@@ -1,2 +1,3 @@
 include:
   - .cnb/workflows/build_go_project.yml
+  - .cnb/workflows/build_docker_image.yml

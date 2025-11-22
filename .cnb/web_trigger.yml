@@ -1,7 +1,7 @@
 branch:
   - buttons:
       - name: 打包 Go 项目
-        description: 打包 Go 项目
+        description: 打包 Go 项目 然后上传到附件
         event: web_trigger_build_go_project # 触发的 CI 事件名
         permissions:
           roles:
@@ -28,3 +28,32 @@ branch:
             required: true # 是否必填
             type: input
             default:
+
+      - name: 打包 Docker 镜像
+        description: 打包 Docker 镜像 然后上传到 制品库
+        event: web_trigger_build_docker_image # 触发的 CI 事件名
+        permissions:
+          roles:
+            - owner
+            - master
+            - developer
+        inputs:
+          # 目前支持以下三种格式：输入框（input）、多行文本输入框（textarea）、下拉选择框（select 支持单选和多选），其中 key 值（var1、var2、var3）为环境变量名
+          goproxy:
+            # 单选下拉选择框
+            description: 请选择Go代理
+            required: true
+            type: select
+            default: https://goproxy.cn,direct
+            options:
+              - name: 七牛云
+                value: https://goproxy.cn,direct
+              - name: 全国
+                value: https://goproxy.io,direct
+
+          version:
+            # 输入框
+            description: 请输入打包版本
+            required: false # 是否必填
+            type: input
+            default: 
