@@ -313,10 +313,17 @@
                   <svg class="ip-i">
                     <use href="/static/icons.svg#ip-edit" />
                   </svg> 编辑</button>
+                {{if ne .Description $.DeviceCode}}
                 <button class="btn btn-sm btn-danger" onclick="deleteIpGroup('{{.ID}}')">
                   <svg class="ip-i">
                     <use href="/static/icons.svg#ip-delete" />
                   </svg> 删除</button>
+                {{else}}
+                <button class="btn btn-sm btn-danger" disabled>
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-delete" />
+                  </svg> 删除</button>
+                {{end}}
               </td>
             </tr>
             {{end}}

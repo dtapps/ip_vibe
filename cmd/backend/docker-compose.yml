@@ -2,7 +2,7 @@ services:
   backend:
     image: docker.cnb.cool/dtapp/ip_vibe/backend:latest
     restart: unless-stopped
-    network_mode: bridge
+    network_mode: host
     environment:
       - "DEBUG=true"
       - "HTTP_PORT=8086"
@@ -11,7 +11,7 @@ services:
       - "DEVICE_CODE=设备编号，留空则自动生成（根据 /etc/machine-id 生成）"
       - "DEVICE_NAME=设备名称，可留空"
     volumes:
-      - /etc/machine-id:/etc/machine-id:ro 
+      - /etc/machine-id:/etc/machine-id:ro
       - /etc/localtime:/etc/localtime:ro
       - ./data:/app/data
       - ./logs:/app/logs
