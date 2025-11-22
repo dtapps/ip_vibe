@@ -3,11 +3,18 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"strings"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/reporter"
+)
+
+var (
+	version   = "dev"     // 版本号
+	commit    = "unknown" // Git 提交 ID
+	buildTime = "unknown" // 构建时间
 )
 
 func main() {
@@ -20,8 +27,15 @@ func main() {
 		initialize.CloseGoCron(ctx) // 关闭 GoCron
 	}()
 
+	// 打印
+	slog.Info("服务启动",
+		slog.String("version", version),
+		slog.String("commit", commit),
+		slog.String("build_time", buildTime),
+	)
+
 	if global.GvaEnv.HTTP_URL == "" {
-		fmt.Printf("服务器启动失败: HTTP_URL未配置\n")
+		fmt.Printf("服务启动失败: HTTP_URL未配置\n")
 		os.Exit(1)
 	}
 

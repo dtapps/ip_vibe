@@ -54,10 +54,10 @@
             go mod tidy
             go mod vendor
 
-            # 3. 编译 Go 二进制
-            echo "编译 Go 二进制..."
+            # 3. 清理并只构建 Linux amd64
+            echo "清理并只构建 Linux amd64..."
             make clean
-            make build-linux-amd64
+            VERSION=v${INTERIOR_VERSION} make build-linux-amd64
 
             # 4. 登录 Docker Registry
             echo "正在登录 Docker Registry: ${CNB_DOCKER_REGISTRY}"
@@ -75,14 +75,10 @@
             # 5. 构建 Docker 镜像
             echo " 构建 Docker 镜像..."
             docker build \
-              --build-arg VERSION="${INTERIOR_VERSION}" \
-              --build-arg BUILD_TIME="$(date +%Y-%m-%d_%H:%M:%S)" \
               -f "./cmd/backend/Dockerfile" \
               -t "${BACKEND_DOCKER_IMAGE_FULL}" \
               -t "${BACKEND_DOCKER_IMAGE_LATEST}" .
             docker build \
-              --build-arg VERSION="${INTERIOR_VERSION}" \
-              --build-arg BUILD_TIME="$(date +%Y-%m-%d_%H:%M:%S)" \
               -f "./cmd/reporter/Dockerfile" \
               -t "${REPORTER_DOCKER_IMAGE_FULL}" \
               -t "${REPORTER_DOCKER_IMAGE_LATEST}" .
@@ -112,7 +108,7 @@
           type: git:release
           options:
             tag: docker-${INTERIOR_VERSION}
-            title: docker-"${INTERIOR_VERSION}"
+            title: "docker-${INTERIOR_VERSION}"
             description: ${LATEST_CHANGE_LOG}
 
         # https://docs.cnb.cool/zh/plugin/#public/cnbcool/ai-review

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"io/fs"
+	"log/slog"
 	"net/http"
 	"os"
 	"vibe_ip/internal/global"
@@ -22,6 +23,12 @@ import (
 //go:embed templates static
 var embeddedFiles embed.FS
 
+var (
+	version   = "dev"     // 版本号
+	commit    = "unknown" // Git 提交 ID
+	buildTime = "unknown" // 构建时间
+)
+
 func main() {
 
 	ctx := context.Background()
@@ -35,6 +42,13 @@ func main() {
 	}()
 
 	initialize.InitOperationLogHelper(global.GvaDb) // 初始化操作日志助手
+
+	// 打印
+	slog.Info("服务启动",
+		slog.String("version", version),
+		slog.String("commit", commit),
+		slog.String("build_time", buildTime),
+	)
 
 	// 强制日志颜色化
 	gin.ForceConsoleColor()

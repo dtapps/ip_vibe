@@ -49,9 +49,9 @@
             go mod tidy
             go mod vendor
 
-            # 3. 编译 Go 二进制
-            echo "编译 Go 二进制..."
-            make build-all
+            # 3. 清理并构建所有平台
+            echo "清理并构建所有平台..."
+            VERSION=v${INTERIOR_VERSION} make build-all
 
             echo "=============================="
             echo "🎉 处理结束 web_trigger_build_go_project"
