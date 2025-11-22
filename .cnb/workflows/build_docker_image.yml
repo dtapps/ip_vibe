@@ -57,7 +57,7 @@
             # 3. 清理并只构建 Linux amd64
             echo "清理并只构建 Linux amd64..."
             make clean
-            VERSION=v${INTERIOR_VERSION} make build-linux-amd64
+            VERSION=${INTERIOR_VERSION} make build-linux-amd64
 
             # 4. 登录 Docker Registry
             echo "正在登录 Docker Registry: ${CNB_DOCKER_REGISTRY}"

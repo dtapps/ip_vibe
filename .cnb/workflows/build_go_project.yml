@@ -51,7 +51,7 @@
 
             # 3. 清理并构建所有平台
             echo "清理并构建所有平台..."
-            VERSION=v${INTERIOR_VERSION} make build-all
+            VERSION=${INTERIOR_VERSION} make build-all
 
             echo "=============================="
             echo "🎉 处理结束 web_trigger_build_go_project"
