@@ -1,0 +1,588 @@
+:root {
+    --primary: #6366f1;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --radius: 8px;
+    --shadow: 0 2px 8px rgba(0, 0, 0, .06);
+    --font: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --mono: "Fira Code", Menlo, monospace;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 20px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+h1 {
+    margin-bottom: 30px;
+}
+
+.card {
+    background: var(--card);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-body {
+    padding: 24px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-success {
+    background: var(--success);
+    color: white;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.8;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    background: #f9fafb;
+    font-weight: 600;
+}
+
+tr:hover {
+    background: #f9fafb;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .3s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: var(--primary);
+}
+
+input:checked+.slider:before {
+    transform: translateX(20px);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.mt-3 {
+    margin-top: 16px;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-success {
+    background: #d1fae5;
+    color: var(--success);
+}
+
+.badge-danger {
+    background: #fee2e2;
+    color: var(--danger);
+}
+
+.timeline {
+    position: relative;
+}
+
+.timeline-item {
+    padding-bottom: 20px;
+    padding-left: 28px;
+    position: relative;
+}
+
+.timeline-item:before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary);
+}
+
+.timeline-item:after {
+    content: "";
+    position: absolute;
+    left: 11px;
+    top: 12px;
+    width: 2px;
+    height: calc(100% - 8px);
+    background: var(--border);
+}
+
+.timeline-item:last-child:after {
+    display: none;
+}
+
+.timeline-time {
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.hidden {
+    display: none;
+}
+
+.platform-fields {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 12px;
+    background: #f9fafb;
+}
+
+/* 图标 */
+.ip-i {
+    width: 1.2em;
+    height: 1.2em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vertical-align: -.18em;
+}
+
+/* 带图标的 h2 */
+.h2-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    /* 图标与文字间距 */
+    margin: 0;
+    /* 覆盖默认 h2 margin */
+}
+
+.h2-icon svg {
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary);
+    /* 比正文浅 */
+}
+
+/* ===== 实时 IP 弹窗专用 ===== */
+.ip-popup {
+    width: 90%;
+    max-width: 640px;
+    padding: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, .15);
+}
+
+.ip-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background: #2c3e50;
+    color: #fff;
+}
+
+.ip-popup-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ip-popup-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    padding: 4px;
+    line-height: 1;
+}
+
+.ip-popup-close:hover {
+    opacity: .8;
+}
+
+.ip-popup-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: #f3f4f6;
+    font-size: 14px;
+}
+
+.ip-popup-count b {
+    color: var(--primary);
+}
+
+.ip-popup-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.ip-popup-copy:hover {
+    background: #f9fafb;
+}
+
+.ip-popup-pre {
+    margin: 0;
+    padding: 20px 24px;
+    background: #1e1e1e;
+    color: #f8f8f2;
+    font-size: 14px;
+    line-height: 1.6;
+    max-height: 420px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: 'Fira Code', Menlo, monospace;
+    border-radius: 0;
+}
+
+/* 滚动条美化 */
+.ip-popup-pre::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.ip-popup-pre::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+.ip-popup-footer {
+    padding: 16px 24px;
+    text-align: right;
+    background: #fff;
+    border-top: 1px solid #e5e7eb;
+}
+
+
+/* placeholder 选项置灰 */
+select:invalid {
+    color: #9ca3af;
+    /* 灰色-400 */
+}
+
+/* 用户选了真实项就恢复黑色 */
+select option {
+    color: #1f2937;
+    /* 灰色-800 */
+}
+
+/* 第一条 placeholder 再暗一点（可选） */
+select option[value=""]:disabled {
+    color: #d1d5db;
+    /* 灰色-300 */
+}
+
+/* 让禁用按钮真正不可点 */
+button:disabled,
+.btn:disabled,
+button[disabled],
+.btn[disabled] {
+    opacity: 0.55 !important;
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+}
+
+
+/* 谷歌字体 3 KB */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Fira+Code&display=swap');
+
+
+
+/* 按钮悬浮放大 1 px */
+.btn {
+    transition: all .25s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* 表格行悬浮高亮 */
+tr {
+    transition: background .2s ease;
+}
+
+tr:hover {
+    background: #f1f5f9;
+}
+
+/* 禁用真正不可点 */
+button:disabled,
+.btn:disabled {
+    opacity: .55 !important;
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+}
+
+/* 一键回到顶部 */
+.back-top {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    visibility: hidden;
+    transition: all .3s ease;
+}
+
+.back-top.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (prefers-reduced-motion:reduce) {
+    .back-top {
+        transition: none;
+    }
+}
+
+/* IP 组 多选设备选择框优化 */
+.multiselect-device {
+    /* 继承基础表单样式 */
+    width: 100%;
+    /* 保证宽度 100% */
+    padding: 0;
+    /* 移除容器 padding，让 option 自己控制 */
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    height: 180px;
+    /* 固定高度 */
+
+    /* 核心设置 */
+    -webkit-appearance: none;
+    /* 移除默认外观，尤其在 macOS 上 */
+    -moz-appearance: none;
+    appearance: none;
+
+    overflow-y: auto;
+    /* 启用垂直滚动条 */
+    background: var(--card);
+    /* 确保背景是卡片色 */
+    color: var(--text);
+}
+
+/* 单个选项的样式 - 包含水平溢出处理 */
+.multiselect-device option {
+    padding: 8px 14px;
+    /* 增加选项本身的内边距 */
+    white-space: nowrap;
+    /* 避免文字意外换行 */
+    cursor: pointer;
+    line-height: 1.4;
+    color: var(--text);
+    background-color: var(--card);
+
+    /* 针对水平溢出的关键修改 */
+    display: block;
+    /* 使 overflow/text-overflow 生效 */
+    overflow: hidden;
+    /* 隐藏超出边界的内容 */
+    text-overflow: ellipsis;
+    /* 将被隐藏的内容替换为省略号 */
+}
+
+/* 悬停样式 (未选中) */
+.multiselect-device option:hover:not(:checked) {
+    background-color: #f1f5f9;
+    /* 浅灰色背景 */
+    color: var(--text);
+}
+
+/* 选中项样式 - **重点: 强制覆盖确保颜色一致** */
+.multiselect-device option:checked {
+    background-color: var(--primary) !important;
+    /* 主题色背景 */
+    color: white !important;
+    /* 白色文字 */
+    font-weight: 500;
+}
+
+/* 滚动条美化 (WebKit) */
+.multiselect-device::-webkit-scrollbar {
+    width: 6px;
+}
+
+.multiselect-device::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    /* 浅灰色滚动条 */
+    border-radius: 3px;
+}
+
+/* 禁用首个 placeholder 选项 */
+.multiselect-device option:disabled {
+    color: #9ca3af;
+    background-color: var(--card);
+}

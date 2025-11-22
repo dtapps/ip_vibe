@@ -1,0 +1,160 @@
+package handlers
+
+import (
+	"fmt"
+	"net/http"
+	"vibe_ip/ent"
+	"vibe_ip/ent/operationlog"
+	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gocron_helper"
+	"vibe_ip/internal/types"
+
+	"github.com/denisbrodbeck/machineid"
+	"github.com/gin-gonic/gin"
+)
+
+func Index(c *gin.Context) {
+	// 准备页面数据
+	pageData := types.Indexesponse{
+		Configs:       []types.GetConfigsResponse{},
+		CdnRecords:    []types.GetCdnRecordsResponse{},
+		DnsRecords:    []types.GetDnsRecordsResponse{},
+		Devices:       []types.GetDevicesResponse{},
+		IpGroups:      []types.GetIPGroupsResponse{},
+		Tasks:         []gocron_helper.JobData{},
+		OperationLogs: []types.GetOperationLogsResponse{},
+	}
+	// 查询全部配置
+	allConfig, err := global.GvaDb.PlatformConfig.Query().
+		All(c)
+	if err == nil {
+		for _, item := range allConfig {
+			pageData.Configs = append(pageData.Configs, types.GetConfigsResponse{
+				ID:       item.ID,
+				Name:     item.Name,
+				Platform: item.Platform.String(),
+			})
+		}
+	}
+	// 查询全部CDN记录
+	allCdnRecord, err := global.GvaDb.CDNRecord.Query().
+		WithConfig().
+		WithIPGroup().
+		All(c)
+	if err == nil {
+		for _, item := range allCdnRecord {
+			list := types.GetCdnRecordsResponse{
+				ID:             item.ID,
+				ConfigID:       item.ConfigID,
+				Platform:       item.Edges.Config.Platform.String(),
+				RecordID:       item.RecordID,
+				Domain:         item.Domain,
+				Type:           item.Type.String(),
+				OriginProtocol: item.OriginProtocol.String(),
+				HTTPPort:       item.HTTPPort,
+				HTTPSPort:      item.HTTPSPort,
+				CdnDomain:      item.CdnDomain,
+				IsActive:       item.IsActive,
+				LastRefresh:    item.LastRefresh,
+			}
+			if ipGroup, err := item.Edges.IPGroupOrErr(); err == nil {
+				list.IPGroupID = ipGroup.ID
+				list.IPGroupName = ipGroup.Name
+			}
+			pageData.CdnRecords = append(pageData.CdnRecords, list)
+		}
+	}
+	// 查询全部DNS记录
+	allDnsRecord, err := global.GvaDb.DNSRecord.Query().
+		WithConfig().
+		WithIPGroup().
+		WithCdnRecord().
+		All(c)
+	if err == nil {
+		for _, item := range allDnsRecord {
+			list := types.GetDnsRecordsResponse{
+				ID:          item.ID,
+				ConfigID:    item.ConfigID,
+				Platform:    item.Edges.Config.Platform.String(),
+				RecordID:    item.RecordID,
+				Domain:      item.Domain,
+				Type:        item.Type.String(),
+				IsActive:    item.IsActive,
+				LastRefresh: item.LastRefresh,
+			}
+			if ipGroup, err := item.Edges.IPGroupOrErr(); err == nil {
+				list.IPGroupID = ipGroup.ID
+				list.IPGroupName = ipGroup.Name
+			}
+			if cdnRecord, err := item.Edges.CdnRecordOrErr(); err == nil {
+				list.CdnRecordID = cdnRecord.ID
+				list.CdnRecordCdnDomain = cdnRecord.CdnDomain
+			}
+			pageData.DnsRecords = append(pageData.DnsRecords, list)
+		}
+	}
+	// 查询全部设备
+	allDevice, err := global.GvaDb.Device.Query().
+		All(c)
+	if err == nil {
+		for _, item := range allDevice {
+			pageData.Devices = append(pageData.Devices, types.GetDevicesResponse{
+				ID:         item.ID,
+				Code:       item.Code,
+				Name:       item.Name,
+				IPV4:       item.IPV4,
+				IPV6:       item.IPV6,
+				ReportedAt: item.UpdatedAt,
+			})
+		}
+	}
+	// 查询全部IP组
+	allIpGroup, err := global.GvaDb.IpGroup.Query().
+		WithDevices().
+		All(c)
+	if err == nil {
+		for _, item := range allIpGroup {
+			pageData.IpGroups = append(pageData.IpGroups, types.GetIPGroupsResponse{
+				ID:          item.ID,
+				Name:        item.Name,
+				Description: item.Description,
+				DeviceCount: len(item.Edges.Devices),
+			})
+		}
+	}
+	// 查询全部任务
+	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
+	pageData.Tasks = jobHelper.GetJobsData(5)
+	// 查询全部操作日志
+	allOperationLog, err := global.GvaDb.OperationLog.Query().
+		Order(ent.Desc(operationlog.FieldCreatedAt)).
+		Limit(20).
+		All(c)
+	if err == nil {
+		for _, item := range allOperationLog {
+			pageData.OperationLogs = append(pageData.OperationLogs, types.GetOperationLogsResponse{
+				ID:        item.ID,
+				OpType:    item.OpType.String(),
+				ObjID:     item.ObjID,
+				ObjType:   item.ObjType.String(),
+				OldValue:  item.OldValue,
+				NewValue:  item.NewValue,
+				Status:    item.Status.String(),
+				Message:   item.Message,
+				CreatedAt: item.CreatedAt,
+			})
+		}
+	}
+
+	// 查询任务状态
+	if global.GvaGoCronRunning == 1 {
+		pageData.TaskStatus = "running"
+	}
+
+	// 获取自身设备ID
+	pageData.DeviceCode, _ = machineid.ID()
+	fmt.Printf("Index pageData: %+v\n", pageData)
+
+	// 渲染模板
+	c.HTML(http.StatusOK, "index.html", pageData)
+}

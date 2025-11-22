@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DDNS管理平台</title>
+  <link rel="stylesheet" href="/static/index.css" />
+  <link rel="stylesheet" href="/static/index.dark.css" />
+  <!-- <base target="_blank"> -->
+</head>
+
+<body>
+  <div class="container">
+    <h1>🌐 DDNS管理平台</h1>
+
+    <!-- 平台配置 -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="h2-icon">
+          <svg class="ip-i">
+            <use href="/static/icons.svg#ip-server" />
+          </svg>
+          平台配置
+        </h2>
+        <div>
+          <button class="btn btn-primary" onclick="openConfigModal()">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-plus"></use>
+            </svg> 添加配置</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <table>
+          <thead>
+            <tr>
+              <th>配置名称</th>
+              <th>平台</th>
+              <th style="width: 200px;text-align: center;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="configTable">
+            {{range .Configs}}
+            <tr>
+              <td>{{.Name}}</td>
+              <td><span class="badge badge-success">{{.Platform}}</span></td>
+              <td>
+                <button class="btn btn-primary btn-sm" onclick="openConfigModal('{{.ID}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-edit" />
+                  </svg> 编辑</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteConfig('{{.ID}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-delete" />
+                  </svg> 删除</button>
+              </td>
+            </tr>
+            {{end}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CDN记录管理 -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="h2-icon">
+          <svg class="ip-i">
+            <use href="/static/icons.svg#ip-dns" />
+          </svg>
+          CDN 记录管理
+        </h2>
+        <div>
+          <button class="btn btn-primary" onclick="openCdnRecordModal()">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-plus" />
+            </svg> 添加记录
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <table>
+          <thead>
+            <tr>
+              <th>域名</th>
+              <th>类型</th>
+              <th>回源协议</th>
+              <th>HTTP端口</th>
+              <th>HTTPS端口</th>
+              <th>别名</th>
+              <th>IP组</th>
+              <th>平台</th>
+              <th>活跃</th>
+              <th style="width: 200px;text-align: center;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="cdnRecordTable">
+            {{range .CdnRecords}}
+            <tr>
+              <td>{{.Domain}}</td>
+              <td>{{.Type}}</td>
+              {{if eq .OriginProtocol "follow"}}
+              <td>协议跟随</td>
+              {{else if eq .OriginProtocol "http"}}
+              <td>HTTP协议回源</td>
+              {{else if eq .OriginProtocol "https"}}
+              <td>HTTPS协议回源</td>
+              {{else}}
+              <td>{{.OriginProtocol}}</td>
+              {{end}}
+              <td>{{.HTTPPort}}</td>
+              <td>{{.HTTPSPort}}</td>
+              <td>{{.CdnDomain}}</td>
+              <td class="text-monospace">{{if gt .IPGroupID 0}}{{.IPGroupID}}:{{.IPGroupName}}{{else}}-{{end}}</td>
+              <td><span class="badge badge-success">{{.Platform}}</span></td>
+              <td>
+                <label class="switch">
+                  <input type="checkbox" {{if .IsActive}}checked{{end}}
+                    onchange="toggleCdnRecordStatus('{{.ID}}', this)">
+                  <span class="slider"></span>
+                </label>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-outline-info"
+                  onclick="viewLiveDeviceIpAddresse('{{.IPGroupID}}','{{.IPGroupName}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-eyes" />
+                  </svg> 实时IP</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteCdnRecord('{{.ID}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-delete" />
+                  </svg> 删除</button>
+              </td>
+            </tr>
+            {{end}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DNS记录管理 -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="h2-icon">
+          <svg class="ip-i">
+            <use href="/static/icons.svg#ip-dns" />
+          </svg>
+          DNS 记录管理
+        </h2>
+        <div>
+          <button class="btn btn-primary" onclick="openDnsRecordModal()">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-plus" />
+            </svg> 添加记录
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <table>
+          <thead>
+            <tr>
+              <th>域名</th>
+              <th>类型</th>
+              <th>IP组</th>
+              <th>CDN</th>
+              <th>平台</th>
+              <th>活跃</th>
+              <th style="width: 200px;text-align: center;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="dnsRecordTable">
+            {{range .DnsRecords}}
+            <tr>
+              <td>{{.Domain}}</td>
+              <td>{{.Type}}</td>
+              <td class="text-monospace">{{if gt .IPGroupID 0}}{{.IPGroupID}}:{{.IPGroupName}}{{else}}{{end}}</td>
+              <td class="text-monospace">{{if gt .CdnRecordID 0}}{{.CdnRecordID}}:{{.CdnRecordCdnDomain}}{{else}}{{end}}</td>
+              <td><span class="badge badge-success">{{.Platform}}</span></td>
+              <td>
+                <label class="switch">
+                  <input type="checkbox" {{if .IsActive}}checked{{end}}
+                    onchange="toggleDnsRecordStatus('{{.ID}}', this)">
+                  <span class="slider"></span>
+                </label>
+              </td>
+              <td>
+                {{if ne .IPGroupID 0 }}
+                <button class="btn btn-sm btn-outline-info"
+                  onclick="viewLiveDeviceIpAddresse('{{.IPGroupID}}','{{.IPGroupName}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-eyes" />
+                  </svg> 实时IP</button>
+                {{else}}
+                <button class="btn btn-sm btn-outline-info" disabled>
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-eyes" />
+                  </svg> 实时IP</button>
+                {{end}}
+                <button class="btn btn-sm btn-danger" onclick="deleteDnsRecord('{{.ID}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-delete" />
+                  </svg> 删除</button>
+              </td>
+            </tr>
+            {{end}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 设备实时上报 -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="h2-icon">
+          <svg class="ip-i">
+            <use href="/static/icons.svg#ip-devices" />
+          </svg>
+          设备实时上报
+        </h2>
+        <div>
+          <button class="btn btn-primary" onclick="openDeviceModal()">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-mobile" />
+            </svg> 管理设备</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <table>
+          <thead>
+            <tr>
+              <th>编号</th>
+              <th>名称</th>
+              <th>最新 IPv4</th>
+              <th>最新 IPv6</th>
+              <th>上报时间</th>
+              <th style="width: 300px;text-align: center;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="deviceTable">
+            {{range .Devices}}
+            <tr>
+              <td>{{.Code}}</td>
+              <td>{{.Name}}</td>
+              <td class="text-monospace">{{.IPV4}}</td>
+              <td class="text-monospace">{{.IPV6}}</td>
+              <td>{{.ReportedAt.Format "2006-01-02 15:04:05"}}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-info" onclick="viewLiveDeviceIpHistory('{{.ID}}','{{.Name}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-eyes" />
+                  </svg> 历史IP</button>
+                <button class="btn btn-primary btn-sm" onclick="openDeviceModal('{{.ID}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-edit" />
+                  </svg> 编辑</button>
+                {{if ne .Code $.DeviceCode}}
+                <button class="btn btn-sm btn-danger" onclick="deleteDevice('{{.ID}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-delete" />
+                  </svg> 删除</button>
+                {{else}}
+                <button class="btn btn-sm btn-danger" disabled>
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-delete" />
+                  </svg> 删除</button>
+                {{end}}
+              </td>
+            </tr>
+            {{end}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- IP 组（设备维度） -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="h2-icon">
+          <svg class="ip-i">
+            <use href="/static/icons.svg#ip-layer" />
+          </svg>
+          IP 组（设备维度）
+        </h2>
+        <div>
+          <button class="btn btn-primary" onclick="openIpGroupModal()">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-folder-plus" />
+            </svg> 添加IP组</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <table>
+          <thead>
+            <tr>
+              <th>组名</th>
+              <th>描述</th>
+              <th>设备数</th>
+              <th style="width: 300px;text-align: center;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="groupTable">
+            {{range .IpGroups}}
+            <tr>
+              <td>{{.Name}}</td>
+              <td>{{.Description}}</td>
+              <td>{{.DeviceCount}}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-info" onclick="viewLiveDeviceIpAddresse('{{.ID}}','{{.Name}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-eyes" />
+                  </svg> 实时IP</button>
+                <button class="btn btn-primary btn-sm" onclick="openIpGroupModal('{{.ID}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-edit" />
+                  </svg> 编辑</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteIpGroup('{{.ID}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-delete" />
+                  </svg> 删除</button>
+              </td>
+            </tr>
+            {{end}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 任务管理 -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="h2-icon">
+          <svg class="ip-i">
+            <use href="/static/icons.svg#ip-task" />
+          </svg>
+          任务管理
+        </h2>
+        <div>
+          {{if eq .TaskStatus "running"}}
+          <button class="btn btn-warning" disabled>
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-play" />
+            </svg> 启动</button>
+          <button class="btn btn-danger" onclick="stopTask()">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-stop" />
+            </svg> 停止</button>
+          {{else}}
+          <button class="btn btn-warning" onclick="startTask()">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-play" />
+            </svg> 启动</button>
+          <button class="btn btn-danger" disabled>
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-stop" />
+            </svg> 停止</button>
+          {{end}}
+        </div>
+      </div>
+      <div class="card-body">
+        <table>
+          <thead>
+            <tr>
+              <th>编号</th>
+              <th>名称</th>
+              <th>调度表达式</th>
+              <th>上次执行时间</th>
+              <th>下一次执行时间</th>
+              <th style="width: 300px;text-align: center;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="groupTable">
+            {{range .Tasks}}
+            <tr>
+              <td>{{.ID}}</td>
+              <td>{{.Name}}</td>
+              <td>{{.ScheduleDetail}}</td>
+              <td>{{.LastRun}}</td>
+              <td>{{.NextRun}}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-info" onclick="viewLiveExecutionTime('{{.ID}}','{{.Name}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-eyes" />
+                  </svg> 执行时间</button>
+                <button class="btn btn-success btn-sm" onclick="runTask('{{.ID}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-running" />
+                  </svg> 运行</button>
+              </td>
+            </tr>
+            {{end}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 操作日志 -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="h2-icon">
+          <svg class="ip-i">
+            <use href="/static/icons.svg#ip-log" />
+          </svg>
+          操作日志（最新 20 条）
+        </h2>
+      </div>
+      <div class="card-body">
+        <div class="timeline" id="timeline">
+          {{range .OperationLogs}}
+          <div class="timeline-item">
+            <div class="timeline-time">{{.CreatedAt.Format "2006-01-02 15:04:05"}}</div>
+            <div>
+              <strong>{{.ID}}</strong>:
+              <span class="text-muted">{{.ObjType}}</span> →
+              <span class="text-success">{{.ObjID}}</span>
+              <span class="badge {{if eq .Status "success"}}badge-success{{else}}badge-danger{{end}}">{{.Message}}</span>
+            </div>
+          </div>
+          {{end}}
+        </div>
+      </div>
+    </div>
+
+    <!-- 平台配置 模态框 -->
+    <div class="modal" id="configModal">
+      <div class="modal-content">
+        <h3 id="configModalTitle">添加平台配置</h3>
+        <form id="configForm">
+
+          <div class="form-group">
+            <label>配置名称</label>
+            <input type="text" name="name" id="config_name" required placeholder="如: 我的EdgeOne">
+          </div>
+
+          <div class="form-group">
+            <label>平台类型</label>
+            <select name="platform" id="config_platform" required onchange="changeConfigPlatform(this.value)">
+              <option value="" disabled selected>请选择平台</option>
+              <option value="edgeone">Tencent EdgeOne</option>
+              <option value="cloudflare">CloudFlare</option>
+              <option value="dnspod">DNSPod</option>
+            </select>
+          </div>
+
+          <!-- EdgeOne 字段 -->
+          <div id="edgeoneFields" class="platform-fields hidden">
+            <h4 style="margin-bottom: 16px;">EdgeOne 配置</h4>
+            <div class="form-group">
+              <label>Secret ID <span style="color: red;">*</span></label>
+              <input type="text" id="edgeone_secret_id" placeholder="AKIDxxxxxxxxxxxxxxxxxxxxxxxxx">
+            </div>
+            <div class="form-group">
+              <label>Secret Key <span style="color: red;">*</span></label>
+              <input type="password" id="edgeone_secret_key" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+            </div>
+            <div class="form-group">
+              <label>Zone ID <span style="color: red;">*</span></label>
+              <input type="text" id="edgeone_zone_id" placeholder="zone-xxxxxxxx">
+            </div>
+          </div>
+
+          <!-- CloudFlare 字段 -->
+          <div id="cloudflareFields" class="platform-fields hidden">
+            <h4 style="margin-bottom: 16px;">CloudFlare 配置</h4>
+            <div class="form-group">
+              <label>API Token <span style="color: red;">*</span></label>
+              <input type="password" id="cloudflare_api_key" placeholder="your-api-token">
+            </div>
+            <div class="form-group">
+              <label>Zone ID <span style="color: red;">*</span></label>
+              <input type="text" id="cloudflare_zone_id" placeholder="your-zone-id">
+            </div>
+          </div>
+
+          <!-- DNSPod 字段 -->
+          <div id="dnspodFields" class="platform-fields hidden">
+            <h4 style="margin-bottom: 16px;">DNSPod 配置</h4>
+            <div class="form-group">
+              <label>Secret ID <span style="color: red;">*</span></label>
+              <input type="text" id="dnspod_secret_id" placeholder="AKIDxxxxxxxxxxxxxxxxxxxxxxxxx">
+            </div>
+            <div class="form-group">
+              <label>Secret Key <span style="color: red;">*</span></label>
+              <input type="password" id="dnspod_secret_key" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+            </div>
+          </div>
+
+          <!-- 隐藏字段 -->
+          <input type="hidden" name="id" id="config_id">
+          <input type="hidden" name="config" id="config_json">
+
+          <div class="form-group mt-3" style="text-align: right;">
+            <button type="button" class="btn" onclick="closeModal('configModal')">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-close" />
+              </svg> 取消</button>
+            <button type="submit" class="btn btn-primary">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-save" />
+              </svg> 保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- CDN记录管理 模态框 -->
+    <div class="modal" id="cdnRecordModal">
+      <div class="modal-content">
+        <h3 id="cdnRecordModalTitle">添加 CDN 记录</h3>
+        <form id="cdnRecordForm">
+          <div class="form-group">
+            <label>选择配置 <span style="color:red">*</span></label>
+            <select name="config_id" id="cdn_record_config_id" required onchange="onCdnRecordConfigSelect(this)">
+              <option value="" disabled selected>请选择配置</option>
+              {{range .Configs}}
+              <option value="{{.ID}}" data-platform="{{.Platform}}">
+                {{.Name}} ({{.Platform}})
+              </option>
+              {{end}}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>域名 <span style="color:red">*</span></label>
+            <input type="text" name="domain" id="cdn_record_domain" required placeholder="如 www.example.com">
+          </div>
+
+          <div class="form-group">
+            <label>记录类型 <span style="color:red">*</span></label>
+            <select name="type" id="cdn_record_type" required onchange="onCdnRecordTypeSelect(this)">
+              <option value="A">A</option>
+              <option value="AAAA">AAAA</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>回源协议 <span style="color:red">*</span></label>
+            <select name="origin_protocol" id="cdn_record_origin_protocol" required
+              onchange="onCdnRecordOriginProtocolSelect(this)">
+              <option value="follow">协议跟随</option>
+              <option value="http">HTTP协议回源</option>
+              <option value="https">HTTPS协议回源</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>HTTP 端口 <span style="color:red">*</span></label>
+            <input type="number" name="http_port" id="cdn_record_http_port" required placeholder="如 80">
+          </div>
+
+          <div class="form-group">
+            <label>HTTPS 端口 <span style="color:red">*</span></label>
+            <input type="number" name="https_port" id="cdn_record_https_port" required placeholder="如 443">
+          </div>
+
+          <div class="form-group">
+            <label>IP 组 <span style="color:red">*</span></label>
+            <select name="ip_group_id" id="cdn_record_ip_group_id" required onchange="onCdnRecordIpGroupSelect(this)">
+            </select>
+          </div>
+
+          <!-- 隐藏字段 -->
+          <input type="hidden" name="id" id="cdn_record_id">
+
+          <div class="form-group mt-3" style="text-align:right">
+            <button type="button" class="btn" onclick="closeModal('cdnRecordModal')">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-close" />
+              </svg> 取消</button>
+            <button type="submit" class="btn btn-primary">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-save" />
+              </svg> 保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- DNS记录管理 模态框 -->
+    <div class="modal" id="dnsRecordModal">
+      <div class="modal-content">
+        <h3 id="dnsRecordModalTitle">添加 DNS 记录</h3>
+        <form id="dnsRecordForm">
+          <div class="form-group">
+            <label>选择配置 <span style="color:red">*</span></label>
+            <select name="config_id" id="dns_record_config_id" required onchange="onDnsRecordConfigSelect(this)">
+              <option value="" disabled selected>请选择配置</option>
+              {{range .Configs}}
+              <option value="{{.ID}}" data-platform="{{.Platform}}">
+                {{.Name}} ({{.Platform}})
+              </option>
+              {{end}}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>域名 <span style="color:red">*</span></label>
+            <input type="text" name="domain" id="dns_record_domain" required placeholder="如 www.example.com">
+          </div>
+
+          <div class="form-group">
+            <label>记录类型 <span style="color:red">*</span></label>
+            <select name="type" id="dns_record_type" required onchange="onDnsRecordTypeSelect(this)">
+              <option value="" disabled selected>请选择记录类型</option>
+              <option value="A">A</option>
+              <option value="AAAA">AAAA</option>
+              <option value="CNAME">CNAME</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>IP 组 <span style="color:green">（和 CDN 记录 二选一）</span></label>
+            <select name="ip_group_id" id="dns_record_ip_group_id" disabled onchange="onDnsRecordIpGroupSelect(this)">
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>CDN 记录 <span style="color:green">（和 IP 组 二选一）</span></label>
+            <select name="cdn_record_id" id="dns_record_cdn_record_id" disabled
+              onchange="onDnsRecordCdnRecordSelect(this)">
+            </select>
+          </div>
+
+          <!-- 隐藏字段 -->
+          <input type="hidden" name="id" id="dns_record_id">
+
+          <div class="form-group mt-3" style="text-align:right">
+            <button type="button" class="btn" onclick="closeModal('dnsRecordModal')">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-close" />
+              </svg> 取消</button>
+            <button type="submit" class="btn btn-primary">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-save" />
+              </svg> 保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 设备管理 模态框 -->
+    <div class="modal" id="deviceModal">
+      <div class="modal-content">
+        <h3 id="deviceModalTitle">添加设备</h3>
+        <form id="deviceForm">
+
+          <div class="form-group">
+            <label>编号 <span style="color:red">*</span></label>
+            <input type="text" name="code" id="device_code" required placeholder="如: xxxx-x-x-x-xxxx">
+          </div>
+          <div class="form-group">
+            <label>名称 <span style="color:red">*</span></label>
+            <input type="text" name="name" id="device_name" required placeholder="如: 我的">
+          </div>
+
+          <!-- 隐藏字段 -->
+          <input type="hidden" name="id" id="device_id">
+
+          <div class="form-group mt-3" style="text-align: right;">
+            <button type="button" class="btn" onclick="closeModal('deviceModal')">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-close" />
+              </svg> 取消</button>
+            <button type="submit" class="btn btn-primary">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-save" />
+              </svg> 保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- IP 组（设备维度） 模态框 -->
+    <div class="modal" id="ipGroupModal">
+      <div class="modal-content">
+        <h3 id="ipGroupModalTitle">添加 / 编辑 IP 组</h3>
+        <form id="ipGroupForm">
+
+          <div class="form-group">
+            <label>组名 <span style="color:red">*</span></label>
+            <input type="text" name="name" id="ip_group_name" required placeholder="如：CDN-边缘">
+          </div>
+
+          <div class="form-group">
+            <label>描述</label>
+            <input type="text" name="description" id="ip_group_description" placeholder="可选">
+          </div>
+
+          <div class="form-group">
+            <label>选择设备（Ctrl/⌘ 多选）</label>
+            <select name="devices" id="ip_group_devices" multiple onchange="onIpGroupDevicesSelect(this)"
+              class="multiselect-device"></select>
+          </div>
+
+          <!-- 隐藏字段 -->
+          <input type="hidden" name="id" id="ip_group_id">
+
+          <div class="form-group mt-3" style="text-align:right">
+            <button type="button" class="btn" onclick="closeModal('ipGroupModal')">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-close" />
+              </svg> 取消</button>
+            <button type="submit" class="btn btn-primary">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-save" />
+              </svg> 保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 实时 设备 IP 历史 弹窗 -->
+    <div class="modal" id="liveDeviceIpHistoryModal">
+      <div class="modal-content ip-popup">
+        <!-- 头部 -->
+        <div class="ip-popup-header">
+          <h4 class="ip-popup-title" id="liveDeviceIpHistoryTitle">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-eyes" />
+              </use>
+            </svg>
+            实时 设备 IP 历史
+          </h4>
+          <button class="ip-popup-close" onclick="closeModal('liveDeviceIpHistoryModal')" aria-label="关闭">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-close" />
+              </use>
+            </svg>
+          </button>
+        </div>
+
+        <!-- 工具栏 -->
+        <div class="ip-popup-toolbar">
+          <span class="ip-popup-count">共 <b id="liveDeviceIpHistoryCount">0</b> 条</span>
+          <button class="ip-popup-copy" onclick="copyData('liveDeviceIpHistoryPre')">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-copy" />
+              </use>
+            </svg>
+            一键复制
+          </button>
+        </div>
+
+        <!-- 代码块区域 -->
+        <pre class="ip-popup-pre" id="liveDeviceIpHistoryPre">点击“实时IP”按钮后，内容将显示在这里</pre>
+
+        <!-- 底部按钮 -->
+        <div class="ip-popup-footer">
+          <button class="btn" onclick="closeModal('liveDeviceIpHistoryModal')">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-close" />
+              </use>
+            </svg> 关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 实时 设备 IP 地址 弹窗 -->
+    <div class="modal" id="liveDeviceIpAddresseModal">
+      <div class="modal-content ip-popup">
+        <!-- 头部 -->
+        <div class="ip-popup-header">
+          <h4 class="ip-popup-title" id="liveDeviceIpAddresseTitle">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-eyes" />
+              </use>
+            </svg>
+            实时 设备 IP 地址
+          </h4>
+          <button class="ip-popup-close" onclick="closeModal('liveDeviceIpAddresseModal')" aria-label="关闭">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-close" />
+              </use>
+            </svg>
+          </button>
+        </div>
+
+        <!-- 工具栏 -->
+        <div class="ip-popup-toolbar">
+          <span class="ip-popup-count">共 <b id="liveDeviceIpAddresseCount">0</b> 条</span>
+          <button class="ip-popup-copy" onclick="copyData('liveDeviceIpAddressePre')">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-copy" />
+              </use>
+            </svg>
+            一键复制
+          </button>
+        </div>
+
+        <!-- 代码块区域 -->
+        <pre class="ip-popup-pre" id="liveDeviceIpAddressePre">点击“实时IP”按钮后，内容将显示在这里</pre>
+
+        <!-- 底部按钮 -->
+        <div class="ip-popup-footer">
+          <button class="btn" onclick="closeModal('liveDeviceIpAddresseModal')">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-close" />
+              </use>
+            </svg> 关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 实时 执行时间 弹窗 -->
+    <div class="modal" id="liveExecutionTimeModal">
+      <div class="modal-content ip-popup">
+        <!-- 头部 -->
+        <div class="ip-popup-header">
+          <h4 class="ip-popup-title" id="liveExecutionTimeTitle">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-eyes" />
+              </use>
+            </svg>
+            实时 执行时间
+          </h4>
+          <button class="ip-popup-close" onclick="closeModal('liveExecutionTimeModal')" aria-label="关闭">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-close" />
+              </use>
+            </svg>
+          </button>
+        </div>
+
+        <!-- 工具栏 -->
+        <div class="ip-popup-toolbar">
+          <span class="ip-popup-count">共 <b id="liveExecutionTimeCount">0</b> 条</span>
+          <button class="ip-popup-copy" onclick="copyData('liveExecutionTimePre')">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-copy" />
+              </use>
+            </svg>
+            一键复制
+          </button>
+        </div>
+
+        <!-- 代码块区域 -->
+        <pre class="ip-popup-pre" id="liveExecutionTimePre">点击“实时IP”按钮后，内容将显示在这里</pre>
+
+        <!-- 底部按钮 -->
+        <div class="ip-popup-footer">
+          <button class="btn" onclick="closeModal('liveExecutionTimeModal')">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-close" />
+              </use>
+            </svg> 关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <a href="#" class="back-top" aria-label="回到顶部">
+      <svg class="ip-i">
+        <use href="/static/icons.svg#ip-top" />
+      </svg>
+    </a>
+
+    <script>
+      window.deviceCode = "{{.DeviceCode}}";   // Go 渲染
+    </script>
+    <script src="/static/uuid.js"></script>
+    <script src="/static/index.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,142 @@
+package handlers
+
+import (
+	"fmt"
+	"net/http"
+	"vibe_ip/ent/operationlog"
+	"vibe_ip/ent/platformconfig"
+	"vibe_ip/internal/global"
+	"vibe_ip/internal/types"
+
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
+)
+
+// 获取全部配置
+func GetConfigs(c *gin.Context) {
+	configs := make([]types.GetConfigsResponse, 0)
+	// 查询全部配置
+	allConfig, err := global.GvaDb.PlatformConfig.Query().
+		All(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, "查询配置失败: "+err.Error())
+		return
+	}
+	for _, item := range allConfig {
+		configs = append(configs, types.GetConfigsResponse{
+			ID:         item.ID,
+			Name:       item.Name,
+			Platform:   item.Platform.String(),
+			ConfigJSON: item.ConfigJSON,
+		})
+	}
+	successResponse(c, configs)
+}
+
+// 获取配置
+func GetConfig(c *gin.Context) {
+	// 请求参数
+	id := c.Param("id")
+	// 查询配置
+	firstConfig, err := global.GvaDb.PlatformConfig.Query().
+		Where(platformconfig.ID(cast.ToInt64(id))).
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, "查询配置失败: "+err.Error())
+		return
+	}
+	successResponse(c, types.GetConfigsResponse{
+		ID:         firstConfig.ID,
+		Name:       firstConfig.Name,
+		Platform:   firstConfig.Platform.String(),
+		ConfigJSON: firstConfig.ConfigJSON,
+	})
+}
+
+// 创建配置
+func CreateConfig(c *gin.Context) {
+	// 请求参数
+	var requestParams types.CreateConfigRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+	fmt.Printf("CreateConfig params: %+v\n", requestParams)
+	// 创建配置
+	saveConfig, err := global.GvaDb.PlatformConfig.Create().
+		SetName(requestParams.Name).
+		SetPlatform(platformconfig.Platform(requestParams.Platform)).
+		SetConfigJSON([]byte(requestParams.ConfigJSON)).
+		Save(c)
+	if err != nil {
+		fmt.Printf("创建配置: %s\n", err.Error())
+		errorResponse(c, http.StatusInternalServerError, "创建配置失败: "+err.Error())
+		return
+	}
+	// 记录操作日志
+	global.GvaOperationLogHelper.RecordDataUpdate(c, saveConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "创建配置")
+	successResponse(c, gin.H{
+		"id": saveConfig.ID,
+	})
+}
+
+// 更新配置
+func UpdateConfig(c *gin.Context) {
+	// 请求参数
+	id := c.Param("id")
+	var requestParams types.CreateConfigRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+	fmt.Printf("UpdateConfig params: %+v\n", requestParams)
+	// 查询配置
+	firstConfig, err := global.GvaDb.PlatformConfig.Query().
+		Where(platformconfig.ID(cast.ToInt64(id))).
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, "查询配置失败: "+err.Error())
+		return
+	}
+	// 更新配置
+	saveConfig, err := global.GvaDb.PlatformConfig.UpdateOne(firstConfig).
+		SetName(requestParams.Name).
+		SetConfigJSON([]byte(requestParams.ConfigJSON)).
+		Save(c)
+	if err != nil {
+		fmt.Printf("更新配置: %s\n", err.Error())
+		errorResponse(c, http.StatusInternalServerError, "更新配置失败: "+err.Error())
+		return
+	}
+	// 记录操作日志
+	global.GvaOperationLogHelper.RecordDataUpdate(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "更新配置")
+	successResponse(c, gin.H{
+		"id": saveConfig.ID,
+	})
+}
+
+// 删除配置
+func DeleteConfig(c *gin.Context) {
+	// 请求参数
+	id := c.Param("id")
+	// 查询配置
+	firstConfig, err := global.GvaDb.PlatformConfig.Query().
+		Where(platformconfig.ID(cast.ToInt64(id))).
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, "查询配置失败: "+err.Error())
+		return
+	}
+	// 删除配置
+	err = global.GvaDb.PlatformConfig.DeleteOne(firstConfig).Exec(c)
+	if err != nil {
+		fmt.Printf("删除配置: %s\n", err.Error())
+		errorResponse(c, http.StatusInternalServerError, "删除配置失败: "+err.Error())
+		return
+	}
+	// 记录操作日志
+	global.GvaOperationLogHelper.RecordDataDelete(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "删除配置")
+	successResponse(c, gin.H{
+		"id": firstConfig.ID,
+	})
+}

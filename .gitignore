@@ -1,0 +1,10 @@
+.env
+.git
+.svn
+.idea
+.vscode
+.log
+*_test.go
+/bin
+/data
+/logs
