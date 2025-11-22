@@ -303,7 +303,7 @@ func ReportDeviceIp(c *gin.Context) {
 			updateDevice := tx.Device.UpdateOne(firstDevice).
 				SetIPV4(requestParams.IPV4Addr).
 				SetIPV6(requestParams.IPV6Addr)
-			if firstDevice.Name != requestParams.DeviceName {
+			if requestParams.DeviceName != "" && firstDevice.Name != requestParams.DeviceName {
 				updateDevice.SetName(requestParams.DeviceName)
 			}
 			err = updateDevice.Exec(c)
