@@ -98,9 +98,6 @@ func main() {
 		}))
 	}
 
-	// 根路径 - 提供HTML页面并渲染数据
-	router.GET("/", handlers.Index)
-
 	// 创建带 FuncMap 的 template
 	funcMap := template.FuncMap{
 		"formatTimeOrNil": func(t time.Time) string {
@@ -111,15 +108,36 @@ func main() {
 		},
 	}
 
+	// 判断是否为开发模式：version == "dev"
+	devMode := version == "dev"
+
 	// 使用embed.FS创建Gin的HTML渲染器
-	templ := template.Must(
-		template.New("").Funcs(funcMap).ParseFS(embeddedFiles, "templates/*.html"),
-	)
+	var templ *template.Template
+	if devMode {
+		// 开发：直接读本地 templates
+		templ = template.Must(
+			template.New("").Funcs(funcMap).ParseGlob("cmd/backend/templates/*.html"),
+		)
+	} else {
+		// 生产：使用 embed
+		templ = template.Must(
+			template.New("").Funcs(funcMap).ParseFS(embeddedFiles, "templates/*.html"),
+		)
+	}
 	router.SetHTMLTemplate(templ)
 
 	// 静态文件服务 - 使用嵌入的文件系统
-	staticFS, _ := fs.Sub(embeddedFiles, "static")
-	router.StaticFS("/static", http.FS(staticFS))
+	if devMode {
+		// 开发：直接读本地 static
+		router.Static("/static", "./cmd/backend/static")
+	} else {
+		// 生产：使用 embed
+		staticFS, _ := fs.Sub(embeddedFiles, "static")
+		router.StaticFS("/static", http.FS(staticFS))
+	}
+
+	// 根路径 - 提供HTML页面并渲染数据
+	router.GET("/", handlers.Index)
 
 	// API路由组
 	api := router.Group("/api")
