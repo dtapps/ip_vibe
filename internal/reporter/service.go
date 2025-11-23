@@ -177,21 +177,19 @@ func (s *Service) httpApi(ctx context.Context, params types.ReportDeviceIpReques
 	}
 
 	// 打印响应状态和内容
-	s.log.InfoContext(ctx, "响应状态码",
+	s.log.InfoContext(ctx, "响应状态码和内容",
 		slog.Int("status_code", resp.StatusCode),
-	)
-	s.log.InfoContext(ctx, "响应内容",
-		slog.String("response", string(body)),
+		slog.Any("response", body),
 	)
 
 	// 根据响应状态码判断请求是否成功
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		s.log.InfoContext(ctx, "请求成功",
-			slog.String("response", string(body)),
+			slog.Any("response", body),
 		)
 	} else {
 		s.log.ErrorContext(ctx, "请求失败",
-			slog.String("response", string(body)),
+			slog.Any("response", body),
 		)
 	}
 
