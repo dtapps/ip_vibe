@@ -71,19 +71,23 @@ func CreateDevice(c *gin.Context) {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	fmt.Printf("CreateDevice params: %+v\n", requestParams)
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("CreateDevice params: %+v\n", requestParams)
+	}
 	// 创建设备
 	saveDevice, err := global.GvaDb.Device.Create().
 		SetCode(requestParams.Code).
 		SetName(requestParams.Name).
 		Save(c)
 	if err != nil {
-		fmt.Printf("创建设备: %s\n", err.Error())
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("创建设备: %s\n", err.Error())
+		}
 		errorResponse(c, http.StatusInternalServerError, "创建设备失败: "+err.Error())
 		return
 	}
 	// 记录操作日志
-	global.GvaOperationLogHelper.RecordDataCreate(c, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "创建设备")
+	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "创建设备")
 	successResponse(c, gin.H{
 		"id": saveDevice.ID,
 	})
@@ -98,7 +102,9 @@ func UpdateDevice(c *gin.Context) {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	fmt.Printf("UpdateDevice params: %+v\n", requestParams)
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("UpdateDevice params: %+v\n", requestParams)
+	}
 	// 查询设备
 	firstDevice, err := global.GvaDb.Device.Query().
 		Where(device.ID(cast.ToInt64(id))).
@@ -112,12 +118,14 @@ func UpdateDevice(c *gin.Context) {
 		SetName(requestParams.Name).
 		Save(c)
 	if err != nil {
-		fmt.Printf("更新设备: %s\n", err.Error())
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("更新设备: %s\n", err.Error())
+		}
 		errorResponse(c, http.StatusInternalServerError, "更新设备失败: "+err.Error())
 		return
 	}
 	// 记录操作日志
-	global.GvaOperationLogHelper.RecordDataUpdate(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "更新设备")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "更新设备")
 	successResponse(c, gin.H{
 		"id": saveDevice.ID,
 	})
@@ -159,7 +167,9 @@ func DeleteDevice(c *gin.Context) {
 		Exec(c)
 	if err != nil {
 		tx.Rollback()
-		fmt.Printf("清除设备关联的IP组: %s\n", err.Error())
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("清除设备关联的IP组: %s\n", err.Error())
+		}
 		errorResponse(c, http.StatusInternalServerError, "清除设备关联的IP组失败: "+err.Error())
 		return
 	}
@@ -167,14 +177,16 @@ func DeleteDevice(c *gin.Context) {
 	err = tx.Device.DeleteOne(firstDevice).Exec(c)
 	if err != nil {
 		tx.Rollback()
-		fmt.Printf("删除设备: %s\n", err.Error())
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("删除设备: %s\n", err.Error())
+		}
 		errorResponse(c, http.StatusInternalServerError, "删除设备失败: "+err.Error())
 		return
 	}
 	// 提交事务
 	_ = tx.Commit()
 	// 记录操作日志
-	global.GvaOperationLogHelper.RecordDataUpdate(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "删除设备")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "删除设备")
 	successResponse(c, gin.H{
 		"id": firstDevice.ID,
 	})
@@ -220,7 +232,9 @@ func ReportDeviceIp(c *gin.Context) {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	fmt.Printf("ReportDeviceIp params: %+v\n", requestParams)
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("ReportDeviceIp params: %+v\n", requestParams)
+	}
 	// 判断IPV4和IPV6是否为空
 	if requestParams.IPV4Addr == "" && requestParams.IPV6Addr == "" {
 		errorResponse(c, http.StatusBadRequest, "IPV4和IPV6不能同时为空")
@@ -268,12 +282,14 @@ func ReportDeviceIp(c *gin.Context) {
 			Save(c)
 		if err != nil {
 			_ = tx.Rollback()
+			if global.GvaEnv.DEBUG {
+				fmt.Printf("创建设备: %s\n", err.Error())
+			}
 			errorResponse(c, http.StatusInternalServerError, "创建设备失败: "+err.Error())
 			return
 		}
 		// 记录操作日志
-		err = global.GvaOperationLogHelper.SetTx(tx).
-			RecordDataCreate(c, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "接口创建设备")
+		err = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(c, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "接口创建设备")
 		if err != nil {
 			_ = tx.Rollback()
 			errorResponse(c, http.StatusInternalServerError, "记录操作日志失败: "+err.Error())
@@ -287,12 +303,14 @@ func ReportDeviceIp(c *gin.Context) {
 			Save(c)
 		if err != nil {
 			_ = tx.Rollback()
+			if global.GvaEnv.DEBUG {
+				fmt.Printf("创建设备IP报告: %s\n", err.Error())
+			}
 			errorResponse(c, http.StatusInternalServerError, "创建设备IP报告失败: "+err.Error())
 			return
 		}
 		// 记录操作日志
-		err = global.GvaOperationLogHelper.SetTx(tx).
-			RecordDataCreate(c, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "接口创建设备IP报告")
+		err = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(c, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "接口创建设备IP报告")
 		if err != nil {
 			_ = tx.Rollback()
 			errorResponse(c, http.StatusInternalServerError, "记录操作日志失败: "+err.Error())
@@ -314,12 +332,14 @@ func ReportDeviceIp(c *gin.Context) {
 			err = updateDevice.Exec(c)
 			if err != nil {
 				_ = tx.Rollback()
+				if global.GvaEnv.DEBUG {
+					fmt.Printf("更新设备IP: %s\n", err.Error())
+				}
 				errorResponse(c, http.StatusInternalServerError, "更新设备IP失败: "+err.Error())
 				return
 			}
 			// 记录操作日志
-			err = global.GvaOperationLogHelper.SetTx(tx).
-				RecordDataUpdate(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "接口更新设备")
+			err = global.GvaOperationLogHelper.SetTx(tx).RecordDataUpdate(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "接口更新设备")
 			if err != nil {
 				_ = tx.Rollback()
 				errorResponse(c, http.StatusInternalServerError, "记录操作日志失败: "+err.Error())
@@ -333,12 +353,14 @@ func ReportDeviceIp(c *gin.Context) {
 				Save(c)
 			if err != nil {
 				_ = tx.Rollback()
+				if global.GvaEnv.DEBUG {
+					fmt.Printf("创建设备IP报告: %s\n", err.Error())
+				}
 				errorResponse(c, http.StatusInternalServerError, "创建设备IP报告失败: "+err.Error())
 				return
 			}
 			// 记录操作日志
-			err = global.GvaOperationLogHelper.SetTx(tx).
-				RecordDataCreate(c, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "接口创建设备IP报告")
+			err = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(c, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "接口创建设备IP报告")
 			if err != nil {
 				_ = tx.Rollback()
 				errorResponse(c, http.StatusInternalServerError, "记录操作日志失败: "+err.Error())
@@ -352,6 +374,9 @@ func ReportDeviceIp(c *gin.Context) {
 				Exec(c)
 			if err != nil {
 				_ = tx.Rollback()
+				if global.GvaEnv.DEBUG {
+					fmt.Printf("更新设备心跳时间: %s\n", err.Error())
+				}
 				errorResponse(c, http.StatusInternalServerError, "更新设备心跳时间失败: "+err.Error())
 				return
 			}

@@ -61,7 +61,9 @@ func CreateConfig(c *gin.Context) {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	fmt.Printf("CreateConfig params: %+v\n", requestParams)
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("CreateConfig params: %+v\n", requestParams)
+	}
 	// 创建配置
 	saveConfig, err := global.GvaDb.PlatformConfig.Create().
 		SetName(requestParams.Name).
@@ -69,12 +71,14 @@ func CreateConfig(c *gin.Context) {
 		SetConfigJSON([]byte(requestParams.ConfigJSON)).
 		Save(c)
 	if err != nil {
-		fmt.Printf("创建配置: %s\n", err.Error())
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("创建配置: %s\n", err.Error())
+		}
 		errorResponse(c, http.StatusInternalServerError, "创建配置失败: "+err.Error())
 		return
 	}
 	// 记录操作日志
-	global.GvaOperationLogHelper.RecordDataUpdate(c, saveConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "创建配置")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "创建配置")
 	successResponse(c, gin.H{
 		"id": saveConfig.ID,
 	})
@@ -89,7 +93,9 @@ func UpdateConfig(c *gin.Context) {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	fmt.Printf("UpdateConfig params: %+v\n", requestParams)
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("UpdateConfig params: %+v\n", requestParams)
+	}
 	// 查询配置
 	firstConfig, err := global.GvaDb.PlatformConfig.Query().
 		Where(platformconfig.ID(cast.ToInt64(id))).
@@ -104,12 +110,14 @@ func UpdateConfig(c *gin.Context) {
 		SetConfigJSON([]byte(requestParams.ConfigJSON)).
 		Save(c)
 	if err != nil {
-		fmt.Printf("更新配置: %s\n", err.Error())
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("更新配置: %s\n", err.Error())
+		}
 		errorResponse(c, http.StatusInternalServerError, "更新配置失败: "+err.Error())
 		return
 	}
 	// 记录操作日志
-	global.GvaOperationLogHelper.RecordDataUpdate(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "更新配置")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "更新配置")
 	successResponse(c, gin.H{
 		"id": saveConfig.ID,
 	})
@@ -130,12 +138,14 @@ func DeleteConfig(c *gin.Context) {
 	// 删除配置
 	err = global.GvaDb.PlatformConfig.DeleteOne(firstConfig).Exec(c)
 	if err != nil {
-		fmt.Printf("删除配置: %s\n", err.Error())
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("删除配置: %s\n", err.Error())
+		}
 		errorResponse(c, http.StatusInternalServerError, "删除配置失败: "+err.Error())
 		return
 	}
 	// 记录操作日志
-	global.GvaOperationLogHelper.RecordDataDelete(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "删除配置")
+	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "删除配置")
 	successResponse(c, gin.H{
 		"id": firstConfig.ID,
 	})

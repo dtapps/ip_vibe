@@ -88,7 +88,9 @@ func CreateDnsRecord(c *gin.Context) {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	fmt.Printf("CreateDnsRecord params: %+v\n", requestParams)
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("CreateDnsRecord params: %+v\n", requestParams)
+	}
 	// 创建DNS记录
 	createDnsRecord := global.GvaDb.DNSRecord.Create().
 		SetConfigID(requestParams.ConfigID).
@@ -102,12 +104,14 @@ func CreateDnsRecord(c *gin.Context) {
 	}
 	saveDnsRecord, err := createDnsRecord.Save(c)
 	if err != nil {
-		fmt.Printf("创建DNS记录: %s\n", err.Error())
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("创建DNS记录: %s\n", err.Error())
+		}
 		errorResponse(c, http.StatusInternalServerError, "创建DNS记录失败: "+err.Error())
 		return
 	}
 	// 记录操作日志
-	global.GvaOperationLogHelper.RecordDataUpdate(c, saveDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "创建DNS记录")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "创建DNS记录")
 	successResponse(c, gin.H{
 		"id": saveDnsRecord.ID,
 	})
@@ -122,7 +126,9 @@ func UpdateDnsRecordActive(c *gin.Context) {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	fmt.Printf("UpdateDnsRecordActive params: %+v\n", requestParams)
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("UpdateDnsRecordActive params: %+v\n", requestParams)
+	}
 	// 查询DNS记录
 	firstDnsRecord, err := global.GvaDb.DNSRecord.Query().
 		Where(dnsrecord.ID(cast.ToInt64(id))).
@@ -136,12 +142,14 @@ func UpdateDnsRecordActive(c *gin.Context) {
 		SetIsActive(requestParams.IsActive).
 		Save(c)
 	if err != nil {
-		fmt.Printf("更新记录: %s\n", err.Error())
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("更新记录: %s\n", err.Error())
+		}
 		errorResponse(c, http.StatusInternalServerError, "更新DNS记录失败: "+err.Error())
 		return
 	}
 	// 记录操作日志
-	global.GvaOperationLogHelper.RecordDataUpdate(c, firstDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "更新DNS记录状态")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "更新DNS记录状态")
 	successResponse(c, gin.H{
 		"id": saveRecord.ID,
 	})
@@ -166,7 +174,7 @@ func DeleteDnsRecord(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	global.GvaOperationLogHelper.RecordDataUpdate(c, firstDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "删除DNS记录")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "删除DNS记录")
 	successResponse(c, gin.H{
 		"id": firstDnsRecord.ID,
 	})

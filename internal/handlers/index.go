@@ -155,7 +155,10 @@ func Index(c *gin.Context) {
 
 	// 获取自身设备ID
 	pageData.DeviceCode, _ = machineid.ID()
-	fmt.Printf("Index pageData: %+v\n", pageData)
+
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("Index pageData: %+v\n", pageData)
+	}
 
 	// 渲染模板
 	c.HTML(http.StatusOK, "index.html", pageData)

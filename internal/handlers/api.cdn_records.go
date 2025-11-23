@@ -88,7 +88,9 @@ func CreateCdnRecord(c *gin.Context) {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	fmt.Printf("CreateCdnRecord params: %+v\n", requestParams)
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("CreateCdnRecord params: %+v\n", requestParams)
+	}
 	// 创建CDN记录
 	saveCdnRecord, err := global.GvaDb.CDNRecord.Create().
 		SetConfigID(requestParams.ConfigID).
@@ -105,7 +107,7 @@ func CreateCdnRecord(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	global.GvaOperationLogHelper.RecordDataUpdate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "创建CDN记录")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "创建CDN记录")
 	successResponse(c, gin.H{
 		"id": saveCdnRecord.ID,
 	})
@@ -120,7 +122,9 @@ func UpdateCdnRecordActive(c *gin.Context) {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	fmt.Printf("UpdateCdnRecordActive params: %+v\n", requestParams)
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("UpdateCdnRecordActive params: %+v\n", requestParams)
+	}
 	// 查询CDN记录
 	firstCdnRecord, err := global.GvaDb.CDNRecord.Query().
 		Where(cdnrecord.ID(cast.ToInt64(id))).
@@ -134,12 +138,14 @@ func UpdateCdnRecordActive(c *gin.Context) {
 		SetIsActive(requestParams.IsActive).
 		Save(c)
 	if err != nil {
-		fmt.Printf("更新CDN记录: %s\n", err.Error())
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("更新CDN记录: %s\n", err.Error())
+		}
 		errorResponse(c, http.StatusInternalServerError, "更新CDN记录失败: "+err.Error())
 		return
 	}
 	// 记录操作日志
-	global.GvaOperationLogHelper.RecordDataUpdate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录状态")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录状态")
 	successResponse(c, gin.H{
 		"id": saveCdnRecord.ID,
 	})
@@ -164,7 +170,7 @@ func DeleteCdnRecord(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	global.GvaOperationLogHelper.RecordDataUpdate(c, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "删除CDN记录")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "删除CDN记录")
 	successResponse(c, gin.H{
 		"id": firstCdnRecord.ID,
 	})

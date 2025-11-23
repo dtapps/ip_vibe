@@ -97,8 +97,7 @@ func (s *IpReportService) StartJob(ctx context.Context) (err error) {
 					return
 				}
 				// 记录操作日志
-				err = global.GvaOperationLogHelper.SetTx(tx).
-					RecordDataCreate(ctx, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "自动创建设备")
+				err = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(ctx, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "自动创建设备")
 				if err != nil {
 					_ = tx.Rollback()
 					s.log.ErrorContext(ctx, "记录操作日志失败",
@@ -120,8 +119,7 @@ func (s *IpReportService) StartJob(ctx context.Context) (err error) {
 					return
 				}
 				// 记录操作日志
-				err = global.GvaOperationLogHelper.SetTx(tx).
-					RecordDataCreate(ctx, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "自动创建设备IP报告")
+				err = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(ctx, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "自动创建设备IP报告")
 				if err != nil {
 					_ = tx.Rollback()
 					s.log.ErrorContext(ctx, "记录操作日志失败",
@@ -143,8 +141,7 @@ func (s *IpReportService) StartJob(ctx context.Context) (err error) {
 					return
 				}
 				// 记录操作日志
-				err = global.GvaOperationLogHelper.SetTx(tx).
-					RecordDataCreate(ctx, saveDeviceIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "自动创建设备IP组")
+				err = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(ctx, saveDeviceIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "自动创建设备IP组")
 				if err != nil {
 					_ = tx.Rollback()
 					s.log.ErrorContext(ctx, "记录操作日志失败",
@@ -171,8 +168,7 @@ func (s *IpReportService) StartJob(ctx context.Context) (err error) {
 						return
 					}
 					// 记录操作日志
-					err = global.GvaOperationLogHelper.SetTx(tx).
-						RecordDataCreate(ctx, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "自动更新设备")
+					err = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(ctx, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "自动更新设备")
 					if err != nil {
 						_ = tx.Rollback()
 						s.log.ErrorContext(ctx, "记录操作日志失败",
@@ -194,8 +190,7 @@ func (s *IpReportService) StartJob(ctx context.Context) (err error) {
 						return
 					}
 					// 记录操作日志
-					err = global.GvaOperationLogHelper.SetTx(tx).
-						RecordDataCreate(ctx, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "自动创建设备IP报告")
+					err = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(ctx, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "自动创建设备IP报告")
 					if err != nil {
 						_ = tx.Rollback()
 						s.log.ErrorContext(ctx, "记录操作日志失败",
