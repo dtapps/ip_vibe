@@ -131,7 +131,7 @@ func (s *IpReportService) StartJob(ctx context.Context) (err error) {
 				}
 				// 创建设备IP组
 				saveDeviceIpGroup, err := tx.IpGroup.Create().
-					AddDevices(firstDevice).
+					AddDevices(saveDevice).
 					SetName(params.DeviceName).
 					SetDescription(params.DeviceCode).
 					Save(ctx)
