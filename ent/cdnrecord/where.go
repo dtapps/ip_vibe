@@ -95,9 +95,9 @@ func IsActive(v bool) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldEQ(FieldIsActive, v))
 }
 
-// LastRefresh applies equality check predicate on the "last_refresh" field. It's identical to LastRefreshEQ.
-func LastRefresh(v time.Time) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldEQ(FieldLastRefresh, v))
+// LastRefreshAt applies equality check predicate on the "last_refresh_at" field. It's identical to LastRefreshAtEQ.
+func LastRefreshAt(v time.Time) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldEQ(FieldLastRefreshAt, v))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
@@ -495,54 +495,54 @@ func IsActiveNEQ(v bool) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldNEQ(FieldIsActive, v))
 }
 
-// LastRefreshEQ applies the EQ predicate on the "last_refresh" field.
-func LastRefreshEQ(v time.Time) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldEQ(FieldLastRefresh, v))
+// LastRefreshAtEQ applies the EQ predicate on the "last_refresh_at" field.
+func LastRefreshAtEQ(v time.Time) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldEQ(FieldLastRefreshAt, v))
 }
 
-// LastRefreshNEQ applies the NEQ predicate on the "last_refresh" field.
-func LastRefreshNEQ(v time.Time) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldNEQ(FieldLastRefresh, v))
+// LastRefreshAtNEQ applies the NEQ predicate on the "last_refresh_at" field.
+func LastRefreshAtNEQ(v time.Time) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldNEQ(FieldLastRefreshAt, v))
 }
 
-// LastRefreshIn applies the In predicate on the "last_refresh" field.
-func LastRefreshIn(vs ...time.Time) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldIn(FieldLastRefresh, vs...))
+// LastRefreshAtIn applies the In predicate on the "last_refresh_at" field.
+func LastRefreshAtIn(vs ...time.Time) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldIn(FieldLastRefreshAt, vs...))
 }
 
-// LastRefreshNotIn applies the NotIn predicate on the "last_refresh" field.
-func LastRefreshNotIn(vs ...time.Time) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldNotIn(FieldLastRefresh, vs...))
+// LastRefreshAtNotIn applies the NotIn predicate on the "last_refresh_at" field.
+func LastRefreshAtNotIn(vs ...time.Time) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldNotIn(FieldLastRefreshAt, vs...))
 }
 
-// LastRefreshGT applies the GT predicate on the "last_refresh" field.
-func LastRefreshGT(v time.Time) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldGT(FieldLastRefresh, v))
+// LastRefreshAtGT applies the GT predicate on the "last_refresh_at" field.
+func LastRefreshAtGT(v time.Time) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldGT(FieldLastRefreshAt, v))
 }
 
-// LastRefreshGTE applies the GTE predicate on the "last_refresh" field.
-func LastRefreshGTE(v time.Time) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldGTE(FieldLastRefresh, v))
+// LastRefreshAtGTE applies the GTE predicate on the "last_refresh_at" field.
+func LastRefreshAtGTE(v time.Time) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldGTE(FieldLastRefreshAt, v))
 }
 
-// LastRefreshLT applies the LT predicate on the "last_refresh" field.
-func LastRefreshLT(v time.Time) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldLT(FieldLastRefresh, v))
+// LastRefreshAtLT applies the LT predicate on the "last_refresh_at" field.
+func LastRefreshAtLT(v time.Time) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldLT(FieldLastRefreshAt, v))
 }
 
-// LastRefreshLTE applies the LTE predicate on the "last_refresh" field.
-func LastRefreshLTE(v time.Time) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldLTE(FieldLastRefresh, v))
+// LastRefreshAtLTE applies the LTE predicate on the "last_refresh_at" field.
+func LastRefreshAtLTE(v time.Time) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldLTE(FieldLastRefreshAt, v))
 }
 
-// LastRefreshIsNil applies the IsNil predicate on the "last_refresh" field.
-func LastRefreshIsNil() predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldIsNull(FieldLastRefresh))
+// LastRefreshAtIsNil applies the IsNil predicate on the "last_refresh_at" field.
+func LastRefreshAtIsNil() predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldIsNull(FieldLastRefreshAt))
 }
 
-// LastRefreshNotNil applies the NotNil predicate on the "last_refresh" field.
-func LastRefreshNotNil() predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldNotNull(FieldLastRefresh))
+// LastRefreshAtNotNil applies the NotNil predicate on the "last_refresh_at" field.
+func LastRefreshAtNotNil() predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldNotNull(FieldLastRefreshAt))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

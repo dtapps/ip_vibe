@@ -36,7 +36,7 @@ type DNSRecord struct {
 	// 是否活跃
 	IsActive bool `json:"is_active,omitempty"`
 	// 最后一次刷新成功时间
-	LastRefresh time.Time `json:"last_refresh,omitempty"`
+	LastRefreshAt time.Time `json:"last_refresh_at,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -104,7 +104,7 @@ func (*DNSRecord) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case dnsrecord.FieldRecordID, dnsrecord.FieldDomain, dnsrecord.FieldType:
 			values[i] = new(sql.NullString)
-		case dnsrecord.FieldLastRefresh, dnsrecord.FieldCreatedAt, dnsrecord.FieldUpdatedAt:
+		case dnsrecord.FieldLastRefreshAt, dnsrecord.FieldCreatedAt, dnsrecord.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -169,11 +169,11 @@ func (_m *DNSRecord) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.IsActive = value.Bool
 			}
-		case dnsrecord.FieldLastRefresh:
+		case dnsrecord.FieldLastRefreshAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field last_refresh", values[i])
+				return fmt.Errorf("unexpected type %T for field last_refresh_at", values[i])
 			} else if value.Valid {
-				_m.LastRefresh = value.Time
+				_m.LastRefreshAt = value.Time
 			}
 		case dnsrecord.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -259,8 +259,8 @@ func (_m *DNSRecord) String() string {
 	builder.WriteString("is_active=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsActive))
 	builder.WriteString(", ")
-	builder.WriteString("last_refresh=")
-	builder.WriteString(_m.LastRefresh.Format(time.ANSIC))
+	builder.WriteString("last_refresh_at=")
+	builder.WriteString(_m.LastRefreshAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))

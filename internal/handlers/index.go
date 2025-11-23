@@ -55,7 +55,7 @@ func Index(c *gin.Context) {
 				HTTPSPort:      item.HTTPSPort,
 				CdnDomain:      item.CdnDomain,
 				IsActive:       item.IsActive,
-				LastRefresh:    item.LastRefresh,
+				LastRefreshAt:  item.LastRefreshAt,
 			}
 			if ipGroup, err := item.Edges.IPGroupOrErr(); err == nil {
 				list.IPGroupID = ipGroup.ID
@@ -73,14 +73,14 @@ func Index(c *gin.Context) {
 	if err == nil {
 		for _, item := range allDnsRecord {
 			list := types.GetDnsRecordsResponse{
-				ID:          item.ID,
-				ConfigID:    item.ConfigID,
-				Platform:    item.Edges.Config.Platform.String(),
-				RecordID:    item.RecordID,
-				Domain:      item.Domain,
-				Type:        item.Type.String(),
-				IsActive:    item.IsActive,
-				LastRefresh: item.LastRefresh,
+				ID:            item.ID,
+				ConfigID:      item.ConfigID,
+				Platform:      item.Edges.Config.Platform.String(),
+				RecordID:      item.RecordID,
+				Domain:        item.Domain,
+				Type:          item.Type.String(),
+				IsActive:      item.IsActive,
+				LastRefreshAt: item.LastRefreshAt,
 			}
 			if ipGroup, err := item.Edges.IPGroupOrErr(); err == nil {
 				list.IPGroupID = ipGroup.ID
@@ -104,8 +104,8 @@ func Index(c *gin.Context) {
 				Name:            item.Name,
 				IPV4:            item.IPV4,
 				IPV6:            item.IPV6,
+				LastReportedAt:  item.LastReportedAt,
 				LastHeartbeatAt: item.LastHeartbeatAt,
-				ReportedAt:      item.UpdatedAt,
 			})
 		}
 	}

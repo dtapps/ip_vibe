@@ -85,6 +85,26 @@ func (_u *DeviceUpdate) ClearIPV6() *DeviceUpdate {
 	return _u
 }
 
+// SetLastReportedAt sets the "last_reported_at" field.
+func (_u *DeviceUpdate) SetLastReportedAt(v time.Time) *DeviceUpdate {
+	_u.mutation.SetLastReportedAt(v)
+	return _u
+}
+
+// SetNillableLastReportedAt sets the "last_reported_at" field if the given value is not nil.
+func (_u *DeviceUpdate) SetNillableLastReportedAt(v *time.Time) *DeviceUpdate {
+	if v != nil {
+		_u.SetLastReportedAt(*v)
+	}
+	return _u
+}
+
+// ClearLastReportedAt clears the value of the "last_reported_at" field.
+func (_u *DeviceUpdate) ClearLastReportedAt() *DeviceUpdate {
+	_u.mutation.ClearLastReportedAt()
+	return _u
+}
+
 // SetLastHeartbeatAt sets the "last_heartbeat_at" field.
 func (_u *DeviceUpdate) SetLastHeartbeatAt(v time.Time) *DeviceUpdate {
 	_u.mutation.SetLastHeartbeatAt(v)
@@ -253,6 +273,12 @@ func (_u *DeviceUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.IPV6Cleared() {
 		_spec.ClearField(device.FieldIPV6, field.TypeString)
+	}
+	if value, ok := _u.mutation.LastReportedAt(); ok {
+		_spec.SetField(device.FieldLastReportedAt, field.TypeTime, value)
+	}
+	if _u.mutation.LastReportedAtCleared() {
+		_spec.ClearField(device.FieldLastReportedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.LastHeartbeatAt(); ok {
 		_spec.SetField(device.FieldLastHeartbeatAt, field.TypeTime, value)
@@ -438,6 +464,26 @@ func (_u *DeviceUpdateOne) SetNillableIPV6(v *string) *DeviceUpdateOne {
 // ClearIPV6 clears the value of the "ip_v6" field.
 func (_u *DeviceUpdateOne) ClearIPV6() *DeviceUpdateOne {
 	_u.mutation.ClearIPV6()
+	return _u
+}
+
+// SetLastReportedAt sets the "last_reported_at" field.
+func (_u *DeviceUpdateOne) SetLastReportedAt(v time.Time) *DeviceUpdateOne {
+	_u.mutation.SetLastReportedAt(v)
+	return _u
+}
+
+// SetNillableLastReportedAt sets the "last_reported_at" field if the given value is not nil.
+func (_u *DeviceUpdateOne) SetNillableLastReportedAt(v *time.Time) *DeviceUpdateOne {
+	if v != nil {
+		_u.SetLastReportedAt(*v)
+	}
+	return _u
+}
+
+// ClearLastReportedAt clears the value of the "last_reported_at" field.
+func (_u *DeviceUpdateOne) ClearLastReportedAt() *DeviceUpdateOne {
+	_u.mutation.ClearLastReportedAt()
 	return _u
 }
 
@@ -639,6 +685,12 @@ func (_u *DeviceUpdateOne) sqlSave(ctx context.Context) (_node *Device, err erro
 	}
 	if _u.mutation.IPV6Cleared() {
 		_spec.ClearField(device.FieldIPV6, field.TypeString)
+	}
+	if value, ok := _u.mutation.LastReportedAt(); ok {
+		_spec.SetField(device.FieldLastReportedAt, field.TypeTime, value)
+	}
+	if _u.mutation.LastReportedAtCleared() {
+		_spec.ClearField(device.FieldLastReportedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.LastHeartbeatAt(); ok {
 		_spec.SetField(device.FieldLastHeartbeatAt, field.TypeTime, value)

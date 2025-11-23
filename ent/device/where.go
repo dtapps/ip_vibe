@@ -75,6 +75,11 @@ func IPV6(v string) predicate.Device {
 	return predicate.Device(sql.FieldEQ(FieldIPV6, v))
 }
 
+// LastReportedAt applies equality check predicate on the "last_reported_at" field. It's identical to LastReportedAtEQ.
+func LastReportedAt(v time.Time) predicate.Device {
+	return predicate.Device(sql.FieldEQ(FieldLastReportedAt, v))
+}
+
 // LastHeartbeatAt applies equality check predicate on the "last_heartbeat_at" field. It's identical to LastHeartbeatAtEQ.
 func LastHeartbeatAt(v time.Time) predicate.Device {
 	return predicate.Device(sql.FieldEQ(FieldLastHeartbeatAt, v))
@@ -368,6 +373,56 @@ func IPV6EqualFold(v string) predicate.Device {
 // IPV6ContainsFold applies the ContainsFold predicate on the "ip_v6" field.
 func IPV6ContainsFold(v string) predicate.Device {
 	return predicate.Device(sql.FieldContainsFold(FieldIPV6, v))
+}
+
+// LastReportedAtEQ applies the EQ predicate on the "last_reported_at" field.
+func LastReportedAtEQ(v time.Time) predicate.Device {
+	return predicate.Device(sql.FieldEQ(FieldLastReportedAt, v))
+}
+
+// LastReportedAtNEQ applies the NEQ predicate on the "last_reported_at" field.
+func LastReportedAtNEQ(v time.Time) predicate.Device {
+	return predicate.Device(sql.FieldNEQ(FieldLastReportedAt, v))
+}
+
+// LastReportedAtIn applies the In predicate on the "last_reported_at" field.
+func LastReportedAtIn(vs ...time.Time) predicate.Device {
+	return predicate.Device(sql.FieldIn(FieldLastReportedAt, vs...))
+}
+
+// LastReportedAtNotIn applies the NotIn predicate on the "last_reported_at" field.
+func LastReportedAtNotIn(vs ...time.Time) predicate.Device {
+	return predicate.Device(sql.FieldNotIn(FieldLastReportedAt, vs...))
+}
+
+// LastReportedAtGT applies the GT predicate on the "last_reported_at" field.
+func LastReportedAtGT(v time.Time) predicate.Device {
+	return predicate.Device(sql.FieldGT(FieldLastReportedAt, v))
+}
+
+// LastReportedAtGTE applies the GTE predicate on the "last_reported_at" field.
+func LastReportedAtGTE(v time.Time) predicate.Device {
+	return predicate.Device(sql.FieldGTE(FieldLastReportedAt, v))
+}
+
+// LastReportedAtLT applies the LT predicate on the "last_reported_at" field.
+func LastReportedAtLT(v time.Time) predicate.Device {
+	return predicate.Device(sql.FieldLT(FieldLastReportedAt, v))
+}
+
+// LastReportedAtLTE applies the LTE predicate on the "last_reported_at" field.
+func LastReportedAtLTE(v time.Time) predicate.Device {
+	return predicate.Device(sql.FieldLTE(FieldLastReportedAt, v))
+}
+
+// LastReportedAtIsNil applies the IsNil predicate on the "last_reported_at" field.
+func LastReportedAtIsNil() predicate.Device {
+	return predicate.Device(sql.FieldIsNull(FieldLastReportedAt))
+}
+
+// LastReportedAtNotNil applies the NotNil predicate on the "last_reported_at" field.
+func LastReportedAtNotNil() predicate.Device {
+	return predicate.Device(sql.FieldNotNull(FieldLastReportedAt))
 }
 
 // LastHeartbeatAtEQ applies the EQ predicate on the "last_heartbeat_at" field.

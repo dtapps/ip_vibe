@@ -64,6 +64,20 @@ func (_c *DeviceCreate) SetNillableIPV6(v *string) *DeviceCreate {
 	return _c
 }
 
+// SetLastReportedAt sets the "last_reported_at" field.
+func (_c *DeviceCreate) SetLastReportedAt(v time.Time) *DeviceCreate {
+	_c.mutation.SetLastReportedAt(v)
+	return _c
+}
+
+// SetNillableLastReportedAt sets the "last_reported_at" field if the given value is not nil.
+func (_c *DeviceCreate) SetNillableLastReportedAt(v *time.Time) *DeviceCreate {
+	if v != nil {
+		_c.SetLastReportedAt(*v)
+	}
+	return _c
+}
+
 // SetLastHeartbeatAt sets the "last_heartbeat_at" field.
 func (_c *DeviceCreate) SetLastHeartbeatAt(v time.Time) *DeviceCreate {
 	_c.mutation.SetLastHeartbeatAt(v)
@@ -250,6 +264,10 @@ func (_c *DeviceCreate) createSpec() (*Device, *sqlgraph.CreateSpec) {
 		_spec.SetField(device.FieldIPV6, field.TypeString, value)
 		_node.IPV6 = value
 	}
+	if value, ok := _c.mutation.LastReportedAt(); ok {
+		_spec.SetField(device.FieldLastReportedAt, field.TypeTime, value)
+		_node.LastReportedAt = value
+	}
 	if value, ok := _c.mutation.LastHeartbeatAt(); ok {
 		_spec.SetField(device.FieldLastHeartbeatAt, field.TypeTime, value)
 		_node.LastHeartbeatAt = value
@@ -398,6 +416,24 @@ func (u *DeviceUpsert) ClearIPV6() *DeviceUpsert {
 	return u
 }
 
+// SetLastReportedAt sets the "last_reported_at" field.
+func (u *DeviceUpsert) SetLastReportedAt(v time.Time) *DeviceUpsert {
+	u.Set(device.FieldLastReportedAt, v)
+	return u
+}
+
+// UpdateLastReportedAt sets the "last_reported_at" field to the value that was provided on create.
+func (u *DeviceUpsert) UpdateLastReportedAt() *DeviceUpsert {
+	u.SetExcluded(device.FieldLastReportedAt)
+	return u
+}
+
+// ClearLastReportedAt clears the value of the "last_reported_at" field.
+func (u *DeviceUpsert) ClearLastReportedAt() *DeviceUpsert {
+	u.SetNull(device.FieldLastReportedAt)
+	return u
+}
+
 // SetLastHeartbeatAt sets the "last_heartbeat_at" field.
 func (u *DeviceUpsert) SetLastHeartbeatAt(v time.Time) *DeviceUpsert {
 	u.Set(device.FieldLastHeartbeatAt, v)
@@ -535,6 +571,27 @@ func (u *DeviceUpsertOne) UpdateIPV6() *DeviceUpsertOne {
 func (u *DeviceUpsertOne) ClearIPV6() *DeviceUpsertOne {
 	return u.Update(func(s *DeviceUpsert) {
 		s.ClearIPV6()
+	})
+}
+
+// SetLastReportedAt sets the "last_reported_at" field.
+func (u *DeviceUpsertOne) SetLastReportedAt(v time.Time) *DeviceUpsertOne {
+	return u.Update(func(s *DeviceUpsert) {
+		s.SetLastReportedAt(v)
+	})
+}
+
+// UpdateLastReportedAt sets the "last_reported_at" field to the value that was provided on create.
+func (u *DeviceUpsertOne) UpdateLastReportedAt() *DeviceUpsertOne {
+	return u.Update(func(s *DeviceUpsert) {
+		s.UpdateLastReportedAt()
+	})
+}
+
+// ClearLastReportedAt clears the value of the "last_reported_at" field.
+func (u *DeviceUpsertOne) ClearLastReportedAt() *DeviceUpsertOne {
+	return u.Update(func(s *DeviceUpsert) {
+		s.ClearLastReportedAt()
 	})
 }
 
@@ -846,6 +903,27 @@ func (u *DeviceUpsertBulk) UpdateIPV6() *DeviceUpsertBulk {
 func (u *DeviceUpsertBulk) ClearIPV6() *DeviceUpsertBulk {
 	return u.Update(func(s *DeviceUpsert) {
 		s.ClearIPV6()
+	})
+}
+
+// SetLastReportedAt sets the "last_reported_at" field.
+func (u *DeviceUpsertBulk) SetLastReportedAt(v time.Time) *DeviceUpsertBulk {
+	return u.Update(func(s *DeviceUpsert) {
+		s.SetLastReportedAt(v)
+	})
+}
+
+// UpdateLastReportedAt sets the "last_reported_at" field to the value that was provided on create.
+func (u *DeviceUpsertBulk) UpdateLastReportedAt() *DeviceUpsertBulk {
+	return u.Update(func(s *DeviceUpsert) {
+		s.UpdateLastReportedAt()
+	})
+}
+
+// ClearLastReportedAt clears the value of the "last_reported_at" field.
+func (u *DeviceUpsertBulk) ClearLastReportedAt() *DeviceUpsertBulk {
+	return u.Update(func(s *DeviceUpsert) {
+		s.ClearLastReportedAt()
 	})
 }
 

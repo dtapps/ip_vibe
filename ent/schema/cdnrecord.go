@@ -89,7 +89,7 @@ func (CDNRecord) Fields() []ent.Field {
 			Comment("是否活跃").
 			Annotations(entsql.WithComments(true)),
 
-		field.Time("last_refresh").
+		field.Time("last_refresh_at").
 			Optional().
 			Comment("最后一次刷新成功时间").
 			Annotations(entsql.WithComments(true)),

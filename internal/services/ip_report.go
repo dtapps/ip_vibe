@@ -87,6 +87,7 @@ func (s *IpReportService) StartJob(ctx context.Context) (err error) {
 					SetName(params.DeviceName).
 					SetIPV4(params.IPV4Addr).
 					SetIPV6(params.IPV6Addr).
+					SetLastReportedAt(time.Now()).
 					SetLastHeartbeatAt(time.Now()).
 					Save(ctx)
 				if err != nil {
@@ -158,6 +159,7 @@ func (s *IpReportService) StartJob(ctx context.Context) (err error) {
 					err = tx.Device.UpdateOne(firstDevice).
 						SetIPV4(params.IPV4Addr).
 						SetIPV6(params.IPV6Addr).
+						SetLastReportedAt(time.Now()).
 						SetLastHeartbeatAt(time.Now()).
 						Exec(ctx)
 					if err != nil {

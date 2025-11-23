@@ -29,8 +29,8 @@ const (
 	FieldCdnRecordID = "cdn_record_id"
 	// FieldIsActive holds the string denoting the is_active field in the database.
 	FieldIsActive = "is_active"
-	// FieldLastRefresh holds the string denoting the last_refresh field in the database.
-	FieldLastRefresh = "last_refresh"
+	// FieldLastRefreshAt holds the string denoting the last_refresh_at field in the database.
+	FieldLastRefreshAt = "last_refresh_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -76,7 +76,7 @@ var Columns = []string{
 	FieldIPGroupID,
 	FieldCdnRecordID,
 	FieldIsActive,
-	FieldLastRefresh,
+	FieldLastRefreshAt,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -169,9 +169,9 @@ func ByIsActive(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsActive, opts...).ToFunc()
 }
 
-// ByLastRefresh orders the results by the last_refresh field.
-func ByLastRefresh(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLastRefresh, opts...).ToFunc()
+// ByLastRefreshAt orders the results by the last_refresh_at field.
+func ByLastRefreshAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastRefreshAt, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

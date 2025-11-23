@@ -197,12 +197,13 @@ func GetIPGroupDevices(c *gin.Context) {
 	devices := make([]types.GetDevicesResponse, 0)
 	for _, item := range firstIpGroup.Edges.Devices {
 		devices = append(devices, types.GetDevicesResponse{
-			ID:         item.ID,
-			Code:       item.Code,
-			Name:       item.Name,
-			IPV4:       item.IPV4,
-			IPV6:       item.IPV6,
-			ReportedAt: item.UpdatedAt,
+			ID:              item.ID,
+			Code:            item.Code,
+			Name:            item.Name,
+			IPV4:            item.IPV4,
+			IPV6:            item.IPV6,
+			LastReportedAt:  item.LastReportedAt,
+			LastHeartbeatAt: item.LastHeartbeatAt,
 		})
 	}
 	successResponse(c, devices)

@@ -33,8 +33,8 @@ func GetDevices(c *gin.Context) {
 			Name:            item.Name,
 			IPV4:            item.IPV4,
 			IPV6:            item.IPV6,
+			LastReportedAt:  item.LastReportedAt,
 			LastHeartbeatAt: item.LastHeartbeatAt,
-			ReportedAt:      item.UpdatedAt,
 		})
 	}
 	successResponse(c, devices)
@@ -58,8 +58,8 @@ func GetDevice(c *gin.Context) {
 		Name:            firstDevice.Name,
 		IPV4:            firstDevice.IPV4,
 		IPV6:            firstDevice.IPV6,
+		LastReportedAt:  firstDevice.LastReportedAt,
 		LastHeartbeatAt: firstDevice.LastHeartbeatAt,
-		ReportedAt:      firstDevice.UpdatedAt,
 	})
 }
 
@@ -278,6 +278,7 @@ func ReportDeviceIp(c *gin.Context) {
 			SetName(requestParams.DeviceName).
 			SetIPV4(requestParams.IPV4Addr).
 			SetIPV6(requestParams.IPV6Addr).
+			SetLastReportedAt(time.Now()).
 			SetLastHeartbeatAt(time.Now()).
 			Save(c)
 		if err != nil {
@@ -325,6 +326,7 @@ func ReportDeviceIp(c *gin.Context) {
 			updateDevice := tx.Device.UpdateOne(firstDevice).
 				SetIPV4(requestParams.IPV4Addr).
 				SetIPV6(requestParams.IPV6Addr).
+				SetLastReportedAt(time.Now()).
 				SetLastHeartbeatAt(time.Now())
 			if requestParams.DeviceName != "" && firstDevice.Name != requestParams.DeviceName {
 				updateDevice.SetName(requestParams.DeviceName)

@@ -11,7 +11,7 @@ type GetDnsRecordsResponse struct {
 	Domain             string    `json:"domain"`                          // 域名（如 www.example.com）
 	Type               string    `json:"type"`                            // 记录类型（A、AAAA、CNAME等）
 	IsActive           bool      `json:"is_active"`                       // 是否活跃
-	LastRefresh        time.Time `json:"last_refresh,omitempty"`          // 最后一次刷新成功时间
+	LastRefreshAt      time.Time `json:"last_refresh_at,omitempty"`       // 最后一次刷新成功时间
 	IPGroupID          int64     `json:"ip_group_id,omitempty"`           // IP 组序号（与 cdn_record_id 二选一）
 	IPGroupName        string    `json:"ip_group_name,omitempty"`         // IP 组名称
 	CdnRecordID        int64     `json:"cdn_record_id,omitempty"`         // CDN 记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）

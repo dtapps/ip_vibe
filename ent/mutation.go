@@ -58,7 +58,7 @@ type CDNRecordMutation struct {
 	addhttps_port      *int
 	cdn_domain         *string
 	is_active          *bool
-	last_refresh       *time.Time
+	last_refresh_at    *time.Time
 	created_at         *time.Time
 	updated_at         *time.Time
 	clearedFields      map[string]struct{}
@@ -604,53 +604,53 @@ func (m *CDNRecordMutation) ResetIsActive() {
 	m.is_active = nil
 }
 
-// SetLastRefresh sets the "last_refresh" field.
-func (m *CDNRecordMutation) SetLastRefresh(t time.Time) {
-	m.last_refresh = &t
+// SetLastRefreshAt sets the "last_refresh_at" field.
+func (m *CDNRecordMutation) SetLastRefreshAt(t time.Time) {
+	m.last_refresh_at = &t
 }
 
-// LastRefresh returns the value of the "last_refresh" field in the mutation.
-func (m *CDNRecordMutation) LastRefresh() (r time.Time, exists bool) {
-	v := m.last_refresh
+// LastRefreshAt returns the value of the "last_refresh_at" field in the mutation.
+func (m *CDNRecordMutation) LastRefreshAt() (r time.Time, exists bool) {
+	v := m.last_refresh_at
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldLastRefresh returns the old "last_refresh" field's value of the CDNRecord entity.
+// OldLastRefreshAt returns the old "last_refresh_at" field's value of the CDNRecord entity.
 // If the CDNRecord object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CDNRecordMutation) OldLastRefresh(ctx context.Context) (v time.Time, err error) {
+func (m *CDNRecordMutation) OldLastRefreshAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastRefresh is only allowed on UpdateOne operations")
+		return v, errors.New("OldLastRefreshAt is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastRefresh requires an ID field in the mutation")
+		return v, errors.New("OldLastRefreshAt requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastRefresh: %w", err)
+		return v, fmt.Errorf("querying old value for OldLastRefreshAt: %w", err)
 	}
-	return oldValue.LastRefresh, nil
+	return oldValue.LastRefreshAt, nil
 }
 
-// ClearLastRefresh clears the value of the "last_refresh" field.
-func (m *CDNRecordMutation) ClearLastRefresh() {
-	m.last_refresh = nil
-	m.clearedFields[cdnrecord.FieldLastRefresh] = struct{}{}
+// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
+func (m *CDNRecordMutation) ClearLastRefreshAt() {
+	m.last_refresh_at = nil
+	m.clearedFields[cdnrecord.FieldLastRefreshAt] = struct{}{}
 }
 
-// LastRefreshCleared returns if the "last_refresh" field was cleared in this mutation.
-func (m *CDNRecordMutation) LastRefreshCleared() bool {
-	_, ok := m.clearedFields[cdnrecord.FieldLastRefresh]
+// LastRefreshAtCleared returns if the "last_refresh_at" field was cleared in this mutation.
+func (m *CDNRecordMutation) LastRefreshAtCleared() bool {
+	_, ok := m.clearedFields[cdnrecord.FieldLastRefreshAt]
 	return ok
 }
 
-// ResetLastRefresh resets all changes to the "last_refresh" field.
-func (m *CDNRecordMutation) ResetLastRefresh() {
-	m.last_refresh = nil
-	delete(m.clearedFields, cdnrecord.FieldLastRefresh)
+// ResetLastRefreshAt resets all changes to the "last_refresh_at" field.
+func (m *CDNRecordMutation) ResetLastRefreshAt() {
+	m.last_refresh_at = nil
+	delete(m.clearedFields, cdnrecord.FieldLastRefreshAt)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -898,8 +898,8 @@ func (m *CDNRecordMutation) Fields() []string {
 	if m.is_active != nil {
 		fields = append(fields, cdnrecord.FieldIsActive)
 	}
-	if m.last_refresh != nil {
-		fields = append(fields, cdnrecord.FieldLastRefresh)
+	if m.last_refresh_at != nil {
+		fields = append(fields, cdnrecord.FieldLastRefreshAt)
 	}
 	if m.created_at != nil {
 		fields = append(fields, cdnrecord.FieldCreatedAt)
@@ -935,8 +935,8 @@ func (m *CDNRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.IPGroupID()
 	case cdnrecord.FieldIsActive:
 		return m.IsActive()
-	case cdnrecord.FieldLastRefresh:
-		return m.LastRefresh()
+	case cdnrecord.FieldLastRefreshAt:
+		return m.LastRefreshAt()
 	case cdnrecord.FieldCreatedAt:
 		return m.CreatedAt()
 	case cdnrecord.FieldUpdatedAt:
@@ -970,8 +970,8 @@ func (m *CDNRecordMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldIPGroupID(ctx)
 	case cdnrecord.FieldIsActive:
 		return m.OldIsActive(ctx)
-	case cdnrecord.FieldLastRefresh:
-		return m.OldLastRefresh(ctx)
+	case cdnrecord.FieldLastRefreshAt:
+		return m.OldLastRefreshAt(ctx)
 	case cdnrecord.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case cdnrecord.FieldUpdatedAt:
@@ -1055,12 +1055,12 @@ func (m *CDNRecordMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIsActive(v)
 		return nil
-	case cdnrecord.FieldLastRefresh:
+	case cdnrecord.FieldLastRefreshAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLastRefresh(v)
+		m.SetLastRefreshAt(v)
 		return nil
 	case cdnrecord.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -1139,8 +1139,8 @@ func (m *CDNRecordMutation) ClearedFields() []string {
 	if m.FieldCleared(cdnrecord.FieldCdnDomain) {
 		fields = append(fields, cdnrecord.FieldCdnDomain)
 	}
-	if m.FieldCleared(cdnrecord.FieldLastRefresh) {
-		fields = append(fields, cdnrecord.FieldLastRefresh)
+	if m.FieldCleared(cdnrecord.FieldLastRefreshAt) {
+		fields = append(fields, cdnrecord.FieldLastRefreshAt)
 	}
 	return fields
 }
@@ -1162,8 +1162,8 @@ func (m *CDNRecordMutation) ClearField(name string) error {
 	case cdnrecord.FieldCdnDomain:
 		m.ClearCdnDomain()
 		return nil
-	case cdnrecord.FieldLastRefresh:
-		m.ClearLastRefresh()
+	case cdnrecord.FieldLastRefreshAt:
+		m.ClearLastRefreshAt()
 		return nil
 	}
 	return fmt.Errorf("unknown CDNRecord nullable field %s", name)
@@ -1203,8 +1203,8 @@ func (m *CDNRecordMutation) ResetField(name string) error {
 	case cdnrecord.FieldIsActive:
 		m.ResetIsActive()
 		return nil
-	case cdnrecord.FieldLastRefresh:
-		m.ResetLastRefresh()
+	case cdnrecord.FieldLastRefreshAt:
+		m.ResetLastRefreshAt()
 		return nil
 	case cdnrecord.FieldCreatedAt:
 		m.ResetCreatedAt()
@@ -1346,7 +1346,7 @@ type DNSRecordMutation struct {
 	domain            *string
 	_type             *dnsrecord.Type
 	is_active         *bool
-	last_refresh      *time.Time
+	last_refresh_at   *time.Time
 	created_at        *time.Time
 	updated_at        *time.Time
 	clearedFields     map[string]struct{}
@@ -1756,53 +1756,53 @@ func (m *DNSRecordMutation) ResetIsActive() {
 	m.is_active = nil
 }
 
-// SetLastRefresh sets the "last_refresh" field.
-func (m *DNSRecordMutation) SetLastRefresh(t time.Time) {
-	m.last_refresh = &t
+// SetLastRefreshAt sets the "last_refresh_at" field.
+func (m *DNSRecordMutation) SetLastRefreshAt(t time.Time) {
+	m.last_refresh_at = &t
 }
 
-// LastRefresh returns the value of the "last_refresh" field in the mutation.
-func (m *DNSRecordMutation) LastRefresh() (r time.Time, exists bool) {
-	v := m.last_refresh
+// LastRefreshAt returns the value of the "last_refresh_at" field in the mutation.
+func (m *DNSRecordMutation) LastRefreshAt() (r time.Time, exists bool) {
+	v := m.last_refresh_at
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldLastRefresh returns the old "last_refresh" field's value of the DNSRecord entity.
+// OldLastRefreshAt returns the old "last_refresh_at" field's value of the DNSRecord entity.
 // If the DNSRecord object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DNSRecordMutation) OldLastRefresh(ctx context.Context) (v time.Time, err error) {
+func (m *DNSRecordMutation) OldLastRefreshAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastRefresh is only allowed on UpdateOne operations")
+		return v, errors.New("OldLastRefreshAt is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastRefresh requires an ID field in the mutation")
+		return v, errors.New("OldLastRefreshAt requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastRefresh: %w", err)
+		return v, fmt.Errorf("querying old value for OldLastRefreshAt: %w", err)
 	}
-	return oldValue.LastRefresh, nil
+	return oldValue.LastRefreshAt, nil
 }
 
-// ClearLastRefresh clears the value of the "last_refresh" field.
-func (m *DNSRecordMutation) ClearLastRefresh() {
-	m.last_refresh = nil
-	m.clearedFields[dnsrecord.FieldLastRefresh] = struct{}{}
+// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
+func (m *DNSRecordMutation) ClearLastRefreshAt() {
+	m.last_refresh_at = nil
+	m.clearedFields[dnsrecord.FieldLastRefreshAt] = struct{}{}
 }
 
-// LastRefreshCleared returns if the "last_refresh" field was cleared in this mutation.
-func (m *DNSRecordMutation) LastRefreshCleared() bool {
-	_, ok := m.clearedFields[dnsrecord.FieldLastRefresh]
+// LastRefreshAtCleared returns if the "last_refresh_at" field was cleared in this mutation.
+func (m *DNSRecordMutation) LastRefreshAtCleared() bool {
+	_, ok := m.clearedFields[dnsrecord.FieldLastRefreshAt]
 	return ok
 }
 
-// ResetLastRefresh resets all changes to the "last_refresh" field.
-func (m *DNSRecordMutation) ResetLastRefresh() {
-	m.last_refresh = nil
-	delete(m.clearedFields, dnsrecord.FieldLastRefresh)
+// ResetLastRefreshAt resets all changes to the "last_refresh_at" field.
+func (m *DNSRecordMutation) ResetLastRefreshAt() {
+	m.last_refresh_at = nil
+	delete(m.clearedFields, dnsrecord.FieldLastRefreshAt)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -2014,8 +2014,8 @@ func (m *DNSRecordMutation) Fields() []string {
 	if m.is_active != nil {
 		fields = append(fields, dnsrecord.FieldIsActive)
 	}
-	if m.last_refresh != nil {
-		fields = append(fields, dnsrecord.FieldLastRefresh)
+	if m.last_refresh_at != nil {
+		fields = append(fields, dnsrecord.FieldLastRefreshAt)
 	}
 	if m.created_at != nil {
 		fields = append(fields, dnsrecord.FieldCreatedAt)
@@ -2045,8 +2045,8 @@ func (m *DNSRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.CdnRecordID()
 	case dnsrecord.FieldIsActive:
 		return m.IsActive()
-	case dnsrecord.FieldLastRefresh:
-		return m.LastRefresh()
+	case dnsrecord.FieldLastRefreshAt:
+		return m.LastRefreshAt()
 	case dnsrecord.FieldCreatedAt:
 		return m.CreatedAt()
 	case dnsrecord.FieldUpdatedAt:
@@ -2074,8 +2074,8 @@ func (m *DNSRecordMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldCdnRecordID(ctx)
 	case dnsrecord.FieldIsActive:
 		return m.OldIsActive(ctx)
-	case dnsrecord.FieldLastRefresh:
-		return m.OldLastRefresh(ctx)
+	case dnsrecord.FieldLastRefreshAt:
+		return m.OldLastRefreshAt(ctx)
 	case dnsrecord.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case dnsrecord.FieldUpdatedAt:
@@ -2138,12 +2138,12 @@ func (m *DNSRecordMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIsActive(v)
 		return nil
-	case dnsrecord.FieldLastRefresh:
+	case dnsrecord.FieldLastRefreshAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLastRefresh(v)
+		m.SetLastRefreshAt(v)
 		return nil
 	case dnsrecord.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -2201,8 +2201,8 @@ func (m *DNSRecordMutation) ClearedFields() []string {
 	if m.FieldCleared(dnsrecord.FieldCdnRecordID) {
 		fields = append(fields, dnsrecord.FieldCdnRecordID)
 	}
-	if m.FieldCleared(dnsrecord.FieldLastRefresh) {
-		fields = append(fields, dnsrecord.FieldLastRefresh)
+	if m.FieldCleared(dnsrecord.FieldLastRefreshAt) {
+		fields = append(fields, dnsrecord.FieldLastRefreshAt)
 	}
 	return fields
 }
@@ -2227,8 +2227,8 @@ func (m *DNSRecordMutation) ClearField(name string) error {
 	case dnsrecord.FieldCdnRecordID:
 		m.ClearCdnRecordID()
 		return nil
-	case dnsrecord.FieldLastRefresh:
-		m.ClearLastRefresh()
+	case dnsrecord.FieldLastRefreshAt:
+		m.ClearLastRefreshAt()
 		return nil
 	}
 	return fmt.Errorf("unknown DNSRecord nullable field %s", name)
@@ -2259,8 +2259,8 @@ func (m *DNSRecordMutation) ResetField(name string) error {
 	case dnsrecord.FieldIsActive:
 		m.ResetIsActive()
 		return nil
-	case dnsrecord.FieldLastRefresh:
-		m.ResetLastRefresh()
+	case dnsrecord.FieldLastRefreshAt:
+		m.ResetLastRefreshAt()
 		return nil
 	case dnsrecord.FieldCreatedAt:
 		m.ResetCreatedAt()
@@ -2392,6 +2392,7 @@ type DeviceMutation struct {
 	name              *string
 	ip_v4             *string
 	ip_v6             *string
+	last_reported_at  *time.Time
 	last_heartbeat_at *time.Time
 	created_at        *time.Time
 	updated_at        *time.Time
@@ -2681,6 +2682,55 @@ func (m *DeviceMutation) ResetIPV6() {
 	delete(m.clearedFields, device.FieldIPV6)
 }
 
+// SetLastReportedAt sets the "last_reported_at" field.
+func (m *DeviceMutation) SetLastReportedAt(t time.Time) {
+	m.last_reported_at = &t
+}
+
+// LastReportedAt returns the value of the "last_reported_at" field in the mutation.
+func (m *DeviceMutation) LastReportedAt() (r time.Time, exists bool) {
+	v := m.last_reported_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastReportedAt returns the old "last_reported_at" field's value of the Device entity.
+// If the Device object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeviceMutation) OldLastReportedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastReportedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastReportedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastReportedAt: %w", err)
+	}
+	return oldValue.LastReportedAt, nil
+}
+
+// ClearLastReportedAt clears the value of the "last_reported_at" field.
+func (m *DeviceMutation) ClearLastReportedAt() {
+	m.last_reported_at = nil
+	m.clearedFields[device.FieldLastReportedAt] = struct{}{}
+}
+
+// LastReportedAtCleared returns if the "last_reported_at" field was cleared in this mutation.
+func (m *DeviceMutation) LastReportedAtCleared() bool {
+	_, ok := m.clearedFields[device.FieldLastReportedAt]
+	return ok
+}
+
+// ResetLastReportedAt resets all changes to the "last_reported_at" field.
+func (m *DeviceMutation) ResetLastReportedAt() {
+	m.last_reported_at = nil
+	delete(m.clearedFields, device.FieldLastReportedAt)
+}
+
 // SetLastHeartbeatAt sets the "last_heartbeat_at" field.
 func (m *DeviceMutation) SetLastHeartbeatAt(t time.Time) {
 	m.last_heartbeat_at = &t
@@ -2944,7 +2994,7 @@ func (m *DeviceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeviceMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.code != nil {
 		fields = append(fields, device.FieldCode)
 	}
@@ -2956,6 +3006,9 @@ func (m *DeviceMutation) Fields() []string {
 	}
 	if m.ip_v6 != nil {
 		fields = append(fields, device.FieldIPV6)
+	}
+	if m.last_reported_at != nil {
+		fields = append(fields, device.FieldLastReportedAt)
 	}
 	if m.last_heartbeat_at != nil {
 		fields = append(fields, device.FieldLastHeartbeatAt)
@@ -2982,6 +3035,8 @@ func (m *DeviceMutation) Field(name string) (ent.Value, bool) {
 		return m.IPV4()
 	case device.FieldIPV6:
 		return m.IPV6()
+	case device.FieldLastReportedAt:
+		return m.LastReportedAt()
 	case device.FieldLastHeartbeatAt:
 		return m.LastHeartbeatAt()
 	case device.FieldCreatedAt:
@@ -3005,6 +3060,8 @@ func (m *DeviceMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldIPV4(ctx)
 	case device.FieldIPV6:
 		return m.OldIPV6(ctx)
+	case device.FieldLastReportedAt:
+		return m.OldLastReportedAt(ctx)
 	case device.FieldLastHeartbeatAt:
 		return m.OldLastHeartbeatAt(ctx)
 	case device.FieldCreatedAt:
@@ -3047,6 +3104,13 @@ func (m *DeviceMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIPV6(v)
+		return nil
+	case device.FieldLastReportedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastReportedAt(v)
 		return nil
 	case device.FieldLastHeartbeatAt:
 		v, ok := value.(time.Time)
@@ -3105,6 +3169,9 @@ func (m *DeviceMutation) ClearedFields() []string {
 	if m.FieldCleared(device.FieldIPV6) {
 		fields = append(fields, device.FieldIPV6)
 	}
+	if m.FieldCleared(device.FieldLastReportedAt) {
+		fields = append(fields, device.FieldLastReportedAt)
+	}
 	if m.FieldCleared(device.FieldLastHeartbeatAt) {
 		fields = append(fields, device.FieldLastHeartbeatAt)
 	}
@@ -3128,6 +3195,9 @@ func (m *DeviceMutation) ClearField(name string) error {
 	case device.FieldIPV6:
 		m.ClearIPV6()
 		return nil
+	case device.FieldLastReportedAt:
+		m.ClearLastReportedAt()
+		return nil
 	case device.FieldLastHeartbeatAt:
 		m.ClearLastHeartbeatAt()
 		return nil
@@ -3150,6 +3220,9 @@ func (m *DeviceMutation) ResetField(name string) error {
 		return nil
 	case device.FieldIPV6:
 		m.ResetIPV6()
+		return nil
+	case device.FieldLastReportedAt:
+		m.ResetLastReportedAt()
 		return nil
 	case device.FieldLastHeartbeatAt:
 		m.ResetLastHeartbeatAt()

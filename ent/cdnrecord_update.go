@@ -84,23 +84,23 @@ func (_u *CDNRecordUpdate) SetNillableIsActive(v *bool) *CDNRecordUpdate {
 	return _u
 }
 
-// SetLastRefresh sets the "last_refresh" field.
-func (_u *CDNRecordUpdate) SetLastRefresh(v time.Time) *CDNRecordUpdate {
-	_u.mutation.SetLastRefresh(v)
+// SetLastRefreshAt sets the "last_refresh_at" field.
+func (_u *CDNRecordUpdate) SetLastRefreshAt(v time.Time) *CDNRecordUpdate {
+	_u.mutation.SetLastRefreshAt(v)
 	return _u
 }
 
-// SetNillableLastRefresh sets the "last_refresh" field if the given value is not nil.
-func (_u *CDNRecordUpdate) SetNillableLastRefresh(v *time.Time) *CDNRecordUpdate {
+// SetNillableLastRefreshAt sets the "last_refresh_at" field if the given value is not nil.
+func (_u *CDNRecordUpdate) SetNillableLastRefreshAt(v *time.Time) *CDNRecordUpdate {
 	if v != nil {
-		_u.SetLastRefresh(*v)
+		_u.SetLastRefreshAt(*v)
 	}
 	return _u
 }
 
-// ClearLastRefresh clears the value of the "last_refresh" field.
-func (_u *CDNRecordUpdate) ClearLastRefresh() *CDNRecordUpdate {
-	_u.mutation.ClearLastRefresh()
+// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
+func (_u *CDNRecordUpdate) ClearLastRefreshAt() *CDNRecordUpdate {
+	_u.mutation.ClearLastRefreshAt()
 	return _u
 }
 
@@ -231,11 +231,11 @@ func (_u *CDNRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(cdnrecord.FieldIsActive, field.TypeBool, value)
 	}
-	if value, ok := _u.mutation.LastRefresh(); ok {
-		_spec.SetField(cdnrecord.FieldLastRefresh, field.TypeTime, value)
+	if value, ok := _u.mutation.LastRefreshAt(); ok {
+		_spec.SetField(cdnrecord.FieldLastRefreshAt, field.TypeTime, value)
 	}
-	if _u.mutation.LastRefreshCleared() {
-		_spec.ClearField(cdnrecord.FieldLastRefresh, field.TypeTime)
+	if _u.mutation.LastRefreshAtCleared() {
+		_spec.ClearField(cdnrecord.FieldLastRefreshAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(cdnrecord.FieldUpdatedAt, field.TypeTime, value)
@@ -361,23 +361,23 @@ func (_u *CDNRecordUpdateOne) SetNillableIsActive(v *bool) *CDNRecordUpdateOne {
 	return _u
 }
 
-// SetLastRefresh sets the "last_refresh" field.
-func (_u *CDNRecordUpdateOne) SetLastRefresh(v time.Time) *CDNRecordUpdateOne {
-	_u.mutation.SetLastRefresh(v)
+// SetLastRefreshAt sets the "last_refresh_at" field.
+func (_u *CDNRecordUpdateOne) SetLastRefreshAt(v time.Time) *CDNRecordUpdateOne {
+	_u.mutation.SetLastRefreshAt(v)
 	return _u
 }
 
-// SetNillableLastRefresh sets the "last_refresh" field if the given value is not nil.
-func (_u *CDNRecordUpdateOne) SetNillableLastRefresh(v *time.Time) *CDNRecordUpdateOne {
+// SetNillableLastRefreshAt sets the "last_refresh_at" field if the given value is not nil.
+func (_u *CDNRecordUpdateOne) SetNillableLastRefreshAt(v *time.Time) *CDNRecordUpdateOne {
 	if v != nil {
-		_u.SetLastRefresh(*v)
+		_u.SetLastRefreshAt(*v)
 	}
 	return _u
 }
 
-// ClearLastRefresh clears the value of the "last_refresh" field.
-func (_u *CDNRecordUpdateOne) ClearLastRefresh() *CDNRecordUpdateOne {
-	_u.mutation.ClearLastRefresh()
+// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
+func (_u *CDNRecordUpdateOne) ClearLastRefreshAt() *CDNRecordUpdateOne {
+	_u.mutation.ClearLastRefreshAt()
 	return _u
 }
 
@@ -538,11 +538,11 @@ func (_u *CDNRecordUpdateOne) sqlSave(ctx context.Context) (_node *CDNRecord, er
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(cdnrecord.FieldIsActive, field.TypeBool, value)
 	}
-	if value, ok := _u.mutation.LastRefresh(); ok {
-		_spec.SetField(cdnrecord.FieldLastRefresh, field.TypeTime, value)
+	if value, ok := _u.mutation.LastRefreshAt(); ok {
+		_spec.SetField(cdnrecord.FieldLastRefreshAt, field.TypeTime, value)
 	}
-	if _u.mutation.LastRefreshCleared() {
-		_spec.ClearField(cdnrecord.FieldLastRefresh, field.TypeTime)
+	if _u.mutation.LastRefreshAtCleared() {
+		_spec.ClearField(cdnrecord.FieldLastRefreshAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(cdnrecord.FieldUpdatedAt, field.TypeTime, value)

@@ -9,8 +9,8 @@ type GetDevicesResponse struct {
 	Name            string    `json:"name"`                        // 设备名称
 	IPV4            string    `json:"ip_v4,omitempty"`             // IP地址V4
 	IPV6            string    `json:"ip_v6,omitempty"`             // IP地址V6
+	LastReportedAt  time.Time `json:"last_reported_at,omitempty"`  // 最后上报时间
 	LastHeartbeatAt time.Time `json:"last_heartbeat_at,omitempty"` // 最后心跳时间
-	ReportedAt      time.Time `json:"reported_at"`                 // 上报时间
 }
 
 // 创建设备 请求结构

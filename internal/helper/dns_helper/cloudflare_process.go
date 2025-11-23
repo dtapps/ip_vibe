@@ -95,7 +95,7 @@ func CloudflareProcessSingleIP(ctx context.Context, service ProcessService, para
 		// 更新DNS记录
 		_ = service.Db.DNSRecord.UpdateOneID(service.RecordID).
 			SetRecordID(queryDomain.DomainID).
-			SetLastRefresh(time.Now()).
+			SetLastRefreshAt(time.Now()).
 			Exec(ctx)
 
 		service.Log.InfoContext(ctx, "创建成功")
@@ -105,7 +105,7 @@ func CloudflareProcessSingleIP(ctx context.Context, service ProcessService, para
 		// 更新DNS记录
 		_ = service.Db.DNSRecord.UpdateOneID(service.RecordID).
 			SetRecordID(queryDomain.DomainID).
-			SetLastRefresh(time.Now()).
+			SetLastRefreshAt(time.Now()).
 			Exec(ctx)
 
 		if utils.DNSValuesEqual(queryDomain.DomainOrigin, params.DomainOrigin) {

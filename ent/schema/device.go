@@ -54,6 +54,11 @@ func (Device) Fields() []ent.Field {
 			Comment("IP地址V6").
 			Annotations(entsql.WithComments(true)),
 
+		field.Time("last_reported_at").
+			Optional(). // 允许为空（新设备尚未上报）
+			Comment("最后上报时间").
+			Annotations(entsql.WithComments(true)),
+
 		field.Time("last_heartbeat_at").
 			Optional(). // 允许为空（新设备尚未上报）
 			Comment("最后心跳时间").

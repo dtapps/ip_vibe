@@ -111,7 +111,7 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 		_ = service.Db.CDNRecord.UpdateOneID(service.RecordID).
 			SetRecordID(queryDomain.DomainID).
 			SetCdnDomain(queryDomain.DomainCname).
-			SetLastRefresh(time.Now()).
+			SetLastRefreshAt(time.Now()).
 			Exec(ctx)
 
 		service.Log.InfoContext(ctx, "创建成功")
@@ -122,7 +122,7 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 		_ = service.Db.CDNRecord.UpdateOneID(service.RecordID).
 			SetRecordID(queryDomain.DomainID).
 			SetCdnDomain(queryDomain.DomainCname).
-			SetLastRefresh(time.Now()).
+			SetLastRefreshAt(time.Now()).
 			Exec(ctx)
 
 		if utils.DNSValuesEqual(queryDomain.DomainOrigin, params.DomainOrigin) {
@@ -338,7 +338,7 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 		_ = service.Db.CDNRecord.UpdateOneID(service.RecordID).
 			SetRecordID(queryDomain.DomainID).
 			SetCdnDomain(queryDomain.DomainCname).
-			SetLastRefresh(time.Now()).
+			SetLastRefreshAt(time.Now()).
 			Exec(ctx)
 
 		service.Log.InfoContext(ctx, "创建成功")
@@ -349,7 +349,7 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 		_ = service.Db.CDNRecord.UpdateOneID(service.RecordID).
 			SetRecordID(queryDomain.DomainID).
 			SetCdnDomain(queryDomain.DomainCname).
-			SetLastRefresh(time.Now()).
+			SetLastRefreshAt(time.Now()).
 			Exec(ctx)
 
 		if queryGroup.GroupID == queryDomain.DomainOrigin {

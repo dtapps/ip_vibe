@@ -37,7 +37,7 @@ func GetCdnRecords(c *gin.Context) {
 			HTTPPort:       item.HTTPPort,
 			HTTPSPort:      item.HTTPSPort,
 			IsActive:       item.IsActive,
-			LastRefresh:    item.LastRefresh,
+			LastRefreshAt:  item.LastRefreshAt,
 		}
 		if ipGroup, err := item.Edges.IPGroupOrErr(); err == nil {
 			list.IPGroupID = ipGroup.ID
@@ -71,7 +71,7 @@ func GetCdnRecord(c *gin.Context) {
 		HTTPPort:       firstCdnRecord.HTTPPort,
 		HTTPSPort:      firstCdnRecord.HTTPSPort,
 		IsActive:       firstCdnRecord.IsActive,
-		LastRefresh:    firstCdnRecord.LastRefresh,
+		LastRefreshAt:  firstCdnRecord.LastRefreshAt,
 	}
 	if ipGroup, err := firstCdnRecord.Edges.IPGroupOrErr(); err == nil {
 		response.IPGroupID = ipGroup.ID

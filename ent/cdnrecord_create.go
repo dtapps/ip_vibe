@@ -133,16 +133,16 @@ func (_c *CDNRecordCreate) SetNillableIsActive(v *bool) *CDNRecordCreate {
 	return _c
 }
 
-// SetLastRefresh sets the "last_refresh" field.
-func (_c *CDNRecordCreate) SetLastRefresh(v time.Time) *CDNRecordCreate {
-	_c.mutation.SetLastRefresh(v)
+// SetLastRefreshAt sets the "last_refresh_at" field.
+func (_c *CDNRecordCreate) SetLastRefreshAt(v time.Time) *CDNRecordCreate {
+	_c.mutation.SetLastRefreshAt(v)
 	return _c
 }
 
-// SetNillableLastRefresh sets the "last_refresh" field if the given value is not nil.
-func (_c *CDNRecordCreate) SetNillableLastRefresh(v *time.Time) *CDNRecordCreate {
+// SetNillableLastRefreshAt sets the "last_refresh_at" field if the given value is not nil.
+func (_c *CDNRecordCreate) SetNillableLastRefreshAt(v *time.Time) *CDNRecordCreate {
 	if v != nil {
-		_c.SetLastRefresh(*v)
+		_c.SetLastRefreshAt(*v)
 	}
 	return _c
 }
@@ -380,9 +380,9 @@ func (_c *CDNRecordCreate) createSpec() (*CDNRecord, *sqlgraph.CreateSpec) {
 		_spec.SetField(cdnrecord.FieldIsActive, field.TypeBool, value)
 		_node.IsActive = value
 	}
-	if value, ok := _c.mutation.LastRefresh(); ok {
-		_spec.SetField(cdnrecord.FieldLastRefresh, field.TypeTime, value)
-		_node.LastRefresh = value
+	if value, ok := _c.mutation.LastRefreshAt(); ok {
+		_spec.SetField(cdnrecord.FieldLastRefreshAt, field.TypeTime, value)
+		_node.LastRefreshAt = value
 	}
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(cdnrecord.FieldCreatedAt, field.TypeTime, value)
@@ -542,21 +542,21 @@ func (u *CDNRecordUpsert) UpdateIsActive() *CDNRecordUpsert {
 	return u
 }
 
-// SetLastRefresh sets the "last_refresh" field.
-func (u *CDNRecordUpsert) SetLastRefresh(v time.Time) *CDNRecordUpsert {
-	u.Set(cdnrecord.FieldLastRefresh, v)
+// SetLastRefreshAt sets the "last_refresh_at" field.
+func (u *CDNRecordUpsert) SetLastRefreshAt(v time.Time) *CDNRecordUpsert {
+	u.Set(cdnrecord.FieldLastRefreshAt, v)
 	return u
 }
 
-// UpdateLastRefresh sets the "last_refresh" field to the value that was provided on create.
-func (u *CDNRecordUpsert) UpdateLastRefresh() *CDNRecordUpsert {
-	u.SetExcluded(cdnrecord.FieldLastRefresh)
+// UpdateLastRefreshAt sets the "last_refresh_at" field to the value that was provided on create.
+func (u *CDNRecordUpsert) UpdateLastRefreshAt() *CDNRecordUpsert {
+	u.SetExcluded(cdnrecord.FieldLastRefreshAt)
 	return u
 }
 
-// ClearLastRefresh clears the value of the "last_refresh" field.
-func (u *CDNRecordUpsert) ClearLastRefresh() *CDNRecordUpsert {
-	u.SetNull(cdnrecord.FieldLastRefresh)
+// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
+func (u *CDNRecordUpsert) ClearLastRefreshAt() *CDNRecordUpsert {
+	u.SetNull(cdnrecord.FieldLastRefreshAt)
 	return u
 }
 
@@ -700,24 +700,24 @@ func (u *CDNRecordUpsertOne) UpdateIsActive() *CDNRecordUpsertOne {
 	})
 }
 
-// SetLastRefresh sets the "last_refresh" field.
-func (u *CDNRecordUpsertOne) SetLastRefresh(v time.Time) *CDNRecordUpsertOne {
+// SetLastRefreshAt sets the "last_refresh_at" field.
+func (u *CDNRecordUpsertOne) SetLastRefreshAt(v time.Time) *CDNRecordUpsertOne {
 	return u.Update(func(s *CDNRecordUpsert) {
-		s.SetLastRefresh(v)
+		s.SetLastRefreshAt(v)
 	})
 }
 
-// UpdateLastRefresh sets the "last_refresh" field to the value that was provided on create.
-func (u *CDNRecordUpsertOne) UpdateLastRefresh() *CDNRecordUpsertOne {
+// UpdateLastRefreshAt sets the "last_refresh_at" field to the value that was provided on create.
+func (u *CDNRecordUpsertOne) UpdateLastRefreshAt() *CDNRecordUpsertOne {
 	return u.Update(func(s *CDNRecordUpsert) {
-		s.UpdateLastRefresh()
+		s.UpdateLastRefreshAt()
 	})
 }
 
-// ClearLastRefresh clears the value of the "last_refresh" field.
-func (u *CDNRecordUpsertOne) ClearLastRefresh() *CDNRecordUpsertOne {
+// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
+func (u *CDNRecordUpsertOne) ClearLastRefreshAt() *CDNRecordUpsertOne {
 	return u.Update(func(s *CDNRecordUpsert) {
-		s.ClearLastRefresh()
+		s.ClearLastRefreshAt()
 	})
 }
 
@@ -1029,24 +1029,24 @@ func (u *CDNRecordUpsertBulk) UpdateIsActive() *CDNRecordUpsertBulk {
 	})
 }
 
-// SetLastRefresh sets the "last_refresh" field.
-func (u *CDNRecordUpsertBulk) SetLastRefresh(v time.Time) *CDNRecordUpsertBulk {
+// SetLastRefreshAt sets the "last_refresh_at" field.
+func (u *CDNRecordUpsertBulk) SetLastRefreshAt(v time.Time) *CDNRecordUpsertBulk {
 	return u.Update(func(s *CDNRecordUpsert) {
-		s.SetLastRefresh(v)
+		s.SetLastRefreshAt(v)
 	})
 }
 
-// UpdateLastRefresh sets the "last_refresh" field to the value that was provided on create.
-func (u *CDNRecordUpsertBulk) UpdateLastRefresh() *CDNRecordUpsertBulk {
+// UpdateLastRefreshAt sets the "last_refresh_at" field to the value that was provided on create.
+func (u *CDNRecordUpsertBulk) UpdateLastRefreshAt() *CDNRecordUpsertBulk {
 	return u.Update(func(s *CDNRecordUpsert) {
-		s.UpdateLastRefresh()
+		s.UpdateLastRefreshAt()
 	})
 }
 
-// ClearLastRefresh clears the value of the "last_refresh" field.
-func (u *CDNRecordUpsertBulk) ClearLastRefresh() *CDNRecordUpsertBulk {
+// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
+func (u *CDNRecordUpsertBulk) ClearLastRefreshAt() *CDNRecordUpsertBulk {
 	return u.Update(func(s *CDNRecordUpsert) {
-		s.ClearLastRefresh()
+		s.ClearLastRefreshAt()
 	})
 }
 

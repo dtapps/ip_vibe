@@ -99,16 +99,16 @@ func (_c *DNSRecordCreate) SetNillableIsActive(v *bool) *DNSRecordCreate {
 	return _c
 }
 
-// SetLastRefresh sets the "last_refresh" field.
-func (_c *DNSRecordCreate) SetLastRefresh(v time.Time) *DNSRecordCreate {
-	_c.mutation.SetLastRefresh(v)
+// SetLastRefreshAt sets the "last_refresh_at" field.
+func (_c *DNSRecordCreate) SetLastRefreshAt(v time.Time) *DNSRecordCreate {
+	_c.mutation.SetLastRefreshAt(v)
 	return _c
 }
 
-// SetNillableLastRefresh sets the "last_refresh" field if the given value is not nil.
-func (_c *DNSRecordCreate) SetNillableLastRefresh(v *time.Time) *DNSRecordCreate {
+// SetNillableLastRefreshAt sets the "last_refresh_at" field if the given value is not nil.
+func (_c *DNSRecordCreate) SetNillableLastRefreshAt(v *time.Time) *DNSRecordCreate {
 	if v != nil {
-		_c.SetLastRefresh(*v)
+		_c.SetLastRefreshAt(*v)
 	}
 	return _c
 }
@@ -288,9 +288,9 @@ func (_c *DNSRecordCreate) createSpec() (*DNSRecord, *sqlgraph.CreateSpec) {
 		_spec.SetField(dnsrecord.FieldIsActive, field.TypeBool, value)
 		_node.IsActive = value
 	}
-	if value, ok := _c.mutation.LastRefresh(); ok {
-		_spec.SetField(dnsrecord.FieldLastRefresh, field.TypeTime, value)
-		_node.LastRefresh = value
+	if value, ok := _c.mutation.LastRefreshAt(); ok {
+		_spec.SetField(dnsrecord.FieldLastRefreshAt, field.TypeTime, value)
+		_node.LastRefreshAt = value
 	}
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(dnsrecord.FieldCreatedAt, field.TypeTime, value)
@@ -469,21 +469,21 @@ func (u *DNSRecordUpsert) UpdateIsActive() *DNSRecordUpsert {
 	return u
 }
 
-// SetLastRefresh sets the "last_refresh" field.
-func (u *DNSRecordUpsert) SetLastRefresh(v time.Time) *DNSRecordUpsert {
-	u.Set(dnsrecord.FieldLastRefresh, v)
+// SetLastRefreshAt sets the "last_refresh_at" field.
+func (u *DNSRecordUpsert) SetLastRefreshAt(v time.Time) *DNSRecordUpsert {
+	u.Set(dnsrecord.FieldLastRefreshAt, v)
 	return u
 }
 
-// UpdateLastRefresh sets the "last_refresh" field to the value that was provided on create.
-func (u *DNSRecordUpsert) UpdateLastRefresh() *DNSRecordUpsert {
-	u.SetExcluded(dnsrecord.FieldLastRefresh)
+// UpdateLastRefreshAt sets the "last_refresh_at" field to the value that was provided on create.
+func (u *DNSRecordUpsert) UpdateLastRefreshAt() *DNSRecordUpsert {
+	u.SetExcluded(dnsrecord.FieldLastRefreshAt)
 	return u
 }
 
-// ClearLastRefresh clears the value of the "last_refresh" field.
-func (u *DNSRecordUpsert) ClearLastRefresh() *DNSRecordUpsert {
-	u.SetNull(dnsrecord.FieldLastRefresh)
+// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
+func (u *DNSRecordUpsert) ClearLastRefreshAt() *DNSRecordUpsert {
+	u.SetNull(dnsrecord.FieldLastRefreshAt)
 	return u
 }
 
@@ -636,24 +636,24 @@ func (u *DNSRecordUpsertOne) UpdateIsActive() *DNSRecordUpsertOne {
 	})
 }
 
-// SetLastRefresh sets the "last_refresh" field.
-func (u *DNSRecordUpsertOne) SetLastRefresh(v time.Time) *DNSRecordUpsertOne {
+// SetLastRefreshAt sets the "last_refresh_at" field.
+func (u *DNSRecordUpsertOne) SetLastRefreshAt(v time.Time) *DNSRecordUpsertOne {
 	return u.Update(func(s *DNSRecordUpsert) {
-		s.SetLastRefresh(v)
+		s.SetLastRefreshAt(v)
 	})
 }
 
-// UpdateLastRefresh sets the "last_refresh" field to the value that was provided on create.
-func (u *DNSRecordUpsertOne) UpdateLastRefresh() *DNSRecordUpsertOne {
+// UpdateLastRefreshAt sets the "last_refresh_at" field to the value that was provided on create.
+func (u *DNSRecordUpsertOne) UpdateLastRefreshAt() *DNSRecordUpsertOne {
 	return u.Update(func(s *DNSRecordUpsert) {
-		s.UpdateLastRefresh()
+		s.UpdateLastRefreshAt()
 	})
 }
 
-// ClearLastRefresh clears the value of the "last_refresh" field.
-func (u *DNSRecordUpsertOne) ClearLastRefresh() *DNSRecordUpsertOne {
+// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
+func (u *DNSRecordUpsertOne) ClearLastRefreshAt() *DNSRecordUpsertOne {
 	return u.Update(func(s *DNSRecordUpsert) {
-		s.ClearLastRefresh()
+		s.ClearLastRefreshAt()
 	})
 }
 
@@ -974,24 +974,24 @@ func (u *DNSRecordUpsertBulk) UpdateIsActive() *DNSRecordUpsertBulk {
 	})
 }
 
-// SetLastRefresh sets the "last_refresh" field.
-func (u *DNSRecordUpsertBulk) SetLastRefresh(v time.Time) *DNSRecordUpsertBulk {
+// SetLastRefreshAt sets the "last_refresh_at" field.
+func (u *DNSRecordUpsertBulk) SetLastRefreshAt(v time.Time) *DNSRecordUpsertBulk {
 	return u.Update(func(s *DNSRecordUpsert) {
-		s.SetLastRefresh(v)
+		s.SetLastRefreshAt(v)
 	})
 }
 
-// UpdateLastRefresh sets the "last_refresh" field to the value that was provided on create.
-func (u *DNSRecordUpsertBulk) UpdateLastRefresh() *DNSRecordUpsertBulk {
+// UpdateLastRefreshAt sets the "last_refresh_at" field to the value that was provided on create.
+func (u *DNSRecordUpsertBulk) UpdateLastRefreshAt() *DNSRecordUpsertBulk {
 	return u.Update(func(s *DNSRecordUpsert) {
-		s.UpdateLastRefresh()
+		s.UpdateLastRefreshAt()
 	})
 }
 
-// ClearLastRefresh clears the value of the "last_refresh" field.
-func (u *DNSRecordUpsertBulk) ClearLastRefresh() *DNSRecordUpsertBulk {
+// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
+func (u *DNSRecordUpsertBulk) ClearLastRefreshAt() *DNSRecordUpsertBulk {
 	return u.Update(func(s *DNSRecordUpsert) {
-		s.ClearLastRefresh()
+		s.ClearLastRefreshAt()
 	})
 }
 

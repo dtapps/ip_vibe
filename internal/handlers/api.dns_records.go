@@ -26,14 +26,14 @@ func GetDnsRecords(c *gin.Context) {
 	}
 	for _, item := range allDnsRecord {
 		list := types.GetDnsRecordsResponse{
-			ID:          item.ID,
-			ConfigID:    item.ConfigID,
-			Platform:    item.Edges.Config.Platform.String(),
-			RecordID:    item.RecordID,
-			Domain:      item.Domain,
-			Type:        item.Type.String(),
-			IsActive:    item.IsActive,
-			LastRefresh: item.LastRefresh,
+			ID:            item.ID,
+			ConfigID:      item.ConfigID,
+			Platform:      item.Edges.Config.Platform.String(),
+			RecordID:      item.RecordID,
+			Domain:        item.Domain,
+			Type:          item.Type.String(),
+			IsActive:      item.IsActive,
+			LastRefreshAt: item.LastRefreshAt,
 		}
 		if ipGroup, err := item.Edges.IPGroupOrErr(); err == nil {
 			list.IPGroupID = ipGroup.ID
@@ -61,14 +61,14 @@ func GetDnsRecord(c *gin.Context) {
 		return
 	}
 	response := types.GetDnsRecordsResponse{
-		ID:          firstDnsRecord.ID,
-		ConfigID:    firstDnsRecord.ConfigID,
-		Platform:    firstDnsRecord.Edges.Config.Platform.String(),
-		RecordID:    firstDnsRecord.RecordID,
-		Domain:      firstDnsRecord.Domain,
-		Type:        firstDnsRecord.Type.String(),
-		IsActive:    firstDnsRecord.IsActive,
-		LastRefresh: firstDnsRecord.LastRefresh,
+		ID:            firstDnsRecord.ID,
+		ConfigID:      firstDnsRecord.ConfigID,
+		Platform:      firstDnsRecord.Edges.Config.Platform.String(),
+		RecordID:      firstDnsRecord.RecordID,
+		Domain:        firstDnsRecord.Domain,
+		Type:          firstDnsRecord.Type.String(),
+		IsActive:      firstDnsRecord.IsActive,
+		LastRefreshAt: firstDnsRecord.LastRefreshAt,
 	}
 	if ipGroup, err := firstDnsRecord.Edges.IPGroupOrErr(); err == nil {
 		response.IPGroupID = ipGroup.ID
