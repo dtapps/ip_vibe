@@ -226,8 +226,12 @@ func main() {
 
 	// 启动IP更新任务
 	ipUpdate := services.NewIpUpdateService(global.GvaDb, global.GvaGoCron)
-	if err := ipUpdate.StartJob(ctx); err != nil {
-		fmt.Printf("启动IP更新任务失败: %v\n", err)
+	if err := ipUpdate.StartDnsJob(ctx); err != nil {
+		fmt.Printf("启动DNS更新任务失败: %v\n", err)
+		os.Exit(1)
+	}
+	if err := ipUpdate.StartCdnJob(ctx); err != nil {
+		fmt.Printf("启动CDN刷新任务失败: %v\n", err)
 		os.Exit(1)
 	}
 

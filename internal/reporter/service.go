@@ -7,6 +7,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"sync"
 	"time"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/ip_helper"
@@ -60,62 +61,7 @@ func (s *Service) StartJob(ctx context.Context) (err error) {
 			8*time.Minute,  // 最小间隔
 			12*time.Minute, // 最大间隔
 		),
-		gocron.NewTask(func() {
-			// 请求参数
-			params := types.ReportDeviceIpRequest{
-				DeviceCode: global.GvaEnv.DEVICE_CODE,
-				DeviceName: global.GvaEnv.DEVICE_NAME,
-			}
-			// 检查设备代码是否为空
-			if params.DeviceCode == "" {
-				// 获取设备ID
-				params.DeviceCode, err = machineid.ID()
-				if err != nil {
-					s.log.ErrorContext(ctx, "获取设备ID失败",
-						slog.Any("err", err),
-					)
-					return
-				}
-			}
-			// 获取设备IP
-			checker := ip_helper.NewIPChecker()
-			ipv4, err := checker.CheckIP(ctx, "v4")
-			if err == nil {
-				params.IPV4Addr = ipv4.IP
-			}
-			ipv6, err := checker.CheckIP(ctx, "v6")
-			if err == nil {
-				params.IPV6Addr = ipv6.IP
-			}
-			s.log.InfoContext(ctx, "IP上报开始",
-				slog.String("device_code", params.DeviceCode),
-				slog.String("device_name", params.DeviceName),
-				slog.String("ipv4_addr", params.IPV4Addr),
-				slog.String("ipv6_addr", params.IPV6Addr),
-				slog.String("http_url", s.config.httpUrl),
-			)
-			err = s.httpApi(ctx, params)
-			if err != nil {
-				s.log.ErrorContext(ctx, "IP上报失败",
-					slog.String("device_code", params.DeviceCode),
-					slog.String("device_name", params.DeviceName),
-					slog.String("ipv4_addr", params.IPV4Addr),
-					slog.String("ipv6_addr", params.IPV6Addr),
-					slog.Any("err", err),
-				)
-				return
-			}
-			nextRun, err := s.job.NextRun()
-			if err == nil {
-				s.log.InfoContext(ctx, "IP上报成功",
-					slog.String("device_code", params.DeviceCode),
-					slog.String("device_name", params.DeviceName),
-					slog.String("ipv4_addr", params.IPV4Addr),
-					slog.String("ipv6_addr", params.IPV6Addr),
-					slog.String("next_run_time", nextRun.Format(time.DateTime)),
-				)
-			}
-		}),
+		gocron.NewTask(s.runTask),                            // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName("IP上报"),                              // 任务名称
@@ -125,6 +71,81 @@ func (s *Service) StartJob(ctx context.Context) (err error) {
 		return err
 	}
 	return nil
+}
+
+// 全局互斥锁
+var globalMutex sync.Mutex
+
+func (s *Service) runTask() {
+	globalMutex.Lock()
+	defer globalMutex.Unlock()
+
+	var err error
+	ctx := context.Background()
+
+	// 请求参数
+	params := types.ReportDeviceIpRequest{
+		DeviceCode: global.GvaEnv.DEVICE_CODE,
+		DeviceName: global.GvaEnv.DEVICE_NAME,
+	}
+	// 检查设备代码是否为空
+	if params.DeviceCode == "" {
+		// 获取设备ID
+		params.DeviceCode, err = machineid.ID()
+		if err != nil {
+			s.log.ErrorContext(ctx, "获取设备ID失败",
+				slog.Any("err", err),
+			)
+			return
+		}
+	}
+	// 获取设备IP
+	checker := ip_helper.NewIPChecker()
+	ipv4, err := checker.CheckIP(ctx, "v4")
+	if err == nil {
+		params.IPV4Addr = ipv4.IP
+	}
+	ipv6, err := checker.CheckIP(ctx, "v6")
+	if err == nil {
+		params.IPV6Addr = ipv6.IP
+	}
+	s.log.InfoContext(ctx, "IP上报开始",
+		slog.String("device_code", params.DeviceCode),
+		slog.String("device_name", params.DeviceName),
+		slog.String("ipv4_addr", params.IPV4Addr),
+		slog.String("ipv6_addr", params.IPV6Addr),
+		slog.String("http_url", s.config.httpUrl),
+	)
+	err = s.httpApi(ctx, params)
+	if err != nil {
+		s.log.ErrorContext(ctx, "IP上报失败",
+			slog.String("device_code", params.DeviceCode),
+			slog.String("device_name", params.DeviceName),
+			slog.String("ipv4_addr", params.IPV4Addr),
+			slog.String("ipv6_addr", params.IPV6Addr),
+			slog.Any("err", err),
+		)
+		return
+	}
+
+	nextRun, err := s.job.NextRun()
+	if err == nil {
+		s.log.InfoContext(ctx, "IP上报成功",
+			slog.String("device_code", params.DeviceCode),
+			slog.String("device_name", params.DeviceName),
+			slog.String("ipv4_addr", params.IPV4Addr),
+			slog.String("ipv6_addr", params.IPV6Addr),
+			slog.String("next_run_time", nextRun.Format(time.DateTime)),
+		)
+	} else {
+		s.log.InfoContext(ctx, "IP上报成功",
+			slog.String("device_code", params.DeviceCode),
+			slog.String("device_name", params.DeviceName),
+			slog.String("ipv4_addr", params.IPV4Addr),
+			slog.String("ipv6_addr", params.IPV6Addr),
+		)
+	}
+
 }
 
 func (s *Service) httpApi(ctx context.Context, params types.ReportDeviceIpRequest) (err error) {

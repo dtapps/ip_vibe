@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"sync"
 	"time"
 	"vibe_ip/ent"
 	"vibe_ip/ent/cdnrecord"
@@ -21,86 +22,142 @@ import (
 
 // IP更新
 type IpUpdateService struct {
-	db   *ent.Client
-	cron gocron.Scheduler
-	job  gocron.Job
-	log  *slog.Logger
+	log    *slog.Logger
+	db     *ent.Client
+	cron   gocron.Scheduler
+	dnsJob gocron.Job
+	cdnJob gocron.Job
 }
 
+// NewIpUpdateService 创建 IP 更新服务
 func NewIpUpdateService(db *ent.Client, cron gocron.Scheduler) *IpUpdateService {
-	return &IpUpdateService{db: db, cron: cron, log: slog.With(
-		slog.String("service", "IpUpdateService"),
-	)}
+	return &IpUpdateService{
+		log: slog.With(
+			slog.String("service", "IpUpdateService"),
+		),
+		db:   db,
+		cron: cron,
+	}
 }
 
-func (s *IpUpdateService) StartJob(ctx context.Context) (err error) {
+// 启动 DNS刷新 任务
+func (s *IpUpdateService) StartDnsJob(ctx context.Context) (err error) {
 	// 每10分钟执行一次
-	s.job, err = s.cron.NewJob(
-		gocron.DurationJob(10*time.Minute),
-		gocron.NewTask(func() {
-
-			// 查询全部CDN记录
-			allCdnRecord, err := global.GvaDb.CDNRecord.Query().
-				Where(cdnrecord.IsActiveEQ(true)).
-				All(ctx)
-			if err == nil {
-				for _, item := range allCdnRecord {
-
-					newLog := s.log.With(
-						slog.Int64("id", item.ID),
-						slog.String("record", "CDN"),
-						slog.String("type", item.Type.String()),
-						slog.String("domain", item.Domain),
-					)
-
-					err = s.CdnUpdate(ctx, newLog, item)
-					if err != nil {
-						newLog.ErrorContext(ctx, "执行失败",
-							slog.Any("err", err),
-						)
-					}
-				}
-			}
-
-			// 查询全部DNS记录
-			allDnsRecord, err := global.GvaDb.DNSRecord.Query().
-				Where(dnsrecord.IsActiveEQ(true)).
-				All(ctx)
-			if err == nil {
-				for _, item := range allDnsRecord {
-
-					newLog := s.log.With(
-						slog.Int64("id", item.ID),
-						slog.String("record", "CDN"),
-						slog.String("type", item.Type.String()),
-						slog.String("domain", item.Domain),
-					)
-
-					err = s.DnsUpdate(ctx, newLog, item)
-					if err != nil {
-						newLog.ErrorContext(ctx, "执行失败",
-							slog.Any("err", err),
-						)
-					}
-				}
-			}
-
-			nextRun, err := s.job.NextRun()
-			if err == nil {
-				s.log.InfoContext(ctx, "IP更新成功",
-					slog.String("next_run_time", nextRun.Format(time.DateTime)),
-				)
-			}
-		}),
+	s.dnsJob, err = s.cron.NewJob(
+		gocron.DurationJob(10*time.Minute),                   // 每10分钟执行一次
+		gocron.NewTask(s.runDnsTask),                         // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
-		gocron.WithName("IP刷新"),                              // 任务名称
-		gocron.WithTags("ip_update"),                         // 任务标签
+		gocron.WithName("DNS刷新"),                             // 任务名称
+		gocron.WithTags("dns_update"),                        // 任务标签
 	)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+// 启动 CDN刷新 任务
+func (s *IpUpdateService) StartCdnJob(ctx context.Context) (err error) {
+	// 每10分钟执行一次
+	s.cdnJob, err = s.cron.NewJob(
+		gocron.DurationJob(10*time.Minute),                                          // 每10分钟执行一次
+		gocron.NewTask(s.runCdnTask),                                                // 执行任务
+		gocron.WithSingletonMode(gocron.LimitModeReschedule),                        // 单例模式
+		gocron.WithStartAt(gocron.WithStartImmediately()),                           // 立即开始
+		gocron.WithStartAt(gocron.WithStartDateTime(time.Now().Add(1*time.Minute))), // 延迟 1 分钟启动，确保 DNS 先跑
+		gocron.WithName("CDN刷新"),                                                    // 任务名称
+		gocron.WithTags("cdn_update"),                                               // 任务标签
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// 全局互斥锁
+var globalIpUpdateMutex sync.Mutex
+
+func (s *IpUpdateService) runDnsTask() {
+	globalIpUpdateMutex.Lock()
+	defer globalIpUpdateMutex.Unlock()
+
+	var err error
+	ctx := context.Background()
+
+	// 查询全部DNS记录
+	allDnsRecord, err := global.GvaDb.DNSRecord.Query().
+		Where(dnsrecord.IsActiveEQ(true)).
+		All(ctx)
+	if err == nil {
+		for _, item := range allDnsRecord {
+
+			newLog := s.log.With(
+				slog.Int64("id", item.ID),
+				slog.String("record", "CDN"),
+				slog.String("type", item.Type.String()),
+				slog.String("domain", item.Domain),
+			)
+
+			err = s.DnsUpdate(ctx, newLog, item)
+			if err != nil {
+				newLog.ErrorContext(ctx, "执行失败",
+					slog.Any("err", err),
+				)
+			}
+		}
+	}
+
+	nextRun, err := s.dnsJob.NextRun()
+	if err == nil {
+		s.log.InfoContext(ctx, "DNS更新成功",
+			slog.String("next_run_time", nextRun.Format(time.DateTime)),
+		)
+	} else {
+		s.log.InfoContext(ctx, "DNS更新成功")
+	}
+
+}
+
+func (s *IpUpdateService) runCdnTask() {
+	globalIpUpdateMutex.Lock()
+	defer globalIpUpdateMutex.Unlock()
+
+	var err error
+	ctx := context.Background()
+
+	// 查询全部DNS记录
+	allDnsRecord, err := global.GvaDb.DNSRecord.Query().
+		Where(dnsrecord.IsActiveEQ(true)).
+		All(ctx)
+	if err == nil {
+		for _, item := range allDnsRecord {
+
+			newLog := s.log.With(
+				slog.Int64("id", item.ID),
+				slog.String("record", "CDN"),
+				slog.String("type", item.Type.String()),
+				slog.String("domain", item.Domain),
+			)
+
+			err = s.DnsUpdate(ctx, newLog, item)
+			if err != nil {
+				newLog.ErrorContext(ctx, "执行失败",
+					slog.Any("err", err),
+				)
+			}
+		}
+	}
+
+	nextRun, err := s.cdnJob.NextRun()
+	if err == nil {
+		s.log.InfoContext(ctx, "CDN更新成功",
+			slog.String("next_run_time", nextRun.Format(time.DateTime)),
+		)
+	} else {
+		s.log.InfoContext(ctx, "CDN更新成功")
+	}
+
 }
 
 // 更新CDN记录
