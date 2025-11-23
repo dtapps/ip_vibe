@@ -562,12 +562,12 @@ async function viewLiveDeviceIpHistory(id, name) {
 
 document.addEventListener('DOMContentLoaded', function () {
     const now = Math.floor(Date.now() / 1000);
-  console.log("当前时间戳（秒）:", now);
-    const tenMinutes = 10 * 60;
+    // console.log("当前时间戳（秒）:", now);
+    const tenMinutes = 12 * 60;
 
     document.querySelectorAll('#deviceTable tr[data-last-heartbeat]').forEach(row => {
         const heartbeatAt = parseInt(row.getAttribute('data-last-heartbeat'));
-    console.log("设备心跳时间戳:", heartbeatAt, "差值:", now - heartbeatAt);
+        // console.log("设备心跳时间戳:", heartbeatAt, "差值:", now - heartbeatAt);
 
         // 如果是零值（从未心跳），heartbeatAt <= 0
         if (heartbeatAt <= 0) {
