@@ -66,8 +66,9 @@ func (s *Service) StartJob(ctx context.Context) (err error) {
 				DeviceCode: global.GvaEnv.DEVICE_CODE,
 				DeviceName: global.GvaEnv.DEVICE_NAME,
 			}
-			// 获取设备ID
+			// 检查设备代码是否为空
 			if params.DeviceCode == "" {
+				// 获取设备ID
 				params.DeviceCode, err = machineid.ID()
 				if err != nil {
 					s.log.ErrorContext(ctx, "获取设备ID失败",

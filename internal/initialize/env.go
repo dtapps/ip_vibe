@@ -35,10 +35,10 @@ func init() {
 		fmt.Printf("BasicAuth 用户名: %s, 密码: %s\n", global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
 	}
 
-	// 从环境变量获取 [reporter] 设备代码
+	// 从环境变量获取 [backend][reporter] 设备代码
 	global.GvaEnv.DEVICE_CODE = os.Getenv("DEVICE_CODE")
 
-	// 从环境变量获取 [reporter] 设备名称
+	// 从环境变量获取 [backend][reporter] 设备名称
 	global.GvaEnv.DEVICE_NAME = os.Getenv("DEVICE_NAME")
 
 	// 打印设备代码和设备名称

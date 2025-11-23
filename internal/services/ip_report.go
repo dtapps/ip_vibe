@@ -39,15 +39,23 @@ func (s *IpReportService) StartJob(ctx context.Context) (err error) {
 		gocron.NewTask(func() {
 			// 请求参数
 			params := types.ReportDeviceIpRequest{
-				DeviceName: "本设备",
+				DeviceCode: global.GvaEnv.DEVICE_CODE,
+				DeviceName: global.GvaEnv.DEVICE_NAME,
 			}
-			// 获取设备ID
-			params.DeviceCode, err = machineid.ID()
-			if err != nil {
-				s.log.ErrorContext(ctx, "获取设备ID失败",
-					slog.Any("err", err),
-				)
-				return
+			// 检查设备代码是否为空
+			if params.DeviceCode == "" {
+				// 获取设备ID
+				params.DeviceCode, err = machineid.ID()
+				if err != nil {
+					s.log.ErrorContext(ctx, "获取设备ID失败",
+						slog.Any("err", err),
+					)
+					return
+				}
+			}
+			// 检查设备名称是否为空
+			if params.DeviceName == "" {
+				params.DeviceName = "本设备"
 			}
 			// 获取设备IP
 			checker := ip_helper.NewIPChecker()
@@ -156,12 +164,15 @@ func (s *IpReportService) StartJob(ctx context.Context) (err error) {
 				params.ID = firstDevice.ID
 				if firstDevice.IPV4 != params.IPV4Addr || firstDevice.IPV6 != params.IPV6Addr {
 					// 更新设备IP
-					err = tx.Device.UpdateOne(firstDevice).
+					updateDevice := tx.Device.UpdateOne(firstDevice).
 						SetIPV4(params.IPV4Addr).
 						SetIPV6(params.IPV6Addr).
 						SetLastReportedAt(time.Now()).
-						SetLastHeartbeatAt(time.Now()).
-						Exec(ctx)
+						SetLastHeartbeatAt(time.Now())
+					if params.DeviceName != "" && firstDevice.Name != params.DeviceName {
+						updateDevice.SetName(params.DeviceName)
+					}
+					err = updateDevice.Exec(ctx)
 					if err != nil {
 						_ = tx.Rollback()
 						s.log.ErrorContext(ctx, "更新设备IP失败",
@@ -203,9 +214,12 @@ func (s *IpReportService) StartJob(ctx context.Context) (err error) {
 					msg = "更新设备IP成功"
 				} else {
 					// 更新设备心跳时间
-					err = tx.Device.UpdateOne(firstDevice).
-						SetLastHeartbeatAt(time.Now()).
-						Exec(ctx)
+					updateDevice := tx.Device.UpdateOne(firstDevice).
+						SetLastHeartbeatAt(time.Now())
+					if params.DeviceName != "" && firstDevice.Name != params.DeviceName {
+						updateDevice.SetName(params.DeviceName)
+					}
+					err = updateDevice.Exec(ctx)
 					if err != nil {
 						_ = tx.Rollback()
 						s.log.ErrorContext(ctx, "更新设备心跳时间失败",

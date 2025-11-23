@@ -2,14 +2,13 @@
 FROM docker.cnb.cool/dtapp/alpine:latest
 
 # 拷贝文件到容器中
-COPY ../../bin/reporter-linux-amd64 /app/reporter-linux-amd64
+COPY ../../bin/reporter-linux-amd64 /app/ip_vibe_reporter
 
 # 工作区
 WORKDIR /app
 
 # 设置权限
-RUN chmod +x /app/reporter-linux-amd64
-RUN mkdir -p /app/data/
+RUN chmod +x /app/ip_vibe_reporter
 RUN mkdir -p /app/logs/
 
 # 设置时区为上海
@@ -35,4 +34,4 @@ ENV DEVICE_CODE=${DEVICE_CODE}
 ENV DEVICE_NAME=${DEVICE_NAME}
 
 # 启动服务
-ENTRYPOINT ["/app/reporter-linux-amd64"]
+ENTRYPOINT ["/app/ip_vibe_reporter"]

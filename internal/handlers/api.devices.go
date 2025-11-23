@@ -371,9 +371,12 @@ func ReportDeviceIp(c *gin.Context) {
 			msg = "更新设备IP成功"
 		} else {
 			// 更新设备心跳时间
-			err = tx.Device.UpdateOne(firstDevice).
-				SetLastHeartbeatAt(time.Now()).
-				Exec(c)
+			updateDevice := tx.Device.UpdateOne(firstDevice).
+				SetLastHeartbeatAt(time.Now())
+			if requestParams.DeviceName != "" && firstDevice.Name != requestParams.DeviceName {
+				updateDevice.SetName(requestParams.DeviceName)
+			}
+			err = updateDevice.Exec(c)
 			if err != nil {
 				_ = tx.Rollback()
 				if global.GvaEnv.DEBUG {
