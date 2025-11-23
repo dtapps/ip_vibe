@@ -22,6 +22,8 @@ const (
 	FieldIPV4 = "ip_v4"
 	// FieldIPV6 holds the string denoting the ip_v6 field in the database.
 	FieldIPV6 = "ip_v6"
+	// FieldLastHeartbeatAt holds the string denoting the last_heartbeat_at field in the database.
+	FieldLastHeartbeatAt = "last_heartbeat_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -62,6 +64,7 @@ var Columns = []string{
 	FieldName,
 	FieldIPV4,
 	FieldIPV6,
+	FieldLastHeartbeatAt,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -117,6 +120,11 @@ func ByIPV4(opts ...sql.OrderTermOption) OrderOption {
 // ByIPV6 orders the results by the ip_v6 field.
 func ByIPV6(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIPV6, opts...).ToFunc()
+}
+
+// ByLastHeartbeatAt orders the results by the last_heartbeat_at field.
+func ByLastHeartbeatAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastHeartbeatAt, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

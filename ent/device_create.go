@@ -64,6 +64,20 @@ func (_c *DeviceCreate) SetNillableIPV6(v *string) *DeviceCreate {
 	return _c
 }
 
+// SetLastHeartbeatAt sets the "last_heartbeat_at" field.
+func (_c *DeviceCreate) SetLastHeartbeatAt(v time.Time) *DeviceCreate {
+	_c.mutation.SetLastHeartbeatAt(v)
+	return _c
+}
+
+// SetNillableLastHeartbeatAt sets the "last_heartbeat_at" field if the given value is not nil.
+func (_c *DeviceCreate) SetNillableLastHeartbeatAt(v *time.Time) *DeviceCreate {
+	if v != nil {
+		_c.SetLastHeartbeatAt(*v)
+	}
+	return _c
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (_c *DeviceCreate) SetCreatedAt(v time.Time) *DeviceCreate {
 	_c.mutation.SetCreatedAt(v)
@@ -236,6 +250,10 @@ func (_c *DeviceCreate) createSpec() (*Device, *sqlgraph.CreateSpec) {
 		_spec.SetField(device.FieldIPV6, field.TypeString, value)
 		_node.IPV6 = value
 	}
+	if value, ok := _c.mutation.LastHeartbeatAt(); ok {
+		_spec.SetField(device.FieldLastHeartbeatAt, field.TypeTime, value)
+		_node.LastHeartbeatAt = value
+	}
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(device.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -380,6 +398,24 @@ func (u *DeviceUpsert) ClearIPV6() *DeviceUpsert {
 	return u
 }
 
+// SetLastHeartbeatAt sets the "last_heartbeat_at" field.
+func (u *DeviceUpsert) SetLastHeartbeatAt(v time.Time) *DeviceUpsert {
+	u.Set(device.FieldLastHeartbeatAt, v)
+	return u
+}
+
+// UpdateLastHeartbeatAt sets the "last_heartbeat_at" field to the value that was provided on create.
+func (u *DeviceUpsert) UpdateLastHeartbeatAt() *DeviceUpsert {
+	u.SetExcluded(device.FieldLastHeartbeatAt)
+	return u
+}
+
+// ClearLastHeartbeatAt clears the value of the "last_heartbeat_at" field.
+func (u *DeviceUpsert) ClearLastHeartbeatAt() *DeviceUpsert {
+	u.SetNull(device.FieldLastHeartbeatAt)
+	return u
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (u *DeviceUpsert) SetUpdatedAt(v time.Time) *DeviceUpsert {
 	u.Set(device.FieldUpdatedAt, v)
@@ -499,6 +535,27 @@ func (u *DeviceUpsertOne) UpdateIPV6() *DeviceUpsertOne {
 func (u *DeviceUpsertOne) ClearIPV6() *DeviceUpsertOne {
 	return u.Update(func(s *DeviceUpsert) {
 		s.ClearIPV6()
+	})
+}
+
+// SetLastHeartbeatAt sets the "last_heartbeat_at" field.
+func (u *DeviceUpsertOne) SetLastHeartbeatAt(v time.Time) *DeviceUpsertOne {
+	return u.Update(func(s *DeviceUpsert) {
+		s.SetLastHeartbeatAt(v)
+	})
+}
+
+// UpdateLastHeartbeatAt sets the "last_heartbeat_at" field to the value that was provided on create.
+func (u *DeviceUpsertOne) UpdateLastHeartbeatAt() *DeviceUpsertOne {
+	return u.Update(func(s *DeviceUpsert) {
+		s.UpdateLastHeartbeatAt()
+	})
+}
+
+// ClearLastHeartbeatAt clears the value of the "last_heartbeat_at" field.
+func (u *DeviceUpsertOne) ClearLastHeartbeatAt() *DeviceUpsertOne {
+	return u.Update(func(s *DeviceUpsert) {
+		s.ClearLastHeartbeatAt()
 	})
 }
 
@@ -789,6 +846,27 @@ func (u *DeviceUpsertBulk) UpdateIPV6() *DeviceUpsertBulk {
 func (u *DeviceUpsertBulk) ClearIPV6() *DeviceUpsertBulk {
 	return u.Update(func(s *DeviceUpsert) {
 		s.ClearIPV6()
+	})
+}
+
+// SetLastHeartbeatAt sets the "last_heartbeat_at" field.
+func (u *DeviceUpsertBulk) SetLastHeartbeatAt(v time.Time) *DeviceUpsertBulk {
+	return u.Update(func(s *DeviceUpsert) {
+		s.SetLastHeartbeatAt(v)
+	})
+}
+
+// UpdateLastHeartbeatAt sets the "last_heartbeat_at" field to the value that was provided on create.
+func (u *DeviceUpsertBulk) UpdateLastHeartbeatAt() *DeviceUpsertBulk {
+	return u.Update(func(s *DeviceUpsert) {
+		s.UpdateLastHeartbeatAt()
+	})
+}
+
+// ClearLastHeartbeatAt clears the value of the "last_heartbeat_at" field.
+func (u *DeviceUpsertBulk) ClearLastHeartbeatAt() *DeviceUpsertBulk {
+	return u.Update(func(s *DeviceUpsert) {
+		s.ClearLastHeartbeatAt()
 	})
 }
 

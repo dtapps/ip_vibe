@@ -26,6 +26,8 @@ type Device struct {
 	IPV4 string `json:"ip_v4,omitempty"`
 	// IP地址V6
 	IPV6 string `json:"ip_v6,omitempty"`
+	// 最后心跳时间
+	LastHeartbeatAt time.Time `json:"last_heartbeat_at,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 更新时间
@@ -88,7 +90,7 @@ func (*Device) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case device.FieldCode, device.FieldName, device.FieldIPV4, device.FieldIPV6:
 			values[i] = new(sql.NullString)
-		case device.FieldCreatedAt, device.FieldUpdatedAt:
+		case device.FieldLastHeartbeatAt, device.FieldCreatedAt, device.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -134,6 +136,12 @@ func (_m *Device) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field ip_v6", values[i])
 			} else if value.Valid {
 				_m.IPV6 = value.String
+			}
+		case device.FieldLastHeartbeatAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field last_heartbeat_at", values[i])
+			} else if value.Valid {
+				_m.LastHeartbeatAt = value.Time
 			}
 		case device.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -209,6 +217,9 @@ func (_m *Device) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("ip_v6=")
 	builder.WriteString(_m.IPV6)
+	builder.WriteString(", ")
+	builder.WriteString("last_heartbeat_at=")
+	builder.WriteString(_m.LastHeartbeatAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))

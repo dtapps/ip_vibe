@@ -2392,6 +2392,7 @@ type DeviceMutation struct {
 	name              *string
 	ip_v4             *string
 	ip_v6             *string
+	last_heartbeat_at *time.Time
 	created_at        *time.Time
 	updated_at        *time.Time
 	clearedFields     map[string]struct{}
@@ -2680,6 +2681,55 @@ func (m *DeviceMutation) ResetIPV6() {
 	delete(m.clearedFields, device.FieldIPV6)
 }
 
+// SetLastHeartbeatAt sets the "last_heartbeat_at" field.
+func (m *DeviceMutation) SetLastHeartbeatAt(t time.Time) {
+	m.last_heartbeat_at = &t
+}
+
+// LastHeartbeatAt returns the value of the "last_heartbeat_at" field in the mutation.
+func (m *DeviceMutation) LastHeartbeatAt() (r time.Time, exists bool) {
+	v := m.last_heartbeat_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastHeartbeatAt returns the old "last_heartbeat_at" field's value of the Device entity.
+// If the Device object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeviceMutation) OldLastHeartbeatAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastHeartbeatAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastHeartbeatAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastHeartbeatAt: %w", err)
+	}
+	return oldValue.LastHeartbeatAt, nil
+}
+
+// ClearLastHeartbeatAt clears the value of the "last_heartbeat_at" field.
+func (m *DeviceMutation) ClearLastHeartbeatAt() {
+	m.last_heartbeat_at = nil
+	m.clearedFields[device.FieldLastHeartbeatAt] = struct{}{}
+}
+
+// LastHeartbeatAtCleared returns if the "last_heartbeat_at" field was cleared in this mutation.
+func (m *DeviceMutation) LastHeartbeatAtCleared() bool {
+	_, ok := m.clearedFields[device.FieldLastHeartbeatAt]
+	return ok
+}
+
+// ResetLastHeartbeatAt resets all changes to the "last_heartbeat_at" field.
+func (m *DeviceMutation) ResetLastHeartbeatAt() {
+	m.last_heartbeat_at = nil
+	delete(m.clearedFields, device.FieldLastHeartbeatAt)
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *DeviceMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -2894,7 +2944,7 @@ func (m *DeviceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeviceMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.code != nil {
 		fields = append(fields, device.FieldCode)
 	}
@@ -2906,6 +2956,9 @@ func (m *DeviceMutation) Fields() []string {
 	}
 	if m.ip_v6 != nil {
 		fields = append(fields, device.FieldIPV6)
+	}
+	if m.last_heartbeat_at != nil {
+		fields = append(fields, device.FieldLastHeartbeatAt)
 	}
 	if m.created_at != nil {
 		fields = append(fields, device.FieldCreatedAt)
@@ -2929,6 +2982,8 @@ func (m *DeviceMutation) Field(name string) (ent.Value, bool) {
 		return m.IPV4()
 	case device.FieldIPV6:
 		return m.IPV6()
+	case device.FieldLastHeartbeatAt:
+		return m.LastHeartbeatAt()
 	case device.FieldCreatedAt:
 		return m.CreatedAt()
 	case device.FieldUpdatedAt:
@@ -2950,6 +3005,8 @@ func (m *DeviceMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldIPV4(ctx)
 	case device.FieldIPV6:
 		return m.OldIPV6(ctx)
+	case device.FieldLastHeartbeatAt:
+		return m.OldLastHeartbeatAt(ctx)
 	case device.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case device.FieldUpdatedAt:
@@ -2990,6 +3047,13 @@ func (m *DeviceMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIPV6(v)
+		return nil
+	case device.FieldLastHeartbeatAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastHeartbeatAt(v)
 		return nil
 	case device.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -3041,6 +3105,9 @@ func (m *DeviceMutation) ClearedFields() []string {
 	if m.FieldCleared(device.FieldIPV6) {
 		fields = append(fields, device.FieldIPV6)
 	}
+	if m.FieldCleared(device.FieldLastHeartbeatAt) {
+		fields = append(fields, device.FieldLastHeartbeatAt)
+	}
 	return fields
 }
 
@@ -3061,6 +3128,9 @@ func (m *DeviceMutation) ClearField(name string) error {
 	case device.FieldIPV6:
 		m.ClearIPV6()
 		return nil
+	case device.FieldLastHeartbeatAt:
+		m.ClearLastHeartbeatAt()
+		return nil
 	}
 	return fmt.Errorf("unknown Device nullable field %s", name)
 }
@@ -3080,6 +3150,9 @@ func (m *DeviceMutation) ResetField(name string) error {
 		return nil
 	case device.FieldIPV6:
 		m.ResetIPV6()
+		return nil
+	case device.FieldLastHeartbeatAt:
+		m.ResetLastHeartbeatAt()
 		return nil
 	case device.FieldCreatedAt:
 		m.ResetCreatedAt()

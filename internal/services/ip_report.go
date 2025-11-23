@@ -87,6 +87,7 @@ func (s *IpReportService) StartJob(ctx context.Context) (err error) {
 					SetName(params.DeviceName).
 					SetIPV4(params.IPV4Addr).
 					SetIPV6(params.IPV6Addr).
+					SetLastHeartbeatAt(time.Now()).
 					Save(ctx)
 				if err != nil {
 					_ = tx.Rollback()
@@ -160,6 +161,7 @@ func (s *IpReportService) StartJob(ctx context.Context) (err error) {
 					err = tx.Device.UpdateOne(firstDevice).
 						SetIPV4(params.IPV4Addr).
 						SetIPV6(params.IPV6Addr).
+						SetLastHeartbeatAt(time.Now()).
 						Exec(ctx)
 					if err != nil {
 						_ = tx.Rollback()
@@ -203,7 +205,17 @@ func (s *IpReportService) StartJob(ctx context.Context) (err error) {
 					}
 					msg = "更新设备IP成功"
 				} else {
-					_ = tx.Rollback()
+					// 更新设备心跳时间
+					err = tx.Device.UpdateOne(firstDevice).
+						SetLastHeartbeatAt(time.Now()).
+						Exec(ctx)
+					if err != nil {
+						_ = tx.Rollback()
+						s.log.ErrorContext(ctx, "更新设备心跳时间失败",
+							slog.Any("err", err),
+						)
+						return
+					}
 					msg = "设备IP未改变，不添加IP报告"
 				}
 			}

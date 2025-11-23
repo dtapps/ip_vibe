@@ -586,3 +586,22 @@ button:disabled,
     color: #9ca3af;
     background-color: var(--card);
 }
+
+/* 默认：正常在线 */
+.device-row {}
+
+/* 超过10分钟未心跳：离线 */
+.device-row.offline {
+    background-color: #fff5f5 !important;
+    color: #e74c3c !important;
+}
+
+.device-row.offline td {
+    color: #e74c3c !important;
+}
+
+/* 从未心跳 */
+.device-row.never-heartbeat td {
+    color: #95a5a6 !important;
+    font-style: italic;
+}

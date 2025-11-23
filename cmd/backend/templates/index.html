@@ -238,12 +238,12 @@
           </thead>
           <tbody id="deviceTable">
             {{range .Devices}}
-            <tr>
+            <tr class="device-row" data-last-heartbeat="{{.LastHeartbeatAt.Unix}}">
               <td>{{.Code}}</td>
               <td>{{.Name}}</td>
               <td class="text-monospace">{{.IPV4}}</td>
               <td class="text-monospace">{{.IPV6}}</td>
-              <td>{{.ReportedAt.Format "2006-01-02 15:04:05"}}</td>
+              <td>{{formatTimeOrNil .ReportedAt}}</td>
               <td>
                 <button class="btn btn-sm btn-outline-info" onclick="viewLiveDeviceIpHistory('{{.ID}}','{{.Name}}')">
                   <svg class="ip-i">
@@ -407,14 +407,14 @@
           <svg class="ip-i">
             <use href="/static/icons.svg#ip-log" />
           </svg>
-          操作日志（最新 20 条）
+          操作日志（最新 {{.OperationLogLimit}} 条）
         </h2>
       </div>
       <div class="card-body">
         <div class="timeline" id="timeline">
           {{range .OperationLogs}}
           <div class="timeline-item">
-            <div class="timeline-time">{{.CreatedAt.Format "2006-01-02 15:04:05"}}</div>
+            <div class="timeline-time">{{formatTimeOrNil .CreatedAt}}</div>
             <div>
               <strong>{{.ID}}</strong>:
               <span class="text-muted">{{.ObjType}}</span> →

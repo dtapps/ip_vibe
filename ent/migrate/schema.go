@@ -144,6 +144,7 @@ var (
 		{Name: "name", Type: field.TypeString, Comment: "设备名称"},
 		{Name: "ip_v4", Type: field.TypeString, Nullable: true, Comment: "IP地址V4"},
 		{Name: "ip_v6", Type: field.TypeString, Nullable: true, Comment: "IP地址V6"},
+		{Name: "last_heartbeat_at", Type: field.TypeTime, Nullable: true, Comment: "最后心跳时间"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 	}

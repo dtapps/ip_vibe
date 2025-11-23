@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"time"
 	"vibe_ip/ent"
 	"vibe_ip/ent/device"
 	"vibe_ip/ent/deviceipreport"
@@ -27,12 +28,13 @@ func GetDevices(c *gin.Context) {
 	}
 	for _, item := range allDevice {
 		devices = append(devices, types.GetDevicesResponse{
-			ID:         item.ID,
-			Code:       item.Code,
-			Name:       item.Name,
-			IPV4:       item.IPV4,
-			IPV6:       item.IPV6,
-			ReportedAt: item.UpdatedAt,
+			ID:              item.ID,
+			Code:            item.Code,
+			Name:            item.Name,
+			IPV4:            item.IPV4,
+			IPV6:            item.IPV6,
+			LastHeartbeatAt: item.LastHeartbeatAt,
+			ReportedAt:      item.UpdatedAt,
 		})
 	}
 	successResponse(c, devices)
@@ -51,12 +53,13 @@ func GetDevice(c *gin.Context) {
 		return
 	}
 	successResponse(c, types.GetDevicesResponse{
-		ID:         firstDevice.ID,
-		Code:       firstDevice.Code,
-		Name:       firstDevice.Name,
-		IPV4:       firstDevice.IPV4,
-		IPV6:       firstDevice.IPV6,
-		ReportedAt: firstDevice.UpdatedAt,
+		ID:              firstDevice.ID,
+		Code:            firstDevice.Code,
+		Name:            firstDevice.Name,
+		IPV4:            firstDevice.IPV4,
+		IPV6:            firstDevice.IPV6,
+		LastHeartbeatAt: firstDevice.LastHeartbeatAt,
+		ReportedAt:      firstDevice.UpdatedAt,
 	})
 }
 
@@ -261,6 +264,7 @@ func ReportDeviceIp(c *gin.Context) {
 			SetName(requestParams.DeviceName).
 			SetIPV4(requestParams.IPV4Addr).
 			SetIPV6(requestParams.IPV6Addr).
+			SetLastHeartbeatAt(time.Now()).
 			Save(c)
 		if err != nil {
 			_ = tx.Rollback()
@@ -302,7 +306,8 @@ func ReportDeviceIp(c *gin.Context) {
 			// 更新设备IP
 			updateDevice := tx.Device.UpdateOne(firstDevice).
 				SetIPV4(requestParams.IPV4Addr).
-				SetIPV6(requestParams.IPV6Addr)
+				SetIPV6(requestParams.IPV6Addr).
+				SetLastHeartbeatAt(time.Now())
 			if requestParams.DeviceName != "" && firstDevice.Name != requestParams.DeviceName {
 				updateDevice.SetName(requestParams.DeviceName)
 			}
@@ -341,7 +346,15 @@ func ReportDeviceIp(c *gin.Context) {
 			}
 			msg = "更新设备IP成功"
 		} else {
-			_ = tx.Rollback()
+			// 更新设备心跳时间
+			err = tx.Device.UpdateOne(firstDevice).
+				SetLastHeartbeatAt(time.Now()).
+				Exec(c)
+			if err != nil {
+				_ = tx.Rollback()
+				errorResponse(c, http.StatusInternalServerError, "更新设备心跳时间失败: "+err.Error())
+				return
+			}
 			msg = "设备IP未改变，不添加IP报告"
 		}
 	}

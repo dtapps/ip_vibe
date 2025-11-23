@@ -75,6 +75,11 @@ func IPV6(v string) predicate.Device {
 	return predicate.Device(sql.FieldEQ(FieldIPV6, v))
 }
 
+// LastHeartbeatAt applies equality check predicate on the "last_heartbeat_at" field. It's identical to LastHeartbeatAtEQ.
+func LastHeartbeatAt(v time.Time) predicate.Device {
+	return predicate.Device(sql.FieldEQ(FieldLastHeartbeatAt, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Device {
 	return predicate.Device(sql.FieldEQ(FieldCreatedAt, v))
@@ -363,6 +368,56 @@ func IPV6EqualFold(v string) predicate.Device {
 // IPV6ContainsFold applies the ContainsFold predicate on the "ip_v6" field.
 func IPV6ContainsFold(v string) predicate.Device {
 	return predicate.Device(sql.FieldContainsFold(FieldIPV6, v))
+}
+
+// LastHeartbeatAtEQ applies the EQ predicate on the "last_heartbeat_at" field.
+func LastHeartbeatAtEQ(v time.Time) predicate.Device {
+	return predicate.Device(sql.FieldEQ(FieldLastHeartbeatAt, v))
+}
+
+// LastHeartbeatAtNEQ applies the NEQ predicate on the "last_heartbeat_at" field.
+func LastHeartbeatAtNEQ(v time.Time) predicate.Device {
+	return predicate.Device(sql.FieldNEQ(FieldLastHeartbeatAt, v))
+}
+
+// LastHeartbeatAtIn applies the In predicate on the "last_heartbeat_at" field.
+func LastHeartbeatAtIn(vs ...time.Time) predicate.Device {
+	return predicate.Device(sql.FieldIn(FieldLastHeartbeatAt, vs...))
+}
+
+// LastHeartbeatAtNotIn applies the NotIn predicate on the "last_heartbeat_at" field.
+func LastHeartbeatAtNotIn(vs ...time.Time) predicate.Device {
+	return predicate.Device(sql.FieldNotIn(FieldLastHeartbeatAt, vs...))
+}
+
+// LastHeartbeatAtGT applies the GT predicate on the "last_heartbeat_at" field.
+func LastHeartbeatAtGT(v time.Time) predicate.Device {
+	return predicate.Device(sql.FieldGT(FieldLastHeartbeatAt, v))
+}
+
+// LastHeartbeatAtGTE applies the GTE predicate on the "last_heartbeat_at" field.
+func LastHeartbeatAtGTE(v time.Time) predicate.Device {
+	return predicate.Device(sql.FieldGTE(FieldLastHeartbeatAt, v))
+}
+
+// LastHeartbeatAtLT applies the LT predicate on the "last_heartbeat_at" field.
+func LastHeartbeatAtLT(v time.Time) predicate.Device {
+	return predicate.Device(sql.FieldLT(FieldLastHeartbeatAt, v))
+}
+
+// LastHeartbeatAtLTE applies the LTE predicate on the "last_heartbeat_at" field.
+func LastHeartbeatAtLTE(v time.Time) predicate.Device {
+	return predicate.Device(sql.FieldLTE(FieldLastHeartbeatAt, v))
+}
+
+// LastHeartbeatAtIsNil applies the IsNil predicate on the "last_heartbeat_at" field.
+func LastHeartbeatAtIsNil() predicate.Device {
+	return predicate.Device(sql.FieldIsNull(FieldLastHeartbeatAt))
+}
+
+// LastHeartbeatAtNotNil applies the NotNil predicate on the "last_heartbeat_at" field.
+func LastHeartbeatAtNotNil() predicate.Device {
+	return predicate.Device(sql.FieldNotNull(FieldLastHeartbeatAt))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

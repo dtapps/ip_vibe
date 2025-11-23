@@ -99,12 +99,13 @@ func Index(c *gin.Context) {
 	if err == nil {
 		for _, item := range allDevice {
 			pageData.Devices = append(pageData.Devices, types.GetDevicesResponse{
-				ID:         item.ID,
-				Code:       item.Code,
-				Name:       item.Name,
-				IPV4:       item.IPV4,
-				IPV6:       item.IPV6,
-				ReportedAt: item.UpdatedAt,
+				ID:              item.ID,
+				Code:            item.Code,
+				Name:            item.Name,
+				IPV4:            item.IPV4,
+				IPV6:            item.IPV6,
+				LastHeartbeatAt: item.LastHeartbeatAt,
+				ReportedAt:      item.UpdatedAt,
 			})
 		}
 	}
@@ -128,7 +129,7 @@ func Index(c *gin.Context) {
 	// 查询全部操作日志
 	allOperationLog, err := global.GvaDb.OperationLog.Query().
 		Order(ent.Desc(operationlog.FieldCreatedAt)).
-		Limit(20).
+		Limit(15).
 		All(c)
 	if err == nil {
 		for _, item := range allOperationLog {
@@ -144,6 +145,7 @@ func Index(c *gin.Context) {
 				CreatedAt: item.CreatedAt,
 			})
 		}
+		pageData.OperationLogLimit = 15
 	}
 
 	// 查询任务状态

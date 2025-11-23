@@ -85,6 +85,26 @@ func (_u *DeviceUpdate) ClearIPV6() *DeviceUpdate {
 	return _u
 }
 
+// SetLastHeartbeatAt sets the "last_heartbeat_at" field.
+func (_u *DeviceUpdate) SetLastHeartbeatAt(v time.Time) *DeviceUpdate {
+	_u.mutation.SetLastHeartbeatAt(v)
+	return _u
+}
+
+// SetNillableLastHeartbeatAt sets the "last_heartbeat_at" field if the given value is not nil.
+func (_u *DeviceUpdate) SetNillableLastHeartbeatAt(v *time.Time) *DeviceUpdate {
+	if v != nil {
+		_u.SetLastHeartbeatAt(*v)
+	}
+	return _u
+}
+
+// ClearLastHeartbeatAt clears the value of the "last_heartbeat_at" field.
+func (_u *DeviceUpdate) ClearLastHeartbeatAt() *DeviceUpdate {
+	_u.mutation.ClearLastHeartbeatAt()
+	return _u
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *DeviceUpdate) SetUpdatedAt(v time.Time) *DeviceUpdate {
 	_u.mutation.SetUpdatedAt(v)
@@ -233,6 +253,12 @@ func (_u *DeviceUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.IPV6Cleared() {
 		_spec.ClearField(device.FieldIPV6, field.TypeString)
+	}
+	if value, ok := _u.mutation.LastHeartbeatAt(); ok {
+		_spec.SetField(device.FieldLastHeartbeatAt, field.TypeTime, value)
+	}
+	if _u.mutation.LastHeartbeatAtCleared() {
+		_spec.ClearField(device.FieldLastHeartbeatAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(device.FieldUpdatedAt, field.TypeTime, value)
@@ -415,6 +441,26 @@ func (_u *DeviceUpdateOne) ClearIPV6() *DeviceUpdateOne {
 	return _u
 }
 
+// SetLastHeartbeatAt sets the "last_heartbeat_at" field.
+func (_u *DeviceUpdateOne) SetLastHeartbeatAt(v time.Time) *DeviceUpdateOne {
+	_u.mutation.SetLastHeartbeatAt(v)
+	return _u
+}
+
+// SetNillableLastHeartbeatAt sets the "last_heartbeat_at" field if the given value is not nil.
+func (_u *DeviceUpdateOne) SetNillableLastHeartbeatAt(v *time.Time) *DeviceUpdateOne {
+	if v != nil {
+		_u.SetLastHeartbeatAt(*v)
+	}
+	return _u
+}
+
+// ClearLastHeartbeatAt clears the value of the "last_heartbeat_at" field.
+func (_u *DeviceUpdateOne) ClearLastHeartbeatAt() *DeviceUpdateOne {
+	_u.mutation.ClearLastHeartbeatAt()
+	return _u
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *DeviceUpdateOne) SetUpdatedAt(v time.Time) *DeviceUpdateOne {
 	_u.mutation.SetUpdatedAt(v)
@@ -593,6 +639,12 @@ func (_u *DeviceUpdateOne) sqlSave(ctx context.Context) (_node *Device, err erro
 	}
 	if _u.mutation.IPV6Cleared() {
 		_spec.ClearField(device.FieldIPV6, field.TypeString)
+	}
+	if value, ok := _u.mutation.LastHeartbeatAt(); ok {
+		_spec.SetField(device.FieldLastHeartbeatAt, field.TypeTime, value)
+	}
+	if _u.mutation.LastHeartbeatAtCleared() {
+		_spec.ClearField(device.FieldLastHeartbeatAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(device.FieldUpdatedAt, field.TypeTime, value)

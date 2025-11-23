@@ -4,12 +4,13 @@ import "time"
 
 // 设备 响应结构
 type GetDevicesResponse struct {
-	ID         int64     `json:"id,omitempty"`    // 设备序号
-	Code       string    `json:"code"`            // 设备编号
-	Name       string    `json:"name"`            // 设备名称
-	IPV4       string    `json:"ip_v4,omitempty"` // IP地址V4
-	IPV6       string    `json:"ip_v6,omitempty"` // IP地址V6
-	ReportedAt time.Time `json:"reported_at"`     // 上报时间
+	ID              int64     `json:"id,omitempty"`                // 设备序号
+	Code            string    `json:"code"`                        // 设备编号
+	Name            string    `json:"name"`                        // 设备名称
+	IPV4            string    `json:"ip_v4,omitempty"`             // IP地址V4
+	IPV6            string    `json:"ip_v6,omitempty"`             // IP地址V6
+	LastHeartbeatAt time.Time `json:"last_heartbeat_at,omitempty"` // 最后心跳时间
+	ReportedAt      time.Time `json:"reported_at"`                 // 上报时间
 }
 
 // 创建设备 请求结构

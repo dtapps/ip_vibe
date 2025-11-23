@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/initialize"
@@ -100,8 +101,20 @@ func main() {
 	// 根路径 - 提供HTML页面并渲染数据
 	router.GET("/", handlers.Index)
 
+	// 创建带 FuncMap 的 template
+	funcMap := template.FuncMap{
+		"formatTimeOrNil": func(t time.Time) string {
+			if t.IsZero() {
+				return "—"
+			}
+			return t.Format("2006-01-02 15:04:05")
+		},
+	}
+
 	// 使用embed.FS创建Gin的HTML渲染器
-	templ := template.Must(template.New("").ParseFS(embeddedFiles, "templates/*.html"))
+	templ := template.Must(
+		template.New("").Funcs(funcMap).ParseFS(embeddedFiles, "templates/*.html"),
+	)
 	router.SetHTMLTemplate(templ)
 
 	// 静态文件服务 - 使用嵌入的文件系统
