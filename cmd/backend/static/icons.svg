@@ -73,6 +73,7 @@
   <rect x="8" y="8" width="26" height="32" rx="4" stroke="currentColor" stroke-width="4"/>
   <path d="M20 20h16v16H20z" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
 </symbol>
+
 <!-- 刷新 -->
 <symbol id="ip-refresh" viewBox="0 0 48 48">
   <path d="M29 14l-8 8 8 8m-7-8h18c0-6-4-10-10-10s-10 4-10 10c0 6 4 10 10 10" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
