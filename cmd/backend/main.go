@@ -46,6 +46,7 @@ func main() {
 
 	// 打印
 	slog.Info("服务启动",
+		slog.Bool("debug", global.GvaEnv.DEBUG),
 		slog.String("version", version),
 		slog.String("commit", commit),
 		slog.String("build_time", buildTime),
