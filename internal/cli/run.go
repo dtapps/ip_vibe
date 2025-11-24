@@ -60,8 +60,8 @@ var runCmd = &cobra.Command{
 					var logPrefix = fmt.Sprintf("cron-%s-%s", targetProvider.Type, targetProvider.ID)
 
 					// 获取IP
-					checker := ip_helper.NewIPChecker()
-					ipInfo, err := checker.CheckIP(cmd.Context(), targetProvider.IpType)
+					iPHelper := ip_helper.NewIPHelper()
+					ipInfo, err := iPHelper.GetIP(cmd.Context(), ip_helper.IPType(targetProvider.IpType))
 					if err != nil {
 						cmd.PrintErrf("[%s]获取IP失败: %s \n",
 							logPrefix,

@@ -8,4 +8,5 @@
 /bin
 /data
 /logs
+# docker-compose-*.sh
 test-*.yml

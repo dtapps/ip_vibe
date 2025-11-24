@@ -78,8 +78,8 @@ func (p *program) run() {
 				var logPrefix = fmt.Sprintf("cron-%s-%s", targetProvider.Type, targetProvider.ID)
 
 				// 获取IP
-				checker := ip_helper.NewIPChecker()
-				ipInfo, err := checker.CheckIP(context.TODO(), targetProvider.IpType)
+				iPHelper := ip_helper.NewIPHelper()
+				ipInfo, err := iPHelper.GetIP(context.TODO(), ip_helper.IPType(targetProvider.IpType))
 				if err != nil {
 					p.logger.Errorf("[%s]获取IP失败: %s \n",
 						logPrefix,

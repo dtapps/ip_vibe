@@ -1,5 +1,6 @@
 services:
   reporter:
+    container_name: ip_vibe_reporter
     image: docker.cnb.cool/dtapp/ip_vibe/reporter:latest
     restart: unless-stopped
     network_mode: host

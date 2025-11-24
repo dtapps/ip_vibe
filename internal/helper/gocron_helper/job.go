@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	"vibe_ip/internal/utils"
+	"vibe_ip/pkg/utils"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/google/uuid"

@@ -80,14 +80,19 @@ func (s *IpReportService) runTask() {
 		params.DeviceName = "本设备"
 	}
 	// 获取设备IP
-	checker := ip_helper.NewIPChecker()
-	ipv4, err := checker.CheckIP(ctx, "v4")
+	iPHelper := ip_helper.NewIPHelper()
+	ipv4, err := iPHelper.GetIP(ctx, ip_helper.IPTypeV4)
 	if err == nil {
 		params.IPV4Addr = ipv4.IP
 	}
-	ipv6, err := checker.CheckIP(ctx, "v6")
+	ipv6, err := iPHelper.GetIP(ctx, ip_helper.IPTypeV6)
 	if err == nil {
 		params.IPV6Addr = ipv6.IP
+	}
+	// 判断IPV4和IPV6是否为空
+	if params.IPV4Addr == "" && params.IPV6Addr == "" {
+		s.log.ErrorContext(ctx, "IPV4和IPV6地址都为空")
+		return
 	}
 	// 描述
 	msg := ""

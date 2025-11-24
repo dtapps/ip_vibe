@@ -65,7 +65,7 @@ func main() {
 	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
 		service.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
 	}
-	service.SetHttpUrl(global.GvaEnv.HTTP_URL)
+	service.SetBaseURL(global.GvaEnv.HTTP_URL)
 
 	// 启动任务
 	err := service.StartJob(ctx)

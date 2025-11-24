@@ -1,12 +1,8 @@
 package reporter
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
-	"io"
 	"log/slog"
-	"net/http"
 	"sync"
 	"time"
 	"vibe_ip/internal/global"
@@ -15,42 +11,48 @@ import (
 
 	"github.com/denisbrodbeck/machineid"
 	"github.com/go-co-op/gocron/v2"
+	"resty.dev/v3"
 )
 
 type Service struct {
-	cron gocron.Scheduler
-	job  gocron.Job
-	log  *slog.Logger
-
-	debug  bool
-	config struct {
-		httpUrl  string
-		username string
-		password string
-	}
+	cron   gocron.Scheduler // 定时任务调度器
+	job    gocron.Job       // 任务
+	log    *slog.Logger     // 日志记录器
+	client *resty.Client    // Resty HTTP 客户端
 }
 
 // NewService 创建一个新的服务实例
 func NewService(cron gocron.Scheduler) *Service {
+
+	// 创建一个新的 Resty 客户端
+	client := resty.New()
+
+	// 启用请求跟踪以获取延迟信息
+	client.EnableTrace()
+
 	return &Service{
 		cron: cron,
-		log:  slog.With(),
+		log:  slog.Default(),
+		// log:    slog.With("component", "reporter"), // 日志记录器
+		client: client,
 	}
 }
 
+// EnableDebug 开启调试模式
 func (s *Service) EnableDebug() *Service {
-	s.debug = true
+	s.client.EnableDebug()
 	return s
 }
 
-func (s *Service) SetHttpUrl(url string) *Service {
-	s.config.httpUrl = url
+// SetBaseURL 设置基础URL
+func (s *Service) SetBaseURL(url string) *Service {
+	s.client.SetBaseURL(url)
 	return s
 }
 
+// 设置基本认证
 func (s *Service) SetBasicAuth(username, password string) *Service {
-	s.config.username = username
-	s.config.password = password
+	s.client.SetBasicAuth(username, password)
 	return s
 }
 
@@ -100,12 +102,12 @@ func (s *Service) runTask() {
 		}
 	}
 	// 获取设备IP
-	checker := ip_helper.NewIPChecker()
-	ipv4, err := checker.CheckIP(ctx, "v4")
+	iPHelper := ip_helper.NewIPHelper()
+	ipv4, err := iPHelper.GetIP(ctx, ip_helper.IPTypeV4)
 	if err == nil {
 		params.IPV4Addr = ipv4.IP
 	}
-	ipv6, err := checker.CheckIP(ctx, "v6")
+	ipv6, err := iPHelper.GetIP(ctx, ip_helper.IPTypeV6)
 	if err == nil {
 		params.IPV6Addr = ipv6.IP
 	}
@@ -114,7 +116,6 @@ func (s *Service) runTask() {
 		slog.String("device_name", params.DeviceName),
 		slog.String("ipv4_addr", params.IPV4Addr),
 		slog.String("ipv6_addr", params.IPV6Addr),
-		slog.String("http_url", s.config.httpUrl),
 	)
 	err = s.httpApi(ctx, params)
 	if err != nil {
@@ -150,68 +151,27 @@ func (s *Service) runTask() {
 
 func (s *Service) httpApi(ctx context.Context, params types.ReportDeviceIpRequest) (err error) {
 
-	// 创建HTTP请求
-	data, err := json.Marshal(params)
-	if err != nil {
-		s.log.ErrorContext(ctx, "JSON编码失败",
-			slog.Any("err", err),
-		)
-		return err
-	}
-
-	// 创建HTTP客户端
-	client := &http.Client{}
-
-	// 创建POST请求
-	req, err := http.NewRequestWithContext(ctx, "POST", s.config.httpUrl, bytes.NewBuffer(data))
-	if err != nil {
-		s.log.ErrorContext(ctx, "创建请求失败",
-			slog.Any("err", err),
-		)
-		return err
-	}
-
-	// 设置请求头
-	req.Header.Set("Content-Type", "application/json")
-
-	// 判断是否有BasicAuth用户名和密码，如果有则设置认证
-	if s.config.username != "" && s.config.password != "" {
-		req.SetBasicAuth(s.config.username, s.config.password)
-	}
-
-	// 发送请求
-	resp, err := client.Do(req)
-	if err != nil {
-		s.log.ErrorContext(ctx, "发送请求失败",
-			slog.Any("err", err),
-		)
-		return err
-	}
-	defer resp.Body.Close()
-
-	// 读取响应
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		s.log.ErrorContext(ctx, "读取响应失败",
-			slog.Any("err", err),
-		)
-		return err
-	}
+	// 使用 Resty 发送请求
+	resp, err := s.client.R().
+		SetContext(ctx).
+		SetContentType("application/json").
+		SetBody(params).
+		Post("")
 
 	// 打印响应状态和内容
 	s.log.InfoContext(ctx, "响应状态码和内容",
-		slog.Int("status_code", resp.StatusCode),
-		slog.Any("response", body),
+		slog.Int("status_code", resp.StatusCode()),
+		slog.Any("response", resp.String()),
 	)
 
 	// 根据响应状态码判断请求是否成功
-	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		s.log.InfoContext(ctx, "请求成功",
-			slog.Any("response", body),
+	if resp.IsError() {
+		s.log.ErrorContext(ctx, "请求失败",
+			slog.Any("response", resp.String()),
 		)
 	} else {
-		s.log.ErrorContext(ctx, "请求失败",
-			slog.Any("response", body),
+		s.log.InfoContext(ctx, "请求成功",
+			slog.Any("response", resp.String()),
 		)
 	}
 

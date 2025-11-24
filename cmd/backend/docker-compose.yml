@@ -1,5 +1,6 @@
 services:
   backend:
+    container_name: ip_vibe_backend
     image: docker.cnb.cool/dtapp/ip_vibe/backend:latest
     restart: unless-stopped
     network_mode: host

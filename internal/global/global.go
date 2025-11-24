@@ -15,8 +15,8 @@ var (
 		HTTP_URL            string // [reporter] HTTP URL
 		BASIC_AUTH_USERNAME string // [backend][reporter] 基本认证用户名
 		BASIC_AUTH_PASSWORD string // [backend][reporter] 基本认证密码
-		DEVICE_CODE         string // [reporter] 设备代码
-		DEVICE_NAME         string // [reporter] 设备名称
+		DEVICE_CODE         string // [backend][reporter] 设备代码
+		DEVICE_NAME         string // [backend][reporter] 设备名称
 	}
 
 	GvaGoCron        gocron.Scheduler // 定时任务

@@ -14,7 +14,7 @@ import (
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/cdn_helper"
 	"vibe_ip/internal/helper/dns_helper"
-	"vibe_ip/internal/utils"
+	"vibe_ip/pkg/utils"
 
 	"github.com/go-co-op/gocron/v2"
 	"go.dtapp.net/library/utils/goarray"
@@ -57,17 +57,18 @@ func (s *IpUpdateService) StartDnsJob(ctx context.Context) (err error) {
 	return nil
 }
 
-// 启动 CDN刷新 任务
+// 启动 CDN刷新 任务，延迟 1 分钟添加，确保 DNS 先跑
 func (s *IpUpdateService) StartCdnJob(ctx context.Context) (err error) {
+	// 延时1分钟
+	time.Sleep(1 * time.Minute)
 	// 每10分钟执行一次
 	s.cdnJob, err = s.cron.NewJob(
-		gocron.DurationJob(10*time.Minute),                                          // 每10分钟执行一次
-		gocron.NewTask(s.runCdnTask),                                                // 执行任务
-		gocron.WithSingletonMode(gocron.LimitModeReschedule),                        // 单例模式
-		gocron.WithStartAt(gocron.WithStartImmediately()),                           // 立即开始
-		gocron.WithStartAt(gocron.WithStartDateTime(time.Now().Add(1*time.Minute))), // 延迟 1 分钟启动，确保 DNS 先跑
-		gocron.WithName("CDN刷新"),                                                    // 任务名称
-		gocron.WithTags("cdn_update"),                                               // 任务标签
+		gocron.DurationJob(10*time.Minute),                   // 每10分钟执行一次
+		gocron.NewTask(s.runCdnTask),                         // 执行任务
+		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
+		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
+		gocron.WithName("CDN刷新"),                             // 任务名称
+		gocron.WithTags("cdn_update"),                        // 任务标签
 	)
 	if err != nil {
 		return err
@@ -113,6 +114,16 @@ func (s *IpUpdateService) runDnsTask() {
 		s.log.InfoContext(ctx, "DNS更新成功",
 			slog.String("next_run_time", nextRun.Format(time.DateTime)),
 		)
+
+		// 判断CDN任务是否存在
+		if s.cdnJob == nil {
+			// 判断 DNS 执行时间是否大于当前时间一分钟
+			if nextRun.After(time.Now().Add(1 * time.Minute)) {
+				// 若大于，则启动CDN任务
+				go s.StartCdnJob(context.Background())
+			}
+		}
+
 	} else {
 		s.log.InfoContext(ctx, "DNS更新成功")
 	}

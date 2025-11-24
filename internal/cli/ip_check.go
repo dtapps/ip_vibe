@@ -22,8 +22,8 @@ go run main.go ip check -type v6
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		checker := ip_helper.NewIPChecker()
-		ipInfo, err := checker.CheckIP(cmd.Context(), ipCheckType)
+		iPHelper := ip_helper.NewIPHelper()
+		ipInfo, err := iPHelper.GetIP(cmd.Context(), ip_helper.IPType(ipCheckType))
 		if err != nil {
 			cmd.PrintErr(err)
 			return
