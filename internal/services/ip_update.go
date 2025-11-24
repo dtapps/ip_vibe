@@ -61,6 +61,10 @@ func (s *IpUpdateService) StartDnsJob(ctx context.Context) (err error) {
 func (s *IpUpdateService) StartCdnJob(ctx context.Context) (err error) {
 	// 延时1分钟
 	time.Sleep(1 * time.Minute)
+	// 判断是否存在CDN任务
+	if s.cdnJob != nil {
+		return nil
+	}
 	// 每10分钟执行一次
 	s.cdnJob, err = s.cron.NewJob(
 		gocron.DurationJob(10*time.Minute),                   // 每10分钟执行一次
