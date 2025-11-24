@@ -641,3 +641,58 @@ button:disabled,
 .footer-content p {
     margin: 0;
 }
+
+
+/* 左侧固定导航栏样式 */
+.nav-sidebar {
+    position: fixed;
+    top: 50%; /* 垂直居中 */
+    left: 20px; /* 距离左侧 20px */
+    transform: translateY(-50%);
+    z-index: 500; /* 确保它在页面内容上方 */
+    
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* 链接间距 */
+    padding: 12px;
+    border-radius: var(--radius);
+    background: var(--card); /* 卡片背景色 */
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+}
+
+.nav-sidebar a {
+    text-decoration: none;
+    color: var(--text-secondary); /* 次要文字颜色 */
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.nav-sidebar a:hover,
+.nav-sidebar a:focus {
+    color: var(--primary); /* 悬停使用主题色 */
+    background: #f1f5f9; /* 浅色悬停背景 */
+}
+
+/* 调整容器内容，避免被导航栏遮挡 */
+.container {
+    /* max-width: 1400px; */
+     /* 留出左侧导航栏的空间 */
+    /* margin-left: 100px; */
+    /* margin-right: auto; */
+
+    /* ---- */
+
+    /* max-width: 1400px; */
+    /* 原始设置 */
+    /* margin: 0 auto;  */
+    
+    /* 修正为给左侧导航栏留出空间 */
+    /* 20px 边距 + 导航栏宽度(约50px) + 间距(30px) = 100px */
+    /* margin-left: 100px;  */
+    /* margin-right: 20px; */
+}

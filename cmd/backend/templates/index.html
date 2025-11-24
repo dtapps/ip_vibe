@@ -11,11 +11,20 @@
 </head>
 
 <body>
+  <div class="nav-sidebar">
+    <a href="#section-config" aria-label="跳转到平台配置">配置</a>
+    <a href="#section-cdn-record" aria-label="跳转到 CDN 记录">CDN</a>
+    <a href="#section-dns-record" aria-label="跳转到 DNS 记录">DNS</a>
+    <a href="#section-devices" aria-label="跳转到设备上报">设备</a>
+    <a href="#section-ip-groups" aria-label="跳转到 IP 组">IP 组</a>
+    <a href="#section-tasks" aria-label="跳转到任务管理">任务</a>
+    <a href="#section-logs" aria-label="跳转到操作日志">日志</a>
+  </div>
   <div class="container">
     <h1>🌐 DDNS管理平台</h1>
 
     <!-- 平台配置 -->
-    <div class="card">
+    <div class="card" id="section-config">
       <div class="card-header">
         <h2 class="h2-icon">
           <svg class="ip-i">
@@ -62,7 +71,7 @@
     </div>
 
     <!-- CDN记录管理 -->
-    <div class="card">
+    <div class="card" id="section-cdn-record">
       <div class="card-header">
         <h2 class="h2-icon">
           <svg class="ip-i">
@@ -139,7 +148,7 @@
     </div>
 
     <!-- DNS记录管理 -->
-    <div class="card">
+    <div class="card" id="section-dns-record">
       <div class="card-header">
         <h2 class="h2-icon">
           <svg class="ip-i">
@@ -174,7 +183,8 @@
               <td>{{.Domain}}</td>
               <td>{{.Type}}</td>
               <td class="text-monospace">{{if gt .IPGroupID 0}}{{.IPGroupID}}:{{.IPGroupName}}{{else}}{{end}}</td>
-              <td class="text-monospace">{{if gt .CdnRecordID 0}}{{.CdnRecordID}}:{{.CdnRecordCdnDomain}}{{else}}{{end}}</td>
+              <td class="text-monospace">{{if gt .CdnRecordID 0}}{{.CdnRecordID}}:{{.CdnRecordCdnDomain}}{{else}}{{end}}
+              </td>
               <td><span class="badge badge-success">{{.Platform}}</span></td>
               <td>
                 <label class="switch">
@@ -209,7 +219,7 @@
     </div>
 
     <!-- 设备实时上报 -->
-    <div class="card">
+    <div class="card" id="section-devices">
       <div class="card-header">
         <h2 class="h2-icon">
           <svg class="ip-i">
@@ -273,7 +283,7 @@
     </div>
 
     <!-- IP 组（设备维度） -->
-    <div class="card">
+    <div class="card" id="section-ip-groups">
       <div class="card-header">
         <h2 class="h2-icon">
           <svg class="ip-i">
@@ -333,7 +343,7 @@
     </div>
 
     <!-- 任务管理 -->
-    <div class="card">
+    <div class="card" id="section-tasks">
       <div class="card-header">
         <h2 class="h2-icon">
           <svg class="ip-i">
@@ -401,7 +411,7 @@
     </div>
 
     <!-- 操作日志 -->
-    <div class="card">
+    <div class="card" id="section-logs">
       <div class="card-header">
         <h2 class="h2-icon">
           <svg class="ip-i">
@@ -865,16 +875,18 @@
     <!-- 页脚 -->
     <footer class="footer">
       <div class="footer-content">
-        <p>Go版本：{{.SystemGoVersion}} &nbsp;|&nbsp; 打包时间：{{.SystemBuildTime}} &nbsp;|&nbsp; Git提交：{{.SystemGitCommit}} &nbsp;|&nbsp; 启动时间：{{.SystemMemoryInfo.RuntimeStartTime}} &nbsp;</p>
-        <p>GC总次数：{{.SystemMemoryInfo.NumGC}} &nbsp;|&nbsp; Goroutine数：{{.SystemMemoryInfo.NumGoroutine}} &nbsp;|&nbsp; 活跃堆对象：{{.SystemMemoryInfo.HeapObjects}} &nbsp;|&nbsp; 下次GC(MB)：{{.SystemMemoryInfo.NextGCMB}}</p>
+        <p>Go版本：{{.SystemGoVersion}} &nbsp;|&nbsp; 打包时间：{{.SystemBuildTime}} &nbsp;|&nbsp; Git提交：{{.SystemGitCommit}}
+          &nbsp;|&nbsp; 启动时间：{{.SystemMemoryInfo.RuntimeStartTime}} &nbsp;</p>
+        <p>GC总次数：{{.SystemMemoryInfo.NumGC}} &nbsp;|&nbsp; Goroutine数：{{.SystemMemoryInfo.NumGoroutine}} &nbsp;|&nbsp;
+          活跃堆对象：{{.SystemMemoryInfo.HeapObjects}} &nbsp;|&nbsp; 下次GC(MB)：{{.SystemMemoryInfo.NextGCMB}}</p>
         <p>系统版本：{{.SystemVersion}} &nbsp;|&nbsp; © 2025 DDNS管理平台</p>
       </div>
     </footer>
 
     <!-- 右边工具栏 -->
-     <a href="javascript:location.reload()" class="refresh-page" aria-label="刷新页面">
+    <a href="javascript:location.reload()" class="refresh-page" aria-label="刷新页面">
       <svg class="ip-i">
-        <use href="/static/icons.svg#ip-refresh" /> 
+        <use href="/static/icons.svg#ip-refresh" />
       </svg>
     </a>
     <a href="#" class="back-top" aria-label="回到顶部">

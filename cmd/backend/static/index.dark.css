@@ -144,4 +144,10 @@
         color: #888888 !important;
         font-style: italic !important;
     }
+
+    .nav-sidebar a:hover,
+    .nav-sidebar a:focus {
+        background: #334155; /* 深色悬停背景 */
+        color: var(--primary); /* 主题色 */
+    }
 }
