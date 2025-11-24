@@ -2,7 +2,7 @@ package types
 
 import "time"
 
-// 设备 响应结构
+// 获取全部设备 响应结构
 type GetDevicesResponse struct {
 	ID              int64     `json:"id,omitempty"`                // 设备序号
 	Code            string    `json:"code"`                        // 设备编号
@@ -21,8 +21,7 @@ type CreateDeviceRequest struct {
 
 // 更新设备 请求结构
 type UpdateDeviceRequest struct {
-	ID   int64  `json:"id,omitempty"` // 设备序号
-	Name string `json:"name"`         // 设备名称
+	Name string `json:"name"` // 设备名称
 }
 
 // 获取设备的IP历史记录 响应结构

@@ -25,6 +25,7 @@ func GetConfigs(c *gin.Context) {
 	for _, item := range allConfig {
 		configs = append(configs, types.GetConfigsResponse{
 			ID:         item.ID,
+			Capability: item.Capability.String(),
 			Name:       item.Name,
 			Platform:   item.Platform.String(),
 			ConfigJSON: item.ConfigJSON,
@@ -47,6 +48,7 @@ func GetConfig(c *gin.Context) {
 	}
 	successResponse(c, types.GetConfigsResponse{
 		ID:         firstConfig.ID,
+		Capability: firstConfig.Capability.String(),
 		Name:       firstConfig.Name,
 		Platform:   firstConfig.Platform.String(),
 		ConfigJSON: firstConfig.ConfigJSON,
@@ -69,6 +71,7 @@ func CreateConfig(c *gin.Context) {
 		SetName(requestParams.Name).
 		SetPlatform(platformconfig.Platform(requestParams.Platform)).
 		SetConfigJSON([]byte(requestParams.ConfigJSON)).
+		SetCapability(platformconfig.Capability(requestParams.Capability)).
 		Save(c)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
@@ -88,7 +91,7 @@ func CreateConfig(c *gin.Context) {
 func UpdateConfig(c *gin.Context) {
 	// 请求参数
 	id := c.Param("id")
-	var requestParams types.CreateConfigRequest
+	var requestParams types.UpdateConfigRequest
 	if err := c.ShouldBindJSON(&requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return

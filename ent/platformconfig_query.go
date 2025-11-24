@@ -339,12 +339,12 @@ func (_q *PlatformConfigQuery) WithCdnRecords(opts ...func(*CDNRecordQuery)) *Pl
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		Capability platformconfig.Capability `json:"capability,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.PlatformConfig.Query().
-//		GroupBy(platformconfig.FieldName).
+//		GroupBy(platformconfig.FieldCapability).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *PlatformConfigQuery) GroupBy(field string, fields ...string) *PlatformConfigGroupBy {
@@ -362,11 +362,11 @@ func (_q *PlatformConfigQuery) GroupBy(field string, fields ...string) *Platform
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		Capability platformconfig.Capability `json:"capability,omitempty"`
 //	}
 //
 //	client.PlatformConfig.Query().
-//		Select(platformconfig.FieldName).
+//		Select(platformconfig.FieldCapability).
 //		Scan(ctx, &v)
 func (_q *PlatformConfigQuery) Select(fields ...string) *PlatformConfigSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)

@@ -25,6 +25,20 @@ type PlatformConfigCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetCapability sets the "capability" field.
+func (_c *PlatformConfigCreate) SetCapability(v platformconfig.Capability) *PlatformConfigCreate {
+	_c.mutation.SetCapability(v)
+	return _c
+}
+
+// SetNillableCapability sets the "capability" field if the given value is not nil.
+func (_c *PlatformConfigCreate) SetNillableCapability(v *platformconfig.Capability) *PlatformConfigCreate {
+	if v != nil {
+		_c.SetCapability(*v)
+	}
+	return _c
+}
+
 // SetName sets the "name" field.
 func (_c *PlatformConfigCreate) SetName(v string) *PlatformConfigCreate {
 	_c.mutation.SetName(v)
@@ -142,6 +156,10 @@ func (_c *PlatformConfigCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *PlatformConfigCreate) defaults() {
+	if _, ok := _c.mutation.Capability(); !ok {
+		v := platformconfig.DefaultCapability
+		_c.mutation.SetCapability(v)
+	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := platformconfig.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
@@ -154,6 +172,14 @@ func (_c *PlatformConfigCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *PlatformConfigCreate) check() error {
+	if _, ok := _c.mutation.Capability(); !ok {
+		return &ValidationError{Name: "capability", err: errors.New(`ent: missing required field "PlatformConfig.capability"`)}
+	}
+	if v, ok := _c.mutation.Capability(); ok {
+		if err := platformconfig.CapabilityValidator(v); err != nil {
+			return &ValidationError{Name: "capability", err: fmt.Errorf(`ent: validator failed for field "PlatformConfig.capability": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "PlatformConfig.name"`)}
 	}
@@ -203,6 +229,10 @@ func (_c *PlatformConfigCreate) createSpec() (*PlatformConfig, *sqlgraph.CreateS
 	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := _c.mutation.Capability(); ok {
+		_spec.SetField(platformconfig.FieldCapability, field.TypeEnum, value)
+		_node.Capability = value
 	}
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(platformconfig.FieldName, field.TypeString, value)
@@ -263,7 +293,7 @@ func (_c *PlatformConfigCreate) createSpec() (*PlatformConfig, *sqlgraph.CreateS
 // of the `INSERT` statement. For example:
 //
 //	client.PlatformConfig.Create().
-//		SetName(v).
+//		SetCapability(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -272,7 +302,7 @@ func (_c *PlatformConfigCreate) createSpec() (*PlatformConfig, *sqlgraph.CreateS
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.PlatformConfigUpsert) {
-//			SetName(v+v).
+//			SetCapability(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *PlatformConfigCreate) OnConflict(opts ...sql.ConflictOption) *PlatformConfigUpsertOne {
@@ -366,6 +396,9 @@ func (u *PlatformConfigUpsertOne) UpdateNewValues() *PlatformConfigUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(platformconfig.FieldID)
+		}
+		if _, exists := u.create.mutation.Capability(); exists {
+			s.SetIgnore(platformconfig.FieldCapability)
 		}
 		if _, exists := u.create.mutation.Platform(); exists {
 			s.SetIgnore(platformconfig.FieldPlatform)
@@ -588,7 +621,7 @@ func (_c *PlatformConfigCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.PlatformConfigUpsert) {
-//			SetName(v+v).
+//			SetCapability(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *PlatformConfigCreateBulk) OnConflict(opts ...sql.ConflictOption) *PlatformConfigUpsertBulk {
@@ -634,6 +667,9 @@ func (u *PlatformConfigUpsertBulk) UpdateNewValues() *PlatformConfigUpsertBulk {
 		for _, b := range u.create.builders {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(platformconfig.FieldID)
+			}
+			if _, exists := b.mutation.Capability(); exists {
+				s.SetIgnore(platformconfig.FieldCapability)
 			}
 			if _, exists := b.mutation.Platform(); exists {
 				s.SetIgnore(platformconfig.FieldPlatform)

@@ -15,6 +15,8 @@ const (
 	Label = "platform_config"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldCapability holds the string denoting the capability field in the database.
+	FieldCapability = "capability"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldPlatform holds the string denoting the platform field in the database.
@@ -50,6 +52,7 @@ const (
 // Columns holds all SQL columns for platformconfig fields.
 var Columns = []string{
 	FieldID,
+	FieldCapability,
 	FieldName,
 	FieldPlatform,
 	FieldConfigJSON,
@@ -75,6 +78,33 @@ var (
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
 )
+
+// Capability defines the type for the "capability" enum field.
+type Capability string
+
+// CapabilityAll is the default value of the Capability enum.
+const DefaultCapability = CapabilityAll
+
+// Capability values.
+const (
+	CapabilityDNS Capability = "dns"
+	CapabilityCdn Capability = "cdn"
+	CapabilityAll Capability = "all"
+)
+
+func (c Capability) String() string {
+	return string(c)
+}
+
+// CapabilityValidator is a validator for the "capability" field enum values. It is called by the builders before save.
+func CapabilityValidator(c Capability) error {
+	switch c {
+	case CapabilityDNS, CapabilityCdn, CapabilityAll:
+		return nil
+	default:
+		return fmt.Errorf("platformconfig: invalid enum value for capability field: %q", c)
+	}
+}
 
 // Platform defines the type for the "platform" enum field.
 type Platform string
@@ -106,6 +136,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCapability orders the results by the capability field.
+func ByCapability(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCapability, opts...).ToFunc()
 }
 
 // ByName orders the results by the name field.

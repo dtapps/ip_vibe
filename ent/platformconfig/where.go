@@ -70,6 +70,26 @@ func UpdatedAt(v time.Time) predicate.PlatformConfig {
 	return predicate.PlatformConfig(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// CapabilityEQ applies the EQ predicate on the "capability" field.
+func CapabilityEQ(v Capability) predicate.PlatformConfig {
+	return predicate.PlatformConfig(sql.FieldEQ(FieldCapability, v))
+}
+
+// CapabilityNEQ applies the NEQ predicate on the "capability" field.
+func CapabilityNEQ(v Capability) predicate.PlatformConfig {
+	return predicate.PlatformConfig(sql.FieldNEQ(FieldCapability, v))
+}
+
+// CapabilityIn applies the In predicate on the "capability" field.
+func CapabilityIn(vs ...Capability) predicate.PlatformConfig {
+	return predicate.PlatformConfig(sql.FieldIn(FieldCapability, vs...))
+}
+
+// CapabilityNotIn applies the NotIn predicate on the "capability" field.
+func CapabilityNotIn(vs ...Capability) predicate.PlatformConfig {
+	return predicate.PlatformConfig(sql.FieldNotIn(FieldCapability, vs...))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.PlatformConfig {
 	return predicate.PlatformConfig(sql.FieldEQ(FieldName, v))

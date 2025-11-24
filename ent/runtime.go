@@ -104,11 +104,11 @@ func init() {
 	platformconfigFields := schema.PlatformConfig{}.Fields()
 	_ = platformconfigFields
 	// platformconfigDescCreatedAt is the schema descriptor for created_at field.
-	platformconfigDescCreatedAt := platformconfigFields[4].Descriptor()
+	platformconfigDescCreatedAt := platformconfigFields[5].Descriptor()
 	// platformconfig.DefaultCreatedAt holds the default value on creation for the created_at field.
 	platformconfig.DefaultCreatedAt = platformconfigDescCreatedAt.Default.(func() time.Time)
 	// platformconfigDescUpdatedAt is the schema descriptor for updated_at field.
-	platformconfigDescUpdatedAt := platformconfigFields[5].Descriptor()
+	platformconfigDescUpdatedAt := platformconfigFields[6].Descriptor()
 	// platformconfig.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	platformconfig.DefaultUpdatedAt = platformconfigDescUpdatedAt.Default.(func() time.Time)
 	// platformconfig.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

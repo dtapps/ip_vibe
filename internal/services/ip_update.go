@@ -18,6 +18,7 @@ import (
 
 	"github.com/go-co-op/gocron/v2"
 	"go.dtapp.net/library/utils/goarray"
+	"golang.org/x/sync/errgroup"
 )
 
 // IP更新
@@ -99,21 +100,30 @@ func (s *IpUpdateService) runDnsTask() {
 		Where(dnsrecord.IsActiveEQ(true)).
 		All(ctx)
 	if err == nil {
-		for _, item := range allDnsRecord {
 
-			newLog := s.log.With(
-				slog.Int64("id", item.ID),
-				slog.String("record", "CDN"),
-				slog.String("type", item.Type.String()),
-				slog.String("domain", item.Domain),
-			)
+		eg, egCtx := errgroup.WithContext(ctx)
+		eg.SetLimit(10) // 最多 10 个并发
 
-			err = s.DnsUpdate(ctx, newLog, item)
-			if err != nil {
-				newLog.ErrorContext(ctx, "执行失败",
-					slog.Any("err", err),
+		for _, vRecord := range allDnsRecord {
+			item := vRecord // 创建副本以避免闭包问题
+			eg.Go(func() error {
+
+				newLog := s.log.With(
+					slog.Int64("id", item.ID),
+					slog.String("record", "CDN"),
+					slog.String("type", item.Type.String()),
+					slog.String("domain", item.Domain),
 				)
-			}
+
+				err = s.DnsUpdate(egCtx, newLog, item)
+				if err != nil {
+					newLog.ErrorContext(egCtx, "执行失败",
+						slog.Any("err", err),
+					)
+				}
+
+				return err
+			})
 		}
 	}
 
@@ -146,21 +156,30 @@ func (s *IpUpdateService) runCdnTask() {
 		Where(dnsrecord.IsActiveEQ(true)).
 		All(ctx)
 	if err == nil {
-		for _, item := range allDnsRecord {
 
-			newLog := s.log.With(
-				slog.Int64("id", item.ID),
-				slog.String("record", "CDN"),
-				slog.String("type", item.Type.String()),
-				slog.String("domain", item.Domain),
-			)
+		eg, egCtx := errgroup.WithContext(ctx)
+		eg.SetLimit(10) // 最多 10 个并发
 
-			err = s.DnsUpdate(ctx, newLog, item)
-			if err != nil {
-				newLog.ErrorContext(ctx, "执行失败",
-					slog.Any("err", err),
+		for _, vRecord := range allDnsRecord {
+			item := vRecord // 创建副本以避免闭包问题
+			eg.Go(func() error {
+
+				newLog := s.log.With(
+					slog.Int64("id", item.ID),
+					slog.String("record", "CDN"),
+					slog.String("type", item.Type.String()),
+					slog.String("domain", item.Domain),
 				)
-			}
+
+				err = s.DnsUpdate(egCtx, newLog, item)
+				if err != nil {
+					newLog.ErrorContext(egCtx, "执行失败",
+						slog.Any("err", err),
+					)
+				}
+
+				return err
+			})
 		}
 	}
 

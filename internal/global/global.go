@@ -18,6 +18,10 @@ var (
 		DEVICE_CODE         string // [backend][reporter] 设备代码
 		DEVICE_NAME         string // [backend][reporter] 设备名称
 	}
+	GvaVersion   string // 版本号
+	GvaGitCommit string // Git 提交 ID
+	GvaBuildTime string // 构建时间
+	GvaGoVersion string // Go 版本
 
 	GvaGoCron        gocron.Scheduler // 定时任务
 	GvaGoCronRunning int32            // 定时任务状态 0=停 1=运行

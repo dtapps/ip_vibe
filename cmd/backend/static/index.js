@@ -72,7 +72,13 @@ function copyData(id) {
 
 // --- 平台配置 --- 
 
-// 切换平台时显示对应字段
+// 请选择服务能力 capability
+function changeConfigCapability(sel) {
+    const opt = sel.options[sel.selectedIndex];
+    // console.log("changeConfigCapability", opt);
+}
+
+// 请选择平台 platform
 function changeConfigPlatform(platform) {
     // 隐藏所有平台字段
     document.querySelectorAll('.platform-fields').forEach(el => el.classList.add('hidden'));
@@ -132,6 +138,8 @@ async function openConfigModal(id) {
 
         document.getElementById('config_id').value = configs.id;
         document.getElementById('config_id').disabled = true;
+        document.getElementById('config_capability').value = configs.capability;
+        document.getElementById('config_capability').disabled = true;
         document.getElementById('config_name').value = configs.name;
         document.getElementById('config_platform').value = configs.platform;
         document.getElementById('config_platform').disabled = true;
@@ -161,6 +169,7 @@ async function openConfigModal(id) {
     if (!id) {
         document.getElementById('config_id').value = '';
         document.getElementById('config_id').disabled = true;
+        document.getElementById('config_capability').disabled = false;
         document.querySelectorAll('.platform-fields').forEach(el => el.classList.add('hidden'));
         document.getElementById('config_platform').disabled = false;
 
@@ -177,6 +186,7 @@ document.getElementById('configForm').onsubmit = async (e) => {
     // 表单数据
     const form_id = Number(document.getElementById('config_id').value.trim());
     const form_data = {
+        capability: document.getElementById('config_capability').value.trim(),
         name: document.getElementById('config_name').value.trim(),
         platform: document.getElementById('config_platform').value.trim(),
         config_json: document.getElementById('config_json').value.trim(),
@@ -184,6 +194,9 @@ document.getElementById('configForm').onsubmit = async (e) => {
     console.log("form_id, form_data", form_id, form_data);
 
     // 校验
+    if (!form_data.capability) {
+        return alert('请选择服务能力')
+    };
     if (!form_data.name) {
         return alert('请输入组名')
     };
@@ -243,25 +256,25 @@ async function openCdnRecordModal() {
 // 选择配置 config_id
 function onCdnRecordConfigSelect(sel) {
     const opt = sel.options[sel.selectedIndex];
-    console.log("onCdnRecordConfigSelect", opt);
+    // console.log("onCdnRecordConfigSelect", opt);
 }
 
 // 选择类型 type
 function onCdnRecordTypeSelect(sel) {
     const opt = sel.options[sel.selectedIndex];
-    console.log("onCdnRecordTypeSelect", opt);
+    // console.log("onCdnRecordTypeSelect", opt);
 }
 
 // 选择回源协议 origin_protocol
 function onCdnRecordOriginProtocolSelect(sel) {
     const opt = sel.options[sel.selectedIndex];
-    console.log("onCdnRecordOriginProtocolSelect", opt);
+    // console.log("onCdnRecordOriginProtocolSelect", opt);
 }
 
 // 选择IP组 ip_group_id
 function onCdnRecordIpGroupSelect(sel) {
     const opt = sel.options[sel.selectedIndex];
-    console.log("onCdnRecordIpGroupSelect", opt);
+    // console.log("onCdnRecordIpGroupSelect", opt);
 }
 
 // CDN记录管理 -> 表单提交
@@ -363,13 +376,13 @@ async function openDnsRecordModal() {
 // 选择配置 config_id
 function onDnsRecordConfigSelect(sel) {
     const opt = sel.options[sel.selectedIndex];
-    console.log("onCdnRecordIponDnsRecordConfigSelectGroupSelect", opt);
+    // console.log("onCdnRecordIponDnsRecordConfigSelectGroupSelect", opt);
 }
 
 // 选择类型 type
 function onDnsRecordTypeSelect(sel) {
     const opt = sel.options[sel.selectedIndex];
-    console.log("onDnsRecordTypeSelect", opt);
+    // console.log("onDnsRecordTypeSelect", opt);
     if (opt.value === 'CNAME') {
         document.getElementById('dns_record_ip_group_id').disabled = true;
         document.getElementById('dns_record_cdn_record_id').disabled = false;
@@ -384,13 +397,13 @@ function onDnsRecordTypeSelect(sel) {
 // 选择IP组 ip_group_id
 function onDnsRecordIpGroupSelect(sel) {
     const opt = sel.options[sel.selectedIndex];
-    console.log("onDnsRecordIpGroupSelect", opt);
+    // console.log("onDnsRecordIpGroupSelect", opt);
 }
 
 // 选择CDN记录 cdn_record_id
 function onDnsRecordCdnRecordSelect(sel) {
     const opt = sel.options[sel.selectedIndex];
-    console.log("onDnsRecordCdnRecordSelect", opt);
+    // console.log("onDnsRecordCdnRecordSelect", opt);
 }
 
 // DNS记录管理（模态框） -> 表单提交
@@ -589,7 +602,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // 选择设备 devices
 function onIpGroupDevicesSelect(sel) {
     const opt = sel.options[sel.selectedIndex];
-    console.log("onIpGroupDevicesSelect", opt);
+    // console.log("onIpGroupDevicesSelect", opt);
 }
 
 // 管理组（模态框）

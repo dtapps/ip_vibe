@@ -270,6 +270,7 @@ var (
 	// PlatformConfigColumns holds the columns for the "platform_config" table.
 	PlatformConfigColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "配置序号"},
+		{Name: "capability", Type: field.TypeEnum, Comment: "平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）", Enums: []string{"dns", "cdn", "all"}, Default: "all"},
 		{Name: "name", Type: field.TypeString, Comment: "配置名称（便于展示）"},
 		{Name: "platform", Type: field.TypeEnum, Comment: "平台类型（edgeone / cloudflare / dnspod …）", Enums: []string{"cloudflare", "edgeone", "dnspod"}},
 		{Name: "config_json", Type: field.TypeJSON, Nullable: true, Comment: "平台密钥等敏感信息（JSON）"},
@@ -286,7 +287,7 @@ var (
 			{
 				Name:    "platformconfig_platform",
 				Unique:  false,
-				Columns: []*schema.Column{PlatformConfigColumns[2]},
+				Columns: []*schema.Column{PlatformConfigColumns[3]},
 			},
 		},
 	}

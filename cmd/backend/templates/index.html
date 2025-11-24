@@ -434,6 +434,15 @@
         <form id="configForm">
 
           <div class="form-group">
+            <label>服务能力</label>
+            <select name="capability" id="config_capability" required onchange="changeConfigCapability(this)">
+              <option value="all" selected>DNS+CDN</option>
+              <option value="dns">DNS</option>
+              <option value="cdn">CDN</option>
+            </select>
+          </div>
+
+          <div class="form-group">
             <label>配置名称</label>
             <input type="text" name="name" id="config_name" required placeholder="如: 我的EdgeOne">
           </div>
@@ -853,6 +862,16 @@
       </div>
     </div>
 
+    <!-- 页脚 -->
+    <footer class="footer">
+      <div class="footer-content">
+        <p>Go版本：{{.SystemGoVersion}} &nbsp;|&nbsp; 打包时间：{{.SystemBuildTime}} &nbsp;|&nbsp; Git提交：{{.SystemGitCommit}} &nbsp;|&nbsp; 启动时间：{{.SystemMemoryInfo.RuntimeStartTime}} &nbsp;</p>
+        <p>GC总次数：{{.SystemMemoryInfo.NumGC}} &nbsp;|&nbsp; Goroutine数：{{.SystemMemoryInfo.NumGoroutine}} &nbsp;|&nbsp; 活跃堆对象：{{.SystemMemoryInfo.HeapObjects}} &nbsp;|&nbsp; 下次GC(MB)：{{.SystemMemoryInfo.NextGCMB}}</p>
+        <p>系统版本：{{.SystemVersion}} &nbsp;|&nbsp; © 2025 DDNS管理平台</p>
+      </div>
+    </footer>
+
+    <!-- 右边工具栏 -->
     <a href="#" class="back-top" aria-label="回到顶部">
       <svg class="ip-i">
         <use href="/static/icons.svg#ip-top" />

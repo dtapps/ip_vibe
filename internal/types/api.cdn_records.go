@@ -2,7 +2,7 @@ package types
 
 import "time"
 
-// Cdn记录 响应结构
+// 获取全部CDN记录 响应结构
 type GetCdnRecordsResponse struct {
 	ID             int64     `json:"id,omitempty"`              // CDN 记录序号
 	ConfigID       int64     `json:"config_id"`                 // 平台配置序号
@@ -20,7 +20,7 @@ type GetCdnRecordsResponse struct {
 	IPGroupName    string    `json:"ip_group_name"`             // IP 组名称
 }
 
-// 创建Cdn记录 请求结构
+// 创建CDN记录 请求结构
 type CreateCdnRecordRequest struct {
 	ID             int64  `json:"id,omitempty"`    // CDN 记录序号
 	ConfigID       int64  `json:"config_id"`       // 平台配置序号
@@ -32,7 +32,7 @@ type CreateCdnRecordRequest struct {
 	IPGroupID      int64  `json:"ip_group_id"`     // IP 组序号
 }
 
-// 更新Cdn记录状态 请求结构
+// 更新CDN记录状态 请求结构
 type UpdateCdnRecordActiveRequest struct {
 	IsActive bool `json:"is_active,omitempty"` // 是否活跃
 }

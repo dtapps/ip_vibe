@@ -605,3 +605,16 @@ button:disabled,
     color: #95a5a6 !important;
     font-style: italic;
 }
+
+
+.footer {
+  margin-top: 40px;
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.footer-content p {
+  margin: 0;
+}

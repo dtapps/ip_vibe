@@ -7,6 +7,7 @@ import (
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gocron_helper"
+	"vibe_ip/internal/helper/system_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/denisbrodbeck/machineid"
@@ -30,9 +31,10 @@ func Index(c *gin.Context) {
 	if err == nil {
 		for _, item := range allConfig {
 			pageData.Configs = append(pageData.Configs, types.GetConfigsResponse{
-				ID:       item.ID,
-				Name:     item.Name,
-				Platform: item.Platform.String(),
+				ID:         item.ID,
+				Capability: item.Capability.String(),
+				Name:       item.Name,
+				Platform:   item.Platform.String(),
 			})
 		}
 	}
@@ -155,6 +157,16 @@ func Index(c *gin.Context) {
 
 	// 获取自身设备ID
 	pageData.DeviceCode, _ = machineid.ID()
+
+	// 获取系统版本信息
+	systemHelper := system_helper.NewSystemHelper()
+	pageData.SystemVersion = global.GvaVersion
+	pageData.SystemGitCommit = global.GvaGitCommit
+	pageData.SystemBuildTime = global.GvaBuildTime
+	pageData.SystemGoVersion = global.GvaGoVersion
+
+	// 获取系统内存信息
+	pageData.SystemMemoryInfo = systemHelper.GetMemoryInfo()
 
 	if global.GvaEnv.DEBUG {
 		fmt.Printf("Index pageData: %+v\n", pageData)

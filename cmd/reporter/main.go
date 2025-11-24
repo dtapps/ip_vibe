@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"runtime"
 	"strings"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/initialize"
@@ -16,6 +17,14 @@ var (
 	commit    = "unknown" // Git 提交 ID
 	buildTime = "unknown" // 构建时间
 )
+
+// 初始化版本信息到全局变量
+func init() {
+	global.GvaVersion = version
+	global.GvaGitCommit = commit
+	global.GvaBuildTime = buildTime
+	global.GvaGoVersion = runtime.Version()
+}
 
 func main() {
 
@@ -30,9 +39,10 @@ func main() {
 	// 打印
 	slog.Info("服务启动",
 		slog.Bool("debug", global.GvaEnv.DEBUG),
-		slog.String("version", version),
-		slog.String("commit", commit),
-		slog.String("build_time", buildTime),
+		slog.String("version", global.GvaVersion),
+		slog.String("git_commit", global.GvaGitCommit),
+		slog.String("build_time", global.GvaBuildTime),
+		slog.String("go_version", global.GvaGoVersion),
 	)
 
 	if global.GvaEnv.HTTP_URL == "" {

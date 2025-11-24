@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"runtime"
 	"time"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/handlers"
@@ -30,6 +31,14 @@ var (
 	buildTime = "unknown" // 构建时间
 )
 
+// 初始化版本信息到全局变量
+func init() {
+	global.GvaVersion = version
+	global.GvaGitCommit = commit
+	global.GvaBuildTime = buildTime
+	global.GvaGoVersion = runtime.Version()
+}
+
 func main() {
 
 	ctx := context.Background()
@@ -47,9 +56,10 @@ func main() {
 	// 打印
 	slog.Info("服务启动",
 		slog.Bool("debug", global.GvaEnv.DEBUG),
-		slog.String("version", version),
-		slog.String("commit", commit),
-		slog.String("build_time", buildTime),
+		slog.String("version", global.GvaVersion),
+		slog.String("git_commit", global.GvaGitCommit),
+		slog.String("build_time", global.GvaBuildTime),
+		slog.String("go_version", global.GvaGoVersion),
 	)
 
 	// 强制日志颜色化
@@ -110,29 +120,27 @@ func main() {
 	}
 
 	// 判断是否为开发模式：version == "dev"
-	devMode := version == "dev"
-
-	// 使用embed.FS创建Gin的HTML渲染器
-	var templ *template.Template
+	devMode := global.GvaVersion == "dev"
 	if devMode {
+		// 自定义分隔符
+		router.Delims("{{", "}}")
+
+		// 自定义模板功能
+		router.SetFuncMap(funcMap)
+
 		// 开发：直接读本地 templates
-		templ = template.Must(
-			template.New("").Funcs(funcMap).ParseGlob("cmd/backend/templates/*.html"),
-		)
+		router.LoadHTMLGlob("cmd/backend/templates/*.html")
+
+		// 静态文件服务 - 开发：直接读本地 static
+		router.StaticFS("/static", http.Dir("cmd/backend/static"))
 	} else {
 		// 生产：使用 embed
-		templ = template.Must(
+		templ := template.Must(
 			template.New("").Funcs(funcMap).ParseFS(embeddedFiles, "templates/*.html"),
 		)
-	}
-	router.SetHTMLTemplate(templ)
+		router.SetHTMLTemplate(templ)
 
-	// 静态文件服务 - 使用嵌入的文件系统
-	if devMode {
-		// 开发：直接读本地 static
-		router.Static("/static", "./cmd/backend/static")
-	} else {
-		// 生产：使用 embed
+		// 静态文件服务 - 使用嵌入的文件系统
 		staticFS, _ := fs.Sub(embeddedFiles, "static")
 		router.StaticFS("/static", http.FS(staticFS))
 	}
@@ -239,9 +247,9 @@ func main() {
 	// }()
 
 	// 启动服务器
-	fmt.Printf("DDNS管理平台启动在 http://localhost%s\n", global.GvaEnv.HTTP_PORT)
-	fmt.Printf("健康检查地址: http://localhost%s/health\n", global.GvaEnv.HTTP_PORT)
-	fmt.Println("按 Ctrl+C 停止服务")
+	// fmt.Printf("DDNS管理平台启动在 http://localhost%s\n", global.GvaEnv.HTTP_PORT)
+	// fmt.Printf("健康检查地址: http://localhost%s/health\n", global.GvaEnv.HTTP_PORT)
+	// fmt.Println("按 Ctrl+C 停止服务")
 
 	// 使用Gin的Run方法启动服务器
 	if err := router.Run(global.GvaEnv.HTTP_PORT); err != nil {

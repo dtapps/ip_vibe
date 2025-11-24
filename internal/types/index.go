@@ -1,6 +1,9 @@
 package types
 
-import "vibe_ip/internal/helper/gocron_helper"
+import (
+	"vibe_ip/internal/helper/gocron_helper"
+	"vibe_ip/internal/helper/system_helper"
+)
 
 type Indexesponse struct {
 	Configs           []GetConfigsResponse       `json:"configs"`
@@ -14,4 +17,10 @@ type Indexesponse struct {
 
 	TaskStatus string `json:"task_status"`
 	DeviceCode string `json:"device_code"`
+
+	SystemVersion    string                         `json:"system_version"`
+	SystemGitCommit  string                         `json:"system_git_commit"`
+	SystemBuildTime  string                         `json:"system_build_time"`
+	SystemGoVersion  string                         `json:"system_go_version"`
+	SystemMemoryInfo system_helper.ReturnMemoryInfo `json:"memory_info"`
 }
