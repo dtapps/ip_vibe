@@ -230,12 +230,12 @@ func main() {
 		fmt.Printf("启动DNS更新任务失败: %v\n", err)
 		os.Exit(1)
 	}
-	go func() {
-		if err := ipUpdate.StartCdnJob(ctx); err != nil {
-			fmt.Printf("启动CDN刷新任务失败: %v\n", err)
-			os.Exit(1)
-		}
-	}()
+	// go func() {
+	// 	if err := ipUpdate.StartCdnJob(ctx); err != nil {
+	// 		fmt.Printf("启动CDN刷新任务失败: %v\n", err)
+	// 		os.Exit(1)
+	// 	}
+	// }()
 
 	// 启动服务器
 	fmt.Printf("DDNS管理平台启动在 http://localhost%s\n", global.GvaEnv.HTTP_PORT)
