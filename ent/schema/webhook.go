@@ -7,7 +7,9 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // Webhook holds the schema definition for the Webhook entity.
@@ -82,5 +84,21 @@ func (Webhook) Fields() []ent.Field {
 
 // Edges of the Webhook.
 func (Webhook) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		// 一对多 Webhook -> WebhookSubscription
+		edge.To("subscriptions", WebhookSubscription.Type).
+			Comment("关联的通知订阅").
+			Annotations(entsql.Annotation{
+				// 级联删除：删除 Webhook 时，其所有 WebhookSubscription 记录也应删除
+				OnDelete: entsql.Cascade,
+			}, entsql.WithComments(true)),
+	}
+}
+
+// Indexes of the Webhook.
+func (Webhook) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("platform").
+			Annotations(entsql.WithComments(true)),
+	}
 }

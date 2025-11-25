@@ -4,10 +4,12 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 	"vibe_ip/ent/predicate"
 	"vibe_ip/ent/webhook"
+	"vibe_ip/ent/webhooksubscription"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -18,11 +20,13 @@ import (
 // WebhookQuery is the builder for querying Webhook entities.
 type WebhookQuery struct {
 	config
-	ctx        *QueryContext
-	order      []webhook.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Webhook
-	modifiers  []func(*sql.Selector)
+	ctx                    *QueryContext
+	order                  []webhook.OrderOption
+	inters                 []Interceptor
+	predicates             []predicate.Webhook
+	withSubscriptions      *WebhookSubscriptionQuery
+	modifiers              []func(*sql.Selector)
+	withNamedSubscriptions map[string]*WebhookSubscriptionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -57,6 +61,28 @@ func (_q *WebhookQuery) Unique(unique bool) *WebhookQuery {
 func (_q *WebhookQuery) Order(o ...webhook.OrderOption) *WebhookQuery {
 	_q.order = append(_q.order, o...)
 	return _q
+}
+
+// QuerySubscriptions chains the current query on the "subscriptions" edge.
+func (_q *WebhookQuery) QuerySubscriptions() *WebhookSubscriptionQuery {
+	query := (&WebhookSubscriptionClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(webhook.Table, webhook.FieldID, selector),
+			sqlgraph.To(webhooksubscription.Table, webhooksubscription.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, webhook.SubscriptionsTable, webhook.SubscriptionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Webhook entity from the query.
@@ -246,16 +272,28 @@ func (_q *WebhookQuery) Clone() *WebhookQuery {
 		return nil
 	}
 	return &WebhookQuery{
-		config:     _q.config,
-		ctx:        _q.ctx.Clone(),
-		order:      append([]webhook.OrderOption{}, _q.order...),
-		inters:     append([]Interceptor{}, _q.inters...),
-		predicates: append([]predicate.Webhook{}, _q.predicates...),
+		config:            _q.config,
+		ctx:               _q.ctx.Clone(),
+		order:             append([]webhook.OrderOption{}, _q.order...),
+		inters:            append([]Interceptor{}, _q.inters...),
+		predicates:        append([]predicate.Webhook{}, _q.predicates...),
+		withSubscriptions: _q.withSubscriptions.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
 		modifiers: append([]func(*sql.Selector){}, _q.modifiers...),
 	}
+}
+
+// WithSubscriptions tells the query-builder to eager-load the nodes that are connected to
+// the "subscriptions" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *WebhookQuery) WithSubscriptions(opts ...func(*WebhookSubscriptionQuery)) *WebhookQuery {
+	query := (&WebhookSubscriptionClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withSubscriptions = query
+	return _q
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -334,8 +372,11 @@ func (_q *WebhookQuery) prepareQuery(ctx context.Context) error {
 
 func (_q *WebhookQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Webhook, error) {
 	var (
-		nodes = []*Webhook{}
-		_spec = _q.querySpec()
+		nodes       = []*Webhook{}
+		_spec       = _q.querySpec()
+		loadedTypes = [1]bool{
+			_q.withSubscriptions != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Webhook).scanValues(nil, columns)
@@ -343,6 +384,7 @@ func (_q *WebhookQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Webh
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &Webhook{config: _q.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(_q.modifiers) > 0 {
@@ -357,7 +399,53 @@ func (_q *WebhookQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Webh
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := _q.withSubscriptions; query != nil {
+		if err := _q.loadSubscriptions(ctx, query, nodes,
+			func(n *Webhook) { n.Edges.Subscriptions = []*WebhookSubscription{} },
+			func(n *Webhook, e *WebhookSubscription) { n.Edges.Subscriptions = append(n.Edges.Subscriptions, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedSubscriptions {
+		if err := _q.loadSubscriptions(ctx, query, nodes,
+			func(n *Webhook) { n.appendNamedSubscriptions(name) },
+			func(n *Webhook, e *WebhookSubscription) { n.appendNamedSubscriptions(name, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (_q *WebhookQuery) loadSubscriptions(ctx context.Context, query *WebhookSubscriptionQuery, nodes []*Webhook, init func(*Webhook), assign func(*Webhook, *WebhookSubscription)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int64]*Webhook)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.WebhookSubscription(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(webhook.SubscriptionsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.webhook_subscriptions
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "webhook_subscriptions" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "webhook_subscriptions" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
 }
 
 func (_q *WebhookQuery) sqlCount(ctx context.Context) (int, error) {
@@ -451,6 +539,20 @@ func (_q *WebhookQuery) sqlQuery(ctx context.Context) *sql.Selector {
 func (_q *WebhookQuery) Modify(modifiers ...func(s *sql.Selector)) *WebhookSelect {
 	_q.modifiers = append(_q.modifiers, modifiers...)
 	return _q.Select()
+}
+
+// WithNamedSubscriptions tells the query-builder to eager-load the nodes that are connected to the "subscriptions"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *WebhookQuery) WithNamedSubscriptions(name string, opts ...func(*WebhookSubscriptionQuery)) *WebhookQuery {
+	query := (&WebhookSubscriptionClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedSubscriptions == nil {
+		_q.withNamedSubscriptions = make(map[string]*WebhookSubscriptionQuery)
+	}
+	_q.withNamedSubscriptions[name] = query
+	return _q
 }
 
 // WebhookGroupBy is the group-by builder for Webhook entities.

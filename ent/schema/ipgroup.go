@@ -63,17 +63,17 @@ func (IpGroup) Edges() []ent.Edge {
 		edge.From("devices", Device.Type).
 			Ref("ip_groups").
 			Through("ip_group_device", IpGroupDevice.Type).
-			Comment("设备").
+			Comment("关联的设备").
 			Annotations(entsql.WithComments(true)),
 
 		// 一对多 IpGroup -> DNSRecord
 		edge.To("dns_records", DNSRecord.Type).
-			Comment("DNS记录").
+			Comment("关联的DNS记录").
 			Annotations(entsql.WithComments(true)),
 
 		// 一对多 IpGroup -> CDNRecord
 		edge.To("cdn_records", CDNRecord.Type).
-			Comment("CDN记录").
+			Comment("关联的CDN记录").
 			Annotations(entsql.WithComments(true)),
 	}
 }

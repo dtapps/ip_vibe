@@ -96,7 +96,7 @@ func (DNSRecord) Edges() []ent.Edge {
 			Unique().
 			Required().
 			Immutable().
-			Comment("平台配置").
+			Comment("关联的平台配置").
 			Annotations(entsql.WithComments(true)),
 
 		// 一对多 IpGroup -> DNSRecord
@@ -104,7 +104,7 @@ func (DNSRecord) Edges() []ent.Edge {
 			Ref("dns_records").
 			Field("ip_group_id").
 			Unique().
-			Comment("IP 组（二选一）").
+			Comment("关联的IP组（二选一）").
 			Annotations(entsql.WithComments(true)),
 
 		// 一对一 CDNRecord -> DNSRecord
@@ -112,7 +112,7 @@ func (DNSRecord) Edges() []ent.Edge {
 			Ref("dns_records").
 			Field("cdn_record_id").
 			Unique().
-			Comment("CDN 记录（二选一）").
+			Comment("关联的CDN记录（二选一）").
 			Annotations(entsql.WithComments(true)),
 	}
 }

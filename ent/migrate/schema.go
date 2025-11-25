@@ -218,7 +218,7 @@ var (
 	// IPGroupDeviceTable holds the schema information for the "ip_group_device" table.
 	IPGroupDeviceTable = &schema.Table{
 		Name:       "ip_group_device",
-		Comment:    "IP组设备",
+		Comment:    "IP组设备 (多对多关联)",
 		Columns:    IPGroupDeviceColumns,
 		PrimaryKey: []*schema.Column{IPGroupDeviceColumns[1], IPGroupDeviceColumns[2]},
 		ForeignKeys: []*schema.ForeignKey{
@@ -311,6 +311,50 @@ var (
 		Comment:    "通知",
 		Columns:    WebhookColumns,
 		PrimaryKey: []*schema.Column{WebhookColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "webhook_platform",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookColumns[4]},
+			},
+		},
+	}
+	// WebhookSubscriptionColumns holds the columns for the "webhook_subscription" table.
+	WebhookSubscriptionColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "通知订阅序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "obj_type", Type: field.TypeEnum, Comment: "订阅对象类型", Enums: []string{"cdn_record", "dns_record", "device"}},
+		{Name: "obj_id", Type: field.TypeInt64, Comment: "订阅对象主键"},
+		{Name: "webhook_subscriptions", Type: field.TypeInt64, Nullable: true},
+		{Name: "webhook_id", Type: field.TypeInt64, Comment: "通知序号"},
+	}
+	// WebhookSubscriptionTable holds the schema information for the "webhook_subscription" table.
+	WebhookSubscriptionTable = &schema.Table{
+		Name:       "webhook_subscription",
+		Comment:    "通知订阅 (多对多关联)",
+		Columns:    WebhookSubscriptionColumns,
+		PrimaryKey: []*schema.Column{WebhookSubscriptionColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "webhook_subscription_webhook_subscriptions",
+				Columns:    []*schema.Column{WebhookSubscriptionColumns[4]},
+				RefColumns: []*schema.Column{WebhookColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "webhook_subscription_webhook_webhook",
+				Columns:    []*schema.Column{WebhookSubscriptionColumns[5]},
+				RefColumns: []*schema.Column{WebhookColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "webhooksubscription_webhook_id_obj_type_obj_id",
+				Unique:  true,
+				Columns: []*schema.Column{WebhookSubscriptionColumns[5], WebhookSubscriptionColumns[2], WebhookSubscriptionColumns[3]},
+			},
+		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
@@ -323,6 +367,7 @@ var (
 		OperationLogTable,
 		PlatformConfigTable,
 		WebhookTable,
+		WebhookSubscriptionTable,
 	}
 )
 
@@ -361,5 +406,10 @@ func init() {
 	}
 	WebhookTable.Annotation = &entsql.Annotation{
 		Table: "webhook",
+	}
+	WebhookSubscriptionTable.ForeignKeys[0].RefTable = WebhookTable
+	WebhookSubscriptionTable.ForeignKeys[1].RefTable = WebhookTable
+	WebhookSubscriptionTable.Annotation = &entsql.Annotation{
+		Table: "webhook_subscription",
 	}
 }

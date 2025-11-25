@@ -114,7 +114,7 @@ func (CDNRecord) Edges() []ent.Edge {
 			Unique().
 			Required().
 			Immutable().
-			Comment("平台配置").
+			Comment("关联的平台配置").
 			Annotations(entsql.WithComments(true)),
 
 		// 一对多 IpGroup -> CDNRecord
@@ -124,12 +124,12 @@ func (CDNRecord) Edges() []ent.Edge {
 			Unique().
 			Required().
 			Immutable().
-			Comment("IP 组").
+			Comment("关联的IP组").
 			Annotations(entsql.WithComments(true)),
 
 		// 一对一 CDNRecord -> DNSRecord
 		edge.To("dns_records", DNSRecord.Type).
-			Comment("DNS 记录").
+			Comment("关联的DNS记录").
 			Annotations(entsql.WithComments(true)),
 	}
 }

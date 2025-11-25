@@ -36,11 +36,11 @@ type IpGroup struct {
 
 // IpGroupEdges holds the relations/edges for other nodes in the graph.
 type IpGroupEdges struct {
-	// 设备
+	// 关联的设备
 	Devices []*Device `json:"devices,omitempty"`
-	// DNS记录
+	// 关联的DNS记录
 	DNSRecords []*DNSRecord `json:"dns_records,omitempty"`
-	// CDN记录
+	// 关联的CDN记录
 	CdnRecords []*CDNRecord `json:"cdn_records,omitempty"`
 	// IPGroupDevice holds the value of the ip_group_device edge.
 	IPGroupDevice []*IpGroupDevice `json:"ip_group_device,omitempty"`

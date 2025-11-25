@@ -39,9 +39,9 @@ type PlatformConfig struct {
 
 // PlatformConfigEdges holds the relations/edges for other nodes in the graph.
 type PlatformConfigEdges struct {
-	// DNS记录
+	// 关联的DNS记录
 	DNSRecords []*DNSRecord `json:"dns_records,omitempty"`
-	// CDN记录
+	// 关联的CDN记录
 	CdnRecords []*CDNRecord `json:"cdn_records,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.

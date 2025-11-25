@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/ent/webhook"
+	"vibe_ip/ent/webhooksubscription"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -134,6 +135,21 @@ func (_c *WebhookCreate) SetNillableIsActive(v *bool) *WebhookCreate {
 func (_c *WebhookCreate) SetID(v int64) *WebhookCreate {
 	_c.mutation.SetID(v)
 	return _c
+}
+
+// AddSubscriptionIDs adds the "subscriptions" edge to the WebhookSubscription entity by IDs.
+func (_c *WebhookCreate) AddSubscriptionIDs(ids ...int64) *WebhookCreate {
+	_c.mutation.AddSubscriptionIDs(ids...)
+	return _c
+}
+
+// AddSubscriptions adds the "subscriptions" edges to the WebhookSubscription entity.
+func (_c *WebhookCreate) AddSubscriptions(v ...*WebhookSubscription) *WebhookCreate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSubscriptionIDs(ids...)
 }
 
 // Mutation returns the WebhookMutation object of the builder.
@@ -285,6 +301,22 @@ func (_c *WebhookCreate) createSpec() (*Webhook, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.IsActive(); ok {
 		_spec.SetField(webhook.FieldIsActive, field.TypeBool, value)
 		_node.IsActive = value
+	}
+	if nodes := _c.mutation.SubscriptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   webhook.SubscriptionsTable,
+			Columns: []string{webhook.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(webhooksubscription.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

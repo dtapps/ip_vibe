@@ -35,7 +35,7 @@ type DeviceIpReport struct {
 
 // DeviceIpReportEdges holds the relations/edges for other nodes in the graph.
 type DeviceIpReportEdges struct {
-	// 设备
+	// 关联的设备
 	Device *Device `json:"device,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.

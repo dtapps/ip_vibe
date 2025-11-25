@@ -78,15 +78,16 @@ func (Device) Edges() []ent.Edge {
 	return []ent.Edge{
 		// 一对多 Device -> DeviceIpReport
 		edge.To("ip_reports", DeviceIpReport.Type).
-			Comment("IP报告").
+			Comment("关联的设备IP报告").
 			Annotations(entsql.Annotation{
+				// 级联删除：删除 Device 时，其所有 DeviceIpReport 记录也应删除
 				OnDelete: entsql.Cascade,
 			}, entsql.WithComments(true)),
 
 		// 多对多：Device <-> IPGroup
 		edge.To("ip_groups", IpGroup.Type).
 			Through("ip_group_device", IpGroupDevice.Type).
-			Comment("IP组").
+			Comment("关联的IP组").
 			Annotations(entsql.WithComments(true)),
 	}
 }

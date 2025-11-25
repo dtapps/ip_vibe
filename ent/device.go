@@ -42,9 +42,9 @@ type Device struct {
 
 // DeviceEdges holds the relations/edges for other nodes in the graph.
 type DeviceEdges struct {
-	// IP报告
+	// 关联的设备IP报告
 	IPReports []*DeviceIpReport `json:"ip_reports,omitempty"`
-	// IP组
+	// 关联的IP组
 	IPGroups []*IpGroup `json:"ip_groups,omitempty"`
 	// IPGroupDevice holds the value of the ip_group_device edge.
 	IPGroupDevice []*IpGroupDevice `json:"ip_group_device,omitempty"`

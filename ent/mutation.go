@@ -19,6 +19,7 @@ import (
 	"vibe_ip/ent/platformconfig"
 	"vibe_ip/ent/predicate"
 	"vibe_ip/ent/webhook"
+	"vibe_ip/ent/webhooksubscription"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -33,15 +34,16 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeCDNRecord      = "CDNRecord"
-	TypeDNSRecord      = "DNSRecord"
-	TypeDevice         = "Device"
-	TypeDeviceIpReport = "DeviceIpReport"
-	TypeIpGroup        = "IpGroup"
-	TypeIpGroupDevice  = "IpGroupDevice"
-	TypeOperationLog   = "OperationLog"
-	TypePlatformConfig = "PlatformConfig"
-	TypeWebhook        = "Webhook"
+	TypeCDNRecord           = "CDNRecord"
+	TypeDNSRecord           = "DNSRecord"
+	TypeDevice              = "Device"
+	TypeDeviceIpReport      = "DeviceIpReport"
+	TypeIpGroup             = "IpGroup"
+	TypeIpGroupDevice       = "IpGroupDevice"
+	TypeOperationLog        = "OperationLog"
+	TypePlatformConfig      = "PlatformConfig"
+	TypeWebhook             = "Webhook"
+	TypeWebhookSubscription = "WebhookSubscription"
 )
 
 // CDNRecordMutation represents an operation that mutates the CDNRecord nodes in the graph.
@@ -6813,24 +6815,27 @@ func (m *PlatformConfigMutation) ResetEdge(name string) error {
 // WebhookMutation represents an operation that mutates the Webhook nodes in the graph.
 type WebhookMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *int64
-	created_at       *time.Time
-	updated_at       *time.Time
-	name             *string
-	platform         *webhook.Platform
-	url              *string
-	secret           *string
-	events           *[]string
-	appendevents     []string
-	template_title   *string
-	template_content *string
-	is_active        *bool
-	clearedFields    map[string]struct{}
-	done             bool
-	oldValue         func(context.Context) (*Webhook, error)
-	predicates       []predicate.Webhook
+	op                   Op
+	typ                  string
+	id                   *int64
+	created_at           *time.Time
+	updated_at           *time.Time
+	name                 *string
+	platform             *webhook.Platform
+	url                  *string
+	secret               *string
+	events               *[]string
+	appendevents         []string
+	template_title       *string
+	template_content     *string
+	is_active            *bool
+	clearedFields        map[string]struct{}
+	subscriptions        map[int64]struct{}
+	removedsubscriptions map[int64]struct{}
+	clearedsubscriptions bool
+	done                 bool
+	oldValue             func(context.Context) (*Webhook, error)
+	predicates           []predicate.Webhook
 }
 
 var _ ent.Mutation = (*WebhookMutation)(nil)
@@ -7351,6 +7356,60 @@ func (m *WebhookMutation) ResetIsActive() {
 	m.is_active = nil
 }
 
+// AddSubscriptionIDs adds the "subscriptions" edge to the WebhookSubscription entity by ids.
+func (m *WebhookMutation) AddSubscriptionIDs(ids ...int64) {
+	if m.subscriptions == nil {
+		m.subscriptions = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.subscriptions[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSubscriptions clears the "subscriptions" edge to the WebhookSubscription entity.
+func (m *WebhookMutation) ClearSubscriptions() {
+	m.clearedsubscriptions = true
+}
+
+// SubscriptionsCleared reports if the "subscriptions" edge to the WebhookSubscription entity was cleared.
+func (m *WebhookMutation) SubscriptionsCleared() bool {
+	return m.clearedsubscriptions
+}
+
+// RemoveSubscriptionIDs removes the "subscriptions" edge to the WebhookSubscription entity by IDs.
+func (m *WebhookMutation) RemoveSubscriptionIDs(ids ...int64) {
+	if m.removedsubscriptions == nil {
+		m.removedsubscriptions = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.subscriptions, ids[i])
+		m.removedsubscriptions[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSubscriptions returns the removed IDs of the "subscriptions" edge to the WebhookSubscription entity.
+func (m *WebhookMutation) RemovedSubscriptionsIDs() (ids []int64) {
+	for id := range m.removedsubscriptions {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SubscriptionsIDs returns the "subscriptions" edge IDs in the mutation.
+func (m *WebhookMutation) SubscriptionsIDs() (ids []int64) {
+	for id := range m.subscriptions {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSubscriptions resets all changes to the "subscriptions" edge.
+func (m *WebhookMutation) ResetSubscriptions() {
+	m.subscriptions = nil
+	m.clearedsubscriptions = false
+	m.removedsubscriptions = nil
+}
+
 // Where appends a list predicates to the WebhookMutation builder.
 func (m *WebhookMutation) Where(ps ...predicate.Webhook) {
 	m.predicates = append(m.predicates, ps...)
@@ -7658,48 +7717,668 @@ func (m *WebhookMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *WebhookMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.subscriptions != nil {
+		edges = append(edges, webhook.EdgeSubscriptions)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *WebhookMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case webhook.EdgeSubscriptions:
+		ids := make([]ent.Value, 0, len(m.subscriptions))
+		for id := range m.subscriptions {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *WebhookMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedsubscriptions != nil {
+		edges = append(edges, webhook.EdgeSubscriptions)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *WebhookMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case webhook.EdgeSubscriptions:
+		ids := make([]ent.Value, 0, len(m.removedsubscriptions))
+		for id := range m.removedsubscriptions {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *WebhookMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedsubscriptions {
+		edges = append(edges, webhook.EdgeSubscriptions)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *WebhookMutation) EdgeCleared(name string) bool {
+	switch name {
+	case webhook.EdgeSubscriptions:
+		return m.clearedsubscriptions
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *WebhookMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown Webhook unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *WebhookMutation) ResetEdge(name string) error {
+	switch name {
+	case webhook.EdgeSubscriptions:
+		m.ResetSubscriptions()
+		return nil
+	}
 	return fmt.Errorf("unknown Webhook edge %s", name)
+}
+
+// WebhookSubscriptionMutation represents an operation that mutates the WebhookSubscription nodes in the graph.
+type WebhookSubscriptionMutation struct {
+	config
+	op             Op
+	typ            string
+	id             *int64
+	created_at     *time.Time
+	obj_type       *webhooksubscription.ObjType
+	obj_id         *int64
+	addobj_id      *int64
+	clearedFields  map[string]struct{}
+	webhook        *int64
+	clearedwebhook bool
+	done           bool
+	oldValue       func(context.Context) (*WebhookSubscription, error)
+	predicates     []predicate.WebhookSubscription
+}
+
+var _ ent.Mutation = (*WebhookSubscriptionMutation)(nil)
+
+// webhooksubscriptionOption allows management of the mutation configuration using functional options.
+type webhooksubscriptionOption func(*WebhookSubscriptionMutation)
+
+// newWebhookSubscriptionMutation creates new mutation for the WebhookSubscription entity.
+func newWebhookSubscriptionMutation(c config, op Op, opts ...webhooksubscriptionOption) *WebhookSubscriptionMutation {
+	m := &WebhookSubscriptionMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeWebhookSubscription,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withWebhookSubscriptionID sets the ID field of the mutation.
+func withWebhookSubscriptionID(id int64) webhooksubscriptionOption {
+	return func(m *WebhookSubscriptionMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *WebhookSubscription
+		)
+		m.oldValue = func(ctx context.Context) (*WebhookSubscription, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().WebhookSubscription.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withWebhookSubscription sets the old WebhookSubscription of the mutation.
+func withWebhookSubscription(node *WebhookSubscription) webhooksubscriptionOption {
+	return func(m *WebhookSubscriptionMutation) {
+		m.oldValue = func(context.Context) (*WebhookSubscription, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m WebhookSubscriptionMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m WebhookSubscriptionMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of WebhookSubscription entities.
+func (m *WebhookSubscriptionMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *WebhookSubscriptionMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *WebhookSubscriptionMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().WebhookSubscription.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *WebhookSubscriptionMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *WebhookSubscriptionMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the WebhookSubscription entity.
+// If the WebhookSubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookSubscriptionMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *WebhookSubscriptionMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetWebhookID sets the "webhook_id" field.
+func (m *WebhookSubscriptionMutation) SetWebhookID(i int64) {
+	m.webhook = &i
+}
+
+// WebhookID returns the value of the "webhook_id" field in the mutation.
+func (m *WebhookSubscriptionMutation) WebhookID() (r int64, exists bool) {
+	v := m.webhook
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWebhookID returns the old "webhook_id" field's value of the WebhookSubscription entity.
+// If the WebhookSubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookSubscriptionMutation) OldWebhookID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWebhookID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWebhookID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWebhookID: %w", err)
+	}
+	return oldValue.WebhookID, nil
+}
+
+// ResetWebhookID resets all changes to the "webhook_id" field.
+func (m *WebhookSubscriptionMutation) ResetWebhookID() {
+	m.webhook = nil
+}
+
+// SetObjType sets the "obj_type" field.
+func (m *WebhookSubscriptionMutation) SetObjType(wt webhooksubscription.ObjType) {
+	m.obj_type = &wt
+}
+
+// ObjType returns the value of the "obj_type" field in the mutation.
+func (m *WebhookSubscriptionMutation) ObjType() (r webhooksubscription.ObjType, exists bool) {
+	v := m.obj_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldObjType returns the old "obj_type" field's value of the WebhookSubscription entity.
+// If the WebhookSubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookSubscriptionMutation) OldObjType(ctx context.Context) (v webhooksubscription.ObjType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldObjType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldObjType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldObjType: %w", err)
+	}
+	return oldValue.ObjType, nil
+}
+
+// ResetObjType resets all changes to the "obj_type" field.
+func (m *WebhookSubscriptionMutation) ResetObjType() {
+	m.obj_type = nil
+}
+
+// SetObjID sets the "obj_id" field.
+func (m *WebhookSubscriptionMutation) SetObjID(i int64) {
+	m.obj_id = &i
+	m.addobj_id = nil
+}
+
+// ObjID returns the value of the "obj_id" field in the mutation.
+func (m *WebhookSubscriptionMutation) ObjID() (r int64, exists bool) {
+	v := m.obj_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldObjID returns the old "obj_id" field's value of the WebhookSubscription entity.
+// If the WebhookSubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookSubscriptionMutation) OldObjID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldObjID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldObjID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldObjID: %w", err)
+	}
+	return oldValue.ObjID, nil
+}
+
+// AddObjID adds i to the "obj_id" field.
+func (m *WebhookSubscriptionMutation) AddObjID(i int64) {
+	if m.addobj_id != nil {
+		*m.addobj_id += i
+	} else {
+		m.addobj_id = &i
+	}
+}
+
+// AddedObjID returns the value that was added to the "obj_id" field in this mutation.
+func (m *WebhookSubscriptionMutation) AddedObjID() (r int64, exists bool) {
+	v := m.addobj_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetObjID resets all changes to the "obj_id" field.
+func (m *WebhookSubscriptionMutation) ResetObjID() {
+	m.obj_id = nil
+	m.addobj_id = nil
+}
+
+// ClearWebhook clears the "webhook" edge to the Webhook entity.
+func (m *WebhookSubscriptionMutation) ClearWebhook() {
+	m.clearedwebhook = true
+	m.clearedFields[webhooksubscription.FieldWebhookID] = struct{}{}
+}
+
+// WebhookCleared reports if the "webhook" edge to the Webhook entity was cleared.
+func (m *WebhookSubscriptionMutation) WebhookCleared() bool {
+	return m.clearedwebhook
+}
+
+// WebhookIDs returns the "webhook" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// WebhookID instead. It exists only for internal usage by the builders.
+func (m *WebhookSubscriptionMutation) WebhookIDs() (ids []int64) {
+	if id := m.webhook; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetWebhook resets all changes to the "webhook" edge.
+func (m *WebhookSubscriptionMutation) ResetWebhook() {
+	m.webhook = nil
+	m.clearedwebhook = false
+}
+
+// Where appends a list predicates to the WebhookSubscriptionMutation builder.
+func (m *WebhookSubscriptionMutation) Where(ps ...predicate.WebhookSubscription) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the WebhookSubscriptionMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *WebhookSubscriptionMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.WebhookSubscription, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *WebhookSubscriptionMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *WebhookSubscriptionMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (WebhookSubscription).
+func (m *WebhookSubscriptionMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *WebhookSubscriptionMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.created_at != nil {
+		fields = append(fields, webhooksubscription.FieldCreatedAt)
+	}
+	if m.webhook != nil {
+		fields = append(fields, webhooksubscription.FieldWebhookID)
+	}
+	if m.obj_type != nil {
+		fields = append(fields, webhooksubscription.FieldObjType)
+	}
+	if m.obj_id != nil {
+		fields = append(fields, webhooksubscription.FieldObjID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *WebhookSubscriptionMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case webhooksubscription.FieldCreatedAt:
+		return m.CreatedAt()
+	case webhooksubscription.FieldWebhookID:
+		return m.WebhookID()
+	case webhooksubscription.FieldObjType:
+		return m.ObjType()
+	case webhooksubscription.FieldObjID:
+		return m.ObjID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *WebhookSubscriptionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case webhooksubscription.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case webhooksubscription.FieldWebhookID:
+		return m.OldWebhookID(ctx)
+	case webhooksubscription.FieldObjType:
+		return m.OldObjType(ctx)
+	case webhooksubscription.FieldObjID:
+		return m.OldObjID(ctx)
+	}
+	return nil, fmt.Errorf("unknown WebhookSubscription field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *WebhookSubscriptionMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case webhooksubscription.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case webhooksubscription.FieldWebhookID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWebhookID(v)
+		return nil
+	case webhooksubscription.FieldObjType:
+		v, ok := value.(webhooksubscription.ObjType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetObjType(v)
+		return nil
+	case webhooksubscription.FieldObjID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetObjID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown WebhookSubscription field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *WebhookSubscriptionMutation) AddedFields() []string {
+	var fields []string
+	if m.addobj_id != nil {
+		fields = append(fields, webhooksubscription.FieldObjID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *WebhookSubscriptionMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case webhooksubscription.FieldObjID:
+		return m.AddedObjID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *WebhookSubscriptionMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case webhooksubscription.FieldObjID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddObjID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown WebhookSubscription numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *WebhookSubscriptionMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *WebhookSubscriptionMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *WebhookSubscriptionMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown WebhookSubscription nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *WebhookSubscriptionMutation) ResetField(name string) error {
+	switch name {
+	case webhooksubscription.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case webhooksubscription.FieldWebhookID:
+		m.ResetWebhookID()
+		return nil
+	case webhooksubscription.FieldObjType:
+		m.ResetObjType()
+		return nil
+	case webhooksubscription.FieldObjID:
+		m.ResetObjID()
+		return nil
+	}
+	return fmt.Errorf("unknown WebhookSubscription field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *WebhookSubscriptionMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.webhook != nil {
+		edges = append(edges, webhooksubscription.EdgeWebhook)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *WebhookSubscriptionMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case webhooksubscription.EdgeWebhook:
+		if id := m.webhook; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *WebhookSubscriptionMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *WebhookSubscriptionMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *WebhookSubscriptionMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedwebhook {
+		edges = append(edges, webhooksubscription.EdgeWebhook)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *WebhookSubscriptionMutation) EdgeCleared(name string) bool {
+	switch name {
+	case webhooksubscription.EdgeWebhook:
+		return m.clearedwebhook
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *WebhookSubscriptionMutation) ClearEdge(name string) error {
+	switch name {
+	case webhooksubscription.EdgeWebhook:
+		m.ClearWebhook()
+		return nil
+	}
+	return fmt.Errorf("unknown WebhookSubscription unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *WebhookSubscriptionMutation) ResetEdge(name string) error {
+	switch name {
+	case webhooksubscription.EdgeWebhook:
+		m.ResetWebhook()
+		return nil
+	}
+	return fmt.Errorf("unknown WebhookSubscription edge %s", name)
 }

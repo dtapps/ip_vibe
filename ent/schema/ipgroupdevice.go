@@ -19,7 +19,7 @@ type IpGroupDevice struct {
 func (IpGroupDevice) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entsql.Annotation{Table: "ip_group_device"},
-		schema.Comment("IP组设备"),
+		schema.Comment("IP组设备 (多对多关联)"),
 		entsql.WithComments(true),
 		field.ID("device_id", "ip_group_id"),
 	}
@@ -57,11 +57,16 @@ func (IpGroupDevice) Edges() []ent.Edge {
 		edge.To("device", Device.Type).
 			Unique().
 			Required().
-			Field("device_id"),
+			Field("device_id").
+			Comment("关联的设备").
+			Annotations(entsql.WithComments(true)),
+
 		edge.To("ip_group", IpGroup.Type).
 			Unique().
 			Required().
-			Field("ip_group_id"),
+			Field("ip_group_id").
+			Comment("关联的IP组").
+			Annotations(entsql.WithComments(true)),
 	}
 }
 

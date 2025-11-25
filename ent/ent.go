@@ -17,6 +17,7 @@ import (
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/platformconfig"
 	"vibe_ip/ent/webhook"
+	"vibe_ip/ent/webhooksubscription"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -81,15 +82,16 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			cdnrecord.Table:      cdnrecord.ValidColumn,
-			dnsrecord.Table:      dnsrecord.ValidColumn,
-			device.Table:         device.ValidColumn,
-			deviceipreport.Table: deviceipreport.ValidColumn,
-			ipgroup.Table:        ipgroup.ValidColumn,
-			ipgroupdevice.Table:  ipgroupdevice.ValidColumn,
-			operationlog.Table:   operationlog.ValidColumn,
-			platformconfig.Table: platformconfig.ValidColumn,
-			webhook.Table:        webhook.ValidColumn,
+			cdnrecord.Table:           cdnrecord.ValidColumn,
+			dnsrecord.Table:           dnsrecord.ValidColumn,
+			device.Table:              device.ValidColumn,
+			deviceipreport.Table:      deviceipreport.ValidColumn,
+			ipgroup.Table:             ipgroup.ValidColumn,
+			ipgroupdevice.Table:       ipgroupdevice.ValidColumn,
+			operationlog.Table:        operationlog.ValidColumn,
+			platformconfig.Table:      platformconfig.ValidColumn,
+			webhook.Table:             webhook.ValidColumn,
+			webhooksubscription.Table: webhooksubscription.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

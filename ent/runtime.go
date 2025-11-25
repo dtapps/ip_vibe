@@ -14,6 +14,7 @@ import (
 	"vibe_ip/ent/platformconfig"
 	"vibe_ip/ent/schema"
 	"vibe_ip/ent/webhook"
+	"vibe_ip/ent/webhooksubscription"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -157,4 +158,13 @@ func init() {
 	webhookDescIsActive := webhookFields[8].Descriptor()
 	// webhook.DefaultIsActive holds the default value on creation for the is_active field.
 	webhook.DefaultIsActive = webhookDescIsActive.Default.(bool)
+	webhooksubscriptionMixin := schema.WebhookSubscription{}.Mixin()
+	webhooksubscriptionMixinFields0 := webhooksubscriptionMixin[0].Fields()
+	_ = webhooksubscriptionMixinFields0
+	webhooksubscriptionFields := schema.WebhookSubscription{}.Fields()
+	_ = webhooksubscriptionFields
+	// webhooksubscriptionDescCreatedAt is the schema descriptor for created_at field.
+	webhooksubscriptionDescCreatedAt := webhooksubscriptionMixinFields0[0].Descriptor()
+	// webhooksubscription.DefaultCreatedAt holds the default value on creation for the created_at field.
+	webhooksubscription.DefaultCreatedAt = webhooksubscriptionDescCreatedAt.Default.(func() time.Time)
 }

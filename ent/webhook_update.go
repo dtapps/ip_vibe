@@ -9,6 +9,7 @@ import (
 	"time"
 	"vibe_ip/ent/predicate"
 	"vibe_ip/ent/webhook"
+	"vibe_ip/ent/webhooksubscription"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -164,9 +165,45 @@ func (_u *WebhookUpdate) SetNillableIsActive(v *bool) *WebhookUpdate {
 	return _u
 }
 
+// AddSubscriptionIDs adds the "subscriptions" edge to the WebhookSubscription entity by IDs.
+func (_u *WebhookUpdate) AddSubscriptionIDs(ids ...int64) *WebhookUpdate {
+	_u.mutation.AddSubscriptionIDs(ids...)
+	return _u
+}
+
+// AddSubscriptions adds the "subscriptions" edges to the WebhookSubscription entity.
+func (_u *WebhookUpdate) AddSubscriptions(v ...*WebhookSubscription) *WebhookUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSubscriptionIDs(ids...)
+}
+
 // Mutation returns the WebhookMutation object of the builder.
 func (_u *WebhookUpdate) Mutation() *WebhookMutation {
 	return _u.mutation
+}
+
+// ClearSubscriptions clears all "subscriptions" edges to the WebhookSubscription entity.
+func (_u *WebhookUpdate) ClearSubscriptions() *WebhookUpdate {
+	_u.mutation.ClearSubscriptions()
+	return _u
+}
+
+// RemoveSubscriptionIDs removes the "subscriptions" edge to WebhookSubscription entities by IDs.
+func (_u *WebhookUpdate) RemoveSubscriptionIDs(ids ...int64) *WebhookUpdate {
+	_u.mutation.RemoveSubscriptionIDs(ids...)
+	return _u
+}
+
+// RemoveSubscriptions removes "subscriptions" edges to WebhookSubscription entities.
+func (_u *WebhookUpdate) RemoveSubscriptions(v ...*WebhookSubscription) *WebhookUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSubscriptionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -273,6 +310,51 @@ func (_u *WebhookUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(webhook.FieldIsActive, field.TypeBool, value)
+	}
+	if _u.mutation.SubscriptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   webhook.SubscriptionsTable,
+			Columns: []string{webhook.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(webhooksubscription.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSubscriptionsIDs(); len(nodes) > 0 && !_u.mutation.SubscriptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   webhook.SubscriptionsTable,
+			Columns: []string{webhook.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(webhooksubscription.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SubscriptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   webhook.SubscriptionsTable,
+			Columns: []string{webhook.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(webhooksubscription.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -430,9 +512,45 @@ func (_u *WebhookUpdateOne) SetNillableIsActive(v *bool) *WebhookUpdateOne {
 	return _u
 }
 
+// AddSubscriptionIDs adds the "subscriptions" edge to the WebhookSubscription entity by IDs.
+func (_u *WebhookUpdateOne) AddSubscriptionIDs(ids ...int64) *WebhookUpdateOne {
+	_u.mutation.AddSubscriptionIDs(ids...)
+	return _u
+}
+
+// AddSubscriptions adds the "subscriptions" edges to the WebhookSubscription entity.
+func (_u *WebhookUpdateOne) AddSubscriptions(v ...*WebhookSubscription) *WebhookUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSubscriptionIDs(ids...)
+}
+
 // Mutation returns the WebhookMutation object of the builder.
 func (_u *WebhookUpdateOne) Mutation() *WebhookMutation {
 	return _u.mutation
+}
+
+// ClearSubscriptions clears all "subscriptions" edges to the WebhookSubscription entity.
+func (_u *WebhookUpdateOne) ClearSubscriptions() *WebhookUpdateOne {
+	_u.mutation.ClearSubscriptions()
+	return _u
+}
+
+// RemoveSubscriptionIDs removes the "subscriptions" edge to WebhookSubscription entities by IDs.
+func (_u *WebhookUpdateOne) RemoveSubscriptionIDs(ids ...int64) *WebhookUpdateOne {
+	_u.mutation.RemoveSubscriptionIDs(ids...)
+	return _u
+}
+
+// RemoveSubscriptions removes "subscriptions" edges to WebhookSubscription entities.
+func (_u *WebhookUpdateOne) RemoveSubscriptions(v ...*WebhookSubscription) *WebhookUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSubscriptionIDs(ids...)
 }
 
 // Where appends a list predicates to the WebhookUpdate builder.
@@ -569,6 +687,51 @@ func (_u *WebhookUpdateOne) sqlSave(ctx context.Context) (_node *Webhook, err er
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(webhook.FieldIsActive, field.TypeBool, value)
+	}
+	if _u.mutation.SubscriptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   webhook.SubscriptionsTable,
+			Columns: []string{webhook.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(webhooksubscription.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSubscriptionsIDs(); len(nodes) > 0 && !_u.mutation.SubscriptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   webhook.SubscriptionsTable,
+			Columns: []string{webhook.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(webhooksubscription.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SubscriptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   webhook.SubscriptionsTable,
+			Columns: []string{webhook.SubscriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(webhooksubscription.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &Webhook{config: _u.config}

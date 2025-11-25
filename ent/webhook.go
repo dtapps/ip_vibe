@@ -38,8 +38,30 @@ type Webhook struct {
 	// 通知内容 Go Template
 	TemplateContent string `json:"template_content,omitempty"`
 	// 是否启用
-	IsActive     bool `json:"is_active,omitempty"`
+	IsActive bool `json:"is_active,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the WebhookQuery when eager-loading is set.
+	Edges        WebhookEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// WebhookEdges holds the relations/edges for other nodes in the graph.
+type WebhookEdges struct {
+	// 关联的通知订阅
+	Subscriptions []*WebhookSubscription `json:"subscriptions,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes        [1]bool
+	namedSubscriptions map[string][]*WebhookSubscription
+}
+
+// SubscriptionsOrErr returns the Subscriptions value or an error if the edge
+// was not loaded in eager-loading.
+func (e WebhookEdges) SubscriptionsOrErr() ([]*WebhookSubscription, error) {
+	if e.loadedTypes[0] {
+		return e.Subscriptions, nil
+	}
+	return nil, &NotLoadedError{edge: "subscriptions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -153,6 +175,11 @@ func (_m *Webhook) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
+// QuerySubscriptions queries the "subscriptions" edge of the Webhook entity.
+func (_m *Webhook) QuerySubscriptions() *WebhookSubscriptionQuery {
+	return NewWebhookClient(_m.config).QuerySubscriptions(_m)
+}
+
 // Update returns a builder for updating this Webhook.
 // Note that you need to call Webhook.Unwrap() before calling this method if this Webhook
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -207,6 +234,30 @@ func (_m *Webhook) String() string {
 	builder.WriteString(fmt.Sprintf("%v", _m.IsActive))
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+// NamedSubscriptions returns the Subscriptions named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *Webhook) NamedSubscriptions(name string) ([]*WebhookSubscription, error) {
+	if _m.Edges.namedSubscriptions == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedSubscriptions[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *Webhook) appendNamedSubscriptions(name string, edges ...*WebhookSubscription) {
+	if _m.Edges.namedSubscriptions == nil {
+		_m.Edges.namedSubscriptions = make(map[string][]*WebhookSubscription)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedSubscriptions[name] = []*WebhookSubscription{}
+	} else {
+		_m.Edges.namedSubscriptions[name] = append(_m.Edges.namedSubscriptions[name], edges...)
+	}
 }
 
 // Webhooks is a parsable slice of Webhook.

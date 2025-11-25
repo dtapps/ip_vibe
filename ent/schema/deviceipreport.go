@@ -70,7 +70,7 @@ func (DeviceIpReport) Edges() []ent.Edge {
 			Unique().
 			Required().
 			Immutable().
-			Comment("设备").
+			Comment("关联的设备").
 			Annotations(entsql.WithComments(true)),
 	}
 }

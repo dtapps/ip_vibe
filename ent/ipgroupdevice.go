@@ -14,7 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// IP组设备
+// IP组设备 (多对多关联)
 type IpGroupDevice struct {
 	config `json:"-"`
 	// 创建时间
@@ -31,9 +31,9 @@ type IpGroupDevice struct {
 
 // IpGroupDeviceEdges holds the relations/edges for other nodes in the graph.
 type IpGroupDeviceEdges struct {
-	// Device holds the value of the device edge.
+	// 关联的设备
 	Device *Device `json:"device,omitempty"`
-	// IPGroup holds the value of the ip_group edge.
+	// 关联的IP组
 	IPGroup *IpGroup `json:"ip_group,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.

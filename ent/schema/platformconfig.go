@@ -71,15 +71,17 @@ func (PlatformConfig) Edges() []ent.Edge {
 	return []ent.Edge{
 		// 一对多 PlatformConfig -> DNSRecord
 		edge.To("dns_records", DNSRecord.Type).
-			Comment("DNS记录").
+			Comment("关联的DNS记录").
 			Annotations(entsql.Annotation{
+				// 级联删除：删除 PlatformConfig 时，其所有 DNSRecord 记录也应删除
 				OnDelete: entsql.Cascade,
 			}, entsql.WithComments(true)),
 
 		// 一对多 PlatformConfig -> CDNRecord
 		edge.To("cdn_records", CDNRecord.Type).
-			Comment("CDN记录").
+			Comment("关联的CDN记录").
 			Annotations(entsql.Annotation{
+				// 级联删除：删除 PlatformConfig 时，其所有 CDNRecord 记录也应删除
 				OnDelete: entsql.Cascade,
 			}, entsql.WithComments(true)),
 	}

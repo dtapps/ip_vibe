@@ -54,11 +54,11 @@ type CDNRecord struct {
 
 // CDNRecordEdges holds the relations/edges for other nodes in the graph.
 type CDNRecordEdges struct {
-	// 平台配置
+	// 关联的平台配置
 	Config *PlatformConfig `json:"config,omitempty"`
-	// IP 组
+	// 关联的IP组
 	IPGroup *IpGroup `json:"ip_group,omitempty"`
-	// DNS 记录
+	// 关联的DNS记录
 	DNSRecords []*DNSRecord `json:"dns_records,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
