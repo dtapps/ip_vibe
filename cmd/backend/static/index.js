@@ -139,7 +139,6 @@ async function openConfigModal(id) {
         document.getElementById('config_id').value = configs.id;
         document.getElementById('config_id').disabled = true;
         document.getElementById('config_capability').value = configs.capability;
-        document.getElementById('config_capability').disabled = true;
         document.getElementById('config_name').value = configs.name;
         document.getElementById('config_platform').value = configs.platform;
         document.getElementById('config_platform').disabled = true;
@@ -169,7 +168,6 @@ async function openConfigModal(id) {
     if (!id) {
         document.getElementById('config_id').value = '';
         document.getElementById('config_id').disabled = true;
-        document.getElementById('config_capability').disabled = false;
         document.querySelectorAll('.platform-fields').forEach(el => el.classList.add('hidden'));
         document.getElementById('config_platform').disabled = false;
 

@@ -33,6 +33,20 @@ func (_u *PlatformConfigUpdate) Where(ps ...predicate.PlatformConfig) *PlatformC
 	return _u
 }
 
+// SetCapability sets the "capability" field.
+func (_u *PlatformConfigUpdate) SetCapability(v platformconfig.Capability) *PlatformConfigUpdate {
+	_u.mutation.SetCapability(v)
+	return _u
+}
+
+// SetNillableCapability sets the "capability" field if the given value is not nil.
+func (_u *PlatformConfigUpdate) SetNillableCapability(v *platformconfig.Capability) *PlatformConfigUpdate {
+	if v != nil {
+		_u.SetCapability(*v)
+	}
+	return _u
+}
+
 // SetName sets the "name" field.
 func (_u *PlatformConfigUpdate) SetName(v string) *PlatformConfigUpdate {
 	_u.mutation.SetName(v)
@@ -184,6 +198,16 @@ func (_u *PlatformConfigUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *PlatformConfigUpdate) check() error {
+	if v, ok := _u.mutation.Capability(); ok {
+		if err := platformconfig.CapabilityValidator(v); err != nil {
+			return &ValidationError{Name: "capability", err: fmt.Errorf(`ent: validator failed for field "PlatformConfig.capability": %w`, err)}
+		}
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *PlatformConfigUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *PlatformConfigUpdate {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -191,6 +215,9 @@ func (_u *PlatformConfigUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) 
 }
 
 func (_u *PlatformConfigUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(platformconfig.Table, platformconfig.Columns, sqlgraph.NewFieldSpec(platformconfig.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -198,6 +225,9 @@ func (_u *PlatformConfigUpdate) sqlSave(ctx context.Context) (_node int, err err
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.Capability(); ok {
+		_spec.SetField(platformconfig.FieldCapability, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(platformconfig.FieldName, field.TypeString, value)
@@ -326,6 +356,20 @@ type PlatformConfigUpdateOne struct {
 	hooks     []Hook
 	mutation  *PlatformConfigMutation
 	modifiers []func(*sql.UpdateBuilder)
+}
+
+// SetCapability sets the "capability" field.
+func (_u *PlatformConfigUpdateOne) SetCapability(v platformconfig.Capability) *PlatformConfigUpdateOne {
+	_u.mutation.SetCapability(v)
+	return _u
+}
+
+// SetNillableCapability sets the "capability" field if the given value is not nil.
+func (_u *PlatformConfigUpdateOne) SetNillableCapability(v *platformconfig.Capability) *PlatformConfigUpdateOne {
+	if v != nil {
+		_u.SetCapability(*v)
+	}
+	return _u
 }
 
 // SetName sets the "name" field.
@@ -492,6 +536,16 @@ func (_u *PlatformConfigUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *PlatformConfigUpdateOne) check() error {
+	if v, ok := _u.mutation.Capability(); ok {
+		if err := platformconfig.CapabilityValidator(v); err != nil {
+			return &ValidationError{Name: "capability", err: fmt.Errorf(`ent: validator failed for field "PlatformConfig.capability": %w`, err)}
+		}
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *PlatformConfigUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *PlatformConfigUpdateOne {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -499,6 +553,9 @@ func (_u *PlatformConfigUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder
 }
 
 func (_u *PlatformConfigUpdateOne) sqlSave(ctx context.Context) (_node *PlatformConfig, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(platformconfig.Table, platformconfig.Columns, sqlgraph.NewFieldSpec(platformconfig.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
@@ -523,6 +580,9 @@ func (_u *PlatformConfigUpdateOne) sqlSave(ctx context.Context) (_node *Platform
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.Capability(); ok {
+		_spec.SetField(platformconfig.FieldCapability, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(platformconfig.FieldName, field.TypeString, value)

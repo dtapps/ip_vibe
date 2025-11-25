@@ -21,6 +21,7 @@ type CreateConfigRequest struct {
 
 // 更新配置 请求结构
 type UpdateConfigRequest struct {
+	Capability string `json:"capability"`  // 平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）
 	Name       string `json:"name"`        // 配置名称
 	ConfigJSON string `json:"config_json"` // 配置平台密钥等敏感信息（JSON）
 }

@@ -248,42 +248,6 @@ type (
 	}
 )
 
-// SetIPV4 sets the "ip_v4" field.
-func (u *DeviceIpReportUpsert) SetIPV4(v string) *DeviceIpReportUpsert {
-	u.Set(deviceipreport.FieldIPV4, v)
-	return u
-}
-
-// UpdateIPV4 sets the "ip_v4" field to the value that was provided on create.
-func (u *DeviceIpReportUpsert) UpdateIPV4() *DeviceIpReportUpsert {
-	u.SetExcluded(deviceipreport.FieldIPV4)
-	return u
-}
-
-// ClearIPV4 clears the value of the "ip_v4" field.
-func (u *DeviceIpReportUpsert) ClearIPV4() *DeviceIpReportUpsert {
-	u.SetNull(deviceipreport.FieldIPV4)
-	return u
-}
-
-// SetIPV6 sets the "ip_v6" field.
-func (u *DeviceIpReportUpsert) SetIPV6(v string) *DeviceIpReportUpsert {
-	u.Set(deviceipreport.FieldIPV6, v)
-	return u
-}
-
-// UpdateIPV6 sets the "ip_v6" field to the value that was provided on create.
-func (u *DeviceIpReportUpsert) UpdateIPV6() *DeviceIpReportUpsert {
-	u.SetExcluded(deviceipreport.FieldIPV6)
-	return u
-}
-
-// ClearIPV6 clears the value of the "ip_v6" field.
-func (u *DeviceIpReportUpsert) ClearIPV6() *DeviceIpReportUpsert {
-	u.SetNull(deviceipreport.FieldIPV6)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -303,6 +267,12 @@ func (u *DeviceIpReportUpsertOne) UpdateNewValues() *DeviceIpReportUpsertOne {
 		}
 		if _, exists := u.create.mutation.DeviceID(); exists {
 			s.SetIgnore(deviceipreport.FieldDeviceID)
+		}
+		if _, exists := u.create.mutation.IPV4(); exists {
+			s.SetIgnore(deviceipreport.FieldIPV4)
+		}
+		if _, exists := u.create.mutation.IPV6(); exists {
+			s.SetIgnore(deviceipreport.FieldIPV6)
 		}
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(deviceipreport.FieldCreatedAt)
@@ -336,48 +306,6 @@ func (u *DeviceIpReportUpsertOne) Update(set func(*DeviceIpReportUpsert)) *Devic
 		set(&DeviceIpReportUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetIPV4 sets the "ip_v4" field.
-func (u *DeviceIpReportUpsertOne) SetIPV4(v string) *DeviceIpReportUpsertOne {
-	return u.Update(func(s *DeviceIpReportUpsert) {
-		s.SetIPV4(v)
-	})
-}
-
-// UpdateIPV4 sets the "ip_v4" field to the value that was provided on create.
-func (u *DeviceIpReportUpsertOne) UpdateIPV4() *DeviceIpReportUpsertOne {
-	return u.Update(func(s *DeviceIpReportUpsert) {
-		s.UpdateIPV4()
-	})
-}
-
-// ClearIPV4 clears the value of the "ip_v4" field.
-func (u *DeviceIpReportUpsertOne) ClearIPV4() *DeviceIpReportUpsertOne {
-	return u.Update(func(s *DeviceIpReportUpsert) {
-		s.ClearIPV4()
-	})
-}
-
-// SetIPV6 sets the "ip_v6" field.
-func (u *DeviceIpReportUpsertOne) SetIPV6(v string) *DeviceIpReportUpsertOne {
-	return u.Update(func(s *DeviceIpReportUpsert) {
-		s.SetIPV6(v)
-	})
-}
-
-// UpdateIPV6 sets the "ip_v6" field to the value that was provided on create.
-func (u *DeviceIpReportUpsertOne) UpdateIPV6() *DeviceIpReportUpsertOne {
-	return u.Update(func(s *DeviceIpReportUpsert) {
-		s.UpdateIPV6()
-	})
-}
-
-// ClearIPV6 clears the value of the "ip_v6" field.
-func (u *DeviceIpReportUpsertOne) ClearIPV6() *DeviceIpReportUpsertOne {
-	return u.Update(func(s *DeviceIpReportUpsert) {
-		s.ClearIPV6()
-	})
 }
 
 // Exec executes the query.
@@ -565,6 +493,12 @@ func (u *DeviceIpReportUpsertBulk) UpdateNewValues() *DeviceIpReportUpsertBulk {
 			if _, exists := b.mutation.DeviceID(); exists {
 				s.SetIgnore(deviceipreport.FieldDeviceID)
 			}
+			if _, exists := b.mutation.IPV4(); exists {
+				s.SetIgnore(deviceipreport.FieldIPV4)
+			}
+			if _, exists := b.mutation.IPV6(); exists {
+				s.SetIgnore(deviceipreport.FieldIPV6)
+			}
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(deviceipreport.FieldCreatedAt)
 			}
@@ -598,48 +532,6 @@ func (u *DeviceIpReportUpsertBulk) Update(set func(*DeviceIpReportUpsert)) *Devi
 		set(&DeviceIpReportUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetIPV4 sets the "ip_v4" field.
-func (u *DeviceIpReportUpsertBulk) SetIPV4(v string) *DeviceIpReportUpsertBulk {
-	return u.Update(func(s *DeviceIpReportUpsert) {
-		s.SetIPV4(v)
-	})
-}
-
-// UpdateIPV4 sets the "ip_v4" field to the value that was provided on create.
-func (u *DeviceIpReportUpsertBulk) UpdateIPV4() *DeviceIpReportUpsertBulk {
-	return u.Update(func(s *DeviceIpReportUpsert) {
-		s.UpdateIPV4()
-	})
-}
-
-// ClearIPV4 clears the value of the "ip_v4" field.
-func (u *DeviceIpReportUpsertBulk) ClearIPV4() *DeviceIpReportUpsertBulk {
-	return u.Update(func(s *DeviceIpReportUpsert) {
-		s.ClearIPV4()
-	})
-}
-
-// SetIPV6 sets the "ip_v6" field.
-func (u *DeviceIpReportUpsertBulk) SetIPV6(v string) *DeviceIpReportUpsertBulk {
-	return u.Update(func(s *DeviceIpReportUpsert) {
-		s.SetIPV6(v)
-	})
-}
-
-// UpdateIPV6 sets the "ip_v6" field to the value that was provided on create.
-func (u *DeviceIpReportUpsertBulk) UpdateIPV6() *DeviceIpReportUpsertBulk {
-	return u.Update(func(s *DeviceIpReportUpsert) {
-		s.UpdateIPV6()
-	})
-}
-
-// ClearIPV6 clears the value of the "ip_v6" field.
-func (u *DeviceIpReportUpsertBulk) ClearIPV6() *DeviceIpReportUpsertBulk {
-	return u.Update(func(s *DeviceIpReportUpsert) {
-		s.ClearIPV6()
-	})
 }
 
 // Exec executes the query.

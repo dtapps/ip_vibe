@@ -5,8 +5,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DDNS管理平台</title>
-  <link rel="stylesheet" href="/static/index.css" />
-  <link rel="stylesheet" href="/static/index.dark.css" />
+  <!-- 预加载关键资源 -->
+  <link rel="preload" href="/static/index.css" as="style">
+  <link rel="preload" href="/static/index.dark.css" as="style">
+  <link rel="preload" href="/static/uuid.js" as="script">
+  <link rel="preload" href="/static/index.js" as="script">
+  <!-- 实际引用-->
+  <link rel="stylesheet" href="/static/index.css">
+  <link rel="stylesheet" href="/static/index.dark.css">
   <!-- <base target="_blank"> -->
 </head>
 
@@ -45,6 +51,7 @@
             <tr>
               <th>配置名称</th>
               <th>平台</th>
+              <th>支持服务</th>
               <th style="width: 200px;text-align: center;">操作</th>
             </tr>
           </thead>
@@ -53,6 +60,17 @@
             <tr>
               <td>{{.Name}}</td>
               <td><span class="badge badge-success">{{.Platform}}</span></td>
+              <td>
+                {{if eq .Capability "all"}}
+                <span style="color: var(--primary);">DNS + CDN</span>
+                {{else if eq .Capability "dns"}}
+                <span style="color: var(--success);">仅 DNS</span>
+                {{else if eq .Capability "cdn"}}
+                <span style="color: var(--warning);">仅 CDN</span>
+                {{else}}
+                -
+                {{end}}
+              </td>
               <td>
                 <button class="btn btn-primary btn-sm" onclick="openConfigModal('{{.ID}}')">
                   <svg class="ip-i">
@@ -429,7 +447,8 @@
               <strong>{{.ID}}</strong>:
               <span class="text-muted">{{.ObjType}}</span> →
               <span class="text-success">{{.ObjID}}</span>
-              <span class="badge {{if eq .Status "success"}}badge-success{{else}}badge-danger{{end}}">{{.Message}}</span>
+              <span class="badge {{if eq .Status "
+                success"}}badge-success{{else}}badge-danger{{end}}">{{.Message}}</span>
             </div>
           </div>
           {{end}}
@@ -538,9 +557,11 @@
             <select name="config_id" id="cdn_record_config_id" required onchange="onCdnRecordConfigSelect(this)">
               <option value="" disabled selected>请选择配置</option>
               {{range .Configs}}
+              {{if or (eq .Capability "cdn") (eq .Capability "all")}}
               <option value="{{.ID}}" data-platform="{{.Platform}}">
                 {{.Name}} ({{.Platform}})
               </option>
+              {{end}}
               {{end}}
             </select>
           </div>
@@ -611,9 +632,11 @@
             <select name="config_id" id="dns_record_config_id" required onchange="onDnsRecordConfigSelect(this)">
               <option value="" disabled selected>请选择配置</option>
               {{range .Configs}}
+              {{if or (eq .Capability "dns") (eq .Capability "all")}}
               <option value="{{.ID}}" data-platform="{{.Platform}}">
                 {{.Name}} ({{.Platform}})
               </option>
+              {{end}}
               {{end}}
             </select>
           </div>
@@ -873,7 +896,7 @@
     </div>
 
     <!-- 页脚 -->
-    <footer class="footer">
+    <footer class="footer" id="footer">
       <div class="footer-content">
         <p>Go版本：{{.SystemGoVersion}} &nbsp;|&nbsp; 打包时间：{{.SystemBuildTime}} &nbsp;|&nbsp; Git提交：{{.SystemGitCommit}}
           &nbsp;|&nbsp; 启动时间：{{.SystemMemoryInfo.RuntimeStartTime}} &nbsp;</p>
@@ -895,11 +918,13 @@
       </svg>
     </a>
 
-    <script>
-      window.deviceCode = "{{.DeviceCode}}";   // Go 渲染
-    </script>
-    <script src="/static/uuid.js"></script>
-    <script src="/static/index.js"></script>
+  </div>
+
+  <script>
+    window.deviceCode = "{{.DeviceCode}}";   // Go 渲染
+  </script>
+  <script src="/static/uuid.js"></script>
+  <script src="/static/index.js"></script>
 
 </body>
 

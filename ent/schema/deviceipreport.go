@@ -41,11 +41,13 @@ func (DeviceIpReport) Fields() []ent.Field {
 
 		field.String("ip_v4").
 			Optional().
+			Immutable().
 			Comment("IP地址V4").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("ip_v6").
 			Optional().
+			Immutable().
 			Comment("IP地址V6").
 			Annotations(entsql.WithComments(true)),
 

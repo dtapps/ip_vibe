@@ -338,6 +338,18 @@ type (
 	}
 )
 
+// SetCapability sets the "capability" field.
+func (u *PlatformConfigUpsert) SetCapability(v platformconfig.Capability) *PlatformConfigUpsert {
+	u.Set(platformconfig.FieldCapability, v)
+	return u
+}
+
+// UpdateCapability sets the "capability" field to the value that was provided on create.
+func (u *PlatformConfigUpsert) UpdateCapability() *PlatformConfigUpsert {
+	u.SetExcluded(platformconfig.FieldCapability)
+	return u
+}
+
 // SetName sets the "name" field.
 func (u *PlatformConfigUpsert) SetName(v string) *PlatformConfigUpsert {
 	u.Set(platformconfig.FieldName, v)
@@ -397,9 +409,6 @@ func (u *PlatformConfigUpsertOne) UpdateNewValues() *PlatformConfigUpsertOne {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(platformconfig.FieldID)
 		}
-		if _, exists := u.create.mutation.Capability(); exists {
-			s.SetIgnore(platformconfig.FieldCapability)
-		}
 		if _, exists := u.create.mutation.Platform(); exists {
 			s.SetIgnore(platformconfig.FieldPlatform)
 		}
@@ -435,6 +444,20 @@ func (u *PlatformConfigUpsertOne) Update(set func(*PlatformConfigUpsert)) *Platf
 		set(&PlatformConfigUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetCapability sets the "capability" field.
+func (u *PlatformConfigUpsertOne) SetCapability(v platformconfig.Capability) *PlatformConfigUpsertOne {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.SetCapability(v)
+	})
+}
+
+// UpdateCapability sets the "capability" field to the value that was provided on create.
+func (u *PlatformConfigUpsertOne) UpdateCapability() *PlatformConfigUpsertOne {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.UpdateCapability()
+	})
 }
 
 // SetName sets the "name" field.
@@ -668,9 +691,6 @@ func (u *PlatformConfigUpsertBulk) UpdateNewValues() *PlatformConfigUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(platformconfig.FieldID)
 			}
-			if _, exists := b.mutation.Capability(); exists {
-				s.SetIgnore(platformconfig.FieldCapability)
-			}
 			if _, exists := b.mutation.Platform(); exists {
 				s.SetIgnore(platformconfig.FieldPlatform)
 			}
@@ -707,6 +727,20 @@ func (u *PlatformConfigUpsertBulk) Update(set func(*PlatformConfigUpsert)) *Plat
 		set(&PlatformConfigUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetCapability sets the "capability" field.
+func (u *PlatformConfigUpsertBulk) SetCapability(v platformconfig.Capability) *PlatformConfigUpsertBulk {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.SetCapability(v)
+	})
+}
+
+// UpdateCapability sets the "capability" field to the value that was provided on create.
+func (u *PlatformConfigUpsertBulk) UpdateCapability() *PlatformConfigUpsertBulk {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.UpdateCapability()
+	})
 }
 
 // SetName sets the "name" field.

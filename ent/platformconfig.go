@@ -21,7 +21,7 @@ type PlatformConfig struct {
 	ID int64 `json:"id,omitempty"`
 	// 平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）
 	Capability platformconfig.Capability `json:"capability,omitempty"`
-	// 配置名称（便于展示）
+	// 配置名称
 	Name string `json:"name,omitempty"`
 	// 平台类型（edgeone / cloudflare / dnspod …）
 	Platform platformconfig.Platform `json:"platform,omitempty"`

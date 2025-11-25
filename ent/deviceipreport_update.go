@@ -28,46 +28,6 @@ func (_u *DeviceIpReportUpdate) Where(ps ...predicate.DeviceIpReport) *DeviceIpR
 	return _u
 }
 
-// SetIPV4 sets the "ip_v4" field.
-func (_u *DeviceIpReportUpdate) SetIPV4(v string) *DeviceIpReportUpdate {
-	_u.mutation.SetIPV4(v)
-	return _u
-}
-
-// SetNillableIPV4 sets the "ip_v4" field if the given value is not nil.
-func (_u *DeviceIpReportUpdate) SetNillableIPV4(v *string) *DeviceIpReportUpdate {
-	if v != nil {
-		_u.SetIPV4(*v)
-	}
-	return _u
-}
-
-// ClearIPV4 clears the value of the "ip_v4" field.
-func (_u *DeviceIpReportUpdate) ClearIPV4() *DeviceIpReportUpdate {
-	_u.mutation.ClearIPV4()
-	return _u
-}
-
-// SetIPV6 sets the "ip_v6" field.
-func (_u *DeviceIpReportUpdate) SetIPV6(v string) *DeviceIpReportUpdate {
-	_u.mutation.SetIPV6(v)
-	return _u
-}
-
-// SetNillableIPV6 sets the "ip_v6" field if the given value is not nil.
-func (_u *DeviceIpReportUpdate) SetNillableIPV6(v *string) *DeviceIpReportUpdate {
-	if v != nil {
-		_u.SetIPV6(*v)
-	}
-	return _u
-}
-
-// ClearIPV6 clears the value of the "ip_v6" field.
-func (_u *DeviceIpReportUpdate) ClearIPV6() *DeviceIpReportUpdate {
-	_u.mutation.ClearIPV6()
-	return _u
-}
-
 // Mutation returns the DeviceIpReportMutation object of the builder.
 func (_u *DeviceIpReportUpdate) Mutation() *DeviceIpReportMutation {
 	return _u.mutation
@@ -126,14 +86,8 @@ func (_u *DeviceIpReportUpdate) sqlSave(ctx context.Context) (_node int, err err
 			}
 		}
 	}
-	if value, ok := _u.mutation.IPV4(); ok {
-		_spec.SetField(deviceipreport.FieldIPV4, field.TypeString, value)
-	}
 	if _u.mutation.IPV4Cleared() {
 		_spec.ClearField(deviceipreport.FieldIPV4, field.TypeString)
-	}
-	if value, ok := _u.mutation.IPV6(); ok {
-		_spec.SetField(deviceipreport.FieldIPV6, field.TypeString, value)
 	}
 	if _u.mutation.IPV6Cleared() {
 		_spec.ClearField(deviceipreport.FieldIPV6, field.TypeString)
@@ -158,46 +112,6 @@ type DeviceIpReportUpdateOne struct {
 	hooks     []Hook
 	mutation  *DeviceIpReportMutation
 	modifiers []func(*sql.UpdateBuilder)
-}
-
-// SetIPV4 sets the "ip_v4" field.
-func (_u *DeviceIpReportUpdateOne) SetIPV4(v string) *DeviceIpReportUpdateOne {
-	_u.mutation.SetIPV4(v)
-	return _u
-}
-
-// SetNillableIPV4 sets the "ip_v4" field if the given value is not nil.
-func (_u *DeviceIpReportUpdateOne) SetNillableIPV4(v *string) *DeviceIpReportUpdateOne {
-	if v != nil {
-		_u.SetIPV4(*v)
-	}
-	return _u
-}
-
-// ClearIPV4 clears the value of the "ip_v4" field.
-func (_u *DeviceIpReportUpdateOne) ClearIPV4() *DeviceIpReportUpdateOne {
-	_u.mutation.ClearIPV4()
-	return _u
-}
-
-// SetIPV6 sets the "ip_v6" field.
-func (_u *DeviceIpReportUpdateOne) SetIPV6(v string) *DeviceIpReportUpdateOne {
-	_u.mutation.SetIPV6(v)
-	return _u
-}
-
-// SetNillableIPV6 sets the "ip_v6" field if the given value is not nil.
-func (_u *DeviceIpReportUpdateOne) SetNillableIPV6(v *string) *DeviceIpReportUpdateOne {
-	if v != nil {
-		_u.SetIPV6(*v)
-	}
-	return _u
-}
-
-// ClearIPV6 clears the value of the "ip_v6" field.
-func (_u *DeviceIpReportUpdateOne) ClearIPV6() *DeviceIpReportUpdateOne {
-	_u.mutation.ClearIPV6()
-	return _u
 }
 
 // Mutation returns the DeviceIpReportMutation object of the builder.
@@ -288,14 +202,8 @@ func (_u *DeviceIpReportUpdateOne) sqlSave(ctx context.Context) (_node *DeviceIp
 			}
 		}
 	}
-	if value, ok := _u.mutation.IPV4(); ok {
-		_spec.SetField(deviceipreport.FieldIPV4, field.TypeString, value)
-	}
 	if _u.mutation.IPV4Cleared() {
 		_spec.ClearField(deviceipreport.FieldIPV4, field.TypeString)
-	}
-	if value, ok := _u.mutation.IPV6(); ok {
-		_spec.SetField(deviceipreport.FieldIPV6, field.TypeString, value)
 	}
 	if _u.mutation.IPV6Cleared() {
 		_spec.ClearField(deviceipreport.FieldIPV6, field.TypeString)

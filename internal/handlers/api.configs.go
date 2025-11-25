@@ -111,6 +111,7 @@ func UpdateConfig(c *gin.Context) {
 	saveConfig, err := global.GvaDb.PlatformConfig.UpdateOne(firstConfig).
 		SetName(requestParams.Name).
 		SetConfigJSON([]byte(requestParams.ConfigJSON)).
+		SetCapability(platformconfig.Capability(requestParams.Capability)).
 		Save(c)
 	if err != nil {
 		if global.GvaEnv.DEBUG {

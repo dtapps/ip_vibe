@@ -38,12 +38,11 @@ func (PlatformConfig) Fields() []ent.Field {
 		field.Enum("capability").
 			Default("all").
 			Values("dns", "cdn", "all").
-			Immutable().
 			Comment("平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
-			Comment("配置名称（便于展示）").
+			Comment("配置名称").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("platform").
