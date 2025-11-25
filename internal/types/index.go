@@ -22,5 +22,7 @@ type Indexesponse struct {
 	SystemGitCommit  string                         `json:"system_git_commit"`
 	SystemBuildTime  string                         `json:"system_build_time"`
 	SystemGoVersion  string                         `json:"system_go_version"`
+	SystemOS         string                         `json:"system_os"`
+	SystemArch       string                         `json:"system_arch"`
 	SystemMemoryInfo system_helper.ReturnMemoryInfo `json:"memory_info"`
 }

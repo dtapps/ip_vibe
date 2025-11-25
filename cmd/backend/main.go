@@ -37,6 +37,8 @@ func init() {
 	global.GvaGitCommit = commit
 	global.GvaBuildTime = buildTime
 	global.GvaGoVersion = runtime.Version()
+	global.GvaOS = runtime.GOOS
+	global.GvaArch = runtime.GOARCH
 }
 
 func main() {

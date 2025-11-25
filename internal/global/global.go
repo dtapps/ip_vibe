@@ -22,6 +22,8 @@ var (
 	GvaGitCommit string // Git 提交 ID
 	GvaBuildTime string // 构建时间
 	GvaGoVersion string // Go 版本
+	GvaOS        string // 操作系统
+	GvaArch      string // CPU 架构
 
 	GvaGoCron        gocron.Scheduler // 定时任务
 	GvaGoCronRunning int32            // 定时任务状态 0=停 1=运行

@@ -30,6 +30,12 @@ func NewService(cron gocron.Scheduler) *Service {
 	// 启用请求跟踪以获取延迟信息
 	client.EnableTrace()
 
+	// 设置自定义请求头
+	client.SetHeader("X-Version", global.GvaVersion)
+	client.SetHeader("X-Git-Commit", global.GvaGitCommit)
+	client.SetHeader("X-Build-Time", global.GvaBuildTime)
+	client.SetHeader("X-Go-Version", global.GvaGoVersion)
+
 	return &Service{
 		cron: cron,
 		log:  slog.Default(),

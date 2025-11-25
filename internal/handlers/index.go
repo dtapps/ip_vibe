@@ -164,6 +164,8 @@ func Index(c *gin.Context) {
 	pageData.SystemGitCommit = global.GvaGitCommit
 	pageData.SystemBuildTime = global.GvaBuildTime
 	pageData.SystemGoVersion = global.GvaGoVersion
+	pageData.SystemOS = global.GvaOS
+	pageData.SystemArch = global.GvaArch
 
 	// 获取系统内存信息
 	pageData.SystemMemoryInfo = systemHelper.GetMemoryInfo()
