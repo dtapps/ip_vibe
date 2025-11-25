@@ -2,6 +2,7 @@ package operation_logs_helper
 
 import (
 	"context"
+	"log/slog"
 	"vibe_ip/ent"
 	"vibe_ip/ent/operationlog"
 )
@@ -43,6 +44,11 @@ func (s *OperationLogHelper) RecordDataCreate(ctx context.Context, obj_id int64,
 		SetStatus(status).
 		SetMessage(message).
 		Exec(ctx)
+	if err != nil {
+		slog.ErrorContext(ctx, "记录数据创建操作日志失败",
+			slog.Any("err", err),
+		)
+	}
 	return err
 }
 
@@ -59,6 +65,11 @@ func (s *OperationLogHelper) RecordDataUpdate(ctx context.Context, obj_id int64,
 		SetStatus(status).
 		SetMessage(message).
 		Exec(ctx)
+	if err != nil {
+		slog.ErrorContext(ctx, "记录数据更新操作日志失败",
+			slog.Any("err", err),
+		)
+	}
 	return err
 }
 
@@ -75,5 +86,10 @@ func (s *OperationLogHelper) RecordDataDelete(ctx context.Context, obj_id int64,
 		SetStatus(status).
 		SetMessage(message).
 		Exec(ctx)
+	if err != nil {
+		slog.ErrorContext(ctx, "记录数据删除操作日志失败",
+			slog.Any("err", err),
+		)
+	}
 	return err
 }

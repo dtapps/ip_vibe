@@ -186,7 +186,7 @@ func DeleteDevice(c *gin.Context) {
 	// 提交事务
 	_ = tx.Commit()
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "删除设备")
+	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "删除设备")
 	successResponse(c, gin.H{
 		"id": firstDevice.ID,
 	})

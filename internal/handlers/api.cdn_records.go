@@ -107,7 +107,7 @@ func CreateCdnRecord(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "创建CDN记录")
+	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "创建CDN记录")
 	successResponse(c, gin.H{
 		"id": saveCdnRecord.ID,
 	})
@@ -170,7 +170,7 @@ func DeleteCdnRecord(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "删除CDN记录")
+	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "删除CDN记录")
 	successResponse(c, gin.H{
 		"id": firstCdnRecord.ID,
 	})

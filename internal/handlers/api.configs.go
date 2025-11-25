@@ -81,7 +81,7 @@ func CreateConfig(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "创建配置")
+	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "创建配置")
 	successResponse(c, gin.H{
 		"id": saveConfig.ID,
 	})
