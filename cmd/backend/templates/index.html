@@ -62,11 +62,11 @@
               <td><span class="badge badge-success">{{.Platform}}</span></td>
               <td>
                 {{if eq .Capability "all"}}
-                <span style="color: var(--primary);">DNS + CDN</span>
-                {{else if eq .Capability "dns"}}
-                <span style="color: var(--success);">仅 DNS</span>
+                <span style="color: var(--primary);">CDN + DNS</span>
                 {{else if eq .Capability "cdn"}}
                 <span style="color: var(--warning);">仅 CDN</span>
+                {{else if eq .Capability "dns"}}
+                <span style="color: var(--success);">仅 DNS</span>
                 {{else}}
                 -
                 {{end}}
@@ -496,21 +496,21 @@
         <form id="configForm">
 
           <div class="form-group">
-            <label>服务能力</label>
+            <label>服务能力 <span style="color:red">*</span></label>
             <select name="capability" id="config_capability" required onchange="changeConfigCapability(this)">
-              <option value="all" selected>DNS+CDN</option>
-              <option value="dns">DNS</option>
-              <option value="cdn">CDN</option>
+              <option value="all" selected>CDN + DNS</option>
+              <option value="cdn">仅 CDN</option>
+              <option value="dns">仅 DNS</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label>配置名称</label>
+            <label>配置名称 <span style="color:red">*</span></label>
             <input type="text" name="name" id="config_name" required placeholder="如: 我的EdgeOne">
           </div>
 
           <div class="form-group">
-            <label>平台类型</label>
+            <label>平台类型 <span style="color:red">*</span></label>
             <select name="platform" id="config_platform" required onchange="changeConfigPlatform(this.value)">
               <option value="" disabled selected>请选择平台</option>
               <option value="edgeone">Tencent EdgeOne</option>
@@ -768,8 +768,8 @@
           </div>
 
           <div class="form-group">
-            <label>选择设备（Ctrl/⌘ 多选）</label>
-            <select name="devices" id="ip_group_devices" multiple onchange="onIpGroupDevicesSelect(this)"
+            <label>选择设备（Ctrl/⌘ 多选） <span style="color:red">*</span></label>
+            <select name="devices" id="ip_group_devices" required multiple onchange="onIpGroupDevicesSelect(this)"
               class="multiselect-device"></select>
           </div>
 
