@@ -46,11 +46,11 @@ func main() {
 	ctx := context.Background()
 
 	initialize.InitEnt(ctx)             // 初始化 ent
-	initialize.InitGoCron(ctx)          // 初始化 GoCron
+	initialize.InitGoCron(ctx)          // 初始化 GoCron 调度器
 	initialize.InitSLog(ctx, "backend") // 初始化 日志
 	defer func() {
 		initialize.CloseEnt(ctx)    // 关闭 ent
-		initialize.CloseGoCron(ctx) // 关闭 GoCron
+		initialize.CloseGoCron(ctx) // 关闭 GoCron 调度器
 	}()
 
 	initialize.InitOperationLogHelper(global.GvaDb) // 初始化操作日志助手
@@ -212,8 +212,9 @@ func main() {
 			tasks.GET("/:id", handlers.GetTask)
 			tasks.POST("/:id", handlers.RunTask)
 			tasks.DELETE("/:id", handlers.DeleteTask)
-			tasks.POST("/stop", handlers.StopTask)
 			tasks.POST("/start", handlers.StartTask)
+			tasks.POST("/stop", handlers.StopTask)
+			tasks.POST("/clean", handlers.CleanTask)
 		}
 	}
 
@@ -225,7 +226,7 @@ func main() {
 		})
 	})
 
-	// 启动 Gocron
+	// 启动 GoCron 调度器
 	initialize.StartGoCron(ctx)
 
 	// 启动IP上报任务

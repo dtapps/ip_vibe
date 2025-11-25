@@ -755,6 +755,16 @@ async function stopTask() {
     }
 }
 
+// 清理全部任务
+async function cleanTask() {
+    if (confirm('确定清理全部任务？')) {
+        await API.post(`/api/tasks/clean`);
+
+        // 刷新页面
+        location.reload();
+    }
+}
+
 // 运行某任务
 async function runTask(id) {
     if (confirm('确定运行此任务？')) {

@@ -16,7 +16,7 @@ import (
 
 type Service struct {
 	cron   gocron.Scheduler // 定时任务调度器
-	job    gocron.Job       // 任务
+	job    gocron.Job       // IP上报任务
 	log    *slog.Logger     // 日志记录器
 	client *resty.Client    // Resty HTTP 客户端
 }
@@ -37,9 +37,8 @@ func NewService(cron gocron.Scheduler) *Service {
 	client.SetHeader("X-Go-Version", global.GvaGoVersion)
 
 	return &Service{
-		cron: cron,
-		log:  slog.Default(),
-		// log:    slog.With("component", "reporter"), // 日志记录器
+		cron:   cron,
+		log:    slog.With("component", "ip_reporter"),
 		client: client,
 	}
 }

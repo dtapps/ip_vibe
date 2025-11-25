@@ -7,6 +7,7 @@ import (
 	"time"
 	"vibe_ip/ent"
 	"vibe_ip/ent/device"
+	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/ip_helper"
@@ -18,16 +19,20 @@ import (
 
 // IP上报
 type IpReportService struct {
-	db   *ent.Client
-	cron gocron.Scheduler
-	job  gocron.Job
-	log  *slog.Logger
+	db   *ent.Client      // 数据库
+	cron gocron.Scheduler // 定时任务调度器
+	job  gocron.Job       // IP上报任务
+	log  *slog.Logger     // 日志记录器
 }
 
 func NewIpReportService(db *ent.Client, cron gocron.Scheduler) *IpReportService {
-	return &IpReportService{db: db, cron: cron, log: slog.With(
-		slog.String("service", "IpReportService"),
-	)}
+	return &IpReportService{
+		db:   db,
+		cron: cron,
+		log: slog.With(
+			slog.String("component", "ip_report"),
+		),
+	}
 }
 
 func (s *IpReportService) StartJob(ctx context.Context) (err error) {
@@ -191,12 +196,14 @@ func (s *IpReportService) runTask() {
 		params.ID = firstDevice.ID
 		if firstDevice.IPV4 != params.IPV4Addr || firstDevice.IPV6 != params.IPV6Addr {
 			// 更新设备IP
+			isUpdateDeviceName := false
 			updateDevice := tx.Device.UpdateOne(firstDevice).
 				SetIPV4(params.IPV4Addr).
 				SetIPV6(params.IPV6Addr).
 				SetLastReportedAt(time.Now()).
 				SetLastHeartbeatAt(time.Now())
 			if params.DeviceName != "" && firstDevice.Name != params.DeviceName {
+				isUpdateDeviceName = true
 				updateDevice.SetName(params.DeviceName)
 			}
 			err = updateDevice.Exec(ctx)
@@ -237,6 +244,19 @@ func (s *IpReportService) runTask() {
 					slog.Any("err", err),
 				)
 				return
+			}
+			if isUpdateDeviceName {
+				err = tx.IpGroup.Update().
+					Where(ipgroup.DescriptionEQ(params.DeviceCode)).
+					SetName(params.DeviceName).
+					Exec(ctx)
+				if err != nil {
+					_ = tx.Rollback()
+					s.log.ErrorContext(ctx, "更新IP组名称失败",
+						slog.Any("err", err),
+					)
+					return
+				}
 			}
 			msg = "更新设备IP成功"
 		} else {

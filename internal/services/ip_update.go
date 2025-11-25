@@ -23,21 +23,21 @@ import (
 
 // IP更新
 type IpUpdateService struct {
-	log    *slog.Logger
-	db     *ent.Client
-	cron   gocron.Scheduler
-	dnsJob gocron.Job
-	cdnJob gocron.Job
+	db     *ent.Client      // 数据库
+	cron   gocron.Scheduler // 定时任务调度器
+	dnsJob gocron.Job       // DNS刷新任务
+	cdnJob gocron.Job       // CDN刷新任务
+	log    *slog.Logger     // 日志记录器
 }
 
 // NewIpUpdateService 创建 IP 更新服务
 func NewIpUpdateService(db *ent.Client, cron gocron.Scheduler) *IpUpdateService {
 	return &IpUpdateService{
-		log: slog.With(
-			slog.String("service", "IpUpdateService"),
-		),
 		db:   db,
 		cron: cron,
+		log: slog.With(
+			slog.String("component", "ip_update"),
+		),
 	}
 }
 

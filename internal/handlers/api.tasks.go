@@ -1,27 +1,32 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/initialize"
+	"vibe_ip/internal/services"
 
 	"github.com/gin-gonic/gin"
 )
 
 // 获取全部任务
 func GetTasks(c *gin.Context) {
-	// 查询全部任务
+	// 任务助手
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
-	successResponse(c, jobHelper.GetJobsData(5))
+	// 获取全部任务
+	jobs := jobHelper.GetJobsData(5)
+	successResponse(c, jobs)
 }
 
 // 获取任务
 func GetTask(c *gin.Context) {
 	// 请求参数
 	id := c.Param("id")
-	// 查询全部任务
+	// 任务助手
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
+	// 获取全部任务
 	jobs := jobHelper.GetJobsData(15)
 	for _, job := range jobs {
 		if job.ID == id {
@@ -36,11 +41,14 @@ func GetTask(c *gin.Context) {
 func RunTask(c *gin.Context) {
 	// 请求参数
 	id := c.Param("id")
-	// 查询全部任务
+	// 任务助手
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
 	// 运行任务
 	err := jobHelper.RunJob(id)
 	if err != nil {
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("运行任务: %v - %s\n", id, err.Error())
+		}
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
@@ -51,25 +59,74 @@ func RunTask(c *gin.Context) {
 func DeleteTask(c *gin.Context) {
 	// 请求参数
 	id := c.Param("id")
-	// 查询全部任务
+	// 任务助手
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
 	// 删除任务
 	err := jobHelper.DeleteJob(id)
 	if err != nil {
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("删除任务: %v - %s\n", id, err.Error())
+		}
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
 	successResponse(c, map[string]string{"message": "任务删除成功"})
 }
 
+// 启动调度器
+func StartTask(c *gin.Context) {
+	// 任务助手
+	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
+	// 获取全部任务
+	jobs := jobHelper.GetJobsData(5)
+	// 启动 GoCron 调度器
+	initialize.StartGoCron(c)
+	if len(jobs) == 0 {
+		// 启动IP上报任务
+		ipRepost := services.NewIpReportService(global.GvaDb, global.GvaGoCron)
+		if err := ipRepost.StartJob(c); err != nil {
+			if global.GvaEnv.DEBUG {
+				fmt.Printf("启动IP上报任务失败: %s\n", err.Error())
+			}
+			errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("启动IP上报任务失败: %v", err))
+			return
+		}
+		// 启动IP更新任务
+		ipUpdate := services.NewIpUpdateService(global.GvaDb, global.GvaGoCron)
+		if err := ipUpdate.StartDnsJob(c); err != nil {
+			if global.GvaEnv.DEBUG {
+				fmt.Printf("启动DNS更新任务失败: %s\n", err.Error())
+			}
+			errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("启动DNS更新任务失败: %v", err))
+			return
+		}
+	}
+	successResponse(c, map[string]string{"message": "调度器启动成功"})
+}
+
 // 停止调度器
 func StopTask(c *gin.Context) {
+	// 停止 GoCron 调度器
 	initialize.StopGoCron(c)
 	successResponse(c, map[string]string{"message": "调度器停止成功"})
 }
 
-// 启动调度器
-func StartTask(c *gin.Context) {
-	initialize.StartGoCron(c)
-	successResponse(c, map[string]string{"message": "调度器启动成功"})
+// 清理全部任务
+func CleanTask(c *gin.Context) {
+	// 任务助手
+	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
+	// 获取全部任务
+	jobs := jobHelper.GetJobsData(5)
+	// 清理任务
+	for _, job := range jobs {
+		err := jobHelper.DeleteJob(job.ID)
+		if err != nil {
+			if global.GvaEnv.DEBUG {
+				fmt.Printf("清理全部任务: %s\n", err.Error())
+			}
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+	}
+	successResponse(c, map[string]string{"message": "任务清理成功"})
 }

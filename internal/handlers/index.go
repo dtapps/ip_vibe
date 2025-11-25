@@ -125,8 +125,9 @@ func Index(c *gin.Context) {
 			})
 		}
 	}
-	// 查询全部任务
+	// 任务助手
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
+	// 获取全部任务
 	pageData.Tasks = jobHelper.GetJobsData(5)
 	// 查询全部操作日志
 	allOperationLog, err := global.GvaDb.OperationLog.Query().

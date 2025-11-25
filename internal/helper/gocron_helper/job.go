@@ -21,10 +21,12 @@ type JobData struct {
 	ScheduleDetail string   `json:"schedule_detail"` // 任务调度表达式详情
 }
 
+// 任务助手
 type JobHelper struct {
 	Scheduler gocron.Scheduler
 }
 
+// 新建任务助手
 func NewJobHelper(scheduler gocron.Scheduler) *JobHelper {
 	return &JobHelper{
 		Scheduler: scheduler,

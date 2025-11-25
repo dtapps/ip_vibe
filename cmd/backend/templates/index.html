@@ -18,19 +18,19 @@
 
 <body>
   <div class="nav-sidebar">
-    <a href="#section-config" aria-label="跳转到平台配置">配置</a>
-    <a href="#section-cdn-record" aria-label="跳转到 CDN 记录">CDN</a>
-    <a href="#section-dns-record" aria-label="跳转到 DNS 记录">DNS</a>
-    <a href="#section-devices" aria-label="跳转到设备上报">设备</a>
-    <a href="#section-ip-groups" aria-label="跳转到 IP 组">IP 组</a>
-    <a href="#section-tasks" aria-label="跳转到任务管理">任务</a>
-    <a href="#section-logs" aria-label="跳转到操作日志">日志</a>
+    <a href="#sectionConfig" aria-label="跳转到平台配置">配置</a>
+    <a href="#sectionCdnRecord" aria-label="跳转到 CDN 记录">CDN</a>
+    <a href="#sectionDnsRecord" aria-label="跳转到 DNS 记录">DNS</a>
+    <a href="#sectionDevices" aria-label="跳转到设备上报">设备</a>
+    <a href="#sectionIpGroup" aria-label="跳转到 IP 组">IP 组</a>
+    <a href="#sectionTask" aria-label="跳转到任务管理">任务</a>
+    <a href="#sectionLog" aria-label="跳转到操作日志">日志</a>
   </div>
   <div class="container">
     <h1>🌐 DDNS管理平台</h1>
 
     <!-- 平台配置 -->
-    <div class="card" id="section-config">
+    <div class="card" id="sectionConfig">
       <div class="card-header">
         <h2 class="h2-icon">
           <svg class="ip-i">
@@ -89,7 +89,7 @@
     </div>
 
     <!-- CDN记录管理 -->
-    <div class="card" id="section-cdn-record">
+    <div class="card" id="sectionCdnRecord">
       <div class="card-header">
         <h2 class="h2-icon">
           <svg class="ip-i">
@@ -166,7 +166,7 @@
     </div>
 
     <!-- DNS记录管理 -->
-    <div class="card" id="section-dns-record">
+    <div class="card" id="sectionDnsRecord">
       <div class="card-header">
         <h2 class="h2-icon">
           <svg class="ip-i">
@@ -237,7 +237,7 @@
     </div>
 
     <!-- 设备实时上报 -->
-    <div class="card" id="section-devices">
+    <div class="card" id="sectionDevices">
       <div class="card-header">
         <h2 class="h2-icon">
           <svg class="ip-i">
@@ -301,7 +301,7 @@
     </div>
 
     <!-- IP 组（设备维度） -->
-    <div class="card" id="section-ip-groups">
+    <div class="card" id="sectionIpGroup">
       <div class="card-header">
         <h2 class="h2-icon">
           <svg class="ip-i">
@@ -361,7 +361,7 @@
     </div>
 
     <!-- 任务管理 -->
-    <div class="card" id="section-tasks">
+    <div class="card" id="sectionTask">
       <div class="card-header">
         <h2 class="h2-icon">
           <svg class="ip-i">
@@ -379,6 +379,10 @@
             <svg class="ip-i">
               <use href="/static/icons.svg#ip-stop" />
             </svg> 停止</button>
+          <button class="btn btn-warning" disabled>
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-close" />
+            </svg> 清理</button>
           {{else}}
           <button class="btn btn-warning" onclick="startTask()">
             <svg class="ip-i">
@@ -388,6 +392,10 @@
             <svg class="ip-i">
               <use href="/static/icons.svg#ip-stop" />
             </svg> 停止</button>
+          <button class="btn btn-warning" onclick="cleanTask()">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-close" />
+            </svg> 清理</button>
           {{end}}
         </div>
       </div>
@@ -398,8 +406,7 @@
               <th>编号</th>
               <th>名称</th>
               <th>调度表达式</th>
-              <th>上次执行时间</th>
-              <th>下一次执行时间</th>
+              <th>执行时间</th>
               <th style="width: 300px;text-align: center;">操作</th>
             </tr>
           </thead>
@@ -410,12 +417,11 @@
               <td>{{.Name}}</td>
               <td>{{.ScheduleDetail}}</td>
               <td>{{.LastRun}}</td>
-              <td>{{.NextRun}}</td>
               <td>
                 <button class="btn btn-sm btn-outline-info" onclick="viewLiveExecutionTime('{{.ID}}','{{.Name}}')">
                   <svg class="ip-i">
                     <use href="/static/icons.svg#ip-eyes" />
-                  </svg> 执行时间</button>
+                  </svg> 下次执行时间</button>
                 <button class="btn btn-success btn-sm" onclick="runTask('{{.ID}}')">
                   <svg class="ip-i">
                     <use href="/static/icons.svg#ip-running" />
@@ -429,7 +435,7 @@
     </div>
 
     <!-- 操作日志 -->
-    <div class="card" id="section-logs">
+    <div class="card" id="sectionLog">
       <div class="card-header">
         <h2 class="h2-icon">
           <svg class="ip-i">
