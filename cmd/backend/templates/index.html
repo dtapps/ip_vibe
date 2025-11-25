@@ -447,8 +447,11 @@
               <strong>{{.ID}}</strong>:
               <span class="text-muted">{{.ObjType}}</span> →
               <span class="text-success">{{.ObjID}}</span>
-              <span class="badge {{if eq .Status "
-                success"}}badge-success{{else}}badge-danger{{end}}">{{.Message}}</span>
+              {{if eq .Status "success"}}
+              <span class="badge badge-success">{{.Message}}</span>
+              {{else}}
+              <span class="badge badge-danger">{{.Message}}</span>
+              {{end}}
             </div>
           </div>
           {{end}}
