@@ -147,7 +147,22 @@
 
     .nav-sidebar a:hover,
     .nav-sidebar a:focus {
-        background: #334155; /* 深色悬停背景 */
-        color: var(--primary); /* 主题色 */
+        background: #334155;
+        /* 深色悬停背景 */
+        color: var(--primary);
+        /* 主题色 */
+    }
+
+    /* 暗色模式下 Tooltip 颜色覆盖 */
+    .btn-tooltip-wrapper::after {
+        background: #f1f5f9;
+        /* 浅灰色背景，与亮色模式中的深色背景相反 */
+        color: var(--text);
+        /* 深色文字 */
+    }
+
+    /* 箭头颜色覆盖 */
+    .btn-tooltip-wrapper::before {
+        border-top-color: #f1f5f9;
     }
 }

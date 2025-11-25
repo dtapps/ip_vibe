@@ -479,9 +479,10 @@ button:disabled,
 }
 
 /* 刷新页面 */
-.refresh-page {position: fixed;
+.refresh-page {
+    position: fixed;
     right: 24px;
-    bottom: 78px; 
+    bottom: 78px;
     width: 44px;
     height: 44px;
     border-radius: 50%;
@@ -495,7 +496,7 @@ button:disabled,
 }
 
 @media (prefers-reduced-motion:reduce) {
-   .refresh-page {
+    .refresh-page {
         transition: none;
     }
 }
@@ -646,24 +647,30 @@ button:disabled,
 /* 左侧固定导航栏样式 */
 .nav-sidebar {
     position: fixed;
-    top: 50%; /* 垂直居中 */
-    left: 20px; /* 距离左侧 20px */
+    top: 50%;
+    /* 垂直居中 */
+    left: 20px;
+    /* 距离左侧 20px */
     transform: translateY(-50%);
-    z-index: 500; /* 确保它在页面内容上方 */
-    
+    z-index: 500;
+    /* 确保它在页面内容上方 */
+
     display: flex;
     flex-direction: column;
-    gap: 8px; /* 链接间距 */
+    gap: 8px;
+    /* 链接间距 */
     padding: 12px;
     border-radius: var(--radius);
-    background: var(--card); /* 卡片背景色 */
+    background: var(--card);
+    /* 卡片背景色 */
     box-shadow: var(--shadow);
     border: 1px solid var(--border);
 }
 
 .nav-sidebar a {
     text-decoration: none;
-    color: var(--text-secondary); /* 次要文字颜色 */
+    color: var(--text-secondary);
+    /* 次要文字颜色 */
     padding: 6px 10px;
     border-radius: 6px;
     font-size: 14px;
@@ -674,14 +681,16 @@ button:disabled,
 
 .nav-sidebar a:hover,
 .nav-sidebar a:focus {
-    color: var(--primary); /* 悬停使用主题色 */
-    background: #f1f5f9; /* 浅色悬停背景 */
+    color: var(--primary);
+    /* 悬停使用主题色 */
+    background: #f1f5f9;
+    /* 浅色悬停背景 */
 }
 
 /* 调整容器内容，避免被导航栏遮挡 */
 .container {
     /* max-width: 1400px; */
-     /* 留出左侧导航栏的空间 */
+    /* 留出左侧导航栏的空间 */
     /* margin-left: 100px; */
     /* margin-right: auto; */
 
@@ -690,9 +699,97 @@ button:disabled,
     /* max-width: 1400px; */
     /* 原始设置 */
     /* margin: 0 auto;  */
-    
+
     /* 修正为给左侧导航栏留出空间 */
     /* 20px 边距 + 导航栏宽度(约50px) + 间距(30px) = 100px */
     /* margin-left: 100px;  */
     /* margin-right: 20px; */
+}
+
+/* 1. 包裹器样式：设置定位上下文和 inline-block */
+.btn-tooltip-wrapper {
+    position: relative;
+    /* 建立定位上下文 */
+    display: inline-block;
+    /* 确保悬停区域不会扩展到整行 */
+    cursor: default;
+    /* 告诉用户这是不可点击的 */
+}
+
+/* 2. 提示框本体 (使用 ::after 伪元素) */
+.btn-tooltip-wrapper::after {
+    /* 获取 title 属性的内容作为提示文本 */
+    content: attr(title);
+
+    /* 样式 */
+    position: absolute;
+    z-index: 9999;
+    /* 确保在最上层 */
+    padding: 6px 10px;
+    border-radius: 4px;
+
+    /* 颜色和背景 (亮色模式) */
+    background: var(--text);
+    /* 深色背景 */
+    color: var(--card);
+    /* 浅色文字 */
+
+    font-size: 12px;
+    white-space: nowrap;
+    /* 确保提示文本不换行 */
+
+    /* **** 关键修改：定位到上方右侧，解决溢出问题 **** */
+    bottom: calc(100% + 8px);
+    /* 向上抬高，距离按钮 8px */
+    right: 0;
+    /* 从右侧对齐 */
+    transform: none;
+    /* 移除居中 transform */
+
+    /* 默认隐藏 */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+/* 3. 悬停显示 */
+.btn-tooltip-wrapper:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+}
+
+/* 4. 可选：添加小箭头 (使用 ::before 伪元素) */
+.btn-tooltip-wrapper::before {
+    content: '';
+    position: absolute;
+    z-index: 9998;
+
+    /* 定位：配合 right: 0，将箭头放在 Tooltip 下方靠右的位置 */
+    bottom: calc(100% + 4px);
+    right: 12px;
+    /* 箭头距离右边缘的距离，可调整 */
+
+    border: 5px solid transparent;
+    border-top-color: var(--text);
+    /* 箭头颜色与提示框背景色一致 */
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    transform: none;
+    /* 移除居中的 transform */
+}
+
+.btn-tooltip-wrapper:hover::before {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 5. 修正禁用按钮的 pointer-events */
+.btn-tooltip-wrapper>button[disabled] {
+    pointer-events: none;
+    /* 确保点击事件被忽略 */
 }

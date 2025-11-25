@@ -18,7 +18,7 @@
 
 <body>
   <div class="nav-sidebar">
-    <a href="#sectionConfig" aria-label="跳转到平台配置">配置</a>
+    <a href="#sectionConfig" aria-label="跳转到平台配置">平台</a>
     <a href="#sectionCdnRecord" aria-label="跳转到 CDN 记录">CDN</a>
     <a href="#sectionDnsRecord" aria-label="跳转到 DNS 记录">DNS</a>
     <a href="#sectionDevices" aria-label="跳转到设备上报">设备</a>
@@ -153,10 +153,19 @@
                   <svg class="ip-i">
                     <use href="/static/icons.svg#ip-eyes" />
                   </svg> 实时IP</button>
+                {{if .IsActive}}
+                <span class="btn-tooltip-wrapper" title="活跃状态时不允许删除，请先禁止后操作再删除！">
+                  <button class="btn btn-sm btn-danger" disabled>
+                    <svg class="ip-i">
+                      <use href="/static/icons.svg#ip-delete" />
+                    </svg> 删除</button>
+                </span>
+                {{else}}
                 <button class="btn btn-sm btn-danger" onclick="deleteCdnRecord('{{.ID}}')">
                   <svg class="ip-i">
                     <use href="/static/icons.svg#ip-delete" />
                   </svg> 删除</button>
+                {{end}}
               </td>
             </tr>
             {{end}}
@@ -219,15 +228,26 @@
                     <use href="/static/icons.svg#ip-eyes" />
                   </svg> 实时IP</button>
                 {{else}}
-                <button class="btn btn-sm btn-outline-info" disabled>
-                  <svg class="ip-i">
-                    <use href="/static/icons.svg#ip-eyes" />
-                  </svg> 实时IP</button>
+                <span class="btn-tooltip-wrapper" title="未绑定IP组，不允许查看实时IP">
+                  <button class="btn btn-sm btn-outline-info" disabled>
+                    <svg class="ip-i">
+                      <use href="/static/icons.svg#ip-eyes" />
+                    </svg> 实时IP</button>
+                </span>
                 {{end}}
+                {{if .IsActive}}
+                <span class="btn-tooltip-wrapper" title="活跃状态时不允许删除，请先禁止后操作再删除！">
+                  <button class="btn btn-sm btn-danger" disabled>
+                    <svg class="ip-i">
+                      <use href="/static/icons.svg#ip-delete" />
+                    </svg> 删除</button>
+                </span>
+                {{else}}
                 <button class="btn btn-sm btn-danger" onclick="deleteDnsRecord('{{.ID}}')">
                   <svg class="ip-i">
                     <use href="/static/icons.svg#ip-delete" />
                   </svg> 删除</button>
+                {{end}}
               </td>
             </tr>
             {{end}}
@@ -287,10 +307,12 @@
                     <use href="/static/icons.svg#ip-delete" />
                   </svg> 删除</button>
                 {{else}}
-                <button class="btn btn-sm btn-danger" disabled>
-                  <svg class="ip-i">
-                    <use href="/static/icons.svg#ip-delete" />
-                  </svg> 删除</button>
+                <span class="btn-tooltip-wrapper" title="自注册设备不允许删除">
+                  <button class="btn btn-sm btn-danger" disabled>
+                    <svg class="ip-i">
+                      <use href="/static/icons.svg#ip-delete" />
+                    </svg> 删除</button>
+                </span>
                 {{end}}
               </td>
             </tr>
@@ -347,10 +369,12 @@
                     <use href="/static/icons.svg#ip-delete" />
                   </svg> 删除</button>
                 {{else}}
-                <button class="btn btn-sm btn-danger" disabled>
-                  <svg class="ip-i">
-                    <use href="/static/icons.svg#ip-delete" />
-                  </svg> 删除</button>
+                <span class="btn-tooltip-wrapper" title="自注册设备关联IP组不允许删除">
+                  <button class="btn btn-sm btn-danger" disabled>
+                    <svg class="ip-i">
+                      <use href="/static/icons.svg#ip-delete" />
+                    </svg> 删除</button>
+                </span>
                 {{end}}
               </td>
             </tr>
@@ -911,7 +935,8 @@
           &nbsp;|&nbsp; 启动时间：{{.SystemMemoryInfo.RuntimeStartTime}} &nbsp;</p>
         <p>GC总次数：{{.SystemMemoryInfo.NumGC}} &nbsp;|&nbsp; Goroutine数：{{.SystemMemoryInfo.NumGoroutine}} &nbsp;|&nbsp;
           活跃堆对象：{{.SystemMemoryInfo.HeapObjects}} &nbsp;|&nbsp; 下次GC(MB)：{{.SystemMemoryInfo.NextGCMB}}</p>
-        <p>系统版本：{{.SystemVersion}} &nbsp;|&nbsp; 操作系统：{{.SystemOS}} &nbsp;|&nbsp; CPU架构：{{.SystemArch}} &nbsp;|&nbsp; © 2025 DDNS管理平台</p>
+        <p>系统版本：{{.SystemVersion}} &nbsp;|&nbsp; 操作系统：{{.SystemOS}} &nbsp;|&nbsp; CPU架构：{{.SystemArch}} &nbsp;|&nbsp; ©
+          2025 DDNS管理平台</p>
       </div>
     </footer>
 
