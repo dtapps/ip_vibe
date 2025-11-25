@@ -129,36 +129,36 @@ async function openConfigModal(id) {
 
     // 编辑
     if (id) {
-        const { data: configs } = await API.get(`/api/configs/${id}`);
-        console.log("configs", configs);
-        if (!configs) {
+        const { data: config } = await API.get(`/api/configs/${id}`);
+        console.log("config", config);
+        if (!config) {
             alert('配置数据异常');
             return;
         }
 
-        document.getElementById('config_id').value = configs.id;
+        document.getElementById('config_id').value = config.id;
         document.getElementById('config_id').disabled = true;
-        document.getElementById('config_capability').value = configs.capability;
-        document.getElementById('config_name').value = configs.name;
-        document.getElementById('config_platform').value = configs.platform;
+        document.getElementById('config_capability').value = config.capability;
+        document.getElementById('config_name').value = config.name;
+        document.getElementById('config_platform').value = config.platform;
         document.getElementById('config_platform').disabled = true;
 
         // 解析JSON并填充表单
-        changeConfigPlatform(configs.platform);
+        changeConfigPlatform(config.platform);
 
-        switch (configs.platform) {
+        switch (config.platform) {
             case 'edgeone':
-                document.getElementById('edgeone_secret_id').value = configs.config_json.secret_id || '';
-                document.getElementById('edgeone_secret_key').value = configs.config_json.secret_key || '';
-                document.getElementById('edgeone_zone_id').value = configs.config_json.zone_id || '';
+                document.getElementById('edgeone_secret_id').value = config.config_json.secret_id || '';
+                document.getElementById('edgeone_secret_key').value = config.config_json.secret_key || '';
+                document.getElementById('edgeone_zone_id').value = config.config_json.zone_id || '';
                 break;
             case 'cloudflare':
-                document.getElementById('cloudflare_api_key').value = configs.config_json.api_key || '';
-                document.getElementById('cloudflare_zone_id').value = configs.config_json.zone_id || '';
+                document.getElementById('cloudflare_api_key').value = config.config_json.api_key || '';
+                document.getElementById('cloudflare_zone_id').value = config.config_json.zone_id || '';
                 break;
             case 'dnspod':
-                document.getElementById('dnspod_secret_id').value = configs.config_json.secret_id || '';
-                document.getElementById('dnspod_secret_key').value = configs.config_json.secret_key || '';
+                document.getElementById('dnspod_secret_id').value = config.config_json.secret_id || '';
+                document.getElementById('dnspod_secret_key').value = config.config_json.secret_key || '';
                 break;
         }
 
@@ -469,18 +469,18 @@ async function openDeviceModal(id) {
 
     // 编辑
     if (id) {
-        const { data: devices } = await API.get(`/api/devices/${id}`);
-        console.log("devices", devices);
-        if (!devices) {
+        const { data: device } = await API.get(`/api/devices/${id}`);
+        console.log("device", device);
+        if (!device) {
             alert('设备数据异常');
             return;
         }
 
-        document.getElementById('device_id').value = devices.id;
+        document.getElementById('device_id').value = device.id;
         document.getElementById('device_id').disabled = true;
-        document.getElementById('device_code').value = devices.code;
+        document.getElementById('device_code').value = device.code;
         document.getElementById('device_code').disabled = true;
-        document.getElementById('device_name').value = devices.name
+        document.getElementById('device_name').value = device.name
 
         openModal('deviceModal', 'deviceModalTitle', '编辑 设备');
     }
@@ -623,25 +623,25 @@ async function openIpGroupModal(id) {
 
     // 编辑
     if (id) {
-        const { data: ipGroups } = await API.get(`/api/ip-groups/${id}`);
-        console.log("ipGroups", ipGroups);
-        if (!ipGroups) {
+        const { data: ipGroup } = await API.get(`/api/ip-groups/${id}`);
+        console.log("ipGroup", ipGroup);
+        if (!ipGroup) {
             alert('IP 组数据异常');
             return;
         }
 
-        document.getElementById('ip_group_id').value = ipGroups.id;
+        document.getElementById('ip_group_id').value = ipGroup.id;
         document.getElementById('ip_group_id').disabled = true;
-        document.getElementById('ip_group_name').value = ipGroups.name;
-        document.getElementById('ip_group_description').value = ipGroups.description || '';
+        document.getElementById('ip_group_name').value = ipGroup.name;
+        document.getElementById('ip_group_description').value = ipGroup.description || '';
 
         // 高亮已选
-        if (ipGroups.devices && ipGroups.devices.length > 0) {
+        if (ipGroup.devices && ipGroup.devices.length > 0) {
             const deviceSelect = document.getElementById('ip_group_devices');
-            Array.from(deviceSelect.options).forEach(opt => opt.selected = ipGroups.devices.includes(Number(opt.value)));
+            Array.from(deviceSelect.options).forEach(opt => opt.selected = ipGroup.devices.includes(Number(opt.value)));
         }
 
-        if (ipGroups.description == window.deviceCode) {
+        if (ipGroup.description == window.deviceCode) {
             document.getElementById('ip_group_description').disabled = true;
         } else {
             document.getElementById('ip_group_description').disabled = false;
@@ -731,8 +731,117 @@ async function viewLiveDeviceIpAddresse(id, name) {
 }
 
 // --- IP 组 ---
+// --- 通知（WebHook） --- 
 
+// 选择平台类型 platform
+function onWebhookPlatformSelect(sel) {
+    const opt = sel.options[sel.selectedIndex];
+    // console.log("onWebhookPlatformSelect", opt);
+    if (opt.value === 'custom_http') {
+        document.getElementById('webhook_url').disabled = false;
+        document.getElementById('webhook_url').value = '';
+        document.getElementById('webhook_url').required = true;
+        document.getElementById('webhook_url_group').style.display = 'block';
+    } else {
+        document.getElementById('webhook_url').disabled = true;
+        document.getElementById('webhook_url').value = '';
+        document.getElementById('webhook_url').required = false;
+        document.getElementById('webhook_url_group').style.display = 'none';
+    }
+}
 
+// 修改通知状态
+async function toggleWebhookStatus(id, checkbox) {
+    await API.patch(`/api/webhooks/${id}/active`, { is_active: checkbox.checked });
+}
+
+// 管理通知（模态框）
+async function openWebhookModal(id) {
+    document.getElementById('webhookForm').reset();
+
+    // 编辑
+    if (id) {
+        const { data: webhook } = await API.get(`/api/webhooks/${id}`);
+        console.log("webhook", webhook);
+        if (!webhook) {
+            alert('通知数据异常');
+            return;
+        }
+
+        document.getElementById('webhook_id').value = webhook.id;
+        document.getElementById('webhook_id').disabled = true;
+        document.getElementById('webhook_name').value = webhook.name;
+        document.getElementById('webhook_platform').value = webhook.platform;
+        document.getElementById('webhook_platform').disabled = true;
+        document.getElementById('webhook_url').value = webhook.url;
+        document.getElementById('webhook_secret').value = webhook.secret;
+        document.getElementById('webhook_template_title').value = webhook.template_title;
+        document.getElementById('webhook_template_content').value = webhook.template_content;
+
+        openModal('webhookModal', 'webhookModalTitle', '编辑 通知');
+    }
+
+    if (!id) {
+        document.getElementById('webhook_id').value = '';
+        document.getElementById('webhook_id').disabled = true;
+
+        openModal('webhookModal', 'webhookModalTitle', '添加 通知');
+    }
+
+}
+
+// 管理通知（模态框） -> 表单提交
+document.getElementById('webhookForm').onsubmit = async (e) => {
+    e.preventDefault();
+
+    // 表单数据
+    const form_id = Number(document.getElementById('webhook_id').value.trim());
+    const form_data = {
+        name: document.getElementById('webhook_name').value.trim(),
+        platform: document.getElementById('webhook_platform').value.trim(),
+        url: document.getElementById('webhook_url').value.trim(),
+        secret: document.getElementById('webhook_secret').value.trim(),
+        template_title: document.getElementById('webhook_template_title').value.trim(),
+        template_content: document.getElementById('webhook_template_content').value.trim(),
+    };
+    console.log("form_id, form_data", form_id, form_data);
+
+    // 校验
+    if (!form_data.name) {
+        return alert('请输入组名')
+    };
+    if (!form_data.platform) {
+        return alert('请选择平台类型')
+    };
+    if (!form_data.template_title) {
+        return alert('请输入通知标题模板')
+    };
+    if (!form_data.template_content) {
+        return alert('请输入通知内容模板')
+    };
+
+    // 提交
+    if (isNaN(form_id) || form_id <= 0) {
+        await API.post('/api/webhooks', form_data);
+    } else {
+        await API.patch(`/api/webhooks/${form_id}`, form_data);
+    }
+
+    // 刷新页面
+    location.reload();
+};
+
+// 删除通知
+async function deleteWebhook(id) {
+    if (confirm('确定删除此通知？')) {
+        await API.delete(`/api/webhooks/${id}`);
+
+        // 刷新页面
+        location.reload();
+    }
+}
+
+// --- 通知（WebHook） --- 
 // --- 任务管理 ---
 
 // 启动全部任务
@@ -777,13 +886,13 @@ async function runTask(id) {
 
 // 实时 执行时间 弹窗
 async function viewLiveExecutionTime(id, name) {
-    const { data: tasks } = await API.get(`/api/tasks/${id}`);
-    console.log("tasks", tasks);
-    if (!tasks) {
+    const { data: task } = await API.get(`/api/tasks/${id}`);
+    console.log("task", task);
+    if (!task) {
         alert('任务数据异常');
         return;
     }
-    if (tasks.length === 0) {
+    if (task.length === 0) {
         alert('当前任务执行时间无数据');
         return;
     }
@@ -791,14 +900,13 @@ async function viewLiveExecutionTime(id, name) {
     // 填充代码块
     const pre = document.getElementById('liveExecutionTimePre');
 
-    pre.textContent = tasks.next_runs.join('\n');
+    pre.textContent = task.next_runs.join('\n');
 
     // 更新计数
-    document.getElementById('liveExecutionTimeCount').textContent = tasks.next_runs.length;
+    document.getElementById('liveExecutionTimeCount').textContent = task.next_runs.length;
 
     // 打开弹窗（统一走你已有的 openModal 即可）
     openModal('liveExecutionTimeModal', 'liveExecutionTimeTitle', `实时 执行时间 - ${name}`);
 }
 
 // --- 任务管理 ---
-

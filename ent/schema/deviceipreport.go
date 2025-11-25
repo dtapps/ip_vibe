@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"time"
+	"vibe_ip/ent/schema/schemamixin"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -22,6 +22,13 @@ func (DeviceIpReport) Annotations() []schema.Annotation {
 		entsql.Annotation{Table: "device_ip_report"},
 		schema.Comment("设备IP报告"),
 		entsql.WithComments(true),
+	}
+}
+
+// Mixin of the DeviceIpReport.
+func (DeviceIpReport) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		schemamixin.AtLogMixin{},
 	}
 }
 
@@ -49,12 +56,6 @@ func (DeviceIpReport) Fields() []ent.Field {
 			Optional().
 			Immutable().
 			Comment("IP地址V6").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("created_at").
-			Default(time.Now).
-			Immutable().
-			Comment("创建时间").
 			Annotations(entsql.WithComments(true)),
 	}
 }

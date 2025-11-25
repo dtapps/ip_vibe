@@ -24,18 +24,6 @@ type IpGroupDeviceCreate struct {
 	conflict []sql.ConflictOption
 }
 
-// SetDeviceID sets the "device_id" field.
-func (_c *IpGroupDeviceCreate) SetDeviceID(v int64) *IpGroupDeviceCreate {
-	_c.mutation.SetDeviceID(v)
-	return _c
-}
-
-// SetIPGroupID sets the "ip_group_id" field.
-func (_c *IpGroupDeviceCreate) SetIPGroupID(v int64) *IpGroupDeviceCreate {
-	_c.mutation.SetIPGroupID(v)
-	return _c
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (_c *IpGroupDeviceCreate) SetCreatedAt(v time.Time) *IpGroupDeviceCreate {
 	_c.mutation.SetCreatedAt(v)
@@ -47,6 +35,18 @@ func (_c *IpGroupDeviceCreate) SetNillableCreatedAt(v *time.Time) *IpGroupDevice
 	if v != nil {
 		_c.SetCreatedAt(*v)
 	}
+	return _c
+}
+
+// SetDeviceID sets the "device_id" field.
+func (_c *IpGroupDeviceCreate) SetDeviceID(v int64) *IpGroupDeviceCreate {
+	_c.mutation.SetDeviceID(v)
+	return _c
+}
+
+// SetIPGroupID sets the "ip_group_id" field.
+func (_c *IpGroupDeviceCreate) SetIPGroupID(v int64) *IpGroupDeviceCreate {
+	_c.mutation.SetIPGroupID(v)
 	return _c
 }
 
@@ -103,14 +103,14 @@ func (_c *IpGroupDeviceCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *IpGroupDeviceCreate) check() error {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "IpGroupDevice.created_at"`)}
+	}
 	if _, ok := _c.mutation.DeviceID(); !ok {
 		return &ValidationError{Name: "device_id", err: errors.New(`ent: missing required field "IpGroupDevice.device_id"`)}
 	}
 	if _, ok := _c.mutation.IPGroupID(); !ok {
 		return &ValidationError{Name: "ip_group_id", err: errors.New(`ent: missing required field "IpGroupDevice.ip_group_id"`)}
-	}
-	if _, ok := _c.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "IpGroupDevice.created_at"`)}
 	}
 	if len(_c.mutation.DeviceIDs()) == 0 {
 		return &ValidationError{Name: "device", err: errors.New(`ent: missing required edge "IpGroupDevice.device"`)}
@@ -186,7 +186,7 @@ func (_c *IpGroupDeviceCreate) createSpec() (*IpGroupDevice, *sqlgraph.CreateSpe
 // of the `INSERT` statement. For example:
 //
 //	client.IpGroupDevice.Create().
-//		SetDeviceID(v).
+//		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -195,7 +195,7 @@ func (_c *IpGroupDeviceCreate) createSpec() (*IpGroupDevice, *sqlgraph.CreateSpe
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.IpGroupDeviceUpsert) {
-//			SetDeviceID(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *IpGroupDeviceCreate) OnConflict(opts ...sql.ConflictOption) *IpGroupDeviceUpsertOne {
@@ -440,7 +440,7 @@ func (_c *IpGroupDeviceCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.IpGroupDeviceUpsert) {
-//			SetDeviceID(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *IpGroupDeviceCreateBulk) OnConflict(opts ...sql.ConflictOption) *IpGroupDeviceUpsertBulk {

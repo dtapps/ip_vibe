@@ -25,6 +25,34 @@ type DNSRecordCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (_c *DNSRecordCreate) SetCreatedAt(v time.Time) *DNSRecordCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (_c *DNSRecordCreate) SetNillableCreatedAt(v *time.Time) *DNSRecordCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
+	}
+	return _c
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (_c *DNSRecordCreate) SetUpdatedAt(v time.Time) *DNSRecordCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (_c *DNSRecordCreate) SetNillableUpdatedAt(v *time.Time) *DNSRecordCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetConfigID sets the "config_id" field.
 func (_c *DNSRecordCreate) SetConfigID(v int64) *DNSRecordCreate {
 	_c.mutation.SetConfigID(v)
@@ -113,34 +141,6 @@ func (_c *DNSRecordCreate) SetNillableLastRefreshAt(v *time.Time) *DNSRecordCrea
 	return _c
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (_c *DNSRecordCreate) SetCreatedAt(v time.Time) *DNSRecordCreate {
-	_c.mutation.SetCreatedAt(v)
-	return _c
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_c *DNSRecordCreate) SetNillableCreatedAt(v *time.Time) *DNSRecordCreate {
-	if v != nil {
-		_c.SetCreatedAt(*v)
-	}
-	return _c
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_c *DNSRecordCreate) SetUpdatedAt(v time.Time) *DNSRecordCreate {
-	_c.mutation.SetUpdatedAt(v)
-	return _c
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (_c *DNSRecordCreate) SetNillableUpdatedAt(v *time.Time) *DNSRecordCreate {
-	if v != nil {
-		_c.SetUpdatedAt(*v)
-	}
-	return _c
-}
-
 // SetID sets the "id" field.
 func (_c *DNSRecordCreate) SetID(v int64) *DNSRecordCreate {
 	_c.mutation.SetID(v)
@@ -197,10 +197,6 @@ func (_c *DNSRecordCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *DNSRecordCreate) defaults() {
-	if _, ok := _c.mutation.IsActive(); !ok {
-		v := dnsrecord.DefaultIsActive
-		_c.mutation.SetIsActive(v)
-	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := dnsrecord.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
@@ -209,10 +205,20 @@ func (_c *DNSRecordCreate) defaults() {
 		v := dnsrecord.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := _c.mutation.IsActive(); !ok {
+		v := dnsrecord.DefaultIsActive
+		_c.mutation.SetIsActive(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *DNSRecordCreate) check() error {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "DNSRecord.created_at"`)}
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "DNSRecord.updated_at"`)}
+	}
 	if _, ok := _c.mutation.ConfigID(); !ok {
 		return &ValidationError{Name: "config_id", err: errors.New(`ent: missing required field "DNSRecord.config_id"`)}
 	}
@@ -229,12 +235,6 @@ func (_c *DNSRecordCreate) check() error {
 	}
 	if _, ok := _c.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "DNSRecord.is_active"`)}
-	}
-	if _, ok := _c.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "DNSRecord.created_at"`)}
-	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "DNSRecord.updated_at"`)}
 	}
 	if len(_c.mutation.ConfigIDs()) == 0 {
 		return &ValidationError{Name: "config", err: errors.New(`ent: missing required edge "DNSRecord.config"`)}
@@ -272,6 +272,14 @@ func (_c *DNSRecordCreate) createSpec() (*DNSRecord, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
+	if value, ok := _c.mutation.CreatedAt(); ok {
+		_spec.SetField(dnsrecord.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := _c.mutation.UpdatedAt(); ok {
+		_spec.SetField(dnsrecord.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	if value, ok := _c.mutation.RecordID(); ok {
 		_spec.SetField(dnsrecord.FieldRecordID, field.TypeString, value)
 		_node.RecordID = value
@@ -291,14 +299,6 @@ func (_c *DNSRecordCreate) createSpec() (*DNSRecord, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.LastRefreshAt(); ok {
 		_spec.SetField(dnsrecord.FieldLastRefreshAt, field.TypeTime, value)
 		_node.LastRefreshAt = value
-	}
-	if value, ok := _c.mutation.CreatedAt(); ok {
-		_spec.SetField(dnsrecord.FieldCreatedAt, field.TypeTime, value)
-		_node.CreatedAt = value
-	}
-	if value, ok := _c.mutation.UpdatedAt(); ok {
-		_spec.SetField(dnsrecord.FieldUpdatedAt, field.TypeTime, value)
-		_node.UpdatedAt = value
 	}
 	if nodes := _c.mutation.ConfigIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -358,7 +358,7 @@ func (_c *DNSRecordCreate) createSpec() (*DNSRecord, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.DNSRecord.Create().
-//		SetConfigID(v).
+//		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -367,7 +367,7 @@ func (_c *DNSRecordCreate) createSpec() (*DNSRecord, *sqlgraph.CreateSpec) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.DNSRecordUpsert) {
-//			SetConfigID(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *DNSRecordCreate) OnConflict(opts ...sql.ConflictOption) *DNSRecordUpsertOne {
@@ -402,6 +402,18 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *DNSRecordUpsert) SetUpdatedAt(v time.Time) *DNSRecordUpsert {
+	u.Set(dnsrecord.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *DNSRecordUpsert) UpdateUpdatedAt() *DNSRecordUpsert {
+	u.SetExcluded(dnsrecord.FieldUpdatedAt)
+	return u
+}
 
 // SetRecordID sets the "record_id" field.
 func (u *DNSRecordUpsert) SetRecordID(v string) *DNSRecordUpsert {
@@ -487,18 +499,6 @@ func (u *DNSRecordUpsert) ClearLastRefreshAt() *DNSRecordUpsert {
 	return u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DNSRecordUpsert) SetUpdatedAt(v time.Time) *DNSRecordUpsert {
-	u.Set(dnsrecord.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DNSRecordUpsert) UpdateUpdatedAt() *DNSRecordUpsert {
-	u.SetExcluded(dnsrecord.FieldUpdatedAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -516,6 +516,9 @@ func (u *DNSRecordUpsertOne) UpdateNewValues() *DNSRecordUpsertOne {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(dnsrecord.FieldID)
 		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(dnsrecord.FieldCreatedAt)
+		}
 		if _, exists := u.create.mutation.ConfigID(); exists {
 			s.SetIgnore(dnsrecord.FieldConfigID)
 		}
@@ -524,9 +527,6 @@ func (u *DNSRecordUpsertOne) UpdateNewValues() *DNSRecordUpsertOne {
 		}
 		if _, exists := u.create.mutation.GetType(); exists {
 			s.SetIgnore(dnsrecord.FieldType)
-		}
-		if _, exists := u.create.mutation.CreatedAt(); exists {
-			s.SetIgnore(dnsrecord.FieldCreatedAt)
 		}
 	}))
 	return u
@@ -557,6 +557,20 @@ func (u *DNSRecordUpsertOne) Update(set func(*DNSRecordUpsert)) *DNSRecordUpsert
 		set(&DNSRecordUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *DNSRecordUpsertOne) SetUpdatedAt(v time.Time) *DNSRecordUpsertOne {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *DNSRecordUpsertOne) UpdateUpdatedAt() *DNSRecordUpsertOne {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetRecordID sets the "record_id" field.
@@ -654,20 +668,6 @@ func (u *DNSRecordUpsertOne) UpdateLastRefreshAt() *DNSRecordUpsertOne {
 func (u *DNSRecordUpsertOne) ClearLastRefreshAt() *DNSRecordUpsertOne {
 	return u.Update(func(s *DNSRecordUpsert) {
 		s.ClearLastRefreshAt()
-	})
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DNSRecordUpsertOne) SetUpdatedAt(v time.Time) *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DNSRecordUpsertOne) UpdateUpdatedAt() *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.UpdateUpdatedAt()
 	})
 }
 
@@ -806,7 +806,7 @@ func (_c *DNSRecordCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.DNSRecordUpsert) {
-//			SetConfigID(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *DNSRecordCreateBulk) OnConflict(opts ...sql.ConflictOption) *DNSRecordUpsertBulk {
@@ -853,6 +853,9 @@ func (u *DNSRecordUpsertBulk) UpdateNewValues() *DNSRecordUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(dnsrecord.FieldID)
 			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(dnsrecord.FieldCreatedAt)
+			}
 			if _, exists := b.mutation.ConfigID(); exists {
 				s.SetIgnore(dnsrecord.FieldConfigID)
 			}
@@ -861,9 +864,6 @@ func (u *DNSRecordUpsertBulk) UpdateNewValues() *DNSRecordUpsertBulk {
 			}
 			if _, exists := b.mutation.GetType(); exists {
 				s.SetIgnore(dnsrecord.FieldType)
-			}
-			if _, exists := b.mutation.CreatedAt(); exists {
-				s.SetIgnore(dnsrecord.FieldCreatedAt)
 			}
 		}
 	}))
@@ -895,6 +895,20 @@ func (u *DNSRecordUpsertBulk) Update(set func(*DNSRecordUpsert)) *DNSRecordUpser
 		set(&DNSRecordUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *DNSRecordUpsertBulk) SetUpdatedAt(v time.Time) *DNSRecordUpsertBulk {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *DNSRecordUpsertBulk) UpdateUpdatedAt() *DNSRecordUpsertBulk {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetRecordID sets the "record_id" field.
@@ -992,20 +1006,6 @@ func (u *DNSRecordUpsertBulk) UpdateLastRefreshAt() *DNSRecordUpsertBulk {
 func (u *DNSRecordUpsertBulk) ClearLastRefreshAt() *DNSRecordUpsertBulk {
 	return u.Update(func(s *DNSRecordUpsert) {
 		s.ClearLastRefreshAt()
-	})
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DNSRecordUpsertBulk) SetUpdatedAt(v time.Time) *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DNSRecordUpsertBulk) UpdateUpdatedAt() *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.UpdateUpdatedAt()
 	})
 }
 

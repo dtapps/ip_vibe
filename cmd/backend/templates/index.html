@@ -23,6 +23,7 @@
     <a href="#sectionDnsRecord" aria-label="跳转到 DNS 记录">DNS</a>
     <a href="#sectionDevices" aria-label="跳转到设备上报">设备</a>
     <a href="#sectionIpGroup" aria-label="跳转到 IP 组">IP 组</a>
+    <a href="#sectionWebhook" aria-label="跳转到通知管理">通知</a>
     <a href="#sectionTask" aria-label="跳转到任务管理">任务</a>
     <a href="#sectionLog" aria-label="跳转到操作日志">日志</a>
   </div>
@@ -375,6 +376,85 @@
                       <use href="/static/icons.svg#ip-delete" />
                     </svg> 删除</button>
                 </span>
+                {{end}}
+              </td>
+            </tr>
+            {{end}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 通知（WebHook） -->
+    <div class="card" id="sectionWebhook">
+      <div class="card-header">
+        <h2 class="h2-icon">
+          <svg class="ip-i">
+            <use href="/static/icons.svg#ip-layer" />
+          </svg>
+          通知（WebHook）
+        </h2>
+        <div>
+          <button class="btn btn-primary" onclick="openWebhookModal()">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-folder-plus" />
+            </svg> 添加WebHook</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <table>
+          <thead>
+            <tr>
+              <th>名称</th>
+              <th>类型</th>
+              <th>活跃</th>
+              <th style="width: 300px;text-align: center;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="webhookTable">
+            {{range .Webhooks}}
+            <tr>
+              <td>{{.Name}}</td>
+              {{if eq .Platform "wechat_work"}}
+              <td><span class="badge badge-success">企业微信</span></td>
+              {{else if eq .Platform "dingtalk"}}
+              <td><span class="badge badge-success">钉钉</span></td>
+              {{else if eq .Platform "feishu"}}
+              <td><span class="badge badge-success">飞书</span></td>
+              {{else if eq .Platform "bark"}}
+              <td><span class="badge badge-success">Bark</span></td>
+              {{else if eq .Platform "server_chan"}}
+              <td><span class="badge badge-success">Server酱</span></td>
+              {{else if eq .Platform "push_deer"}}
+              <td><span class="badge badge-success">PushDeer</span></td>
+              {{else if eq .Platform "PushDeer"}}
+              <td><span class="badge badge-success">自定义</span></td>
+              {{else}}
+              <td><span class="badge badge-success">{{.Platform}}</span></td>
+              {{end}}
+              <td>
+                <label class="switch">
+                  <input type="checkbox" {{if .IsActive}}checked{{end}} onchange="toggleWebhookStatus('{{.ID}}', this)">
+                  <span class="slider"></span>
+                </label>
+              </td>
+              <td>
+                <button class="btn btn-primary btn-sm" onclick="openWebhookModal('{{.ID}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-edit" />
+                  </svg> 编辑</button>
+                {{if .IsActive}}
+                <span class="btn-tooltip-wrapper" title="活跃状态时不允许删除，请先禁止后操作再删除！">
+                  <button class="btn btn-sm btn-danger" disabled>
+                    <svg class="ip-i">
+                      <use href="/static/icons.svg#ip-delete" />
+                    </svg> 删除</button>
+                </span>
+                {{else}}
+                <button class="btn btn-sm btn-danger" onclick="deleteWebhook('{{.ID}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-delete" />
+                  </svg> 删除</button>
                 {{end}}
               </td>
             </tr>
@@ -778,6 +858,71 @@
 
           <div class="form-group mt-3" style="text-align:right">
             <button type="button" class="btn" onclick="closeModal('ipGroupModal')">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-close" />
+              </svg> 取消</button>
+            <button type="submit" class="btn btn-primary">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-save" />
+              </svg> 保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!--  通知（WebHook）模态框 -->
+    <div class="modal" id="webhookModal">
+      <div class="modal-content">
+        <h3 id="webhookModalTitle">添加 / 编辑 通知</h3>
+        <form id="webhookForm">
+
+          <div class="form-group">
+            <label>名称 <span style="color:red">*</span></label>
+            <input type="text" name="name" id="webhook_name" required placeholder="如：告警-IP">
+          </div>
+
+          <div class="form-group">
+            <label>平台类型 <span style="color:red">*</span></label>
+            <select name="platform" id="webhook_platform" required onchange="onWebhookPlatformSelect(this)">
+              <option value="" disabled selected>请选择平台类型</option>
+              <option value="wechat_work">企业微信</option>
+              <option value="dingtalk">钉钉</option>
+              <option value="feishu">飞书</option>
+              <option value="bark">Bark</option>
+              <option value="server_chan">Server酱</option>
+              <option value="push_deer">PushDeer</option>
+              <option value="custom_http">自定义</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="webhook_url_group" style="display: none;">
+            <label>自定义 URL</label>
+            <input type="text" name="url" id="webhook_url" placeholder="如：https://webhook.example.com/notify">
+          </div>
+
+          <div class="form-group">
+            <label>签名密钥或Token</label>
+            <input type="text" name="secret" id="webhook_secret">
+          </div>
+
+          <div class="form-group">
+            <label for="templateTitle">通知标题模板 (Go Template) <span style="color:red">*</span></label>
+            <input type="text" name="template_title" id="webhook_template_title" required
+              placeholder="[DDNS] [[DeviceName]] IP 更新" />
+            <small class="text-secondary">可用变量: [[DeviceName]], [[IPv4]], [[IPv6]], [[EventTime]]...</small>
+          </div>
+
+          <div class="form-group">
+            <label for="templateContent">通知内容模板 (支持 Markdown/Text) <span style="color:red">*</span></label>
+            <textarea name="template_content" id="webhook_template_content" required rows="5"></textarea>
+            <small class="text-secondary">注意：不同平台 (如飞书、钉钉) 的 Markdown 格式略有不同。</small>
+          </div>
+
+          <!-- 隐藏字段 -->
+          <input type="hidden" name="id" id="webhook_id">
+
+          <div class="form-group mt-3" style="text-align:right">
+            <button type="button" class="btn" onclick="closeModal('webhookModal')">
               <svg class="ip-i">
                 <use href="/static/icons.svg#ip-close" />
               </svg> 取消</button>

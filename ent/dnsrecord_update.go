@@ -31,6 +31,12 @@ func (_u *DNSRecordUpdate) Where(ps ...predicate.DNSRecord) *DNSRecordUpdate {
 	return _u
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *DNSRecordUpdate) SetUpdatedAt(v time.Time) *DNSRecordUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
+}
+
 // SetRecordID sets the "record_id" field.
 func (_u *DNSRecordUpdate) SetRecordID(v string) *DNSRecordUpdate {
 	_u.mutation.SetRecordID(v)
@@ -125,12 +131,6 @@ func (_u *DNSRecordUpdate) ClearLastRefreshAt() *DNSRecordUpdate {
 	return _u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *DNSRecordUpdate) SetUpdatedAt(v time.Time) *DNSRecordUpdate {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
 // SetIPGroup sets the "ip_group" edge to the IpGroup entity.
 func (_u *DNSRecordUpdate) SetIPGroup(v *IpGroup) *DNSRecordUpdate {
 	return _u.SetIPGroupID(v.ID)
@@ -220,6 +220,9 @@ func (_u *DNSRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(dnsrecord.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if value, ok := _u.mutation.RecordID(); ok {
 		_spec.SetField(dnsrecord.FieldRecordID, field.TypeString, value)
 	}
@@ -234,9 +237,6 @@ func (_u *DNSRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.LastRefreshAtCleared() {
 		_spec.ClearField(dnsrecord.FieldLastRefreshAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(dnsrecord.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.IPGroupCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -316,6 +316,12 @@ type DNSRecordUpdateOne struct {
 	hooks     []Hook
 	mutation  *DNSRecordMutation
 	modifiers []func(*sql.UpdateBuilder)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *DNSRecordUpdateOne) SetUpdatedAt(v time.Time) *DNSRecordUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetRecordID sets the "record_id" field.
@@ -409,12 +415,6 @@ func (_u *DNSRecordUpdateOne) SetNillableLastRefreshAt(v *time.Time) *DNSRecordU
 // ClearLastRefreshAt clears the value of the "last_refresh_at" field.
 func (_u *DNSRecordUpdateOne) ClearLastRefreshAt() *DNSRecordUpdateOne {
 	_u.mutation.ClearLastRefreshAt()
-	return _u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *DNSRecordUpdateOne) SetUpdatedAt(v time.Time) *DNSRecordUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
@@ -537,6 +537,9 @@ func (_u *DNSRecordUpdateOne) sqlSave(ctx context.Context) (_node *DNSRecord, er
 			}
 		}
 	}
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(dnsrecord.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if value, ok := _u.mutation.RecordID(); ok {
 		_spec.SetField(dnsrecord.FieldRecordID, field.TypeString, value)
 	}
@@ -551,9 +554,6 @@ func (_u *DNSRecordUpdateOne) sqlSave(ctx context.Context) (_node *DNSRecord, er
 	}
 	if _u.mutation.LastRefreshAtCleared() {
 		_spec.ClearField(dnsrecord.FieldLastRefreshAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(dnsrecord.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.IPGroupCleared() {
 		edge := &sqlgraph.EdgeSpec{

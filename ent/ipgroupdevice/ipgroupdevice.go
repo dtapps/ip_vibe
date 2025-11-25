@@ -12,12 +12,12 @@ import (
 const (
 	// Label holds the string label denoting the ipgroupdevice type in the database.
 	Label = "ip_group_device"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
 	// FieldDeviceID holds the string denoting the device_id field in the database.
 	FieldDeviceID = "device_id"
 	// FieldIPGroupID holds the string denoting the ip_group_id field in the database.
 	FieldIPGroupID = "ip_group_id"
-	// FieldCreatedAt holds the string denoting the created_at field in the database.
-	FieldCreatedAt = "created_at"
 	// EdgeDevice holds the string denoting the device edge name in mutations.
 	EdgeDevice = "device"
 	// EdgeIPGroup holds the string denoting the ip_group edge name in mutations.
@@ -46,9 +46,9 @@ const (
 
 // Columns holds all SQL columns for ipgroupdevice fields.
 var Columns = []string{
+	FieldCreatedAt,
 	FieldDeviceID,
 	FieldIPGroupID,
-	FieldCreatedAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -69,6 +69,11 @@ var (
 // OrderOption defines the ordering options for the IpGroupDevice queries.
 type OrderOption func(*sql.Selector)
 
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
 // ByDeviceID orders the results by the device_id field.
 func ByDeviceID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeviceID, opts...).ToFunc()
@@ -77,11 +82,6 @@ func ByDeviceID(opts ...sql.OrderTermOption) OrderOption {
 // ByIPGroupID orders the results by the ip_group_id field.
 func ByIPGroupID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIPGroupID, opts...).ToFunc()
-}
-
-// ByCreatedAt orders the results by the created_at field.
-func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
 }
 
 // ByDeviceField orders the results by device field.

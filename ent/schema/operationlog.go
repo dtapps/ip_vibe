@@ -1,7 +1,8 @@
 package schema
 
 import (
-	"time"
+	"vibe_ip/ent/schema/schemamixin"
+	"vibe_ip/ent/schema/schematype"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -24,6 +25,13 @@ func (OperationLog) Annotations() []schema.Annotation {
 	}
 }
 
+// Mixin of the OperationLog.
+func (OperationLog) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		schemamixin.AtLogMixin{},
+	}
+}
+
 // Fields of the OperationLog.
 func (OperationLog) Fields() []ent.Field {
 	return []ent.Field{
@@ -34,13 +42,7 @@ func (OperationLog) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
 
 		field.Enum("op_type").
-			Values(
-				"data_create",
-				"data_update",
-				"data_delete",
-				"device_report",
-				"ip_refresh",
-			).
+			Values(schematype.GetLogOpType()...).
 			Immutable().
 			Comment("操作类型").
 			Annotations(entsql.WithComments(true)),
@@ -51,15 +53,7 @@ func (OperationLog) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("obj_type").
-			Values(
-				"platform_config",
-				"cdn_record",
-				"dns_record",
-				"device",
-				"device_ip_report",
-				"ip_group",
-				"ip_group_device",
-			).
+			Values(schematype.GetLogObjType()...).
 			Immutable().
 			Comment("对象类型").
 			Annotations(entsql.WithComments(true)),
@@ -77,7 +71,7 @@ func (OperationLog) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("status").
-			Values("success", "failed").
+			Values(schematype.GetLogStatus()...).
 			Immutable().
 			Comment("状态").
 			Annotations(entsql.WithComments(true)),
@@ -85,12 +79,6 @@ func (OperationLog) Fields() []ent.Field {
 		field.String("message").
 			Immutable().
 			Comment("详情").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("created_at").
-			Default(time.Now).
-			Immutable().
-			Comment("创建时间").
 			Annotations(entsql.WithComments(true)),
 	}
 }

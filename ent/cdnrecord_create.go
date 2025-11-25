@@ -25,6 +25,34 @@ type CDNRecordCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (_c *CDNRecordCreate) SetCreatedAt(v time.Time) *CDNRecordCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (_c *CDNRecordCreate) SetNillableCreatedAt(v *time.Time) *CDNRecordCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
+	}
+	return _c
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (_c *CDNRecordCreate) SetUpdatedAt(v time.Time) *CDNRecordCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (_c *CDNRecordCreate) SetNillableUpdatedAt(v *time.Time) *CDNRecordCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetConfigID sets the "config_id" field.
 func (_c *CDNRecordCreate) SetConfigID(v int64) *CDNRecordCreate {
 	_c.mutation.SetConfigID(v)
@@ -147,34 +175,6 @@ func (_c *CDNRecordCreate) SetNillableLastRefreshAt(v *time.Time) *CDNRecordCrea
 	return _c
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (_c *CDNRecordCreate) SetCreatedAt(v time.Time) *CDNRecordCreate {
-	_c.mutation.SetCreatedAt(v)
-	return _c
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_c *CDNRecordCreate) SetNillableCreatedAt(v *time.Time) *CDNRecordCreate {
-	if v != nil {
-		_c.SetCreatedAt(*v)
-	}
-	return _c
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_c *CDNRecordCreate) SetUpdatedAt(v time.Time) *CDNRecordCreate {
-	_c.mutation.SetUpdatedAt(v)
-	return _c
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (_c *CDNRecordCreate) SetNillableUpdatedAt(v *time.Time) *CDNRecordCreate {
-	if v != nil {
-		_c.SetUpdatedAt(*v)
-	}
-	return _c
-}
-
 // SetID sets the "id" field.
 func (_c *CDNRecordCreate) SetID(v int64) *CDNRecordCreate {
 	_c.mutation.SetID(v)
@@ -241,6 +241,14 @@ func (_c *CDNRecordCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *CDNRecordCreate) defaults() {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
+		v := cdnrecord.DefaultCreatedAt()
+		_c.mutation.SetCreatedAt(v)
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		v := cdnrecord.DefaultUpdatedAt()
+		_c.mutation.SetUpdatedAt(v)
+	}
 	if _, ok := _c.mutation.OriginProtocol(); !ok {
 		v := cdnrecord.DefaultOriginProtocol
 		_c.mutation.SetOriginProtocol(v)
@@ -257,18 +265,16 @@ func (_c *CDNRecordCreate) defaults() {
 		v := cdnrecord.DefaultIsActive
 		_c.mutation.SetIsActive(v)
 	}
-	if _, ok := _c.mutation.CreatedAt(); !ok {
-		v := cdnrecord.DefaultCreatedAt()
-		_c.mutation.SetCreatedAt(v)
-	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		v := cdnrecord.DefaultUpdatedAt()
-		_c.mutation.SetUpdatedAt(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *CDNRecordCreate) check() error {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "CDNRecord.created_at"`)}
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "CDNRecord.updated_at"`)}
+	}
 	if _, ok := _c.mutation.ConfigID(); !ok {
 		return &ValidationError{Name: "config_id", err: errors.New(`ent: missing required field "CDNRecord.config_id"`)}
 	}
@@ -302,12 +308,6 @@ func (_c *CDNRecordCreate) check() error {
 	}
 	if _, ok := _c.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "CDNRecord.is_active"`)}
-	}
-	if _, ok := _c.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "CDNRecord.created_at"`)}
-	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "CDNRecord.updated_at"`)}
 	}
 	if len(_c.mutation.ConfigIDs()) == 0 {
 		return &ValidationError{Name: "config", err: errors.New(`ent: missing required edge "CDNRecord.config"`)}
@@ -348,6 +348,14 @@ func (_c *CDNRecordCreate) createSpec() (*CDNRecord, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
+	if value, ok := _c.mutation.CreatedAt(); ok {
+		_spec.SetField(cdnrecord.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := _c.mutation.UpdatedAt(); ok {
+		_spec.SetField(cdnrecord.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	if value, ok := _c.mutation.RecordID(); ok {
 		_spec.SetField(cdnrecord.FieldRecordID, field.TypeString, value)
 		_node.RecordID = value
@@ -383,14 +391,6 @@ func (_c *CDNRecordCreate) createSpec() (*CDNRecord, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.LastRefreshAt(); ok {
 		_spec.SetField(cdnrecord.FieldLastRefreshAt, field.TypeTime, value)
 		_node.LastRefreshAt = value
-	}
-	if value, ok := _c.mutation.CreatedAt(); ok {
-		_spec.SetField(cdnrecord.FieldCreatedAt, field.TypeTime, value)
-		_node.CreatedAt = value
-	}
-	if value, ok := _c.mutation.UpdatedAt(); ok {
-		_spec.SetField(cdnrecord.FieldUpdatedAt, field.TypeTime, value)
-		_node.UpdatedAt = value
 	}
 	if nodes := _c.mutation.ConfigIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -449,7 +449,7 @@ func (_c *CDNRecordCreate) createSpec() (*CDNRecord, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.CDNRecord.Create().
-//		SetConfigID(v).
+//		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -458,7 +458,7 @@ func (_c *CDNRecordCreate) createSpec() (*CDNRecord, *sqlgraph.CreateSpec) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.CDNRecordUpsert) {
-//			SetConfigID(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *CDNRecordCreate) OnConflict(opts ...sql.ConflictOption) *CDNRecordUpsertOne {
@@ -493,6 +493,18 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *CDNRecordUpsert) SetUpdatedAt(v time.Time) *CDNRecordUpsert {
+	u.Set(cdnrecord.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *CDNRecordUpsert) UpdateUpdatedAt() *CDNRecordUpsert {
+	u.SetExcluded(cdnrecord.FieldUpdatedAt)
+	return u
+}
 
 // SetRecordID sets the "record_id" field.
 func (u *CDNRecordUpsert) SetRecordID(v string) *CDNRecordUpsert {
@@ -560,18 +572,6 @@ func (u *CDNRecordUpsert) ClearLastRefreshAt() *CDNRecordUpsert {
 	return u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *CDNRecordUpsert) SetUpdatedAt(v time.Time) *CDNRecordUpsert {
-	u.Set(cdnrecord.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *CDNRecordUpsert) UpdateUpdatedAt() *CDNRecordUpsert {
-	u.SetExcluded(cdnrecord.FieldUpdatedAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -588,6 +588,9 @@ func (u *CDNRecordUpsertOne) UpdateNewValues() *CDNRecordUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(cdnrecord.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(cdnrecord.FieldCreatedAt)
 		}
 		if _, exists := u.create.mutation.ConfigID(); exists {
 			s.SetIgnore(cdnrecord.FieldConfigID)
@@ -609,9 +612,6 @@ func (u *CDNRecordUpsertOne) UpdateNewValues() *CDNRecordUpsertOne {
 		}
 		if _, exists := u.create.mutation.IPGroupID(); exists {
 			s.SetIgnore(cdnrecord.FieldIPGroupID)
-		}
-		if _, exists := u.create.mutation.CreatedAt(); exists {
-			s.SetIgnore(cdnrecord.FieldCreatedAt)
 		}
 	}))
 	return u
@@ -642,6 +642,20 @@ func (u *CDNRecordUpsertOne) Update(set func(*CDNRecordUpsert)) *CDNRecordUpsert
 		set(&CDNRecordUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *CDNRecordUpsertOne) SetUpdatedAt(v time.Time) *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *CDNRecordUpsertOne) UpdateUpdatedAt() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetRecordID sets the "record_id" field.
@@ -718,20 +732,6 @@ func (u *CDNRecordUpsertOne) UpdateLastRefreshAt() *CDNRecordUpsertOne {
 func (u *CDNRecordUpsertOne) ClearLastRefreshAt() *CDNRecordUpsertOne {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.ClearLastRefreshAt()
-	})
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *CDNRecordUpsertOne) SetUpdatedAt(v time.Time) *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *CDNRecordUpsertOne) UpdateUpdatedAt() *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.UpdateUpdatedAt()
 	})
 }
 
@@ -870,7 +870,7 @@ func (_c *CDNRecordCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.CDNRecordUpsert) {
-//			SetConfigID(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *CDNRecordCreateBulk) OnConflict(opts ...sql.ConflictOption) *CDNRecordUpsertBulk {
@@ -917,6 +917,9 @@ func (u *CDNRecordUpsertBulk) UpdateNewValues() *CDNRecordUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(cdnrecord.FieldID)
 			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(cdnrecord.FieldCreatedAt)
+			}
 			if _, exists := b.mutation.ConfigID(); exists {
 				s.SetIgnore(cdnrecord.FieldConfigID)
 			}
@@ -937,9 +940,6 @@ func (u *CDNRecordUpsertBulk) UpdateNewValues() *CDNRecordUpsertBulk {
 			}
 			if _, exists := b.mutation.IPGroupID(); exists {
 				s.SetIgnore(cdnrecord.FieldIPGroupID)
-			}
-			if _, exists := b.mutation.CreatedAt(); exists {
-				s.SetIgnore(cdnrecord.FieldCreatedAt)
 			}
 		}
 	}))
@@ -971,6 +971,20 @@ func (u *CDNRecordUpsertBulk) Update(set func(*CDNRecordUpsert)) *CDNRecordUpser
 		set(&CDNRecordUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *CDNRecordUpsertBulk) SetUpdatedAt(v time.Time) *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *CDNRecordUpsertBulk) UpdateUpdatedAt() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetRecordID sets the "record_id" field.
@@ -1047,20 +1061,6 @@ func (u *CDNRecordUpsertBulk) UpdateLastRefreshAt() *CDNRecordUpsertBulk {
 func (u *CDNRecordUpsertBulk) ClearLastRefreshAt() *CDNRecordUpsertBulk {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.ClearLastRefreshAt()
-	})
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *CDNRecordUpsertBulk) SetUpdatedAt(v time.Time) *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *CDNRecordUpsertBulk) UpdateUpdatedAt() *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.UpdateUpdatedAt()
 	})
 }
 

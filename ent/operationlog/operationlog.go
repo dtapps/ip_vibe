@@ -14,6 +14,8 @@ const (
 	Label = "operation_log"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
 	// FieldOpType holds the string denoting the op_type field in the database.
 	FieldOpType = "op_type"
 	// FieldObjID holds the string denoting the obj_id field in the database.
@@ -28,8 +30,6 @@ const (
 	FieldStatus = "status"
 	// FieldMessage holds the string denoting the message field in the database.
 	FieldMessage = "message"
-	// FieldCreatedAt holds the string denoting the created_at field in the database.
-	FieldCreatedAt = "created_at"
 	// Table holds the table name of the operationlog in the database.
 	Table = "operation_log"
 )
@@ -37,6 +37,7 @@ const (
 // Columns holds all SQL columns for operationlog fields.
 var Columns = []string{
 	FieldID,
+	FieldCreatedAt,
 	FieldOpType,
 	FieldObjID,
 	FieldObjType,
@@ -44,7 +45,6 @@ var Columns = []string{
 	FieldNewValue,
 	FieldStatus,
 	FieldMessage,
-	FieldCreatedAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -100,6 +100,7 @@ const (
 	ObjTypeDeviceIPReport ObjType = "device_ip_report"
 	ObjTypeIPGroup        ObjType = "ip_group"
 	ObjTypeIPGroupDevice  ObjType = "ip_group_device"
+	ObjTypeWebhook        ObjType = "webhook"
 )
 
 func (ot ObjType) String() string {
@@ -109,7 +110,7 @@ func (ot ObjType) String() string {
 // ObjTypeValidator is a validator for the "obj_type" field enum values. It is called by the builders before save.
 func ObjTypeValidator(ot ObjType) error {
 	switch ot {
-	case ObjTypePlatformConfig, ObjTypeCdnRecord, ObjTypeDNSRecord, ObjTypeDevice, ObjTypeDeviceIPReport, ObjTypeIPGroup, ObjTypeIPGroupDevice:
+	case ObjTypePlatformConfig, ObjTypeCdnRecord, ObjTypeDNSRecord, ObjTypeDevice, ObjTypeDeviceIPReport, ObjTypeIPGroup, ObjTypeIPGroupDevice, ObjTypeWebhook:
 		return nil
 	default:
 		return fmt.Errorf("operationlog: invalid enum value for obj_type field: %q", ot)
@@ -147,6 +148,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
 // ByOpType orders the results by the op_type field.
 func ByOpType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldOpType, opts...).ToFunc()
@@ -180,9 +186,4 @@ func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 // ByMessage orders the results by the message field.
 func ByMessage(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldMessage, opts...).ToFunc()
-}
-
-// ByCreatedAt orders the results by the created_at field.
-func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
 }

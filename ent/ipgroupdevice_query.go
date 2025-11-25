@@ -263,12 +263,12 @@ func (_q *IpGroupDeviceQuery) WithIPGroup(opts ...func(*IpGroupQuery)) *IpGroupD
 // Example:
 //
 //	var v []struct {
-//		DeviceID int64 `json:"device_id,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.IpGroupDevice.Query().
-//		GroupBy(ipgroupdevice.FieldDeviceID).
+//		GroupBy(ipgroupdevice.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *IpGroupDeviceQuery) GroupBy(field string, fields ...string) *IpGroupDeviceGroupBy {
@@ -286,11 +286,11 @@ func (_q *IpGroupDeviceQuery) GroupBy(field string, fields ...string) *IpGroupDe
 // Example:
 //
 //	var v []struct {
-//		DeviceID int64 `json:"device_id,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.IpGroupDevice.Query().
-//		Select(ipgroupdevice.FieldDeviceID).
+//		Select(ipgroupdevice.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (_q *IpGroupDeviceQuery) Select(fields ...string) *IpGroupDeviceSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)

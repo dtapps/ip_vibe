@@ -19,6 +19,10 @@ type PlatformConfig struct {
 	// ID of the ent.
 	// 配置序号
 	ID int64 `json:"id,omitempty"`
+	// 创建时间
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// 更新时间
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// 平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）
 	Capability platformconfig.Capability `json:"capability,omitempty"`
 	// 配置名称
@@ -27,10 +31,6 @@ type PlatformConfig struct {
 	Platform platformconfig.Platform `json:"platform,omitempty"`
 	// 平台密钥等敏感信息（JSON）
 	ConfigJSON json.RawMessage `json:"config_json,omitempty"`
-	// 创建时间
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	// 更新时间
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlatformConfigQuery when eager-loading is set.
 	Edges        PlatformConfigEdges `json:"edges"`
@@ -102,6 +102,18 @@ func (_m *PlatformConfig) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			_m.ID = int64(value.Int64)
+		case platformconfig.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				_m.CreatedAt = value.Time
+			}
+		case platformconfig.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				_m.UpdatedAt = value.Time
+			}
 		case platformconfig.FieldCapability:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field capability", values[i])
@@ -127,18 +139,6 @@ func (_m *PlatformConfig) assignValues(columns []string, values []any) error {
 				if err := json.Unmarshal(*value, &_m.ConfigJSON); err != nil {
 					return fmt.Errorf("unmarshal field config_json: %w", err)
 				}
-			}
-		case platformconfig.FieldCreatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[i])
-			} else if value.Valid {
-				_m.CreatedAt = value.Time
-			}
-		case platformconfig.FieldUpdatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
-			} else if value.Valid {
-				_m.UpdatedAt = value.Time
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -186,6 +186,12 @@ func (_m *PlatformConfig) String() string {
 	var builder strings.Builder
 	builder.WriteString("PlatformConfig(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString("created_at=")
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("capability=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Capability))
 	builder.WriteString(", ")
@@ -197,12 +203,6 @@ func (_m *PlatformConfig) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("config_json=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ConfigJSON))
-	builder.WriteString(", ")
-	builder.WriteString("created_at=")
-	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("updated_at=")
-	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

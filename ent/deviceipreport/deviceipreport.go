@@ -14,14 +14,14 @@ const (
 	Label = "device_ip_report"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
 	// FieldDeviceID holds the string denoting the device_id field in the database.
 	FieldDeviceID = "device_id"
 	// FieldIPV4 holds the string denoting the ip_v4 field in the database.
 	FieldIPV4 = "ip_v4"
 	// FieldIPV6 holds the string denoting the ip_v6 field in the database.
 	FieldIPV6 = "ip_v6"
-	// FieldCreatedAt holds the string denoting the created_at field in the database.
-	FieldCreatedAt = "created_at"
 	// EdgeDevice holds the string denoting the device edge name in mutations.
 	EdgeDevice = "device"
 	// Table holds the table name of the deviceipreport in the database.
@@ -38,10 +38,10 @@ const (
 // Columns holds all SQL columns for deviceipreport fields.
 var Columns = []string{
 	FieldID,
+	FieldCreatedAt,
 	FieldDeviceID,
 	FieldIPV4,
 	FieldIPV6,
-	FieldCreatedAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -67,6 +67,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
 // ByDeviceID orders the results by the device_id field.
 func ByDeviceID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeviceID, opts...).ToFunc()
@@ -80,11 +85,6 @@ func ByIPV4(opts ...sql.OrderTermOption) OrderOption {
 // ByIPV6 orders the results by the ip_v6 field.
 func ByIPV6(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIPV6, opts...).ToFunc()
-}
-
-// ByCreatedAt orders the results by the created_at field.
-func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
 }
 
 // ByDeviceField orders the results by device field.

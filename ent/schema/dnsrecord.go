@@ -1,7 +1,8 @@
 package schema
 
 import (
-	"time"
+	"vibe_ip/ent/schema/schemamixin"
+	"vibe_ip/ent/schema/schematype"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -22,6 +23,13 @@ func (DNSRecord) Annotations() []schema.Annotation {
 		entsql.Annotation{Table: "dns_record"},
 		schema.Comment("DNS记录"),
 		entsql.WithComments(true),
+	}
+}
+
+// Mixin of the DNSRecord.
+func (DNSRecord) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		schemamixin.AtMixin{},
 	}
 }
 
@@ -50,7 +58,7 @@ func (DNSRecord) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("type").
-			Values("A", "AAAA", "CNAME").
+			Values(schematype.GetDNSRecordType()...).
 			Immutable().
 			Comment("记录类型（A、AAAA、CNAME等）").
 			Annotations(entsql.WithComments(true)),
@@ -74,18 +82,6 @@ func (DNSRecord) Fields() []ent.Field {
 		field.Time("last_refresh_at").
 			Optional().
 			Comment("最后一次刷新成功时间").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("created_at").
-			Default(time.Now).
-			Immutable().
-			Comment("创建时间").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("updated_at").
-			Default(time.Now).
-			UpdateDefault(time.Now).
-			Comment("更新时间").
 			Annotations(entsql.WithComments(true)),
 	}
 }

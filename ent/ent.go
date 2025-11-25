@@ -16,6 +16,7 @@ import (
 	"vibe_ip/ent/ipgroupdevice"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/platformconfig"
+	"vibe_ip/ent/webhook"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -88,6 +89,7 @@ func checkColumn(t, c string) error {
 			ipgroupdevice.Table:  ipgroupdevice.ValidColumn,
 			operationlog.Table:   operationlog.ValidColumn,
 			platformconfig.Table: platformconfig.ValidColumn,
+			webhook.Table:        webhook.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

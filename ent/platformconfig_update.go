@@ -33,6 +33,12 @@ func (_u *PlatformConfigUpdate) Where(ps ...predicate.PlatformConfig) *PlatformC
 	return _u
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *PlatformConfigUpdate) SetUpdatedAt(v time.Time) *PlatformConfigUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
+}
+
 // SetCapability sets the "capability" field.
 func (_u *PlatformConfigUpdate) SetCapability(v platformconfig.Capability) *PlatformConfigUpdate {
 	_u.mutation.SetCapability(v)
@@ -76,12 +82,6 @@ func (_u *PlatformConfigUpdate) AppendConfigJSON(v json.RawMessage) *PlatformCon
 // ClearConfigJSON clears the value of the "config_json" field.
 func (_u *PlatformConfigUpdate) ClearConfigJSON() *PlatformConfigUpdate {
 	_u.mutation.ClearConfigJSON()
-	return _u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *PlatformConfigUpdate) SetUpdatedAt(v time.Time) *PlatformConfigUpdate {
-	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
@@ -226,6 +226,9 @@ func (_u *PlatformConfigUpdate) sqlSave(ctx context.Context) (_node int, err err
 			}
 		}
 	}
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(platformconfig.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if value, ok := _u.mutation.Capability(); ok {
 		_spec.SetField(platformconfig.FieldCapability, field.TypeEnum, value)
 	}
@@ -242,9 +245,6 @@ func (_u *PlatformConfigUpdate) sqlSave(ctx context.Context) (_node int, err err
 	}
 	if _u.mutation.ConfigJSONCleared() {
 		_spec.ClearField(platformconfig.FieldConfigJSON, field.TypeJSON)
-	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(platformconfig.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.DNSRecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -358,6 +358,12 @@ type PlatformConfigUpdateOne struct {
 	modifiers []func(*sql.UpdateBuilder)
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *PlatformConfigUpdateOne) SetUpdatedAt(v time.Time) *PlatformConfigUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
+}
+
 // SetCapability sets the "capability" field.
 func (_u *PlatformConfigUpdateOne) SetCapability(v platformconfig.Capability) *PlatformConfigUpdateOne {
 	_u.mutation.SetCapability(v)
@@ -401,12 +407,6 @@ func (_u *PlatformConfigUpdateOne) AppendConfigJSON(v json.RawMessage) *Platform
 // ClearConfigJSON clears the value of the "config_json" field.
 func (_u *PlatformConfigUpdateOne) ClearConfigJSON() *PlatformConfigUpdateOne {
 	_u.mutation.ClearConfigJSON()
-	return _u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *PlatformConfigUpdateOne) SetUpdatedAt(v time.Time) *PlatformConfigUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
@@ -581,6 +581,9 @@ func (_u *PlatformConfigUpdateOne) sqlSave(ctx context.Context) (_node *Platform
 			}
 		}
 	}
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(platformconfig.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if value, ok := _u.mutation.Capability(); ok {
 		_spec.SetField(platformconfig.FieldCapability, field.TypeEnum, value)
 	}
@@ -597,9 +600,6 @@ func (_u *PlatformConfigUpdateOne) sqlSave(ctx context.Context) (_node *Platform
 	}
 	if _u.mutation.ConfigJSONCleared() {
 		_spec.ClearField(platformconfig.FieldConfigJSON, field.TypeJSON)
-	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(platformconfig.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.DNSRecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -372,12 +372,12 @@ func (_q *DNSRecordQuery) WithCdnRecord(opts ...func(*CDNRecordQuery)) *DNSRecor
 // Example:
 //
 //	var v []struct {
-//		ConfigID int64 `json:"config_id,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.DNSRecord.Query().
-//		GroupBy(dnsrecord.FieldConfigID).
+//		GroupBy(dnsrecord.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *DNSRecordQuery) GroupBy(field string, fields ...string) *DNSRecordGroupBy {
@@ -395,11 +395,11 @@ func (_q *DNSRecordQuery) GroupBy(field string, fields ...string) *DNSRecordGrou
 // Example:
 //
 //	var v []struct {
-//		ConfigID int64 `json:"config_id,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.DNSRecord.Query().
-//		Select(dnsrecord.FieldConfigID).
+//		Select(dnsrecord.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (_q *DNSRecordQuery) Select(fields ...string) *DNSRecordSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)

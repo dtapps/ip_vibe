@@ -13,14 +13,28 @@ import (
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/platformconfig"
 	"vibe_ip/ent/schema"
+	"vibe_ip/ent/webhook"
 )
 
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	cdnrecordMixin := schema.CDNRecord{}.Mixin()
+	cdnrecordMixinFields0 := cdnrecordMixin[0].Fields()
+	_ = cdnrecordMixinFields0
 	cdnrecordFields := schema.CDNRecord{}.Fields()
 	_ = cdnrecordFields
+	// cdnrecordDescCreatedAt is the schema descriptor for created_at field.
+	cdnrecordDescCreatedAt := cdnrecordMixinFields0[0].Descriptor()
+	// cdnrecord.DefaultCreatedAt holds the default value on creation for the created_at field.
+	cdnrecord.DefaultCreatedAt = cdnrecordDescCreatedAt.Default.(func() time.Time)
+	// cdnrecordDescUpdatedAt is the schema descriptor for updated_at field.
+	cdnrecordDescUpdatedAt := cdnrecordMixinFields0[1].Descriptor()
+	// cdnrecord.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	cdnrecord.DefaultUpdatedAt = cdnrecordDescUpdatedAt.Default.(func() time.Time)
+	// cdnrecord.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	cdnrecord.UpdateDefaultUpdatedAt = cdnrecordDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// cdnrecordDescHTTPPort is the schema descriptor for http_port field.
 	cdnrecordDescHTTPPort := cdnrecordFields[6].Descriptor()
 	// cdnrecord.DefaultHTTPPort holds the default value on creation for the http_port field.
@@ -33,84 +47,114 @@ func init() {
 	cdnrecordDescIsActive := cdnrecordFields[10].Descriptor()
 	// cdnrecord.DefaultIsActive holds the default value on creation for the is_active field.
 	cdnrecord.DefaultIsActive = cdnrecordDescIsActive.Default.(bool)
-	// cdnrecordDescCreatedAt is the schema descriptor for created_at field.
-	cdnrecordDescCreatedAt := cdnrecordFields[12].Descriptor()
-	// cdnrecord.DefaultCreatedAt holds the default value on creation for the created_at field.
-	cdnrecord.DefaultCreatedAt = cdnrecordDescCreatedAt.Default.(func() time.Time)
-	// cdnrecordDescUpdatedAt is the schema descriptor for updated_at field.
-	cdnrecordDescUpdatedAt := cdnrecordFields[13].Descriptor()
-	// cdnrecord.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	cdnrecord.DefaultUpdatedAt = cdnrecordDescUpdatedAt.Default.(func() time.Time)
-	// cdnrecord.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	cdnrecord.UpdateDefaultUpdatedAt = cdnrecordDescUpdatedAt.UpdateDefault.(func() time.Time)
+	dnsrecordMixin := schema.DNSRecord{}.Mixin()
+	dnsrecordMixinFields0 := dnsrecordMixin[0].Fields()
+	_ = dnsrecordMixinFields0
 	dnsrecordFields := schema.DNSRecord{}.Fields()
 	_ = dnsrecordFields
-	// dnsrecordDescIsActive is the schema descriptor for is_active field.
-	dnsrecordDescIsActive := dnsrecordFields[7].Descriptor()
-	// dnsrecord.DefaultIsActive holds the default value on creation for the is_active field.
-	dnsrecord.DefaultIsActive = dnsrecordDescIsActive.Default.(bool)
 	// dnsrecordDescCreatedAt is the schema descriptor for created_at field.
-	dnsrecordDescCreatedAt := dnsrecordFields[9].Descriptor()
+	dnsrecordDescCreatedAt := dnsrecordMixinFields0[0].Descriptor()
 	// dnsrecord.DefaultCreatedAt holds the default value on creation for the created_at field.
 	dnsrecord.DefaultCreatedAt = dnsrecordDescCreatedAt.Default.(func() time.Time)
 	// dnsrecordDescUpdatedAt is the schema descriptor for updated_at field.
-	dnsrecordDescUpdatedAt := dnsrecordFields[10].Descriptor()
+	dnsrecordDescUpdatedAt := dnsrecordMixinFields0[1].Descriptor()
 	// dnsrecord.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	dnsrecord.DefaultUpdatedAt = dnsrecordDescUpdatedAt.Default.(func() time.Time)
 	// dnsrecord.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	dnsrecord.UpdateDefaultUpdatedAt = dnsrecordDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// dnsrecordDescIsActive is the schema descriptor for is_active field.
+	dnsrecordDescIsActive := dnsrecordFields[7].Descriptor()
+	// dnsrecord.DefaultIsActive holds the default value on creation for the is_active field.
+	dnsrecord.DefaultIsActive = dnsrecordDescIsActive.Default.(bool)
+	deviceMixin := schema.Device{}.Mixin()
+	deviceMixinFields0 := deviceMixin[0].Fields()
+	_ = deviceMixinFields0
 	deviceFields := schema.Device{}.Fields()
 	_ = deviceFields
 	// deviceDescCreatedAt is the schema descriptor for created_at field.
-	deviceDescCreatedAt := deviceFields[7].Descriptor()
+	deviceDescCreatedAt := deviceMixinFields0[0].Descriptor()
 	// device.DefaultCreatedAt holds the default value on creation for the created_at field.
 	device.DefaultCreatedAt = deviceDescCreatedAt.Default.(func() time.Time)
 	// deviceDescUpdatedAt is the schema descriptor for updated_at field.
-	deviceDescUpdatedAt := deviceFields[8].Descriptor()
+	deviceDescUpdatedAt := deviceMixinFields0[1].Descriptor()
 	// device.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	device.DefaultUpdatedAt = deviceDescUpdatedAt.Default.(func() time.Time)
 	// device.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	device.UpdateDefaultUpdatedAt = deviceDescUpdatedAt.UpdateDefault.(func() time.Time)
+	deviceipreportMixin := schema.DeviceIpReport{}.Mixin()
+	deviceipreportMixinFields0 := deviceipreportMixin[0].Fields()
+	_ = deviceipreportMixinFields0
 	deviceipreportFields := schema.DeviceIpReport{}.Fields()
 	_ = deviceipreportFields
 	// deviceipreportDescCreatedAt is the schema descriptor for created_at field.
-	deviceipreportDescCreatedAt := deviceipreportFields[4].Descriptor()
+	deviceipreportDescCreatedAt := deviceipreportMixinFields0[0].Descriptor()
 	// deviceipreport.DefaultCreatedAt holds the default value on creation for the created_at field.
 	deviceipreport.DefaultCreatedAt = deviceipreportDescCreatedAt.Default.(func() time.Time)
+	ipgroupMixin := schema.IpGroup{}.Mixin()
+	ipgroupMixinFields0 := ipgroupMixin[0].Fields()
+	_ = ipgroupMixinFields0
 	ipgroupFields := schema.IpGroup{}.Fields()
 	_ = ipgroupFields
 	// ipgroupDescCreatedAt is the schema descriptor for created_at field.
-	ipgroupDescCreatedAt := ipgroupFields[4].Descriptor()
+	ipgroupDescCreatedAt := ipgroupMixinFields0[0].Descriptor()
 	// ipgroup.DefaultCreatedAt holds the default value on creation for the created_at field.
 	ipgroup.DefaultCreatedAt = ipgroupDescCreatedAt.Default.(func() time.Time)
 	// ipgroupDescUpdatedAt is the schema descriptor for updated_at field.
-	ipgroupDescUpdatedAt := ipgroupFields[5].Descriptor()
+	ipgroupDescUpdatedAt := ipgroupMixinFields0[1].Descriptor()
 	// ipgroup.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	ipgroup.DefaultUpdatedAt = ipgroupDescUpdatedAt.Default.(func() time.Time)
 	// ipgroup.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	ipgroup.UpdateDefaultUpdatedAt = ipgroupDescUpdatedAt.UpdateDefault.(func() time.Time)
+	ipgroupdeviceMixin := schema.IpGroupDevice{}.Mixin()
+	ipgroupdeviceMixinFields0 := ipgroupdeviceMixin[0].Fields()
+	_ = ipgroupdeviceMixinFields0
 	ipgroupdeviceFields := schema.IpGroupDevice{}.Fields()
 	_ = ipgroupdeviceFields
 	// ipgroupdeviceDescCreatedAt is the schema descriptor for created_at field.
-	ipgroupdeviceDescCreatedAt := ipgroupdeviceFields[3].Descriptor()
+	ipgroupdeviceDescCreatedAt := ipgroupdeviceMixinFields0[0].Descriptor()
 	// ipgroupdevice.DefaultCreatedAt holds the default value on creation for the created_at field.
 	ipgroupdevice.DefaultCreatedAt = ipgroupdeviceDescCreatedAt.Default.(func() time.Time)
+	operationlogMixin := schema.OperationLog{}.Mixin()
+	operationlogMixinFields0 := operationlogMixin[0].Fields()
+	_ = operationlogMixinFields0
 	operationlogFields := schema.OperationLog{}.Fields()
 	_ = operationlogFields
 	// operationlogDescCreatedAt is the schema descriptor for created_at field.
-	operationlogDescCreatedAt := operationlogFields[8].Descriptor()
+	operationlogDescCreatedAt := operationlogMixinFields0[0].Descriptor()
 	// operationlog.DefaultCreatedAt holds the default value on creation for the created_at field.
 	operationlog.DefaultCreatedAt = operationlogDescCreatedAt.Default.(func() time.Time)
+	platformconfigMixin := schema.PlatformConfig{}.Mixin()
+	platformconfigMixinFields0 := platformconfigMixin[0].Fields()
+	_ = platformconfigMixinFields0
 	platformconfigFields := schema.PlatformConfig{}.Fields()
 	_ = platformconfigFields
 	// platformconfigDescCreatedAt is the schema descriptor for created_at field.
-	platformconfigDescCreatedAt := platformconfigFields[5].Descriptor()
+	platformconfigDescCreatedAt := platformconfigMixinFields0[0].Descriptor()
 	// platformconfig.DefaultCreatedAt holds the default value on creation for the created_at field.
 	platformconfig.DefaultCreatedAt = platformconfigDescCreatedAt.Default.(func() time.Time)
 	// platformconfigDescUpdatedAt is the schema descriptor for updated_at field.
-	platformconfigDescUpdatedAt := platformconfigFields[6].Descriptor()
+	platformconfigDescUpdatedAt := platformconfigMixinFields0[1].Descriptor()
 	// platformconfig.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	platformconfig.DefaultUpdatedAt = platformconfigDescUpdatedAt.Default.(func() time.Time)
 	// platformconfig.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	platformconfig.UpdateDefaultUpdatedAt = platformconfigDescUpdatedAt.UpdateDefault.(func() time.Time)
+	webhookMixin := schema.Webhook{}.Mixin()
+	webhookMixinFields0 := webhookMixin[0].Fields()
+	_ = webhookMixinFields0
+	webhookFields := schema.Webhook{}.Fields()
+	_ = webhookFields
+	// webhookDescCreatedAt is the schema descriptor for created_at field.
+	webhookDescCreatedAt := webhookMixinFields0[0].Descriptor()
+	// webhook.DefaultCreatedAt holds the default value on creation for the created_at field.
+	webhook.DefaultCreatedAt = webhookDescCreatedAt.Default.(func() time.Time)
+	// webhookDescUpdatedAt is the schema descriptor for updated_at field.
+	webhookDescUpdatedAt := webhookMixinFields0[1].Descriptor()
+	// webhook.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	webhook.DefaultUpdatedAt = webhookDescUpdatedAt.Default.(func() time.Time)
+	// webhook.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	webhook.UpdateDefaultUpdatedAt = webhookDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// webhookDescIsActive is the schema descriptor for is_active field.
+	webhookDescIsActive := webhookFields[8].Descriptor()
+	// webhook.DefaultIsActive holds the default value on creation for the is_active field.
+	webhook.DefaultIsActive = webhookDescIsActive.Default.(bool)
 }

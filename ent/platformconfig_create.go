@@ -25,6 +25,34 @@ type PlatformConfigCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (_c *PlatformConfigCreate) SetCreatedAt(v time.Time) *PlatformConfigCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (_c *PlatformConfigCreate) SetNillableCreatedAt(v *time.Time) *PlatformConfigCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
+	}
+	return _c
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (_c *PlatformConfigCreate) SetUpdatedAt(v time.Time) *PlatformConfigCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (_c *PlatformConfigCreate) SetNillableUpdatedAt(v *time.Time) *PlatformConfigCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetCapability sets the "capability" field.
 func (_c *PlatformConfigCreate) SetCapability(v platformconfig.Capability) *PlatformConfigCreate {
 	_c.mutation.SetCapability(v)
@@ -54,34 +82,6 @@ func (_c *PlatformConfigCreate) SetPlatform(v platformconfig.Platform) *Platform
 // SetConfigJSON sets the "config_json" field.
 func (_c *PlatformConfigCreate) SetConfigJSON(v json.RawMessage) *PlatformConfigCreate {
 	_c.mutation.SetConfigJSON(v)
-	return _c
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (_c *PlatformConfigCreate) SetCreatedAt(v time.Time) *PlatformConfigCreate {
-	_c.mutation.SetCreatedAt(v)
-	return _c
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_c *PlatformConfigCreate) SetNillableCreatedAt(v *time.Time) *PlatformConfigCreate {
-	if v != nil {
-		_c.SetCreatedAt(*v)
-	}
-	return _c
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_c *PlatformConfigCreate) SetUpdatedAt(v time.Time) *PlatformConfigCreate {
-	_c.mutation.SetUpdatedAt(v)
-	return _c
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (_c *PlatformConfigCreate) SetNillableUpdatedAt(v *time.Time) *PlatformConfigCreate {
-	if v != nil {
-		_c.SetUpdatedAt(*v)
-	}
 	return _c
 }
 
@@ -156,10 +156,6 @@ func (_c *PlatformConfigCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *PlatformConfigCreate) defaults() {
-	if _, ok := _c.mutation.Capability(); !ok {
-		v := platformconfig.DefaultCapability
-		_c.mutation.SetCapability(v)
-	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := platformconfig.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
@@ -168,10 +164,20 @@ func (_c *PlatformConfigCreate) defaults() {
 		v := platformconfig.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := _c.mutation.Capability(); !ok {
+		v := platformconfig.DefaultCapability
+		_c.mutation.SetCapability(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *PlatformConfigCreate) check() error {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "PlatformConfig.created_at"`)}
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "PlatformConfig.updated_at"`)}
+	}
 	if _, ok := _c.mutation.Capability(); !ok {
 		return &ValidationError{Name: "capability", err: errors.New(`ent: missing required field "PlatformConfig.capability"`)}
 	}
@@ -190,12 +196,6 @@ func (_c *PlatformConfigCreate) check() error {
 		if err := platformconfig.PlatformValidator(v); err != nil {
 			return &ValidationError{Name: "platform", err: fmt.Errorf(`ent: validator failed for field "PlatformConfig.platform": %w`, err)}
 		}
-	}
-	if _, ok := _c.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "PlatformConfig.created_at"`)}
-	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "PlatformConfig.updated_at"`)}
 	}
 	return nil
 }
@@ -230,6 +230,14 @@ func (_c *PlatformConfigCreate) createSpec() (*PlatformConfig, *sqlgraph.CreateS
 		_node.ID = id
 		_spec.ID.Value = id
 	}
+	if value, ok := _c.mutation.CreatedAt(); ok {
+		_spec.SetField(platformconfig.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := _c.mutation.UpdatedAt(); ok {
+		_spec.SetField(platformconfig.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	if value, ok := _c.mutation.Capability(); ok {
 		_spec.SetField(platformconfig.FieldCapability, field.TypeEnum, value)
 		_node.Capability = value
@@ -245,14 +253,6 @@ func (_c *PlatformConfigCreate) createSpec() (*PlatformConfig, *sqlgraph.CreateS
 	if value, ok := _c.mutation.ConfigJSON(); ok {
 		_spec.SetField(platformconfig.FieldConfigJSON, field.TypeJSON, value)
 		_node.ConfigJSON = value
-	}
-	if value, ok := _c.mutation.CreatedAt(); ok {
-		_spec.SetField(platformconfig.FieldCreatedAt, field.TypeTime, value)
-		_node.CreatedAt = value
-	}
-	if value, ok := _c.mutation.UpdatedAt(); ok {
-		_spec.SetField(platformconfig.FieldUpdatedAt, field.TypeTime, value)
-		_node.UpdatedAt = value
 	}
 	if nodes := _c.mutation.DNSRecordsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -293,7 +293,7 @@ func (_c *PlatformConfigCreate) createSpec() (*PlatformConfig, *sqlgraph.CreateS
 // of the `INSERT` statement. For example:
 //
 //	client.PlatformConfig.Create().
-//		SetCapability(v).
+//		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -302,7 +302,7 @@ func (_c *PlatformConfigCreate) createSpec() (*PlatformConfig, *sqlgraph.CreateS
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.PlatformConfigUpsert) {
-//			SetCapability(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *PlatformConfigCreate) OnConflict(opts ...sql.ConflictOption) *PlatformConfigUpsertOne {
@@ -337,6 +337,18 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *PlatformConfigUpsert) SetUpdatedAt(v time.Time) *PlatformConfigUpsert {
+	u.Set(platformconfig.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *PlatformConfigUpsert) UpdateUpdatedAt() *PlatformConfigUpsert {
+	u.SetExcluded(platformconfig.FieldUpdatedAt)
+	return u
+}
 
 // SetCapability sets the "capability" field.
 func (u *PlatformConfigUpsert) SetCapability(v platformconfig.Capability) *PlatformConfigUpsert {
@@ -380,18 +392,6 @@ func (u *PlatformConfigUpsert) ClearConfigJSON() *PlatformConfigUpsert {
 	return u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *PlatformConfigUpsert) SetUpdatedAt(v time.Time) *PlatformConfigUpsert {
-	u.Set(platformconfig.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *PlatformConfigUpsert) UpdateUpdatedAt() *PlatformConfigUpsert {
-	u.SetExcluded(platformconfig.FieldUpdatedAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -409,11 +409,11 @@ func (u *PlatformConfigUpsertOne) UpdateNewValues() *PlatformConfigUpsertOne {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(platformconfig.FieldID)
 		}
-		if _, exists := u.create.mutation.Platform(); exists {
-			s.SetIgnore(platformconfig.FieldPlatform)
-		}
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(platformconfig.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.Platform(); exists {
+			s.SetIgnore(platformconfig.FieldPlatform)
 		}
 	}))
 	return u
@@ -444,6 +444,20 @@ func (u *PlatformConfigUpsertOne) Update(set func(*PlatformConfigUpsert)) *Platf
 		set(&PlatformConfigUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *PlatformConfigUpsertOne) SetUpdatedAt(v time.Time) *PlatformConfigUpsertOne {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *PlatformConfigUpsertOne) UpdateUpdatedAt() *PlatformConfigUpsertOne {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetCapability sets the "capability" field.
@@ -492,20 +506,6 @@ func (u *PlatformConfigUpsertOne) UpdateConfigJSON() *PlatformConfigUpsertOne {
 func (u *PlatformConfigUpsertOne) ClearConfigJSON() *PlatformConfigUpsertOne {
 	return u.Update(func(s *PlatformConfigUpsert) {
 		s.ClearConfigJSON()
-	})
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *PlatformConfigUpsertOne) SetUpdatedAt(v time.Time) *PlatformConfigUpsertOne {
-	return u.Update(func(s *PlatformConfigUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *PlatformConfigUpsertOne) UpdateUpdatedAt() *PlatformConfigUpsertOne {
-	return u.Update(func(s *PlatformConfigUpsert) {
-		s.UpdateUpdatedAt()
 	})
 }
 
@@ -644,7 +644,7 @@ func (_c *PlatformConfigCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.PlatformConfigUpsert) {
-//			SetCapability(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *PlatformConfigCreateBulk) OnConflict(opts ...sql.ConflictOption) *PlatformConfigUpsertBulk {
@@ -691,11 +691,11 @@ func (u *PlatformConfigUpsertBulk) UpdateNewValues() *PlatformConfigUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(platformconfig.FieldID)
 			}
-			if _, exists := b.mutation.Platform(); exists {
-				s.SetIgnore(platformconfig.FieldPlatform)
-			}
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(platformconfig.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.Platform(); exists {
+				s.SetIgnore(platformconfig.FieldPlatform)
 			}
 		}
 	}))
@@ -727,6 +727,20 @@ func (u *PlatformConfigUpsertBulk) Update(set func(*PlatformConfigUpsert)) *Plat
 		set(&PlatformConfigUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *PlatformConfigUpsertBulk) SetUpdatedAt(v time.Time) *PlatformConfigUpsertBulk {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *PlatformConfigUpsertBulk) UpdateUpdatedAt() *PlatformConfigUpsertBulk {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetCapability sets the "capability" field.
@@ -775,20 +789,6 @@ func (u *PlatformConfigUpsertBulk) UpdateConfigJSON() *PlatformConfigUpsertBulk 
 func (u *PlatformConfigUpsertBulk) ClearConfigJSON() *PlatformConfigUpsertBulk {
 	return u.Update(func(s *PlatformConfigUpsert) {
 		s.ClearConfigJSON()
-	})
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *PlatformConfigUpsertBulk) SetUpdatedAt(v time.Time) *PlatformConfigUpsertBulk {
-	return u.Update(func(s *PlatformConfigUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *PlatformConfigUpsertBulk) UpdateUpdatedAt() *PlatformConfigUpsertBulk {
-	return u.Update(func(s *PlatformConfigUpsert) {
-		s.UpdateUpdatedAt()
 	})
 }
 

@@ -30,6 +30,8 @@ type Tx struct {
 	OperationLog *OperationLogClient
 	// PlatformConfig is the client for interacting with the PlatformConfig builders.
 	PlatformConfig *PlatformConfigClient
+	// Webhook is the client for interacting with the Webhook builders.
+	Webhook *WebhookClient
 
 	// lazily loaded.
 	client     *Client
@@ -169,6 +171,7 @@ func (tx *Tx) init() {
 	tx.IpGroupDevice = NewIpGroupDeviceClient(tx.config)
 	tx.OperationLog = NewOperationLogClient(tx.config)
 	tx.PlatformConfig = NewPlatformConfigClient(tx.config)
+	tx.Webhook = NewWebhookClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

@@ -413,12 +413,12 @@ func (_q *IpGroupQuery) WithIPGroupDevice(opts ...func(*IpGroupDeviceQuery)) *Ip
 // Example:
 //
 //	var v []struct {
-//		RecordID string `json:"record_id,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.IpGroup.Query().
-//		GroupBy(ipgroup.FieldRecordID).
+//		GroupBy(ipgroup.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *IpGroupQuery) GroupBy(field string, fields ...string) *IpGroupGroupBy {
@@ -436,11 +436,11 @@ func (_q *IpGroupQuery) GroupBy(field string, fields ...string) *IpGroupGroupBy 
 // Example:
 //
 //	var v []struct {
-//		RecordID string `json:"record_id,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.IpGroup.Query().
-//		Select(ipgroup.FieldRecordID).
+//		Select(ipgroup.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (_q *IpGroupQuery) Select(fields ...string) *IpGroupSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)

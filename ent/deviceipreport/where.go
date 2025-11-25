@@ -55,6 +55,11 @@ func IDLTE(id int64) predicate.DeviceIpReport {
 	return predicate.DeviceIpReport(sql.FieldLTE(FieldID, id))
 }
 
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldEQ(FieldCreatedAt, v))
+}
+
 // DeviceID applies equality check predicate on the "device_id" field. It's identical to DeviceIDEQ.
 func DeviceID(v int64) predicate.DeviceIpReport {
 	return predicate.DeviceIpReport(sql.FieldEQ(FieldDeviceID, v))
@@ -70,9 +75,44 @@ func IPV6(v string) predicate.DeviceIpReport {
 	return predicate.DeviceIpReport(sql.FieldEQ(FieldIPV6, v))
 }
 
-// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
-func CreatedAt(v time.Time) predicate.DeviceIpReport {
+// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+func CreatedAtEQ(v time.Time) predicate.DeviceIpReport {
 	return predicate.DeviceIpReport(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+func CreatedAtNEQ(v time.Time) predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldNEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtIn applies the In predicate on the "created_at" field.
+func CreatedAtIn(vs ...time.Time) predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldNotIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtGT applies the GT predicate on the "created_at" field.
+func CreatedAtGT(v time.Time) predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldGT(FieldCreatedAt, v))
+}
+
+// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+func CreatedAtGTE(v time.Time) predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldGTE(FieldCreatedAt, v))
+}
+
+// CreatedAtLT applies the LT predicate on the "created_at" field.
+func CreatedAtLT(v time.Time) predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldLT(FieldCreatedAt, v))
+}
+
+// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+func CreatedAtLTE(v time.Time) predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // DeviceIDEQ applies the EQ predicate on the "device_id" field.
@@ -243,46 +283,6 @@ func IPV6EqualFold(v string) predicate.DeviceIpReport {
 // IPV6ContainsFold applies the ContainsFold predicate on the "ip_v6" field.
 func IPV6ContainsFold(v string) predicate.DeviceIpReport {
 	return predicate.DeviceIpReport(sql.FieldContainsFold(FieldIPV6, v))
-}
-
-// CreatedAtEQ applies the EQ predicate on the "created_at" field.
-func CreatedAtEQ(v time.Time) predicate.DeviceIpReport {
-	return predicate.DeviceIpReport(sql.FieldEQ(FieldCreatedAt, v))
-}
-
-// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
-func CreatedAtNEQ(v time.Time) predicate.DeviceIpReport {
-	return predicate.DeviceIpReport(sql.FieldNEQ(FieldCreatedAt, v))
-}
-
-// CreatedAtIn applies the In predicate on the "created_at" field.
-func CreatedAtIn(vs ...time.Time) predicate.DeviceIpReport {
-	return predicate.DeviceIpReport(sql.FieldIn(FieldCreatedAt, vs...))
-}
-
-// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
-func CreatedAtNotIn(vs ...time.Time) predicate.DeviceIpReport {
-	return predicate.DeviceIpReport(sql.FieldNotIn(FieldCreatedAt, vs...))
-}
-
-// CreatedAtGT applies the GT predicate on the "created_at" field.
-func CreatedAtGT(v time.Time) predicate.DeviceIpReport {
-	return predicate.DeviceIpReport(sql.FieldGT(FieldCreatedAt, v))
-}
-
-// CreatedAtGTE applies the GTE predicate on the "created_at" field.
-func CreatedAtGTE(v time.Time) predicate.DeviceIpReport {
-	return predicate.DeviceIpReport(sql.FieldGTE(FieldCreatedAt, v))
-}
-
-// CreatedAtLT applies the LT predicate on the "created_at" field.
-func CreatedAtLT(v time.Time) predicate.DeviceIpReport {
-	return predicate.DeviceIpReport(sql.FieldLT(FieldCreatedAt, v))
-}
-
-// CreatedAtLTE applies the LTE predicate on the "created_at" field.
-func CreatedAtLTE(v time.Time) predicate.DeviceIpReport {
-	return predicate.DeviceIpReport(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // HasDevice applies the HasEdge predicate on the "device" edge.

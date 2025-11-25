@@ -22,6 +22,20 @@ type OperationLogCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (_c *OperationLogCreate) SetCreatedAt(v time.Time) *OperationLogCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (_c *OperationLogCreate) SetNillableCreatedAt(v *time.Time) *OperationLogCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
+	}
+	return _c
+}
+
 // SetOpType sets the "op_type" field.
 func (_c *OperationLogCreate) SetOpType(v operationlog.OpType) *OperationLogCreate {
 	_c.mutation.SetOpType(v)
@@ -80,20 +94,6 @@ func (_c *OperationLogCreate) SetMessage(v string) *OperationLogCreate {
 	return _c
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (_c *OperationLogCreate) SetCreatedAt(v time.Time) *OperationLogCreate {
-	_c.mutation.SetCreatedAt(v)
-	return _c
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_c *OperationLogCreate) SetNillableCreatedAt(v *time.Time) *OperationLogCreate {
-	if v != nil {
-		_c.SetCreatedAt(*v)
-	}
-	return _c
-}
-
 // SetID sets the "id" field.
 func (_c *OperationLogCreate) SetID(v int64) *OperationLogCreate {
 	_c.mutation.SetID(v)
@@ -143,6 +143,9 @@ func (_c *OperationLogCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *OperationLogCreate) check() error {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "OperationLog.created_at"`)}
+	}
 	if _, ok := _c.mutation.OpType(); !ok {
 		return &ValidationError{Name: "op_type", err: errors.New(`ent: missing required field "OperationLog.op_type"`)}
 	}
@@ -172,9 +175,6 @@ func (_c *OperationLogCreate) check() error {
 	}
 	if _, ok := _c.mutation.Message(); !ok {
 		return &ValidationError{Name: "message", err: errors.New(`ent: missing required field "OperationLog.message"`)}
-	}
-	if _, ok := _c.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "OperationLog.created_at"`)}
 	}
 	return nil
 }
@@ -209,6 +209,10 @@ func (_c *OperationLogCreate) createSpec() (*OperationLog, *sqlgraph.CreateSpec)
 		_node.ID = id
 		_spec.ID.Value = id
 	}
+	if value, ok := _c.mutation.CreatedAt(); ok {
+		_spec.SetField(operationlog.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
 	if value, ok := _c.mutation.OpType(); ok {
 		_spec.SetField(operationlog.FieldOpType, field.TypeEnum, value)
 		_node.OpType = value
@@ -237,10 +241,6 @@ func (_c *OperationLogCreate) createSpec() (*OperationLog, *sqlgraph.CreateSpec)
 		_spec.SetField(operationlog.FieldMessage, field.TypeString, value)
 		_node.Message = value
 	}
-	if value, ok := _c.mutation.CreatedAt(); ok {
-		_spec.SetField(operationlog.FieldCreatedAt, field.TypeTime, value)
-		_node.CreatedAt = value
-	}
 	return _node, _spec
 }
 
@@ -248,7 +248,7 @@ func (_c *OperationLogCreate) createSpec() (*OperationLog, *sqlgraph.CreateSpec)
 // of the `INSERT` statement. For example:
 //
 //	client.OperationLog.Create().
-//		SetOpType(v).
+//		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -257,7 +257,7 @@ func (_c *OperationLogCreate) createSpec() (*OperationLog, *sqlgraph.CreateSpec)
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.OperationLogUpsert) {
-//			SetOpType(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *OperationLogCreate) OnConflict(opts ...sql.ConflictOption) *OperationLogUpsertOne {
@@ -310,6 +310,9 @@ func (u *OperationLogUpsertOne) UpdateNewValues() *OperationLogUpsertOne {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(operationlog.FieldID)
 		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(operationlog.FieldCreatedAt)
+		}
 		if _, exists := u.create.mutation.OpType(); exists {
 			s.SetIgnore(operationlog.FieldOpType)
 		}
@@ -330,9 +333,6 @@ func (u *OperationLogUpsertOne) UpdateNewValues() *OperationLogUpsertOne {
 		}
 		if _, exists := u.create.mutation.Message(); exists {
 			s.SetIgnore(operationlog.FieldMessage)
-		}
-		if _, exists := u.create.mutation.CreatedAt(); exists {
-			s.SetIgnore(operationlog.FieldCreatedAt)
 		}
 	}))
 	return u
@@ -500,7 +500,7 @@ func (_c *OperationLogCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.OperationLogUpsert) {
-//			SetOpType(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *OperationLogCreateBulk) OnConflict(opts ...sql.ConflictOption) *OperationLogUpsertBulk {
@@ -547,6 +547,9 @@ func (u *OperationLogUpsertBulk) UpdateNewValues() *OperationLogUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(operationlog.FieldID)
 			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(operationlog.FieldCreatedAt)
+			}
 			if _, exists := b.mutation.OpType(); exists {
 				s.SetIgnore(operationlog.FieldOpType)
 			}
@@ -567,9 +570,6 @@ func (u *OperationLogUpsertBulk) UpdateNewValues() *OperationLogUpsertBulk {
 			}
 			if _, exists := b.mutation.Message(); exists {
 				s.SetIgnore(operationlog.FieldMessage)
-			}
-			if _, exists := b.mutation.CreatedAt(); exists {
-				s.SetIgnore(operationlog.FieldCreatedAt)
 			}
 		}
 	}))

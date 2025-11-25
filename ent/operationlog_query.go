@@ -264,12 +264,12 @@ func (_q *OperationLogQuery) Clone() *OperationLogQuery {
 // Example:
 //
 //	var v []struct {
-//		OpType operationlog.OpType `json:"op_type,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.OperationLog.Query().
-//		GroupBy(operationlog.FieldOpType).
+//		GroupBy(operationlog.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *OperationLogQuery) GroupBy(field string, fields ...string) *OperationLogGroupBy {
@@ -287,11 +287,11 @@ func (_q *OperationLogQuery) GroupBy(field string, fields ...string) *OperationL
 // Example:
 //
 //	var v []struct {
-//		OpType operationlog.OpType `json:"op_type,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.OperationLog.Query().
-//		Select(operationlog.FieldOpType).
+//		Select(operationlog.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (_q *OperationLogQuery) Select(fields ...string) *OperationLogSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)

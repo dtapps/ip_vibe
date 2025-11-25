@@ -206,6 +206,18 @@ func main() {
 			ipGroups.GET("/:id/devices", handlers.GetIPGroupDevices)
 		}
 
+		// 通知相关API
+		webhooks := api.Group("/webhooks")
+		{
+			webhooks.GET("", handlers.GetWebhooks)
+			webhooks.GET("/:id", handlers.GetWebhook)
+			webhooks.POST("", handlers.CreateWebhook)
+			webhooks.PATCH("/:id", handlers.UpdateWebhook)
+			webhooks.PATCH("/:id/active", handlers.UpdateWebhookActive)
+			webhooks.DELETE("/:id", handlers.DeleteWebhook)
+		}
+
+		// 任务相关API
 		tasks := api.Group("/tasks")
 		{
 			tasks.GET("", handlers.GetTasks)

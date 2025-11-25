@@ -18,6 +18,8 @@ type OperationLog struct {
 	// ID of the ent.
 	// 记录序号
 	ID int64 `json:"id,omitempty"`
+	// 创建时间
+	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 操作类型
 	OpType operationlog.OpType `json:"op_type,omitempty"`
 	// 对象主键
@@ -31,9 +33,7 @@ type OperationLog struct {
 	// 状态
 	Status operationlog.Status `json:"status,omitempty"`
 	// 详情
-	Message string `json:"message,omitempty"`
-	// 创建时间
-	CreatedAt    time.Time `json:"created_at,omitempty"`
+	Message      string `json:"message,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -69,6 +69,12 @@ func (_m *OperationLog) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			_m.ID = int64(value.Int64)
+		case operationlog.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				_m.CreatedAt = value.Time
+			}
 		case operationlog.FieldOpType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field op_type", values[i])
@@ -111,12 +117,6 @@ func (_m *OperationLog) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Message = value.String
 			}
-		case operationlog.FieldCreatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[i])
-			} else if value.Valid {
-				_m.CreatedAt = value.Time
-			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -153,6 +153,9 @@ func (_m *OperationLog) String() string {
 	var builder strings.Builder
 	builder.WriteString("OperationLog(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString("created_at=")
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("op_type=")
 	builder.WriteString(fmt.Sprintf("%v", _m.OpType))
 	builder.WriteString(", ")
@@ -173,9 +176,6 @@ func (_m *OperationLog) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("message=")
 	builder.WriteString(_m.Message)
-	builder.WriteString(", ")
-	builder.WriteString("created_at=")
-	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

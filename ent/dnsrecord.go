@@ -21,6 +21,10 @@ type DNSRecord struct {
 	// ID of the ent.
 	// DNS 记录序号
 	ID int64 `json:"id,omitempty"`
+	// 创建时间
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// 更新时间
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// 平台配置序号
 	ConfigID int64 `json:"config_id,omitempty"`
 	// 平台侧记录 ID
@@ -37,10 +41,6 @@ type DNSRecord struct {
 	IsActive bool `json:"is_active,omitempty"`
 	// 最后一次刷新成功时间
 	LastRefreshAt time.Time `json:"last_refresh_at,omitempty"`
-	// 创建时间
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	// 更新时间
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DNSRecordQuery when eager-loading is set.
 	Edges        DNSRecordEdges `json:"edges"`
@@ -104,7 +104,7 @@ func (*DNSRecord) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case dnsrecord.FieldRecordID, dnsrecord.FieldDomain, dnsrecord.FieldType:
 			values[i] = new(sql.NullString)
-		case dnsrecord.FieldLastRefreshAt, dnsrecord.FieldCreatedAt, dnsrecord.FieldUpdatedAt:
+		case dnsrecord.FieldCreatedAt, dnsrecord.FieldUpdatedAt, dnsrecord.FieldLastRefreshAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -127,6 +127,18 @@ func (_m *DNSRecord) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			_m.ID = int64(value.Int64)
+		case dnsrecord.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				_m.CreatedAt = value.Time
+			}
+		case dnsrecord.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				_m.UpdatedAt = value.Time
+			}
 		case dnsrecord.FieldConfigID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field config_id", values[i])
@@ -174,18 +186,6 @@ func (_m *DNSRecord) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field last_refresh_at", values[i])
 			} else if value.Valid {
 				_m.LastRefreshAt = value.Time
-			}
-		case dnsrecord.FieldCreatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[i])
-			} else if value.Valid {
-				_m.CreatedAt = value.Time
-			}
-		case dnsrecord.FieldUpdatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
-			} else if value.Valid {
-				_m.UpdatedAt = value.Time
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -238,6 +238,12 @@ func (_m *DNSRecord) String() string {
 	var builder strings.Builder
 	builder.WriteString("DNSRecord(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString("created_at=")
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("config_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ConfigID))
 	builder.WriteString(", ")
@@ -261,12 +267,6 @@ func (_m *DNSRecord) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("last_refresh_at=")
 	builder.WriteString(_m.LastRefreshAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("created_at=")
-	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("updated_at=")
-	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

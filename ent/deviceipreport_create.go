@@ -23,6 +23,20 @@ type DeviceIpReportCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (_c *DeviceIpReportCreate) SetCreatedAt(v time.Time) *DeviceIpReportCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (_c *DeviceIpReportCreate) SetNillableCreatedAt(v *time.Time) *DeviceIpReportCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
+	}
+	return _c
+}
+
 // SetDeviceID sets the "device_id" field.
 func (_c *DeviceIpReportCreate) SetDeviceID(v int64) *DeviceIpReportCreate {
 	_c.mutation.SetDeviceID(v)
@@ -53,20 +67,6 @@ func (_c *DeviceIpReportCreate) SetIPV6(v string) *DeviceIpReportCreate {
 func (_c *DeviceIpReportCreate) SetNillableIPV6(v *string) *DeviceIpReportCreate {
 	if v != nil {
 		_c.SetIPV6(*v)
-	}
-	return _c
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (_c *DeviceIpReportCreate) SetCreatedAt(v time.Time) *DeviceIpReportCreate {
-	_c.mutation.SetCreatedAt(v)
-	return _c
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_c *DeviceIpReportCreate) SetNillableCreatedAt(v *time.Time) *DeviceIpReportCreate {
-	if v != nil {
-		_c.SetCreatedAt(*v)
 	}
 	return _c
 }
@@ -125,11 +125,11 @@ func (_c *DeviceIpReportCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *DeviceIpReportCreate) check() error {
-	if _, ok := _c.mutation.DeviceID(); !ok {
-		return &ValidationError{Name: "device_id", err: errors.New(`ent: missing required field "DeviceIpReport.device_id"`)}
-	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "DeviceIpReport.created_at"`)}
+	}
+	if _, ok := _c.mutation.DeviceID(); !ok {
+		return &ValidationError{Name: "device_id", err: errors.New(`ent: missing required field "DeviceIpReport.device_id"`)}
 	}
 	if len(_c.mutation.DeviceIDs()) == 0 {
 		return &ValidationError{Name: "device", err: errors.New(`ent: missing required edge "DeviceIpReport.device"`)}
@@ -167,6 +167,10 @@ func (_c *DeviceIpReportCreate) createSpec() (*DeviceIpReport, *sqlgraph.CreateS
 		_node.ID = id
 		_spec.ID.Value = id
 	}
+	if value, ok := _c.mutation.CreatedAt(); ok {
+		_spec.SetField(deviceipreport.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
 	if value, ok := _c.mutation.IPV4(); ok {
 		_spec.SetField(deviceipreport.FieldIPV4, field.TypeString, value)
 		_node.IPV4 = value
@@ -174,10 +178,6 @@ func (_c *DeviceIpReportCreate) createSpec() (*DeviceIpReport, *sqlgraph.CreateS
 	if value, ok := _c.mutation.IPV6(); ok {
 		_spec.SetField(deviceipreport.FieldIPV6, field.TypeString, value)
 		_node.IPV6 = value
-	}
-	if value, ok := _c.mutation.CreatedAt(); ok {
-		_spec.SetField(deviceipreport.FieldCreatedAt, field.TypeTime, value)
-		_node.CreatedAt = value
 	}
 	if nodes := _c.mutation.DeviceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -203,7 +203,7 @@ func (_c *DeviceIpReportCreate) createSpec() (*DeviceIpReport, *sqlgraph.CreateS
 // of the `INSERT` statement. For example:
 //
 //	client.DeviceIpReport.Create().
-//		SetDeviceID(v).
+//		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -212,7 +212,7 @@ func (_c *DeviceIpReportCreate) createSpec() (*DeviceIpReport, *sqlgraph.CreateS
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.DeviceIpReportUpsert) {
-//			SetDeviceID(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *DeviceIpReportCreate) OnConflict(opts ...sql.ConflictOption) *DeviceIpReportUpsertOne {
@@ -265,6 +265,9 @@ func (u *DeviceIpReportUpsertOne) UpdateNewValues() *DeviceIpReportUpsertOne {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(deviceipreport.FieldID)
 		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(deviceipreport.FieldCreatedAt)
+		}
 		if _, exists := u.create.mutation.DeviceID(); exists {
 			s.SetIgnore(deviceipreport.FieldDeviceID)
 		}
@@ -273,9 +276,6 @@ func (u *DeviceIpReportUpsertOne) UpdateNewValues() *DeviceIpReportUpsertOne {
 		}
 		if _, exists := u.create.mutation.IPV6(); exists {
 			s.SetIgnore(deviceipreport.FieldIPV6)
-		}
-		if _, exists := u.create.mutation.CreatedAt(); exists {
-			s.SetIgnore(deviceipreport.FieldCreatedAt)
 		}
 	}))
 	return u
@@ -443,7 +443,7 @@ func (_c *DeviceIpReportCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.DeviceIpReportUpsert) {
-//			SetDeviceID(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *DeviceIpReportCreateBulk) OnConflict(opts ...sql.ConflictOption) *DeviceIpReportUpsertBulk {
@@ -490,6 +490,9 @@ func (u *DeviceIpReportUpsertBulk) UpdateNewValues() *DeviceIpReportUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(deviceipreport.FieldID)
 			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(deviceipreport.FieldCreatedAt)
+			}
 			if _, exists := b.mutation.DeviceID(); exists {
 				s.SetIgnore(deviceipreport.FieldDeviceID)
 			}
@@ -498,9 +501,6 @@ func (u *DeviceIpReportUpsertBulk) UpdateNewValues() *DeviceIpReportUpsertBulk {
 			}
 			if _, exists := b.mutation.IPV6(); exists {
 				s.SetIgnore(deviceipreport.FieldIPV6)
-			}
-			if _, exists := b.mutation.CreatedAt(); exists {
-				s.SetIgnore(deviceipreport.FieldCreatedAt)
 			}
 		}
 	}))

@@ -32,6 +32,12 @@ func (_u *IpGroupUpdate) Where(ps ...predicate.IpGroup) *IpGroupUpdate {
 	return _u
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *IpGroupUpdate) SetUpdatedAt(v time.Time) *IpGroupUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
+}
+
 // SetRecordID sets the "record_id" field.
 func (_u *IpGroupUpdate) SetRecordID(v string) *IpGroupUpdate {
 	_u.mutation.SetRecordID(v)
@@ -83,12 +89,6 @@ func (_u *IpGroupUpdate) SetNillableDescription(v *string) *IpGroupUpdate {
 // ClearDescription clears the value of the "description" field.
 func (_u *IpGroupUpdate) ClearDescription() *IpGroupUpdate {
 	_u.mutation.ClearDescription()
-	return _u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *IpGroupUpdate) SetUpdatedAt(v time.Time) *IpGroupUpdate {
-	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
@@ -256,6 +256,9 @@ func (_u *IpGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(ipgroup.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if value, ok := _u.mutation.RecordID(); ok {
 		_spec.SetField(ipgroup.FieldRecordID, field.TypeString, value)
 	}
@@ -270,9 +273,6 @@ func (_u *IpGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.DescriptionCleared() {
 		_spec.ClearField(ipgroup.FieldDescription, field.TypeString)
-	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(ipgroup.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.DevicesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -443,6 +443,12 @@ type IpGroupUpdateOne struct {
 	modifiers []func(*sql.UpdateBuilder)
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *IpGroupUpdateOne) SetUpdatedAt(v time.Time) *IpGroupUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
+}
+
 // SetRecordID sets the "record_id" field.
 func (_u *IpGroupUpdateOne) SetRecordID(v string) *IpGroupUpdateOne {
 	_u.mutation.SetRecordID(v)
@@ -494,12 +500,6 @@ func (_u *IpGroupUpdateOne) SetNillableDescription(v *string) *IpGroupUpdateOne 
 // ClearDescription clears the value of the "description" field.
 func (_u *IpGroupUpdateOne) ClearDescription() *IpGroupUpdateOne {
 	_u.mutation.ClearDescription()
-	return _u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *IpGroupUpdateOne) SetUpdatedAt(v time.Time) *IpGroupUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
@@ -697,6 +697,9 @@ func (_u *IpGroupUpdateOne) sqlSave(ctx context.Context) (_node *IpGroup, err er
 			}
 		}
 	}
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(ipgroup.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if value, ok := _u.mutation.RecordID(); ok {
 		_spec.SetField(ipgroup.FieldRecordID, field.TypeString, value)
 	}
@@ -711,9 +714,6 @@ func (_u *IpGroupUpdateOne) sqlSave(ctx context.Context) (_node *IpGroup, err er
 	}
 	if _u.mutation.DescriptionCleared() {
 		_spec.ClearField(ipgroup.FieldDescription, field.TypeString)
-	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(ipgroup.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.DevicesCleared() {
 		edge := &sqlgraph.EdgeSpec{

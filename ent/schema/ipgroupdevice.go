@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"time"
+	"vibe_ip/ent/schema/schemamixin"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -25,6 +25,13 @@ func (IpGroupDevice) Annotations() []schema.Annotation {
 	}
 }
 
+// Mixin of the IpGroupDevice.
+func (IpGroupDevice) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		schemamixin.AtLogMixin{},
+	}
+}
+
 // Fields of the IpGroupDevice.
 func (IpGroupDevice) Fields() []ent.Field {
 	return []ent.Field{
@@ -40,12 +47,6 @@ func (IpGroupDevice) Fields() []ent.Field {
 
 		field.Int64("ip_group_id").
 			Comment("IP组序号").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("created_at").
-			Default(time.Now).
-			Immutable().
-			Comment("创建时间").
 			Annotations(entsql.WithComments(true)),
 	}
 }

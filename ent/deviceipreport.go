@@ -19,14 +19,14 @@ type DeviceIpReport struct {
 	// ID of the ent.
 	// 报告序号
 	ID int64 `json:"id,omitempty"`
+	// 创建时间
+	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 设备序号
 	DeviceID int64 `json:"device_id,omitempty"`
 	// IP地址V4
 	IPV4 string `json:"ip_v4,omitempty"`
 	// IP地址V6
 	IPV6 string `json:"ip_v6,omitempty"`
-	// 创建时间
-	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DeviceIpReportQuery when eager-loading is set.
 	Edges        DeviceIpReportEdges `json:"edges"`
@@ -85,6 +85,12 @@ func (_m *DeviceIpReport) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			_m.ID = int64(value.Int64)
+		case deviceipreport.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				_m.CreatedAt = value.Time
+			}
 		case deviceipreport.FieldDeviceID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field device_id", values[i])
@@ -102,12 +108,6 @@ func (_m *DeviceIpReport) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field ip_v6", values[i])
 			} else if value.Valid {
 				_m.IPV6 = value.String
-			}
-		case deviceipreport.FieldCreatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[i])
-			} else if value.Valid {
-				_m.CreatedAt = value.Time
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -150,6 +150,9 @@ func (_m *DeviceIpReport) String() string {
 	var builder strings.Builder
 	builder.WriteString("DeviceIpReport(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString("created_at=")
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("device_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.DeviceID))
 	builder.WriteString(", ")
@@ -158,9 +161,6 @@ func (_m *DeviceIpReport) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("ip_v6=")
 	builder.WriteString(_m.IPV6)
-	builder.WriteString(", ")
-	builder.WriteString("created_at=")
-	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -25,6 +25,34 @@ type IpGroupCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (_c *IpGroupCreate) SetCreatedAt(v time.Time) *IpGroupCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (_c *IpGroupCreate) SetNillableCreatedAt(v *time.Time) *IpGroupCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
+	}
+	return _c
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (_c *IpGroupCreate) SetUpdatedAt(v time.Time) *IpGroupCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (_c *IpGroupCreate) SetNillableUpdatedAt(v *time.Time) *IpGroupCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetRecordID sets the "record_id" field.
 func (_c *IpGroupCreate) SetRecordID(v string) *IpGroupCreate {
 	_c.mutation.SetRecordID(v)
@@ -55,34 +83,6 @@ func (_c *IpGroupCreate) SetDescription(v string) *IpGroupCreate {
 func (_c *IpGroupCreate) SetNillableDescription(v *string) *IpGroupCreate {
 	if v != nil {
 		_c.SetDescription(*v)
-	}
-	return _c
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (_c *IpGroupCreate) SetCreatedAt(v time.Time) *IpGroupCreate {
-	_c.mutation.SetCreatedAt(v)
-	return _c
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_c *IpGroupCreate) SetNillableCreatedAt(v *time.Time) *IpGroupCreate {
-	if v != nil {
-		_c.SetCreatedAt(*v)
-	}
-	return _c
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_c *IpGroupCreate) SetUpdatedAt(v time.Time) *IpGroupCreate {
-	_c.mutation.SetUpdatedAt(v)
-	return _c
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (_c *IpGroupCreate) SetNillableUpdatedAt(v *time.Time) *IpGroupCreate {
-	if v != nil {
-		_c.SetUpdatedAt(*v)
 	}
 	return _c
 }
@@ -185,14 +185,14 @@ func (_c *IpGroupCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *IpGroupCreate) check() error {
-	if _, ok := _c.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "IpGroup.name"`)}
-	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "IpGroup.created_at"`)}
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "IpGroup.updated_at"`)}
+	}
+	if _, ok := _c.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "IpGroup.name"`)}
 	}
 	return nil
 }
@@ -227,6 +227,14 @@ func (_c *IpGroupCreate) createSpec() (*IpGroup, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
+	if value, ok := _c.mutation.CreatedAt(); ok {
+		_spec.SetField(ipgroup.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := _c.mutation.UpdatedAt(); ok {
+		_spec.SetField(ipgroup.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	if value, ok := _c.mutation.RecordID(); ok {
 		_spec.SetField(ipgroup.FieldRecordID, field.TypeString, value)
 		_node.RecordID = value
@@ -238,14 +246,6 @@ func (_c *IpGroupCreate) createSpec() (*IpGroup, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Description(); ok {
 		_spec.SetField(ipgroup.FieldDescription, field.TypeString, value)
 		_node.Description = value
-	}
-	if value, ok := _c.mutation.CreatedAt(); ok {
-		_spec.SetField(ipgroup.FieldCreatedAt, field.TypeTime, value)
-		_node.CreatedAt = value
-	}
-	if value, ok := _c.mutation.UpdatedAt(); ok {
-		_spec.SetField(ipgroup.FieldUpdatedAt, field.TypeTime, value)
-		_node.UpdatedAt = value
 	}
 	if nodes := _c.mutation.DevicesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -306,7 +306,7 @@ func (_c *IpGroupCreate) createSpec() (*IpGroup, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.IpGroup.Create().
-//		SetRecordID(v).
+//		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -315,7 +315,7 @@ func (_c *IpGroupCreate) createSpec() (*IpGroup, *sqlgraph.CreateSpec) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.IpGroupUpsert) {
-//			SetRecordID(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *IpGroupCreate) OnConflict(opts ...sql.ConflictOption) *IpGroupUpsertOne {
@@ -350,6 +350,18 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *IpGroupUpsert) SetUpdatedAt(v time.Time) *IpGroupUpsert {
+	u.Set(ipgroup.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *IpGroupUpsert) UpdateUpdatedAt() *IpGroupUpsert {
+	u.SetExcluded(ipgroup.FieldUpdatedAt)
+	return u
+}
 
 // SetRecordID sets the "record_id" field.
 func (u *IpGroupUpsert) SetRecordID(v string) *IpGroupUpsert {
@@ -396,18 +408,6 @@ func (u *IpGroupUpsert) UpdateDescription() *IpGroupUpsert {
 // ClearDescription clears the value of the "description" field.
 func (u *IpGroupUpsert) ClearDescription() *IpGroupUpsert {
 	u.SetNull(ipgroup.FieldDescription)
-	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *IpGroupUpsert) SetUpdatedAt(v time.Time) *IpGroupUpsert {
-	u.Set(ipgroup.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *IpGroupUpsert) UpdateUpdatedAt() *IpGroupUpsert {
-	u.SetExcluded(ipgroup.FieldUpdatedAt)
 	return u
 }
 
@@ -460,6 +460,20 @@ func (u *IpGroupUpsertOne) Update(set func(*IpGroupUpsert)) *IpGroupUpsertOne {
 		set(&IpGroupUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *IpGroupUpsertOne) SetUpdatedAt(v time.Time) *IpGroupUpsertOne {
+	return u.Update(func(s *IpGroupUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *IpGroupUpsertOne) UpdateUpdatedAt() *IpGroupUpsertOne {
+	return u.Update(func(s *IpGroupUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetRecordID sets the "record_id" field.
@@ -515,20 +529,6 @@ func (u *IpGroupUpsertOne) UpdateDescription() *IpGroupUpsertOne {
 func (u *IpGroupUpsertOne) ClearDescription() *IpGroupUpsertOne {
 	return u.Update(func(s *IpGroupUpsert) {
 		s.ClearDescription()
-	})
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *IpGroupUpsertOne) SetUpdatedAt(v time.Time) *IpGroupUpsertOne {
-	return u.Update(func(s *IpGroupUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *IpGroupUpsertOne) UpdateUpdatedAt() *IpGroupUpsertOne {
-	return u.Update(func(s *IpGroupUpsert) {
-		s.UpdateUpdatedAt()
 	})
 }
 
@@ -667,7 +667,7 @@ func (_c *IpGroupCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.IpGroupUpsert) {
-//			SetRecordID(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *IpGroupCreateBulk) OnConflict(opts ...sql.ConflictOption) *IpGroupUpsertBulk {
@@ -749,6 +749,20 @@ func (u *IpGroupUpsertBulk) Update(set func(*IpGroupUpsert)) *IpGroupUpsertBulk 
 	return u
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (u *IpGroupUpsertBulk) SetUpdatedAt(v time.Time) *IpGroupUpsertBulk {
+	return u.Update(func(s *IpGroupUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *IpGroupUpsertBulk) UpdateUpdatedAt() *IpGroupUpsertBulk {
+	return u.Update(func(s *IpGroupUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
 // SetRecordID sets the "record_id" field.
 func (u *IpGroupUpsertBulk) SetRecordID(v string) *IpGroupUpsertBulk {
 	return u.Update(func(s *IpGroupUpsert) {
@@ -802,20 +816,6 @@ func (u *IpGroupUpsertBulk) UpdateDescription() *IpGroupUpsertBulk {
 func (u *IpGroupUpsertBulk) ClearDescription() *IpGroupUpsertBulk {
 	return u.Update(func(s *IpGroupUpsert) {
 		s.ClearDescription()
-	})
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *IpGroupUpsertBulk) SetUpdatedAt(v time.Time) *IpGroupUpsertBulk {
-	return u.Update(func(s *IpGroupUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *IpGroupUpsertBulk) UpdateUpdatedAt() *IpGroupUpsertBulk {
-	return u.Update(func(s *IpGroupUpsert) {
-		s.UpdateUpdatedAt()
 	})
 }
 

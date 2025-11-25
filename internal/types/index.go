@@ -6,12 +6,14 @@ import (
 )
 
 type Indexesponse struct {
-	Configs           []GetConfigsResponse       `json:"configs"`
-	CdnRecords        []GetCdnRecordsResponse    `json:"cdn_records"`
-	DnsRecords        []GetDnsRecordsResponse    `json:"dns_records"`
-	Devices           []GetDevicesResponse       `json:"devices"`
-	IpGroups          []GetIPGroupsResponse      `json:"ip_groups"`
-	Tasks             []gocron_helper.JobData    `json:"tasks"`
+	Configs    []GetConfigsResponse    `json:"configs"`
+	CdnRecords []GetCdnRecordsResponse `json:"cdn_records"`
+	DnsRecords []GetDnsRecordsResponse `json:"dns_records"`
+	Devices    []GetDevicesResponse    `json:"devices"`
+	IpGroups   []GetIPGroupsResponse   `json:"ip_groups"`
+	Webhooks   []GetWebhooksResponse   `json:"webhooks"`
+	Tasks      []gocron_helper.JobData `json:"tasks"`
+
 	OperationLogs     []GetOperationLogsResponse `json:"operation_logs"`
 	OperationLogLimit int                        `json:"operation_log_limit"`
 

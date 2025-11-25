@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"time"
+	"vibe_ip/ent/schema/schemamixin"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -22,6 +22,13 @@ func (Device) Annotations() []schema.Annotation {
 		entsql.Annotation{Table: "device"},
 		schema.Comment("设备"),
 		entsql.WithComments(true),
+	}
+}
+
+// Mixin of the Device.
+func (Device) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		schemamixin.AtMixin{},
 	}
 }
 
@@ -62,18 +69,6 @@ func (Device) Fields() []ent.Field {
 		field.Time("last_heartbeat_at").
 			Optional(). // 允许为空（新设备尚未上报）
 			Comment("最后心跳时间").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("created_at").
-			Default(time.Now).
-			Immutable().
-			Comment("创建时间").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("updated_at").
-			Default(time.Now).
-			UpdateDefault(time.Now).
-			Comment("更新时间").
 			Annotations(entsql.WithComments(true)),
 	}
 }

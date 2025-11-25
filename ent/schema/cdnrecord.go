@@ -1,7 +1,8 @@
 package schema
 
 import (
-	"time"
+	"vibe_ip/ent/schema/schemamixin"
+	"vibe_ip/ent/schema/schematype"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -22,6 +23,13 @@ func (CDNRecord) Annotations() []schema.Annotation {
 		entsql.Annotation{Table: "cdn_record"},
 		schema.Comment("CDN记录"),
 		entsql.WithComments(true),
+	}
+}
+
+// Mixin of the CDNRecord.
+func (CDNRecord) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		schemamixin.AtMixin{},
 	}
 }
 
@@ -50,14 +58,14 @@ func (CDNRecord) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("type").
-			Values("A", "AAAA").
+			Values(schematype.GetCDNRecordType()...).
 			Immutable().
 			Comment("记录类型（A、AAAA等）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("origin_protocol").
-			Default("follow").
-			Values("http", "https", "follow").
+			Default(schematype.OriginProtocolFollow).
+			Values(schematype.GetOriginProtocol()...).
 			Immutable().
 			Comment("回源协议").
 			Annotations(entsql.WithComments(true)),
@@ -92,18 +100,6 @@ func (CDNRecord) Fields() []ent.Field {
 		field.Time("last_refresh_at").
 			Optional().
 			Comment("最后一次刷新成功时间").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("created_at").
-			Default(time.Now).
-			Immutable().
-			Comment("创建时间").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("updated_at").
-			Default(time.Now).
-			UpdateDefault(time.Now).
-			Comment("更新时间").
 			Annotations(entsql.WithComments(true)),
 	}
 }

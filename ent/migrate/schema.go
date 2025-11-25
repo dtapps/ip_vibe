@@ -12,6 +12,8 @@ var (
 	// CdnRecordColumns holds the columns for the "cdn_record" table.
 	CdnRecordColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "CDN 记录序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录 ID"},
 		{Name: "domain", Type: field.TypeString, Comment: "域名（如 www.example.com）"},
 		{Name: "type", Type: field.TypeEnum, Comment: "记录类型（A、AAAA等）", Enums: []string{"A", "AAAA"}},
@@ -21,8 +23,6 @@ var (
 		{Name: "cdn_domain", Type: field.TypeString, Nullable: true, Comment: "CDN 边缘域名（平台提供）"},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
 		{Name: "last_refresh_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次刷新成功时间"},
-		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
-		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "ip_group_id", Type: field.TypeInt64, Comment: "IP 组序号"},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
 	}
@@ -55,7 +55,7 @@ var (
 			{
 				Name:    "cdnrecord_type",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[3]},
+				Columns: []*schema.Column{CdnRecordColumns[5]},
 			},
 			{
 				Name:    "cdnrecord_ip_group_id",
@@ -65,20 +65,20 @@ var (
 			{
 				Name:    "cdnrecord_is_active",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[8]},
+				Columns: []*schema.Column{CdnRecordColumns[10]},
 			},
 		},
 	}
 	// DNSRecordColumns holds the columns for the "dns_record" table.
 	DNSRecordColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "DNS 记录序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录 ID"},
 		{Name: "domain", Type: field.TypeString, Comment: "域名（如 www.example.com）"},
 		{Name: "type", Type: field.TypeEnum, Comment: "记录类型（A、AAAA、CNAME等）", Enums: []string{"A", "AAAA", "CNAME"}},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
 		{Name: "last_refresh_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次刷新成功时间"},
-		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
-		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "cdn_record_id", Type: field.TypeInt64, Nullable: true, Comment: "CDN 记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）"},
 		{Name: "ip_group_id", Type: field.TypeInt64, Nullable: true, Comment: "IP 组序号（与 cdn_record_id 二选一）"},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
@@ -118,7 +118,7 @@ var (
 			{
 				Name:    "dnsrecord_type",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[3]},
+				Columns: []*schema.Column{DNSRecordColumns[5]},
 			},
 			{
 				Name:    "dnsrecord_ip_group_id",
@@ -133,21 +133,21 @@ var (
 			{
 				Name:    "dnsrecord_is_active",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[4]},
+				Columns: []*schema.Column{DNSRecordColumns[6]},
 			},
 		},
 	}
 	// DeviceColumns holds the columns for the "device" table.
 	DeviceColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "设备序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "code", Type: field.TypeString, Unique: true, Comment: "设备编号"},
 		{Name: "name", Type: field.TypeString, Comment: "设备名称"},
 		{Name: "ip_v4", Type: field.TypeString, Nullable: true, Comment: "IP地址V4"},
 		{Name: "ip_v6", Type: field.TypeString, Nullable: true, Comment: "IP地址V6"},
 		{Name: "last_reported_at", Type: field.TypeTime, Nullable: true, Comment: "最后上报时间"},
 		{Name: "last_heartbeat_at", Type: field.TypeTime, Nullable: true, Comment: "最后心跳时间"},
-		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
-		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 	}
 	// DeviceTable holds the schema information for the "device" table.
 	DeviceTable = &schema.Table{
@@ -159,16 +159,16 @@ var (
 			{
 				Name:    "device_code",
 				Unique:  true,
-				Columns: []*schema.Column{DeviceColumns[1]},
+				Columns: []*schema.Column{DeviceColumns[3]},
 			},
 		},
 	}
 	// DeviceIPReportColumns holds the columns for the "device_ip_report" table.
 	DeviceIPReportColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "报告序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "ip_v4", Type: field.TypeString, Nullable: true, Comment: "IP地址V4"},
 		{Name: "ip_v6", Type: field.TypeString, Nullable: true, Comment: "IP地址V6"},
-		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "device_id", Type: field.TypeInt64, Comment: "设备序号"},
 	}
 	// DeviceIPReportTable holds the schema information for the "device_ip_report" table.
@@ -196,11 +196,11 @@ var (
 	// IPGroupColumns holds the columns for the "ip_group" table.
 	IPGroupColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "IP组序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录 ID"},
 		{Name: "name", Type: field.TypeString, Comment: "IP组名称"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "IP组描述"},
-		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
-		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 	}
 	// IPGroupTable holds the schema information for the "ip_group" table.
 	IPGroupTable = &schema.Table{
@@ -239,14 +239,14 @@ var (
 	// OperationLogColumns holds the columns for the "operation_log" table.
 	OperationLogColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "记录序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "op_type", Type: field.TypeEnum, Comment: "操作类型", Enums: []string{"data_create", "data_update", "data_delete", "device_report", "ip_refresh"}},
 		{Name: "obj_id", Type: field.TypeInt64, Comment: "对象主键"},
-		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"platform_config", "cdn_record", "dns_record", "device", "device_ip_report", "ip_group", "ip_group_device"}},
+		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"platform_config", "cdn_record", "dns_record", "device", "device_ip_report", "ip_group", "ip_group_device", "webhook"}},
 		{Name: "old_value", Type: field.TypeString, Nullable: true, Comment: "旧值"},
 		{Name: "new_value", Type: field.TypeString, Nullable: true, Comment: "新值"},
 		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"success", "failed"}},
 		{Name: "message", Type: field.TypeString, Comment: "详情"},
-		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 	}
 	// OperationLogTable holds the schema information for the "operation_log" table.
 	OperationLogTable = &schema.Table{
@@ -258,24 +258,24 @@ var (
 			{
 				Name:    "operationlog_op_type",
 				Unique:  false,
-				Columns: []*schema.Column{OperationLogColumns[1]},
+				Columns: []*schema.Column{OperationLogColumns[2]},
 			},
 			{
 				Name:    "operationlog_obj_type",
 				Unique:  false,
-				Columns: []*schema.Column{OperationLogColumns[3]},
+				Columns: []*schema.Column{OperationLogColumns[4]},
 			},
 		},
 	}
 	// PlatformConfigColumns holds the columns for the "platform_config" table.
 	PlatformConfigColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "配置序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "capability", Type: field.TypeEnum, Comment: "平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）", Enums: []string{"dns", "cdn", "all"}, Default: "all"},
 		{Name: "name", Type: field.TypeString, Comment: "配置名称"},
 		{Name: "platform", Type: field.TypeEnum, Comment: "平台类型（edgeone / cloudflare / dnspod …）", Enums: []string{"cloudflare", "edgeone", "dnspod"}},
 		{Name: "config_json", Type: field.TypeJSON, Nullable: true, Comment: "平台密钥等敏感信息（JSON）"},
-		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
-		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 	}
 	// PlatformConfigTable holds the schema information for the "platform_config" table.
 	PlatformConfigTable = &schema.Table{
@@ -287,9 +287,30 @@ var (
 			{
 				Name:    "platformconfig_platform",
 				Unique:  false,
-				Columns: []*schema.Column{PlatformConfigColumns[3]},
+				Columns: []*schema.Column{PlatformConfigColumns[5]},
 			},
 		},
+	}
+	// WebhookColumns holds the columns for the "webhook" table.
+	WebhookColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "通知序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "name", Type: field.TypeString, Comment: "通知名称"},
+		{Name: "platform", Type: field.TypeEnum, Comment: "通知平台类型", Enums: []string{"wechat_work", "dingtalk", "feishu", "bark", "server_chan", "push_deer", "custom_http"}},
+		{Name: "url", Type: field.TypeString, Comment: "Webhook URL / API Key"},
+		{Name: "secret", Type: field.TypeString, Nullable: true, Comment: "Webhook 签名密钥或额外Token"},
+		{Name: "events", Type: field.TypeJSON, Comment: "订阅的事件类型列表"},
+		{Name: "template_title", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "通知标题 Go Template"},
+		{Name: "template_content", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "通知内容 Go Template"},
+		{Name: "is_active", Type: field.TypeBool, Comment: "是否启用", Default: false},
+	}
+	// WebhookTable holds the schema information for the "webhook" table.
+	WebhookTable = &schema.Table{
+		Name:       "webhook",
+		Comment:    "通知",
+		Columns:    WebhookColumns,
+		PrimaryKey: []*schema.Column{WebhookColumns[0]},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
@@ -301,6 +322,7 @@ var (
 		IPGroupDeviceTable,
 		OperationLogTable,
 		PlatformConfigTable,
+		WebhookTable,
 	}
 )
 
@@ -336,5 +358,8 @@ func init() {
 	}
 	PlatformConfigTable.Annotation = &entsql.Annotation{
 		Table: "platform_config",
+	}
+	WebhookTable.Annotation = &entsql.Annotation{
+		Table: "webhook",
 	}
 }

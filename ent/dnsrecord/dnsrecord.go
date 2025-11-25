@@ -15,6 +15,10 @@ const (
 	Label = "dns_record"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
+	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	FieldUpdatedAt = "updated_at"
 	// FieldConfigID holds the string denoting the config_id field in the database.
 	FieldConfigID = "config_id"
 	// FieldRecordID holds the string denoting the record_id field in the database.
@@ -31,10 +35,6 @@ const (
 	FieldIsActive = "is_active"
 	// FieldLastRefreshAt holds the string denoting the last_refresh_at field in the database.
 	FieldLastRefreshAt = "last_refresh_at"
-	// FieldCreatedAt holds the string denoting the created_at field in the database.
-	FieldCreatedAt = "created_at"
-	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
-	FieldUpdatedAt = "updated_at"
 	// EdgeConfig holds the string denoting the config edge name in mutations.
 	EdgeConfig = "config"
 	// EdgeIPGroup holds the string denoting the ip_group edge name in mutations.
@@ -69,6 +69,8 @@ const (
 // Columns holds all SQL columns for dnsrecord fields.
 var Columns = []string{
 	FieldID,
+	FieldCreatedAt,
+	FieldUpdatedAt,
 	FieldConfigID,
 	FieldRecordID,
 	FieldDomain,
@@ -77,8 +79,6 @@ var Columns = []string{
 	FieldCdnRecordID,
 	FieldIsActive,
 	FieldLastRefreshAt,
-	FieldCreatedAt,
-	FieldUpdatedAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -92,14 +92,14 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// DefaultIsActive holds the default value on creation for the "is_active" field.
-	DefaultIsActive bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultIsActive holds the default value on creation for the "is_active" field.
+	DefaultIsActive bool
 )
 
 // Type defines the type for the "type" enum field.
@@ -132,6 +132,16 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
 // ByConfigID orders the results by the config_id field.
@@ -172,16 +182,6 @@ func ByIsActive(opts ...sql.OrderTermOption) OrderOption {
 // ByLastRefreshAt orders the results by the last_refresh_at field.
 func ByLastRefreshAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastRefreshAt, opts...).ToFunc()
-}
-
-// ByCreatedAt orders the results by the created_at field.
-func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
-}
-
-// ByUpdatedAt orders the results by the updated_at field.
-func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
 // ByConfigField orders the results by config field.

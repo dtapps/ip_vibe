@@ -10,6 +10,11 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.IpGroupDevice {
+	return predicate.IpGroupDevice(sql.FieldEQ(FieldCreatedAt, v))
+}
+
 // DeviceID applies equality check predicate on the "device_id" field. It's identical to DeviceIDEQ.
 func DeviceID(v int64) predicate.IpGroupDevice {
 	return predicate.IpGroupDevice(sql.FieldEQ(FieldDeviceID, v))
@@ -18,51 +23,6 @@ func DeviceID(v int64) predicate.IpGroupDevice {
 // IPGroupID applies equality check predicate on the "ip_group_id" field. It's identical to IPGroupIDEQ.
 func IPGroupID(v int64) predicate.IpGroupDevice {
 	return predicate.IpGroupDevice(sql.FieldEQ(FieldIPGroupID, v))
-}
-
-// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
-func CreatedAt(v time.Time) predicate.IpGroupDevice {
-	return predicate.IpGroupDevice(sql.FieldEQ(FieldCreatedAt, v))
-}
-
-// DeviceIDEQ applies the EQ predicate on the "device_id" field.
-func DeviceIDEQ(v int64) predicate.IpGroupDevice {
-	return predicate.IpGroupDevice(sql.FieldEQ(FieldDeviceID, v))
-}
-
-// DeviceIDNEQ applies the NEQ predicate on the "device_id" field.
-func DeviceIDNEQ(v int64) predicate.IpGroupDevice {
-	return predicate.IpGroupDevice(sql.FieldNEQ(FieldDeviceID, v))
-}
-
-// DeviceIDIn applies the In predicate on the "device_id" field.
-func DeviceIDIn(vs ...int64) predicate.IpGroupDevice {
-	return predicate.IpGroupDevice(sql.FieldIn(FieldDeviceID, vs...))
-}
-
-// DeviceIDNotIn applies the NotIn predicate on the "device_id" field.
-func DeviceIDNotIn(vs ...int64) predicate.IpGroupDevice {
-	return predicate.IpGroupDevice(sql.FieldNotIn(FieldDeviceID, vs...))
-}
-
-// IPGroupIDEQ applies the EQ predicate on the "ip_group_id" field.
-func IPGroupIDEQ(v int64) predicate.IpGroupDevice {
-	return predicate.IpGroupDevice(sql.FieldEQ(FieldIPGroupID, v))
-}
-
-// IPGroupIDNEQ applies the NEQ predicate on the "ip_group_id" field.
-func IPGroupIDNEQ(v int64) predicate.IpGroupDevice {
-	return predicate.IpGroupDevice(sql.FieldNEQ(FieldIPGroupID, v))
-}
-
-// IPGroupIDIn applies the In predicate on the "ip_group_id" field.
-func IPGroupIDIn(vs ...int64) predicate.IpGroupDevice {
-	return predicate.IpGroupDevice(sql.FieldIn(FieldIPGroupID, vs...))
-}
-
-// IPGroupIDNotIn applies the NotIn predicate on the "ip_group_id" field.
-func IPGroupIDNotIn(vs ...int64) predicate.IpGroupDevice {
-	return predicate.IpGroupDevice(sql.FieldNotIn(FieldIPGroupID, vs...))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -103,6 +63,46 @@ func CreatedAtLT(v time.Time) predicate.IpGroupDevice {
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.IpGroupDevice {
 	return predicate.IpGroupDevice(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// DeviceIDEQ applies the EQ predicate on the "device_id" field.
+func DeviceIDEQ(v int64) predicate.IpGroupDevice {
+	return predicate.IpGroupDevice(sql.FieldEQ(FieldDeviceID, v))
+}
+
+// DeviceIDNEQ applies the NEQ predicate on the "device_id" field.
+func DeviceIDNEQ(v int64) predicate.IpGroupDevice {
+	return predicate.IpGroupDevice(sql.FieldNEQ(FieldDeviceID, v))
+}
+
+// DeviceIDIn applies the In predicate on the "device_id" field.
+func DeviceIDIn(vs ...int64) predicate.IpGroupDevice {
+	return predicate.IpGroupDevice(sql.FieldIn(FieldDeviceID, vs...))
+}
+
+// DeviceIDNotIn applies the NotIn predicate on the "device_id" field.
+func DeviceIDNotIn(vs ...int64) predicate.IpGroupDevice {
+	return predicate.IpGroupDevice(sql.FieldNotIn(FieldDeviceID, vs...))
+}
+
+// IPGroupIDEQ applies the EQ predicate on the "ip_group_id" field.
+func IPGroupIDEQ(v int64) predicate.IpGroupDevice {
+	return predicate.IpGroupDevice(sql.FieldEQ(FieldIPGroupID, v))
+}
+
+// IPGroupIDNEQ applies the NEQ predicate on the "ip_group_id" field.
+func IPGroupIDNEQ(v int64) predicate.IpGroupDevice {
+	return predicate.IpGroupDevice(sql.FieldNEQ(FieldIPGroupID, v))
+}
+
+// IPGroupIDIn applies the In predicate on the "ip_group_id" field.
+func IPGroupIDIn(vs ...int64) predicate.IpGroupDevice {
+	return predicate.IpGroupDevice(sql.FieldIn(FieldIPGroupID, vs...))
+}
+
+// IPGroupIDNotIn applies the NotIn predicate on the "ip_group_id" field.
+func IPGroupIDNotIn(vs ...int64) predicate.IpGroupDevice {
+	return predicate.IpGroupDevice(sql.FieldNotIn(FieldIPGroupID, vs...))
 }
 
 // HasDevice applies the HasEdge predicate on the "device" edge.

@@ -17,12 +17,12 @@ import (
 // IP组设备
 type IpGroupDevice struct {
 	config `json:"-"`
+	// 创建时间
+	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 设备序号
 	DeviceID int64 `json:"device_id,omitempty"`
 	// IP组序号
 	IPGroupID int64 `json:"ip_group_id,omitempty"`
-	// 创建时间
-	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the IpGroupDeviceQuery when eager-loading is set.
 	Edges        IpGroupDeviceEdges `json:"edges"`
@@ -86,6 +86,12 @@ func (_m *IpGroupDevice) assignValues(columns []string, values []any) error {
 	}
 	for i := range columns {
 		switch columns[i] {
+		case ipgroupdevice.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				_m.CreatedAt = value.Time
+			}
 		case ipgroupdevice.FieldDeviceID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field device_id", values[i])
@@ -97,12 +103,6 @@ func (_m *IpGroupDevice) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field ip_group_id", values[i])
 			} else if value.Valid {
 				_m.IPGroupID = value.Int64
-			}
-		case ipgroupdevice.FieldCreatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[i])
-			} else if value.Valid {
-				_m.CreatedAt = value.Time
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -149,14 +149,14 @@ func (_m *IpGroupDevice) Unwrap() *IpGroupDevice {
 func (_m *IpGroupDevice) String() string {
 	var builder strings.Builder
 	builder.WriteString("IpGroupDevice(")
+	builder.WriteString("created_at=")
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("device_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.DeviceID))
 	builder.WriteString(", ")
 	builder.WriteString("ip_group_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IPGroupID))
-	builder.WriteString(", ")
-	builder.WriteString("created_at=")
-	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

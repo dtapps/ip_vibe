@@ -2,7 +2,8 @@ package schema
 
 import (
 	"encoding/json"
-	"time"
+	"vibe_ip/ent/schema/schemamixin"
+	"vibe_ip/ent/schema/schematype"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -26,6 +27,13 @@ func (PlatformConfig) Annotations() []schema.Annotation {
 	}
 }
 
+// Mixin of the PlatformConfig.
+func (PlatformConfig) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		schemamixin.AtMixin{},
+	}
+}
+
 // Fields of the PlatformConfig.
 func (PlatformConfig) Fields() []ent.Field {
 	return []ent.Field{
@@ -36,8 +44,8 @@ func (PlatformConfig) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
 
 		field.Enum("capability").
-			Default("all").
-			Values("dns", "cdn", "all").
+			Default(schematype.ConfigCapabilityAll).
+			Values(schematype.GetConfigCapability()...).
 			Comment("平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）").
 			Annotations(entsql.WithComments(true)),
 
@@ -46,7 +54,7 @@ func (PlatformConfig) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("platform").
-			Values("cloudflare", "edgeone", "dnspod").
+			Values(schematype.GetConfigPlatform()...).
 			Immutable().
 			Comment("平台类型（edgeone / cloudflare / dnspod …）").
 			Annotations(entsql.WithComments(true)),
@@ -54,18 +62,6 @@ func (PlatformConfig) Fields() []ent.Field {
 		field.JSON("config_json", json.RawMessage{}).
 			Optional().
 			Comment("平台密钥等敏感信息（JSON）").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("created_at").
-			Default(time.Now).
-			Immutable().
-			Comment("创建时间").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("updated_at").
-			Default(time.Now).
-			UpdateDefault(time.Now).
-			Comment("更新时间").
 			Annotations(entsql.WithComments(true)),
 	}
 }

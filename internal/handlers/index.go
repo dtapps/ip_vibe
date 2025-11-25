@@ -17,13 +17,16 @@ import (
 func Index(c *gin.Context) {
 	// 准备页面数据
 	pageData := types.Indexesponse{
-		Configs:       []types.GetConfigsResponse{},
-		CdnRecords:    []types.GetCdnRecordsResponse{},
-		DnsRecords:    []types.GetDnsRecordsResponse{},
-		Devices:       []types.GetDevicesResponse{},
-		IpGroups:      []types.GetIPGroupsResponse{},
-		Tasks:         []gocron_helper.JobData{},
-		OperationLogs: []types.GetOperationLogsResponse{},
+		Configs:    []types.GetConfigsResponse{},
+		CdnRecords: []types.GetCdnRecordsResponse{},
+		DnsRecords: []types.GetDnsRecordsResponse{},
+		Devices:    []types.GetDevicesResponse{},
+		IpGroups:   []types.GetIPGroupsResponse{},
+		Webhooks:   []types.GetWebhooksResponse{},
+		Tasks:      []gocron_helper.JobData{},
+
+		OperationLogs:     []types.GetOperationLogsResponse{},
+		OperationLogLimit: 0,
 	}
 	// 查询全部配置
 	allConfig, err := global.GvaDb.PlatformConfig.Query().
@@ -122,6 +125,22 @@ func Index(c *gin.Context) {
 				Name:        item.Name,
 				Description: item.Description,
 				DeviceCount: len(item.Edges.Devices),
+			})
+		}
+	}
+	// 查询全部通知
+	allWebhook, err := global.GvaDb.Webhook.Query().
+		All(c)
+	if err == nil {
+		for _, item := range allWebhook {
+			pageData.Webhooks = append(pageData.Webhooks, types.GetWebhooksResponse{
+				ID:       item.ID,
+				Name:     item.Name,
+				Platform: item.Platform.String(),
+				URL:      item.URL,
+				Secret:   item.Secret,
+				Events:   item.Events,
+				IsActive: item.IsActive,
 			})
 		}
 	}

@@ -137,15 +137,15 @@ func UpdateDnsRecordActive(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询DNS记录失败: "+err.Error())
 		return
 	}
-	// 更新DNS记录
+	// 更新DNS记录状态
 	saveRecord, err := global.GvaDb.DNSRecord.UpdateOne(firstDnsRecord).
 		SetIsActive(requestParams.IsActive).
 		Save(c)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
-			fmt.Printf("更新记录: %s\n", err.Error())
+			fmt.Printf("更新DNS记录状态: %s\n", err.Error())
 		}
-		errorResponse(c, http.StatusInternalServerError, "更新DNS记录失败: "+err.Error())
+		errorResponse(c, http.StatusInternalServerError, "更新DNS记录状态失败: "+err.Error())
 		return
 	}
 	// 记录操作日志

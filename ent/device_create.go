@@ -24,6 +24,34 @@ type DeviceCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (_c *DeviceCreate) SetCreatedAt(v time.Time) *DeviceCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (_c *DeviceCreate) SetNillableCreatedAt(v *time.Time) *DeviceCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
+	}
+	return _c
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (_c *DeviceCreate) SetUpdatedAt(v time.Time) *DeviceCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (_c *DeviceCreate) SetNillableUpdatedAt(v *time.Time) *DeviceCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetCode sets the "code" field.
 func (_c *DeviceCreate) SetCode(v string) *DeviceCreate {
 	_c.mutation.SetCode(v)
@@ -88,34 +116,6 @@ func (_c *DeviceCreate) SetLastHeartbeatAt(v time.Time) *DeviceCreate {
 func (_c *DeviceCreate) SetNillableLastHeartbeatAt(v *time.Time) *DeviceCreate {
 	if v != nil {
 		_c.SetLastHeartbeatAt(*v)
-	}
-	return _c
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (_c *DeviceCreate) SetCreatedAt(v time.Time) *DeviceCreate {
-	_c.mutation.SetCreatedAt(v)
-	return _c
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_c *DeviceCreate) SetNillableCreatedAt(v *time.Time) *DeviceCreate {
-	if v != nil {
-		_c.SetCreatedAt(*v)
-	}
-	return _c
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_c *DeviceCreate) SetUpdatedAt(v time.Time) *DeviceCreate {
-	_c.mutation.SetUpdatedAt(v)
-	return _c
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (_c *DeviceCreate) SetNillableUpdatedAt(v *time.Time) *DeviceCreate {
-	if v != nil {
-		_c.SetUpdatedAt(*v)
 	}
 	return _c
 }
@@ -203,17 +203,17 @@ func (_c *DeviceCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *DeviceCreate) check() error {
-	if _, ok := _c.mutation.Code(); !ok {
-		return &ValidationError{Name: "code", err: errors.New(`ent: missing required field "Device.code"`)}
-	}
-	if _, ok := _c.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Device.name"`)}
-	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Device.created_at"`)}
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Device.updated_at"`)}
+	}
+	if _, ok := _c.mutation.Code(); !ok {
+		return &ValidationError{Name: "code", err: errors.New(`ent: missing required field "Device.code"`)}
+	}
+	if _, ok := _c.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Device.name"`)}
 	}
 	return nil
 }
@@ -248,6 +248,14 @@ func (_c *DeviceCreate) createSpec() (*Device, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
+	if value, ok := _c.mutation.CreatedAt(); ok {
+		_spec.SetField(device.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := _c.mutation.UpdatedAt(); ok {
+		_spec.SetField(device.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	if value, ok := _c.mutation.Code(); ok {
 		_spec.SetField(device.FieldCode, field.TypeString, value)
 		_node.Code = value
@@ -271,14 +279,6 @@ func (_c *DeviceCreate) createSpec() (*Device, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.LastHeartbeatAt(); ok {
 		_spec.SetField(device.FieldLastHeartbeatAt, field.TypeTime, value)
 		_node.LastHeartbeatAt = value
-	}
-	if value, ok := _c.mutation.CreatedAt(); ok {
-		_spec.SetField(device.FieldCreatedAt, field.TypeTime, value)
-		_node.CreatedAt = value
-	}
-	if value, ok := _c.mutation.UpdatedAt(); ok {
-		_spec.SetField(device.FieldUpdatedAt, field.TypeTime, value)
-		_node.UpdatedAt = value
 	}
 	if nodes := _c.mutation.IPReportsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -323,7 +323,7 @@ func (_c *DeviceCreate) createSpec() (*Device, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.Device.Create().
-//		SetCode(v).
+//		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -332,7 +332,7 @@ func (_c *DeviceCreate) createSpec() (*Device, *sqlgraph.CreateSpec) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.DeviceUpsert) {
-//			SetCode(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *DeviceCreate) OnConflict(opts ...sql.ConflictOption) *DeviceUpsertOne {
@@ -367,6 +367,18 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *DeviceUpsert) SetUpdatedAt(v time.Time) *DeviceUpsert {
+	u.Set(device.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *DeviceUpsert) UpdateUpdatedAt() *DeviceUpsert {
+	u.SetExcluded(device.FieldUpdatedAt)
+	return u
+}
 
 // SetName sets the "name" field.
 func (u *DeviceUpsert) SetName(v string) *DeviceUpsert {
@@ -452,18 +464,6 @@ func (u *DeviceUpsert) ClearLastHeartbeatAt() *DeviceUpsert {
 	return u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DeviceUpsert) SetUpdatedAt(v time.Time) *DeviceUpsert {
-	u.Set(device.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DeviceUpsert) UpdateUpdatedAt() *DeviceUpsert {
-	u.SetExcluded(device.FieldUpdatedAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -481,11 +481,11 @@ func (u *DeviceUpsertOne) UpdateNewValues() *DeviceUpsertOne {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(device.FieldID)
 		}
-		if _, exists := u.create.mutation.Code(); exists {
-			s.SetIgnore(device.FieldCode)
-		}
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(device.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.Code(); exists {
+			s.SetIgnore(device.FieldCode)
 		}
 	}))
 	return u
@@ -516,6 +516,20 @@ func (u *DeviceUpsertOne) Update(set func(*DeviceUpsert)) *DeviceUpsertOne {
 		set(&DeviceUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *DeviceUpsertOne) SetUpdatedAt(v time.Time) *DeviceUpsertOne {
+	return u.Update(func(s *DeviceUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *DeviceUpsertOne) UpdateUpdatedAt() *DeviceUpsertOne {
+	return u.Update(func(s *DeviceUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetName sets the "name" field.
@@ -613,20 +627,6 @@ func (u *DeviceUpsertOne) UpdateLastHeartbeatAt() *DeviceUpsertOne {
 func (u *DeviceUpsertOne) ClearLastHeartbeatAt() *DeviceUpsertOne {
 	return u.Update(func(s *DeviceUpsert) {
 		s.ClearLastHeartbeatAt()
-	})
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DeviceUpsertOne) SetUpdatedAt(v time.Time) *DeviceUpsertOne {
-	return u.Update(func(s *DeviceUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DeviceUpsertOne) UpdateUpdatedAt() *DeviceUpsertOne {
-	return u.Update(func(s *DeviceUpsert) {
-		s.UpdateUpdatedAt()
 	})
 }
 
@@ -765,7 +765,7 @@ func (_c *DeviceCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.DeviceUpsert) {
-//			SetCode(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *DeviceCreateBulk) OnConflict(opts ...sql.ConflictOption) *DeviceUpsertBulk {
@@ -812,11 +812,11 @@ func (u *DeviceUpsertBulk) UpdateNewValues() *DeviceUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(device.FieldID)
 			}
-			if _, exists := b.mutation.Code(); exists {
-				s.SetIgnore(device.FieldCode)
-			}
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(device.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.Code(); exists {
+				s.SetIgnore(device.FieldCode)
 			}
 		}
 	}))
@@ -848,6 +848,20 @@ func (u *DeviceUpsertBulk) Update(set func(*DeviceUpsert)) *DeviceUpsertBulk {
 		set(&DeviceUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *DeviceUpsertBulk) SetUpdatedAt(v time.Time) *DeviceUpsertBulk {
+	return u.Update(func(s *DeviceUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *DeviceUpsertBulk) UpdateUpdatedAt() *DeviceUpsertBulk {
+	return u.Update(func(s *DeviceUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetName sets the "name" field.
@@ -945,20 +959,6 @@ func (u *DeviceUpsertBulk) UpdateLastHeartbeatAt() *DeviceUpsertBulk {
 func (u *DeviceUpsertBulk) ClearLastHeartbeatAt() *DeviceUpsertBulk {
 	return u.Update(func(s *DeviceUpsert) {
 		s.ClearLastHeartbeatAt()
-	})
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DeviceUpsertBulk) SetUpdatedAt(v time.Time) *DeviceUpsertBulk {
-	return u.Update(func(s *DeviceUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DeviceUpsertBulk) UpdateUpdatedAt() *DeviceUpsertBulk {
-	return u.Update(func(s *DeviceUpsert) {
-		s.UpdateUpdatedAt()
 	})
 }
 

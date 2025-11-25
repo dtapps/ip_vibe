@@ -300,12 +300,12 @@ func (_q *DeviceIpReportQuery) WithDevice(opts ...func(*DeviceQuery)) *DeviceIpR
 // Example:
 //
 //	var v []struct {
-//		DeviceID int64 `json:"device_id,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.DeviceIpReport.Query().
-//		GroupBy(deviceipreport.FieldDeviceID).
+//		GroupBy(deviceipreport.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *DeviceIpReportQuery) GroupBy(field string, fields ...string) *DeviceIpReportGroupBy {
@@ -323,11 +323,11 @@ func (_q *DeviceIpReportQuery) GroupBy(field string, fields ...string) *DeviceIp
 // Example:
 //
 //	var v []struct {
-//		DeviceID int64 `json:"device_id,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.DeviceIpReport.Query().
-//		Select(deviceipreport.FieldDeviceID).
+//		Select(deviceipreport.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (_q *DeviceIpReportQuery) Select(fields ...string) *DeviceIpReportSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)

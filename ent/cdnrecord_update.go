@@ -30,6 +30,12 @@ func (_u *CDNRecordUpdate) Where(ps ...predicate.CDNRecord) *CDNRecordUpdate {
 	return _u
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *CDNRecordUpdate) SetUpdatedAt(v time.Time) *CDNRecordUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
+}
+
 // SetRecordID sets the "record_id" field.
 func (_u *CDNRecordUpdate) SetRecordID(v string) *CDNRecordUpdate {
 	_u.mutation.SetRecordID(v)
@@ -101,12 +107,6 @@ func (_u *CDNRecordUpdate) SetNillableLastRefreshAt(v *time.Time) *CDNRecordUpda
 // ClearLastRefreshAt clears the value of the "last_refresh_at" field.
 func (_u *CDNRecordUpdate) ClearLastRefreshAt() *CDNRecordUpdate {
 	_u.mutation.ClearLastRefreshAt()
-	return _u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *CDNRecordUpdate) SetUpdatedAt(v time.Time) *CDNRecordUpdate {
-	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
@@ -216,6 +216,9 @@ func (_u *CDNRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(cdnrecord.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if value, ok := _u.mutation.RecordID(); ok {
 		_spec.SetField(cdnrecord.FieldRecordID, field.TypeString, value)
 	}
@@ -236,9 +239,6 @@ func (_u *CDNRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.LastRefreshAtCleared() {
 		_spec.ClearField(cdnrecord.FieldLastRefreshAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(cdnrecord.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.DNSRecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -305,6 +305,12 @@ type CDNRecordUpdateOne struct {
 	hooks     []Hook
 	mutation  *CDNRecordMutation
 	modifiers []func(*sql.UpdateBuilder)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *CDNRecordUpdateOne) SetUpdatedAt(v time.Time) *CDNRecordUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetRecordID sets the "record_id" field.
@@ -378,12 +384,6 @@ func (_u *CDNRecordUpdateOne) SetNillableLastRefreshAt(v *time.Time) *CDNRecordU
 // ClearLastRefreshAt clears the value of the "last_refresh_at" field.
 func (_u *CDNRecordUpdateOne) ClearLastRefreshAt() *CDNRecordUpdateOne {
 	_u.mutation.ClearLastRefreshAt()
-	return _u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *CDNRecordUpdateOne) SetUpdatedAt(v time.Time) *CDNRecordUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
@@ -523,6 +523,9 @@ func (_u *CDNRecordUpdateOne) sqlSave(ctx context.Context) (_node *CDNRecord, er
 			}
 		}
 	}
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(cdnrecord.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if value, ok := _u.mutation.RecordID(); ok {
 		_spec.SetField(cdnrecord.FieldRecordID, field.TypeString, value)
 	}
@@ -543,9 +546,6 @@ func (_u *CDNRecordUpdateOne) sqlSave(ctx context.Context) (_node *CDNRecord, er
 	}
 	if _u.mutation.LastRefreshAtCleared() {
 		_spec.ClearField(cdnrecord.FieldLastRefreshAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(cdnrecord.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.DNSRecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{
