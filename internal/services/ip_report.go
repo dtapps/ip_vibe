@@ -141,7 +141,7 @@ func (s *IpReportService) runTask() {
 		_ = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(ctx, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "自动创建设备")
 		// 创建设备IP报告
 		saveDeviceIPReport, err := tx.DeviceIpReport.Create().
-			SetDevice(firstDevice).
+			SetDevice(saveDevice).
 			SetIPV4(params.IPV4Addr).
 			SetIPV6(params.IPV6Addr).
 			Save(ctx)

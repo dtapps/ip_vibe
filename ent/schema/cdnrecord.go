@@ -137,16 +137,18 @@ func (CDNRecord) Edges() []ent.Edge {
 // Indexes of the CDNRecord.
 func (CDNRecord) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("config_id").
+		index.Fields("domain").
 			Annotations(entsql.WithComments(true)),
 
 		index.Fields("type").
 			Annotations(entsql.WithComments(true)),
 
-		index.Fields("ip_group_id").
+		index.Fields("is_active").
 			Annotations(entsql.WithComments(true)),
 
-		index.Fields("is_active").
+		// 确保一个 域名 不能有多个相同类型的记录
+		index.Fields("domain", "type").
+			Unique().
 			Annotations(entsql.WithComments(true)),
 	}
 }

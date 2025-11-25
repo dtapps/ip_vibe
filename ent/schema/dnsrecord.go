@@ -120,19 +120,18 @@ func (DNSRecord) Edges() []ent.Edge {
 // Indexes of the DNSRecord.
 func (DNSRecord) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("config_id").
+		index.Fields("domain").
 			Annotations(entsql.WithComments(true)),
 
 		index.Fields("type").
 			Annotations(entsql.WithComments(true)),
 
-		index.Fields("ip_group_id").
-			Annotations(entsql.WithComments(true)),
-
-		index.Fields("cdn_record_id").
-			Annotations(entsql.WithComments(true)),
-
 		index.Fields("is_active").
+			Annotations(entsql.WithComments(true)),
+
+		// 确保一个 域名 不能有多个相同类型的记录
+		index.Fields("domain", "type").
+			Unique().
 			Annotations(entsql.WithComments(true)),
 	}
 }

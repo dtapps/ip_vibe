@@ -95,6 +95,7 @@ func (Device) Edges() []ent.Edge {
 // Indexes of the Device.
 func (Device) Indexes() []ent.Index {
 	return []ent.Index{
+		// 确保一个 设备编号 不能重复
 		index.Fields("code").
 			Unique().
 			Annotations(entsql.WithComments(true)),

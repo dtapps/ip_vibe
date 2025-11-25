@@ -78,6 +78,7 @@ func (WebhookSubscription) Indexes() []ent.Index {
 	return []ent.Index{
 		// 确保一个 Webhook 不能对同一个对象（类型+ID）重复订阅
 		index.Fields("webhook_id", "obj_type", "obj_id").
-			Unique(),
+			Unique().
+			Annotations(entsql.WithComments(true)),
 	}
 }

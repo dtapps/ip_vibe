@@ -48,9 +48,9 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "cdnrecord_config_id",
+				Name:    "cdnrecord_domain",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[13]},
+				Columns: []*schema.Column{CdnRecordColumns[4]},
 			},
 			{
 				Name:    "cdnrecord_type",
@@ -58,14 +58,14 @@ var (
 				Columns: []*schema.Column{CdnRecordColumns[5]},
 			},
 			{
-				Name:    "cdnrecord_ip_group_id",
-				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[12]},
-			},
-			{
 				Name:    "cdnrecord_is_active",
 				Unique:  false,
 				Columns: []*schema.Column{CdnRecordColumns[10]},
+			},
+			{
+				Name:    "cdnrecord_domain_type",
+				Unique:  true,
+				Columns: []*schema.Column{CdnRecordColumns[4], CdnRecordColumns[5]},
 			},
 		},
 	}
@@ -111,9 +111,9 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "dnsrecord_config_id",
+				Name:    "dnsrecord_domain",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[10]},
+				Columns: []*schema.Column{DNSRecordColumns[4]},
 			},
 			{
 				Name:    "dnsrecord_type",
@@ -121,19 +121,14 @@ var (
 				Columns: []*schema.Column{DNSRecordColumns[5]},
 			},
 			{
-				Name:    "dnsrecord_ip_group_id",
-				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[9]},
-			},
-			{
-				Name:    "dnsrecord_cdn_record_id",
-				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[8]},
-			},
-			{
 				Name:    "dnsrecord_is_active",
 				Unique:  false,
 				Columns: []*schema.Column{DNSRecordColumns[6]},
+			},
+			{
+				Name:    "dnsrecord_domain_type",
+				Unique:  true,
+				Columns: []*schema.Column{DNSRecordColumns[4], DNSRecordColumns[5]},
 			},
 		},
 	}
@@ -316,6 +311,11 @@ var (
 				Name:    "webhook_platform",
 				Unique:  false,
 				Columns: []*schema.Column{WebhookColumns[4]},
+			},
+			{
+				Name:    "webhook_is_active",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookColumns[10]},
 			},
 		},
 	}

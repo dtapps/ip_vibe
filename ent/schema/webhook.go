@@ -100,5 +100,8 @@ func (Webhook) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("platform").
 			Annotations(entsql.WithComments(true)),
+
+		index.Fields("is_active").
+			Annotations(entsql.WithComments(true)),
 	}
 }
