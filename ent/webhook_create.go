@@ -394,18 +394,6 @@ func (u *WebhookUpsert) UpdateName() *WebhookUpsert {
 	return u
 }
 
-// SetPlatform sets the "platform" field.
-func (u *WebhookUpsert) SetPlatform(v webhook.Platform) *WebhookUpsert {
-	u.Set(webhook.FieldPlatform, v)
-	return u
-}
-
-// UpdatePlatform sets the "platform" field to the value that was provided on create.
-func (u *WebhookUpsert) UpdatePlatform() *WebhookUpsert {
-	u.SetExcluded(webhook.FieldPlatform)
-	return u
-}
-
 // SetURL sets the "url" field.
 func (u *WebhookUpsert) SetURL(v string) *WebhookUpsert {
 	u.Set(webhook.FieldURL, v)
@@ -516,6 +504,9 @@ func (u *WebhookUpsertOne) UpdateNewValues() *WebhookUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(webhook.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.Platform(); exists {
+			s.SetIgnore(webhook.FieldPlatform)
+		}
 	}))
 	return u
 }
@@ -572,20 +563,6 @@ func (u *WebhookUpsertOne) SetName(v string) *WebhookUpsertOne {
 func (u *WebhookUpsertOne) UpdateName() *WebhookUpsertOne {
 	return u.Update(func(s *WebhookUpsert) {
 		s.UpdateName()
-	})
-}
-
-// SetPlatform sets the "platform" field.
-func (u *WebhookUpsertOne) SetPlatform(v webhook.Platform) *WebhookUpsertOne {
-	return u.Update(func(s *WebhookUpsert) {
-		s.SetPlatform(v)
-	})
-}
-
-// UpdatePlatform sets the "platform" field to the value that was provided on create.
-func (u *WebhookUpsertOne) UpdatePlatform() *WebhookUpsertOne {
-	return u.Update(func(s *WebhookUpsert) {
-		s.UpdatePlatform()
 	})
 }
 
@@ -879,6 +856,9 @@ func (u *WebhookUpsertBulk) UpdateNewValues() *WebhookUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(webhook.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.Platform(); exists {
+				s.SetIgnore(webhook.FieldPlatform)
+			}
 		}
 	}))
 	return u
@@ -936,20 +916,6 @@ func (u *WebhookUpsertBulk) SetName(v string) *WebhookUpsertBulk {
 func (u *WebhookUpsertBulk) UpdateName() *WebhookUpsertBulk {
 	return u.Update(func(s *WebhookUpsert) {
 		s.UpdateName()
-	})
-}
-
-// SetPlatform sets the "platform" field.
-func (u *WebhookUpsertBulk) SetPlatform(v webhook.Platform) *WebhookUpsertBulk {
-	return u.Update(func(s *WebhookUpsert) {
-		s.SetPlatform(v)
-	})
-}
-
-// UpdatePlatform sets the "platform" field to the value that was provided on create.
-func (u *WebhookUpsertBulk) UpdatePlatform() *WebhookUpsertBulk {
-	return u.Update(func(s *WebhookUpsert) {
-		s.UpdatePlatform()
 	})
 }
 

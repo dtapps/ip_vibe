@@ -37,6 +37,12 @@ func (_c *WebhookSubscriptionCreate) SetNillableCreatedAt(v *time.Time) *Webhook
 	return _c
 }
 
+// SetName sets the "name" field.
+func (_c *WebhookSubscriptionCreate) SetName(v string) *WebhookSubscriptionCreate {
+	_c.mutation.SetName(v)
+	return _c
+}
+
 // SetWebhookID sets the "webhook_id" field.
 func (_c *WebhookSubscriptionCreate) SetWebhookID(v int64) *WebhookSubscriptionCreate {
 	_c.mutation.SetWebhookID(v)
@@ -52,6 +58,20 @@ func (_c *WebhookSubscriptionCreate) SetObjType(v webhooksubscription.ObjType) *
 // SetObjID sets the "obj_id" field.
 func (_c *WebhookSubscriptionCreate) SetObjID(v int64) *WebhookSubscriptionCreate {
 	_c.mutation.SetObjID(v)
+	return _c
+}
+
+// SetIsActive sets the "is_active" field.
+func (_c *WebhookSubscriptionCreate) SetIsActive(v bool) *WebhookSubscriptionCreate {
+	_c.mutation.SetIsActive(v)
+	return _c
+}
+
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (_c *WebhookSubscriptionCreate) SetNillableIsActive(v *bool) *WebhookSubscriptionCreate {
+	if v != nil {
+		_c.SetIsActive(*v)
+	}
 	return _c
 }
 
@@ -105,12 +125,19 @@ func (_c *WebhookSubscriptionCreate) defaults() {
 		v := webhooksubscription.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
+	if _, ok := _c.mutation.IsActive(); !ok {
+		v := webhooksubscription.DefaultIsActive
+		_c.mutation.SetIsActive(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *WebhookSubscriptionCreate) check() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "WebhookSubscription.created_at"`)}
+	}
+	if _, ok := _c.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "WebhookSubscription.name"`)}
 	}
 	if _, ok := _c.mutation.WebhookID(); !ok {
 		return &ValidationError{Name: "webhook_id", err: errors.New(`ent: missing required field "WebhookSubscription.webhook_id"`)}
@@ -125,6 +152,9 @@ func (_c *WebhookSubscriptionCreate) check() error {
 	}
 	if _, ok := _c.mutation.ObjID(); !ok {
 		return &ValidationError{Name: "obj_id", err: errors.New(`ent: missing required field "WebhookSubscription.obj_id"`)}
+	}
+	if _, ok := _c.mutation.IsActive(); !ok {
+		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "WebhookSubscription.is_active"`)}
 	}
 	if len(_c.mutation.WebhookIDs()) == 0 {
 		return &ValidationError{Name: "webhook", err: errors.New(`ent: missing required edge "WebhookSubscription.webhook"`)}
@@ -166,6 +196,10 @@ func (_c *WebhookSubscriptionCreate) createSpec() (*WebhookSubscription, *sqlgra
 		_spec.SetField(webhooksubscription.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
+	if value, ok := _c.mutation.Name(); ok {
+		_spec.SetField(webhooksubscription.FieldName, field.TypeString, value)
+		_node.Name = value
+	}
 	if value, ok := _c.mutation.ObjType(); ok {
 		_spec.SetField(webhooksubscription.FieldObjType, field.TypeEnum, value)
 		_node.ObjType = value
@@ -173,6 +207,10 @@ func (_c *WebhookSubscriptionCreate) createSpec() (*WebhookSubscription, *sqlgra
 	if value, ok := _c.mutation.ObjID(); ok {
 		_spec.SetField(webhooksubscription.FieldObjID, field.TypeInt64, value)
 		_node.ObjID = value
+	}
+	if value, ok := _c.mutation.IsActive(); ok {
+		_spec.SetField(webhooksubscription.FieldIsActive, field.TypeBool, value)
+		_node.IsActive = value
 	}
 	if nodes := _c.mutation.WebhookIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -243,6 +281,30 @@ type (
 	}
 )
 
+// SetName sets the "name" field.
+func (u *WebhookSubscriptionUpsert) SetName(v string) *WebhookSubscriptionUpsert {
+	u.Set(webhooksubscription.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *WebhookSubscriptionUpsert) UpdateName() *WebhookSubscriptionUpsert {
+	u.SetExcluded(webhooksubscription.FieldName)
+	return u
+}
+
+// SetIsActive sets the "is_active" field.
+func (u *WebhookSubscriptionUpsert) SetIsActive(v bool) *WebhookSubscriptionUpsert {
+	u.Set(webhooksubscription.FieldIsActive, v)
+	return u
+}
+
+// UpdateIsActive sets the "is_active" field to the value that was provided on create.
+func (u *WebhookSubscriptionUpsert) UpdateIsActive() *WebhookSubscriptionUpsert {
+	u.SetExcluded(webhooksubscription.FieldIsActive)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -301,6 +363,34 @@ func (u *WebhookSubscriptionUpsertOne) Update(set func(*WebhookSubscriptionUpser
 		set(&WebhookSubscriptionUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetName sets the "name" field.
+func (u *WebhookSubscriptionUpsertOne) SetName(v string) *WebhookSubscriptionUpsertOne {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *WebhookSubscriptionUpsertOne) UpdateName() *WebhookSubscriptionUpsertOne {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetIsActive sets the "is_active" field.
+func (u *WebhookSubscriptionUpsertOne) SetIsActive(v bool) *WebhookSubscriptionUpsertOne {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.SetIsActive(v)
+	})
+}
+
+// UpdateIsActive sets the "is_active" field to the value that was provided on create.
+func (u *WebhookSubscriptionUpsertOne) UpdateIsActive() *WebhookSubscriptionUpsertOne {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.UpdateIsActive()
+	})
 }
 
 // Exec executes the query.
@@ -527,6 +617,34 @@ func (u *WebhookSubscriptionUpsertBulk) Update(set func(*WebhookSubscriptionUpse
 		set(&WebhookSubscriptionUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetName sets the "name" field.
+func (u *WebhookSubscriptionUpsertBulk) SetName(v string) *WebhookSubscriptionUpsertBulk {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *WebhookSubscriptionUpsertBulk) UpdateName() *WebhookSubscriptionUpsertBulk {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetIsActive sets the "is_active" field.
+func (u *WebhookSubscriptionUpsertBulk) SetIsActive(v bool) *WebhookSubscriptionUpsertBulk {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.SetIsActive(v)
+	})
+}
+
+// UpdateIsActive sets the "is_active" field to the value that was provided on create.
+func (u *WebhookSubscriptionUpsertBulk) UpdateIsActive() *WebhookSubscriptionUpsertBulk {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.UpdateIsActive()
+	})
 }
 
 // Exec executes the query.

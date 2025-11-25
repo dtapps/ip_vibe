@@ -167,4 +167,8 @@ func init() {
 	webhooksubscriptionDescCreatedAt := webhooksubscriptionMixinFields0[0].Descriptor()
 	// webhooksubscription.DefaultCreatedAt holds the default value on creation for the created_at field.
 	webhooksubscription.DefaultCreatedAt = webhooksubscriptionDescCreatedAt.Default.(func() time.Time)
+	// webhooksubscriptionDescIsActive is the schema descriptor for is_active field.
+	webhooksubscriptionDescIsActive := webhooksubscriptionFields[5].Descriptor()
+	// webhooksubscription.DefaultIsActive holds the default value on creation for the is_active field.
+	webhooksubscription.DefaultIsActive = webhooksubscriptionDescIsActive.Default.(bool)
 }

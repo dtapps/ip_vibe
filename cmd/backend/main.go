@@ -217,6 +217,17 @@ func main() {
 			webhooks.DELETE("/:id", handlers.DeleteWebhook)
 		}
 
+		// 通知订阅相关API
+		webhookSubscriptions := api.Group("/webhook-subscriptions")
+		{
+			webhookSubscriptions.GET("", handlers.GetWebhookSubscriptions)
+			webhookSubscriptions.GET("/:id", handlers.GetWebhookSubscription)
+			webhookSubscriptions.POST("", handlers.CreateWebhookSubscription)
+			webhookSubscriptions.PATCH("/:id", handlers.UpdateWebhookSubscription)
+			webhookSubscriptions.PATCH("/:id/active", handlers.UpdateWebhookSubscriptionActive)
+			webhookSubscriptions.DELETE("/:id", handlers.DeleteWebhookSubscription)
+		}
+
 		// 任务相关API
 		tasks := api.Group("/tasks")
 		{

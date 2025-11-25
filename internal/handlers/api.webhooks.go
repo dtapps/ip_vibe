@@ -16,13 +16,13 @@ import (
 func GetWebhooks(c *gin.Context) {
 	webhooks := make([]types.GetWebhooksResponse, 0)
 	// 查询全部通知
-	allWebhooks, err := global.GvaDb.Webhook.Query().
+	allWebhook, err := global.GvaDb.Webhook.Query().
 		All(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询通知失败: "+err.Error())
 		return
 	}
-	for _, item := range allWebhooks {
+	for _, item := range allWebhook {
 		webhooks = append(webhooks, types.GetWebhooksResponse{
 			ID:              item.ID,
 			Name:            item.Name,

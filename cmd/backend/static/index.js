@@ -737,6 +737,8 @@ async function viewLiveDeviceIpAddresse(id, name) {
 function onWebhookPlatformSelect(sel) {
     const opt = sel.options[sel.selectedIndex];
     // console.log("onWebhookPlatformSelect", opt);
+    const webhook_id = document.getElementById('webhook_id').value.trim()
+    // console.log("onWebhookPlatformSelect webhook_id", webhook_id);
     if (opt.value === 'custom_http') {
         document.getElementById('webhook_url').disabled = false;
         document.getElementById('webhook_url').value = '';
@@ -747,6 +749,24 @@ function onWebhookPlatformSelect(sel) {
         document.getElementById('webhook_url').value = '';
         document.getElementById('webhook_url').required = false;
         document.getElementById('webhook_url_group').style.display = 'none';
+    }
+    if (!webhook_id) {
+        switch (opt.value) {
+            case 'custom_http':
+                document.getElementById('webhook_template_title').value = '[IPVibe] [[.DeviceName]] IP 更新'
+                document.getElementById('webhook_template_content').value = `事件类型: {{.EventType}}
+事件时间: {{.EventTime}}
+事件内容: {{.EventBody}}
+设备编号: {{.DeviceCode}}
+设备名称: {{.DeviceName}}
+IPV4地址: {{.IPv4Addr}}
+IPV6地址: {{.IPv6Addr}}
+记录域名: {{.RecordDomain}}
+记录类型: {{.RecordType}}
+平台名称: {{.PlatformName}}
+平台类型: {{.PlatformType}}`
+                break;
+        }
     }
 }
 
@@ -777,6 +797,16 @@ async function openWebhookModal(id) {
         document.getElementById('webhook_secret').value = webhook.secret;
         document.getElementById('webhook_template_title').value = webhook.template_title;
         document.getElementById('webhook_template_content').value = webhook.template_content;
+
+        if (webhook.platform === 'custom_http') {
+            document.getElementById('webhook_url').disabled = false;
+            document.getElementById('webhook_url').required = true;
+            document.getElementById('webhook_url_group').style.display = 'block';
+        } else {
+            document.getElementById('webhook_url').disabled = true;
+            document.getElementById('webhook_url').required = false;
+            document.getElementById('webhook_url_group').style.display = 'none';
+        }
 
         openModal('webhookModal', 'webhookModalTitle', '编辑 通知');
     }
@@ -842,6 +872,192 @@ async function deleteWebhook(id) {
 }
 
 // --- 通知（WebHook） --- 
+// --- 通知订阅 --- 
+
+// 选择通知 webhook_id
+function onWebhookSubscriptionWebhookIdSelect(sel) {
+    const opt = sel.options[sel.selectedIndex];
+    // console.log("onWebhookSubscriptionWebhookIdSelect", opt);
+}
+
+// 选择订阅对象 obj_id
+function onWebhookSubscriptionObjIdSelect(sel) {
+    const opt = sel.options[sel.selectedIndex];
+    // console.log("onWebhookSubscriptionObjIdSelect", opt);
+}
+
+// 修改通知订阅状态
+async function toggleWebhookSubscriptionStatus(id, checkbox) {
+    await API.patch(`/api/webhook-subscriptions/${id}/active`, { is_active: checkbox.checked });
+}
+
+// 管理通知订阅（模态框）
+async function openWebhookSubscriptionModal(id, obj_type) {
+    document.getElementById('webhookSubscriptionForm').reset();
+
+    // 通知列表
+    const { data: webhooks } = await API.get(`/api/webhooks`);
+    console.log("webhooks", webhooks);
+    if (webhooks) {
+        const webhookIdSelect = document.getElementById('webhook_subscription_webhook_id');
+        webhookIdSelect.innerHTML = '';
+        addPlaceholder(webhookIdSelect, '请选择通知');
+        webhooks.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d.id;
+            opt.text = `${d.name}`;
+            webhookIdSelect.appendChild(opt);
+        });
+    }
+
+    var modalTitle = ''
+    switch (obj_type) {
+        case 'device':
+            modalTitle = '设备订阅';
+
+            // 设备列表
+            const { data: devices } = await API.get(`/api/devices`);
+            console.log("devices", devices);
+            if (devices) {
+                const objIdSelect = document.getElementById('webhook_subscription_obj_id');
+                objIdSelect.innerHTML = '';
+                addPlaceholder(objIdSelect, '请选择设备');
+                devices.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.id;
+                    opt.text = `${d.name}`;
+                    objIdSelect.appendChild(opt);
+                });
+            }
+
+            break;
+        case 'dns_record':
+            modalTitle = 'DNS订阅';
+
+            // DNS列表
+            const { data: dnsRecords } = await API.get(`/api/dns-records`);
+            console.log("dnsRecords", dnsRecords);
+            if (dnsRecords) {
+                const objIdSelect = document.getElementById('webhook_subscription_obj_id');
+                objIdSelect.innerHTML = '';
+                addPlaceholder(objIdSelect, '请选择DNS记录');
+                dnsRecords.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.id;
+                    opt.text = `${d.domain} - ${d.type}`;
+                    objIdSelect.appendChild(opt);
+                });
+            }
+
+            break;
+        case 'cdn_record':
+            modalTitle = 'CDN订阅';
+
+            // CDN列表
+            const { data: cdnRecords } = await API.get(`/api/cdn-records`);
+            console.log("cdnRecords", cdnRecords);
+            if (cdnRecords) {
+                const objIdSelect = document.getElementById('webhook_subscription_obj_id');
+                objIdSelect.innerHTML = '';
+                addPlaceholder(objIdSelect, '请选择CDN记录');
+                cdnRecords.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.id;
+                    opt.text = `${d.domain} - ${d.type}`;
+                    objIdSelect.appendChild(opt);
+                });
+            }
+
+            break;
+        default:
+            return alert('请选择订阅对象类型')
+    }
+
+    // 编辑
+    if (id) {
+        const { data: webhookSubscription } = await API.get(`/api/webhook-subscriptions/${id}`);
+        console.log("webhookSubscription", webhookSubscription);
+        if (!webhookSubscription) {
+            alert('通知订阅数据异常');
+            return;
+        }
+
+        document.getElementById('webhook_subscription_id').value = webhookSubscription.id;
+        document.getElementById('webhook_subscription_id').disabled = true;
+        document.getElementById('webhook_subscription_name').value = webhookSubscription.name;
+        document.getElementById('webhook_subscription_webhook_id').value = webhookSubscription.webhook_id;
+        document.getElementById('webhook_subscription_webhook_id').disabled = true;
+        document.getElementById('webhook_subscription_obj_id').value = webhookSubscription.obj_id;
+        document.getElementById('webhook_subscription_obj_id').disabled = true;
+        document.getElementById('webhook_subscription_obj_type').value = webhookSubscription.obj_type;
+        document.getElementById('webhook_subscription_obj_type').disabled = true;
+
+        openModal('webhookSubscriptionModal', 'webhookSubscriptionModalTitle', `编辑 ${modalTitle}`);
+    }
+
+    if (!id) {
+        document.getElementById('webhook_subscription_id').value = '';
+        document.getElementById('webhook_subscription_id').disabled = true;
+        document.getElementById('webhook_subscription_webhook_id').disabled = false;
+        document.getElementById('webhook_subscription_obj_id').disabled = false;
+        document.getElementById('webhook_subscription_obj_type').value = obj_type;
+        document.getElementById('webhook_subscription_obj_type').disabled = true;
+
+        openModal('webhookSubscriptionModal', 'webhookSubscriptionModalTitle', `添加 ${modalTitle}`);
+    }
+
+}
+
+// 管理通知订阅（模态框） -> 表单提交
+document.getElementById('webhookSubscriptionForm').onsubmit = async (e) => {
+    e.preventDefault();
+
+    // 表单数据
+    const form_id = Number(document.getElementById('webhook_subscription_id').value.trim());
+    const form_data = {
+        name: document.getElementById('webhook_subscription_name').value.trim(),
+        webhook_id: Number(document.getElementById('webhook_subscription_webhook_id').value.trim()),
+        obj_type: document.getElementById('webhook_subscription_obj_type').value.trim(),
+        obj_id: Number(document.getElementById('webhook_subscription_obj_id').value.trim()),
+    };
+    console.log("form_id, form_data", form_id, form_data);
+
+    // 校验
+    if (!form_data.name) {
+        return alert('请输入名称')
+    };
+    if (isNaN(form_data.webhook_id) || form_data.webhook_id <= 0) {
+        return alert('请选择通知渠道')
+    };
+    if (!form_data.obj_type) {
+        return alert('请选择订阅对象类型')
+    };
+    if (isNaN(form_data.obj_id) || form_data.obj_id <= 0) {
+        return alert('请选择订阅对象')
+    };
+
+    // 提交
+    if (isNaN(form_id) || form_id <= 0) {
+        await API.post('/api/webhook-subscriptions', form_data);
+    } else {
+        await API.patch(`/api/webhook-subscriptions/${form_id}`, form_data);
+    }
+
+    // 刷新页面
+    location.reload();
+};
+
+// 删除通知订阅
+async function deleteWebhookSubscription(id) {
+    if (confirm('确定删除此通知订阅？')) {
+        await API.delete(`/api/webhook-subscriptions/${id}`);
+
+        // 刷新页面
+        location.reload();
+    }
+}
+
+// --- 通知订阅 --- 
 // --- 任务管理 ---
 
 // 启动全部任务

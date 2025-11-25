@@ -17,7 +17,7 @@ import (
 type DeviceIpReport struct {
 	config `json:"-"`
 	// ID of the ent.
-	// 报告序号
+	// IP报告序号
 	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`

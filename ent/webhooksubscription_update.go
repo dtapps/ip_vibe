@@ -28,6 +28,34 @@ func (_u *WebhookSubscriptionUpdate) Where(ps ...predicate.WebhookSubscription) 
 	return _u
 }
 
+// SetName sets the "name" field.
+func (_u *WebhookSubscriptionUpdate) SetName(v string) *WebhookSubscriptionUpdate {
+	_u.mutation.SetName(v)
+	return _u
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (_u *WebhookSubscriptionUpdate) SetNillableName(v *string) *WebhookSubscriptionUpdate {
+	if v != nil {
+		_u.SetName(*v)
+	}
+	return _u
+}
+
+// SetIsActive sets the "is_active" field.
+func (_u *WebhookSubscriptionUpdate) SetIsActive(v bool) *WebhookSubscriptionUpdate {
+	_u.mutation.SetIsActive(v)
+	return _u
+}
+
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (_u *WebhookSubscriptionUpdate) SetNillableIsActive(v *bool) *WebhookSubscriptionUpdate {
+	if v != nil {
+		_u.SetIsActive(*v)
+	}
+	return _u
+}
+
 // Mutation returns the WebhookSubscriptionMutation object of the builder.
 func (_u *WebhookSubscriptionUpdate) Mutation() *WebhookSubscriptionMutation {
 	return _u.mutation
@@ -86,6 +114,12 @@ func (_u *WebhookSubscriptionUpdate) sqlSave(ctx context.Context) (_node int, er
 			}
 		}
 	}
+	if value, ok := _u.mutation.Name(); ok {
+		_spec.SetField(webhooksubscription.FieldName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.IsActive(); ok {
+		_spec.SetField(webhooksubscription.FieldIsActive, field.TypeBool, value)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -106,6 +140,34 @@ type WebhookSubscriptionUpdateOne struct {
 	hooks     []Hook
 	mutation  *WebhookSubscriptionMutation
 	modifiers []func(*sql.UpdateBuilder)
+}
+
+// SetName sets the "name" field.
+func (_u *WebhookSubscriptionUpdateOne) SetName(v string) *WebhookSubscriptionUpdateOne {
+	_u.mutation.SetName(v)
+	return _u
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (_u *WebhookSubscriptionUpdateOne) SetNillableName(v *string) *WebhookSubscriptionUpdateOne {
+	if v != nil {
+		_u.SetName(*v)
+	}
+	return _u
+}
+
+// SetIsActive sets the "is_active" field.
+func (_u *WebhookSubscriptionUpdateOne) SetIsActive(v bool) *WebhookSubscriptionUpdateOne {
+	_u.mutation.SetIsActive(v)
+	return _u
+}
+
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (_u *WebhookSubscriptionUpdateOne) SetNillableIsActive(v *bool) *WebhookSubscriptionUpdateOne {
+	if v != nil {
+		_u.SetIsActive(*v)
+	}
+	return _u
 }
 
 // Mutation returns the WebhookSubscriptionMutation object of the builder.
@@ -195,6 +257,12 @@ func (_u *WebhookSubscriptionUpdateOne) sqlSave(ctx context.Context) (_node *Web
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.Name(); ok {
+		_spec.SetField(webhooksubscription.FieldName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.IsActive(); ok {
+		_spec.SetField(webhooksubscription.FieldIsActive, field.TypeBool, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &WebhookSubscription{config: _u.config}

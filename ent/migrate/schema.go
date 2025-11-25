@@ -17,7 +17,7 @@ var (
 		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录 ID"},
 		{Name: "domain", Type: field.TypeString, Comment: "域名（如 www.example.com）"},
 		{Name: "type", Type: field.TypeEnum, Comment: "记录类型（A、AAAA等）", Enums: []string{"A", "AAAA"}},
-		{Name: "origin_protocol", Type: field.TypeEnum, Comment: "回源协议", Enums: []string{"http", "https", "follow"}, Default: "follow"},
+		{Name: "origin_protocol", Type: field.TypeEnum, Comment: "回源协议（http、https、follow）", Enums: []string{"http", "https", "follow"}, Default: "follow"},
 		{Name: "http_port", Type: field.TypeInt, Comment: "HTTP 回源端口", Default: 80},
 		{Name: "https_port", Type: field.TypeInt, Comment: "HTTPS 回源端口", Default: 443},
 		{Name: "cdn_domain", Type: field.TypeString, Nullable: true, Comment: "CDN 边缘域名（平台提供）"},
@@ -160,7 +160,7 @@ var (
 	}
 	// DeviceIPReportColumns holds the columns for the "device_ip_report" table.
 	DeviceIPReportColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "报告序号"},
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "IP报告序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "ip_v4", Type: field.TypeString, Nullable: true, Comment: "IP地址V4"},
 		{Name: "ip_v6", Type: field.TypeString, Nullable: true, Comment: "IP地址V6"},
@@ -233,11 +233,11 @@ var (
 	}
 	// OperationLogColumns holds the columns for the "operation_log" table.
 	OperationLogColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "记录序号"},
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "日志序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "op_type", Type: field.TypeEnum, Comment: "操作类型", Enums: []string{"data_create", "data_update", "data_delete", "device_report", "ip_refresh"}},
 		{Name: "obj_id", Type: field.TypeInt64, Comment: "对象主键"},
-		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"platform_config", "cdn_record", "dns_record", "device", "device_ip_report", "ip_group", "ip_group_device", "webhook"}},
+		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"platform_config", "cdn_record", "dns_record", "device", "device_ip_report", "ip_group", "ip_group_device", "webhook", "webhook_subscription"}},
 		{Name: "old_value", Type: field.TypeString, Nullable: true, Comment: "旧值"},
 		{Name: "new_value", Type: field.TypeString, Nullable: true, Comment: "新值"},
 		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"success", "failed"}},
@@ -323,8 +323,10 @@ var (
 	WebhookSubscriptionColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "通知订阅序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "name", Type: field.TypeString, Comment: "通知订阅名称"},
 		{Name: "obj_type", Type: field.TypeEnum, Comment: "订阅对象类型", Enums: []string{"cdn_record", "dns_record", "device"}},
 		{Name: "obj_id", Type: field.TypeInt64, Comment: "订阅对象主键"},
+		{Name: "is_active", Type: field.TypeBool, Comment: "是否启用", Default: false},
 		{Name: "webhook_subscriptions", Type: field.TypeInt64, Nullable: true},
 		{Name: "webhook_id", Type: field.TypeInt64, Comment: "通知序号"},
 	}
@@ -337,13 +339,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "webhook_subscription_webhook_subscriptions",
-				Columns:    []*schema.Column{WebhookSubscriptionColumns[4]},
+				Columns:    []*schema.Column{WebhookSubscriptionColumns[6]},
 				RefColumns: []*schema.Column{WebhookColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "webhook_subscription_webhook_webhook",
-				Columns:    []*schema.Column{WebhookSubscriptionColumns[5]},
+				Columns:    []*schema.Column{WebhookSubscriptionColumns[7]},
 				RefColumns: []*schema.Column{WebhookColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -352,7 +354,7 @@ var (
 			{
 				Name:    "webhooksubscription_webhook_id_obj_type_obj_id",
 				Unique:  true,
-				Columns: []*schema.Column{WebhookSubscriptionColumns[5], WebhookSubscriptionColumns[2], WebhookSubscriptionColumns[3]},
+				Columns: []*schema.Column{WebhookSubscriptionColumns[7], WebhookSubscriptionColumns[3], WebhookSubscriptionColumns[4]},
 			},
 		},
 	}

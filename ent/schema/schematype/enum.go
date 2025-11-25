@@ -94,19 +94,20 @@ var GetLogOpType = func() []string {
 }
 
 const (
-	LogObjTypePlatformConfig string = "platform_config"  // 平台配置
-	LogObjTypeCdnRecord      string = "cdn_record"       // CDN 记录
-	LogObjTypeDnsRecord      string = "dns_record"       // DNS 记录
-	LogObjTypeDevice         string = "device"           // 设备
-	LogObjTypeDeviceIPRecord string = "device_ip_report" // 设备 IP 记录
-	LogObjTypeIPGroup        string = "ip_group"         // IP 组
-	LogObjTypeIPGroupDevice  string = "ip_group_device"  // IP 组设备
-	LogObjTypeWebhook        string = "webhook"          // 通知
+	LogObjTypePlatformConfig      string = "platform_config"      // 平台配置
+	LogObjTypeCdnRecord           string = "cdn_record"           // CDN 记录
+	LogObjTypeDnsRecord           string = "dns_record"           // DNS 记录
+	LogObjTypeDevice              string = "device"               // 设备
+	LogObjTypeDeviceIPRecord      string = "device_ip_report"     // 设备 IP 记录
+	LogObjTypeIPGroup             string = "ip_group"             // IP 组
+	LogObjTypeIPGroupDevice       string = "ip_group_device"      // IP 组设备
+	LogObjTypeWebhook             string = "webhook"              // 通知
+	LogObjTypeWebhookSubscription string = "webhook_subscription" // 通知订阅
 )
 
 // GetLogObjType 返回所有对象类型
 var GetLogObjType = func() []string {
-	return []string{LogObjTypePlatformConfig, LogObjTypeCdnRecord, LogObjTypeDnsRecord, LogObjTypeDevice, LogObjTypeDeviceIPRecord, LogObjTypeIPGroup, LogObjTypeIPGroupDevice, LogObjTypeWebhook}
+	return []string{LogObjTypePlatformConfig, LogObjTypeCdnRecord, LogObjTypeDnsRecord, LogObjTypeDevice, LogObjTypeDeviceIPRecord, LogObjTypeIPGroup, LogObjTypeIPGroupDevice, LogObjTypeWebhook, LogObjTypeWebhookSubscription}
 }
 
 const (

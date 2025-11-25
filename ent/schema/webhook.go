@@ -48,6 +48,7 @@ func (Webhook) Fields() []ent.Field {
 
 		field.Enum("platform").
 			Values(schematype.GetWebhookPlatform()...).
+			Immutable().
 			Comment("通知平台类型").
 			Annotations(entsql.WithComments(true)),
 

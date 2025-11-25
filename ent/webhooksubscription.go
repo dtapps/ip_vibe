@@ -21,12 +21,16 @@ type WebhookSubscription struct {
 	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
+	// 通知订阅名称
+	Name string `json:"name,omitempty"`
 	// 通知序号
 	WebhookID int64 `json:"webhook_id,omitempty"`
 	// 订阅对象类型
 	ObjType webhooksubscription.ObjType `json:"obj_type,omitempty"`
 	// 订阅对象主键
 	ObjID int64 `json:"obj_id,omitempty"`
+	// 是否启用
+	IsActive bool `json:"is_active,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the WebhookSubscriptionQuery when eager-loading is set.
 	Edges                 WebhookSubscriptionEdges `json:"edges"`
@@ -59,9 +63,11 @@ func (*WebhookSubscription) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case webhooksubscription.FieldIsActive:
+			values[i] = new(sql.NullBool)
 		case webhooksubscription.FieldID, webhooksubscription.FieldWebhookID, webhooksubscription.FieldObjID:
 			values[i] = new(sql.NullInt64)
-		case webhooksubscription.FieldObjType:
+		case webhooksubscription.FieldName, webhooksubscription.FieldObjType:
 			values[i] = new(sql.NullString)
 		case webhooksubscription.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -94,6 +100,12 @@ func (_m *WebhookSubscription) assignValues(columns []string, values []any) erro
 			} else if value.Valid {
 				_m.CreatedAt = value.Time
 			}
+		case webhooksubscription.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				_m.Name = value.String
+			}
 		case webhooksubscription.FieldWebhookID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field webhook_id", values[i])
@@ -111,6 +123,12 @@ func (_m *WebhookSubscription) assignValues(columns []string, values []any) erro
 				return fmt.Errorf("unexpected type %T for field obj_id", values[i])
 			} else if value.Valid {
 				_m.ObjID = value.Int64
+			}
+		case webhooksubscription.FieldIsActive:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_active", values[i])
+			} else if value.Valid {
+				_m.IsActive = value.Bool
 			}
 		case webhooksubscription.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -163,6 +181,9 @@ func (_m *WebhookSubscription) String() string {
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(_m.Name)
+	builder.WriteString(", ")
 	builder.WriteString("webhook_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.WebhookID))
 	builder.WriteString(", ")
@@ -171,6 +192,9 @@ func (_m *WebhookSubscription) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("obj_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ObjID))
+	builder.WriteString(", ")
+	builder.WriteString("is_active=")
+	builder.WriteString(fmt.Sprintf("%v", _m.IsActive))
 	builder.WriteByte(')')
 	return builder.String()
 }

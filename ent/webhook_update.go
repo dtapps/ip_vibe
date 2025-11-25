@@ -51,20 +51,6 @@ func (_u *WebhookUpdate) SetNillableName(v *string) *WebhookUpdate {
 	return _u
 }
 
-// SetPlatform sets the "platform" field.
-func (_u *WebhookUpdate) SetPlatform(v webhook.Platform) *WebhookUpdate {
-	_u.mutation.SetPlatform(v)
-	return _u
-}
-
-// SetNillablePlatform sets the "platform" field if the given value is not nil.
-func (_u *WebhookUpdate) SetNillablePlatform(v *webhook.Platform) *WebhookUpdate {
-	if v != nil {
-		_u.SetPlatform(*v)
-	}
-	return _u
-}
-
 // SetURL sets the "url" field.
 func (_u *WebhookUpdate) SetURL(v string) *WebhookUpdate {
 	_u.mutation.SetURL(v)
@@ -242,16 +228,6 @@ func (_u *WebhookUpdate) defaults() {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (_u *WebhookUpdate) check() error {
-	if v, ok := _u.mutation.Platform(); ok {
-		if err := webhook.PlatformValidator(v); err != nil {
-			return &ValidationError{Name: "platform", err: fmt.Errorf(`ent: validator failed for field "Webhook.platform": %w`, err)}
-		}
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *WebhookUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *WebhookUpdate {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -259,9 +235,6 @@ func (_u *WebhookUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Webhoo
 }
 
 func (_u *WebhookUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	if err := _u.check(); err != nil {
-		return _node, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(webhook.Table, webhook.Columns, sqlgraph.NewFieldSpec(webhook.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -275,9 +248,6 @@ func (_u *WebhookUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(webhook.FieldName, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Platform(); ok {
-		_spec.SetField(webhook.FieldPlatform, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.URL(); ok {
 		_spec.SetField(webhook.FieldURL, field.TypeString, value)
@@ -394,20 +364,6 @@ func (_u *WebhookUpdateOne) SetName(v string) *WebhookUpdateOne {
 func (_u *WebhookUpdateOne) SetNillableName(v *string) *WebhookUpdateOne {
 	if v != nil {
 		_u.SetName(*v)
-	}
-	return _u
-}
-
-// SetPlatform sets the "platform" field.
-func (_u *WebhookUpdateOne) SetPlatform(v webhook.Platform) *WebhookUpdateOne {
-	_u.mutation.SetPlatform(v)
-	return _u
-}
-
-// SetNillablePlatform sets the "platform" field if the given value is not nil.
-func (_u *WebhookUpdateOne) SetNillablePlatform(v *webhook.Platform) *WebhookUpdateOne {
-	if v != nil {
-		_u.SetPlatform(*v)
 	}
 	return _u
 }
@@ -602,16 +558,6 @@ func (_u *WebhookUpdateOne) defaults() {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (_u *WebhookUpdateOne) check() error {
-	if v, ok := _u.mutation.Platform(); ok {
-		if err := webhook.PlatformValidator(v); err != nil {
-			return &ValidationError{Name: "platform", err: fmt.Errorf(`ent: validator failed for field "Webhook.platform": %w`, err)}
-		}
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *WebhookUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *WebhookUpdateOne {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -619,9 +565,6 @@ func (_u *WebhookUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Web
 }
 
 func (_u *WebhookUpdateOne) sqlSave(ctx context.Context) (_node *Webhook, err error) {
-	if err := _u.check(); err != nil {
-		return _node, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(webhook.Table, webhook.Columns, sqlgraph.NewFieldSpec(webhook.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
@@ -652,9 +595,6 @@ func (_u *WebhookUpdateOne) sqlSave(ctx context.Context) (_node *Webhook, err er
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(webhook.FieldName, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Platform(); ok {
-		_spec.SetField(webhook.FieldPlatform, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.URL(); ok {
 		_spec.SetField(webhook.FieldURL, field.TypeString, value)

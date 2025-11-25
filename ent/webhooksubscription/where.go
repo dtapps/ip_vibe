@@ -60,6 +60,11 @@ func CreatedAt(v time.Time) predicate.WebhookSubscription {
 	return predicate.WebhookSubscription(sql.FieldEQ(FieldCreatedAt, v))
 }
 
+// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
+func Name(v string) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldEQ(FieldName, v))
+}
+
 // WebhookID applies equality check predicate on the "webhook_id" field. It's identical to WebhookIDEQ.
 func WebhookID(v int64) predicate.WebhookSubscription {
 	return predicate.WebhookSubscription(sql.FieldEQ(FieldWebhookID, v))
@@ -68,6 +73,11 @@ func WebhookID(v int64) predicate.WebhookSubscription {
 // ObjID applies equality check predicate on the "obj_id" field. It's identical to ObjIDEQ.
 func ObjID(v int64) predicate.WebhookSubscription {
 	return predicate.WebhookSubscription(sql.FieldEQ(FieldObjID, v))
+}
+
+// IsActive applies equality check predicate on the "is_active" field. It's identical to IsActiveEQ.
+func IsActive(v bool) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldEQ(FieldIsActive, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -108,6 +118,71 @@ func CreatedAtLT(v time.Time) predicate.WebhookSubscription {
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.WebhookSubscription {
 	return predicate.WebhookSubscription(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// NameEQ applies the EQ predicate on the "name" field.
+func NameEQ(v string) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldEQ(FieldName, v))
+}
+
+// NameNEQ applies the NEQ predicate on the "name" field.
+func NameNEQ(v string) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldNEQ(FieldName, v))
+}
+
+// NameIn applies the In predicate on the "name" field.
+func NameIn(vs ...string) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldIn(FieldName, vs...))
+}
+
+// NameNotIn applies the NotIn predicate on the "name" field.
+func NameNotIn(vs ...string) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldNotIn(FieldName, vs...))
+}
+
+// NameGT applies the GT predicate on the "name" field.
+func NameGT(v string) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldGT(FieldName, v))
+}
+
+// NameGTE applies the GTE predicate on the "name" field.
+func NameGTE(v string) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldGTE(FieldName, v))
+}
+
+// NameLT applies the LT predicate on the "name" field.
+func NameLT(v string) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldLT(FieldName, v))
+}
+
+// NameLTE applies the LTE predicate on the "name" field.
+func NameLTE(v string) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldLTE(FieldName, v))
+}
+
+// NameContains applies the Contains predicate on the "name" field.
+func NameContains(v string) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldContains(FieldName, v))
+}
+
+// NameHasPrefix applies the HasPrefix predicate on the "name" field.
+func NameHasPrefix(v string) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldHasPrefix(FieldName, v))
+}
+
+// NameHasSuffix applies the HasSuffix predicate on the "name" field.
+func NameHasSuffix(v string) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldHasSuffix(FieldName, v))
+}
+
+// NameEqualFold applies the EqualFold predicate on the "name" field.
+func NameEqualFold(v string) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldEqualFold(FieldName, v))
+}
+
+// NameContainsFold applies the ContainsFold predicate on the "name" field.
+func NameContainsFold(v string) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldContainsFold(FieldName, v))
 }
 
 // WebhookIDEQ applies the EQ predicate on the "webhook_id" field.
@@ -188,6 +263,16 @@ func ObjIDLT(v int64) predicate.WebhookSubscription {
 // ObjIDLTE applies the LTE predicate on the "obj_id" field.
 func ObjIDLTE(v int64) predicate.WebhookSubscription {
 	return predicate.WebhookSubscription(sql.FieldLTE(FieldObjID, v))
+}
+
+// IsActiveEQ applies the EQ predicate on the "is_active" field.
+func IsActiveEQ(v bool) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldEQ(FieldIsActive, v))
+}
+
+// IsActiveNEQ applies the NEQ predicate on the "is_active" field.
+func IsActiveNEQ(v bool) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldNEQ(FieldIsActive, v))
 }
 
 // HasWebhook applies the HasEdge predicate on the "webhook" edge.

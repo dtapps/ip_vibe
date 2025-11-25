@@ -38,7 +38,7 @@ func (DeviceIpReport) Fields() []ent.Field {
 		field.Int64("id").
 			StorageKey("id").
 			Immutable().
-			Comment("报告序号").
+			Comment("IP报告序号").
 			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
 
 		field.Int64("device_id").

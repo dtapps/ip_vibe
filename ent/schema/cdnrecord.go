@@ -67,7 +67,7 @@ func (CDNRecord) Fields() []ent.Field {
 			Default(schematype.OriginProtocolFollow).
 			Values(schematype.GetOriginProtocol()...).
 			Immutable().
-			Comment("回源协议").
+			Comment("回源协议（http、https、follow）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int("http_port").

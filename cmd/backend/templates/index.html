@@ -24,6 +24,7 @@
     <a href="#sectionDevices" aria-label="跳转到设备上报">设备</a>
     <a href="#sectionIpGroup" aria-label="跳转到 IP 组">IP 组</a>
     <a href="#sectionWebhook" aria-label="跳转到通知管理">通知</a>
+    <a href="#sectionWebhookSubscription" aria-label="跳转到通知订阅管理">通知订阅</a>
     <a href="#sectionTask" aria-label="跳转到任务管理">任务</a>
     <a href="#sectionLog" aria-label="跳转到操作日志">日志</a>
   </div>
@@ -398,7 +399,7 @@
           <button class="btn btn-primary" onclick="openWebhookModal()">
             <svg class="ip-i">
               <use href="/static/icons.svg#ip-folder-plus" />
-            </svg> 添加WebHook</button>
+            </svg> 添加通知</button>
         </div>
       </div>
       <div class="card-body">
@@ -452,6 +453,88 @@
                 </span>
                 {{else}}
                 <button class="btn btn-sm btn-danger" onclick="deleteWebhook('{{.ID}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-delete" />
+                  </svg> 删除</button>
+                {{end}}
+              </td>
+            </tr>
+            {{end}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 通知订阅 -->
+    <div class="card" id="sectionWebhookSubscription">
+      <div class="card-header">
+        <h2 class="h2-icon">
+          <svg class="ip-i">
+            <use href="/static/icons.svg#ip-layer" />
+          </svg>
+          通知订阅
+        </h2>
+        <div>
+          <button class="btn btn-primary" onclick="openWebhookSubscriptionModal(0,'cdn_record')">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-folder-plus" />
+            </svg> 添加 CDN订阅</button>
+          <button class="btn btn-primary" onclick="openWebhookSubscriptionModal(0,'dns_record')">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-folder-plus" />
+            </svg> 添加 DNS订阅</button>
+          <button class="btn btn-primary" onclick="openWebhookSubscriptionModal(0,'device')">
+            <svg class="ip-i">
+              <use href="/static/icons.svg#ip-folder-plus" />
+            </svg> 添加 设备订阅</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <table>
+          <thead>
+            <tr>
+              <th>名称</th>
+              <th>类型</th>
+              <th>通知</th>
+              <th>活跃</th>
+              <th style="width: 300px;text-align: center;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="webhookSubscriptionTable">
+            {{range .WebhookSubscriptions}}
+            <tr>
+              <td>{{.Name}}</td>
+              {{if eq .ObjType "cdn_record"}}
+              <td><span class="badge badge-success">CDN记录</span></td>
+              {{else if eq .ObjType "dns_record"}}
+              <td><span class="badge badge-success">DNS记录</span></td>
+              {{else if eq .ObjType "device"}}
+              <td><span class="badge badge-success">设备</span></td>
+              {{else}}
+              <td><span class="badge badge-success">{{.ObjType}}</span></td>
+              {{end}}
+              <td>{{.WebhookID}}:{{.WebhookName}}</td>
+              <td>
+                <label class="switch">
+                  <input type="checkbox" {{if .IsActive}}checked{{end}}
+                    onchange="toggleWebhookSubscriptionStatus('{{.ID}}', this)">
+                  <span class="slider"></span>
+                </label>
+              </td>
+              <td>
+                <button class="btn btn-primary btn-sm" onclick="openWebhookSubscriptionModal('{{.ID}}','{{.ObjType}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-edit" />
+                  </svg> 编辑</button>
+                {{if .IsActive}}
+                <span class="btn-tooltip-wrapper" title="活跃状态时不允许删除，请先禁止后操作再删除！">
+                  <button class="btn btn-sm btn-danger" disabled>
+                    <svg class="ip-i">
+                      <use href="/static/icons.svg#ip-delete" />
+                    </svg> 删除</button>
+                </span>
+                {{else}}
+                <button class="btn btn-sm btn-danger" onclick="deleteWebhookSubscription('{{.ID}}')">
                   <svg class="ip-i">
                     <use href="/static/icons.svg#ip-delete" />
                   </svg> 删除</button>
@@ -907,9 +990,9 @@
 
           <div class="form-group">
             <label for="templateTitle">通知标题模板 (Go Template) <span style="color:red">*</span></label>
-            <input type="text" name="template_title" id="webhook_template_title" required
-              placeholder="[DDNS] [[DeviceName]] IP 更新" />
-            <small class="text-secondary">可用变量: [[DeviceName]], [[IPv4]], [[IPv6]], [[EventTime]]...</small>
+            <input type="text" name="template_title" id="webhook_template_title" required>
+            <small class="text-secondary">可用变量: [[.EventTime]] [[.EventBody]] [[.DeviceCode]] [[.DeviceName]]
+              [[.IPv4Addr]] [[.IPv6Addr]] [[.RecordDomain]] [[.RecordType]] [[.PlatformName]] [[.PlatformType]]</small>
           </div>
 
           <div class="form-group">
@@ -923,6 +1006,48 @@
 
           <div class="form-group mt-3" style="text-align:right">
             <button type="button" class="btn" onclick="closeModal('webhookModal')">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-close" />
+              </svg> 取消</button>
+            <button type="submit" class="btn btn-primary">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-save" />
+              </svg> 保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 通知订阅 模态框 -->
+    <div class="modal" id="webhookSubscriptionModal">
+      <div class="modal-content">
+        <h3 id="webhookSubscriptionModalTitle">添加 / 编辑 通知订阅</h3>
+        <form id="webhookSubscriptionForm">
+
+          <div class="form-group">
+            <label>名称 <span style="color:red">*</span></label>
+            <input type="text" name="name" id="webhook_subscription_name" required placeholder="如：告警-IP">
+          </div>
+
+          <div class="form-group">
+            <label>通知 <span style="color:red">*</span></label>
+            <select name="webhook_id" id="webhook_subscription_webhook_id"
+              onchange="onWebhookSubscriptionWebhookIdSelect(this)">
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>订阅对象 <span style="color:red">*</span></label>
+            <select name="obj_id" id="webhook_subscription_obj_id" onchange="onWebhookSubscriptionObjIdSelect(this)">
+            </select>
+          </div>
+
+          <!-- 隐藏字段 -->
+          <input type="hidden" name="id" id="webhook_subscription_id">
+          <input type="hidden" name="obj_type" id="webhook_subscription_obj_type">
+
+          <div class="form-group mt-3" style="text-align:right">
+            <button type="button" class="btn" onclick="closeModal('webhookSubscriptionModal')">
               <svg class="ip-i">
                 <use href="/static/icons.svg#ip-close" />
               </svg> 取消</button>

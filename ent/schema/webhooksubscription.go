@@ -40,6 +40,10 @@ func (WebhookSubscription) Fields() []ent.Field {
 			StorageKey("id").
 			Immutable().
 			Comment("通知订阅序号").
+			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
+
+		field.String("name").
+			Comment("通知订阅名称").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("webhook_id").
@@ -56,6 +60,11 @@ func (WebhookSubscription) Fields() []ent.Field {
 		field.Int64("obj_id").
 			Immutable().
 			Comment("订阅对象主键").
+			Annotations(entsql.WithComments(true)),
+
+		field.Bool("is_active").
+			Default(false).
+			Comment("是否启用").
 			Annotations(entsql.WithComments(true)),
 	}
 }

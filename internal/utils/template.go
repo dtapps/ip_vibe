@@ -6,8 +6,22 @@ import (
 	"log"
 )
 
+type TemplateData struct {
+	EventType    string // 事件类型
+	EventTime    string // 事件时间
+	EventBody    string // 事件内容
+	DeviceCode   string // 设备编码 Device->Code
+	DeviceName   string // 设备名称 Device->Name
+	IPv4Addr     string // IP地址V4 Device->IPv4
+	IPv6Addr     string // IP地址V6 Device->IPv6
+	RecordDomain string // 记录域名 CDNRecord/DNSRecord->Domain
+	RecordType   string // 记录类型 CDNRecord/DNSRecord->Type
+	PlatformName string // 平台名称 PlatformConfig->Name
+	PlatformType string // 平台类型 PlatformConfig->Platform
+}
+
 // RenderTemplate 使用 Go Template 渲染标题和内容
-func RenderTemplate(tmplString string, data any) (string, error) {
+func RenderTemplate(tmplString string, data TemplateData) (string, error) {
 	// 创建一个新的模板实例
 	tmpl := template.New("webhook_template")
 

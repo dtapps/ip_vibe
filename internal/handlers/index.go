@@ -17,13 +17,14 @@ import (
 func Index(c *gin.Context) {
 	// 准备页面数据
 	pageData := types.Indexesponse{
-		Configs:    []types.GetConfigsResponse{},
-		CdnRecords: []types.GetCdnRecordsResponse{},
-		DnsRecords: []types.GetDnsRecordsResponse{},
-		Devices:    []types.GetDevicesResponse{},
-		IpGroups:   []types.GetIPGroupsResponse{},
-		Webhooks:   []types.GetWebhooksResponse{},
-		Tasks:      []gocron_helper.JobData{},
+		Configs:              []types.GetConfigsResponse{},
+		CdnRecords:           []types.GetCdnRecordsResponse{},
+		DnsRecords:           []types.GetDnsRecordsResponse{},
+		Devices:              []types.GetDevicesResponse{},
+		IpGroups:             []types.GetIPGroupsResponse{},
+		Webhooks:             []types.GetWebhooksResponse{},
+		WebhookSubscriptions: []types.GetWebhookSubscriptionsResponse{},
+		Tasks:                []gocron_helper.JobData{},
 
 		OperationLogs:     []types.GetOperationLogsResponse{},
 		OperationLogLimit: 0,
@@ -144,6 +145,23 @@ func Index(c *gin.Context) {
 			})
 		}
 	}
+	// 查询全部通知订阅
+	allWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
+		WithWebhook().
+		All(c)
+	if err == nil {
+		for _, item := range allWebhookSubscription {
+			pageData.WebhookSubscriptions = append(pageData.WebhookSubscriptions, types.GetWebhookSubscriptionsResponse{
+				ID:          item.ID,
+				Name:        item.Name,
+				WebhookID:   item.WebhookID,
+				WebhookName: item.Edges.Webhook.Name,
+				ObjType:     item.ObjType.String(),
+				ObjID:       item.ObjID,
+				IsActive:    item.IsActive,
+			})
+		}
+	}
 	// 任务助手
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
 	// 获取全部任务
@@ -190,9 +208,9 @@ func Index(c *gin.Context) {
 	// 获取系统内存信息
 	pageData.SystemMemoryInfo = systemHelper.GetMemoryInfo()
 
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("Index pageData: %+v \n", pageData)
-	}
+	// if global.GvaEnv.DEBUG {
+	// 	fmt.Printf("Index pageData: %+v \n", pageData)
+	// }
 
 	// HTTP2 server 推送
 	// https://gin-gonic.com/zh-cn/docs/examples/http2-server-push/

@@ -32,7 +32,7 @@ type CDNRecord struct {
 	Domain string `json:"domain,omitempty"`
 	// 记录类型（A、AAAA等）
 	Type cdnrecord.Type `json:"type,omitempty"`
-	// 回源协议
+	// 回源协议（http、https、follow）
 	OriginProtocol cdnrecord.OriginProtocol `json:"origin_protocol,omitempty"`
 	// HTTP 回源端口
 	HTTPPort int `json:"http_port,omitempty"`

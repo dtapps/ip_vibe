@@ -17,12 +17,16 @@ const (
 	FieldID = "id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
 	// FieldWebhookID holds the string denoting the webhook_id field in the database.
 	FieldWebhookID = "webhook_id"
 	// FieldObjType holds the string denoting the obj_type field in the database.
 	FieldObjType = "obj_type"
 	// FieldObjID holds the string denoting the obj_id field in the database.
 	FieldObjID = "obj_id"
+	// FieldIsActive holds the string denoting the is_active field in the database.
+	FieldIsActive = "is_active"
 	// EdgeWebhook holds the string denoting the webhook edge name in mutations.
 	EdgeWebhook = "webhook"
 	// Table holds the table name of the webhooksubscription in the database.
@@ -40,9 +44,11 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
+	FieldName,
 	FieldWebhookID,
 	FieldObjType,
 	FieldObjID,
+	FieldIsActive,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "webhook_subscription"
@@ -69,6 +75,8 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// DefaultIsActive holds the default value on creation for the "is_active" field.
+	DefaultIsActive bool
 )
 
 // ObjType defines the type for the "obj_type" enum field.
@@ -108,6 +116,11 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
 }
 
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
 // ByWebhookID orders the results by the webhook_id field.
 func ByWebhookID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldWebhookID, opts...).ToFunc()
@@ -121,6 +134,11 @@ func ByObjType(opts ...sql.OrderTermOption) OrderOption {
 // ByObjID orders the results by the obj_id field.
 func ByObjID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldObjID, opts...).ToFunc()
+}
+
+// ByIsActive orders the results by the is_active field.
+func ByIsActive(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsActive, opts...).ToFunc()
 }
 
 // ByWebhookField orders the results by webhook field.
