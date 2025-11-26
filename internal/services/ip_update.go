@@ -109,7 +109,7 @@ func (s *IpUpdateService) runDnsTask() {
 
 				newLog := s.log.With(
 					slog.Int64("id", item.ID),
-					slog.String("record", "CDN"),
+					slog.String("record", "DNS"),
 					slog.String("type", item.Type.String()),
 					slog.String("domain", item.Domain),
 				)
@@ -120,7 +120,8 @@ func (s *IpUpdateService) runDnsTask() {
 					)
 				}
 
-				return err
+				// 返回nil而不是错误，这样单个DNS记录更新失败不会导致整个errgroup取消上下文
+				return nil
 			})
 		}
 
@@ -181,7 +182,8 @@ func (s *IpUpdateService) runCdnTask() {
 					)
 				}
 
-				return err
+				// 返回nil而不是错误，这样单个CDN记录更新失败不会导致整个errgroup取消上下文
+				return nil
 			})
 		}
 
