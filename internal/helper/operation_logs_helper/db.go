@@ -35,7 +35,7 @@ func (s *OperationLogHelper) SetTx(tx *ent.Tx) *OperationLogHelper {
 // RecordDataCreate 记录数据创建操作日志
 func (s *OperationLogHelper) RecordDataCreate(ctx context.Context, obj_id int64, obj_type operationlog.ObjType, status operationlog.Status, message string) error {
 	var create *ent.OperationLogCreate
-	if s.db == nil && s.dbEnabled {
+	if s.db != nil && s.dbEnabled {
 		create = s.db.OperationLog.Create()
 	} else if s.tx != nil && s.txEnabled {
 		create = s.tx.OperationLog.Create()
@@ -63,7 +63,7 @@ func (s *OperationLogHelper) RecordDataCreate(ctx context.Context, obj_id int64,
 // RecordDataUpdate 记录数据更新操作日志
 func (s *OperationLogHelper) RecordDataUpdate(ctx context.Context, obj_id int64, obj_type operationlog.ObjType, status operationlog.Status, message string) error {
 	var create *ent.OperationLogCreate
-	if s.db == nil && s.dbEnabled {
+	if s.db != nil && s.dbEnabled {
 		create = s.db.OperationLog.Create()
 	} else if s.tx != nil && s.txEnabled {
 		create = s.tx.OperationLog.Create()
@@ -91,7 +91,7 @@ func (s *OperationLogHelper) RecordDataUpdate(ctx context.Context, obj_id int64,
 // RecordDataDelete 记录数据删除操作日志
 func (s *OperationLogHelper) RecordDataDelete(ctx context.Context, obj_id int64, obj_type operationlog.ObjType, status operationlog.Status, message string) error {
 	var create *ent.OperationLogCreate
-	if s.db == nil && s.dbEnabled {
+	if s.db != nil && s.dbEnabled {
 		create = s.db.OperationLog.Create()
 	} else if s.tx != nil && s.txEnabled {
 		create = s.tx.OperationLog.Create()
