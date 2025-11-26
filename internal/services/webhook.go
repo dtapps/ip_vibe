@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"time"
 	"vibe_ip/ent"
 	"vibe_ip/ent/webhook"
 	"vibe_ip/ent/webhooksubscription"
@@ -26,8 +27,8 @@ func NewWebhookService(db *ent.Client) *WebhookService {
 	// 创建一个新的 Resty 客户端
 	client := resty.New()
 
-	// 启用请求跟踪以获取延迟信息
-	client.EnableTrace()
+	// 设置默认超时
+	client.SetTimeout(30 * time.Second)
 
 	return &WebhookService{
 		db:     db,

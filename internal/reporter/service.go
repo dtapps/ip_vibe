@@ -27,8 +27,8 @@ func NewService(cron gocron.Scheduler) *Service {
 	// 创建一个新的 Resty 客户端
 	client := resty.New()
 
-	// 启用请求跟踪以获取延迟信息
-	client.EnableTrace()
+	// 设置默认超时
+	client.SetTimeout(30 * time.Second)
 
 	// 设置自定义请求头
 	client.SetHeader("X-Version", global.GvaVersion)
@@ -106,6 +106,7 @@ func (s *Service) runTask() {
 			return
 		}
 	}
+
 	// 获取设备IP
 	iPHelper := ip_helper.NewIPHelper()
 	ipv4, err := iPHelper.GetIP(ctx, ip_helper.IPTypeV4)
@@ -162,6 +163,9 @@ func (s *Service) httpApi(ctx context.Context, params types.ReportDeviceIpReques
 		SetContentType("application/json").
 		SetBody(params).
 		Post("")
+	if err != nil {
+		return err
+	}
 
 	// 打印响应状态和内容
 	s.log.InfoContext(ctx, "响应状态码和内容",

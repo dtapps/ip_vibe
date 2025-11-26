@@ -847,7 +847,7 @@ function changeWebhookPlatform(platform) {
             document.getElementById('webhook_url_group').style.display = 'block';
 
             document.getElementById('webhook_secret').disabled = false;
-            document.getElementById('webhook_secret').required = true;
+            document.getElementById('webhook_secret').required = false;
             document.getElementById('webhook_secret_group').style.display = 'block';
             break;
         case 'ft07':

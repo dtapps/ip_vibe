@@ -37,9 +37,6 @@ func NewIPHelper() *IPHelper {
 	// 设置默认超时
 	client.SetTimeout(5 * time.Second)
 
-	// 启用请求跟踪以获取延迟信息
-	client.EnableTrace()
-
 	return &IPHelper{
 		iPv4URLs: []string{
 			"https://eo-ip.dtapp.net",
