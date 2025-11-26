@@ -66,6 +66,16 @@ func (s *WebhookService) Send(ctx context.Context, objType webhooksubscription.O
 
 			if item.Edges.Webhook != nil {
 
+				templateTitle, err := utils.RenderTemplate(item.Edges.Webhook.TemplateTitle, payload)
+				if err != nil {
+					s.log.ErrorContext(egCtx, "渲染模板失败",
+						slog.Any("err", err),
+						slog.Int64("webhook_id", item.Edges.Webhook.ID),
+						slog.String("webhook_platform", item.Edges.Webhook.Platform.String()),
+					)
+					return nil
+				}
+
 				templateContent, err := utils.RenderTemplate(item.Edges.Webhook.TemplateContent, payload)
 				if err != nil {
 					s.log.ErrorContext(egCtx, "渲染模板失败",
@@ -78,19 +88,19 @@ func (s *WebhookService) Send(ctx context.Context, objType webhooksubscription.O
 
 				switch item.Edges.Webhook.Platform {
 				case webhook.PlatformWechatWork:
-					err = s.SendWechatWork(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.TemplateTitle, templateContent)
+					err = s.SendWechatWork(egCtx, item.Edges.Webhook.URL, templateTitle, templateContent)
 				case webhook.PlatformDingtalk:
-					err = s.SendDingtalk(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, item.Edges.Webhook.TemplateTitle, templateContent)
+					err = s.SendDingtalk(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				case webhook.PlatformFeishu:
-					err = s.SendFeishu(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, item.Edges.Webhook.TemplateTitle, templateContent)
+					err = s.SendFeishu(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				case webhook.PlatformBark:
-					err = s.SendBark(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, item.Edges.Webhook.TemplateTitle, templateContent)
+					err = s.SendBark(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				case webhook.PlatformFt07:
-					err = s.SendFt07(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, item.Edges.Webhook.TemplateTitle, templateContent)
+					err = s.SendFt07(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				case webhook.PlatformPushDeer:
-					err = s.SendPushDeer(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, item.Edges.Webhook.TemplateTitle, templateContent)
+					err = s.SendPushDeer(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				default:
-					err = s.SendHttp(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.TemplateTitle, templateContent)
+					err = s.SendHttp(egCtx, item.Edges.Webhook.URL, templateTitle, templateContent)
 				}
 				if err != nil {
 					s.log.ErrorContext(egCtx, "发送Webhook失败",

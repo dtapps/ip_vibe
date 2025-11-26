@@ -893,95 +893,95 @@ function onWebhookPlatformSelect(sel) {
         document.getElementById('webhook_template_title').value = '[IPVibe] [[.DeviceName]] IP 更新'
         switch (opt.value) {
             case 'wechat_work':
-                document.getElementById('webhook_template_content').value = `事件类型: {{.EventType}}
-事件时间: {{.EventTime}}
-事件内容: {{.EventBody}}
-设备编号: {{.DeviceCode}}
-设备名称: {{.DeviceName}}
-IPV4地址: {{.IPv4Addr}}
-IPV6地址: {{.IPv6Addr}}
-记录域名: {{.RecordDomain}}
-记录类型: {{.RecordType}}
-平台名称: {{.PlatformName}}
-平台类型: {{.PlatformType}}`
+                document.getElementById('webhook_template_content').value = `事件类型: [[.EventType]]
+事件时间: [[.EventTime]]
+事件内容: [[.EventBody]]
+设备编号: [[.DeviceCode]]
+设备名称: [[.DeviceName]]
+IPV4地址: [[.IPv4Addr]]
+IPV6地址: [[.IPv6Addr]]
+记录域名: [[.RecordDomain]]
+记录类型: [[.RecordType]]
+平台名称: [[.PlatformName]]
+平台类型: [[.PlatformType]]`
                 break;
             case 'dingtalk':
-                document.getElementById('webhook_template_content').value = `事件类型: {{.EventType}}
-事件时间: {{.EventTime}}
-事件内容: {{.EventBody}}
-设备编号: {{.DeviceCode}}
-设备名称: {{.DeviceName}}
-IPV4地址: {{.IPv4Addr}}
-IPV6地址: {{.IPv6Addr}}
-记录域名: {{.RecordDomain}}
-记录类型: {{.RecordType}}
-平台名称: {{.PlatformName}}
-平台类型: {{.PlatformType}}`
+                document.getElementById('webhook_template_content').value = `事件类型: [[.EventType]]
+事件时间: [[.EventTime]]
+事件内容: [[.EventBody]]
+设备编号: [[.DeviceCode]]
+设备名称: [[.DeviceName]]
+IPV4地址: [[.IPv4Addr]]
+IPV6地址: [[.IPv6Addr]]
+记录域名: [[.RecordDomain]]
+记录类型: [[.RecordType]]
+平台名称: [[.PlatformName]]
+平台类型: [[.PlatformType]]`
                 break;
             case 'feishu':
-                document.getElementById('webhook_template_content').value = `事件类型: {{.EventType}}
-事件时间: {{.EventTime}}
-事件内容: {{.EventBody}}
-设备编号: {{.DeviceCode}}
-设备名称: {{.DeviceName}}
-IPV4地址: {{.IPv4Addr}}
-IPV6地址: {{.IPv6Addr}}
-记录域名: {{.RecordDomain}}
-记录类型: {{.RecordType}}
-平台名称: {{.PlatformName}}
-平台类型: {{.PlatformType}}`
+                document.getElementById('webhook_template_content').value = `事件类型: [[.EventType]]
+事件时间: [[.EventTime]]
+事件内容: [[.EventBody]]
+设备编号: [[.DeviceCode]]
+设备名称: [[.DeviceName]]
+IPV4地址: [[.IPv4Addr]]
+IPV6地址: [[.IPv6Addr]]
+记录域名: [[.RecordDomain]]
+记录类型: [[.RecordType]]
+平台名称: [[.PlatformName]]
+平台类型: [[.PlatformType]]`
                 break;
             case 'bark':
-                document.getElementById('webhook_template_content').value = `事件类型: {{.EventType}}
-事件时间: {{.EventTime}}
-事件内容: {{.EventBody}}
-设备编号: {{.DeviceCode}}
-设备名称: {{.DeviceName}}
-IPV4地址: {{.IPv4Addr}}
-IPV6地址: {{.IPv6Addr}}
-记录域名: {{.RecordDomain}}
-记录类型: {{.RecordType}}
-平台名称: {{.PlatformName}}
-平台类型: {{.PlatformType}}`
+                document.getElementById('webhook_template_content').value = `事件类型: [[.EventType]]
+事件时间: [[.EventTime]]
+事件内容: [[.EventBody]]
+设备编号: [[.DeviceCode]]
+设备名称: [[.DeviceName]]
+IPV4地址: [[.IPv4Addr]]
+IPV6地址: [[.IPv6Addr]]
+记录域名: [[.RecordDomain]]
+记录类型: [[.RecordType]]
+平台名称: [[.PlatformName]]
+平台类型: [[.PlatformType]]`
                 break;
             case 'ft07':
-                document.getElementById('webhook_template_content').value = `事件类型: {{.EventType}}
-事件时间: {{.EventTime}}
-事件内容: {{.EventBody}}
-设备编号: {{.DeviceCode}}
-设备名称: {{.DeviceName}}
-IPV4地址: {{.IPv4Addr}}
-IPV6地址: {{.IPv6Addr}}
-记录域名: {{.RecordDomain}}
-记录类型: {{.RecordType}}
-平台名称: {{.PlatformName}}
-平台类型: {{.PlatformType}}`
+                document.getElementById('webhook_template_content').value = `事件类型: [[.EventType]]
+事件时间: [[.EventTime]]
+事件内容: [[.EventBody]]
+设备编号: [[.DeviceCode]]
+设备名称: [[.DeviceName]]
+IPV4地址: [[.IPv4Addr]]
+IPV6地址: [[.IPv6Addr]]
+记录域名: [[.RecordDomain]]
+记录类型: [[.RecordType]]
+平台名称: [[.PlatformName]]
+平台类型: [[.PlatformType]]`
                 break;
             case 'push_deer':
-                document.getElementById('webhook_template_content').value = `事件类型: {{.EventType}}
-事件时间: {{.EventTime}}
-事件内容: {{.EventBody}}
-设备编号: {{.DeviceCode}}
-设备名称: {{.DeviceName}}
-IPV4地址: {{.IPv4Addr}}
-IPV6地址: {{.IPv6Addr}}
-记录域名: {{.RecordDomain}}
-记录类型: {{.RecordType}}
-平台名称: {{.PlatformName}}
-平台类型: {{.PlatformType}}`
+                document.getElementById('webhook_template_content').value = `事件类型: [[.EventType]]
+事件时间: [[.EventTime]]
+事件内容: [[.EventBody]]
+设备编号: [[.DeviceCode]]
+设备名称: [[.DeviceName]]
+IPV4地址: [[.IPv4Addr]]
+IPV6地址: [[.IPv6Addr]]
+记录域名: [[.RecordDomain]]
+记录类型: [[.RecordType]]
+平台名称: [[.PlatformName]]
+平台类型: [[.PlatformType]]`
                 break;
             case 'custom_http':
-                document.getElementById('webhook_template_content').value = `事件类型: {{.EventType}}
-事件时间: {{.EventTime}}
-事件内容: {{.EventBody}}
-设备编号: {{.DeviceCode}}
-设备名称: {{.DeviceName}}
-IPV4地址: {{.IPv4Addr}}
-IPV6地址: {{.IPv6Addr}}
-记录域名: {{.RecordDomain}}
-记录类型: {{.RecordType}}
-平台名称: {{.PlatformName}}
-平台类型: {{.PlatformType}}`
+                document.getElementById('webhook_template_content').value = `事件类型: [[.EventType]]
+事件时间: [[.EventTime]]
+事件内容: [[.EventBody]]
+设备编号: [[.DeviceCode]]
+设备名称: [[.DeviceName]]
+IPV4地址: [[.IPv4Addr]]
+IPV6地址: [[.IPv6Addr]]
+记录域名: [[.RecordDomain]]
+记录类型: [[.RecordType]]
+平台名称: [[.PlatformName]]
+平台类型: [[.PlatformType]]`
                 break;
         }
     }
