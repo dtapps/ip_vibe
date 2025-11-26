@@ -83,7 +83,7 @@ func CreateWebhookSubscription(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "创建通知订阅")
+	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataCreate(c, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "创建通知订阅")
 	successResponse(c, gin.H{
 		"id": saveWebhookSubscription.ID,
 	})
@@ -121,7 +121,7 @@ func UpdateWebhookSubscription(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅")
+	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅")
 	successResponse(c, gin.H{
 		"id": saveWebhookSubscription.ID,
 	})
@@ -159,7 +159,7 @@ func UpdateWebhookSubscriptionActive(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅状态")
+	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅状态")
 	successResponse(c, gin.H{
 		"id": saveWebhookSubscription.ID,
 	})
@@ -187,7 +187,7 @@ func DeleteWebhookSubscription(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "删除通知订阅")
+	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataDelete(c, firstWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "删除通知订阅")
 	successResponse(c, gin.H{
 		"id": firstWebhookSubscription.ID,
 	})

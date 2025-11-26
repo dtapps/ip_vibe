@@ -107,7 +107,7 @@ func CreateCdnRecord(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "创建CDN记录")
+	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataCreate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "创建CDN记录")
 	successResponse(c, gin.H{
 		"id": saveCdnRecord.ID,
 	})
@@ -145,7 +145,7 @@ func UpdateCdnRecordActive(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录状态")
+	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录状态")
 	successResponse(c, gin.H{
 		"id": saveCdnRecord.ID,
 	})
@@ -170,7 +170,7 @@ func DeleteCdnRecord(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "删除CDN记录")
+	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataDelete(c, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "删除CDN记录")
 	successResponse(c, gin.H{
 		"id": firstCdnRecord.ID,
 	})

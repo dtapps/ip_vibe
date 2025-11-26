@@ -53,7 +53,7 @@ func main() {
 		initialize.CloseGoCron(ctx) // 关闭 GoCron 调度器
 	}()
 
-	initialize.InitOperationLogHelper(global.GvaDb) // 初始化操作日志助手
+	initialize.InitOperationLogHelper() // 初始化操作日志助手
 
 	// 打印
 	slog.Info("服务启动",

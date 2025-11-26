@@ -81,7 +81,7 @@ func CreateConfig(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "创建配置")
+	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataCreate(c, saveConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "创建配置")
 	successResponse(c, gin.H{
 		"id": saveConfig.ID,
 	})
@@ -121,7 +121,7 @@ func UpdateConfig(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "更新配置")
+	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "更新配置")
 	successResponse(c, gin.H{
 		"id": saveConfig.ID,
 	})
@@ -149,7 +149,7 @@ func DeleteConfig(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "删除配置")
+	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataDelete(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "删除配置")
 	successResponse(c, gin.H{
 		"id": firstConfig.ID,
 	})

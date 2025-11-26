@@ -83,7 +83,7 @@ func CreateIPGroup(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "创建IP组")
+	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataCreate(c, saveIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "创建IP组")
 	successResponse(c, gin.H{
 		"id": saveIpGroup.ID,
 	})
@@ -124,7 +124,7 @@ func UpdateIPGroup(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "更新IP组")
+	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, saveIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "更新IP组")
 	successResponse(c, gin.H{
 		"id": saveIpGroup.ID,
 	})
@@ -174,7 +174,7 @@ func DeleteIPGroup(c *gin.Context) {
 	// 提交事务
 	_ = tx.Commit()
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "删除IP组")
+	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataDelete(c, firstIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "删除IP组")
 	successResponse(c, gin.H{
 		"id": firstIpGroup.ID,
 	})
