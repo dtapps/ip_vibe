@@ -829,7 +829,7 @@ function changeWebhookPlatform(platform) {
             document.getElementById('webhook_url_group').style.display = 'block';
 
             document.getElementById('webhook_secret').disabled = false;
-            document.getElementById('webhook_secret').required = true;
+            document.getElementById('webhook_secret').required = false;
             document.getElementById('webhook_secret_group').style.display = 'block';
             break;
         case 'feishu':
@@ -838,12 +838,12 @@ function changeWebhookPlatform(platform) {
             document.getElementById('webhook_url_group').style.display = 'block';
 
             document.getElementById('webhook_secret').disabled = false;
-            document.getElementById('webhook_secret').required = true;
+            document.getElementById('webhook_secret').required = false;
             document.getElementById('webhook_secret_group').style.display = 'block';
             break;
         case 'bark':
             document.getElementById('webhook_url').disabled = false;
-            document.getElementById('webhook_url').required = true;
+            document.getElementById('webhook_url').required = false;
             document.getElementById('webhook_url_group').style.display = 'block';
 
             document.getElementById('webhook_secret').disabled = false;
@@ -852,7 +852,7 @@ function changeWebhookPlatform(platform) {
             break;
         case 'ft07':
             document.getElementById('webhook_url').disabled = false;
-            document.getElementById('webhook_url').required = true;
+            document.getElementById('webhook_url').required = false;
             document.getElementById('webhook_url_group').style.display = 'block';
 
             document.getElementById('webhook_secret').disabled = false;
@@ -861,7 +861,7 @@ function changeWebhookPlatform(platform) {
             break;
         case 'push_deer':
             document.getElementById('webhook_url').disabled = false;
-            document.getElementById('webhook_url').required = true;
+            document.getElementById('webhook_url').required = false;
             document.getElementById('webhook_url_group').style.display = 'block';
 
             document.getElementById('webhook_secret').disabled = false;
