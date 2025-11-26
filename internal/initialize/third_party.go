@@ -16,37 +16,37 @@ import (
 func InitThirdParty(ctx context.Context) (err error) {
 
 	// 企业微信
-	global.GvaWechatWork, err = wechatqy.NewClient(ctx)
+	global.GvaWechatWork, err = wechatqy.NewClient(ctx, wechatqy.WithDebug(global.GvaEnv.DEBUG))
 	if err != nil {
 		return err
 	}
 
 	// 钉钉
-	global.GvaDingTalk, err = dingtalk.NewClient(ctx)
+	global.GvaDingTalk, err = dingtalk.NewClient(ctx, dingtalk.WithDebug(global.GvaEnv.DEBUG))
 	if err != nil {
 		return err
 	}
 
 	// 飞书
-	global.GvaFeishu, err = feishu.NewClient(ctx)
+	global.GvaFeishu, err = feishu.NewClient(ctx, feishu.WithDebug(global.GvaEnv.DEBUG))
 	if err != nil {
 		return err
 	}
 
 	// bark
-	global.GvaBark, err = bark.NewClient(ctx)
+	global.GvaBark, err = bark.NewClient(ctx, bark.WithDebug(global.GvaEnv.DEBUG))
 	if err != nil {
 		return err
 	}
 
 	// ft07
-	global.GvaFt07, err = ft07.NewClient(ctx)
+	global.GvaFt07, err = ft07.NewClient(ctx, ft07.WithDebug(global.GvaEnv.DEBUG))
 	if err != nil {
 		return err
 	}
 
 	// pushdeer
-	global.GvaPushDeer, err = pushdeer.NewClient(ctx)
+	global.GvaPushDeer, err = pushdeer.NewClient(ctx, pushdeer.WithDebug(global.GvaEnv.DEBUG))
 	if err != nil {
 		return err
 	}

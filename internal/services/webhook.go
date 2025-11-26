@@ -98,6 +98,11 @@ func (s *WebhookService) Send(ctx context.Context, objType webhooksubscription.O
 						slog.Int64("webhook_id", item.Edges.Webhook.ID),
 						slog.String("webhook_platform", item.Edges.Webhook.Platform.String()),
 					)
+				} else {
+					s.log.InfoContext(egCtx, "Webhook发送成功",
+						slog.Int64("webhook_id", item.Edges.Webhook.ID),
+						slog.String("webhook_platform", item.Edges.Webhook.Platform.String()),
+					)
 				}
 			}
 
