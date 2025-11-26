@@ -127,6 +127,7 @@ func (s *IpReportService) runTask() {
 		)
 		return
 	}
+
 	// 检查设备是否存在
 	firstDevice, err := tx.Device.Query().
 		Where(device.CodeEQ(params.DeviceCode)).
@@ -197,6 +198,7 @@ func (s *IpReportService) runTask() {
 		msg = "创建设备IP成功"
 	} else {
 		params.ID = firstDevice.ID
+		params.DeviceName = firstDevice.Name
 		if firstDevice.IPV4 != params.IPV4Addr || firstDevice.IPV6 != params.IPV6Addr {
 			// 更新设备IP
 			isUpdateDeviceName := false
@@ -296,7 +298,9 @@ func (s *IpReportService) runTask() {
 
 	// 发送通知
 	if isNotify {
-		_ = NewWebhookService(s.db).Send(ctx, webhooksubscription.ObjTypeDevice, params.ID, notifyData)
+		go func() {
+			_ = NewWebhookService(global.GvaDb).Send(context.Background(), webhooksubscription.ObjTypeDevice, params.ID, notifyData)
+		}()
 	}
 
 }
