@@ -19,6 +19,7 @@ func GetDnsRecords(c *gin.Context) {
 	allDnsRecord, err := global.GvaDb.DNSRecord.Query().
 		WithConfig().
 		WithIPGroup().
+		WithCdnRecord().
 		All(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询DNS记录失败: "+err.Error())
@@ -55,6 +56,9 @@ func GetDnsRecord(c *gin.Context) {
 	// 查询DNS记录
 	firstDnsRecord, err := global.GvaDb.DNSRecord.Query().
 		Where(dnsrecord.ID(cast.ToInt64(id))).
+		WithConfig().
+		WithIPGroup().
+		WithCdnRecord().
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询DNS记录失败: "+err.Error())
@@ -76,6 +80,7 @@ func GetDnsRecord(c *gin.Context) {
 	}
 	if cdnRecord, err := firstDnsRecord.Edges.CdnRecordOrErr(); err == nil {
 		response.CdnRecordID = cdnRecord.ID
+		response.CdnRecordCdnDomain = cdnRecord.CdnDomain
 	}
 	successResponse(c, response)
 }
@@ -112,6 +117,49 @@ func CreateDnsRecord(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataCreate(c, saveDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "创建DNS记录")
+	successResponse(c, gin.H{
+		"id": saveDnsRecord.ID,
+	})
+}
+
+// 更新DNS记录
+func UpdateDnsRecord(c *gin.Context) {
+	// 请求参数
+	id := c.Param("id")
+	var requestParams types.UpdateDnsRecordRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("UpdateDnsRecord params: %+v\n", requestParams)
+	}
+	// 查询DNS记录
+	firstDnsRecord, err := global.GvaDb.DNSRecord.Query().
+		Where(dnsrecord.ID(cast.ToInt64(id))).
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, "查询DNS记录失败: "+err.Error())
+		return
+	}
+	// 更新DNS记录
+	createDnsRecord := global.GvaDb.DNSRecord.UpdateOne(firstDnsRecord)
+	if requestParams.IPGroupID > 0 {
+		createDnsRecord.SetIPGroupID(requestParams.IPGroupID)
+	}
+	if requestParams.CdnRecordID > 0 {
+		createDnsRecord.SetCdnRecordID(requestParams.CdnRecordID)
+	}
+	saveDnsRecord, err := createDnsRecord.Save(c)
+	if err != nil {
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("更新DNS记录: %s\n", err.Error())
+		}
+		errorResponse(c, http.StatusInternalServerError, "更新DNS记录失败: "+err.Error())
+		return
+	}
+	// 记录操作日志
+	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, saveDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "更新DNS记录")
 	successResponse(c, gin.H{
 		"id": saveDnsRecord.ID,
 	})

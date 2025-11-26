@@ -63,6 +63,8 @@ h1 {
     cursor: pointer;
     font-size: 14px;
     transition: all 0.3s;
+    margin-top: 2px;
+    margin-bottom: 2px;
 }
 
 .btn-primary {
@@ -97,7 +99,8 @@ table {
 th,
 td {
     padding: 12px;
-    text-align: left;
+    /* text-align: left; */
+    text-align: center;
     border-bottom: 1px solid var(--border);
 }
 

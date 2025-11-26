@@ -165,6 +165,7 @@ async function openConfigModal(id) {
         openModal('configModal', 'configModalTitle', '编辑 平台配置');
     }
 
+    // 创建
     if (!id) {
         document.getElementById('config_id').value = '';
         document.getElementById('config_id').disabled = true;
@@ -232,7 +233,7 @@ async function toggleCdnRecordStatus(id, checkbox) {
 }
 
 // CDN记录管理
-async function openCdnRecordModal() {
+async function openCdnRecordModal(id) {
 
     // IP 组列表
     const { data: ipGroups } = await API.get(`/api/ip-groups`);
@@ -248,7 +249,42 @@ async function openCdnRecordModal() {
         });
     }
 
-    openModal('cdnRecordModal', 'cdnRecordModalTitle', '添加 CDN记录');
+    // 编辑
+    if (id) {
+        const { data: cdnRecord } = await API.get(`/api/cdn-records/${id}`);
+        console.log("cdnRecord", cdnRecord);
+        if (!cdnRecord) {
+            alert('CDN记录数据异常');
+            return;
+        }
+
+        document.getElementById('cdn_record_id').value = cdnRecord.id;
+        document.getElementById('cdn_record_id').disabled = true;
+        document.getElementById('cdn_record_config_id').value = cdnRecord.config_id;
+        document.getElementById('cdn_record_config_id').disabled = true;
+        document.getElementById('cdn_record_domain').value = cdnRecord.domain;
+        document.getElementById('cdn_record_domain').disabled = true;
+        document.getElementById('cdn_record_type').value = cdnRecord.type;
+        document.getElementById('cdn_record_type').disabled = true;
+        document.getElementById('cdn_record_origin_protocol').value = cdnRecord.origin_protocol;
+        document.getElementById('cdn_record_http_port').value = cdnRecord.http_port;
+        document.getElementById('cdn_record_https_port').value = cdnRecord.https_port;
+        document.getElementById('cdn_record_ip_group_id').value = cdnRecord.ip_group_id;
+
+        openModal('cdnRecordModal', 'cdnRecordModalTitle', '编辑 CDN记录');
+    }
+
+    // 创建
+    if (!id) {
+        document.getElementById('cdn_record_id').value = 0;
+        document.getElementById('cdn_record_id').disabled = true;
+        document.getElementById('cdn_record_config_id').disabled = false;
+        document.getElementById('cdn_record_domain').disabled = false;
+        document.getElementById('cdn_record_type').disabled = false;
+
+        openModal('cdnRecordModal', 'cdnRecordModalTitle', '添加 CDN记录');
+    }
+
 }
 
 // 选择配置 config_id
@@ -336,7 +372,7 @@ async function toggleDnsRecordStatus(id, checkbox) {
 }
 
 // DNS记录管理（模态框）
-async function openDnsRecordModal() {
+async function openDnsRecordModal(id) {
 
     // IP 组列表
     const { data: ipGroups } = await API.get(`/api/ip-groups`);
@@ -368,7 +404,48 @@ async function openDnsRecordModal() {
         });
     }
 
-    openModal('dnsRecordModal', 'dnsRecordModalTitle', '添加 DNS记录');
+    // 编辑
+    if (id) {
+        const { data: dnsRecord } = await API.get(`/api/dns-records/${id}`);
+        console.log("dnsRecord", dnsRecord);
+        if (!dnsRecord) {
+            alert('DNS记录数据异常');
+            return;
+        }
+
+        document.getElementById('dns_record_id').value = dnsRecord.id;
+        document.getElementById('dns_record_id').disabled = true;
+        document.getElementById('dns_record_config_id').value = dnsRecord.config_id;
+        document.getElementById('dns_record_config_id').disabled = true;
+        document.getElementById('dns_record_domain').value = dnsRecord.domain;
+        document.getElementById('dns_record_domain').disabled = true;
+        document.getElementById('dns_record_type').value = dnsRecord.type;
+        document.getElementById('dns_record_type').disabled = true;
+
+        if (dnsRecord.type === 'CNAME') {
+            document.getElementById('dns_record_cdn_record_id').value = dnsRecord.cdn_record_id;
+            document.getElementById('dns_record_cdn_record_id').disabled = false;
+        } else {
+            document.getElementById('dns_record_ip_group_id').value = dnsRecord.ip_group_id;
+            document.getElementById('dns_record_ip_group_id').disabled = false;
+        }
+
+        openModal('dnsRecordModal', 'dnsRecordModalTitle', '编辑 DNS记录');
+    }
+
+    // 创建
+    if (!id) {
+        document.getElementById('dns_record_id').value = 0;
+        document.getElementById('dns_record_id').disabled = true;
+        document.getElementById('dns_record_config_id').disabled = false;
+        document.getElementById('dns_record_domain').disabled = false;
+        document.getElementById('dns_record_type').disabled = false;
+        document.getElementById('dns_record_cdn_record_id').disabled = true;
+        document.getElementById('dns_record_ip_group_id').disabled = true;
+
+        openModal('dnsRecordModal', 'dnsRecordModalTitle', '添加 DNS记录');
+    }
+
 }
 
 // 选择配置 config_id
@@ -485,6 +562,7 @@ async function openDeviceModal(id) {
         openModal('deviceModal', 'deviceModalTitle', '编辑 设备');
     }
 
+    // 创建
     if (!id) {
         document.getElementById('device_id').value = '';
         document.getElementById('device_id').disabled = true;
@@ -650,6 +728,7 @@ async function openIpGroupModal(id) {
         openModal('ipGroupModal', 'ipGroupModalTitle', '编辑 IP 组');
     }
 
+    // 创建
     if (!id) {
         document.getElementById('ip_group_id').value = '';
         document.getElementById('ip_group_id').disabled = true;
@@ -811,6 +890,7 @@ async function openWebhookModal(id) {
         openModal('webhookModal', 'webhookModalTitle', '编辑 通知');
     }
 
+    // 创建
     if (!id) {
         document.getElementById('webhook_id').value = '';
         document.getElementById('webhook_id').disabled = true;
@@ -995,6 +1075,7 @@ async function openWebhookSubscriptionModal(id, obj_type) {
         openModal('webhookSubscriptionModal', 'webhookSubscriptionModalTitle', `编辑 ${modalTitle}`);
     }
 
+    // 创建
     if (!id) {
         document.getElementById('webhook_subscription_id').value = '';
         document.getElementById('webhook_subscription_id').disabled = true;

@@ -155,6 +155,10 @@
                   <svg class="ip-i">
                     <use href="/static/icons.svg#ip-eyes" />
                   </svg> 实时IP</button>
+                <button class="btn btn-primary btn-sm" onclick="openCdnRecordModal('{{.ID}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-edit" />
+                  </svg> 编辑</button>
                 {{if .IsActive}}
                 <span class="btn-tooltip-wrapper" title="活跃状态时不允许删除，请先禁止后操作再删除！">
                   <button class="btn btn-sm btn-danger" disabled>
@@ -237,6 +241,10 @@
                     </svg> 实时IP</button>
                 </span>
                 {{end}}
+                <button class="btn btn-primary btn-sm" onclick="openDnsRecordModal('{{.ID}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-edit" />
+                  </svg> 编辑</button>
                 {{if .IsActive}}
                 <span class="btn-tooltip-wrapper" title="活跃状态时不允许删除，请先禁止后操作再删除！">
                   <button class="btn btn-sm btn-danger" disabled>

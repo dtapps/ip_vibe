@@ -524,6 +524,54 @@ func (u *CDNRecordUpsert) ClearRecordID() *CDNRecordUpsert {
 	return u
 }
 
+// SetOriginProtocol sets the "origin_protocol" field.
+func (u *CDNRecordUpsert) SetOriginProtocol(v cdnrecord.OriginProtocol) *CDNRecordUpsert {
+	u.Set(cdnrecord.FieldOriginProtocol, v)
+	return u
+}
+
+// UpdateOriginProtocol sets the "origin_protocol" field to the value that was provided on create.
+func (u *CDNRecordUpsert) UpdateOriginProtocol() *CDNRecordUpsert {
+	u.SetExcluded(cdnrecord.FieldOriginProtocol)
+	return u
+}
+
+// SetHTTPPort sets the "http_port" field.
+func (u *CDNRecordUpsert) SetHTTPPort(v int) *CDNRecordUpsert {
+	u.Set(cdnrecord.FieldHTTPPort, v)
+	return u
+}
+
+// UpdateHTTPPort sets the "http_port" field to the value that was provided on create.
+func (u *CDNRecordUpsert) UpdateHTTPPort() *CDNRecordUpsert {
+	u.SetExcluded(cdnrecord.FieldHTTPPort)
+	return u
+}
+
+// AddHTTPPort adds v to the "http_port" field.
+func (u *CDNRecordUpsert) AddHTTPPort(v int) *CDNRecordUpsert {
+	u.Add(cdnrecord.FieldHTTPPort, v)
+	return u
+}
+
+// SetHTTPSPort sets the "https_port" field.
+func (u *CDNRecordUpsert) SetHTTPSPort(v int) *CDNRecordUpsert {
+	u.Set(cdnrecord.FieldHTTPSPort, v)
+	return u
+}
+
+// UpdateHTTPSPort sets the "https_port" field to the value that was provided on create.
+func (u *CDNRecordUpsert) UpdateHTTPSPort() *CDNRecordUpsert {
+	u.SetExcluded(cdnrecord.FieldHTTPSPort)
+	return u
+}
+
+// AddHTTPSPort adds v to the "https_port" field.
+func (u *CDNRecordUpsert) AddHTTPSPort(v int) *CDNRecordUpsert {
+	u.Add(cdnrecord.FieldHTTPSPort, v)
+	return u
+}
+
 // SetCdnDomain sets the "cdn_domain" field.
 func (u *CDNRecordUpsert) SetCdnDomain(v string) *CDNRecordUpsert {
 	u.Set(cdnrecord.FieldCdnDomain, v)
@@ -539,6 +587,18 @@ func (u *CDNRecordUpsert) UpdateCdnDomain() *CDNRecordUpsert {
 // ClearCdnDomain clears the value of the "cdn_domain" field.
 func (u *CDNRecordUpsert) ClearCdnDomain() *CDNRecordUpsert {
 	u.SetNull(cdnrecord.FieldCdnDomain)
+	return u
+}
+
+// SetIPGroupID sets the "ip_group_id" field.
+func (u *CDNRecordUpsert) SetIPGroupID(v int64) *CDNRecordUpsert {
+	u.Set(cdnrecord.FieldIPGroupID, v)
+	return u
+}
+
+// UpdateIPGroupID sets the "ip_group_id" field to the value that was provided on create.
+func (u *CDNRecordUpsert) UpdateIPGroupID() *CDNRecordUpsert {
+	u.SetExcluded(cdnrecord.FieldIPGroupID)
 	return u
 }
 
@@ -600,18 +660,6 @@ func (u *CDNRecordUpsertOne) UpdateNewValues() *CDNRecordUpsertOne {
 		}
 		if _, exists := u.create.mutation.GetType(); exists {
 			s.SetIgnore(cdnrecord.FieldType)
-		}
-		if _, exists := u.create.mutation.OriginProtocol(); exists {
-			s.SetIgnore(cdnrecord.FieldOriginProtocol)
-		}
-		if _, exists := u.create.mutation.HTTPPort(); exists {
-			s.SetIgnore(cdnrecord.FieldHTTPPort)
-		}
-		if _, exists := u.create.mutation.HTTPSPort(); exists {
-			s.SetIgnore(cdnrecord.FieldHTTPSPort)
-		}
-		if _, exists := u.create.mutation.IPGroupID(); exists {
-			s.SetIgnore(cdnrecord.FieldIPGroupID)
 		}
 	}))
 	return u
@@ -679,6 +727,62 @@ func (u *CDNRecordUpsertOne) ClearRecordID() *CDNRecordUpsertOne {
 	})
 }
 
+// SetOriginProtocol sets the "origin_protocol" field.
+func (u *CDNRecordUpsertOne) SetOriginProtocol(v cdnrecord.OriginProtocol) *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetOriginProtocol(v)
+	})
+}
+
+// UpdateOriginProtocol sets the "origin_protocol" field to the value that was provided on create.
+func (u *CDNRecordUpsertOne) UpdateOriginProtocol() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateOriginProtocol()
+	})
+}
+
+// SetHTTPPort sets the "http_port" field.
+func (u *CDNRecordUpsertOne) SetHTTPPort(v int) *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetHTTPPort(v)
+	})
+}
+
+// AddHTTPPort adds v to the "http_port" field.
+func (u *CDNRecordUpsertOne) AddHTTPPort(v int) *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.AddHTTPPort(v)
+	})
+}
+
+// UpdateHTTPPort sets the "http_port" field to the value that was provided on create.
+func (u *CDNRecordUpsertOne) UpdateHTTPPort() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateHTTPPort()
+	})
+}
+
+// SetHTTPSPort sets the "https_port" field.
+func (u *CDNRecordUpsertOne) SetHTTPSPort(v int) *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetHTTPSPort(v)
+	})
+}
+
+// AddHTTPSPort adds v to the "https_port" field.
+func (u *CDNRecordUpsertOne) AddHTTPSPort(v int) *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.AddHTTPSPort(v)
+	})
+}
+
+// UpdateHTTPSPort sets the "https_port" field to the value that was provided on create.
+func (u *CDNRecordUpsertOne) UpdateHTTPSPort() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateHTTPSPort()
+	})
+}
+
 // SetCdnDomain sets the "cdn_domain" field.
 func (u *CDNRecordUpsertOne) SetCdnDomain(v string) *CDNRecordUpsertOne {
 	return u.Update(func(s *CDNRecordUpsert) {
@@ -697,6 +801,20 @@ func (u *CDNRecordUpsertOne) UpdateCdnDomain() *CDNRecordUpsertOne {
 func (u *CDNRecordUpsertOne) ClearCdnDomain() *CDNRecordUpsertOne {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.ClearCdnDomain()
+	})
+}
+
+// SetIPGroupID sets the "ip_group_id" field.
+func (u *CDNRecordUpsertOne) SetIPGroupID(v int64) *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetIPGroupID(v)
+	})
+}
+
+// UpdateIPGroupID sets the "ip_group_id" field to the value that was provided on create.
+func (u *CDNRecordUpsertOne) UpdateIPGroupID() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateIPGroupID()
 	})
 }
 
@@ -929,18 +1047,6 @@ func (u *CDNRecordUpsertBulk) UpdateNewValues() *CDNRecordUpsertBulk {
 			if _, exists := b.mutation.GetType(); exists {
 				s.SetIgnore(cdnrecord.FieldType)
 			}
-			if _, exists := b.mutation.OriginProtocol(); exists {
-				s.SetIgnore(cdnrecord.FieldOriginProtocol)
-			}
-			if _, exists := b.mutation.HTTPPort(); exists {
-				s.SetIgnore(cdnrecord.FieldHTTPPort)
-			}
-			if _, exists := b.mutation.HTTPSPort(); exists {
-				s.SetIgnore(cdnrecord.FieldHTTPSPort)
-			}
-			if _, exists := b.mutation.IPGroupID(); exists {
-				s.SetIgnore(cdnrecord.FieldIPGroupID)
-			}
 		}
 	}))
 	return u
@@ -1008,6 +1114,62 @@ func (u *CDNRecordUpsertBulk) ClearRecordID() *CDNRecordUpsertBulk {
 	})
 }
 
+// SetOriginProtocol sets the "origin_protocol" field.
+func (u *CDNRecordUpsertBulk) SetOriginProtocol(v cdnrecord.OriginProtocol) *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetOriginProtocol(v)
+	})
+}
+
+// UpdateOriginProtocol sets the "origin_protocol" field to the value that was provided on create.
+func (u *CDNRecordUpsertBulk) UpdateOriginProtocol() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateOriginProtocol()
+	})
+}
+
+// SetHTTPPort sets the "http_port" field.
+func (u *CDNRecordUpsertBulk) SetHTTPPort(v int) *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetHTTPPort(v)
+	})
+}
+
+// AddHTTPPort adds v to the "http_port" field.
+func (u *CDNRecordUpsertBulk) AddHTTPPort(v int) *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.AddHTTPPort(v)
+	})
+}
+
+// UpdateHTTPPort sets the "http_port" field to the value that was provided on create.
+func (u *CDNRecordUpsertBulk) UpdateHTTPPort() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateHTTPPort()
+	})
+}
+
+// SetHTTPSPort sets the "https_port" field.
+func (u *CDNRecordUpsertBulk) SetHTTPSPort(v int) *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetHTTPSPort(v)
+	})
+}
+
+// AddHTTPSPort adds v to the "https_port" field.
+func (u *CDNRecordUpsertBulk) AddHTTPSPort(v int) *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.AddHTTPSPort(v)
+	})
+}
+
+// UpdateHTTPSPort sets the "https_port" field to the value that was provided on create.
+func (u *CDNRecordUpsertBulk) UpdateHTTPSPort() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateHTTPSPort()
+	})
+}
+
 // SetCdnDomain sets the "cdn_domain" field.
 func (u *CDNRecordUpsertBulk) SetCdnDomain(v string) *CDNRecordUpsertBulk {
 	return u.Update(func(s *CDNRecordUpsert) {
@@ -1026,6 +1188,20 @@ func (u *CDNRecordUpsertBulk) UpdateCdnDomain() *CDNRecordUpsertBulk {
 func (u *CDNRecordUpsertBulk) ClearCdnDomain() *CDNRecordUpsertBulk {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.ClearCdnDomain()
+	})
+}
+
+// SetIPGroupID sets the "ip_group_id" field.
+func (u *CDNRecordUpsertBulk) SetIPGroupID(v int64) *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetIPGroupID(v)
+	})
+}
+
+// UpdateIPGroupID sets the "ip_group_id" field to the value that was provided on create.
+func (u *CDNRecordUpsertBulk) UpdateIPGroupID() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateIPGroupID()
 	})
 }
 

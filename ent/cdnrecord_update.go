@@ -9,6 +9,7 @@ import (
 	"time"
 	"vibe_ip/ent/cdnrecord"
 	"vibe_ip/ent/dnsrecord"
+	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
@@ -56,6 +57,62 @@ func (_u *CDNRecordUpdate) ClearRecordID() *CDNRecordUpdate {
 	return _u
 }
 
+// SetOriginProtocol sets the "origin_protocol" field.
+func (_u *CDNRecordUpdate) SetOriginProtocol(v cdnrecord.OriginProtocol) *CDNRecordUpdate {
+	_u.mutation.SetOriginProtocol(v)
+	return _u
+}
+
+// SetNillableOriginProtocol sets the "origin_protocol" field if the given value is not nil.
+func (_u *CDNRecordUpdate) SetNillableOriginProtocol(v *cdnrecord.OriginProtocol) *CDNRecordUpdate {
+	if v != nil {
+		_u.SetOriginProtocol(*v)
+	}
+	return _u
+}
+
+// SetHTTPPort sets the "http_port" field.
+func (_u *CDNRecordUpdate) SetHTTPPort(v int) *CDNRecordUpdate {
+	_u.mutation.ResetHTTPPort()
+	_u.mutation.SetHTTPPort(v)
+	return _u
+}
+
+// SetNillableHTTPPort sets the "http_port" field if the given value is not nil.
+func (_u *CDNRecordUpdate) SetNillableHTTPPort(v *int) *CDNRecordUpdate {
+	if v != nil {
+		_u.SetHTTPPort(*v)
+	}
+	return _u
+}
+
+// AddHTTPPort adds value to the "http_port" field.
+func (_u *CDNRecordUpdate) AddHTTPPort(v int) *CDNRecordUpdate {
+	_u.mutation.AddHTTPPort(v)
+	return _u
+}
+
+// SetHTTPSPort sets the "https_port" field.
+func (_u *CDNRecordUpdate) SetHTTPSPort(v int) *CDNRecordUpdate {
+	_u.mutation.ResetHTTPSPort()
+	_u.mutation.SetHTTPSPort(v)
+	return _u
+}
+
+// SetNillableHTTPSPort sets the "https_port" field if the given value is not nil.
+func (_u *CDNRecordUpdate) SetNillableHTTPSPort(v *int) *CDNRecordUpdate {
+	if v != nil {
+		_u.SetHTTPSPort(*v)
+	}
+	return _u
+}
+
+// AddHTTPSPort adds value to the "https_port" field.
+func (_u *CDNRecordUpdate) AddHTTPSPort(v int) *CDNRecordUpdate {
+	_u.mutation.AddHTTPSPort(v)
+	return _u
+}
+
 // SetCdnDomain sets the "cdn_domain" field.
 func (_u *CDNRecordUpdate) SetCdnDomain(v string) *CDNRecordUpdate {
 	_u.mutation.SetCdnDomain(v)
@@ -73,6 +130,20 @@ func (_u *CDNRecordUpdate) SetNillableCdnDomain(v *string) *CDNRecordUpdate {
 // ClearCdnDomain clears the value of the "cdn_domain" field.
 func (_u *CDNRecordUpdate) ClearCdnDomain() *CDNRecordUpdate {
 	_u.mutation.ClearCdnDomain()
+	return _u
+}
+
+// SetIPGroupID sets the "ip_group_id" field.
+func (_u *CDNRecordUpdate) SetIPGroupID(v int64) *CDNRecordUpdate {
+	_u.mutation.SetIPGroupID(v)
+	return _u
+}
+
+// SetNillableIPGroupID sets the "ip_group_id" field if the given value is not nil.
+func (_u *CDNRecordUpdate) SetNillableIPGroupID(v *int64) *CDNRecordUpdate {
+	if v != nil {
+		_u.SetIPGroupID(*v)
+	}
 	return _u
 }
 
@@ -110,6 +181,11 @@ func (_u *CDNRecordUpdate) ClearLastRefreshAt() *CDNRecordUpdate {
 	return _u
 }
 
+// SetIPGroup sets the "ip_group" edge to the IpGroup entity.
+func (_u *CDNRecordUpdate) SetIPGroup(v *IpGroup) *CDNRecordUpdate {
+	return _u.SetIPGroupID(v.ID)
+}
+
 // AddDNSRecordIDs adds the "dns_records" edge to the DNSRecord entity by IDs.
 func (_u *CDNRecordUpdate) AddDNSRecordIDs(ids ...int64) *CDNRecordUpdate {
 	_u.mutation.AddDNSRecordIDs(ids...)
@@ -128,6 +204,12 @@ func (_u *CDNRecordUpdate) AddDNSRecords(v ...*DNSRecord) *CDNRecordUpdate {
 // Mutation returns the CDNRecordMutation object of the builder.
 func (_u *CDNRecordUpdate) Mutation() *CDNRecordMutation {
 	return _u.mutation
+}
+
+// ClearIPGroup clears the "ip_group" edge to the IpGroup entity.
+func (_u *CDNRecordUpdate) ClearIPGroup() *CDNRecordUpdate {
+	_u.mutation.ClearIPGroup()
+	return _u
 }
 
 // ClearDNSRecords clears all "dns_records" edges to the DNSRecord entity.
@@ -189,6 +271,11 @@ func (_u *CDNRecordUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *CDNRecordUpdate) check() error {
+	if v, ok := _u.mutation.OriginProtocol(); ok {
+		if err := cdnrecord.OriginProtocolValidator(v); err != nil {
+			return &ValidationError{Name: "origin_protocol", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.origin_protocol": %w`, err)}
+		}
+	}
 	if _u.mutation.ConfigCleared() && len(_u.mutation.ConfigIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CDNRecord.config"`)
 	}
@@ -225,6 +312,21 @@ func (_u *CDNRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.RecordIDCleared() {
 		_spec.ClearField(cdnrecord.FieldRecordID, field.TypeString)
 	}
+	if value, ok := _u.mutation.OriginProtocol(); ok {
+		_spec.SetField(cdnrecord.FieldOriginProtocol, field.TypeEnum, value)
+	}
+	if value, ok := _u.mutation.HTTPPort(); ok {
+		_spec.SetField(cdnrecord.FieldHTTPPort, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedHTTPPort(); ok {
+		_spec.AddField(cdnrecord.FieldHTTPPort, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.HTTPSPort(); ok {
+		_spec.SetField(cdnrecord.FieldHTTPSPort, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedHTTPSPort(); ok {
+		_spec.AddField(cdnrecord.FieldHTTPSPort, field.TypeInt, value)
+	}
 	if value, ok := _u.mutation.CdnDomain(); ok {
 		_spec.SetField(cdnrecord.FieldCdnDomain, field.TypeString, value)
 	}
@@ -239,6 +341,35 @@ func (_u *CDNRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.LastRefreshAtCleared() {
 		_spec.ClearField(cdnrecord.FieldLastRefreshAt, field.TypeTime)
+	}
+	if _u.mutation.IPGroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cdnrecord.IPGroupTable,
+			Columns: []string{cdnrecord.IPGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ipgroup.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.IPGroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cdnrecord.IPGroupTable,
+			Columns: []string{cdnrecord.IPGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ipgroup.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.DNSRecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -333,6 +464,62 @@ func (_u *CDNRecordUpdateOne) ClearRecordID() *CDNRecordUpdateOne {
 	return _u
 }
 
+// SetOriginProtocol sets the "origin_protocol" field.
+func (_u *CDNRecordUpdateOne) SetOriginProtocol(v cdnrecord.OriginProtocol) *CDNRecordUpdateOne {
+	_u.mutation.SetOriginProtocol(v)
+	return _u
+}
+
+// SetNillableOriginProtocol sets the "origin_protocol" field if the given value is not nil.
+func (_u *CDNRecordUpdateOne) SetNillableOriginProtocol(v *cdnrecord.OriginProtocol) *CDNRecordUpdateOne {
+	if v != nil {
+		_u.SetOriginProtocol(*v)
+	}
+	return _u
+}
+
+// SetHTTPPort sets the "http_port" field.
+func (_u *CDNRecordUpdateOne) SetHTTPPort(v int) *CDNRecordUpdateOne {
+	_u.mutation.ResetHTTPPort()
+	_u.mutation.SetHTTPPort(v)
+	return _u
+}
+
+// SetNillableHTTPPort sets the "http_port" field if the given value is not nil.
+func (_u *CDNRecordUpdateOne) SetNillableHTTPPort(v *int) *CDNRecordUpdateOne {
+	if v != nil {
+		_u.SetHTTPPort(*v)
+	}
+	return _u
+}
+
+// AddHTTPPort adds value to the "http_port" field.
+func (_u *CDNRecordUpdateOne) AddHTTPPort(v int) *CDNRecordUpdateOne {
+	_u.mutation.AddHTTPPort(v)
+	return _u
+}
+
+// SetHTTPSPort sets the "https_port" field.
+func (_u *CDNRecordUpdateOne) SetHTTPSPort(v int) *CDNRecordUpdateOne {
+	_u.mutation.ResetHTTPSPort()
+	_u.mutation.SetHTTPSPort(v)
+	return _u
+}
+
+// SetNillableHTTPSPort sets the "https_port" field if the given value is not nil.
+func (_u *CDNRecordUpdateOne) SetNillableHTTPSPort(v *int) *CDNRecordUpdateOne {
+	if v != nil {
+		_u.SetHTTPSPort(*v)
+	}
+	return _u
+}
+
+// AddHTTPSPort adds value to the "https_port" field.
+func (_u *CDNRecordUpdateOne) AddHTTPSPort(v int) *CDNRecordUpdateOne {
+	_u.mutation.AddHTTPSPort(v)
+	return _u
+}
+
 // SetCdnDomain sets the "cdn_domain" field.
 func (_u *CDNRecordUpdateOne) SetCdnDomain(v string) *CDNRecordUpdateOne {
 	_u.mutation.SetCdnDomain(v)
@@ -350,6 +537,20 @@ func (_u *CDNRecordUpdateOne) SetNillableCdnDomain(v *string) *CDNRecordUpdateOn
 // ClearCdnDomain clears the value of the "cdn_domain" field.
 func (_u *CDNRecordUpdateOne) ClearCdnDomain() *CDNRecordUpdateOne {
 	_u.mutation.ClearCdnDomain()
+	return _u
+}
+
+// SetIPGroupID sets the "ip_group_id" field.
+func (_u *CDNRecordUpdateOne) SetIPGroupID(v int64) *CDNRecordUpdateOne {
+	_u.mutation.SetIPGroupID(v)
+	return _u
+}
+
+// SetNillableIPGroupID sets the "ip_group_id" field if the given value is not nil.
+func (_u *CDNRecordUpdateOne) SetNillableIPGroupID(v *int64) *CDNRecordUpdateOne {
+	if v != nil {
+		_u.SetIPGroupID(*v)
+	}
 	return _u
 }
 
@@ -387,6 +588,11 @@ func (_u *CDNRecordUpdateOne) ClearLastRefreshAt() *CDNRecordUpdateOne {
 	return _u
 }
 
+// SetIPGroup sets the "ip_group" edge to the IpGroup entity.
+func (_u *CDNRecordUpdateOne) SetIPGroup(v *IpGroup) *CDNRecordUpdateOne {
+	return _u.SetIPGroupID(v.ID)
+}
+
 // AddDNSRecordIDs adds the "dns_records" edge to the DNSRecord entity by IDs.
 func (_u *CDNRecordUpdateOne) AddDNSRecordIDs(ids ...int64) *CDNRecordUpdateOne {
 	_u.mutation.AddDNSRecordIDs(ids...)
@@ -405,6 +611,12 @@ func (_u *CDNRecordUpdateOne) AddDNSRecords(v ...*DNSRecord) *CDNRecordUpdateOne
 // Mutation returns the CDNRecordMutation object of the builder.
 func (_u *CDNRecordUpdateOne) Mutation() *CDNRecordMutation {
 	return _u.mutation
+}
+
+// ClearIPGroup clears the "ip_group" edge to the IpGroup entity.
+func (_u *CDNRecordUpdateOne) ClearIPGroup() *CDNRecordUpdateOne {
+	_u.mutation.ClearIPGroup()
+	return _u
 }
 
 // ClearDNSRecords clears all "dns_records" edges to the DNSRecord entity.
@@ -479,6 +691,11 @@ func (_u *CDNRecordUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *CDNRecordUpdateOne) check() error {
+	if v, ok := _u.mutation.OriginProtocol(); ok {
+		if err := cdnrecord.OriginProtocolValidator(v); err != nil {
+			return &ValidationError{Name: "origin_protocol", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.origin_protocol": %w`, err)}
+		}
+	}
 	if _u.mutation.ConfigCleared() && len(_u.mutation.ConfigIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CDNRecord.config"`)
 	}
@@ -532,6 +749,21 @@ func (_u *CDNRecordUpdateOne) sqlSave(ctx context.Context) (_node *CDNRecord, er
 	if _u.mutation.RecordIDCleared() {
 		_spec.ClearField(cdnrecord.FieldRecordID, field.TypeString)
 	}
+	if value, ok := _u.mutation.OriginProtocol(); ok {
+		_spec.SetField(cdnrecord.FieldOriginProtocol, field.TypeEnum, value)
+	}
+	if value, ok := _u.mutation.HTTPPort(); ok {
+		_spec.SetField(cdnrecord.FieldHTTPPort, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedHTTPPort(); ok {
+		_spec.AddField(cdnrecord.FieldHTTPPort, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.HTTPSPort(); ok {
+		_spec.SetField(cdnrecord.FieldHTTPSPort, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedHTTPSPort(); ok {
+		_spec.AddField(cdnrecord.FieldHTTPSPort, field.TypeInt, value)
+	}
 	if value, ok := _u.mutation.CdnDomain(); ok {
 		_spec.SetField(cdnrecord.FieldCdnDomain, field.TypeString, value)
 	}
@@ -546,6 +778,35 @@ func (_u *CDNRecordUpdateOne) sqlSave(ctx context.Context) (_node *CDNRecord, er
 	}
 	if _u.mutation.LastRefreshAtCleared() {
 		_spec.ClearField(cdnrecord.FieldLastRefreshAt, field.TypeTime)
+	}
+	if _u.mutation.IPGroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cdnrecord.IPGroupTable,
+			Columns: []string{cdnrecord.IPGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ipgroup.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.IPGroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cdnrecord.IPGroupTable,
+			Columns: []string{cdnrecord.IPGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ipgroup.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.DNSRecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{

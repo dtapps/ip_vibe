@@ -19,7 +19,6 @@ func GetCdnRecords(c *gin.Context) {
 	allCdnRecord, err := global.GvaDb.CDNRecord.Query().
 		WithConfig().
 		WithIPGroup().
-		WithDNSRecords().
 		All(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询记录失败: "+err.Error())
@@ -55,6 +54,8 @@ func GetCdnRecord(c *gin.Context) {
 	// 查询CDN记录
 	firstCdnRecord, err := global.GvaDb.CDNRecord.Query().
 		Where(cdnrecord.ID(cast.ToInt64(id))).
+		WithConfig().
+		WithIPGroup().
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询CDN记录失败: "+err.Error())
@@ -108,6 +109,47 @@ func CreateCdnRecord(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataCreate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "创建CDN记录")
+	successResponse(c, gin.H{
+		"id": saveCdnRecord.ID,
+	})
+}
+
+// 更新CDN记录
+func UpdateCdnRecord(c *gin.Context) {
+	// 请求参数
+	id := c.Param("id")
+	var requestParams types.UpdateCdnRecordRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("UpdateCdnRecord params: %+v\n", requestParams)
+	}
+	// 查询CDN记录
+	firstCdnRecord, err := global.GvaDb.CDNRecord.Query().
+		Where(cdnrecord.ID(cast.ToInt64(id))).
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, "查询CDN记录失败: "+err.Error())
+		return
+	}
+	// 更新CDN记录
+	saveCdnRecord, err := global.GvaDb.CDNRecord.UpdateOne(firstCdnRecord).
+		SetOriginProtocol(cdnrecord.OriginProtocol(requestParams.OriginProtocol)).
+		SetHTTPPort(requestParams.HTTPPort).
+		SetHTTPSPort(requestParams.HTTPSPort).
+		SetIPGroupID(requestParams.IPGroupID).
+		Save(c)
+	if err != nil {
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("更新CDN记录: %s\n", err.Error())
+		}
+		errorResponse(c, http.StatusInternalServerError, "更新CDN记录失败: "+err.Error())
+		return
+	}
+	// 记录操作日志
+	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录")
 	successResponse(c, gin.H{
 		"id": saveCdnRecord.ID,
 	})

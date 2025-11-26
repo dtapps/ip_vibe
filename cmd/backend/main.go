@@ -169,6 +169,7 @@ func main() {
 			cdnRecords.GET("", handlers.GetCdnRecords)
 			cdnRecords.GET("/:id", handlers.GetCdnRecord)
 			cdnRecords.POST("", handlers.CreateCdnRecord)
+			cdnRecords.PATCH("/:id", handlers.UpdateCdnRecord)
 			cdnRecords.PATCH("/:id/active", handlers.UpdateCdnRecordActive)
 			cdnRecords.DELETE("/:id", handlers.DeleteCdnRecord)
 		}
@@ -179,6 +180,7 @@ func main() {
 			dnsRecords.GET("", handlers.GetDnsRecords)
 			dnsRecords.GET("/:id", handlers.GetDnsRecord)
 			dnsRecords.POST("", handlers.CreateDnsRecord)
+			dnsRecords.PATCH("/:id", handlers.UpdateDnsRecord)
 			dnsRecords.PATCH("/:id/active", handlers.UpdateDnsRecordActive)
 			dnsRecords.DELETE("/:id", handlers.DeleteDnsRecord)
 		}

@@ -61,7 +61,6 @@
         background: #334155;
     }
 
-
     .modal-content {
         background: var(--card);
         /* 已定义为 #1e293b */
@@ -155,7 +154,8 @@
 
     /* 暗色模式下 Tooltip 颜色覆盖 */
     .btn-tooltip-wrapper::after {
-        background: #f1f5f9;
+        /* background: #f1f5f9; */
+        background: var(--bg);
         /* 浅灰色背景，与亮色模式中的深色背景相反 */
         color: var(--text);
         /* 深色文字 */

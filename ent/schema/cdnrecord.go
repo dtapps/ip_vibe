@@ -66,19 +66,16 @@ func (CDNRecord) Fields() []ent.Field {
 		field.Enum("origin_protocol").
 			Default(schematype.OriginProtocolFollow).
 			Values(schematype.GetOriginProtocol()...).
-			Immutable().
 			Comment("回源协议（http、https、follow）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int("http_port").
 			Default(80).
-			Immutable().
 			Comment("HTTP 回源端口").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int("https_port").
 			Default(443).
-			Immutable().
 			Comment("HTTPS 回源端口").
 			Annotations(entsql.WithComments(true)),
 
@@ -88,7 +85,6 @@ func (CDNRecord) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("ip_group_id").
-			Immutable().
 			Comment("IP 组序号").
 			Annotations(entsql.WithComments(true)),
 
@@ -123,7 +119,6 @@ func (CDNRecord) Edges() []ent.Edge {
 			Field("ip_group_id").
 			Unique().
 			Required().
-			Immutable().
 			Comment("关联的IP组").
 			Annotations(entsql.WithComments(true)),
 
