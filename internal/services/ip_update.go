@@ -92,7 +92,6 @@ func (s *IpUpdateService) runDnsTask() {
 	globalIpUpdateMutex.Lock()
 	defer globalIpUpdateMutex.Unlock()
 
-	var err error
 	ctx := context.Background()
 
 	// 查询全部DNS记录
@@ -115,8 +114,7 @@ func (s *IpUpdateService) runDnsTask() {
 					slog.String("domain", item.Domain),
 				)
 
-				err = s.DnsUpdate(egCtx, newLog, item)
-				if err != nil {
+				if err = s.DnsUpdate(egCtx, newLog, item); err != nil {
 					newLog.ErrorContext(egCtx, "执行失败",
 						slog.Any("err", err),
 					)
@@ -125,6 +123,13 @@ func (s *IpUpdateService) runDnsTask() {
 				return err
 			})
 		}
+
+		if err = eg.Wait(); err != nil {
+			s.log.ErrorContext(egCtx, "并发错误",
+				slog.Any("err", err),
+			)
+		}
+
 	}
 
 	nextRun, err := s.dnsJob.NextRun()
@@ -148,19 +153,18 @@ func (s *IpUpdateService) runCdnTask() {
 	globalIpUpdateMutex.Lock()
 	defer globalIpUpdateMutex.Unlock()
 
-	var err error
 	ctx := context.Background()
 
-	// 查询全部DNS记录
-	allDnsRecord, err := global.GvaDb.DNSRecord.Query().
-		Where(dnsrecord.IsActiveEQ(true)).
+	// 查询全部CDN记录
+	allCdnRecord, err := global.GvaDb.CDNRecord.Query().
+		Where(cdnrecord.IsActiveEQ(true)).
 		All(ctx)
 	if err == nil {
 
 		eg, egCtx := errgroup.WithContext(ctx)
 		eg.SetLimit(10) // 最多 10 个并发
 
-		for _, vRecord := range allDnsRecord {
+		for _, vRecord := range allCdnRecord {
 			item := vRecord // 创建副本以避免闭包问题
 			eg.Go(func() error {
 
@@ -171,8 +175,7 @@ func (s *IpUpdateService) runCdnTask() {
 					slog.String("domain", item.Domain),
 				)
 
-				err = s.DnsUpdate(egCtx, newLog, item)
-				if err != nil {
+				if err = s.CdnUpdate(egCtx, newLog, item); err != nil {
 					newLog.ErrorContext(egCtx, "执行失败",
 						slog.Any("err", err),
 					)
@@ -181,6 +184,13 @@ func (s *IpUpdateService) runCdnTask() {
 				return err
 			})
 		}
+
+		if err = eg.Wait(); err != nil {
+			s.log.ErrorContext(egCtx, "并发错误",
+				slog.Any("err", err),
+			)
+		}
+
 	}
 
 	nextRun, err := s.cdnJob.NextRun()
