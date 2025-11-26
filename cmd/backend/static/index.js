@@ -286,7 +286,7 @@ document.getElementById('cdnRecordForm').onsubmit = async (e) => {
         domain: document.getElementById('cdn_record_domain').value.trim(),
         type: document.getElementById('cdn_record_type').value.trim(),
         origin_protocol: document.getElementById('cdn_record_origin_protocol').value.trim(),
-        http_port: Number(document.getElementById('cdn_http_port').value.trim()),
+        http_port: Number(document.getElementById('cdn_record_http_port').value.trim()),
         https_port: Number(document.getElementById('cdn_record_https_port').value.trim()),
         ip_group_id: Number(document.getElementById('cdn_record_ip_group_id').value.trim()),
     };
