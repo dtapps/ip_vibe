@@ -47,10 +47,12 @@ func main() {
 
 	initialize.InitEnt(ctx)             // 初始化 ent
 	initialize.InitGoCron(ctx)          // 初始化 GoCron 调度器
+	initialize.InitThirdParty(ctx)      // 初始化 第三方
 	initialize.InitSLog(ctx, "backend") // 初始化 日志
 	defer func() {
-		initialize.CloseEnt(ctx)    // 关闭 ent
-		initialize.CloseGoCron(ctx) // 关闭 GoCron 调度器
+		initialize.CloseEnt(ctx)     // 关闭 ent
+		initialize.CloseGoCron(ctx)  // 关闭 GoCron 调度器
+		initialize.CloseThirdParty() // 关闭 第三方
 	}()
 
 	initialize.InitOperationLogHelper() // 初始化操作日志助手

@@ -5,6 +5,12 @@ import (
 	"vibe_ip/internal/helper/operation_logs_helper"
 
 	"github.com/go-co-op/gocron/v2"
+	"go.dtapp.net/library/service/bark"
+	"go.dtapp.net/library/service/dingtalk"
+	"go.dtapp.net/library/service/feishu"
+	"go.dtapp.net/library/service/ft07"
+	"go.dtapp.net/library/service/pushdeer"
+	"go.dtapp.net/library/service/wechatqy"
 )
 
 // GvaConfig 变量
@@ -31,4 +37,11 @@ var (
 	GvaDb *ent.Client // 数据库
 
 	GvaOperationLogHelper *operation_logs_helper.OperationLogHelper // 操作日志助手
+
+	GvaWechatWork *wechatqy.Client // 企业微信
+	GvaDingTalk   *dingtalk.Client // 钉钉
+	GvaFeishu     *feishu.Client   // 飞书
+	GvaBark       *bark.Client     // Bark
+	GvaFt07       *ft07.Client     // Server酱
+	GvaPushDeer   *pushdeer.Client // PushDeer
 )

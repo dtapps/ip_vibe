@@ -59,14 +59,14 @@ const (
 	WebhookPlatformDingtalk   string = "dingtalk"    // 钉钉
 	WebhookPlatformFeishu     string = "feishu"      // 飞书
 	WebhookPlatformBark       string = "bark"        // Bark
-	WebhookPlatformServerChan string = "server_chan" // Server酱
+	WebhookPlatformFt07       string = "ft07"        // Server酱
 	WebhookPlatformPushDeer   string = "push_deer"   // PushDeer
 	WebhookPlatformCustomHTTP string = "custom_http" // 自定义 HTTP 平台
 )
 
 // GetWebhookPlatform 返回所有 Webhook 平台
 var GetWebhookPlatform = func() []string {
-	return []string{WebhookPlatformWechatWork, WebhookPlatformDingtalk, WebhookPlatformFeishu, WebhookPlatformBark, WebhookPlatformServerChan, WebhookPlatformPushDeer, WebhookPlatformCustomHTTP}
+	return []string{WebhookPlatformWechatWork, WebhookPlatformDingtalk, WebhookPlatformFeishu, WebhookPlatformBark, WebhookPlatformFt07, WebhookPlatformPushDeer, WebhookPlatformCustomHTTP}
 }
 
 const (

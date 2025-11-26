@@ -93,7 +93,7 @@ const (
 	PlatformDingtalk   Platform = "dingtalk"
 	PlatformFeishu     Platform = "feishu"
 	PlatformBark       Platform = "bark"
-	PlatformServerChan Platform = "server_chan"
+	PlatformFt07       Platform = "ft07"
 	PlatformPushDeer   Platform = "push_deer"
 	PlatformCustomHTTP Platform = "custom_http"
 )
@@ -105,7 +105,7 @@ func (pl Platform) String() string {
 // PlatformValidator is a validator for the "platform" field enum values. It is called by the builders before save.
 func PlatformValidator(pl Platform) error {
 	switch pl {
-	case PlatformWechatWork, PlatformDingtalk, PlatformFeishu, PlatformBark, PlatformServerChan, PlatformPushDeer, PlatformCustomHTTP:
+	case PlatformWechatWork, PlatformDingtalk, PlatformFeishu, PlatformBark, PlatformFt07, PlatformPushDeer, PlatformCustomHTTP:
 		return nil
 	default:
 		return fmt.Errorf("webhook: invalid enum value for platform field: %q", pl)

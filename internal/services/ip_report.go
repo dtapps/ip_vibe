@@ -9,9 +9,11 @@ import (
 	"vibe_ip/ent/device"
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/operationlog"
+	"vibe_ip/ent/webhooksubscription"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/ip_helper"
 	"vibe_ip/internal/types"
+	"vibe_ip/internal/utils"
 
 	"github.com/denisbrodbeck/machineid"
 	"github.com/go-co-op/gocron/v2"
@@ -19,7 +21,7 @@ import (
 
 // IP上报
 type IpReportService struct {
-	db   *ent.Client      // 数据库
+	db   *ent.Client      // 数据库客户端
 	cron gocron.Scheduler // 定时任务调度器
 	job  gocron.Job       // IP上报任务
 	log  *slog.Logger     // 日志记录器
@@ -69,6 +71,7 @@ func (s *IpReportService) runTask() {
 		DeviceCode: global.GvaEnv.DEVICE_CODE,
 		DeviceName: global.GvaEnv.DEVICE_NAME,
 	}
+
 	// 检查设备代码是否为空
 	if params.DeviceCode == "" {
 		// 获取设备ID
@@ -84,6 +87,7 @@ func (s *IpReportService) runTask() {
 	if params.DeviceName == "" {
 		params.DeviceName = "本设备"
 	}
+
 	// 获取设备IP
 	iPHelper := ip_helper.NewIPHelper()
 	ipv4, err := iPHelper.GetIP(ctx, ip_helper.IPTypeV4)
@@ -99,8 +103,22 @@ func (s *IpReportService) runTask() {
 		s.log.ErrorContext(ctx, "IPV4和IPV6地址都为空")
 		return
 	}
+
+	// 是否通知
+	isNotify := false
+	notifyData := utils.TemplateData{
+		EventType:  "IP_UPDATE",
+		EventTime:  time.Now().Format("2006-01-02 15:04:05"),
+		EventBody:  "IP地址更新事件",
+		DeviceCode: params.DeviceCode,
+		DeviceName: params.DeviceName,
+		IPv4Addr:   params.IPV4Addr,
+		IPv6Addr:   params.IPV6Addr,
+	}
+
 	// 描述
 	msg := ""
+
 	// 开始事务
 	tx, err := s.db.Tx(ctx)
 	if err != nil {
@@ -121,6 +139,7 @@ func (s *IpReportService) runTask() {
 			)
 			return
 		}
+
 		// 创建设备
 		saveDevice, err := tx.Device.Create().
 			SetCode(params.DeviceCode).
@@ -137,8 +156,10 @@ func (s *IpReportService) runTask() {
 			)
 			return
 		}
+		params.ID = saveDevice.ID
 		// 记录操作日志
 		_ = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(ctx, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "自动创建设备")
+
 		// 创建设备IP报告
 		saveDeviceIPReport, err := tx.DeviceIpReport.Create().
 			SetDevice(saveDevice).
@@ -154,6 +175,7 @@ func (s *IpReportService) runTask() {
 		}
 		// 记录操作日志
 		_ = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(ctx, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "自动创建设备IP报告")
+
 		// 创建设备IP组
 		saveDeviceIpGroup, err := tx.IpGroup.Create().
 			AddDevices(saveDevice).
@@ -169,7 +191,9 @@ func (s *IpReportService) runTask() {
 		}
 		// 记录操作日志
 		_ = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(ctx, saveDeviceIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "自动创建设备IP组")
-		params.ID = saveDevice.ID
+
+		isNotify = true
+
 		msg = "创建设备IP成功"
 	} else {
 		params.ID = firstDevice.ID
@@ -195,6 +219,7 @@ func (s *IpReportService) runTask() {
 			}
 			// 记录操作日志
 			_ = global.GvaOperationLogHelper.SetTx(tx).RecordDataUpdate(ctx, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "自动更新设备")
+
 			// 创建设备IP报告
 			saveDeviceIPReport, err := tx.DeviceIpReport.Create().
 				SetDevice(firstDevice).
@@ -225,6 +250,9 @@ func (s *IpReportService) runTask() {
 				// 记录操作日志
 				// 	_ = global.GvaOperationLogHelper.SetTx(tx).RecordDataUpdate(ctx, saveDeviceIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "自动创建设备IP组")
 			}
+
+			isNotify = true
+
 			msg = "更新设备IP成功"
 		} else {
 			// 更新设备心跳时间
@@ -264,6 +292,11 @@ func (s *IpReportService) runTask() {
 			slog.String("ipv4_addr", params.IPV4Addr),
 			slog.String("ipv6_addr", params.IPV6Addr),
 		)
+	}
+
+	// 发送通知
+	if isNotify {
+		_ = NewWebhookService(s.db).Send(ctx, webhooksubscription.ObjTypeDevice, params.ID, notifyData)
 	}
 
 }

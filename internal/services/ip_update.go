@@ -23,7 +23,7 @@ import (
 
 // IP更新
 type IpUpdateService struct {
-	db     *ent.Client      // 数据库
+	db     *ent.Client      // 数据库客户端
 	cron   gocron.Scheduler // 定时任务调度器
 	dnsJob gocron.Job       // DNS刷新任务
 	cdnJob gocron.Job       // CDN刷新任务
@@ -126,7 +126,7 @@ func (s *IpUpdateService) runDnsTask() {
 		}
 
 		if err = eg.Wait(); err != nil {
-			s.log.ErrorContext(egCtx, "并发错误",
+			s.log.ErrorContext(ctx, "并发错误",
 				slog.Any("err", err),
 			)
 		}
@@ -188,7 +188,7 @@ func (s *IpUpdateService) runCdnTask() {
 		}
 
 		if err = eg.Wait(); err != nil {
-			s.log.ErrorContext(egCtx, "并发错误",
+			s.log.ErrorContext(ctx, "并发错误",
 				slog.Any("err", err),
 			)
 		}

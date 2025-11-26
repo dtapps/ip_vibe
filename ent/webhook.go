@@ -27,7 +27,7 @@ type Webhook struct {
 	Name string `json:"name,omitempty"`
 	// 通知平台类型
 	Platform webhook.Platform `json:"platform,omitempty"`
-	// Webhook URL / API Key
+	// Webhook URL
 	URL string `json:"url,omitempty"`
 	// Webhook 签名密钥或额外Token
 	Secret string `json:"secret,omitempty"`

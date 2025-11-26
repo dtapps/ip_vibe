@@ -53,7 +53,7 @@ func (Webhook) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("url").
-			Comment("Webhook URL / API Key").
+			Comment("Webhook URL").
 			Annotations(entsql.WithComments(true)),
 
 		// 密钥：用于签名验证或特殊 Token

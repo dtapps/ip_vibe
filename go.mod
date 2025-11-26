@@ -16,8 +16,15 @@ require (
 	github.com/spf13/cast v1.10.0
 	github.com/spf13/cobra v1.10.1
 	github.com/spf13/viper v1.21.0
+	go.dtapp.net/library/service/bark v1.0.7
+	go.dtapp.net/library/service/dingtalk v1.0.39
+	go.dtapp.net/library/service/feishu v1.0.36
+	go.dtapp.net/library/service/ft07 v1.0.8
+	go.dtapp.net/library/service/pushdeer v1.0.8
+	go.dtapp.net/library/service/wechatqy v1.0.38
 	go.dtapp.net/library/utils/goarray v1.0.4
 	go.dtapp.net/library/utils/golog v1.0.177
+	go.dtapp.net/library/utils/gorequest v1.1.3
 	golang.org/x/net v0.47.0
 	golang.org/x/sync v0.18.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
@@ -73,7 +80,7 @@ require (
 	github.com/ugorji/go/codec v1.3.1 // indirect
 	github.com/zclconf/go-cty v1.17.0 // indirect
 	github.com/zclconf/go-cty-yaml v1.1.0 // indirect
-	go.dtapp.net/library/utils/gorequest v1.1.3 // indirect
+	go.dtapp.net/library/contrib/resty_log v1.0.8 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/bridges/otelslog v0.13.0 // indirect
 	go.opentelemetry.io/otel v1.38.0 // indirect

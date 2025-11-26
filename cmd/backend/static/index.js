@@ -812,27 +812,165 @@ async function viewLiveDeviceIpAddresse(id, name) {
 // --- IP 组 ---
 // --- 通知（WebHook） --- 
 
+function changeWebhookPlatform(platform) {
+    switch (platform) {
+        case 'wechat_work':
+            document.getElementById('webhook_url').disabled = false;
+            document.getElementById('webhook_url').required = true;
+            document.getElementById('webhook_url_group').style.display = 'block';
+
+            document.getElementById('webhook_secret').disabled = false;
+            document.getElementById('webhook_secret').required = false;
+            document.getElementById('webhook_secret_group').style.display = 'none';
+            break;
+        case 'dingtalk':
+            document.getElementById('webhook_url').disabled = false;
+            document.getElementById('webhook_url').required = true;
+            document.getElementById('webhook_url_group').style.display = 'block';
+
+            document.getElementById('webhook_secret').disabled = false;
+            document.getElementById('webhook_secret').required = true;
+            document.getElementById('webhook_secret_group').style.display = 'block';
+            break;
+        case 'feishu':
+            document.getElementById('webhook_url').disabled = false;
+            document.getElementById('webhook_url').required = true;
+            document.getElementById('webhook_url_group').style.display = 'block';
+
+            document.getElementById('webhook_secret').disabled = false;
+            document.getElementById('webhook_secret').required = true;
+            document.getElementById('webhook_secret_group').style.display = 'block';
+            break;
+        case 'bark':
+            document.getElementById('webhook_url').disabled = false;
+            document.getElementById('webhook_url').required = true;
+            document.getElementById('webhook_url_group').style.display = 'block';
+
+            document.getElementById('webhook_secret').disabled = false;
+            document.getElementById('webhook_secret').required = true;
+            document.getElementById('webhook_secret_group').style.display = 'block';
+            break;
+        case 'ft07':
+            document.getElementById('webhook_url').disabled = false;
+            document.getElementById('webhook_url').required = true;
+            document.getElementById('webhook_url_group').style.display = 'block';
+
+            document.getElementById('webhook_secret').disabled = false;
+            document.getElementById('webhook_secret').required = true;
+            document.getElementById('webhook_secret_group').style.display = 'block';
+            break;
+        case 'push_deer':
+            document.getElementById('webhook_url').disabled = false;
+            document.getElementById('webhook_url').required = true;
+            document.getElementById('webhook_url_group').style.display = 'block';
+
+            document.getElementById('webhook_secret').disabled = false;
+            document.getElementById('webhook_secret').required = true;
+            document.getElementById('webhook_secret_group').style.display = 'block';
+            break;
+        case 'custom_http':
+            document.getElementById('webhook_url').disabled = false;
+            document.getElementById('webhook_url').required = true;
+            document.getElementById('webhook_url_group').style.display = 'block';
+
+            document.getElementById('webhook_secret').disabled = true;
+            document.getElementById('webhook_secret').required = false;
+            document.getElementById('webhook_secret_group').style.display = 'none';
+            break;
+    }
+}
+
 // 选择平台类型 platform
 function onWebhookPlatformSelect(sel) {
     const opt = sel.options[sel.selectedIndex];
     // console.log("onWebhookPlatformSelect", opt);
     const webhook_id = document.getElementById('webhook_id').value.trim()
     // console.log("onWebhookPlatformSelect webhook_id", webhook_id);
-    if (opt.value === 'custom_http') {
-        document.getElementById('webhook_url').disabled = false;
-        document.getElementById('webhook_url').value = '';
-        document.getElementById('webhook_url').required = true;
-        document.getElementById('webhook_url_group').style.display = 'block';
-    } else {
-        document.getElementById('webhook_url').disabled = true;
-        document.getElementById('webhook_url').value = '';
-        document.getElementById('webhook_url').required = false;
-        document.getElementById('webhook_url_group').style.display = 'none';
-    }
+
+    changeWebhookPlatform(opt.value);
+
     if (!webhook_id) {
+        document.getElementById('webhook_template_title').value = '[IPVibe] [[.DeviceName]] IP 更新'
         switch (opt.value) {
+            case 'wechat_work':
+                document.getElementById('webhook_template_content').value = `事件类型: {{.EventType}}
+事件时间: {{.EventTime}}
+事件内容: {{.EventBody}}
+设备编号: {{.DeviceCode}}
+设备名称: {{.DeviceName}}
+IPV4地址: {{.IPv4Addr}}
+IPV6地址: {{.IPv6Addr}}
+记录域名: {{.RecordDomain}}
+记录类型: {{.RecordType}}
+平台名称: {{.PlatformName}}
+平台类型: {{.PlatformType}}`
+                break;
+            case 'dingtalk':
+                document.getElementById('webhook_template_content').value = `事件类型: {{.EventType}}
+事件时间: {{.EventTime}}
+事件内容: {{.EventBody}}
+设备编号: {{.DeviceCode}}
+设备名称: {{.DeviceName}}
+IPV4地址: {{.IPv4Addr}}
+IPV6地址: {{.IPv6Addr}}
+记录域名: {{.RecordDomain}}
+记录类型: {{.RecordType}}
+平台名称: {{.PlatformName}}
+平台类型: {{.PlatformType}}`
+                break;
+            case 'feishu':
+                document.getElementById('webhook_template_content').value = `事件类型: {{.EventType}}
+事件时间: {{.EventTime}}
+事件内容: {{.EventBody}}
+设备编号: {{.DeviceCode}}
+设备名称: {{.DeviceName}}
+IPV4地址: {{.IPv4Addr}}
+IPV6地址: {{.IPv6Addr}}
+记录域名: {{.RecordDomain}}
+记录类型: {{.RecordType}}
+平台名称: {{.PlatformName}}
+平台类型: {{.PlatformType}}`
+                break;
+            case 'bark':
+                document.getElementById('webhook_template_content').value = `事件类型: {{.EventType}}
+事件时间: {{.EventTime}}
+事件内容: {{.EventBody}}
+设备编号: {{.DeviceCode}}
+设备名称: {{.DeviceName}}
+IPV4地址: {{.IPv4Addr}}
+IPV6地址: {{.IPv6Addr}}
+记录域名: {{.RecordDomain}}
+记录类型: {{.RecordType}}
+平台名称: {{.PlatformName}}
+平台类型: {{.PlatformType}}`
+                break;
+            case 'ft07':
+                document.getElementById('webhook_template_content').value = `事件类型: {{.EventType}}
+事件时间: {{.EventTime}}
+事件内容: {{.EventBody}}
+设备编号: {{.DeviceCode}}
+设备名称: {{.DeviceName}}
+IPV4地址: {{.IPv4Addr}}
+IPV6地址: {{.IPv6Addr}}
+记录域名: {{.RecordDomain}}
+记录类型: {{.RecordType}}
+平台名称: {{.PlatformName}}
+平台类型: {{.PlatformType}}`
+                break;
+            case 'push_deer':
+                document.getElementById('webhook_template_content').value = `事件类型: {{.EventType}}
+事件时间: {{.EventTime}}
+事件内容: {{.EventBody}}
+设备编号: {{.DeviceCode}}
+设备名称: {{.DeviceName}}
+IPV4地址: {{.IPv4Addr}}
+IPV6地址: {{.IPv6Addr}}
+记录域名: {{.RecordDomain}}
+记录类型: {{.RecordType}}
+平台名称: {{.PlatformName}}
+平台类型: {{.PlatformType}}`
+                break;
             case 'custom_http':
-                document.getElementById('webhook_template_title').value = '[IPVibe] [[.DeviceName]] IP 更新'
                 document.getElementById('webhook_template_content').value = `事件类型: {{.EventType}}
 事件时间: {{.EventTime}}
 事件内容: {{.EventBody}}
@@ -877,15 +1015,7 @@ async function openWebhookModal(id) {
         document.getElementById('webhook_template_title').value = webhook.template_title;
         document.getElementById('webhook_template_content').value = webhook.template_content;
 
-        if (webhook.platform === 'custom_http') {
-            document.getElementById('webhook_url').disabled = false;
-            document.getElementById('webhook_url').required = true;
-            document.getElementById('webhook_url_group').style.display = 'block';
-        } else {
-            document.getElementById('webhook_url').disabled = true;
-            document.getElementById('webhook_url').required = false;
-            document.getElementById('webhook_url_group').style.display = 'none';
-        }
+        changeWebhookPlatform(webhook.platform);
 
         openModal('webhookModal', 'webhookModalTitle', '编辑 通知');
     }

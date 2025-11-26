@@ -432,7 +432,7 @@
               <td><span class="badge badge-success">飞书</span></td>
               {{else if eq .Platform "bark"}}
               <td><span class="badge badge-success">Bark</span></td>
-              {{else if eq .Platform "server_chan"}}
+              {{else if eq .Platform "ft07"}}
               <td><span class="badge badge-success">Server酱</span></td>
               {{else if eq .Platform "push_deer"}}
               <td><span class="badge badge-success">PushDeer</span></td>
@@ -980,7 +980,7 @@
               <option value="dingtalk">钉钉</option>
               <option value="feishu">飞书</option>
               <option value="bark">Bark</option>
-              <option value="server_chan">Server酱</option>
+              <option value="ft07">Server酱</option>
               <option value="push_deer">PushDeer</option>
               <option value="custom_http">自定义</option>
             </select>
@@ -991,9 +991,9 @@
             <input type="text" name="url" id="webhook_url" placeholder="如：https://webhook.example.com/notify">
           </div>
 
-          <div class="form-group">
+          <div class="form-group" id="webhook_secret_group" style="display: none;">
             <label>签名密钥或Token</label>
-            <input type="text" name="secret" id="webhook_secret">
+            <input type="text" name="secret" id="webhook_secret"  placeholder="如：123456">
           </div>
 
           <div class="form-group">
