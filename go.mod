@@ -10,7 +10,7 @@ require (
 	github.com/gin-contrib/gzip v1.2.5
 	github.com/gin-contrib/requestid v1.0.5
 	github.com/gin-gonic/gin v1.11.0
-	github.com/go-co-op/gocron/v2 v2.18.1
+	github.com/go-co-op/gocron/v2 v2.18.2
 	github.com/google/uuid v1.6.0
 	github.com/kardianos/service v1.2.4
 	github.com/spf13/cast v1.10.0
