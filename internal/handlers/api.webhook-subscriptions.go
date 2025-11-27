@@ -3,6 +3,9 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"vibe_ip/ent/cdnrecord"
+	"vibe_ip/ent/device"
+	"vibe_ip/ent/dnsrecord"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/webhooksubscription"
 	"vibe_ip/internal/global"
@@ -23,14 +26,38 @@ func GetWebhookSubscriptions(c *gin.Context) {
 		return
 	}
 	for _, item := range allWebhookSubscription {
-		webhooks = append(webhooks, types.GetWebhookSubscriptionsResponse{
+		list := types.GetWebhookSubscriptionsResponse{
 			ID:        item.ID,
 			Name:      item.Name,
 			WebhookID: item.WebhookID,
 			ObjType:   item.ObjType.String(),
 			ObjID:     item.ObjID,
 			IsActive:  item.IsActive,
-		})
+		}
+		switch item.ObjType {
+		case webhooksubscription.ObjTypeCdnRecord:
+			firstCDNRecord, err := global.GvaDb.CDNRecord.Query().
+				Where(cdnrecord.IDEQ(item.ObjID)).
+				First(c)
+			if err == nil {
+				list.ObjName = firstCDNRecord.Domain
+			}
+		case webhooksubscription.ObjTypeDNSRecord:
+			firstDNSRecord, err := global.GvaDb.DNSRecord.Query().
+				Where(dnsrecord.IDEQ(item.ObjID)).
+				First(c)
+			if err == nil {
+				list.ObjName = firstDNSRecord.Domain
+			}
+		case webhooksubscription.ObjTypeDevice:
+			firstDevice, err := global.GvaDb.Device.Query().
+				Where(device.IDEQ(item.ObjID)).
+				First(c)
+			if err == nil {
+				list.ObjName = firstDevice.Name
+			}
+		}
+		webhooks = append(webhooks)
 	}
 	successResponse(c, webhooks)
 }
@@ -47,14 +74,38 @@ func GetWebhookSubscription(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询通知订阅失败: "+err.Error())
 		return
 	}
-	successResponse(c, types.GetWebhookSubscriptionsResponse{
+	list := types.GetWebhookSubscriptionsResponse{
 		ID:        firstWebhookSubscription.ID,
 		Name:      firstWebhookSubscription.Name,
 		WebhookID: firstWebhookSubscription.WebhookID,
 		ObjType:   firstWebhookSubscription.ObjType.String(),
 		ObjID:     firstWebhookSubscription.ObjID,
 		IsActive:  firstWebhookSubscription.IsActive,
-	})
+	}
+	switch firstWebhookSubscription.ObjType {
+	case webhooksubscription.ObjTypeCdnRecord:
+		firstCDNRecord, err := global.GvaDb.CDNRecord.Query().
+			Where(cdnrecord.IDEQ(firstWebhookSubscription.ObjID)).
+			First(c)
+		if err == nil {
+			list.ObjName = firstCDNRecord.Domain
+		}
+	case webhooksubscription.ObjTypeDNSRecord:
+		firstDNSRecord, err := global.GvaDb.DNSRecord.Query().
+			Where(dnsrecord.IDEQ(firstWebhookSubscription.ObjID)).
+			First(c)
+		if err == nil {
+			list.ObjName = firstDNSRecord.Domain
+		}
+	case webhooksubscription.ObjTypeDevice:
+		firstDevice, err := global.GvaDb.Device.Query().
+			Where(device.IDEQ(firstWebhookSubscription.ObjID)).
+			First(c)
+		if err == nil {
+			list.ObjName = firstDevice.Name
+		}
+	}
+	successResponse(c, list)
 }
 
 // 创建通知订阅
@@ -68,24 +119,26 @@ func CreateWebhookSubscription(c *gin.Context) {
 	if global.GvaEnv.DEBUG {
 		fmt.Printf("CreateWebhookSubscription params: %+v\n", requestParams)
 	}
-	// 创建通知订阅
-	saveWebhookSubscription, err := global.GvaDb.WebhookSubscription.Create().
-		SetName(requestParams.Name).
-		SetWebhookID(requestParams.WebhookID).
-		SetObjType(webhooksubscription.ObjType(requestParams.ObjType)).
-		SetObjID(requestParams.ObjID).
-		Save(c)
-	if err != nil {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("创建通知订阅: %s\n", err.Error())
+	for _, objID := range requestParams.ObjIDs {
+		// 创建通知订阅
+		saveWebhookSubscription, err := global.GvaDb.WebhookSubscription.Create().
+			SetName(requestParams.Name).
+			SetWebhookID(requestParams.WebhookID).
+			SetObjType(webhooksubscription.ObjType(requestParams.ObjType)).
+			SetObjID(objID).
+			Save(c)
+		if err != nil {
+			if global.GvaEnv.DEBUG {
+				fmt.Printf("创建通知订阅: %s\n", err.Error())
+			}
+			errorResponse(c, http.StatusInternalServerError, "创建通知订阅失败: "+err.Error())
+			return
 		}
-		errorResponse(c, http.StatusInternalServerError, "创建通知订阅失败: "+err.Error())
-		return
+		// 记录操作日志
+		_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataCreate(c, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "创建通知订阅")
 	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataCreate(c, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "创建通知订阅")
 	successResponse(c, gin.H{
-		"id": saveWebhookSubscription.ID,
+		"ids": requestParams.ObjIDs,
 	})
 }
 

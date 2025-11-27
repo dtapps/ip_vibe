@@ -1131,7 +1131,6 @@ async function openWebhookSubscriptionModal(id, obj_type) {
             if (devices) {
                 const objIdSelect = document.getElementById('webhook_subscription_obj_id');
                 objIdSelect.innerHTML = '';
-                addPlaceholder(objIdSelect, '请选择设备');
                 devices.forEach(d => {
                     const opt = document.createElement('option');
                     opt.value = d.id;
@@ -1150,7 +1149,6 @@ async function openWebhookSubscriptionModal(id, obj_type) {
             if (dnsRecords) {
                 const objIdSelect = document.getElementById('webhook_subscription_obj_id');
                 objIdSelect.innerHTML = '';
-                addPlaceholder(objIdSelect, '请选择DNS记录');
                 dnsRecords.forEach(d => {
                     const opt = document.createElement('option');
                     opt.value = d.id;
@@ -1169,7 +1167,6 @@ async function openWebhookSubscriptionModal(id, obj_type) {
             if (cdnRecords) {
                 const objIdSelect = document.getElementById('webhook_subscription_obj_id');
                 objIdSelect.innerHTML = '';
-                addPlaceholder(objIdSelect, '请选择CDN记录');
                 cdnRecords.forEach(d => {
                     const opt = document.createElement('option');
                     opt.value = d.id;
@@ -1229,7 +1226,8 @@ document.getElementById('webhookSubscriptionForm').onsubmit = async (e) => {
         name: document.getElementById('webhook_subscription_name').value.trim(),
         webhook_id: Number(document.getElementById('webhook_subscription_webhook_id').value.trim()),
         obj_type: document.getElementById('webhook_subscription_obj_type').value.trim(),
-        obj_id: Number(document.getElementById('webhook_subscription_obj_id').value.trim()),
+        // obj_id: Number(document.getElementById('webhook_subscription_obj_id').value.trim()),
+        obj_ids: Array.from(document.getElementById('webhook_subscription_obj_id').selectedOptions).map(opt => Number(opt.value.trim())),
     };
     console.log("form_id, form_data", form_id, form_data);
 
@@ -1243,7 +1241,7 @@ document.getElementById('webhookSubscriptionForm').onsubmit = async (e) => {
     if (!form_data.obj_type) {
         return alert('请选择订阅对象类型')
     };
-    if (isNaN(form_data.obj_id) || form_data.obj_id <= 0) {
+    if (form_data.obj_ids.length === 0) {
         return alert('请选择订阅对象')
     };
 

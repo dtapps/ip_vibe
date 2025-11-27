@@ -504,6 +504,7 @@
               <th>名称</th>
               <th>类型</th>
               <th>通知</th>
+              <th>对象</th>
               <th>活跃</th>
               <th style="width: 300px;text-align: center;">操作</th>
             </tr>
@@ -522,6 +523,7 @@
               <td><span class="badge badge-success">{{.ObjType}}</span></td>
               {{end}}
               <td>{{.WebhookID}}:{{.WebhookName}}</td>
+              <td>{{.ObjID}}:{{.ObjName}}</td>
               <td>
                 <label class="switch">
                   <input type="checkbox" {{if .IsActive}}checked{{end}}
@@ -993,7 +995,7 @@
 
           <div class="form-group" id="webhook_secret_group" style="display: none;">
             <label>签名密钥或Token</label>
-            <input type="text" name="secret" id="webhook_secret"  placeholder="如：123456">
+            <input type="text" name="secret" id="webhook_secret" placeholder="如：123456">
           </div>
 
           <div class="form-group">
@@ -1039,14 +1041,15 @@
 
           <div class="form-group">
             <label>通知 <span style="color:red">*</span></label>
-            <select name="webhook_id" id="webhook_subscription_webhook_id"
+            <select name="webhook_id" id="webhook_subscription_webhook_id" required
               onchange="onWebhookSubscriptionWebhookIdSelect(this)">
             </select>
           </div>
 
           <div class="form-group">
             <label>订阅对象 <span style="color:red">*</span></label>
-            <select name="obj_id" id="webhook_subscription_obj_id" onchange="onWebhookSubscriptionObjIdSelect(this)">
+            <select name="obj_id" id="webhook_subscription_obj_id" required multiple
+              onchange="onWebhookSubscriptionObjIdSelect(this)" class="multiselect-device">
             </select>
           </div>
 

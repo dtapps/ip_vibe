@@ -4,7 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"vibe_ip/ent"
+	"vibe_ip/ent/cdnrecord"
+	"vibe_ip/ent/device"
+	"vibe_ip/ent/dnsrecord"
 	"vibe_ip/ent/operationlog"
+	"vibe_ip/ent/webhooksubscription"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/helper/system_helper"
@@ -151,7 +155,7 @@ func Index(c *gin.Context) {
 		All(c)
 	if err == nil {
 		for _, item := range allWebhookSubscription {
-			pageData.WebhookSubscriptions = append(pageData.WebhookSubscriptions, types.GetWebhookSubscriptionsResponse{
+			list := types.GetWebhookSubscriptionsResponse{
 				ID:          item.ID,
 				Name:        item.Name,
 				WebhookID:   item.WebhookID,
@@ -159,7 +163,31 @@ func Index(c *gin.Context) {
 				ObjType:     item.ObjType.String(),
 				ObjID:       item.ObjID,
 				IsActive:    item.IsActive,
-			})
+			}
+			switch item.ObjType {
+			case webhooksubscription.ObjTypeCdnRecord:
+				firstCdnRecord, err := global.GvaDb.CDNRecord.Query().
+					Where(cdnrecord.IDEQ(item.ObjID)).
+					First(c)
+				if err == nil {
+					list.ObjName = firstCdnRecord.Domain
+				}
+			case webhooksubscription.ObjTypeDNSRecord:
+				firstDNSRecord, err := global.GvaDb.DNSRecord.Query().
+					Where(dnsrecord.IDEQ(item.ObjID)).
+					First(c)
+				if err == nil {
+					list.ObjName = firstDNSRecord.Domain
+				}
+			case webhooksubscription.ObjTypeDevice:
+				firstDevice, err := global.GvaDb.Device.Query().
+					Where(device.IDEQ(item.ObjID)).
+					First(c)
+				if err == nil {
+					list.ObjName = firstDevice.Name
+				}
+			}
+			pageData.WebhookSubscriptions = append(pageData.WebhookSubscriptions, list)
 		}
 	}
 	// 任务助手

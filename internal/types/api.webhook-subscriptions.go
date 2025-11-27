@@ -8,6 +8,7 @@ type GetWebhookSubscriptionsResponse struct {
 	WebhookName string `json:"webhook_name,omitempty"` // 通知渠道名称
 	ObjType     string `json:"obj_type"`               // 订阅对象类型
 	ObjID       int64  `json:"obj_id"`                 // 订阅对象主键
+	ObjName     string `json:"obj_name,omitempty"`     // 订阅对象名称
 	IsActive    bool   `json:"is_active"`              // 是否启用
 }
 
@@ -16,7 +17,8 @@ type CreateWebhookSubscriptionRequest struct {
 	Name      string `json:"name"`       // 通知订阅名称
 	WebhookID int64  `json:"webhook_id"` // 通知序号
 	ObjType   string `json:"obj_type"`   // 订阅对象类型
-	ObjID     int64  `json:"obj_id"`     // 订阅对象主键
+	// ObjID     int64   `json:"obj_id"`     // 订阅对象主键
+	ObjIDs []int64 `json:"obj_ids"` // 订阅对象主键列表
 }
 
 // 更新通知订阅 请求结构
