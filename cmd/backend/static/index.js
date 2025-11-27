@@ -55,12 +55,12 @@ async function handleResponse(response) {
     } catch (error) {
         throw new Error(`JSON解析错误: ${error.message}`);
     }
-    
+
     if (!response.ok) {
-        const errorMsg = data.error || `请求失败: ${response.status} ${response.statusText}`;
+        const errorMsg = data.message || data.error || `请求失败: ${response.status} ${response.statusText}`;
         throw new Error(errorMsg);
     }
-    
+
     return data;
 }
 
@@ -84,7 +84,7 @@ async function withErrorHandling(asyncFn, options = {}) {
         const errorMessage = options.errorMessage || '操作失败';
         alert(`${errorMessage}: ${error.message}`);
         console.error(errorMessage, error);
-        
+
         if (options.revertAction) {
             options.revertAction();
         }
@@ -1291,7 +1291,7 @@ function onWebhookSubscriptionObjIdSelect(sel) {
 async function toggleWebhookSubscriptionStatus(id, checkbox) {
     // 保存原始状态用于错误恢复
     const originalChecked = checkbox.checked;
-    
+
     await withErrorHandling(async () => {
         await API.patch(`/api/webhook-subscriptions/${id}/active`, { is_active: checkbox.checked });
     }, {
