@@ -1,0 +1,152 @@
+{{ define "aggregate" }}
+
+{{/* The line below tells Intellij/GoLand to enable the autocompletion based *gen.Graph type. */}}
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ $pkg := base $.Config.Package }}
+{{ template "header" $ }}
+
+{{/* 通用聚合类型定义 */}}
+type AggType string
+
+const (
+	SumAgg    AggType = "SUM"
+	CountAgg  AggType = "COUNT"
+	AvgAgg    AggType = "AVG"
+	MaxAgg    AggType = "MAX"
+	MinAgg    AggType = "MIN"
+	StdDevAgg AggType = "STDDEV_POP"
+)
+
+{{ range $n := $.Nodes }}
+
+// SumOrZero 计算某个字段的 SUM，返回 0 表示空值。
+func (q *{{ $n.Name }}Query) SumOrZero(ctx context.Context, field string) (int64, error) {
+	var res struct{ Val sql.NullInt64 }
+	sel := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s),0) AS sum_val", s.C(field))
+		},
+	).Select("sum_val")
+	if err := sel.Scan(ctx, &res); err != nil {
+		return 0, err
+	}
+	if !res.Val.Valid {
+		return 0, nil
+	}
+	return res.Val.Int64, nil
+}
+
+// CountOrZero 计算条目数，返回 0 表示空值。
+func (q *{{ $n.Name }}Query) CountOrZero(ctx context.Context) (int64, error) {
+	var res struct{ Val sql.NullInt64 }
+	sel := q.Aggregate(
+		func(s *sql.Selector) string {
+			return "COALESCE(COUNT(*),0) AS count_val"
+		},
+	).Select("count_val")
+	if err := sel.Scan(ctx, &res); err != nil {
+		return 0, err
+	}
+	if !res.Val.Valid {
+		return 0, nil
+	}
+	return res.Val.Int64, nil
+}
+
+// AvgOrZero 计算某个字段的平均值，NULL -> 0
+func (q *{{ $n.Name }}Query) AvgOrZero(ctx context.Context, field string) (float64, error) {
+	var res struct{ Val sql.NullFloat64 }
+	sel := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s),0) AS avg_val", s.C(field))
+		},
+	).Select("avg_val")
+	if err := sel.Scan(ctx, &res); err != nil {
+		return 0, err
+	}
+	if !res.Val.Valid {
+		return 0, nil
+	}
+	return res.Val.Float64, nil
+}
+
+// MaxOrZero 计算某个字段的最大值，NULL -> 0
+func (q *{{ $n.Name }}Query) MaxOrZero(ctx context.Context, field string) (float64, error) {
+	var res struct{ Val sql.NullFloat64 }
+	sel := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s),0) AS max_val", s.C(field))
+		},
+	).Select("max_val")
+	if err := sel.Scan(ctx, &res); err != nil {
+		return 0, err
+	}
+	if !res.Val.Valid {
+		return 0, nil
+	}
+	return res.Val.Float64, nil
+}
+
+// MinOrZero 计算某个字段的最小值，NULL -> 0
+func (q *{{ $n.Name }}Query) MinOrZero(ctx context.Context, field string) (float64, error) {
+	var res struct{ Val sql.NullFloat64 }
+	sel := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s),0) AS min_val", s.C(field))
+		},
+	).Select("min_val")
+	if err := sel.Scan(ctx, &res); err != nil {
+		return 0, err
+	}
+	if !res.Val.Valid {
+		return 0, nil
+	}
+	return res.Val.Float64, nil
+}
+
+// StdDevOrZero 计算某个字段的标准差，NULL -> 0
+func (q *{{ $n.Name }}Query) StdDevOrZero(ctx context.Context, field string) (float64, error) {
+	var res struct{ Val sql.NullFloat64 }
+	sel := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV_POP(%s),0) AS stddev_val", s.C(field))
+		},
+	).Select("stddev_val")
+	if err := sel.Scan(ctx, &res); err != nil {
+		return 0, err
+	}
+	if !res.Val.Valid {
+		return 0, nil
+	}
+	return res.Val.Float64, nil
+}
+
+// AggregateOrZero 通用聚合方法，字段为空返回 0
+func (q *{{ $n.Name }}Query) AggregateOrZero(ctx context.Context, aggType AggType, field string) (float64, error) {
+	var res struct{ Val sql.NullFloat64 }
+
+	sel := q.Aggregate(
+		func(s *sql.Selector) string {
+			var expr string
+			if aggType == CountAgg {
+				expr = "COUNT(*)" // COUNT 不用字段
+			} else {
+				expr = fmt.Sprintf("%s(%s)", aggType, s.C(field))
+			}
+			return fmt.Sprintf("COALESCE(%s,0) AS agg_val", expr)
+		},
+	).Select("agg_val")
+
+	if err := sel.Scan(ctx, &res); err != nil {
+		return 0, err
+	}
+	if !res.Val.Valid {
+		return 0, nil
+	}
+	return res.Val.Float64, nil
+}
+
+{{ end }}
+
+{{ end }}

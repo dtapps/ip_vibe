@@ -1,0 +1,149 @@
+{{ define "aggregate" }}
+
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+{{ $pkg := base $.Config.Package }}
+{{ template "header" $ }}
+
+{{ range $n := $.Nodes }}
+
+{{ range $f := $n.Fields }}
+
+{{/* 支持所有整数类型 */}}
+{{ $isInt := or 
+    (eq $f.Type.String "int") (eq $f.Type.String "int8") (eq $f.Type.String "int16")
+    (eq $f.Type.String "int32") (eq $f.Type.String "int64")
+    (eq $f.Type.String "uint") (eq $f.Type.String "uint8") (eq $f.Type.String "uint16")
+    (eq $f.Type.String "uint32") (eq $f.Type.String "uint64")
+}}
+
+{{/* 支持所有浮点类型 */}}
+{{ $isFloat := or 
+    (eq $f.Type.String "float32") (eq $f.Type.String "float64")
+}}
+
+{{ if not (or $isInt $isFloat) }}
+    {{ continue }}
+{{ end }}
+
+{{ $returnType := "" }}
+{{ $nullType := "" }}
+{{ $accessor := "" }}
+{{ if $isInt }}
+    {{ $returnType = "int64" }}
+    {{ $nullType = "sql.NullInt64" }}
+    {{ $accessor = "Int64" }}
+{{ else if $isFloat }}
+    {{ $returnType = "float64" }}
+    {{ $nullType = "sql.NullFloat64" }}
+    {{ $accessor = "Float64" }}
+{{ end }}
+
+// Sum{{ $f.StructField }}OrZero 统计字段求和 (NULL 自动转 0)
+func (q *{{ $n.Name }}Query) Sum{{ $f.StructField }}OrZero(ctx context.Context) ({{ $returnType }}, error) {
+	var results []struct {
+		Val {{ $nullType }} `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C({{ $n.Package }}.Field{{ $f.StructField }}))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.{{ $accessor }}, nil
+}
+
+// Max{{ $f.StructField }}OrZero 统计字段最大值 (NULL 自动转 0)
+func (q *{{ $n.Name }}Query) Max{{ $f.StructField }}OrZero(ctx context.Context) ({{ $returnType }}, error) {
+	var results []struct {
+		Val {{ $nullType }} `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C({{ $n.Package }}.Field{{ $f.StructField }}))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.{{ $accessor }}, nil
+}
+
+// Min{{ $f.StructField }}OrZero 统计字段最小值 (NULL 自动转 0)
+func (q *{{ $n.Name }}Query) Min{{ $f.StructField }}OrZero(ctx context.Context) ({{ $returnType }}, error) {
+	var results []struct {
+		Val {{ $nullType }} `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C({{ $n.Package }}.Field{{ $f.StructField }}))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.{{ $accessor }}, nil
+}
+
+// Avg{{ $f.StructField }}OrZero 统计字段平均值 (NULL 自动转 0)
+func (q *{{ $n.Name }}Query) Avg{{ $f.StructField }}OrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C({{ $n.Package }}.Field{{ $f.StructField }}))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// Stddev{{ $f.StructField }}OrZero 统计字段标准差 (NULL 自动转 0)
+func (q *{{ $n.Name }}Query) Stddev{{ $f.StructField }}OrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C({{ $n.Package }}.Field{{ $f.StructField }}))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+{{ end }}
+
+// CountOrZero 统计总数 (失败返回 0)
+func (q *{{ $n.Name }}Query) CountOrZero(ctx context.Context) (int64, error) {
+	count, err := q.Count(ctx)
+	if err != nil {
+		return 0, err
+	}
+	return int64(count), nil
+}
+
+{{ end }}
+
+{{ end }}
