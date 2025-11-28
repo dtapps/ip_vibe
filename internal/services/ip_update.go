@@ -99,6 +99,7 @@ func (s *IpUpdateService) runDnsTask() {
 	// 查询全部DNS记录
 	allDnsRecord, err := global.GvaDb.DNSRecord.Query().
 		Where(dnsrecord.IsActiveEQ(true)).
+		WithConfig().
 		All(ctx)
 	if err == nil {
 
@@ -193,6 +194,7 @@ func (s *IpUpdateService) runCdnTask() {
 	// 查询全部CDN记录
 	allCdnRecord, err := global.GvaDb.CDNRecord.Query().
 		Where(cdnrecord.IsActiveEQ(true)).
+		WithConfig().
 		All(ctx)
 	if err == nil {
 
@@ -279,16 +281,8 @@ func (s *IpUpdateService) runCdnTask() {
 }
 
 // 更新CDN记录
-// WithConfig().
 // WithIPGroup().
 func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, firstRecord *ent.CDNRecord) (err error) {
-
-	// 查询配置
-	firstConfig, err := firstRecord.QueryConfig().
-		First(ctx)
-	if err != nil {
-		return fmt.Errorf("找不到配置: %w", err)
-	}
 
 	// 准备源
 	origins := make([]string, 0)
@@ -324,7 +318,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 		return fmt.Errorf("需要更新的源为空")
 	}
 
-	switch firstConfig.Platform {
+	switch firstRecord.Edges.Config.Platform {
 	case platformconfig.PlatformEdgeone:
 
 		if len(origins) == 1 {
@@ -342,7 +336,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 					Debug:    global.GvaEnv.DEBUG,
 				},
 				cdn_helper.EdgeOneProcessSingleIPParams{
-					ConfigJSON:     firstConfig.ConfigJSON,
+					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
 					DomainName:     firstRecord.Domain,
 					DomainOrigin:   origins[0],
 					OriginProtocol: firstRecord.OriginProtocol.String(),
@@ -369,7 +363,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 					Debug:    global.GvaEnv.DEBUG,
 				},
 				cdn_helper.EdgeOneProcessMultiIPParams{
-					ConfigJSON:     firstConfig.ConfigJSON,
+					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
 					DomainName:     firstRecord.Domain,
 					DomainOrigins:  origins,
 					GroupName:      utils.GenerateShortIDBasedHash(firstIPGroup.ID, 10),
@@ -385,23 +379,15 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 
 		return nil
 	default:
-		return fmt.Errorf("不支持类型: %s", firstConfig.Platform)
+		return fmt.Errorf("不支持类型: %s", firstRecord.Edges.Config.Platform)
 	}
 
 }
 
 // 更新DNS录
-// WithConfig().
 // WithIPGroup().
 // WithCdnRecord()
 func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, firstRecord *ent.DNSRecord) (err error) {
-
-	// 查询配置
-	firstConfig, err := firstRecord.QueryConfig().
-		First(ctx)
-	if err != nil {
-		return fmt.Errorf("找不到配置: %w", err)
-	}
 
 	// 准备源
 	origin := ""
@@ -448,7 +434,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 		return fmt.Errorf("需要更新的源为空")
 	}
 
-	switch firstConfig.Platform {
+	switch firstRecord.Edges.Config.Platform {
 	case platformconfig.PlatformCloudflare:
 
 		err = dns_helper.CloudflareProcessSingleIP(
@@ -460,7 +446,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 				Debug:    global.GvaEnv.DEBUG,
 			},
 			dns_helper.CloudflareProcessSingleIPParams{
-				ConfigJSON:   firstConfig.ConfigJSON,
+				ConfigJSON:   firstRecord.Edges.Config.ConfigJSON,
 				DomainName:   firstRecord.Domain,
 				DomainOrigin: origin,
 			},
@@ -481,7 +467,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 				Debug:    global.GvaEnv.DEBUG,
 			},
 			dns_helper.DnsPodProcessSingleIPParams{
-				ConfigJSON:   firstConfig.ConfigJSON,
+				ConfigJSON:   firstRecord.Edges.Config.ConfigJSON,
 				DomainName:   firstRecord.Domain,
 				DomainOrigin: origin,
 			},
@@ -492,7 +478,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 
 		return nil
 	default:
-		return fmt.Errorf("不支持类型: %s", firstConfig.Platform)
+		return fmt.Errorf("不支持类型: %s", firstRecord.Edges.Config.Platform)
 	}
 
 }
