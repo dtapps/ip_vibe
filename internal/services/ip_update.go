@@ -41,12 +41,14 @@ func NewIpUpdateService(db *ent.Client, cron gocron.Scheduler) *IpUpdateService 
 	}
 }
 
-// 启动 DNS刷新 任务
+// 启动 DNS刷新 任务，延迟 1 分钟添加，确保 CDN 先跑
 func (s *IpUpdateService) StartDnsJob(ctx context.Context) (err error) {
 	// 判断是否存在DNS任务
 	if s.dnsJob != nil {
 		return nil
 	}
+	// 延时1分钟
+	time.Sleep(1 * time.Minute)
 	// 每10分钟执行一次
 	s.dnsJob, err = s.cron.NewJob(
 		gocron.DurationJob(10*time.Minute),                   // 每10分钟执行一次
@@ -62,14 +64,14 @@ func (s *IpUpdateService) StartDnsJob(ctx context.Context) (err error) {
 	return nil
 }
 
-// 启动 CDN刷新 任务，延迟 1 分钟添加，确保 DNS 先跑
+// 启动 CDN刷新 任务
 func (s *IpUpdateService) StartCdnJob(ctx context.Context) (err error) {
 	// 判断是否存在CDN任务
 	if s.cdnJob != nil {
 		return nil
 	}
 	// 延时1分钟
-	time.Sleep(1 * time.Minute)
+	// time.Sleep(1 * time.Minute)
 	// 每10分钟执行一次
 	s.cdnJob, err = s.cron.NewJob(
 		gocron.DurationJob(10*time.Minute),                   // 每10分钟执行一次
@@ -140,10 +142,9 @@ func (s *IpUpdateService) runDnsTask() {
 		)
 
 		// 判断CDN任务是否存在
-		if s.cdnJob == nil {
-			go s.StartCdnJob(context.Background())
-		}
-
+		// if s.cdnJob == nil {
+		// 	go s.StartCdnJob(context.Background())
+		// }
 	} else {
 		s.log.InfoContext(ctx, "DNS更新成功")
 	}
@@ -200,6 +201,11 @@ func (s *IpUpdateService) runCdnTask() {
 		s.log.InfoContext(ctx, "CDN更新成功",
 			slog.String("next_run_time", nextRun.Format(time.DateTime)),
 		)
+
+		// 判断DNS任务是否存在
+		if s.dnsJob == nil {
+			go s.StartDnsJob(context.Background())
+		}
 	} else {
 		s.log.InfoContext(ctx, "CDN更新成功")
 	}
