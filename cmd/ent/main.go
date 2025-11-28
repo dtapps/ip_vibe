@@ -14,7 +14,7 @@ func main() {
 		// 	entc.DependencyType(&http.Client{}),
 		// ),
 		entc.TemplateFiles(
-			// "../ent/template/debug.tmpl",
+			"./ent/template/debug.tmpl",
 			// "./ent/template/stringer.tmpl",
 			"./ent/template/aggregate.tmpl",
 		),
