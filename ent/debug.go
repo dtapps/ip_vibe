@@ -4,6 +4,9 @@ package ent
 
 import "entgo.io/ent/dialect"
 
+// Debug 返回一个新的 CDNRecordClient 实例，该实例在执行数据库操作时会打印详细的 SQL 日志。
+// 如果当前客户端已处于 Debug 模式，则直接返回自身。
+// 此方法常用于开发或排查问题时，用于观察生成的 SQL 语句及执行参数。
 func (c *CDNRecordClient) Debug() *CDNRecordClient {
 	if c.debug {
 		return c
@@ -12,6 +15,9 @@ func (c *CDNRecordClient) Debug() *CDNRecordClient {
 	return &CDNRecordClient{config: cfg}
 }
 
+// Debug 返回一个新的 DNSRecordClient 实例，该实例在执行数据库操作时会打印详细的 SQL 日志。
+// 如果当前客户端已处于 Debug 模式，则直接返回自身。
+// 此方法常用于开发或排查问题时，用于观察生成的 SQL 语句及执行参数。
 func (c *DNSRecordClient) Debug() *DNSRecordClient {
 	if c.debug {
 		return c
@@ -20,6 +26,9 @@ func (c *DNSRecordClient) Debug() *DNSRecordClient {
 	return &DNSRecordClient{config: cfg}
 }
 
+// Debug 返回一个新的 DeviceClient 实例，该实例在执行数据库操作时会打印详细的 SQL 日志。
+// 如果当前客户端已处于 Debug 模式，则直接返回自身。
+// 此方法常用于开发或排查问题时，用于观察生成的 SQL 语句及执行参数。
 func (c *DeviceClient) Debug() *DeviceClient {
 	if c.debug {
 		return c
@@ -28,6 +37,9 @@ func (c *DeviceClient) Debug() *DeviceClient {
 	return &DeviceClient{config: cfg}
 }
 
+// Debug 返回一个新的 DeviceIpReportClient 实例，该实例在执行数据库操作时会打印详细的 SQL 日志。
+// 如果当前客户端已处于 Debug 模式，则直接返回自身。
+// 此方法常用于开发或排查问题时，用于观察生成的 SQL 语句及执行参数。
 func (c *DeviceIpReportClient) Debug() *DeviceIpReportClient {
 	if c.debug {
 		return c
@@ -36,6 +48,9 @@ func (c *DeviceIpReportClient) Debug() *DeviceIpReportClient {
 	return &DeviceIpReportClient{config: cfg}
 }
 
+// Debug 返回一个新的 IpGroupClient 实例，该实例在执行数据库操作时会打印详细的 SQL 日志。
+// 如果当前客户端已处于 Debug 模式，则直接返回自身。
+// 此方法常用于开发或排查问题时，用于观察生成的 SQL 语句及执行参数。
 func (c *IpGroupClient) Debug() *IpGroupClient {
 	if c.debug {
 		return c
@@ -44,6 +59,9 @@ func (c *IpGroupClient) Debug() *IpGroupClient {
 	return &IpGroupClient{config: cfg}
 }
 
+// Debug 返回一个新的 IpGroupDeviceClient 实例，该实例在执行数据库操作时会打印详细的 SQL 日志。
+// 如果当前客户端已处于 Debug 模式，则直接返回自身。
+// 此方法常用于开发或排查问题时，用于观察生成的 SQL 语句及执行参数。
 func (c *IpGroupDeviceClient) Debug() *IpGroupDeviceClient {
 	if c.debug {
 		return c
@@ -52,6 +70,9 @@ func (c *IpGroupDeviceClient) Debug() *IpGroupDeviceClient {
 	return &IpGroupDeviceClient{config: cfg}
 }
 
+// Debug 返回一个新的 OperationLogClient 实例，该实例在执行数据库操作时会打印详细的 SQL 日志。
+// 如果当前客户端已处于 Debug 模式，则直接返回自身。
+// 此方法常用于开发或排查问题时，用于观察生成的 SQL 语句及执行参数。
 func (c *OperationLogClient) Debug() *OperationLogClient {
 	if c.debug {
 		return c
@@ -60,6 +81,9 @@ func (c *OperationLogClient) Debug() *OperationLogClient {
 	return &OperationLogClient{config: cfg}
 }
 
+// Debug 返回一个新的 PlatformConfigClient 实例，该实例在执行数据库操作时会打印详细的 SQL 日志。
+// 如果当前客户端已处于 Debug 模式，则直接返回自身。
+// 此方法常用于开发或排查问题时，用于观察生成的 SQL 语句及执行参数。
 func (c *PlatformConfigClient) Debug() *PlatformConfigClient {
 	if c.debug {
 		return c
@@ -68,6 +92,9 @@ func (c *PlatformConfigClient) Debug() *PlatformConfigClient {
 	return &PlatformConfigClient{config: cfg}
 }
 
+// Debug 返回一个新的 WebhookClient 实例，该实例在执行数据库操作时会打印详细的 SQL 日志。
+// 如果当前客户端已处于 Debug 模式，则直接返回自身。
+// 此方法常用于开发或排查问题时，用于观察生成的 SQL 语句及执行参数。
 func (c *WebhookClient) Debug() *WebhookClient {
 	if c.debug {
 		return c
@@ -76,6 +103,9 @@ func (c *WebhookClient) Debug() *WebhookClient {
 	return &WebhookClient{config: cfg}
 }
 
+// Debug 返回一个新的 WebhookSubscriptionClient 实例，该实例在执行数据库操作时会打印详细的 SQL 日志。
+// 如果当前客户端已处于 Debug 模式，则直接返回自身。
+// 此方法常用于开发或排查问题时，用于观察生成的 SQL 语句及执行参数。
 func (c *WebhookSubscriptionClient) Debug() *WebhookSubscriptionClient {
 	if c.debug {
 		return c

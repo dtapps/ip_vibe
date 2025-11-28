@@ -41,7 +41,9 @@
     {{ $accessor = "Float64" }}
 {{ end }}
 
-// Sum{{ $f.StructField }}OrZero 统计字段求和 (NULL 自动转 0)
+// Sum{{ $f.StructField }}OrZero 计算字段 {{ $f.Name }} 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
 func (q *{{ $n.Name }}Query) Sum{{ $f.StructField }}OrZero(ctx context.Context) ({{ $returnType }}, error) {
 	var results []struct {
 		Val {{ $nullType }} `json:"val"`
@@ -60,7 +62,10 @@ func (q *{{ $n.Name }}Query) Sum{{ $f.StructField }}OrZero(ctx context.Context) 
 	return results[0].Val.{{ $accessor }}, nil
 }
 
-// Max{{ $f.StructField }}OrZero 统计字段最大值 (NULL 自动转 0)
+// Max{{ $f.StructField }}OrZero 获取字段 {{ $f.Name }} 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
 func (q *{{ $n.Name }}Query) Max{{ $f.StructField }}OrZero(ctx context.Context) ({{ $returnType }}, error) {
 	var results []struct {
 		Val {{ $nullType }} `json:"val"`
@@ -79,7 +84,10 @@ func (q *{{ $n.Name }}Query) Max{{ $f.StructField }}OrZero(ctx context.Context) 
 	return results[0].Val.{{ $accessor }}, nil
 }
 
-// Min{{ $f.StructField }}OrZero 统计字段最小值 (NULL 自动转 0)
+// Min{{ $f.StructField }}OrZero 获取字段 {{ $f.Name }} 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
 func (q *{{ $n.Name }}Query) Min{{ $f.StructField }}OrZero(ctx context.Context) ({{ $returnType }}, error) {
 	var results []struct {
 		Val {{ $nullType }} `json:"val"`
@@ -98,7 +106,9 @@ func (q *{{ $n.Name }}Query) Min{{ $f.StructField }}OrZero(ctx context.Context) 
 	return results[0].Val.{{ $accessor }}, nil
 }
 
-// Avg{{ $f.StructField }}OrZero 统计字段平均值 (NULL 自动转 0)
+// Avg{{ $f.StructField }}OrZero 计算字段 {{ $f.Name }} 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
 func (q *{{ $n.Name }}Query) Avg{{ $f.StructField }}OrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -117,7 +127,9 @@ func (q *{{ $n.Name }}Query) Avg{{ $f.StructField }}OrZero(ctx context.Context) 
 	return results[0].Val.Float64, nil
 }
 
-// Stddev{{ $f.StructField }}OrZero 统计字段标准差 (NULL 自动转 0)
+// Stddev{{ $f.StructField }}OrZero 计算字段 {{ $f.Name }} 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
 func (q *{{ $n.Name }}Query) Stddev{{ $f.StructField }}OrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -138,7 +150,10 @@ func (q *{{ $n.Name }}Query) Stddev{{ $f.StructField }}OrZero(ctx context.Contex
 
 {{ end }}
 
-// CountOrZero 统计总数 (失败返回 0)
+// CountOrZero 返回满足当前查询条件的记录总数。
+// 如果查询执行失败（如数据库连接错误），则返回 0 和原始错误。
+// 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
+// 若需严格错误处理，请使用原生 Count 方法。
 func (q *{{ $n.Name }}Query) CountOrZero(ctx context.Context) (int64, error) {
 	count, err := q.Count(ctx)
 	if err != nil {

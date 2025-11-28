@@ -15,7 +15,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// SumConfigIDOrZero 统计字段求和 (NULL 自动转 0)
+// SumConfigIDOrZero 计算字段 config_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
 func (q *CDNRecordQuery) SumConfigIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -34,7 +36,10 @@ func (q *CDNRecordQuery) SumConfigIDOrZero(ctx context.Context) (int64, error) {
 	return results[0].Val.Int64, nil
 }
 
-// MaxConfigIDOrZero 统计字段最大值 (NULL 自动转 0)
+// MaxConfigIDOrZero 获取字段 config_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
 func (q *CDNRecordQuery) MaxConfigIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -53,7 +58,10 @@ func (q *CDNRecordQuery) MaxConfigIDOrZero(ctx context.Context) (int64, error) {
 	return results[0].Val.Int64, nil
 }
 
-// MinConfigIDOrZero 统计字段最小值 (NULL 自动转 0)
+// MinConfigIDOrZero 获取字段 config_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
 func (q *CDNRecordQuery) MinConfigIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -72,7 +80,9 @@ func (q *CDNRecordQuery) MinConfigIDOrZero(ctx context.Context) (int64, error) {
 	return results[0].Val.Int64, nil
 }
 
-// AvgConfigIDOrZero 统计字段平均值 (NULL 自动转 0)
+// AvgConfigIDOrZero 计算字段 config_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
 func (q *CDNRecordQuery) AvgConfigIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -91,7 +101,9 @@ func (q *CDNRecordQuery) AvgConfigIDOrZero(ctx context.Context) (float64, error)
 	return results[0].Val.Float64, nil
 }
 
-// StddevConfigIDOrZero 统计字段标准差 (NULL 自动转 0)
+// StddevConfigIDOrZero 计算字段 config_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
 func (q *CDNRecordQuery) StddevConfigIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -110,7 +122,9 @@ func (q *CDNRecordQuery) StddevConfigIDOrZero(ctx context.Context) (float64, err
 	return results[0].Val.Float64, nil
 }
 
-// SumHTTPPortOrZero 统计字段求和 (NULL 自动转 0)
+// SumHTTPPortOrZero 计算字段 http_port 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
 func (q *CDNRecordQuery) SumHTTPPortOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -129,7 +143,10 @@ func (q *CDNRecordQuery) SumHTTPPortOrZero(ctx context.Context) (int64, error) {
 	return results[0].Val.Int64, nil
 }
 
-// MaxHTTPPortOrZero 统计字段最大值 (NULL 自动转 0)
+// MaxHTTPPortOrZero 获取字段 http_port 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
 func (q *CDNRecordQuery) MaxHTTPPortOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -148,7 +165,10 @@ func (q *CDNRecordQuery) MaxHTTPPortOrZero(ctx context.Context) (int64, error) {
 	return results[0].Val.Int64, nil
 }
 
-// MinHTTPPortOrZero 统计字段最小值 (NULL 自动转 0)
+// MinHTTPPortOrZero 获取字段 http_port 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
 func (q *CDNRecordQuery) MinHTTPPortOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -167,7 +187,9 @@ func (q *CDNRecordQuery) MinHTTPPortOrZero(ctx context.Context) (int64, error) {
 	return results[0].Val.Int64, nil
 }
 
-// AvgHTTPPortOrZero 统计字段平均值 (NULL 自动转 0)
+// AvgHTTPPortOrZero 计算字段 http_port 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
 func (q *CDNRecordQuery) AvgHTTPPortOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -186,7 +208,9 @@ func (q *CDNRecordQuery) AvgHTTPPortOrZero(ctx context.Context) (float64, error)
 	return results[0].Val.Float64, nil
 }
 
-// StddevHTTPPortOrZero 统计字段标准差 (NULL 自动转 0)
+// StddevHTTPPortOrZero 计算字段 http_port 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
 func (q *CDNRecordQuery) StddevHTTPPortOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -205,7 +229,9 @@ func (q *CDNRecordQuery) StddevHTTPPortOrZero(ctx context.Context) (float64, err
 	return results[0].Val.Float64, nil
 }
 
-// SumHTTPSPortOrZero 统计字段求和 (NULL 自动转 0)
+// SumHTTPSPortOrZero 计算字段 https_port 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
 func (q *CDNRecordQuery) SumHTTPSPortOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -224,7 +250,10 @@ func (q *CDNRecordQuery) SumHTTPSPortOrZero(ctx context.Context) (int64, error) 
 	return results[0].Val.Int64, nil
 }
 
-// MaxHTTPSPortOrZero 统计字段最大值 (NULL 自动转 0)
+// MaxHTTPSPortOrZero 获取字段 https_port 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
 func (q *CDNRecordQuery) MaxHTTPSPortOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -243,7 +272,10 @@ func (q *CDNRecordQuery) MaxHTTPSPortOrZero(ctx context.Context) (int64, error) 
 	return results[0].Val.Int64, nil
 }
 
-// MinHTTPSPortOrZero 统计字段最小值 (NULL 自动转 0)
+// MinHTTPSPortOrZero 获取字段 https_port 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
 func (q *CDNRecordQuery) MinHTTPSPortOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -262,7 +294,9 @@ func (q *CDNRecordQuery) MinHTTPSPortOrZero(ctx context.Context) (int64, error) 
 	return results[0].Val.Int64, nil
 }
 
-// AvgHTTPSPortOrZero 统计字段平均值 (NULL 自动转 0)
+// AvgHTTPSPortOrZero 计算字段 https_port 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
 func (q *CDNRecordQuery) AvgHTTPSPortOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -281,7 +315,9 @@ func (q *CDNRecordQuery) AvgHTTPSPortOrZero(ctx context.Context) (float64, error
 	return results[0].Val.Float64, nil
 }
 
-// StddevHTTPSPortOrZero 统计字段标准差 (NULL 自动转 0)
+// StddevHTTPSPortOrZero 计算字段 https_port 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
 func (q *CDNRecordQuery) StddevHTTPSPortOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -300,7 +336,9 @@ func (q *CDNRecordQuery) StddevHTTPSPortOrZero(ctx context.Context) (float64, er
 	return results[0].Val.Float64, nil
 }
 
-// SumIPGroupIDOrZero 统计字段求和 (NULL 自动转 0)
+// SumIPGroupIDOrZero 计算字段 ip_group_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
 func (q *CDNRecordQuery) SumIPGroupIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -319,7 +357,10 @@ func (q *CDNRecordQuery) SumIPGroupIDOrZero(ctx context.Context) (int64, error) 
 	return results[0].Val.Int64, nil
 }
 
-// MaxIPGroupIDOrZero 统计字段最大值 (NULL 自动转 0)
+// MaxIPGroupIDOrZero 获取字段 ip_group_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
 func (q *CDNRecordQuery) MaxIPGroupIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -338,7 +379,10 @@ func (q *CDNRecordQuery) MaxIPGroupIDOrZero(ctx context.Context) (int64, error) 
 	return results[0].Val.Int64, nil
 }
 
-// MinIPGroupIDOrZero 统计字段最小值 (NULL 自动转 0)
+// MinIPGroupIDOrZero 获取字段 ip_group_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
 func (q *CDNRecordQuery) MinIPGroupIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -357,7 +401,9 @@ func (q *CDNRecordQuery) MinIPGroupIDOrZero(ctx context.Context) (int64, error) 
 	return results[0].Val.Int64, nil
 }
 
-// AvgIPGroupIDOrZero 统计字段平均值 (NULL 自动转 0)
+// AvgIPGroupIDOrZero 计算字段 ip_group_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
 func (q *CDNRecordQuery) AvgIPGroupIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -376,7 +422,9 @@ func (q *CDNRecordQuery) AvgIPGroupIDOrZero(ctx context.Context) (float64, error
 	return results[0].Val.Float64, nil
 }
 
-// StddevIPGroupIDOrZero 统计字段标准差 (NULL 自动转 0)
+// StddevIPGroupIDOrZero 计算字段 ip_group_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
 func (q *CDNRecordQuery) StddevIPGroupIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -395,7 +443,10 @@ func (q *CDNRecordQuery) StddevIPGroupIDOrZero(ctx context.Context) (float64, er
 	return results[0].Val.Float64, nil
 }
 
-// CountOrZero 统计总数 (失败返回 0)
+// CountOrZero 返回满足当前查询条件的记录总数。
+// 如果查询执行失败（如数据库连接错误），则返回 0 和原始错误。
+// 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
+// 若需严格错误处理，请使用原生 Count 方法。
 func (q *CDNRecordQuery) CountOrZero(ctx context.Context) (int64, error) {
 	count, err := q.Count(ctx)
 	if err != nil {
@@ -404,7 +455,9 @@ func (q *CDNRecordQuery) CountOrZero(ctx context.Context) (int64, error) {
 	return int64(count), nil
 }
 
-// SumConfigIDOrZero 统计字段求和 (NULL 自动转 0)
+// SumConfigIDOrZero 计算字段 config_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
 func (q *DNSRecordQuery) SumConfigIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -423,7 +476,10 @@ func (q *DNSRecordQuery) SumConfigIDOrZero(ctx context.Context) (int64, error) {
 	return results[0].Val.Int64, nil
 }
 
-// MaxConfigIDOrZero 统计字段最大值 (NULL 自动转 0)
+// MaxConfigIDOrZero 获取字段 config_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
 func (q *DNSRecordQuery) MaxConfigIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -442,7 +498,10 @@ func (q *DNSRecordQuery) MaxConfigIDOrZero(ctx context.Context) (int64, error) {
 	return results[0].Val.Int64, nil
 }
 
-// MinConfigIDOrZero 统计字段最小值 (NULL 自动转 0)
+// MinConfigIDOrZero 获取字段 config_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
 func (q *DNSRecordQuery) MinConfigIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -461,7 +520,9 @@ func (q *DNSRecordQuery) MinConfigIDOrZero(ctx context.Context) (int64, error) {
 	return results[0].Val.Int64, nil
 }
 
-// AvgConfigIDOrZero 统计字段平均值 (NULL 自动转 0)
+// AvgConfigIDOrZero 计算字段 config_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
 func (q *DNSRecordQuery) AvgConfigIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -480,7 +541,9 @@ func (q *DNSRecordQuery) AvgConfigIDOrZero(ctx context.Context) (float64, error)
 	return results[0].Val.Float64, nil
 }
 
-// StddevConfigIDOrZero 统计字段标准差 (NULL 自动转 0)
+// StddevConfigIDOrZero 计算字段 config_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
 func (q *DNSRecordQuery) StddevConfigIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -499,7 +562,9 @@ func (q *DNSRecordQuery) StddevConfigIDOrZero(ctx context.Context) (float64, err
 	return results[0].Val.Float64, nil
 }
 
-// SumIPGroupIDOrZero 统计字段求和 (NULL 自动转 0)
+// SumIPGroupIDOrZero 计算字段 ip_group_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
 func (q *DNSRecordQuery) SumIPGroupIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -518,7 +583,10 @@ func (q *DNSRecordQuery) SumIPGroupIDOrZero(ctx context.Context) (int64, error) 
 	return results[0].Val.Int64, nil
 }
 
-// MaxIPGroupIDOrZero 统计字段最大值 (NULL 自动转 0)
+// MaxIPGroupIDOrZero 获取字段 ip_group_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
 func (q *DNSRecordQuery) MaxIPGroupIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -537,7 +605,10 @@ func (q *DNSRecordQuery) MaxIPGroupIDOrZero(ctx context.Context) (int64, error) 
 	return results[0].Val.Int64, nil
 }
 
-// MinIPGroupIDOrZero 统计字段最小值 (NULL 自动转 0)
+// MinIPGroupIDOrZero 获取字段 ip_group_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
 func (q *DNSRecordQuery) MinIPGroupIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -556,7 +627,9 @@ func (q *DNSRecordQuery) MinIPGroupIDOrZero(ctx context.Context) (int64, error) 
 	return results[0].Val.Int64, nil
 }
 
-// AvgIPGroupIDOrZero 统计字段平均值 (NULL 自动转 0)
+// AvgIPGroupIDOrZero 计算字段 ip_group_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
 func (q *DNSRecordQuery) AvgIPGroupIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -575,7 +648,9 @@ func (q *DNSRecordQuery) AvgIPGroupIDOrZero(ctx context.Context) (float64, error
 	return results[0].Val.Float64, nil
 }
 
-// StddevIPGroupIDOrZero 统计字段标准差 (NULL 自动转 0)
+// StddevIPGroupIDOrZero 计算字段 ip_group_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
 func (q *DNSRecordQuery) StddevIPGroupIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -594,7 +669,9 @@ func (q *DNSRecordQuery) StddevIPGroupIDOrZero(ctx context.Context) (float64, er
 	return results[0].Val.Float64, nil
 }
 
-// SumCdnRecordIDOrZero 统计字段求和 (NULL 自动转 0)
+// SumCdnRecordIDOrZero 计算字段 cdn_record_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
 func (q *DNSRecordQuery) SumCdnRecordIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -613,7 +690,10 @@ func (q *DNSRecordQuery) SumCdnRecordIDOrZero(ctx context.Context) (int64, error
 	return results[0].Val.Int64, nil
 }
 
-// MaxCdnRecordIDOrZero 统计字段最大值 (NULL 自动转 0)
+// MaxCdnRecordIDOrZero 获取字段 cdn_record_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
 func (q *DNSRecordQuery) MaxCdnRecordIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -632,7 +712,10 @@ func (q *DNSRecordQuery) MaxCdnRecordIDOrZero(ctx context.Context) (int64, error
 	return results[0].Val.Int64, nil
 }
 
-// MinCdnRecordIDOrZero 统计字段最小值 (NULL 自动转 0)
+// MinCdnRecordIDOrZero 获取字段 cdn_record_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
 func (q *DNSRecordQuery) MinCdnRecordIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -651,7 +734,9 @@ func (q *DNSRecordQuery) MinCdnRecordIDOrZero(ctx context.Context) (int64, error
 	return results[0].Val.Int64, nil
 }
 
-// AvgCdnRecordIDOrZero 统计字段平均值 (NULL 自动转 0)
+// AvgCdnRecordIDOrZero 计算字段 cdn_record_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
 func (q *DNSRecordQuery) AvgCdnRecordIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -670,7 +755,9 @@ func (q *DNSRecordQuery) AvgCdnRecordIDOrZero(ctx context.Context) (float64, err
 	return results[0].Val.Float64, nil
 }
 
-// StddevCdnRecordIDOrZero 统计字段标准差 (NULL 自动转 0)
+// StddevCdnRecordIDOrZero 计算字段 cdn_record_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
 func (q *DNSRecordQuery) StddevCdnRecordIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -689,7 +776,10 @@ func (q *DNSRecordQuery) StddevCdnRecordIDOrZero(ctx context.Context) (float64, 
 	return results[0].Val.Float64, nil
 }
 
-// CountOrZero 统计总数 (失败返回 0)
+// CountOrZero 返回满足当前查询条件的记录总数。
+// 如果查询执行失败（如数据库连接错误），则返回 0 和原始错误。
+// 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
+// 若需严格错误处理，请使用原生 Count 方法。
 func (q *DNSRecordQuery) CountOrZero(ctx context.Context) (int64, error) {
 	count, err := q.Count(ctx)
 	if err != nil {
@@ -698,7 +788,10 @@ func (q *DNSRecordQuery) CountOrZero(ctx context.Context) (int64, error) {
 	return int64(count), nil
 }
 
-// CountOrZero 统计总数 (失败返回 0)
+// CountOrZero 返回满足当前查询条件的记录总数。
+// 如果查询执行失败（如数据库连接错误），则返回 0 和原始错误。
+// 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
+// 若需严格错误处理，请使用原生 Count 方法。
 func (q *DeviceQuery) CountOrZero(ctx context.Context) (int64, error) {
 	count, err := q.Count(ctx)
 	if err != nil {
@@ -707,7 +800,9 @@ func (q *DeviceQuery) CountOrZero(ctx context.Context) (int64, error) {
 	return int64(count), nil
 }
 
-// SumDeviceIDOrZero 统计字段求和 (NULL 自动转 0)
+// SumDeviceIDOrZero 计算字段 device_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
 func (q *DeviceIpReportQuery) SumDeviceIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -726,7 +821,10 @@ func (q *DeviceIpReportQuery) SumDeviceIDOrZero(ctx context.Context) (int64, err
 	return results[0].Val.Int64, nil
 }
 
-// MaxDeviceIDOrZero 统计字段最大值 (NULL 自动转 0)
+// MaxDeviceIDOrZero 获取字段 device_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
 func (q *DeviceIpReportQuery) MaxDeviceIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -745,7 +843,10 @@ func (q *DeviceIpReportQuery) MaxDeviceIDOrZero(ctx context.Context) (int64, err
 	return results[0].Val.Int64, nil
 }
 
-// MinDeviceIDOrZero 统计字段最小值 (NULL 自动转 0)
+// MinDeviceIDOrZero 获取字段 device_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
 func (q *DeviceIpReportQuery) MinDeviceIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -764,7 +865,9 @@ func (q *DeviceIpReportQuery) MinDeviceIDOrZero(ctx context.Context) (int64, err
 	return results[0].Val.Int64, nil
 }
 
-// AvgDeviceIDOrZero 统计字段平均值 (NULL 自动转 0)
+// AvgDeviceIDOrZero 计算字段 device_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
 func (q *DeviceIpReportQuery) AvgDeviceIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -783,7 +886,9 @@ func (q *DeviceIpReportQuery) AvgDeviceIDOrZero(ctx context.Context) (float64, e
 	return results[0].Val.Float64, nil
 }
 
-// StddevDeviceIDOrZero 统计字段标准差 (NULL 自动转 0)
+// StddevDeviceIDOrZero 计算字段 device_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
 func (q *DeviceIpReportQuery) StddevDeviceIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -802,7 +907,10 @@ func (q *DeviceIpReportQuery) StddevDeviceIDOrZero(ctx context.Context) (float64
 	return results[0].Val.Float64, nil
 }
 
-// CountOrZero 统计总数 (失败返回 0)
+// CountOrZero 返回满足当前查询条件的记录总数。
+// 如果查询执行失败（如数据库连接错误），则返回 0 和原始错误。
+// 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
+// 若需严格错误处理，请使用原生 Count 方法。
 func (q *DeviceIpReportQuery) CountOrZero(ctx context.Context) (int64, error) {
 	count, err := q.Count(ctx)
 	if err != nil {
@@ -811,7 +919,10 @@ func (q *DeviceIpReportQuery) CountOrZero(ctx context.Context) (int64, error) {
 	return int64(count), nil
 }
 
-// CountOrZero 统计总数 (失败返回 0)
+// CountOrZero 返回满足当前查询条件的记录总数。
+// 如果查询执行失败（如数据库连接错误），则返回 0 和原始错误。
+// 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
+// 若需严格错误处理，请使用原生 Count 方法。
 func (q *IpGroupQuery) CountOrZero(ctx context.Context) (int64, error) {
 	count, err := q.Count(ctx)
 	if err != nil {
@@ -820,7 +931,9 @@ func (q *IpGroupQuery) CountOrZero(ctx context.Context) (int64, error) {
 	return int64(count), nil
 }
 
-// SumDeviceIDOrZero 统计字段求和 (NULL 自动转 0)
+// SumDeviceIDOrZero 计算字段 device_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
 func (q *IpGroupDeviceQuery) SumDeviceIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -839,7 +952,10 @@ func (q *IpGroupDeviceQuery) SumDeviceIDOrZero(ctx context.Context) (int64, erro
 	return results[0].Val.Int64, nil
 }
 
-// MaxDeviceIDOrZero 统计字段最大值 (NULL 自动转 0)
+// MaxDeviceIDOrZero 获取字段 device_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
 func (q *IpGroupDeviceQuery) MaxDeviceIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -858,7 +974,10 @@ func (q *IpGroupDeviceQuery) MaxDeviceIDOrZero(ctx context.Context) (int64, erro
 	return results[0].Val.Int64, nil
 }
 
-// MinDeviceIDOrZero 统计字段最小值 (NULL 自动转 0)
+// MinDeviceIDOrZero 获取字段 device_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
 func (q *IpGroupDeviceQuery) MinDeviceIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -877,7 +996,9 @@ func (q *IpGroupDeviceQuery) MinDeviceIDOrZero(ctx context.Context) (int64, erro
 	return results[0].Val.Int64, nil
 }
 
-// AvgDeviceIDOrZero 统计字段平均值 (NULL 自动转 0)
+// AvgDeviceIDOrZero 计算字段 device_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
 func (q *IpGroupDeviceQuery) AvgDeviceIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -896,7 +1017,9 @@ func (q *IpGroupDeviceQuery) AvgDeviceIDOrZero(ctx context.Context) (float64, er
 	return results[0].Val.Float64, nil
 }
 
-// StddevDeviceIDOrZero 统计字段标准差 (NULL 自动转 0)
+// StddevDeviceIDOrZero 计算字段 device_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
 func (q *IpGroupDeviceQuery) StddevDeviceIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -915,7 +1038,9 @@ func (q *IpGroupDeviceQuery) StddevDeviceIDOrZero(ctx context.Context) (float64,
 	return results[0].Val.Float64, nil
 }
 
-// SumIPGroupIDOrZero 统计字段求和 (NULL 自动转 0)
+// SumIPGroupIDOrZero 计算字段 ip_group_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
 func (q *IpGroupDeviceQuery) SumIPGroupIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -934,7 +1059,10 @@ func (q *IpGroupDeviceQuery) SumIPGroupIDOrZero(ctx context.Context) (int64, err
 	return results[0].Val.Int64, nil
 }
 
-// MaxIPGroupIDOrZero 统计字段最大值 (NULL 自动转 0)
+// MaxIPGroupIDOrZero 获取字段 ip_group_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
 func (q *IpGroupDeviceQuery) MaxIPGroupIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -953,7 +1081,10 @@ func (q *IpGroupDeviceQuery) MaxIPGroupIDOrZero(ctx context.Context) (int64, err
 	return results[0].Val.Int64, nil
 }
 
-// MinIPGroupIDOrZero 统计字段最小值 (NULL 自动转 0)
+// MinIPGroupIDOrZero 获取字段 ip_group_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
 func (q *IpGroupDeviceQuery) MinIPGroupIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -972,7 +1103,9 @@ func (q *IpGroupDeviceQuery) MinIPGroupIDOrZero(ctx context.Context) (int64, err
 	return results[0].Val.Int64, nil
 }
 
-// AvgIPGroupIDOrZero 统计字段平均值 (NULL 自动转 0)
+// AvgIPGroupIDOrZero 计算字段 ip_group_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
 func (q *IpGroupDeviceQuery) AvgIPGroupIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -991,7 +1124,9 @@ func (q *IpGroupDeviceQuery) AvgIPGroupIDOrZero(ctx context.Context) (float64, e
 	return results[0].Val.Float64, nil
 }
 
-// StddevIPGroupIDOrZero 统计字段标准差 (NULL 自动转 0)
+// StddevIPGroupIDOrZero 计算字段 ip_group_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
 func (q *IpGroupDeviceQuery) StddevIPGroupIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -1010,7 +1145,10 @@ func (q *IpGroupDeviceQuery) StddevIPGroupIDOrZero(ctx context.Context) (float64
 	return results[0].Val.Float64, nil
 }
 
-// CountOrZero 统计总数 (失败返回 0)
+// CountOrZero 返回满足当前查询条件的记录总数。
+// 如果查询执行失败（如数据库连接错误），则返回 0 和原始错误。
+// 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
+// 若需严格错误处理，请使用原生 Count 方法。
 func (q *IpGroupDeviceQuery) CountOrZero(ctx context.Context) (int64, error) {
 	count, err := q.Count(ctx)
 	if err != nil {
@@ -1019,7 +1157,9 @@ func (q *IpGroupDeviceQuery) CountOrZero(ctx context.Context) (int64, error) {
 	return int64(count), nil
 }
 
-// SumObjIDOrZero 统计字段求和 (NULL 自动转 0)
+// SumObjIDOrZero 计算字段 obj_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
 func (q *OperationLogQuery) SumObjIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -1038,7 +1178,10 @@ func (q *OperationLogQuery) SumObjIDOrZero(ctx context.Context) (int64, error) {
 	return results[0].Val.Int64, nil
 }
 
-// MaxObjIDOrZero 统计字段最大值 (NULL 自动转 0)
+// MaxObjIDOrZero 获取字段 obj_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
 func (q *OperationLogQuery) MaxObjIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -1057,7 +1200,10 @@ func (q *OperationLogQuery) MaxObjIDOrZero(ctx context.Context) (int64, error) {
 	return results[0].Val.Int64, nil
 }
 
-// MinObjIDOrZero 统计字段最小值 (NULL 自动转 0)
+// MinObjIDOrZero 获取字段 obj_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
 func (q *OperationLogQuery) MinObjIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -1076,7 +1222,9 @@ func (q *OperationLogQuery) MinObjIDOrZero(ctx context.Context) (int64, error) {
 	return results[0].Val.Int64, nil
 }
 
-// AvgObjIDOrZero 统计字段平均值 (NULL 自动转 0)
+// AvgObjIDOrZero 计算字段 obj_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
 func (q *OperationLogQuery) AvgObjIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -1095,7 +1243,9 @@ func (q *OperationLogQuery) AvgObjIDOrZero(ctx context.Context) (float64, error)
 	return results[0].Val.Float64, nil
 }
 
-// StddevObjIDOrZero 统计字段标准差 (NULL 自动转 0)
+// StddevObjIDOrZero 计算字段 obj_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
 func (q *OperationLogQuery) StddevObjIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -1114,7 +1264,10 @@ func (q *OperationLogQuery) StddevObjIDOrZero(ctx context.Context) (float64, err
 	return results[0].Val.Float64, nil
 }
 
-// CountOrZero 统计总数 (失败返回 0)
+// CountOrZero 返回满足当前查询条件的记录总数。
+// 如果查询执行失败（如数据库连接错误），则返回 0 和原始错误。
+// 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
+// 若需严格错误处理，请使用原生 Count 方法。
 func (q *OperationLogQuery) CountOrZero(ctx context.Context) (int64, error) {
 	count, err := q.Count(ctx)
 	if err != nil {
@@ -1123,7 +1276,10 @@ func (q *OperationLogQuery) CountOrZero(ctx context.Context) (int64, error) {
 	return int64(count), nil
 }
 
-// CountOrZero 统计总数 (失败返回 0)
+// CountOrZero 返回满足当前查询条件的记录总数。
+// 如果查询执行失败（如数据库连接错误），则返回 0 和原始错误。
+// 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
+// 若需严格错误处理，请使用原生 Count 方法。
 func (q *PlatformConfigQuery) CountOrZero(ctx context.Context) (int64, error) {
 	count, err := q.Count(ctx)
 	if err != nil {
@@ -1132,7 +1288,10 @@ func (q *PlatformConfigQuery) CountOrZero(ctx context.Context) (int64, error) {
 	return int64(count), nil
 }
 
-// CountOrZero 统计总数 (失败返回 0)
+// CountOrZero 返回满足当前查询条件的记录总数。
+// 如果查询执行失败（如数据库连接错误），则返回 0 和原始错误。
+// 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
+// 若需严格错误处理，请使用原生 Count 方法。
 func (q *WebhookQuery) CountOrZero(ctx context.Context) (int64, error) {
 	count, err := q.Count(ctx)
 	if err != nil {
@@ -1141,7 +1300,9 @@ func (q *WebhookQuery) CountOrZero(ctx context.Context) (int64, error) {
 	return int64(count), nil
 }
 
-// SumWebhookIDOrZero 统计字段求和 (NULL 自动转 0)
+// SumWebhookIDOrZero 计算字段 webhook_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
 func (q *WebhookSubscriptionQuery) SumWebhookIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -1160,7 +1321,10 @@ func (q *WebhookSubscriptionQuery) SumWebhookIDOrZero(ctx context.Context) (int6
 	return results[0].Val.Int64, nil
 }
 
-// MaxWebhookIDOrZero 统计字段最大值 (NULL 自动转 0)
+// MaxWebhookIDOrZero 获取字段 webhook_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
 func (q *WebhookSubscriptionQuery) MaxWebhookIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -1179,7 +1343,10 @@ func (q *WebhookSubscriptionQuery) MaxWebhookIDOrZero(ctx context.Context) (int6
 	return results[0].Val.Int64, nil
 }
 
-// MinWebhookIDOrZero 统计字段最小值 (NULL 自动转 0)
+// MinWebhookIDOrZero 获取字段 webhook_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
 func (q *WebhookSubscriptionQuery) MinWebhookIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -1198,7 +1365,9 @@ func (q *WebhookSubscriptionQuery) MinWebhookIDOrZero(ctx context.Context) (int6
 	return results[0].Val.Int64, nil
 }
 
-// AvgWebhookIDOrZero 统计字段平均值 (NULL 自动转 0)
+// AvgWebhookIDOrZero 计算字段 webhook_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
 func (q *WebhookSubscriptionQuery) AvgWebhookIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -1217,7 +1386,9 @@ func (q *WebhookSubscriptionQuery) AvgWebhookIDOrZero(ctx context.Context) (floa
 	return results[0].Val.Float64, nil
 }
 
-// StddevWebhookIDOrZero 统计字段标准差 (NULL 自动转 0)
+// StddevWebhookIDOrZero 计算字段 webhook_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
 func (q *WebhookSubscriptionQuery) StddevWebhookIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -1236,7 +1407,9 @@ func (q *WebhookSubscriptionQuery) StddevWebhookIDOrZero(ctx context.Context) (f
 	return results[0].Val.Float64, nil
 }
 
-// SumObjIDOrZero 统计字段求和 (NULL 自动转 0)
+// SumObjIDOrZero 计算字段 obj_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
 func (q *WebhookSubscriptionQuery) SumObjIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -1255,7 +1428,10 @@ func (q *WebhookSubscriptionQuery) SumObjIDOrZero(ctx context.Context) (int64, e
 	return results[0].Val.Int64, nil
 }
 
-// MaxObjIDOrZero 统计字段最大值 (NULL 自动转 0)
+// MaxObjIDOrZero 获取字段 obj_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
 func (q *WebhookSubscriptionQuery) MaxObjIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -1274,7 +1450,10 @@ func (q *WebhookSubscriptionQuery) MaxObjIDOrZero(ctx context.Context) (int64, e
 	return results[0].Val.Int64, nil
 }
 
-// MinObjIDOrZero 统计字段最小值 (NULL 自动转 0)
+// MinObjIDOrZero 获取字段 obj_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
 func (q *WebhookSubscriptionQuery) MinObjIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
@@ -1293,7 +1472,9 @@ func (q *WebhookSubscriptionQuery) MinObjIDOrZero(ctx context.Context) (int64, e
 	return results[0].Val.Int64, nil
 }
 
-// AvgObjIDOrZero 统计字段平均值 (NULL 自动转 0)
+// AvgObjIDOrZero 计算字段 obj_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
 func (q *WebhookSubscriptionQuery) AvgObjIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -1312,7 +1493,9 @@ func (q *WebhookSubscriptionQuery) AvgObjIDOrZero(ctx context.Context) (float64,
 	return results[0].Val.Float64, nil
 }
 
-// StddevObjIDOrZero 统计字段标准差 (NULL 自动转 0)
+// StddevObjIDOrZero 计算字段 obj_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
 func (q *WebhookSubscriptionQuery) StddevObjIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
@@ -1331,7 +1514,10 @@ func (q *WebhookSubscriptionQuery) StddevObjIDOrZero(ctx context.Context) (float
 	return results[0].Val.Float64, nil
 }
 
-// CountOrZero 统计总数 (失败返回 0)
+// CountOrZero 返回满足当前查询条件的记录总数。
+// 如果查询执行失败（如数据库连接错误），则返回 0 和原始错误。
+// 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
+// 若需严格错误处理，请使用原生 Count 方法。
 func (q *WebhookSubscriptionQuery) CountOrZero(ctx context.Context) (int64, error) {
 	count, err := q.Count(ctx)
 	if err != nil {

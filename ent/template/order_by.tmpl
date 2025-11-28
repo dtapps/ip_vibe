@@ -13,28 +13,32 @@ const orderDesc = "DESC"
 // ==========================
 // 通用排序解析
 // ==========================
+
+// OrderItem 表示一个排序项，包含一组字段名和排序方向（ASC 或 DESC）。
 type OrderItem struct {
-	Fields    []string
-	Direction string
+	Fields    []string // 要排序的字段列表（已转换为 snake_case）
+	Direction string   // 排序方向，值为 "ASC" 或 "DESC"
 }
 
-// camelToSnake 将 CamelCase 转为 snake_case
+// camelToSnake 将 CamelCase 或 PascalCase 格式的字符串转换为 snake_case。
+// 例如：UserName → user_name，UserID → user_id，XMLParser → xml_parser。
 func camelToSnake(input string) string {
-	// 正则匹配大写字母前插入下划线
-	// 特别处理：多个大写字母（如 ID、IP）保持一组处理
+	// 正则匹配小写字母/数字后跟大写字母的情况，在中间插入下划线
 	re := regexp.MustCompile(`([a-z0-9])([A-Z])`)
 	snake := re.ReplaceAllString(input, `${1}_${2}`)
 
-	// 处理 ID、URL 等缩写后带大写的问题，如：UserIDNumber → user_id_number
+	// 处理连续大写字母后接小写字母的情况，如 UserID → user_id（而非 user_i_d）
 	re2 := regexp.MustCompile(`([A-Z]+)([A-Z][a-z0-9]+)`)
 	snake = re2.ReplaceAllString(snake, `${1}_${2}`)
 
-	// 全部转小写
+	// 全部转为小写
 	return strings.ToLower(snake)
 }
 
-// parseSortExpr 解析排序表达式，例如：
-// "a,b,c ASC; d,e DESC"
+// parseSortExpr 解析排序表达式字符串。
+// 表达式格式示例："name ASC; age,created_at DESC"。
+// 每个分号分隔一个排序项，每个项由字段列表（逗号分隔）和可选方向（ASC/DESC）组成。
+// 默认方向为 ASC。无效项将被忽略。
 func parseSortExpr(expr string) ([]OrderItem, error) {
 	items := []OrderItem{}
 	parts := strings.Split(expr, ";")
@@ -44,34 +48,45 @@ func parseSortExpr(expr string) ([]OrderItem, error) {
 			continue
 		}
 
-        dir := orderAsc
-        var fields []string
+		dir := orderAsc
+		var fields []string
 		segs := strings.Fields(part)
-		len := len(segs)
-		if len == 0 {
+		n := len(segs)
+		if n == 0 {
 			continue
-		} else if len == 1 {
+		} else if n == 1 {
+			// 仅字段，无方向：默认 ASC
 			_fields := strings.Split(segs[0], ",")
 			for i := range _fields {
-				fields = append(fields, camelToSnake(strings.TrimSpace(_fields[i])))
+				field := strings.TrimSpace(_fields[i])
+				if field != "" {
+					fields = append(fields, camelToSnake(field))
+				}
 			}
-		} else if len == 2 {
+		} else if n == 2 {
+			// 字段 + 方向
 			_fields := strings.Split(segs[0], ",")
 			for i := range _fields {
-				fields = append(fields, camelToSnake(strings.TrimSpace(_fields[i])))
+				field := strings.TrimSpace(_fields[i])
+				if field != "" {
+					fields = append(fields, camelToSnake(field))
+				}
 			}
-
 			if strings.ToUpper(segs[1]) == orderDesc {
-			    dir = orderDesc
+				dir = orderDesc
 			}
+			// 其他方向视为无效，保留默认 ASC
 		} else {
-		    continue
+			// 超过两个部分，视为格式错误，跳过
+			continue
 		}
 
-		items = append(items, OrderItem{
-			Fields:    fields,
-			Direction: dir,
-		})
+		if len(fields) > 0 {
+			items = append(items, OrderItem{
+				Fields:    fields,
+				Direction: dir,
+			})
+		}
 	}
 	return items, nil
 }
@@ -81,7 +96,10 @@ func parseSortExpr(expr string) ([]OrderItem, error) {
 // ==========================
 {{ range $n, $t := $.Nodes }}
 
-// OrderByExpr 支持多字段、多方向排序
+// OrderByExpr 根据给定的排序表达式对查询结果进行排序。
+// 表达式格式： "field1,field2 ASC; field3 DESC"
+// 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
+// 无效字段将被忽略，至少有一个有效字段时才会应用排序。
 func (q *{{ $t.Name }}Query) OrderByExpr(expr string) *{{ $t.Name }}Query {
 	if expr == "" {
 		return q
@@ -90,34 +108,32 @@ func (q *{{ $t.Name }}Query) OrderByExpr(expr string) *{{ $t.Name }}Query {
 	items, _ := parseSortExpr(expr)
 
 	for _, item := range items {
-	    var fields []string
+		var fields []string
 		for _, f := range item.Fields {
-			ok := {{ $t.Name | lower }}.ValidColumn(f)
-			if !ok {
-				continue
+			// 校验字段是否为该实体的有效列
+			if {{ $t.Name | lower }}.ValidColumn(f) {
+				fields = append(fields, f)
 			}
-
-			fields = append(fields, f)
 		}
 
-        if len(fields) > 0 {
-            if item.Direction == orderAsc {
-		    	q = q.Order(Asc(fields...))
-		    } else {
-		    	q = q.Order(Desc(fields...))
-		    }
-        }
+		if len(fields) > 0 {
+			if item.Direction == orderAsc {
+				q = q.Order(Asc(fields...))
+			} else {
+				q = q.Order(Desc(fields...))
+			}
+		}
 	}
 	return q
 }
- 
+
 {{ if $t.ID }}
-// 按ID正序排序
+// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
 func (q *{{ $t.Name }}Query) OrderByID() *{{ $t.Name }}Query {
 	return q.Order({{ $t.Name | lower }}.ByID())
 }
 
-// 按ID倒序排序
+// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
 func (q *{{ $t.Name }}Query) OrderByIDDesc() *{{ $t.Name }}Query {
 	return q.Order({{ $t.Name | lower }}.ByID(sql.OrderDesc()))
 }
@@ -126,4 +142,3 @@ func (q *{{ $t.Name }}Query) OrderByIDDesc() *{{ $t.Name }}Query {
 {{ end }}
 
 {{ end }}
-
