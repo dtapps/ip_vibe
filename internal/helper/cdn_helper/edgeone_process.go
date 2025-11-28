@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 	"vibe_ip/internal/utils"
 
@@ -125,7 +126,26 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 			SetLastRefreshAt(time.Now()).
 			Exec(ctx)
 
-		if utils.DNSValuesEqual(queryDomain.DomainOrigin, params.DomainOrigin) {
+		var isUpdate = false
+
+		// 比较源站
+		if !utils.DNSValuesEqual(queryDomain.DomainOrigin, params.DomainOrigin) {
+			isUpdate = true
+		}
+		// 比较回源协议
+		if !strings.EqualFold(queryDomain.OriginProtocol, params.OriginProtocol) {
+			isUpdate = true
+		}
+		// 比较HTTP回源端口
+		if queryDomain.HttpOriginPort != params.HttpPort {
+			isUpdate = true
+		}
+		// 比较HTTPS回源端口
+		if queryDomain.HttpsOriginPort != params.HttpsPort {
+			isUpdate = true
+		}
+		// 判断是否需要更新
+		if !isUpdate {
 			service.Log.InfoContext(ctx, "无需更新")
 			return nil
 		}
@@ -352,7 +372,26 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 			SetLastRefreshAt(time.Now()).
 			Exec(ctx)
 
-		if queryGroup.GroupID == queryDomain.DomainOrigin {
+		var isUpdate = false
+
+		// 比较源站
+		if !strings.EqualFold(queryGroup.GroupID, queryDomain.DomainOrigin) {
+			isUpdate = true
+		}
+		// 比较回源协议
+		if !strings.EqualFold(queryDomain.OriginProtocol, params.OriginProtocol) {
+			isUpdate = true
+		}
+		// 比较HTTP回源端口
+		if queryDomain.HttpOriginPort != params.HttpPort {
+			isUpdate = true
+		}
+		// 比较HTTPS回源端口
+		if queryDomain.HttpsOriginPort != params.HttpsPort {
+			isUpdate = true
+		}
+		// 判断是否需要更新
+		if !isUpdate {
 			service.Log.InfoContext(ctx, "无需更新")
 			return nil
 		}

@@ -7,9 +7,11 @@ COPY ../../bin/reporter-linux-amd64 /app/ip_vibe_reporter
 # 工作区
 WORKDIR /app
 
+# 创建文件夹
+RUN mkdir -p /app/logs/
+
 # 设置权限
 RUN chmod +x /app/ip_vibe_reporter
-RUN mkdir -p /app/logs/
 
 # 设置时区为上海
 ENV TZ=Asia/Shanghai

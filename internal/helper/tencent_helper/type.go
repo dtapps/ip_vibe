@@ -56,8 +56,8 @@ type ResponseQueryDomain struct {
 				Origin     string `json:"Origin"`     // 源站地址
 			} `json:"OriginDetail"`
 			OriginProtocol  string `json:"OriginProtocol,omitempty"`  // 回源协议
-			HttpOriginPort  int64  `json:"HttpOriginPort,omitempty"`  // HTTP回源端口
-			HttpsOriginPort int64  `json:"HttpsOriginPort,omitempty"` // HTTPS回源端口
+			HttpOriginPort  int    `json:"HttpOriginPort,omitempty"`  // HTTP回源端口
+			HttpsOriginPort int    `json:"HttpsOriginPort,omitempty"` // HTTPS回源端口
 			Cname           string `json:"Cname"`                     // CNAME 地址
 		} `json:"AccelerationDomains"`
 	} `json:"Response"`

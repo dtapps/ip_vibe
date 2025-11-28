@@ -45,11 +45,14 @@ func (c *EdgeOneClient) EnableDebug() *EdgeOneClient {
 
 // 查询加速域名列表
 type ResponseEdgeOneQueryDomain struct {
-	DomainID     string // 域名ID
-	DomainName   string // 域名名称
-	DomainCname  string // 域名别名
-	DomainType   string // 源站类型
-	DomainOrigin string // 源站类型值
+	DomainID        string // 域名ID
+	DomainName      string // 域名名称
+	DomainCname     string // 域名别名
+	DomainType      string // 源站类型
+	DomainOrigin    string // 源站类型值
+	OriginProtocol  string // 回源协议
+	HttpOriginPort  int    // HTTP回源端口
+	HttpsOriginPort int    // HTTPS回源端口
 }
 
 // 查询加速域名列表
@@ -89,11 +92,14 @@ func (c *EdgeOneClient) QueryDomain(ctx context.Context, domainName string) (res
 	for _, item := range apiResp.Response.AccelerationDomains {
 		if item.DomainName == domainFull {
 			return ResponseEdgeOneQueryDomain{
-				DomainID:     item.DomainId,
-				DomainName:   item.DomainName,
-				DomainCname:  item.Cname,
-				DomainType:   item.OriginDetail.OriginType,
-				DomainOrigin: item.OriginDetail.Origin,
+				DomainID:        item.DomainId,
+				DomainName:      item.DomainName,
+				DomainCname:     item.Cname,
+				DomainType:      item.OriginDetail.OriginType,
+				DomainOrigin:    item.OriginDetail.Origin,
+				OriginProtocol:  item.OriginProtocol,
+				HttpOriginPort:  item.HttpOriginPort,
+				HttpsOriginPort: item.HttpsOriginPort,
 			}, nil
 		}
 	}

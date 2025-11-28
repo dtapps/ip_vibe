@@ -327,6 +327,13 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 				slog.String("domain_name", firstRecord.Domain),
 				slog.String("domain_origin", origins[0]),
 			)
+			// 清理不需要的端口
+			switch firstRecord.OriginProtocol {
+			case cdnrecord.OriginProtocolHTTP:
+				firstRecord.HTTPSPort = 0
+			case cdnrecord.OriginProtocolHTTPS:
+				firstRecord.HTTPPort = 0
+			}
 			err = cdn_helper.EdgeOneProcessSingleIP(
 				ctx,
 				cdn_helper.ProcessService{
@@ -353,6 +360,13 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 				slog.String("domain_name", firstRecord.Domain),
 				slog.Any("domain_origins", origins),
 			)
+			// 清理不需要的端口
+			switch firstRecord.OriginProtocol {
+			case cdnrecord.OriginProtocolHTTP:
+				firstRecord.HTTPSPort = 0
+			case cdnrecord.OriginProtocolHTTPS:
+				firstRecord.HTTPPort = 0
+			}
 			err = cdn_helper.EdgeOneProcessMultiIP(
 				ctx,
 				cdn_helper.ProcessService{

@@ -7,10 +7,12 @@ COPY ../../bin/backend-linux-amd64  /app/ip_vibe_backend
 # 工作区
 WORKDIR /app
 
-# 设置权限
-RUN chmod +x /app/ip_vibe_backend 
+# 创建文件夹
 RUN mkdir -p /app/data/
 RUN mkdir -p /app/logs/
+
+# 设置权限
+RUN chmod +x /app/ip_vibe_backend 
 
 # 设置时区为上海
 ENV TZ=Asia/Shanghai
