@@ -384,6 +384,8 @@ async function openCdnRecordModal(id) {
         document.getElementById('cdn_record_config_id').disabled = false;
         document.getElementById('cdn_record_domain').disabled = false;
         document.getElementById('cdn_record_type').disabled = false;
+        document.getElementById('cdn_record_http_port').value = 80;
+        document.getElementById('cdn_record_https_port').value = 443;
 
         openModal('cdnRecordModal', 'cdnRecordModalTitle', '添加 CDN记录');
     }

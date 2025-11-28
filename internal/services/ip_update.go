@@ -102,35 +102,68 @@ func (s *IpUpdateService) runDnsTask() {
 		All(ctx)
 	if err == nil {
 
-		eg, egCtx := errgroup.WithContext(ctx)
-		eg.SetLimit(10) // 最多 10 个并发
+		var concurrentRecords, serialRecords []*ent.DNSRecord
 
-		for _, vRecord := range allDnsRecord {
-			item := vRecord // 创建副本以避免闭包问题
-			eg.Go(func() error {
-
-				newLog := s.log.With(
-					slog.Int64("id", item.ID),
-					slog.String("record", "DNS"),
-					slog.String("type", item.Type.String()),
-					slog.String("domain", item.Domain),
-				)
-
-				if err = s.DnsUpdate(egCtx, newLog, item); err != nil {
-					newLog.ErrorContext(egCtx, "执行失败",
-						slog.Any("err", err),
-					)
-				}
-
-				// 返回nil而不是错误，这样单个DNS记录更新失败不会导致整个errgroup取消上下文
-				return nil
-			})
+		// 按策略分组
+		for _, item := range allDnsRecord {
+			if s.allowConcurrent(item.Edges.Config) {
+				concurrentRecords = append(concurrentRecords, item)
+			} else {
+				serialRecords = append(serialRecords, item)
+			}
 		}
 
-		if err = eg.Wait(); err != nil {
-			s.log.ErrorContext(ctx, "并发错误",
-				slog.Any("err", err),
+		// 1. 并发处理支持并发的记录
+		if len(concurrentRecords) > 0 {
+
+			eg, egCtx := errgroup.WithContext(ctx)
+			eg.SetLimit(10) // 最多 10 个并发
+
+			for _, vRecord := range concurrentRecords {
+				item := vRecord // 创建副本以避免闭包问题
+				eg.Go(func() error {
+
+					newLog := s.log.With(
+						slog.Int64("id", item.ID),
+						slog.String("record", "DNS"),
+						slog.String("type", item.Type.String()),
+						slog.String("domain", item.Domain),
+					)
+
+					if err = s.DnsUpdate(egCtx, newLog, item); err != nil {
+						newLog.ErrorContext(egCtx, "并发处理失败",
+							slog.Any("err", err),
+						)
+					}
+
+					// 返回nil而不是错误，这样单个DNS记录更新失败不会导致整个errgroup取消上下文
+					return nil
+				})
+			}
+
+			if err = eg.Wait(); err != nil {
+				s.log.ErrorContext(ctx, "并发处理错误",
+					slog.Any("err", err),
+				)
+			}
+
+		}
+		// 2. 串行处理不支持并发的记录
+		for _, item := range serialRecords {
+
+			newLog := s.log.With(
+				slog.Int64("id", item.ID),
+				slog.String("record", "DNS"),
+				slog.String("type", item.Type.String()),
+				slog.String("domain", item.Domain),
 			)
+
+			if err = s.DnsUpdate(ctx, newLog, item); err != nil {
+				newLog.ErrorContext(ctx, "串行处理失败",
+					slog.Any("err", err),
+				)
+			}
+
 		}
 
 	}
@@ -163,35 +196,68 @@ func (s *IpUpdateService) runCdnTask() {
 		All(ctx)
 	if err == nil {
 
-		eg, egCtx := errgroup.WithContext(ctx)
-		eg.SetLimit(10) // 最多 10 个并发
+		var concurrentRecords, serialRecords []*ent.CDNRecord
 
-		for _, vRecord := range allCdnRecord {
-			item := vRecord // 创建副本以避免闭包问题
-			eg.Go(func() error {
-
-				newLog := s.log.With(
-					slog.Int64("id", item.ID),
-					slog.String("record", "CDN"),
-					slog.String("type", item.Type.String()),
-					slog.String("domain", item.Domain),
-				)
-
-				if err = s.CdnUpdate(egCtx, newLog, item); err != nil {
-					newLog.ErrorContext(egCtx, "执行失败",
-						slog.Any("err", err),
-					)
-				}
-
-				// 返回nil而不是错误，这样单个CDN记录更新失败不会导致整个errgroup取消上下文
-				return nil
-			})
+		// 按策略分组
+		for _, item := range allCdnRecord {
+			if s.allowConcurrent(item.Edges.Config) {
+				concurrentRecords = append(concurrentRecords, item)
+			} else {
+				serialRecords = append(serialRecords, item)
+			}
 		}
 
-		if err = eg.Wait(); err != nil {
-			s.log.ErrorContext(ctx, "并发错误",
-				slog.Any("err", err),
+		// 1. 并发处理支持并发的记录
+		if len(concurrentRecords) > 0 {
+
+			eg, egCtx := errgroup.WithContext(ctx)
+			eg.SetLimit(10) // 最多 10 个并发
+
+			for _, vRecord := range concurrentRecords {
+				item := vRecord // 创建副本以避免闭包问题
+				eg.Go(func() error {
+
+					newLog := s.log.With(
+						slog.Int64("id", item.ID),
+						slog.String("record", "CDN"),
+						slog.String("type", item.Type.String()),
+						slog.String("domain", item.Domain),
+					)
+
+					if err = s.CdnUpdate(egCtx, newLog, item); err != nil {
+						newLog.ErrorContext(egCtx, "并发处理失败",
+							slog.Any("err", err),
+						)
+					}
+
+					// 返回nil而不是错误，这样单个DNS记录更新失败不会导致整个errgroup取消上下文
+					return nil
+				})
+			}
+
+			if err = eg.Wait(); err != nil {
+				s.log.ErrorContext(ctx, "并发处理错误",
+					slog.Any("err", err),
+				)
+			}
+
+		}
+		// 2. 串行处理不支持并发的记录
+		for _, item := range serialRecords {
+
+			newLog := s.log.With(
+				slog.Int64("id", item.ID),
+				slog.String("record", "CDN"),
+				slog.String("type", item.Type.String()),
+				slog.String("domain", item.Domain),
 			)
+
+			if err = s.CdnUpdate(ctx, newLog, item); err != nil {
+				newLog.ErrorContext(ctx, "串行处理失败",
+					slog.Any("err", err),
+				)
+			}
+
 		}
 
 	}
@@ -429,4 +495,11 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 		return fmt.Errorf("不支持类型: %s", firstConfig.Platform)
 	}
 
+}
+func (s *IpUpdateService) allowConcurrent(item *ent.PlatformConfig) bool {
+	// EdgeOne 平台不支持并发，串行；其他并发
+	if item.Platform == platformconfig.PlatformEdgeone {
+		return false
+	}
+	return true
 }
