@@ -1,16 +1,16 @@
 {{ define "debug" }}
 
-{{/* The line below tells Intellij/GoLand to enable the autocompletion based *gen.Graph type. */}}
+{{/* 以下行告诉IntelliJ/GoLand启用基于*gen.Graph类型的自动完成 */}}
 {{/* gotype: entgo.io/ent/entc/gen.Graph */}}
 
 {{/* A template that will be generated to a file named "debug.go" and
      add the functionality for running each client <T> in debug mode. */}}
 
-{{/* Add the base header for the generated file. */}}
+{{/* 添加生成的文件的基头信息 */}}
 {{ $pkg := base $.Config.Package }}
 {{ template "header" $ }}
 
-{{/* Loop over all nodes and add option the "Debug()" method. */}}
+{{/* 循环所有节点，并添加选项 Debug() 方法 */}}
 {{ range $n := $.Nodes }}
 	{{ $client := print $n.Name "Client" }}
 	func (c *{{ $client }}) Debug() *{{ $client }} {
