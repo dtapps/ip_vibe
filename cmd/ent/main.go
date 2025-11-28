@@ -17,6 +17,7 @@ func main() {
 			"./ent/template/debug.tmpl",
 			// "./ent/template/stringer.tmpl",
 			"./ent/template/aggregate.tmpl",
+			"./ent/template/order_by.tmpl",
 		),
 	}
 	err := entc.Generate("./ent/schema", &gen.Config{
