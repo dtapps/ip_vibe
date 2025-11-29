@@ -312,19 +312,10 @@
                   <svg class="ip-i">
                     <use href="/static/icons.svg#ip-edit" />
                   </svg> 编辑</button>
-                {{if ne .Code $.DeviceCode}}
                 <button class="btn btn-sm btn-danger" onclick="deleteDevice('{{.ID}}')">
                   <svg class="ip-i">
                     <use href="/static/icons.svg#ip-delete" />
                   </svg> 删除</button>
-                {{else}}
-                <span class="btn-tooltip-wrapper" title="自注册设备不允许删除">
-                  <button class="btn btn-sm btn-danger" disabled>
-                    <svg class="ip-i">
-                      <use href="/static/icons.svg#ip-delete" />
-                    </svg> 删除</button>
-                </span>
-                {{end}}
               </td>
             </tr>
             {{end}}
@@ -374,19 +365,10 @@
                   <svg class="ip-i">
                     <use href="/static/icons.svg#ip-edit" />
                   </svg> 编辑</button>
-                {{if ne .Description $.DeviceCode}}
                 <button class="btn btn-sm btn-danger" onclick="deleteIpGroup('{{.ID}}')">
                   <svg class="ip-i">
                     <use href="/static/icons.svg#ip-delete" />
                   </svg> 删除</button>
-                {{else}}
-                <span class="btn-tooltip-wrapper" title="自注册设备关联IP组不允许删除">
-                  <button class="btn btn-sm btn-danger" disabled>
-                    <svg class="ip-i">
-                      <use href="/static/icons.svg#ip-delete" />
-                    </svg> 删除</button>
-                </span>
-                {{end}}
               </td>
             </tr>
             {{end}}
@@ -1064,13 +1046,14 @@
 
           <div class="form-group">
             <label>选择协议（Ctrl/⌘ 多选） <span style="color:red">*</span></label>
-            <select name="protocols" id="port_forward_protocols" required multiple onchange="onPortForwardProtocolsSelect(this)"
-              class="multiselect-protocol"></select>
+            <select name="protocols" id="port_forward_protocols" required multiple
+              onchange="onPortForwardProtocolsSelect(this)" class="multiselect-protocol"></select>
           </div>
 
           <div class="form-group">
             <label>选择设备<span style="color:red">*</span></label>
-            <select name="device_id" id="port_forward_device_id" required onchange="onPortForwardDeviceIdSelect(this)"></select>
+            <select name="device_id" id="port_forward_device_id" required
+              onchange="onPortForwardDeviceIdSelect(this)"></select>
           </div>
 
           <!-- 隐藏字段 -->

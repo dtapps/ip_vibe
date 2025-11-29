@@ -81,7 +81,6 @@
             type: UPLOAD
             tag: ${INTERIOR_VERSION}
             attachments:
-              - "bin/cli-*"
               - "bin/backend-*"
               - "bin/reporter-*"
               - "bin/forwarder-*"

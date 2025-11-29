@@ -33,10 +33,3 @@ type GetDeviceIpHistoryRequest struct {
 	IPV6      string    `json:"ip_v6"`      // IP地址V6
 	CreatedAt time.Time `json:"created_at"` // 创建时间
 }
-
-// 上报设备IP 请求结构
-type ReportDeviceIpRequest struct {
-	DeviceName string `json:"device_name,omitempty"` // 设备名称
-	IPV4Addr   string `json:"ipv4_addr,omitempty"`   // IP地址V4
-	IPV6Addr   string `json:"ipv6_addr,omitempty"`   // IP地址V6
-}

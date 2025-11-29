@@ -3,10 +3,10 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"vibe_ip/internal/backend"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/initialize"
-	"vibe_ip/internal/services"
 
 	"github.com/gin-gonic/gin"
 )
@@ -82,22 +82,13 @@ func StartTask(c *gin.Context) {
 	// 启动 GoCron 调度器
 	initialize.StartGoCron()
 	if len(jobs) == 0 {
-		// 启动IP上报任务
-		ipRepost := services.NewIpReportService(global.GvaDb, global.GvaGoCron)
-		if err := ipRepost.StartJob(c); err != nil {
+		// 启动CDN刷新任务
+		ipUpdate := backend.NewIpUpdateService(global.GvaDb, global.GvaGoCron)
+		if err := ipUpdate.StartCdnJob(c); err != nil {
 			if global.GvaEnv.DEBUG {
-				fmt.Printf("启动IP上报任务失败: %s\n", err.Error())
+				fmt.Printf("启动CDN刷新任务失败: %s\n", err.Error())
 			}
-			errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("启动IP上报任务失败: %v", err))
-			return
-		}
-		// 启动IP更新任务
-		ipUpdate := services.NewIpUpdateService(global.GvaDb, global.GvaGoCron)
-		if err := ipUpdate.StartDnsJob(c); err != nil {
-			if global.GvaEnv.DEBUG {
-				fmt.Printf("启动DNS更新任务失败: %s\n", err.Error())
-			}
-			errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("启动DNS更新任务失败: %v", err))
+			errorResponse(c, http.StatusInternalServerError, fmt.Sprintf("启动CDN刷新任务失败: %v", err))
 			return
 		}
 	}

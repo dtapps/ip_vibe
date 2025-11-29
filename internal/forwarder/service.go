@@ -3,7 +3,6 @@ package forwarder
 import (
 	"context"
 	"log/slog"
-	"strings"
 	"time"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/types"
@@ -50,22 +49,7 @@ func (s *Service) SetDebug(debug bool) *Service {
 
 // SetBaseURL 设置基础URL
 func (s *Service) SetBaseURL(url string) *Service {
-
-	// 检查地址
-	altPath := "api/devices/{device_code}/port-forwards"
-	targetPath := "/" + altPath
-
-	// 规范化URL，移除末尾可能的斜杠
-	url = strings.TrimSuffix(url, "/")
-
-	// 检查并移除已存在的路径后缀
-	if strings.HasSuffix(url, targetPath) {
-		url = strings.TrimSuffix(url, targetPath)
-	} else if strings.HasSuffix(url, altPath) {
-		url = strings.TrimSuffix(url, altPath)
-	}
-
-	s.client.SetBaseURL(url + targetPath)
+	s.client.SetBaseURL(url)
 	return s
 }
 
@@ -119,9 +103,11 @@ func (s *Service) httpApi(ctx context.Context, deviceCode string) (response Http
 	// 使用 Resty 发送请求
 	resp, err := s.client.R().
 		SetContext(ctx).
-		SetPathParam("device_code", deviceCode).
+		SetPathParams(map[string]string{
+			"device_code": deviceCode,
+		}).
 		SetResult(&response).
-		Get("")
+		Get("api/open/device/{device_code}/port-forwards")
 	if err != nil {
 		return response, err
 	}

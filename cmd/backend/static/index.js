@@ -875,12 +875,6 @@ async function openIpGroupModal(id) {
                 Array.from(deviceSelect.options).forEach(opt => opt.selected = ipGroup.devices.includes(Number(opt.value)));
             }
 
-            if (ipGroup.description == window.deviceCode) {
-                document.getElementById('ip_group_description').disabled = true;
-            } else {
-                document.getElementById('ip_group_description').disabled = false;
-            }
-
             openModal('ipGroupModal', 'ipGroupModalTitle', '编辑 IP 组');
         }
 
@@ -888,7 +882,6 @@ async function openIpGroupModal(id) {
         if (!id) {
             document.getElementById('ip_group_id').value = '';
             document.getElementById('ip_group_id').disabled = true;
-            document.getElementById('ip_group_description').disabled = false;
 
             openModal('ipGroupModal', 'ipGroupModalTitle', '添加 IP 组');
         }

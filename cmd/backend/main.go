@@ -11,10 +11,10 @@ import (
 	"os"
 	"runtime"
 	"time"
+	"vibe_ip/internal/backend"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/initialize"
-	"vibe_ip/internal/services"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
@@ -197,8 +197,6 @@ func main() {
 			devices.PATCH("/:id", handlers.UpdateDevice)
 			devices.DELETE("/:id", handlers.DeleteDevice)
 			devices.GET("/:id/ip-history", handlers.GetDeviceIpHistory)
-			devices.POST("/:device_code/ip-report", handlers.ReportDeviceIp)           // open api
-			devices.GET("/:device_code/port-forwards", handlers.GetDevicePortForwards) // open api
 		}
 
 		// IP组相关API
@@ -257,37 +255,23 @@ func main() {
 			tasks.POST("/stop", handlers.StopTask)
 			tasks.POST("/clean", handlers.CleanTask)
 		}
-	}
 
-	// 健康检查端点
-	router.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status":  "ok",
-			"message": "DDNS管理平台服务运行正常",
-		})
-	})
+		opens := api.Group("/open")
+		{
+			opens.POST("/device/:device_code/ip-report", handlers.DeviceReportDeviceIp)  // open api
+			opens.GET("/device/:device_code/port-forwards", handlers.DevicePortForwards) // open api
+		}
+	}
 
 	// 启动 GoCron 调度器
 	initialize.StartGoCron()
 
-	// 启动IP上报任务
-	ipRepost := services.NewIpReportService(global.GvaDb, global.GvaGoCron)
-	if err := ipRepost.StartJob(ctx); err != nil {
-		fmt.Printf("启动IP上报任务失败: %v\n", err)
-		os.Exit(1)
-	}
-
-	// 启动IP更新任务
-	ipUpdate := services.NewIpUpdateService(global.GvaDb, global.GvaGoCron)
+	// 启动CDN刷新任务
+	ipUpdate := backend.NewIpUpdateService(global.GvaDb, global.GvaGoCron)
 	if err := ipUpdate.StartCdnJob(ctx); err != nil {
 		fmt.Printf("启动CDN刷新任务失败: %v\n", err)
 		os.Exit(1)
 	}
-
-	// 启动服务器
-	// fmt.Printf("DDNS管理平台启动在 http://localhost%s\n", global.GvaEnv.HTTP_PORT)
-	// fmt.Printf("健康检查地址: http://localhost%s/health\n", global.GvaEnv.HTTP_PORT)
-	// fmt.Println("按 Ctrl+C 停止服务")
 
 	// 使用Gin的Run方法启动服务器
 	if err := router.Run(global.GvaEnv.HTTP_PORT); err != nil {
