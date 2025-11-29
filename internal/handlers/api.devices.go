@@ -402,12 +402,20 @@ func ReportDeviceIp(c *gin.Context) {
 	})
 }
 
+// 获取设备端口转发
 func GetDevicePortForwards(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.GetDevicePortForwardsRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("GetDevicePortForwards params: %+v\n", requestParams)
+	}
 	// 查询设备
 	firstDevice, err := global.GvaDb.Device.Query().
-		Where(device.ID(cast.ToInt64(id))).
+		Where(device.CodeEQ(requestParams.DeviceCode)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())

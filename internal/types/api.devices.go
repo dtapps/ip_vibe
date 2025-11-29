@@ -43,3 +43,8 @@ type ReportDeviceIpRequest struct {
 	IPV4Addr    string `json:"ipv4_addr,omitempty"`   // IP地址V4
 	IPV6Addr    string `json:"ipv6_addr,omitempty"`   // IP地址V6
 }
+
+// 获取设备端口转发 请求结构
+type GetDevicePortForwardsRequest struct {
+	DeviceCode string `json:"device_code"` // 设备编号
+}

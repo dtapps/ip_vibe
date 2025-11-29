@@ -3,6 +3,7 @@ package reporter
 import (
 	"context"
 	"log/slog"
+	"strings"
 	"sync"
 	"time"
 	"vibe_ip/internal/global"
@@ -43,24 +44,41 @@ func NewService(cron gocron.Scheduler) *Service {
 	}
 }
 
-// EnableDebug 开启调试模式
-func (s *Service) EnableDebug() *Service {
-	s.client.EnableDebug()
+// SetDebug 设置调试模式
+func (s *Service) SetDebug(debug bool) *Service {
+	s.client.SetDebug(debug)
 	return s
 }
 
 // SetBaseURL 设置基础URL
 func (s *Service) SetBaseURL(url string) *Service {
-	s.client.SetBaseURL(url)
+
+	// 规范化HTTP_URL并确保以/api/devices/ip-report结尾
+	// 首先移除可能存在的重复api/devices/ip-report或/api/devices/ip-report后缀
+	targetPath := "/api/devices/ip-report"
+	altPath := "api/devices/ip-report"
+
+	// 规范化URL，移除末尾可能的斜杠
+	url = strings.TrimSuffix(url, "/")
+
+	// 检查并移除已存在的路径后缀
+	if strings.HasSuffix(url, targetPath) {
+		url = strings.TrimSuffix(url, targetPath)
+	} else if strings.HasSuffix(url, altPath) {
+		url = strings.TrimSuffix(url, altPath)
+	}
+
+	s.client.SetBaseURL(url + targetPath)
 	return s
 }
 
 // 设置基本认证
 func (s *Service) SetBasicAuth(username, password string) *Service {
-	s.client.SetBasicAuth(username, password)
+	if username != "" && password != "" {
+		s.client.SetBasicAuth(username, password)
+	}
 	return s
 }
-
 func (s *Service) StartJob(ctx context.Context) (err error) {
 	// 每8到12分钟执行一次
 	s.job, err = s.cron.NewJob(

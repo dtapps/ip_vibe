@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	// 从环境变量获取 [backend][reporter] 是否开启调试模式
+	// 从环境变量获取 [backend][reporter][forwarder] 是否开启调试模式
 	global.GvaEnv.DEBUG = os.Getenv("DEBUG") == "true"
 
 	// 从环境变量获取 [backend] HTTP 端口
@@ -23,10 +23,10 @@ func init() {
 		global.GvaEnv.HTTP_PORT = ":" + global.GvaEnv.HTTP_PORT
 	}
 
-	// 从环境变量获取 [reporter] HTTP URL
+	// 从环境变量获取 [reporter][forwarder] HTTP URL
 	global.GvaEnv.HTTP_URL = os.Getenv("HTTP_URL")
 
-	// 从环境变量获取 [backend][reporter] 基本认证用户名和密码
+	// 从环境变量获取 [backend][reporter][forwarder] 基本认证用户名和密码
 	global.GvaEnv.BASIC_AUTH_USERNAME = os.Getenv("BASIC_AUTH_USERNAME")
 	global.GvaEnv.BASIC_AUTH_PASSWORD = os.Getenv("BASIC_AUTH_PASSWORD")
 
@@ -35,7 +35,7 @@ func init() {
 		fmt.Printf("BasicAuth 用户名: %s, 密码: %s\n", global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
 	}
 
-	// 从环境变量获取 [backend][reporter] 设备代码
+	// 从环境变量获取 [backend][reporter][forwarder] 设备代码
 	global.GvaEnv.DEVICE_CODE = os.Getenv("DEVICE_CODE")
 
 	// 从环境变量获取 [backend][reporter] 设备名称

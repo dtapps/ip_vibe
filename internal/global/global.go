@@ -17,12 +17,12 @@ import (
 // GvaConfig 变量
 var (
 	GvaEnv struct {
-		DEBUG               bool   // [backend][reporter] 是否开启调试模式
+		DEBUG               bool   // [backend][reporter][forwarder] 是否开启调试模式
 		HTTP_PORT           string // [backend] HTTP 端口
-		HTTP_URL            string // [reporter] HTTP URL
-		BASIC_AUTH_USERNAME string // [backend][reporter] 基本认证用户名
-		BASIC_AUTH_PASSWORD string // [backend][reporter] 基本认证密码
-		DEVICE_CODE         string // [backend][reporter] 设备代码
+		HTTP_URL            string // [reporter][forwarder] HTTP URL
+		BASIC_AUTH_USERNAME string // [backend][reporter][forwarder] 基本认证用户名
+		BASIC_AUTH_PASSWORD string // [backend][reporter][forwarder] 基本认证密码
+		DEVICE_CODE         string // [backend][reporter][forwarder] 设备代码
 		DEVICE_NAME         string // [backend][reporter] 设备名称
 	}
 	GvaVersion   string // 版本号
