@@ -9,6 +9,7 @@ import (
 	"math"
 	"vibe_ip/ent/device"
 	"vibe_ip/ent/deviceipreport"
+	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/ipgroupdevice"
 	"vibe_ip/ent/predicate"
@@ -28,10 +29,12 @@ type DeviceQuery struct {
 	predicates             []predicate.Device
 	withIPReports          *DeviceIpReportQuery
 	withIPGroups           *IpGroupQuery
+	withPortForwards       *DevicePortForwardQuery
 	withIPGroupDevice      *IpGroupDeviceQuery
 	modifiers              []func(*sql.Selector)
 	withNamedIPReports     map[string]*DeviceIpReportQuery
 	withNamedIPGroups      map[string]*IpGroupQuery
+	withNamedPortForwards  map[string]*DevicePortForwardQuery
 	withNamedIPGroupDevice map[string]*IpGroupDeviceQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -106,6 +109,28 @@ func (_q *DeviceQuery) QueryIPGroups() *IpGroupQuery {
 			sqlgraph.From(device.Table, device.FieldID, selector),
 			sqlgraph.To(ipgroup.Table, ipgroup.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, device.IPGroupsTable, device.IPGroupsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPortForwards chains the current query on the "port_forwards" edge.
+func (_q *DeviceQuery) QueryPortForwards() *DevicePortForwardQuery {
+	query := (&DevicePortForwardClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(device.Table, device.FieldID, selector),
+			sqlgraph.To(deviceportforward.Table, deviceportforward.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, device.PortForwardsTable, device.PortForwardsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -329,6 +354,7 @@ func (_q *DeviceQuery) Clone() *DeviceQuery {
 		predicates:        append([]predicate.Device{}, _q.predicates...),
 		withIPReports:     _q.withIPReports.Clone(),
 		withIPGroups:      _q.withIPGroups.Clone(),
+		withPortForwards:  _q.withPortForwards.Clone(),
 		withIPGroupDevice: _q.withIPGroupDevice.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
@@ -356,6 +382,17 @@ func (_q *DeviceQuery) WithIPGroups(opts ...func(*IpGroupQuery)) *DeviceQuery {
 		opt(query)
 	}
 	_q.withIPGroups = query
+	return _q
+}
+
+// WithPortForwards tells the query-builder to eager-load the nodes that are connected to
+// the "port_forwards" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *DeviceQuery) WithPortForwards(opts ...func(*DevicePortForwardQuery)) *DeviceQuery {
+	query := (&DevicePortForwardClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withPortForwards = query
 	return _q
 }
 
@@ -448,9 +485,10 @@ func (_q *DeviceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Devic
 	var (
 		nodes       = []*Device{}
 		_spec       = _q.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			_q.withIPReports != nil,
 			_q.withIPGroups != nil,
+			_q.withPortForwards != nil,
 			_q.withIPGroupDevice != nil,
 		}
 	)
@@ -494,6 +532,18 @@ func (_q *DeviceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Devic
 			return nil, err
 		}
 	}
+	if query := _q.withPortForwards; query != nil {
+		if err := _q.loadPortForwards(ctx, query, nodes,
+			func(n *Device) { n.Edges.PortForwards = []*DevicePortForward{} },
+			func(n *Device, e *DevicePortForward) {
+				n.Edges.PortForwards = append(n.Edges.PortForwards, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Device = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
 	if query := _q.withIPGroupDevice; query != nil {
 		if err := _q.loadIPGroupDevice(ctx, query, nodes,
 			func(n *Device) { n.Edges.IPGroupDevice = []*IpGroupDevice{} },
@@ -522,6 +572,18 @@ func (_q *DeviceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Devic
 		if err := _q.loadIPGroups(ctx, query, nodes,
 			func(n *Device) { n.appendNamedIPGroups(name) },
 			func(n *Device, e *IpGroup) { n.appendNamedIPGroups(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedPortForwards {
+		if err := _q.loadPortForwards(ctx, query, nodes,
+			func(n *Device) { n.appendNamedPortForwards(name) },
+			func(n *Device, e *DevicePortForward) {
+				n.appendNamedPortForwards(name, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Device = n
+				}
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -628,6 +690,37 @@ func (_q *DeviceQuery) loadIPGroups(ctx context.Context, query *IpGroupQuery, no
 		for kn := range nodes {
 			assign(kn, n)
 		}
+	}
+	return nil
+}
+func (_q *DeviceQuery) loadPortForwards(ctx context.Context, query *DevicePortForwardQuery, nodes []*Device, init func(*Device), assign func(*Device, *DevicePortForward)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int64]*Device)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.DevicePortForward(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(device.PortForwardsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.device_port_forwards
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "device_port_forwards" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "device_port_forwards" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }
@@ -780,6 +873,20 @@ func (_q *DeviceQuery) WithNamedIPGroups(name string, opts ...func(*IpGroupQuery
 		_q.withNamedIPGroups = make(map[string]*IpGroupQuery)
 	}
 	_q.withNamedIPGroups[name] = query
+	return _q
+}
+
+// WithNamedPortForwards tells the query-builder to eager-load the nodes that are connected to the "port_forwards"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *DeviceQuery) WithNamedPortForwards(name string, opts ...func(*DevicePortForwardQuery)) *DeviceQuery {
+	query := (&DevicePortForwardClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedPortForwards == nil {
+		_q.withNamedPortForwards = make(map[string]*DevicePortForwardQuery)
+	}
+	_q.withNamedPortForwards[name] = query
 	return _q
 }
 

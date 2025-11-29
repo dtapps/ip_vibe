@@ -188,6 +188,33 @@ var (
 			},
 		},
 	}
+	// DevicePortForwardColumns holds the columns for the "device_port_forward" table.
+	DevicePortForwardColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "设备端口转发序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "local_port", Type: field.TypeInt, Comment: "本地监听端口"},
+		{Name: "remote_host", Type: field.TypeString, Comment: "远程目标地址"},
+		{Name: "remote_port", Type: field.TypeInt, Comment: "远程目标端口"},
+		{Name: "protocols", Type: field.TypeJSON, Comment: "协议列表，支持 tcp4, tcp6, udp4, udp6"},
+		{Name: "enabled", Type: field.TypeBool, Comment: "是否启用", Default: false},
+		{Name: "device_port_forwards", Type: field.TypeInt64},
+	}
+	// DevicePortForwardTable holds the schema information for the "device_port_forward" table.
+	DevicePortForwardTable = &schema.Table{
+		Name:       "device_port_forward",
+		Comment:    "设备端口转发",
+		Columns:    DevicePortForwardColumns,
+		PrimaryKey: []*schema.Column{DevicePortForwardColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "device_port_forward_device_port_forwards",
+				Columns:    []*schema.Column{DevicePortForwardColumns[8]},
+				RefColumns: []*schema.Column{DeviceColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// IPGroupColumns holds the columns for the "ip_group" table.
 	IPGroupColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "IP组序号"},
@@ -364,6 +391,7 @@ var (
 		DNSRecordTable,
 		DeviceTable,
 		DeviceIPReportTable,
+		DevicePortForwardTable,
 		IPGroupTable,
 		IPGroupDeviceTable,
 		OperationLogTable,
@@ -391,6 +419,10 @@ func init() {
 	DeviceIPReportTable.ForeignKeys[0].RefTable = DeviceTable
 	DeviceIPReportTable.Annotation = &entsql.Annotation{
 		Table: "device_ip_report",
+	}
+	DevicePortForwardTable.ForeignKeys[0].RefTable = DeviceTable
+	DevicePortForwardTable.Annotation = &entsql.Annotation{
+		Table: "device_port_forward",
 	}
 	IPGroupTable.Annotation = &entsql.Annotation{
 		Table: "ip_group",

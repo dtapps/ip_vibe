@@ -601,6 +601,29 @@ func HasIPGroupsWith(preds ...predicate.IpGroup) predicate.Device {
 	})
 }
 
+// HasPortForwards applies the HasEdge predicate on the "port_forwards" edge.
+func HasPortForwards() predicate.Device {
+	return predicate.Device(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PortForwardsTable, PortForwardsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPortForwardsWith applies the HasEdge predicate on the "port_forwards" edge with a given conditions (other predicates).
+func HasPortForwardsWith(preds ...predicate.DevicePortForward) predicate.Device {
+	return predicate.Device(func(s *sql.Selector) {
+		step := newPortForwardsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasIPGroupDevice applies the HasEdge predicate on the "ip_group_device" edge.
 func HasIPGroupDevice() predicate.Device {
 	return predicate.Device(func(s *sql.Selector) {

@@ -11,6 +11,7 @@ import (
 	"vibe_ip/ent/cdnrecord"
 	"vibe_ip/ent/device"
 	"vibe_ip/ent/deviceipreport"
+	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/ent/dnsrecord"
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/ipgroupdevice"
@@ -86,6 +87,7 @@ func checkColumn(t, c string) error {
 			dnsrecord.Table:           dnsrecord.ValidColumn,
 			device.Table:              device.ValidColumn,
 			deviceipreport.Table:      deviceipreport.ValidColumn,
+			deviceportforward.Table:   deviceportforward.ValidColumn,
 			ipgroup.Table:             ipgroup.ValidColumn,
 			ipgroupdevice.Table:       ipgroupdevice.ValidColumn,
 			operationlog.Table:        operationlog.ValidColumn,

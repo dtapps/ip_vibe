@@ -19,7 +19,6 @@ func main() {
 			"./ent/template/aggregate.tmpl",
 			"./ent/template/order_by.tmpl",
 			"./ent/template/pagination.tmpl",
-			"./ent/template/soft_delete.tmpl",
 			"./ent/template/to_map.tmpl",
 		),
 	}

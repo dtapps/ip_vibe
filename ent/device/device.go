@@ -34,6 +34,8 @@ const (
 	EdgeIPReports = "ip_reports"
 	// EdgeIPGroups holds the string denoting the ip_groups edge name in mutations.
 	EdgeIPGroups = "ip_groups"
+	// EdgePortForwards holds the string denoting the port_forwards edge name in mutations.
+	EdgePortForwards = "port_forwards"
 	// EdgeIPGroupDevice holds the string denoting the ip_group_device edge name in mutations.
 	EdgeIPGroupDevice = "ip_group_device"
 	// Table holds the table name of the device in the database.
@@ -50,6 +52,13 @@ const (
 	// IPGroupsInverseTable is the table name for the IpGroup entity.
 	// It exists in this package in order to avoid circular dependency with the "ipgroup" package.
 	IPGroupsInverseTable = "ip_group"
+	// PortForwardsTable is the table that holds the port_forwards relation/edge.
+	PortForwardsTable = "device_port_forward"
+	// PortForwardsInverseTable is the table name for the DevicePortForward entity.
+	// It exists in this package in order to avoid circular dependency with the "deviceportforward" package.
+	PortForwardsInverseTable = "device_port_forward"
+	// PortForwardsColumn is the table column denoting the port_forwards relation/edge.
+	PortForwardsColumn = "device_port_forwards"
 	// IPGroupDeviceTable is the table that holds the ip_group_device relation/edge.
 	IPGroupDeviceTable = "ip_group_device"
 	// IPGroupDeviceInverseTable is the table name for the IpGroupDevice entity.
@@ -173,6 +182,20 @@ func ByIPGroups(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByPortForwardsCount orders the results by port_forwards count.
+func ByPortForwardsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPortForwardsStep(), opts...)
+	}
+}
+
+// ByPortForwards orders the results by port_forwards terms.
+func ByPortForwards(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPortForwardsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByIPGroupDeviceCount orders the results by ip_group_device count.
 func ByIPGroupDeviceCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -198,6 +221,13 @@ func newIPGroupsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(IPGroupsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, IPGroupsTable, IPGroupsPrimaryKey...),
+	)
+}
+func newPortForwardsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PortForwardsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, PortForwardsTable, PortForwardsColumn),
 	)
 }
 func newIPGroupDeviceStep() *sqlgraph.Step {

@@ -48,6 +48,17 @@ func (c *DeviceIpReportClient) Debug() *DeviceIpReportClient {
 	return &DeviceIpReportClient{config: cfg}
 }
 
+// Debug 返回一个新的 DevicePortForwardClient 实例，该实例在执行数据库操作时会打印详细的 SQL 日志。
+// 如果当前客户端已处于 Debug 模式，则直接返回自身。
+// 此方法常用于开发或排查问题时，用于观察生成的 SQL 语句及执行参数。
+func (c *DevicePortForwardClient) Debug() *DevicePortForwardClient {
+	if c.debug {
+		return c
+	}
+	cfg := config{driver: dialect.Debug(c.driver, c.log), log: c.log, debug: true, hooks: c.hooks}
+	return &DevicePortForwardClient{config: cfg}
+}
+
 // Debug 返回一个新的 IpGroupClient 实例，该实例在执行数据库操作时会打印详细的 SQL 日志。
 // 如果当前客户端已处于 Debug 模式，则直接返回自身。
 // 此方法常用于开发或排查问题时，用于观察生成的 SQL 语句及执行参数。

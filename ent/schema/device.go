@@ -89,6 +89,13 @@ func (Device) Edges() []ent.Edge {
 			Through("ip_group_device", IpGroupDevice.Type).
 			Comment("关联的IP组").
 			Annotations(entsql.WithComments(true)),
+
+		edge.To("port_forwards", DevicePortForward.Type).
+			Comment("设备的端口转发规则").
+			Annotations(entsql.Annotation{
+				// 级联删除：删除 Device 时，其所有 DeviceIpReport 记录也应删除
+				OnDelete: entsql.Cascade,
+			}, entsql.WithComments(true)),
 	}
 }
 

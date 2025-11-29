@@ -9,6 +9,7 @@ import (
 	"time"
 	"vibe_ip/ent/device"
 	"vibe_ip/ent/deviceipreport"
+	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/predicate"
 
@@ -161,6 +162,21 @@ func (_u *DeviceUpdate) AddIPGroups(v ...*IpGroup) *DeviceUpdate {
 	return _u.AddIPGroupIDs(ids...)
 }
 
+// AddPortForwardIDs adds the "port_forwards" edge to the DevicePortForward entity by IDs.
+func (_u *DeviceUpdate) AddPortForwardIDs(ids ...int64) *DeviceUpdate {
+	_u.mutation.AddPortForwardIDs(ids...)
+	return _u
+}
+
+// AddPortForwards adds the "port_forwards" edges to the DevicePortForward entity.
+func (_u *DeviceUpdate) AddPortForwards(v ...*DevicePortForward) *DeviceUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddPortForwardIDs(ids...)
+}
+
 // Mutation returns the DeviceMutation object of the builder.
 func (_u *DeviceUpdate) Mutation() *DeviceMutation {
 	return _u.mutation
@@ -206,6 +222,27 @@ func (_u *DeviceUpdate) RemoveIPGroups(v ...*IpGroup) *DeviceUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveIPGroupIDs(ids...)
+}
+
+// ClearPortForwards clears all "port_forwards" edges to the DevicePortForward entity.
+func (_u *DeviceUpdate) ClearPortForwards() *DeviceUpdate {
+	_u.mutation.ClearPortForwards()
+	return _u
+}
+
+// RemovePortForwardIDs removes the "port_forwards" edge to DevicePortForward entities by IDs.
+func (_u *DeviceUpdate) RemovePortForwardIDs(ids ...int64) *DeviceUpdate {
+	_u.mutation.RemovePortForwardIDs(ids...)
+	return _u
+}
+
+// RemovePortForwards removes "port_forwards" edges to DevicePortForward entities.
+func (_u *DeviceUpdate) RemovePortForwards(v ...*DevicePortForward) *DeviceUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemovePortForwardIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -391,6 +428,51 @@ func (_u *DeviceUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		edge.Target.Fields = specE.Fields
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.PortForwardsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   device.PortForwardsTable,
+			Columns: []string{device.PortForwardsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(deviceportforward.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedPortForwardsIDs(); len(nodes) > 0 && !_u.mutation.PortForwardsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   device.PortForwardsTable,
+			Columns: []string{device.PortForwardsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(deviceportforward.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.PortForwardsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   device.PortForwardsTable,
+			Columns: []string{device.PortForwardsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(deviceportforward.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -543,6 +625,21 @@ func (_u *DeviceUpdateOne) AddIPGroups(v ...*IpGroup) *DeviceUpdateOne {
 	return _u.AddIPGroupIDs(ids...)
 }
 
+// AddPortForwardIDs adds the "port_forwards" edge to the DevicePortForward entity by IDs.
+func (_u *DeviceUpdateOne) AddPortForwardIDs(ids ...int64) *DeviceUpdateOne {
+	_u.mutation.AddPortForwardIDs(ids...)
+	return _u
+}
+
+// AddPortForwards adds the "port_forwards" edges to the DevicePortForward entity.
+func (_u *DeviceUpdateOne) AddPortForwards(v ...*DevicePortForward) *DeviceUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddPortForwardIDs(ids...)
+}
+
 // Mutation returns the DeviceMutation object of the builder.
 func (_u *DeviceUpdateOne) Mutation() *DeviceMutation {
 	return _u.mutation
@@ -588,6 +685,27 @@ func (_u *DeviceUpdateOne) RemoveIPGroups(v ...*IpGroup) *DeviceUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveIPGroupIDs(ids...)
+}
+
+// ClearPortForwards clears all "port_forwards" edges to the DevicePortForward entity.
+func (_u *DeviceUpdateOne) ClearPortForwards() *DeviceUpdateOne {
+	_u.mutation.ClearPortForwards()
+	return _u
+}
+
+// RemovePortForwardIDs removes the "port_forwards" edge to DevicePortForward entities by IDs.
+func (_u *DeviceUpdateOne) RemovePortForwardIDs(ids ...int64) *DeviceUpdateOne {
+	_u.mutation.RemovePortForwardIDs(ids...)
+	return _u
+}
+
+// RemovePortForwards removes "port_forwards" edges to DevicePortForward entities.
+func (_u *DeviceUpdateOne) RemovePortForwards(v ...*DevicePortForward) *DeviceUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemovePortForwardIDs(ids...)
 }
 
 // Where appends a list predicates to the DeviceUpdate builder.
@@ -801,6 +919,51 @@ func (_u *DeviceUpdateOne) sqlSave(ctx context.Context) (_node *Device, err erro
 		createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.PortForwardsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   device.PortForwardsTable,
+			Columns: []string{device.PortForwardsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(deviceportforward.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedPortForwardsIDs(); len(nodes) > 0 && !_u.mutation.PortForwardsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   device.PortForwardsTable,
+			Columns: []string{device.PortForwardsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(deviceportforward.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.PortForwardsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   device.PortForwardsTable,
+			Columns: []string{device.PortForwardsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(deviceportforward.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)

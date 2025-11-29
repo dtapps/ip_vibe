@@ -7,6 +7,7 @@ import (
 	"vibe_ip/ent/cdnrecord"
 	"vibe_ip/ent/device"
 	"vibe_ip/ent/deviceipreport"
+	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/ent/dnsrecord"
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/ipgroupdevice"
@@ -91,6 +92,41 @@ func init() {
 	deviceipreportDescCreatedAt := deviceipreportMixinFields0[0].Descriptor()
 	// deviceipreport.DefaultCreatedAt holds the default value on creation for the created_at field.
 	deviceipreport.DefaultCreatedAt = deviceipreportDescCreatedAt.Default.(func() time.Time)
+	deviceportforwardMixin := schema.DevicePortForward{}.Mixin()
+	deviceportforwardMixinFields0 := deviceportforwardMixin[0].Fields()
+	_ = deviceportforwardMixinFields0
+	deviceportforwardFields := schema.DevicePortForward{}.Fields()
+	_ = deviceportforwardFields
+	// deviceportforwardDescCreatedAt is the schema descriptor for created_at field.
+	deviceportforwardDescCreatedAt := deviceportforwardMixinFields0[0].Descriptor()
+	// deviceportforward.DefaultCreatedAt holds the default value on creation for the created_at field.
+	deviceportforward.DefaultCreatedAt = deviceportforwardDescCreatedAt.Default.(func() time.Time)
+	// deviceportforwardDescUpdatedAt is the schema descriptor for updated_at field.
+	deviceportforwardDescUpdatedAt := deviceportforwardMixinFields0[1].Descriptor()
+	// deviceportforward.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	deviceportforward.DefaultUpdatedAt = deviceportforwardDescUpdatedAt.Default.(func() time.Time)
+	// deviceportforward.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	deviceportforward.UpdateDefaultUpdatedAt = deviceportforwardDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// deviceportforwardDescLocalPort is the schema descriptor for local_port field.
+	deviceportforwardDescLocalPort := deviceportforwardFields[1].Descriptor()
+	// deviceportforward.LocalPortValidator is a validator for the "local_port" field. It is called by the builders before save.
+	deviceportforward.LocalPortValidator = deviceportforwardDescLocalPort.Validators[0].(func(int) error)
+	// deviceportforwardDescRemoteHost is the schema descriptor for remote_host field.
+	deviceportforwardDescRemoteHost := deviceportforwardFields[2].Descriptor()
+	// deviceportforward.RemoteHostValidator is a validator for the "remote_host" field. It is called by the builders before save.
+	deviceportforward.RemoteHostValidator = deviceportforwardDescRemoteHost.Validators[0].(func(string) error)
+	// deviceportforwardDescRemotePort is the schema descriptor for remote_port field.
+	deviceportforwardDescRemotePort := deviceportforwardFields[3].Descriptor()
+	// deviceportforward.RemotePortValidator is a validator for the "remote_port" field. It is called by the builders before save.
+	deviceportforward.RemotePortValidator = deviceportforwardDescRemotePort.Validators[0].(func(int) error)
+	// deviceportforwardDescProtocols is the schema descriptor for protocols field.
+	deviceportforwardDescProtocols := deviceportforwardFields[4].Descriptor()
+	// deviceportforward.DefaultProtocols holds the default value on creation for the protocols field.
+	deviceportforward.DefaultProtocols = deviceportforwardDescProtocols.Default.([]string)
+	// deviceportforwardDescEnabled is the schema descriptor for enabled field.
+	deviceportforwardDescEnabled := deviceportforwardFields[5].Descriptor()
+	// deviceportforward.DefaultEnabled holds the default value on creation for the enabled field.
+	deviceportforward.DefaultEnabled = deviceportforwardDescEnabled.Default.(bool)
 	ipgroupMixin := schema.IpGroup{}.Mixin()
 	ipgroupMixinFields0 := ipgroupMixin[0].Fields()
 	_ = ipgroupMixinFields0

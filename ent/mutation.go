@@ -12,6 +12,7 @@ import (
 	"vibe_ip/ent/cdnrecord"
 	"vibe_ip/ent/device"
 	"vibe_ip/ent/deviceipreport"
+	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/ent/dnsrecord"
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/ipgroupdevice"
@@ -38,6 +39,7 @@ const (
 	TypeDNSRecord           = "DNSRecord"
 	TypeDevice              = "Device"
 	TypeDeviceIpReport      = "DeviceIpReport"
+	TypeDevicePortForward   = "DevicePortForward"
 	TypeIpGroup             = "IpGroup"
 	TypeIpGroupDevice       = "IpGroupDevice"
 	TypeOperationLog        = "OperationLog"
@@ -2389,27 +2391,30 @@ func (m *DNSRecordMutation) ResetEdge(name string) error {
 // DeviceMutation represents an operation that mutates the Device nodes in the graph.
 type DeviceMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *int64
-	created_at        *time.Time
-	updated_at        *time.Time
-	code              *string
-	name              *string
-	ip_v4             *string
-	ip_v6             *string
-	last_reported_at  *time.Time
-	last_heartbeat_at *time.Time
-	clearedFields     map[string]struct{}
-	ip_reports        map[int64]struct{}
-	removedip_reports map[int64]struct{}
-	clearedip_reports bool
-	ip_groups         map[int64]struct{}
-	removedip_groups  map[int64]struct{}
-	clearedip_groups  bool
-	done              bool
-	oldValue          func(context.Context) (*Device, error)
-	predicates        []predicate.Device
+	op                   Op
+	typ                  string
+	id                   *int64
+	created_at           *time.Time
+	updated_at           *time.Time
+	code                 *string
+	name                 *string
+	ip_v4                *string
+	ip_v6                *string
+	last_reported_at     *time.Time
+	last_heartbeat_at    *time.Time
+	clearedFields        map[string]struct{}
+	ip_reports           map[int64]struct{}
+	removedip_reports    map[int64]struct{}
+	clearedip_reports    bool
+	ip_groups            map[int64]struct{}
+	removedip_groups     map[int64]struct{}
+	clearedip_groups     bool
+	port_forwards        map[int64]struct{}
+	removedport_forwards map[int64]struct{}
+	clearedport_forwards bool
+	done                 bool
+	oldValue             func(context.Context) (*Device, error)
+	predicates           []predicate.Device
 }
 
 var _ ent.Mutation = (*DeviceMutation)(nil)
@@ -2964,6 +2969,60 @@ func (m *DeviceMutation) ResetIPGroups() {
 	m.removedip_groups = nil
 }
 
+// AddPortForwardIDs adds the "port_forwards" edge to the DevicePortForward entity by ids.
+func (m *DeviceMutation) AddPortForwardIDs(ids ...int64) {
+	if m.port_forwards == nil {
+		m.port_forwards = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.port_forwards[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPortForwards clears the "port_forwards" edge to the DevicePortForward entity.
+func (m *DeviceMutation) ClearPortForwards() {
+	m.clearedport_forwards = true
+}
+
+// PortForwardsCleared reports if the "port_forwards" edge to the DevicePortForward entity was cleared.
+func (m *DeviceMutation) PortForwardsCleared() bool {
+	return m.clearedport_forwards
+}
+
+// RemovePortForwardIDs removes the "port_forwards" edge to the DevicePortForward entity by IDs.
+func (m *DeviceMutation) RemovePortForwardIDs(ids ...int64) {
+	if m.removedport_forwards == nil {
+		m.removedport_forwards = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.port_forwards, ids[i])
+		m.removedport_forwards[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPortForwards returns the removed IDs of the "port_forwards" edge to the DevicePortForward entity.
+func (m *DeviceMutation) RemovedPortForwardsIDs() (ids []int64) {
+	for id := range m.removedport_forwards {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PortForwardsIDs returns the "port_forwards" edge IDs in the mutation.
+func (m *DeviceMutation) PortForwardsIDs() (ids []int64) {
+	for id := range m.port_forwards {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPortForwards resets all changes to the "port_forwards" edge.
+func (m *DeviceMutation) ResetPortForwards() {
+	m.port_forwards = nil
+	m.clearedport_forwards = false
+	m.removedport_forwards = nil
+}
+
 // Where appends a list predicates to the DeviceMutation builder.
 func (m *DeviceMutation) Where(ps ...predicate.Device) {
 	m.predicates = append(m.predicates, ps...)
@@ -3243,12 +3302,15 @@ func (m *DeviceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *DeviceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.ip_reports != nil {
 		edges = append(edges, device.EdgeIPReports)
 	}
 	if m.ip_groups != nil {
 		edges = append(edges, device.EdgeIPGroups)
+	}
+	if m.port_forwards != nil {
+		edges = append(edges, device.EdgePortForwards)
 	}
 	return edges
 }
@@ -3269,18 +3331,27 @@ func (m *DeviceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case device.EdgePortForwards:
+		ids := make([]ent.Value, 0, len(m.port_forwards))
+		for id := range m.port_forwards {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *DeviceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedip_reports != nil {
 		edges = append(edges, device.EdgeIPReports)
 	}
 	if m.removedip_groups != nil {
 		edges = append(edges, device.EdgeIPGroups)
+	}
+	if m.removedport_forwards != nil {
+		edges = append(edges, device.EdgePortForwards)
 	}
 	return edges
 }
@@ -3301,18 +3372,27 @@ func (m *DeviceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case device.EdgePortForwards:
+		ids := make([]ent.Value, 0, len(m.removedport_forwards))
+		for id := range m.removedport_forwards {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *DeviceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedip_reports {
 		edges = append(edges, device.EdgeIPReports)
 	}
 	if m.clearedip_groups {
 		edges = append(edges, device.EdgeIPGroups)
+	}
+	if m.clearedport_forwards {
+		edges = append(edges, device.EdgePortForwards)
 	}
 	return edges
 }
@@ -3325,6 +3405,8 @@ func (m *DeviceMutation) EdgeCleared(name string) bool {
 		return m.clearedip_reports
 	case device.EdgeIPGroups:
 		return m.clearedip_groups
+	case device.EdgePortForwards:
+		return m.clearedport_forwards
 	}
 	return false
 }
@@ -3346,6 +3428,9 @@ func (m *DeviceMutation) ResetEdge(name string) error {
 		return nil
 	case device.EdgeIPGroups:
 		m.ResetIPGroups()
+		return nil
+	case device.EdgePortForwards:
+		m.ResetPortForwards()
 		return nil
 	}
 	return fmt.Errorf("unknown Device edge %s", name)
@@ -3941,6 +4026,814 @@ func (m *DeviceIpReportMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown DeviceIpReport edge %s", name)
+}
+
+// DevicePortForwardMutation represents an operation that mutates the DevicePortForward nodes in the graph.
+type DevicePortForwardMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *int64
+	created_at      *time.Time
+	updated_at      *time.Time
+	local_port      *int
+	addlocal_port   *int
+	remote_host     *string
+	remote_port     *int
+	addremote_port  *int
+	protocols       *[]string
+	appendprotocols []string
+	enabled         *bool
+	clearedFields   map[string]struct{}
+	device          *int64
+	cleareddevice   bool
+	done            bool
+	oldValue        func(context.Context) (*DevicePortForward, error)
+	predicates      []predicate.DevicePortForward
+}
+
+var _ ent.Mutation = (*DevicePortForwardMutation)(nil)
+
+// deviceportforwardOption allows management of the mutation configuration using functional options.
+type deviceportforwardOption func(*DevicePortForwardMutation)
+
+// newDevicePortForwardMutation creates new mutation for the DevicePortForward entity.
+func newDevicePortForwardMutation(c config, op Op, opts ...deviceportforwardOption) *DevicePortForwardMutation {
+	m := &DevicePortForwardMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeDevicePortForward,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withDevicePortForwardID sets the ID field of the mutation.
+func withDevicePortForwardID(id int64) deviceportforwardOption {
+	return func(m *DevicePortForwardMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *DevicePortForward
+		)
+		m.oldValue = func(ctx context.Context) (*DevicePortForward, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().DevicePortForward.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withDevicePortForward sets the old DevicePortForward of the mutation.
+func withDevicePortForward(node *DevicePortForward) deviceportforwardOption {
+	return func(m *DevicePortForwardMutation) {
+		m.oldValue = func(context.Context) (*DevicePortForward, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m DevicePortForwardMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m DevicePortForwardMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of DevicePortForward entities.
+func (m *DevicePortForwardMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *DevicePortForwardMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *DevicePortForwardMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().DevicePortForward.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *DevicePortForwardMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *DevicePortForwardMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the DevicePortForward entity.
+// If the DevicePortForward object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DevicePortForwardMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *DevicePortForwardMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *DevicePortForwardMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *DevicePortForwardMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the DevicePortForward entity.
+// If the DevicePortForward object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DevicePortForwardMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *DevicePortForwardMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetLocalPort sets the "local_port" field.
+func (m *DevicePortForwardMutation) SetLocalPort(i int) {
+	m.local_port = &i
+	m.addlocal_port = nil
+}
+
+// LocalPort returns the value of the "local_port" field in the mutation.
+func (m *DevicePortForwardMutation) LocalPort() (r int, exists bool) {
+	v := m.local_port
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLocalPort returns the old "local_port" field's value of the DevicePortForward entity.
+// If the DevicePortForward object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DevicePortForwardMutation) OldLocalPort(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLocalPort is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLocalPort requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLocalPort: %w", err)
+	}
+	return oldValue.LocalPort, nil
+}
+
+// AddLocalPort adds i to the "local_port" field.
+func (m *DevicePortForwardMutation) AddLocalPort(i int) {
+	if m.addlocal_port != nil {
+		*m.addlocal_port += i
+	} else {
+		m.addlocal_port = &i
+	}
+}
+
+// AddedLocalPort returns the value that was added to the "local_port" field in this mutation.
+func (m *DevicePortForwardMutation) AddedLocalPort() (r int, exists bool) {
+	v := m.addlocal_port
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLocalPort resets all changes to the "local_port" field.
+func (m *DevicePortForwardMutation) ResetLocalPort() {
+	m.local_port = nil
+	m.addlocal_port = nil
+}
+
+// SetRemoteHost sets the "remote_host" field.
+func (m *DevicePortForwardMutation) SetRemoteHost(s string) {
+	m.remote_host = &s
+}
+
+// RemoteHost returns the value of the "remote_host" field in the mutation.
+func (m *DevicePortForwardMutation) RemoteHost() (r string, exists bool) {
+	v := m.remote_host
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemoteHost returns the old "remote_host" field's value of the DevicePortForward entity.
+// If the DevicePortForward object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DevicePortForwardMutation) OldRemoteHost(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemoteHost is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemoteHost requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemoteHost: %w", err)
+	}
+	return oldValue.RemoteHost, nil
+}
+
+// ResetRemoteHost resets all changes to the "remote_host" field.
+func (m *DevicePortForwardMutation) ResetRemoteHost() {
+	m.remote_host = nil
+}
+
+// SetRemotePort sets the "remote_port" field.
+func (m *DevicePortForwardMutation) SetRemotePort(i int) {
+	m.remote_port = &i
+	m.addremote_port = nil
+}
+
+// RemotePort returns the value of the "remote_port" field in the mutation.
+func (m *DevicePortForwardMutation) RemotePort() (r int, exists bool) {
+	v := m.remote_port
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemotePort returns the old "remote_port" field's value of the DevicePortForward entity.
+// If the DevicePortForward object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DevicePortForwardMutation) OldRemotePort(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemotePort is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemotePort requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemotePort: %w", err)
+	}
+	return oldValue.RemotePort, nil
+}
+
+// AddRemotePort adds i to the "remote_port" field.
+func (m *DevicePortForwardMutation) AddRemotePort(i int) {
+	if m.addremote_port != nil {
+		*m.addremote_port += i
+	} else {
+		m.addremote_port = &i
+	}
+}
+
+// AddedRemotePort returns the value that was added to the "remote_port" field in this mutation.
+func (m *DevicePortForwardMutation) AddedRemotePort() (r int, exists bool) {
+	v := m.addremote_port
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRemotePort resets all changes to the "remote_port" field.
+func (m *DevicePortForwardMutation) ResetRemotePort() {
+	m.remote_port = nil
+	m.addremote_port = nil
+}
+
+// SetProtocols sets the "protocols" field.
+func (m *DevicePortForwardMutation) SetProtocols(s []string) {
+	m.protocols = &s
+	m.appendprotocols = nil
+}
+
+// Protocols returns the value of the "protocols" field in the mutation.
+func (m *DevicePortForwardMutation) Protocols() (r []string, exists bool) {
+	v := m.protocols
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProtocols returns the old "protocols" field's value of the DevicePortForward entity.
+// If the DevicePortForward object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DevicePortForwardMutation) OldProtocols(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProtocols is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProtocols requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProtocols: %w", err)
+	}
+	return oldValue.Protocols, nil
+}
+
+// AppendProtocols adds s to the "protocols" field.
+func (m *DevicePortForwardMutation) AppendProtocols(s []string) {
+	m.appendprotocols = append(m.appendprotocols, s...)
+}
+
+// AppendedProtocols returns the list of values that were appended to the "protocols" field in this mutation.
+func (m *DevicePortForwardMutation) AppendedProtocols() ([]string, bool) {
+	if len(m.appendprotocols) == 0 {
+		return nil, false
+	}
+	return m.appendprotocols, true
+}
+
+// ResetProtocols resets all changes to the "protocols" field.
+func (m *DevicePortForwardMutation) ResetProtocols() {
+	m.protocols = nil
+	m.appendprotocols = nil
+}
+
+// SetEnabled sets the "enabled" field.
+func (m *DevicePortForwardMutation) SetEnabled(b bool) {
+	m.enabled = &b
+}
+
+// Enabled returns the value of the "enabled" field in the mutation.
+func (m *DevicePortForwardMutation) Enabled() (r bool, exists bool) {
+	v := m.enabled
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEnabled returns the old "enabled" field's value of the DevicePortForward entity.
+// If the DevicePortForward object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DevicePortForwardMutation) OldEnabled(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEnabled is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEnabled requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEnabled: %w", err)
+	}
+	return oldValue.Enabled, nil
+}
+
+// ResetEnabled resets all changes to the "enabled" field.
+func (m *DevicePortForwardMutation) ResetEnabled() {
+	m.enabled = nil
+}
+
+// SetDeviceID sets the "device" edge to the Device entity by id.
+func (m *DevicePortForwardMutation) SetDeviceID(id int64) {
+	m.device = &id
+}
+
+// ClearDevice clears the "device" edge to the Device entity.
+func (m *DevicePortForwardMutation) ClearDevice() {
+	m.cleareddevice = true
+}
+
+// DeviceCleared reports if the "device" edge to the Device entity was cleared.
+func (m *DevicePortForwardMutation) DeviceCleared() bool {
+	return m.cleareddevice
+}
+
+// DeviceID returns the "device" edge ID in the mutation.
+func (m *DevicePortForwardMutation) DeviceID() (id int64, exists bool) {
+	if m.device != nil {
+		return *m.device, true
+	}
+	return
+}
+
+// DeviceIDs returns the "device" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// DeviceID instead. It exists only for internal usage by the builders.
+func (m *DevicePortForwardMutation) DeviceIDs() (ids []int64) {
+	if id := m.device; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetDevice resets all changes to the "device" edge.
+func (m *DevicePortForwardMutation) ResetDevice() {
+	m.device = nil
+	m.cleareddevice = false
+}
+
+// Where appends a list predicates to the DevicePortForwardMutation builder.
+func (m *DevicePortForwardMutation) Where(ps ...predicate.DevicePortForward) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the DevicePortForwardMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *DevicePortForwardMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.DevicePortForward, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *DevicePortForwardMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *DevicePortForwardMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (DevicePortForward).
+func (m *DevicePortForwardMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *DevicePortForwardMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.created_at != nil {
+		fields = append(fields, deviceportforward.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, deviceportforward.FieldUpdatedAt)
+	}
+	if m.local_port != nil {
+		fields = append(fields, deviceportforward.FieldLocalPort)
+	}
+	if m.remote_host != nil {
+		fields = append(fields, deviceportforward.FieldRemoteHost)
+	}
+	if m.remote_port != nil {
+		fields = append(fields, deviceportforward.FieldRemotePort)
+	}
+	if m.protocols != nil {
+		fields = append(fields, deviceportforward.FieldProtocols)
+	}
+	if m.enabled != nil {
+		fields = append(fields, deviceportforward.FieldEnabled)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *DevicePortForwardMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case deviceportforward.FieldCreatedAt:
+		return m.CreatedAt()
+	case deviceportforward.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case deviceportforward.FieldLocalPort:
+		return m.LocalPort()
+	case deviceportforward.FieldRemoteHost:
+		return m.RemoteHost()
+	case deviceportforward.FieldRemotePort:
+		return m.RemotePort()
+	case deviceportforward.FieldProtocols:
+		return m.Protocols()
+	case deviceportforward.FieldEnabled:
+		return m.Enabled()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *DevicePortForwardMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case deviceportforward.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case deviceportforward.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case deviceportforward.FieldLocalPort:
+		return m.OldLocalPort(ctx)
+	case deviceportforward.FieldRemoteHost:
+		return m.OldRemoteHost(ctx)
+	case deviceportforward.FieldRemotePort:
+		return m.OldRemotePort(ctx)
+	case deviceportforward.FieldProtocols:
+		return m.OldProtocols(ctx)
+	case deviceportforward.FieldEnabled:
+		return m.OldEnabled(ctx)
+	}
+	return nil, fmt.Errorf("unknown DevicePortForward field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DevicePortForwardMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case deviceportforward.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case deviceportforward.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case deviceportforward.FieldLocalPort:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLocalPort(v)
+		return nil
+	case deviceportforward.FieldRemoteHost:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemoteHost(v)
+		return nil
+	case deviceportforward.FieldRemotePort:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemotePort(v)
+		return nil
+	case deviceportforward.FieldProtocols:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProtocols(v)
+		return nil
+	case deviceportforward.FieldEnabled:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEnabled(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DevicePortForward field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *DevicePortForwardMutation) AddedFields() []string {
+	var fields []string
+	if m.addlocal_port != nil {
+		fields = append(fields, deviceportforward.FieldLocalPort)
+	}
+	if m.addremote_port != nil {
+		fields = append(fields, deviceportforward.FieldRemotePort)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *DevicePortForwardMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case deviceportforward.FieldLocalPort:
+		return m.AddedLocalPort()
+	case deviceportforward.FieldRemotePort:
+		return m.AddedRemotePort()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DevicePortForwardMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case deviceportforward.FieldLocalPort:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLocalPort(v)
+		return nil
+	case deviceportforward.FieldRemotePort:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRemotePort(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DevicePortForward numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *DevicePortForwardMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *DevicePortForwardMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *DevicePortForwardMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown DevicePortForward nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *DevicePortForwardMutation) ResetField(name string) error {
+	switch name {
+	case deviceportforward.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case deviceportforward.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case deviceportforward.FieldLocalPort:
+		m.ResetLocalPort()
+		return nil
+	case deviceportforward.FieldRemoteHost:
+		m.ResetRemoteHost()
+		return nil
+	case deviceportforward.FieldRemotePort:
+		m.ResetRemotePort()
+		return nil
+	case deviceportforward.FieldProtocols:
+		m.ResetProtocols()
+		return nil
+	case deviceportforward.FieldEnabled:
+		m.ResetEnabled()
+		return nil
+	}
+	return fmt.Errorf("unknown DevicePortForward field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *DevicePortForwardMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.device != nil {
+		edges = append(edges, deviceportforward.EdgeDevice)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *DevicePortForwardMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case deviceportforward.EdgeDevice:
+		if id := m.device; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *DevicePortForwardMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *DevicePortForwardMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *DevicePortForwardMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.cleareddevice {
+		edges = append(edges, deviceportforward.EdgeDevice)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *DevicePortForwardMutation) EdgeCleared(name string) bool {
+	switch name {
+	case deviceportforward.EdgeDevice:
+		return m.cleareddevice
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *DevicePortForwardMutation) ClearEdge(name string) error {
+	switch name {
+	case deviceportforward.EdgeDevice:
+		m.ClearDevice()
+		return nil
+	}
+	return fmt.Errorf("unknown DevicePortForward unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *DevicePortForwardMutation) ResetEdge(name string) error {
+	switch name {
+	case deviceportforward.EdgeDevice:
+		m.ResetDevice()
+		return nil
+	}
+	return fmt.Errorf("unknown DevicePortForward edge %s", name)
 }
 
 // IpGroupMutation represents an operation that mutates the IpGroup nodes in the graph.

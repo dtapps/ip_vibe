@@ -14,6 +14,7 @@ import (
 	"vibe_ip/ent/cdnrecord"
 	"vibe_ip/ent/device"
 	"vibe_ip/ent/deviceipreport"
+	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/ent/dnsrecord"
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/ipgroupdevice"
@@ -43,6 +44,8 @@ type Client struct {
 	Device *DeviceClient
 	// DeviceIpReport is the client for interacting with the DeviceIpReport builders.
 	DeviceIpReport *DeviceIpReportClient
+	// DevicePortForward is the client for interacting with the DevicePortForward builders.
+	DevicePortForward *DevicePortForwardClient
 	// IpGroup is the client for interacting with the IpGroup builders.
 	IpGroup *IpGroupClient
 	// IpGroupDevice is the client for interacting with the IpGroupDevice builders.
@@ -70,6 +73,7 @@ func (c *Client) init() {
 	c.DNSRecord = NewDNSRecordClient(c.config)
 	c.Device = NewDeviceClient(c.config)
 	c.DeviceIpReport = NewDeviceIpReportClient(c.config)
+	c.DevicePortForward = NewDevicePortForwardClient(c.config)
 	c.IpGroup = NewIpGroupClient(c.config)
 	c.IpGroupDevice = NewIpGroupDeviceClient(c.config)
 	c.OperationLog = NewOperationLogClient(c.config)
@@ -172,6 +176,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		DNSRecord:           NewDNSRecordClient(cfg),
 		Device:              NewDeviceClient(cfg),
 		DeviceIpReport:      NewDeviceIpReportClient(cfg),
+		DevicePortForward:   NewDevicePortForwardClient(cfg),
 		IpGroup:             NewIpGroupClient(cfg),
 		IpGroupDevice:       NewIpGroupDeviceClient(cfg),
 		OperationLog:        NewOperationLogClient(cfg),
@@ -201,6 +206,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		DNSRecord:           NewDNSRecordClient(cfg),
 		Device:              NewDeviceClient(cfg),
 		DeviceIpReport:      NewDeviceIpReportClient(cfg),
+		DevicePortForward:   NewDevicePortForwardClient(cfg),
 		IpGroup:             NewIpGroupClient(cfg),
 		IpGroupDevice:       NewIpGroupDeviceClient(cfg),
 		OperationLog:        NewOperationLogClient(cfg),
@@ -236,8 +242,8 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.CDNRecord, c.DNSRecord, c.Device, c.DeviceIpReport, c.IpGroup,
-		c.IpGroupDevice, c.OperationLog, c.PlatformConfig, c.Webhook,
+		c.CDNRecord, c.DNSRecord, c.Device, c.DeviceIpReport, c.DevicePortForward,
+		c.IpGroup, c.IpGroupDevice, c.OperationLog, c.PlatformConfig, c.Webhook,
 		c.WebhookSubscription,
 	} {
 		n.Use(hooks...)
@@ -248,8 +254,8 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.CDNRecord, c.DNSRecord, c.Device, c.DeviceIpReport, c.IpGroup,
-		c.IpGroupDevice, c.OperationLog, c.PlatformConfig, c.Webhook,
+		c.CDNRecord, c.DNSRecord, c.Device, c.DeviceIpReport, c.DevicePortForward,
+		c.IpGroup, c.IpGroupDevice, c.OperationLog, c.PlatformConfig, c.Webhook,
 		c.WebhookSubscription,
 	} {
 		n.Intercept(interceptors...)
@@ -267,6 +273,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Device.mutate(ctx, m)
 	case *DeviceIpReportMutation:
 		return c.DeviceIpReport.mutate(ctx, m)
+	case *DevicePortForwardMutation:
+		return c.DevicePortForward.mutate(ctx, m)
 	case *IpGroupMutation:
 		return c.IpGroup.mutate(ctx, m)
 	case *IpGroupDeviceMutation:
@@ -786,6 +794,22 @@ func (c *DeviceClient) QueryIPGroups(_m *Device) *IpGroupQuery {
 	return query
 }
 
+// QueryPortForwards queries the port_forwards edge of a Device.
+func (c *DeviceClient) QueryPortForwards(_m *Device) *DevicePortForwardQuery {
+	query := (&DevicePortForwardClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(device.Table, device.FieldID, id),
+			sqlgraph.To(deviceportforward.Table, deviceportforward.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, device.PortForwardsTable, device.PortForwardsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryIPGroupDevice queries the ip_group_device edge of a Device.
 func (c *DeviceClient) QueryIPGroupDevice(_m *Device) *IpGroupDeviceQuery {
 	query := (&IpGroupDeviceClient{config: c.config}).Query()
@@ -973,6 +997,155 @@ func (c *DeviceIpReportClient) mutate(ctx context.Context, m *DeviceIpReportMuta
 		return (&DeviceIpReportDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown DeviceIpReport mutation op: %q", m.Op())
+	}
+}
+
+// DevicePortForwardClient is a client for the DevicePortForward schema.
+type DevicePortForwardClient struct {
+	config
+}
+
+// NewDevicePortForwardClient returns a client for the DevicePortForward from the given config.
+func NewDevicePortForwardClient(c config) *DevicePortForwardClient {
+	return &DevicePortForwardClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `deviceportforward.Hooks(f(g(h())))`.
+func (c *DevicePortForwardClient) Use(hooks ...Hook) {
+	c.hooks.DevicePortForward = append(c.hooks.DevicePortForward, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `deviceportforward.Intercept(f(g(h())))`.
+func (c *DevicePortForwardClient) Intercept(interceptors ...Interceptor) {
+	c.inters.DevicePortForward = append(c.inters.DevicePortForward, interceptors...)
+}
+
+// Create returns a builder for creating a DevicePortForward entity.
+func (c *DevicePortForwardClient) Create() *DevicePortForwardCreate {
+	mutation := newDevicePortForwardMutation(c.config, OpCreate)
+	return &DevicePortForwardCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of DevicePortForward entities.
+func (c *DevicePortForwardClient) CreateBulk(builders ...*DevicePortForwardCreate) *DevicePortForwardCreateBulk {
+	return &DevicePortForwardCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DevicePortForwardClient) MapCreateBulk(slice any, setFunc func(*DevicePortForwardCreate, int)) *DevicePortForwardCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DevicePortForwardCreateBulk{err: fmt.Errorf("calling to DevicePortForwardClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DevicePortForwardCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &DevicePortForwardCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for DevicePortForward.
+func (c *DevicePortForwardClient) Update() *DevicePortForwardUpdate {
+	mutation := newDevicePortForwardMutation(c.config, OpUpdate)
+	return &DevicePortForwardUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DevicePortForwardClient) UpdateOne(_m *DevicePortForward) *DevicePortForwardUpdateOne {
+	mutation := newDevicePortForwardMutation(c.config, OpUpdateOne, withDevicePortForward(_m))
+	return &DevicePortForwardUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DevicePortForwardClient) UpdateOneID(id int64) *DevicePortForwardUpdateOne {
+	mutation := newDevicePortForwardMutation(c.config, OpUpdateOne, withDevicePortForwardID(id))
+	return &DevicePortForwardUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for DevicePortForward.
+func (c *DevicePortForwardClient) Delete() *DevicePortForwardDelete {
+	mutation := newDevicePortForwardMutation(c.config, OpDelete)
+	return &DevicePortForwardDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *DevicePortForwardClient) DeleteOne(_m *DevicePortForward) *DevicePortForwardDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *DevicePortForwardClient) DeleteOneID(id int64) *DevicePortForwardDeleteOne {
+	builder := c.Delete().Where(deviceportforward.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DevicePortForwardDeleteOne{builder}
+}
+
+// Query returns a query builder for DevicePortForward.
+func (c *DevicePortForwardClient) Query() *DevicePortForwardQuery {
+	return &DevicePortForwardQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeDevicePortForward},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a DevicePortForward entity by its id.
+func (c *DevicePortForwardClient) Get(ctx context.Context, id int64) (*DevicePortForward, error) {
+	return c.Query().Where(deviceportforward.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DevicePortForwardClient) GetX(ctx context.Context, id int64) *DevicePortForward {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryDevice queries the device edge of a DevicePortForward.
+func (c *DevicePortForwardClient) QueryDevice(_m *DevicePortForward) *DeviceQuery {
+	query := (&DeviceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(deviceportforward.Table, deviceportforward.FieldID, id),
+			sqlgraph.To(device.Table, device.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, deviceportforward.DeviceTable, deviceportforward.DeviceColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *DevicePortForwardClient) Hooks() []Hook {
+	return c.hooks.DevicePortForward
+}
+
+// Interceptors returns the client interceptors.
+func (c *DevicePortForwardClient) Interceptors() []Interceptor {
+	return c.inters.DevicePortForward
+}
+
+func (c *DevicePortForwardClient) mutate(ctx context.Context, m *DevicePortForwardMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&DevicePortForwardCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&DevicePortForwardUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&DevicePortForwardUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&DevicePortForwardDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown DevicePortForward mutation op: %q", m.Op())
 	}
 }
 
@@ -1888,12 +2061,14 @@ func (c *WebhookSubscriptionClient) mutate(ctx context.Context, m *WebhookSubscr
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		CDNRecord, DNSRecord, Device, DeviceIpReport, IpGroup, IpGroupDevice,
-		OperationLog, PlatformConfig, Webhook, WebhookSubscription []ent.Hook
+		CDNRecord, DNSRecord, Device, DeviceIpReport, DevicePortForward, IpGroup,
+		IpGroupDevice, OperationLog, PlatformConfig, Webhook,
+		WebhookSubscription []ent.Hook
 	}
 	inters struct {
-		CDNRecord, DNSRecord, Device, DeviceIpReport, IpGroup, IpGroupDevice,
-		OperationLog, PlatformConfig, Webhook, WebhookSubscription []ent.Interceptor
+		CDNRecord, DNSRecord, Device, DeviceIpReport, DevicePortForward, IpGroup,
+		IpGroupDevice, OperationLog, PlatformConfig, Webhook,
+		WebhookSubscription []ent.Interceptor
 	}
 )
 

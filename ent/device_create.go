@@ -9,6 +9,7 @@ import (
 	"time"
 	"vibe_ip/ent/device"
 	"vibe_ip/ent/deviceipreport"
+	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/ent/ipgroup"
 
 	"entgo.io/ent/dialect/sql"
@@ -154,6 +155,21 @@ func (_c *DeviceCreate) AddIPGroups(v ...*IpGroup) *DeviceCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddIPGroupIDs(ids...)
+}
+
+// AddPortForwardIDs adds the "port_forwards" edge to the DevicePortForward entity by IDs.
+func (_c *DeviceCreate) AddPortForwardIDs(ids ...int64) *DeviceCreate {
+	_c.mutation.AddPortForwardIDs(ids...)
+	return _c
+}
+
+// AddPortForwards adds the "port_forwards" edges to the DevicePortForward entity.
+func (_c *DeviceCreate) AddPortForwards(v ...*DevicePortForward) *DeviceCreate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddPortForwardIDs(ids...)
 }
 
 // Mutation returns the DeviceMutation object of the builder.
@@ -314,6 +330,22 @@ func (_c *DeviceCreate) createSpec() (*Device, *sqlgraph.CreateSpec) {
 		createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.PortForwardsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   device.PortForwardsTable,
+			Columns: []string{device.PortForwardsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(deviceportforward.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
