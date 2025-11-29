@@ -1,0 +1,51 @@
+{{ define "to_map" }}
+
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+{{ $pkg := base $.Config.Package }}
+{{ template "header" $ }}
+
+import (
+	"time"
+)
+
+{{ range $n := $.Nodes }}
+
+// ToMap 将 {{ $n.Name }} 实体转换为 map[string]any。
+// 键为数据库列名（snake_case），值为字段当前值。
+// 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。
+func (t *{{ $n.Name }}) ToMap() map[string]any {
+	if t == nil {
+		return nil
+	}
+	m := make(map[string]any)
+
+	{{ range $f := $n.Fields }}
+		{{ if $f.HasGoType }}
+			{{ if eq $f.Type.String "time.Time" }}
+				if t.{{ $f.StructField }}.IsZero() {
+					m["{{ $f.Name }}"] = nil
+				} else {
+					m["{{ $f.Name }}"] = t.{{ $f.StructField }}
+				}
+
+			{{ else if and $f.Optional (not (or $f.IsJSON $f.IsOther)) }}
+				// 基本类型 + Optional → 指针，需解引用
+				if t.{{ $f.StructField }} != nil {
+					m["{{ $f.Name }}"] = *t.{{ $f.StructField }}
+				} else {
+					m["{{ $f.Name }}"] = nil
+				}
+
+			{{ else }}
+				// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+				m["{{ $f.Name }}"] = t.{{ $f.StructField }}
+			{{ end }}
+		{{ end }}
+	{{ end }}
+
+	return m
+}
+
+{{ end }}
+
+{{ end }}
