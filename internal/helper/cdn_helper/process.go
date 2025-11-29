@@ -5,6 +5,12 @@ import (
 	"vibe_ip/ent"
 )
 
+const (
+	OriginProtocolHTTP   = "HTTP"
+	OriginProtocolHTTPS  = "HTTPS"
+	OriginProtocolFOLLOW = "FOLLOW"
+)
+
 type ProcessService struct {
 	Log      *slog.Logger // 日志
 	Db       *ent.Client  // 数据库

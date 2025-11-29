@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 	"sync"
 	"time"
 	"vibe_ip/ent"
@@ -346,7 +347,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
 					DomainName:     firstRecord.Domain,
 					DomainOrigin:   origins[0],
-					OriginProtocol: firstRecord.OriginProtocol.String(),
+					OriginProtocol: strings.ToUpper(firstRecord.OriginProtocol.String()),
 					HttpPort:       firstRecord.HTTPPort,
 					HttpsPort:      firstRecord.HTTPSPort,
 				},
@@ -381,7 +382,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 					DomainName:     firstRecord.Domain,
 					DomainOrigins:  origins,
 					GroupName:      utils.GenerateShortIDBasedHash(firstIPGroup.ID, 10),
-					OriginProtocol: firstRecord.OriginProtocol.String(),
+					OriginProtocol: strings.ToUpper(firstRecord.OriginProtocol.String()),
 					HttpPort:       firstRecord.HTTPPort,
 					HttpsPort:      firstRecord.HTTPSPort,
 				},

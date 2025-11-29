@@ -2,6 +2,7 @@ package cdn_helper
 
 import (
 	"context"
+	"strings"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/tencent_helper"
 	"vibe_ip/internal/utils"
@@ -130,14 +131,10 @@ func (c *EdgeOneClient) CreateDomain(ctx context.Context, domainName string, ori
 		return err
 	}
 
-	switch originProtocol {
-	case "follow":
-		originProtocol = "FOLLOW"
-	case "http":
-		originProtocol = "HTTP"
-	case "https":
-		originProtocol = "HTTPS"
-	}
+	// 转大写
+	originProtocol = strings.ToUpper(originProtocol)
+
+	// 默认值
 	if httpPort == 0 {
 		httpPort = 80
 	}
@@ -189,14 +186,10 @@ func (c *EdgeOneClient) UpdateDomain(ctx context.Context, domainName string, ori
 		return err
 	}
 
-	switch originProtocol {
-	case "follow":
-		originProtocol = "FOLLOW"
-	case "http":
-		originProtocol = "HTTP"
-	case "https":
-		originProtocol = "HTTPS"
-	}
+	// 转大写
+	originProtocol = strings.ToUpper(originProtocol)
+
+	// 默认值
 	if httpPort == 0 {
 		httpPort = 80
 	}

@@ -136,13 +136,27 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 		if !strings.EqualFold(queryDomain.OriginProtocol, params.OriginProtocol) {
 			isUpdate = true
 		}
-		// 比较HTTP回源端口
-		if queryDomain.HttpOriginPort != params.HttpPort {
-			isUpdate = true
+		if strings.EqualFold(queryDomain.OriginProtocol, OriginProtocolHTTP) {
+			// 比较HTTP回源端口
+			if queryDomain.HttpOriginPort != params.HttpPort {
+				isUpdate = true
+			}
 		}
-		// 比较HTTPS回源端口
-		if queryDomain.HttpsOriginPort != params.HttpsPort {
-			isUpdate = true
+		if strings.EqualFold(queryDomain.OriginProtocol, OriginProtocolHTTPS) {
+			// 比较HTTPS回源端口
+			if queryDomain.HttpsOriginPort != params.HttpsPort {
+				isUpdate = true
+			}
+		}
+		if strings.EqualFold(queryDomain.OriginProtocol, OriginProtocolFOLLOW) {
+			// 比较HTTP回源端口
+			if queryDomain.HttpOriginPort != params.HttpPort {
+				isUpdate = true
+			}
+			// 比较HTTPS回源端口
+			if queryDomain.HttpsOriginPort != params.HttpsPort {
+				isUpdate = true
+			}
 		}
 		// 判断是否需要更新
 		if !isUpdate {
@@ -382,13 +396,27 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 		if !strings.EqualFold(queryDomain.OriginProtocol, params.OriginProtocol) {
 			isUpdate = true
 		}
-		// 比较HTTP回源端口
-		if queryDomain.HttpOriginPort != params.HttpPort {
-			isUpdate = true
+		if strings.EqualFold(queryDomain.OriginProtocol, OriginProtocolHTTP) {
+			// 比较HTTP回源端口
+			if queryDomain.HttpOriginPort != params.HttpPort {
+				isUpdate = true
+			}
 		}
-		// 比较HTTPS回源端口
-		if queryDomain.HttpsOriginPort != params.HttpsPort {
-			isUpdate = true
+		if strings.EqualFold(queryDomain.OriginProtocol, OriginProtocolHTTPS) {
+			// 比较HTTPS回源端口
+			if queryDomain.HttpsOriginPort != params.HttpsPort {
+				isUpdate = true
+			}
+		}
+		if strings.EqualFold(queryDomain.OriginProtocol, OriginProtocolFOLLOW) {
+			// 比较HTTP回源端口
+			if queryDomain.HttpOriginPort != params.HttpPort {
+				isUpdate = true
+			}
+			// 比较HTTPS回源端口
+			if queryDomain.HttpsOriginPort != params.HttpsPort {
+				isUpdate = true
+			}
 		}
 		// 判断是否需要更新
 		if !isUpdate {
