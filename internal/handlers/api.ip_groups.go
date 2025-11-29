@@ -142,37 +142,15 @@ func DeleteIPGroup(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询IP组失败: "+err.Error())
 		return
 	}
-	// 开始事务
-	tx, err := global.GvaDb.Tx(c)
-	if err != nil {
-		errorResponse(c, http.StatusInternalServerError, "开始事务失败: "+err.Error())
-		return
-	}
-	// 清除IP组关联的设备
-	err = tx.IpGroup.Update().
-		Where(ipgroup.ID(cast.ToInt64(id))).
-		ClearDevices().
-		Exec(c)
-	if err != nil {
-		tx.Rollback()
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("清除IP组关联的设备: %s\n", err.Error())
-		}
-		errorResponse(c, http.StatusInternalServerError, "清除IP组关联的设备失败: "+err.Error())
-		return
-	}
 	// 删除IP组
-	err = tx.IpGroup.DeleteOne(firstIpGroup).Exec(c)
+	err = global.GvaDb.IpGroup.DeleteOne(firstIpGroup).Exec(c)
 	if err != nil {
-		tx.Rollback()
 		if global.GvaEnv.DEBUG {
 			fmt.Printf("删除IP组: %s\n", err.Error())
 		}
 		errorResponse(c, http.StatusInternalServerError, "删除IP组失败: "+err.Error())
 		return
 	}
-	// 提交事务
-	_ = tx.Commit()
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataDelete(c, firstIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "删除IP组")
 	successResponse(c, gin.H{
@@ -200,6 +178,7 @@ func GetIPGroupDevices(c *gin.Context) {
 			ID:              item.ID,
 			Code:            item.Code,
 			Name:            item.Name,
+			Description:     item.Description,
 			IPV4:            item.IPV4,
 			IPV6:            item.IPV6,
 			LastReportedAt:  item.LastReportedAt,

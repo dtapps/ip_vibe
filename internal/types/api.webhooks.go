@@ -4,6 +4,7 @@ package types
 type GetWebhooksResponse struct {
 	ID              int64    `json:"id"`                         // 通知序号
 	Name            string   `json:"name"`                       // 通知名称
+	Description     string   `json:"description,omitempty"`      // 通知描述
 	Platform        string   `json:"platform"`                   // 通知平台类型
 	URL             string   `json:"url"`                        // Webhook URL
 	Secret          string   `json:"secret"`                     // Webhook 签名密钥或额外Token
@@ -16,6 +17,7 @@ type GetWebhooksResponse struct {
 // 创建通知 请求结构
 type CreateWebhookRequest struct {
 	Name            string   `json:"name"`                       // 通知名称
+	Description     string   `json:"description,omitempty"`      // 通知描述
 	Platform        string   `json:"platform"`                   // 通知平台类型
 	URL             string   `json:"url"`                        // Webhook URL
 	Secret          string   `json:"secret"`                     // Webhook 签名密钥或额外Token
@@ -27,6 +29,7 @@ type CreateWebhookRequest struct {
 // 更新通知 请求结构
 type UpdateWebhookRequest struct {
 	Name            string   `json:"name"`                       // 通知名称
+	Description     string   `json:"description,omitempty"`      // 通知描述
 	Secret          string   `json:"secret"`                     // Webhook 签名密钥或额外Token
 	Events          []string `json:"events"`                     // 订阅的事件类型列表
 	TemplateTitle   string   `json:"template_title,omitempty"`   // 通知标题 Go Template

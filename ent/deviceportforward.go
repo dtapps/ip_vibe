@@ -24,6 +24,10 @@ type DevicePortForward struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 更新时间
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// 设备端口转发名称
+	Name string `json:"name,omitempty"`
+	// 设备端口转发描述
+	Description string `json:"description,omitempty"`
 	// 本地监听端口
 	LocalPort int `json:"local_port,omitempty"`
 	// 远程目标地址
@@ -32,6 +36,8 @@ type DevicePortForward struct {
 	RemotePort int `json:"remote_port,omitempty"`
 	// 协议列表，支持 tcp4, tcp6, udp4, udp6
 	Protocols []string `json:"protocols,omitempty"`
+	// 防火墙自动放行
+	AutoForward bool `json:"auto_forward,omitempty"`
 	// 是否启用
 	Enabled bool `json:"enabled,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -68,11 +74,11 @@ func (*DevicePortForward) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case deviceportforward.FieldProtocols:
 			values[i] = new([]byte)
-		case deviceportforward.FieldEnabled:
+		case deviceportforward.FieldAutoForward, deviceportforward.FieldEnabled:
 			values[i] = new(sql.NullBool)
 		case deviceportforward.FieldID, deviceportforward.FieldLocalPort, deviceportforward.FieldRemotePort:
 			values[i] = new(sql.NullInt64)
-		case deviceportforward.FieldRemoteHost:
+		case deviceportforward.FieldName, deviceportforward.FieldDescription, deviceportforward.FieldRemoteHost:
 			values[i] = new(sql.NullString)
 		case deviceportforward.FieldCreatedAt, deviceportforward.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -111,6 +117,18 @@ func (_m *DevicePortForward) assignValues(columns []string, values []any) error 
 			} else if value.Valid {
 				_m.UpdatedAt = value.Time
 			}
+		case deviceportforward.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				_m.Name = value.String
+			}
+		case deviceportforward.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				_m.Description = value.String
+			}
 		case deviceportforward.FieldLocalPort:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field local_port", values[i])
@@ -136,6 +154,12 @@ func (_m *DevicePortForward) assignValues(columns []string, values []any) error 
 				if err := json.Unmarshal(*value, &_m.Protocols); err != nil {
 					return fmt.Errorf("unmarshal field protocols: %w", err)
 				}
+			}
+		case deviceportforward.FieldAutoForward:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field auto_forward", values[i])
+			} else if value.Valid {
+				_m.AutoForward = value.Bool
 			}
 		case deviceportforward.FieldEnabled:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -197,6 +221,12 @@ func (_m *DevicePortForward) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(_m.Name)
+	builder.WriteString(", ")
+	builder.WriteString("description=")
+	builder.WriteString(_m.Description)
+	builder.WriteString(", ")
 	builder.WriteString("local_port=")
 	builder.WriteString(fmt.Sprintf("%v", _m.LocalPort))
 	builder.WriteString(", ")
@@ -208,6 +238,9 @@ func (_m *DevicePortForward) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("protocols=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Protocols))
+	builder.WriteString(", ")
+	builder.WriteString("auto_forward=")
+	builder.WriteString(fmt.Sprintf("%v", _m.AutoForward))
 	builder.WriteString(", ")
 	builder.WriteString("enabled=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Enabled))

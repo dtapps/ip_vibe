@@ -23,6 +23,8 @@ type WebhookSubscription struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 通知订阅名称
 	Name string `json:"name,omitempty"`
+	// 通知订阅描述
+	Description string `json:"description,omitempty"`
 	// 通知序号
 	WebhookID int64 `json:"webhook_id,omitempty"`
 	// 订阅对象类型
@@ -67,7 +69,7 @@ func (*WebhookSubscription) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case webhooksubscription.FieldID, webhooksubscription.FieldWebhookID, webhooksubscription.FieldObjID:
 			values[i] = new(sql.NullInt64)
-		case webhooksubscription.FieldName, webhooksubscription.FieldObjType:
+		case webhooksubscription.FieldName, webhooksubscription.FieldDescription, webhooksubscription.FieldObjType:
 			values[i] = new(sql.NullString)
 		case webhooksubscription.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -105,6 +107,12 @@ func (_m *WebhookSubscription) assignValues(columns []string, values []any) erro
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				_m.Name = value.String
+			}
+		case webhooksubscription.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				_m.Description = value.String
 			}
 		case webhooksubscription.FieldWebhookID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -183,6 +191,9 @@ func (_m *WebhookSubscription) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
+	builder.WriteString(", ")
+	builder.WriteString("description=")
+	builder.WriteString(_m.Description)
 	builder.WriteString(", ")
 	builder.WriteString("webhook_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.WebhookID))

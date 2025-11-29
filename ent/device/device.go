@@ -22,6 +22,8 @@ const (
 	FieldCode = "code"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldDescription holds the string denoting the description field in the database.
+	FieldDescription = "description"
 	// FieldIPV4 holds the string denoting the ip_v4 field in the database.
 	FieldIPV4 = "ip_v4"
 	// FieldIPV6 holds the string denoting the ip_v6 field in the database.
@@ -75,6 +77,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldCode,
 	FieldName,
+	FieldDescription,
 	FieldIPV4,
 	FieldIPV6,
 	FieldLastReportedAt,
@@ -132,6 +135,11 @@ func ByCode(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
 }
 
 // ByIPV4 orders the results by the ip_v4 field.

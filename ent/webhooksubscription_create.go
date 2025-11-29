@@ -43,6 +43,20 @@ func (_c *WebhookSubscriptionCreate) SetName(v string) *WebhookSubscriptionCreat
 	return _c
 }
 
+// SetDescription sets the "description" field.
+func (_c *WebhookSubscriptionCreate) SetDescription(v string) *WebhookSubscriptionCreate {
+	_c.mutation.SetDescription(v)
+	return _c
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_c *WebhookSubscriptionCreate) SetNillableDescription(v *string) *WebhookSubscriptionCreate {
+	if v != nil {
+		_c.SetDescription(*v)
+	}
+	return _c
+}
+
 // SetWebhookID sets the "webhook_id" field.
 func (_c *WebhookSubscriptionCreate) SetWebhookID(v int64) *WebhookSubscriptionCreate {
 	_c.mutation.SetWebhookID(v)
@@ -200,6 +214,10 @@ func (_c *WebhookSubscriptionCreate) createSpec() (*WebhookSubscription, *sqlgra
 		_spec.SetField(webhooksubscription.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
+	if value, ok := _c.mutation.Description(); ok {
+		_spec.SetField(webhooksubscription.FieldDescription, field.TypeString, value)
+		_node.Description = value
+	}
 	if value, ok := _c.mutation.ObjType(); ok {
 		_spec.SetField(webhooksubscription.FieldObjType, field.TypeEnum, value)
 		_node.ObjType = value
@@ -293,6 +311,24 @@ func (u *WebhookSubscriptionUpsert) UpdateName() *WebhookSubscriptionUpsert {
 	return u
 }
 
+// SetDescription sets the "description" field.
+func (u *WebhookSubscriptionUpsert) SetDescription(v string) *WebhookSubscriptionUpsert {
+	u.Set(webhooksubscription.FieldDescription, v)
+	return u
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *WebhookSubscriptionUpsert) UpdateDescription() *WebhookSubscriptionUpsert {
+	u.SetExcluded(webhooksubscription.FieldDescription)
+	return u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *WebhookSubscriptionUpsert) ClearDescription() *WebhookSubscriptionUpsert {
+	u.SetNull(webhooksubscription.FieldDescription)
+	return u
+}
+
 // SetIsActive sets the "is_active" field.
 func (u *WebhookSubscriptionUpsert) SetIsActive(v bool) *WebhookSubscriptionUpsert {
 	u.Set(webhooksubscription.FieldIsActive, v)
@@ -376,6 +412,27 @@ func (u *WebhookSubscriptionUpsertOne) SetName(v string) *WebhookSubscriptionUps
 func (u *WebhookSubscriptionUpsertOne) UpdateName() *WebhookSubscriptionUpsertOne {
 	return u.Update(func(s *WebhookSubscriptionUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *WebhookSubscriptionUpsertOne) SetDescription(v string) *WebhookSubscriptionUpsertOne {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *WebhookSubscriptionUpsertOne) UpdateDescription() *WebhookSubscriptionUpsertOne {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *WebhookSubscriptionUpsertOne) ClearDescription() *WebhookSubscriptionUpsertOne {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.ClearDescription()
 	})
 }
 
@@ -630,6 +687,27 @@ func (u *WebhookSubscriptionUpsertBulk) SetName(v string) *WebhookSubscriptionUp
 func (u *WebhookSubscriptionUpsertBulk) UpdateName() *WebhookSubscriptionUpsertBulk {
 	return u.Update(func(s *WebhookSubscriptionUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *WebhookSubscriptionUpsertBulk) SetDescription(v string) *WebhookSubscriptionUpsertBulk {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *WebhookSubscriptionUpsertBulk) UpdateDescription() *WebhookSubscriptionUpsertBulk {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *WebhookSubscriptionUpsertBulk) ClearDescription() *WebhookSubscriptionUpsertBulk {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.ClearDescription()
 	})
 }
 

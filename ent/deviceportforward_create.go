@@ -51,6 +51,26 @@ func (_c *DevicePortForwardCreate) SetNillableUpdatedAt(v *time.Time) *DevicePor
 	return _c
 }
 
+// SetName sets the "name" field.
+func (_c *DevicePortForwardCreate) SetName(v string) *DevicePortForwardCreate {
+	_c.mutation.SetName(v)
+	return _c
+}
+
+// SetDescription sets the "description" field.
+func (_c *DevicePortForwardCreate) SetDescription(v string) *DevicePortForwardCreate {
+	_c.mutation.SetDescription(v)
+	return _c
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_c *DevicePortForwardCreate) SetNillableDescription(v *string) *DevicePortForwardCreate {
+	if v != nil {
+		_c.SetDescription(*v)
+	}
+	return _c
+}
+
 // SetLocalPort sets the "local_port" field.
 func (_c *DevicePortForwardCreate) SetLocalPort(v int) *DevicePortForwardCreate {
 	_c.mutation.SetLocalPort(v)
@@ -72,6 +92,20 @@ func (_c *DevicePortForwardCreate) SetRemotePort(v int) *DevicePortForwardCreate
 // SetProtocols sets the "protocols" field.
 func (_c *DevicePortForwardCreate) SetProtocols(v []string) *DevicePortForwardCreate {
 	_c.mutation.SetProtocols(v)
+	return _c
+}
+
+// SetAutoForward sets the "auto_forward" field.
+func (_c *DevicePortForwardCreate) SetAutoForward(v bool) *DevicePortForwardCreate {
+	_c.mutation.SetAutoForward(v)
+	return _c
+}
+
+// SetNillableAutoForward sets the "auto_forward" field if the given value is not nil.
+func (_c *DevicePortForwardCreate) SetNillableAutoForward(v *bool) *DevicePortForwardCreate {
+	if v != nil {
+		_c.SetAutoForward(*v)
+	}
 	return _c
 }
 
@@ -153,6 +187,10 @@ func (_c *DevicePortForwardCreate) defaults() {
 		v := deviceportforward.DefaultProtocols
 		_c.mutation.SetProtocols(v)
 	}
+	if _, ok := _c.mutation.AutoForward(); !ok {
+		v := deviceportforward.DefaultAutoForward
+		_c.mutation.SetAutoForward(v)
+	}
 	if _, ok := _c.mutation.Enabled(); !ok {
 		v := deviceportforward.DefaultEnabled
 		_c.mutation.SetEnabled(v)
@@ -166,6 +204,9 @@ func (_c *DevicePortForwardCreate) check() error {
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "DevicePortForward.updated_at"`)}
+	}
+	if _, ok := _c.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "DevicePortForward.name"`)}
 	}
 	if _, ok := _c.mutation.LocalPort(); !ok {
 		return &ValidationError{Name: "local_port", err: errors.New(`ent: missing required field "DevicePortForward.local_port"`)}
@@ -193,6 +234,9 @@ func (_c *DevicePortForwardCreate) check() error {
 	}
 	if _, ok := _c.mutation.Protocols(); !ok {
 		return &ValidationError{Name: "protocols", err: errors.New(`ent: missing required field "DevicePortForward.protocols"`)}
+	}
+	if _, ok := _c.mutation.AutoForward(); !ok {
+		return &ValidationError{Name: "auto_forward", err: errors.New(`ent: missing required field "DevicePortForward.auto_forward"`)}
 	}
 	if _, ok := _c.mutation.Enabled(); !ok {
 		return &ValidationError{Name: "enabled", err: errors.New(`ent: missing required field "DevicePortForward.enabled"`)}
@@ -241,6 +285,14 @@ func (_c *DevicePortForwardCreate) createSpec() (*DevicePortForward, *sqlgraph.C
 		_spec.SetField(deviceportforward.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
+	if value, ok := _c.mutation.Name(); ok {
+		_spec.SetField(deviceportforward.FieldName, field.TypeString, value)
+		_node.Name = value
+	}
+	if value, ok := _c.mutation.Description(); ok {
+		_spec.SetField(deviceportforward.FieldDescription, field.TypeString, value)
+		_node.Description = value
+	}
 	if value, ok := _c.mutation.LocalPort(); ok {
 		_spec.SetField(deviceportforward.FieldLocalPort, field.TypeInt, value)
 		_node.LocalPort = value
@@ -256,6 +308,10 @@ func (_c *DevicePortForwardCreate) createSpec() (*DevicePortForward, *sqlgraph.C
 	if value, ok := _c.mutation.Protocols(); ok {
 		_spec.SetField(deviceportforward.FieldProtocols, field.TypeJSON, value)
 		_node.Protocols = value
+	}
+	if value, ok := _c.mutation.AutoForward(); ok {
+		_spec.SetField(deviceportforward.FieldAutoForward, field.TypeBool, value)
+		_node.AutoForward = value
 	}
 	if value, ok := _c.mutation.Enabled(); ok {
 		_spec.SetField(deviceportforward.FieldEnabled, field.TypeBool, value)
@@ -342,6 +398,36 @@ func (u *DevicePortForwardUpsert) UpdateUpdatedAt() *DevicePortForwardUpsert {
 	return u
 }
 
+// SetName sets the "name" field.
+func (u *DevicePortForwardUpsert) SetName(v string) *DevicePortForwardUpsert {
+	u.Set(deviceportforward.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *DevicePortForwardUpsert) UpdateName() *DevicePortForwardUpsert {
+	u.SetExcluded(deviceportforward.FieldName)
+	return u
+}
+
+// SetDescription sets the "description" field.
+func (u *DevicePortForwardUpsert) SetDescription(v string) *DevicePortForwardUpsert {
+	u.Set(deviceportforward.FieldDescription, v)
+	return u
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *DevicePortForwardUpsert) UpdateDescription() *DevicePortForwardUpsert {
+	u.SetExcluded(deviceportforward.FieldDescription)
+	return u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *DevicePortForwardUpsert) ClearDescription() *DevicePortForwardUpsert {
+	u.SetNull(deviceportforward.FieldDescription)
+	return u
+}
+
 // SetLocalPort sets the "local_port" field.
 func (u *DevicePortForwardUpsert) SetLocalPort(v int) *DevicePortForwardUpsert {
 	u.Set(deviceportforward.FieldLocalPort, v)
@@ -399,6 +485,18 @@ func (u *DevicePortForwardUpsert) SetProtocols(v []string) *DevicePortForwardUps
 // UpdateProtocols sets the "protocols" field to the value that was provided on create.
 func (u *DevicePortForwardUpsert) UpdateProtocols() *DevicePortForwardUpsert {
 	u.SetExcluded(deviceportforward.FieldProtocols)
+	return u
+}
+
+// SetAutoForward sets the "auto_forward" field.
+func (u *DevicePortForwardUpsert) SetAutoForward(v bool) *DevicePortForwardUpsert {
+	u.Set(deviceportforward.FieldAutoForward, v)
+	return u
+}
+
+// UpdateAutoForward sets the "auto_forward" field to the value that was provided on create.
+func (u *DevicePortForwardUpsert) UpdateAutoForward() *DevicePortForwardUpsert {
+	u.SetExcluded(deviceportforward.FieldAutoForward)
 	return u
 }
 
@@ -479,6 +577,41 @@ func (u *DevicePortForwardUpsertOne) UpdateUpdatedAt() *DevicePortForwardUpsertO
 	})
 }
 
+// SetName sets the "name" field.
+func (u *DevicePortForwardUpsertOne) SetName(v string) *DevicePortForwardUpsertOne {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *DevicePortForwardUpsertOne) UpdateName() *DevicePortForwardUpsertOne {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *DevicePortForwardUpsertOne) SetDescription(v string) *DevicePortForwardUpsertOne {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *DevicePortForwardUpsertOne) UpdateDescription() *DevicePortForwardUpsertOne {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *DevicePortForwardUpsertOne) ClearDescription() *DevicePortForwardUpsertOne {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.ClearDescription()
+	})
+}
+
 // SetLocalPort sets the "local_port" field.
 func (u *DevicePortForwardUpsertOne) SetLocalPort(v int) *DevicePortForwardUpsertOne {
 	return u.Update(func(s *DevicePortForwardUpsert) {
@@ -546,6 +679,20 @@ func (u *DevicePortForwardUpsertOne) SetProtocols(v []string) *DevicePortForward
 func (u *DevicePortForwardUpsertOne) UpdateProtocols() *DevicePortForwardUpsertOne {
 	return u.Update(func(s *DevicePortForwardUpsert) {
 		s.UpdateProtocols()
+	})
+}
+
+// SetAutoForward sets the "auto_forward" field.
+func (u *DevicePortForwardUpsertOne) SetAutoForward(v bool) *DevicePortForwardUpsertOne {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.SetAutoForward(v)
+	})
+}
+
+// UpdateAutoForward sets the "auto_forward" field to the value that was provided on create.
+func (u *DevicePortForwardUpsertOne) UpdateAutoForward() *DevicePortForwardUpsertOne {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.UpdateAutoForward()
 	})
 }
 
@@ -794,6 +941,41 @@ func (u *DevicePortForwardUpsertBulk) UpdateUpdatedAt() *DevicePortForwardUpsert
 	})
 }
 
+// SetName sets the "name" field.
+func (u *DevicePortForwardUpsertBulk) SetName(v string) *DevicePortForwardUpsertBulk {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *DevicePortForwardUpsertBulk) UpdateName() *DevicePortForwardUpsertBulk {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *DevicePortForwardUpsertBulk) SetDescription(v string) *DevicePortForwardUpsertBulk {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *DevicePortForwardUpsertBulk) UpdateDescription() *DevicePortForwardUpsertBulk {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *DevicePortForwardUpsertBulk) ClearDescription() *DevicePortForwardUpsertBulk {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.ClearDescription()
+	})
+}
+
 // SetLocalPort sets the "local_port" field.
 func (u *DevicePortForwardUpsertBulk) SetLocalPort(v int) *DevicePortForwardUpsertBulk {
 	return u.Update(func(s *DevicePortForwardUpsert) {
@@ -861,6 +1043,20 @@ func (u *DevicePortForwardUpsertBulk) SetProtocols(v []string) *DevicePortForwar
 func (u *DevicePortForwardUpsertBulk) UpdateProtocols() *DevicePortForwardUpsertBulk {
 	return u.Update(func(s *DevicePortForwardUpsert) {
 		s.UpdateProtocols()
+	})
+}
+
+// SetAutoForward sets the "auto_forward" field.
+func (u *DevicePortForwardUpsertBulk) SetAutoForward(v bool) *DevicePortForwardUpsertBulk {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.SetAutoForward(v)
+	})
+}
+
+// UpdateAutoForward sets the "auto_forward" field to the value that was provided on create.
+func (u *DevicePortForwardUpsertBulk) UpdateAutoForward() *DevicePortForwardUpsertBulk {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.UpdateAutoForward()
 	})
 }
 

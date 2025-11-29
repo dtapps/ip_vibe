@@ -27,12 +27,13 @@ func GetWebhookSubscriptions(c *gin.Context) {
 	}
 	for _, item := range allWebhookSubscription {
 		list := types.GetWebhookSubscriptionsResponse{
-			ID:        item.ID,
-			Name:      item.Name,
-			WebhookID: item.WebhookID,
-			ObjType:   item.ObjType.String(),
-			ObjID:     item.ObjID,
-			IsActive:  item.IsActive,
+			ID:          item.ID,
+			Name:        item.Name,
+			Description: item.Description,
+			WebhookID:   item.WebhookID,
+			ObjType:     item.ObjType.String(),
+			ObjID:       item.ObjID,
+			IsActive:    item.IsActive,
 		}
 		switch item.ObjType {
 		case webhooksubscription.ObjTypeCdnRecord:
@@ -75,12 +76,13 @@ func GetWebhookSubscription(c *gin.Context) {
 		return
 	}
 	list := types.GetWebhookSubscriptionsResponse{
-		ID:        firstWebhookSubscription.ID,
-		Name:      firstWebhookSubscription.Name,
-		WebhookID: firstWebhookSubscription.WebhookID,
-		ObjType:   firstWebhookSubscription.ObjType.String(),
-		ObjID:     firstWebhookSubscription.ObjID,
-		IsActive:  firstWebhookSubscription.IsActive,
+		ID:          firstWebhookSubscription.ID,
+		Name:        firstWebhookSubscription.Name,
+		Description: firstWebhookSubscription.Description,
+		WebhookID:   firstWebhookSubscription.WebhookID,
+		ObjType:     firstWebhookSubscription.ObjType.String(),
+		ObjID:       firstWebhookSubscription.ObjID,
+		IsActive:    firstWebhookSubscription.IsActive,
 	}
 	switch firstWebhookSubscription.ObjType {
 	case webhooksubscription.ObjTypeCdnRecord:
@@ -123,6 +125,7 @@ func CreateWebhookSubscription(c *gin.Context) {
 		// 创建通知订阅
 		saveWebhookSubscription, err := global.GvaDb.WebhookSubscription.Create().
 			SetName(requestParams.Name).
+			SetDescription(requestParams.Description).
 			SetWebhookID(requestParams.WebhookID).
 			SetObjType(webhooksubscription.ObjType(requestParams.ObjType)).
 			SetObjID(objID).
@@ -165,6 +168,7 @@ func UpdateWebhookSubscription(c *gin.Context) {
 	// 更新通知订阅
 	saveWebhookSubscription, err := global.GvaDb.WebhookSubscription.UpdateOne(firstWebhookSubscription).
 		SetName(requestParams.Name).
+		SetDescription(requestParams.Description).
 		Save(c)
 	if err != nil {
 		if global.GvaEnv.DEBUG {

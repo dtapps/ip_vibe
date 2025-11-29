@@ -26,6 +26,8 @@ type Device struct {
 	Code string `json:"code,omitempty"`
 	// 设备名称
 	Name string `json:"name,omitempty"`
+	// 设备描述
+	Description string `json:"description,omitempty"`
 	// IP地址V4
 	IPV4 string `json:"ip_v4,omitempty"`
 	// IP地址V6
@@ -102,7 +104,7 @@ func (*Device) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case device.FieldID:
 			values[i] = new(sql.NullInt64)
-		case device.FieldCode, device.FieldName, device.FieldIPV4, device.FieldIPV6:
+		case device.FieldCode, device.FieldName, device.FieldDescription, device.FieldIPV4, device.FieldIPV6:
 			values[i] = new(sql.NullString)
 		case device.FieldCreatedAt, device.FieldUpdatedAt, device.FieldLastReportedAt, device.FieldLastHeartbeatAt:
 			values[i] = new(sql.NullTime)
@@ -150,6 +152,12 @@ func (_m *Device) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				_m.Name = value.String
+			}
+		case device.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				_m.Description = value.String
 			}
 		case device.FieldIPV4:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -242,6 +250,9 @@ func (_m *Device) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
+	builder.WriteString(", ")
+	builder.WriteString("description=")
+	builder.WriteString(_m.Description)
 	builder.WriteString(", ")
 	builder.WriteString("ip_v4=")
 	builder.WriteString(_m.IPV4)

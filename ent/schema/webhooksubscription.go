@@ -46,6 +46,11 @@ func (WebhookSubscription) Fields() []ent.Field {
 			Comment("通知订阅名称").
 			Annotations(entsql.WithComments(true)),
 
+		field.String("description").
+			Optional().
+			Comment("通知订阅描述").
+			Annotations(entsql.WithComments(true)),
+
 		field.Int64("webhook_id").
 			Immutable().
 			Comment("通知序号").

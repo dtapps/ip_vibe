@@ -65,6 +65,20 @@ func (_c *DeviceCreate) SetName(v string) *DeviceCreate {
 	return _c
 }
 
+// SetDescription sets the "description" field.
+func (_c *DeviceCreate) SetDescription(v string) *DeviceCreate {
+	_c.mutation.SetDescription(v)
+	return _c
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_c *DeviceCreate) SetNillableDescription(v *string) *DeviceCreate {
+	if v != nil {
+		_c.SetDescription(*v)
+	}
+	return _c
+}
+
 // SetIPV4 sets the "ip_v4" field.
 func (_c *DeviceCreate) SetIPV4(v string) *DeviceCreate {
 	_c.mutation.SetIPV4(v)
@@ -280,6 +294,10 @@ func (_c *DeviceCreate) createSpec() (*Device, *sqlgraph.CreateSpec) {
 		_spec.SetField(device.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
+	if value, ok := _c.mutation.Description(); ok {
+		_spec.SetField(device.FieldDescription, field.TypeString, value)
+		_node.Description = value
+	}
 	if value, ok := _c.mutation.IPV4(); ok {
 		_spec.SetField(device.FieldIPV4, field.TypeString, value)
 		_node.IPV4 = value
@@ -421,6 +439,24 @@ func (u *DeviceUpsert) SetName(v string) *DeviceUpsert {
 // UpdateName sets the "name" field to the value that was provided on create.
 func (u *DeviceUpsert) UpdateName() *DeviceUpsert {
 	u.SetExcluded(device.FieldName)
+	return u
+}
+
+// SetDescription sets the "description" field.
+func (u *DeviceUpsert) SetDescription(v string) *DeviceUpsert {
+	u.Set(device.FieldDescription, v)
+	return u
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *DeviceUpsert) UpdateDescription() *DeviceUpsert {
+	u.SetExcluded(device.FieldDescription)
+	return u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *DeviceUpsert) ClearDescription() *DeviceUpsert {
+	u.SetNull(device.FieldDescription)
 	return u
 }
 
@@ -575,6 +611,27 @@ func (u *DeviceUpsertOne) SetName(v string) *DeviceUpsertOne {
 func (u *DeviceUpsertOne) UpdateName() *DeviceUpsertOne {
 	return u.Update(func(s *DeviceUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *DeviceUpsertOne) SetDescription(v string) *DeviceUpsertOne {
+	return u.Update(func(s *DeviceUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *DeviceUpsertOne) UpdateDescription() *DeviceUpsertOne {
+	return u.Update(func(s *DeviceUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *DeviceUpsertOne) ClearDescription() *DeviceUpsertOne {
+	return u.Update(func(s *DeviceUpsert) {
+		s.ClearDescription()
 	})
 }
 
@@ -907,6 +964,27 @@ func (u *DeviceUpsertBulk) SetName(v string) *DeviceUpsertBulk {
 func (u *DeviceUpsertBulk) UpdateName() *DeviceUpsertBulk {
 	return u.Update(func(s *DeviceUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *DeviceUpsertBulk) SetDescription(v string) *DeviceUpsertBulk {
+	return u.Update(func(s *DeviceUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *DeviceUpsertBulk) UpdateDescription() *DeviceUpsertBulk {
+	return u.Update(func(s *DeviceUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *DeviceUpsertBulk) ClearDescription() *DeviceUpsertBulk {
+	return u.Update(func(s *DeviceUpsert) {
+		s.ClearDescription()
 	})
 }
 

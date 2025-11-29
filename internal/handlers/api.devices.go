@@ -35,6 +35,7 @@ func GetDevices(c *gin.Context) {
 			ID:              item.ID,
 			Code:            item.Code,
 			Name:            item.Name,
+			Description:     item.Description,
 			IPV4:            item.IPV4,
 			IPV6:            item.IPV6,
 			LastReportedAt:  item.LastReportedAt,
@@ -60,6 +61,7 @@ func GetDevice(c *gin.Context) {
 		ID:              firstDevice.ID,
 		Code:            firstDevice.Code,
 		Name:            firstDevice.Name,
+		Description:     firstDevice.Description,
 		IPV4:            firstDevice.IPV4,
 		IPV6:            firstDevice.IPV6,
 		LastReportedAt:  firstDevice.LastReportedAt,
@@ -82,6 +84,7 @@ func CreateDevice(c *gin.Context) {
 	saveDevice, err := global.GvaDb.Device.Create().
 		SetCode(requestParams.Code).
 		SetName(requestParams.Name).
+		SetDescription(requestParams.Description).
 		Save(c)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
@@ -120,6 +123,7 @@ func UpdateDevice(c *gin.Context) {
 	// 更新设备
 	saveDevice, err := global.GvaDb.Device.UpdateOne(firstDevice).
 		SetName(requestParams.Name).
+		SetDescription(requestParams.Description).
 		Save(c)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
@@ -158,37 +162,15 @@ func DeleteDevice(c *gin.Context) {
 		errorResponse(c, http.StatusForbidden, "不能删除自身设备")
 		return
 	}
-	// 开始事务
-	tx, err := global.GvaDb.Tx(c)
-	if err != nil {
-		errorResponse(c, http.StatusInternalServerError, "开始事务失败: "+err.Error())
-		return
-	}
-	// 清除设备关联的IP组
-	err = tx.Device.Update().
-		Where(device.ID(cast.ToInt64(id))).
-		ClearIPGroups().
-		Exec(c)
-	if err != nil {
-		tx.Rollback()
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("清除设备关联的IP组: %s\n", err.Error())
-		}
-		errorResponse(c, http.StatusInternalServerError, "清除设备关联的IP组失败: "+err.Error())
-		return
-	}
 	// 删除设备
-	err = tx.Device.DeleteOne(firstDevice).Exec(c)
+	err = global.GvaDb.Device.DeleteOne(firstDevice).Exec(c)
 	if err != nil {
-		tx.Rollback()
 		if global.GvaEnv.DEBUG {
 			fmt.Printf("删除设备: %s\n", err.Error())
 		}
 		errorResponse(c, http.StatusInternalServerError, "删除设备失败: "+err.Error())
 		return
 	}
-	// 提交事务
-	_ = tx.Commit()
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataDelete(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "删除设备")
 	successResponse(c, gin.H{
@@ -298,6 +280,7 @@ func ReportDeviceIp(c *gin.Context) {
 		saveDevice, err := tx.Device.Create().
 			SetCode(requestParams.DeviceCode).
 			SetName(requestParams.DeviceName).
+			SetDescription(requestParams.Description).
 			SetIPV4(requestParams.IPV4Addr).
 			SetIPV6(requestParams.IPV6Addr).
 			SetLastReportedAt(time.Now()).
@@ -347,6 +330,9 @@ func ReportDeviceIp(c *gin.Context) {
 				SetLastHeartbeatAt(time.Now())
 			if requestParams.DeviceName != "" && firstDevice.Name != requestParams.DeviceName {
 				updateDevice.SetName(requestParams.DeviceName)
+			}
+			if requestParams.Description != "" && firstDevice.Description != requestParams.Description {
+				updateDevice.SetDescription(requestParams.Description)
 			}
 			err = updateDevice.Exec(c)
 			if err != nil {

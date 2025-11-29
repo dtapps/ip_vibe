@@ -18,6 +18,10 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
+	// FieldDescription holds the string denoting the description field in the database.
+	FieldDescription = "description"
 	// FieldLocalPort holds the string denoting the local_port field in the database.
 	FieldLocalPort = "local_port"
 	// FieldRemoteHost holds the string denoting the remote_host field in the database.
@@ -26,6 +30,8 @@ const (
 	FieldRemotePort = "remote_port"
 	// FieldProtocols holds the string denoting the protocols field in the database.
 	FieldProtocols = "protocols"
+	// FieldAutoForward holds the string denoting the auto_forward field in the database.
+	FieldAutoForward = "auto_forward"
 	// FieldEnabled holds the string denoting the enabled field in the database.
 	FieldEnabled = "enabled"
 	// EdgeDevice holds the string denoting the device edge name in mutations.
@@ -46,10 +52,13 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldName,
+	FieldDescription,
 	FieldLocalPort,
 	FieldRemoteHost,
 	FieldRemotePort,
 	FieldProtocols,
+	FieldAutoForward,
 	FieldEnabled,
 }
 
@@ -89,6 +98,8 @@ var (
 	RemotePortValidator func(int) error
 	// DefaultProtocols holds the default value on creation for the "protocols" field.
 	DefaultProtocols []string
+	// DefaultAutoForward holds the default value on creation for the "auto_forward" field.
+	DefaultAutoForward bool
 	// DefaultEnabled holds the default value on creation for the "enabled" field.
 	DefaultEnabled bool
 )
@@ -111,6 +122,16 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
 // ByLocalPort orders the results by the local_port field.
 func ByLocalPort(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLocalPort, opts...).ToFunc()
@@ -124,6 +145,11 @@ func ByRemoteHost(opts ...sql.OrderTermOption) OrderOption {
 // ByRemotePort orders the results by the remote_port field.
 func ByRemotePort(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRemotePort, opts...).ToFunc()
+}
+
+// ByAutoForward orders the results by the auto_forward field.
+func ByAutoForward(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAutoForward, opts...).ToFunc()
 }
 
 // ByEnabled orders the results by the enabled field.

@@ -37,6 +37,40 @@ func (_u *DevicePortForwardUpdate) SetUpdatedAt(v time.Time) *DevicePortForwardU
 	return _u
 }
 
+// SetName sets the "name" field.
+func (_u *DevicePortForwardUpdate) SetName(v string) *DevicePortForwardUpdate {
+	_u.mutation.SetName(v)
+	return _u
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (_u *DevicePortForwardUpdate) SetNillableName(v *string) *DevicePortForwardUpdate {
+	if v != nil {
+		_u.SetName(*v)
+	}
+	return _u
+}
+
+// SetDescription sets the "description" field.
+func (_u *DevicePortForwardUpdate) SetDescription(v string) *DevicePortForwardUpdate {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *DevicePortForwardUpdate) SetNillableDescription(v *string) *DevicePortForwardUpdate {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *DevicePortForwardUpdate) ClearDescription() *DevicePortForwardUpdate {
+	_u.mutation.ClearDescription()
+	return _u
+}
+
 // SetLocalPort sets the "local_port" field.
 func (_u *DevicePortForwardUpdate) SetLocalPort(v int) *DevicePortForwardUpdate {
 	_u.mutation.ResetLocalPort()
@@ -102,6 +136,20 @@ func (_u *DevicePortForwardUpdate) SetProtocols(v []string) *DevicePortForwardUp
 // AppendProtocols appends value to the "protocols" field.
 func (_u *DevicePortForwardUpdate) AppendProtocols(v []string) *DevicePortForwardUpdate {
 	_u.mutation.AppendProtocols(v)
+	return _u
+}
+
+// SetAutoForward sets the "auto_forward" field.
+func (_u *DevicePortForwardUpdate) SetAutoForward(v bool) *DevicePortForwardUpdate {
+	_u.mutation.SetAutoForward(v)
+	return _u
+}
+
+// SetNillableAutoForward sets the "auto_forward" field if the given value is not nil.
+func (_u *DevicePortForwardUpdate) SetNillableAutoForward(v *bool) *DevicePortForwardUpdate {
+	if v != nil {
+		_u.SetAutoForward(*v)
+	}
 	return _u
 }
 
@@ -221,6 +269,15 @@ func (_u *DevicePortForwardUpdate) sqlSave(ctx context.Context) (_node int, err 
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(deviceportforward.FieldUpdatedAt, field.TypeTime, value)
 	}
+	if value, ok := _u.mutation.Name(); ok {
+		_spec.SetField(deviceportforward.FieldName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(deviceportforward.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(deviceportforward.FieldDescription, field.TypeString)
+	}
 	if value, ok := _u.mutation.LocalPort(); ok {
 		_spec.SetField(deviceportforward.FieldLocalPort, field.TypeInt, value)
 	}
@@ -243,6 +300,9 @@ func (_u *DevicePortForwardUpdate) sqlSave(ctx context.Context) (_node int, err 
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
 			sqljson.Append(u, deviceportforward.FieldProtocols, value)
 		})
+	}
+	if value, ok := _u.mutation.AutoForward(); ok {
+		_spec.SetField(deviceportforward.FieldAutoForward, field.TypeBool, value)
 	}
 	if value, ok := _u.mutation.Enabled(); ok {
 		_spec.SetField(deviceportforward.FieldEnabled, field.TypeBool, value)
@@ -301,6 +361,40 @@ type DevicePortForwardUpdateOne struct {
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *DevicePortForwardUpdateOne) SetUpdatedAt(v time.Time) *DevicePortForwardUpdateOne {
 	_u.mutation.SetUpdatedAt(v)
+	return _u
+}
+
+// SetName sets the "name" field.
+func (_u *DevicePortForwardUpdateOne) SetName(v string) *DevicePortForwardUpdateOne {
+	_u.mutation.SetName(v)
+	return _u
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (_u *DevicePortForwardUpdateOne) SetNillableName(v *string) *DevicePortForwardUpdateOne {
+	if v != nil {
+		_u.SetName(*v)
+	}
+	return _u
+}
+
+// SetDescription sets the "description" field.
+func (_u *DevicePortForwardUpdateOne) SetDescription(v string) *DevicePortForwardUpdateOne {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *DevicePortForwardUpdateOne) SetNillableDescription(v *string) *DevicePortForwardUpdateOne {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *DevicePortForwardUpdateOne) ClearDescription() *DevicePortForwardUpdateOne {
+	_u.mutation.ClearDescription()
 	return _u
 }
 
@@ -369,6 +463,20 @@ func (_u *DevicePortForwardUpdateOne) SetProtocols(v []string) *DevicePortForwar
 // AppendProtocols appends value to the "protocols" field.
 func (_u *DevicePortForwardUpdateOne) AppendProtocols(v []string) *DevicePortForwardUpdateOne {
 	_u.mutation.AppendProtocols(v)
+	return _u
+}
+
+// SetAutoForward sets the "auto_forward" field.
+func (_u *DevicePortForwardUpdateOne) SetAutoForward(v bool) *DevicePortForwardUpdateOne {
+	_u.mutation.SetAutoForward(v)
+	return _u
+}
+
+// SetNillableAutoForward sets the "auto_forward" field if the given value is not nil.
+func (_u *DevicePortForwardUpdateOne) SetNillableAutoForward(v *bool) *DevicePortForwardUpdateOne {
+	if v != nil {
+		_u.SetAutoForward(*v)
+	}
 	return _u
 }
 
@@ -518,6 +626,15 @@ func (_u *DevicePortForwardUpdateOne) sqlSave(ctx context.Context) (_node *Devic
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(deviceportforward.FieldUpdatedAt, field.TypeTime, value)
 	}
+	if value, ok := _u.mutation.Name(); ok {
+		_spec.SetField(deviceportforward.FieldName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(deviceportforward.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(deviceportforward.FieldDescription, field.TypeString)
+	}
 	if value, ok := _u.mutation.LocalPort(); ok {
 		_spec.SetField(deviceportforward.FieldLocalPort, field.TypeInt, value)
 	}
@@ -540,6 +657,9 @@ func (_u *DevicePortForwardUpdateOne) sqlSave(ctx context.Context) (_node *Devic
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
 			sqljson.Append(u, deviceportforward.FieldProtocols, value)
 		})
+	}
+	if value, ok := _u.mutation.AutoForward(); ok {
+		_spec.SetField(deviceportforward.FieldAutoForward, field.TypeBool, value)
 	}
 	if value, ok := _u.mutation.Enabled(); ok {
 		_spec.SetField(deviceportforward.FieldEnabled, field.TypeBool, value)

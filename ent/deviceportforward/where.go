@@ -65,6 +65,16 @@ func UpdatedAt(v time.Time) predicate.DevicePortForward {
 	return predicate.DevicePortForward(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
+func Name(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldEQ(FieldName, v))
+}
+
+// Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
+func Description(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldEQ(FieldDescription, v))
+}
+
 // LocalPort applies equality check predicate on the "local_port" field. It's identical to LocalPortEQ.
 func LocalPort(v int) predicate.DevicePortForward {
 	return predicate.DevicePortForward(sql.FieldEQ(FieldLocalPort, v))
@@ -78,6 +88,11 @@ func RemoteHost(v string) predicate.DevicePortForward {
 // RemotePort applies equality check predicate on the "remote_port" field. It's identical to RemotePortEQ.
 func RemotePort(v int) predicate.DevicePortForward {
 	return predicate.DevicePortForward(sql.FieldEQ(FieldRemotePort, v))
+}
+
+// AutoForward applies equality check predicate on the "auto_forward" field. It's identical to AutoForwardEQ.
+func AutoForward(v bool) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldEQ(FieldAutoForward, v))
 }
 
 // Enabled applies equality check predicate on the "enabled" field. It's identical to EnabledEQ.
@@ -163,6 +178,146 @@ func UpdatedAtLT(v time.Time) predicate.DevicePortForward {
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.DevicePortForward {
 	return predicate.DevicePortForward(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// NameEQ applies the EQ predicate on the "name" field.
+func NameEQ(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldEQ(FieldName, v))
+}
+
+// NameNEQ applies the NEQ predicate on the "name" field.
+func NameNEQ(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldNEQ(FieldName, v))
+}
+
+// NameIn applies the In predicate on the "name" field.
+func NameIn(vs ...string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldIn(FieldName, vs...))
+}
+
+// NameNotIn applies the NotIn predicate on the "name" field.
+func NameNotIn(vs ...string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldNotIn(FieldName, vs...))
+}
+
+// NameGT applies the GT predicate on the "name" field.
+func NameGT(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldGT(FieldName, v))
+}
+
+// NameGTE applies the GTE predicate on the "name" field.
+func NameGTE(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldGTE(FieldName, v))
+}
+
+// NameLT applies the LT predicate on the "name" field.
+func NameLT(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldLT(FieldName, v))
+}
+
+// NameLTE applies the LTE predicate on the "name" field.
+func NameLTE(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldLTE(FieldName, v))
+}
+
+// NameContains applies the Contains predicate on the "name" field.
+func NameContains(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldContains(FieldName, v))
+}
+
+// NameHasPrefix applies the HasPrefix predicate on the "name" field.
+func NameHasPrefix(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldHasPrefix(FieldName, v))
+}
+
+// NameHasSuffix applies the HasSuffix predicate on the "name" field.
+func NameHasSuffix(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldHasSuffix(FieldName, v))
+}
+
+// NameEqualFold applies the EqualFold predicate on the "name" field.
+func NameEqualFold(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldEqualFold(FieldName, v))
+}
+
+// NameContainsFold applies the ContainsFold predicate on the "name" field.
+func NameContainsFold(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldContainsFold(FieldName, v))
+}
+
+// DescriptionEQ applies the EQ predicate on the "description" field.
+func DescriptionEQ(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldEQ(FieldDescription, v))
+}
+
+// DescriptionNEQ applies the NEQ predicate on the "description" field.
+func DescriptionNEQ(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldNEQ(FieldDescription, v))
+}
+
+// DescriptionIn applies the In predicate on the "description" field.
+func DescriptionIn(vs ...string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldIn(FieldDescription, vs...))
+}
+
+// DescriptionNotIn applies the NotIn predicate on the "description" field.
+func DescriptionNotIn(vs ...string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldNotIn(FieldDescription, vs...))
+}
+
+// DescriptionGT applies the GT predicate on the "description" field.
+func DescriptionGT(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldGT(FieldDescription, v))
+}
+
+// DescriptionGTE applies the GTE predicate on the "description" field.
+func DescriptionGTE(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldGTE(FieldDescription, v))
+}
+
+// DescriptionLT applies the LT predicate on the "description" field.
+func DescriptionLT(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldLT(FieldDescription, v))
+}
+
+// DescriptionLTE applies the LTE predicate on the "description" field.
+func DescriptionLTE(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldLTE(FieldDescription, v))
+}
+
+// DescriptionContains applies the Contains predicate on the "description" field.
+func DescriptionContains(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldContains(FieldDescription, v))
+}
+
+// DescriptionHasPrefix applies the HasPrefix predicate on the "description" field.
+func DescriptionHasPrefix(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldHasPrefix(FieldDescription, v))
+}
+
+// DescriptionHasSuffix applies the HasSuffix predicate on the "description" field.
+func DescriptionHasSuffix(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldHasSuffix(FieldDescription, v))
+}
+
+// DescriptionIsNil applies the IsNil predicate on the "description" field.
+func DescriptionIsNil() predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldIsNull(FieldDescription))
+}
+
+// DescriptionNotNil applies the NotNil predicate on the "description" field.
+func DescriptionNotNil() predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldNotNull(FieldDescription))
+}
+
+// DescriptionEqualFold applies the EqualFold predicate on the "description" field.
+func DescriptionEqualFold(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldEqualFold(FieldDescription, v))
+}
+
+// DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
+func DescriptionContainsFold(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldContainsFold(FieldDescription, v))
 }
 
 // LocalPortEQ applies the EQ predicate on the "local_port" field.
@@ -308,6 +463,16 @@ func RemotePortLT(v int) predicate.DevicePortForward {
 // RemotePortLTE applies the LTE predicate on the "remote_port" field.
 func RemotePortLTE(v int) predicate.DevicePortForward {
 	return predicate.DevicePortForward(sql.FieldLTE(FieldRemotePort, v))
+}
+
+// AutoForwardEQ applies the EQ predicate on the "auto_forward" field.
+func AutoForwardEQ(v bool) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldEQ(FieldAutoForward, v))
+}
+
+// AutoForwardNEQ applies the NEQ predicate on the "auto_forward" field.
+func AutoForwardNEQ(v bool) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldNEQ(FieldAutoForward, v))
 }
 
 // EnabledEQ applies the EQ predicate on the "enabled" field.

@@ -73,6 +73,20 @@ func (_c *PlatformConfigCreate) SetName(v string) *PlatformConfigCreate {
 	return _c
 }
 
+// SetDescription sets the "description" field.
+func (_c *PlatformConfigCreate) SetDescription(v string) *PlatformConfigCreate {
+	_c.mutation.SetDescription(v)
+	return _c
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_c *PlatformConfigCreate) SetNillableDescription(v *string) *PlatformConfigCreate {
+	if v != nil {
+		_c.SetDescription(*v)
+	}
+	return _c
+}
+
 // SetPlatform sets the "platform" field.
 func (_c *PlatformConfigCreate) SetPlatform(v platformconfig.Platform) *PlatformConfigCreate {
 	_c.mutation.SetPlatform(v)
@@ -246,6 +260,10 @@ func (_c *PlatformConfigCreate) createSpec() (*PlatformConfig, *sqlgraph.CreateS
 		_spec.SetField(platformconfig.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
+	if value, ok := _c.mutation.Description(); ok {
+		_spec.SetField(platformconfig.FieldDescription, field.TypeString, value)
+		_node.Description = value
+	}
 	if value, ok := _c.mutation.Platform(); ok {
 		_spec.SetField(platformconfig.FieldPlatform, field.TypeEnum, value)
 		_node.Platform = value
@@ -374,6 +392,24 @@ func (u *PlatformConfigUpsert) UpdateName() *PlatformConfigUpsert {
 	return u
 }
 
+// SetDescription sets the "description" field.
+func (u *PlatformConfigUpsert) SetDescription(v string) *PlatformConfigUpsert {
+	u.Set(platformconfig.FieldDescription, v)
+	return u
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *PlatformConfigUpsert) UpdateDescription() *PlatformConfigUpsert {
+	u.SetExcluded(platformconfig.FieldDescription)
+	return u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *PlatformConfigUpsert) ClearDescription() *PlatformConfigUpsert {
+	u.SetNull(platformconfig.FieldDescription)
+	return u
+}
+
 // SetConfigJSON sets the "config_json" field.
 func (u *PlatformConfigUpsert) SetConfigJSON(v json.RawMessage) *PlatformConfigUpsert {
 	u.Set(platformconfig.FieldConfigJSON, v)
@@ -485,6 +521,27 @@ func (u *PlatformConfigUpsertOne) SetName(v string) *PlatformConfigUpsertOne {
 func (u *PlatformConfigUpsertOne) UpdateName() *PlatformConfigUpsertOne {
 	return u.Update(func(s *PlatformConfigUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *PlatformConfigUpsertOne) SetDescription(v string) *PlatformConfigUpsertOne {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *PlatformConfigUpsertOne) UpdateDescription() *PlatformConfigUpsertOne {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *PlatformConfigUpsertOne) ClearDescription() *PlatformConfigUpsertOne {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.ClearDescription()
 	})
 }
 
@@ -768,6 +825,27 @@ func (u *PlatformConfigUpsertBulk) SetName(v string) *PlatformConfigUpsertBulk {
 func (u *PlatformConfigUpsertBulk) UpdateName() *PlatformConfigUpsertBulk {
 	return u.Update(func(s *PlatformConfigUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *PlatformConfigUpsertBulk) SetDescription(v string) *PlatformConfigUpsertBulk {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *PlatformConfigUpsertBulk) UpdateDescription() *PlatformConfigUpsertBulk {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *PlatformConfigUpsertBulk) ClearDescription() *PlatformConfigUpsertBulk {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.ClearDescription()
 	})
 }
 

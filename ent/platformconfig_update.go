@@ -67,6 +67,26 @@ func (_u *PlatformConfigUpdate) SetNillableName(v *string) *PlatformConfigUpdate
 	return _u
 }
 
+// SetDescription sets the "description" field.
+func (_u *PlatformConfigUpdate) SetDescription(v string) *PlatformConfigUpdate {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *PlatformConfigUpdate) SetNillableDescription(v *string) *PlatformConfigUpdate {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *PlatformConfigUpdate) ClearDescription() *PlatformConfigUpdate {
+	_u.mutation.ClearDescription()
+	return _u
+}
+
 // SetConfigJSON sets the "config_json" field.
 func (_u *PlatformConfigUpdate) SetConfigJSON(v json.RawMessage) *PlatformConfigUpdate {
 	_u.mutation.SetConfigJSON(v)
@@ -235,6 +255,12 @@ func (_u *PlatformConfigUpdate) sqlSave(ctx context.Context) (_node int, err err
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(platformconfig.FieldName, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(platformconfig.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(platformconfig.FieldDescription, field.TypeString)
+	}
 	if value, ok := _u.mutation.ConfigJSON(); ok {
 		_spec.SetField(platformconfig.FieldConfigJSON, field.TypeJSON, value)
 	}
@@ -389,6 +415,26 @@ func (_u *PlatformConfigUpdateOne) SetNillableName(v *string) *PlatformConfigUpd
 	if v != nil {
 		_u.SetName(*v)
 	}
+	return _u
+}
+
+// SetDescription sets the "description" field.
+func (_u *PlatformConfigUpdateOne) SetDescription(v string) *PlatformConfigUpdateOne {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *PlatformConfigUpdateOne) SetNillableDescription(v *string) *PlatformConfigUpdateOne {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *PlatformConfigUpdateOne) ClearDescription() *PlatformConfigUpdateOne {
+	_u.mutation.ClearDescription()
 	return _u
 }
 
@@ -589,6 +635,12 @@ func (_u *PlatformConfigUpdateOne) sqlSave(ctx context.Context) (_node *Platform
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(platformconfig.FieldName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(platformconfig.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(platformconfig.FieldDescription, field.TypeString)
 	}
 	if value, ok := _u.mutation.ConfigJSON(); ok {
 		_spec.SetField(platformconfig.FieldConfigJSON, field.TypeJSON, value)

@@ -23,6 +23,8 @@ const (
 	FieldCapability = "capability"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldDescription holds the string denoting the description field in the database.
+	FieldDescription = "description"
 	// FieldPlatform holds the string denoting the platform field in the database.
 	FieldPlatform = "platform"
 	// FieldConfigJSON holds the string denoting the config_json field in the database.
@@ -56,6 +58,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldCapability,
 	FieldName,
+	FieldDescription,
 	FieldPlatform,
 	FieldConfigJSON,
 }
@@ -156,6 +159,11 @@ func ByCapability(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
 }
 
 // ByPlatform orders the results by the platform field.

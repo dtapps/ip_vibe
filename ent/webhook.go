@@ -25,6 +25,8 @@ type Webhook struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// 通知名称
 	Name string `json:"name,omitempty"`
+	// 通知描述
+	Description string `json:"description,omitempty"`
 	// 通知平台类型
 	Platform webhook.Platform `json:"platform,omitempty"`
 	// Webhook URL
@@ -75,7 +77,7 @@ func (*Webhook) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case webhook.FieldID:
 			values[i] = new(sql.NullInt64)
-		case webhook.FieldName, webhook.FieldPlatform, webhook.FieldURL, webhook.FieldSecret, webhook.FieldTemplateTitle, webhook.FieldTemplateContent:
+		case webhook.FieldName, webhook.FieldDescription, webhook.FieldPlatform, webhook.FieldURL, webhook.FieldSecret, webhook.FieldTemplateTitle, webhook.FieldTemplateContent:
 			values[i] = new(sql.NullString)
 		case webhook.FieldCreatedAt, webhook.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -117,6 +119,12 @@ func (_m *Webhook) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				_m.Name = value.String
+			}
+		case webhook.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				_m.Description = value.String
 			}
 		case webhook.FieldPlatform:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -211,6 +219,9 @@ func (_m *Webhook) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
+	builder.WriteString(", ")
+	builder.WriteString("description=")
+	builder.WriteString(_m.Description)
 	builder.WriteString(", ")
 	builder.WriteString("platform=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Platform))

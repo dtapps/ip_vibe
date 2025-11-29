@@ -2398,6 +2398,7 @@ type DeviceMutation struct {
 	updated_at           *time.Time
 	code                 *string
 	name                 *string
+	description          *string
 	ip_v4                *string
 	ip_v6                *string
 	last_reported_at     *time.Time
@@ -2663,6 +2664,55 @@ func (m *DeviceMutation) OldName(ctx context.Context) (v string, err error) {
 // ResetName resets all changes to the "name" field.
 func (m *DeviceMutation) ResetName() {
 	m.name = nil
+}
+
+// SetDescription sets the "description" field.
+func (m *DeviceMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *DeviceMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the Device entity.
+// If the Device object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeviceMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *DeviceMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[device.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *DeviceMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[device.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *DeviceMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, device.FieldDescription)
 }
 
 // SetIPV4 sets the "ip_v4" field.
@@ -3057,7 +3107,7 @@ func (m *DeviceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeviceMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, device.FieldCreatedAt)
 	}
@@ -3069,6 +3119,9 @@ func (m *DeviceMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, device.FieldName)
+	}
+	if m.description != nil {
+		fields = append(fields, device.FieldDescription)
 	}
 	if m.ip_v4 != nil {
 		fields = append(fields, device.FieldIPV4)
@@ -3098,6 +3151,8 @@ func (m *DeviceMutation) Field(name string) (ent.Value, bool) {
 		return m.Code()
 	case device.FieldName:
 		return m.Name()
+	case device.FieldDescription:
+		return m.Description()
 	case device.FieldIPV4:
 		return m.IPV4()
 	case device.FieldIPV6:
@@ -3123,6 +3178,8 @@ func (m *DeviceMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldCode(ctx)
 	case device.FieldName:
 		return m.OldName(ctx)
+	case device.FieldDescription:
+		return m.OldDescription(ctx)
 	case device.FieldIPV4:
 		return m.OldIPV4(ctx)
 	case device.FieldIPV6:
@@ -3167,6 +3224,13 @@ func (m *DeviceMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case device.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
 		return nil
 	case device.FieldIPV4:
 		v, ok := value.(string)
@@ -3226,6 +3290,9 @@ func (m *DeviceMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *DeviceMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(device.FieldDescription) {
+		fields = append(fields, device.FieldDescription)
+	}
 	if m.FieldCleared(device.FieldIPV4) {
 		fields = append(fields, device.FieldIPV4)
 	}
@@ -3252,6 +3319,9 @@ func (m *DeviceMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *DeviceMutation) ClearField(name string) error {
 	switch name {
+	case device.FieldDescription:
+		m.ClearDescription()
+		return nil
 	case device.FieldIPV4:
 		m.ClearIPV4()
 		return nil
@@ -3283,6 +3353,9 @@ func (m *DeviceMutation) ResetField(name string) error {
 		return nil
 	case device.FieldName:
 		m.ResetName()
+		return nil
+	case device.FieldDescription:
+		m.ResetDescription()
 		return nil
 	case device.FieldIPV4:
 		m.ResetIPV4()
@@ -4036,6 +4109,8 @@ type DevicePortForwardMutation struct {
 	id              *int64
 	created_at      *time.Time
 	updated_at      *time.Time
+	name            *string
+	description     *string
 	local_port      *int
 	addlocal_port   *int
 	remote_host     *string
@@ -4043,6 +4118,7 @@ type DevicePortForwardMutation struct {
 	addremote_port  *int
 	protocols       *[]string
 	appendprotocols []string
+	auto_forward    *bool
 	enabled         *bool
 	clearedFields   map[string]struct{}
 	device          *int64
@@ -4226,6 +4302,91 @@ func (m *DevicePortForwardMutation) OldUpdatedAt(ctx context.Context) (v time.Ti
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *DevicePortForwardMutation) ResetUpdatedAt() {
 	m.updated_at = nil
+}
+
+// SetName sets the "name" field.
+func (m *DevicePortForwardMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *DevicePortForwardMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the DevicePortForward entity.
+// If the DevicePortForward object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DevicePortForwardMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *DevicePortForwardMutation) ResetName() {
+	m.name = nil
+}
+
+// SetDescription sets the "description" field.
+func (m *DevicePortForwardMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *DevicePortForwardMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the DevicePortForward entity.
+// If the DevicePortForward object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DevicePortForwardMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *DevicePortForwardMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[deviceportforward.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *DevicePortForwardMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[deviceportforward.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *DevicePortForwardMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, deviceportforward.FieldDescription)
 }
 
 // SetLocalPort sets the "local_port" field.
@@ -4427,6 +4588,42 @@ func (m *DevicePortForwardMutation) ResetProtocols() {
 	m.appendprotocols = nil
 }
 
+// SetAutoForward sets the "auto_forward" field.
+func (m *DevicePortForwardMutation) SetAutoForward(b bool) {
+	m.auto_forward = &b
+}
+
+// AutoForward returns the value of the "auto_forward" field in the mutation.
+func (m *DevicePortForwardMutation) AutoForward() (r bool, exists bool) {
+	v := m.auto_forward
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAutoForward returns the old "auto_forward" field's value of the DevicePortForward entity.
+// If the DevicePortForward object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DevicePortForwardMutation) OldAutoForward(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAutoForward is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAutoForward requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAutoForward: %w", err)
+	}
+	return oldValue.AutoForward, nil
+}
+
+// ResetAutoForward resets all changes to the "auto_forward" field.
+func (m *DevicePortForwardMutation) ResetAutoForward() {
+	m.auto_forward = nil
+}
+
 // SetEnabled sets the "enabled" field.
 func (m *DevicePortForwardMutation) SetEnabled(b bool) {
 	m.enabled = &b
@@ -4536,12 +4733,18 @@ func (m *DevicePortForwardMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DevicePortForwardMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, deviceportforward.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, deviceportforward.FieldUpdatedAt)
+	}
+	if m.name != nil {
+		fields = append(fields, deviceportforward.FieldName)
+	}
+	if m.description != nil {
+		fields = append(fields, deviceportforward.FieldDescription)
 	}
 	if m.local_port != nil {
 		fields = append(fields, deviceportforward.FieldLocalPort)
@@ -4554,6 +4757,9 @@ func (m *DevicePortForwardMutation) Fields() []string {
 	}
 	if m.protocols != nil {
 		fields = append(fields, deviceportforward.FieldProtocols)
+	}
+	if m.auto_forward != nil {
+		fields = append(fields, deviceportforward.FieldAutoForward)
 	}
 	if m.enabled != nil {
 		fields = append(fields, deviceportforward.FieldEnabled)
@@ -4570,6 +4776,10 @@ func (m *DevicePortForwardMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case deviceportforward.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case deviceportforward.FieldName:
+		return m.Name()
+	case deviceportforward.FieldDescription:
+		return m.Description()
 	case deviceportforward.FieldLocalPort:
 		return m.LocalPort()
 	case deviceportforward.FieldRemoteHost:
@@ -4578,6 +4788,8 @@ func (m *DevicePortForwardMutation) Field(name string) (ent.Value, bool) {
 		return m.RemotePort()
 	case deviceportforward.FieldProtocols:
 		return m.Protocols()
+	case deviceportforward.FieldAutoForward:
+		return m.AutoForward()
 	case deviceportforward.FieldEnabled:
 		return m.Enabled()
 	}
@@ -4593,6 +4805,10 @@ func (m *DevicePortForwardMutation) OldField(ctx context.Context, name string) (
 		return m.OldCreatedAt(ctx)
 	case deviceportforward.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case deviceportforward.FieldName:
+		return m.OldName(ctx)
+	case deviceportforward.FieldDescription:
+		return m.OldDescription(ctx)
 	case deviceportforward.FieldLocalPort:
 		return m.OldLocalPort(ctx)
 	case deviceportforward.FieldRemoteHost:
@@ -4601,6 +4817,8 @@ func (m *DevicePortForwardMutation) OldField(ctx context.Context, name string) (
 		return m.OldRemotePort(ctx)
 	case deviceportforward.FieldProtocols:
 		return m.OldProtocols(ctx)
+	case deviceportforward.FieldAutoForward:
+		return m.OldAutoForward(ctx)
 	case deviceportforward.FieldEnabled:
 		return m.OldEnabled(ctx)
 	}
@@ -4625,6 +4843,20 @@ func (m *DevicePortForwardMutation) SetField(name string, value ent.Value) error
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
+		return nil
+	case deviceportforward.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case deviceportforward.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
 		return nil
 	case deviceportforward.FieldLocalPort:
 		v, ok := value.(int)
@@ -4653,6 +4885,13 @@ func (m *DevicePortForwardMutation) SetField(name string, value ent.Value) error
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetProtocols(v)
+		return nil
+	case deviceportforward.FieldAutoForward:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAutoForward(v)
 		return nil
 	case deviceportforward.FieldEnabled:
 		v, ok := value.(bool)
@@ -4717,7 +4956,11 @@ func (m *DevicePortForwardMutation) AddField(name string, value ent.Value) error
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *DevicePortForwardMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(deviceportforward.FieldDescription) {
+		fields = append(fields, deviceportforward.FieldDescription)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -4730,6 +4973,11 @@ func (m *DevicePortForwardMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *DevicePortForwardMutation) ClearField(name string) error {
+	switch name {
+	case deviceportforward.FieldDescription:
+		m.ClearDescription()
+		return nil
+	}
 	return fmt.Errorf("unknown DevicePortForward nullable field %s", name)
 }
 
@@ -4743,6 +4991,12 @@ func (m *DevicePortForwardMutation) ResetField(name string) error {
 	case deviceportforward.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
+	case deviceportforward.FieldName:
+		m.ResetName()
+		return nil
+	case deviceportforward.FieldDescription:
+		m.ResetDescription()
+		return nil
 	case deviceportforward.FieldLocalPort:
 		m.ResetLocalPort()
 		return nil
@@ -4754,6 +5008,9 @@ func (m *DevicePortForwardMutation) ResetField(name string) error {
 		return nil
 	case deviceportforward.FieldProtocols:
 		m.ResetProtocols()
+		return nil
+	case deviceportforward.FieldAutoForward:
+		m.ResetAutoForward()
 		return nil
 	case deviceportforward.FieldEnabled:
 		m.ResetEnabled()
@@ -6898,6 +7155,7 @@ type PlatformConfigMutation struct {
 	updated_at         *time.Time
 	capability         *platformconfig.Capability
 	name               *string
+	description        *string
 	platform           *platformconfig.Platform
 	config_json        *json.RawMessage
 	appendconfig_json  json.RawMessage
@@ -7161,6 +7419,55 @@ func (m *PlatformConfigMutation) ResetName() {
 	m.name = nil
 }
 
+// SetDescription sets the "description" field.
+func (m *PlatformConfigMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *PlatformConfigMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the PlatformConfig entity.
+// If the PlatformConfig object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlatformConfigMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *PlatformConfigMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[platformconfig.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *PlatformConfigMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[platformconfig.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *PlatformConfigMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, platformconfig.FieldDescription)
+}
+
 // SetPlatform sets the "platform" field.
 func (m *PlatformConfigMutation) SetPlatform(pl platformconfig.Platform) {
 	m.platform = &pl
@@ -7404,7 +7711,7 @@ func (m *PlatformConfigMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlatformConfigMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, platformconfig.FieldCreatedAt)
 	}
@@ -7416,6 +7723,9 @@ func (m *PlatformConfigMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, platformconfig.FieldName)
+	}
+	if m.description != nil {
+		fields = append(fields, platformconfig.FieldDescription)
 	}
 	if m.platform != nil {
 		fields = append(fields, platformconfig.FieldPlatform)
@@ -7439,6 +7749,8 @@ func (m *PlatformConfigMutation) Field(name string) (ent.Value, bool) {
 		return m.Capability()
 	case platformconfig.FieldName:
 		return m.Name()
+	case platformconfig.FieldDescription:
+		return m.Description()
 	case platformconfig.FieldPlatform:
 		return m.Platform()
 	case platformconfig.FieldConfigJSON:
@@ -7460,6 +7772,8 @@ func (m *PlatformConfigMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldCapability(ctx)
 	case platformconfig.FieldName:
 		return m.OldName(ctx)
+	case platformconfig.FieldDescription:
+		return m.OldDescription(ctx)
 	case platformconfig.FieldPlatform:
 		return m.OldPlatform(ctx)
 	case platformconfig.FieldConfigJSON:
@@ -7500,6 +7814,13 @@ func (m *PlatformConfigMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case platformconfig.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
 		return nil
 	case platformconfig.FieldPlatform:
 		v, ok := value.(platformconfig.Platform)
@@ -7545,6 +7866,9 @@ func (m *PlatformConfigMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *PlatformConfigMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(platformconfig.FieldDescription) {
+		fields = append(fields, platformconfig.FieldDescription)
+	}
 	if m.FieldCleared(platformconfig.FieldConfigJSON) {
 		fields = append(fields, platformconfig.FieldConfigJSON)
 	}
@@ -7562,6 +7886,9 @@ func (m *PlatformConfigMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *PlatformConfigMutation) ClearField(name string) error {
 	switch name {
+	case platformconfig.FieldDescription:
+		m.ClearDescription()
+		return nil
 	case platformconfig.FieldConfigJSON:
 		m.ClearConfigJSON()
 		return nil
@@ -7584,6 +7911,9 @@ func (m *PlatformConfigMutation) ResetField(name string) error {
 		return nil
 	case platformconfig.FieldName:
 		m.ResetName()
+		return nil
+	case platformconfig.FieldDescription:
+		m.ResetDescription()
 		return nil
 	case platformconfig.FieldPlatform:
 		m.ResetPlatform()
@@ -7714,6 +8044,7 @@ type WebhookMutation struct {
 	created_at           *time.Time
 	updated_at           *time.Time
 	name                 *string
+	description          *string
 	platform             *webhook.Platform
 	url                  *string
 	secret               *string
@@ -7941,6 +8272,55 @@ func (m *WebhookMutation) OldName(ctx context.Context) (v string, err error) {
 // ResetName resets all changes to the "name" field.
 func (m *WebhookMutation) ResetName() {
 	m.name = nil
+}
+
+// SetDescription sets the "description" field.
+func (m *WebhookMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *WebhookMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the Webhook entity.
+// If the Webhook object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *WebhookMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[webhook.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *WebhookMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[webhook.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *WebhookMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, webhook.FieldDescription)
 }
 
 // SetPlatform sets the "platform" field.
@@ -8337,7 +8717,7 @@ func (m *WebhookMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *WebhookMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, webhook.FieldCreatedAt)
 	}
@@ -8346,6 +8726,9 @@ func (m *WebhookMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, webhook.FieldName)
+	}
+	if m.description != nil {
+		fields = append(fields, webhook.FieldDescription)
 	}
 	if m.platform != nil {
 		fields = append(fields, webhook.FieldPlatform)
@@ -8382,6 +8765,8 @@ func (m *WebhookMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case webhook.FieldName:
 		return m.Name()
+	case webhook.FieldDescription:
+		return m.Description()
 	case webhook.FieldPlatform:
 		return m.Platform()
 	case webhook.FieldURL:
@@ -8411,6 +8796,8 @@ func (m *WebhookMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldUpdatedAt(ctx)
 	case webhook.FieldName:
 		return m.OldName(ctx)
+	case webhook.FieldDescription:
+		return m.OldDescription(ctx)
 	case webhook.FieldPlatform:
 		return m.OldPlatform(ctx)
 	case webhook.FieldURL:
@@ -8454,6 +8841,13 @@ func (m *WebhookMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case webhook.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
 		return nil
 	case webhook.FieldPlatform:
 		v, ok := value.(webhook.Platform)
@@ -8534,6 +8928,9 @@ func (m *WebhookMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *WebhookMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(webhook.FieldDescription) {
+		fields = append(fields, webhook.FieldDescription)
+	}
 	if m.FieldCleared(webhook.FieldSecret) {
 		fields = append(fields, webhook.FieldSecret)
 	}
@@ -8557,6 +8954,9 @@ func (m *WebhookMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *WebhookMutation) ClearField(name string) error {
 	switch name {
+	case webhook.FieldDescription:
+		m.ClearDescription()
+		return nil
 	case webhook.FieldSecret:
 		m.ClearSecret()
 		return nil
@@ -8582,6 +8982,9 @@ func (m *WebhookMutation) ResetField(name string) error {
 		return nil
 	case webhook.FieldName:
 		m.ResetName()
+		return nil
+	case webhook.FieldDescription:
+		m.ResetDescription()
 		return nil
 	case webhook.FieldPlatform:
 		m.ResetPlatform()
@@ -8700,6 +9103,7 @@ type WebhookSubscriptionMutation struct {
 	id             *int64
 	created_at     *time.Time
 	name           *string
+	description    *string
 	obj_type       *webhooksubscription.ObjType
 	obj_id         *int64
 	addobj_id      *int64
@@ -8886,6 +9290,55 @@ func (m *WebhookSubscriptionMutation) OldName(ctx context.Context) (v string, er
 // ResetName resets all changes to the "name" field.
 func (m *WebhookSubscriptionMutation) ResetName() {
 	m.name = nil
+}
+
+// SetDescription sets the "description" field.
+func (m *WebhookSubscriptionMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *WebhookSubscriptionMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the WebhookSubscription entity.
+// If the WebhookSubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookSubscriptionMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *WebhookSubscriptionMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[webhooksubscription.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *WebhookSubscriptionMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[webhooksubscription.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *WebhookSubscriptionMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, webhooksubscription.FieldDescription)
 }
 
 // SetWebhookID sets the "webhook_id" field.
@@ -9113,12 +9566,15 @@ func (m *WebhookSubscriptionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *WebhookSubscriptionMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, webhooksubscription.FieldCreatedAt)
 	}
 	if m.name != nil {
 		fields = append(fields, webhooksubscription.FieldName)
+	}
+	if m.description != nil {
+		fields = append(fields, webhooksubscription.FieldDescription)
 	}
 	if m.webhook != nil {
 		fields = append(fields, webhooksubscription.FieldWebhookID)
@@ -9144,6 +9600,8 @@ func (m *WebhookSubscriptionMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case webhooksubscription.FieldName:
 		return m.Name()
+	case webhooksubscription.FieldDescription:
+		return m.Description()
 	case webhooksubscription.FieldWebhookID:
 		return m.WebhookID()
 	case webhooksubscription.FieldObjType:
@@ -9165,6 +9623,8 @@ func (m *WebhookSubscriptionMutation) OldField(ctx context.Context, name string)
 		return m.OldCreatedAt(ctx)
 	case webhooksubscription.FieldName:
 		return m.OldName(ctx)
+	case webhooksubscription.FieldDescription:
+		return m.OldDescription(ctx)
 	case webhooksubscription.FieldWebhookID:
 		return m.OldWebhookID(ctx)
 	case webhooksubscription.FieldObjType:
@@ -9195,6 +9655,13 @@ func (m *WebhookSubscriptionMutation) SetField(name string, value ent.Value) err
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case webhooksubscription.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
 		return nil
 	case webhooksubscription.FieldWebhookID:
 		v, ok := value.(int64)
@@ -9268,7 +9735,11 @@ func (m *WebhookSubscriptionMutation) AddField(name string, value ent.Value) err
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *WebhookSubscriptionMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(webhooksubscription.FieldDescription) {
+		fields = append(fields, webhooksubscription.FieldDescription)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -9281,6 +9752,11 @@ func (m *WebhookSubscriptionMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *WebhookSubscriptionMutation) ClearField(name string) error {
+	switch name {
+	case webhooksubscription.FieldDescription:
+		m.ClearDescription()
+		return nil
+	}
 	return fmt.Errorf("unknown WebhookSubscription nullable field %s", name)
 }
 
@@ -9293,6 +9769,9 @@ func (m *WebhookSubscriptionMutation) ResetField(name string) error {
 		return nil
 	case webhooksubscription.FieldName:
 		m.ResetName()
+		return nil
+	case webhooksubscription.FieldDescription:
+		m.ResetDescription()
 		return nil
 	case webhooksubscription.FieldWebhookID:
 		m.ResetWebhookID()

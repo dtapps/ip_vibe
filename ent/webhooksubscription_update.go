@@ -42,6 +42,26 @@ func (_u *WebhookSubscriptionUpdate) SetNillableName(v *string) *WebhookSubscrip
 	return _u
 }
 
+// SetDescription sets the "description" field.
+func (_u *WebhookSubscriptionUpdate) SetDescription(v string) *WebhookSubscriptionUpdate {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *WebhookSubscriptionUpdate) SetNillableDescription(v *string) *WebhookSubscriptionUpdate {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *WebhookSubscriptionUpdate) ClearDescription() *WebhookSubscriptionUpdate {
+	_u.mutation.ClearDescription()
+	return _u
+}
+
 // SetIsActive sets the "is_active" field.
 func (_u *WebhookSubscriptionUpdate) SetIsActive(v bool) *WebhookSubscriptionUpdate {
 	_u.mutation.SetIsActive(v)
@@ -117,6 +137,12 @@ func (_u *WebhookSubscriptionUpdate) sqlSave(ctx context.Context) (_node int, er
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(webhooksubscription.FieldName, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(webhooksubscription.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(webhooksubscription.FieldDescription, field.TypeString)
+	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(webhooksubscription.FieldIsActive, field.TypeBool, value)
 	}
@@ -153,6 +179,26 @@ func (_u *WebhookSubscriptionUpdateOne) SetNillableName(v *string) *WebhookSubsc
 	if v != nil {
 		_u.SetName(*v)
 	}
+	return _u
+}
+
+// SetDescription sets the "description" field.
+func (_u *WebhookSubscriptionUpdateOne) SetDescription(v string) *WebhookSubscriptionUpdateOne {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *WebhookSubscriptionUpdateOne) SetNillableDescription(v *string) *WebhookSubscriptionUpdateOne {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *WebhookSubscriptionUpdateOne) ClearDescription() *WebhookSubscriptionUpdateOne {
+	_u.mutation.ClearDescription()
 	return _u
 }
 
@@ -260,6 +306,12 @@ func (_u *WebhookSubscriptionUpdateOne) sqlSave(ctx context.Context) (_node *Web
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(webhooksubscription.FieldName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(webhooksubscription.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(webhooksubscription.FieldDescription, field.TypeString)
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(webhooksubscription.FieldIsActive, field.TypeBool, value)

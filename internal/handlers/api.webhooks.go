@@ -26,6 +26,7 @@ func GetWebhooks(c *gin.Context) {
 		webhooks = append(webhooks, types.GetWebhooksResponse{
 			ID:              item.ID,
 			Name:            item.Name,
+			Description:     item.Description,
 			Platform:        item.Platform.String(),
 			URL:             item.URL,
 			Secret:          item.Secret,
@@ -53,6 +54,7 @@ func GetWebhook(c *gin.Context) {
 	successResponse(c, types.GetWebhooksResponse{
 		ID:              firstWebhook.ID,
 		Name:            firstWebhook.Name,
+		Description:     firstWebhook.Description,
 		Platform:        firstWebhook.Platform.String(),
 		URL:             firstWebhook.URL,
 		Secret:          firstWebhook.Secret,
@@ -77,6 +79,7 @@ func CreateWebhook(c *gin.Context) {
 	// 创建通知
 	saveWebhook, err := global.GvaDb.Webhook.Create().
 		SetName(requestParams.Name).
+		SetDescription(requestParams.Description).
 		SetPlatform(webhook.Platform(requestParams.Platform)).
 		SetURL(requestParams.URL).
 		SetSecret(requestParams.Secret).
@@ -121,6 +124,7 @@ func UpdateWebhook(c *gin.Context) {
 	// 更新通知
 	saveWebhook, err := global.GvaDb.Webhook.UpdateOne(firstWebhook).
 		SetName(requestParams.Name).
+		SetDescription(requestParams.Description).
 		SetSecret(requestParams.Secret).
 		SetEvents(requestParams.Events).
 		SetTemplateTitle(requestParams.TemplateTitle).

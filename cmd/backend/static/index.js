@@ -1433,7 +1433,6 @@ document.getElementById('webhookSubscriptionForm').onsubmit = async (e) => {
         name: document.getElementById('webhook_subscription_name').value.trim(),
         webhook_id: Number(document.getElementById('webhook_subscription_webhook_id').value.trim()),
         obj_type: document.getElementById('webhook_subscription_obj_type').value.trim(),
-        // obj_id: Number(document.getElementById('webhook_subscription_obj_id').value.trim()),
         obj_ids: Array.from(document.getElementById('webhook_subscription_obj_id').selectedOptions).map(opt => Number(opt.value.trim())),
     };
     console.log("form_id, form_data", form_id, form_data);

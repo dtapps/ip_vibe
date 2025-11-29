@@ -57,6 +57,20 @@ func (_c *WebhookCreate) SetName(v string) *WebhookCreate {
 	return _c
 }
 
+// SetDescription sets the "description" field.
+func (_c *WebhookCreate) SetDescription(v string) *WebhookCreate {
+	_c.mutation.SetDescription(v)
+	return _c
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_c *WebhookCreate) SetNillableDescription(v *string) *WebhookCreate {
+	if v != nil {
+		_c.SetDescription(*v)
+	}
+	return _c
+}
+
 // SetPlatform sets the "platform" field.
 func (_c *WebhookCreate) SetPlatform(v webhook.Platform) *WebhookCreate {
 	_c.mutation.SetPlatform(v)
@@ -274,6 +288,10 @@ func (_c *WebhookCreate) createSpec() (*Webhook, *sqlgraph.CreateSpec) {
 		_spec.SetField(webhook.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
+	if value, ok := _c.mutation.Description(); ok {
+		_spec.SetField(webhook.FieldDescription, field.TypeString, value)
+		_node.Description = value
+	}
 	if value, ok := _c.mutation.Platform(); ok {
 		_spec.SetField(webhook.FieldPlatform, field.TypeEnum, value)
 		_node.Platform = value
@@ -391,6 +409,24 @@ func (u *WebhookUpsert) SetName(v string) *WebhookUpsert {
 // UpdateName sets the "name" field to the value that was provided on create.
 func (u *WebhookUpsert) UpdateName() *WebhookUpsert {
 	u.SetExcluded(webhook.FieldName)
+	return u
+}
+
+// SetDescription sets the "description" field.
+func (u *WebhookUpsert) SetDescription(v string) *WebhookUpsert {
+	u.Set(webhook.FieldDescription, v)
+	return u
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *WebhookUpsert) UpdateDescription() *WebhookUpsert {
+	u.SetExcluded(webhook.FieldDescription)
+	return u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *WebhookUpsert) ClearDescription() *WebhookUpsert {
+	u.SetNull(webhook.FieldDescription)
 	return u
 }
 
@@ -563,6 +599,27 @@ func (u *WebhookUpsertOne) SetName(v string) *WebhookUpsertOne {
 func (u *WebhookUpsertOne) UpdateName() *WebhookUpsertOne {
 	return u.Update(func(s *WebhookUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *WebhookUpsertOne) SetDescription(v string) *WebhookUpsertOne {
+	return u.Update(func(s *WebhookUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *WebhookUpsertOne) UpdateDescription() *WebhookUpsertOne {
+	return u.Update(func(s *WebhookUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *WebhookUpsertOne) ClearDescription() *WebhookUpsertOne {
+	return u.Update(func(s *WebhookUpsert) {
+		s.ClearDescription()
 	})
 }
 
@@ -916,6 +973,27 @@ func (u *WebhookUpsertBulk) SetName(v string) *WebhookUpsertBulk {
 func (u *WebhookUpsertBulk) UpdateName() *WebhookUpsertBulk {
 	return u.Update(func(s *WebhookUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *WebhookUpsertBulk) SetDescription(v string) *WebhookUpsertBulk {
+	return u.Update(func(s *WebhookUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *WebhookUpsertBulk) UpdateDescription() *WebhookUpsertBulk {
+	return u.Update(func(s *WebhookUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *WebhookUpsertBulk) ClearDescription() *WebhookUpsertBulk {
+	return u.Update(func(s *WebhookUpsert) {
+		s.ClearDescription()
 	})
 }
 

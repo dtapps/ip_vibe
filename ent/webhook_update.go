@@ -51,6 +51,26 @@ func (_u *WebhookUpdate) SetNillableName(v *string) *WebhookUpdate {
 	return _u
 }
 
+// SetDescription sets the "description" field.
+func (_u *WebhookUpdate) SetDescription(v string) *WebhookUpdate {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *WebhookUpdate) SetNillableDescription(v *string) *WebhookUpdate {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *WebhookUpdate) ClearDescription() *WebhookUpdate {
+	_u.mutation.ClearDescription()
+	return _u
+}
+
 // SetURL sets the "url" field.
 func (_u *WebhookUpdate) SetURL(v string) *WebhookUpdate {
 	_u.mutation.SetURL(v)
@@ -249,6 +269,12 @@ func (_u *WebhookUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(webhook.FieldName, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(webhook.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(webhook.FieldDescription, field.TypeString)
+	}
 	if value, ok := _u.mutation.URL(); ok {
 		_spec.SetField(webhook.FieldURL, field.TypeString, value)
 	}
@@ -365,6 +391,26 @@ func (_u *WebhookUpdateOne) SetNillableName(v *string) *WebhookUpdateOne {
 	if v != nil {
 		_u.SetName(*v)
 	}
+	return _u
+}
+
+// SetDescription sets the "description" field.
+func (_u *WebhookUpdateOne) SetDescription(v string) *WebhookUpdateOne {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *WebhookUpdateOne) SetNillableDescription(v *string) *WebhookUpdateOne {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *WebhookUpdateOne) ClearDescription() *WebhookUpdateOne {
+	_u.mutation.ClearDescription()
 	return _u
 }
 
@@ -595,6 +641,12 @@ func (_u *WebhookUpdateOne) sqlSave(ctx context.Context) (_node *Webhook, err er
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(webhook.FieldName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(webhook.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(webhook.FieldDescription, field.TypeString)
 	}
 	if value, ok := _u.mutation.URL(); ok {
 		_spec.SetField(webhook.FieldURL, field.TypeString, value)

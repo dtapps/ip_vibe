@@ -24,11 +24,12 @@ func GetConfigs(c *gin.Context) {
 	}
 	for _, item := range allConfig {
 		configs = append(configs, types.GetConfigsResponse{
-			ID:         item.ID,
-			Capability: item.Capability.String(),
-			Name:       item.Name,
-			Platform:   item.Platform.String(),
-			ConfigJSON: item.ConfigJSON,
+			ID:          item.ID,
+			Capability:  item.Capability.String(),
+			Name:        item.Name,
+			Description: item.Description,
+			Platform:    item.Platform.String(),
+			ConfigJSON:  item.ConfigJSON,
 		})
 	}
 	successResponse(c, configs)
@@ -47,11 +48,12 @@ func GetConfig(c *gin.Context) {
 		return
 	}
 	successResponse(c, types.GetConfigsResponse{
-		ID:         firstConfig.ID,
-		Capability: firstConfig.Capability.String(),
-		Name:       firstConfig.Name,
-		Platform:   firstConfig.Platform.String(),
-		ConfigJSON: firstConfig.ConfigJSON,
+		ID:          firstConfig.ID,
+		Capability:  firstConfig.Capability.String(),
+		Name:        firstConfig.Name,
+		Description: firstConfig.Description,
+		Platform:    firstConfig.Platform.String(),
+		ConfigJSON:  firstConfig.ConfigJSON,
 	})
 }
 
@@ -69,6 +71,7 @@ func CreateConfig(c *gin.Context) {
 	// 创建配置
 	saveConfig, err := global.GvaDb.PlatformConfig.Create().
 		SetName(requestParams.Name).
+		SetDescription(requestParams.Description).
 		SetPlatform(platformconfig.Platform(requestParams.Platform)).
 		SetConfigJSON([]byte(requestParams.ConfigJSON)).
 		SetCapability(platformconfig.Capability(requestParams.Capability)).
@@ -110,6 +113,7 @@ func UpdateConfig(c *gin.Context) {
 	// 更新配置
 	saveConfig, err := global.GvaDb.PlatformConfig.UpdateOne(firstConfig).
 		SetName(requestParams.Name).
+		SetDescription(requestParams.Description).
 		SetConfigJSON([]byte(requestParams.ConfigJSON)).
 		SetCapability(platformconfig.Capability(requestParams.Capability)).
 		Save(c)

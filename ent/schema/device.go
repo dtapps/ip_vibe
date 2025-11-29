@@ -51,6 +51,11 @@ func (Device) Fields() []ent.Field {
 			Comment("设备名称").
 			Annotations(entsql.WithComments(true)),
 
+		field.String("description").
+			Optional().
+			Comment("设备描述").
+			Annotations(entsql.WithComments(true)),
+
 		field.String("ip_v4").
 			Optional().
 			Comment("IP地址V4").
@@ -88,12 +93,15 @@ func (Device) Edges() []ent.Edge {
 		edge.To("ip_groups", IpGroup.Type).
 			Through("ip_group_device", IpGroupDevice.Type).
 			Comment("关联的IP组").
-			Annotations(entsql.WithComments(true)),
+			Annotations(entsql.Annotation{
+				// 级联删除：删除 Device 时，其所有 IpGroup 记录也应删除
+				OnDelete: entsql.Cascade,
+			}, entsql.WithComments(true)),
 
 		edge.To("port_forwards", DevicePortForward.Type).
 			Comment("设备的端口转发规则").
 			Annotations(entsql.Annotation{
-				// 级联删除：删除 Device 时，其所有 DeviceIpReport 记录也应删除
+				// 级联删除：删除 Device 时，其所有 DevicePortForward 记录也应删除
 				OnDelete: entsql.Cascade,
 			}, entsql.WithComments(true)),
 	}

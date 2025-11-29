@@ -53,6 +53,11 @@ func (PlatformConfig) Fields() []ent.Field {
 			Comment("配置名称").
 			Annotations(entsql.WithComments(true)),
 
+		field.String("description").
+			Optional().
+			Comment("配置描述").
+			Annotations(entsql.WithComments(true)),
+
 		field.Enum("platform").
 			Values(schematype.GetConfigPlatform()...).
 			Immutable().

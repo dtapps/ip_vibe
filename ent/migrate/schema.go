@@ -139,6 +139,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "code", Type: field.TypeString, Unique: true, Comment: "设备编号"},
 		{Name: "name", Type: field.TypeString, Comment: "设备名称"},
+		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "设备描述"},
 		{Name: "ip_v4", Type: field.TypeString, Nullable: true, Comment: "IP地址V4"},
 		{Name: "ip_v6", Type: field.TypeString, Nullable: true, Comment: "IP地址V6"},
 		{Name: "last_reported_at", Type: field.TypeTime, Nullable: true, Comment: "最后上报时间"},
@@ -193,10 +194,13 @@ var (
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "设备端口转发序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "name", Type: field.TypeString, Comment: "设备端口转发名称"},
+		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "设备端口转发描述"},
 		{Name: "local_port", Type: field.TypeInt, Comment: "本地监听端口"},
 		{Name: "remote_host", Type: field.TypeString, Comment: "远程目标地址"},
 		{Name: "remote_port", Type: field.TypeInt, Comment: "远程目标端口"},
 		{Name: "protocols", Type: field.TypeJSON, Comment: "协议列表，支持 tcp4, tcp6, udp4, udp6"},
+		{Name: "auto_forward", Type: field.TypeBool, Comment: "防火墙自动放行", Default: false},
 		{Name: "enabled", Type: field.TypeBool, Comment: "是否启用", Default: false},
 		{Name: "device_port_forwards", Type: field.TypeInt64},
 	}
@@ -209,7 +213,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "device_port_forward_device_port_forwards",
-				Columns:    []*schema.Column{DevicePortForwardColumns[8]},
+				Columns:    []*schema.Column{DevicePortForwardColumns[11]},
 				RefColumns: []*schema.Column{DeviceColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -296,6 +300,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "capability", Type: field.TypeEnum, Comment: "平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）", Enums: []string{"dns", "cdn", "all"}, Default: "all"},
 		{Name: "name", Type: field.TypeString, Comment: "配置名称"},
+		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "配置描述"},
 		{Name: "platform", Type: field.TypeEnum, Comment: "平台类型（edgeone / cloudflare / dnspod …）", Enums: []string{"cloudflare", "edgeone", "dnspod"}},
 		{Name: "config_json", Type: field.TypeJSON, Nullable: true, Comment: "平台密钥等敏感信息（JSON）"},
 	}
@@ -309,7 +314,7 @@ var (
 			{
 				Name:    "platformconfig_platform",
 				Unique:  false,
-				Columns: []*schema.Column{PlatformConfigColumns[5]},
+				Columns: []*schema.Column{PlatformConfigColumns[6]},
 			},
 		},
 	}
@@ -319,6 +324,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "name", Type: field.TypeString, Comment: "通知名称"},
+		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "通知描述"},
 		{Name: "platform", Type: field.TypeEnum, Comment: "通知平台类型", Enums: []string{"wechat_work", "dingtalk", "feishu", "bark", "ft07", "push_deer", "custom_http"}},
 		{Name: "url", Type: field.TypeString, Comment: "Webhook URL"},
 		{Name: "secret", Type: field.TypeString, Nullable: true, Comment: "Webhook 签名密钥或额外Token"},
@@ -337,12 +343,12 @@ var (
 			{
 				Name:    "webhook_platform",
 				Unique:  false,
-				Columns: []*schema.Column{WebhookColumns[4]},
+				Columns: []*schema.Column{WebhookColumns[5]},
 			},
 			{
 				Name:    "webhook_is_active",
 				Unique:  false,
-				Columns: []*schema.Column{WebhookColumns[10]},
+				Columns: []*schema.Column{WebhookColumns[11]},
 			},
 		},
 	}
@@ -351,6 +357,7 @@ var (
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "通知订阅序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "name", Type: field.TypeString, Comment: "通知订阅名称"},
+		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "通知订阅描述"},
 		{Name: "obj_type", Type: field.TypeEnum, Comment: "订阅对象类型", Enums: []string{"cdn_record", "dns_record", "device"}},
 		{Name: "obj_id", Type: field.TypeInt64, Comment: "订阅对象主键"},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否启用", Default: false},
@@ -366,13 +373,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "webhook_subscription_webhook_subscriptions",
-				Columns:    []*schema.Column{WebhookSubscriptionColumns[6]},
+				Columns:    []*schema.Column{WebhookSubscriptionColumns[7]},
 				RefColumns: []*schema.Column{WebhookColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "webhook_subscription_webhook_webhook",
-				Columns:    []*schema.Column{WebhookSubscriptionColumns[7]},
+				Columns:    []*schema.Column{WebhookSubscriptionColumns[8]},
 				RefColumns: []*schema.Column{WebhookColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -381,7 +388,7 @@ var (
 			{
 				Name:    "webhooksubscription_webhook_id_obj_type_obj_id",
 				Unique:  true,
-				Columns: []*schema.Column{WebhookSubscriptionColumns[7], WebhookSubscriptionColumns[3], WebhookSubscriptionColumns[4]},
+				Columns: []*schema.Column{WebhookSubscriptionColumns[8], WebhookSubscriptionColumns[4], WebhookSubscriptionColumns[5]},
 			},
 		},
 	}

@@ -27,6 +27,8 @@ type PlatformConfig struct {
 	Capability platformconfig.Capability `json:"capability,omitempty"`
 	// 配置名称
 	Name string `json:"name,omitempty"`
+	// 配置描述
+	Description string `json:"description,omitempty"`
 	// 平台类型（edgeone / cloudflare / dnspod …）
 	Platform platformconfig.Platform `json:"platform,omitempty"`
 	// 平台密钥等敏感信息（JSON）
@@ -77,7 +79,7 @@ func (*PlatformConfig) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case platformconfig.FieldID:
 			values[i] = new(sql.NullInt64)
-		case platformconfig.FieldCapability, platformconfig.FieldName, platformconfig.FieldPlatform:
+		case platformconfig.FieldCapability, platformconfig.FieldName, platformconfig.FieldDescription, platformconfig.FieldPlatform:
 			values[i] = new(sql.NullString)
 		case platformconfig.FieldCreatedAt, platformconfig.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -125,6 +127,12 @@ func (_m *PlatformConfig) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				_m.Name = value.String
+			}
+		case platformconfig.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				_m.Description = value.String
 			}
 		case platformconfig.FieldPlatform:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -197,6 +205,9 @@ func (_m *PlatformConfig) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
+	builder.WriteString(", ")
+	builder.WriteString("description=")
+	builder.WriteString(_m.Description)
 	builder.WriteString(", ")
 	builder.WriteString("platform=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Platform))

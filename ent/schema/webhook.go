@@ -46,6 +46,11 @@ func (Webhook) Fields() []ent.Field {
 			Comment("通知名称").
 			Annotations(entsql.WithComments(true)),
 
+		field.String("description").
+			Optional().
+			Comment("通知描述").
+			Annotations(entsql.WithComments(true)),
+
 		field.Enum("platform").
 			Values(schematype.GetWebhookPlatform()...).
 			Immutable().

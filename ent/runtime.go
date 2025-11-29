@@ -108,23 +108,27 @@ func init() {
 	// deviceportforward.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	deviceportforward.UpdateDefaultUpdatedAt = deviceportforwardDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// deviceportforwardDescLocalPort is the schema descriptor for local_port field.
-	deviceportforwardDescLocalPort := deviceportforwardFields[1].Descriptor()
+	deviceportforwardDescLocalPort := deviceportforwardFields[3].Descriptor()
 	// deviceportforward.LocalPortValidator is a validator for the "local_port" field. It is called by the builders before save.
 	deviceportforward.LocalPortValidator = deviceportforwardDescLocalPort.Validators[0].(func(int) error)
 	// deviceportforwardDescRemoteHost is the schema descriptor for remote_host field.
-	deviceportforwardDescRemoteHost := deviceportforwardFields[2].Descriptor()
+	deviceportforwardDescRemoteHost := deviceportforwardFields[4].Descriptor()
 	// deviceportforward.RemoteHostValidator is a validator for the "remote_host" field. It is called by the builders before save.
 	deviceportforward.RemoteHostValidator = deviceportforwardDescRemoteHost.Validators[0].(func(string) error)
 	// deviceportforwardDescRemotePort is the schema descriptor for remote_port field.
-	deviceportforwardDescRemotePort := deviceportforwardFields[3].Descriptor()
+	deviceportforwardDescRemotePort := deviceportforwardFields[5].Descriptor()
 	// deviceportforward.RemotePortValidator is a validator for the "remote_port" field. It is called by the builders before save.
 	deviceportforward.RemotePortValidator = deviceportforwardDescRemotePort.Validators[0].(func(int) error)
 	// deviceportforwardDescProtocols is the schema descriptor for protocols field.
-	deviceportforwardDescProtocols := deviceportforwardFields[4].Descriptor()
+	deviceportforwardDescProtocols := deviceportforwardFields[6].Descriptor()
 	// deviceportforward.DefaultProtocols holds the default value on creation for the protocols field.
 	deviceportforward.DefaultProtocols = deviceportforwardDescProtocols.Default.([]string)
+	// deviceportforwardDescAutoForward is the schema descriptor for auto_forward field.
+	deviceportforwardDescAutoForward := deviceportforwardFields[7].Descriptor()
+	// deviceportforward.DefaultAutoForward holds the default value on creation for the auto_forward field.
+	deviceportforward.DefaultAutoForward = deviceportforwardDescAutoForward.Default.(bool)
 	// deviceportforwardDescEnabled is the schema descriptor for enabled field.
-	deviceportforwardDescEnabled := deviceportforwardFields[5].Descriptor()
+	deviceportforwardDescEnabled := deviceportforwardFields[8].Descriptor()
 	// deviceportforward.DefaultEnabled holds the default value on creation for the enabled field.
 	deviceportforward.DefaultEnabled = deviceportforwardDescEnabled.Default.(bool)
 	ipgroupMixin := schema.IpGroup{}.Mixin()
@@ -191,7 +195,7 @@ func init() {
 	// webhook.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	webhook.UpdateDefaultUpdatedAt = webhookDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// webhookDescIsActive is the schema descriptor for is_active field.
-	webhookDescIsActive := webhookFields[8].Descriptor()
+	webhookDescIsActive := webhookFields[9].Descriptor()
 	// webhook.DefaultIsActive holds the default value on creation for the is_active field.
 	webhook.DefaultIsActive = webhookDescIsActive.Default.(bool)
 	webhooksubscriptionMixin := schema.WebhookSubscription{}.Mixin()
@@ -204,7 +208,7 @@ func init() {
 	// webhooksubscription.DefaultCreatedAt holds the default value on creation for the created_at field.
 	webhooksubscription.DefaultCreatedAt = webhooksubscriptionDescCreatedAt.Default.(func() time.Time)
 	// webhooksubscriptionDescIsActive is the schema descriptor for is_active field.
-	webhooksubscriptionDescIsActive := webhooksubscriptionFields[5].Descriptor()
+	webhooksubscriptionDescIsActive := webhooksubscriptionFields[6].Descriptor()
 	// webhooksubscription.DefaultIsActive holds the default value on creation for the is_active field.
 	webhooksubscription.DefaultIsActive = webhooksubscriptionDescIsActive.Default.(bool)
 }

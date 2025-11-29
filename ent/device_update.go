@@ -52,6 +52,26 @@ func (_u *DeviceUpdate) SetNillableName(v *string) *DeviceUpdate {
 	return _u
 }
 
+// SetDescription sets the "description" field.
+func (_u *DeviceUpdate) SetDescription(v string) *DeviceUpdate {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *DeviceUpdate) SetNillableDescription(v *string) *DeviceUpdate {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *DeviceUpdate) ClearDescription() *DeviceUpdate {
+	_u.mutation.ClearDescription()
+	return _u
+}
+
 // SetIPV4 sets the "ip_v4" field.
 func (_u *DeviceUpdate) SetIPV4(v string) *DeviceUpdate {
 	_u.mutation.SetIPV4(v)
@@ -302,6 +322,12 @@ func (_u *DeviceUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(device.FieldName, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(device.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(device.FieldDescription, field.TypeString)
+	}
 	if value, ok := _u.mutation.IPV4(); ok {
 		_spec.SetField(device.FieldIPV4, field.TypeString, value)
 	}
@@ -512,6 +538,26 @@ func (_u *DeviceUpdateOne) SetNillableName(v *string) *DeviceUpdateOne {
 	if v != nil {
 		_u.SetName(*v)
 	}
+	return _u
+}
+
+// SetDescription sets the "description" field.
+func (_u *DeviceUpdateOne) SetDescription(v string) *DeviceUpdateOne {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *DeviceUpdateOne) SetNillableDescription(v *string) *DeviceUpdateOne {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *DeviceUpdateOne) ClearDescription() *DeviceUpdateOne {
+	_u.mutation.ClearDescription()
 	return _u
 }
 
@@ -794,6 +840,12 @@ func (_u *DeviceUpdateOne) sqlSave(ctx context.Context) (_node *Device, err erro
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(device.FieldName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(device.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(device.FieldDescription, field.TypeString)
 	}
 	if value, ok := _u.mutation.IPV4(); ok {
 		_spec.SetField(device.FieldIPV4, field.TypeString, value)

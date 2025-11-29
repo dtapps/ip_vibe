@@ -39,10 +39,11 @@ func Index(c *gin.Context) {
 	if err == nil {
 		for _, item := range allConfig {
 			pageData.Configs = append(pageData.Configs, types.GetConfigsResponse{
-				ID:         item.ID,
-				Capability: item.Capability.String(),
-				Name:       item.Name,
-				Platform:   item.Platform.String(),
+				ID:          item.ID,
+				Capability:  item.Capability.String(),
+				Name:        item.Name,
+				Description: item.Description,
+				Platform:    item.Platform.String(),
 			})
 		}
 	}
@@ -112,6 +113,7 @@ func Index(c *gin.Context) {
 				ID:              item.ID,
 				Code:            item.Code,
 				Name:            item.Name,
+				Description:     item.Description,
 				IPV4:            item.IPV4,
 				IPV6:            item.IPV6,
 				LastReportedAt:  item.LastReportedAt,
@@ -139,13 +141,14 @@ func Index(c *gin.Context) {
 	if err == nil {
 		for _, item := range allWebhook {
 			pageData.Webhooks = append(pageData.Webhooks, types.GetWebhooksResponse{
-				ID:       item.ID,
-				Name:     item.Name,
-				Platform: item.Platform.String(),
-				URL:      item.URL,
-				Secret:   item.Secret,
-				Events:   item.Events,
-				IsActive: item.IsActive,
+				ID:          item.ID,
+				Name:        item.Name,
+				Description: item.Description,
+				Platform:    item.Platform.String(),
+				URL:         item.URL,
+				Secret:      item.Secret,
+				Events:      item.Events,
+				IsActive:    item.IsActive,
 			})
 		}
 	}
@@ -158,6 +161,7 @@ func Index(c *gin.Context) {
 			list := types.GetWebhookSubscriptionsResponse{
 				ID:          item.ID,
 				Name:        item.Name,
+				Description: item.Description,
 				WebhookID:   item.WebhookID,
 				WebhookName: item.Edges.Webhook.Name,
 				ObjType:     item.ObjType.String(),

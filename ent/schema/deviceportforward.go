@@ -40,6 +40,15 @@ func (DevicePortForward) Fields() []ent.Field {
 			Comment("设备端口转发序号").
 			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
 
+		field.String("name").
+			Comment("设备端口转发名称").
+			Annotations(entsql.WithComments(true)),
+
+		field.String("description").
+			Optional().
+			Comment("设备端口转发描述").
+			Annotations(entsql.WithComments(true)),
+
 		field.Int("local_port").
 			Positive().
 			Comment("本地监听端口").
@@ -58,6 +67,11 @@ func (DevicePortForward) Fields() []ent.Field {
 		field.JSON("protocols", []string{}).
 			Default([]string{}).
 			Comment("协议列表，支持 tcp4, tcp6, udp4, udp6").
+			Annotations(entsql.WithComments(true)),
+
+		field.Bool("auto_forward").
+			Default(false).
+			Comment("防火墙自动放行").
 			Annotations(entsql.WithComments(true)),
 
 		field.Bool("enabled").
