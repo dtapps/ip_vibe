@@ -1,4 +1,4 @@
-package tencent_helper
+package tencent
 
 import (
 	"crypto/hmac"

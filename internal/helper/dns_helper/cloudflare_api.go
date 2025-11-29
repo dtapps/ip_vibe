@@ -2,8 +2,11 @@ package dns_helper
 
 import (
 	"context"
+	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/cloudflare_helper"
 	"vibe_ip/internal/utils"
+
+	"go.dtapp.net/library/service/cloudflare"
 )
 
 type CloudflareClient struct {
@@ -11,7 +14,7 @@ type CloudflareClient struct {
 		ApiKey string // API 密钥
 		ZoneID string // 站点 ID
 	}
-	client *cloudflare_helper.Client
+	client *cloudflare.Client
 }
 
 func NewCloudflareClient(ctx context.Context, apiKey string, zoneID string) (c *CloudflareClient, err error) {
@@ -20,7 +23,12 @@ func NewCloudflareClient(ctx context.Context, apiKey string, zoneID string) (c *
 	c.config.ApiKey = apiKey
 	c.config.ZoneID = zoneID
 
-	c.client, err = cloudflare_helper.NewClient(c.config.ApiKey)
+	c.client, err = cloudflare.NewClient(
+		ctx,
+		cloudflare.WithApiKey(c.config.ApiKey),
+		cloudflare.WithRestyLog(global.GvaRestyLog),
+		cloudflare.WithDebug(global.GvaEnv.DEBUG),
+	)
 	if err != nil {
 		return nil, err
 	}

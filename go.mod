@@ -16,11 +16,14 @@ require (
 	github.com/spf13/cast v1.10.0
 	github.com/spf13/cobra v1.10.1
 	github.com/spf13/viper v1.21.0
+	go.dtapp.net/library/contrib/resty_log v1.0.8
 	go.dtapp.net/library/service/bark v1.0.7
+	go.dtapp.net/library/service/cloudflare v1.0.0
 	go.dtapp.net/library/service/dingtalk v1.0.39
 	go.dtapp.net/library/service/feishu v1.0.36
 	go.dtapp.net/library/service/ft07 v1.0.8
 	go.dtapp.net/library/service/pushdeer v1.0.8
+	go.dtapp.net/library/service/tencent v1.0.0
 	go.dtapp.net/library/service/wechatqy v1.0.38
 	go.dtapp.net/library/utils/goarray v1.0.4
 	go.dtapp.net/library/utils/golog v1.0.178
@@ -54,7 +57,7 @@ require (
 	github.com/go-playground/validator/v10 v10.28.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
-	github.com/goccy/go-yaml v1.18.0 // indirect
+	github.com/goccy/go-yaml v1.19.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.24.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
@@ -80,7 +83,6 @@ require (
 	github.com/ugorji/go/codec v1.3.1 // indirect
 	github.com/zclconf/go-cty v1.17.0 // indirect
 	github.com/zclconf/go-cty-yaml v1.1.0 // indirect
-	go.dtapp.net/library/contrib/resty_log v1.0.8 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/bridges/otelslog v0.13.0 // indirect
 	go.opentelemetry.io/otel v1.38.0 // indirect

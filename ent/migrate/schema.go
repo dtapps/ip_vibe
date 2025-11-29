@@ -318,6 +318,50 @@ var (
 			},
 		},
 	}
+	// RestyLogColumns holds the columns for the "resty_log" table.
+	RestyLogColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "hostname", Type: field.TypeString, Comment: "请求主机名"},
+		{Name: "method", Type: field.TypeString, Comment: "请求方式"},
+		{Name: "url", Type: field.TypeString, Comment: "请求url"},
+		{Name: "request_headers", Type: field.TypeJSON, Comment: "请求header"},
+		{Name: "request_body", Type: field.TypeJSON, Nullable: true, Comment: "请求参数"},
+		{Name: "status_code", Type: field.TypeInt, Comment: "响应码"},
+		{Name: "response_headers", Type: field.TypeJSON, Comment: "响应header"},
+		{Name: "response_body", Type: field.TypeJSON, Nullable: true, Comment: "响应结果"},
+		{Name: "elapse_time", Type: field.TypeInt64, Comment: "请求耗时, 单位:毫秒"},
+		{Name: "is_error", Type: field.TypeBool, Nullable: true, Comment: "是否为错误请求（如 5xx、4xx）", Default: false},
+		{Name: "created_at", Type: field.TypeTime, Comment: "请求时间"},
+	}
+	// RestyLogTable holds the schema information for the "resty_log" table.
+	RestyLogTable = &schema.Table{
+		Name:       "resty_log",
+		Comment:    "resty 请求日志",
+		Columns:    RestyLogColumns,
+		PrimaryKey: []*schema.Column{RestyLogColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "restylog_hostname",
+				Unique:  false,
+				Columns: []*schema.Column{RestyLogColumns[1]},
+			},
+			{
+				Name:    "restylog_method",
+				Unique:  false,
+				Columns: []*schema.Column{RestyLogColumns[2]},
+			},
+			{
+				Name:    "restylog_url",
+				Unique:  false,
+				Columns: []*schema.Column{RestyLogColumns[3]},
+			},
+			{
+				Name:    "restylog_status_code",
+				Unique:  false,
+				Columns: []*schema.Column{RestyLogColumns[6]},
+			},
+		},
+	}
 	// WebhookColumns holds the columns for the "webhook" table.
 	WebhookColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "通知序号"},
@@ -403,6 +447,7 @@ var (
 		IPGroupDeviceTable,
 		OperationLogTable,
 		PlatformConfigTable,
+		RestyLogTable,
 		WebhookTable,
 		WebhookSubscriptionTable,
 	}
@@ -444,6 +489,9 @@ func init() {
 	}
 	PlatformConfigTable.Annotation = &entsql.Annotation{
 		Table: "platform_config",
+	}
+	RestyLogTable.Annotation = &entsql.Annotation{
+		Table: "resty_log",
 	}
 	WebhookTable.Annotation = &entsql.Annotation{
 		Table: "webhook",

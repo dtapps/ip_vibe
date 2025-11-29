@@ -1,4 +1,4 @@
-package cloudflare_helper
+package cloudflare
 
 import (
 	"fmt"

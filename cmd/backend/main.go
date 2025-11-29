@@ -45,13 +45,14 @@ func main() {
 
 	ctx := context.Background()
 
-	initialize.InitEnt(ctx)             // 初始化 ent
-	initialize.InitGoCron(ctx)          // 初始化 GoCron 调度器
-	initialize.InitThirdParty(ctx)      // 初始化 第三方
-	initialize.InitSLog(ctx, "backend") // 初始化 日志
+	initialize.InitEnt(ctx)        // 初始化 ent
+	initialize.InitGoCron()        // 初始化 GoCron 调度器
+	initialize.InitRestyLog()      // 初始化 Resty 日志
+	initialize.InitThirdParty(ctx) // 初始化 第三方
+	initialize.InitSLog("backend") // 初始化 日志
 	defer func() {
-		initialize.CloseEnt(ctx)     // 关闭 ent
-		initialize.CloseGoCron(ctx)  // 关闭 GoCron 调度器
+		initialize.CloseEnt()        // 关闭 ent
+		initialize.CloseGoCron()     // 关闭 GoCron 调度器
 		initialize.CloseThirdParty() // 关闭 第三方
 	}()
 
@@ -254,7 +255,7 @@ func main() {
 	})
 
 	// 启动 GoCron 调度器
-	initialize.StartGoCron(ctx)
+	initialize.StartGoCron()
 
 	// 启动IP上报任务
 	ipRepost := services.NewIpReportService(global.GvaDb, global.GvaGoCron)

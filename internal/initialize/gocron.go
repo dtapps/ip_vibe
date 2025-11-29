@@ -1,7 +1,6 @@
 package initialize
 
 import (
-	"context"
 	"log"
 	"vibe_ip/internal/global"
 
@@ -9,7 +8,7 @@ import (
 )
 
 // InitGoCron 初始化 GoCron 调度器
-func InitGoCron(ctx context.Context) {
+func InitGoCron() {
 	s, err := gocron.NewScheduler()
 	if err != nil {
 		log.Fatalf("[初始化 GoCron] :%v", err)
@@ -18,7 +17,7 @@ func InitGoCron(ctx context.Context) {
 }
 
 // CloseGoCron 关闭 GoCron 调度器
-func CloseGoCron(ctx context.Context) {
+func CloseGoCron() {
 	if global.GvaGoCron != nil {
 		if err := global.GvaGoCron.Shutdown(); err != nil {
 			log.Fatalf("[关闭 GoCron] :%v", err)
@@ -27,7 +26,7 @@ func CloseGoCron(ctx context.Context) {
 }
 
 // StartGoCron 启动 GoCron 调度器
-func StartGoCron(ctx context.Context) {
+func StartGoCron() {
 	if global.GvaGoCron != nil {
 		global.GvaGoCron.Start()
 		global.GvaGoCronRunning = 1
@@ -35,7 +34,7 @@ func StartGoCron(ctx context.Context) {
 }
 
 // StopGoCron 停止 GoCron 调度器
-func StopGoCron(ctx context.Context) {
+func StopGoCron() {
 	if global.GvaGoCron != nil {
 		if err := global.GvaGoCron.StopJobs(); err == nil {
 			global.GvaGoCronRunning = 0

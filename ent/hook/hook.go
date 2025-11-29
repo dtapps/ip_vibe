@@ -116,6 +116,18 @@ func (f PlatformConfigFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlatformConfigMutation", m)
 }
 
+// The RestyLogFunc type is an adapter to allow the use of ordinary
+// function as RestyLog mutator.
+type RestyLogFunc func(context.Context, *ent.RestyLogMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f RestyLogFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.RestyLogMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RestyLogMutation", m)
+}
+
 // The WebhookFunc type is an adapter to allow the use of ordinary
 // function as Webhook mutator.
 type WebhookFunc func(context.Context, *ent.WebhookMutation) (ent.Value, error)

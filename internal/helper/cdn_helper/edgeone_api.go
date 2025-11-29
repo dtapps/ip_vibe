@@ -2,8 +2,11 @@ package cdn_helper
 
 import (
 	"context"
+	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/tencent_helper"
 	"vibe_ip/internal/utils"
+
+	"go.dtapp.net/library/service/tencent"
 )
 
 type EdgeOneClient struct {
@@ -12,7 +15,7 @@ type EdgeOneClient struct {
 		SecretKey string // 密钥密钥
 		ZoneID    string // 站点 ID
 	}
-	client *tencent_helper.Client
+	client *tencent.Client
 }
 
 // 边缘安全加速平台 EO
@@ -25,10 +28,13 @@ func NewEdgeOneClient(ctx context.Context, secretID string, secretKey string, zo
 	c.config.SecretKey = secretKey
 	c.config.ZoneID = zoneID
 
-	c.client, err = tencent_helper.NewClient(
-		"https://teo.tencentcloudapi.com",
-		c.config.SecretID,
-		c.config.SecretKey,
+	c.client, err = tencent.NewClient(
+		ctx,
+		tencent.WithEndpoint("https://teo.tencentcloudapi.com"),
+		tencent.WithSecretID(secretID),
+		tencent.WithSecretKey(secretKey),
+		tencent.WithRestyLog(global.GvaRestyLog),
+		tencent.WithDebug(global.GvaEnv.DEBUG),
 	)
 	if err != nil {
 		return nil, err

@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/helper/operation_logs_helper"
 
 	"github.com/go-co-op/gocron/v2"
+	"go.dtapp.net/library/contrib/resty_log"
 	"go.dtapp.net/library/service/bark"
 	"go.dtapp.net/library/service/dingtalk"
 	"go.dtapp.net/library/service/feishu"
@@ -37,6 +38,8 @@ var (
 	GvaDb *ent.Client // 数据库
 
 	GvaOperationLogHelper *operation_logs_helper.OperationLogHelper // 操作日志助手
+
+	GvaRestyLog *resty_log.Logger // Resty框架日志
 
 	GvaWechatWork *wechatqy.Client // 企业微信
 	GvaDingTalk   *dingtalk.Client // 钉钉

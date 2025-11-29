@@ -46,7 +46,7 @@ func InitEnt(ctx context.Context) {
 }
 
 // CloseEnt 关闭 ent
-func CloseEnt(ctx context.Context) {
+func CloseEnt() {
 	if global.GvaDb != nil {
 		if err := global.GvaDb.Close(); err != nil {
 			log.Fatalf("[关闭 ent] :%v", err)

@@ -13,6 +13,7 @@ import (
 	"vibe_ip/ent/ipgroupdevice"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/platformconfig"
+	"vibe_ip/ent/restylog"
 	"vibe_ip/ent/schema"
 	"vibe_ip/ent/webhook"
 	"vibe_ip/ent/webhooksubscription"
@@ -179,6 +180,16 @@ func init() {
 	platformconfig.DefaultUpdatedAt = platformconfigDescUpdatedAt.Default.(func() time.Time)
 	// platformconfig.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	platformconfig.UpdateDefaultUpdatedAt = platformconfigDescUpdatedAt.UpdateDefault.(func() time.Time)
+	restylogFields := schema.RestyLog{}.Fields()
+	_ = restylogFields
+	// restylogDescIsError is the schema descriptor for is_error field.
+	restylogDescIsError := restylogFields[9].Descriptor()
+	// restylog.DefaultIsError holds the default value on creation for the is_error field.
+	restylog.DefaultIsError = restylogDescIsError.Default.(bool)
+	// restylogDescCreatedAt is the schema descriptor for created_at field.
+	restylogDescCreatedAt := restylogFields[10].Descriptor()
+	// restylog.DefaultCreatedAt holds the default value on creation for the created_at field.
+	restylog.DefaultCreatedAt = restylogDescCreatedAt.Default.(func() time.Time)
 	webhookMixin := schema.Webhook{}.Mixin()
 	webhookMixinFields0 := webhookMixin[0].Fields()
 	_ = webhookMixinFields0

@@ -80,7 +80,7 @@ func StartTask(c *gin.Context) {
 	// 获取全部任务
 	jobs := jobHelper.GetJobsData(5)
 	// 启动 GoCron 调度器
-	initialize.StartGoCron(c)
+	initialize.StartGoCron()
 	if len(jobs) == 0 {
 		// 启动IP上报任务
 		ipRepost := services.NewIpReportService(global.GvaDb, global.GvaGoCron)
@@ -107,7 +107,7 @@ func StartTask(c *gin.Context) {
 // 停止调度器
 func StopTask(c *gin.Context) {
 	// 停止 GoCron 调度器
-	initialize.StopGoCron(c)
+	initialize.StopGoCron()
 	successResponse(c, map[string]string{"message": "调度器停止成功"})
 }
 

@@ -19,6 +19,7 @@ import (
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/platformconfig"
 	"vibe_ip/ent/predicate"
+	"vibe_ip/ent/restylog"
 	"vibe_ip/ent/webhook"
 	"vibe_ip/ent/webhooksubscription"
 
@@ -44,6 +45,7 @@ const (
 	TypeIpGroupDevice       = "IpGroupDevice"
 	TypeOperationLog        = "OperationLog"
 	TypePlatformConfig      = "PlatformConfig"
+	TypeRestyLog            = "RestyLog"
 	TypeWebhook             = "Webhook"
 	TypeWebhookSubscription = "WebhookSubscription"
 )
@@ -8033,6 +8035,1035 @@ func (m *PlatformConfigMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown PlatformConfig edge %s", name)
+}
+
+// RestyLogMutation represents an operation that mutates the RestyLog nodes in the graph.
+type RestyLogMutation struct {
+	config
+	op                  Op
+	typ                 string
+	id                  *int
+	hostname            *string
+	method              *string
+	url                 *string
+	request_headers     *map[string][]string
+	request_body        *json.RawMessage
+	appendrequest_body  json.RawMessage
+	status_code         *int
+	addstatus_code      *int
+	response_headers    *map[string][]string
+	response_body       *json.RawMessage
+	appendresponse_body json.RawMessage
+	elapse_time         *int64
+	addelapse_time      *int64
+	is_error            *bool
+	created_at          *time.Time
+	clearedFields       map[string]struct{}
+	done                bool
+	oldValue            func(context.Context) (*RestyLog, error)
+	predicates          []predicate.RestyLog
+}
+
+var _ ent.Mutation = (*RestyLogMutation)(nil)
+
+// restylogOption allows management of the mutation configuration using functional options.
+type restylogOption func(*RestyLogMutation)
+
+// newRestyLogMutation creates new mutation for the RestyLog entity.
+func newRestyLogMutation(c config, op Op, opts ...restylogOption) *RestyLogMutation {
+	m := &RestyLogMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeRestyLog,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withRestyLogID sets the ID field of the mutation.
+func withRestyLogID(id int) restylogOption {
+	return func(m *RestyLogMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *RestyLog
+		)
+		m.oldValue = func(ctx context.Context) (*RestyLog, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().RestyLog.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withRestyLog sets the old RestyLog of the mutation.
+func withRestyLog(node *RestyLog) restylogOption {
+	return func(m *RestyLogMutation) {
+		m.oldValue = func(context.Context) (*RestyLog, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m RestyLogMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m RestyLogMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *RestyLogMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *RestyLogMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().RestyLog.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetHostname sets the "hostname" field.
+func (m *RestyLogMutation) SetHostname(s string) {
+	m.hostname = &s
+}
+
+// Hostname returns the value of the "hostname" field in the mutation.
+func (m *RestyLogMutation) Hostname() (r string, exists bool) {
+	v := m.hostname
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHostname returns the old "hostname" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldHostname(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHostname is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHostname requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHostname: %w", err)
+	}
+	return oldValue.Hostname, nil
+}
+
+// ResetHostname resets all changes to the "hostname" field.
+func (m *RestyLogMutation) ResetHostname() {
+	m.hostname = nil
+}
+
+// SetMethod sets the "method" field.
+func (m *RestyLogMutation) SetMethod(s string) {
+	m.method = &s
+}
+
+// Method returns the value of the "method" field in the mutation.
+func (m *RestyLogMutation) Method() (r string, exists bool) {
+	v := m.method
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMethod returns the old "method" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldMethod(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMethod is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMethod requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMethod: %w", err)
+	}
+	return oldValue.Method, nil
+}
+
+// ResetMethod resets all changes to the "method" field.
+func (m *RestyLogMutation) ResetMethod() {
+	m.method = nil
+}
+
+// SetURL sets the "url" field.
+func (m *RestyLogMutation) SetURL(s string) {
+	m.url = &s
+}
+
+// URL returns the value of the "url" field in the mutation.
+func (m *RestyLogMutation) URL() (r string, exists bool) {
+	v := m.url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldURL returns the old "url" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldURL: %w", err)
+	}
+	return oldValue.URL, nil
+}
+
+// ResetURL resets all changes to the "url" field.
+func (m *RestyLogMutation) ResetURL() {
+	m.url = nil
+}
+
+// SetRequestHeaders sets the "request_headers" field.
+func (m *RestyLogMutation) SetRequestHeaders(value map[string][]string) {
+	m.request_headers = &value
+}
+
+// RequestHeaders returns the value of the "request_headers" field in the mutation.
+func (m *RestyLogMutation) RequestHeaders() (r map[string][]string, exists bool) {
+	v := m.request_headers
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestHeaders returns the old "request_headers" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldRequestHeaders(ctx context.Context) (v map[string][]string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestHeaders is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestHeaders requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestHeaders: %w", err)
+	}
+	return oldValue.RequestHeaders, nil
+}
+
+// ResetRequestHeaders resets all changes to the "request_headers" field.
+func (m *RestyLogMutation) ResetRequestHeaders() {
+	m.request_headers = nil
+}
+
+// SetRequestBody sets the "request_body" field.
+func (m *RestyLogMutation) SetRequestBody(jm json.RawMessage) {
+	m.request_body = &jm
+	m.appendrequest_body = nil
+}
+
+// RequestBody returns the value of the "request_body" field in the mutation.
+func (m *RestyLogMutation) RequestBody() (r json.RawMessage, exists bool) {
+	v := m.request_body
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestBody returns the old "request_body" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldRequestBody(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestBody is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestBody requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestBody: %w", err)
+	}
+	return oldValue.RequestBody, nil
+}
+
+// AppendRequestBody adds jm to the "request_body" field.
+func (m *RestyLogMutation) AppendRequestBody(jm json.RawMessage) {
+	m.appendrequest_body = append(m.appendrequest_body, jm...)
+}
+
+// AppendedRequestBody returns the list of values that were appended to the "request_body" field in this mutation.
+func (m *RestyLogMutation) AppendedRequestBody() (json.RawMessage, bool) {
+	if len(m.appendrequest_body) == 0 {
+		return nil, false
+	}
+	return m.appendrequest_body, true
+}
+
+// ClearRequestBody clears the value of the "request_body" field.
+func (m *RestyLogMutation) ClearRequestBody() {
+	m.request_body = nil
+	m.appendrequest_body = nil
+	m.clearedFields[restylog.FieldRequestBody] = struct{}{}
+}
+
+// RequestBodyCleared returns if the "request_body" field was cleared in this mutation.
+func (m *RestyLogMutation) RequestBodyCleared() bool {
+	_, ok := m.clearedFields[restylog.FieldRequestBody]
+	return ok
+}
+
+// ResetRequestBody resets all changes to the "request_body" field.
+func (m *RestyLogMutation) ResetRequestBody() {
+	m.request_body = nil
+	m.appendrequest_body = nil
+	delete(m.clearedFields, restylog.FieldRequestBody)
+}
+
+// SetStatusCode sets the "status_code" field.
+func (m *RestyLogMutation) SetStatusCode(i int) {
+	m.status_code = &i
+	m.addstatus_code = nil
+}
+
+// StatusCode returns the value of the "status_code" field in the mutation.
+func (m *RestyLogMutation) StatusCode() (r int, exists bool) {
+	v := m.status_code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatusCode returns the old "status_code" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldStatusCode(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatusCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatusCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatusCode: %w", err)
+	}
+	return oldValue.StatusCode, nil
+}
+
+// AddStatusCode adds i to the "status_code" field.
+func (m *RestyLogMutation) AddStatusCode(i int) {
+	if m.addstatus_code != nil {
+		*m.addstatus_code += i
+	} else {
+		m.addstatus_code = &i
+	}
+}
+
+// AddedStatusCode returns the value that was added to the "status_code" field in this mutation.
+func (m *RestyLogMutation) AddedStatusCode() (r int, exists bool) {
+	v := m.addstatus_code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetStatusCode resets all changes to the "status_code" field.
+func (m *RestyLogMutation) ResetStatusCode() {
+	m.status_code = nil
+	m.addstatus_code = nil
+}
+
+// SetResponseHeaders sets the "response_headers" field.
+func (m *RestyLogMutation) SetResponseHeaders(value map[string][]string) {
+	m.response_headers = &value
+}
+
+// ResponseHeaders returns the value of the "response_headers" field in the mutation.
+func (m *RestyLogMutation) ResponseHeaders() (r map[string][]string, exists bool) {
+	v := m.response_headers
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResponseHeaders returns the old "response_headers" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldResponseHeaders(ctx context.Context) (v map[string][]string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResponseHeaders is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResponseHeaders requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResponseHeaders: %w", err)
+	}
+	return oldValue.ResponseHeaders, nil
+}
+
+// ResetResponseHeaders resets all changes to the "response_headers" field.
+func (m *RestyLogMutation) ResetResponseHeaders() {
+	m.response_headers = nil
+}
+
+// SetResponseBody sets the "response_body" field.
+func (m *RestyLogMutation) SetResponseBody(jm json.RawMessage) {
+	m.response_body = &jm
+	m.appendresponse_body = nil
+}
+
+// ResponseBody returns the value of the "response_body" field in the mutation.
+func (m *RestyLogMutation) ResponseBody() (r json.RawMessage, exists bool) {
+	v := m.response_body
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResponseBody returns the old "response_body" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldResponseBody(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResponseBody is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResponseBody requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResponseBody: %w", err)
+	}
+	return oldValue.ResponseBody, nil
+}
+
+// AppendResponseBody adds jm to the "response_body" field.
+func (m *RestyLogMutation) AppendResponseBody(jm json.RawMessage) {
+	m.appendresponse_body = append(m.appendresponse_body, jm...)
+}
+
+// AppendedResponseBody returns the list of values that were appended to the "response_body" field in this mutation.
+func (m *RestyLogMutation) AppendedResponseBody() (json.RawMessage, bool) {
+	if len(m.appendresponse_body) == 0 {
+		return nil, false
+	}
+	return m.appendresponse_body, true
+}
+
+// ClearResponseBody clears the value of the "response_body" field.
+func (m *RestyLogMutation) ClearResponseBody() {
+	m.response_body = nil
+	m.appendresponse_body = nil
+	m.clearedFields[restylog.FieldResponseBody] = struct{}{}
+}
+
+// ResponseBodyCleared returns if the "response_body" field was cleared in this mutation.
+func (m *RestyLogMutation) ResponseBodyCleared() bool {
+	_, ok := m.clearedFields[restylog.FieldResponseBody]
+	return ok
+}
+
+// ResetResponseBody resets all changes to the "response_body" field.
+func (m *RestyLogMutation) ResetResponseBody() {
+	m.response_body = nil
+	m.appendresponse_body = nil
+	delete(m.clearedFields, restylog.FieldResponseBody)
+}
+
+// SetElapseTime sets the "elapse_time" field.
+func (m *RestyLogMutation) SetElapseTime(i int64) {
+	m.elapse_time = &i
+	m.addelapse_time = nil
+}
+
+// ElapseTime returns the value of the "elapse_time" field in the mutation.
+func (m *RestyLogMutation) ElapseTime() (r int64, exists bool) {
+	v := m.elapse_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldElapseTime returns the old "elapse_time" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldElapseTime(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldElapseTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldElapseTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldElapseTime: %w", err)
+	}
+	return oldValue.ElapseTime, nil
+}
+
+// AddElapseTime adds i to the "elapse_time" field.
+func (m *RestyLogMutation) AddElapseTime(i int64) {
+	if m.addelapse_time != nil {
+		*m.addelapse_time += i
+	} else {
+		m.addelapse_time = &i
+	}
+}
+
+// AddedElapseTime returns the value that was added to the "elapse_time" field in this mutation.
+func (m *RestyLogMutation) AddedElapseTime() (r int64, exists bool) {
+	v := m.addelapse_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetElapseTime resets all changes to the "elapse_time" field.
+func (m *RestyLogMutation) ResetElapseTime() {
+	m.elapse_time = nil
+	m.addelapse_time = nil
+}
+
+// SetIsError sets the "is_error" field.
+func (m *RestyLogMutation) SetIsError(b bool) {
+	m.is_error = &b
+}
+
+// IsError returns the value of the "is_error" field in the mutation.
+func (m *RestyLogMutation) IsError() (r bool, exists bool) {
+	v := m.is_error
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsError returns the old "is_error" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldIsError(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsError is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsError requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsError: %w", err)
+	}
+	return oldValue.IsError, nil
+}
+
+// ClearIsError clears the value of the "is_error" field.
+func (m *RestyLogMutation) ClearIsError() {
+	m.is_error = nil
+	m.clearedFields[restylog.FieldIsError] = struct{}{}
+}
+
+// IsErrorCleared returns if the "is_error" field was cleared in this mutation.
+func (m *RestyLogMutation) IsErrorCleared() bool {
+	_, ok := m.clearedFields[restylog.FieldIsError]
+	return ok
+}
+
+// ResetIsError resets all changes to the "is_error" field.
+func (m *RestyLogMutation) ResetIsError() {
+	m.is_error = nil
+	delete(m.clearedFields, restylog.FieldIsError)
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *RestyLogMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *RestyLogMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *RestyLogMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// Where appends a list predicates to the RestyLogMutation builder.
+func (m *RestyLogMutation) Where(ps ...predicate.RestyLog) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the RestyLogMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *RestyLogMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.RestyLog, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *RestyLogMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *RestyLogMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (RestyLog).
+func (m *RestyLogMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *RestyLogMutation) Fields() []string {
+	fields := make([]string, 0, 11)
+	if m.hostname != nil {
+		fields = append(fields, restylog.FieldHostname)
+	}
+	if m.method != nil {
+		fields = append(fields, restylog.FieldMethod)
+	}
+	if m.url != nil {
+		fields = append(fields, restylog.FieldURL)
+	}
+	if m.request_headers != nil {
+		fields = append(fields, restylog.FieldRequestHeaders)
+	}
+	if m.request_body != nil {
+		fields = append(fields, restylog.FieldRequestBody)
+	}
+	if m.status_code != nil {
+		fields = append(fields, restylog.FieldStatusCode)
+	}
+	if m.response_headers != nil {
+		fields = append(fields, restylog.FieldResponseHeaders)
+	}
+	if m.response_body != nil {
+		fields = append(fields, restylog.FieldResponseBody)
+	}
+	if m.elapse_time != nil {
+		fields = append(fields, restylog.FieldElapseTime)
+	}
+	if m.is_error != nil {
+		fields = append(fields, restylog.FieldIsError)
+	}
+	if m.created_at != nil {
+		fields = append(fields, restylog.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *RestyLogMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case restylog.FieldHostname:
+		return m.Hostname()
+	case restylog.FieldMethod:
+		return m.Method()
+	case restylog.FieldURL:
+		return m.URL()
+	case restylog.FieldRequestHeaders:
+		return m.RequestHeaders()
+	case restylog.FieldRequestBody:
+		return m.RequestBody()
+	case restylog.FieldStatusCode:
+		return m.StatusCode()
+	case restylog.FieldResponseHeaders:
+		return m.ResponseHeaders()
+	case restylog.FieldResponseBody:
+		return m.ResponseBody()
+	case restylog.FieldElapseTime:
+		return m.ElapseTime()
+	case restylog.FieldIsError:
+		return m.IsError()
+	case restylog.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *RestyLogMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case restylog.FieldHostname:
+		return m.OldHostname(ctx)
+	case restylog.FieldMethod:
+		return m.OldMethod(ctx)
+	case restylog.FieldURL:
+		return m.OldURL(ctx)
+	case restylog.FieldRequestHeaders:
+		return m.OldRequestHeaders(ctx)
+	case restylog.FieldRequestBody:
+		return m.OldRequestBody(ctx)
+	case restylog.FieldStatusCode:
+		return m.OldStatusCode(ctx)
+	case restylog.FieldResponseHeaders:
+		return m.OldResponseHeaders(ctx)
+	case restylog.FieldResponseBody:
+		return m.OldResponseBody(ctx)
+	case restylog.FieldElapseTime:
+		return m.OldElapseTime(ctx)
+	case restylog.FieldIsError:
+		return m.OldIsError(ctx)
+	case restylog.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown RestyLog field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *RestyLogMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case restylog.FieldHostname:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHostname(v)
+		return nil
+	case restylog.FieldMethod:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMethod(v)
+		return nil
+	case restylog.FieldURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetURL(v)
+		return nil
+	case restylog.FieldRequestHeaders:
+		v, ok := value.(map[string][]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestHeaders(v)
+		return nil
+	case restylog.FieldRequestBody:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestBody(v)
+		return nil
+	case restylog.FieldStatusCode:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatusCode(v)
+		return nil
+	case restylog.FieldResponseHeaders:
+		v, ok := value.(map[string][]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResponseHeaders(v)
+		return nil
+	case restylog.FieldResponseBody:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResponseBody(v)
+		return nil
+	case restylog.FieldElapseTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetElapseTime(v)
+		return nil
+	case restylog.FieldIsError:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsError(v)
+		return nil
+	case restylog.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown RestyLog field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *RestyLogMutation) AddedFields() []string {
+	var fields []string
+	if m.addstatus_code != nil {
+		fields = append(fields, restylog.FieldStatusCode)
+	}
+	if m.addelapse_time != nil {
+		fields = append(fields, restylog.FieldElapseTime)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *RestyLogMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case restylog.FieldStatusCode:
+		return m.AddedStatusCode()
+	case restylog.FieldElapseTime:
+		return m.AddedElapseTime()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *RestyLogMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case restylog.FieldStatusCode:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatusCode(v)
+		return nil
+	case restylog.FieldElapseTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddElapseTime(v)
+		return nil
+	}
+	return fmt.Errorf("unknown RestyLog numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *RestyLogMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(restylog.FieldRequestBody) {
+		fields = append(fields, restylog.FieldRequestBody)
+	}
+	if m.FieldCleared(restylog.FieldResponseBody) {
+		fields = append(fields, restylog.FieldResponseBody)
+	}
+	if m.FieldCleared(restylog.FieldIsError) {
+		fields = append(fields, restylog.FieldIsError)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *RestyLogMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *RestyLogMutation) ClearField(name string) error {
+	switch name {
+	case restylog.FieldRequestBody:
+		m.ClearRequestBody()
+		return nil
+	case restylog.FieldResponseBody:
+		m.ClearResponseBody()
+		return nil
+	case restylog.FieldIsError:
+		m.ClearIsError()
+		return nil
+	}
+	return fmt.Errorf("unknown RestyLog nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *RestyLogMutation) ResetField(name string) error {
+	switch name {
+	case restylog.FieldHostname:
+		m.ResetHostname()
+		return nil
+	case restylog.FieldMethod:
+		m.ResetMethod()
+		return nil
+	case restylog.FieldURL:
+		m.ResetURL()
+		return nil
+	case restylog.FieldRequestHeaders:
+		m.ResetRequestHeaders()
+		return nil
+	case restylog.FieldRequestBody:
+		m.ResetRequestBody()
+		return nil
+	case restylog.FieldStatusCode:
+		m.ResetStatusCode()
+		return nil
+	case restylog.FieldResponseHeaders:
+		m.ResetResponseHeaders()
+		return nil
+	case restylog.FieldResponseBody:
+		m.ResetResponseBody()
+		return nil
+	case restylog.FieldElapseTime:
+		m.ResetElapseTime()
+		return nil
+	case restylog.FieldIsError:
+		m.ResetIsError()
+		return nil
+	case restylog.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown RestyLog field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *RestyLogMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *RestyLogMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *RestyLogMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *RestyLogMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *RestyLogMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *RestyLogMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *RestyLogMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown RestyLog unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *RestyLogMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown RestyLog edge %s", name)
 }
 
 // WebhookMutation represents an operation that mutates the Webhook nodes in the graph.

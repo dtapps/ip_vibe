@@ -32,10 +32,10 @@ func main() {
 
 	ctx := context.Background()
 
-	initialize.InitGoCron(ctx)           // 初始化 GoCron 调度器
-	initialize.InitSLog(ctx, "reporter") // 初始化 日志
+	initialize.InitGoCron()         // 初始化 GoCron 调度器
+	initialize.InitSLog("reporter") // 初始化 日志
 	defer func() {
-		initialize.CloseGoCron(ctx) // 关闭 GoCron 调度器
+		initialize.CloseGoCron() // 关闭 GoCron 调度器
 	}()
 
 	// 打印
@@ -88,7 +88,7 @@ func main() {
 	}
 
 	// 启动 GoCron 调度器
-	initialize.StartGoCron(ctx)
+	initialize.StartGoCron()
 
 	// 阻止主线程退出
 	select {}

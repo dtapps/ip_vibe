@@ -32,6 +32,8 @@ type Tx struct {
 	OperationLog *OperationLogClient
 	// PlatformConfig is the client for interacting with the PlatformConfig builders.
 	PlatformConfig *PlatformConfigClient
+	// RestyLog is the client for interacting with the RestyLog builders.
+	RestyLog *RestyLogClient
 	// Webhook is the client for interacting with the Webhook builders.
 	Webhook *WebhookClient
 	// WebhookSubscription is the client for interacting with the WebhookSubscription builders.
@@ -176,6 +178,7 @@ func (tx *Tx) init() {
 	tx.IpGroupDevice = NewIpGroupDeviceClient(tx.config)
 	tx.OperationLog = NewOperationLogClient(tx.config)
 	tx.PlatformConfig = NewPlatformConfigClient(tx.config)
+	tx.RestyLog = NewRestyLogClient(tx.config)
 	tx.Webhook = NewWebhookClient(tx.config)
 	tx.WebhookSubscription = NewWebhookSubscriptionClient(tx.config)
 }

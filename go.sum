@@ -71,8 +71,8 @@ github.com/go-viper/mapstructure/v2 v2.4.0 h1:EBsztssimR/CONLSZZ04E8qAkxNYq4Qp9L
 github.com/go-viper/mapstructure/v2 v2.4.0/go.mod h1:oJDH3BJKyqBA2TXFhDsKDGDTlndYOZ6rGS0BRZIxGhM=
 github.com/goccy/go-json v0.10.5 h1:Fq85nIqj+gXn/S5ahsiTlK3TmC85qgirsdTP/+DeaC4=
 github.com/goccy/go-json v0.10.5/go.mod h1:oq7eo15ShAhp70Anwd5lgX2pLfOS3QCiwU/PULtXL6M=
-github.com/goccy/go-yaml v1.18.0 h1:8W7wMFS12Pcas7KU+VVkaiCng+kG8QiFeFwzFb+rwuw=
-github.com/goccy/go-yaml v1.18.0/go.mod h1:XBurs7gK8ATbW4ZPGKgcbrY1Br56PdM69F7LkFRi1kA=
+github.com/goccy/go-yaml v1.19.0 h1:EmkZ9RIsX+Uq4DYFowegAuJo8+xdX3T/2dwNPXbxEYE=
+github.com/goccy/go-yaml v1.19.0/go.mod h1:XBurs7gK8ATbW4ZPGKgcbrY1Br56PdM69F7LkFRi1kA=
 github.com/google/go-cmp v0.7.0 h1:wk8382ETsv4JYUZwIsn6YpYiWiBsYLSJiTsyBybVuN8=
 github.com/google/go-cmp v0.7.0/go.mod h1:pXiqmnSA92OHEEa9HXL2W4E7lf9JzCmGVUdgjX3N/iU=
 github.com/google/gofuzz v1.0.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/M65Eg=
@@ -168,6 +168,8 @@ go.dtapp.net/library/contrib/resty_log v1.0.8 h1:JvRswUuL1bjhJWoMxK/J1P1+qkR31Gf
 go.dtapp.net/library/contrib/resty_log v1.0.8/go.mod h1:S1E2lSiV2KOkpnXv8LlJQPUnskhpRo0SzGmrPZ/V2UY=
 go.dtapp.net/library/service/bark v1.0.7 h1:Zz02Rh/N/DGCc5C9P5odxoMIbPBVlDq5LEP6yGhbmMM=
 go.dtapp.net/library/service/bark v1.0.7/go.mod h1:5a/Hxz9GYxU5ynlsZ2L7eXc83yWnVXa+Hu2Ta2spKMg=
+go.dtapp.net/library/service/cloudflare v1.0.0 h1:ncCpXpwiLPiyleIzQOGFqcxVRh/2g4QRu2fuQgvNqfI=
+go.dtapp.net/library/service/cloudflare v1.0.0/go.mod h1:TQv+5FbY72r0DlTqAy5ooBT9OjW3XpGrXxUcyIhBONY=
 go.dtapp.net/library/service/dingtalk v1.0.39 h1:4JdEMn05XGllhlRx0Fsp7snhz5u8/IrTMf212xHc+yE=
 go.dtapp.net/library/service/dingtalk v1.0.39/go.mod h1:CTeFgAm8M8eTBPhbWWVKf5TdXqptDkpSrHh2gh4CFrI=
 go.dtapp.net/library/service/feishu v1.0.36 h1:Z4s9v8XGQGvxA+OcBoqUT2wESLId+ZT9//BwtpvjPzk=
@@ -176,6 +178,8 @@ go.dtapp.net/library/service/ft07 v1.0.8 h1:GuysqXjZ97iKNnLZU4pV4EodEThRv185sKkF
 go.dtapp.net/library/service/ft07 v1.0.8/go.mod h1:8M87eVThjq96YWaXpVTyOpN0u72W2P3dO3kVief4kkE=
 go.dtapp.net/library/service/pushdeer v1.0.8 h1:DUzbijqJBc07lA+7rSpD7b4haGpaS9KoLNM2XSg5IWo=
 go.dtapp.net/library/service/pushdeer v1.0.8/go.mod h1:xGS/Pwq6tP2vFk7sD2CARDJ+IrOJqmLVLYtYNlhds+Q=
+go.dtapp.net/library/service/tencent v1.0.0 h1:0EaOA4GlIXJSDqrYl3PSJrHjUptDLbzWp4j1YiLgC0M=
+go.dtapp.net/library/service/tencent v1.0.0/go.mod h1:drRWDu5XxIyUTKtBnmsfyPDchG+XyZzTb0vQhZ5De8k=
 go.dtapp.net/library/service/wechatqy v1.0.38 h1:WkoR/tNkl6f1RTW5WDuL/2KX/hYkO9GwubwIkgkSPz0=
 go.dtapp.net/library/service/wechatqy v1.0.38/go.mod h1:FQEZVKQ9jqaem+q+PZ2ORCqYaxClpFl57oLJf15jODQ=
 go.dtapp.net/library/utils/goarray v1.0.4 h1:2Zuk5cn/3/ZHmVRG542sOZToRmAyEhHTXGdqV5YegOo=

@@ -2,8 +2,11 @@ package dns_helper
 
 import (
 	"context"
+	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/tencent_helper"
 	"vibe_ip/internal/utils"
+
+	"go.dtapp.net/library/service/tencent"
 )
 
 type DnsPodClient struct {
@@ -11,7 +14,7 @@ type DnsPodClient struct {
 		SecretID  string // 密钥ID
 		SecretKey string // 密钥密钥
 	}
-	client *tencent_helper.Client
+	client *tencent.Client
 }
 
 func NewDnsPodClient(ctx context.Context, secretID string, secretKey string) (c *DnsPodClient, err error) {
@@ -20,10 +23,13 @@ func NewDnsPodClient(ctx context.Context, secretID string, secretKey string) (c 
 	c.config.SecretID = secretID
 	c.config.SecretKey = secretKey
 
-	c.client, err = tencent_helper.NewClient(
-		"https://dnspod.tencentcloudapi.com",
-		c.config.SecretID,
-		c.config.SecretKey,
+	c.client, err = tencent.NewClient(
+		ctx,
+		tencent.WithEndpoint("https://dnspod.tencentcloudapi.com"),
+		tencent.WithSecretID(secretID),
+		tencent.WithSecretKey(secretKey),
+		tencent.WithRestyLog(global.GvaRestyLog),
+		tencent.WithDebug(global.GvaEnv.DEBUG),
 	)
 	if err != nil {
 		return nil, err

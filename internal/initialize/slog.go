@@ -1,7 +1,6 @@
 package initialize
 
 import (
-	"context"
 	"path/filepath"
 
 	"go.dtapp.net/library/utils/golog"
@@ -9,7 +8,7 @@ import (
 )
 
 // InitSLog 初始化 日志
-func InitSLog(ctx context.Context, name string) {
+func InitSLog(name string) {
 	golog.NewSlog(
 		golog.WithSLogLumberjack(&lumberjack.Logger{
 			Filename:   filepath.Join("./logs/slog_" + name + ".log"), // 日志文件的位置

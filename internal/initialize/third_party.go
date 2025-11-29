@@ -16,37 +16,61 @@ import (
 func InitThirdParty(ctx context.Context) (err error) {
 
 	// 企业微信
-	global.GvaWechatWork, err = wechatqy.NewClient(ctx, wechatqy.WithDebug(global.GvaEnv.DEBUG))
+	global.GvaWechatWork, err = wechatqy.NewClient(
+		ctx,
+		wechatqy.WithRestyLog(global.GvaRestyLog),
+		wechatqy.WithDebug(global.GvaEnv.DEBUG),
+	)
 	if err != nil {
 		return err
 	}
 
 	// 钉钉
-	global.GvaDingTalk, err = dingtalk.NewClient(ctx, dingtalk.WithDebug(global.GvaEnv.DEBUG))
+	global.GvaDingTalk, err = dingtalk.NewClient(
+		ctx,
+		dingtalk.WithRestyLog(global.GvaRestyLog),
+		dingtalk.WithDebug(global.GvaEnv.DEBUG),
+	)
 	if err != nil {
 		return err
 	}
 
 	// 飞书
-	global.GvaFeishu, err = feishu.NewClient(ctx, feishu.WithDebug(global.GvaEnv.DEBUG))
+	global.GvaFeishu, err = feishu.NewClient(
+		ctx,
+		feishu.WithRestyLog(global.GvaRestyLog),
+		feishu.WithDebug(global.GvaEnv.DEBUG),
+	)
 	if err != nil {
 		return err
 	}
 
 	// bark
-	global.GvaBark, err = bark.NewClient(ctx, bark.WithDebug(global.GvaEnv.DEBUG))
+	global.GvaBark, err = bark.NewClient(
+		ctx,
+		bark.WithRestyLog(global.GvaRestyLog),
+		bark.WithDebug(global.GvaEnv.DEBUG),
+	)
 	if err != nil {
 		return err
 	}
 
 	// ft07
-	global.GvaFt07, err = ft07.NewClient(ctx, ft07.WithDebug(global.GvaEnv.DEBUG))
+	global.GvaFt07, err = ft07.NewClient(
+		ctx,
+		ft07.WithRestyLog(global.GvaRestyLog),
+		ft07.WithDebug(global.GvaEnv.DEBUG),
+	)
 	if err != nil {
 		return err
 	}
 
 	// pushdeer
-	global.GvaPushDeer, err = pushdeer.NewClient(ctx, pushdeer.WithDebug(global.GvaEnv.DEBUG))
+	global.GvaPushDeer, err = pushdeer.NewClient(
+		ctx,
+		pushdeer.WithRestyLog(global.GvaRestyLog),
+		pushdeer.WithDebug(global.GvaEnv.DEBUG),
+	)
 	if err != nil {
 		return err
 	}
