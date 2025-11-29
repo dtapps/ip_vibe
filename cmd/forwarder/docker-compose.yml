@@ -10,7 +10,6 @@ services:
       - "BASIC_AUTH_USERNAME=admin"
       - "BASIC_AUTH_PASSWORD=123456"
       - "DEVICE_CODE=设备编号，留空则自动生成（根据 /etc/machine-id 生成）"
-      - "DEVICE_NAME=设备名称，可留空"
     volumes:
       - /etc/machine-id:/etc/machine-id:ro
       - /etc/localtime:/etc/localtime:ro

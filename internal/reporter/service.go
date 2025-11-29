@@ -2,6 +2,7 @@ package reporter
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"time"
 	"vibe_ip/internal/global"
@@ -99,6 +100,10 @@ func (s *Service) httpApi(ctx context.Context, deviceCode string, params types.D
 		slog.Int("status_code", resp.StatusCode()),
 		slog.Any("response", resp.String()),
 	)
+
+	if resp.IsError() {
+		return fmt.Errorf("响应状态码错误: %d", resp.StatusCode())
+	}
 
 	return nil
 }

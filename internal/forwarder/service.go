@@ -2,6 +2,7 @@ package forwarder
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"time"
 	"vibe_ip/internal/global"
@@ -109,7 +110,7 @@ func (s *Service) httpApi(ctx context.Context, deviceCode string) (response Http
 		SetResult(&response).
 		Get("api/open/device/{device_code}/port-forwards")
 	if err != nil {
-		return response, err
+		return HttpApiResponse{}, err
 	}
 
 	// 打印响应状态和内容
@@ -117,6 +118,10 @@ func (s *Service) httpApi(ctx context.Context, deviceCode string) (response Http
 		slog.Int("status_code", resp.StatusCode()),
 		slog.Any("response", resp.String()),
 	)
+
+	if resp.IsError() {
+		return HttpApiResponse{}, fmt.Errorf("响应状态码错误: %d", resp.StatusCode())
+	}
 
 	return response, nil
 }
