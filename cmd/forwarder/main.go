@@ -31,11 +31,7 @@ func main() {
 
 	ctx := context.Background()
 
-	initialize.InitGoCron()          // 初始化 GoCron 调度器
 	initialize.InitSLog("forwarder") // 初始化 日志
-	defer func() {
-		initialize.CloseGoCron() // 关闭 GoCron 调度器
-	}()
 
 	// 打印
 	slog.Info("服务启动",
@@ -63,9 +59,6 @@ func main() {
 		fmt.Printf("启动任务失败: %v\n", err)
 		os.Exit(1)
 	}
-
-	// 启动 GoCron 调度器
-	initialize.StartGoCron()
 
 	// 阻止主线程退出
 	select {}
