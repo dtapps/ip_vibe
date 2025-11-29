@@ -197,8 +197,8 @@ func main() {
 			devices.PATCH("/:id", handlers.UpdateDevice)
 			devices.DELETE("/:id", handlers.DeleteDevice)
 			devices.GET("/:id/ip-history", handlers.GetDeviceIpHistory)
-			devices.POST("/ip-report", handlers.ReportDeviceIp)           // open api
-			devices.GET("/port-forwards", handlers.GetDevicePortForwards) // open api
+			devices.POST("/:device_code/ip-report", handlers.ReportDeviceIp)           // open api
+			devices.GET("/:device_code/port-forwards", handlers.GetDevicePortForwards) // open api
 		}
 
 		// IP组相关API

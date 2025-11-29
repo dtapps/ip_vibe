@@ -36,15 +36,7 @@ type GetDeviceIpHistoryRequest struct {
 
 // 上报设备IP 请求结构
 type ReportDeviceIpRequest struct {
-	ID          int64  `json:"id,omitempty"`          // 设备序号
-	DeviceCode  string `json:"device_code"`           // 设备编号
-	DeviceName  string `json:"device_name,omitempty"` // 设备名称
-	Description string `json:"description,omitempty"` // 设备描述
-	IPV4Addr    string `json:"ipv4_addr,omitempty"`   // IP地址V4
-	IPV6Addr    string `json:"ipv6_addr,omitempty"`   // IP地址V6
-}
-
-// 获取设备端口转发 请求结构
-type GetDevicePortForwardsRequest struct {
-	DeviceCode string `json:"device_code"` // 设备编号
+	DeviceName string `json:"device_name,omitempty"` // 设备名称
+	IPV4Addr   string `json:"ipv4_addr,omitempty"`   // IP地址V4
+	IPV6Addr   string `json:"ipv6_addr,omitempty"`   // IP地址V6
 }

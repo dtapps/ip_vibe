@@ -215,6 +215,7 @@ func GetDeviceIpHistory(c *gin.Context) {
 // 上报设备IP
 func ReportDeviceIp(c *gin.Context) {
 	// 请求参数
+	deviceCode := c.Param("device_code")
 	var requestParams types.ReportDeviceIpRequest
 	if err := c.ShouldBindJSON(&requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
@@ -235,7 +236,7 @@ func ReportDeviceIp(c *gin.Context) {
 		errorResponse(c, http.StatusInternalServerError, "获取当前设备ID失败: "+err.Error())
 		return
 	}
-	if requestParams.DeviceCode == selfDeviceCode {
+	if deviceCode == selfDeviceCode {
 		errorResponse(c, http.StatusForbidden, "不能上报自身IP")
 		return
 	}
@@ -246,7 +247,7 @@ func ReportDeviceIp(c *gin.Context) {
 		EventType:  "IP_UPDATE",
 		EventTime:  time.Now().Format("2006-01-02 15:04:05"),
 		EventBody:  "IP地址更新事件",
-		DeviceCode: requestParams.DeviceCode,
+		DeviceCode: deviceCode,
 		DeviceName: requestParams.DeviceName,
 		IPv4Addr:   requestParams.IPV4Addr,
 		IPv6Addr:   requestParams.IPV6Addr,
@@ -254,6 +255,7 @@ func ReportDeviceIp(c *gin.Context) {
 
 	// 描述
 	msg := ""
+	var deviceID int64
 
 	// 开始事务
 	tx, err := global.GvaDb.Tx(c)
@@ -264,7 +266,7 @@ func ReportDeviceIp(c *gin.Context) {
 
 	// 检查设备是否存在
 	firstDevice, err := tx.Device.Query().
-		Where(device.CodeEQ(requestParams.DeviceCode)).
+		Where(device.CodeEQ(deviceCode)).
 		First(c)
 	if err != nil {
 		if !ent.IsNotFound(err) {
@@ -275,14 +277,13 @@ func ReportDeviceIp(c *gin.Context) {
 
 		// 如果设备不存在和设备名称为空，则使用设备编号作为设备名称
 		if requestParams.DeviceName == "" {
-			requestParams.DeviceName = requestParams.DeviceCode
+			requestParams.DeviceName = deviceCode
 		}
 
 		// 创建设备
 		saveDevice, err := tx.Device.Create().
-			SetCode(requestParams.DeviceCode).
+			SetCode(deviceCode).
 			SetName(requestParams.DeviceName).
-			SetDescription(requestParams.Description).
 			SetIPV4(requestParams.IPV4Addr).
 			SetIPV6(requestParams.IPV6Addr).
 			SetLastReportedAt(time.Now()).
@@ -296,7 +297,7 @@ func ReportDeviceIp(c *gin.Context) {
 			errorResponse(c, http.StatusInternalServerError, "创建设备失败: "+err.Error())
 			return
 		}
-		requestParams.ID = saveDevice.ID
+		deviceID = saveDevice.ID
 		// 记录操作日志
 		_ = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(c, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "接口创建设备")
 
@@ -321,7 +322,7 @@ func ReportDeviceIp(c *gin.Context) {
 
 		msg = "创建设备IP成功"
 	} else {
-		requestParams.ID = firstDevice.ID
+		deviceID = firstDevice.ID
 		requestParams.DeviceName = firstDevice.Name
 		if firstDevice.IPV4 != requestParams.IPV4Addr || firstDevice.IPV6 != requestParams.IPV6Addr {
 			// 更新设备IP
@@ -332,9 +333,6 @@ func ReportDeviceIp(c *gin.Context) {
 				SetLastHeartbeatAt(time.Now())
 			if requestParams.DeviceName != "" && firstDevice.Name != requestParams.DeviceName {
 				updateDevice.SetName(requestParams.DeviceName)
-			}
-			if requestParams.Description != "" && firstDevice.Description != requestParams.Description {
-				updateDevice.SetDescription(requestParams.Description)
 			}
 			err = updateDevice.Exec(c)
 			if err != nil {
@@ -392,12 +390,12 @@ func ReportDeviceIp(c *gin.Context) {
 	// 发送通知
 	if isNotify {
 		go func() {
-			_ = services.NewWebhookService(global.GvaDb).Send(context.Background(), webhooksubscription.ObjTypeDevice, requestParams.ID, notifyData)
+			_ = services.NewWebhookService(global.GvaDb).Send(context.Background(), webhooksubscription.ObjTypeDevice, deviceID, notifyData)
 		}()
 	}
 
 	successResponse(c, gin.H{
-		"id":  requestParams.ID,
+		"id":  deviceID,
 		"msg": msg,
 	})
 }
@@ -405,17 +403,10 @@ func ReportDeviceIp(c *gin.Context) {
 // 获取设备端口转发
 func GetDevicePortForwards(c *gin.Context) {
 	// 请求参数
-	var requestParams types.GetDevicePortForwardsRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
-		return
-	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("GetDevicePortForwards params: %+v\n", requestParams)
-	}
+	deviceCode := c.Param("device_code")
 	// 查询设备
 	firstDevice, err := global.GvaDb.Device.Query().
-		Where(device.CodeEQ(requestParams.DeviceCode)).
+		Where(device.CodeEQ(deviceCode)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())

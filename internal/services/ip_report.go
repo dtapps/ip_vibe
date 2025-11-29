@@ -67,15 +67,15 @@ func (s *IpReportService) runTask() {
 	ctx := context.Background()
 
 	// 请求参数
+	deviceCode := global.GvaEnv.DEVICE_CODE
 	params := types.ReportDeviceIpRequest{
-		DeviceCode: global.GvaEnv.DEVICE_CODE,
 		DeviceName: global.GvaEnv.DEVICE_NAME,
 	}
 
 	// 检查设备代码是否为空
-	if params.DeviceCode == "" {
+	if deviceCode == "" {
 		// 获取设备ID
-		params.DeviceCode, err = machineid.ID()
+		deviceCode, err = machineid.ID()
 		if err != nil {
 			s.log.ErrorContext(ctx, "获取设备ID失败",
 				slog.Any("err", err),
@@ -110,7 +110,7 @@ func (s *IpReportService) runTask() {
 		EventType:  "IP_UPDATE",
 		EventTime:  time.Now().Format("2006-01-02 15:04:05"),
 		EventBody:  "IP地址更新事件",
-		DeviceCode: params.DeviceCode,
+		DeviceCode: deviceCode,
 		DeviceName: params.DeviceName,
 		IPv4Addr:   params.IPV4Addr,
 		IPv6Addr:   params.IPV6Addr,
@@ -118,6 +118,7 @@ func (s *IpReportService) runTask() {
 
 	// 描述
 	msg := ""
+	var deviceID int64
 
 	// 开始事务
 	tx, err := s.db.Tx(ctx)
@@ -130,7 +131,7 @@ func (s *IpReportService) runTask() {
 
 	// 检查设备是否存在
 	firstDevice, err := tx.Device.Query().
-		Where(device.CodeEQ(params.DeviceCode)).
+		Where(device.CodeEQ(deviceCode)).
 		First(ctx)
 	if err != nil {
 		if !ent.IsNotFound(err) {
@@ -143,7 +144,7 @@ func (s *IpReportService) runTask() {
 
 		// 创建设备
 		saveDevice, err := tx.Device.Create().
-			SetCode(params.DeviceCode).
+			SetCode(deviceCode).
 			SetName(params.DeviceName).
 			SetIPV4(params.IPV4Addr).
 			SetIPV6(params.IPV6Addr).
@@ -157,7 +158,7 @@ func (s *IpReportService) runTask() {
 			)
 			return
 		}
-		params.ID = saveDevice.ID
+		deviceID = saveDevice.ID
 		// 记录操作日志
 		_ = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(ctx, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "自动创建设备")
 
@@ -181,7 +182,7 @@ func (s *IpReportService) runTask() {
 		saveDeviceIpGroup, err := tx.IpGroup.Create().
 			AddDevices(saveDevice).
 			SetName(params.DeviceName).
-			SetDescription(params.DeviceCode).
+			SetDescription(deviceCode).
 			Save(ctx)
 		if err != nil {
 			_ = tx.Rollback()
@@ -197,7 +198,7 @@ func (s *IpReportService) runTask() {
 
 		msg = "创建设备IP成功"
 	} else {
-		params.ID = firstDevice.ID
+		deviceID = firstDevice.ID
 		params.DeviceName = firstDevice.Name
 		if firstDevice.IPV4 != params.IPV4Addr || firstDevice.IPV6 != params.IPV6Addr {
 			// 更新设备IP
@@ -239,7 +240,7 @@ func (s *IpReportService) runTask() {
 			_ = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(ctx, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "自动创建设备IP报告")
 			if isUpdateDeviceName {
 				err = tx.IpGroup.Update().
-					Where(ipgroup.DescriptionEQ(params.DeviceCode)).
+					Where(ipgroup.DescriptionEQ(deviceCode)).
 					SetName(params.DeviceName).
 					Exec(ctx)
 				if err != nil {
@@ -280,7 +281,7 @@ func (s *IpReportService) runTask() {
 	if err == nil {
 		s.log.InfoContext(ctx, "IP上报成功",
 			slog.String("msg", msg),
-			slog.String("device_code", params.DeviceCode),
+			slog.String("device_code", deviceCode),
 			slog.String("device_name", params.DeviceName),
 			slog.String("ipv4_addr", params.IPV4Addr),
 			slog.String("ipv6_addr", params.IPV6Addr),
@@ -289,7 +290,7 @@ func (s *IpReportService) runTask() {
 	} else {
 		s.log.InfoContext(ctx, "IP上报成功",
 			slog.String("msg", msg),
-			slog.String("device_code", params.DeviceCode),
+			slog.String("device_code", deviceCode),
 			slog.String("device_name", params.DeviceName),
 			slog.String("ipv4_addr", params.IPV4Addr),
 			slog.String("ipv6_addr", params.IPV6Addr),
@@ -299,7 +300,7 @@ func (s *IpReportService) runTask() {
 	// 发送通知
 	if isNotify {
 		go func() {
-			_ = NewWebhookService(global.GvaDb).Send(context.Background(), webhooksubscription.ObjTypeDevice, params.ID, notifyData)
+			_ = NewWebhookService(global.GvaDb).Send(context.Background(), webhooksubscription.ObjTypeDevice, deviceID, notifyData)
 		}()
 	}
 

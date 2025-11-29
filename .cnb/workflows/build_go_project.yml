@@ -84,6 +84,7 @@
               - "bin/cli-*"
               - "bin/backend-*"
               - "bin/reporter-*"
+              - "bin/forwarder-*"
           exports:
             FILES: FILES
 

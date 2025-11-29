@@ -15,6 +15,7 @@ BINARY_NAME=ip_vibe
 BINARY_NAME_CLI=cli
 BINARY_NAME_BACKEND=backend
 BINARY_NAME_REPORTER=reporter
+BINARY_NAME_FORWARDER=forwarder
 
 # 编译输出目录
 BUILD_DIR=bin
@@ -54,6 +55,18 @@ dev_reporter_basic_auth:
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_REPORTER)/main.go
 
+dev_forwarder:
+	export DEBUG=$(ENV_DEBUG) && \
+	export HTTP_URL=$(ENV_HTTP_URL) && \
+	go run cmd/$(BINARY_NAME_FORWARDER)/main.go
+
+dev_forwarder_basic_auth:
+	export DEBUG=$(ENV_DEBUG) && \
+	export HTTP_URL=$(ENV_HTTP_URL) && \
+	export BASIC_AUTH_USERNAME=$(ENV_BASIC_AUTH_USERNAME) && \
+	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
+	go run cmd/$(BINARY_NAME_FORWARDER)/main.go
+
 # 已应用的优化：
 # CGO_ENABLED=0 - 禁用CGO，实现完全静态链接
 # -ldflags="-s -w" - 移除符号表和调试信息
@@ -78,6 +91,7 @@ clean:
 	@rm -f $(BUILD_DIR)/$(BINARY_NAME_CLI)-*
 	@rm -f $(BUILD_DIR)/$(BINARY_NAME_BACKEND)-*
 	@rm -f $(BUILD_DIR)/$(BINARY_NAME_REPORTER)-*
+	@rm -f $(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-*
 
 build-linux-amd64:
 	@echo "编译 $(BINARY_NAME_CLI) 为 linux/amd64... (version: $(VERSION))"
@@ -86,6 +100,8 @@ build-linux-amd64:
 	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-amd64 .
 	@echo "编译 $(BINARY_NAME_REPORTER) 为 linux/amd64..."
 	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-amd64 .
+	@echo "编译 $(BINARY_NAME_FORWARDER) 为 linux/amd64..."
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-amd64 .
 
 build-linux-arm64:
 	@echo "编译 $(BINARY_NAME_CLI) 为 linux/arm64... (version: $(VERSION))"
@@ -94,6 +110,8 @@ build-linux-arm64:
 	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-arm64 .
 	@echo "编译 $(BINARY_NAME_REPORTER) 为 linux/arm64..."
 	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-arm64 .
+	@echo "编译 $(BINARY_NAME_FORWARDER) 为 linux/arm64..."
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-arm64 .
 
 build-windows-amd64:
 	@echo "编译 $(BINARY_NAME_CLI) 为 windows/amd64... (version: $(VERSION))"
@@ -102,6 +120,8 @@ build-windows-amd64:
 	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-windows-amd64.exe .
 	@echo "编译 $(BINARY_NAME_REPORTER) 为 windows/amd64..."
 	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-windows-amd64.exe .
+	@echo "编译 $(BINARY_NAME_FORWARDER) 为 windows/amd64..."
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-windows-amd64.exe .
 
 build-windows-arm64:
 	@echo "编译 $(BINARY_NAME_CLI) 为 windows/arm64... (version: $(VERSION))"
@@ -110,6 +130,8 @@ build-windows-arm64:
 	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=windows GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-windows-arm64.exe .
 	@echo "编译 $(BINARY_NAME_REPORTER) 为 windows/arm64..."
 	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=windows GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-windows-arm64.exe .
+	@echo "编译 $(BINARY_NAME_FORWARDER) 为 windows/arm64..."
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=windows GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-windows-arm64.exe .
 
 build-darwin-amd64:
 	@echo "编译 $(BINARY_NAME_CLI) 为 darwin/amd64... (version: $(VERSION))"
@@ -118,6 +140,8 @@ build-darwin-amd64:
 	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-darwin-amd64 .
 	@echo "编译 $(BINARY_NAME_REPORTER) 为 darwin/amd64..."
 	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-amd64 .
+	@echo "编译 $(BINARY_NAME_FORWARDER) 为 darwin/amd64..."
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-amd64 .
 
 build-darwin-arm64:
 	@echo "编译 $(BINARY_NAME_CLI) 为 darwin/arm64... (version: $(VERSION))"
@@ -126,3 +150,5 @@ build-darwin-arm64:
 	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-darwin-arm64 .
 	@echo "编译 $(BINARY_NAME_REPORTER) 为 darwin/arm64..."
 	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-arm64 .
+	@echo "编译 $(BINARY_NAME_FORWARDER) 为 darwin/arm64..."
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-arm64 .

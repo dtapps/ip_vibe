@@ -53,10 +53,9 @@ func (s *Service) SetDebug(debug bool) *Service {
 // SetBaseURL 设置基础URL
 func (s *Service) SetBaseURL(url string) *Service {
 
-	// 规范化HTTP_URL并确保以/api/devices/ip-report结尾
-	// 首先移除可能存在的重复api/devices/ip-report或/api/devices/ip-report后缀
-	targetPath := "/api/devices/ip-report"
-	altPath := "api/devices/ip-report"
+	// 检查地址
+	altPath := "api/devices/{device_code}/ip-report"
+	targetPath := "/" + altPath
 
 	// 规范化URL，移除末尾可能的斜杠
 	url = strings.TrimSuffix(url, "/")
@@ -109,14 +108,14 @@ func (s *Service) runTask() {
 	ctx := context.Background()
 
 	// 请求参数
+	deviceCode := global.GvaEnv.DEVICE_CODE
 	params := types.ReportDeviceIpRequest{
-		DeviceCode: global.GvaEnv.DEVICE_CODE,
 		DeviceName: global.GvaEnv.DEVICE_NAME,
 	}
 	// 检查设备代码是否为空
-	if params.DeviceCode == "" {
+	if deviceCode == "" {
 		// 获取设备ID
-		params.DeviceCode, err = machineid.ID()
+		deviceCode, err = machineid.ID()
 		if err != nil {
 			s.log.ErrorContext(ctx, "获取设备ID失败",
 				slog.Any("err", err),
@@ -136,15 +135,15 @@ func (s *Service) runTask() {
 		params.IPV6Addr = ipv6.IP
 	}
 	s.log.InfoContext(ctx, "IP上报开始",
-		slog.String("device_code", params.DeviceCode),
+		slog.String("device_code", deviceCode),
 		slog.String("device_name", params.DeviceName),
 		slog.String("ipv4_addr", params.IPV4Addr),
 		slog.String("ipv6_addr", params.IPV6Addr),
 	)
-	err = s.httpApi(ctx, params)
+	err = s.httpApi(ctx, deviceCode, params)
 	if err != nil {
 		s.log.ErrorContext(ctx, "IP上报失败",
-			slog.String("device_code", params.DeviceCode),
+			slog.String("device_code", deviceCode),
 			slog.String("device_name", params.DeviceName),
 			slog.String("ipv4_addr", params.IPV4Addr),
 			slog.String("ipv6_addr", params.IPV6Addr),
@@ -156,7 +155,7 @@ func (s *Service) runTask() {
 	nextRun, err := s.job.NextRun()
 	if err == nil {
 		s.log.InfoContext(ctx, "IP上报成功",
-			slog.String("device_code", params.DeviceCode),
+			slog.String("device_code", deviceCode),
 			slog.String("device_name", params.DeviceName),
 			slog.String("ipv4_addr", params.IPV4Addr),
 			slog.String("ipv6_addr", params.IPV6Addr),
@@ -164,7 +163,7 @@ func (s *Service) runTask() {
 		)
 	} else {
 		s.log.InfoContext(ctx, "IP上报成功",
-			slog.String("device_code", params.DeviceCode),
+			slog.String("device_code", deviceCode),
 			slog.String("device_name", params.DeviceName),
 			slog.String("ipv4_addr", params.IPV4Addr),
 			slog.String("ipv6_addr", params.IPV6Addr),
@@ -173,13 +172,14 @@ func (s *Service) runTask() {
 
 }
 
-func (s *Service) httpApi(ctx context.Context, params types.ReportDeviceIpRequest) (err error) {
+func (s *Service) httpApi(ctx context.Context, deviceCode string, params types.ReportDeviceIpRequest) (err error) {
 
 	// 使用 Resty 发送请求
 	resp, err := s.client.R().
 		SetContext(ctx).
 		SetContentType("application/json").
 		SetBody(params).
+		SetPathParam("device_code", deviceCode).
 		Post("")
 	if err != nil {
 		return err
@@ -190,17 +190,6 @@ func (s *Service) httpApi(ctx context.Context, params types.ReportDeviceIpReques
 		slog.Int("status_code", resp.StatusCode()),
 		slog.Any("response", resp.String()),
 	)
-
-	// 根据响应状态码判断请求是否成功
-	if resp.IsError() {
-		s.log.ErrorContext(ctx, "请求失败",
-			slog.Any("response", resp.String()),
-		)
-	} else {
-		s.log.InfoContext(ctx, "请求成功",
-			slog.Any("response", resp.String()),
-		)
-	}
 
 	return nil
 }
