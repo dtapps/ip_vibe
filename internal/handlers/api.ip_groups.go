@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"vibe_ip/ent"
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/global"
@@ -17,6 +18,7 @@ func GetIPGroups(c *gin.Context) {
 	ipGroups := make([]types.GetIPGroupsResponse, 0)
 	// 查询全部IP组
 	allIpGroup, err := global.GvaDb.IpGroup.Query().
+		Order(ent.Desc(ipgroup.FieldCreatedAt)).
 		All(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询IP组失败: "+err.Error())

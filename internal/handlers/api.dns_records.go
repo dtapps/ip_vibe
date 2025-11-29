@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"vibe_ip/ent"
 	"vibe_ip/ent/dnsrecord"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/global"
@@ -20,6 +21,7 @@ func GetDnsRecords(c *gin.Context) {
 		WithConfig().
 		WithIPGroup().
 		WithCdnRecord().
+		Order(ent.Desc(dnsrecord.FieldCreatedAt)).
 		All(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询DNS记录失败: "+err.Error())

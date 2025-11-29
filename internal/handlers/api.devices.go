@@ -8,6 +8,7 @@ import (
 	"vibe_ip/ent"
 	"vibe_ip/ent/device"
 	"vibe_ip/ent/deviceipreport"
+	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/webhooksubscription"
 	"vibe_ip/internal/global"
@@ -25,6 +26,7 @@ func GetDevices(c *gin.Context) {
 	devices := make([]types.GetDevicesResponse, 0)
 	// 查询全部设备
 	allDevice, err := global.GvaDb.Device.Query().
+		Order(ent.Desc(device.FieldCreatedAt)).
 		All(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
@@ -398,4 +400,41 @@ func ReportDeviceIp(c *gin.Context) {
 		"id":  requestParams.ID,
 		"msg": msg,
 	})
+}
+
+func GetDevicePortForwards(c *gin.Context) {
+	// 请求参数
+	id := c.Param("id")
+	// 查询设备
+	firstDevice, err := global.GvaDb.Device.Query().
+		Where(device.ID(cast.ToInt64(id))).
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
+		return
+	}
+	portForwards := make([]types.GetPortForwardsResponse, 0)
+	// 查询端口转发
+	allPortForward, err := firstDevice.QueryPortForwards().
+		Where(deviceportforward.IsActiveEQ(true)).
+		Order(ent.Desc(deviceportforward.FieldCreatedAt)).
+		All(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, "查询端口转发失败: "+err.Error())
+		return
+	}
+	for _, item := range allPortForward {
+		portForwards = append(portForwards, types.GetPortForwardsResponse{
+			ID:          item.ID,
+			Name:        item.Name,
+			Description: item.Description,
+			LocalPort:   item.LocalPort,
+			RemoteHost:  item.RemoteHost,
+			RemotePort:  item.RemotePort,
+			Protocols:   item.Protocols,
+			AutoForward: item.AutoForward,
+			IsActive:    item.IsActive,
+		})
+	}
+	successResponse(c, portForwards)
 }

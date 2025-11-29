@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"vibe_ip/ent"
 	"vibe_ip/ent/cdnrecord"
 	"vibe_ip/ent/device"
 	"vibe_ip/ent/dnsrecord"
@@ -20,6 +21,7 @@ func GetWebhookSubscriptions(c *gin.Context) {
 	webhooks := make([]types.GetWebhookSubscriptionsResponse, 0)
 	// 查询全部通知订阅
 	allWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
+		Order(ent.Desc(webhooksubscription.FieldCreatedAt)).
 		All(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询通知订阅失败: "+err.Error())

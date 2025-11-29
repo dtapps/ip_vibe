@@ -6,8 +6,12 @@ import (
 	"vibe_ip/ent"
 	"vibe_ip/ent/cdnrecord"
 	"vibe_ip/ent/device"
+	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/ent/dnsrecord"
+	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/operationlog"
+	"vibe_ip/ent/platformconfig"
+	"vibe_ip/ent/webhook"
 	"vibe_ip/ent/webhooksubscription"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gocron_helper"
@@ -36,6 +40,7 @@ func Index(c *gin.Context) {
 	}
 	// 查询全部配置
 	allConfig, err := global.GvaDb.PlatformConfig.Query().
+		Order(ent.Desc(platformconfig.FieldCreatedAt)).
 		All(c)
 	if err == nil {
 		for _, item := range allConfig {
@@ -52,6 +57,7 @@ func Index(c *gin.Context) {
 	allCdnRecord, err := global.GvaDb.CDNRecord.Query().
 		WithConfig().
 		WithIPGroup().
+		Order(ent.Desc(cdnrecord.FieldCreatedAt)).
 		All(c)
 	if err == nil {
 		for _, item := range allCdnRecord {
@@ -81,6 +87,7 @@ func Index(c *gin.Context) {
 		WithConfig().
 		WithIPGroup().
 		WithCdnRecord().
+		Order(ent.Desc(dnsrecord.FieldCreatedAt)).
 		All(c)
 	if err == nil {
 		for _, item := range allDnsRecord {
@@ -107,6 +114,7 @@ func Index(c *gin.Context) {
 	}
 	// 查询全部设备
 	allDevice, err := global.GvaDb.Device.Query().
+		Order(ent.Desc(device.FieldCreatedAt)).
 		All(c)
 	if err == nil {
 		for _, item := range allDevice {
@@ -125,6 +133,7 @@ func Index(c *gin.Context) {
 	// 查询全部IP组
 	allIpGroup, err := global.GvaDb.IpGroup.Query().
 		WithDevices().
+		Order(ent.Desc(ipgroup.FieldCreatedAt)).
 		All(c)
 	if err == nil {
 		for _, item := range allIpGroup {
@@ -139,6 +148,7 @@ func Index(c *gin.Context) {
 	// 查询全部端口转发
 	allPortForward, err := global.GvaDb.DevicePortForward.Query().
 		WithDevice().
+		Order(ent.Desc(deviceportforward.FieldCreatedAt)).
 		All(c)
 	if err == nil {
 		for _, item := range allPortForward {
@@ -159,6 +169,7 @@ func Index(c *gin.Context) {
 	}
 	// 查询全部通知
 	allWebhook, err := global.GvaDb.Webhook.Query().
+		Order(ent.Desc(webhook.FieldCreatedAt)).
 		All(c)
 	if err == nil {
 		for _, item := range allWebhook {
@@ -177,6 +188,7 @@ func Index(c *gin.Context) {
 	// 查询全部通知订阅
 	allWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
 		WithWebhook().
+		Order(ent.Desc(webhooksubscription.FieldCreatedAt)).
 		All(c)
 	if err == nil {
 		for _, item := range allWebhookSubscription {

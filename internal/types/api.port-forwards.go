@@ -12,8 +12,8 @@ type GetPortForwardsResponse struct {
 	AutoForward bool     `json:"auto_forward"`          // 防火墙自动放行
 	IsActive    bool     `json:"is_active"`             // 是否活跃
 
-	DeviceID   int64  `json:"device_id"`   // 设备ID
-	DeviceName string `json:"device_name"` // 设备名称
+	DeviceID   int64  `json:"device_id,omitempty"`   // 设备ID
+	DeviceName string `json:"device_name,omitempty"` // 设备名称
 }
 
 // 创建端口转发 请求结构

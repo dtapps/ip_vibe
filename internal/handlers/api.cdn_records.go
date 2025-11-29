@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"vibe_ip/ent"
 	"vibe_ip/ent/cdnrecord"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/global"
@@ -19,6 +20,7 @@ func GetCdnRecords(c *gin.Context) {
 	allCdnRecord, err := global.GvaDb.CDNRecord.Query().
 		WithConfig().
 		WithIPGroup().
+		Order(ent.Desc(cdnrecord.FieldCreatedAt)).
 		All(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询记录失败: "+err.Error())

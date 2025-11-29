@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"vibe_ip/ent"
 	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/global"
@@ -17,6 +18,7 @@ func GetPortForwards(c *gin.Context) {
 	portForwards := make([]types.GetPortForwardsResponse, 0)
 	// 查询全部端口转发
 	allPortForward, err := global.GvaDb.DevicePortForward.Query().
+		Order(ent.Desc(deviceportforward.FieldCreatedAt)).
 		All(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询端口转发失败: "+err.Error())

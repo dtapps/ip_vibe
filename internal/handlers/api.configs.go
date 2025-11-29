@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"vibe_ip/ent"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/platformconfig"
 	"vibe_ip/internal/global"
@@ -17,6 +18,7 @@ func GetConfigs(c *gin.Context) {
 	configs := make([]types.GetConfigsResponse, 0)
 	// 查询全部配置
 	allConfig, err := global.GvaDb.PlatformConfig.Query().
+		Order(ent.Desc(platformconfig.FieldCreatedAt)).
 		All(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询配置失败: "+err.Error())
