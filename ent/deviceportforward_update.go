@@ -153,16 +153,16 @@ func (_u *DevicePortForwardUpdate) SetNillableAutoForward(v *bool) *DevicePortFo
 	return _u
 }
 
-// SetEnabled sets the "enabled" field.
-func (_u *DevicePortForwardUpdate) SetEnabled(v bool) *DevicePortForwardUpdate {
-	_u.mutation.SetEnabled(v)
+// SetIsActive sets the "is_active" field.
+func (_u *DevicePortForwardUpdate) SetIsActive(v bool) *DevicePortForwardUpdate {
+	_u.mutation.SetIsActive(v)
 	return _u
 }
 
-// SetNillableEnabled sets the "enabled" field if the given value is not nil.
-func (_u *DevicePortForwardUpdate) SetNillableEnabled(v *bool) *DevicePortForwardUpdate {
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (_u *DevicePortForwardUpdate) SetNillableIsActive(v *bool) *DevicePortForwardUpdate {
 	if v != nil {
-		_u.SetEnabled(*v)
+		_u.SetIsActive(*v)
 	}
 	return _u
 }
@@ -304,8 +304,8 @@ func (_u *DevicePortForwardUpdate) sqlSave(ctx context.Context) (_node int, err 
 	if value, ok := _u.mutation.AutoForward(); ok {
 		_spec.SetField(deviceportforward.FieldAutoForward, field.TypeBool, value)
 	}
-	if value, ok := _u.mutation.Enabled(); ok {
-		_spec.SetField(deviceportforward.FieldEnabled, field.TypeBool, value)
+	if value, ok := _u.mutation.IsActive(); ok {
+		_spec.SetField(deviceportforward.FieldIsActive, field.TypeBool, value)
 	}
 	if _u.mutation.DeviceCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -480,16 +480,16 @@ func (_u *DevicePortForwardUpdateOne) SetNillableAutoForward(v *bool) *DevicePor
 	return _u
 }
 
-// SetEnabled sets the "enabled" field.
-func (_u *DevicePortForwardUpdateOne) SetEnabled(v bool) *DevicePortForwardUpdateOne {
-	_u.mutation.SetEnabled(v)
+// SetIsActive sets the "is_active" field.
+func (_u *DevicePortForwardUpdateOne) SetIsActive(v bool) *DevicePortForwardUpdateOne {
+	_u.mutation.SetIsActive(v)
 	return _u
 }
 
-// SetNillableEnabled sets the "enabled" field if the given value is not nil.
-func (_u *DevicePortForwardUpdateOne) SetNillableEnabled(v *bool) *DevicePortForwardUpdateOne {
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (_u *DevicePortForwardUpdateOne) SetNillableIsActive(v *bool) *DevicePortForwardUpdateOne {
 	if v != nil {
-		_u.SetEnabled(*v)
+		_u.SetIsActive(*v)
 	}
 	return _u
 }
@@ -661,8 +661,8 @@ func (_u *DevicePortForwardUpdateOne) sqlSave(ctx context.Context) (_node *Devic
 	if value, ok := _u.mutation.AutoForward(); ok {
 		_spec.SetField(deviceportforward.FieldAutoForward, field.TypeBool, value)
 	}
-	if value, ok := _u.mutation.Enabled(); ok {
-		_spec.SetField(deviceportforward.FieldEnabled, field.TypeBool, value)
+	if value, ok := _u.mutation.IsActive(); ok {
+		_spec.SetField(deviceportforward.FieldIsActive, field.TypeBool, value)
 	}
 	if _u.mutation.DeviceCleared() {
 		edge := &sqlgraph.EdgeSpec{

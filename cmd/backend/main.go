@@ -211,6 +211,18 @@ func main() {
 			ipGroups.GET("/:id/devices", handlers.GetIPGroupDevices)
 		}
 
+		// 端口转发相关API
+		portForwards := api.Group("/port-forwards")
+		{
+			portForwards.GET("", handlers.GetPortForwards)
+			portForwards.GET("/:id", handlers.GetPortForward)
+			portForwards.POST("", handlers.CreatePortForward)
+			portForwards.PATCH("/:id", handlers.UpdatePortForward)
+			portForwards.PATCH("/:id/forward", handlers.UpdatePortForwardForward)
+			portForwards.PATCH("/:id/active", handlers.UpdatePortForwardActive)
+			portForwards.DELETE("/:id", handlers.DeletePortForward)
+		}
+
 		// 通知相关API
 		webhooks := api.Group("/webhooks")
 		{

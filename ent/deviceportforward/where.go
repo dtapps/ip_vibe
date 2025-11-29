@@ -95,9 +95,9 @@ func AutoForward(v bool) predicate.DevicePortForward {
 	return predicate.DevicePortForward(sql.FieldEQ(FieldAutoForward, v))
 }
 
-// Enabled applies equality check predicate on the "enabled" field. It's identical to EnabledEQ.
-func Enabled(v bool) predicate.DevicePortForward {
-	return predicate.DevicePortForward(sql.FieldEQ(FieldEnabled, v))
+// IsActive applies equality check predicate on the "is_active" field. It's identical to IsActiveEQ.
+func IsActive(v bool) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldEQ(FieldIsActive, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -475,14 +475,14 @@ func AutoForwardNEQ(v bool) predicate.DevicePortForward {
 	return predicate.DevicePortForward(sql.FieldNEQ(FieldAutoForward, v))
 }
 
-// EnabledEQ applies the EQ predicate on the "enabled" field.
-func EnabledEQ(v bool) predicate.DevicePortForward {
-	return predicate.DevicePortForward(sql.FieldEQ(FieldEnabled, v))
+// IsActiveEQ applies the EQ predicate on the "is_active" field.
+func IsActiveEQ(v bool) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldEQ(FieldIsActive, v))
 }
 
-// EnabledNEQ applies the NEQ predicate on the "enabled" field.
-func EnabledNEQ(v bool) predicate.DevicePortForward {
-	return predicate.DevicePortForward(sql.FieldNEQ(FieldEnabled, v))
+// IsActiveNEQ applies the NEQ predicate on the "is_active" field.
+func IsActiveNEQ(v bool) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldNEQ(FieldIsActive, v))
 }
 
 // HasDevice applies the HasEdge predicate on the "device" edge.

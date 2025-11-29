@@ -11,6 +11,7 @@ type Indexesponse struct {
 	DnsRecords           []GetDnsRecordsResponse           `json:"dns_records"`
 	Devices              []GetDevicesResponse              `json:"devices"`
 	IpGroups             []GetIPGroupsResponse             `json:"ip_groups"`
+	PortForwards         []GetPortForwardsResponse         `json:"port_forwards"`
 	Webhooks             []GetWebhooksResponse             `json:"webhooks"`
 	WebhookSubscriptions []GetWebhookSubscriptionsResponse `json:"webhook_subscriptions"`
 	Tasks                []gocron_helper.JobData           `json:"tasks"`

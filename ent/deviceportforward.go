@@ -38,8 +38,8 @@ type DevicePortForward struct {
 	Protocols []string `json:"protocols,omitempty"`
 	// 防火墙自动放行
 	AutoForward bool `json:"auto_forward,omitempty"`
-	// 是否启用
-	Enabled bool `json:"enabled,omitempty"`
+	// 是否活跃
+	IsActive bool `json:"is_active,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DevicePortForwardQuery when eager-loading is set.
 	Edges                DevicePortForwardEdges `json:"edges"`
@@ -74,7 +74,7 @@ func (*DevicePortForward) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case deviceportforward.FieldProtocols:
 			values[i] = new([]byte)
-		case deviceportforward.FieldAutoForward, deviceportforward.FieldEnabled:
+		case deviceportforward.FieldAutoForward, deviceportforward.FieldIsActive:
 			values[i] = new(sql.NullBool)
 		case deviceportforward.FieldID, deviceportforward.FieldLocalPort, deviceportforward.FieldRemotePort:
 			values[i] = new(sql.NullInt64)
@@ -161,11 +161,11 @@ func (_m *DevicePortForward) assignValues(columns []string, values []any) error 
 			} else if value.Valid {
 				_m.AutoForward = value.Bool
 			}
-		case deviceportforward.FieldEnabled:
+		case deviceportforward.FieldIsActive:
 			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field enabled", values[i])
+				return fmt.Errorf("unexpected type %T for field is_active", values[i])
 			} else if value.Valid {
-				_m.Enabled = value.Bool
+				_m.IsActive = value.Bool
 			}
 		case deviceportforward.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -242,8 +242,8 @@ func (_m *DevicePortForward) String() string {
 	builder.WriteString("auto_forward=")
 	builder.WriteString(fmt.Sprintf("%v", _m.AutoForward))
 	builder.WriteString(", ")
-	builder.WriteString("enabled=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Enabled))
+	builder.WriteString("is_active=")
+	builder.WriteString(fmt.Sprintf("%v", _m.IsActive))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -103,11 +103,12 @@ const (
 	LogObjTypeIPGroupDevice       string = "ip_group_device"      // IP 组设备
 	LogObjTypeWebhook             string = "webhook"              // 通知
 	LogObjTypeWebhookSubscription string = "webhook_subscription" // 通知订阅
+	LogObjTypeDevicePortForward   string = "device_port_forward"  // 端口转发
 )
 
 // GetLogObjType 返回所有对象类型
 var GetLogObjType = func() []string {
-	return []string{LogObjTypePlatformConfig, LogObjTypeCdnRecord, LogObjTypeDnsRecord, LogObjTypeDevice, LogObjTypeDeviceIPRecord, LogObjTypeIPGroup, LogObjTypeIPGroupDevice, LogObjTypeWebhook, LogObjTypeWebhookSubscription}
+	return []string{LogObjTypePlatformConfig, LogObjTypeCdnRecord, LogObjTypeDnsRecord, LogObjTypeDevice, LogObjTypeDeviceIPRecord, LogObjTypeIPGroup, LogObjTypeIPGroupDevice, LogObjTypeWebhook, LogObjTypeWebhookSubscription, LogObjTypeDevicePortForward}
 }
 
 const (

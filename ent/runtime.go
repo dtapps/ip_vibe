@@ -128,10 +128,10 @@ func init() {
 	deviceportforwardDescAutoForward := deviceportforwardFields[7].Descriptor()
 	// deviceportforward.DefaultAutoForward holds the default value on creation for the auto_forward field.
 	deviceportforward.DefaultAutoForward = deviceportforwardDescAutoForward.Default.(bool)
-	// deviceportforwardDescEnabled is the schema descriptor for enabled field.
-	deviceportforwardDescEnabled := deviceportforwardFields[8].Descriptor()
-	// deviceportforward.DefaultEnabled holds the default value on creation for the enabled field.
-	deviceportforward.DefaultEnabled = deviceportforwardDescEnabled.Default.(bool)
+	// deviceportforwardDescIsActive is the schema descriptor for is_active field.
+	deviceportforwardDescIsActive := deviceportforwardFields[8].Descriptor()
+	// deviceportforward.DefaultIsActive holds the default value on creation for the is_active field.
+	deviceportforward.DefaultIsActive = deviceportforwardDescIsActive.Default.(bool)
 	ipgroupMixin := schema.IpGroup{}.Mixin()
 	ipgroupMixinFields0 := ipgroupMixin[0].Fields()
 	_ = ipgroupMixinFields0

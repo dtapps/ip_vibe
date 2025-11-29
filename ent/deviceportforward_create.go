@@ -109,16 +109,16 @@ func (_c *DevicePortForwardCreate) SetNillableAutoForward(v *bool) *DevicePortFo
 	return _c
 }
 
-// SetEnabled sets the "enabled" field.
-func (_c *DevicePortForwardCreate) SetEnabled(v bool) *DevicePortForwardCreate {
-	_c.mutation.SetEnabled(v)
+// SetIsActive sets the "is_active" field.
+func (_c *DevicePortForwardCreate) SetIsActive(v bool) *DevicePortForwardCreate {
+	_c.mutation.SetIsActive(v)
 	return _c
 }
 
-// SetNillableEnabled sets the "enabled" field if the given value is not nil.
-func (_c *DevicePortForwardCreate) SetNillableEnabled(v *bool) *DevicePortForwardCreate {
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (_c *DevicePortForwardCreate) SetNillableIsActive(v *bool) *DevicePortForwardCreate {
 	if v != nil {
-		_c.SetEnabled(*v)
+		_c.SetIsActive(*v)
 	}
 	return _c
 }
@@ -191,9 +191,9 @@ func (_c *DevicePortForwardCreate) defaults() {
 		v := deviceportforward.DefaultAutoForward
 		_c.mutation.SetAutoForward(v)
 	}
-	if _, ok := _c.mutation.Enabled(); !ok {
-		v := deviceportforward.DefaultEnabled
-		_c.mutation.SetEnabled(v)
+	if _, ok := _c.mutation.IsActive(); !ok {
+		v := deviceportforward.DefaultIsActive
+		_c.mutation.SetIsActive(v)
 	}
 }
 
@@ -238,8 +238,8 @@ func (_c *DevicePortForwardCreate) check() error {
 	if _, ok := _c.mutation.AutoForward(); !ok {
 		return &ValidationError{Name: "auto_forward", err: errors.New(`ent: missing required field "DevicePortForward.auto_forward"`)}
 	}
-	if _, ok := _c.mutation.Enabled(); !ok {
-		return &ValidationError{Name: "enabled", err: errors.New(`ent: missing required field "DevicePortForward.enabled"`)}
+	if _, ok := _c.mutation.IsActive(); !ok {
+		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "DevicePortForward.is_active"`)}
 	}
 	if len(_c.mutation.DeviceIDs()) == 0 {
 		return &ValidationError{Name: "device", err: errors.New(`ent: missing required edge "DevicePortForward.device"`)}
@@ -313,9 +313,9 @@ func (_c *DevicePortForwardCreate) createSpec() (*DevicePortForward, *sqlgraph.C
 		_spec.SetField(deviceportforward.FieldAutoForward, field.TypeBool, value)
 		_node.AutoForward = value
 	}
-	if value, ok := _c.mutation.Enabled(); ok {
-		_spec.SetField(deviceportforward.FieldEnabled, field.TypeBool, value)
-		_node.Enabled = value
+	if value, ok := _c.mutation.IsActive(); ok {
+		_spec.SetField(deviceportforward.FieldIsActive, field.TypeBool, value)
+		_node.IsActive = value
 	}
 	if nodes := _c.mutation.DeviceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -500,15 +500,15 @@ func (u *DevicePortForwardUpsert) UpdateAutoForward() *DevicePortForwardUpsert {
 	return u
 }
 
-// SetEnabled sets the "enabled" field.
-func (u *DevicePortForwardUpsert) SetEnabled(v bool) *DevicePortForwardUpsert {
-	u.Set(deviceportforward.FieldEnabled, v)
+// SetIsActive sets the "is_active" field.
+func (u *DevicePortForwardUpsert) SetIsActive(v bool) *DevicePortForwardUpsert {
+	u.Set(deviceportforward.FieldIsActive, v)
 	return u
 }
 
-// UpdateEnabled sets the "enabled" field to the value that was provided on create.
-func (u *DevicePortForwardUpsert) UpdateEnabled() *DevicePortForwardUpsert {
-	u.SetExcluded(deviceportforward.FieldEnabled)
+// UpdateIsActive sets the "is_active" field to the value that was provided on create.
+func (u *DevicePortForwardUpsert) UpdateIsActive() *DevicePortForwardUpsert {
+	u.SetExcluded(deviceportforward.FieldIsActive)
 	return u
 }
 
@@ -696,17 +696,17 @@ func (u *DevicePortForwardUpsertOne) UpdateAutoForward() *DevicePortForwardUpser
 	})
 }
 
-// SetEnabled sets the "enabled" field.
-func (u *DevicePortForwardUpsertOne) SetEnabled(v bool) *DevicePortForwardUpsertOne {
+// SetIsActive sets the "is_active" field.
+func (u *DevicePortForwardUpsertOne) SetIsActive(v bool) *DevicePortForwardUpsertOne {
 	return u.Update(func(s *DevicePortForwardUpsert) {
-		s.SetEnabled(v)
+		s.SetIsActive(v)
 	})
 }
 
-// UpdateEnabled sets the "enabled" field to the value that was provided on create.
-func (u *DevicePortForwardUpsertOne) UpdateEnabled() *DevicePortForwardUpsertOne {
+// UpdateIsActive sets the "is_active" field to the value that was provided on create.
+func (u *DevicePortForwardUpsertOne) UpdateIsActive() *DevicePortForwardUpsertOne {
 	return u.Update(func(s *DevicePortForwardUpsert) {
-		s.UpdateEnabled()
+		s.UpdateIsActive()
 	})
 }
 
@@ -1060,17 +1060,17 @@ func (u *DevicePortForwardUpsertBulk) UpdateAutoForward() *DevicePortForwardUpse
 	})
 }
 
-// SetEnabled sets the "enabled" field.
-func (u *DevicePortForwardUpsertBulk) SetEnabled(v bool) *DevicePortForwardUpsertBulk {
+// SetIsActive sets the "is_active" field.
+func (u *DevicePortForwardUpsertBulk) SetIsActive(v bool) *DevicePortForwardUpsertBulk {
 	return u.Update(func(s *DevicePortForwardUpsert) {
-		s.SetEnabled(v)
+		s.SetIsActive(v)
 	})
 }
 
-// UpdateEnabled sets the "enabled" field to the value that was provided on create.
-func (u *DevicePortForwardUpsertBulk) UpdateEnabled() *DevicePortForwardUpsertBulk {
+// UpdateIsActive sets the "is_active" field to the value that was provided on create.
+func (u *DevicePortForwardUpsertBulk) UpdateIsActive() *DevicePortForwardUpsertBulk {
 	return u.Update(func(s *DevicePortForwardUpsert) {
-		s.UpdateEnabled()
+		s.UpdateIsActive()
 	})
 }
 

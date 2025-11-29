@@ -26,6 +26,7 @@ func Index(c *gin.Context) {
 		DnsRecords:           []types.GetDnsRecordsResponse{},
 		Devices:              []types.GetDevicesResponse{},
 		IpGroups:             []types.GetIPGroupsResponse{},
+		PortForwards:         []types.GetPortForwardsResponse{},
 		Webhooks:             []types.GetWebhooksResponse{},
 		WebhookSubscriptions: []types.GetWebhookSubscriptionsResponse{},
 		Tasks:                []gocron_helper.JobData{},
@@ -132,6 +133,27 @@ func Index(c *gin.Context) {
 				Name:        item.Name,
 				Description: item.Description,
 				DeviceCount: len(item.Edges.Devices),
+			})
+		}
+	}
+	// 查询全部端口转发
+	allPortForward, err := global.GvaDb.DevicePortForward.Query().
+		WithDevice().
+		All(c)
+	if err == nil {
+		for _, item := range allPortForward {
+			pageData.PortForwards = append(pageData.PortForwards, types.GetPortForwardsResponse{
+				ID:          item.ID,
+				Name:        item.Name,
+				Description: item.Description,
+				LocalPort:   item.LocalPort,
+				RemoteHost:  item.RemoteHost,
+				RemotePort:  item.RemotePort,
+				Protocols:   item.Protocols,
+				AutoForward: item.AutoForward,
+				IsActive:    item.IsActive,
+				DeviceID:    item.Edges.Device.ID,
+				DeviceName:  item.Edges.Device.Name,
 			})
 		}
 	}

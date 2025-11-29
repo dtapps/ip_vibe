@@ -32,8 +32,8 @@ const (
 	FieldProtocols = "protocols"
 	// FieldAutoForward holds the string denoting the auto_forward field in the database.
 	FieldAutoForward = "auto_forward"
-	// FieldEnabled holds the string denoting the enabled field in the database.
-	FieldEnabled = "enabled"
+	// FieldIsActive holds the string denoting the is_active field in the database.
+	FieldIsActive = "is_active"
 	// EdgeDevice holds the string denoting the device edge name in mutations.
 	EdgeDevice = "device"
 	// Table holds the table name of the deviceportforward in the database.
@@ -59,7 +59,7 @@ var Columns = []string{
 	FieldRemotePort,
 	FieldProtocols,
 	FieldAutoForward,
-	FieldEnabled,
+	FieldIsActive,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "device_port_forward"
@@ -100,8 +100,8 @@ var (
 	DefaultProtocols []string
 	// DefaultAutoForward holds the default value on creation for the "auto_forward" field.
 	DefaultAutoForward bool
-	// DefaultEnabled holds the default value on creation for the "enabled" field.
-	DefaultEnabled bool
+	// DefaultIsActive holds the default value on creation for the "is_active" field.
+	DefaultIsActive bool
 )
 
 // OrderOption defines the ordering options for the DevicePortForward queries.
@@ -152,9 +152,9 @@ func ByAutoForward(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAutoForward, opts...).ToFunc()
 }
 
-// ByEnabled orders the results by the enabled field.
-func ByEnabled(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldEnabled, opts...).ToFunc()
+// ByIsActive orders the results by the is_active field.
+func ByIsActive(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsActive, opts...).ToFunc()
 }
 
 // ByDeviceField orders the results by device field.

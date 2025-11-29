@@ -74,9 +74,9 @@ func (DevicePortForward) Fields() []ent.Field {
 			Comment("防火墙自动放行").
 			Annotations(entsql.WithComments(true)),
 
-		field.Bool("enabled").
+		field.Bool("is_active").
 			Default(false).
-			Comment("是否启用").
+			Comment("是否活跃").
 			Annotations(entsql.WithComments(true)),
 	}
 }

@@ -19,7 +19,7 @@ func GetIPGroups(c *gin.Context) {
 	allIpGroup, err := global.GvaDb.IpGroup.Query().
 		All(c)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, "查询IP组失败: "+err.Error())
 		return
 	}
 	for _, item := range allIpGroup {

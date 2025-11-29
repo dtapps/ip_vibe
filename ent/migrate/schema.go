@@ -201,7 +201,7 @@ var (
 		{Name: "remote_port", Type: field.TypeInt, Comment: "远程目标端口"},
 		{Name: "protocols", Type: field.TypeJSON, Comment: "协议列表，支持 tcp4, tcp6, udp4, udp6"},
 		{Name: "auto_forward", Type: field.TypeBool, Comment: "防火墙自动放行", Default: false},
-		{Name: "enabled", Type: field.TypeBool, Comment: "是否启用", Default: false},
+		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
 		{Name: "device_port_forwards", Type: field.TypeInt64},
 	}
 	// DevicePortForwardTable holds the schema information for the "device_port_forward" table.
@@ -268,7 +268,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "op_type", Type: field.TypeEnum, Comment: "操作类型", Enums: []string{"data_create", "data_update", "data_delete", "device_report", "ip_refresh"}},
 		{Name: "obj_id", Type: field.TypeInt64, Comment: "对象主键"},
-		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"platform_config", "cdn_record", "dns_record", "device", "device_ip_report", "ip_group", "ip_group_device", "webhook", "webhook_subscription"}},
+		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"platform_config", "cdn_record", "dns_record", "device", "device_ip_report", "ip_group", "ip_group_device", "webhook", "webhook_subscription", "device_port_forward"}},
 		{Name: "old_value", Type: field.TypeString, Nullable: true, Comment: "旧值"},
 		{Name: "new_value", Type: field.TypeString, Nullable: true, Comment: "新值"},
 		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"success", "failed"}},
