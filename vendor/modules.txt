@@ -368,7 +368,7 @@ go.dtapp.net/library/service/wechatqy
 # go.dtapp.net/library/utils/goarray v1.0.4
 ## explicit; go 1.22.5
 go.dtapp.net/library/utils/goarray
-# go.dtapp.net/library/utils/golog v1.0.177
+# go.dtapp.net/library/utils/golog v1.0.178
 ## explicit; go 1.24.2
 go.dtapp.net/library/utils/golog
 # go.dtapp.net/library/utils/gorequest v1.1.3
