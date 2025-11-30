@@ -36,18 +36,22 @@ func (s *EntLogSaver) SaveLog(ctx context.Context, data *resty_log.LogData) erro
 		)
 	}
 
-	return s.db.RestyLog.Create().
-		SetHostname(data.Hostname).
-		SetMethod(data.Method).
-		SetURL(data.URL).
-		SetRequestHeaders(data.RequestHeaders).
-		SetRequestBody(data.RequestBody).
-		SetStatusCode(data.StatusCode).
-		SetResponseHeaders(data.ResponseHeaders).
-		SetResponseBody(data.ResponseBody).
-		SetElapseTime(data.ElapseTime).
-		SetIsError(data.IsError).
-		Exec(ctx)
+	go func(asyncCtx context.Context, asyncDb *ent.Client) {
+		_ = asyncDb.RestyLog.Create().
+			SetHostname(data.Hostname).
+			SetMethod(data.Method).
+			SetURL(data.URL).
+			SetRequestHeaders(data.RequestHeaders).
+			SetRequestBody(data.RequestBody).
+			SetStatusCode(data.StatusCode).
+			SetResponseHeaders(data.ResponseHeaders).
+			SetResponseBody(data.ResponseBody).
+			SetElapseTime(data.ElapseTime).
+			SetIsError(data.IsError).
+			Exec(asyncCtx)
+	}(ctx, s.db)
+
+	return nil
 }
 
 func InitRestyLog() {
@@ -75,18 +79,22 @@ func InitRestyLog() {
 			)
 		}
 
-		return global.GvaDb.RestyLog.Create().
-			SetHostname(data.Hostname).
-			SetMethod(data.Method).
-			SetURL(data.URL).
-			SetRequestHeaders(data.RequestHeaders).
-			SetRequestBody(data.RequestBody).
-			SetStatusCode(data.StatusCode).
-			SetResponseHeaders(data.ResponseHeaders).
-			SetResponseBody(data.ResponseBody).
-			SetElapseTime(data.ElapseTime).
-			SetIsError(data.IsError).
-			Exec(ctx)
+		go func(asyncCtx context.Context, asyncDb *ent.Client) {
+			_ = asyncDb.RestyLog.Create().
+				SetHostname(data.Hostname).
+				SetMethod(data.Method).
+				SetURL(data.URL).
+				SetRequestHeaders(data.RequestHeaders).
+				SetRequestBody(data.RequestBody).
+				SetStatusCode(data.StatusCode).
+				SetResponseHeaders(data.ResponseHeaders).
+				SetResponseBody(data.ResponseBody).
+				SetElapseTime(data.ElapseTime).
+				SetIsError(data.IsError).
+				Exec(asyncCtx)
+		}(ctx, global.GvaDb)
+
+		return nil
 	}
 
 	// 创建 LogSaver 实现

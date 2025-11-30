@@ -12,6 +12,7 @@ import (
 	"vibe_ip/ent/webhooksubscription"
 	"vibe_ip/internal/backend"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
@@ -167,42 +168,38 @@ func DeviceReportDeviceIp(c *gin.Context) {
 		return
 	}
 
-	// --- 3. 异步处理非核心写入和通知 ---
+	// --- 异步处理非核心写入和通知 ---
 	// 使用独立的 Go Routine 和 Background Context，不阻塞 HTTP 响应
-	go func() {
-		// 异步写入操作，即使失败也不会影响主 API 的响应
-		asyncCtx := context.Background()
+	go func(asyncCtx context.Context, asyncDb *ent.Client, asyncLogHelper *operation_logs_helper.OperationLogHelper) {
 
-		// 3.1 记录 Device 相关的操作日志
+		// 记录 Device 相关的操作日志
 		// 只在创建设备或IP更新时记录设备操作日志，避免高频心跳日志
 		if isNewDevice {
-			_ = global.GvaOperationLogHelper.RecordDataCreate(asyncCtx, deviceID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "接口创建设备")
+			_ = asyncLogHelper.RecordDataCreate(asyncCtx, deviceID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "接口创建设备")
 		} else if isIPChanged {
-			_ = global.GvaOperationLogHelper.RecordDataUpdate(asyncCtx, deviceID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "接口更新设备")
+			_ = asyncLogHelper.RecordDataUpdate(asyncCtx, deviceID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "接口更新设备")
 		}
 
-		// 3.2 记录 IP 报告并发送通知
+		// 记录 IP 报告并发送通知
 		if isNotify {
 			// 创建设备IP报告
-			saveDeviceIPReport, err := global.GvaDb.DeviceIpReport.Create().
+			saveDeviceIPReport, err := asyncDb.DeviceIpReport.Create().
 				SetDeviceID(deviceID).
 				SetIPV4(requestParams.IPV4Addr).
 				SetIPV6(requestParams.IPV6Addr).
 				Save(asyncCtx)
 			if err != nil {
 				// 异步写入失败，仅打印日志
-				if global.GvaEnv.DEBUG {
-					fmt.Printf("[异步写入失败] 创建设备IP报告: %s\n", err.Error())
-				}
+				fmt.Printf("[异步写入失败] 创建设备IP报告: %s\n", err.Error())
 			} else {
 				// 记录设备IP报告的操作日志
-				_ = global.GvaOperationLogHelper.RecordDataCreate(asyncCtx, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "接口创建设备IP报告")
+				_ = asyncLogHelper.RecordDataCreate(asyncCtx, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "接口创建设备IP报告")
 			}
 
 			// 发送通知 (你原来就在 go func 中，现在并入这个更集中的异步块)
-			_ = backend.NewWebhookService(global.GvaDb).Send(asyncCtx, webhooksubscription.ObjTypeDevice, deviceID, notifyData)
+			_ = backend.NewWebhookService(asyncDb).Send(asyncCtx, webhooksubscription.ObjTypeDevice, deviceID, notifyData)
 		}
-	}()
+	}(context.Background(), global.GvaDb, global.GvaOperationLogHelper)
 
 	successResponse(c, gin.H{
 		"id":  deviceID,
