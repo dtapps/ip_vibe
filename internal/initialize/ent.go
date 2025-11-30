@@ -37,12 +37,14 @@ func InitEnt(ctx context.Context) {
 	driver := entSql.OpenDB(dialect.SQLite, sqlDB)
 
 	// 3. 让 Ent 使用这个 DB  dialect.SQLite,
-	global.GvaDb = ent.NewClient(
-		ent.Debug(),
-		ent.Driver(driver),
-	)
+	global.GvaDb = ent.NewClient(ent.Driver(driver))
 
-	// 4. 自动迁移
+	// 4. 开启调试模式（仅在开发环境）
+	if global.GvaEnv.DEBUG {
+		global.GvaDb = global.GvaDb.Debug()
+	}
+
+	// 5. 自动迁移
 	if err := global.GvaDb.Schema.Create(ctx); err != nil {
 		log.Fatalf("[初始化 ent] 自动迁移失败:%v", err)
 	}
