@@ -36,8 +36,13 @@ func DeviceReportDeviceIp(c *gin.Context) {
 		return
 	}
 
-	// 是否通知
-	isNotify := false
+	// 异步处理所需数据
+	isNotify := false // 是否需要发送通知和记录IP报告
+	var deviceID int64
+	var isNewDevice bool // 记录是否为新设备，用于异步日志记录
+	var isIPChanged bool // 记录IP是否发生变化，用于异步日志记录
+
+	// 通知模板数据
 	notifyData := utils.TemplateData{
 		EventType:  "IP_UPDATE",
 		EventTime:  time.Now().Format("2006-01-02 15:04:05"),
@@ -48,9 +53,7 @@ func DeviceReportDeviceIp(c *gin.Context) {
 		IPv6Addr:   requestParams.IPV6Addr,
 	}
 
-	// 描述
 	msg := ""
-	var deviceID int64
 
 	// 开始事务
 	tx, err := global.GvaDb.Tx(c)
@@ -70,12 +73,12 @@ func DeviceReportDeviceIp(c *gin.Context) {
 			return
 		}
 
-		// 如果设备不存在和设备名称为空，则使用设备编号作为设备名称
+		// 如果设备不存在：创建设备
+		isNewDevice = true
 		if requestParams.DeviceName == "" {
 			requestParams.DeviceName = deviceCode
 		}
 
-		// 创建设备
 		saveDevice, err := tx.Device.Create().
 			SetCode(deviceCode).
 			SetName(requestParams.DeviceName).
@@ -92,43 +95,36 @@ func DeviceReportDeviceIp(c *gin.Context) {
 			errorResponse(c, http.StatusInternalServerError, "创建设备失败: "+err.Error())
 			return
 		}
+
 		deviceID = saveDevice.ID
-		// 记录操作日志
-		_ = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(c, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "接口创建设备")
-
-		// 创建设备IP报告
-		saveDeviceIPReport, err := tx.DeviceIpReport.Create().
-			SetDevice(saveDevice).
-			SetIPV4(requestParams.IPV4Addr).
-			SetIPV6(requestParams.IPV6Addr).
-			Save(c)
-		if err != nil {
-			_ = tx.Rollback()
-			if global.GvaEnv.DEBUG {
-				fmt.Printf("创建设备IP报告: %s\n", err.Error())
-			}
-			errorResponse(c, http.StatusInternalServerError, "创建设备IP报告失败: "+err.Error())
-			return
-		}
-		// 记录操作日志
-		_ = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(c, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "接口创建设备IP报告")
-
-		isNotify = true
-
+		isNotify = true // 新设备必须通知和记录报告
+		isIPChanged = true
 		msg = "创建设备IP成功"
+
 	} else {
+		// 设备存在：检查 IP 是否变化
 		deviceID = firstDevice.ID
-		requestParams.DeviceName = firstDevice.Name
+		requestParams.DeviceName = firstDevice.Name // 使用数据库中的设备名进行通知
+
 		if firstDevice.IPV4 != requestParams.IPV4Addr || firstDevice.IPV6 != requestParams.IPV6Addr {
-			// 更新设备IP
+			// IP 发生变化
+			isIPChanged = true
+			isNotify = true
+
+			// 更新设备IP和心跳时间
 			updateDevice := tx.Device.UpdateOne(firstDevice).
 				SetIPV4(requestParams.IPV4Addr).
 				SetIPV6(requestParams.IPV6Addr).
 				SetLastReportedAt(time.Now()).
 				SetLastHeartbeatAt(time.Now())
+
+			// 如果设备名有更新
 			if requestParams.DeviceName != "" && firstDevice.Name != requestParams.DeviceName {
 				updateDevice.SetName(requestParams.DeviceName)
+				// 确保异步通知使用新的设备名
+				notifyData.DeviceName = requestParams.DeviceName
 			}
+
 			err = updateDevice.Exec(c)
 			if err != nil {
 				_ = tx.Rollback()
@@ -138,36 +134,20 @@ func DeviceReportDeviceIp(c *gin.Context) {
 				errorResponse(c, http.StatusInternalServerError, "更新设备IP失败: "+err.Error())
 				return
 			}
-			// 记录操作日志
-			_ = global.GvaOperationLogHelper.SetTx(tx).RecordDataUpdate(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "接口更新设备")
-
-			// 创建设备IP报告
-			saveDeviceIPReport, err := tx.DeviceIpReport.Create().
-				SetDevice(firstDevice).
-				SetIPV4(requestParams.IPV4Addr).
-				SetIPV6(requestParams.IPV6Addr).
-				Save(c)
-			if err != nil {
-				_ = tx.Rollback()
-				if global.GvaEnv.DEBUG {
-					fmt.Printf("创建设备IP报告: %s\n", err.Error())
-				}
-				errorResponse(c, http.StatusInternalServerError, "创建设备IP报告失败: "+err.Error())
-				return
-			}
-			// 记录操作日志
-			_ = global.GvaOperationLogHelper.SetTx(tx).RecordDataCreate(c, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "接口创建设备IP报告")
-
-			isNotify = true
 
 			msg = "更新设备IP成功"
+
 		} else {
-			// 更新设备心跳时间
+			// IP 未改变：仅更新心跳时间
 			updateDevice := tx.Device.UpdateOne(firstDevice).
 				SetLastHeartbeatAt(time.Now())
+
+			// 如果设备名有更新
 			if requestParams.DeviceName != "" && firstDevice.Name != requestParams.DeviceName {
 				updateDevice.SetName(requestParams.DeviceName)
+				notifyData.DeviceName = requestParams.DeviceName
 			}
+
 			err = updateDevice.Exec(c)
 			if err != nil {
 				_ = tx.Rollback()
@@ -180,14 +160,49 @@ func DeviceReportDeviceIp(c *gin.Context) {
 			msg = "设备IP未改变，不添加IP报告"
 		}
 	}
-	_ = tx.Commit()
 
-	// 发送通知
-	if isNotify {
-		go func() {
-			_ = backend.NewWebhookService(global.GvaDb).Send(context.Background(), webhooksubscription.ObjTypeDevice, deviceID, notifyData)
-		}()
+	// 提交核心事务：立即释放独占锁，这是解决卡死的关键！
+	if err := tx.Commit(); err != nil {
+		errorResponse(c, http.StatusInternalServerError, "提交事务失败: "+err.Error())
+		return
 	}
+
+	// --- 3. 异步处理非核心写入和通知 ---
+	// 使用独立的 Go Routine 和 Background Context，不阻塞 HTTP 响应
+	go func() {
+		// 异步写入操作，即使失败也不会影响主 API 的响应
+		asyncCtx := context.Background()
+
+		// 3.1 记录 Device 相关的操作日志
+		// 只在创建设备或IP更新时记录设备操作日志，避免高频心跳日志
+		if isNewDevice {
+			_ = global.GvaOperationLogHelper.RecordDataCreate(asyncCtx, deviceID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "接口创建设备")
+		} else if isIPChanged {
+			_ = global.GvaOperationLogHelper.RecordDataUpdate(asyncCtx, deviceID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "接口更新设备")
+		}
+
+		// 3.2 记录 IP 报告并发送通知
+		if isNotify {
+			// 创建设备IP报告
+			saveDeviceIPReport, err := global.GvaDb.DeviceIpReport.Create().
+				SetDeviceID(deviceID).
+				SetIPV4(requestParams.IPV4Addr).
+				SetIPV6(requestParams.IPV6Addr).
+				Save(asyncCtx)
+			if err != nil {
+				// 异步写入失败，仅打印日志
+				if global.GvaEnv.DEBUG {
+					fmt.Printf("[异步写入失败] 创建设备IP报告: %s\n", err.Error())
+				}
+			} else {
+				// 记录设备IP报告的操作日志
+				_ = global.GvaOperationLogHelper.RecordDataCreate(asyncCtx, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "接口创建设备IP报告")
+			}
+
+			// 发送通知 (你原来就在 go func 中，现在并入这个更集中的异步块)
+			_ = backend.NewWebhookService(global.GvaDb).Send(asyncCtx, webhooksubscription.ObjTypeDevice, deviceID, notifyData)
+		}
+	}()
 
 	successResponse(c, gin.H{
 		"id":  deviceID,

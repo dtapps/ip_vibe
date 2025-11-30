@@ -3,7 +3,6 @@ package reporter
 import (
 	"context"
 	"log/slog"
-	"sync"
 	"time"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/ip_helper"
@@ -12,12 +11,7 @@ import (
 	"github.com/denisbrodbeck/machineid"
 )
 
-// 全局互斥锁
-var globalMutex sync.Mutex
-
 func (s *Service) runTask() {
-	globalMutex.Lock()
-	defer globalMutex.Unlock()
 
 	var err error
 	ctx := context.Background()
