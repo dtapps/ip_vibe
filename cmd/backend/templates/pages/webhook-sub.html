@@ -1,92 +1,92 @@
 {{ define "content" }}
 <h1>平台配置</h1>
 
- <div class="card" id="sectionWebhookSubscription">
-      <div class="card-header">
-        <h2 class="h2-icon">
-          <svg class="ip-i">
-            <use href="/static/icons.svg#ip-layer"></use>
-          </svg>
-          通知订阅
-        </h2>
-        <div>
-          <button class="btn btn-primary" onclick="openWebhookSubscriptionModal(0,'cdn_record')">
-            <svg class="ip-i">
-              <use href="/static/icons.svg#ip-folder-plus"></use>
-            </svg> 添加 CDN订阅
-        </button>
-          <button class="btn btn-primary" onclick="openWebhookSubscriptionModal(0,'dns_record')">
-            <svg class="ip-i">
-              <use href="/static/icons.svg#ip-folder-plus"></use>
-            </svg> 添加 DNS订阅
-        </button>
-          <button class="btn btn-primary" onclick="openWebhookSubscriptionModal(0,'device')">
-            <svg class="ip-i">
-              <use href="/static/icons.svg#ip-folder-plus"></use>
-            </svg> 添加 设备订阅
-        </button>
-        </div>
-      </div>
-      <div class="card-body">
-        <table>
-          <thead>
-            <tr>
-              <th>名称</th>
-              <th>类型</th>
-              <th>通知</th>
-              <th>对象</th>
-              <th>启用</th>
-              <th style="width: 300px;text-align: center;">操作</th>
-            </tr>
-          </thead>
-          <tbody id="webhookSubscriptionTable">
-            {{range .List}}
-            <tr>
-              <td>{{.Name}}</td>
-              {{if eq .ObjType "cdn_record"}}
-              <td><span class="badge badge-success">CDN记录</span></td>
-              {{else if eq .ObjType "dns_record"}}
-              <td><span class="badge badge-success">DNS记录</span></td>
-              {{else if eq .ObjType "device"}}
-              <td><span class="badge badge-success">设备</span></td>
-              {{else}}
-              <td><span class="badge badge-success">{{.ObjType}}</span></td>
-              {{end}}
-              <td>{{.WebhookID}}:{{.WebhookName}}</td>
-              <td>{{.ObjID}}:{{.ObjName}}</td>
-              <td>
-                <label class="switch">
-                  <input type="checkbox" {{if .IsActive}}checked{{end}}
-                    onchange="toggleWebhookSubscriptionStatus('{{.ID}}', this)">
-                  <span class="slider"></span>
-                </label>
-              </td>
-              <td>
-                <button class="btn btn-primary btn-sm" onclick="openWebhookSubscriptionModal('{{.ID}}','{{.ObjType}}')">
-                  <svg class="ip-i">
-                    <use href="/static/icons.svg#ip-edit"></use>
-                  </svg> 编辑
-                </button>
-                {{if .IsActive}}
-                <span class="btn-tooltip-wrapper" title="启用状态时不允许删除，请先禁止后操作再删除！">
-                  <button class="btn btn-sm btn-danger" disabled>
-                    <svg class="ip-i">
-                      <use href="/static/icons.svg#ip-delete"></use>
-                    </svg> 删除
-                </button>
-                </span>
-                {{else}}
-                <button class="btn btn-sm btn-danger" onclick="deleteWebhookSubscription('{{.ID}}')">
-                  <svg class="ip-i">
-                    <use href="/static/icons.svg#ip-delete"></use>
-                  </svg> 删除
-                </button>
-                {{end}}
-              </td>
-            </tr>
-            {{end}}
-          </tbody>
-        </table>
-      </div>
+<div class="card" id="sectionWebhookSubscription">
+  <div class="card-header">
+    <h2 class="h2-icon">
+      <svg class="ip-i">
+        <use href="/static/icons.svg#ip-layer"></use>
+      </svg>
+      通知订阅
+    </h2>
+    <div>
+      <button class="btn btn-primary" onclick="openWebhookSubscriptionModal(0,'cdn_record')">
+        <svg class="ip-i">
+          <use href="/static/icons.svg#ip-folder-plus"></use>
+        </svg> 添加 CDN订阅
+      </button>
+      <button class="btn btn-primary" onclick="openWebhookSubscriptionModal(0,'dns_record')">
+        <svg class="ip-i">
+          <use href="/static/icons.svg#ip-folder-plus"></use>
+        </svg> 添加 DNS订阅
+      </button>
+      <button class="btn btn-primary" onclick="openWebhookSubscriptionModal(0,'device')">
+        <svg class="ip-i">
+          <use href="/static/icons.svg#ip-folder-plus"></use>
+        </svg> 添加 设备订阅
+      </button>
     </div>
+  </div>
+  <div class="card-body">
+    <table>
+      <thead>
+        <tr>
+          <th>名称</th>
+          <th>类型</th>
+          <th>通知</th>
+          <th>对象</th>
+          <th>启用</th>
+          <th style="width: 300px;text-align: center;">操作</th>
+        </tr>
+      </thead>
+      <tbody id="webhookSubscriptionTable">
+        {{range .List}}
+        <tr>
+          <td>{{.Name}}</td>
+          {{if eq .ObjType "cdn_record"}}
+          <td><span class="badge badge-success">CDN记录</span></td>
+          {{else if eq .ObjType "dns_record"}}
+          <td><span class="badge badge-success">DNS记录</span></td>
+          {{else if eq .ObjType "device"}}
+          <td><span class="badge badge-success">设备</span></td>
+          {{else}}
+          <td><span class="badge badge-success">{{.ObjType}}</span></td>
+          {{end}}
+          <td>{{.WebhookID}}:{{.WebhookName}}</td>
+          <td>{{.ObjID}}:{{.ObjName}}</td>
+          <td>
+            <label class="switch">
+              <input type="checkbox" {{if .IsActive}}checked{{end}}
+                onchange="toggleWebhookSubscriptionStatus('{{.ID}}', this)">
+              <span class="slider"></span>
+            </label>
+          </td>
+          <td>
+            <button class="btn btn-primary btn-sm" onclick="openWebhookSubscriptionModal('{{.ID}}','{{.ObjType}}')">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-edit"></use>
+              </svg> 编辑
+            </button>
+            {{if .IsActive}}
+            <span class="btn-tooltip-wrapper" title="启用状态时不允许删除，请先禁止后操作再删除！">
+              <button class="btn btn-sm btn-danger" disabled>
+                <svg class="ip-i">
+                  <use href="/static/icons.svg#ip-delete"></use>
+                </svg> 删除
+              </button>
+            </span>
+            {{else}}
+            <button class="btn btn-sm btn-danger" onclick="deleteWebhookSubscription('{{.ID}}')">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-delete"></use>
+              </svg> 删除
+            </button>
+            {{end}}
+          </td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
+</div>
 {{ end }}

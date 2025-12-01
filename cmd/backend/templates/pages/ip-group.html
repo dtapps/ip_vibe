@@ -2,58 +2,58 @@
 <h1>平台配置</h1>
 
 <div class="card" id="sectionIpGroup">
-    <div class="card-header">
-        <h2 class="h2-icon">
-            <svg class="ip-i">
-                <use href="/static/icons.svg#ip-layer"></use>
-            </svg>
-            IP 组（设备维度）
-        </h2>
-        <div>
-            <button class="btn btn-primary" onclick="openIpGroupModal()">
-                <svg class="ip-i">
-                    <use href="/static/icons.svg#ip-folder-plus"></use>
-                </svg> 添加IP组
+  <div class="card-header">
+    <h2 class="h2-icon">
+      <svg class="ip-i">
+        <use href="/static/icons.svg#ip-layer"></use>
+      </svg>
+      IP 组（设备维度）
+    </h2>
+    <div>
+      <button class="btn btn-primary" onclick="openIpGroupModal()">
+        <svg class="ip-i">
+          <use href="/static/icons.svg#ip-folder-plus"></use>
+        </svg> 添加IP组
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <table>
+      <thead>
+        <tr>
+          <th>组名</th>
+          <th>描述</th>
+          <th>设备数</th>
+          <th style="width: 300px;text-align: center;">操作</th>
+        </tr>
+      </thead>
+      <tbody id="groupTable">
+        {{ range .List }}
+        <tr>
+          <td>{{.Name}}</td>
+          <td>{{.Description}}</td>
+          <td>{{.DeviceCount}}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-info" onclick="viewLiveDeviceIpAddresse('{{.ID}}','{{.Name}}')">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-eyes"></use>
+              </svg> 实时IP
             </button>
-        </div>
-    </div>
-    <div class="card-body">
-        <table>
-            <thead>
-                <tr>
-              <th>组名</th>
-              <th>描述</th>
-              <th>设备数</th>
-              <th style="width: 300px;text-align: center;">操作</th>
-                </tr>
-            </thead>
-            <tbody id="groupTable">
-                {{ range .List }}
-                <tr>
-              <td>{{.Name}}</td>
-              <td>{{.Description}}</td>
-              <td>{{.DeviceCount}}</td>
-              <td>
-                <button class="btn btn-sm btn-outline-info" onclick="viewLiveDeviceIpAddresse('{{.ID}}','{{.Name}}')">
-                  <svg class="ip-i">
-                    <use href="/static/icons.svg#ip-eyes"></use>
-                  </svg> 实时IP
-                </button>
-                <button class="btn btn-primary btn-sm" onclick="openIpGroupModal('{{.ID}}')">
-                  <svg class="ip-i">
-                    <use href="/static/icons.svg#ip-edit"></use>
-                  </svg> 编辑
-                </button>
-                <button class="btn btn-sm btn-danger" onclick="deleteIpGroup('{{.ID}}')">
-                  <svg class="ip-i">
-                    <use href="/static/icons.svg#ip-delete"></use>
-                  </svg> 删除
-                </button>
-              </td>
-            </tr>
-                {{ end }}
-            </tbody>
-        </table>
-    </div>
+            <button class="btn btn-primary btn-sm" onclick="openIpGroupModal('{{.ID}}')">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-edit"></use>
+              </svg> 编辑
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="deleteIpGroup('{{.ID}}')">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-delete"></use>
+              </svg> 删除
+            </button>
+          </td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
 </div>
 {{ end }}

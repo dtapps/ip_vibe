@@ -2,83 +2,83 @@
 <h1>平台配置</h1>
 
 <div class="card" id="sectionTask">
-      <div class="card-header">
-        <h2 class="h2-icon">
-          <svg class="ip-i">
-            <use href="/static/icons.svg#ip-task"></use>
-          </svg>
-          任务管理
-        </h2>
-        <div>
-          {{if eq .Status "running"}}
-          <button class="btn btn-warning" disabled>
-            <svg class="ip-i">
-              <use href="/static/icons.svg#ip-play"></use>
-            </svg> 启动
-        </button>
-          <button class="btn btn-danger" onclick="stopTask()">
-            <svg class="ip-i">
-              <use href="/static/icons.svg#ip-stop"></use>
-            </svg> 停止
-        </button>
-          <button class="btn btn-warning" disabled>
-            <svg class="ip-i">
-              <use href="/static/icons.svg#ip-close"></use>
-            </svg> 清理
-        </button>
-          {{else}}
-          <button class="btn btn-warning" onclick="startTask()">
-            <svg class="ip-i">
-              <use href="/static/icons.svg#ip-play"></use>
-            </svg> 启动
-        </button>
-          <button class="btn btn-danger" disabled>
-            <svg class="ip-i">
-              <use href="/static/icons.svg#ip-stop"></use>
-            </svg> 停止
-        </button>
-          <button class="btn btn-warning" onclick="cleanTask()">
-            <svg class="ip-i">
-              <use href="/static/icons.svg#ip-close"></use>
-            </svg> 清理
-        </button>
-          {{end}}
-        </div>
-      </div>
-      <div class="card-body">
-        <table>
-          <thead>
-            <tr>
-              <th>编号</th>
-              <th>名称</th>
-              <th>调度表达式</th>
-              <th>执行时间</th>
-              <th style="width: 300px;text-align: center;">操作</th>
-            </tr>
-          </thead>
-          <tbody id="groupTable">
-            {{range .List}}
-            <tr>
-              <td>{{.ID}}</td>
-              <td>{{.Name}}</td>
-              <td>{{.ScheduleDetail}}</td>
-              <td>{{.LastRun}}</td>
-              <td>
-                <button class="btn btn-sm btn-outline-info" onclick="viewLiveExecutionTime('{{.ID}}','{{.Name}}')">
-                  <svg class="ip-i">
-                    <use href="/static/icons.svg#ip-eyes"></use>
-                  </svg> 下次执行时间
-                </button>
-                <button class="btn btn-success btn-sm" onclick="runTask('{{.ID}}')">
-                  <svg class="ip-i">
-                    <use href="/static/icons.svg#ip-running"></use>
-                  </svg> 运行
-                </button>
-              </td>
-            </tr>
-            {{end}}
-          </tbody>
-        </table>
-      </div>
+  <div class="card-header">
+    <h2 class="h2-icon">
+      <svg class="ip-i">
+        <use href="/static/icons.svg#ip-task"></use>
+      </svg>
+      任务管理
+    </h2>
+    <div>
+      {{if eq .Status "running"}}
+      <button class="btn btn-warning" disabled>
+        <svg class="ip-i">
+          <use href="/static/icons.svg#ip-play"></use>
+        </svg> 启动
+      </button>
+      <button class="btn btn-danger" onclick="stopTask()">
+        <svg class="ip-i">
+          <use href="/static/icons.svg#ip-stop"></use>
+        </svg> 停止
+      </button>
+      <button class="btn btn-warning" disabled>
+        <svg class="ip-i">
+          <use href="/static/icons.svg#ip-close"></use>
+        </svg> 清理
+      </button>
+      {{else}}
+      <button class="btn btn-warning" onclick="startTask()">
+        <svg class="ip-i">
+          <use href="/static/icons.svg#ip-play"></use>
+        </svg> 启动
+      </button>
+      <button class="btn btn-danger" disabled>
+        <svg class="ip-i">
+          <use href="/static/icons.svg#ip-stop"></use>
+        </svg> 停止
+      </button>
+      <button class="btn btn-warning" onclick="cleanTask()">
+        <svg class="ip-i">
+          <use href="/static/icons.svg#ip-close"></use>
+        </svg> 清理
+      </button>
+      {{end}}
     </div>
+  </div>
+  <div class="card-body">
+    <table>
+      <thead>
+        <tr>
+          <th>编号</th>
+          <th>名称</th>
+          <th>调度表达式</th>
+          <th>执行时间</th>
+          <th style="width: 300px;text-align: center;">操作</th>
+        </tr>
+      </thead>
+      <tbody id="groupTable">
+        {{range .List}}
+        <tr>
+          <td>{{.ID}}</td>
+          <td>{{.Name}}</td>
+          <td>{{.ScheduleDetail}}</td>
+          <td>{{.LastRun}}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-info" onclick="viewLiveExecutionTime('{{.ID}}','{{.Name}}')">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-eyes"></use>
+              </svg> 下次执行时间
+            </button>
+            <button class="btn btn-success btn-sm" onclick="runTask('{{.ID}}')">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-running"></use>
+              </svg> 运行
+            </button>
+          </td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
+</div>
 {{ end }}
