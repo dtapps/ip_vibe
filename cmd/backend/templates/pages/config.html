@@ -2,63 +2,72 @@
 <h1>平台配置</h1>
 
 <div class="card" id="sectionConfig">
-    <div class="card-header">
-        <h2 class="h2-icon">
-            <svg class="ip-i">
-                <use href="/static/icons.svg#ip-server"></use>
-            </svg>
-            平台配置
-        </h2>
-        <div>
-            <button class="btn btn-primary" onclick="openConfigModal()">
-                <svg class="ip-i">
-                    <use href="/static/icons.svg#ip-plus"></use>
-                </svg> 添加配置
+  <div class="card-header">
+    <h2 class="h2-icon">
+      <svg class="ip-i">
+        <use href="/static/icons.svg#ip-server"></use>
+      </svg>
+      平台配置
+    </h2>
+    <div>
+      <button class="btn btn-primary" onclick="openConfigModal()">
+        <svg class="ip-i">
+          <use href="/static/icons.svg#ip-plus"></use>
+        </svg>
+        添加配置
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <table>
+      <thead>
+        <tr>
+          <th>配置名称</th>
+          <th>平台</th>
+          <th>支持服务</th>
+          <th style="width: 200px; text-align: center">操作</th>
+        </tr>
+      </thead>
+      <tbody id="configTable">
+        {{range .List}}
+        <tr>
+          <td>{{.Name}}</td>
+          <td>
+            <span class="badge badge-success">{{.Platform}}</span>
+          </td>
+          <td>
+            {{if eq .Capability "all"}}
+            <span style="color: var(--primary)">CDN + DNS</span>
+            {{else if eq .Capability "cdn"}}
+            <span style="color: var(--warning)">仅 CDN</span>
+            {{else if eq .Capability "dns"}}
+            <span style="color: var(--success)">仅 DNS</span>
+            {{else}} - {{end}}
+          </td>
+          <td>
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="openConfigModal('{{.ID}}')"
+            >
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-edit"></use>
+              </svg>
+              编辑
             </button>
-        </div>
-    </div>
-    <div class="card-body">
-        <table>
-            <thead>
-                <tr>
-                    <th>配置名称</th>
-                    <th>平台</th>
-                    <th>支持服务</th>
-                    <th style="width: 200px;text-align: center;">操作</th>
-                </tr>
-            </thead>
-            <tbody id="configTable">
-                {{ range .List }}
-                <tr>
-                    <td>{{.Name}}</td>
-                    <td><span class="badge badge-success">{{.Platform}}</span></td>
-                    <td>
-                        {{if eq .Capability "all"}}
-                        <span style="color: var(--primary);">CDN + DNS</span>
-                        {{else if eq .Capability "cdn"}}
-                        <span style="color: var(--warning);">仅 CDN</span>
-                        {{else if eq .Capability "dns"}}
-                        <span style="color: var(--success);">仅 DNS</span>
-                        {{else}}
-                        -
-                        {{end}}
-                    </td>
-                    <td>
-                        <button class="btn btn-primary btn-sm" onclick="openConfigModal('{{.ID}}')">
-                            <svg class="ip-i">
-                                <use href="/static/icons.svg#ip-edit"></use>
-                            </svg> 编辑
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteConfig('{{.ID}}')">
-                            <svg class="ip-i">
-                                <use href="/static/icons.svg#ip-delete"></use>
-                            </svg> 删除
-                        </button>
-                    </td>
-                </tr>
-                {{ end }}
-            </tbody>
-        </table>
-    </div>
+            <button
+              class="btn btn-danger btn-sm"
+              onclick="deleteConfig('{{.ID}}')"
+            >
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-delete"></use>
+              </svg>
+              删除
+            </button>
+          </td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
 </div>
 {{ end }}

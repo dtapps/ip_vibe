@@ -1,5 +1,5 @@
 {{ define "content" }}
-<h1>平台配置</h1>
+<h1>设备实时上报</h1>
 
 <div class="card" id="sectionDevices">
   <div class="card-header">
@@ -13,7 +13,8 @@
       <button class="btn btn-primary" onclick="openDeviceModal()">
         <svg class="ip-i">
           <use href="/static/icons.svg#ip-mobile"></use>
-        </svg> 管理设备
+        </svg>
+        管理设备
       </button>
     </div>
   </div>
@@ -26,7 +27,7 @@
           <th>最新 IPv4</th>
           <th>最新 IPv6</th>
           <th>上报时间</th>
-          <th style="width: 300px;text-align: center;">操作</th>
+          <th style="width: 300px; text-align: center">操作</th>
         </tr>
       </thead>
       <tbody id="deviceTable">
@@ -38,20 +39,32 @@
           <td class="text-monospace">{{.IPV6}}</td>
           <td>{{formatTimeOrNil .LastReportedAt}}</td>
           <td>
-            <button class="btn btn-sm btn-outline-info" onclick="viewLiveDeviceIpHistory('{{.ID}}','{{.Name}}')">
+            <button
+              class="btn btn-sm btn-outline-info"
+              onclick="viewLiveDeviceIpHistory('{{.ID}}','{{.Name}}')"
+            >
               <svg class="ip-i">
                 <use href="/static/icons.svg#ip-eyes"></use>
-              </svg> 历史IP
+              </svg>
+              历史IP
             </button>
-            <button class="btn btn-primary btn-sm" onclick="openDeviceModal('{{.ID}}')">
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="openDeviceModal('{{.ID}}')"
+            >
               <svg class="ip-i">
                 <use href="/static/icons.svg#ip-edit"></use>
-              </svg> 编辑
+              </svg>
+              编辑
             </button>
-            <button class="btn btn-sm btn-danger" onclick="deleteDevice('{{.ID}}')">
+            <button
+              class="btn btn-sm btn-danger"
+              onclick="deleteDevice('{{.ID}}')"
+            >
               <svg class="ip-i">
                 <use href="/static/icons.svg#ip-delete"></use>
-              </svg> 删除
+              </svg>
+              删除
             </button>
           </td>
         </tr>

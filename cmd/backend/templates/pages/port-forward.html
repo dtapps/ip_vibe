@@ -1,5 +1,5 @@
 {{ define "content" }}
-<h1>平台配置</h1>
+<h1>端口转发（设备维度）</h1>
 
 <div class="card" id="sectionPortForward">
   <div class="card-header">
@@ -13,7 +13,8 @@
       <button class="btn btn-primary" onclick="openPortForwardModal()">
         <svg class="ip-i">
           <use href="/static/icons.svg#ip-folder-plus"></use>
-        </svg> 添加端口转发
+        </svg>
+        添加端口转发
       </button>
     </div>
   </div>
@@ -27,7 +28,7 @@
           <th>远程目标</th>
           <th>防火墙</th>
           <th>启用</th>
-          <th style="width: 300px;text-align: center;">操作</th>
+          <th style="width: 300px; text-align: center">操作</th>
         </tr>
       </thead>
       <tbody id="cdnRecordTable">
@@ -39,28 +40,42 @@
           <td>{{.RemoteHost}}:{{.RemotePort}}</td>
           <td>
             <label class="switch">
-              <input type="checkbox" {{if .AutoForward}}checked{{end}}
-                onchange="togglePortForwardForwardStatus('{{.ID}}', this)">
+              <input
+                type="checkbox"
+                {{if .AutoForward}}checked{{end}}
+                onchange="togglePortForwardForwardStatus('{{.ID}}', this)"
+              />
               <span class="slider"></span>
             </label>
           </td>
           <td>
             <label class="switch">
-              <input type="checkbox" {{if .IsActive}}checked{{end}}
-                onchange="togglePortForwardActiveStatus('{{.ID}}', this)">
+              <input
+                type="checkbox"
+                {{if .IsActive}}checked{{end}}
+                onchange="togglePortForwardActiveStatus('{{.ID}}', this)"
+              />
               <span class="slider"></span>
             </label>
           </td>
           <td>
-            <button class="btn btn-primary btn-sm" onclick="openPortForwardModal('{{.ID}}')">
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="openPortForwardModal('{{.ID}}')"
+            >
               <svg class="ip-i">
                 <use href="/static/icons.svg#ip-edit"></use>
-              </svg> 编辑
+              </svg>
+              编辑
             </button>
-            <button class="btn btn-sm btn-danger" onclick="deletePortForward('{{.ID}}')">
+            <button
+              class="btn btn-sm btn-danger"
+              onclick="deletePortForward('{{.ID}}')"
+            >
               <svg class="ip-i">
                 <use href="/static/icons.svg#ip-delete"></use>
-              </svg> 删除
+              </svg>
+              删除
             </button>
           </td>
         </tr>
