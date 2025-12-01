@@ -1,0 +1,33 @@
+{{ define "content" }}
+<h1>平台配置</h1>
+
+<div class="card" id="sectionLog">
+      <div class="card-header">
+        <h2 class="h2-icon">
+          <svg class="ip-i">
+            <use href="/static/icons.svg#ip-log"></use>
+          </svg>
+          操作日志（最新 {{.Total}} 条）
+        </h2>
+      </div>
+      <div class="card-body">
+        <div class="timeline" id="timeline">
+          {{range .List}}
+          <div class="timeline-item">
+            <div class="timeline-time">{{formatTimeOrNil .CreatedAt}}</div>
+            <div>
+              <strong>{{.ID}}</strong>:
+              <span class="text-muted">{{.ObjType}}</span> →
+              <span class="text-success">{{.ObjID}}</span>
+              {{if eq .Status "success"}}
+              <span class="badge badge-success">{{.Message}}</span>
+              {{else}}
+              <span class="badge badge-danger">{{.Message}}</span>
+              {{end}}
+            </div>
+          </div>
+          {{end}}
+        </div>
+      </div>
+    </div>
+{{ end }}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ block "title" . }}DDNS管理平台{{ end }}</title>
+
+    <link rel="stylesheet" href="/static/index.css">
+    <link rel="stylesheet" href="/static/index.dark.css">
+
+    {{ block "head" . }}{{ end }}
+</head>
+<body>
+
+    {{ block "body" . }}{{ end }}
+
+    {{ block "scripts" . }}
+    <script>
+        window.selfDeviceCode = "{{selfDeviceCode}}";
+    </script>
+    <script src="/static/uuid.js"></script>
+    <script src="/static/index.js"></script>
+    {{ end }}
+
+</body>
+</html>

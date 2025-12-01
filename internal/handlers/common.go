@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
+	"vibe_ip/internal/global"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,4 +29,28 @@ func errorResponse(c *gin.Context, statusCode int, message string) {
 		Code:    statusCode,
 		Message: message,
 	})
+}
+
+// HTTP2 server 推送
+// https://gin-gonic.com/zh-cn/docs/examples/http2-server-push/
+func pusher(c *gin.Context) {
+	if pusher := c.Writer.Pusher(); pusher != nil {
+		// 推送 CSS 和 JS 文件
+		resources := []string{
+			"/static/index.css",
+			"/static/index.dark.css",
+			"/static/uuid.js",
+			"/static/index.js",
+		}
+		for _, res := range resources {
+			if err := pusher.Push(res, nil); err != nil {
+				fmt.Printf("推送失败 %s: %v \n", res, err)
+			}
+		}
+	} else {
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("推送器为空，跳过推送资源 \n")
+		}
+	}
+
 }

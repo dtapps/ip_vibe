@@ -1,0 +1,97 @@
+{{ define "content" }}
+<h1>平台配置</h1>
+
+<div class="card" id="sectionCdnRecord">
+    <div class="card-header">
+        <h2 class="h2-icon">
+            <svg class="ip-i">
+                <use href="/static/icons.svg#ip-dns"></use>
+            </svg>
+            CDN 记录管理
+        </h2>
+        <div>
+            <button class="btn btn-primary" onclick="openCdnRecordModal()">
+                <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-plus"></use>
+                </svg> 添加记录
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <table>
+            <thead>
+                <tr>
+                    <th>域名</th>
+                    <th>类型</th>
+                    <th>回源协议</th>
+                    <th>HTTP端口</th>
+                    <th>HTTPS端口</th>
+                    <th>别名</th>
+                    <th>IP组</th>
+                    <th>平台</th>
+                    <th>启用</th>
+                    <th style="width: 200px;text-align: center;">操作</th>
+                </tr>
+            </thead>
+            <tbody id="cdnRecordTable">
+                {{ range .List }}
+                <tr>
+                    <td>{{.Domain}}</td>
+                    <td>{{.Type}}</td>
+                    {{if eq .OriginProtocol "follow"}}
+                    <td>协议跟随</td>
+                    {{else if eq .OriginProtocol "http"}}
+                    <td>HTTP协议回源</td>
+                    {{else if eq .OriginProtocol "https"}}
+                    <td>HTTPS协议回源</td>
+                    {{else}}
+                    <td>{{.OriginProtocol}}</td>
+                    {{end}}
+                    <td>{{.HTTPPort}}</td>
+                    <td>{{.HTTPSPort}}</td>
+                    <td>{{.CdnDomain}}</td>
+                    <td class="text-monospace">{{if gt .IPGroupID 0}}{{.IPGroupID}}:{{.IPGroupName}}{{else}}-{{end}}
+                    </td>
+                    <td><span class="badge badge-success">{{.Platform}}</span></td>
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" {{if .IsActive}}checked{{end}}
+                                onchange="toggleCdnRecordStatus('{{.ID}}', this)">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-info"
+                            onclick="viewLiveDeviceIpAddresse('{{.IPGroupID}}','{{.IPGroupName}}')">
+                            <svg class="ip-i">
+                                <use href="/static/icons.svg#ip-eyes"></use>
+                            </svg> 实时IP
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="openCdnRecordModal('{{.ID}}')">
+                            <svg class="ip-i">
+                                <use href="/static/icons.svg#ip-edit"></use>
+                            </svg> 编辑
+                        </button>
+                        {{if .IsActive}}
+                        <span class="btn-tooltip-wrapper" title="启用状态时不允许删除，请先禁止后操作再删除！">
+                            <button class="btn btn-sm btn-danger" disabled>
+                                <svg class="ip-i">
+                                    <use href="/static/icons.svg#ip-delete"></use>
+                                </svg> 删除
+                            </button>
+                        </span>
+                        {{else}}
+                        <button class="btn btn-sm btn-danger" onclick="deleteCdnRecord('{{.ID}}')">
+                            <svg class="ip-i">
+                                <use href="/static/icons.svg#ip-delete"></use>
+                            </svg> 删除
+                        </button>
+                        {{end}}
+                    </td>
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+    </div>
+</div>
+{{ end }}

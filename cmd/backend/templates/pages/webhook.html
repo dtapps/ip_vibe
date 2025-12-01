@@ -1,0 +1,85 @@
+{{ define "content" }}
+<h1>平台配置</h1>
+
+<div class="card" id="sectionWebhook">
+    <div class="card-header">
+        <h2 class="h2-icon">
+            <svg class="ip-i">
+                <use href="/static/icons.svg#ip-layer"></use>
+            </svg>
+            通知（WebHook）
+        </h2>
+        <div>
+            <button class="btn btn-primary" onclick="openWebhookModal()">
+                <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-folder-plus"></use>
+                </svg> 添加通知
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <table>
+            <thead>
+                <tr>
+              <th>名称</th>
+              <th>类型</th>
+              <th>启用</th>
+              <th style="width: 300px;text-align: center;">操作</th>
+                </tr>
+            </thead>
+            <tbody id="webhookTable">
+                {{ range .List }}
+                <tr>
+              <td>{{.Name}}</td>
+              {{if eq .Platform "wechat_work"}}
+              <td><span class="badge badge-success">企业微信</span></td>
+              {{else if eq .Platform "dingtalk"}}
+              <td><span class="badge badge-success">钉钉</span></td>
+              {{else if eq .Platform "feishu"}}
+              <td><span class="badge badge-success">飞书</span></td>
+              {{else if eq .Platform "bark"}}
+              <td><span class="badge badge-success">Bark</span></td>
+              {{else if eq .Platform "ft07"}}
+              <td><span class="badge badge-success">Server酱</span></td>
+              {{else if eq .Platform "push_deer"}}
+              <td><span class="badge badge-success">PushDeer</span></td>
+              {{else if eq .Platform "PushDeer"}}
+              <td><span class="badge badge-success">自定义</span></td>
+              {{else}}
+              <td><span class="badge badge-success">{{.Platform}}</span></td>
+              {{end}}
+              <td>
+                <label class="switch">
+                  <input type="checkbox" {{if .IsActive}}checked{{end}} onchange="toggleWebhookStatus('{{.ID}}', this)">
+                  <span class="slider"></span>
+                </label>
+              </td>
+              <td>
+                <button class="btn btn-primary btn-sm" onclick="openWebhookModal('{{.ID}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-edit"></use>
+                  </svg> 编辑
+                </button>
+                {{if .IsActive}}
+                <span class="btn-tooltip-wrapper" title="启用状态时不允许删除，请先禁止后操作再删除！">
+                  <button class="btn btn-sm btn-danger" disabled>
+                    <svg class="ip-i">
+                      <use href="/static/icons.svg#ip-delete"></use>
+                    </svg> 删除
+                </button>
+                </span>
+                {{else}}
+                <button class="btn btn-sm btn-danger" onclick="deleteWebhook('{{.ID}}')">
+                  <svg class="ip-i">
+                    <use href="/static/icons.svg#ip-delete"></use>
+                  </svg> 删除
+                </button>
+                {{end}}
+              </td>
+            </tr>
+                {{ end }}
+            </tbody>
+        </table>
+    </div>
+</div>
+{{ end }}

@@ -24,7 +24,7 @@ import (
 
 func Index(c *gin.Context) {
 	// 准备页面数据
-	pageData := types.Indexesponse{
+	pageData := types.IndexResponse{
 		Configs:              []types.GetConfigsResponse{},
 		CdnRecords:           []types.GetCdnRecordsResponse{},
 		DnsRecords:           []types.GetDnsRecordsResponse{},
