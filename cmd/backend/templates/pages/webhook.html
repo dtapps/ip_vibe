@@ -51,11 +51,18 @@
           {{end}}
           <td>
             <label class="switch">
+              {{if .IsActive}}
               <input
                 type="checkbox"
-                {{if .IsActive}}checked{{end}}
+                checked
                 onchange="toggleWebhookStatus('{{.ID}}', this)"
               />
+              {{else}}
+              <input
+                type="checkbox"
+                onchange="toggleWebhookStatus('{{.ID}}', this)"
+              />
+              {{end}}
               <span class="slider"></span>
             </label>
           </td>

@@ -68,11 +68,18 @@
           <td>{{.ObjID}}:{{.ObjName}}</td>
           <td>
             <label class="switch">
+              {{if .IsActive}}
               <input
                 type="checkbox"
-                {{if .IsActive}}checked{{end}}
+                checked
                 onchange="toggleWebhookSubscriptionStatus('{{.ID}}', this)"
               />
+              {{else}}
+              <input
+                type="checkbox"
+                onchange="toggleWebhookSubscriptionStatus('{{.ID}}', this)"
+              />
+              {{end}}
               <span class="slider"></span>
             </label>
           </td>

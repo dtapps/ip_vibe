@@ -39,31 +39,44 @@
         <tr>
           <td>{{.Domain}}</td>
           <td>{{.Type}}</td>
-          {{if eq .OriginProtocol "follow"}}
-          <td>协议跟随</td>
-          {{else if eq .OriginProtocol "http"}}
-          <td>HTTP协议回源</td>
-          {{else if eq .OriginProtocol "https"}}
-          <td>HTTPS协议回源</td>
-          {{else}}
-          <td>{{.OriginProtocol}}</td>
-          {{end}}
+          <td>
+            {{if eq .OriginProtocol "follow"}}
+            <span>协议跟随</span>
+            {{else if eq .OriginProtocol "http"}}
+            <span>HTTP协议回源</span>
+            {{else if eq .OriginProtocol "https"}}
+            <span>HTTPS协议回源</span>
+            {{else}}
+            <span>{{.OriginProtocol}}</span>
+            {{end}}
+          </td>
           <td>{{.HTTPPort}}</td>
           <td>{{.HTTPSPort}}</td>
           <td>{{.CdnDomain}}</td>
           <td class="text-monospace">
-            {{if gt .IPGroupID 0}}{{.IPGroupID}}:{{.IPGroupName}}{{else}}-{{end}}
+            {{if gt .IPGroupID 0}}
+            <span>{{.IPGroupID}}:{{.IPGroupName}}</span>
+            {{else}}
+            <span>-</span>
+            {{end}}
           </td>
           <td>
             <span class="badge badge-success">{{.Platform}}</span>
           </td>
           <td>
             <label class="switch">
+              {{if .IsActive}}
               <input
                 type="checkbox"
-                {{if .IsActive}}checked{{end}}
+                checked
                 onchange="toggleCdnRecordStatus('{{.ID}}', this)"
               />
+              {{else}}
+              <input
+                type="checkbox"
+                onchange="toggleCdnRecordStatus('{{.ID}}', this)"
+              />
+              {{end}}
               <span class="slider"></span>
             </label>
           </td>

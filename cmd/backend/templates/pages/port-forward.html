@@ -40,21 +40,35 @@
           <td>{{.RemoteHost}}:{{.RemotePort}}</td>
           <td>
             <label class="switch">
+              {{if .AutoForward}}
               <input
                 type="checkbox"
-                {{if .AutoForward}}checked{{end}}
+                checked
                 onchange="togglePortForwardForwardStatus('{{.ID}}', this)"
               />
+              {{else}}
+              <input
+                type="checkbox"
+                onchange="togglePortForwardForwardStatus('{{.ID}}', this)"
+              />
+              {{end}}
               <span class="slider"></span>
             </label>
           </td>
           <td>
             <label class="switch">
+              {{if .IsActive}}
               <input
                 type="checkbox"
-                {{if .IsActive}}checked{{end}}
+                checked
                 onchange="togglePortForwardActiveStatus('{{.ID}}', this)"
               />
+              {{else}}
+              <input
+                type="checkbox"
+                onchange="togglePortForwardActiveStatus('{{.ID}}', this)"
+              />
+              {{end}}
               <span class="slider"></span>
             </label>
           </td>

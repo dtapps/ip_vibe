@@ -42,7 +42,9 @@
             <span style="color: var(--warning)">仅 CDN</span>
             {{else if eq .Capability "dns"}}
             <span style="color: var(--success)">仅 DNS</span>
-            {{else}} - {{end}}
+            {{else}}
+            <span>-</span>
+            {{end}}
           </td>
           <td>
             <button
