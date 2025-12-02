@@ -368,19 +368,13 @@ func loadTemplates(templatePath string, funcMap template.FuncMap) multitemplate.
 
 	for _, p := range pages {
 		name := filepath.Join("pages", filepath.Base(p))
-		fmt.Printf("渲染页面: %s\n", name)
+		fmt.Printf("开发环境 渲染页面: %s\n", name)
 
 		// 页面模板 = base + index + 组件 + 页面
 		files := []string{layout, index}
 		files = append(files, components...) // 注入全部组件
 		files = append(files, p)             // 当前页面
 
-		// r.AddFromFiles(
-		// 	filepath.Join("pages", name),
-		// 	layout,
-		// 	index,
-		// 	p,
-		// )
 		r.AddFromFilesFuncs(
 			name,
 			funcMap,
@@ -395,24 +389,26 @@ func loadTemplates(templatePath string, funcMap template.FuncMap) multitemplate.
 func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Renderer {
 	r := multitemplate.NewRenderer()
 
-	layout := "templates/layout/base.html"
-	index := "templates/pages/index.html"
+	templatePath := "templates"
+
+	layout := filepath.Join(templatePath, "layout/base.html")
+	index := filepath.Join(templatePath, "pages/index.html")
 
 	// 所有业务页面
-	pages, err := fs.Glob(efs, "templates/pages/*.html")
+	pages, err := fs.Glob(efs, filepath.Join(templatePath, "pages/*.html"))
 	if err != nil {
 		panic(err)
 	}
 
 	// 所有组件（自动注入）
-	components, err := fs.Glob(efs, "templates/components/*.html")
+	components, err := fs.Glob(efs, filepath.Join(templatePath, "components/*.html"))
 	if err != nil {
 		panic(err)
 	}
 
 	for _, p := range pages {
 		name := filepath.Join("pages", filepath.Base(p))
-		fmt.Printf("渲染页面: %s\n", name)
+		fmt.Printf("生产环境 渲染页面: %s\n", name)
 
 		// 模板文件顺序：base → index → components → page
 		files := []string{layout, index}
