@@ -16,8 +16,8 @@ type IndexResponse struct {
 	WebhookSubscriptions []GetWebhookSubscriptionsResponse `json:"webhook_subscriptions"`
 	Tasks                []gocron_helper.JobData           `json:"tasks"`
 
-	OperationLogs     []GetOperationLogsResponse `json:"operation_logs"`
-	OperationLogLimit int                        `json:"operation_log_limit"`
+	OperationLogs     []GetLogsResponse `json:"operation_logs"`
+	OperationLogLimit int               `json:"operation_log_limit"`
 
 	TaskStatus string `json:"task_status"`
 	DeviceCode string `json:"device_code"`

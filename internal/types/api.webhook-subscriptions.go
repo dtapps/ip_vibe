@@ -15,7 +15,7 @@ type GetWebhookSubscriptionsResponse struct {
 
 // 获取通知订阅 请求结构
 type GetWebhookSubscriptionRequest struct {
-	ID int64 `uri:"id" binding:"required"` // 配置序号
+	ID int64 `uri:"id" binding:"required"` // 通知订阅序号
 }
 
 // 创建通知订阅 请求结构

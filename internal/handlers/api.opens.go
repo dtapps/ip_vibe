@@ -22,7 +22,6 @@ import (
 // 设备上报IP
 func DeviceReportDeviceIp(c *gin.Context) {
 	// 请求参数
-	deviceCode := c.Param("device_code")
 	var requestParams types.DeviceReportDeviceIpRequest
 	if err := c.ShouldBindJSON(&requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
@@ -48,7 +47,7 @@ func DeviceReportDeviceIp(c *gin.Context) {
 		EventType:  "IP_UPDATE",
 		EventTime:  time.Now().Format("2006-01-02 15:04:05"),
 		EventBody:  "IP地址更新事件",
-		DeviceCode: deviceCode,
+		DeviceCode: requestParams.DeviceCode,
 		DeviceName: requestParams.DeviceName,
 		IPv4Addr:   requestParams.IPV4Addr,
 		IPv6Addr:   requestParams.IPV6Addr,
@@ -65,7 +64,7 @@ func DeviceReportDeviceIp(c *gin.Context) {
 
 	// 检查设备是否存在
 	firstDevice, err := tx.Device.Query().
-		Where(device.CodeEQ(deviceCode)).
+		Where(device.CodeEQ(requestParams.DeviceCode)).
 		First(c)
 	if err != nil {
 		if !ent.IsNotFound(err) {
@@ -77,11 +76,11 @@ func DeviceReportDeviceIp(c *gin.Context) {
 		// 如果设备不存在：创建设备
 		isNewDevice = true
 		if requestParams.DeviceName == "" {
-			requestParams.DeviceName = deviceCode
+			requestParams.DeviceName = requestParams.DeviceCode
 		}
 
 		saveDevice, err := tx.Device.Create().
-			SetCode(deviceCode).
+			SetCode(requestParams.DeviceCode).
 			SetName(requestParams.DeviceName).
 			SetIPV4(requestParams.IPV4Addr).
 			SetIPV6(requestParams.IPV6Addr).

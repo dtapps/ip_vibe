@@ -16,7 +16,7 @@ type GetDevicesResponse struct {
 
 // 获取设备 请求结构
 type GetDeviceRequest struct {
-	ID int64 `uri:"id" binding:"required"` // 配置序号
+	ID int64 `uri:"id" binding:"required"` // 设备序号
 }
 
 // 创建设备 请求结构

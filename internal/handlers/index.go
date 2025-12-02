@@ -35,7 +35,7 @@ func Index(c *gin.Context) {
 		WebhookSubscriptions: []types.GetWebhookSubscriptionsResponse{},
 		Tasks:                []gocron_helper.JobData{},
 
-		OperationLogs:     []types.GetOperationLogsResponse{},
+		OperationLogs:     []types.GetLogsResponse{},
 		OperationLogLimit: 0,
 	}
 	// 查询全部配置
@@ -239,7 +239,7 @@ func Index(c *gin.Context) {
 		All(c)
 	if err == nil {
 		for _, item := range allOperationLog {
-			pageData.OperationLogs = append(pageData.OperationLogs, types.GetOperationLogsResponse{
+			pageData.OperationLogs = append(pageData.OperationLogs, types.GetLogsResponse{
 				ID:        item.ID,
 				OpType:    item.OpType.String(),
 				ObjID:     item.ObjID,

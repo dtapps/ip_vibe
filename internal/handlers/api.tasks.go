@@ -7,6 +7,7 @@ import (
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/initialize"
+	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,13 +24,17 @@ func GetTasks(c *gin.Context) {
 // 获取任务
 func GetTask(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.GetTaskRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 任务助手
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
 	// 获取全部任务
 	jobs := jobHelper.GetJobsData(15)
 	for _, job := range jobs {
-		if job.ID == id {
+		if job.ID == requestParams.ID {
 			successResponse(c, job)
 			return
 		}
@@ -40,14 +45,18 @@ func GetTask(c *gin.Context) {
 // 运行任务
 func RunTask(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.RunTaskRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 任务助手
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
 	// 运行任务
-	err := jobHelper.RunJob(id)
+	err := jobHelper.RunJob(requestParams.ID)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
-			fmt.Printf("运行任务: %v - %s\n", id, err.Error())
+			fmt.Printf("运行任务: %s - %s\n", requestParams.ID, err.Error())
 		}
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -58,14 +67,18 @@ func RunTask(c *gin.Context) {
 // 删除任务
 func DeleteTask(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.DeleteTaskRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 任务助手
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
 	// 删除任务
-	err := jobHelper.DeleteJob(id)
+	err := jobHelper.DeleteJob(requestParams.ID)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
-			fmt.Printf("删除任务: %v - %s\n", id, err.Error())
+			fmt.Printf("删除任务: %s - %s\n", requestParams.ID, err.Error())
 		}
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

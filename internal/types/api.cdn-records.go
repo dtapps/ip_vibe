@@ -23,7 +23,7 @@ type GetCdnRecordsResponse struct {
 
 // 获取CDN记录 请求结构
 type GetCdnRecordRequest struct {
-	ID int64 `uri:"id" binding:"required"` // 配置序号
+	ID int64 `uri:"id" binding:"required"` // CDN 记录序号
 }
 
 // 创建CDN记录 请求结构

@@ -14,7 +14,7 @@ import (
 func Log(c *gin.Context) {
 	// 准备页面数据
 	pageData := types.LogResponse{
-		List:     []types.GetOperationLogsResponse{},
+		List:     []types.GetLogsResponse{},
 		Page:     0,
 		PageSize: 0,
 		Total:    0,
@@ -27,7 +27,7 @@ func Log(c *gin.Context) {
 		All(c)
 	if err == nil {
 		for _, item := range allOperationLog {
-			pageData.List = append(pageData.List, types.GetOperationLogsResponse{
+			pageData.List = append(pageData.List, types.GetLogsResponse{
 				ID:        item.ID,
 				OpType:    item.OpType.String(),
 				ObjID:     item.ObjID,
