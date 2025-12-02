@@ -110,6 +110,13 @@ func main() {
 		AllowCredentials: true, // 允许发送凭据（如 Cookie 和 Authorization）
 	}))
 
+	// health check
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status": "ok",
+		})
+	})
+
 	// 配置BasicAuth中间件
 	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
 		// 账户映射
