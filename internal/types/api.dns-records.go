@@ -3,7 +3,7 @@ package types
 import "time"
 
 // 获取全部DNS记录 响应结构
-type GetDnsRecordsResponse struct {
+type GetDnsRecordResponse struct {
 	ID            int64     `json:"id,omitempty"`              // DNS 记录序号
 	ConfigID      int64     `json:"config_id"`                 // 平台配置序号
 	Platform      string    `json:"platform,omitempty"`        // 平台平台名称

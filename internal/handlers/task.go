@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/helper/gocron_helper"
@@ -50,5 +51,5 @@ func Task(c *gin.Context) {
 	}
 
 	// 渲染模板
-	c.HTML(http.StatusOK, "pages/task.html", pageData)
+	c.HTML(http.StatusOK, filepath.Join("pages", "task.html"), pageData)
 }

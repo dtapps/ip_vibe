@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"vibe_ip/ent"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/global"
@@ -22,7 +23,7 @@ func Log(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.LogResponse{
-		List:     []types.GetLogsResponse{},
+		List:     []types.GetLogResponse{},
 		Page:     0,
 		PageSize: 0,
 		Total:    0,
@@ -34,7 +35,7 @@ func Log(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allOperationLog.Items {
-			pageData.List = append(pageData.List, types.GetLogsResponse{
+			pageData.List = append(pageData.List, types.GetLogResponse{
 				ID:        item.ID,
 				OpType:    item.OpType.String(),
 				ObjID:     item.ObjID,
@@ -60,5 +61,5 @@ func Log(c *gin.Context) {
 	}
 
 	// 渲染模板
-	c.HTML(http.StatusOK, "pages/log.html", pageData)
+	c.HTML(http.StatusOK, filepath.Join("pages", "log.html"), pageData)
 }

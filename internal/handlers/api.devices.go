@@ -16,7 +16,7 @@ import (
 
 // 获取全部设备
 func GetDevices(c *gin.Context) {
-	devices := make([]types.GetDevicesResponse, 0)
+	devices := make([]types.GetDeviceResponse, 0)
 	// 查询全部设备
 	allDevice, err := global.GvaDb.Device.Query().
 		Order(ent.Desc(device.FieldCreatedAt)).
@@ -26,7 +26,7 @@ func GetDevices(c *gin.Context) {
 		return
 	}
 	for _, item := range allDevice {
-		devices = append(devices, types.GetDevicesResponse{
+		devices = append(devices, types.GetDeviceResponse{
 			ID:              item.ID,
 			Code:            item.Code,
 			Name:            item.Name,
@@ -57,7 +57,7 @@ func GetDevice(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
 		return
 	}
-	successResponse(c, types.GetDevicesResponse{
+	successResponse(c, types.GetDeviceResponse{
 		ID:              firstDevice.ID,
 		Code:            firstDevice.Code,
 		Name:            firstDevice.Name,

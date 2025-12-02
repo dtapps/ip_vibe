@@ -15,7 +15,7 @@ import (
 
 // 获取全部CDN记录
 func GetCdnRecords(c *gin.Context) {
-	records := make([]types.GetCdnRecordsResponse, 0)
+	records := make([]types.GetCdnRecordResponse, 0)
 	// 查询全部CDN记录
 	allCdnRecord, err := global.GvaDb.CDNRecord.Query().
 		WithConfig().
@@ -27,7 +27,7 @@ func GetCdnRecords(c *gin.Context) {
 		return
 	}
 	for _, item := range allCdnRecord {
-		list := types.GetCdnRecordsResponse{
+		list := types.GetCdnRecordResponse{
 			ID:             item.ID,
 			ConfigID:       item.ConfigID,
 			Platform:       item.Edges.Config.Platform.String(),
@@ -68,7 +68,7 @@ func GetCdnRecord(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询CDN记录失败: "+err.Error())
 		return
 	}
-	response := types.GetCdnRecordsResponse{
+	response := types.GetCdnRecordResponse{
 		ID:             firstCdnRecord.ID,
 		ConfigID:       firstCdnRecord.ConfigID,
 		Platform:       firstCdnRecord.Edges.Config.Platform.String(),

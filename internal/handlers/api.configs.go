@@ -15,7 +15,7 @@ import (
 
 // 获取全部配置
 func GetConfigs(c *gin.Context) {
-	configs := make([]types.GetConfigsResponse, 0)
+	configs := make([]types.GetConfigResponse, 0)
 	// 查询全部配置
 	allConfig, err := global.GvaDb.PlatformConfig.Query().
 		Order(ent.Desc(platformconfig.FieldCreatedAt)).
@@ -25,7 +25,7 @@ func GetConfigs(c *gin.Context) {
 		return
 	}
 	for _, item := range allConfig {
-		configs = append(configs, types.GetConfigsResponse{
+		configs = append(configs, types.GetConfigResponse{
 			ID:          item.ID,
 			Capability:  item.Capability.String(),
 			Name:        item.Name,
@@ -54,7 +54,7 @@ func GetConfig(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询配置失败: "+err.Error())
 		return
 	}
-	successResponse(c, types.GetConfigsResponse{
+	successResponse(c, types.GetConfigResponse{
 		ID:          firstConfig.ID,
 		Capability:  firstConfig.Capability.String(),
 		Name:        firstConfig.Name,

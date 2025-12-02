@@ -6,18 +6,18 @@ import (
 )
 
 type IndexResponse struct {
-	Configs              []GetConfigsResponse              `json:"configs"`
-	CdnRecords           []GetCdnRecordsResponse           `json:"cdn_records"`
-	DnsRecords           []GetDnsRecordsResponse           `json:"dns_records"`
-	Devices              []GetDevicesResponse              `json:"devices"`
-	IpGroups             []GetIPGroupsResponse             `json:"ip_groups"`
-	PortForwards         []GetPortForwardsResponse         `json:"port_forwards"`
-	Webhooks             []GetWebhooksResponse             `json:"webhooks"`
-	WebhookSubscriptions []GetWebhookSubscriptionsResponse `json:"webhook_subscriptions"`
-	Tasks                []gocron_helper.JobData           `json:"tasks"`
+	Configs      []GetConfigResponse      `json:"configs"`
+	CdnRecords   []GetCdnRecordResponse   `json:"cdn_records"`
+	DnsRecords   []GetDnsRecordResponse   `json:"dns_records"`
+	Devices      []GetDeviceResponse      `json:"devices"`
+	IpGroups     []GetIPGroupResponse     `json:"ip_groups"`
+	PortForwards []GetPortForwardResponse `json:"port_forwards"`
+	Webhooks     []GetWebhookResponse     `json:"webhooks"`
+	WebhookSubs  []GetWebhookSubResponse  `json:"webhook_subscriptions"`
+	Tasks        []gocron_helper.JobData  `json:"tasks"`
 
-	OperationLogs     []GetLogsResponse `json:"operation_logs"`
-	OperationLogLimit int               `json:"operation_log_limit"`
+	Logs     []GetLogResponse `json:"logs"`
+	LogLimit int              `json:"log_limit"`
 
 	TaskStatus string `json:"task_status"`
 	DeviceCode string `json:"device_code"`

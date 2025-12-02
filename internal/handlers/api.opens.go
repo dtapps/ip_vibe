@@ -222,7 +222,7 @@ func DevicePortForwards(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
 		return
 	}
-	portForwards := make([]types.GetPortForwardsResponse, 0)
+	portForwards := make([]types.GetPortForwardResponse, 0)
 	// 查询端口转发
 	allPortForward, err := firstDevice.QueryPortForwards().
 		Where(deviceportforward.IsActiveEQ(true)).
@@ -233,7 +233,7 @@ func DevicePortForwards(c *gin.Context) {
 		return
 	}
 	for _, item := range allPortForward {
-		portForwards = append(portForwards, types.GetPortForwardsResponse{
+		portForwards = append(portForwards, types.GetPortForwardResponse{
 			ID:          item.ID,
 			Name:        item.Name,
 			Description: item.Description,

@@ -1467,7 +1467,7 @@ async function toggleWebhookSubscriptionStatus(id, checkbox) {
     const originalChecked = checkbox.checked;
 
     await withErrorHandling(async () => {
-        await API.patch(`/api/webhook-subscriptions/${id}/active`, { is_active: checkbox.checked });
+        await API.patch(`/api/webhook-subs/${id}/active`, { is_active: checkbox.checked });
     }, {
         errorMessage: '更新状态失败',
         revertAction: () => {
@@ -1559,7 +1559,7 @@ async function openWebhookSubscriptionModal(id, obj_type) {
 
         // 编辑
         if (id) {
-            const { data: webhookSubscription } = await API.get(`/api/webhook-subscriptions/${id}`);
+            const { data: webhookSubscription } = await API.get(`/api/webhook-subs/${id}`);
             console.log("webhookSubscription", webhookSubscription);
             if (!webhookSubscription) {
                 alert('通知订阅数据异常');
@@ -1626,9 +1626,9 @@ document.getElementById('webhookSubscriptionForm').onsubmit = async (e) => {
     await withErrorHandling(async () => {
         // 提交
         if (isNaN(form_id) || form_id <= 0) {
-            await API.post('/api/webhook-subscriptions', form_data);
+            await API.post('/api/webhook-subs', form_data);
         } else {
-            await API.patch(`/api/webhook-subscriptions/${form_id}`, form_data);
+            await API.patch(`/api/webhook-subs/${form_id}`, form_data);
         }
 
         // 刷新页面
@@ -1642,7 +1642,7 @@ document.getElementById('webhookSubscriptionForm').onsubmit = async (e) => {
 async function deleteWebhookSubscription(id) {
     if (confirm('确定删除此通知订阅？')) {
         await withErrorHandling(async () => {
-            await API.delete(`/api/webhook-subscriptions/${id}`);
+            await API.delete(`/api/webhook-subs/${id}`);
             // 刷新页面
             location.reload();
         }, {

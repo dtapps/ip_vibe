@@ -15,7 +15,7 @@ import (
 
 // 获取全部DNS记录
 func GetDnsRecords(c *gin.Context) {
-	records := make([]types.GetDnsRecordsResponse, 0)
+	records := make([]types.GetDnsRecordResponse, 0)
 	// 查询全部DNS记录
 	allDnsRecord, err := global.GvaDb.DNSRecord.Query().
 		WithConfig().
@@ -28,7 +28,7 @@ func GetDnsRecords(c *gin.Context) {
 		return
 	}
 	for _, item := range allDnsRecord {
-		list := types.GetDnsRecordsResponse{
+		list := types.GetDnsRecordResponse{
 			ID:            item.ID,
 			ConfigID:      item.ConfigID,
 			Platform:      item.Edges.Config.Platform.String(),
@@ -71,7 +71,7 @@ func GetDnsRecord(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询DNS记录失败: "+err.Error())
 		return
 	}
-	response := types.GetDnsRecordsResponse{
+	response := types.GetDnsRecordResponse{
 		ID:            firstDnsRecord.ID,
 		ConfigID:      firstDnsRecord.ConfigID,
 		Platform:      firstDnsRecord.Edges.Config.Platform.String(),

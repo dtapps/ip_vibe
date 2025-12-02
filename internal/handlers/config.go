@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"vibe_ip/ent"
 	"vibe_ip/ent/platformconfig"
 	"vibe_ip/internal/global"
@@ -22,7 +23,7 @@ func Config(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.ConfigResponse{
-		List:     []types.GetConfigsResponse{},
+		List:     []types.GetConfigResponse{},
 		Page:     0,
 		PageSize: 0,
 		Total:    0,
@@ -34,7 +35,7 @@ func Config(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allConfig.Items {
-			pageData.List = append(pageData.List, types.GetConfigsResponse{
+			pageData.List = append(pageData.List, types.GetConfigResponse{
 				ID:          item.ID,
 				Capability:  item.Capability.String(),
 				Name:        item.Name,
@@ -56,5 +57,5 @@ func Config(c *gin.Context) {
 	}
 
 	// 渲染模板
-	c.HTML(http.StatusOK, "pages/config.html", pageData)
+	c.HTML(http.StatusOK, filepath.Join("pages", "config.html"), pageData)
 }

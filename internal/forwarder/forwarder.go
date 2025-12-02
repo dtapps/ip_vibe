@@ -13,7 +13,7 @@ var activeForwarders = make(map[int64]*ForwarderGroup)
 var mu sync.Mutex
 
 type ForwarderGroup struct {
-	rule   types.GetPortForwardsResponse
+	rule   types.GetPortForwardResponse
 	closer []io.Closer
 }
 
@@ -24,7 +24,7 @@ func (fg *ForwarderGroup) Close() {
 }
 
 // 启动所有转发
-func startForwarding(rules []types.GetPortForwardsResponse) {
+func startForwarding(rules []types.GetPortForwardResponse) {
 	mu.Lock()
 	defer mu.Unlock()
 

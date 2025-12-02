@@ -1,7 +1,7 @@
 package types
 
 // 获取全部通知订阅 响应结构
-type GetWebhookSubscriptionsResponse struct {
+type GetWebhookSubResponse struct {
 	ID          int64  `json:"id"`                     // 通知订阅序号
 	Name        string `json:"name"`                   // 通知订阅名称
 	Description string `json:"description,omitempty"`  // 通知订阅描述
@@ -14,12 +14,12 @@ type GetWebhookSubscriptionsResponse struct {
 }
 
 // 获取通知订阅 请求结构
-type GetWebhookSubscriptionRequest struct {
+type GetWebhookSubRequest struct {
 	ID int64 `uri:"id" binding:"required"` // 通知订阅序号
 }
 
 // 创建通知订阅 请求结构
-type CreateWebhookSubscriptionRequest struct {
+type CreateWebhookSubRequest struct {
 	Name        string  `json:"name" binding:"required"`       // 通知订阅名称
 	Description string  `json:"description,omitempty"`         // 通知订阅描述
 	WebhookID   int64   `json:"webhook_id" binding:"required"` // 通知序号
@@ -28,19 +28,19 @@ type CreateWebhookSubscriptionRequest struct {
 }
 
 // 更新通知订阅 请求结构
-type UpdateWebhookSubscriptionRequest struct {
-	GetWebhookSubscriptionRequest
+type UpdateWebhookSubRequest struct {
+	GetWebhookSubRequest
 	Name        string `json:"name" binding:"required"` // 通知订阅名称
 	Description string `json:"description,omitempty"`   // 通知订阅描述
 }
 
 // 更新通知订阅状态 请求结构
-type UpdateWebhookSubscriptionActiveRequest struct {
-	GetWebhookSubscriptionRequest
+type UpdateWebhookSubActiveRequest struct {
+	GetWebhookSubRequest
 	IsActive bool `json:"is_active,omitempty"` // 是否启用
 }
 
 // 删除通知订阅 请求结构
-type DeleteWebhookSubscriptionRequest struct {
-	GetWebhookSubscriptionRequest
+type DeleteWebhookSubRequest struct {
+	GetWebhookSubRequest
 }

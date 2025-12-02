@@ -302,14 +302,14 @@ func main() {
 		}
 
 		// 通知订阅相关API
-		webhookSubscriptions := api.Group("/webhook-subscriptions")
+		webhookSubs := api.Group("/webhook-subs")
 		{
-			webhookSubscriptions.GET("", handlers.GetWebhookSubscriptions)
-			webhookSubscriptions.GET("/:id", handlers.GetWebhookSubscription)
-			webhookSubscriptions.POST("", handlers.CreateWebhookSubscription)
-			webhookSubscriptions.PATCH("/:id", handlers.UpdateWebhookSubscription)
-			webhookSubscriptions.PATCH("/:id/active", handlers.UpdateWebhookSubscriptionActive)
-			webhookSubscriptions.DELETE("/:id", handlers.DeleteWebhookSubscription)
+			webhookSubs.GET("", handlers.GetWebhookSubs)
+			webhookSubs.GET("/:id", handlers.GetWebhookSub)
+			webhookSubs.POST("", handlers.CreateWebhookSub)
+			webhookSubs.PATCH("/:id", handlers.UpdateWebhookSub)
+			webhookSubs.PATCH("/:id/active", handlers.UpdateWebhookSubActive)
+			webhookSubs.DELETE("/:id", handlers.DeleteWebhookSub)
 		}
 
 		// 任务相关API
@@ -354,6 +354,8 @@ func loadTemplates(templatePath string, funcMap template.FuncMap) multitemplate.
 
 	layout := filepath.Join(templatePath, "layout", "base.html")
 	index := filepath.Join(templatePath, "pages", "index.html")
+	fmt.Printf("开发环境 布局: %s\n", layout)
+	fmt.Printf("开发环境 首页: %s\n", index)
 
 	// 所有业务页面
 	pages, err := filepath.Glob(filepath.Join(templatePath, "pages", "*.html"))
@@ -398,6 +400,8 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 
 	layout := filepath.Join(templatePath, "layout", "base.html")
 	index := filepath.Join(templatePath, "pages", "index.html")
+	fmt.Printf("生产环境 布局: %s\n", layout)
+	fmt.Printf("生产环境 首页: %s\n", index)
 
 	// 所有业务页面
 	pages, err := fs.Glob(efs, filepath.Join(templatePath, "pages", "*.html"))

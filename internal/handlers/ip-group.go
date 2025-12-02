@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"vibe_ip/ent"
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/internal/global"
@@ -22,7 +23,7 @@ func IPGroup(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.IPGroupResponse{
-		List:     []types.GetIPGroupsResponse{},
+		List:     []types.GetIPGroupResponse{},
 		Page:     0,
 		PageSize: 0,
 		Total:    0,
@@ -35,7 +36,7 @@ func IPGroup(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allIpGroup.Items {
-			pageData.List = append(pageData.List, types.GetIPGroupsResponse{
+			pageData.List = append(pageData.List, types.GetIPGroupResponse{
 				ID:          item.ID,
 				Name:        item.Name,
 				Description: item.Description,
@@ -56,5 +57,5 @@ func IPGroup(c *gin.Context) {
 	}
 
 	// 渲染模板
-	c.HTML(http.StatusOK, "pages/ip-group.html", pageData)
+	c.HTML(http.StatusOK, filepath.Join("pages", "ip-group.html"), pageData)
 }

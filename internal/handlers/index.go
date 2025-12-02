@@ -25,18 +25,18 @@ import (
 func Index(c *gin.Context) {
 	// 准备页面数据
 	pageData := types.IndexResponse{
-		Configs:              []types.GetConfigsResponse{},
-		CdnRecords:           []types.GetCdnRecordsResponse{},
-		DnsRecords:           []types.GetDnsRecordsResponse{},
-		Devices:              []types.GetDevicesResponse{},
-		IpGroups:             []types.GetIPGroupsResponse{},
-		PortForwards:         []types.GetPortForwardsResponse{},
-		Webhooks:             []types.GetWebhooksResponse{},
-		WebhookSubscriptions: []types.GetWebhookSubscriptionsResponse{},
-		Tasks:                []gocron_helper.JobData{},
+		Configs:      []types.GetConfigResponse{},
+		CdnRecords:   []types.GetCdnRecordResponse{},
+		DnsRecords:   []types.GetDnsRecordResponse{},
+		Devices:      []types.GetDeviceResponse{},
+		IpGroups:     []types.GetIPGroupResponse{},
+		PortForwards: []types.GetPortForwardResponse{},
+		Webhooks:     []types.GetWebhookResponse{},
+		WebhookSubs:  []types.GetWebhookSubResponse{},
+		Tasks:        []gocron_helper.JobData{},
 
-		OperationLogs:     []types.GetLogsResponse{},
-		OperationLogLimit: 0,
+		Logs:     []types.GetLogResponse{},
+		LogLimit: 0,
 	}
 	// 查询全部配置
 	allConfig, err := global.GvaDb.PlatformConfig.Query().
@@ -44,7 +44,7 @@ func Index(c *gin.Context) {
 		All(c)
 	if err == nil {
 		for _, item := range allConfig {
-			pageData.Configs = append(pageData.Configs, types.GetConfigsResponse{
+			pageData.Configs = append(pageData.Configs, types.GetConfigResponse{
 				ID:          item.ID,
 				Capability:  item.Capability.String(),
 				Name:        item.Name,
@@ -61,7 +61,7 @@ func Index(c *gin.Context) {
 		All(c)
 	if err == nil {
 		for _, item := range allCdnRecord {
-			list := types.GetCdnRecordsResponse{
+			list := types.GetCdnRecordResponse{
 				ID:             item.ID,
 				ConfigID:       item.ConfigID,
 				Platform:       item.Edges.Config.Platform.String(),
@@ -91,7 +91,7 @@ func Index(c *gin.Context) {
 		All(c)
 	if err == nil {
 		for _, item := range allDnsRecord {
-			list := types.GetDnsRecordsResponse{
+			list := types.GetDnsRecordResponse{
 				ID:            item.ID,
 				ConfigID:      item.ConfigID,
 				Platform:      item.Edges.Config.Platform.String(),
@@ -118,7 +118,7 @@ func Index(c *gin.Context) {
 		All(c)
 	if err == nil {
 		for _, item := range allDevice {
-			pageData.Devices = append(pageData.Devices, types.GetDevicesResponse{
+			pageData.Devices = append(pageData.Devices, types.GetDeviceResponse{
 				ID:              item.ID,
 				Code:            item.Code,
 				Name:            item.Name,
@@ -137,7 +137,7 @@ func Index(c *gin.Context) {
 		All(c)
 	if err == nil {
 		for _, item := range allIpGroup {
-			pageData.IpGroups = append(pageData.IpGroups, types.GetIPGroupsResponse{
+			pageData.IpGroups = append(pageData.IpGroups, types.GetIPGroupResponse{
 				ID:          item.ID,
 				Name:        item.Name,
 				Description: item.Description,
@@ -152,7 +152,7 @@ func Index(c *gin.Context) {
 		All(c)
 	if err == nil {
 		for _, item := range allPortForward {
-			pageData.PortForwards = append(pageData.PortForwards, types.GetPortForwardsResponse{
+			pageData.PortForwards = append(pageData.PortForwards, types.GetPortForwardResponse{
 				ID:          item.ID,
 				Name:        item.Name,
 				Description: item.Description,
@@ -173,7 +173,7 @@ func Index(c *gin.Context) {
 		All(c)
 	if err == nil {
 		for _, item := range allWebhook {
-			pageData.Webhooks = append(pageData.Webhooks, types.GetWebhooksResponse{
+			pageData.Webhooks = append(pageData.Webhooks, types.GetWebhookResponse{
 				ID:          item.ID,
 				Name:        item.Name,
 				Description: item.Description,
@@ -192,7 +192,7 @@ func Index(c *gin.Context) {
 		All(c)
 	if err == nil {
 		for _, item := range allWebhookSubscription {
-			list := types.GetWebhookSubscriptionsResponse{
+			list := types.GetWebhookSubResponse{
 				ID:          item.ID,
 				Name:        item.Name,
 				Description: item.Description,
@@ -225,7 +225,7 @@ func Index(c *gin.Context) {
 					list.ObjName = firstDevice.Name
 				}
 			}
-			pageData.WebhookSubscriptions = append(pageData.WebhookSubscriptions, list)
+			pageData.WebhookSubs = append(pageData.WebhookSubs, list)
 		}
 	}
 	// 任务助手
@@ -239,7 +239,7 @@ func Index(c *gin.Context) {
 		All(c)
 	if err == nil {
 		for _, item := range allOperationLog {
-			pageData.OperationLogs = append(pageData.OperationLogs, types.GetLogsResponse{
+			pageData.Logs = append(pageData.Logs, types.GetLogResponse{
 				ID:        item.ID,
 				OpType:    item.OpType.String(),
 				ObjID:     item.ObjID,
@@ -251,7 +251,7 @@ func Index(c *gin.Context) {
 				CreatedAt: item.CreatedAt,
 			})
 		}
-		pageData.OperationLogLimit = 15
+		pageData.LogLimit = 15
 	}
 
 	// 查询任务状态

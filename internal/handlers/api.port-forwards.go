@@ -15,7 +15,7 @@ import (
 
 // 获取全部端口转发
 func GetPortForwards(c *gin.Context) {
-	portForwards := make([]types.GetPortForwardsResponse, 0)
+	portForwards := make([]types.GetPortForwardResponse, 0)
 	// 查询全部端口转发
 	allPortForward, err := global.GvaDb.DevicePortForward.Query().
 		Order(ent.Desc(deviceportforward.FieldCreatedAt)).
@@ -25,7 +25,7 @@ func GetPortForwards(c *gin.Context) {
 		return
 	}
 	for _, item := range allPortForward {
-		portForwards = append(portForwards, types.GetPortForwardsResponse{
+		portForwards = append(portForwards, types.GetPortForwardResponse{
 			ID:          item.ID,
 			Name:        item.Name,
 			Description: item.Description,
@@ -60,7 +60,7 @@ func GetPortForward(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询端口转发失败: "+err.Error())
 		return
 	}
-	successResponse(c, types.GetPortForwardsResponse{
+	successResponse(c, types.GetPortForwardResponse{
 		ID:          firstPortForward.ID,
 		Name:        firstPortForward.Name,
 		Description: firstPortForward.Description,

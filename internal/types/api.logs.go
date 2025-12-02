@@ -5,7 +5,7 @@ import (
 )
 
 // 获取全部操作日志 响应结构
-type GetLogsResponse struct {
+type GetLogResponse struct {
 	ID        int64     `json:"id"`         // 日志序号
 	OpType    string    `json:"op_type"`    // 操作类型
 	ObjID     int64     `json:"obj_id"`     // 对象主键

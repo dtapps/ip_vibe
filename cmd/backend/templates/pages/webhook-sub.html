@@ -69,7 +69,7 @@
           <td>
     {{ template "switch" (dict
         "Checked" .IsActive
-        "URL" (printf "/api/webhook-subscriptions/%d/active" .ID)
+        "URL" (printf "/api/webhook-subs/%d/active" .ID)
     ) }}
           </td>
           <td>

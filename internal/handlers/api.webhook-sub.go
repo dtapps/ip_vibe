@@ -17,8 +17,8 @@ import (
 )
 
 // 获取全部通知订阅
-func GetWebhookSubscriptions(c *gin.Context) {
-	webhooks := make([]types.GetWebhookSubscriptionsResponse, 0)
+func GetWebhookSubs(c *gin.Context) {
+	webhooks := make([]types.GetWebhookSubResponse, 0)
 	// 查询全部通知订阅
 	allWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
 		Order(ent.Desc(webhooksubscription.FieldCreatedAt)).
@@ -28,7 +28,7 @@ func GetWebhookSubscriptions(c *gin.Context) {
 		return
 	}
 	for _, item := range allWebhookSubscription {
-		list := types.GetWebhookSubscriptionsResponse{
+		list := types.GetWebhookSubResponse{
 			ID:          item.ID,
 			Name:        item.Name,
 			Description: item.Description,
@@ -66,9 +66,9 @@ func GetWebhookSubscriptions(c *gin.Context) {
 }
 
 // 获取通知订阅
-func GetWebhookSubscription(c *gin.Context) {
+func GetWebhookSub(c *gin.Context) {
 	// 请求参数
-	var requestParams types.GetWebhookSubscriptionRequest
+	var requestParams types.GetWebhookSubRequest
 	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
@@ -82,7 +82,7 @@ func GetWebhookSubscription(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询通知订阅失败: "+err.Error())
 		return
 	}
-	list := types.GetWebhookSubscriptionsResponse{
+	list := types.GetWebhookSubResponse{
 		ID:          firstWebhookSubscription.ID,
 		Name:        firstWebhookSubscription.Name,
 		Description: firstWebhookSubscription.Description,
@@ -118,9 +118,9 @@ func GetWebhookSubscription(c *gin.Context) {
 }
 
 // 创建通知订阅
-func CreateWebhookSubscription(c *gin.Context) {
+func CreateWebhookSub(c *gin.Context) {
 	// 请求参数
-	var requestParams types.CreateWebhookSubscriptionRequest
+	var requestParams types.CreateWebhookSubRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
@@ -151,9 +151,9 @@ func CreateWebhookSubscription(c *gin.Context) {
 }
 
 // 更新通知订阅
-func UpdateWebhookSubscription(c *gin.Context) {
+func UpdateWebhookSub(c *gin.Context) {
 	// 请求参数
-	var requestParams types.UpdateWebhookSubscriptionRequest
+	var requestParams types.UpdateWebhookSubRequest
 	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
@@ -187,9 +187,9 @@ func UpdateWebhookSubscription(c *gin.Context) {
 }
 
 // 更新通知订阅状态
-func UpdateWebhookSubscriptionActive(c *gin.Context) {
+func UpdateWebhookSubActive(c *gin.Context) {
 	// 请求参数
-	var requestParams types.UpdateWebhookSubscriptionActiveRequest
+	var requestParams types.UpdateWebhookSubActiveRequest
 	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
@@ -222,9 +222,9 @@ func UpdateWebhookSubscriptionActive(c *gin.Context) {
 }
 
 // 删除通知订阅
-func DeleteWebhookSubscription(c *gin.Context) {
+func DeleteWebhookSub(c *gin.Context) {
 	// 请求参数
-	var requestParams types.DeleteWebhookSubscriptionRequest
+	var requestParams types.DeleteWebhookSubRequest
 	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return

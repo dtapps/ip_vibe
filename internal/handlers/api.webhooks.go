@@ -15,7 +15,7 @@ import (
 
 // 获取全部通知
 func GetWebhooks(c *gin.Context) {
-	webhooks := make([]types.GetWebhooksResponse, 0)
+	webhooks := make([]types.GetWebhookResponse, 0)
 	// 查询全部通知
 	allWebhook, err := global.GvaDb.Webhook.Query().
 		Order(ent.Desc(webhook.FieldCreatedAt)).
@@ -25,7 +25,7 @@ func GetWebhooks(c *gin.Context) {
 		return
 	}
 	for _, item := range allWebhook {
-		webhooks = append(webhooks, types.GetWebhooksResponse{
+		webhooks = append(webhooks, types.GetWebhookResponse{
 			ID:              item.ID,
 			Name:            item.Name,
 			Description:     item.Description,
@@ -58,7 +58,7 @@ func GetWebhook(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询通知失败: "+err.Error())
 		return
 	}
-	successResponse(c, types.GetWebhooksResponse{
+	successResponse(c, types.GetWebhookResponse{
 		ID:              firstWebhook.ID,
 		Name:            firstWebhook.Name,
 		Description:     firstWebhook.Description,

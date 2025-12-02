@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"vibe_ip/ent"
 	"vibe_ip/ent/device"
 	"vibe_ip/internal/global"
@@ -22,7 +23,7 @@ func Device(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.DeviceResponse{
-		List:     []types.GetDevicesResponse{},
+		List:     []types.GetDeviceResponse{},
 		Page:     0,
 		PageSize: 0,
 		Total:    0,
@@ -34,7 +35,7 @@ func Device(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allDevice.Items {
-			pageData.List = append(pageData.List, types.GetDevicesResponse{
+			pageData.List = append(pageData.List, types.GetDeviceResponse{
 				ID:              item.ID,
 				Code:            item.Code,
 				Name:            item.Name,
@@ -59,5 +60,5 @@ func Device(c *gin.Context) {
 	}
 
 	// 渲染模板
-	c.HTML(http.StatusOK, "pages/device.html", pageData)
+	c.HTML(http.StatusOK, filepath.Join("pages", "device.html"), pageData)
 }

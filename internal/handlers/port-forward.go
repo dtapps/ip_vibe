@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"vibe_ip/ent"
 	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/internal/global"
@@ -22,7 +23,7 @@ func PortForward(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.PortForwardResponse{
-		List:     []types.GetPortForwardsResponse{},
+		List:     []types.GetPortForwardResponse{},
 		Page:     0,
 		PageSize: 0,
 		Total:    0,
@@ -35,7 +36,7 @@ func PortForward(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allPortForward.Items {
-			pageData.List = append(pageData.List, types.GetPortForwardsResponse{
+			pageData.List = append(pageData.List, types.GetPortForwardResponse{
 				ID:          item.ID,
 				Name:        item.Name,
 				Description: item.Description,
@@ -63,5 +64,5 @@ func PortForward(c *gin.Context) {
 	}
 
 	// 渲染模板
-	c.HTML(http.StatusOK, "pages/port-forward.html", pageData)
+	c.HTML(http.StatusOK, filepath.Join("pages", "port-forward.html"), pageData)
 }

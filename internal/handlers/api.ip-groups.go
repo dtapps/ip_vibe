@@ -15,7 +15,7 @@ import (
 
 // 获取全部IP组
 func GetIPGroups(c *gin.Context) {
-	ipGroups := make([]types.GetIPGroupsResponse, 0)
+	ipGroups := make([]types.GetIPGroupResponse, 0)
 	// 查询全部IP组
 	allIpGroup, err := global.GvaDb.IpGroup.Query().
 		Order(ent.Desc(ipgroup.FieldCreatedAt)).
@@ -25,7 +25,7 @@ func GetIPGroups(c *gin.Context) {
 		return
 	}
 	for _, item := range allIpGroup {
-		ipGroups = append(ipGroups, types.GetIPGroupsResponse{
+		ipGroups = append(ipGroups, types.GetIPGroupResponse{
 			ID:          item.ID,
 			Name:        item.Name,
 			Description: item.Description,
@@ -57,7 +57,7 @@ func GetIPGroup(c *gin.Context) {
 	for _, item := range firstIpGroup.Edges.Devices {
 		deviceIDs = append(deviceIDs, item.ID)
 	}
-	successResponse(c, types.GetIPGroupsResponse{
+	successResponse(c, types.GetIPGroupResponse{
 		ID:          firstIpGroup.ID,
 		Name:        firstIpGroup.Name,
 		Description: firstIpGroup.Description,
@@ -184,9 +184,9 @@ func GetIPGroupDevices(c *gin.Context) {
 		return
 	}
 	// 设备列表
-	devices := make([]types.GetDevicesResponse, 0)
+	devices := make([]types.GetDeviceResponse, 0)
 	for _, item := range firstIpGroup.Edges.Devices {
-		devices = append(devices, types.GetDevicesResponse{
+		devices = append(devices, types.GetDeviceResponse{
 			ID:              item.ID,
 			Code:            item.Code,
 			Name:            item.Name,

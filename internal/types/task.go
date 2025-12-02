@@ -7,7 +7,7 @@ import (
 // 任务页面 请求结构
 type TaskRequest struct {
 	Page     int `form:"page" default:"1"`       // 当前页码
-	PageSize int `form:"page_size" default:"20"` // 每页数量
+	PageSize int `form:"page_size" default:"10"` // 每页数量
 }
 
 // 任务页面 响应结构

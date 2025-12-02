@@ -95,8 +95,8 @@ func (s *Service) StartJob(ctx context.Context) (err error) {
 }
 
 type HttpApiResponse struct {
-	Status int                             `json:"status"`
-	Data   []types.GetPortForwardsResponse `json:"data"`
+	Status int                            `json:"status"`
+	Data   []types.GetPortForwardResponse `json:"data"`
 }
 
 func (s *Service) httpApi(ctx context.Context, deviceCode string) (response HttpApiResponse, err error) {

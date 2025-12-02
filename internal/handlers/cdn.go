@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"vibe_ip/ent"
 	"vibe_ip/ent/cdnrecord"
 	"vibe_ip/internal/global"
@@ -22,7 +23,7 @@ func Cdn(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.CdnResponse{
-		List:     []types.GetCdnRecordsResponse{},
+		List:     []types.GetCdnRecordResponse{},
 		Page:     0,
 		PageSize: 0,
 		Total:    0,
@@ -36,7 +37,7 @@ func Cdn(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allCdnRecord.Items {
-			list := types.GetCdnRecordsResponse{
+			list := types.GetCdnRecordResponse{
 				ID:             item.ID,
 				ConfigID:       item.ConfigID,
 				Platform:       item.Edges.Config.Platform.String(),
@@ -70,5 +71,5 @@ func Cdn(c *gin.Context) {
 	}
 
 	// 渲染模板
-	c.HTML(http.StatusOK, "pages/cdn.html", pageData)
+	c.HTML(http.StatusOK, filepath.Join("pages", "cdn.html"), pageData)
 }

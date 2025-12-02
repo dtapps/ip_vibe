@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"vibe_ip/ent"
 	"vibe_ip/ent/webhook"
 	"vibe_ip/internal/global"
@@ -22,7 +23,7 @@ func Webhook(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.WebhookResponse{
-		List:     []types.GetWebhooksResponse{},
+		List:     []types.GetWebhookResponse{},
 		Page:     0,
 		PageSize: 0,
 		Total:    0,
@@ -34,7 +35,7 @@ func Webhook(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allWebhook.Items {
-			pageData.List = append(pageData.List, types.GetWebhooksResponse{
+			pageData.List = append(pageData.List, types.GetWebhookResponse{
 				ID:          item.ID,
 				Name:        item.Name,
 				Description: item.Description,
@@ -59,5 +60,5 @@ func Webhook(c *gin.Context) {
 	}
 
 	// 渲染模板
-	c.HTML(http.StatusOK, "pages/webhook.html", pageData)
+	c.HTML(http.StatusOK, filepath.Join("pages", "webhook.html"), pageData)
 }

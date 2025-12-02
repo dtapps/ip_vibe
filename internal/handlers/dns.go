@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"vibe_ip/ent"
 	"vibe_ip/ent/dnsrecord"
 	"vibe_ip/internal/global"
@@ -22,7 +23,7 @@ func Dns(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.DnsResponse{
-		List:     []types.GetDnsRecordsResponse{},
+		List:     []types.GetDnsRecordResponse{},
 		Page:     0,
 		PageSize: 0,
 		Total:    0,
@@ -37,7 +38,7 @@ func Dns(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allDnsRecord.Items {
-			list := types.GetDnsRecordsResponse{
+			list := types.GetDnsRecordResponse{
 				ID:            item.ID,
 				ConfigID:      item.ConfigID,
 				Platform:      item.Edges.Config.Platform.String(),
@@ -71,5 +72,5 @@ func Dns(c *gin.Context) {
 	}
 
 	// 渲染模板
-	c.HTML(http.StatusOK, "pages/dns.html", pageData)
+	c.HTML(http.StatusOK, filepath.Join("pages", "dns.html"), pageData)
 }
