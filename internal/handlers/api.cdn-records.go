@@ -10,7 +10,6 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/cast"
 )
 
 // 获取全部CDN记录
@@ -52,10 +51,14 @@ func GetCdnRecords(c *gin.Context) {
 // 获取CDN记录
 func GetCdnRecord(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.GetCdnRecordRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 查询CDN记录
 	firstCdnRecord, err := global.GvaDb.CDNRecord.Query().
-		Where(cdnrecord.ID(cast.ToInt64(id))).
+		Where(cdnrecord.IDEQ(requestParams.ID)).
 		WithConfig().
 		WithIPGroup().
 		First(c)
@@ -119,7 +122,6 @@ func CreateCdnRecord(c *gin.Context) {
 // 更新CDN记录
 func UpdateCdnRecord(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
 	var requestParams types.UpdateCdnRecordRequest
 	if err := c.ShouldBindJSON(&requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
@@ -130,7 +132,7 @@ func UpdateCdnRecord(c *gin.Context) {
 	}
 	// 查询CDN记录
 	firstCdnRecord, err := global.GvaDb.CDNRecord.Query().
-		Where(cdnrecord.ID(cast.ToInt64(id))).
+		Where(cdnrecord.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询CDN记录失败: "+err.Error())
@@ -160,8 +162,7 @@ func UpdateCdnRecord(c *gin.Context) {
 // 更新CDN记录状态
 func UpdateCdnRecordActive(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
-	var requestParams types.UpdateDnsRecordActiveRequest
+	var requestParams types.UpdateCdnRecordActiveRequest
 	if err := c.ShouldBindJSON(&requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
@@ -171,7 +172,7 @@ func UpdateCdnRecordActive(c *gin.Context) {
 	}
 	// 查询CDN记录
 	firstCdnRecord, err := global.GvaDb.CDNRecord.Query().
-		Where(cdnrecord.ID(cast.ToInt64(id))).
+		Where(cdnrecord.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询CDN记录失败: "+err.Error())
@@ -198,10 +199,14 @@ func UpdateCdnRecordActive(c *gin.Context) {
 // 删除CDN记录
 func DeleteCdnRecord(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.GetCdnRecordRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 查询CDN记录
 	firstCdnRecord, err := global.GvaDb.CDNRecord.Query().
-		Where(cdnrecord.ID(cast.ToInt64(id))).
+		Where(cdnrecord.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询CDN记录失败: "+err.Error())

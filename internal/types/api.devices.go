@@ -14,21 +14,37 @@ type GetDevicesResponse struct {
 	LastHeartbeatAt time.Time `json:"last_heartbeat_at,omitempty"` // 最后心跳时间
 }
 
+// 获取设备 请求结构
+type GetDeviceRequest struct {
+	ID int64 `uri:"id" binding:"required"` // 配置序号
+}
+
 // 创建设备 请求结构
 type CreateDeviceRequest struct {
-	Code        string `json:"code"`                  // 设备编号
-	Name        string `json:"name"`                  // 设备名称
-	Description string `json:"description,omitempty"` // 设备描述
+	Code        string `json:"code" binding:"required"` // 设备编号
+	Name        string `json:"name" binding:"required"` // 设备名称
+	Description string `json:"description,omitempty"`   // 设备描述
 }
 
 // 更新设备 请求结构
 type UpdateDeviceRequest struct {
-	Name        string `json:"name"`                  // 设备名称
-	Description string `json:"description,omitempty"` // 设备描述
+	GetDeviceRequest
+	Name        string `json:"name" binding:"required"` // 设备名称
+	Description string `json:"description,omitempty"`   // 设备描述
+}
+
+// 删除设备 请求结构
+type DeleteDeviceRequest struct {
+	GetDeviceRequest
+}
+
+// 删除设备 获取设备的IP历史记录
+type GetDeviceIpHistoryRequest struct {
+	GetDeviceRequest
 }
 
 // 获取设备的IP历史记录 响应结构
-type GetDeviceIpHistoryRequest struct {
+type GetDeviceIpHistoryResponse struct {
 	IPV4      string    `json:"ip_v4"`      // IP地址V4
 	IPV6      string    `json:"ip_v6"`      // IP地址V6
 	CreatedAt time.Time `json:"created_at"` // 创建时间

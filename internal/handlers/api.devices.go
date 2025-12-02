@@ -11,7 +11,6 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/cast"
 )
 
 // 获取全部设备
@@ -43,10 +42,14 @@ func GetDevices(c *gin.Context) {
 // 获取设备
 func GetDevice(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.GetDeviceRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 查询设备
 	firstDevice, err := global.GvaDb.Device.Query().
-		Where(device.ID(cast.ToInt64(id))).
+		Where(device.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
@@ -98,7 +101,6 @@ func CreateDevice(c *gin.Context) {
 // 更新设备
 func UpdateDevice(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
 	var requestParams types.UpdateDeviceRequest
 	if err := c.ShouldBindJSON(&requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
@@ -109,7 +111,7 @@ func UpdateDevice(c *gin.Context) {
 	}
 	// 查询设备
 	firstDevice, err := global.GvaDb.Device.Query().
-		Where(device.ID(cast.ToInt64(id))).
+		Where(device.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
@@ -137,10 +139,14 @@ func UpdateDevice(c *gin.Context) {
 // 删除设备
 func DeleteDevice(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.DeleteDeviceRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 查询设备
 	firstDevice, err := global.GvaDb.Device.Query().
-		Where(device.ID(cast.ToInt64(id))).
+		Where(device.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
@@ -165,10 +171,14 @@ func DeleteDevice(c *gin.Context) {
 // 获取设备的IP历史记录
 func GetDeviceIpHistory(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.GetDeviceIpHistoryRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 查询设备
 	firstDevice, err := global.GvaDb.Device.Query().
-		Where(device.ID(cast.ToInt64(id))).
+		Where(device.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
@@ -183,9 +193,9 @@ func GetDeviceIpHistory(c *gin.Context) {
 		return
 	}
 	// 设备列表
-	ips := make([]types.GetDeviceIpHistoryRequest, 0)
+	ips := make([]types.GetDeviceIpHistoryResponse, 0)
 	for _, item := range firstDeviceReports {
-		ips = append(ips, types.GetDeviceIpHistoryRequest{
+		ips = append(ips, types.GetDeviceIpHistoryResponse{
 			IPV4:      item.IPV4,
 			IPV6:      item.IPV6,
 			CreatedAt: item.CreatedAt,

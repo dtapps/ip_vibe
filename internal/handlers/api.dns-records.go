@@ -10,7 +10,6 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/cast"
 )
 
 // 获取全部DNS记录
@@ -54,10 +53,14 @@ func GetDnsRecords(c *gin.Context) {
 // 获取DNS记录
 func GetDnsRecord(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.GetDnsRecordRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 查询DNS记录
 	firstDnsRecord, err := global.GvaDb.DNSRecord.Query().
-		Where(dnsrecord.ID(cast.ToInt64(id))).
+		Where(dnsrecord.IDEQ(requestParams.ID)).
 		WithConfig().
 		WithIPGroup().
 		WithCdnRecord().
@@ -127,7 +130,6 @@ func CreateDnsRecord(c *gin.Context) {
 // 更新DNS记录
 func UpdateDnsRecord(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
 	var requestParams types.UpdateDnsRecordRequest
 	if err := c.ShouldBindJSON(&requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
@@ -138,7 +140,7 @@ func UpdateDnsRecord(c *gin.Context) {
 	}
 	// 查询DNS记录
 	firstDnsRecord, err := global.GvaDb.DNSRecord.Query().
-		Where(dnsrecord.ID(cast.ToInt64(id))).
+		Where(dnsrecord.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询DNS记录失败: "+err.Error())
@@ -170,7 +172,6 @@ func UpdateDnsRecord(c *gin.Context) {
 // 更新DNS记录状态
 func UpdateDnsRecordActive(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
 	var requestParams types.UpdateDnsRecordActiveRequest
 	if err := c.ShouldBindJSON(&requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
@@ -181,7 +182,7 @@ func UpdateDnsRecordActive(c *gin.Context) {
 	}
 	// 查询DNS记录
 	firstDnsRecord, err := global.GvaDb.DNSRecord.Query().
-		Where(dnsrecord.ID(cast.ToInt64(id))).
+		Where(dnsrecord.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询DNS记录失败: "+err.Error())
@@ -208,10 +209,14 @@ func UpdateDnsRecordActive(c *gin.Context) {
 // 删除DNS记录
 func DeleteDnsRecord(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.DeleteDnsRecordRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 查询DNS记录
 	firstDnsRecord, err := global.GvaDb.DNSRecord.Query().
-		Where(dnsrecord.ID(cast.ToInt64(id))).
+		Where(dnsrecord.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询DNS记录失败: "+err.Error())

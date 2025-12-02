@@ -10,7 +10,6 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/cast"
 )
 
 // 获取全部通知
@@ -44,10 +43,14 @@ func GetWebhooks(c *gin.Context) {
 // 获取通知
 func GetWebhook(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.GetWebhookRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 查询通知
 	firstWebhook, err := global.GvaDb.Webhook.Query().
-		Where(webhook.ID(cast.ToInt64(id))).
+		Where(webhook.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询通知失败: "+err.Error())
@@ -106,7 +109,6 @@ func CreateWebhook(c *gin.Context) {
 // 更新通知
 func UpdateWebhook(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
 	var requestParams types.UpdateWebhookRequest
 	if err := c.ShouldBindJSON(&requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
@@ -117,7 +119,7 @@ func UpdateWebhook(c *gin.Context) {
 	}
 	// 查询通知
 	firstWebhook, err := global.GvaDb.Webhook.Query().
-		Where(webhook.ID(cast.ToInt64(id))).
+		Where(webhook.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询通知失败: "+err.Error())
@@ -149,7 +151,6 @@ func UpdateWebhook(c *gin.Context) {
 // 更新通知状态
 func UpdateWebhookActive(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
 	var requestParams types.UpdateWebhookActiveRequest
 	if err := c.ShouldBindJSON(&requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
@@ -160,7 +161,7 @@ func UpdateWebhookActive(c *gin.Context) {
 	}
 	// 查询通知
 	firstWebhook, err := global.GvaDb.Webhook.Query().
-		Where(webhook.ID(cast.ToInt64(id))).
+		Where(webhook.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询通知失败: "+err.Error())
@@ -187,10 +188,14 @@ func UpdateWebhookActive(c *gin.Context) {
 // 删除通知
 func DeleteWebhook(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.DeleteWebhookRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 查询通知
 	firstWebhook, err := global.GvaDb.Webhook.Query().
-		Where(webhook.ID(cast.ToInt64(id))).
+		Where(webhook.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询通知失败: "+err.Error())

@@ -10,7 +10,6 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/cast"
 )
 
 // 获取全部配置
@@ -40,10 +39,14 @@ func GetConfigs(c *gin.Context) {
 // 获取配置
 func GetConfig(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.GetConfigRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 查询配置
 	firstConfig, err := global.GvaDb.PlatformConfig.Query().
-		Where(platformconfig.ID(cast.ToInt64(id))).
+		Where(platformconfig.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询配置失败: "+err.Error())
@@ -95,7 +98,6 @@ func CreateConfig(c *gin.Context) {
 // 更新配置
 func UpdateConfig(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
 	var requestParams types.UpdateConfigRequest
 	if err := c.ShouldBindJSON(&requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
@@ -106,7 +108,7 @@ func UpdateConfig(c *gin.Context) {
 	}
 	// 查询配置
 	firstConfig, err := global.GvaDb.PlatformConfig.Query().
-		Where(platformconfig.ID(cast.ToInt64(id))).
+		Where(platformconfig.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询配置失败: "+err.Error())
@@ -136,10 +138,14 @@ func UpdateConfig(c *gin.Context) {
 // 删除配置
 func DeleteConfig(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.DeleteConfigRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 查询配置
 	firstConfig, err := global.GvaDb.PlatformConfig.Query().
-		Where(platformconfig.ID(cast.ToInt64(id))).
+		Where(platformconfig.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询配置失败: "+err.Error())

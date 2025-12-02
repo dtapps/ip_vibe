@@ -16,34 +16,47 @@ type GetPortForwardsResponse struct {
 	DeviceName string `json:"device_name,omitempty"` // 设备名称
 }
 
+// 获取端口转发 请求结构
+type GetPortForwardRequest struct {
+	ID int64 `uri:"id" binding:"required"` // 配置序号
+}
+
 // 创建端口转发 请求结构
 type CreatePortForwardRequest struct {
-	Name        string   `json:"name"`                  // 设备端口转发名称
-	Description string   `json:"description,omitempty"` // 设备端口转发描述
-	LocalPort   int      `json:"local_port"`            // 本地监听端口
-	RemoteHost  string   `json:"remote_host"`           // 远程目标地址
-	RemotePort  int      `json:"remote_port"`           // 远程目标端口
-	Protocols   []string `json:"protocols"`             // 协议列表，支持 tcp4, tcp6, udp4, udp6
-	DeviceID    int64    `json:"device_id"`             // 设备ID
+	Name        string   `json:"name" binding:"required"`        // 设备端口转发名称
+	Description string   `json:"description,omitempty"`          // 设备端口转发描述
+	LocalPort   int      `json:"local_port" binding:"required"`  // 本地监听端口
+	RemoteHost  string   `json:"remote_host" binding:"required"` // 远程目标地址
+	RemotePort  int      `json:"remote_port" binding:"required"` // 远程目标端口
+	Protocols   []string `json:"protocols" binding:"required"`   // 协议列表，支持 tcp4, tcp6, udp4, udp6
+	DeviceID    int64    `json:"device_id" binding:"required"`   // 设备ID
 }
 
 // 更新端口转发 请求结构
 type UpdatePortForwardRequest struct {
-	Name        string   `json:"name"`                  // 设备端口转发名称
-	Description string   `json:"description,omitempty"` // 设备端口转发描述
-	LocalPort   int      `json:"local_port"`            // 本地监听端口
-	RemoteHost  string   `json:"remote_host"`           // 远程目标地址
-	RemotePort  int      `json:"remote_port"`           // 远程目标端口
-	Protocols   []string `json:"protocols"`             // 协议列表，支持 tcp4, tcp6, udp4, udp6
-	DeviceID    int64    `json:"device_id"`             // 设备ID
+	GetPortForwardRequest
+	Name        string   `json:"name" binding:"required"`        // 设备端口转发名称
+	Description string   `json:"description,omitempty"`          // 设备端口转发描述
+	LocalPort   int      `json:"local_port" binding:"required"`  // 本地监听端口
+	RemoteHost  string   `json:"remote_host" binding:"required"` // 远程目标地址
+	RemotePort  int      `json:"remote_port" binding:"required"` // 远程目标端口
+	Protocols   []string `json:"protocols" binding:"required"`   // 协议列表，支持 tcp4, tcp6, udp4, udp6
+	DeviceID    int64    `json:"device_id" binding:"required"`   // 设备ID
 }
 
 // 更新端口转发防火墙 请求结构
 type UpdatePortForwardForwardRequest struct {
+	GetPortForwardRequest
 	AutoForward bool `json:"auto_forward"` // 防火墙自动放行
 }
 
 // 更新端口转发状态 请求结构
 type UpdatePortForwardActiveRequest struct {
+	GetPortForwardRequest
 	IsActive bool `json:"is_active,omitempty"` // 是否活跃
+}
+
+// 删除端口转发 请求结构
+type DeletePortForwardRequest struct {
+	GetPortForwardRequest
 }

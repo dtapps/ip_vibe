@@ -10,7 +10,6 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/cast"
 )
 
 // 获取全部IP组
@@ -37,10 +36,14 @@ func GetIPGroups(c *gin.Context) {
 // 获取IP组
 func GetIPGroup(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.GetIPGroupRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 查询IP组
 	firstIpGroup, err := global.GvaDb.IpGroup.Query().
-		Where(ipgroup.ID(cast.ToInt64(id))).
+		Where(ipgroup.IDEQ(requestParams.ID)).
 		WithDevices().
 		First(c)
 	if err != nil {
@@ -94,8 +97,7 @@ func CreateIPGroup(c *gin.Context) {
 // 更新IP组
 func UpdateIPGroup(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
-	var requestParams types.CreateIPGroupRequest
+	var requestParams types.UpdateIPGroupRequest
 	if err := c.ShouldBindJSON(&requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
@@ -105,7 +107,7 @@ func UpdateIPGroup(c *gin.Context) {
 	}
 	// 查询IP组
 	firstIpGroup, err := global.GvaDb.IpGroup.Query().
-		Where(ipgroup.ID(cast.ToInt64(id))).
+		Where(ipgroup.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询IP组失败: "+err.Error())
@@ -135,10 +137,14 @@ func UpdateIPGroup(c *gin.Context) {
 // 删除IP组
 func DeleteIPGroup(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.DeleteIPGroupRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 查询IP组
 	firstIpGroup, err := global.GvaDb.IpGroup.Query().
-		Where(ipgroup.ID(cast.ToInt64(id))).
+		Where(ipgroup.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询IP组失败: "+err.Error())
@@ -163,10 +169,14 @@ func DeleteIPGroup(c *gin.Context) {
 // 获取IP组的设备列表
 func GetIPGroupDevices(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.GetIPGroupDevicesRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 查询IP组
 	firstIpGroup, err := global.GvaDb.IpGroup.Query().
-		Where(ipgroup.ID(cast.ToInt64(id))).
+		Where(ipgroup.IDEQ(requestParams.ID)).
 		WithDevices().
 		First(c)
 	if err != nil {

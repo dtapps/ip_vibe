@@ -13,7 +13,6 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/cast"
 )
 
 // 获取全部通知订阅
@@ -68,10 +67,14 @@ func GetWebhookSubscriptions(c *gin.Context) {
 // 获取通知订阅
 func GetWebhookSubscription(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.GetWebhookSubscriptionRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 查询通知订阅
 	firstWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
-		Where(webhooksubscription.ID(cast.ToInt64(id))).
+		Where(webhooksubscription.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询通知订阅失败: "+err.Error())
@@ -150,7 +153,6 @@ func CreateWebhookSubscription(c *gin.Context) {
 // 更新通知订阅
 func UpdateWebhookSubscription(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
 	var requestParams types.UpdateWebhookSubscriptionRequest
 	if err := c.ShouldBindJSON(&requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
@@ -161,7 +163,7 @@ func UpdateWebhookSubscription(c *gin.Context) {
 	}
 	// 查询通知订阅
 	firstWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
-		Where(webhooksubscription.ID(cast.ToInt64(id))).
+		Where(webhooksubscription.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询通知订阅失败: "+err.Error())
@@ -189,7 +191,6 @@ func UpdateWebhookSubscription(c *gin.Context) {
 // 更新通知订阅状态
 func UpdateWebhookSubscriptionActive(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
 	var requestParams types.UpdateWebhookSubscriptionActiveRequest
 	if err := c.ShouldBindJSON(&requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
@@ -200,7 +201,7 @@ func UpdateWebhookSubscriptionActive(c *gin.Context) {
 	}
 	// 查询通知订阅
 	firstWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
-		Where(webhooksubscription.ID(cast.ToInt64(id))).
+		Where(webhooksubscription.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询通知订阅失败: "+err.Error())
@@ -227,10 +228,14 @@ func UpdateWebhookSubscriptionActive(c *gin.Context) {
 // 删除通知订阅
 func DeleteWebhookSubscription(c *gin.Context) {
 	// 请求参数
-	id := c.Param("id")
+	var requestParams types.DeleteWebhookSubscriptionRequest
+	if err := c.ShouldBindJSON(&requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
 	// 查询通知订阅
 	firstWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
-		Where(webhooksubscription.ID(cast.ToInt64(id))).
+		Where(webhooksubscription.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询通知订阅失败: "+err.Error())
