@@ -5,14 +5,14 @@
   <div class="card-header">
     <h2 class="h2-icon">
       <svg class="ip-i">
-        <use href="/static/icons.svg#ip-layer"></use>
+        <use href="/static/img/icons.svg#ip-layer"></use>
       </svg>
       IP 组（设备维度）
     </h2>
     <div>
       <button class="btn btn-primary" onclick="openIpGroupModal()">
         <svg class="ip-i">
-          <use href="/static/icons.svg#ip-folder-plus"></use>
+          <use href="/static/img/icons.svg#ip-folder-plus"></use>
         </svg>
         添加IP组
       </button>
@@ -40,7 +40,7 @@
               onclick="viewLiveDeviceIpAddresse('{{.ID}}','{{.Name}}')"
             >
               <svg class="ip-i">
-                <use href="/static/icons.svg#ip-eyes"></use>
+                <use href="/static/img/icons.svg#ip-eyes"></use>
               </svg>
               实时IP
             </button>
@@ -49,7 +49,7 @@
               onclick="openIpGroupModal('{{.ID}}')"
             >
               <svg class="ip-i">
-                <use href="/static/icons.svg#ip-edit"></use>
+                <use href="/static/img/icons.svg#ip-edit"></use>
               </svg>
               编辑
             </button>
@@ -58,7 +58,7 @@
               onclick="deleteIpGroup('{{.ID}}')"
             >
               <svg class="ip-i">
-                <use href="/static/icons.svg#ip-delete"></use>
+                <use href="/static/img/icons.svg#ip-delete"></use>
               </svg>
               删除
             </button>
@@ -100,11 +100,11 @@
           <div class="form-group mt-3" style="text-align:right">
             <button type="button" class="btn" onclick="closeModal('ipGroupModal')">
               <svg class="ip-i">
-                <use href="/static/icons.svg#ip-close" />
+                <use href="/static/img/icons.svg#ip-close" />
               </svg> 取消</button>
             <button type="submit" class="btn btn-primary">
               <svg class="ip-i">
-                <use href="/static/icons.svg#ip-save" />
+                <use href="/static/img/icons.svg#ip-save" />
               </svg> 保存</button>
           </div>
         </form>

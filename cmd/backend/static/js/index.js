@@ -144,7 +144,7 @@ function copyData(id) {
         .then(() => {
             const btn = document.querySelector('.ip-popup-copy');
             const old = btn.innerHTML;
-            btn.innerHTML = '<svg class="ip-i"><use href="/static/icons.svg#ip-check"/></use></svg> 已复制';
+            btn.innerHTML = '<svg class="ip-i"><use href="/static/img/icons.svg#ip-check"/></use></svg> 已复制';
             btn.style.color = 'var(--success)';
             setTimeout(() => { btn.innerHTML = old; btn.style.color = ''; }, 1500);
         })

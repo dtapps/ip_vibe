@@ -5,14 +5,14 @@
   <div class="card-header">
     <h2 class="h2-icon">
       <svg class="ip-i">
-        <use href="/static/icons.svg#ip-dns"></use>
+        <use href="/static/img/icons.svg#ip-dns"></use>
       </svg>
       DNS 记录管理
     </h2>
     <div>
       <button class="btn btn-primary" onclick="openDnsRecordModal()">
         <svg class="ip-i">
-          <use href="/static/icons.svg#ip-plus"></use>
+          <use href="/static/img/icons.svg#ip-plus"></use>
         </svg>
         添加记录
       </button>
@@ -66,7 +66,7 @@
               onclick="viewLiveDeviceIpAddresse('{{.IPGroupID}}','{{.IPGroupName}}')"
             >
               <svg class="ip-i">
-                <use href="/static/icons.svg#ip-eyes"></use>
+                <use href="/static/img/icons.svg#ip-eyes"></use>
               </svg>
               实时IP
             </button>
@@ -77,7 +77,7 @@
             >
               <button class="btn btn-sm btn-outline-info" disabled>
                 <svg class="ip-i">
-                  <use href="/static/icons.svg#ip-eyes"></use>
+                  <use href="/static/img/icons.svg#ip-eyes"></use>
                 </svg>
                 实时IP
               </button>
@@ -88,7 +88,7 @@
               onclick="openDnsRecordModal('{{.ID}}')"
             >
               <svg class="ip-i">
-                <use href="/static/icons.svg#ip-edit"></use>
+                <use href="/static/img/icons.svg#ip-edit"></use>
               </svg>
               编辑
             </button>
@@ -99,7 +99,7 @@
             >
               <button class="btn btn-sm btn-danger" disabled>
                 <svg class="ip-i">
-                  <use href="/static/icons.svg#ip-delete"></use>
+                  <use href="/static/img/icons.svg#ip-delete"></use>
                 </svg>
                 删除
               </button>
@@ -110,7 +110,7 @@
               onclick="deleteDnsRecord('{{.ID}}')"
             >
               <svg class="ip-i">
-                <use href="/static/icons.svg#ip-delete"></use>
+                <use href="/static/img/icons.svg#ip-delete"></use>
               </svg>
               删除
             </button>
@@ -169,11 +169,11 @@
           <div class="form-group mt-3" style="text-align:right">
             <button type="button" class="btn" onclick="closeModal('dnsRecordModal')">
               <svg class="ip-i">
-                <use href="/static/icons.svg#ip-close" />
+                <use href="/static/img/icons.svg#ip-close" />
               </svg> 取消</button>
             <button type="submit" class="btn btn-primary">
               <svg class="ip-i">
-                <use href="/static/icons.svg#ip-save" />
+                <use href="/static/img/icons.svg#ip-save" />
               </svg> 保存</button>
           </div>
         </form>
@@ -188,14 +188,14 @@
         <div class="ip-popup-header">
           <h4 class="ip-popup-title" id="liveDeviceIpHistoryTitle">
             <svg class="ip-i">
-              <use href="/static/icons.svg#ip-eyes" />
+              <use href="/static/img/icons.svg#ip-eyes" />
               </use>
             </svg>
             实时 设备 IP 历史
           </h4>
           <button class="ip-popup-close" onclick="closeModal('liveDeviceIpHistoryModal')" aria-label="关闭">
             <svg class="ip-i">
-              <use href="/static/icons.svg#ip-close" />
+              <use href="/static/img/icons.svg#ip-close" />
               </use>
             </svg>
           </button>
@@ -206,7 +206,7 @@
           <span class="ip-popup-count">共 <b id="liveDeviceIpHistoryCount">0</b> 条</span>
           <button class="ip-popup-copy" onclick="copyData('liveDeviceIpHistoryPre')">
             <svg class="ip-i">
-              <use href="/static/icons.svg#ip-copy" />
+              <use href="/static/img/icons.svg#ip-copy" />
               </use>
             </svg>
             一键复制
@@ -220,7 +220,7 @@
         <div class="ip-popup-footer">
           <button class="btn" onclick="closeModal('liveDeviceIpHistoryModal')">
             <svg class="ip-i">
-              <use href="/static/icons.svg#ip-close" />
+              <use href="/static/img/icons.svg#ip-close" />
               </use>
             </svg> 关闭</button>
         </div>
@@ -234,14 +234,14 @@
         <div class="ip-popup-header">
           <h4 class="ip-popup-title" id="liveDeviceIpAddresseTitle">
             <svg class="ip-i">
-              <use href="/static/icons.svg#ip-eyes" />
+              <use href="/static/img/icons.svg#ip-eyes" />
               </use>
             </svg>
             实时 设备 IP 地址
           </h4>
           <button class="ip-popup-close" onclick="closeModal('liveDeviceIpAddresseModal')" aria-label="关闭">
             <svg class="ip-i">
-              <use href="/static/icons.svg#ip-close" />
+              <use href="/static/img/icons.svg#ip-close" />
               </use>
             </svg>
           </button>
@@ -252,7 +252,7 @@
           <span class="ip-popup-count">共 <b id="liveDeviceIpAddresseCount">0</b> 条</span>
           <button class="ip-popup-copy" onclick="copyData('liveDeviceIpAddressePre')">
             <svg class="ip-i">
-              <use href="/static/icons.svg#ip-copy" />
+              <use href="/static/img/icons.svg#ip-copy" />
               </use>
             </svg>
             一键复制
@@ -266,7 +266,7 @@
         <div class="ip-popup-footer">
           <button class="btn" onclick="closeModal('liveDeviceIpAddresseModal')">
             <svg class="ip-i">
-              <use href="/static/icons.svg#ip-close" />
+              <use href="/static/img/icons.svg#ip-close" />
               </use>
             </svg> 关闭</button>
         </div>

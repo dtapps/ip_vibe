@@ -1,37 +1,45 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>{{ block "title" . }}DDNS管理平台{{ end }}</title>
 
-    <link rel="stylesheet" href="/static/css/index.css">
-    <link rel="stylesheet" href="/static/css/index.dark.css">
+    <link rel="preload" href="/static/css/index.css" as="style" />
+    <link rel="preload" href="/static/css/index.dark.css" as="style" />
+    <link rel="preload" href="/static/js/uuid.js" as="script" />
+    <link rel="preload" href="/static/js/old_index.js" as="script" />
+    <link rel="preload" href="/static/img/icons.svg" as="image" />
+
+    <link rel="stylesheet" href="/static/css/index.css" />
+    <link rel="stylesheet" href="/static/css/index.dark.css" />
 
     {{ block "head" . }}{{ end }}
-</head>
-<body>
-
+  </head>
+  <body>
     {{ block "body" . }}{{ end }}
 
     <!-- 右边工具栏 -->
-    <a href="javascript:location.reload()" class="refresh-page" aria-label="刷新页面">
+    <a
+      href="javascript:location.reload()"
+      class="refresh-page"
+      aria-label="刷新页面"
+    >
       <svg class="ip-i">
-        <use href="/static/icons.svg#ip-refresh" />
+        <use href="/static/img/icons.svg#ip-refresh" />
       </svg>
     </a>
     <a href="#" class="back-top" aria-label="回到顶部">
       <svg class="ip-i">
-        <use href="/static/icons.svg#ip-top" />
+        <use href="/static/img/icons.svg#ip-top" />
       </svg>
     </a>
 
     {{ block "scripts" . }}
     <script>
-        window.selfDeviceCode = "{{selfDeviceCode}}";
+      window.deviceCode = "{{selfDeviceCode}}";
     </script>
     <script src="/static/js/uuid.js"></script>
     <script src="/static/js/index.js"></script>
     {{ end }}
-
-</body>
+  </body>
 </html>
