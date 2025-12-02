@@ -1,6 +1,7 @@
 {{ define "pagination" }} {{ $page := .Page }} {{ $size := .PageSize }} {{
 $total := toInt .Total }} {{ if gt $total 0 }}
 <div class="pagination">
+
   {{ $totalPages := div (add $total (sub $size 1)) $size }} {{ if gt $page 1 }}
   <a class="page-btn" onclick="changePage(`{{ sub $page 1 }}`)">上一页</a>
   {{ end }}

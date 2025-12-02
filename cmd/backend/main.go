@@ -189,7 +189,8 @@ func main() {
 	}
 
 	// 根路径 - 提供HTML页面并渲染数据
-	router.GET("/", handlers.Index)
+	router.GET("/", handlers.Dashboard)
+	router.GET("/dashboard", handlers.Dashboard)
 
 	// 平台配置页面 - 提供HTML页面并渲染数据
 	router.GET("/config", handlers.Config)

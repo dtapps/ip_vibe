@@ -5,7 +5,7 @@ import (
 	"vibe_ip/internal/helper/system_helper"
 )
 
-type IndexResponse struct {
+type OldIndexResponse struct {
 	Configs      []GetConfigResponse      `json:"configs"`
 	CdnRecords   []GetCdnRecordResponse   `json:"cdn_records"`
 	DnsRecords   []GetDnsRecordResponse   `json:"dns_records"`

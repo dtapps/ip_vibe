@@ -138,4 +138,24 @@
   </style>
   <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-dasharray="90 270" class="ring" fill="none"/>
 </symbol>
+
+<!-- 端口转发 -->
+<symbol id="ip-forward" viewBox="0 0 48 48">
+  <path d="M8 24h12m-12 0l4-4m-4 4l4 4M28 24h12m-12 0l4-4m-4 4l4 4" 
+        stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</symbol>
+
+<!-- 通知管理（铃铛） -->
+<symbol id="ip-bell" viewBox="0 0 48 48">
+  <path d="M24 40a18 18 0 100-36m0 36v-4M14 20a6 6 0 0110 0m6 0a6 6 0 01-10 0" 
+        stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+</symbol>
+
+<!-- 通知订阅（铃铛 + + 号，表示“订阅”动作） -->
+<symbol id="ip-subscribe" viewBox="0 0 48 48">
+  <path d="M24 40a18 18 0 100-36m0 36v-4M14 20a6 6 0 0110 0m6 0a6 6 0 01-10 0" 
+        stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+  <path d="M34 32v6m-3-3h6" 
+        stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+</symbol>
 </svg>

@@ -1,0 +1,156 @@
+{{ define "content" }}
+<h1>🌐 DDNS管理平台</h1>
+
+    <link rel="stylesheet" href="/static/css/dashboard.css" />
+
+<!-- 数据概览卡片 -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="h2-icon">
+      <svg class="ip-i"><use href="/static/img/icons.svg#ip-dashboard"></use></svg>
+      系统概览
+    </h2>
+  </div>
+  <div class="card-body">
+    <div class="overview-grid">
+      <div class="overview-item">
+        <div class="overview-title">设备总数</div>
+        <div class="overview-value">{{ .Stats.DeviceCount }}</div>
+      </div>
+      <div class="overview-item">
+        <div class="overview-title">在线设备</div>
+        <div class="overview-value">{{ .Stats.OnlineDeviceCount }}</div>
+      </div>
+      <div class="overview-item">
+        <div class="overview-title">DNS 记录</div>
+        <div class="overview-value">{{ .Stats.DnsRecordCount }}</div>
+      </div>
+      <div class="overview-item">
+        <div class="overview-title">CDN 记录</div>
+        <div class="overview-value">{{ .Stats.CdnRecordCount }}</div>
+      </div>
+      <div class="overview-item">
+        <div class="overview-title">通知渠道</div>
+        <div class="overview-value">{{ .Stats.WebhookCount }}</div>
+      </div>
+      <div class="overview-item">
+        <div class="overview-title">运行任务</div>
+        <div class="overview-value">{{ .Stats.ActiveTaskCount }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 快速入口导航 -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="h2-icon">
+      <svg class="ip-i"><use href="/static/img/icons.svg#ip-menu"></use></svg>
+      功能导航
+    </h2>
+  </div>
+  <div class="card-body">
+    <div class="quick-links">
+      <a href="/cdn" class="quick-link">
+        <svg class="ip-i"><use href="/static/img/icons.svg#ip-dns"></use></svg>
+        <span>CDN 管理</span>
+      </a>
+      <a href="/dns" class="quick-link">
+        <svg class="ip-i"><use href="/static/img/icons.svg#ip-dns"></use></svg>
+        <span>DNS 记录</span>
+      </a>
+      <a href="/device" class="quick-link">
+        <svg class="ip-i"><use href="/static/img/icons.svg#ip-devices"></use></svg>
+        <span>设备管理</span>
+      </a>
+      <a href="/ip-group" class="quick-link">
+        <svg class="ip-i"><use href="/static/img/icons.svg#ip-layer"></use></svg>
+        <span>IP 组</span>
+      </a>
+      <a href="/port-forward" class="quick-link">
+        <svg class="ip-i"><use href="/static/img/icons.svg#ip-forward"></use></svg>
+        <span>端口转发</span>
+      </a>
+      <a href="/webhook" class="quick-link">
+        <svg class="ip-i"><use href="/static/img/icons.svg#ip-bell"></use></svg>
+        <span>通知管理</span>
+      </a>
+      <a href="/webhook-sub" class="quick-link">
+        <svg class="ip-i"><use href="/static/img/icons.svg#ip-subscribe"></use></svg>
+        <span>通知订阅</span>
+      </a>
+      <a href="/task" class="quick-link">
+        <svg class="ip-i"><use href="/static/img/icons.svg#ip-task"></use></svg>
+        <span>任务管理</span>
+      </a>
+      <a href="/log" class="quick-link">
+        <svg class="ip-i"><use href="/static/img/icons.svg#ip-log"></use></svg>
+        <span>操作日志</span>
+      </a>
+      <a href="/config" class="quick-link">
+        <svg class="ip-i"><use href="/static/img/icons.svg#ip-server"></use></svg>
+        <span>平台配置</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- 系统信息 -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="h2-icon">
+      <svg class="ip-i"><use href="/static/img/icons.svg#ip-server"></use></svg>
+      系统信息
+    </h2>
+  </div>
+  <div class="card-body">
+    <div class="system-info-grid">
+      <div><strong>Go 版本：</strong>{{ .SystemGoVersion }}</div>
+      <div><strong>打包时间：</strong>{{ .SystemBuildTime }}</div>
+      <div><strong>Git 提交：</strong>{{ .SystemGitCommit }}</div>
+      <div><strong>启动时间：</strong>{{ .SystemMemoryInfo.RuntimeStartTime }}</div>
+      <div><strong>GC 总次数：</strong>{{ .SystemMemoryInfo.NumGC }}</div>
+      <div><strong>Goroutine 数：</strong>{{ .SystemMemoryInfo.NumGoroutine }}</div>
+      <div><strong>活跃堆对象：</strong>{{ .SystemMemoryInfo.HeapObjects }}</div>
+      <div><strong>下次 GC（MB）：</strong>{{ .SystemMemoryInfo.NextGCMB }}</div>
+      <div><strong>系统版本：</strong>{{ .SystemVersion }}</div>
+      <div><strong>操作系统：</strong>{{ .SystemOS }}</div>
+      <div><strong>CPU 架构：</strong>{{ .SystemArch }}</div>
+    </div>
+    <div style="margin-top: 16px; font-size: 13px; color: var(--text-secondary);">
+      © 2025 DDNS 管理平台
+    </div>
+  </div>
+</div>
+
+<!-- 最新操作日志（简化版） -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="h2-icon">
+      <svg class="ip-i"><use href="/static/img/icons.svg#ip-log"></use></svg>
+      最新操作（最近 {{ .Stats.LogLimit }} 条）
+    </h2>
+  </div>
+  <div class="card-body">
+    <div class="timeline" id="timeline">
+      {{ range .RecentLogs }}
+      <div class="timeline-item">
+        <div class="timeline-time">{{ formatTimeOrNil .CreatedAt }}</div>
+        <div>
+          <strong>{{ .ID }}</strong>:
+          <span class="text-muted">{{ .ObjType }}</span> →
+          <span class="text-success">{{ .ObjID }}</span>
+          {{ if eq .Status "success" }}
+          <span class="badge badge-success">{{ .Message }}</span>
+          {{ else }}
+          <span class="badge badge-danger">{{ .Message }}</span>
+          {{ end }}
+        </div>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+</div>
+
+    <script src="/static/js/dashboard.js"></script>
+{{ end }}

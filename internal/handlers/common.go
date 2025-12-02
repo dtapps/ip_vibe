@@ -41,6 +41,7 @@ func pusher(c *gin.Context) {
 			"/static/css/index.dark.css",
 			"/static/js/uuid.js",
 			"/static/js/index.js",
+			"/static/img/icons.svg",
 		}
 		for _, res := range resources {
 			if err := pusher.Push(res, nil); err != nil {
