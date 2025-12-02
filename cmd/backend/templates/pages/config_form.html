@@ -1,0 +1,134 @@
+{{ define "pages/config_form.html" }}
+<div class="modal" id="configModal">
+  <div class="modal-content">
+    <h3 id="configModalTitle">添加平台配置</h3>
+    <form id="configForm">
+      <div class="form-group">
+        <label>服务能力 <span style="color: red">*</span></label>
+        <select
+          name="capability"
+          id="config_capability"
+          required
+          onchange="changeConfigCapability(this)"
+        >
+          <option value="all" selected>CDN + DNS</option>
+          <option value="cdn">仅 CDN</option>
+          <option value="dns">仅 DNS</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>配置名称 <span style="color: red">*</span></label>
+        <input
+          type="text"
+          name="name"
+          id="config_name"
+          required
+          placeholder="如: 我的EdgeOne"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>平台类型 <span style="color: red">*</span></label>
+        <select
+          name="platform"
+          id="config_platform"
+          required
+          onchange="changeConfigPlatform(this.value)"
+        >
+          <option value="" disabled selected>请选择平台</option>
+          <option value="edgeone">Tencent EdgeOne</option>
+          <option value="cloudflare">CloudFlare</option>
+          <option value="dnspod">DNSPod</option>
+        </select>
+      </div>
+
+      <!-- EdgeOne 字段 -->
+      <div id="edgeoneFields" class="platform-fields hidden">
+        <h4 style="margin-bottom: 16px">EdgeOne 配置</h4>
+        <div class="form-group">
+          <label>Secret ID <span style="color: red">*</span></label>
+          <input
+            type="text"
+            id="edgeone_secret_id"
+            placeholder="AKIDxxxxxxxxxxxxxxxxxxxxxxxxx"
+          />
+        </div>
+        <div class="form-group">
+          <label>Secret Key <span style="color: red">*</span></label>
+          <input
+            type="password"
+            id="edgeone_secret_key"
+            placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          />
+        </div>
+        <div class="form-group">
+          <label>Zone ID <span style="color: red">*</span></label>
+          <input type="text" id="edgeone_zone_id" placeholder="zone-xxxxxxxx" />
+        </div>
+      </div>
+
+      <!-- CloudFlare 字段 -->
+      <div id="cloudflareFields" class="platform-fields hidden">
+        <h4 style="margin-bottom: 16px">CloudFlare 配置</h4>
+        <div class="form-group">
+          <label>API Token <span style="color: red">*</span></label>
+          <input
+            type="password"
+            id="cloudflare_api_key"
+            placeholder="your-api-token"
+          />
+        </div>
+        <div class="form-group">
+          <label>Zone ID <span style="color: red">*</span></label>
+          <input
+            type="text"
+            id="cloudflare_zone_id"
+            placeholder="your-zone-id"
+          />
+        </div>
+      </div>
+
+      <!-- DNSPod 字段 -->
+      <div id="dnspodFields" class="platform-fields hidden">
+        <h4 style="margin-bottom: 16px">DNSPod 配置</h4>
+        <div class="form-group">
+          <label>Secret ID <span style="color: red">*</span></label>
+          <input
+            type="text"
+            id="dnspod_secret_id"
+            placeholder="AKIDxxxxxxxxxxxxxxxxxxxxxxxxx"
+          />
+        </div>
+        <div class="form-group">
+          <label>Secret Key <span style="color: red">*</span></label>
+          <input
+            type="password"
+            id="dnspod_secret_key"
+            placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          />
+        </div>
+      </div>
+
+      <!-- 隐藏字段 -->
+      <input type="hidden" name="id" id="config_id" />
+      <input type="hidden" name="config" id="config_json" />
+
+      <div class="form-group mt-3" style="text-align: right">
+        <button type="button" class="btn" onclick="closeModal('configModal')">
+          <svg class="ip-i">
+            <use href="/static/img/icons.svg#ip-close" />
+          </svg>
+          取消
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <svg class="ip-i">
+            <use href="/static/img/icons.svg#ip-save" />
+          </svg>
+          保存
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{{ end }}

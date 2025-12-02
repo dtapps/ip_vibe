@@ -1,0 +1,90 @@
+{{ define "pages/dns_form.html" }}
+<div class="modal" id="dnsRecordModal">
+  <div class="modal-content">
+    <h3 id="dnsRecordModalTitle">添加 DNS 记录</h3>
+    <form id="dnsRecordForm">
+      <div class="form-group">
+        <label>选择配置 <span style="color: red">*</span></label>
+        <select
+          name="config_id"
+          id="dns_record_config_id"
+          required
+          onchange="onDnsRecordConfigSelect(this)"
+        ></select>
+      </div>
+
+      <div class="form-group">
+        <label>域名 <span style="color: red">*</span></label>
+        <input
+          type="text"
+          name="domain"
+          id="dns_record_domain"
+          required
+          placeholder="如 www.example.com"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>记录类型 <span style="color: red">*</span></label>
+        <select
+          name="type"
+          id="dns_record_type"
+          required
+          onchange="onDnsRecordTypeSelect(this)"
+        >
+          <option value="" disabled selected>请选择记录类型</option>
+          <option value="A">A</option>
+          <option value="AAAA">AAAA</option>
+          <option value="CNAME">CNAME</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label
+          >IP 组 <span style="color: green">（和 CDN 记录 二选一）</span></label
+        >
+        <select
+          name="ip_group_id"
+          id="dns_record_ip_group_id"
+          disabled
+          onchange="onDnsRecordIpGroupSelect(this)"
+        ></select>
+      </div>
+
+      <div class="form-group">
+        <label
+          >CDN 记录 <span style="color: green">（和 IP 组 二选一）</span></label
+        >
+        <select
+          name="cdn_record_id"
+          id="dns_record_cdn_record_id"
+          disabled
+          onchange="onDnsRecordCdnRecordSelect(this)"
+        ></select>
+      </div>
+
+      <!-- 隐藏字段 -->
+      <input type="hidden" name="id" id="dns_record_id" />
+
+      <div class="form-group mt-3" style="text-align: right">
+        <button
+          type="button"
+          class="btn"
+          onclick="closeModal('dnsRecordModal')"
+        >
+          <svg class="ip-i">
+            <use href="/static/img/icons.svg#ip-close" />
+          </svg>
+          取消
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <svg class="ip-i">
+            <use href="/static/img/icons.svg#ip-save" />
+          </svg>
+          保存
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{{ end }}

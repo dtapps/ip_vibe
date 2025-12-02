@@ -1,0 +1,47 @@
+{{ define "pages/device_form.html" }}
+<div class="modal" id="deviceModal">
+  <div class="modal-content">
+    <h3 id="deviceModalTitle">添加设备</h3>
+    <form id="deviceForm">
+      <div class="form-group">
+        <label>编号 <span style="color: red">*</span></label>
+        <input
+          type="text"
+          name="code"
+          id="device_code"
+          required
+          placeholder="如: xxxx-x-x-x-xxxx"
+        />
+      </div>
+      <div class="form-group">
+        <label>名称 <span style="color: red">*</span></label>
+        <input
+          type="text"
+          name="name"
+          id="device_name"
+          required
+          placeholder="如: 我的"
+        />
+      </div>
+
+      <!-- 隐藏字段 -->
+      <input type="hidden" name="id" id="device_id" />
+
+      <div class="form-group mt-3" style="text-align: right">
+        <button type="button" class="btn" onclick="closeModal('deviceModal')">
+          <svg class="ip-i">
+            <use href="/static/img/icons.svg#ip-close" />
+          </svg>
+          取消
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <svg class="ip-i">
+            <use href="/static/img/icons.svg#ip-save" />
+          </svg>
+          保存
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{{ end }}

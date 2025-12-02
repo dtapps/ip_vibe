@@ -67,10 +67,8 @@
           <td>{{.WebhookID}}:{{.WebhookName}}</td>
           <td>{{.ObjID}}:{{.ObjName}}</td>
           <td>
-    {{ template "switch" (dict
-        "Checked" .IsActive
-        "URL" (printf "/api/webhook-subs/%d/active" .ID)
-    ) }}
+            {{ template "switch" (dict "Checked" .IsActive "URL" (printf
+            "/api/webhook-subs/%d/active" .ID) ) }}
           </td>
           <td>
             <button
@@ -115,48 +113,8 @@
   </div>
 </div>
 
-    <!-- 通知订阅 模态框 -->
-    <div class="modal" id="webhookSubscriptionModal">
-      <div class="modal-content">
-        <h3 id="webhookSubscriptionModalTitle">添加 / 编辑 通知订阅</h3>
-        <form id="webhookSubscriptionForm">
+<!-- 通知订阅 模态框 -->
+{{ template "pages/webhook-sub_form.html" . }}
 
-          <div class="form-group">
-            <label>名称 <span style="color:red">*</span></label>
-            <input type="text" name="name" id="webhook_subscription_name" required placeholder="如：告警-IP">
-          </div>
-
-          <div class="form-group">
-            <label>通知 <span style="color:red">*</span></label>
-            <select name="webhook_id" id="webhook_subscription_webhook_id" required
-              onchange="onWebhookSubscriptionWebhookIdSelect(this)">
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>订阅对象 <span style="color:red">*</span></label>
-            <select name="obj_id" id="webhook_subscription_obj_id" required multiple
-              onchange="onWebhookSubscriptionObjIdSelect(this)" class="multiselect-device">
-            </select>
-          </div>
-
-          <!-- 隐藏字段 -->
-          <input type="hidden" name="id" id="webhook_subscription_id">
-          <input type="hidden" name="obj_type" id="webhook_subscription_obj_type">
-
-          <div class="form-group mt-3" style="text-align:right">
-            <button type="button" class="btn" onclick="closeModal('webhookSubscriptionModal')">
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-close" />
-              </svg> 取消</button>
-            <button type="submit" class="btn btn-primary">
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-save" />
-              </svg> 保存</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <script src="/static/js/webhook-sub.js"></script>
+<script src="/static/js/webhook-sub.js"></script>
 {{ end }}

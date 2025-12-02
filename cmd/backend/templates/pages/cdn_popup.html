@@ -1,0 +1,95 @@
+{{ define "pages/cdn_popup.html" }}
+
+    <!-- 实时 设备 IP 历史 弹窗 -->
+    <div class="modal" id="liveDeviceIpHistoryModal">
+      <div class="modal-content ip-popup">
+        <!-- 头部 -->
+        <div class="ip-popup-header">
+          <h4 class="ip-popup-title" id="liveDeviceIpHistoryTitle">
+            <svg class="ip-i">
+              <use href="/static/img/icons.svg#ip-eyes" />
+              </use>
+            </svg>
+            实时 设备 IP 历史
+          </h4>
+          <button class="ip-popup-close" onclick="closeModal('liveDeviceIpHistoryModal')" aria-label="关闭">
+            <svg class="ip-i">
+              <use href="/static/img/icons.svg#ip-close" />
+              </use>
+            </svg>
+          </button>
+        </div>
+
+        <!-- 工具栏 -->
+        <div class="ip-popup-toolbar">
+          <span class="ip-popup-count">共 <b id="liveDeviceIpHistoryCount">0</b> 条</span>
+          <button class="ip-popup-copy" onclick="copyData('liveDeviceIpHistoryPre')">
+            <svg class="ip-i">
+              <use href="/static/img/icons.svg#ip-copy" />
+              </use>
+            </svg>
+            一键复制
+          </button>
+        </div>
+
+        <!-- 代码块区域 -->
+        <pre class="ip-popup-pre" id="liveDeviceIpHistoryPre">点击“实时IP”按钮后，内容将显示在这里</pre>
+
+        <!-- 底部按钮 -->
+        <div class="ip-popup-footer">
+          <button class="btn" onclick="closeModal('liveDeviceIpHistoryModal')">
+            <svg class="ip-i">
+              <use href="/static/img/icons.svg#ip-close" />
+              </use>
+            </svg> 关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 实时 设备 IP 地址 弹窗 -->
+    <div class="modal" id="liveDeviceIpAddresseModal">
+      <div class="modal-content ip-popup">
+        <!-- 头部 -->
+        <div class="ip-popup-header">
+          <h4 class="ip-popup-title" id="liveDeviceIpAddresseTitle">
+            <svg class="ip-i">
+              <use href="/static/img/icons.svg#ip-eyes" />
+              </use>
+            </svg>
+            实时 设备 IP 地址
+          </h4>
+          <button class="ip-popup-close" onclick="closeModal('liveDeviceIpAddresseModal')" aria-label="关闭">
+            <svg class="ip-i">
+              <use href="/static/img/icons.svg#ip-close" />
+              </use>
+            </svg>
+          </button>
+        </div>
+
+        <!-- 工具栏 -->
+        <div class="ip-popup-toolbar">
+          <span class="ip-popup-count">共 <b id="liveDeviceIpAddresseCount">0</b> 条</span>
+          <button class="ip-popup-copy" onclick="copyData('liveDeviceIpAddressePre')">
+            <svg class="ip-i">
+              <use href="/static/img/icons.svg#ip-copy" />
+              </use>
+            </svg>
+            一键复制
+          </button>
+        </div>
+
+        <!-- 代码块区域 -->
+        <pre class="ip-popup-pre" id="liveDeviceIpAddressePre">点击“实时IP”按钮后，内容将显示在这里</pre>
+
+        <!-- 底部按钮 -->
+        <div class="ip-popup-footer">
+          <button class="btn" onclick="closeModal('liveDeviceIpAddresseModal')">
+            <svg class="ip-i">
+              <use href="/static/img/icons.svg#ip-close" />
+              </use>
+            </svg> 关闭</button>
+        </div>
+      </div>
+    </div>
+
+{{ end }}

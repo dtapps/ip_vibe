@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 	"vibe_ip/internal/backend"
 	"vibe_ip/internal/global"
@@ -391,11 +392,24 @@ func loadTemplates(templatePath string, funcMap template.FuncMap) multitemplate.
 			fmt.Printf("开发环境 业务页面: %s\n", name)
 		}
 
-		// 页面模板 = base + index + 组件 + 页面
+		// 检查是否存在同名 _form.html 或 _popup.html
+		var extras []string
+		baseName := strings.TrimSuffix(p, ".html")
+		if formFile := baseName + "_form.html"; fileExists(formFile) {
+			extras = append(extras, formFile)
+		}
+		if popupFile := baseName + "_popup.html"; fileExists(popupFile) {
+			extras = append(extras, popupFile)
+		}
+
+		// 页面模板 = base + index + components + extras + page
 		files := []string{layout, index}
 		files = append(files, components...) // 注入全部组件
+		files = append(files, extras...)     // 注入额外文件
 		files = append(files, p)             // 当前页面
-
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("开发环境 业务页面合并: %s\n", strings.Join(files, " -> "))
+		}
 		r.AddFromFilesFuncs(
 			name,
 			funcMap,
@@ -443,11 +457,24 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 			fmt.Printf("生产环境 业务页面: %s\n", name)
 		}
 
-		// 模板文件顺序：base → index → components → page
-		files := []string{layout, index}
-		files = append(files, components...)
-		files = append(files, p)
+		// 检查是否存在同名 _form.html 或 _popup.html
+		var extras []string
+		baseName := strings.TrimSuffix(p, ".html")
+		if formFile := baseName + "_form.html"; fileExists(formFile) {
+			extras = append(extras, formFile)
+		}
+		if popupFile := baseName + "_popup.html"; fileExists(popupFile) {
+			extras = append(extras, popupFile)
+		}
 
+		// 页面模板 = base + index + components + extras + page
+		files := []string{layout, index}
+		files = append(files, components...) // 注入全部组件
+		files = append(files, extras...)     // 注入额外文件
+		files = append(files, p)             // 当前页面
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("生产环境 业务页面合并: %s\n", strings.Join(files, " -> "))
+		}
 		r.AddFromFSFuncs(
 			name,
 			funcMap,
@@ -457,4 +484,9 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 	}
 
 	return r
+}
+
+func fileExists(filename string) bool {
+	_, err := os.Stat(filename)
+	return err == nil
 }

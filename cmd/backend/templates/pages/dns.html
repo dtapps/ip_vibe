@@ -54,10 +54,8 @@
             <span class="badge badge-success">{{.Platform}}</span>
           </td>
           <td>
-    {{ template "switch" (dict
-        "Checked" .IsActive
-        "URL" (printf "/api/dns-records/%d/active" .ID)
-    ) }}
+            {{ template "switch" (dict "Checked" .IsActive "URL" (printf
+            "/api/dns-records/%d/active" .ID) ) }}
           </td>
           <td>
             {{if ne .IPGroupID 0 }}
@@ -125,153 +123,12 @@
   </div>
 </div>
 
-    <!-- DNS记录管理 模态框 -->
-    <div class="modal" id="dnsRecordModal">
-      <div class="modal-content">
-        <h3 id="dnsRecordModalTitle">添加 DNS 记录</h3>
-        <form id="dnsRecordForm">
-          <div class="form-group">
-            <label>选择配置 <span style="color:red">*</span></label>
-            <select name="config_id" id="dns_record_config_id" required onchange="onDnsRecordConfigSelect(this)"> </select>
-          </div>
+<!-- DNS记录管理 模态框 -->
+{{ template "pages/dns_form.html" . }}
 
-          <div class="form-group">
-            <label>域名 <span style="color:red">*</span></label>
-            <input type="text" name="domain" id="dns_record_domain" required placeholder="如 www.example.com">
-          </div>
+<!-- 实时 设备 IP 历史 弹窗 -->
+<!-- 实时 设备 IP 地址 弹窗 -->
+{{ template "pages/dns_popup.html" . }}
 
-          <div class="form-group">
-            <label>记录类型 <span style="color:red">*</span></label>
-            <select name="type" id="dns_record_type" required onchange="onDnsRecordTypeSelect(this)">
-              <option value="" disabled selected>请选择记录类型</option>
-              <option value="A">A</option>
-              <option value="AAAA">AAAA</option>
-              <option value="CNAME">CNAME</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>IP 组 <span style="color:green">（和 CDN 记录 二选一）</span></label>
-            <select name="ip_group_id" id="dns_record_ip_group_id" disabled onchange="onDnsRecordIpGroupSelect(this)">
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>CDN 记录 <span style="color:green">（和 IP 组 二选一）</span></label>
-            <select name="cdn_record_id" id="dns_record_cdn_record_id" disabled
-              onchange="onDnsRecordCdnRecordSelect(this)">
-            </select>
-          </div>
-
-          <!-- 隐藏字段 -->
-          <input type="hidden" name="id" id="dns_record_id">
-
-          <div class="form-group mt-3" style="text-align:right">
-            <button type="button" class="btn" onclick="closeModal('dnsRecordModal')">
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-close" />
-              </svg> 取消</button>
-            <button type="submit" class="btn btn-primary">
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-save" />
-              </svg> 保存</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-
-    <!-- 实时 设备 IP 历史 弹窗 -->
-    <div class="modal" id="liveDeviceIpHistoryModal">
-      <div class="modal-content ip-popup">
-        <!-- 头部 -->
-        <div class="ip-popup-header">
-          <h4 class="ip-popup-title" id="liveDeviceIpHistoryTitle">
-            <svg class="ip-i">
-              <use href="/static/img/icons.svg#ip-eyes" />
-              </use>
-            </svg>
-            实时 设备 IP 历史
-          </h4>
-          <button class="ip-popup-close" onclick="closeModal('liveDeviceIpHistoryModal')" aria-label="关闭">
-            <svg class="ip-i">
-              <use href="/static/img/icons.svg#ip-close" />
-              </use>
-            </svg>
-          </button>
-        </div>
-
-        <!-- 工具栏 -->
-        <div class="ip-popup-toolbar">
-          <span class="ip-popup-count">共 <b id="liveDeviceIpHistoryCount">0</b> 条</span>
-          <button class="ip-popup-copy" onclick="copyData('liveDeviceIpHistoryPre')">
-            <svg class="ip-i">
-              <use href="/static/img/icons.svg#ip-copy" />
-              </use>
-            </svg>
-            一键复制
-          </button>
-        </div>
-
-        <!-- 代码块区域 -->
-        <pre class="ip-popup-pre" id="liveDeviceIpHistoryPre">点击“实时IP”按钮后，内容将显示在这里</pre>
-
-        <!-- 底部按钮 -->
-        <div class="ip-popup-footer">
-          <button class="btn" onclick="closeModal('liveDeviceIpHistoryModal')">
-            <svg class="ip-i">
-              <use href="/static/img/icons.svg#ip-close" />
-              </use>
-            </svg> 关闭</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 实时 设备 IP 地址 弹窗 -->
-    <div class="modal" id="liveDeviceIpAddresseModal">
-      <div class="modal-content ip-popup">
-        <!-- 头部 -->
-        <div class="ip-popup-header">
-          <h4 class="ip-popup-title" id="liveDeviceIpAddresseTitle">
-            <svg class="ip-i">
-              <use href="/static/img/icons.svg#ip-eyes" />
-              </use>
-            </svg>
-            实时 设备 IP 地址
-          </h4>
-          <button class="ip-popup-close" onclick="closeModal('liveDeviceIpAddresseModal')" aria-label="关闭">
-            <svg class="ip-i">
-              <use href="/static/img/icons.svg#ip-close" />
-              </use>
-            </svg>
-          </button>
-        </div>
-
-        <!-- 工具栏 -->
-        <div class="ip-popup-toolbar">
-          <span class="ip-popup-count">共 <b id="liveDeviceIpAddresseCount">0</b> 条</span>
-          <button class="ip-popup-copy" onclick="copyData('liveDeviceIpAddressePre')">
-            <svg class="ip-i">
-              <use href="/static/img/icons.svg#ip-copy" />
-              </use>
-            </svg>
-            一键复制
-          </button>
-        </div>
-
-        <!-- 代码块区域 -->
-        <pre class="ip-popup-pre" id="liveDeviceIpAddressePre">点击“实时IP”按钮后，内容将显示在这里</pre>
-
-        <!-- 底部按钮 -->
-        <div class="ip-popup-footer">
-          <button class="btn" onclick="closeModal('liveDeviceIpAddresseModal')">
-            <svg class="ip-i">
-              <use href="/static/img/icons.svg#ip-close" />
-              </use>
-            </svg> 关闭</button>
-        </div>
-      </div>
-    </div>
-
-    <script src="/static/js/dns.js"></script>
+<script src="/static/js/dns.js"></script>
 {{ end }}

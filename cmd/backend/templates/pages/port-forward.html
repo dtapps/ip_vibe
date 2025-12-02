@@ -80,64 +80,7 @@
 </div>
 
     <!-- 端口转发（设备维度） 模态框 -->
-    <div class="modal" id="portForwardModal">
-      <div class="modal-content">
-        <h3 id="portForwardModalTitle">添加 / 编辑 端口转发</h3>
-        <form id="portForwardForm">
-
-          <div class="form-group">
-            <label>名称 <span style="color:red">*</span></label>
-            <input type="text" name="name" id="port_forward_name" required placeholder="如: 我的端口转发">
-          </div>
-
-          <!-- <div class="form-group" style="display: none;">
-            <label>描述 <span style="color:red">*</span></label>
-            <input type="text" name="description" id="port_forward_description" required placeholder="如: 我的端口转发">
-          </div> -->
-
-          <div class="form-group">
-            <label>本地监听端口 <span style="color:red">*</span></label>
-            <input type="number" name="local_port" id="port_forward_local_port" required placeholder="如：8080">
-          </div>
-
-          <div class="form-group">
-            <label>远程目标主机 <span style="color:red">*</span></label>
-            <input type="text" name="remote_host" id="port_forward_remote_host" required placeholder="如：192.168.1.100">
-          </div>
-
-          <div class="form-group">
-            <label>远程目标端口 <span style="color:red">*</span></label>
-            <input type="number" name="remote_port" id="port_forward_remote_port" required placeholder="如：80">
-          </div>
-
-          <div class="form-group">
-            <label>选择协议（Ctrl/⌘ 多选） <span style="color:red">*</span></label>
-            <select name="protocols" id="port_forward_protocols" required multiple
-              onchange="onPortForwardProtocolsSelect(this)" class="form-multiselect"></select>
-          </div>
-
-          <div class="form-group">
-            <label>选择设备<span style="color:red">*</span></label>
-            <select name="device_id" id="port_forward_device_id" required
-              onchange="onPortForwardDeviceIdSelect(this)"></select>
-          </div>
-
-          <!-- 隐藏字段 -->
-          <input type="hidden" name="id" id="port_forward_id">
-
-          <div class="form-group mt-3" style="text-align:right">
-            <button type="button" class="btn" onclick="closeModal('portForwardModal')">
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-close" />
-              </svg> 取消</button>
-            <button type="submit" class="btn btn-primary">
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-save" />
-              </svg> 保存</button>
-          </div>
-        </form>
-      </div>
-    </div>
+    {{ template "pages/port-forward_form.html" . }}
 
     <script src="/static/js/port-forward.js"></script>
 {{ end }}
