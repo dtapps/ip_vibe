@@ -14,7 +14,7 @@ type GetConfigResponse struct {
 
 // 获取配置 请求结构
 type GetConfigRequest struct {
-	ID int64 `uri:"id" binding:"required"` // 配置序号
+	ID int64 `uri:"id" json:"-" binding:"required"` // 配置序号
 }
 
 // 创建配置 请求结构

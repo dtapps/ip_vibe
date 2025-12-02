@@ -18,7 +18,7 @@ type GetPortForwardResponse struct {
 
 // 获取端口转发 请求结构
 type GetPortForwardRequest struct {
-	ID int64 `uri:"id" binding:"required"` // 设备端口转发序号
+	ID int64 `uri:"id" json:"-" binding:"required"` // 设备端口转发序号
 }
 
 // 创建端口转发 请求结构

@@ -16,7 +16,7 @@ type GetWebhookResponse struct {
 
 // 获取通知 请求结构
 type GetWebhookRequest struct {
-	ID int64 `uri:"id" binding:"required"` // 通知序号
+	ID int64 `uri:"id" json:"-" binding:"required"` // 通知序号
 }
 
 // 创建通知 请求结构

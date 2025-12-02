@@ -2,7 +2,7 @@ package types
 
 // 获取任务 请求结构
 type GetTaskRequest struct {
-	ID string `uri:"id" binding:"required"` // 任务序号
+	ID string `uri:"id" json:"-" binding:"required"` // 任务序号
 }
 
 // 运行任务 请求结构

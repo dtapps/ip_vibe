@@ -11,7 +11,7 @@ type GetIPGroupResponse struct {
 
 // 获取IP组 请求结构
 type GetIPGroupRequest struct {
-	ID int64 `uri:"id" binding:"required"` // IP组序号
+	ID int64 `uri:"id" json:"-" binding:"required"` // IP组序号
 }
 
 // 创建IP组 请求结构
