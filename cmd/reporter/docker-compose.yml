@@ -5,13 +5,13 @@ services:
     restart: unless-stopped
     network_mode: host
     environment:
-      - "DEBUG=true"
-      - "HTTP_URL=http://ip_vibe:8086"
-      - "BASIC_AUTH_USERNAME=admin"
-      - "BASIC_AUTH_PASSWORD=123456"
-      - "DEVICE_CODE=设备编号，留空则自动生成（根据 /etc/machine-id 生成）"
-      - "DEVICE_NAME=设备名称，可留空"
+      - "DEBUG=true"  # 开启调试模式
+      - "HTTP_URL=http://backend:8080"  # backend 服务的 HTTP 地址
+      - "BASIC_AUTH_USERNAME="  # 基本认证用户名，可留空
+      - "BASIC_AUTH_PASSWORD="  # 基本认证密码，可留空
+      - "DEVICE_CODE="  # 设备编号，留空则自动生成（根据 /etc/machine-id 生成）
+      - "DEVICE_NAME="  # 设备名称，可留空
     volumes:
-      - /etc/machine-id:/etc/machine-id:ro
-      - /etc/localtime:/etc/localtime:ro
-      - ./logs:/app/logs
+      - /etc/machine-id:/etc/machine-id:ro  # 挂载主机的 /etc/machine-id 文件到容器，只读模式，用于生成设备编号
+      - /etc/localtime:/etc/localtime:ro  # 挂载主机的 /etc/localtime 文件到容器，只读模式，用于设置容器时间与主机时间一致
+      - ./logs:/app/logs  # 挂载主机的 ./logs 目录到容器的 /app/logs 目录，用于存储应用日志

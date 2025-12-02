@@ -6,23 +6,23 @@ services:
     network_mode: host
     healthcheck:
       # 检查 HTTP 路由是否返回 200 OK
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:8086/health"] 
-      interval: 5s # 每 5 秒检查一次
-      timeout: 3s # 超时时间 3 秒
-      retries: 3 # 失败 3 次后标记为 unhealthy
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8080/health"] 
+      interval: 5s  # 每 5 秒检查一次
+      timeout: 3s  # 超时时间 3 秒
+      retries: 3  # 失败 3 次后标记为 unhealthy
       start_period: 10s  # 在启动后的前 10 秒内，如果检查失败不算入重试次数
     environment:
-      - "DEBUG=true"
-      - "HTTP_PORT=8086"
-      - "BASIC_AUTH_USERNAME=admin"
-      - "BASIC_AUTH_PASSWORD=123456"
-      - "DEVICE_CODE=设备编号，留空则自动生成（根据 /etc/machine-id 生成）"
-      - "DEVICE_NAME=设备名称，可留空"
+      - "DEBUG=true"  # 开启调试模式
+      - "HTTP_PORT=8080"  # HTTP 端口号，默认 8080
+      - "BASIC_AUTH_USERNAME="  # 基本认证用户名，可留空
+      - "BASIC_AUTH_PASSWORD="  # 基本认证密码，可留空
+      - "DEVICE_CODE="  # 设备编号，留空则自动生成（根据 /etc/machine-id 生成）
+      - "DEVICE_NAME="  # 设备名称，可留空
     volumes:
-      - /etc/machine-id:/etc/machine-id:ro
-      - /etc/localtime:/etc/localtime:ro
-      - ./data:/app/data
-      - ./logs:/app/logs
+      - /etc/machine-id:/etc/machine-id:ro  # 挂载主机的 /etc/machine-id 文件到容器，只读模式，用于生成设备编号
+      - /etc/localtime:/etc/localtime:ro  # 挂载主机的 /etc/localtime 文件到容器，只读模式，用于设置容器时间与主机时间一致
+      - ./data:/app/data  # 挂载主机的 ./data 目录到容器的 /app/data 目录，用于存储应用数据
+      - ./logs:/app/logs  # 挂载主机的 ./logs 目录到容器的 /app/logs 目录，用于存储应用日志
 
   reporter:
     container_name: ip_vibe_reporter
@@ -32,16 +32,16 @@ services:
     depends_on:
       - backend
     environment:
-      - "DEBUG=true"
-      - "HTTP_URL=http://127.0.0.1:8086"
-      - "BASIC_AUTH_USERNAME=admin"
-      - "BASIC_AUTH_PASSWORD=123456"
-      - "DEVICE_CODE=设备编号，留空则自动生成（根据 /etc/machine-id 生成）"
-      - "DEVICE_NAME=设备名称，可留空"
+      - "DEBUG=true"  # 开启调试模式
+      - "HTTP_URL=http://backend:8080"  # backend 服务的 HTTP 地址
+      - "BASIC_AUTH_USERNAME="  # 基本认证用户名，可留空
+      - "BASIC_AUTH_PASSWORD="  # 基本认证密码，可留空
+      - "DEVICE_CODE="  # 设备编号，留空则自动生成（根据 /etc/machine-id 生成）
+      - "DEVICE_NAME="  # 设备名称，可留空
     volumes:
-      - /etc/machine-id:/etc/machine-id:ro
-      - /etc/localtime:/etc/localtime:ro
-      - ./logs:/app/logs
+      - /etc/machine-id:/etc/machine-id:ro  # 挂载主机的 /etc/machine-id 文件到容器，只读模式，用于生成设备编号
+      - /etc/localtime:/etc/localtime:ro  # 挂载主机的 /etc/localtime 文件到容器，只读模式，用于设置容器时间与主机时间一致
+      - ./logs:/app/logs  # 挂载主机的 ./logs 目录到容器的 /app/logs 目录，用于存储应用日志
 
   forwarder:
     container_name: ip_vibe_forwarder
@@ -51,12 +51,12 @@ services:
     depends_on:
       - backend
     environment:
-      - "DEBUG=true"
-      - "HTTP_URL=http://127.0.0.1:8086"
-      - "BASIC_AUTH_USERNAME=admin"
-      - "BASIC_AUTH_PASSWORD=123456"
-      - "DEVICE_CODE=设备编号，留空则自动生成（根据 /etc/machine-id 生成）"
+      - "DEBUG=true"  # 开启调试模式
+      - "HTTP_URL=http://backend:8080"  # backend 服务的 HTTP 地址
+      - "BASIC_AUTH_USERNAME="  # 基本认证用户名，可留空
+      - "BASIC_AUTH_PASSWORD="  # 基本认证密码，可留空
+      - "DEVICE_CODE="  # 设备编号，留空则自动生成（根据 /etc/machine-id 生成）
     volumes:
-      - /etc/machine-id:/etc/machine-id:ro
-      - /etc/localtime:/etc/localtime:ro
-      - ./logs:/app/logs
+      - /etc/machine-id:/etc/machine-id:ro  # 挂载主机的 /etc/machine-id 文件到容器，只读模式，用于生成设备编号
+      - /etc/localtime:/etc/localtime:ro  # 挂载主机的 /etc/localtime 文件到容器，只读模式，用于设置容器时间与主机时间一致
+      - ./logs:/app/logs  # 挂载主机的 ./logs 目录到容器的 /app/logs 目录，用于存储应用日志

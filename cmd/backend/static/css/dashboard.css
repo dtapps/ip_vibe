@@ -64,15 +64,6 @@
   gap: 10px;
   font-size: 14px;
 }
-@media (prefers-color-scheme: dark) {
-  .quick-link {
-    background: #1e293b;
-    border-color: #334155;
-  }
-  .quick-link:hover {
-    background: #334155;
-  }
-}
 
 .quick-link svg {
   width: 24px;

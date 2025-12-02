@@ -190,33 +190,42 @@ async function deleteCdnRecord(id) {
 
 // 实时 设备 IP 地址 弹窗
 async function viewLiveDeviceIpAddresse(id, name) {
-    try {
-        const { data: ipGroupDevices } = await API.get(`/api/ip-groups/${id}/devices`);
-        console.log("ipGroupDevices", ipGroupDevices);
-        if (!ipGroupDevices) {
-            alert('IP组设备数据异常');
-            return;
-        }
-        if (ipGroupDevices.length === 0) {
-            alert('当前组内设备无数据');
-            return;
-        }
-
-        // 填充代码块
-        const pre = document.getElementById('liveDeviceIpAddressePre');
-
-        // 格式化 IP 列表
-        const ipList = ipGroupDevices.map(d => `${d.name} - ${d.ip_v4 || '-'} / ${d.ip_v6 || '-'}`);
-
-        pre.textContent = ipList.join('\n');
-
-        // 更新计数
-        document.getElementById('liveDeviceIpAddresseCount').textContent = ipGroupDevices.length;
-
-        // 打开弹窗（统一走你已有的 openModal 即可）
-        openModal('liveDeviceIpAddresseModal', 'liveDeviceIpAddresseTitle', `实时 设备 IP 地址 - ${name}`);
-    } catch (error) {
-        alert(`加载IP组设备信息失败: ${error.message}`);
-        console.error("查看设备IP地址失败", error);
+  try {
+    const { data: ipGroupDevices } = await API.get(
+      `/api/ip-groups/${id}/devices`
+    );
+    console.log("ipGroupDevices", ipGroupDevices);
+    if (!ipGroupDevices) {
+      alert("IP组设备数据异常");
+      return;
     }
+    if (ipGroupDevices.length === 0) {
+      alert("当前组内设备无数据");
+      return;
+    }
+
+    // 填充代码块
+    const pre = document.getElementById("liveDeviceIpAddressePre");
+
+    // 格式化 IP 列表
+    const ipList = ipGroupDevices.map(
+      (d) => `${d.name} - ${d.ip_v4 || "-"} / ${d.ip_v6 || "-"}`
+    );
+
+    pre.textContent = ipList.join("\n");
+
+    // 更新计数
+    document.getElementById("liveDeviceIpAddresseCount").textContent =
+      ipGroupDevices.length;
+
+    // 打开弹窗（统一走你已有的 openModal 即可）
+    openModal(
+      "liveDeviceIpAddresseModal",
+      "liveDeviceIpAddresseTitle",
+      `实时 设备 IP 地址 - ${name}`
+    );
+  } catch (error) {
+    alert(`加载IP组设备信息失败: ${error.message}`);
+    console.error("查看设备IP地址失败", error);
+  }
 }
