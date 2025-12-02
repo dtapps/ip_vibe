@@ -1,7 +1,7 @@
 {{ define "content" }}
 <h1>🌐 DDNS管理平台</h1>
 
-<div class="card" id="sectionTask">
+<div class="card">
   <div class="card-header">
     <h2 class="h2-icon">
       <svg class="ip-i">
@@ -62,7 +62,7 @@
           <th style="width: 300px; text-align: center">操作</th>
         </tr>
       </thead>
-      <tbody id="groupTable">
+      <tbody id="table">
         {{range .List}}
         <tr>
           <td>{{.ID}}</td>

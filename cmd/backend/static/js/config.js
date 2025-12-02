@@ -1,11 +1,11 @@
 // 请选择服务能力 capability
-function changeConfigCapability(sel) {
+function changeCapability(sel) {
   const opt = sel.options[sel.selectedIndex];
-  // console.log("changeConfigCapability", opt);
+  // console.log("changeCapability", opt);
 }
 
 // 请选择平台 platform
-function changeConfigPlatform(platform) {
+function changePlatform(platform) {
   // 隐藏所有平台字段
   document
     .querySelectorAll(".platform-fields")
@@ -20,7 +20,7 @@ function changeConfigPlatform(platform) {
 
 // 组装JSON配置
 function buildConfigPlatform() {
-  const platform = document.getElementById("config_platform").value;
+  const platform = document.getElementById("platform").value;
   let config = {};
 
   switch (platform) {
@@ -51,9 +51,9 @@ function buildConfigPlatform() {
   document.getElementById("config_json").value = JSON.stringify(config);
 }
 
-// 平台配置管理（模态框）
-async function openConfigModal(id) {
-  document.getElementById("configForm").reset();
+// 打开表单
+async function openModal(id) {
+  document.getElementById("form").reset();
 
   // 编辑
   if (id) {
@@ -64,15 +64,15 @@ async function openConfigModal(id) {
       return;
     }
 
-    document.getElementById("config_id").value = config.id;
-    document.getElementById("config_id").disabled = true;
-    document.getElementById("config_capability").value = config.capability;
-    document.getElementById("config_name").value = config.name;
-    document.getElementById("config_platform").value = config.platform;
-    document.getElementById("config_platform").disabled = true;
+    document.getElementById("id").value = config.id;
+    document.getElementById("id").disabled = true;
+    document.getElementById("capability").value = config.capability;
+    document.getElementById("name").value = config.name;
+    document.getElementById("platform").value = config.platform;
+    document.getElementById("platform").disabled = true;
 
     // 解析JSON并填充表单
-    changeConfigPlatform(config.platform);
+    changePlatform(config.platform);
 
     switch (config.platform) {
       case "edgeone":
@@ -97,33 +97,33 @@ async function openConfigModal(id) {
         break;
     }
 
-    openModal("configModal", "configModalTitle", "编辑 平台配置");
+    showModal("modal", "modalTitle", "编辑 平台配置");
   }
 
   // 创建
   if (!id) {
-    document.getElementById("config_id").value = "";
-    document.getElementById("config_id").disabled = true;
+    document.getElementById("id").value = "";
+    document.getElementById("id").disabled = true;
     document
       .querySelectorAll(".platform-fields")
       .forEach((el) => el.classList.add("hidden"));
-    document.getElementById("config_platform").disabled = false;
+    document.getElementById("platform").disabled = false;
 
-    openModal("configModal", "configModalTitle", "添加 平台配置");
+    showModal("modal", "modalTitle", "添加 平台配置");
   }
 }
 
-// 平台配置管理（模态框） -> 表单提交
-document.getElementById("configForm").onsubmit = async (e) => {
+// 表单提交
+document.getElementById("form").onsubmit = async (e) => {
   e.preventDefault();
   buildConfigPlatform(); // 组装JSON
 
   // 表单数据
-  const form_id = Number(document.getElementById("config_id").value.trim());
+  const form_id = Number(document.getElementById("id").value.trim());
   const form_data = {
-    capability: document.getElementById("config_capability").value.trim(),
-    name: document.getElementById("config_name").value.trim(),
-    platform: document.getElementById("config_platform").value.trim(),
+    capability: document.getElementById("capability").value.trim(),
+    name: document.getElementById("name").value.trim(),
+    platform: document.getElementById("platform").value.trim(),
     config_json: document.getElementById("config_json").value.trim(),
   };
   console.log("form_id, form_data", form_id, form_data);

@@ -1,15 +1,15 @@
 {{ define "pages/config_form.html" }}
-<div class="modal" id="configModal">
+<div class="modal" id="modal">
   <div class="modal-content">
-    <h3 id="configModalTitle">添加平台配置</h3>
-    <form id="configForm">
+    <h3 id="modalTitle">添加平台配置</h3>
+    <form id="form">
       <div class="form-group">
         <label>服务能力 <span style="color: red">*</span></label>
         <select
           name="capability"
-          id="config_capability"
+          id="capability"
           required
-          onchange="changeConfigCapability(this)"
+          onchange="changeCapability(this)"
         >
           <option value="all" selected>CDN + DNS</option>
           <option value="cdn">仅 CDN</option>
@@ -22,7 +22,7 @@
         <input
           type="text"
           name="name"
-          id="config_name"
+          id="name"
           required
           placeholder="如: 我的EdgeOne"
         />
@@ -32,9 +32,9 @@
         <label>平台类型 <span style="color: red">*</span></label>
         <select
           name="platform"
-          id="config_platform"
+          id="platform"
           required
-          onchange="changeConfigPlatform(this.value)"
+          onchange="changePlatform(this.value)"
         >
           <option value="" disabled selected>请选择平台</option>
           <option value="edgeone">Tencent EdgeOne</option>
@@ -111,11 +111,11 @@
       </div>
 
       <!-- 隐藏字段 -->
-      <input type="hidden" name="id" id="config_id" />
+      <input type="hidden" name="id" id="id" />
       <input type="hidden" name="config" id="config_json" />
 
       <div class="form-group mt-3" style="text-align: right">
-        <button type="button" class="btn" onclick="closeModal('configModal')">
+        <button type="button" class="btn" onclick="closeModal('modal')">
           <svg class="ip-i">
             <use href="/static/img/icons.svg#ip-close" />
           </svg>

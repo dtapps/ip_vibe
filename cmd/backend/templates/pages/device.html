@@ -1,7 +1,7 @@
 {{ define "content" }}
 <h1>🌐 DDNS管理平台</h1>
 
-<div class="card" id="sectionDevices">
+<div class="card">
   <div class="card-header">
     <h2 class="h2-icon">
       <svg class="ip-i">
@@ -10,7 +10,7 @@
       设备实时上报
     </h2>
     <div>
-      <button class="btn btn-primary" onclick="openDeviceModal()">
+      <button class="btn btn-primary" onclick="openModal()">
         <svg class="ip-i">
           <use href="/static/img/icons.svg#ip-mobile"></use>
         </svg>
@@ -30,7 +30,7 @@
           <th style="width: 300px; text-align: center">操作</th>
         </tr>
       </thead>
-      <tbody id="deviceTable">
+      <tbody id="table">
         {{ range .List }}
         <tr class="device-row" data-last-heartbeat="{{.LastHeartbeatAt.Unix}}">
           <td>{{.Code}}</td>
@@ -50,7 +50,7 @@
             </button>
             <button
               class="btn btn-primary btn-sm"
-              onclick="openDeviceModal('{{.ID}}')"
+              onclick="openModal('{{.ID}}')"
             >
               <svg class="ip-i">
                 <use href="/static/img/icons.svg#ip-edit"></use>

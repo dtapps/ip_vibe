@@ -1,39 +1,18 @@
 // 选择通知 webhook_id
-function onWebhookSubscriptionWebhookIdSelect(sel) {
+function onWebhookIdSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  // console.log("onWebhookSubscriptionWebhookIdSelect", opt);
+  // console.log("onWebhookIdSelect", opt);
 }
 
 // 选择订阅对象 obj_id
-function onWebhookSubscriptionObjIdSelect(sel) {
+function onObjIdSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  // console.log("onWebhookSubscriptionObjIdSelect", opt);
+  // console.log("onObjIdSelect", opt);
 }
 
-// 修改通知订阅状态
-async function toggleWebhookSubscriptionStatus(id, checkbox) {
-  // 保存原始状态用于错误恢复
-  const originalChecked = checkbox.checked;
-
-  await withErrorHandling(
-    async () => {
-      await API.patch(`/api/webhook-subs/${id}/active`, {
-        is_active: checkbox.checked,
-      });
-    },
-    {
-      errorMessage: "更新状态失败",
-      revertAction: () => {
-        // 恢复checkbox状态
-        checkbox.checked = originalChecked;
-      },
-    }
-  );
-}
-
-// 管理通知订阅（模态框）
-async function openWebhookSubscriptionModal(id, obj_type) {
-  document.getElementById("webhookSubscriptionForm").reset();
+// 打开表单
+async function openModal(id, obj_type) {
+  document.getElementById("form").reset();
 
   await withErrorHandling(
     async () => {
@@ -41,9 +20,7 @@ async function openWebhookSubscriptionModal(id, obj_type) {
       const { data: webhooks } = await API.get(`/api/webhooks`);
       console.log("webhooks", webhooks);
       if (webhooks) {
-        const webhookIdSelect = document.getElementById(
-          "webhook_subscription_webhook_id"
-        );
+        const webhookIdSelect = document.getElementById("webhook_id");
         webhookIdSelect.innerHTML = "";
         addPlaceholder(webhookIdSelect, "请选择通知");
         webhooks.forEach((d) => {
@@ -63,9 +40,7 @@ async function openWebhookSubscriptionModal(id, obj_type) {
           const { data: devices } = await API.get(`/api/devices`);
           console.log("devices", devices);
           if (devices) {
-            const objIdSelect = document.getElementById(
-              "webhook_subscription_obj_id"
-            );
+            const objIdSelect = document.getElementById("obj_id");
             objIdSelect.innerHTML = "";
             devices.forEach((d) => {
               const opt = document.createElement("option");
@@ -83,9 +58,7 @@ async function openWebhookSubscriptionModal(id, obj_type) {
           const { data: dnsRecords } = await API.get(`/api/dns-records`);
           console.log("dnsRecords", dnsRecords);
           if (dnsRecords) {
-            const objIdSelect = document.getElementById(
-              "webhook_subscription_obj_id"
-            );
+            const objIdSelect = document.getElementById("obj_id");
             objIdSelect.innerHTML = "";
             dnsRecords.forEach((d) => {
               const opt = document.createElement("option");
@@ -103,9 +76,7 @@ async function openWebhookSubscriptionModal(id, obj_type) {
           const { data: cdnRecords } = await API.get(`/api/cdn-records`);
           console.log("cdnRecords", cdnRecords);
           if (cdnRecords) {
-            const objIdSelect = document.getElementById(
-              "webhook_subscription_obj_id"
-            );
+            const objIdSelect = document.getElementById("obj_id");
             objIdSelect.innerHTML = "";
             cdnRecords.forEach((d) => {
               const opt = document.createElement("option");
@@ -131,51 +102,31 @@ async function openWebhookSubscriptionModal(id, obj_type) {
           return;
         }
 
-        document.getElementById("webhook_subscription_id").value =
-          webhookSubscription.id;
-        document.getElementById("webhook_subscription_id").disabled = true;
-        document.getElementById("webhook_subscription_name").value =
-          webhookSubscription.name;
-        document.getElementById("webhook_subscription_webhook_id").value =
+        document.getElementById("id").value = webhookSubscription.id;
+        document.getElementById("id").disabled = true;
+        document.getElementById("name").value = webhookSubscription.name;
+        document.getElementById("webhook_id").value =
           webhookSubscription.webhook_id;
-        document.getElementById(
-          "webhook_subscription_webhook_id"
-        ).disabled = true;
-        document.getElementById("webhook_subscription_obj_id").value =
-          webhookSubscription.obj_id;
-        document.getElementById("webhook_subscription_obj_id").disabled = true;
-        document.getElementById("webhook_subscription_obj_type").value =
+        document.getElementById("webhook_id").disabled = true;
+        document.getElementById("obj_id").value = webhookSubscription.obj_id;
+        document.getElementById("obj_id").disabled = true;
+        document.getElementById("obj_type").value =
           webhookSubscription.obj_type;
-        document.getElementById(
-          "webhook_subscription_obj_type"
-        ).disabled = true;
+        document.getElementById("obj_type").disabled = true;
 
-        openModal(
-          "webhookSubscriptionModal",
-          "webhookSubscriptionModalTitle",
-          `编辑 ${modalTitle}`
-        );
+        showModal("modal", "modalTitle", `编辑 ${modalTitle}`);
       }
 
       // 创建
       if (!id) {
-        document.getElementById("webhook_subscription_id").value = "";
-        document.getElementById("webhook_subscription_id").disabled = true;
-        document.getElementById(
-          "webhook_subscription_webhook_id"
-        ).disabled = false;
-        document.getElementById("webhook_subscription_obj_id").disabled = false;
-        document.getElementById("webhook_subscription_obj_type").value =
-          obj_type;
-        document.getElementById(
-          "webhook_subscription_obj_type"
-        ).disabled = true;
+        document.getElementById("id").value = "";
+        document.getElementById("id").disabled = true;
+        document.getElementById("webhook_id").disabled = false;
+        document.getElementById("obj_id").disabled = false;
+        document.getElementById("obj_type").value = obj_type;
+        document.getElementById("obj_type").disabled = true;
 
-        openModal(
-          "webhookSubscriptionModal",
-          "webhookSubscriptionModalTitle",
-          `添加 ${modalTitle}`
-        );
+        showModal("modal", "modalTitle", `添加 ${modalTitle}`);
       }
     },
     {
@@ -184,25 +135,19 @@ async function openWebhookSubscriptionModal(id, obj_type) {
   );
 }
 
-// 管理通知订阅（模态框） -> 表单提交
-document.getElementById("webhookSubscriptionForm").onsubmit = async (e) => {
+// 表单提交
+document.getElementById("form").onsubmit = async (e) => {
   e.preventDefault();
 
   // 表单数据
-  const form_id = Number(
-    document.getElementById("webhook_subscription_id").value.trim()
-  );
+  const form_id = Number(document.getElementById("id").value.trim());
   const form_data = {
-    name: document.getElementById("webhook_subscription_name").value.trim(),
-    webhook_id: Number(
-      document.getElementById("webhook_subscription_webhook_id").value.trim()
+    name: document.getElementById("name").value.trim(),
+    webhook_id: Number(document.getElementById("webhook_id").value.trim()),
+    obj_type: document.getElementById("obj_type").value.trim(),
+    obj_ids: Array.from(document.getElementById("obj_id").selectedOptions).map(
+      (opt) => Number(opt.value.trim())
     ),
-    obj_type: document
-      .getElementById("webhook_subscription_obj_type")
-      .value.trim(),
-    obj_ids: Array.from(
-      document.getElementById("webhook_subscription_obj_id").selectedOptions
-    ).map((opt) => Number(opt.value.trim())),
   };
   console.log("form_id, form_data", form_id, form_data);
 

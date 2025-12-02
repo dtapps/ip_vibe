@@ -1,23 +1,23 @@
 // 选择协议 protocols
-function onPortForwardProtocolsSelect(sel) {
+function onProtocolsSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  // console.log("onPortForwardProtocolsSelect", opt);
+  // console.log("onProtocolsSelect", opt);
 }
 
 // 选择设备 device_id
-function onPortForwardDeviceIdSelect(sel) {
+function onDeviceIdSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  // console.log("onPortForwardDeviceIdSelect", opt);
+  // console.log("onDeviceIdSelect", opt);
 }
 
-// 管理组（模态框）
-async function openPortForwardModal(id) {
-  document.getElementById("portForwardForm").reset();
+// 打开表单
+async function openModal(id) {
+  document.getElementById("form").reset();
 
   try {
     // 协议列表
     const protocols = ["tcp4", "tcp6", "udp4", "udp6"];
-    const protocolsSelect = document.getElementById("port_forward_protocols");
+    const protocolsSelect = document.getElementById("protocols");
     protocolsSelect.innerHTML = "";
     protocols.forEach((d) => {
       const opt = document.createElement("option");
@@ -30,7 +30,7 @@ async function openPortForwardModal(id) {
     const { data: devices } = await API.get(`/api/devices`);
     console.log("devices", devices);
     if (devices) {
-      const deviceSelect = document.getElementById("port_forward_device_id");
+      const deviceSelect = document.getElementById("device_id");
       deviceSelect.innerHTML = "";
       addPlaceholder(deviceSelect, "请选择设备");
       devices.forEach((d) => {
@@ -50,38 +50,32 @@ async function openPortForwardModal(id) {
         return;
       }
 
-      document.getElementById("port_forward_id").value = portForward.id;
-      document.getElementById("port_forward_id").disabled = true;
-      document.getElementById("port_forward_name").value = portForward.name;
-      // document.getElementById('port_forward_description').value = portForward.description || '';
-      document.getElementById("port_forward_local_port").value =
-        portForward.local_port;
-      document.getElementById("port_forward_remote_host").value =
-        portForward.remote_host;
-      document.getElementById("port_forward_remote_port").value =
-        portForward.remote_port;
-      document.getElementById("port_forward_device_id").value =
-        portForward.device_id;
+      document.getElementById("id").value = portForward.id;
+      document.getElementById("id").disabled = true;
+      document.getElementById("name").value = portForward.name;
+      // document.getElementById('description').value = portForward.description || '';
+      document.getElementById("local_port").value = portForward.local_port;
+      document.getElementById("remote_host").value = portForward.remote_host;
+      document.getElementById("remote_port").value = portForward.remote_port;
+      document.getElementById("device_id").value = portForward.device_id;
 
       // 高亮已选
       if (portForward.protocols && portForward.protocols.length > 0) {
-        const protocolsSelect = document.getElementById(
-          "port_forward_protocols"
-        );
+        const protocolsSelect = document.getElementById("protocols");
         Array.from(protocolsSelect.options).forEach(
           (opt) => (opt.selected = portForward.protocols.includes(opt.value))
         );
       }
 
-      openModal("portForwardModal", "portForwardModalTitle", "编辑 端口转发");
+      showModal("modal", "modalTitle", "编辑 端口转发");
     }
 
     // 创建
     if (!id) {
-      document.getElementById("port_forward_id").value = "";
-      document.getElementById("port_forward_id").disabled = true;
+      document.getElementById("id").value = "";
+      document.getElementById("id").disabled = true;
 
-      openModal("portForwardModal", "portForwardModalTitle", "添加 端口转发");
+      showModal("modal", "modalTitle", "添加 端口转发");
     }
   } catch (error) {
     alert(`加载IP组信息失败: ${error.message}`);
@@ -89,32 +83,22 @@ async function openPortForwardModal(id) {
   }
 }
 
-// 管理组（模态框） -> 表单提交
-document.getElementById("portForwardForm").onsubmit = async (e) => {
+// 表单提交
+document.getElementById("form").onsubmit = async (e) => {
   e.preventDefault();
 
   // 表单数据
-  const form_id = Number(
-    document.getElementById("port_forward_id").value.trim()
-  );
+  const form_id = Number(document.getElementById("id").value.trim());
   const form_data = {
-    name: document.getElementById("port_forward_name").value.trim(),
-    // description: document.getElementById('port_forward_description').value.trim(),
-    local_port: Number(
-      document.getElementById("port_forward_local_port").value.trim()
-    ),
-    remote_host: document
-      .getElementById("port_forward_remote_host")
-      .value.trim(),
-    remote_port: Number(
-      document.getElementById("port_forward_remote_port").value.trim()
-    ),
+    name: document.getElementById("name").value.trim(),
+    // description: document.getElementById('description').value.trim(),
+    local_port: Number(document.getElementById("local_port").value.trim()),
+    remote_host: document.getElementById("remote_host").value.trim(),
+    remote_port: Number(document.getElementById("remote_port").value.trim()),
     protocols: Array.from(
-      document.getElementById("port_forward_protocols").selectedOptions
+      document.getElementById("protocols").selectedOptions
     ).map((opt) => opt.value.trim()),
-    device_id: Number(
-      document.getElementById("port_forward_device_id").value.trim()
-    ),
+    device_id: Number(document.getElementById("device_id").value.trim()),
   };
   console.log("form_id, form_data", form_id, form_data);
 

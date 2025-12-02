@@ -1,6 +1,6 @@
-// 管理设备（模态框）
-async function openDeviceModal(id) {
-  document.getElementById("deviceForm").reset();
+// 打开表单
+async function openModal(id) {
+  document.getElementById("form").reset();
 
   // 编辑
   if (id) {
@@ -12,13 +12,13 @@ async function openDeviceModal(id) {
         return;
       }
 
-      document.getElementById("device_id").value = device.id;
-      document.getElementById("device_id").disabled = true;
-      document.getElementById("device_code").value = device.code;
-      document.getElementById("device_code").disabled = true;
-      document.getElementById("device_name").value = device.name;
+      document.getElementById("id").value = device.id;
+      document.getElementById("id").disabled = true;
+      document.getElementById("code").value = device.code;
+      document.getElementById("code").disabled = true;
+      document.getElementById("name").value = device.name;
 
-      openModal("deviceModal", "deviceModalTitle", "编辑 设备");
+      showModal("modal", "modalTitle", "编辑 设备");
     } catch (error) {
       alert(`加载设备信息失败: ${error.message}`);
       console.error("打开设备模态框失败", error);
@@ -27,30 +27,30 @@ async function openDeviceModal(id) {
 
   // 创建
   if (!id) {
-    document.getElementById("device_id").value = "";
-    document.getElementById("device_id").disabled = true;
+    document.getElementById("id").value = "";
+    document.getElementById("id").disabled = true;
 
     const deviceCode = uuid.v7();
     if (!deviceCode) {
       alert("生成设备编码失败");
       return;
     }
-    document.getElementById("device_code").value = deviceCode;
-    document.getElementById("device_code").disabled = false;
+    document.getElementById("code").value = deviceCode;
+    document.getElementById("code").disabled = false;
 
-    openModal("deviceModal", "deviceModalTitle", "添加 设备");
+    showModal("modal", "modalTitle", "添加 设备");
   }
 }
 
-// 管理设备（模态框） -> 表单提交
-document.getElementById("deviceForm").onsubmit = async (e) => {
+// 表单提交
+document.getElementById("form").onsubmit = async (e) => {
   e.preventDefault();
 
   // 表单数据
-  const form_id = Number(document.getElementById("device_id").value.trim());
+  const form_id = Number(document.getElementById("id").value.trim());
   const form_data = {
-    code: document.getElementById("device_code").value.trim(),
-    name: document.getElementById("device_name").value.trim(),
+    code: document.getElementById("code").value.trim(),
+    name: document.getElementById("name").value.trim(),
   };
   console.log("form_id, form_data", form_id, form_data);
 
@@ -122,8 +122,8 @@ async function viewLiveDeviceIpHistory(id, name) {
     document.getElementById("liveDeviceIpHistoryCount").textContent =
       deviceIpHistory.length;
 
-    // 打开弹窗（统一走你已有的 openModal 即可）
-    openModal(
+    // 打开弹窗（统一走你已有的 showModal 即可）
+    showModal(
       "liveDeviceIpHistoryModal",
       "liveDeviceIpHistoryTitle",
       `实时 设备 IP 历史 - ${name}`
@@ -139,22 +139,20 @@ document.addEventListener("DOMContentLoaded", function () {
   // console.log("当前时间戳（秒）:", now);
   const tenMinutes = 12 * 60;
 
-  document
-    .querySelectorAll("#deviceTable tr[data-last-heartbeat]")
-    .forEach((row) => {
-      const heartbeatAt = parseInt(row.getAttribute("data-last-heartbeat"));
-      // console.log("设备心跳时间戳:", heartbeatAt, "差值:", now - heartbeatAt);
+  document.querySelectorAll("#table tr[data-last-heartbeat]").forEach((row) => {
+    const heartbeatAt = parseInt(row.getAttribute("data-last-heartbeat"));
+    // console.log("设备心跳时间戳:", heartbeatAt, "差值:", now - heartbeatAt);
 
-      // 如果是零值（从未心跳），heartbeatAt <= 0
-      if (heartbeatAt <= 0) {
-        row.classList.add("never-heartbeat");
-        return;
-      }
+    // 如果是零值（从未心跳），heartbeatAt <= 0
+    if (heartbeatAt <= 0) {
+      row.classList.add("never-heartbeat");
+      return;
+    }
 
-      if (now - heartbeatAt > tenMinutes) {
-        row.classList.add("offline");
-      } else {
-        row.classList.remove("offline");
-      }
-    });
+    if (now - heartbeatAt > tenMinutes) {
+      row.classList.add("offline");
+    } else {
+      row.classList.remove("offline");
+    }
+  });
 });

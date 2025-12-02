@@ -1,15 +1,15 @@
 {{ define "pages/cdn_form.html" }}
-<div class="modal" id="cdnRecordModal">
+<div class="modal" id="modal">
   <div class="modal-content">
-    <h3 id="cdnRecordModalTitle">添加 CDN 记录</h3>
-    <form id="cdnRecordForm">
+    <h3 id="modalTitle">添加 CDN 记录</h3>
+    <form id="form">
       <div class="form-group">
         <label>选择配置 <span style="color: red">*</span></label>
         <select
           name="config_id"
-          id="cdn_record_config_id"
+          id="config_id"
           required
-          onchange="onCdnRecordConfigSelect(this)"
+          onchange="onConfigSelect(this)"
         ></select>
       </div>
 
@@ -18,7 +18,7 @@
         <input
           type="text"
           name="domain"
-          id="cdn_record_domain"
+          id="domain"
           required
           placeholder="如 www.example.com"
         />
@@ -26,12 +26,7 @@
 
       <div class="form-group">
         <label>记录类型 <span style="color: red">*</span></label>
-        <select
-          name="type"
-          id="cdn_record_type"
-          required
-          onchange="onCdnRecordTypeSelect(this)"
-        >
+        <select name="type" id="type" required onchange="onTypeSelect(this)">
           <option value="A">A</option>
           <option value="AAAA">AAAA</option>
         </select>
@@ -41,9 +36,9 @@
         <label>回源协议 <span style="color: red">*</span></label>
         <select
           name="origin_protocol"
-          id="cdn_record_origin_protocol"
+          id="origin_protocol"
           required
-          onchange="onCdnRecordOriginProtocolSelect(this)"
+          onchange="onOriginProtocolSelect(this)"
         >
           <option value="follow">协议跟随</option>
           <option value="http">HTTP协议回源</option>
@@ -56,7 +51,7 @@
         <input
           type="number"
           name="http_port"
-          id="cdn_record_http_port"
+          id="http_port"
           required
           placeholder="如 80"
         />
@@ -67,7 +62,7 @@
         <input
           type="number"
           name="https_port"
-          id="cdn_record_https_port"
+          id="https_port"
           required
           placeholder="如 443"
         />
@@ -77,21 +72,17 @@
         <label>IP 组 <span style="color: red">*</span></label>
         <select
           name="ip_group_id"
-          id="cdn_record_ip_group_id"
+          id="ip_group_id"
           required
-          onchange="onCdnRecordIpGroupSelect(this)"
+          onchange="onIpGroupSelect(this)"
         ></select>
       </div>
 
       <!-- 隐藏字段 -->
-      <input type="hidden" name="id" id="cdn_record_id" />
+      <input type="hidden" name="id" id="id" />
 
       <div class="form-group mt-3" style="text-align: right">
-        <button
-          type="button"
-          class="btn"
-          onclick="closeModal('cdnRecordModal')"
-        >
+        <button type="button" class="btn" onclick="closeModal('modal')">
           <svg class="ip-i">
             <use href="/static/img/icons.svg#ip-close" />
           </svg>

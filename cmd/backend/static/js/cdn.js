@@ -1,25 +1,35 @@
-// 状态
-async function toggleCdnRecordStatus(id, checkbox) {
-  try {
-    await API.patch(`/api/cdn-records/${id}/active`, {
-      is_active: checkbox.checked,
-    });
-  } catch (error) {
-    alert(`状态更新失败: ${error.message}`);
-    console.error("切换CDN记录状态失败", error);
-    // 恢复 checkbox 状态
-    checkbox.checked = !checkbox.checked;
-  }
+// 选择配置 config_id
+function onConfigSelect(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  // console.log("onConfigSelect", opt);
 }
 
-// CDN记录管理
-async function openCdnRecordModal(id) {
+// 选择类型 type
+function onTypeSelect(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  // console.log("onTypeSelect", opt);
+}
+
+// 选择回源协议 origin_protocol
+function onOriginProtocolSelect(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  // console.log("onOriginProtocolSelect", opt);
+}
+
+// 选择IP组 ip_group_id
+function onIpGroupSelect(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  // console.log("onIpGroupSelect", opt);
+}
+
+// 打开表单
+async function openModal(id) {
   try {
     // 平台配置列表
     const { data: configs } = await API.get(`/api/configs`);
     console.log("configs", configs);
     if (configs) {
-      const configSelect = document.getElementById("cdn_record_config_id");
+      const configSelect = document.getElementById("config_id");
       configSelect.innerHTML = "";
       addPlaceholder(configSelect, "请选择平台配置");
       configs.forEach((d) => {
@@ -36,7 +46,7 @@ async function openCdnRecordModal(id) {
     const { data: ipGroups } = await API.get(`/api/ip-groups`);
     console.log("ipGroups", ipGroups);
     if (ipGroups) {
-      const ipGroupSelect = document.getElementById("cdn_record_ip_group_id");
+      const ipGroupSelect = document.getElementById("ip_group_id");
       ipGroupSelect.innerHTML = "";
       ipGroups.forEach((d) => {
         const opt = document.createElement("option");
@@ -60,87 +70,51 @@ async function openCdnRecordModal(id) {
       return;
     }
 
-    document.getElementById("cdn_record_id").value = cdnRecord.id;
-    document.getElementById("cdn_record_id").disabled = true;
-    document.getElementById("cdn_record_config_id").value = cdnRecord.config_id;
-    document.getElementById("cdn_record_config_id").disabled = true;
-    document.getElementById("cdn_record_domain").value = cdnRecord.domain;
-    document.getElementById("cdn_record_domain").disabled = true;
-    document.getElementById("cdn_record_type").value = cdnRecord.type;
-    document.getElementById("cdn_record_type").disabled = true;
-    document.getElementById("cdn_record_origin_protocol").value =
+    document.getElementById("id").value = cdnRecord.id;
+    document.getElementById("id").disabled = true;
+    document.getElementById("config_id").value = cdnRecord.config_id;
+    document.getElementById("config_id").disabled = true;
+    document.getElementById("domain").value = cdnRecord.domain;
+    document.getElementById("domain").disabled = true;
+    document.getElementById("type").value = cdnRecord.type;
+    document.getElementById("type").disabled = true;
+    document.getElementById("origin_protocol").value =
       cdnRecord.origin_protocol;
-    document.getElementById("cdn_record_http_port").value = cdnRecord.http_port;
-    document.getElementById("cdn_record_https_port").value =
-      cdnRecord.https_port;
-    document.getElementById("cdn_record_ip_group_id").value =
-      cdnRecord.ip_group_id;
+    document.getElementById("http_port").value = cdnRecord.http_port;
+    document.getElementById("https_port").value = cdnRecord.https_port;
+    document.getElementById("ip_group_id").value = cdnRecord.ip_group_id;
 
-    openModal("cdnRecordModal", "cdnRecordModalTitle", "编辑 CDN记录");
+    showModal("modal", "modalTitle", "编辑 CDN记录");
   }
 
   // 创建
   if (!id) {
-    document.getElementById("cdn_record_id").value = 0;
-    document.getElementById("cdn_record_id").disabled = true;
-    document.getElementById("cdn_record_config_id").disabled = false;
-    document.getElementById("cdn_record_domain").disabled = false;
-    document.getElementById("cdn_record_type").disabled = false;
-    document.getElementById("cdn_record_http_port").value = 80;
-    document.getElementById("cdn_record_https_port").value = 443;
+    document.getElementById("id").value = 0;
+    document.getElementById("id").disabled = true;
+    document.getElementById("config_id").disabled = false;
+    document.getElementById("domain").disabled = false;
+    document.getElementById("type").disabled = false;
+    document.getElementById("http_port").value = 80;
+    document.getElementById("https_port").value = 443;
 
-    openModal("cdnRecordModal", "cdnRecordModalTitle", "添加 CDN记录");
+    showModal("modal", "modalTitle", "添加 CDN记录");
   }
 }
 
-// 选择配置 config_id
-function onCdnRecordConfigSelect(sel) {
-  const opt = sel.options[sel.selectedIndex];
-  // console.log("onCdnRecordConfigSelect", opt);
-}
-
-// 选择类型 type
-function onCdnRecordTypeSelect(sel) {
-  const opt = sel.options[sel.selectedIndex];
-  // console.log("onCdnRecordTypeSelect", opt);
-}
-
-// 选择回源协议 origin_protocol
-function onCdnRecordOriginProtocolSelect(sel) {
-  const opt = sel.options[sel.selectedIndex];
-  // console.log("onCdnRecordOriginProtocolSelect", opt);
-}
-
-// 选择IP组 ip_group_id
-function onCdnRecordIpGroupSelect(sel) {
-  const opt = sel.options[sel.selectedIndex];
-  // console.log("onCdnRecordIpGroupSelect", opt);
-}
-
-// CDN记录管理 -> 表单提交
-document.getElementById("cdnRecordForm").onsubmit = async (e) => {
+// 表单提交
+document.getElementById("form").onsubmit = async (e) => {
   e.preventDefault();
 
   // 表单数据
-  const form_id = Number(document.getElementById("cdn_record_id").value.trim());
+  const form_id = Number(document.getElementById("id").value.trim());
   const form_data = {
-    config_id: Number(
-      document.getElementById("cdn_record_config_id").value.trim()
-    ),
-    domain: document.getElementById("cdn_record_domain").value.trim(),
-    type: document.getElementById("cdn_record_type").value.trim(),
-    origin_protocol: document
-      .getElementById("cdn_record_origin_protocol")
-      .value.trim(),
-    http_port: Number(
-      document.getElementById("cdn_record_http_port").value.trim()
-    ),
-    https_port: Number(
-      document.getElementById("cdn_record_https_port").value.trim()
-    ),
-    ip_group_id: Number(
-      document.getElementById("cdn_record_ip_group_id").value.trim()
-    ),
+    config_id: Number(document.getElementById("config_id").value.trim()),
+    domain: document.getElementById("domain").value.trim(),
+    type: document.getElementById("type").value.trim(),
+    origin_protocol: document.getElementById("origin_protocol").value.trim(),
+    http_port: Number(document.getElementById("http_port").value.trim()),
+    https_port: Number(document.getElementById("https_port").value.trim()),
+    ip_group_id: Number(document.getElementById("ip_group_id").value.trim()),
   };
   console.log("form_id, form_data", form_id, form_data);
 
@@ -218,8 +192,8 @@ async function viewLiveDeviceIpAddresse(id, name) {
     document.getElementById("liveDeviceIpAddresseCount").textContent =
       ipGroupDevices.length;
 
-    // 打开弹窗（统一走你已有的 openModal 即可）
-    openModal(
+    // 打开弹窗（统一走你已有的 showModal 即可）
+    showModal(
       "liveDeviceIpAddresseModal",
       "liveDeviceIpAddresseTitle",
       `实时 设备 IP 地址 - ${name}`

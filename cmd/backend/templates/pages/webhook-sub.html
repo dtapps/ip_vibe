@@ -1,7 +1,7 @@
 {{ define "content" }}
 <h1>🌐 DDNS管理平台</h1>
 
-<div class="card" id="sectionWebhookSubscription">
+<div class="card">
   <div class="card-header">
     <h2 class="h2-icon">
       <svg class="ip-i">
@@ -10,28 +10,19 @@
       通知订阅
     </h2>
     <div>
-      <button
-        class="btn btn-primary"
-        onclick="openWebhookSubscriptionModal(0,'cdn_record')"
-      >
+      <button class="btn btn-primary" onclick="openModal(0,'cdn_record')">
         <svg class="ip-i">
           <use href="/static/img/icons.svg#ip-plus"></use>
         </svg>
         添加 CDN订阅
       </button>
-      <button
-        class="btn btn-primary"
-        onclick="openWebhookSubscriptionModal(0,'dns_record')"
-      >
+      <button class="btn btn-primary" onclick="openModal(0,'dns_record')">
         <svg class="ip-i">
           <use href="/static/img/icons.svg#ip-plus"></use>
         </svg>
         添加 DNS订阅
       </button>
-      <button
-        class="btn btn-primary"
-        onclick="openWebhookSubscriptionModal(0,'device')"
-      >
+      <button class="btn btn-primary" onclick="openModal(0,'device')">
         <svg class="ip-i">
           <use href="/static/img/icons.svg#ip-plus"></use>
         </svg>
@@ -51,7 +42,7 @@
           <th style="width: 300px; text-align: center">操作</th>
         </tr>
       </thead>
-      <tbody id="webhookSubscriptionTable">
+      <tbody id="table">
         {{range .List}}
         <tr>
           <td>{{.Name}}</td>
@@ -73,7 +64,7 @@
           <td>
             <button
               class="btn btn-primary btn-sm"
-              onclick="openWebhookSubscriptionModal('{{.ID}}','{{.ObjType}}')"
+              onclick="openModal('{{.ID}}','{{.ObjType}}')"
             >
               <svg class="ip-i">
                 <use href="/static/img/icons.svg#ip-edit"></use>

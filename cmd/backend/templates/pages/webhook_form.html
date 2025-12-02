@@ -1,14 +1,14 @@
 {{ define "pages/webhook_form.html" }}
-<div class="modal" id="webhookModal">
+<div class="modal" id="modal">
   <div class="modal-content">
-    <h3 id="webhookModalTitle">添加 / 编辑 通知</h3>
-    <form id="webhookForm">
+    <h3 id="modalTitle">添加 / 编辑 通知</h3>
+    <form id="form">
       <div class="form-group">
         <label>名称 <span style="color: red">*</span></label>
         <input
           type="text"
           name="name"
-          id="webhook_name"
+          id="name"
           required
           placeholder="如：告警-IP"
         />
@@ -18,9 +18,9 @@
         <label>平台类型 <span style="color: red">*</span></label>
         <select
           name="platform"
-          id="webhook_platform"
+          id="platform"
           required
-          onchange="onWebhookPlatformSelect(this)"
+          onchange="onPlatformSelect(this)"
         >
           <option value="" disabled selected>请选择平台类型</option>
           <option value="wechat_work">企业微信</option>
@@ -33,36 +33,26 @@
         </select>
       </div>
 
-      <div class="form-group" id="webhook_url_group" style="display: none">
+      <div class="form-group" id="url_group" style="display: none">
         <label>自定义 URL</label>
         <input
           type="text"
           name="url"
-          id="webhook_url"
+          id="url"
           placeholder="如：https://webhook.example.com/notify"
         />
       </div>
 
-      <div class="form-group" id="webhook_secret_group" style="display: none">
+      <div class="form-group" id="secret_group" style="display: none">
         <label>签名密钥或Token</label>
-        <input
-          type="text"
-          name="secret"
-          id="webhook_secret"
-          placeholder="如：123456"
-        />
+        <input type="text" name="secret" id="secret" placeholder="如：123456" />
       </div>
 
       <div class="form-group">
         <label for="templateTitle"
           >通知标题模板 (Go Template) <span style="color: red">*</span></label
         >
-        <input
-          type="text"
-          name="template_title"
-          id="webhook_template_title"
-          required
-        />
+        <input type="text" name="template_title" id="template_title" required />
         <small class="text-secondary"
           >可用变量: [[.EventTime]] [[.EventBody]] [[.DeviceCode]]
           [[.DeviceName]] [[.IPv4Addr]] [[.IPv6Addr]] [[.RecordDomain]]
@@ -77,7 +67,7 @@
         >
         <textarea
           name="template_content"
-          id="webhook_template_content"
+          id="template_content"
           required
           rows="5"
         ></textarea>
@@ -87,10 +77,10 @@
       </div>
 
       <!-- 隐藏字段 -->
-      <input type="hidden" name="id" id="webhook_id" />
+      <input type="hidden" name="id" id="id" />
 
       <div class="form-group mt-3" style="text-align: right">
-        <button type="button" class="btn" onclick="closeModal('webhookModal')">
+        <button type="button" class="btn" onclick="closeModal('modal')">
           <svg class="ip-i">
             <use href="/static/img/icons.svg#ip-close" />
           </svg>

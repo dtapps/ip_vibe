@@ -77,8 +77,8 @@ async function viewLiveExecutionTime(id, name) {
     document.getElementById("liveExecutionTimeCount").textContent =
       task.next_runs.length;
 
-    // 打开弹窗（统一走你已有的 openModal 即可）
-    openModal(
+    // 打开弹窗（统一走你已有的 showModal 即可）
+    showModal(
       "liveExecutionTimeModal",
       "liveExecutionTimeTitle",
       `实时 执行时间 - ${name}`

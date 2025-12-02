@@ -1,14 +1,14 @@
 {{ define "pages/port-forward_form.html" }}
-<div class="modal" id="portForwardModal">
+<div class="modal" id="modal">
   <div class="modal-content">
-    <h3 id="portForwardModalTitle">添加 / 编辑 端口转发</h3>
-    <form id="portForwardForm">
+    <h3 id="modalTitle">添加 / 编辑 端口转发</h3>
+    <form id="form">
       <div class="form-group">
         <label>名称 <span style="color: red">*</span></label>
         <input
           type="text"
           name="name"
-          id="port_forward_name"
+          id="name"
           required
           placeholder="如: 我的端口转发"
         />
@@ -16,7 +16,7 @@
 
       <!-- <div class="form-group" style="display: none;">
             <label>描述 <span style="color:red">*</span></label>
-            <input type="text" name="description" id="port_forward_description" required placeholder="如: 我的端口转发">
+            <input type="text" name="description" id="description" required placeholder="如: 我的端口转发">
           </div> -->
 
       <div class="form-group">
@@ -24,7 +24,7 @@
         <input
           type="number"
           name="local_port"
-          id="port_forward_local_port"
+          id="local_port"
           required
           placeholder="如：8080"
         />
@@ -35,7 +35,7 @@
         <input
           type="text"
           name="remote_host"
-          id="port_forward_remote_host"
+          id="remote_host"
           required
           placeholder="如：192.168.1.100"
         />
@@ -46,7 +46,7 @@
         <input
           type="number"
           name="remote_port"
-          id="port_forward_remote_port"
+          id="remote_port"
           required
           placeholder="如：80"
         />
@@ -56,10 +56,10 @@
         <label>选择协议（Ctrl/⌘ 多选） <span style="color: red">*</span></label>
         <select
           name="protocols"
-          id="port_forward_protocols"
+          id="protocols"
           required
           multiple
-          onchange="onPortForwardProtocolsSelect(this)"
+          onchange="onProtocolsSelect(this)"
           class="form-multiselect"
         ></select>
       </div>
@@ -68,21 +68,17 @@
         <label>选择设备<span style="color: red">*</span></label>
         <select
           name="device_id"
-          id="port_forward_device_id"
+          id="device_id"
           required
-          onchange="onPortForwardDeviceIdSelect(this)"
+          onchange="onDeviceIdSelect(this)"
         ></select>
       </div>
 
       <!-- 隐藏字段 -->
-      <input type="hidden" name="id" id="port_forward_id" />
+      <input type="hidden" name="id" id="id" />
 
       <div class="form-group mt-3" style="text-align: right">
-        <button
-          type="button"
-          class="btn"
-          onclick="closeModal('portForwardModal')"
-        >
+        <button type="button" class="btn" onclick="closeModal('modal')">
           <svg class="ip-i">
             <use href="/static/img/icons.svg#ip-close" />
           </svg>

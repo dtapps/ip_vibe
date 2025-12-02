@@ -1,7 +1,7 @@
 {{ define "content" }}
 <h1>🌐 DDNS管理平台</h1>
 
-<div class="card" id="sectionWebhook">
+<div class="card">
   <div class="card-header">
     <h2 class="h2-icon">
       <svg class="ip-i">
@@ -10,7 +10,7 @@
       通知（WebHook）
     </h2>
     <div>
-      <button class="btn btn-primary" onclick="openWebhookModal()">
+      <button class="btn btn-primary" onclick="openModal()">
         <svg class="ip-i">
           <use href="/static/img/icons.svg#ip-plus"></use>
         </svg>
@@ -28,7 +28,7 @@
           <th style="width: 300px; text-align: center">操作</th>
         </tr>
       </thead>
-      <tbody id="webhookTable">
+      <tbody id="table">
         {{ range .List }}
         <tr>
           <td>{{.Name}}</td>
@@ -56,7 +56,7 @@
           <td>
             <button
               class="btn btn-primary btn-sm"
-              onclick="openWebhookModal('{{.ID}}')"
+              onclick="openModal('{{.ID}}')"
             >
               <svg class="ip-i">
                 <use href="/static/img/icons.svg#ip-edit"></use>

@@ -119,7 +119,7 @@ const fmtDate = (iso) => {
 };
 
 // 打开配置模态框
-function openModal(id, titleID, titleName) {
+function showModal(id, titleID, titleName) {
   const modal = document.getElementById(id);
   const title = document.getElementById(titleID);
   if (title) title.textContent = titleName;

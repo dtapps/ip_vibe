@@ -1,87 +1,87 @@
-function changeWebhookPlatform(platform) {
+function changePlatform(platform) {
   switch (platform) {
     case "wechat_work":
-      document.getElementById("webhook_url").disabled = false;
-      document.getElementById("webhook_url").required = true;
-      document.getElementById("webhook_url_group").style.display = "block";
+      document.getElementById("url").disabled = false;
+      document.getElementById("url").required = true;
+      document.getElementById("url_group").style.display = "block";
 
-      document.getElementById("webhook_secret").disabled = false;
-      document.getElementById("webhook_secret").required = false;
-      document.getElementById("webhook_secret_group").style.display = "none";
+      document.getElementById("secret").disabled = false;
+      document.getElementById("secret").required = false;
+      document.getElementById("secret_group").style.display = "none";
       break;
     case "dingtalk":
-      document.getElementById("webhook_url").disabled = false;
-      document.getElementById("webhook_url").required = true;
-      document.getElementById("webhook_url_group").style.display = "block";
+      document.getElementById("url").disabled = false;
+      document.getElementById("url").required = true;
+      document.getElementById("url_group").style.display = "block";
 
-      document.getElementById("webhook_secret").disabled = false;
-      document.getElementById("webhook_secret").required = false;
-      document.getElementById("webhook_secret_group").style.display = "block";
+      document.getElementById("secret").disabled = false;
+      document.getElementById("secret").required = false;
+      document.getElementById("secret_group").style.display = "block";
       break;
     case "feishu":
-      document.getElementById("webhook_url").disabled = false;
-      document.getElementById("webhook_url").required = true;
-      document.getElementById("webhook_url_group").style.display = "block";
+      document.getElementById("url").disabled = false;
+      document.getElementById("url").required = true;
+      document.getElementById("url_group").style.display = "block";
 
-      document.getElementById("webhook_secret").disabled = false;
-      document.getElementById("webhook_secret").required = false;
-      document.getElementById("webhook_secret_group").style.display = "block";
+      document.getElementById("secret").disabled = false;
+      document.getElementById("secret").required = false;
+      document.getElementById("secret_group").style.display = "block";
       break;
     case "bark":
-      document.getElementById("webhook_url").disabled = false;
-      document.getElementById("webhook_url").required = false;
-      document.getElementById("webhook_url_group").style.display = "block";
+      document.getElementById("url").disabled = false;
+      document.getElementById("url").required = false;
+      document.getElementById("url_group").style.display = "block";
 
-      document.getElementById("webhook_secret").disabled = false;
-      document.getElementById("webhook_secret").required = false;
-      document.getElementById("webhook_secret_group").style.display = "block";
+      document.getElementById("secret").disabled = false;
+      document.getElementById("secret").required = false;
+      document.getElementById("secret_group").style.display = "block";
       break;
     case "ft07":
-      document.getElementById("webhook_url").disabled = false;
-      document.getElementById("webhook_url").required = false;
-      document.getElementById("webhook_url_group").style.display = "block";
+      document.getElementById("url").disabled = false;
+      document.getElementById("url").required = false;
+      document.getElementById("url_group").style.display = "block";
 
-      document.getElementById("webhook_secret").disabled = false;
-      document.getElementById("webhook_secret").required = true;
-      document.getElementById("webhook_secret_group").style.display = "block";
+      document.getElementById("secret").disabled = false;
+      document.getElementById("secret").required = true;
+      document.getElementById("secret_group").style.display = "block";
       break;
     case "push_deer":
-      document.getElementById("webhook_url").disabled = false;
-      document.getElementById("webhook_url").required = false;
-      document.getElementById("webhook_url_group").style.display = "block";
+      document.getElementById("url").disabled = false;
+      document.getElementById("url").required = false;
+      document.getElementById("url_group").style.display = "block";
 
-      document.getElementById("webhook_secret").disabled = false;
-      document.getElementById("webhook_secret").required = true;
-      document.getElementById("webhook_secret_group").style.display = "block";
+      document.getElementById("secret").disabled = false;
+      document.getElementById("secret").required = true;
+      document.getElementById("secret_group").style.display = "block";
       break;
     case "custom_http":
-      document.getElementById("webhook_url").disabled = false;
-      document.getElementById("webhook_url").required = true;
-      document.getElementById("webhook_url_group").style.display = "block";
+      document.getElementById("url").disabled = false;
+      document.getElementById("url").required = true;
+      document.getElementById("url_group").style.display = "block";
 
-      document.getElementById("webhook_secret").disabled = true;
-      document.getElementById("webhook_secret").required = false;
-      document.getElementById("webhook_secret_group").style.display = "none";
+      document.getElementById("secret").disabled = true;
+      document.getElementById("secret").required = false;
+      document.getElementById("secret_group").style.display = "none";
       break;
   }
 }
 
 // 选择平台类型 platform
-function onWebhookPlatformSelect(sel) {
+function onPlatformSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  // console.log("onWebhookPlatformSelect", opt);
-  const webhook_id = document.getElementById("webhook_id").value.trim();
-  // console.log("onWebhookPlatformSelect webhook_id", webhook_id);
+  // console.log("onPlatformSelect", opt);
+  const id = document.getElementById("id").value.trim();
+  // console.log("onPlatformSelect id", id);
 
-  changeWebhookPlatform(opt.value);
+  changePlatform(opt.value);
 
-  if (!webhook_id) {
-    document.getElementById("webhook_template_title").value =
+  if (!id) {
+    document.getElementById("template_title").value =
       "[IPVibe] [[.DeviceName]] IP 更新";
     switch (opt.value) {
       case "wechat_work":
         document.getElementById(
-          "webhook_template_content"
+          "template_content"
         ).value = `事件类型: [[.EventType]]
 事件时间: [[.EventTime]]
 事件内容: [[.EventBody]]
@@ -96,7 +96,7 @@ IPV6地址: [[.IPv6Addr]]
         break;
       case "dingtalk":
         document.getElementById(
-          "webhook_template_content"
+          "template_content"
         ).value = `事件类型: [[.EventType]]
 事件时间: [[.EventTime]]
 事件内容: [[.EventBody]]
@@ -111,7 +111,7 @@ IPV6地址: [[.IPv6Addr]]
         break;
       case "feishu":
         document.getElementById(
-          "webhook_template_content"
+          "template_content"
         ).value = `事件类型: [[.EventType]]
 事件时间: [[.EventTime]]
 事件内容: [[.EventBody]]
@@ -126,7 +126,7 @@ IPV6地址: [[.IPv6Addr]]
         break;
       case "bark":
         document.getElementById(
-          "webhook_template_content"
+          "template_content"
         ).value = `事件类型: [[.EventType]]
 事件时间: [[.EventTime]]
 事件内容: [[.EventBody]]
@@ -141,7 +141,7 @@ IPV6地址: [[.IPv6Addr]]
         break;
       case "ft07":
         document.getElementById(
-          "webhook_template_content"
+          "template_content"
         ).value = `事件类型: [[.EventType]]
 事件时间: [[.EventTime]]
 事件内容: [[.EventBody]]
@@ -156,7 +156,7 @@ IPV6地址: [[.IPv6Addr]]
         break;
       case "push_deer":
         document.getElementById(
-          "webhook_template_content"
+          "template_content"
         ).value = `事件类型: [[.EventType]]
 事件时间: [[.EventTime]]
 事件内容: [[.EventBody]]
@@ -171,7 +171,7 @@ IPV6地址: [[.IPv6Addr]]
         break;
       case "custom_http":
         document.getElementById(
-          "webhook_template_content"
+          "template_content"
         ).value = `事件类型: [[.EventType]]
 事件时间: [[.EventTime]]
 事件内容: [[.EventBody]]
@@ -188,23 +188,9 @@ IPV6地址: [[.IPv6Addr]]
   }
 }
 
-// 修改通知状态
-async function toggleWebhookStatus(id, checkbox) {
-  try {
-    await API.patch(`/api/webhooks/${id}/active`, {
-      is_active: checkbox.checked,
-    });
-  } catch (error) {
-    // 恢复checkbox状态
-    checkbox.checked = !checkbox.checked;
-    alert(`更新状态失败: ${error.message}`);
-    console.error("更新通知状态失败", error);
-  }
-}
-
-// 管理通知（模态框）
-async function openWebhookModal(id) {
-  document.getElementById("webhookForm").reset();
+// 打开表单
+async function openModal(id) {
+  document.getElementById("form").reset();
 
   try {
     // 编辑
@@ -216,29 +202,28 @@ async function openWebhookModal(id) {
         return;
       }
 
-      document.getElementById("webhook_id").value = webhook.id;
-      document.getElementById("webhook_id").disabled = true;
-      document.getElementById("webhook_name").value = webhook.name;
-      document.getElementById("webhook_platform").value = webhook.platform;
-      document.getElementById("webhook_platform").disabled = true;
-      document.getElementById("webhook_url").value = webhook.url;
-      document.getElementById("webhook_secret").value = webhook.secret;
-      document.getElementById("webhook_template_title").value =
-        webhook.template_title;
-      document.getElementById("webhook_template_content").value =
+      document.getElementById("id").value = webhook.id;
+      document.getElementById("id").disabled = true;
+      document.getElementById("name").value = webhook.name;
+      document.getElementById("platform").value = webhook.platform;
+      document.getElementById("platform").disabled = true;
+      document.getElementById("url").value = webhook.url;
+      document.getElementById("secret").value = webhook.secret;
+      document.getElementById("template_title").value = webhook.template_title;
+      document.getElementById("template_content").value =
         webhook.template_content;
 
       changeWebhookPlatform(webhook.platform);
 
-      openModal("webhookModal", "webhookModalTitle", "编辑 通知");
+      showModal("modal", "modalTitle", "编辑 通知");
     }
 
     // 创建
     if (!id) {
-      document.getElementById("webhook_id").value = "";
-      document.getElementById("webhook_id").disabled = true;
+      document.getElementById("id").value = "";
+      document.getElementById("id").disabled = true;
 
-      openModal("webhookModal", "webhookModalTitle", "添加 通知");
+      showModal("modal", "modalTitle", "添加 通知");
     }
   } catch (error) {
     alert(`加载通知信息失败: ${error.message}`);
@@ -246,23 +231,19 @@ async function openWebhookModal(id) {
   }
 }
 
-// 管理通知（模态框） -> 表单提交
-document.getElementById("webhookForm").onsubmit = async (e) => {
+// 表单提交
+document.getElementById("form").onsubmit = async (e) => {
   e.preventDefault();
 
   // 表单数据
-  const form_id = Number(document.getElementById("webhook_id").value.trim());
+  const form_id = Number(document.getElementById("id").value.trim());
   const form_data = {
-    name: document.getElementById("webhook_name").value.trim(),
-    platform: document.getElementById("webhook_platform").value.trim(),
-    url: document.getElementById("webhook_url").value.trim(),
-    secret: document.getElementById("webhook_secret").value.trim(),
-    template_title: document
-      .getElementById("webhook_template_title")
-      .value.trim(),
-    template_content: document
-      .getElementById("webhook_template_content")
-      .value.trim(),
+    name: document.getElementById("name").value.trim(),
+    platform: document.getElementById("platform").value.trim(),
+    url: document.getElementById("url").value.trim(),
+    secret: document.getElementById("secret").value.trim(),
+    template_title: document.getElementById("template_title").value.trim(),
+    template_content: document.getElementById("template_content").value.trim(),
   };
   console.log("form_id, form_data", form_id, form_data);
 

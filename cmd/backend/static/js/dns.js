@@ -1,25 +1,44 @@
-// 状态
-async function toggleDnsRecordStatus(id, checkbox) {
-  try {
-    await API.patch(`/api/dns-records/${id}/active`, {
-      is_active: checkbox.checked,
-    });
-  } catch (error) {
-    alert(`状态更新失败: ${error.message}`);
-    console.error("切换DNS记录状态失败", error);
-    // 恢复 checkbox 状态
-    checkbox.checked = !checkbox.checked;
+// 选择配置 config_id
+function onConfigSelect(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  // console.log("onConfigSelect", opt);
+}
+
+// 选择类型 type
+function onTypeSelect(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  // console.log("onTypeSelect", opt);
+  if (opt.value === "CNAME") {
+    document.getElementById("ip_group_id").disabled = true;
+    document.getElementById("cdn_record_id").disabled = false;
+    document.getElementById("ip_group_id").value = "";
+  } else {
+    document.getElementById("ip_group_id").disabled = false;
+    document.getElementById("cdn_record_id").disabled = true;
+    document.getElementById("cdn_record_id").value = "";
   }
 }
 
-// DNS记录管理（模态框）
-async function openDnsRecordModal(id) {
+// 选择IP组 ip_group_id
+function onIpGroupSelect(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  // console.log("onIpGroupSelect", opt);
+}
+
+// 选择CDN记录 cdn_record_id
+function onCdnRecordSelect(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  // console.log("onCdnRecordSelect", opt);
+}
+
+// 打开表单
+async function openModal(id) {
   try {
     // 平台配置列表
     const { data: configs } = await API.get(`/api/configs`);
     console.log("configs", configs);
     if (configs) {
-      const configSelect = document.getElementById("dns_record_config_id");
+      const configSelect = document.getElementById("config_id");
       configSelect.innerHTML = "";
       addPlaceholder(configSelect, "请选择平台配置");
       configs.forEach((d) => {
@@ -36,7 +55,7 @@ async function openDnsRecordModal(id) {
     const { data: ipGroups } = await API.get(`/api/ip-groups`);
     console.log("ipGroups", ipGroups);
     if (ipGroups) {
-      const ipGroupSelect = document.getElementById("dns_record_ip_group_id");
+      const ipGroupSelect = document.getElementById("ip_group_id");
       ipGroupSelect.innerHTML = "";
       addPlaceholder(ipGroupSelect, "请选择IP组");
       ipGroups.forEach((d) => {
@@ -51,9 +70,7 @@ async function openDnsRecordModal(id) {
     const { data: cdnRecords } = await API.get(`/api/cdn-records`);
     console.log("cdnRecords", cdnRecords);
     if (cdnRecords) {
-      const cdnRecordSelect = document.getElementById(
-        "dns_record_cdn_record_id"
-      );
+      const cdnRecordSelect = document.getElementById("cdn_record_id");
       cdnRecordSelect.innerHTML = "";
       addPlaceholder(cdnRecordSelect, "请选择CDN记录");
       cdnRecords.forEach((d) => {
@@ -78,92 +95,53 @@ async function openDnsRecordModal(id) {
       return;
     }
 
-    document.getElementById("dns_record_id").value = dnsRecord.id;
-    document.getElementById("dns_record_id").disabled = true;
-    document.getElementById("dns_record_config_id").value = dnsRecord.config_id;
-    document.getElementById("dns_record_config_id").disabled = true;
-    document.getElementById("dns_record_domain").value = dnsRecord.domain;
-    document.getElementById("dns_record_domain").disabled = true;
-    document.getElementById("dns_record_type").value = dnsRecord.type;
-    document.getElementById("dns_record_type").disabled = true;
+    document.getElementById("id").value = dnsRecord.id;
+    document.getElementById("id").disabled = true;
+    document.getElementById("config_id").value = dnsRecord.config_id;
+    document.getElementById("config_id").disabled = true;
+    document.getElementById("domain").value = dnsRecord.domain;
+    document.getElementById("domain").disabled = true;
+    document.getElementById("type").value = dnsRecord.type;
+    document.getElementById("type").disabled = true;
 
     if (dnsRecord.type === "CNAME") {
-      document.getElementById("dns_record_cdn_record_id").value =
-        dnsRecord.cdn_record_id;
-      document.getElementById("dns_record_cdn_record_id").disabled = false;
+      document.getElementById("cdn_record_id").value = dnsRecord.cdn_record_id;
+      document.getElementById("cdn_record_id").disabled = false;
     } else {
-      document.getElementById("dns_record_ip_group_id").value =
-        dnsRecord.ip_group_id;
-      document.getElementById("dns_record_ip_group_id").disabled = false;
+      document.getElementById("ip_group_id").value = dnsRecord.ip_group_id;
+      document.getElementById("ip_group_id").disabled = false;
     }
 
-    openModal("dnsRecordModal", "dnsRecordModalTitle", "编辑 DNS记录");
+    showModal("modal", "modalTitle", "编辑 DNS记录");
   }
 
   // 创建
   if (!id) {
-    document.getElementById("dns_record_id").value = 0;
-    document.getElementById("dns_record_id").disabled = true;
-    document.getElementById("dns_record_config_id").disabled = false;
-    document.getElementById("dns_record_domain").disabled = false;
-    document.getElementById("dns_record_type").disabled = false;
-    document.getElementById("dns_record_cdn_record_id").disabled = true;
-    document.getElementById("dns_record_ip_group_id").disabled = true;
+    document.getElementById("id").value = 0;
+    document.getElementById("id").disabled = true;
+    document.getElementById("config_id").disabled = false;
+    document.getElementById("domain").disabled = false;
+    document.getElementById("type").disabled = false;
+    document.getElementById("cdn_record_id").disabled = true;
+    document.getElementById("ip_group_id").disabled = true;
 
-    openModal("dnsRecordModal", "dnsRecordModalTitle", "添加 DNS记录");
+    showModal("modal", "modalTitle", "添加 DNS记录");
   }
 }
 
-// 选择配置 config_id
-function onDnsRecordConfigSelect(sel) {
-  const opt = sel.options[sel.selectedIndex];
-  // console.log("onCdnRecordIponDnsRecordConfigSelectGroupSelect", opt);
-}
-
-// 选择类型 type
-function onDnsRecordTypeSelect(sel) {
-  const opt = sel.options[sel.selectedIndex];
-  // console.log("onDnsRecordTypeSelect", opt);
-  if (opt.value === "CNAME") {
-    document.getElementById("dns_record_ip_group_id").disabled = true;
-    document.getElementById("dns_record_cdn_record_id").disabled = false;
-    document.getElementById("dns_record_ip_group_id").value = "";
-  } else {
-    document.getElementById("dns_record_ip_group_id").disabled = false;
-    document.getElementById("dns_record_cdn_record_id").disabled = true;
-    document.getElementById("dns_record_cdn_record_id").value = "";
-  }
-}
-
-// 选择IP组 ip_group_id
-function onDnsRecordIpGroupSelect(sel) {
-  const opt = sel.options[sel.selectedIndex];
-  // console.log("onDnsRecordIpGroupSelect", opt);
-}
-
-// 选择CDN记录 cdn_record_id
-function onDnsRecordCdnRecordSelect(sel) {
-  const opt = sel.options[sel.selectedIndex];
-  // console.log("onDnsRecordCdnRecordSelect", opt);
-}
-
-// DNS记录管理（模态框） -> 表单提交
-document.getElementById("dnsRecordForm").onsubmit = async (e) => {
+// 表单提交
+document.getElementById("form").onsubmit = async (e) => {
   e.preventDefault();
 
   // 表单数据
-  const form_id = Number(document.getElementById("dns_record_id").value.trim());
+  const form_id = Number(document.getElementById("id").value.trim());
   const form_data = {
-    config_id: Number(
-      document.getElementById("dns_record_config_id").value.trim()
-    ),
-    domain: document.getElementById("dns_record_domain").value.trim(),
-    type: document.getElementById("dns_record_type").value.trim(),
-    ip_group_id: Number(
-      document.getElementById("dns_record_ip_group_id").value.trim()
-    ),
+    config_id: Number(document.getElementById("config_id").value.trim()),
+    domain: document.getElementById("domain").value.trim(),
+    type: document.getElementById("type").value.trim(),
+    ip_group_id: Number(document.getElementById("ip_group_id").value.trim()),
     cdn_record_id: Number(
-      document.getElementById("dns_record_cdn_record_id").value.trim()
+      document.getElementById("cdn_record_id").value.trim()
     ),
   };
   console.log("form_id, form_data", form_id, form_data);
@@ -248,8 +226,8 @@ async function viewLiveDeviceIpAddresse(id, name) {
     document.getElementById("liveDeviceIpAddresseCount").textContent =
       ipGroupDevices.length;
 
-    // 打开弹窗（统一走你已有的 openModal 即可）
-    openModal(
+    // 打开弹窗（统一走你已有的 showModal 即可）
+    showModal(
       "liveDeviceIpAddresseModal",
       "liveDeviceIpAddresseTitle",
       `实时 设备 IP 地址 - ${name}`

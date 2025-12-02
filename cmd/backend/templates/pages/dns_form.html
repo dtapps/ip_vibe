@@ -1,15 +1,15 @@
 {{ define "pages/dns_form.html" }}
-<div class="modal" id="dnsRecordModal">
+<div class="modal" id="modal">
   <div class="modal-content">
-    <h3 id="dnsRecordModalTitle">添加 DNS 记录</h3>
+    <h3 id="modalTitle">添加 DNS 记录</h3>
     <form id="dnsRecordForm">
       <div class="form-group">
         <label>选择配置 <span style="color: red">*</span></label>
         <select
           name="config_id"
-          id="dns_record_config_id"
+          id="config_id"
           required
-          onchange="onDnsRecordConfigSelect(this)"
+          onchange="onConfigSelect(this)"
         ></select>
       </div>
 
@@ -18,7 +18,7 @@
         <input
           type="text"
           name="domain"
-          id="dns_record_domain"
+          id="domain"
           required
           placeholder="如 www.example.com"
         />
@@ -26,12 +26,7 @@
 
       <div class="form-group">
         <label>记录类型 <span style="color: red">*</span></label>
-        <select
-          name="type"
-          id="dns_record_type"
-          required
-          onchange="onDnsRecordTypeSelect(this)"
-        >
+        <select name="type" id="type" required onchange="onTypeSelect(this)">
           <option value="" disabled selected>请选择记录类型</option>
           <option value="A">A</option>
           <option value="AAAA">AAAA</option>
@@ -45,9 +40,9 @@
         >
         <select
           name="ip_group_id"
-          id="dns_record_ip_group_id"
+          id="ip_group_id"
           disabled
-          onchange="onDnsRecordIpGroupSelect(this)"
+          onchange="onIpGroupSelect(this)"
         ></select>
       </div>
 
@@ -57,21 +52,17 @@
         >
         <select
           name="cdn_record_id"
-          id="dns_record_cdn_record_id"
+          id="cdn_record_id"
           disabled
-          onchange="onDnsRecordCdnRecordSelect(this)"
+          onchange="onCdnRecordSelect(this)"
         ></select>
       </div>
 
       <!-- 隐藏字段 -->
-      <input type="hidden" name="id" id="dns_record_id" />
+      <input type="hidden" name="id" id="id" />
 
       <div class="form-group mt-3" style="text-align: right">
-        <button
-          type="button"
-          class="btn"
-          onclick="closeModal('dnsRecordModal')"
-        >
+        <button type="button" class="btn" onclick="closeModal('modal')">
           <svg class="ip-i">
             <use href="/static/img/icons.svg#ip-close" />
           </svg>

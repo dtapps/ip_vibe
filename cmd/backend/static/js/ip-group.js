@@ -1,19 +1,19 @@
 // 选择设备 devices
-function onIpGroupDevicesSelect(sel) {
+function onDevicesSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  // console.log("onIpGroupDevicesSelect", opt);
+  // console.log("onDevicesSelect", opt);
 }
 
-// 管理组（模态框）
-async function openIpGroupModal(id) {
-  document.getElementById("ipGroupForm").reset();
+// 打开表单
+async function openModal(id) {
+  document.getElementById("form").reset();
 
   try {
     // 设备列表
     const { data: devices } = await API.get(`/api/devices`);
     console.log("devices", devices);
     if (devices) {
-      const deviceSelect = document.getElementById("ip_group_devices");
+      const deviceSelect = document.getElementById("devices");
       deviceSelect.innerHTML = "";
       devices.forEach((d) => {
         const opt = document.createElement("option");
@@ -32,29 +32,28 @@ async function openIpGroupModal(id) {
         return;
       }
 
-      document.getElementById("ip_group_id").value = ipGroup.id;
-      document.getElementById("ip_group_id").disabled = true;
-      document.getElementById("ip_group_name").value = ipGroup.name;
-      document.getElementById("ip_group_description").value =
-        ipGroup.description || "";
+      document.getElementById("id").value = ipGroup.id;
+      document.getElementById("id").disabled = true;
+      document.getElementById("name").value = ipGroup.name;
+      document.getElementById("description").value = ipGroup.description || "";
 
       // 高亮已选
       if (ipGroup.devices && ipGroup.devices.length > 0) {
-        const deviceSelect = document.getElementById("ip_group_devices");
+        const deviceSelect = document.getElementById("devices");
         Array.from(deviceSelect.options).forEach(
           (opt) => (opt.selected = ipGroup.devices.includes(Number(opt.value)))
         );
       }
 
-      openModal("ipGroupModal", "ipGroupModalTitle", "编辑 IP 组");
+      showModal("modal", "modalTitle", "编辑 IP 组");
     }
 
     // 创建
     if (!id) {
-      document.getElementById("ip_group_id").value = "";
-      document.getElementById("ip_group_id").disabled = true;
+      document.getElementById("id").value = "";
+      document.getElementById("id").disabled = true;
 
-      openModal("ipGroupModal", "ipGroupModalTitle", "添加 IP 组");
+      showModal("modal", "modalTitle", "添加 IP 组");
     }
   } catch (error) {
     alert(`加载IP组信息失败: ${error.message}`);
@@ -62,18 +61,18 @@ async function openIpGroupModal(id) {
   }
 }
 
-// 管理组（模态框） -> 表单提交
-document.getElementById("ipGroupForm").onsubmit = async (e) => {
+// 表单提交
+document.getElementById("form").onsubmit = async (e) => {
   e.preventDefault();
 
   // 表单数据
-  const form_id = Number(document.getElementById("ip_group_id").value.trim());
+  const form_id = Number(document.getElementById("id").value.trim());
   const form_data = {
-    name: document.getElementById("ip_group_name").value.trim(),
-    description: document.getElementById("ip_group_description").value.trim(),
-    devices: Array.from(
-      document.getElementById("ip_group_devices").selectedOptions
-    ).map((opt) => Number(opt.value.trim())),
+    name: document.getElementById("name").value.trim(),
+    description: document.getElementById("description").value.trim(),
+    devices: Array.from(document.getElementById("devices").selectedOptions).map(
+      (opt) => Number(opt.value.trim())
+    ),
   };
   console.log("form_id, form_data", form_id, form_data);
 
@@ -145,8 +144,8 @@ async function viewLiveDeviceIpAddresse(id, name) {
     document.getElementById("liveDeviceIpAddresseCount").textContent =
       ipGroupDevices.length;
 
-    // 打开弹窗（统一走你已有的 openModal 即可）
-    openModal(
+    // 打开弹窗（统一走你已有的 showModal 即可）
+    showModal(
       "liveDeviceIpAddresseModal",
       "liveDeviceIpAddresseTitle",
       `实时 设备 IP 地址 - ${name}`

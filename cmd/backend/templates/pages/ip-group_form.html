@@ -1,14 +1,14 @@
 {{ define "pages/ip-group_form.html" }}
-<div class="modal" id="ipGroupModal">
+<div class="modal" id="modal">
   <div class="modal-content">
-    <h3 id="ipGroupModalTitle">添加 / 编辑 IP 组</h3>
-    <form id="ipGroupForm">
+    <h3 id="modalTitle">添加 / 编辑 IP 组</h3>
+    <form id="form">
       <div class="form-group">
         <label>组名 <span style="color: red">*</span></label>
         <input
           type="text"
           name="name"
-          id="ip_group_name"
+          id="name"
           required
           placeholder="如：CDN-边缘"
         />
@@ -19,7 +19,7 @@
         <input
           type="text"
           name="description"
-          id="ip_group_description"
+          id="description"
           placeholder="可选"
         />
       </div>
@@ -28,19 +28,19 @@
         <label>选择设备（Ctrl/⌘ 多选） <span style="color: red">*</span></label>
         <select
           name="devices"
-          id="ip_group_devices"
+          id="devices"
           required
           multiple
-          onchange="onIpGroupDevicesSelect(this)"
+          onchange="onDevicesSelect(this)"
           class="form-multiselect"
         ></select>
       </div>
 
       <!-- 隐藏字段 -->
-      <input type="hidden" name="id" id="ip_group_id" />
+      <input type="hidden" name="id" id="id" />
 
       <div class="form-group mt-3" style="text-align: right">
-        <button type="button" class="btn" onclick="closeModal('ipGroupModal')">
+        <button type="button" class="btn" onclick="closeModal('modal')">
           <svg class="ip-i">
             <use href="/static/img/icons.svg#ip-close" />
           </svg>
