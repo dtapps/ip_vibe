@@ -1,13 +1,15 @@
 {{ define "content" }}
 <h1>🌐 DDNS管理平台</h1>
 
-    <link rel="stylesheet" href="/static/css/dashboard.css" />
+<link rel="stylesheet" href="/static/css/dashboard.css" />
 
 <!-- 数据概览卡片 -->
 <div class="card">
   <div class="card-header">
     <h2 class="h2-icon">
-      <svg class="ip-i"><use href="/static/img/icons.svg#ip-dashboard"></use></svg>
+      <svg class="ip-i">
+        <use href="/static/img/icons.svg#ip-dashboard"></use>
+      </svg>
       系统概览
     </h2>
   </div>
@@ -60,15 +62,21 @@
         <span>DNS 记录</span>
       </a>
       <a href="/device" class="quick-link">
-        <svg class="ip-i"><use href="/static/img/icons.svg#ip-devices"></use></svg>
+        <svg class="ip-i">
+          <use href="/static/img/icons.svg#ip-devices"></use>
+        </svg>
         <span>设备管理</span>
       </a>
       <a href="/ip-group" class="quick-link">
-        <svg class="ip-i"><use href="/static/img/icons.svg#ip-layer"></use></svg>
+        <svg class="ip-i">
+          <use href="/static/img/icons.svg#ip-layer"></use>
+        </svg>
         <span>IP 组</span>
       </a>
       <a href="/port-forward" class="quick-link">
-        <svg class="ip-i"><use href="/static/img/icons.svg#ip-forward"></use></svg>
+        <svg class="ip-i">
+          <use href="/static/img/icons.svg#ip-forward"></use>
+        </svg>
         <span>端口转发</span>
       </a>
       <a href="/webhook" class="quick-link">
@@ -76,7 +84,9 @@
         <span>通知管理</span>
       </a>
       <a href="/webhook-sub" class="quick-link">
-        <svg class="ip-i"><use href="/static/img/icons.svg#ip-subscribe"></use></svg>
+        <svg class="ip-i">
+          <use href="/static/img/icons.svg#ip-subscribe"></use>
+        </svg>
         <span>通知订阅</span>
       </a>
       <a href="/task" class="quick-link">
@@ -88,37 +98,11 @@
         <span>操作日志</span>
       </a>
       <a href="/config" class="quick-link">
-        <svg class="ip-i"><use href="/static/img/icons.svg#ip-server"></use></svg>
+        <svg class="ip-i">
+          <use href="/static/img/icons.svg#ip-server"></use>
+        </svg>
         <span>平台配置</span>
       </a>
-    </div>
-  </div>
-</div>
-
-<!-- 系统信息 -->
-<div class="card">
-  <div class="card-header">
-    <h2 class="h2-icon">
-      <svg class="ip-i"><use href="/static/img/icons.svg#ip-server"></use></svg>
-      系统信息
-    </h2>
-  </div>
-  <div class="card-body">
-    <div class="system-info-grid">
-      <div><strong>Go 版本：</strong>{{ .SystemGoVersion }}</div>
-      <div><strong>打包时间：</strong>{{ .SystemBuildTime }}</div>
-      <div><strong>Git 提交：</strong>{{ .SystemGitCommit }}</div>
-      <div><strong>启动时间：</strong>{{ .SystemMemoryInfo.RuntimeStartTime }}</div>
-      <div><strong>GC 总次数：</strong>{{ .SystemMemoryInfo.NumGC }}</div>
-      <div><strong>Goroutine 数：</strong>{{ .SystemMemoryInfo.NumGoroutine }}</div>
-      <div><strong>活跃堆对象：</strong>{{ .SystemMemoryInfo.HeapObjects }}</div>
-      <div><strong>下次 GC（MB）：</strong>{{ .SystemMemoryInfo.NextGCMB }}</div>
-      <div><strong>系统版本：</strong>{{ .SystemVersion }}</div>
-      <div><strong>操作系统：</strong>{{ .SystemOS }}</div>
-      <div><strong>CPU 架构：</strong>{{ .SystemArch }}</div>
-    </div>
-    <div style="margin-top: 16px; font-size: 13px; color: var(--text-secondary);">
-      © 2025 DDNS 管理平台
     </div>
   </div>
 </div>
@@ -152,5 +136,43 @@
   </div>
 </div>
 
-    <script src="/static/js/dashboard.js"></script>
+<!-- 系统信息 -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="h2-icon">
+      <svg class="ip-i"><use href="/static/img/icons.svg#ip-server"></use></svg>
+      系统信息
+    </h2>
+  </div>
+  <div class="card-body">
+    <div class="system-info-grid">
+      <div><strong>Go 版本：</strong>{{ .SystemGoVersion }}</div>
+      <div><strong>打包时间：</strong>{{ .SystemBuildTime }}</div>
+      <div><strong>Git 提交：</strong>{{ .SystemGitCommit }}</div>
+      <div>
+        <strong>启动时间：</strong>{{ .SystemMemoryInfo.RuntimeStartTime }}
+      </div>
+      <div><strong>GC 总次数：</strong>{{ .SystemMemoryInfo.NumGC }}</div>
+      <div>
+        <strong>Goroutine 数：</strong>{{ .SystemMemoryInfo.NumGoroutine }}
+      </div>
+      <div>
+        <strong>活跃堆对象：</strong>{{ .SystemMemoryInfo.HeapObjects }}
+      </div>
+      <div>
+        <strong>下次 GC（MB）：</strong>{{ .SystemMemoryInfo.NextGCMB }}
+      </div>
+      <div><strong>系统版本：</strong>{{ .SystemVersion }}</div>
+      <div><strong>操作系统：</strong>{{ .SystemOS }}</div>
+      <div><strong>CPU 架构：</strong>{{ .SystemArch }}</div>
+    </div>
+    <div
+      style="margin-top: 16px; font-size: 13px; color: var(--text-secondary)"
+    >
+      © 2025 DDNS 管理平台
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/dashboard.js"></script>
 {{ end }}
