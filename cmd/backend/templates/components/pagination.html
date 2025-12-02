@@ -1,0 +1,25 @@
+{{ define "pagination" }} {{ $page := .Page }} {{ $size := .PageSize }} {{
+$total := toInt .Total }} {{ if gt $total 0 }}
+<div class="pagination">
+  {{ $totalPages := div (add $total (sub $size 1)) $size }} {{ if gt $page 1 }}
+  <a class="page-btn" onclick="changePage(`{{ sub $page 1 }}`)">上一页</a>
+  {{ end }}
+
+  <span class="page-info">
+    第 {{ $page }} / {{ $totalPages }} 页（共 {{ $total }} 条）
+  </span>
+
+  {{ if lt $page $totalPages }}
+  <a class="page-btn" onclick="changePage(`{{ add $page 1 }}`)">下一页</a>
+  {{ end }}
+</div>
+
+<script>
+  function changePage(p) {
+    const url = new URL(location.href);
+    url.searchParams.set("page", p);
+    url.searchParams.set("page_size", `{{ $size }}`);
+    location.href = url.toString();
+  }
+</script>
+{{ end }} {{ end }}

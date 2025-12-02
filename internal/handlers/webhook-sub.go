@@ -9,12 +9,20 @@ import (
 	"vibe_ip/ent/dnsrecord"
 	"vibe_ip/ent/webhooksubscription"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gin_param"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
 )
 
 func WebhookSub(c *gin.Context) {
+	// 请求参数
+	var requestParams types.WebhookSubRequest
+	if err := gin_param.BindQueryWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+
 	// 准备页面数据
 	pageData := types.WebhookSubResponse{
 		List:     []types.GetWebhookSubscriptionsResponse{},
@@ -27,9 +35,9 @@ func WebhookSub(c *gin.Context) {
 	allWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
 		WithWebhook().
 		Order(ent.Desc(webhooksubscription.FieldCreatedAt)).
-		All(c)
+		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
-		for _, item := range allWebhookSubscription {
+		for _, item := range allWebhookSubscription.Items {
 			list := types.GetWebhookSubscriptionsResponse{
 				ID:          item.ID,
 				Name:        item.Name,
@@ -67,12 +75,16 @@ func WebhookSub(c *gin.Context) {
 		}
 	}
 
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("webhook-sub pageData: %+v \n", pageData)
-	}
+	pageData.Page = allWebhookSubscription.Page
+	pageData.PageSize = allWebhookSubscription.Size
+	pageData.Total = allWebhookSubscription.Total
 
 	// HTTP2 server 推送
 	pusher(c)
+
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
+	}
 
 	// 渲染模板
 	c.HTML(http.StatusOK, "pages/webhook-sub.html", pageData)

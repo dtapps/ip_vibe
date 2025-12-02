@@ -1,5 +1,5 @@
 {{ define "content" }}
-<h1>通知（WebHook）</h1>
+<h1>🌐 DDNS管理平台</h1>
 
 <div class="card" id="sectionWebhook">
   <div class="card-header">
@@ -50,21 +50,10 @@
           <td><span class="badge badge-success">{{.Platform}}</span></td>
           {{end}}
           <td>
-            <label class="switch">
-              {{if .IsActive}}
-              <input
-                type="checkbox"
-                checked
-                onchange="toggleWebhookStatus('{{.ID}}', this)"
-              />
-              {{else}}
-              <input
-                type="checkbox"
-                onchange="toggleWebhookStatus('{{.ID}}', this)"
-              />
-              {{end}}
-              <span class="slider"></span>
-            </label>
+    {{ template "switch" (dict
+        "Checked" .IsActive
+        "URL" (printf "/api/webhooks/%d/active" .ID)
+    ) }}
           </td>
           <td>
             <button
@@ -104,6 +93,75 @@
         {{ end }}
       </tbody>
     </table>
+    <!-- 分页 -->
+    {{ template "pagination" . }}
   </div>
 </div>
+
+    <!--  通知（WebHook）模态框 -->
+    <div class="modal" id="webhookModal">
+      <div class="modal-content">
+        <h3 id="webhookModalTitle">添加 / 编辑 通知</h3>
+        <form id="webhookForm">
+
+          <div class="form-group">
+            <label>名称 <span style="color:red">*</span></label>
+            <input type="text" name="name" id="webhook_name" required placeholder="如：告警-IP">
+          </div>
+
+          <div class="form-group">
+            <label>平台类型 <span style="color:red">*</span></label>
+            <select name="platform" id="webhook_platform" required onchange="onWebhookPlatformSelect(this)">
+              <option value="" disabled selected>请选择平台类型</option>
+              <option value="wechat_work">企业微信</option>
+              <option value="dingtalk">钉钉</option>
+              <option value="feishu">飞书</option>
+              <option value="bark">Bark</option>
+              <option value="ft07">Server酱</option>
+              <option value="push_deer">PushDeer</option>
+              <option value="custom_http">自定义</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="webhook_url_group" style="display: none;">
+            <label>自定义 URL</label>
+            <input type="text" name="url" id="webhook_url" placeholder="如：https://webhook.example.com/notify">
+          </div>
+
+          <div class="form-group" id="webhook_secret_group" style="display: none;">
+            <label>签名密钥或Token</label>
+            <input type="text" name="secret" id="webhook_secret" placeholder="如：123456">
+          </div>
+
+          <div class="form-group">
+            <label for="templateTitle">通知标题模板 (Go Template) <span style="color:red">*</span></label>
+            <input type="text" name="template_title" id="webhook_template_title" required>
+            <small class="text-secondary">可用变量: [[.EventTime]] [[.EventBody]] [[.DeviceCode]] [[.DeviceName]]
+              [[.IPv4Addr]] [[.IPv6Addr]] [[.RecordDomain]] [[.RecordType]] [[.PlatformName]] [[.PlatformType]]</small>
+          </div>
+
+          <div class="form-group">
+            <label for="templateContent">通知内容模板 (支持 Markdown/Text) <span style="color:red">*</span></label>
+            <textarea name="template_content" id="webhook_template_content" required rows="5"></textarea>
+            <small class="text-secondary">注意：不同平台 (如飞书、钉钉) 的 Markdown 格式略有不同。</small>
+          </div>
+
+          <!-- 隐藏字段 -->
+          <input type="hidden" name="id" id="webhook_id">
+
+          <div class="form-group mt-3" style="text-align:right">
+            <button type="button" class="btn" onclick="closeModal('webhookModal')">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-close" />
+              </svg> 取消</button>
+            <button type="submit" class="btn btn-primary">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-save" />
+              </svg> 保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="/static/js/webhook.js"></script>
 {{ end }}

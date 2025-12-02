@@ -6,12 +6,20 @@ import (
 	"vibe_ip/ent"
 	"vibe_ip/ent/cdnrecord"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gin_param"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Cdn(c *gin.Context) {
+	// 请求参数
+	var requestParams types.CdnRequest
+	if err := gin_param.BindQueryWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+
 	// 准备页面数据
 	pageData := types.CdnResponse{
 		List:     []types.GetCdnRecordsResponse{},
@@ -25,9 +33,9 @@ func Cdn(c *gin.Context) {
 		WithConfig().
 		WithIPGroup().
 		Order(ent.Desc(cdnrecord.FieldCreatedAt)).
-		All(c)
+		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
-		for _, item := range allCdnRecord {
+		for _, item := range allCdnRecord.Items {
 			list := types.GetCdnRecordsResponse{
 				ID:             item.ID,
 				ConfigID:       item.ConfigID,
@@ -50,12 +58,16 @@ func Cdn(c *gin.Context) {
 		}
 	}
 
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("cdn pageData: %+v \n", pageData)
-	}
+	pageData.Page = allCdnRecord.Page
+	pageData.PageSize = allCdnRecord.Size
+	pageData.Total = allCdnRecord.Total
 
 	// HTTP2 server 推送
 	pusher(c)
+
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
+	}
 
 	// 渲染模板
 	c.HTML(http.StatusOK, "pages/cdn.html", pageData)

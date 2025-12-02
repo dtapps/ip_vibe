@@ -10,6 +10,7 @@ import (
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/webhooksubscription"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gin_param"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -68,10 +69,11 @@ func GetWebhookSubscriptions(c *gin.Context) {
 func GetWebhookSubscription(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetWebhookSubscriptionRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 查询通知订阅
 	firstWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
 		Where(webhooksubscription.IDEQ(requestParams.ID)).
@@ -119,13 +121,11 @@ func GetWebhookSubscription(c *gin.Context) {
 func CreateWebhookSubscription(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateWebhookSubscriptionRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("CreateWebhookSubscription params: %+v\n", requestParams)
-	}
+
 	for _, objID := range requestParams.ObjIDs {
 		// 创建通知订阅
 		saveWebhookSubscription, err := global.GvaDb.WebhookSubscription.Create().
@@ -154,13 +154,11 @@ func CreateWebhookSubscription(c *gin.Context) {
 func UpdateWebhookSubscription(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateWebhookSubscriptionRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("UpdateWebhookSubscription params: %+v\n", requestParams)
-	}
+
 	// 查询通知订阅
 	firstWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
 		Where(webhooksubscription.IDEQ(requestParams.ID)).
@@ -192,13 +190,11 @@ func UpdateWebhookSubscription(c *gin.Context) {
 func UpdateWebhookSubscriptionActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateWebhookSubscriptionActiveRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("UpdateWebhookSubscriptionActive params: %+v\n", requestParams)
-	}
+
 	// 查询通知订阅
 	firstWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
 		Where(webhooksubscription.IDEQ(requestParams.ID)).
@@ -229,10 +225,11 @@ func UpdateWebhookSubscriptionActive(c *gin.Context) {
 func DeleteWebhookSubscription(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteWebhookSubscriptionRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 查询通知订阅
 	firstWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
 		Where(webhooksubscription.IDEQ(requestParams.ID)).

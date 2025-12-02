@@ -7,6 +7,7 @@ import (
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/platformconfig"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gin_param"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -40,10 +41,11 @@ func GetConfigs(c *gin.Context) {
 func GetConfig(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetConfigRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 查询配置
 	firstConfig, err := global.GvaDb.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(requestParams.ID)).
@@ -66,13 +68,11 @@ func GetConfig(c *gin.Context) {
 func CreateConfig(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateConfigRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("CreateConfig params: %+v\n", requestParams)
-	}
+
 	// 创建配置
 	saveConfig, err := global.GvaDb.PlatformConfig.Create().
 		SetName(requestParams.Name).
@@ -99,13 +99,11 @@ func CreateConfig(c *gin.Context) {
 func UpdateConfig(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateConfigRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("UpdateConfig params: %+v\n", requestParams)
-	}
+
 	// 查询配置
 	firstConfig, err := global.GvaDb.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(requestParams.ID)).
@@ -139,10 +137,11 @@ func UpdateConfig(c *gin.Context) {
 func DeleteConfig(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteConfigRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 查询配置
 	firstConfig, err := global.GvaDb.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(requestParams.ID)).

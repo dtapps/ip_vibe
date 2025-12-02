@@ -8,6 +8,7 @@ import (
 	"vibe_ip/ent/deviceipreport"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gin_param"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -43,10 +44,11 @@ func GetDevices(c *gin.Context) {
 func GetDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetDeviceRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 查询设备
 	firstDevice, err := global.GvaDb.Device.Query().
 		Where(device.IDEQ(requestParams.ID)).
@@ -71,13 +73,11 @@ func GetDevice(c *gin.Context) {
 func CreateDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateDeviceRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("CreateDevice params: %+v\n", requestParams)
-	}
+
 	// 创建设备
 	saveDevice, err := global.GvaDb.Device.Create().
 		SetCode(requestParams.Code).
@@ -102,13 +102,11 @@ func CreateDevice(c *gin.Context) {
 func UpdateDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateDeviceRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("UpdateDevice params: %+v\n", requestParams)
-	}
+
 	// 查询设备
 	firstDevice, err := global.GvaDb.Device.Query().
 		Where(device.IDEQ(requestParams.ID)).
@@ -140,10 +138,11 @@ func UpdateDevice(c *gin.Context) {
 func DeleteDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteDeviceRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 查询设备
 	firstDevice, err := global.GvaDb.Device.Query().
 		Where(device.IDEQ(requestParams.ID)).
@@ -172,10 +171,11 @@ func DeleteDevice(c *gin.Context) {
 func GetDeviceIpHistory(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetDeviceIpHistoryRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 查询设备
 	firstDevice, err := global.GvaDb.Device.Query().
 		Where(device.IDEQ(requestParams.ID)).

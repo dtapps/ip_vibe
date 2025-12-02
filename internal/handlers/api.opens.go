@@ -12,6 +12,7 @@ import (
 	"vibe_ip/ent/webhooksubscription"
 	"vibe_ip/internal/backend"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gin_param"
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
@@ -23,13 +24,11 @@ import (
 func DeviceReportDeviceIp(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeviceReportDeviceIpRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("ReportDeviceIp params: %+v\n", requestParams)
-	}
+
 	// 判断IPV4和IPV6是否为空
 	if requestParams.IPV4Addr == "" && requestParams.IPV6Addr == "" {
 		errorResponse(c, http.StatusBadRequest, "IPV4和IPV6不能同时为空")
@@ -209,10 +208,15 @@ func DeviceReportDeviceIp(c *gin.Context) {
 // 获取设备端口转发
 func DevicePortForwards(c *gin.Context) {
 	// 请求参数
-	deviceCode := c.Param("device_code")
+	var requestParams types.DevicePortForwardsRequest
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+
 	// 查询设备
 	firstDevice, err := global.GvaDb.Device.Query().
-		Where(device.CodeEQ(deviceCode)).
+		Where(device.CodeEQ(requestParams.DeviceCode)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())

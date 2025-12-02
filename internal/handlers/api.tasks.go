@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"vibe_ip/internal/backend"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gin_param"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/types"
@@ -25,10 +26,11 @@ func GetTasks(c *gin.Context) {
 func GetTask(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetTaskRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 任务助手
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
 	// 获取全部任务
@@ -46,10 +48,11 @@ func GetTask(c *gin.Context) {
 func RunTask(c *gin.Context) {
 	// 请求参数
 	var requestParams types.RunTaskRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 任务助手
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
 	// 运行任务
@@ -68,10 +71,11 @@ func RunTask(c *gin.Context) {
 func DeleteTask(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteTaskRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 任务助手
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
 	// 删除任务

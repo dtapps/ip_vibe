@@ -6,12 +6,20 @@ import (
 	"vibe_ip/ent"
 	"vibe_ip/ent/device"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gin_param"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Device(c *gin.Context) {
+	// 请求参数
+	var requestParams types.DeviceRequest
+	if err := gin_param.BindQueryWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+
 	// 准备页面数据
 	pageData := types.DeviceResponse{
 		List:     []types.GetDevicesResponse{},
@@ -23,9 +31,9 @@ func Device(c *gin.Context) {
 	// 查询全部设备
 	allDevice, err := global.GvaDb.Device.Query().
 		Order(ent.Desc(device.FieldCreatedAt)).
-		All(c)
+		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
-		for _, item := range allDevice {
+		for _, item := range allDevice.Items {
 			pageData.List = append(pageData.List, types.GetDevicesResponse{
 				ID:              item.ID,
 				Code:            item.Code,
@@ -39,12 +47,16 @@ func Device(c *gin.Context) {
 		}
 	}
 
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("device pageData: %+v \n", pageData)
-	}
+	pageData.Page = allDevice.Page
+	pageData.PageSize = allDevice.Size
+	pageData.Total = allDevice.Total
 
 	// HTTP2 server 推送
 	pusher(c)
+
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
+	}
 
 	// 渲染模板
 	c.HTML(http.StatusOK, "pages/device.html", pageData)

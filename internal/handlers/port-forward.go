@@ -6,12 +6,20 @@ import (
 	"vibe_ip/ent"
 	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gin_param"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
 )
 
 func PortForward(c *gin.Context) {
+	// 请求参数
+	var requestParams types.PortForwardRequest
+	if err := gin_param.BindQueryWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+
 	// 准备页面数据
 	pageData := types.PortForwardResponse{
 		List:     []types.GetPortForwardsResponse{},
@@ -24,9 +32,9 @@ func PortForward(c *gin.Context) {
 	allPortForward, err := global.GvaDb.DevicePortForward.Query().
 		WithDevice().
 		Order(ent.Desc(deviceportforward.FieldCreatedAt)).
-		All(c)
+		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
-		for _, item := range allPortForward {
+		for _, item := range allPortForward.Items {
 			pageData.List = append(pageData.List, types.GetPortForwardsResponse{
 				ID:          item.ID,
 				Name:        item.Name,
@@ -43,12 +51,16 @@ func PortForward(c *gin.Context) {
 		}
 	}
 
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("port-forward pageData: %+v \n", pageData)
-	}
+	pageData.Page = allPortForward.Page
+	pageData.PageSize = allPortForward.Size
+	pageData.Total = allPortForward.Total
 
 	// HTTP2 server 推送
 	pusher(c)
+
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
+	}
 
 	// 渲染模板
 	c.HTML(http.StatusOK, "pages/port-forward.html", pageData)

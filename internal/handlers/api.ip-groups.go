@@ -7,6 +7,7 @@ import (
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gin_param"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -37,10 +38,11 @@ func GetIPGroups(c *gin.Context) {
 func GetIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetIPGroupRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 查询IP组
 	firstIpGroup, err := global.GvaDb.IpGroup.Query().
 		Where(ipgroup.IDEQ(requestParams.ID)).
@@ -67,13 +69,11 @@ func GetIPGroup(c *gin.Context) {
 func CreateIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateIPGroupRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("CreateIPGroup params: %+v\n", requestParams)
-	}
+
 	// 创建IP组
 	saveIpGroup, err := global.GvaDb.IpGroup.Create().
 		SetName(requestParams.Name).
@@ -98,13 +98,11 @@ func CreateIPGroup(c *gin.Context) {
 func UpdateIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateIPGroupRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("UpdateIPGroup params: %+v\n", requestParams)
-	}
+
 	// 查询IP组
 	firstIpGroup, err := global.GvaDb.IpGroup.Query().
 		Where(ipgroup.IDEQ(requestParams.ID)).
@@ -138,10 +136,11 @@ func UpdateIPGroup(c *gin.Context) {
 func DeleteIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteIPGroupRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 查询IP组
 	firstIpGroup, err := global.GvaDb.IpGroup.Query().
 		Where(ipgroup.IDEQ(requestParams.ID)).
@@ -170,10 +169,11 @@ func DeleteIPGroup(c *gin.Context) {
 func GetIPGroupDevices(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetIPGroupDevicesRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 查询IP组
 	firstIpGroup, err := global.GvaDb.IpGroup.Query().
 		Where(ipgroup.IDEQ(requestParams.ID)).

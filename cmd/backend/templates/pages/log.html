@@ -1,5 +1,5 @@
 {{ define "content" }}
-<h1>操作日志</h1>
+<h1>🌐 DDNS管理平台</h1>
 
 <div class="card" id="sectionLog">
   <div class="card-header">
@@ -28,6 +28,10 @@
       </div>
       {{end}}
     </div>
+    <!-- 分页 -->
+    {{ template "pagination" . }}
   </div>
 </div>
+
+    <script src="/static/js/log.js"></script>
 {{ end }}

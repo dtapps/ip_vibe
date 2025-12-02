@@ -7,6 +7,7 @@ import (
 	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gin_param"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -45,10 +46,11 @@ func GetPortForwards(c *gin.Context) {
 func GetPortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetPortForwardRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 查询端口转发
 	firstPortForward, err := global.GvaDb.DevicePortForward.Query().
 		Where(deviceportforward.IDEQ(requestParams.ID)).
@@ -77,13 +79,11 @@ func GetPortForward(c *gin.Context) {
 func CreatePortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreatePortForwardRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("CreatePortForward params: %+v\n", requestParams)
-	}
+
 	// 创建端口转发
 	savePortForward, err := global.GvaDb.DevicePortForward.Create().
 		SetName(requestParams.Name).
@@ -112,13 +112,11 @@ func CreatePortForward(c *gin.Context) {
 func UpdatePortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdatePortForwardRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("UpdatePortForward params: %+v\n", requestParams)
-	}
+
 	// 查询端口转发
 	firstPortForward, err := global.GvaDb.DevicePortForward.Query().
 		Where(deviceportforward.IDEQ(requestParams.ID)).
@@ -155,13 +153,11 @@ func UpdatePortForward(c *gin.Context) {
 func UpdatePortForwardForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdatePortForwardForwardRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("UpdatePortForwardForward params: %+v\n", requestParams)
-	}
+
 	// 查询端口转发
 	firstPortForward, err := global.GvaDb.DevicePortForward.Query().
 		Where(deviceportforward.IDEQ(requestParams.ID)).
@@ -192,13 +188,11 @@ func UpdatePortForwardForward(c *gin.Context) {
 func UpdatePortForwardActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdatePortForwardActiveRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("UpdatePortForwardActive params: %+v\n", requestParams)
-	}
+
 	// 查询端口转发
 	firstPortForward, err := global.GvaDb.DevicePortForward.Query().
 		Where(deviceportforward.IDEQ(requestParams.ID)).
@@ -229,10 +223,11 @@ func UpdatePortForwardActive(c *gin.Context) {
 func DeletePortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeletePortForwardRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 查询端口转发
 	firstPortForward, err := global.GvaDb.DevicePortForward.Query().
 		Where(deviceportforward.IDEQ(requestParams.ID)).

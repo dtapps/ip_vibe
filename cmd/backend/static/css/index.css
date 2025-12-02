@@ -1,0 +1,847 @@
+:root {
+    --primary: #6366f1;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --radius: 8px;
+    --shadow: 0 2px 8px rgba(0, 0, 0, .06);
+    --font: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --mono: "Fira Code", Menlo, monospace;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 20px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+h1 {
+    margin-bottom: 30px;
+}
+
+.card {
+    background: var(--card);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-body {
+    padding: 24px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-success {
+    background: var(--success);
+    color: white;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.8;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 12px;
+    /* text-align: left; */
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    background: #f9fafb;
+    font-weight: 600;
+}
+
+tr:hover {
+    background: #f9fafb;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .3s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: var(--primary);
+}
+
+input:checked+.slider:before {
+    transform: translateX(20px);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.mt-3 {
+    margin-top: 16px;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-success {
+    background: #d1fae5;
+    color: var(--success);
+}
+
+.badge-danger {
+    background: #fee2e2;
+    color: var(--danger);
+}
+
+.timeline {
+    position: relative;
+}
+
+.timeline-item {
+    padding-bottom: 20px;
+    padding-left: 28px;
+    position: relative;
+}
+
+.timeline-item:before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary);
+}
+
+.timeline-item:after {
+    content: "";
+    position: absolute;
+    left: 11px;
+    top: 12px;
+    width: 2px;
+    height: calc(100% - 8px);
+    background: var(--border);
+}
+
+.timeline-item:last-child:after {
+    display: none;
+}
+
+.timeline-time {
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.hidden {
+    display: none;
+}
+
+.platform-fields {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 12px;
+    background: #f9fafb;
+}
+
+/* 图标 */
+.ip-i {
+    width: 1.2em;
+    height: 1.2em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vertical-align: -.18em;
+}
+
+/* 带图标的 h2 */
+.h2-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    /* 图标与文字间距 */
+    margin: 0;
+    /* 覆盖默认 h2 margin */
+}
+
+.h2-icon svg {
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary);
+    /* 比正文浅 */
+}
+
+/* ===== 实时 IP 弹窗专用 ===== */
+.ip-popup {
+    width: 90%;
+    max-width: 640px;
+    padding: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, .15);
+}
+
+.ip-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background: #2c3e50;
+    color: #fff;
+}
+
+.ip-popup-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ip-popup-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    padding: 4px;
+    line-height: 1;
+}
+
+.ip-popup-close:hover {
+    opacity: .8;
+}
+
+.ip-popup-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: #f3f4f6;
+    font-size: 14px;
+}
+
+.ip-popup-count b {
+    color: var(--primary);
+}
+
+.ip-popup-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.ip-popup-copy:hover {
+    background: #f9fafb;
+}
+
+.ip-popup-pre {
+    margin: 0;
+    padding: 20px 24px;
+    background: #1e1e1e;
+    color: #f8f8f2;
+    font-size: 14px;
+    line-height: 1.6;
+    max-height: 420px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: 'Fira Code', Menlo, monospace;
+    border-radius: 0;
+}
+
+/* 滚动条美化 */
+.ip-popup-pre::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.ip-popup-pre::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+.ip-popup-footer {
+    padding: 16px 24px;
+    text-align: right;
+    background: #fff;
+    border-top: 1px solid #e5e7eb;
+}
+
+
+/* placeholder 选项置灰 */
+select:invalid {
+    color: #9ca3af;
+    /* 灰色-400 */
+}
+
+/* 用户选了真实项就恢复黑色 */
+select option {
+    color: #1f2937;
+    /* 灰色-800 */
+}
+
+/* 第一条 placeholder 再暗一点（可选） */
+select option[value=""]:disabled {
+    color: #d1d5db;
+    /* 灰色-300 */
+}
+
+/* 让禁用按钮真正不可点 */
+button:disabled,
+.btn:disabled,
+button[disabled],
+.btn[disabled] {
+    opacity: 0.55 !important;
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+}
+
+
+/* 谷歌字体 3 KB */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Fira+Code&display=swap');
+
+
+
+/* 按钮悬浮放大 1 px */
+.btn {
+    transition: all .25s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* 表格行悬浮高亮 */
+tr {
+    transition: background .2s ease;
+}
+
+tr:hover {
+    background: #f1f5f9;
+}
+
+/* 禁用真正不可点 */
+button:disabled,
+.btn:disabled {
+    opacity: .55 !important;
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+}
+
+/* 刷新页面 */
+.refresh-page {
+    position: fixed;
+    right: 24px;
+    bottom: 78px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+    transition: all .3s ease;
+}
+
+@media (prefers-reduced-motion:reduce) {
+    .refresh-page {
+        transition: none;
+    }
+}
+
+/* 一键回到顶部 */
+.back-top {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    visibility: hidden;
+    transition: all .3s ease;
+}
+
+.back-top.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (prefers-reduced-motion:reduce) {
+    .back-top {
+        transition: none;
+    }
+}
+
+/* IP 组 多选设备选择框优化 */
+.multiselect-device {
+    /* 继承基础表单样式 */
+    width: 100%;
+    /* 保证宽度 100% */
+    padding: 0;
+    /* 移除容器 padding，让 option 自己控制 */
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    height: 180px;
+    /* 固定高度 */
+
+    /* 核心设置 */
+    -webkit-appearance: none;
+    /* 移除默认外观，尤其在 macOS 上 */
+    -moz-appearance: none;
+    appearance: none;
+
+    overflow-y: auto;
+    /* 启用垂直滚动条 */
+    background: var(--card);
+    /* 确保背景是卡片色 */
+    color: var(--text);
+}
+
+/* 单个选项的样式 - 包含水平溢出处理 */
+.multiselect-device option {
+    padding: 8px 14px;
+    /* 增加选项本身的内边距 */
+    white-space: nowrap;
+    /* 避免文字意外换行 */
+    cursor: pointer;
+    line-height: 1.4;
+    color: var(--text);
+    background-color: var(--card);
+
+    /* 针对水平溢出的关键修改 */
+    display: block;
+    /* 使 overflow/text-overflow 生效 */
+    overflow: hidden;
+    /* 隐藏超出边界的内容 */
+    text-overflow: ellipsis;
+    /* 将被隐藏的内容替换为省略号 */
+}
+
+/* 悬停样式 (未选中) */
+.multiselect-device option:hover:not(:checked) {
+    background-color: #f1f5f9;
+    /* 浅灰色背景 */
+    color: var(--text);
+}
+
+/* 选中项样式 - **重点: 强制覆盖确保颜色一致** */
+.multiselect-device option:checked {
+    background-color: var(--primary) !important;
+    /* 主题色背景 */
+    color: white !important;
+    /* 白色文字 */
+    font-weight: 500;
+}
+
+/* 滚动条美化 (WebKit) */
+.multiselect-device::-webkit-scrollbar {
+    width: 6px;
+}
+
+.multiselect-device::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    /* 浅灰色滚动条 */
+    border-radius: 3px;
+}
+
+/* 禁用首个 placeholder 选项 */
+.multiselect-device option:disabled {
+    color: #9ca3af;
+    background-color: var(--card);
+}
+
+/* 默认：正常在线 */
+.device-row {}
+
+/* 超过10分钟未心跳：离线 */
+.device-row.offline {
+    background-color: #fff5f5 !important;
+    color: #e74c3c !important;
+}
+
+.device-row.offline td {
+    color: #e74c3c !important;
+}
+
+/* 从未心跳 */
+.device-row.never-heartbeat td {
+    color: #95a5a6 !important;
+    font-style: italic;
+}
+
+
+.footer {
+    margin-top: 40px;
+    padding: 20px 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.footer-content p {
+    margin: 0;
+}
+
+
+/* 左侧固定导航栏样式 */
+.nav-sidebar {
+    position: fixed;
+    top: 50%;
+    /* 垂直居中 */
+    left: 20px;
+    /* 距离左侧 20px */
+    transform: translateY(-50%);
+    z-index: 500;
+    /* 确保它在页面内容上方 */
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    /* 链接间距 */
+    padding: 12px;
+    border-radius: var(--radius);
+    background: var(--card);
+    /* 卡片背景色 */
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+}
+
+.nav-sidebar a {
+    text-decoration: none;
+    color: var(--text-secondary);
+    /* 次要文字颜色 */
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.nav-sidebar a:hover,
+.nav-sidebar a:focus {
+    color: var(--primary);
+    /* 悬停使用主题色 */
+    background: #f1f5f9;
+    /* 浅色悬停背景 */
+}
+
+/* 调整容器内容，避免被导航栏遮挡 */
+.container {
+    /* max-width: 1400px; */
+    /* 留出左侧导航栏的空间 */
+    /* margin-left: 100px; */
+    /* margin-right: auto; */
+
+    /* ---- */
+
+    /* max-width: 1400px; */
+    /* 原始设置 */
+    /* margin: 0 auto;  */
+
+    /* 修正为给左侧导航栏留出空间 */
+    /* 20px 边距 + 导航栏宽度(约50px) + 间距(30px) = 100px */
+    /* margin-left: 100px;  */
+    /* margin-right: 20px; */
+}
+
+/* 1. 包裹器样式：设置定位上下文和 inline-block */
+.btn-tooltip-wrapper {
+    position: relative;
+    /* 建立定位上下文 */
+    display: inline-block;
+    /* 确保悬停区域不会扩展到整行 */
+    cursor: default;
+    /* 告诉用户这是不可点击的 */
+}
+
+/* 2. 提示框本体 (使用 ::after 伪元素) */
+.btn-tooltip-wrapper::after {
+    /* 获取 title 属性的内容作为提示文本 */
+    content: attr(title);
+
+    /* 样式 */
+    position: absolute;
+    z-index: 9999;
+    /* 确保在最上层 */
+    padding: 6px 10px;
+    border-radius: 4px;
+
+    /* 颜色和背景 (亮色模式) */
+    background: var(--text);
+    /* 深色背景 */
+    color: var(--card);
+    /* 浅色文字 */
+
+    font-size: 12px;
+    white-space: nowrap;
+    /* 确保提示文本不换行 */
+
+    /* **** 关键修改：定位到上方右侧，解决溢出问题 **** */
+    bottom: calc(100% + 8px);
+    /* 向上抬高，距离按钮 8px */
+    right: 0;
+    /* 从右侧对齐 */
+    transform: none;
+    /* 移除居中 transform */
+
+    /* 默认隐藏 */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+/* 3. 悬停显示 */
+.btn-tooltip-wrapper:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+}
+
+/* 4. 可选：添加小箭头 (使用 ::before 伪元素) */
+.btn-tooltip-wrapper::before {
+    content: '';
+    position: absolute;
+    z-index: 9998;
+
+    /* 定位：配合 right: 0，将箭头放在 Tooltip 下方靠右的位置 */
+    bottom: calc(100% + 4px);
+    right: 12px;
+    /* 箭头距离右边缘的距离，可调整 */
+
+    border: 5px solid transparent;
+    border-top-color: var(--text);
+    /* 箭头颜色与提示框背景色一致 */
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    transform: none;
+    /* 移除居中的 transform */
+}
+
+.btn-tooltip-wrapper:hover::before {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 5. 修正禁用按钮的 pointer-events */
+.btn-tooltip-wrapper>button[disabled] {
+    pointer-events: none;
+    /* 确保点击事件被忽略 */
+}
+
+/* ===========================
+   Pagination 分页组件（统一风格）
+   =========================== */
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    font-size: 14px;
+    user-select: none;
+}
+
+.pagination a,
+.pagination .disabled,
+.pagination .page-info {
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text-secondary);
+    transition: all .22s ease;
+}
+
+/* 可点击按钮 */
+.pagination a {
+    color: var(--text);
+}
+
+.pagination a:hover {
+    border-color: var(--primary);
+    background: #f1f5f9;
+    color: var(--primary);
+    box-shadow: var(--shadow);
+}
+
+/* 禁用态 */
+.pagination .disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+/* 当前页提示 */
+.pagination .page-info {
+    color: var(--text-secondary);
+    background: var(--card);
+}

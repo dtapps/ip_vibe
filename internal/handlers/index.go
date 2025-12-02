@@ -274,29 +274,11 @@ func Index(c *gin.Context) {
 	// 获取系统内存信息
 	pageData.SystemMemoryInfo = systemHelper.GetMemoryInfo()
 
-	// if global.GvaEnv.DEBUG {
-	// 	fmt.Printf("Index pageData: %+v \n", pageData)
-	// }
-
 	// HTTP2 server 推送
-	// https://gin-gonic.com/zh-cn/docs/examples/http2-server-push/
-	if pusher := c.Writer.Pusher(); pusher != nil {
-		// 推送 CSS 和 JS 文件
-		resources := []string{
-			"/static/index.css",
-			"/static/index.dark.css",
-			"/static/uuid.js",
-			"/static/index.js",
-		}
-		for _, res := range resources {
-			if err := pusher.Push(res, nil); err != nil {
-				fmt.Printf("推送失败 %s: %v \n", res, err)
-			}
-		}
-	} else {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("推送器为空，跳过推送资源 \n")
-		}
+	pusher(c)
+
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
 	}
 
 	// 渲染模板

@@ -1,5 +1,5 @@
 {{ define "content" }}
-<h1>IP 组（设备维度）</h1>
+<h1>🌐 DDNS管理平台</h1>
 
 <div class="card" id="sectionIpGroup">
   <div class="card-header">
@@ -67,6 +67,49 @@
         {{ end }}
       </tbody>
     </table>
+    <!-- 分页 -->
+    {{ template "pagination" . }}
   </div>
 </div>
+
+    <!-- IP 组（设备维度） 模态框 -->
+    <div class="modal" id="ipGroupModal">
+      <div class="modal-content">
+        <h3 id="ipGroupModalTitle">添加 / 编辑 IP 组</h3>
+        <form id="ipGroupForm">
+
+          <div class="form-group">
+            <label>组名 <span style="color:red">*</span></label>
+            <input type="text" name="name" id="ip_group_name" required placeholder="如：CDN-边缘">
+          </div>
+
+          <div class="form-group">
+            <label>描述</label>
+            <input type="text" name="description" id="ip_group_description" placeholder="可选">
+          </div>
+
+          <div class="form-group">
+            <label>选择设备（Ctrl/⌘ 多选） <span style="color:red">*</span></label>
+            <select name="devices" id="ip_group_devices" required multiple onchange="onIpGroupDevicesSelect(this)"
+              class="multiselect-device"></select>
+          </div>
+
+          <!-- 隐藏字段 -->
+          <input type="hidden" name="id" id="ip_group_id">
+
+          <div class="form-group mt-3" style="text-align:right">
+            <button type="button" class="btn" onclick="closeModal('ipGroupModal')">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-close" />
+              </svg> 取消</button>
+            <button type="submit" class="btn btn-primary">
+              <svg class="ip-i">
+                <use href="/static/icons.svg#ip-save" />
+              </svg> 保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="/static/js/ip-group.js"></script>
 {{ end }}

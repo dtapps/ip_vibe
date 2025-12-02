@@ -165,4 +165,26 @@
     .btn-tooltip-wrapper::before {
         border-top-color: #f1f5f9;
     }
+
+/* ===========================
+   Pagination 分页组件（统一风格）
+   =========================== */
+
+      .pagination a,
+    .pagination .disabled,
+    .pagination .page-info {
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--text-secondary);
+    }
+
+    .pagination a:hover {
+        background: #334155;
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .pagination .disabled {
+        opacity: .35;
+    }
 }

@@ -7,6 +7,7 @@ import (
 	"vibe_ip/ent/dnsrecord"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gin_param"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -54,10 +55,11 @@ func GetDnsRecords(c *gin.Context) {
 func GetDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetDnsRecordRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 查询DNS记录
 	firstDnsRecord, err := global.GvaDb.DNSRecord.Query().
 		Where(dnsrecord.IDEQ(requestParams.ID)).
@@ -94,13 +96,11 @@ func GetDnsRecord(c *gin.Context) {
 func CreateDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateDnsRecordRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("CreateDnsRecord params: %+v\n", requestParams)
-	}
+
 	// 创建DNS记录
 	createDnsRecord := global.GvaDb.DNSRecord.Create().
 		SetConfigID(requestParams.ConfigID).
@@ -131,13 +131,11 @@ func CreateDnsRecord(c *gin.Context) {
 func UpdateDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateDnsRecordRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("UpdateDnsRecord params: %+v\n", requestParams)
-	}
+
 	// 查询DNS记录
 	firstDnsRecord, err := global.GvaDb.DNSRecord.Query().
 		Where(dnsrecord.IDEQ(requestParams.ID)).
@@ -173,13 +171,11 @@ func UpdateDnsRecord(c *gin.Context) {
 func UpdateDnsRecordActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateDnsRecordActiveRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("UpdateDnsRecordActive params: %+v\n", requestParams)
-	}
+
 	// 查询DNS记录
 	firstDnsRecord, err := global.GvaDb.DNSRecord.Query().
 		Where(dnsrecord.IDEQ(requestParams.ID)).
@@ -210,10 +206,11 @@ func UpdateDnsRecordActive(c *gin.Context) {
 func DeleteDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteDnsRecordRequest
-	if err := c.ShouldBindJSON(&requestParams); err != nil {
+	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
+
 	// 查询DNS记录
 	firstDnsRecord, err := global.GvaDb.DNSRecord.Query().
 		Where(dnsrecord.IDEQ(requestParams.ID)).

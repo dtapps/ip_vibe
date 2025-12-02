@@ -1,0 +1,23 @@
+{{ define "switch" }}
+<label class="switch">
+  {{if .Checked}}
+  <input type="checkbox" checked onchange="changeSwitchStatus('{{.URL}}', this)" />
+  {{else}}
+  <input type="checkbox" onchange="changeSwitchStatus('{{.URL}}', this)"/>
+  {{end}}
+  <span class="slider"></span>
+</label>
+
+<script>
+ async function changeSwitchStatus(url,checkbox) {
+  try {
+        await API.patch(url, { is_active: checkbox.checked });
+    } catch (error) {
+        alert(`状态更新失败: ${error.message}`);
+        console.error("切换状态失败", error);
+        // 恢复 checkbox 状态
+        checkbox.checked = !checkbox.checked;
+    }
+  }
+</script>
+{{ end }}

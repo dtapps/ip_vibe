@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>{{ block "title" . }}DDNS管理平台{{ end }}</title>
 
-    <link rel="stylesheet" href="/static/index.css">
-    <link rel="stylesheet" href="/static/index.dark.css">
+    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/css/index.dark.css">
 
     {{ block "head" . }}{{ end }}
 </head>
@@ -13,12 +13,24 @@
 
     {{ block "body" . }}{{ end }}
 
+    <!-- 右边工具栏 -->
+    <a href="javascript:location.reload()" class="refresh-page" aria-label="刷新页面">
+      <svg class="ip-i">
+        <use href="/static/icons.svg#ip-refresh" />
+      </svg>
+    </a>
+    <a href="#" class="back-top" aria-label="回到顶部">
+      <svg class="ip-i">
+        <use href="/static/icons.svg#ip-top" />
+      </svg>
+    </a>
+
     {{ block "scripts" . }}
     <script>
         window.selfDeviceCode = "{{selfDeviceCode}}";
     </script>
-    <script src="/static/uuid.js"></script>
-    <script src="/static/index.js"></script>
+    <script src="/static/js/uuid.js"></script>
+    <script src="/static/js/index.js"></script>
     {{ end }}
 
 </body>

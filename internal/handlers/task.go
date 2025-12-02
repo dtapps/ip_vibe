@@ -30,12 +30,12 @@ func Task(c *gin.Context) {
 		pageData.Status = "running"
 	}
 
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("task pageData: %+v \n", pageData)
-	}
-
 	// HTTP2 server 推送
 	pusher(c)
+
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
+	}
 
 	// 渲染模板
 	c.HTML(http.StatusOK, "pages/task.html", pageData)

@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"path/filepath"
 	"runtime"
 	"time"
 	"vibe_ip/internal/backend"
@@ -16,8 +17,10 @@ import (
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/initialize"
 
+	"github.com/denisbrodbeck/machineid"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
+	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 )
@@ -116,11 +119,37 @@ func main() {
 
 	// 创建带 FuncMap 的 template
 	funcMap := template.FuncMap{
+		// 格式化时间为字符串，若为空则返回 "—"
 		"formatTimeOrNil": func(t time.Time) string {
 			if t.IsZero() {
 				return "—"
 			}
 			return t.Format("2006-01-02 15:04:05")
+		},
+		// 获取当前设备的 Code
+		"selfDeviceCode": func() string {
+			code, _ := machineid.ID()
+			return code
+		},
+		// pagination 组件
+		"add":   func(a, b int) int { return a + b },
+		"sub":   func(a, b int) int { return a - b },
+		"div":   func(a, b int) int { return a / b },
+		"toInt": func(i int64) int { return int(i) },
+		// switch 组件
+		"dict": func(values ...interface{}) (map[string]interface{}, error) {
+			if len(values)%2 != 0 {
+				return nil, fmt.Errorf("dict expects even number of arguments")
+			}
+			m := make(map[string]interface{}, len(values)/2)
+			for i := 0; i < len(values); i += 2 {
+				key, ok := values[i].(string)
+				if !ok {
+					return nil, fmt.Errorf("dict keys must be strings")
+				}
+				m[key] = values[i+1]
+			}
+			return m, nil
 		},
 	}
 
@@ -128,22 +157,30 @@ func main() {
 	devMode := global.GvaVersion == "dev"
 	if devMode {
 		// 自定义分隔符
-		router.Delims("{{", "}}")
+		// router.Delims("{{", "}}")
 
 		// 自定义模板功能
-		router.SetFuncMap(funcMap)
+		// router.SetFuncMap(funcMap)
 
 		// 开发：直接读本地 templates
-		router.LoadHTMLGlob("cmd/backend/templates/*.html")
+		// router.LoadHTMLGlob("cmd/backend/templates/**/*")
+
+		// 开发环境
+		router.HTMLRender = loadTemplates("cmd/backend/templates", funcMap)
 
 		// 静态文件服务 - 开发：直接读本地 static
 		router.StaticFS("/static", http.Dir("cmd/backend/static"))
 	} else {
 		// 生产：使用 embed
-		templ := template.Must(
-			template.New("").Funcs(funcMap).ParseFS(embeddedFiles, "templates/*.html"),
-		)
-		router.SetHTMLTemplate(templ)
+		// templ := template.Must(
+		// 	template.New("").
+		// 		Funcs(funcMap).
+		// 		ParseFS(embeddedFiles, "templates/**/*"),
+		// )
+		// router.SetHTMLTemplate(templ)
+
+		// 生产环境
+		router.HTMLRender = loadTemplatesFS(embeddedFiles, funcMap)
 
 		// 静态文件服务 - 使用嵌入的文件系统
 		staticFS, _ := fs.Sub(embeddedFiles, "static")
@@ -152,6 +189,36 @@ func main() {
 
 	// 根路径 - 提供HTML页面并渲染数据
 	router.GET("/", handlers.Index)
+
+	// 平台配置页面 - 提供HTML页面并渲染数据
+	router.GET("/config", handlers.Config)
+
+	// CDN页面 - 提供HTML页面并渲染数据
+	router.GET("/cdn", handlers.Cdn)
+
+	// DNS页面 - 提供HTML页面并渲染数据
+	router.GET("/dns", handlers.Dns)
+
+	// 设备页面 - 提供HTML页面并渲染数据
+	router.GET("/device", handlers.Device)
+
+	// IP组页面 - 提供HTML页面并渲染数据
+	router.GET("/ip-group", handlers.IPGroup)
+
+	// 端口转发页面 - 提供HTML页面并渲染数据
+	router.GET("/port-forward", handlers.PortForward)
+
+	// 通知页面 - 提供HTML页面并渲染数据
+	router.GET("/webhook", handlers.Webhook)
+
+	// 通知订阅页面 - 提供HTML页面并渲染数据
+	router.GET("/webhook-sub", handlers.WebhookSub)
+
+	// 任务页面 - 提供HTML页面并渲染数据
+	router.GET("/task", handlers.Task)
+
+	// 日志页面 - 提供HTML页面并渲染数据
+	router.GET("/log", handlers.Log)
 
 	// API路由组
 	api := router.Group("/api")
@@ -278,4 +345,87 @@ func main() {
 		fmt.Printf("服务器启动失败: %v\n", err)
 		os.Exit(1)
 	}
+}
+
+// 开发环境
+func loadTemplates(templatePath string, funcMap template.FuncMap) multitemplate.Renderer {
+	r := multitemplate.NewRenderer()
+
+	layout := filepath.Join(templatePath, "layout/base.html")
+	index := filepath.Join(templatePath, "pages/index.html")
+
+	// 所有业务页面
+	pages, err := filepath.Glob(filepath.Join(templatePath, "pages/*.html"))
+	if err != nil {
+		panic(err)
+	}
+
+	// 所有组件（自动注入）
+	components, err := filepath.Glob(filepath.Join(templatePath, "components/*.html"))
+	if err != nil {
+		panic(err)
+	}
+
+	for _, p := range pages {
+		name := filepath.Join("pages", filepath.Base(p))
+		fmt.Printf("渲染页面: %s\n", name)
+
+		// 页面模板 = base + index + 组件 + 页面
+		files := []string{layout, index}
+		files = append(files, components...) // 注入全部组件
+		files = append(files, p)             // 当前页面
+
+		// r.AddFromFiles(
+		// 	filepath.Join("pages", name),
+		// 	layout,
+		// 	index,
+		// 	p,
+		// )
+		r.AddFromFilesFuncs(
+			name,
+			funcMap,
+			files...,
+		)
+	}
+
+	return r
+}
+
+// 生产环境
+func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Renderer {
+	r := multitemplate.NewRenderer()
+
+	layout := "templates/layout/base.html"
+	index := "templates/pages/index.html"
+
+	// 所有业务页面
+	pages, err := fs.Glob(efs, "templates/pages/*.html")
+	if err != nil {
+		panic(err)
+	}
+
+	// 所有组件（自动注入）
+	components, err := fs.Glob(efs, "templates/components/*.html")
+	if err != nil {
+		panic(err)
+	}
+
+	for _, p := range pages {
+		name := filepath.Join("pages", filepath.Base(p))
+		fmt.Printf("渲染页面: %s\n", name)
+
+		// 模板文件顺序：base → index → components → page
+		files := []string{layout, index}
+		files = append(files, components...)
+		files = append(files, p)
+
+		r.AddFromFSFuncs(
+			name,
+			funcMap,
+			efs,
+			files...,
+		)
+	}
+
+	return r
 }
