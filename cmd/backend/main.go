@@ -355,8 +355,10 @@ func loadTemplates(templatePath string, funcMap template.FuncMap) multitemplate.
 
 	layout := filepath.Join(templatePath, "layout", "base.html")
 	index := filepath.Join(templatePath, "pages", "index.html")
-	fmt.Printf("开发环境 布局: %s\n", layout)
-	fmt.Printf("开发环境 首页: %s\n", index)
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("开发环境 布局: %s\n", layout)
+		fmt.Printf("开发环境 首页: %s\n", index)
+	}
 
 	// 所有业务页面
 	pages, err := filepath.Glob(filepath.Join(templatePath, "pages", "*.html"))
@@ -371,12 +373,16 @@ func loadTemplates(templatePath string, funcMap template.FuncMap) multitemplate.
 	}
 	for _, c := range components {
 		name := filepath.Join("components", filepath.Base(c))
-		fmt.Printf("开发环境 组件: %s\n", name)
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("开发环境 组件: %s\n", name)
+		}
 	}
 
 	for _, p := range pages {
 		name := filepath.Join("pages", filepath.Base(p))
-		fmt.Printf("开发环境 业务页面: %s\n", name)
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("开发环境 业务页面: %s\n", name)
+		}
 
 		// 页面模板 = base + index + 组件 + 页面
 		files := []string{layout, index}
@@ -401,8 +407,10 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 
 	layout := filepath.Join(templatePath, "layout", "base.html")
 	index := filepath.Join(templatePath, "pages", "index.html")
-	fmt.Printf("生产环境 布局: %s\n", layout)
-	fmt.Printf("生产环境 首页: %s\n", index)
+	if global.GvaEnv.DEBUG {
+		fmt.Printf("生产环境 布局: %s\n", layout)
+		fmt.Printf("生产环境 首页: %s\n", index)
+	}
 
 	// 所有业务页面
 	pages, err := fs.Glob(efs, filepath.Join(templatePath, "pages", "*.html"))
@@ -417,12 +425,16 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 	}
 	for _, c := range components {
 		name := filepath.Join("components", filepath.Base(c))
-		fmt.Printf("生产环境 组件: %s\n", name)
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("生产环境 组件: %s\n", name)
+		}
 	}
 
 	for _, p := range pages {
 		name := filepath.Join("pages", filepath.Base(p))
-		fmt.Printf("生产环境 业务页面: %s\n", name)
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("生产环境 业务页面: %s\n", name)
+		}
 
 		// 模板文件顺序：base → index → components → page
 		files := []string{layout, index}
