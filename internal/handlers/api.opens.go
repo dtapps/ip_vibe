@@ -12,7 +12,7 @@ import (
 	"vibe_ip/ent/webhooksubscription"
 	"vibe_ip/internal/backend"
 	"vibe_ip/internal/global"
-	"vibe_ip/internal/helper/gin_param"
+	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
@@ -24,7 +24,7 @@ import (
 func DeviceReportDeviceIp(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeviceReportDeviceIpRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -209,7 +209,7 @@ func DeviceReportDeviceIp(c *gin.Context) {
 func DevicePortForwards(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DevicePortForwardsRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

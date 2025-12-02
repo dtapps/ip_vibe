@@ -4,6 +4,13 @@ import (
 	"vibe_ip/internal/helper/gocron_helper"
 )
 
+// 任务页面 请求结构
+type TaskRequest struct {
+	Page     int `form:"page" default:"1"`       // 当前页码
+	PageSize int `form:"page_size" default:"20"` // 每页数量
+}
+
+// 任务页面 响应结构
 type TaskResponse struct {
 	List     []gocron_helper.JobData `json:"list"`      // 任务列表
 	Page     int                     `json:"page"`      // 当前页码

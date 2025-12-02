@@ -37,10 +37,10 @@ func pusher(c *gin.Context) {
 	if pusher := c.Writer.Pusher(); pusher != nil {
 		// 推送 CSS 和 JS 文件
 		resources := []string{
-			"/static/index.css",
-			"/static/index.dark.css",
-			"/static/uuid.js",
-			"/static/index.js",
+			"/static/css/index.css",
+			"/static/css/index.dark.css",
+			"/static/js/uuid.js",
+			"/static/js/index.js",
 		}
 		for _, res := range resources {
 			if err := pusher.Push(res, nil); err != nil {

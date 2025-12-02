@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"vibe_ip/internal/backend"
 	"vibe_ip/internal/global"
-	"vibe_ip/internal/helper/gin_param"
+	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/types"
@@ -26,7 +26,7 @@ func GetTasks(c *gin.Context) {
 func GetTask(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetTaskRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -48,7 +48,7 @@ func GetTask(c *gin.Context) {
 func RunTask(c *gin.Context) {
 	// 请求参数
 	var requestParams types.RunTaskRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -71,7 +71,7 @@ func RunTask(c *gin.Context) {
 func DeleteTask(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteTaskRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

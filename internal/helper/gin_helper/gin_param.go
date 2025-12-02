@@ -1,4 +1,4 @@
-package gin_param
+package gin_helper
 
 import (
 	"fmt"

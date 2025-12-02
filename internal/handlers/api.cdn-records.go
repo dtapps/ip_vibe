@@ -7,7 +7,7 @@ import (
 	"vibe_ip/ent/cdnrecord"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/global"
-	"vibe_ip/internal/helper/gin_param"
+	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -53,7 +53,7 @@ func GetCdnRecords(c *gin.Context) {
 func GetCdnRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetCdnRecordRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -92,7 +92,7 @@ func GetCdnRecord(c *gin.Context) {
 func CreateCdnRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateCdnRecordRequest
-	if err := gin_param.BindJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -123,7 +123,7 @@ func CreateCdnRecord(c *gin.Context) {
 func UpdateCdnRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateCdnRecordRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -161,7 +161,7 @@ func UpdateCdnRecord(c *gin.Context) {
 func UpdateCdnRecordActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateCdnRecordActiveRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -196,7 +196,7 @@ func UpdateCdnRecordActive(c *gin.Context) {
 func DeleteCdnRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetCdnRecordRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

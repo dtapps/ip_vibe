@@ -10,7 +10,7 @@ import (
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/webhooksubscription"
 	"vibe_ip/internal/global"
-	"vibe_ip/internal/helper/gin_param"
+	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -69,7 +69,7 @@ func GetWebhookSubscriptions(c *gin.Context) {
 func GetWebhookSubscription(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetWebhookSubscriptionRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -121,7 +121,7 @@ func GetWebhookSubscription(c *gin.Context) {
 func CreateWebhookSubscription(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateWebhookSubscriptionRequest
-	if err := gin_param.BindJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -154,7 +154,7 @@ func CreateWebhookSubscription(c *gin.Context) {
 func UpdateWebhookSubscription(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateWebhookSubscriptionRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -190,7 +190,7 @@ func UpdateWebhookSubscription(c *gin.Context) {
 func UpdateWebhookSubscriptionActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateWebhookSubscriptionActiveRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -225,7 +225,7 @@ func UpdateWebhookSubscriptionActive(c *gin.Context) {
 func DeleteWebhookSubscription(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteWebhookSubscriptionRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

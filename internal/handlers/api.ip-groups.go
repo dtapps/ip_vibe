@@ -7,7 +7,7 @@ import (
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/global"
-	"vibe_ip/internal/helper/gin_param"
+	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -38,7 +38,7 @@ func GetIPGroups(c *gin.Context) {
 func GetIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetIPGroupRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -69,7 +69,7 @@ func GetIPGroup(c *gin.Context) {
 func CreateIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateIPGroupRequest
-	if err := gin_param.BindJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -98,7 +98,7 @@ func CreateIPGroup(c *gin.Context) {
 func UpdateIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateIPGroupRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -136,7 +136,7 @@ func UpdateIPGroup(c *gin.Context) {
 func DeleteIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteIPGroupRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -169,7 +169,7 @@ func DeleteIPGroup(c *gin.Context) {
 func GetIPGroupDevices(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetIPGroupDevicesRequest
-	if err := gin_param.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

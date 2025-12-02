@@ -6,7 +6,7 @@ import (
 	"vibe_ip/ent"
 	"vibe_ip/ent/platformconfig"
 	"vibe_ip/internal/global"
-	"vibe_ip/internal/helper/gin_param"
+	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -15,7 +15,7 @@ import (
 func Config(c *gin.Context) {
 	// 请求参数
 	var requestParams types.ConfigRequest
-	if err := gin_param.BindQueryWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

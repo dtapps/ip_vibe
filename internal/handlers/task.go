@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/types"
 
@@ -11,6 +12,13 @@ import (
 )
 
 func Task(c *gin.Context) {
+	// 请求参数
+	var requestParams types.TaskRequest
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+
 	// 准备页面数据
 	pageData := types.TaskResponse{
 		List:     []gocron_helper.JobData{},
@@ -24,6 +32,10 @@ func Task(c *gin.Context) {
 
 	// 获取全部任务
 	pageData.List = jobHelper.GetJobsData(5)
+
+	pageData.Page = requestParams.Page
+	pageData.PageSize = requestParams.PageSize
+	pageData.Total = int64(len(pageData.List))
 
 	// 查询任务状态
 	if global.GvaGoCronRunning == 1 {
