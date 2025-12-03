@@ -162,3 +162,12 @@ function copyData(id) {
     })
     .catch(() => alert("复制失败，请手动选择复制"));
 }
+
+// 格式化健康检查结果
+function formatHealthCheckResult(healthData) {
+  return healthData
+    .map((group) =>
+      group.map((item) => `${item.key}: ${item.value || "-"}`).join("\n")
+    )
+    .join("\n-----\n");
+}

@@ -192,71 +192,73 @@ func checkHTTP(ctx context.Context, url string) (int, time.Duration, error) {
 	return resp.StatusCode, duration, nil
 }
 
-func (r *HealthCheckResult) ToPairs() []map[string]string {
-	var pairs []map[string]string
+type ToPairsStruct struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+// ToPairsForDomain 返回域名检测关注的字段
+func (r *HealthCheckResult) ToPairsForDomain() []ToPairsStruct {
+	var pairs []ToPairsStruct
 
 	if r.DNSUsed != "" {
-		pairs = append(pairs, map[string]string{
-			"Key":   "使用的 DNS 服务器",
-			"Value": r.DNSUsed,
-		})
+		pairs = append(pairs, ToPairsStruct{Key: "使用的 DNS 服务器", Value: r.DNSUsed})
 	}
-
 	if len(r.ResolvedIPs) > 0 {
-		pairs = append(pairs, map[string]string{
-			"Key":   "解析出的 IP 地址",
-			"Value": strings.Join(r.ResolvedIPs, ", "),
-		})
+		pairs = append(pairs, ToPairsStruct{Key: "解析出的 IP 地址", Value: strings.Join(r.ResolvedIPs, ", ")})
 	}
 
-	if r.HTTPStatus > 0 {
-		pairs = append(pairs, map[string]string{
-			"Key":   "HTTP 状态码",
-			"Value": strconv.Itoa(r.HTTPStatus),
-		})
+	// HTTP/HTTPS 部分保持不变
+	addHTTPHTTPS(pairs, r)
+
+	return pairs
+}
+
+// ToPairsForIP 返回 IP 检测关注的字段
+func (r *HealthCheckResult) ToPairsForIP() []ToPairsStruct {
+	var pairs []ToPairsStruct
+
+	// IP 检测：不显示 DNSUsed（因为没用 DNS）
+	if len(r.ResolvedIPs) > 0 {
+		pairs = append(pairs, ToPairsStruct{Key: "检测的 IP 地址", Value: strings.Join(r.ResolvedIPs, ", ")})
 	}
-	if r.HTTPErr != "" {
-		pairs = append(pairs, map[string]string{
-			"Key":   "HTTP 错误",
-			"Value": r.HTTPErr,
-		})
+
+	// 如果 IP 校验失败，显示错误
+	if r.HTTPErr == "IP 不在预期列表中" {
+		pairs = append(pairs, ToPairsStruct{Key: "IP 校验", Value: "❌ 不在预期列表中"})
+	} else if len(r.ResolvedIPs) > 0 {
+		pairs = append(pairs, ToPairsStruct{Key: "IP 校验", Value: "✅ 在预期列表中"})
+	}
+
+	addHTTPHTTPS(pairs, r)
+
+	return pairs
+}
+
+// 公共辅助函数：添加 HTTP/HTTPS 字段
+func addHTTPHTTPS(pairs []ToPairsStruct, r *HealthCheckResult) {
+	if r.HTTPStatus > 0 {
+		pairs = append(pairs, ToPairsStruct{Key: "HTTP 状态码", Value: strconv.Itoa(r.HTTPStatus)})
+	}
+	if r.HTTPErr != "" && r.HTTPErr != "IP 不在预期列表中" {
+		pairs = append(pairs, ToPairsStruct{Key: "HTTP 错误", Value: r.HTTPErr})
 	}
 	if r.HTTPRTT > 0 {
-		pairs = append(pairs, map[string]string{
-			"Key":   "HTTP 响应时间（ms）",
-			"Value": strconv.FormatInt(r.HTTPRTT, 10),
-		})
+		pairs = append(pairs, ToPairsStruct{Key: "HTTP 响应时间（ms）", Value: strconv.FormatInt(r.HTTPRTT, 10)})
 	}
 
 	if r.HTTPSStatus > 0 {
-		pairs = append(pairs, map[string]string{
-			"Key":   "HTTPS 状态码",
-			"Value": strconv.Itoa(r.HTTPSStatus),
-		})
+		pairs = append(pairs, ToPairsStruct{Key: "HTTPS 状态码", Value: strconv.Itoa(r.HTTPSStatus)})
 	}
-	if r.HTTPSErr != "" {
-		pairs = append(pairs, map[string]string{
-			"Key":   "HTTPS 错误",
-			"Value": r.HTTPSErr,
-		})
+	if r.HTTPSErr != "" && r.HTTPSErr != "IP 不在预期列表中" {
+		pairs = append(pairs, ToPairsStruct{Key: "HTTPS 错误", Value: r.HTTPSErr})
 	}
 	if r.HTTPSRTT > 0 {
-		pairs = append(pairs, map[string]string{
-			"Key":   "HTTPS 响应时间（ms）",
-			"Value": strconv.FormatInt(r.HTTPSRTT, 10),
-		})
+		pairs = append(pairs, ToPairsStruct{Key: "HTTPS 响应时间（ms）", Value: strconv.FormatInt(r.HTTPSRTT, 10)})
 	}
 
-	pairs = append(pairs, map[string]string{
-		"Key":   "HTTP 是否健康",
-		"Value": boolToStatus(r.IsHTTPHealthy),
-	})
-	pairs = append(pairs, map[string]string{
-		"Key":   "HTTPS 是否健康",
-		"Value": boolToStatus(r.IsHTTPSHealthy),
-	})
-
-	return pairs
+	pairs = append(pairs, ToPairsStruct{Key: "HTTP 是否健康", Value: boolToStatus(r.IsHTTPHealthy)})
+	pairs = append(pairs, ToPairsStruct{Key: "HTTPS 是否健康", Value: boolToStatus(r.IsHTTPSHealthy)})
 }
 
 func boolToStatus(ok bool) string {

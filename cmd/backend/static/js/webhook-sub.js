@@ -11,7 +11,7 @@ function onObjIdSelect(sel) {
 }
 
 // 打开 表单 弹窗
-async function openModal(id, obj_type) {
+async function openFormModal(id, obj_type) {
   document.getElementById("form").reset();
 
   await withErrorHandling(

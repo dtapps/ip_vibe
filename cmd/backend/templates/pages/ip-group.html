@@ -7,7 +7,7 @@
       {{ template "icons" (dict "Name" "ip-layer") }} IP 组（设备维度）
     </h2>
     <div>
-      <button class="btn btn-primary" onclick="openModal()">
+      <button class="btn btn-primary" onclick="openFormModal()">
         {{ template "icons" (dict "Name" "ip-folder-plus") }} 添加IP组
       </button>
     </div>
@@ -31,13 +31,19 @@
           <td>
             <button
               class="btn btn-sm btn-outline-info"
-              onclick="onPopup('{{.ID}}','{{.Name}}')"
+              onclick="onHealthcheckPopup('{{.ID}}')"
+            >
+              {{ template "icons" (dict "Name" "ip-health-check") }} 检测
+            </button>
+            <button
+              class="btn btn-sm btn-outline-info"
+              onclick="onLiveIPPopup('{{.ID}}','{{.Name}}')"
             >
               {{ template "icons" (dict "Name" "ip-eyes") }} 实时IP
             </button>
             <button
               class="btn btn-primary btn-sm"
-              onclick="openModal('{{.ID}}')"
+              onclick="openFormModal('{{.ID}}')"
             >
               {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>

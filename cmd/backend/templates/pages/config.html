@@ -7,7 +7,7 @@
       {{ template "icons" (dict "Name" "ip-server") }} 平台配置
     </h2>
     <div>
-      <button class="btn btn-primary" onclick="openModal()">
+      <button class="btn btn-primary" onclick="openFormModal()">
         {{ template "icons" (dict "Name" "ip-plus") }} 添加配置
       </button>
     </div>
@@ -43,7 +43,7 @@
           <td>
             <button
               class="btn btn-primary btn-sm"
-              onclick="openModal('{{.ID}}')"
+              onclick="openFormModal('{{.ID}}')"
             >
               {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>

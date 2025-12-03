@@ -103,6 +103,7 @@
 <symbol id="ip-top" viewBox="0 0 48 48">
   <path d="M12 28l12-12 12 12M24 16v24" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
 </symbol>
+
 <!-- 调试 / Debug -->
 <symbol id="ip-debug" viewBox="0 0 48 48">
   <path d="M20 4l-4 4-4-4m-8 8l4 4-4 4m24-16l4 4 4-4m8 8l-4 4 4 4M24 12v24m-8-8l8 8 8-8" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
@@ -158,4 +159,18 @@
   <path d="M34 32v6m-3-3h6" 
         stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
 </symbol>
+
+<!-- 检测 / 健康检查 -->
+<!-- <symbol id="ip-health-check" viewBox="0 0 48 48">
+  <path d="M24 44C12.95 44 4 35.05 4 24S12.95 4 24 4s20 8.95 20 20-8.95 20-20 20zm0-36C15.16 8 8 15.16 8 24s7.16 16 16 16 16-7.16 16-16S32.84 8 24 8z"
+        fill="none" stroke="currentColor" stroke-width="4"/>
+  <path d="M24 16v8l4 4" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</symbol> -->
+
+<!-- 检测 / 健康检查（轻量版） -->
+<symbol id="ip-health-check" viewBox="0 0 48 48">
+  <circle cx="24" cy="24" r="18" fill="none" stroke="currentColor" stroke-width="2.5"/>
+  <path d="M18 24l3 3 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+</symbol>
+
 </svg>

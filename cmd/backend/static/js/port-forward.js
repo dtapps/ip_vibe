@@ -11,7 +11,7 @@ function onDeviceIdSelect(sel) {
 }
 
 // 打开 表单 弹窗
-async function openModal(id) {
+async function openFormModal(id) {
   document.getElementById("form").reset();
 
   try {
@@ -149,5 +149,39 @@ async function onDelete(id) {
       alert(`删除失败: ${error.message}`);
       console.error("删除端口转发失败", error);
     }
+  }
+}
+
+// 打开 检测 弹窗
+async function onHealthcheckPopup(id) {
+  try {
+    const { data: portForwardHealthcheck } = await API.get(
+      `/api/port-forwards/${id}/healthcheck`
+    );
+    console.log("portForwardHealthcheck", portForwardHealthcheck);
+    if (!portForwardHealthcheck) {
+      alert("端口转发检测数据异常");
+      return;
+    }
+    if (portForwardHealthcheck.length === 0) {
+      alert("当前记录无检测数据");
+      return;
+    }
+
+    // 填充代码块
+    const pre = document.getElementById("popupPre");
+
+    // 格式化 检测数据
+    pre.textContent = formatHealthCheckResult(portForwardHealthcheck);
+
+    // 更新计数
+    document.getElementById("popupCount").textContent =
+      portForwardHealthcheck.length;
+
+    // 打开弹窗（统一走你已有的 showModal 即可）
+    showModal("popup", "popupTitle", `实时 检测 IP`);
+  } catch (error) {
+    alert(`加载端口转发检测信息失败: ${error.message}`);
+    console.error("查看端口转发检测信息失败", error);
   }
 }

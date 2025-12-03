@@ -32,7 +32,7 @@ function onCdnRecordSelect(sel) {
 }
 
 // 打开 表单 弹窗
-async function openModal(id) {
+async function openFormModal(id) {
   try {
     // 平台配置列表
     const { data: configs } = await API.get(`/api/configs`);
@@ -196,8 +196,42 @@ async function onDelete(id) {
   }
 }
 
+// 打开 检测 弹窗
+async function onHealthcheckPopup(id) {
+  try {
+    const { data: dnsRecordHealthcheck } = await API.get(
+      `/api/dns-records/${id}/healthcheck`
+    );
+    console.log("dnsRecordHealthcheck", dnsRecordHealthcheck);
+    if (!dnsRecordHealthcheck) {
+      alert("DNS记录检测数据异常");
+      return;
+    }
+    if (dnsRecordHealthcheck.length === 0) {
+      alert("当前记录无检测数据");
+      return;
+    }
+
+    // 填充代码块
+    const pre = document.getElementById("popupPre");
+
+    // 格式化 检测数据
+    pre.textContent = formatHealthCheckResult(dnsRecordHealthcheck);
+
+    // 更新计数
+    document.getElementById("popupCount").textContent =
+      dnsRecordHealthcheck.length;
+
+    // 打开弹窗（统一走你已有的 showModal 即可）
+    showModal("popup", "popupTitle", `实时 检测 域名/IP`);
+  } catch (error) {
+    alert(`加载DNS记录检测信息失败: ${error.message}`);
+    console.error("查看DNS记录检测信息失败", error);
+  }
+}
+
 // 打开 实时IP 弹窗
-async function onPopup(id, name) {
+async function onLiveIPPopup(id, name) {
   try {
     const { data: ipGroupDevices } = await API.get(
       `/api/ip-groups/${id}/devices`
@@ -216,11 +250,11 @@ async function onPopup(id, name) {
     const pre = document.getElementById("popupPre");
 
     // 格式化 IP 列表
-    const ipList = ipGroupDevices.map(
+    const preList = ipGroupDevices.map(
       (d) => `${d.name} - ${d.ip_v4 || "-"} / ${d.ip_v6 || "-"}`
     );
 
-    pre.textContent = ipList.join("\n");
+    pre.textContent = preList.join("\n");
 
     // 更新计数
     document.getElementById("popupCount").textContent = ipGroupDevices.length;

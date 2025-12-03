@@ -5,7 +5,7 @@ function onDevicesSelect(sel) {
 }
 
 // 打开 表单 弹窗
-async function openModal(id) {
+async function openFormModal(id) {
   document.getElementById("form").reset();
 
   try {
@@ -114,8 +114,42 @@ async function onDelete(id) {
   }
 }
 
+// 打开 检测 弹窗
+async function onHealthcheckPopup(id) {
+  try {
+    const { data: ipGroupHealthcheck } = await API.get(
+      `/api/ip-groups/${id}/healthcheck`
+    );
+    console.log("ipGroupHealthcheck", ipGroupHealthcheck);
+    if (!ipGroupHealthcheck) {
+      alert("IP组检测数据异常");
+      return;
+    }
+    if (ipGroupHealthcheck.length === 0) {
+      alert("当前组内无检测数据");
+      return;
+    }
+
+    // 填充代码块
+    const pre = document.getElementById("popupPre");
+
+    // 格式化 检测数据
+    pre.textContent = formatHealthCheckResult(ipGroupHealthcheck);
+
+    // 更新计数
+    document.getElementById("popupCount").textContent =
+      ipGroupHealthcheck.length;
+
+    // 打开弹窗（统一走你已有的 showModal 即可）
+    showModal("popup", "popupTitle", `实时 检测 IP`);
+  } catch (error) {
+    alert(`加载IP组检测信息失败: ${error.message}`);
+    console.error("查看检测信息失败", error);
+  }
+}
+
 // 打开 实时IP 弹窗
-async function onPopup(id, name) {
+async function onLiveIPPopup(id, name) {
   try {
     const { data: ipGroupDevices } = await API.get(
       `/api/ip-groups/${id}/devices`
@@ -134,11 +168,11 @@ async function onPopup(id, name) {
     const pre = document.getElementById("popupPre");
 
     // 格式化 IP 列表
-    const ipList = ipGroupDevices.map(
+    const preList = ipGroupDevices.map(
       (d) => `${d.name} - ${d.ip_v4 || "-"} / ${d.ip_v6 || "-"}`
     );
 
-    pre.textContent = ipList.join("\n");
+    pre.textContent = preList.join("\n");
 
     // 更新计数
     document.getElementById("popupCount").textContent = ipGroupDevices.length;

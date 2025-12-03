@@ -1,5 +1,5 @@
 // 打开 表单 弹窗
-async function openModal(id) {
+async function openFormModal(id) {
   document.getElementById("form").reset();
 
   // 编辑
@@ -92,8 +92,42 @@ async function onDelete(id) {
   }
 }
 
+// 打开 检测 弹窗
+async function onHealthcheckPopup(id) {
+  try {
+    const { data: deviceHealthcheck } = await API.get(
+      `/api/devices/${id}/healthcheck`
+    );
+    console.log("deviceHealthcheck", deviceHealthcheck);
+    if (!deviceHealthcheck) {
+      alert("设备检测数据异常");
+      return;
+    }
+    if (deviceHealthcheck.length === 0) {
+      alert("当前设备无检测数据");
+      return;
+    }
+
+    // 填充代码块
+    const pre = document.getElementById("popupPre");
+
+    // 格式化 检测数据
+    pre.textContent = formatHealthCheckResult(deviceHealthcheck);
+
+    // 更新计数
+    document.getElementById("popupCount").textContent =
+      deviceHealthcheck.length;
+
+    // 打开弹窗（统一走你已有的 showModal 即可）
+    showModal("popup", "popupTitle", `实时 检测 IP`);
+  } catch (error) {
+    alert(`加载设备检测信息失败: ${error.message}`);
+    console.error("查看设备检测信息失败", error);
+  }
+}
+
 // 打开 历史IP 弹窗
-async function onPopup(id, name) {
+async function onHistoryIPPopup(id, name) {
   try {
     const { data: deviceIpHistory } = await API.get(
       `/api/devices/${id}/ip-history`
@@ -112,11 +146,11 @@ async function onPopup(id, name) {
     const pre = document.getElementById("popupPre");
 
     // 格式化 IP 列表
-    const ipList = deviceIpHistory.map(
+    const preList = deviceIpHistory.map(
       (d) => `${fmtDate(d.created_at)} - ${d.ip_v4 || "-"} / ${d.ip_v6 || "-"}`
     );
 
-    pre.textContent = ipList.join("\n");
+    pre.textContent = preList.join("\n");
 
     // 更新计数
     document.getElementById("popupCount").textContent = deviceIpHistory.length;

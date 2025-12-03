@@ -189,7 +189,7 @@ IPV6地址: [[.IPv6Addr]]
 }
 
 // 打开 表单 弹窗
-async function openModal(id) {
+async function openFormModal(id) {
   document.getElementById("form").reset();
 
   try {

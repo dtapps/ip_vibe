@@ -7,7 +7,7 @@
       {{ template "icons" (dict "Name" "ip-forward") }} 端口转发（设备维度）
     </h2>
     <div>
-      <button class="btn btn-primary" onclick="openModal()">
+      <button class="btn btn-primary" onclick="openFormModal()">
         {{ template "icons" (dict "Name" "ip-plus") }} 添加端口转发
       </button>
     </div>
@@ -42,8 +42,14 @@
           </td>
           <td>
             <button
+              class="btn btn-sm btn-outline-info"
+              onclick="onHealthcheckPopup('{{.ID}}')"
+            >
+              {{ template "icons" (dict "Name" "ip-health-check") }} 检测
+            </button>
+            <button
               class="btn btn-primary btn-sm"
-              onclick="openModal('{{.ID}}')"
+              onclick="openFormModal('{{.ID}}')"
             >
               {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
@@ -62,6 +68,9 @@
 
 <!-- 表单 -->
 {{ template "pages/port-forward_form.html" . }}
+
+<!-- 弹窗 -->
+{{ template "popup" . }}
 
 <script src="/static/js/port-forward.js"></script>
 {{ end }}

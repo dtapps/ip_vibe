@@ -7,7 +7,7 @@
       {{ template "icons" (dict "Name" "ip-dns") }} DNS 记录管理（平台维度）
     </h2>
     <div>
-      <button class="btn btn-primary" onclick="openModal()">
+      <button class="btn btn-primary" onclick="openFormModal()">
         {{ template "icons" (dict "Name" "ip-plus") }} 添加记录
       </button>
     </div>
@@ -52,10 +52,16 @@
             "/api/dns-records/%d/active" .ID) ) }}
           </td>
           <td>
+            <button
+              class="btn btn-sm btn-outline-info"
+              onclick="onHealthcheckPopup('{{.ID}}')"
+            >
+              {{ template "icons" (dict "Name" "ip-health-check") }} 检测
+            </button>
             {{if ne .IPGroupID 0 }}
             <button
               class="btn btn-sm btn-outline-info"
-              onclick="onPopup('{{.IPGroupID}}','{{.IPGroupName}}')"
+              onclick="onLiveIPPopup('{{.IPGroupID}}','{{.IPGroupName}}')"
             >
               {{ template "icons" (dict "Name" "ip-eyes") }} 实时IP
             </button>
@@ -71,7 +77,7 @@
             {{end}}
             <button
               class="btn btn-primary btn-sm"
-              onclick="openModal('{{.ID}}')"
+              onclick="openFormModal('{{.ID}}')"
             >
               {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>

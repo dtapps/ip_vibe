@@ -7,13 +7,13 @@
       {{ template "icons" (dict "Name" "ip-subscribe") }} 通知订阅
     </h2>
     <div>
-      <button class="btn btn-primary" onclick="openModal(0,'cdn_record')">
+      <button class="btn btn-primary" onclick="openFormModal(0,'cdn_record')">
         {{ template "icons" (dict "Name" "ip-plus") }} 添加 CDN订阅
       </button>
-      <button class="btn btn-primary" onclick="openModal(0,'dns_record')">
+      <button class="btn btn-primary" onclick="openFormModal(0,'dns_record')">
         {{ template "icons" (dict "Name" "ip-plus") }} 添加 DNS订阅
       </button>
-      <button class="btn btn-primary" onclick="openModal(0,'device')">
+      <button class="btn btn-primary" onclick="openFormModal(0,'device')">
         {{ template "icons" (dict "Name" "ip-plus") }} 添加 设备订阅
       </button>
     </div>
@@ -52,7 +52,7 @@
           <td>
             <button
               class="btn btn-primary btn-sm"
-              onclick="openModal('{{.ID}}','{{.ObjType}}')"
+              onclick="openFormModal('{{.ID}}','{{.ObjType}}')"
             >
               {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
