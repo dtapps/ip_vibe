@@ -81,16 +81,10 @@
 
       <div class="form-group mt-3" style="text-align: right">
         <button type="button" class="btn" onclick="closeModal('modal')">
-          <svg class="ip-i">
-            <use href="/static/img/icons.svg#ip-close" />
-          </svg>
-          取消
+          {{ template "icons" (dict "Name" "ip-close") }} 取消
         </button>
         <button type="submit" class="btn btn-primary">
-          <svg class="ip-i">
-            <use href="/static/img/icons.svg#ip-save" />
-          </svg>
-          保存
+          {{ template "icons" (dict "Name" "ip-save") }} 保存
         </button>
       </div>
     </form>

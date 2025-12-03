@@ -35,7 +35,7 @@
           <td>
             <button
               class="btn btn-sm btn-outline-info"
-              onclick="viewLiveDeviceIpHistory('{{.ID}}','{{.Name}}')"
+              onclick="onPopup('{{.ID}}','{{.Name}}')"
             >
               {{ template "icons" (dict "Name" "ip-eyes") }} 历史IP
             </button>
@@ -61,9 +61,8 @@
 <!-- 表单 -->
 {{ template "pages/device_form.html" . }}
 
-<!-- 实时 设备 IP 历史 弹窗 -->
-<!-- 实时 设备 IP 地址 弹窗 -->
-{{ template "pages/device_popup.html" . }}
+<!-- 弹窗 -->
+{{ template "popup" . }}
 
 <script src="/static/js/device.js"></script>
 {{ end }}

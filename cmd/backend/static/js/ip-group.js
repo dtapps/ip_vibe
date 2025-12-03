@@ -4,7 +4,7 @@ function onDevicesSelect(sel) {
   // console.log("onDevicesSelect", opt);
 }
 
-// 打开表单
+// 打开 表单 弹窗
 async function openModal(id) {
   document.getElementById("form").reset();
 
@@ -114,8 +114,8 @@ async function onDelete(id) {
   }
 }
 
-// 实时 设备 IP 地址 弹窗
-async function viewLiveDeviceIpAddresse(id, name) {
+// 打开 实时IP 弹窗
+async function onPopup(id, name) {
   try {
     const { data: ipGroupDevices } = await API.get(
       `/api/ip-groups/${id}/devices`
@@ -131,7 +131,7 @@ async function viewLiveDeviceIpAddresse(id, name) {
     }
 
     // 填充代码块
-    const pre = document.getElementById("liveDeviceIpAddressePre");
+    const pre = document.getElementById("popupPre");
 
     // 格式化 IP 列表
     const ipList = ipGroupDevices.map(
@@ -141,15 +141,10 @@ async function viewLiveDeviceIpAddresse(id, name) {
     pre.textContent = ipList.join("\n");
 
     // 更新计数
-    document.getElementById("liveDeviceIpAddresseCount").textContent =
-      ipGroupDevices.length;
+    document.getElementById("popupCount").textContent = ipGroupDevices.length;
 
     // 打开弹窗（统一走你已有的 showModal 即可）
-    showModal(
-      "liveDeviceIpAddresseModal",
-      "liveDeviceIpAddresseTitle",
-      `实时 设备 IP 地址 - ${name}`
-    );
+    showModal("popup", "popupTitle", `实时 设备 IP 地址 - ${name}`);
   } catch (error) {
     alert(`加载IP组设备信息失败: ${error.message}`);
     console.error("查看设备IP地址失败", error);

@@ -54,8 +54,8 @@ async function runTask(id) {
   }
 }
 
-// 实时 执行时间 弹窗
-async function viewLiveExecutionTime(id, name) {
+// 打开 下次执行时间 弹窗
+async function onPopup(id, name) {
   try {
     const { data: task } = await API.get(`/api/tasks/${id}`);
     console.log("task", task);
@@ -69,20 +69,15 @@ async function viewLiveExecutionTime(id, name) {
     }
 
     // 填充代码块
-    const pre = document.getElementById("liveExecutionTimePre");
+    const pre = document.getElementById("popupPre");
 
     pre.textContent = task.next_runs.join("\n");
 
     // 更新计数
-    document.getElementById("liveExecutionTimeCount").textContent =
-      task.next_runs.length;
+    document.getElementById("popupCount").textContent = task.next_runs.length;
 
     // 打开弹窗（统一走你已有的 showModal 即可）
-    showModal(
-      "liveExecutionTimeModal",
-      "liveExecutionTimeTitle",
-      `实时 执行时间 - ${name}`
-    );
+    showModal("popup", "popupTitle", `实时 执行时间 - ${name}`);
   } catch (error) {
     alert(`加载任务执行时间失败: ${error.message}`);
     console.error("查看任务执行时间失败", error);

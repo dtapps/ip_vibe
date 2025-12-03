@@ -64,7 +64,7 @@
           <td>
             <button
               class="btn btn-sm btn-outline-info"
-              onclick="viewLiveDeviceIpAddresse('{{.IPGroupID}}','{{.IPGroupName}}')"
+              onclick="onPopup('{{.IPGroupID}}','{{.IPGroupName}}')"
             >
               {{ template "icons" (dict "Name" "ip-eyes") }} 实时IP
             </button>
@@ -101,9 +101,8 @@
 <!-- 表单 -->
 {{ template "pages/cdn_form.html" . }}
 
-<!-- 实时 设备 IP 历史 弹窗 -->
-<!-- 实时 设备 IP 地址 弹窗 -->
-{{ template "pages/cdn_popup.html" . }}
+<!-- 弹窗 -->
+{{ template "popup" . }}
 
 <script src="/static/js/cdn.js"></script>
 {{ end }}

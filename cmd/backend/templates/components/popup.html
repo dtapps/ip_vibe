@@ -1,18 +1,17 @@
-{{ define "pages/task_popup.html" }}
-  
-    <!-- 实时 执行时间 弹窗 -->
-    <div class="modal" id="liveExecutionTimeModal">
+{{ define "popup" }}
+  <div class="modal" id="popup">
       <div class="modal-content ip-popup">
+
         <!-- 头部 -->
         <div class="ip-popup-header">
-          <h4 class="ip-popup-title" id="liveExecutionTimeTitle">
+          <h4 class="ip-popup-title" id="popupTitle">
             <svg class="ip-i">
               <use href="/static/img/icons.svg#ip-eyes" />
               </use>
             </svg>
-            实时 执行时间
+            弹窗
           </h4>
-          <button class="ip-popup-close" onclick="closeModal('liveExecutionTimeModal')" aria-label="关闭">
+          <button class="ip-popup-close" onclick="closeModal('popup')" aria-label="关闭">
             <svg class="ip-i">
               <use href="/static/img/icons.svg#ip-close" />
               </use>
@@ -22,8 +21,8 @@
 
         <!-- 工具栏 -->
         <div class="ip-popup-toolbar">
-          <span class="ip-popup-count">共 <b id="liveExecutionTimeCount">0</b> 条</span>
-          <button class="ip-popup-copy" onclick="copyData('liveExecutionTimePre')">
+          <span class="ip-popup-count">共 <b id="popupCount">0</b> 条</span>
+          <button class="ip-popup-copy" onclick="copyData('popupPre')">
             <svg class="ip-i">
               <use href="/static/img/icons.svg#ip-copy" />
               </use>
@@ -33,11 +32,11 @@
         </div>
 
         <!-- 代码块区域 -->
-        <pre class="ip-popup-pre" id="liveExecutionTimePre">点击“实时IP”按钮后，内容将显示在这里</pre>
+        <pre class="ip-popup-pre" id="popupPre">代码块区域</pre>
 
         <!-- 底部按钮 -->
         <div class="ip-popup-footer">
-          <button class="btn" onclick="closeModal('liveExecutionTimeModal')">
+          <button class="btn" onclick="closeModal('popup')">
             <svg class="ip-i">
               <use href="/static/img/icons.svg#ip-close" />
               </use>

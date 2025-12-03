@@ -51,7 +51,7 @@ function buildConfigPlatform() {
   document.getElementById("config_json").value = JSON.stringify(config);
 }
 
-// 打开表单
+// 打开 表单 弹窗
 async function openModal(id) {
   document.getElementById("form").reset();
 

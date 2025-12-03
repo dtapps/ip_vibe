@@ -10,7 +10,7 @@ function onObjIdSelect(sel) {
   // console.log("onObjIdSelect", opt);
 }
 
-// 打开表单
+// 打开 表单 弹窗
 async function openModal(id, obj_type) {
   document.getElementById("form").reset();
 

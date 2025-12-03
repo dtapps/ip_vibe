@@ -31,7 +31,7 @@
           <td>
             <button
               class="btn btn-sm btn-outline-info"
-              onclick="viewLiveDeviceIpAddresse('{{.ID}}','{{.Name}}')"
+              onclick="onPopup('{{.ID}}','{{.Name}}')"
             >
               {{ template "icons" (dict "Name" "ip-eyes") }} 实时IP
             </button>
@@ -55,7 +55,10 @@
 </div>
 
 <!-- 表单 -->
-{{ template "ip-group_form.html" . }}
+{{ template "pages/ip-group_form.html" . }}
+
+<!-- 弹窗 -->
+{{ template "popup" . }}
 
 <script src="/static/js/ip-group.js"></script>
 {{ end }}

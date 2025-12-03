@@ -1,4 +1,4 @@
-// 打开表单
+// 打开 表单 弹窗
 async function openModal(id) {
   document.getElementById("form").reset();
 
@@ -92,8 +92,8 @@ async function onDelete(id) {
   }
 }
 
-// 实时 设备 IP 历史 弹窗
-async function viewLiveDeviceIpHistory(id, name) {
+// 打开 历史IP 弹窗
+async function onPopup(id, name) {
   try {
     const { data: deviceIpHistory } = await API.get(
       `/api/devices/${id}/ip-history`
@@ -109,7 +109,7 @@ async function viewLiveDeviceIpHistory(id, name) {
     }
 
     // 填充代码块
-    const pre = document.getElementById("liveDeviceIpHistoryPre");
+    const pre = document.getElementById("popupPre");
 
     // 格式化 IP 列表
     const ipList = deviceIpHistory.map(
@@ -119,15 +119,10 @@ async function viewLiveDeviceIpHistory(id, name) {
     pre.textContent = ipList.join("\n");
 
     // 更新计数
-    document.getElementById("liveDeviceIpHistoryCount").textContent =
-      deviceIpHistory.length;
+    document.getElementById("popupCount").textContent = deviceIpHistory.length;
 
     // 打开弹窗（统一走你已有的 showModal 即可）
-    showModal(
-      "liveDeviceIpHistoryModal",
-      "liveDeviceIpHistoryTitle",
-      `实时 设备 IP 历史 - ${name}`
-    );
+    showModal("popup", "popupTitle", `实时 设备 IP 历史 - ${name}`);
   } catch (error) {
     alert(`加载设备IP历史失败: ${error.message}`);
     console.error("查看设备IP历史失败", error);

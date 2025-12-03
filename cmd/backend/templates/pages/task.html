@@ -51,7 +51,7 @@
           <td>
             <button
               class="btn btn-sm btn-outline-info"
-              onclick="viewLiveExecutionTime('{{.ID}}','{{.Name}}')"
+              onclick="onPopup('{{.ID}}','{{.Name}}')"
             >
               {{ template "icons" (dict "Name" "ip-eyes") }} 下次执行时间
             </button>
@@ -68,8 +68,8 @@
   </div>
 </div>
 
-<!-- 实时 执行时间 弹窗 -->
-{{ template "pages/task_popup.html" . }}
+<!-- 弹窗 -->
+{{ template "popup" . }}
 
 <script src="/static/js/task.js"></script>
 {{ end }}
