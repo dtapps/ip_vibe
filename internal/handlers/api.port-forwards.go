@@ -6,11 +6,13 @@ import (
 	"vibe_ip/ent"
 	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/ent/operationlog"
+	"vibe_ip/internal/backend"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/sync/errgroup"
 )
 
 // 获取全部端口转发
@@ -250,4 +252,55 @@ func DeletePortForward(c *gin.Context) {
 	successResponse(c, gin.H{
 		"id": firstPortForward.ID,
 	})
+}
+
+// 检查端口转发健康状态
+func HealthcheckPortForward(c *gin.Context) {
+	// 请求参数
+	var requestParams types.HealthcheckPortForwardRequest
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+
+	// 查询端口转发
+	firstPortForward, err := global.GvaDb.DevicePortForward.Query().
+		Where(deviceportforward.IDEQ(requestParams.ID)).
+		WithDevice().
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, "查询端口转发失败: "+err.Error())
+		return
+	}
+
+	// 检查健康状态
+	results := make([]*backend.HealthCheckResult, 0)
+
+	// 并发检查
+	eg, egCtx := errgroup.WithContext(c)
+	eg.SetLimit(10) // 最多 10 个并发
+
+	if firstPortForward.Edges.Device.IPV4 != "" {
+		// 检测 IP 是否可通过 HTTP/HTTPS 访问
+		eg.Go(func() error {
+			healthCheckResult, _ := backend.CheckIPHealth(egCtx, firstPortForward.Edges.Device.IPV4, firstPortForward.LocalPort, firstPortForward.LocalPort, []string{})
+			results = append(results, healthCheckResult)
+			return nil
+		})
+	}
+	if firstPortForward.Edges.Device.IPV6 != "" {
+		// 检测 IP 是否可通过 HTTP/HTTPS 访问
+		eg.Go(func() error {
+			healthCheckResult, _ := backend.CheckIPHealth(egCtx, firstPortForward.Edges.Device.IPV6, firstPortForward.LocalPort, firstPortForward.LocalPort, []string{})
+			results = append(results, healthCheckResult)
+			return nil
+		})
+	}
+
+	if err = eg.Wait(); err != nil {
+		errorResponse(c, http.StatusInternalServerError, "端口转发健康状态检查失败: "+err.Error())
+		return
+	}
+
+	successResponse(c, results)
 }

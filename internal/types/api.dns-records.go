@@ -51,3 +51,8 @@ type UpdateDnsRecordActiveRequest struct {
 type DeleteDnsRecordRequest struct {
 	GetDnsRecordRequest
 }
+
+// 检查DNS记录健康状态 请求结构
+type HealthcheckDnsRecordRequest struct {
+	GetDnsRecordRequest
+}

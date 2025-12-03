@@ -6,11 +6,13 @@ import (
 	"vibe_ip/ent"
 	"vibe_ip/ent/cdnrecord"
 	"vibe_ip/ent/operationlog"
+	"vibe_ip/internal/backend"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/sync/errgroup"
 )
 
 // 获取全部CDN记录
@@ -220,4 +222,76 @@ func DeleteCdnRecord(c *gin.Context) {
 	successResponse(c, gin.H{
 		"id": firstCdnRecord.ID,
 	})
+}
+
+// 检查CDN记录健康状态
+func HealthcheckCdnRecord(c *gin.Context) {
+	// 请求参数
+	var requestParams types.HealthcheckCdnRecordRequest
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+
+	// 查询CDN记录
+	firstCdnRecord, err := global.GvaDb.CDNRecord.Query().
+		Where(cdnrecord.IDEQ(requestParams.ID)).
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, "查询CDN记录失败: "+err.Error())
+		return
+	}
+
+	switch firstCdnRecord.OriginProtocol {
+	case cdnrecord.OriginProtocolHTTP:
+		firstCdnRecord.HTTPSPort = 0
+	case cdnrecord.OriginProtocolHTTPS:
+		firstCdnRecord.HTTPPort = 0
+	}
+
+	// 检查健康状态
+	results := make([]*backend.HealthCheckResult, 0)
+
+	// 并发检查
+	eg, egCtx := errgroup.WithContext(c)
+	eg.SetLimit(10) // 最多 10 个并发
+
+	// 检测域名是否可通（含 DNS + HTTP + HTTPS）
+	eg.Go(func() error {
+		healthCheckResult, _ := backend.CheckDomainHealth(egCtx, firstCdnRecord.Domain, 80, 443, []string{})
+		results = append(results, healthCheckResult)
+		return nil
+	})
+
+	// 查询Cdn的IP组
+	firstCdnIpGroup, err := firstCdnRecord.QueryIPGroup().
+		WithDevices().
+		First(egCtx)
+	if err == nil {
+		for _, itme := range firstCdnIpGroup.Edges.Devices {
+			if itme.IPV4 != "" {
+				// 检测 IP 是否可通过 HTTP/HTTPS 访问
+				eg.Go(func() error {
+					healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV4, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort, []string{})
+					results = append(results, healthCheckResult)
+					return nil
+				})
+			}
+			if itme.IPV6 != "" {
+				// 检测 IP 是否可通过 HTTP/HTTPS 访问
+				eg.Go(func() error {
+					healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV6, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort, []string{})
+					results = append(results, healthCheckResult)
+					return nil
+				})
+			}
+		}
+	}
+
+	if err = eg.Wait(); err != nil {
+		errorResponse(c, http.StatusInternalServerError, "CDN记录健康状态检查失败: "+err.Error())
+		return
+	}
+
+	successResponse(c, results)
 }

@@ -252,6 +252,7 @@ func main() {
 			cdnRecords.PATCH("/:id", handlers.UpdateCdnRecord)
 			cdnRecords.PATCH("/:id/active", handlers.UpdateCdnRecordActive)
 			cdnRecords.DELETE("/:id", handlers.DeleteCdnRecord)
+			cdnRecords.GET("/:id/healthcheck", handlers.HealthcheckCdnRecord)
 		}
 
 		// DNS记录管理相关API
@@ -263,6 +264,7 @@ func main() {
 			dnsRecords.PATCH("/:id", handlers.UpdateDnsRecord)
 			dnsRecords.PATCH("/:id/active", handlers.UpdateDnsRecordActive)
 			dnsRecords.DELETE("/:id", handlers.DeleteDnsRecord)
+			dnsRecords.GET("/:id/healthcheck", handlers.HealthcheckDnsRecord)
 		}
 
 		// 设备相关API
@@ -274,6 +276,7 @@ func main() {
 			devices.PATCH("/:id", handlers.UpdateDevice)
 			devices.DELETE("/:id", handlers.DeleteDevice)
 			devices.GET("/:id/ip-history", handlers.GetDeviceIpHistory)
+			devices.GET("/:id/healthcheck", handlers.HealthcheckDevice)
 		}
 
 		// IP组相关API
@@ -285,6 +288,7 @@ func main() {
 			ipGroups.PATCH("/:id", handlers.UpdateIPGroup)
 			ipGroups.DELETE("/:id", handlers.DeleteIPGroup)
 			ipGroups.GET("/:id/devices", handlers.GetIPGroupDevices)
+			ipGroups.GET("/:id/healthcheck", handlers.HealthcheckIPGroup)
 		}
 
 		// 端口转发相关API
@@ -297,6 +301,7 @@ func main() {
 			portForwards.PATCH("/:id/forward", handlers.UpdatePortForwardForward)
 			portForwards.PATCH("/:id/active", handlers.UpdatePortForwardActive)
 			portForwards.DELETE("/:id", handlers.DeletePortForward)
+			portForwards.GET("/:id/healthcheck", handlers.HealthcheckPortForward)
 		}
 
 		// 通知相关API

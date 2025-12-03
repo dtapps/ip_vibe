@@ -6,11 +6,13 @@ import (
 	"vibe_ip/ent"
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/operationlog"
+	"vibe_ip/internal/backend"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/sync/errgroup"
 )
 
 // 获取全部IP组
@@ -198,4 +200,57 @@ func GetIPGroupDevices(c *gin.Context) {
 		})
 	}
 	successResponse(c, devices)
+}
+
+// 检查IP组健康状态
+func HealthcheckIPGroup(c *gin.Context) {
+	// 请求参数
+	var requestParams types.HealthcheckIPGroupRequest
+	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+
+	// 查询IP组
+	firstIpGroup, err := global.GvaDb.IpGroup.Query().
+		Where(ipgroup.IDEQ(requestParams.ID)).
+		WithDevices().
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, "查询IP组失败: "+err.Error())
+		return
+	}
+
+	// 检查健康状态
+	results := make([]*backend.HealthCheckResult, 0)
+
+	// 并发检查
+	eg, egCtx := errgroup.WithContext(c)
+	eg.SetLimit(10) // 最多 10 个并发
+
+	for _, itme := range firstIpGroup.Edges.Devices {
+		if itme.IPV4 != "" {
+			// 检测 IP 是否可通过 HTTP/HTTPS 访问
+			eg.Go(func() error {
+				healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV4, 80, 443, []string{})
+				results = append(results, healthCheckResult)
+				return nil
+			})
+		}
+		if itme.IPV6 != "" {
+			// 检测 IP 是否可通过 HTTP/HTTPS 访问
+			eg.Go(func() error {
+				healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV6, 80, 443, []string{})
+				results = append(results, healthCheckResult)
+				return nil
+			})
+		}
+	}
+
+	if err = eg.Wait(); err != nil {
+		errorResponse(c, http.StatusInternalServerError, "IP组健康状态检查失败: "+err.Error())
+		return
+	}
+
+	successResponse(c, results)
 }

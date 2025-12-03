@@ -38,3 +38,8 @@ type DeleteIPGroupRequest struct {
 type GetIPGroupDevicesRequest struct {
 	GetIPGroupRequest
 }
+
+// 检查IP组健康状态 请求结构
+type HealthcheckIPGroupRequest struct {
+	GetIPGroupRequest
+}

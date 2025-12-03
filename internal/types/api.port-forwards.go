@@ -60,3 +60,8 @@ type UpdatePortForwardActiveRequest struct {
 type DeletePortForwardRequest struct {
 	GetPortForwardRequest
 }
+
+// 检查端口转发健康状态 请求结构
+type HealthcheckPortForwardRequest struct {
+	GetPortForwardRequest
+}

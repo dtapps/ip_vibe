@@ -49,3 +49,8 @@ type GetDeviceIpHistoryResponse struct {
 	IPV6      string    `json:"ip_v6"`      // IP地址V6
 	CreatedAt time.Time `json:"created_at"` // 创建时间
 }
+
+// 检查设备健康状态 请求结构
+type HealthcheckDeviceRequest struct {
+	GetDeviceRequest
+}
