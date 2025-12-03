@@ -391,6 +391,12 @@ func loadTemplates(templatePath string, funcMap template.FuncMap) multitemplate.
 		}
 	}
 
+	// 检查文件是否存在
+	var fileExists func(string) bool = func(path string) bool {
+		_, err := os.Stat(path)
+		return err == nil
+	}
+
 	for _, p := range pages {
 		name := filepath.Join("pages", filepath.Base(p))
 		if global.GvaEnv.DEBUG {
@@ -456,6 +462,12 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 		}
 	}
 
+	// 检查文件是否存在
+	var fileExists func(string) bool = func(path string) bool {
+		_, err := embeddedFiles.Open(path)
+		return err == nil
+	}
+
 	for _, p := range pages {
 		name := filepath.Join("pages", filepath.Base(p))
 		if global.GvaEnv.DEBUG {
@@ -489,9 +501,4 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 	}
 
 	return r
-}
-
-func fileExists(filename string) bool {
-	_, err := os.Stat(filename)
-	return err == nil
 }
