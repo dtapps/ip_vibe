@@ -129,10 +129,15 @@ function showModal(id, titleID, titleName) {
 // 关闭模态框
 function closeModal(id) {
   const modal = document.getElementById(id);
-  if (!modal) return;
+  if (!modal) {
+    return;
+  }
 
   // 隐藏弹窗
   modal.classList.remove("show");
+
+  // 在 DOM 元素上挂状态
+  modal.dataset.manuallyClosed = "true";
 
   // 如果有 form 才 reset
   const form = modal.querySelector("form");
@@ -174,32 +179,55 @@ function formatHealthCheckResult(healthData) {
 
 // 显示 loading 弹窗
 function showLoadingPopup(idEl = "popup") {
+  const modal = document.getElementById(idEl);
   const titleEl = document.getElementById(`${idEl}Title`);
   const countEl = document.getElementById(`${idEl}Count`);
   const preEl = document.getElementById(`${idEl}Pre`);
   const copyBtn = document.getElementById(`${idEl}CopyBtn`);
 
-  titleEl.textContent = "检测中...";
-  preEl.textContent = "正在检测中，请稍候...（预计 5~15 秒）";
-  preEl.style.color = "var(--text-secondary)";
-  countEl.textContent = "...";
-  copyBtn.disabled = true;
+  if (titleEl) {
+    titleEl.textContent = "检测中...";
+  }
+  if (preEl) {
+    preEl.textContent = "正在检测中，请稍候...（预计 5~15 秒）";
+    preEl.style.color = "var(--text-secondary)";
+  }
+  if (countEl) {
+    countEl.textContent = "...";
+  }
+  if (copyBtn) {
+    copyBtn.disabled = true;
+  }
 
   showModal(idEl, titleEl, `检测中...`);
 }
 
 // 显示弹窗内容
 function showPopupContent(idEl = "popup", title = "", content = "", count = 0) {
+  const modal = document.getElementById(idEl);
   const titleEl = document.getElementById(`${idEl}Title`);
   const countEl = document.getElementById(`${idEl}Count`);
   const preEl = document.getElementById(`${idEl}Pre`);
   const copyBtn = document.getElementById(`${idEl}CopyBtn`);
 
-  titleEl.textContent = title;
-  preEl.textContent = content;
-  preEl.style.color = "#f8f8f2";
-  countEl.textContent = count;
-  copyBtn.disabled = false;
+  if (modal && modal.dataset.manuallyClosed === "true") {
+    console.log(`用户已关闭弹窗 ${idEl}，跳过自动显示`);
+    return;
+  }
+
+  if (titleEl) {
+    titleEl.textContent = title;
+  }
+  if (preEl) {
+    preEl.textContent = content;
+    preEl.style.color = "#f8f8f2";
+  }
+  if (countEl) {
+    countEl.textContent = count;
+  }
+  if (copyBtn) {
+    copyBtn.disabled = false;
+  }
 
   showModal(idEl, titleEl, title);
 }
