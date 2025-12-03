@@ -274,19 +274,20 @@ func HealthcheckDnsRecord(c *gin.Context) {
 		WithDevices().
 		First(egCtx)
 	if err == nil {
-		for _, itme := range firstDnsIpGroup.Edges.Devices {
-			if itme.IPV4 != "" {
+		for _, item := range firstDnsIpGroup.Edges.Devices {
+			item := item // 创建副本以避免闭包问题
+			if item.IPV4 != "" {
 				// 检测 IP 是否可通过 HTTP/HTTPS 访问
 				eg.Go(func() error {
-					healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV4, 80, 443)
+					healthCheckResult, _ := backend.CheckIPHealth(egCtx, item.IPV4, 80, 443)
 					results = append(results, healthCheckResult.ToPairsForIP())
 					return nil
 				})
 			}
-			if itme.IPV6 != "" {
+			if item.IPV6 != "" {
 				// 检测 IP 是否可通过 HTTP/HTTPS 访问
 				eg.Go(func() error {
-					healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV6, 80, 443)
+					healthCheckResult, _ := backend.CheckIPHealth(egCtx, item.IPV6, 80, 443)
 					results = append(results, healthCheckResult.ToPairsForIP())
 					return nil
 				})
@@ -317,19 +318,20 @@ func HealthcheckDnsRecord(c *gin.Context) {
 			case cdnrecord.OriginProtocolHTTPS:
 				firstCdnRecord.HTTPPort = 0
 			}
-			for _, itme := range firstCdnIpGroup.Edges.Devices {
-				if itme.IPV4 != "" {
+			for _, item := range firstCdnIpGroup.Edges.Devices {
+				item := item // 创建副本以避免闭包问题
+				if item.IPV4 != "" {
 					// 检测 IP 是否可通过 HTTP/HTTPS 访问
 					eg.Go(func() error {
-						healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV4, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
+						healthCheckResult, _ := backend.CheckIPHealth(egCtx, item.IPV4, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
 						results = append(results, healthCheckResult.ToPairsForIP())
 						return nil
 					})
 				}
-				if itme.IPV6 != "" {
+				if item.IPV6 != "" {
 					// 检测 IP 是否可通过 HTTP/HTTPS 访问
 					eg.Go(func() error {
-						healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV6, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
+						healthCheckResult, _ := backend.CheckIPHealth(egCtx, item.IPV6, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
 						results = append(results, healthCheckResult.ToPairsForIP())
 						return nil
 					})

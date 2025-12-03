@@ -228,19 +228,20 @@ func HealthcheckIPGroup(c *gin.Context) {
 	eg, egCtx := errgroup.WithContext(c)
 	eg.SetLimit(10) // 最多 10 个并发
 
-	for _, itme := range firstIpGroup.Edges.Devices {
-		if itme.IPV4 != "" {
+	for _, item := range firstIpGroup.Edges.Devices {
+		item := item // 创建副本以避免闭包问题
+		if item.IPV4 != "" {
 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
 			eg.Go(func() error {
-				healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV4, 80, 443)
+				healthCheckResult, _ := backend.CheckIPHealth(egCtx, item.IPV4, 80, 443)
 				results = append(results, healthCheckResult.ToPairsForIP())
 				return nil
 			})
 		}
-		if itme.IPV6 != "" {
+		if item.IPV6 != "" {
 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
 			eg.Go(func() error {
-				healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV6, 80, 443)
+				healthCheckResult, _ := backend.CheckIPHealth(egCtx, item.IPV6, 80, 443)
 				results = append(results, healthCheckResult.ToPairsForIP())
 				return nil
 			})

@@ -48,8 +48,8 @@ func (s *IpUpdateService) runDnsTask() {
 			eg, egCtx := errgroup.WithContext(ctx)
 			eg.SetLimit(10) // 最多 10 个并发
 
-			for _, vRecord := range concurrentRecords {
-				item := vRecord // 创建副本以避免闭包问题
+			for _, item := range concurrentRecords {
+				item := item // 创建副本以避免闭包问题
 				eg.Go(func() error {
 
 					newLog := s.log.With(
@@ -141,8 +141,8 @@ func (s *IpUpdateService) runCdnTask() {
 			eg, egCtx := errgroup.WithContext(ctx)
 			eg.SetLimit(10) // 最多 10 个并发
 
-			for _, vRecord := range concurrentRecords {
-				item := vRecord // 创建副本以避免闭包问题
+			for _, item := range concurrentRecords {
+				item := item // 创建副本以避免闭包问题
 				eg.Go(func() error {
 
 					newLog := s.log.With(

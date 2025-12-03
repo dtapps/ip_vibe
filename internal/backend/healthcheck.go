@@ -8,9 +8,11 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/miekg/dns"
+	"golang.org/x/sync/errgroup"
 )
 
 type HealthCheckResult struct {
@@ -19,16 +21,34 @@ type HealthCheckResult struct {
 	HTTPPort     int    `json:"http_port,omitempty"`     // 显式记录端口
 	HTTPSPort    int    `json:"https_port,omitempty"`    // 显式记录端口
 
-	DNSUsed        string   `json:"dns_used,omitempty"`     // 实际使用的 DNS 服务器
-	ResolvedIPs    []string `json:"resolved_ips,omitempty"` // 解析出的 IP 地址
-	HTTPStatus     int      `json:"http_status,omitempty"`  // HTTP 状态码
-	HTTPSStatus    int      `json:"https_status,omitempty"` // HTTPS 状态码
-	HTTPErr        string   `json:"http_err,omitempty"`     // HTTP 错误信息
-	HTTPSErr       string   `json:"https_err,omitempty"`    // HTTPS 错误信息
-	HTTPRTT        int64    `json:"http_rtt_ms,omitempty"`  // HTTP 响应时间（毫秒）
-	HTTPSRTT       int64    `json:"https_rtt_ms,omitempty"` // HTTPS 响应时间（毫秒）
-	IsHTTPHealthy  bool     `json:"is_http_healthy"`        // 是否 HTTP 健康
-	IsHTTPSHealthy bool     `json:"is_https_healthy"`       // 是否 HTTPS 健康
+	DNSUsed     string   `json:"dns_used,omitempty"`     // 实际使用的 DNS 服务器
+	ResolvedIPs []string `json:"resolved_ips,omitempty"` // 解析出的 IP 地址
+
+	HTTPStatus    int    `json:"http_status,omitempty"` // HTTP 状态码
+	HTTPErr       string `json:"http_err,omitempty"`    // HTTP 错误信息
+	HTTPRTT       int64  `json:"http_rtt_ms,omitempty"` // HTTP 响应时间（毫秒）
+	IsHTTPHealthy bool   `json:"is_http_healthy"`       // 是否 HTTP 健康
+
+	HTTPTCPErr       string `json:"http_tcp_err,omitempty"`    // HTTP TCP 错误信息
+	HTTPTCPRTT       int64  `json:"http_tcp_rtt_ms,omitempty"` // HTTP TCP 响应时间（毫秒）
+	IsHTTPTCPHealthy bool   `json:"is_http_tcp_healthy"`       // 是否 HTTP TCP 健康
+
+	HTTPUDPErr       string `json:"http_udp_err,omitempty"`    // HTTP UDP 错误信息
+	HTTPUDPRTT       int64  `json:"http_udp_rtt_ms,omitempty"` // HTTP UDP 响应时间（毫秒）
+	IsHTTPUDPHealthy bool   `json:"is_http_udp_healthy"`       // 是否 HTTP UDP 健康
+
+	HTTPSStatus    int    `json:"https_status,omitempty"` // HTTPS 状态码
+	HTTPSErr       string `json:"https_err,omitempty"`    // HTTPS 错误信息
+	HTTPSRTT       int64  `json:"https_rtt_ms,omitempty"` // HTTPS 响应时间（毫秒）
+	IsHTTPSHealthy bool   `json:"is_https_healthy"`       // 是否 HTTPS 健康
+
+	HTTPSTCPErr       string `json:"https_tcp_err,omitempty"`    // HTTPS TCP 错误信息
+	HTTPSTCPRTT       int64  `json:"https_tcp_rtt_ms,omitempty"` // HTTPS TCP 响应时间（毫秒）
+	IsHTTPSTCPHealthy bool   `json:"is_https_tcp_healthy"`       // 是否 HTTPS TCP 健康
+
+	HTTPSUDPErr       string `json:"https_udp_err,omitempty"`    // HTTPS UDP 错误信息
+	HTTPSUDPRTT       int64  `json:"https_udp_rtt_ms,omitempty"` // HTTPS UDP 响应时间（毫秒）
+	IsHTTPSUDPHealthy bool   `json:"is_https_udp_healthy"`       // 是否 HTTPS UDP 健康
 }
 
 // CheckDomainHealth 检测域名是否可通（含 DNS + HTTP + HTTPS）
@@ -46,40 +66,87 @@ func CheckDomainHealth(ctx context.Context, domain string, httpPort, httpsPort i
 	// DNS 解析（尝试多个 DNS）
 	var resolvedIPs []string
 	var usedDNS string
+
+	// 用于快速通知其他 goroutine 停止
+	found := make(chan struct{}, 1)
+
+	// 保护 resolvedIPs 和 usedDNS 的写入
+	var mu sync.Mutex
+
+	// 并发处理DNS解析
+	dnsEg, dnsCtx := errgroup.WithContext(ctx)
+	dnsEg.SetLimit(len(dnsServers))
+
 	for _, server := range dnsServers {
-		ips, err := resolveDNS(ctx, domain, server)
-		if err == nil && len(ips) > 0 {
-			resolvedIPs = ips
-			usedDNS = server
-			break
-		}
+		server := server // 闭包捕获
+		dnsEg.Go(func() error {
+			// 检查是否已有结果，避免无效工作
+			select {
+			case <-found:
+				return nil // 已有成功结果，直接退出
+			default:
+			}
+
+			ips, err := resolveDNS(dnsCtx, domain, server)
+			if err == nil && len(ips) > 0 {
+				mu.Lock()
+				// 再次检查，防止多个 goroutine 同时成功
+				if len(resolvedIPs) == 0 {
+					resolvedIPs = ips
+					usedDNS = server
+					select {
+					case found <- struct{}{}: // 发出完成信号
+					default:
+					}
+				}
+				mu.Unlock()
+			}
+			return nil
+		})
 	}
+
+	// 等待 并发处理DNS解析 完成
+	_ = dnsEg.Wait()
+
 	result.DNSUsed = usedDNS
 	result.ResolvedIPs = resolvedIPs
 
+	// 并发处理
+	eg, egCtx := errgroup.WithContext(ctx)
+	eg.SetLimit(2) // 最多 2 个并发
+
 	// HTTP 检测（如果端口 > 0）
 	if httpPort > 0 {
-		httpStatus, rtt, err := checkHTTP(ctx, fmt.Sprintf("http://%s:%d", domain, httpPort))
-		result.HTTPStatus = httpStatus
-		result.HTTPRTT = rtt.Milliseconds()
-		if err != nil {
-			result.HTTPErr = err.Error()
-		} else {
-			result.IsHTTPHealthy = httpStatus >= 200 && httpStatus < 400
-		}
+		eg.Go(func() error {
+			httpStatus, rtt, err := checkHTTP(egCtx, fmt.Sprintf("http://%s:%d", domain, httpPort))
+			result.HTTPStatus = httpStatus
+			result.HTTPRTT = rtt
+			if err != nil {
+				result.HTTPErr = fmt.Sprintf("HTTP 端口(%d) 错误: %v", httpPort, err)
+			} else {
+				result.IsHTTPHealthy = httpStatus >= 200 && httpStatus < 400
+			}
+			return nil
+		})
 	}
 
-	// 3. HTTPS 检测（如果端口 > 0）
+	// HTTPS 检测（如果端口 > 0）
 	if httpsPort > 0 {
-		httpsStatus, rtt, err := checkHTTP(ctx, fmt.Sprintf("https://%s:%d", domain, httpsPort))
-		result.HTTPSStatus = httpsStatus
-		result.HTTPSRTT = rtt.Milliseconds()
-		if err != nil {
-			result.HTTPSErr = err.Error()
-		} else {
-			result.IsHTTPSHealthy = httpsStatus >= 200 && httpsStatus < 400
-		}
+		eg.Go(func() error {
+			httpsStatus, rtt, err := checkHTTP(egCtx, fmt.Sprintf("https://%s:%d", domain, httpsPort))
+			result.HTTPSStatus = httpsStatus
+			result.HTTPSRTT = rtt
+			if err != nil {
+				result.HTTPSErr = fmt.Sprintf("HTTPS 端口(%d) 错误: %v", httpsPort, err)
+			} else {
+				result.IsHTTPSHealthy = httpsStatus >= 200 && httpsStatus < 400
+			}
+			return nil
+		})
 	}
+
+	// 等待 并发处理 完成
+	_ = eg.Wait()
 
 	return result, nil
 }
@@ -98,29 +165,90 @@ func CheckIPHealth(ctx context.Context, ip string, httpPort, httpsPort int) (*He
 		ipStr = "[" + ip + "]"
 	}
 
-	// HTTP 检测
+	// 并发处理
+	eg, egCtx := errgroup.WithContext(ctx)
+	eg.SetLimit(6) // 最多 6 个并发
+
+	// HTTP 检测（如果端口 > 0）
 	if httpPort > 0 {
-		httpStatus, rtt, err := checkHTTP(ctx, fmt.Sprintf("http://%s:%d", ipStr, httpPort))
-		result.HTTPStatus = httpStatus
-		result.HTTPRTT = rtt.Milliseconds()
-		if err != nil {
-			result.HTTPErr = err.Error()
-		} else {
-			result.IsHTTPHealthy = httpStatus >= 200 && httpStatus < 400
-		}
+		eg.Go(func() error {
+			httpStatus, rtt, err := checkHTTP(egCtx, fmt.Sprintf("http://%s:%d", ipStr, httpPort))
+			result.HTTPStatus = httpStatus
+			result.HTTPRTT = rtt
+			if err != nil {
+				result.HTTPErr = fmt.Sprintf("HTTP 端口(%d) 错误: %v", httpPort, err)
+			} else {
+				result.IsHTTPHealthy = httpStatus >= 200 && httpStatus < 400
+			}
+			return nil
+		})
+	}
+	// HTTP TCP 检测（如果端口 > 0）
+	if httpPort > 0 {
+		eg.Go(func() error {
+			ok, rtt, err := checkTCP(egCtx, net.JoinHostPort(ip, fmt.Sprintf("%d", httpPort)))
+			result.IsHTTPTCPHealthy = ok
+			result.HTTPTCPRTT = rtt
+			if err != nil {
+				result.HTTPTCPErr = fmt.Sprintf("HTTP 端口(%d) TCP: %v", httpPort, err)
+			}
+			return nil
+		})
+	}
+	// HTTP UDP 检测（如果端口 > 0）
+	if httpPort > 0 {
+		eg.Go(func() error {
+			ok, rtt, err := checkUDP(egCtx, net.JoinHostPort(ip, fmt.Sprintf("%d", httpPort)))
+			result.IsHTTPUDPHealthy = ok
+			result.HTTPUDPRTT = rtt
+			if err != nil {
+				result.HTTPUDPErr = fmt.Sprintf("HTTP 端口(%d) UDP: %v", httpPort, err)
+			}
+			return nil
+		})
 	}
 
-	// HTTPS 检测
+	// HTTPS 检测（如果端口 > 0）
 	if httpsPort > 0 {
-		httpsStatus, rtt, err := checkHTTP(ctx, fmt.Sprintf("https://%s:%d", ipStr, httpsPort))
-		result.HTTPSStatus = httpsStatus
-		result.HTTPSRTT = rtt.Milliseconds()
-		if err != nil {
-			result.HTTPSErr = err.Error()
-		} else {
-			result.IsHTTPSHealthy = httpsStatus >= 200 && httpsStatus < 400
-		}
+		eg.Go(func() error {
+			httpsStatus, rtt, err := checkHTTP(egCtx, fmt.Sprintf("https://%s:%d", ipStr, httpsPort))
+			result.HTTPSStatus = httpsStatus
+			result.HTTPSRTT = rtt
+			if err != nil {
+				result.HTTPSErr = fmt.Sprintf("HTTPS 端口(%d) 错误: %v", httpsPort, err)
+			} else {
+				result.IsHTTPSHealthy = httpsStatus >= 200 && httpsStatus < 400
+			}
+			return nil
+		})
 	}
+	// HTTPS TCP 检测（如果端口 > 0）
+	if httpsPort > 0 {
+		eg.Go(func() error {
+			ok, rtt, err := checkTCP(egCtx, net.JoinHostPort(ip, fmt.Sprintf("%d", httpsPort)))
+			result.IsHTTPSTCPHealthy = ok
+			result.HTTPSTCPRTT = rtt
+			if err != nil {
+				result.HTTPSTCPErr = fmt.Sprintf("HTTPS 端口(%d) TCP: %v", httpsPort, err)
+			}
+			return nil
+		})
+	}
+	// HTTPS UDP 检测（如果端口 > 0）
+	if httpsPort > 0 {
+		eg.Go(func() error {
+			ok, rtt, err := checkUDP(egCtx, net.JoinHostPort(ip, fmt.Sprintf("%d", httpsPort)))
+			result.IsHTTPSUDPHealthy = ok
+			result.HTTPSUDPRTT = rtt
+			if err != nil {
+				result.HTTPSUDPErr = fmt.Sprintf("HTTPS 端口(%d) UDP: %v", httpsPort, err)
+			}
+			return nil
+		})
+	}
+
+	// 等待 并发处理 完成
+	_ = eg.Wait()
 
 	return result, nil
 }
@@ -158,7 +286,7 @@ func resolveDNS(ctx context.Context, domain string, server string) ([]string, er
 }
 
 // checkHTTP 发起 HTTP(S) 请求并返回状态码 + 耗时
-func checkHTTP(ctx context.Context, url string) (int, time.Duration, error) {
+func checkHTTP(ctx context.Context, url string) (int, int64, error) {
 	client := &http.Client{
 		Timeout: 10 * time.Second,
 		Transport: &http.Transport{
@@ -177,7 +305,7 @@ func checkHTTP(ctx context.Context, url string) (int, time.Duration, error) {
 	req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
 	req.Header.Set("User-Agent", "IPVibe-HealthChecker/1.0")
 	resp, err := client.Do(req)
-	duration := time.Since(start)
+	duration := time.Since(start).Milliseconds()
 
 	if err != nil {
 		return 0, duration, err
@@ -185,6 +313,38 @@ func checkHTTP(ctx context.Context, url string) (int, time.Duration, error) {
 	defer resp.Body.Close()
 
 	return resp.StatusCode, duration, nil
+}
+
+// checkTCP 检测 TCP 连通性（返回是否成功 + 耗时）
+func checkTCP(ctx context.Context, address string) (bool, int64, error) {
+	start := time.Now()
+	conn, err := net.DialTimeout("tcp", address, 10*time.Second)
+	duration := time.Since(start).Milliseconds()
+	if err != nil {
+		return false, duration, err
+	}
+	conn.Close()
+	return true, duration, nil
+}
+
+// checkUDP 尝试发送 UDP 包（无响应验证，仅测是否能发）
+func checkUDP(ctx context.Context, address string) (bool, int64, error) {
+	start := time.Now()
+	conn, err := net.DialTimeout("udp", address, 10*time.Second)
+	duration := time.Since(start).Milliseconds()
+	if err != nil {
+		return false, duration, err
+	}
+	defer conn.Close()
+
+	// 发送一个最小探测包（1 字节）
+	_, writeErr := conn.Write([]byte{0x00})
+	if writeErr != nil {
+		return false, duration, writeErr
+	}
+
+	// UDP 无通用响应，这里仅认为“能发包”就算通
+	return true, duration, nil
 }
 
 type ToPairsStruct struct {
@@ -201,14 +361,14 @@ func (r *HealthCheckResult) ToPairsForDomain() (pairs []ToPairsStruct) {
 	}
 
 	// 端口信息
-	pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口", Value: r.HTTPPort})
-	pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口", Value: r.HTTPSPort})
+	// pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口", Value: r.HTTPPort})
+	// pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口", Value: r.HTTPSPort})
 
 	if r.DNSUsed != "" {
-		pairs = append(pairs, ToPairsStruct{Key: "使用的 DNS 服务器", Value: r.DNSUsed})
+		pairs = append(pairs, ToPairsStruct{Key: "使用的DNS服务器", Value: r.DNSUsed})
 	}
 	if len(r.ResolvedIPs) > 0 {
-		pairs = append(pairs, ToPairsStruct{Key: "解析出的 IP 地址", Value: strings.Join(r.ResolvedIPs, ", ")})
+		pairs = append(pairs, ToPairsStruct{Key: "解析出的IP地址", Value: strings.Join(r.ResolvedIPs, ", ")})
 	}
 
 	// HTTP/HTTPS 部分保持不变
@@ -226,39 +386,88 @@ func (r *HealthCheckResult) ToPairsForIP() (pairs []ToPairsStruct) {
 	}
 
 	// 端口信息
-	pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口", Value: r.HTTPPort})
-	pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口", Value: r.HTTPSPort})
+	// pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口", Value: r.HTTPPort})
+	// pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口", Value: r.HTTPSPort})
 
-	// HTTP/HTTPS 部分保持不变
+	// HTTP/HTTPS URL 字段
 	pairs = addHTTPHTTPS(pairs, r)
+
+	// HTTP/HTTPS TCP/UDP 字段
+	pairs = addHTTPHTTPSTCPUDP(pairs, r)
 
 	return pairs
 }
 
-// 公共辅助函数：添加 HTTP/HTTPS 字段
+// 添加 HTTP/HTTPS URL 字段
 func addHTTPHTTPS(pairs []ToPairsStruct, r *HealthCheckResult) []ToPairsStruct {
-	if r.HTTPStatus > 0 {
-		pairs = append(pairs, ToPairsStruct{Key: "HTTP 状态码", Value: r.HTTPStatus})
-	}
-	if r.HTTPErr != "" {
-		pairs = append(pairs, ToPairsStruct{Key: "HTTP 错误", Value: r.HTTPErr})
-	}
-	if r.HTTPRTT > 0 {
-		pairs = append(pairs, ToPairsStruct{Key: "HTTP 响应时间（ms）", Value: strconv.FormatInt(r.HTTPRTT, 10)})
-	}
-
-	if r.HTTPSStatus > 0 {
-		pairs = append(pairs, ToPairsStruct{Key: "HTTPS 状态码", Value: r.HTTPSStatus})
-	}
-	if r.HTTPSErr != "" {
-		pairs = append(pairs, ToPairsStruct{Key: "HTTPS 错误", Value: r.HTTPSErr})
-	}
-	if r.HTTPSRTT > 0 {
-		pairs = append(pairs, ToPairsStruct{Key: "HTTPS 响应时间（ms）", Value: strconv.FormatInt(r.HTTPSRTT, 10)})
+	if r.HTTPPort > 0 {
+		if r.HTTPErr != "" {
+			pairs = append(pairs, ToPairsStruct{Key: "HTTP 错误", Value: r.HTTPErr})
+		} else {
+			pairs = append(pairs, ToPairsStruct{Key: "HTTP 是否通", Value: boolToStatus(r.IsHTTPHealthy)})
+			pairs = append(pairs, ToPairsStruct{Key: "HTTP 状态码", Value: r.HTTPStatus})
+			if r.HTTPRTT > 0 {
+				pairs = append(pairs, ToPairsStruct{Key: "HTTP 响应时间（ms）", Value: strconv.FormatInt(r.HTTPRTT, 10)})
+			}
+		}
 	}
 
-	pairs = append(pairs, ToPairsStruct{Key: "HTTP 是否健康", Value: boolToStatus(r.IsHTTPHealthy)})
-	pairs = append(pairs, ToPairsStruct{Key: "HTTPS 是否健康", Value: boolToStatus(r.IsHTTPSHealthy)})
+	if r.HTTPSPort > 0 {
+		if r.HTTPSErr != "" {
+			pairs = append(pairs, ToPairsStruct{Key: "HTTPS 错误", Value: r.HTTPSErr})
+		} else {
+			pairs = append(pairs, ToPairsStruct{Key: "HTTPS 是否通", Value: boolToStatus(r.IsHTTPSHealthy)})
+			pairs = append(pairs, ToPairsStruct{Key: "HTTPS 状态码", Value: r.HTTPSStatus})
+			if r.HTTPSRTT > 0 {
+				pairs = append(pairs, ToPairsStruct{Key: "HTTPS 响应时间（ms）", Value: strconv.FormatInt(r.HTTPSRTT, 10)})
+			}
+		}
+	}
+
+	return pairs
+}
+
+// 添加 HTTP/HTTPS TCP/UDP 字段
+func addHTTPHTTPSTCPUDP(pairs []ToPairsStruct, r *HealthCheckResult) []ToPairsStruct {
+	if r.HTTPPort > 0 {
+		if r.HTTPTCPErr != "" {
+			pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口 TCP 错误", Value: r.HTTPTCPErr})
+		} else {
+			pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口 TCP 是否通", Value: boolToStatus(r.IsHTTPTCPHealthy)})
+			if r.HTTPTCPRTT > 0 {
+				pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口 TCP 响应时间（ms）", Value: strconv.FormatInt(r.HTTPTCPRTT, 10)})
+			}
+		}
+
+		if r.HTTPUDPErr != "" {
+			pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口 UDP 错误", Value: r.HTTPUDPErr})
+		} else {
+			pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口 UDP 是否通", Value: boolToStatus(r.IsHTTPUDPHealthy)})
+			if r.HTTPUDPRTT > 0 {
+				pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口 UDP 响应时间（ms）", Value: strconv.FormatInt(r.HTTPUDPRTT, 10)})
+			}
+		}
+	}
+
+	if r.HTTPSPort > 0 {
+		if r.HTTPSTCPErr != "" {
+			pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口 TCP 错误", Value: r.HTTPSTCPErr})
+		} else {
+			pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口 TCP 是否通", Value: boolToStatus(r.IsHTTPSTCPHealthy)})
+			if r.HTTPSTCPRTT > 0 {
+				pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口 TCP 响应时间（ms）", Value: strconv.FormatInt(r.HTTPSTCPRTT, 10)})
+			}
+		}
+
+		if r.HTTPSUDPErr != "" {
+			pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口 UDP 错误", Value: r.HTTPSUDPErr})
+		} else {
+			pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口 UDP 是否通", Value: boolToStatus(r.IsHTTPSUDPHealthy)})
+			if r.HTTPSUDPRTT > 0 {
+				pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口 UDP 响应时间（ms）", Value: strconv.FormatInt(r.HTTPSUDPRTT, 10)})
+			}
+		}
+	}
 
 	return pairs
 }
