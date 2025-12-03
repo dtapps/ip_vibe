@@ -14,6 +14,11 @@ import (
 )
 
 type HealthCheckResult struct {
+	TargetDomain string `json:"target_domain,omitempty"` // 检测的域名（用于 ToPairsForDomain）
+	TargetIP     string `json:"target_ip,omitempty"`     // 检测的 IP（用于 ToPairsForIP）
+	HTTPPort     int    `json:"http_port,omitempty"`     // 显式记录端口
+	HTTPSPort    int    `json:"https_port,omitempty"`    // 显式记录端口
+
 	DNSUsed        string   `json:"dns_used,omitempty"`     // 实际使用的 DNS 服务器
 	ResolvedIPs    []string `json:"resolved_ips,omitempty"` // 解析出的 IP 地址
 	HTTPStatus     int      `json:"http_status,omitempty"`  // HTTP 状态码
@@ -32,7 +37,11 @@ func CheckDomainHealth(ctx context.Context, domain string, httpPort, httpsPort i
 		dnsServers = []string{"119.29.29.29:53", "223.5.5.5:53", "8.8.8.8:53", "1.1.1.1:53"}
 	}
 
-	result := &HealthCheckResult{}
+	result := &HealthCheckResult{
+		TargetDomain: domain,
+		HTTPPort:     httpPort,
+		HTTPSPort:    httpsPort,
+	}
 
 	// 1. DNS 解析（尝试多个 DNS）
 	var resolvedIPs []string
@@ -78,7 +87,10 @@ func CheckDomainHealth(ctx context.Context, domain string, httpPort, httpsPort i
 // CheckIPHealth 检测 IP 是否可通过 HTTP/HTTPS 访问
 func CheckIPHealth(ctx context.Context, ip string, httpPort, httpsPort int, expectedIPs []string) (*HealthCheckResult, error) {
 	result := &HealthCheckResult{
-		ResolvedIPs: []string{ip}, // 虚拟 DNS 结果
+		TargetIP:    ip,
+		HTTPPort:    httpPort,
+		HTTPSPort:   httpsPort,
+		ResolvedIPs: []string{ip},
 	}
 
 	// 可选：验证 IP 是否在预期列表中
@@ -201,6 +213,15 @@ type ToPairsStruct struct {
 func (r *HealthCheckResult) ToPairsForDomain() []ToPairsStruct {
 	var pairs []ToPairsStruct
 
+	// 检测的域名
+	if r.TargetDomain != "" {
+		pairs = append(pairs, ToPairsStruct{Key: "检测的域名", Value: r.TargetDomain})
+	}
+
+	// 端口信息
+	pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口", Value: strconv.Itoa(r.HTTPPort)})
+	pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口", Value: strconv.Itoa(r.HTTPSPort)})
+
 	if r.DNSUsed != "" {
 		pairs = append(pairs, ToPairsStruct{Key: "使用的 DNS 服务器", Value: r.DNSUsed})
 	}
@@ -218,10 +239,14 @@ func (r *HealthCheckResult) ToPairsForDomain() []ToPairsStruct {
 func (r *HealthCheckResult) ToPairsForIP() []ToPairsStruct {
 	var pairs []ToPairsStruct
 
-	// IP 检测：不显示 DNSUsed（因为没用 DNS）
-	if len(r.ResolvedIPs) > 0 {
-		pairs = append(pairs, ToPairsStruct{Key: "检测的 IP 地址", Value: strings.Join(r.ResolvedIPs, ", ")})
+	// 检测的 IP
+	if r.TargetIP != "" {
+		pairs = append(pairs, ToPairsStruct{Key: "检测的 IP 地址", Value: r.TargetIP})
 	}
+
+	// 端口信息
+	pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口", Value: strconv.Itoa(r.HTTPPort)})
+	pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口", Value: strconv.Itoa(r.HTTPSPort)})
 
 	// 如果 IP 校验失败，显示错误
 	if r.HTTPErr == "IP 不在预期列表中" {

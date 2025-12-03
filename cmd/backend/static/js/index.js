@@ -121,9 +121,20 @@ const fmtDate = (iso) => {
 // 打开配置模态框
 function showModal(id, titleID, titleName) {
   const modal = document.getElementById(id);
+  if (!modal) {
+    return;
+  }
+  
   const title = document.getElementById(titleID);
-  if (title) title.textContent = titleName;
-  if (modal) modal.classList.add("show");
+  if (title) {
+    title.textContent = titleName;
+  }
+
+  // 显示弹窗
+  modal.classList.add("show");
+
+  // 在 DOM 元素上挂状态
+  modal.dataset.manuallyClosed = "false";
 }
 
 // 关闭模态框
