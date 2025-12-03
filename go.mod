@@ -12,7 +12,6 @@ require (
 	github.com/gin-gonic/gin v1.11.0
 	github.com/go-co-op/gocron/v2 v2.18.2
 	github.com/google/uuid v1.6.0
-	github.com/spf13/cast v1.10.0
 	go.dtapp.net/library/contrib/resty_log v1.0.8
 	go.dtapp.net/library/service/bark v1.0.7
 	go.dtapp.net/library/service/cloudflare v1.0.0
