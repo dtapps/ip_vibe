@@ -222,7 +222,7 @@ func HealthcheckIPGroup(c *gin.Context) {
 	}
 
 	// 检查健康状态
-	results := make([]*backend.HealthCheckResult, 0)
+	results := make([][]map[string]string, 0)
 
 	// 并发检查
 	eg, egCtx := errgroup.WithContext(c)
@@ -233,7 +233,7 @@ func HealthcheckIPGroup(c *gin.Context) {
 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
 			eg.Go(func() error {
 				healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV4, 80, 443, []string{})
-				results = append(results, healthCheckResult)
+				results = append(results, healthCheckResult.ToPairs())
 				return nil
 			})
 		}
@@ -241,7 +241,7 @@ func HealthcheckIPGroup(c *gin.Context) {
 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
 			eg.Go(func() error {
 				healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV6, 80, 443, []string{})
-				results = append(results, healthCheckResult)
+				results = append(results, healthCheckResult.ToPairs())
 				return nil
 			})
 		}
