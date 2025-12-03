@@ -131,14 +131,14 @@ function closeModal(id) {
   const modal = document.getElementById(id);
   if (!modal) return;
 
-  // 1. 隐藏弹窗
+  // 隐藏弹窗
   modal.classList.remove("show");
 
-  // 2. 如果有 form 才 reset
+  // 如果有 form 才 reset
   const form = modal.querySelector("form");
   if (form) form.reset();
 
-  // 3. 如果有平台字段才隐藏
+  // 如果有平台字段才隐藏
   modal
     .querySelectorAll(".platform-fields")
     .forEach((el) => el.classList.add("hidden"));

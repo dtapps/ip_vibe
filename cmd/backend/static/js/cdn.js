@@ -210,21 +210,18 @@ async function onLiveIPPopup(id, name) {
       return;
     }
 
-    // 填充代码块
-    const pre = document.getElementById("popupPre");
-
     // 格式化 IP 列表
     const preList = ipGroupDevices.map(
       (d) => `${d.name} - ${d.ip_v4 || "-"} / ${d.ip_v6 || "-"}`
     );
 
-    pre.textContent = preList.join("\n");
-
-    // 更新计数
-    document.getElementById("popupCount").textContent = ipGroupDevices.length;
-
-    // 打开弹窗（统一走你已有的 showModal 即可）
-    showModal("popup", "popupTitle", `实时 设备 IP 地址 - ${name}`);
+    // 显示弹窗内容
+    showPopupContent(
+      "popup",
+      `实时 设备 IP 地址 - ${name}`,
+      preList.join("\n"),
+      ipGroupDevices.length
+    );
   } catch (error) {
     alert(`加载IP组设备信息失败: ${error.message}`);
     console.error("查看设备IP地址失败", error);

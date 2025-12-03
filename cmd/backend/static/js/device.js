@@ -140,21 +140,18 @@ async function onHistoryIPPopup(id, name) {
       return;
     }
 
-    // 填充代码块
-    const pre = document.getElementById("popupPre");
-
     // 格式化 IP 列表
     const preList = deviceIpHistory.map(
       (d) => `${fmtDate(d.created_at)} - ${d.ip_v4 || "-"} / ${d.ip_v6 || "-"}`
     );
 
-    pre.textContent = preList.join("\n");
-
-    // 更新计数
-    document.getElementById("popupCount").textContent = deviceIpHistory.length;
-
-    // 打开弹窗（统一走你已有的 showModal 即可）
-    showModal("popup", "popupTitle", `实时 设备 IP 历史 - ${name}`);
+    // 显示弹窗内容
+    showPopupContent(
+      "popup",
+      `实时 设备 IP 历史 - ${name}`,
+      preList.join("\n"),
+      deviceIpHistory.length
+    );
   } catch (error) {
     alert(`加载设备IP历史失败: ${error.message}`);
     console.error("查看设备IP历史失败", error);

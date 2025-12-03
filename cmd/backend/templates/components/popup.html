@@ -1,12 +1,13 @@
 {{ define "popup" }}
-<div class="modal" id="popup">
+<div id="popup" class="modal">
   <div class="modal-content ip-popup">
     <!-- 头部 -->
     <div class="ip-popup-header">
-      <h4 class="ip-popup-title" id="popupTitle">
+      <h4 id="popupTitle" class="ip-popup-title">
         {{ template "icons" (dict "Name" "ip-eyes") }} 弹窗
       </h4>
       <button
+        id="popupCloseIcon"
         class="ip-popup-close"
         onclick="closeModal('popup')"
         aria-label="关闭"
@@ -18,17 +19,21 @@
     <!-- 工具栏 -->
     <div class="ip-popup-toolbar">
       <span class="ip-popup-count">共 <b id="popupCount">0</b> 条</span>
-      <button id="popupCopyBtn" class="ip-popup-copy" onclick="copyData('popupPre')">
+      <button
+        id="popupCopyBtn"
+        class="ip-popup-copy"
+        onclick="copyData('popupPre')"
+      >
         {{ template "icons" (dict "Name" "ip-copy") }} 一键复制
       </button>
     </div>
 
     <!-- 代码块区域 -->
-    <pre class="ip-popup-pre" id="popupPre">代码块区域</pre>
+    <pre id="popupPre" class="ip-popup-pre">代码块区域</pre>
 
     <!-- 底部按钮 -->
     <div class="ip-popup-footer">
-      <button class="btn" onclick="closeModal('popup')">
+      <button id="popupCloseBtn" class="btn" onclick="closeModal('popup')">
         {{ template "icons" (dict "Name" "ip-close") }}关闭
       </button>
     </div>

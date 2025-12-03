@@ -55,7 +55,7 @@ async function runTask(id) {
 }
 
 // 打开 下次执行时间 弹窗
-async function onPopup(id, name) {
+async function onNextRunPopup(id, name) {
   try {
     const { data: task } = await API.get(`/api/tasks/${id}`);
     console.log("task", task);
@@ -68,16 +68,13 @@ async function onPopup(id, name) {
       return;
     }
 
-    // 填充代码块
-    const pre = document.getElementById("popupPre");
-
-    pre.textContent = task.next_runs.join("\n");
-
-    // 更新计数
-    document.getElementById("popupCount").textContent = task.next_runs.length;
-
-    // 打开弹窗（统一走你已有的 showModal 即可）
-    showModal("popup", "popupTitle", `实时 执行时间 - ${name}`);
+    // 显示弹窗内容
+    showPopupContent(
+      "popup",
+      `实时 执行时间 - ${name}`,
+      task.next_runs.join("\n"),
+      task.next_runs.length
+    );
   } catch (error) {
     alert(`加载任务执行时间失败: ${error.message}`);
     console.error("查看任务执行时间失败", error);
