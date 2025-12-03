@@ -64,6 +64,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	// 关闭服务，释放资源
+	defer service.Close()
+
 	// 启动 GoCron 调度器
 	initialize.StartGoCron()
 

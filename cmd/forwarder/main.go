@@ -60,6 +60,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	// 关闭服务，释放资源
+	defer service.Close()
+
 	// 阻止主线程退出
 	select {}
 }

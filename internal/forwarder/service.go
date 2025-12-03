@@ -2,6 +2,7 @@ package forwarder
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"log/slog"
 	"time"
@@ -10,14 +11,17 @@ import (
 
 	"github.com/denisbrodbeck/machineid"
 	"github.com/go-co-op/gocron/v2"
+	"github.com/quic-go/quic-go"
+	"github.com/quic-go/quic-go/http3"
 	"resty.dev/v3"
 )
 
 type Service struct {
-	cron   gocron.Scheduler // 定时任务调度器
-	job    gocron.Job       // IP上报任务
-	log    *slog.Logger     // 日志记录器
-	client *resty.Client    // Resty HTTP 客户端
+	cron           gocron.Scheduler // 定时任务调度器
+	job            gocron.Job       // IP上报任务
+	log            *slog.Logger     // 日志记录器
+	client         *resty.Client    // Resty HTTP 客户端
+	http3Transport *http3.Transport // HTTP/3 传输
 }
 
 // NewService 创建一个新的服务实例
@@ -25,6 +29,9 @@ func NewService(cron gocron.Scheduler) *Service {
 
 	// 创建一个新的 Resty 客户端
 	client := resty.New()
+
+	// 请求跟踪
+	client.EnableTrace()
 
 	// 设置默认超时
 	client.SetTimeout(30 * time.Second)
@@ -40,10 +47,34 @@ func NewService(cron gocron.Scheduler) *Service {
 	client.SetRetryWaitTime(2 * time.Second)
 	client.SetRetryMaxWaitTime(5 * time.Second)
 
+	// 设置 HTTP/3 传输
+	http3Transport := &http3.Transport{
+		TLSClientConfig: &tls.Config{},
+		QUICConfig: &quic.Config{
+			MaxIdleTimeout:  45 * time.Second,
+			KeepAlivePeriod: 30 * time.Second,
+		},
+	}
+	client.SetTransport(http3Transport)
+
 	return &Service{
-		cron:   cron,
-		log:    slog.With("component", "port-forwards"),
-		client: client,
+		cron:           cron,
+		log:            slog.With("component", "port-forwards"),
+		client:         client,
+		http3Transport: http3Transport,
+	}
+}
+
+// Close 关闭服务，释放资源
+func (s *Service) Close() {
+	if s.http3Transport != nil {
+		s.http3Transport.Close()
+	}
+	if s.client != nil {
+		s.client.Close()
+	}
+	if s.cron != nil && s.job != nil {
+		_ = s.cron.RemoveJob(s.job.ID())
 	}
 }
 

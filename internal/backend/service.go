@@ -29,6 +29,16 @@ func NewIpUpdateService(db *ent.Client, cron gocron.Scheduler) *IpUpdateService 
 	}
 }
 
+// Close 关闭服务，释放资源
+func (s *IpUpdateService) Close() {
+	if s.cron != nil && s.dnsJob != nil {
+		_ = s.cron.RemoveJob(s.dnsJob.ID())
+	}
+	if s.cron != nil && s.cdnJob != nil {
+		_ = s.cron.RemoveJob(s.cdnJob.ID())
+	}
+}
+
 // 启动 DNS刷新 任务，延迟 1 分钟添加，确保 CDN 先跑
 func (s *IpUpdateService) StartDnsJob(ctx context.Context) (err error) {
 	// 判断是否存在DNS任务
