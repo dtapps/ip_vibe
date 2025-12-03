@@ -8,10 +8,7 @@
 <div class="card">
   <div class="card-header">
     <h2 class="h2-icon">
-      <svg class="ip-i">
-        <use href="/static/img/icons.svg#ip-dashboard"></use>
-      </svg>
-      系统概览
+      {{ template "icons" (dict "Name" "ip-dashboard") }} 系统概览
     </h2>
   </div>
   <div class="card-body">
@@ -48,60 +45,49 @@
 <div class="card">
   <div class="card-header">
     <h2 class="h2-icon">
-      <svg class="ip-i"><use href="/static/img/icons.svg#ip-menu"></use></svg>
-      功能导航
+      {{ template "icons" (dict "Name" "ip-menu") }} 功能导航
     </h2>
   </div>
   <div class="card-body">
     <div class="quick-links">
       <a href="/cdn" class="quick-link">
-        <svg class="ip-i"><use href="/static/img/icons.svg#ip-dns"></use></svg>
+        {{ template "icons" (dict "Name" "ip-dns") }}
         <span>CDN 管理</span>
       </a>
       <a href="/dns" class="quick-link">
-        <svg class="ip-i"><use href="/static/img/icons.svg#ip-dns"></use></svg>
+        {{ template "icons" (dict "Name" "ip-dns") }}
         <span>DNS 记录</span>
       </a>
       <a href="/device" class="quick-link">
-        <svg class="ip-i">
-          <use href="/static/img/icons.svg#ip-devices"></use>
-        </svg>
+        {{ template "icons" (dict "Name" "ip-devices") }}
         <span>设备管理</span>
       </a>
       <a href="/ip-group" class="quick-link">
-        <svg class="ip-i">
-          <use href="/static/img/icons.svg#ip-layer"></use>
-        </svg>
+        {{ template "icons" (dict "Name" "ip-layer") }}
         <span>IP 组</span>
       </a>
       <a href="/port-forward" class="quick-link">
-        <svg class="ip-i">
-          <use href="/static/img/icons.svg#ip-forward"></use>
-        </svg>
+        {{ template "icons" (dict "Name" "ip-forward") }}
         <span>端口转发</span>
       </a>
       <a href="/webhook" class="quick-link">
-        <svg class="ip-i"><use href="/static/img/icons.svg#ip-bell"></use></svg>
+        {{ template "icons" (dict "Name" "ip-bell") }}
         <span>通知管理</span>
       </a>
       <a href="/webhook-sub" class="quick-link">
-        <svg class="ip-i">
-          <use href="/static/img/icons.svg#ip-subscribe"></use>
-        </svg>
+        {{ template "icons" (dict "Name" "ip-subscribe") }}
         <span>通知订阅</span>
       </a>
       <a href="/task" class="quick-link">
-        <svg class="ip-i"><use href="/static/img/icons.svg#ip-task"></use></svg>
+        {{ template "icons" (dict "Name" "ip-task") }}
         <span>任务管理</span>
       </a>
       <a href="/log" class="quick-link">
-        <svg class="ip-i"><use href="/static/img/icons.svg#ip-log"></use></svg>
+        {{ template "icons" (dict "Name" "ip-log") }}
         <span>操作日志</span>
       </a>
       <a href="/config" class="quick-link">
-        <svg class="ip-i">
-          <use href="/static/img/icons.svg#ip-server"></use>
-        </svg>
+        {{ template "icons" (dict "Name" "ip-server") }}
         <span>平台配置</span>
       </a>
     </div>
@@ -112,8 +98,8 @@
 <div class="card">
   <div class="card-header">
     <h2 class="h2-icon">
-      <svg class="ip-i"><use href="/static/img/icons.svg#ip-log"></use></svg>
-      最新操作（最近 {{ .Stats.LogLimit }} 条）
+      {{ template "icons" (dict "Name" "ip-log") }} 最新操作（最近 {{
+      .Stats.LogLimit }} 条）
     </h2>
   </div>
   <div class="card-body">
@@ -141,8 +127,7 @@
 <div class="card">
   <div class="card-header">
     <h2 class="h2-icon">
-      <svg class="ip-i"><use href="/static/img/icons.svg#ip-server"></use></svg>
-      系统信息
+      {{ template "icons" (dict "Name" "ip-server") }} 系统信息
     </h2>
   </div>
   <div class="card-body">
