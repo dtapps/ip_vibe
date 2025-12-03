@@ -18,7 +18,7 @@
     <!-- 工具栏 -->
     <div class="ip-popup-toolbar">
       <span class="ip-popup-count">共 <b id="popupCount">0</b> 条</span>
-      <button class="ip-popup-copy" onclick="copyData('popupPre')">
+      <button id="popupCopyBtn" class="ip-popup-copy" onclick="copyData('popupPre')">
         {{ template "icons" (dict "Name" "ip-copy") }} 一键复制
       </button>
     </div>

@@ -198,6 +198,9 @@ async function onDelete(id) {
 
 // 打开 检测 弹窗
 async function onHealthcheckPopup(id) {
+  // 显示 loading 弹窗
+  showLoadingPopup("popup");
+
   try {
     const { data: dnsRecordHealthcheck } = await API.get(
       `/api/dns-records/${id}/healthcheck`
@@ -212,18 +215,13 @@ async function onHealthcheckPopup(id) {
       return;
     }
 
-    // 填充代码块
-    const pre = document.getElementById("popupPre");
-
-    // 格式化 检测数据
-    pre.textContent = formatHealthCheckResult(dnsRecordHealthcheck);
-
-    // 更新计数
-    document.getElementById("popupCount").textContent =
-      dnsRecordHealthcheck.length;
-
-    // 打开弹窗（统一走你已有的 showModal 即可）
-    showModal("popup", "popupTitle", `实时 检测 域名/IP`);
+    // 显示弹窗内容
+    showPopupContent(
+      "popup",
+      `实时 检测 域名/IP`,
+      formatHealthCheckResult(dnsRecordHealthcheck),
+      dnsRecordHealthcheck.length
+    );
   } catch (error) {
     alert(`加载DNS记录检测信息失败: ${error.message}`);
     console.error("查看DNS记录检测信息失败", error);

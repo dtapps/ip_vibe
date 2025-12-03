@@ -94,6 +94,9 @@ async function onDelete(id) {
 
 // 打开 检测 弹窗
 async function onHealthcheckPopup(id) {
+  // 显示 loading 弹窗
+  showLoadingPopup("popup");
+
   try {
     const { data: deviceHealthcheck } = await API.get(
       `/api/devices/${id}/healthcheck`
@@ -108,18 +111,13 @@ async function onHealthcheckPopup(id) {
       return;
     }
 
-    // 填充代码块
-    const pre = document.getElementById("popupPre");
-
-    // 格式化 检测数据
-    pre.textContent = formatHealthCheckResult(deviceHealthcheck);
-
-    // 更新计数
-    document.getElementById("popupCount").textContent =
-      deviceHealthcheck.length;
-
-    // 打开弹窗（统一走你已有的 showModal 即可）
-    showModal("popup", "popupTitle", `实时 检测 IP`);
+    // 显示弹窗内容
+    showPopupContent(
+      "popup",
+      `实时 检测 IP`,
+      formatHealthCheckResult(deviceHealthcheck),
+      deviceHealthcheck.length
+    );
   } catch (error) {
     alert(`加载设备检测信息失败: ${error.message}`);
     console.error("查看设备检测信息失败", error);

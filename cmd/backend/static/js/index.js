@@ -171,3 +171,35 @@ function formatHealthCheckResult(healthData) {
     )
     .join("\n-----\n");
 }
+
+// 显示 loading 弹窗
+function showLoadingPopup(idEl = "popup") {
+  const titleEl = document.getElementById(`${idEl}Title`);
+  const countEl = document.getElementById(`${idEl}Count`);
+  const preEl = document.getElementById(`${idEl}Pre`);
+  const copyBtn = document.getElementById(`${idEl}CopyBtn`);
+
+  titleEl.textContent = "检测中...";
+  preEl.textContent = "正在检测中，请稍候...（预计 5~15 秒）";
+  preEl.style.color = "var(--text-secondary)";
+  countEl.textContent = "...";
+  copyBtn.disabled = true;
+
+  showModal(idEl, titleEl, `检测中...`);
+}
+
+// 显示弹窗内容
+function showPopupContent(idEl = "popup", title = "", content = "", count = 0) {
+  const titleEl = document.getElementById(`${idEl}Title`);
+  const countEl = document.getElementById(`${idEl}Count`);
+  const preEl = document.getElementById(`${idEl}Pre`);
+  const copyBtn = document.getElementById(`${idEl}CopyBtn`);
+
+  titleEl.textContent = title;
+  preEl.textContent = content;
+  preEl.style.color = "#f8f8f2";
+  countEl.textContent = count;
+  copyBtn.disabled = false;
+
+  showModal(idEl, titleEl, title);
+}
