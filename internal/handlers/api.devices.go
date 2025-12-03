@@ -234,7 +234,7 @@ func HealthcheckDevice(c *gin.Context) {
 	if firstDevice.IPV4 != "" {
 		// 检测 IP 是否可通过 HTTP/HTTPS 访问
 		eg.Go(func() error {
-			healthCheckResult, _ := backend.CheckIPHealth(egCtx, firstDevice.IPV4, 80, 443, []string{})
+			healthCheckResult, _ := backend.CheckIPHealth(egCtx, firstDevice.IPV4, 80, 443)
 			results = append(results, healthCheckResult.ToPairsForIP())
 			return nil
 		})
@@ -242,7 +242,7 @@ func HealthcheckDevice(c *gin.Context) {
 	if firstDevice.IPV6 != "" {
 		// 检测 IP 是否可通过 HTTP/HTTPS 访问
 		eg.Go(func() error {
-			healthCheckResult, _ := backend.CheckIPHealth(egCtx, firstDevice.IPV6, 80, 443, []string{})
+			healthCheckResult, _ := backend.CheckIPHealth(egCtx, firstDevice.IPV6, 80, 443)
 			results = append(results, healthCheckResult.ToPairsForIP())
 			return nil
 		})

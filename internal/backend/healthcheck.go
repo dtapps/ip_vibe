@@ -43,7 +43,7 @@ func CheckDomainHealth(ctx context.Context, domain string, httpPort, httpsPort i
 		HTTPSPort:    httpsPort,
 	}
 
-	// 1. DNS 解析（尝试多个 DNS）
+	// DNS 解析（尝试多个 DNS）
 	var resolvedIPs []string
 	var usedDNS string
 	for _, server := range dnsServers {
@@ -57,7 +57,7 @@ func CheckDomainHealth(ctx context.Context, domain string, httpPort, httpsPort i
 	result.DNSUsed = usedDNS
 	result.ResolvedIPs = resolvedIPs
 
-	// 2. HTTP 检测（如果端口 > 0）
+	// HTTP 检测（如果端口 > 0）
 	if httpPort > 0 {
 		httpStatus, rtt, err := checkHTTP(ctx, fmt.Sprintf("http://%s:%d", domain, httpPort))
 		result.HTTPStatus = httpStatus
@@ -85,28 +85,11 @@ func CheckDomainHealth(ctx context.Context, domain string, httpPort, httpsPort i
 }
 
 // CheckIPHealth 检测 IP 是否可通过 HTTP/HTTPS 访问
-func CheckIPHealth(ctx context.Context, ip string, httpPort, httpsPort int, expectedIPs []string) (*HealthCheckResult, error) {
+func CheckIPHealth(ctx context.Context, ip string, httpPort, httpsPort int) (*HealthCheckResult, error) {
 	result := &HealthCheckResult{
-		TargetIP:    ip,
-		HTTPPort:    httpPort,
-		HTTPSPort:   httpsPort,
-		ResolvedIPs: []string{ip},
-	}
-
-	// 可选：验证 IP 是否在预期列表中
-	if len(expectedIPs) > 0 {
-		found := false
-		for _, eip := range expectedIPs {
-			if eip == ip {
-				found = true
-				break
-			}
-		}
-		if !found {
-			result.HTTPErr = "IP 不在预期列表中"
-			result.HTTPSErr = "IP 不在预期列表中"
-			return result, nil
-		}
+		TargetIP:  ip,
+		HTTPPort:  httpPort,
+		HTTPSPort: httpsPort,
 	}
 
 	// 处理 IPv6 地址（HTTP 需方括号）
@@ -117,25 +100,25 @@ func CheckIPHealth(ctx context.Context, ip string, httpPort, httpsPort int, expe
 
 	// HTTP 检测
 	if httpPort > 0 {
-		status, rtt, err := checkHTTP(ctx, fmt.Sprintf("http://%s:%d", ipStr, httpPort))
-		result.HTTPStatus = status
+		httpStatus, rtt, err := checkHTTP(ctx, fmt.Sprintf("http://%s:%d", ipStr, httpPort))
+		result.HTTPStatus = httpStatus
 		result.HTTPRTT = rtt.Milliseconds()
 		if err != nil {
 			result.HTTPErr = err.Error()
 		} else {
-			result.IsHTTPHealthy = status >= 200 && status < 400
+			result.IsHTTPHealthy = httpStatus >= 200 && httpStatus < 400
 		}
 	}
 
 	// HTTPS 检测
 	if httpsPort > 0 {
-		status, rtt, err := checkHTTP(ctx, fmt.Sprintf("https://%s:%d", ipStr, httpsPort))
-		result.HTTPSStatus = status
+		httpsStatus, rtt, err := checkHTTP(ctx, fmt.Sprintf("https://%s:%d", ipStr, httpsPort))
+		result.HTTPSStatus = httpsStatus
 		result.HTTPSRTT = rtt.Milliseconds()
 		if err != nil {
 			result.HTTPSErr = err.Error()
 		} else {
-			result.IsHTTPSHealthy = status >= 200 && status < 400
+			result.IsHTTPSHealthy = httpsStatus >= 200 && httpsStatus < 400
 		}
 	}
 
@@ -206,12 +189,11 @@ func checkHTTP(ctx context.Context, url string) (int, time.Duration, error) {
 
 type ToPairsStruct struct {
 	Key   string `json:"key"`
-	Value string `json:"value"`
+	Value any    `json:"value"`
 }
 
 // ToPairsForDomain 返回域名检测关注的字段
-func (r *HealthCheckResult) ToPairsForDomain() []ToPairsStruct {
-	var pairs []ToPairsStruct
+func (r *HealthCheckResult) ToPairsForDomain() (pairs []ToPairsStruct) {
 
 	// 检测的域名
 	if r.TargetDomain != "" {
@@ -219,8 +201,8 @@ func (r *HealthCheckResult) ToPairsForDomain() []ToPairsStruct {
 	}
 
 	// 端口信息
-	pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口", Value: strconv.Itoa(r.HTTPPort)})
-	pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口", Value: strconv.Itoa(r.HTTPSPort)})
+	pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口", Value: r.HTTPPort})
+	pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口", Value: r.HTTPSPort})
 
 	if r.DNSUsed != "" {
 		pairs = append(pairs, ToPairsStruct{Key: "使用的 DNS 服务器", Value: r.DNSUsed})
@@ -236,25 +218,18 @@ func (r *HealthCheckResult) ToPairsForDomain() []ToPairsStruct {
 }
 
 // ToPairsForIP 返回 IP 检测关注的字段
-func (r *HealthCheckResult) ToPairsForIP() []ToPairsStruct {
-	var pairs []ToPairsStruct
+func (r *HealthCheckResult) ToPairsForIP() (pairs []ToPairsStruct) {
 
 	// 检测的 IP
 	if r.TargetIP != "" {
-		pairs = append(pairs, ToPairsStruct{Key: "检测的 IP 地址", Value: r.TargetIP})
+		pairs = append(pairs, ToPairsStruct{Key: "检测的IP地址", Value: r.TargetIP})
 	}
 
 	// 端口信息
-	pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口", Value: strconv.Itoa(r.HTTPPort)})
-	pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口", Value: strconv.Itoa(r.HTTPSPort)})
+	pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口", Value: r.HTTPPort})
+	pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口", Value: r.HTTPSPort})
 
-	// 如果 IP 校验失败，显示错误
-	if r.HTTPErr == "IP 不在预期列表中" {
-		pairs = append(pairs, ToPairsStruct{Key: "IP 校验", Value: "❌ 不在预期列表中"})
-	} else if len(r.ResolvedIPs) > 0 {
-		pairs = append(pairs, ToPairsStruct{Key: "IP 校验", Value: "✅ 在预期列表中"})
-	}
-
+	// HTTP/HTTPS 部分保持不变
 	pairs = addHTTPHTTPS(pairs, r)
 
 	return pairs
@@ -263,9 +238,9 @@ func (r *HealthCheckResult) ToPairsForIP() []ToPairsStruct {
 // 公共辅助函数：添加 HTTP/HTTPS 字段
 func addHTTPHTTPS(pairs []ToPairsStruct, r *HealthCheckResult) []ToPairsStruct {
 	if r.HTTPStatus > 0 {
-		pairs = append(pairs, ToPairsStruct{Key: "HTTP 状态码", Value: strconv.Itoa(r.HTTPStatus)})
+		pairs = append(pairs, ToPairsStruct{Key: "HTTP 状态码", Value: r.HTTPStatus})
 	}
-	if r.HTTPErr != "" && r.HTTPErr != "IP 不在预期列表中" {
+	if r.HTTPErr != "" {
 		pairs = append(pairs, ToPairsStruct{Key: "HTTP 错误", Value: r.HTTPErr})
 	}
 	if r.HTTPRTT > 0 {
@@ -273,9 +248,9 @@ func addHTTPHTTPS(pairs []ToPairsStruct, r *HealthCheckResult) []ToPairsStruct {
 	}
 
 	if r.HTTPSStatus > 0 {
-		pairs = append(pairs, ToPairsStruct{Key: "HTTPS 状态码", Value: strconv.Itoa(r.HTTPSStatus)})
+		pairs = append(pairs, ToPairsStruct{Key: "HTTPS 状态码", Value: r.HTTPSStatus})
 	}
-	if r.HTTPSErr != "" && r.HTTPSErr != "IP 不在预期列表中" {
+	if r.HTTPSErr != "" {
 		pairs = append(pairs, ToPairsStruct{Key: "HTTPS 错误", Value: r.HTTPSErr})
 	}
 	if r.HTTPSRTT > 0 {

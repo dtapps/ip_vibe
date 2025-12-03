@@ -187,7 +187,7 @@ function formatHealthCheckResult(healthData) {
     .map((group) =>
       group.map((item) => `${item.key}: ${item.value || "-"}`).join("\n")
     )
-    .join("\n-----\n");
+    .join("\n--------\n");
 }
 
 // 显示 loading 弹窗

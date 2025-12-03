@@ -232,7 +232,7 @@ func HealthcheckIPGroup(c *gin.Context) {
 		if itme.IPV4 != "" {
 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
 			eg.Go(func() error {
-				healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV4, 80, 443, []string{})
+				healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV4, 80, 443)
 				results = append(results, healthCheckResult.ToPairsForIP())
 				return nil
 			})
@@ -240,7 +240,7 @@ func HealthcheckIPGroup(c *gin.Context) {
 		if itme.IPV6 != "" {
 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
 			eg.Go(func() error {
-				healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV6, 80, 443, []string{})
+				healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV6, 80, 443)
 				results = append(results, healthCheckResult.ToPairsForIP())
 				return nil
 			})

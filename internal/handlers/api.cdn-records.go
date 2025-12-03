@@ -256,12 +256,23 @@ func HealthcheckCdnRecord(c *gin.Context) {
 	eg, egCtx := errgroup.WithContext(c)
 	eg.SetLimit(10) // 最多 10 个并发
 
-	// 检测域名是否可通（含 DNS + HTTP + HTTPS）
-	eg.Go(func() error {
-		healthCheckResult, _ := backend.CheckDomainHealth(egCtx, firstCdnRecord.Domain, 80, 443, []string{})
-		results = append(results, healthCheckResult.ToPairsForDomain())
-		return nil
-	})
+	if firstCdnRecord.Domain != "" {
+		// 检测域名是否可通（含 DNS + HTTP + HTTPS）
+		eg.Go(func() error {
+			healthCheckResult, _ := backend.CheckDomainHealth(egCtx, firstCdnRecord.Domain, 80, 443, []string{})
+			results = append(results, healthCheckResult.ToPairsForDomain())
+			return nil
+		})
+	}
+
+	if firstCdnRecord.CdnDomain != "" {
+		// 检测域名是否可通（含 DNS + HTTP + HTTPS）
+		eg.Go(func() error {
+			healthCheckResult, _ := backend.CheckDomainHealth(egCtx, firstCdnRecord.CdnDomain, 80, 443, []string{})
+			results = append(results, healthCheckResult.ToPairsForDomain())
+			return nil
+		})
+	}
 
 	// 查询Cdn的IP组
 	firstCdnIpGroup, err := firstCdnRecord.QueryIPGroup().
@@ -272,7 +283,7 @@ func HealthcheckCdnRecord(c *gin.Context) {
 			if itme.IPV4 != "" {
 				// 检测 IP 是否可通过 HTTP/HTTPS 访问
 				eg.Go(func() error {
-					healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV4, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort, []string{})
+					healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV4, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
 					results = append(results, healthCheckResult.ToPairsForIP())
 					return nil
 				})
@@ -280,7 +291,7 @@ func HealthcheckCdnRecord(c *gin.Context) {
 			if itme.IPV6 != "" {
 				// 检测 IP 是否可通过 HTTP/HTTPS 访问
 				eg.Go(func() error {
-					healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV6, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort, []string{})
+					healthCheckResult, _ := backend.CheckIPHealth(egCtx, itme.IPV6, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
 					results = append(results, healthCheckResult.ToPairsForIP())
 					return nil
 				})

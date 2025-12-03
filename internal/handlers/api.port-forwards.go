@@ -283,7 +283,7 @@ func HealthcheckPortForward(c *gin.Context) {
 	if firstPortForward.Edges.Device.IPV4 != "" {
 		// 检测 IP 是否可通过 HTTP/HTTPS 访问
 		eg.Go(func() error {
-			healthCheckResult, _ := backend.CheckIPHealth(egCtx, firstPortForward.Edges.Device.IPV4, firstPortForward.LocalPort, firstPortForward.LocalPort, []string{})
+			healthCheckResult, _ := backend.CheckIPHealth(egCtx, firstPortForward.Edges.Device.IPV4, firstPortForward.LocalPort, firstPortForward.LocalPort)
 			results = append(results, healthCheckResult.ToPairsForIP())
 			return nil
 		})
@@ -291,7 +291,7 @@ func HealthcheckPortForward(c *gin.Context) {
 	if firstPortForward.Edges.Device.IPV6 != "" {
 		// 检测 IP 是否可通过 HTTP/HTTPS 访问
 		eg.Go(func() error {
-			healthCheckResult, _ := backend.CheckIPHealth(egCtx, firstPortForward.Edges.Device.IPV6, firstPortForward.LocalPort, firstPortForward.LocalPort, []string{})
+			healthCheckResult, _ := backend.CheckIPHealth(egCtx, firstPortForward.Edges.Device.IPV6, firstPortForward.LocalPort, firstPortForward.LocalPort)
 			results = append(results, healthCheckResult.ToPairsForIP())
 			return nil
 		})
