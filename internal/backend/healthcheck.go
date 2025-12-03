@@ -209,7 +209,7 @@ func (r *HealthCheckResult) ToPairsForDomain() []ToPairsStruct {
 	}
 
 	// HTTP/HTTPS 部分保持不变
-	addHTTPHTTPS(pairs, r)
+	pairs = addHTTPHTTPS(pairs, r)
 
 	return pairs
 }
@@ -230,13 +230,13 @@ func (r *HealthCheckResult) ToPairsForIP() []ToPairsStruct {
 		pairs = append(pairs, ToPairsStruct{Key: "IP 校验", Value: "✅ 在预期列表中"})
 	}
 
-	addHTTPHTTPS(pairs, r)
+	pairs = addHTTPHTTPS(pairs, r)
 
 	return pairs
 }
 
 // 公共辅助函数：添加 HTTP/HTTPS 字段
-func addHTTPHTTPS(pairs []ToPairsStruct, r *HealthCheckResult) {
+func addHTTPHTTPS(pairs []ToPairsStruct, r *HealthCheckResult) []ToPairsStruct {
 	if r.HTTPStatus > 0 {
 		pairs = append(pairs, ToPairsStruct{Key: "HTTP 状态码", Value: strconv.Itoa(r.HTTPStatus)})
 	}
@@ -259,6 +259,8 @@ func addHTTPHTTPS(pairs []ToPairsStruct, r *HealthCheckResult) {
 
 	pairs = append(pairs, ToPairsStruct{Key: "HTTP 是否健康", Value: boolToStatus(r.IsHTTPHealthy)})
 	pairs = append(pairs, ToPairsStruct{Key: "HTTPS 是否健康", Value: boolToStatus(r.IsHTTPSHealthy)})
+
+	return pairs
 }
 
 func boolToStatus(ok bool) string {
