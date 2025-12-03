@@ -2,7 +2,6 @@ package reporter
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
 	"log/slog"
 	"time"
@@ -10,7 +9,6 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/go-co-op/gocron/v2"
-	"github.com/quic-go/quic-go"
 	"github.com/quic-go/quic-go/http3"
 	"resty.dev/v3"
 )
@@ -47,28 +45,28 @@ func NewService(cron gocron.Scheduler) *Service {
 	client.SetRetryMaxWaitTime(5 * time.Second)
 
 	// 设置 HTTP/3 传输
-	http3Transport := &http3.Transport{
-		TLSClientConfig: &tls.Config{},
-		QUICConfig: &quic.Config{
-			MaxIdleTimeout:  45 * time.Second,
-			KeepAlivePeriod: 30 * time.Second,
-		},
-	}
-	client.SetTransport(http3Transport)
+	// http3Transport := &http3.Transport{
+	// 	TLSClientConfig: &tls.Config{},
+	// 	QUICConfig: &quic.Config{
+	// 		MaxIdleTimeout:  45 * time.Second,
+	// 		KeepAlivePeriod: 30 * time.Second,
+	// 	},
+	// }
+	// client.SetTransport(http3Transport)
 
 	return &Service{
-		cron:           cron,
-		log:            slog.With("component", "ip-report"),
-		client:         client,
-		http3Transport: http3Transport,
+		cron:   cron,
+		log:    slog.With("component", "ip-report"),
+		client: client,
+		// http3Transport: http3Transport,
 	}
 }
 
 // Close 关闭服务，释放资源
 func (s *Service) Close() {
-	if s.http3Transport != nil {
-		s.http3Transport.Close()
-	}
+	// if s.http3Transport != nil {
+	// 	s.http3Transport.Close()
+	// }
 	if s.client != nil {
 		s.client.Close()
 	}
