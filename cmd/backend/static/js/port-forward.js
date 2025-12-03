@@ -138,36 +138,8 @@ document.getElementById("form").onsubmit = async (e) => {
   }
 };
 
-// 防火墙
-async function togglePortForwardForwardStatus(id, checkbox) {
-  try {
-    await API.patch(`/api/port-forwards/${id}/forward`, {
-      auto_forward: checkbox.checked,
-    });
-  } catch (error) {
-    alert(`防火墙状态更新失败: ${error.message}`);
-    console.error("切换防火墙状态失败", error);
-    // 恢复 checkbox 状态
-    checkbox.checked = !checkbox.checked;
-  }
-}
-
-// 启用
-async function togglePortForwardActiveStatus(id, checkbox) {
-  try {
-    await API.patch(`/api/port-forwards/${id}/active`, {
-      is_active: checkbox.checked,
-    });
-  } catch (error) {
-    alert(`启用状态更新失败: ${error.message}`);
-    console.error("切换启用状态失败", error);
-    // 恢复 checkbox 状态
-    checkbox.checked = !checkbox.checked;
-  }
-}
-
 // 删除
-async function deletePortForward(id) {
+async function onDelete(id) {
   if (confirm("确定删除此 端口转发？")) {
     try {
       await API.delete(`/api/port-forwards/${id}`);

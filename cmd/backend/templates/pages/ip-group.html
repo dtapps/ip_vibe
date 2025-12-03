@@ -4,17 +4,11 @@
 <div class="card">
   <div class="card-header">
     <h2 class="h2-icon">
-      <svg class="ip-i">
-        <use href="/static/img/icons.svg#ip-layer"></use>
-      </svg>
-      IP 组（设备维度）
+      {{ template "icons" (dict "Name" "ip-layer") }} IP 组（设备维度）
     </h2>
     <div>
       <button class="btn btn-primary" onclick="openModal()">
-        <svg class="ip-i">
-          <use href="/static/img/icons.svg#ip-folder-plus"></use>
-        </svg>
-        添加IP组
+        {{ template "icons" (dict "Name" "ip-folder-plus") }} 添加IP组
       </button>
     </div>
   </div>
@@ -39,28 +33,16 @@
               class="btn btn-sm btn-outline-info"
               onclick="viewLiveDeviceIpAddresse('{{.ID}}','{{.Name}}')"
             >
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-eyes"></use>
-              </svg>
-              实时IP
+              {{ template "icons" (dict "Name" "ip-eyes") }} 实时IP
             </button>
             <button
               class="btn btn-primary btn-sm"
               onclick="openModal('{{.ID}}')"
             >
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-edit"></use>
-              </svg>
-              编辑
+              {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
-            <button
-              class="btn btn-sm btn-danger"
-              onclick="deleteIpGroup('{{.ID}}')"
-            >
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-delete"></use>
-              </svg>
-              删除
+            <button class="btn btn-sm btn-danger" onclick="onDelete('{{.ID}}')">
+              {{ template "icons" (dict "Name" "ip-delete") }} 删除
             </button>
           </td>
         </tr>
@@ -72,7 +54,7 @@
   </div>
 </div>
 
-<!-- IP 组（设备维度） 模态框 -->
+<!-- 表单 -->
 {{ template "ip-group_form.html" . }}
 
 <script src="/static/js/ip-group.js"></script>

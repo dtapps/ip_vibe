@@ -4,17 +4,11 @@
 <div class="card">
   <div class="card-header">
     <h2 class="h2-icon">
-      <svg class="ip-i">
-        <use href="/static/img/icons.svg#ip-dns"></use>
-      </svg>
-      DNS 记录管理
+      {{ template "icons" (dict "Name" "ip-dns") }} DNS 记录管理
     </h2>
     <div>
       <button class="btn btn-primary" onclick="openModal()">
-        <svg class="ip-i">
-          <use href="/static/img/icons.svg#ip-plus"></use>
-        </svg>
-        添加记录
+        {{ template "icons" (dict "Name" "ip-plus") }} 添加记录
       </button>
     </div>
   </div>
@@ -63,10 +57,7 @@
               class="btn btn-sm btn-outline-info"
               onclick="viewLiveDeviceIpAddresse('{{.IPGroupID}}','{{.IPGroupName}}')"
             >
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-eyes"></use>
-              </svg>
-              实时IP
+              {{ template "icons" (dict "Name" "ip-eyes") }} 实时IP
             </button>
             {{else}}
             <span
@@ -74,10 +65,7 @@
               title="未绑定IP组，不允许查看实时IP"
             >
               <button class="btn btn-sm btn-outline-info" disabled>
-                <svg class="ip-i">
-                  <use href="/static/img/icons.svg#ip-eyes"></use>
-                </svg>
-                实时IP
+                {{ template "icons" (dict "Name" "ip-eyes") }} 实时IP
               </button>
             </span>
             {{end}}
@@ -85,10 +73,7 @@
               class="btn btn-primary btn-sm"
               onclick="openModal('{{.ID}}')"
             >
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-edit"></use>
-              </svg>
-              编辑
+              {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
             {{if .IsActive}}
             <span
@@ -96,21 +81,12 @@
               title="启用状态时不允许删除，请先禁止后操作再删除！"
             >
               <button class="btn btn-sm btn-danger" disabled>
-                <svg class="ip-i">
-                  <use href="/static/img/icons.svg#ip-delete"></use>
-                </svg>
-                删除
+                {{ template "icons" (dict "Name" "ip-delete") }} 删除
               </button>
             </span>
             {{else}}
-            <button
-              class="btn btn-sm btn-danger"
-              onclick="deleteDnsRecord('{{.ID}}')"
-            >
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-delete"></use>
-              </svg>
-              删除
+            <button class="btn btn-sm btn-danger" onclick="onDelete('{{.ID}}')">
+              {{ template "icons" (dict "Name" "ip-delete") }} 删除
             </button>
             {{end}}
           </td>
@@ -123,7 +99,7 @@
   </div>
 </div>
 
-<!-- DNS记录管理 模态框 -->
+<!-- 表单 -->
 {{ template "pages/dns_form.html" . }}
 
 <!-- 实时 设备 IP 历史 弹窗 -->

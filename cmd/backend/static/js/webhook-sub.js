@@ -183,8 +183,8 @@ document.getElementById("form").onsubmit = async (e) => {
   );
 };
 
-// 删除通知订阅
-async function deleteWebhookSubscription(id) {
+// 删除
+async function onDelete(id) {
   if (confirm("确定删除此通知订阅？")) {
     await withErrorHandling(
       async () => {

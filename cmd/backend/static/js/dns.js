@@ -183,7 +183,7 @@ document.getElementById("form").onsubmit = async (e) => {
 };
 
 // 删除
-async function deleteDnsRecord(id) {
+async function onDelete(id) {
   if (confirm("确定删除此记录？")) {
     try {
       await API.delete(`/api/dns-records/${id}`);

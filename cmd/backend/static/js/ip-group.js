@@ -101,7 +101,7 @@ document.getElementById("form").onsubmit = async (e) => {
 };
 
 // 删除
-async function deleteIpGroup(id) {
+async function onDelete(id) {
   if (confirm("确定删除此 IP 组？")) {
     try {
       await API.delete(`/api/ip-groups/${id}`);

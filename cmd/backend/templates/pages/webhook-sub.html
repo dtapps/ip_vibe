@@ -4,29 +4,17 @@
 <div class="card">
   <div class="card-header">
     <h2 class="h2-icon">
-      <svg class="ip-i">
-        <use href="/static/img/icons.svg#ip-subscribe"></use>
-      </svg>
-      通知订阅
+      {{ template "icons" (dict "Name" "ip-subscribe") }} 通知订阅
     </h2>
     <div>
       <button class="btn btn-primary" onclick="openModal(0,'cdn_record')">
-        <svg class="ip-i">
-          <use href="/static/img/icons.svg#ip-plus"></use>
-        </svg>
-        添加 CDN订阅
+        {{ template "icons" (dict "Name" "ip-plus") }} 添加 CDN订阅
       </button>
       <button class="btn btn-primary" onclick="openModal(0,'dns_record')">
-        <svg class="ip-i">
-          <use href="/static/img/icons.svg#ip-plus"></use>
-        </svg>
-        添加 DNS订阅
+        {{ template "icons" (dict "Name" "ip-plus") }} 添加 DNS订阅
       </button>
       <button class="btn btn-primary" onclick="openModal(0,'device')">
-        <svg class="ip-i">
-          <use href="/static/img/icons.svg#ip-plus"></use>
-        </svg>
-        添加 设备订阅
+        {{ template "icons" (dict "Name" "ip-plus") }} 添加 设备订阅
       </button>
     </div>
   </div>
@@ -66,10 +54,7 @@
               class="btn btn-primary btn-sm"
               onclick="openModal('{{.ID}}','{{.ObjType}}')"
             >
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-edit"></use>
-              </svg>
-              编辑
+              {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
             {{if .IsActive}}
             <span
@@ -77,21 +62,12 @@
               title="启用状态时不允许删除，请先禁止后操作再删除！"
             >
               <button class="btn btn-sm btn-danger" disabled>
-                <svg class="ip-i">
-                  <use href="/static/img/icons.svg#ip-delete"></use>
-                </svg>
-                删除
+                {{ template "icons" (dict "Name" "ip-delete") }} 删除
               </button>
             </span>
             {{else}}
-            <button
-              class="btn btn-sm btn-danger"
-              onclick="deleteWebhookSubscription('{{.ID}}')"
-            >
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-delete"></use>
-              </svg>
-              删除
+            <button class="btn btn-sm btn-danger" onclick="onDelete('{{.ID}}')">
+              {{ template "icons" (dict "Name" "ip-delete") }} 删除
             </button>
             {{end}}
           </td>
@@ -104,7 +80,7 @@
   </div>
 </div>
 
-<!-- 通知订阅 模态框 -->
+<!-- 表单 -->
 {{ template "pages/webhook-sub_form.html" . }}
 
 <script src="/static/js/webhook-sub.js"></script>

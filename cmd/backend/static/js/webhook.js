@@ -277,8 +277,8 @@ document.getElementById("form").onsubmit = async (e) => {
   }
 };
 
-// 删除通知
-async function deleteWebhook(id) {
+// 删除
+async function onDelete(id) {
   if (confirm("确定删除此通知？")) {
     try {
       await API.delete(`/api/webhooks/${id}`);

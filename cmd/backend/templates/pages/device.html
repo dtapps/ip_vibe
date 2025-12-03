@@ -4,17 +4,11 @@
 <div class="card">
   <div class="card-header">
     <h2 class="h2-icon">
-      <svg class="ip-i">
-        <use href="/static/img/icons.svg#ip-devices"></use>
-      </svg>
-      设备实时上报
+      {{ template "icons" (dict "Name" "ip-devices") }} 设备实时上报
     </h2>
     <div>
       <button class="btn btn-primary" onclick="openModal()">
-        <svg class="ip-i">
-          <use href="/static/img/icons.svg#ip-mobile"></use>
-        </svg>
-        管理设备
+        {{ template "icons" (dict "Name" "ip-mobile") }} 管理设备
       </button>
     </div>
   </div>
@@ -43,28 +37,16 @@
               class="btn btn-sm btn-outline-info"
               onclick="viewLiveDeviceIpHistory('{{.ID}}','{{.Name}}')"
             >
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-eyes"></use>
-              </svg>
-              历史IP
+              {{ template "icons" (dict "Name" "ip-eyes") }} 历史IP
             </button>
             <button
               class="btn btn-primary btn-sm"
               onclick="openModal('{{.ID}}')"
             >
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-edit"></use>
-              </svg>
-              编辑
+              {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
-            <button
-              class="btn btn-sm btn-danger"
-              onclick="deleteDevice('{{.ID}}')"
-            >
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-delete"></use>
-              </svg>
-              删除
+            <button class="btn btn-sm btn-danger" onclick="onDelete('{{.ID}}')">
+              {{ template "icons" (dict "Name" "ip-delete") }} 删除
             </button>
           </td>
         </tr>
@@ -76,7 +58,7 @@
   </div>
 </div>
 
-<!-- 设备管理 模态框 -->
+<!-- 表单 -->
 {{ template "pages/device_form.html" . }}
 
 <!-- 实时 设备 IP 历史 弹窗 -->

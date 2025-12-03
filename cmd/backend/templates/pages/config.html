@@ -4,17 +4,11 @@
 <div class="card">
   <div class="card-header">
     <h2 class="h2-icon">
-      <svg class="ip-i">
-        <use href="/static/img/icons.svg#ip-server"></use>
-      </svg>
-      平台配置
+      {{ template "icons" (dict "Name" "ip-server") }} 平台配置
     </h2>
     <div>
       <button class="btn btn-primary" onclick="openModal()">
-        <svg class="ip-i">
-          <use href="/static/img/icons.svg#ip-plus"></use>
-        </svg>
-        添加配置
+        {{ template "icons" (dict "Name" "ip-plus") }} 添加配置
       </button>
     </div>
   </div>
@@ -51,19 +45,10 @@
               class="btn btn-primary btn-sm"
               onclick="openModal('{{.ID}}')"
             >
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-edit"></use>
-              </svg>
-              编辑
+              {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
-            <button
-              class="btn btn-danger btn-sm"
-              onclick="deleteConfig('{{.ID}}')"
-            >
-              <svg class="ip-i">
-                <use href="/static/img/icons.svg#ip-delete"></use>
-              </svg>
-              删除
+            <button class="btn btn-danger btn-sm" onclick="onDelete('{{.ID}}')">
+              {{ template "icons" (dict "Name" "ip-delete") }} 删除
             </button>
           </td>
         </tr>
@@ -75,7 +60,7 @@
   </div>
 </div>
 
-<!-- 平台配置 模态框 -->
+<!-- 表单 -->
 {{ template "pages/config_form.html" . }}
 
 <script src="/static/js/config.js"></script>

@@ -79,7 +79,7 @@ document.getElementById("form").onsubmit = async (e) => {
 };
 
 // 删除
-async function deleteDevice(id) {
+async function onDelete(id) {
   if (confirm("确定删除此设备？")) {
     try {
       await API.delete(`/api/devices/${id}`);

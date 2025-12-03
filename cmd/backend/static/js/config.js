@@ -156,7 +156,7 @@ document.getElementById("form").onsubmit = async (e) => {
 };
 
 // 删除
-async function deleteConfig(id) {
+async function onDelete(id) {
   if (confirm("确定删除此配置？相关记录也会被删除")) {
     try {
       await API.delete(`/api/configs/${id}`);
