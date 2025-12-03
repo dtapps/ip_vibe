@@ -28,15 +28,20 @@ func NewService(cron gocron.Scheduler) *Service {
 	// 设置默认超时
 	client.SetTimeout(30 * time.Second)
 
-	// 设置自定义请求头
+	// 设置请求头
 	client.SetHeader("X-Version", global.GvaVersion)
 	client.SetHeader("X-Git-Commit", global.GvaGitCommit)
 	client.SetHeader("X-Build-Time", global.GvaBuildTime)
 	client.SetHeader("X-Go-Version", global.GvaGoVersion)
 
+	// 重试机制
+	client.SetRetryCount(3)
+	client.SetRetryWaitTime(2 * time.Second)
+	client.SetRetryMaxWaitTime(5 * time.Second)
+
 	return &Service{
 		cron:   cron,
-		log:    slog.With("component", "ip_reporter"),
+		log:    slog.With("component", "ip-report"),
 		client: client,
 	}
 }
@@ -60,6 +65,7 @@ func (s *Service) SetBasicAuth(username, password string) *Service {
 	}
 	return s
 }
+
 func (s *Service) StartJob(ctx context.Context) (err error) {
 	// 每8到12分钟执行一次
 	s.job, err = s.cron.NewJob(
@@ -71,7 +77,7 @@ func (s *Service) StartJob(ctx context.Context) (err error) {
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName("IP上报"),                              // 任务名称
-		gocron.WithTags("ip_report"),                         // 任务标签
+		gocron.WithTags("ip-report"),                         // 任务标签
 	)
 	if err != nil {
 		return err

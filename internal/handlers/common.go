@@ -10,13 +10,13 @@ import (
 
 // API响应结构
 type APIResponse struct {
-	Code    int         `json:"code"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Data    any    `json:"data,omitempty"`
 }
 
 // API响应辅助函数
-func successResponse(c *gin.Context, data interface{}) {
+func successResponse(c *gin.Context, data any) {
 	c.JSON(http.StatusOK, APIResponse{
 		Code:    http.StatusOK,
 		Message: "success",

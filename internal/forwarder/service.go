@@ -29,15 +29,20 @@ func NewService(cron gocron.Scheduler) *Service {
 	// 设置默认超时
 	client.SetTimeout(30 * time.Second)
 
-	// 设置自定义请求头
+	// 设置请求头
 	client.SetHeader("X-Version", global.GvaVersion)
 	client.SetHeader("X-Git-Commit", global.GvaGitCommit)
 	client.SetHeader("X-Build-Time", global.GvaBuildTime)
 	client.SetHeader("X-Go-Version", global.GvaGoVersion)
 
+	// 重试机制
+	client.SetRetryCount(3)
+	client.SetRetryWaitTime(2 * time.Second)
+	client.SetRetryMaxWaitTime(5 * time.Second)
+
 	return &Service{
 		cron:   cron,
-		log:    slog.With("component", "port_forwarder"),
+		log:    slog.With("component", "port-forwards"),
 		client: client,
 	}
 }
@@ -87,6 +92,12 @@ func (s *Service) StartJob(ctx context.Context) (err error) {
 		)
 		return
 	}
+	if len(response.Data) == 0 {
+		s.log.InfoContext(ctx, "端口转发获取成功, 但无数据",
+			slog.String("device_code", deviceCode),
+		)
+		return
+	}
 	startForwarding(response.Data)
 	s.log.InfoContext(ctx, "端口转发获取成功",
 		slog.String("device_code", deviceCode),
@@ -104,6 +115,7 @@ func (s *Service) httpApi(ctx context.Context, deviceCode string) (response Http
 	// 使用 Resty 发送请求
 	resp, err := s.client.R().
 		SetContext(ctx).
+		SetContentType("application/json").
 		SetPathParams(map[string]string{
 			"device_code": deviceCode,
 		}).

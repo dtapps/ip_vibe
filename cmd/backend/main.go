@@ -145,12 +145,12 @@ func main() {
 		"sub":   func(a, b int) int { return a - b },
 		"div":   func(a, b int) int { return a / b },
 		"toInt": func(i int64) int { return int(i) },
-		// switch 组件
-		"dict": func(values ...interface{}) (map[string]interface{}, error) {
+		// switch / icons 组件
+		"dict": func(values ...any) (map[string]any, error) {
 			if len(values)%2 != 0 {
 				return nil, fmt.Errorf("dict expects even number of arguments")
 			}
-			m := make(map[string]interface{}, len(values)/2)
+			m := make(map[string]any, len(values)/2)
 			for i := 0; i < len(values); i += 2 {
 				key, ok := values[i].(string)
 				if !ok {
