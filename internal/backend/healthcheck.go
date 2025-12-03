@@ -254,34 +254,46 @@ func CheckIPHealth(ctx context.Context, ip string, httpPort, httpsPort int) (*He
 }
 
 // resolveDNS 使用指定 DNS 服务器解析 A/AAAA 记录
-func resolveDNS(ctx context.Context, domain string, server string) ([]string, error) {
+func resolveDNS(ctx context.Context, domain string, server string) (ips []string, err error) {
 	c := dns.Client{Timeout: 5 * time.Second}
 	m := dns.Msg{}
+
+	// 查 A
 	m.SetQuestion(dns.Fqdn(domain), dns.TypeA)
 	r, _, err := c.Exchange(&m, server)
 	if err != nil {
 		return nil, err
 	}
-
-	var ips []string
 	for _, ans := range r.Answer {
 		if a, ok := ans.(*dns.A); ok {
 			ips = append(ips, a.A.String())
 		}
 	}
-	// 如果没 A 记录，查 AAAA
-	if len(ips) == 0 {
-		m.SetQuestion(dns.Fqdn(domain), dns.TypeAAAA)
-		r, _, err = c.Exchange(&m, server)
-		if err != nil {
-			return nil, err
-		}
-		for _, ans := range r.Answer {
-			if aaaa, ok := ans.(*dns.AAAA); ok {
-				ips = append(ips, aaaa.AAAA.String())
-			}
+
+	// 查 AAAA
+	m.SetQuestion(dns.Fqdn(domain), dns.TypeAAAA)
+	r, _, err = c.Exchange(&m, server)
+	if err != nil {
+		return nil, err
+	}
+	for _, ans := range r.Answer {
+		if aaaa, ok := ans.(*dns.AAAA); ok {
+			ips = append(ips, aaaa.AAAA.String())
 		}
 	}
+
+	// 查 CNAME
+	m.SetQuestion(dns.Fqdn(domain), dns.TypeCNAME)
+	r, _, err = c.Exchange(&m, server)
+	if err != nil {
+		return nil, err
+	}
+	for _, ans := range r.Answer {
+		if cname, ok := ans.(*dns.CNAME); ok {
+			ips = append(ips, cname.Target)
+		}
+	}
+
 	return ips, nil
 }
 
