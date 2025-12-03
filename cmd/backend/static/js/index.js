@@ -124,7 +124,7 @@ function showModal(id, titleID, titleName) {
   if (!modal) {
     return;
   }
-  
+
   const title = document.getElementById(titleID);
   if (title) {
     title.textContent = titleName;
@@ -152,7 +152,9 @@ function closeModal(id) {
 
   // 如果有 form 才 reset
   const form = modal.querySelector("form");
-  if (form) form.reset();
+  if (form) {
+    form.reset();
+  }
 
   // 如果有平台字段才隐藏
   modal
@@ -214,16 +216,26 @@ function showLoadingPopup(idEl = "popup") {
 }
 
 // 显示弹窗内容
-function showPopupContent(idEl = "popup", title = "", content = "", count = 0) {
+function showPopupContent(
+  idEl = "popup",
+  title = "",
+  content = "",
+  count = 0,
+  options = {}
+) {
   const modal = document.getElementById(idEl);
   const titleEl = document.getElementById(`${idEl}Title`);
   const countEl = document.getElementById(`${idEl}Count`);
   const preEl = document.getElementById(`${idEl}Pre`);
   const copyBtn = document.getElementById(`${idEl}CopyBtn`);
 
-  if (modal && modal.dataset.manuallyClosed === "true") {
-    console.log(`用户已关闭弹窗 ${idEl}，跳过自动显示`);
-    return;
+  if (modal) {
+    if (options.resetClosedState) {
+      if (modal.dataset.manuallyClosed === "true") {
+        console.log(`用户已关闭弹窗 ${idEl}，跳过自动显示`);
+        return;
+      }
+    }
   }
 
   if (titleEl) {

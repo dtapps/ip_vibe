@@ -138,7 +138,8 @@ async function onHealthcheckPopup(id) {
       "popup",
       `实时 检测 IP`,
       formatHealthCheckResult(ipGroupHealthcheck),
-      ipGroupHealthcheck.length
+      ipGroupHealthcheck.length,
+      { resetClosedState: true }
     );
   } catch (error) {
     alert(`加载IP组检测信息失败: ${error.message}`);

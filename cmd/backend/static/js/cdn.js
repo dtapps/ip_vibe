@@ -186,7 +186,8 @@ async function onHealthcheckPopup(id) {
       "popup",
       `实时 检测 域名/IP`,
       formatHealthCheckResult(cdnRecordHealthcheck),
-      cdnRecordHealthcheck.length
+      cdnRecordHealthcheck.length,
+      { resetClosedState: true }
     );
   } catch (error) {
     alert(`加载CDN记录检测信息失败: ${error.message}`);

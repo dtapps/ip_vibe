@@ -220,7 +220,8 @@ async function onHealthcheckPopup(id) {
       "popup",
       `实时 检测 域名/IP`,
       formatHealthCheckResult(dnsRecordHealthcheck),
-      dnsRecordHealthcheck.length
+      dnsRecordHealthcheck.length,
+      { resetClosedState: true }
     );
   } catch (error) {
     alert(`加载DNS记录检测信息失败: ${error.message}`);

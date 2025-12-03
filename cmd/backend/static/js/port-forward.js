@@ -176,7 +176,8 @@ async function onHealthcheckPopup(id) {
       "popup",
       `实时 检测 IP`,
       formatHealthCheckResult(portForwardHealthcheck),
-      portForwardHealthcheck.length
+      portForwardHealthcheck.length,
+      { resetClosedState: true }
     );
   } catch (error) {
     alert(`加载端口转发检测信息失败: ${error.message}`);

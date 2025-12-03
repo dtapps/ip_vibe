@@ -116,7 +116,8 @@ async function onHealthcheckPopup(id) {
       "popup",
       `实时 检测 IP`,
       formatHealthCheckResult(deviceHealthcheck),
-      deviceHealthcheck.length
+      deviceHealthcheck.length,
+      { resetClosedState: true }
     );
   } catch (error) {
     alert(`加载设备检测信息失败: ${error.message}`);
