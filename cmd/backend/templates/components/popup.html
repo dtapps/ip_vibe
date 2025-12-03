@@ -1,47 +1,37 @@
 {{ define "popup" }}
-  <div class="modal" id="popup">
-      <div class="modal-content ip-popup">
-
-        <!-- 头部 -->
-        <div class="ip-popup-header">
-          <h4 class="ip-popup-title" id="popupTitle">
-            <svg class="ip-i">
-              <use href="/static/img/icons.svg#ip-eyes" />
-              </use>
-            </svg>
-            弹窗
-          </h4>
-          <button class="ip-popup-close" onclick="closeModal('popup')" aria-label="关闭">
-            <svg class="ip-i">
-              <use href="/static/img/icons.svg#ip-close" />
-              </use>
-            </svg>
-          </button>
-        </div>
-
-        <!-- 工具栏 -->
-        <div class="ip-popup-toolbar">
-          <span class="ip-popup-count">共 <b id="popupCount">0</b> 条</span>
-          <button class="ip-popup-copy" onclick="copyData('popupPre')">
-            <svg class="ip-i">
-              <use href="/static/img/icons.svg#ip-copy" />
-              </use>
-            </svg>
-            一键复制
-          </button>
-        </div>
-
-        <!-- 代码块区域 -->
-        <pre class="ip-popup-pre" id="popupPre">代码块区域</pre>
-
-        <!-- 底部按钮 -->
-        <div class="ip-popup-footer">
-          <button class="btn" onclick="closeModal('popup')">
-            <svg class="ip-i">
-              <use href="/static/img/icons.svg#ip-close" />
-              </use>
-            </svg> 关闭</button>
-        </div>
-      </div>
+<div class="modal" id="popup">
+  <div class="modal-content ip-popup">
+    <!-- 头部 -->
+    <div class="ip-popup-header">
+      <h4 class="ip-popup-title" id="popupTitle">
+        {{ template "icons" (dict "Name" "ip-eyes") }} 弹窗
+      </h4>
+      <button
+        class="ip-popup-close"
+        onclick="closeModal('popup')"
+        aria-label="关闭"
+      >
+        {{ template "icons" (dict "Name" "ip-close") }}
+      </button>
     </div>
+
+    <!-- 工具栏 -->
+    <div class="ip-popup-toolbar">
+      <span class="ip-popup-count">共 <b id="popupCount">0</b> 条</span>
+      <button class="ip-popup-copy" onclick="copyData('popupPre')">
+        {{ template "icons" (dict "Name" "ip-copy") }} 一键复制
+      </button>
+    </div>
+
+    <!-- 代码块区域 -->
+    <pre class="ip-popup-pre" id="popupPre">代码块区域</pre>
+
+    <!-- 底部按钮 -->
+    <div class="ip-popup-footer">
+      <button class="btn" onclick="closeModal('popup')">
+        {{ template "icons" (dict "Name" "ip-close") }}关闭
+      </button>
+    </div>
+  </div>
+</div>
 {{ end }}
