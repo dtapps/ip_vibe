@@ -118,7 +118,7 @@ func CheckDomainHealth(ctx context.Context, domain string, httpPort, httpsPort i
 	// HTTP 检测（如果端口 > 0）
 	if httpPort > 0 {
 		eg.Go(func() error {
-			httpStatus, rtt, err := checkHTTP(egCtx, fmt.Sprintf("http://%s:%d", domain, httpPort))
+			httpStatus, rtt, err := checkHTTP(egCtx, fmt.Sprintf("http://%s:%d", domain, httpPort), 10*time.Second)
 			result.HTTPStatus = httpStatus
 			result.HTTPRTT = rtt
 			if err != nil {
@@ -133,7 +133,7 @@ func CheckDomainHealth(ctx context.Context, domain string, httpPort, httpsPort i
 	// HTTPS 检测（如果端口 > 0）
 	if httpsPort > 0 {
 		eg.Go(func() error {
-			httpsStatus, rtt, err := checkHTTP(egCtx, fmt.Sprintf("https://%s:%d", domain, httpsPort))
+			httpsStatus, rtt, err := checkHTTP(egCtx, fmt.Sprintf("https://%s:%d", domain, httpsPort), 10*time.Second)
 			result.HTTPSStatus = httpsStatus
 			result.HTTPSRTT = rtt
 			if err != nil {
@@ -159,12 +159,6 @@ func CheckIPHealth(ctx context.Context, ip string, httpPort, httpsPort int) (*He
 		HTTPSPort: httpsPort,
 	}
 
-	// 处理 IPv6 地址（HTTP 需方括号）
-	ipStr := ip
-	if strings.Contains(ip, ":") && !strings.HasPrefix(ip, "[") {
-		ipStr = "[" + ip + "]"
-	}
-
 	// 并发处理
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(6) // 最多 6 个并发
@@ -172,7 +166,7 @@ func CheckIPHealth(ctx context.Context, ip string, httpPort, httpsPort int) (*He
 	// HTTP 检测（如果端口 > 0）
 	if httpPort > 0 {
 		eg.Go(func() error {
-			httpStatus, rtt, err := checkHTTP(egCtx, fmt.Sprintf("http://%s:%d", ipStr, httpPort))
+			httpStatus, rtt, err := checkHTTP(egCtx, fmt.Sprintf("http://%s", JoinHostPort(ip, httpPort)), 10*time.Second)
 			result.HTTPStatus = httpStatus
 			result.HTTPRTT = rtt
 			if err != nil {
@@ -186,7 +180,7 @@ func CheckIPHealth(ctx context.Context, ip string, httpPort, httpsPort int) (*He
 	// HTTP TCP 检测（如果端口 > 0）
 	if httpPort > 0 {
 		eg.Go(func() error {
-			ok, rtt, err := checkTCP(egCtx, net.JoinHostPort(ip, fmt.Sprintf("%d", httpPort)))
+			ok, rtt, err := checkTCP(egCtx, JoinHostPort(ip, httpPort), 10*time.Second)
 			result.IsHTTPTCPHealthy = ok
 			result.HTTPTCPRTT = rtt
 			if err != nil {
@@ -198,7 +192,7 @@ func CheckIPHealth(ctx context.Context, ip string, httpPort, httpsPort int) (*He
 	// HTTP UDP 检测（如果端口 > 0）
 	if httpPort > 0 {
 		eg.Go(func() error {
-			ok, rtt, err := checkUDP(egCtx, net.JoinHostPort(ip, fmt.Sprintf("%d", httpPort)))
+			ok, rtt, err := checkUDP(egCtx, JoinHostPort(ip, httpPort), 10*time.Second)
 			result.IsHTTPUDPHealthy = ok
 			result.HTTPUDPRTT = rtt
 			if err != nil {
@@ -211,7 +205,7 @@ func CheckIPHealth(ctx context.Context, ip string, httpPort, httpsPort int) (*He
 	// HTTPS 检测（如果端口 > 0）
 	if httpsPort > 0 {
 		eg.Go(func() error {
-			httpsStatus, rtt, err := checkHTTP(egCtx, fmt.Sprintf("https://%s:%d", ipStr, httpsPort))
+			httpsStatus, rtt, err := checkHTTP(egCtx, fmt.Sprintf("https://%s", JoinHostPort(ip, httpsPort)), 10*time.Second)
 			result.HTTPSStatus = httpsStatus
 			result.HTTPSRTT = rtt
 			if err != nil {
@@ -225,7 +219,7 @@ func CheckIPHealth(ctx context.Context, ip string, httpPort, httpsPort int) (*He
 	// HTTPS TCP 检测（如果端口 > 0）
 	if httpsPort > 0 {
 		eg.Go(func() error {
-			ok, rtt, err := checkTCP(egCtx, net.JoinHostPort(ip, fmt.Sprintf("%d", httpsPort)))
+			ok, rtt, err := checkTCP(egCtx, JoinHostPort(ip, httpsPort), 10*time.Second)
 			result.IsHTTPSTCPHealthy = ok
 			result.HTTPSTCPRTT = rtt
 			if err != nil {
@@ -237,7 +231,7 @@ func CheckIPHealth(ctx context.Context, ip string, httpPort, httpsPort int) (*He
 	// HTTPS UDP 检测（如果端口 > 0）
 	if httpsPort > 0 {
 		eg.Go(func() error {
-			ok, rtt, err := checkUDP(egCtx, net.JoinHostPort(ip, fmt.Sprintf("%d", httpsPort)))
+			ok, rtt, err := checkUDP(egCtx, JoinHostPort(ip, httpsPort), 10*time.Second)
 			result.IsHTTPSUDPHealthy = ok
 			result.HTTPSUDPRTT = rtt
 			if err != nil {
@@ -298,7 +292,7 @@ func resolveDNS(ctx context.Context, domain string, server string) (ips []string
 }
 
 // checkHTTP 发起 HTTP(S) 请求并返回状态码 + 耗时
-func checkHTTP(ctx context.Context, url string) (int, int64, error) {
+func checkHTTP(ctx context.Context, url string, timeout time.Duration) (int, int64, error) {
 	client := &http.Client{
 		Timeout: 10 * time.Second,
 		Transport: &http.Transport{
@@ -310,7 +304,7 @@ func checkHTTP(ctx context.Context, url string) (int, int64, error) {
 		},
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	start := time.Now()
@@ -328,31 +322,49 @@ func checkHTTP(ctx context.Context, url string) (int, int64, error) {
 }
 
 // checkTCP 检测 TCP 连通性（返回是否成功 + 耗时）
-func checkTCP(ctx context.Context, address string) (bool, int64, error) {
+func checkTCP(ctx context.Context, address string, timeout time.Duration) (bool, int64, error) {
 	start := time.Now()
-	conn, err := net.DialTimeout("tcp", address, 10*time.Second)
+
+	conn, err := net.DialTimeout("tcp", address, timeout)
 	duration := time.Since(start).Milliseconds()
 	if err != nil {
-		return false, duration, err
+		return false, 0, err
 	}
 	conn.Close()
+
 	return true, duration, nil
 }
 
 // checkUDP 尝试发送 UDP 包（无响应验证，仅测是否能发）
-func checkUDP(ctx context.Context, address string) (bool, int64, error) {
+func checkUDP(ctx context.Context, address string, timeout time.Duration) (bool, int64, error) {
 	start := time.Now()
-	conn, err := net.DialTimeout("udp", address, 10*time.Second)
+
+	// 解析地址
+	serverAddr, err := net.ResolveUDPAddr("udp", address)
+	if err != nil {
+		return false, 0, err
+	}
+
+	// 创建 UDP 连接
+	conn, err := net.DialUDP("udp", nil, serverAddr)
 	duration := time.Since(start).Milliseconds()
 	if err != nil {
-		return false, duration, err
+		return false, 0, err
 	}
 	defer conn.Close()
 
-	// 发送一个最小探测包（1 字节）
-	_, writeErr := conn.Write([]byte{0x00})
+	// 设置读写超时
+	writeDeadline := time.Now().Add(timeout)
+	conn.SetWriteDeadline(writeDeadline)
+
+	// 发送探测包（1 字节）
+	testData := []byte{0x00}
+	n, writeErr := conn.Write(testData)
 	if writeErr != nil {
-		return false, duration, writeErr
+		return false, 0, writeErr
+	}
+	if n != len(testData) {
+		return false, 0, fmt.Errorf("预期 %d bytes, 写了 %d", len(testData), n)
 	}
 
 	// UDP 无通用响应，这里仅认为“能发包”就算通
@@ -489,4 +501,9 @@ func boolToStatus(ok bool) string {
 		return "✅ 正常"
 	}
 	return "❌ 异常"
+}
+
+// 拼接主机名和端口号
+func JoinHostPort(host string, port int) string {
+	return net.JoinHostPort(host, fmt.Sprintf("%d", port))
 }
