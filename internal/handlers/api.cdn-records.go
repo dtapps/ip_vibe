@@ -275,30 +275,30 @@ func HealthcheckCdnRecord(c *gin.Context) {
 	}
 
 	// 查询Cdn的IP组
-	firstCdnIpGroup, err := firstCdnRecord.QueryIPGroup().
-		WithDevices().
-		First(egCtx)
-	if err == nil {
-		for _, item := range firstCdnIpGroup.Edges.Devices {
-			item := item // 创建副本以避免闭包问题
-			if item.IPV4 != "" && firstCdnRecord.Type == cdnrecord.TypeA {
-				// 检测 IP 是否可通过 HTTP/HTTPS 访问
-				eg.Go(func() error {
-					healthCheckResult, _ := backend.CheckIPHealth(egCtx, item.IPV4, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
-					results = append(results, healthCheckResult.ToPairsForIP())
-					return nil
-				})
-			}
-			if item.IPV6 != "" && firstCdnRecord.Type == cdnrecord.TypeAAAA {
-				// 检测 IP 是否可通过 HTTP/HTTPS 访问
-				eg.Go(func() error {
-					healthCheckResult, _ := backend.CheckIPHealth(egCtx, item.IPV6, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
-					results = append(results, healthCheckResult.ToPairsForIP())
-					return nil
-				})
-			}
-		}
-	}
+	// firstCdnIpGroup, err := firstCdnRecord.QueryIPGroup().
+	// 	WithDevices().
+	// 	First(egCtx)
+	// if err == nil {
+	// 	for _, item := range firstCdnIpGroup.Edges.Devices {
+	// 		item := item // 创建副本以避免闭包问题
+	// 		if item.IPV4 != "" && firstCdnRecord.Type == cdnrecord.TypeA {
+	// 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
+	// 			eg.Go(func() error {
+	// 				healthCheckResult, _ := backend.CheckIPHealth(egCtx, item.IPV4, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
+	// 				results = append(results, healthCheckResult.ToPairsForIP())
+	// 				return nil
+	// 			})
+	// 		}
+	// 		if item.IPV6 != "" && firstCdnRecord.Type == cdnrecord.TypeAAAA {
+	// 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
+	// 			eg.Go(func() error {
+	// 				healthCheckResult, _ := backend.CheckIPHealth(egCtx, item.IPV6, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
+	// 				results = append(results, healthCheckResult.ToPairsForIP())
+	// 				return nil
+	// 			})
+	// 		}
+	// 	}
+	// }
 
 	if err = eg.Wait(); err != nil {
 		errorResponse(c, http.StatusInternalServerError, "CDN记录健康状态检查失败: "+err.Error())

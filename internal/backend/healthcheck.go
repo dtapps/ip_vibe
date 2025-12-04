@@ -53,7 +53,20 @@ type HealthCheckResult struct {
 // CheckDomainHealth 检测域名是否可通（含 DNS + HTTP + HTTPS）
 func CheckDomainHealth(ctx context.Context, domain string, httpPort, httpsPort int, dnsServers []string) (*HealthCheckResult, error) {
 	if len(dnsServers) == 0 {
-		dnsServers = []string{"119.29.29.29:53", "223.5.5.5:53", "8.8.8.8:53", "1.1.1.1:53"}
+		dnsServers = []string{
+			JoinHostPort("119.29.29.29", 53),
+			JoinHostPort("2402:4e00::", 53),
+			JoinHostPort("223.5.5.5", 53),
+			JoinHostPort("2400:3200::1", 53),
+			JoinHostPort("180.76.76.76", 53),
+			JoinHostPort("2400:da00::6666", 53),
+			JoinHostPort("180.184.1.1", 53),
+			JoinHostPort("101.226.4.6", 53),
+			JoinHostPort("1.1.1.1", 53),
+			JoinHostPort("2606:4700:4700::1111", 53),
+			JoinHostPort("8.8.8.8", 53),
+			JoinHostPort("2001:4860:4860::8888", 53),
+		}
 	}
 
 	result := &HealthCheckResult{
