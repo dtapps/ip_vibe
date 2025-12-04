@@ -1,0 +1,143 @@
+/* =======================================================
+   Select2 Theme Override for DDNS Management Platform
+   Theme: Matches Index.css variables (Primary, Card, Border)
+   ======================================================= */
+
+/* -----------------------------------
+   1. 基础容器样式 (Border, Background, Min Height)
+   ----------------------------------- */
+
+.select2-container .select2-selection--single,
+.select2-container .select2-selection--multiple {
+  /* 继承项目的边框、背景、圆角 */
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  padding: 4px 10px !important;
+  outline: none !important;
+}
+
+/* 确保单选和多选的最小高度一致 */
+.select2-container .select2-selection--single {
+  height: 38px !important; /* 固定高度 */
+}
+.select2-container .select2-selection--multiple {
+  min-height: 38px !important; /* 最小高度 */
+  height: auto !important;
+}
+
+/* -----------------------------------
+   2. 聚焦 (Focus) 样式
+   ----------------------------------- */
+
+/* 聚焦时使用项目的主色调 */
+.select2-container--default.select2-container--focus
+  .select2-selection--multiple,
+.select2-container--default.select2-container--open .select2-selection--single {
+  border-color: var(--primary) !important;
+  /* 使用 var(--primary) 的透明版本作为阴影 */
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* -----------------------------------
+   3. 多选高度控制 (解决高度爆炸问题)
+   ----------------------------------- */
+
+.select2-container--default .select2-selection--multiple {
+  /* 限制最大高度，例如最多显示 3-4 行标签 */
+  max-height: 120px;
+  /* 超过最大高度时，显示垂直滚动条 */
+  overflow-y: auto !important;
+  /* 确保内部渲染区域没有额外的边距 */
+  padding-right: 10px;
+}
+
+/* -----------------------------------
+   4. 多选标签 (Tags) 样式
+   ----------------------------------- */
+
+.select2-container--default
+  .select2-selection--multiple
+  .select2-selection__choice {
+  /* 标签背景和颜色 */
+  background-color: var(--primary) !important;
+  color: var(--card) !important; /* 白色文字 */
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 3px 8px !important;
+  margin-top: 2px; /* 标签的垂直间距 */
+  margin-bottom: 2px;
+  line-height: 1.2;
+}
+
+/* 标签上的关闭按钮 (x) */
+.select2-container--default
+  .select2-selection--multiple
+  .select2-selection__choice__remove {
+  color: var(--card) !important; /* 白色 x */
+  margin-right: 4px;
+  float: none; /* 确保它和文本对齐 */
+}
+.select2-container--default
+  .select2-selection--multiple
+  .select2-selection__choice__remove:hover {
+  color: #fff !important; /* 悬停时保持白色或稍微变亮 */
+}
+
+/* -----------------------------------
+   5. 下拉结果列表 (Dropdown) 样式
+   ----------------------------------- */
+
+/* 下拉菜单容器 */
+.select2-container--default .select2-dropdown {
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow) !important;
+  overflow: hidden; /* 确保圆角有效 */
+}
+
+/* 搜索输入框 */
+.select2-container--default .select2-search--dropdown .select2-search__field {
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  color: var(--text) !important;
+  background-color: var(--bg) !important;
+  padding: 8px !important;
+}
+
+/* 选项基础样式 */
+.select2-container--default .select2-results__option {
+  padding: 8px 12px;
+  color: var(--text);
+  background-color: var(--card);
+}
+
+/* 鼠标悬停 (Highlight) 时的样式 */
+.select2-container--default
+  .select2-results__option--highlighted[aria-selected] {
+  background-color: var(--primary) !important;
+  color: var(--card) !important;
+}
+
+/* 选中项的样式 */
+.select2-container--default .select2-results__option--selected {
+  background-color: var(--bg) !important; /* 使用背景色作为轻微区分 */
+  color: var(--text);
+}
+
+/* -----------------------------------
+   6. 单选/占位符/箭头
+   ----------------------------------- */
+
+/* 占位符 (Placeholder) 颜色 */
+.select2-container--default .select2-selection__placeholder {
+  color: var(--text-secondary) !important;
+}
+
+/* 单选/下拉箭头颜色 */
+.select2-container--default
+  .select2-selection--single
+  .select2-selection__arrow
+  b {
+  border-color: var(--text-secondary) transparent transparent transparent !important;
+}

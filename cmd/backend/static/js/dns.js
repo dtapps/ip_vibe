@@ -33,7 +33,13 @@ function onCdnRecordSelect(sel) {
 
 // 打开 表单 弹窗
 async function openFormModal(id) {
+  document.getElementById("form").reset();
+
   try {
+    
+    // 选择 Select2 控件
+    const selectId2 = $("#webhook_ids");
+
     // 平台配置列表
     const { data: configs } = await API.get(`/api/configs`);
     console.log("configs", configs);
@@ -80,58 +86,102 @@ async function openFormModal(id) {
         cdnRecordSelect.appendChild(opt);
       });
     }
+
+    // 通知列表
+    const { data: webhooks } = await API.get(`/api/webhooks`);
+    console.log("webhooks", webhooks);
+    if (webhooks) {
+      // 销毁旧实例（防止 Select2 冲突）
+      if (selectId2.data("select2")) {
+        selectId2.select2("destroy");
+      }
+
+      // 准备 Select2 需要的数据格式
+      const select2Data = [];
+      if (webhooks && webhooks.length > 0) {
+        webhooks.forEach((d) => {
+          select2Data.push({
+            id: d.id,
+            text: `${d.name} (${d.platform})`,
+          });
+        });
+      }
+
+      // 初始化 Select2 控件
+      selectId2.select2({
+        width: "100%",
+        placeholder: "请选择通知 Webhook",
+        allowClear: true,
+        multiple: true,
+        data: select2Data,
+      });
+    }
+
+    // 编辑
+    if (id) {
+      const { data: dnsRecord } = await API.get(`/api/dns-records/${id}`);
+      console.log("dnsRecord", dnsRecord);
+      if (!dnsRecord) {
+        alert("DNS记录数据异常");
+        return;
+      }
+
+      document.getElementById("id").value = dnsRecord.id;
+      document.getElementById("id").disabled = true;
+      document.getElementById("config_id").value = dnsRecord.config_id;
+      document.getElementById("config_id").disabled = true;
+      document.getElementById("domain").value = dnsRecord.domain;
+      document.getElementById("domain").disabled = true;
+      document.getElementById("type").value = dnsRecord.type;
+      document.getElementById("type").disabled = true;
+
+      if (dnsRecord.type === "CNAME") {
+        document.getElementById("cdn_record_id").value =
+          dnsRecord.cdn_record_id;
+        document.getElementById("cdn_record_id").disabled = false;
+      } else {
+        document.getElementById("ip_group_id").value = dnsRecord.ip_group_id;
+        document.getElementById("ip_group_id").disabled = false;
+      }
+
+      if (dnsRecord.webhooks && dnsRecord.webhooks.length > 0) {
+        // 高亮已选
+        selectId2.val(dnsRecord.webhooks).trigger("change");
+      } else {
+        // 清空已选
+        selectId2.val(null).trigger("change");
+      }
+
+      showModal("modal", "modalTitle", "编辑 DNS记录");
+    }
+
+    // 创建
+    if (!id) {
+      document.getElementById("id").value = 0;
+      document.getElementById("id").disabled = true;
+      document.getElementById("config_id").disabled = false;
+      document.getElementById("domain").disabled = false;
+      document.getElementById("type").disabled = false;
+      document.getElementById("cdn_record_id").disabled = true;
+      document.getElementById("ip_group_id").disabled = true;
+
+      // 清空已选
+      selectId2.val(null).trigger("change");
+
+      showModal("modal", "modalTitle", "添加 DNS记录");
+    }
   } catch (error) {
     alert(`加载数据失败: ${error.message}`);
     console.error("打开DNS记录模态框失败", error);
     return;
-  }
-
-  // 编辑
-  if (id) {
-    const { data: dnsRecord } = await API.get(`/api/dns-records/${id}`);
-    console.log("dnsRecord", dnsRecord);
-    if (!dnsRecord) {
-      alert("DNS记录数据异常");
-      return;
-    }
-
-    document.getElementById("id").value = dnsRecord.id;
-    document.getElementById("id").disabled = true;
-    document.getElementById("config_id").value = dnsRecord.config_id;
-    document.getElementById("config_id").disabled = true;
-    document.getElementById("domain").value = dnsRecord.domain;
-    document.getElementById("domain").disabled = true;
-    document.getElementById("type").value = dnsRecord.type;
-    document.getElementById("type").disabled = true;
-
-    if (dnsRecord.type === "CNAME") {
-      document.getElementById("cdn_record_id").value = dnsRecord.cdn_record_id;
-      document.getElementById("cdn_record_id").disabled = false;
-    } else {
-      document.getElementById("ip_group_id").value = dnsRecord.ip_group_id;
-      document.getElementById("ip_group_id").disabled = false;
-    }
-
-    showModal("modal", "modalTitle", "编辑 DNS记录");
-  }
-
-  // 创建
-  if (!id) {
-    document.getElementById("id").value = 0;
-    document.getElementById("id").disabled = true;
-    document.getElementById("config_id").disabled = false;
-    document.getElementById("domain").disabled = false;
-    document.getElementById("type").disabled = false;
-    document.getElementById("cdn_record_id").disabled = true;
-    document.getElementById("ip_group_id").disabled = true;
-
-    showModal("modal", "modalTitle", "添加 DNS记录");
   }
 }
 
 // 表单提交
 document.getElementById("form").onsubmit = async (e) => {
   e.preventDefault();
+
+  const selectedWebhookIDs = $("#webhook_ids").val() || [];
 
   // 表单数据
   const form_id = Number(document.getElementById("id").value.trim());
@@ -143,6 +193,7 @@ document.getElementById("form").onsubmit = async (e) => {
     cdn_record_id: Number(
       document.getElementById("cdn_record_id").value.trim()
     ),
+    webhook_ids: selectedWebhookIDs.map(Number),
   };
   console.log("form_id, form_data", form_id, form_data);
 

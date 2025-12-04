@@ -8,18 +8,37 @@ function onDevicesSelect(sel) {
 async function openFormModal(id) {
   document.getElementById("form").reset();
 
+  // 选择 Select2 控件
+  const selectId2 = $("#devices");
+
   try {
     // 设备列表
     const { data: devices } = await API.get(`/api/devices`);
     console.log("devices", devices);
     if (devices) {
-      const deviceSelect = document.getElementById("devices");
-      deviceSelect.innerHTML = "";
-      devices.forEach((d) => {
-        const opt = document.createElement("option");
-        opt.value = d.id;
-        opt.text = `${d.name} - ${d.ip_v4 || "-"} / ${d.ip_v6 || "-"}`;
-        deviceSelect.appendChild(opt);
+      // 销毁旧实例（防止 Select2 冲突）
+      if (selectId2.data("select2")) {
+        selectId2.select2("destroy");
+      }
+
+      // 准备 Select2 需要的数据格式
+      const select2Data = [];
+      if (devices && devices.length > 0) {
+        devices.forEach((d) => {
+          select2Data.push({
+            id: d.id,
+            text: `${d.name}`,
+          });
+        });
+      }
+
+      // 初始化 Select2 控件
+      selectId2.select2({
+        width: "100%",
+        placeholder: "请选择设备",
+        allowClear: true,
+        multiple: true,
+        data: select2Data,
       });
     }
 
@@ -37,12 +56,12 @@ async function openFormModal(id) {
       document.getElementById("name").value = ipGroup.name;
       document.getElementById("description").value = ipGroup.description || "";
 
-      // 高亮已选
       if (ipGroup.devices && ipGroup.devices.length > 0) {
-        const deviceSelect = document.getElementById("devices");
-        Array.from(deviceSelect.options).forEach(
-          (opt) => (opt.selected = ipGroup.devices.includes(Number(opt.value)))
-        );
+        // 高亮已选
+        selectId2.val(ipGroup.devices).trigger("change");
+      } else {
+        // 清空已选
+        selectId2.val(null).trigger("change");
       }
 
       showModal("modal", "modalTitle", "编辑 IP 组");
@@ -53,10 +72,13 @@ async function openFormModal(id) {
       document.getElementById("id").value = "";
       document.getElementById("id").disabled = true;
 
+      // 清空已选
+      selectId2.val(null).trigger("change");
+
       showModal("modal", "modalTitle", "添加 IP 组");
     }
   } catch (error) {
-    alert(`加载IP组信息失败: ${error.message}`);
+    alert(`加载数据失败: ${error.message}`);
     console.error("打开IP组模态框失败", error);
   }
 }
@@ -65,14 +87,14 @@ async function openFormModal(id) {
 document.getElementById("form").onsubmit = async (e) => {
   e.preventDefault();
 
+  const selectedDeviceIDs = $("#devices").val() || [];
+
   // 表单数据
   const form_id = Number(document.getElementById("id").value.trim());
   const form_data = {
     name: document.getElementById("name").value.trim(),
     description: document.getElementById("description").value.trim(),
-    devices: Array.from(document.getElementById("devices").selectedOptions).map(
-      (opt) => Number(opt.value.trim())
-    ),
+    devices: selectedDeviceIDs.map(Number),
   };
   console.log("form_id, form_data", form_id, form_data);
 

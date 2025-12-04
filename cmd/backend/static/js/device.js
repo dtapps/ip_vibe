@@ -2,9 +2,43 @@
 async function openFormModal(id) {
   document.getElementById("form").reset();
 
-  // 编辑
-  if (id) {
-    try {
+  try {
+    // 选择 Select2 控件
+    const selectId2 = $("#webhook_ids");
+
+    // 通知列表
+    const { data: webhooks } = await API.get(`/api/webhooks`);
+    console.log("webhooks", webhooks);
+    if (webhooks) {
+      // 销毁旧实例（防止 Select2 冲突）
+      if (selectId2.data("select2")) {
+        selectId2.select2("destroy");
+      }
+
+      // 准备 Select2 需要的数据格式
+      const select2Data = [];
+      if (webhooks && webhooks.length > 0) {
+        webhooks.forEach((d) => {
+          select2Data.push({
+            id: d.id,
+            text: `${d.name} (${d.platform})`,
+          });
+        });
+      }
+
+      // 初始化 Select2 控件
+      selectId2.select2({
+        width: "100%",
+        placeholder: "请选择通知 Webhook",
+        allowClear: true,
+        multiple: true,
+        data: select2Data,
+      });
+    }
+
+    // 编辑
+    if (id) {
+      // 设备信息
       const { data: device } = await API.get(`/api/devices/${id}`);
       console.log("device", device);
       if (!device) {
@@ -20,33 +54,46 @@ async function openFormModal(id) {
       document.getElementById("ip_v4").value = device.ip_v4;
       document.getElementById("ip_v6").value = device.ip_v6;
 
+      if (device.webhooks && device.webhooks.length > 0) {
+        // 高亮已选
+        selectId2.val(device.webhooks).trigger("change");
+      } else {
+        // 清空已选
+        selectId2.val(null).trigger("change");
+      }
+
       showModal("modal", "modalTitle", "编辑 设备");
-    } catch (error) {
-      alert(`加载设备信息失败: ${error.message}`);
-      console.error("打开设备模态框失败", error);
     }
-  }
 
-  // 创建
-  if (!id) {
-    document.getElementById("id").value = "";
-    document.getElementById("id").disabled = true;
+    // 创建
+    if (!id) {
+      document.getElementById("id").value = "";
+      document.getElementById("id").disabled = true;
 
-    const deviceCode = uuid.v7();
-    if (!deviceCode) {
-      alert("生成设备编码失败");
-      return;
+      const deviceCode = uuid.v7();
+      if (!deviceCode) {
+        alert("生成设备编码失败");
+        return;
+      }
+      document.getElementById("code").value = deviceCode;
+      document.getElementById("code").disabled = false;
+
+      // 清空已选
+      selectId2.val(null).trigger("change");
+
+      showModal("modal", "modalTitle", "添加 设备");
     }
-    document.getElementById("code").value = deviceCode;
-    document.getElementById("code").disabled = false;
-
-    showModal("modal", "modalTitle", "添加 设备");
+  } catch (error) {
+    alert(`加载数据失败: ${error.message}`);
+    console.error("打开设备模态框失败", error);
   }
 }
 
 // 表单提交
 document.getElementById("form").onsubmit = async (e) => {
   e.preventDefault();
+
+  const selectedWebhookIDs = $("#webhook_ids").val() || [];
 
   // 表单数据
   const form_id = Number(document.getElementById("id").value.trim());
@@ -55,6 +102,7 @@ document.getElementById("form").onsubmit = async (e) => {
     name: document.getElementById("name").value.trim(),
     ip_v4: document.getElementById("ip_v4").value.trim(),
     ip_v6: document.getElementById("ip_v6").value.trim(),
+    webhook_ids: selectedWebhookIDs.map(Number),
   };
   console.log("form_id, form_data", form_id, form_data);
 

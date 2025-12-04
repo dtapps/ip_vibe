@@ -78,7 +78,7 @@ async function openFormModal(id) {
       showModal("modal", "modalTitle", "添加 端口转发");
     }
   } catch (error) {
-    alert(`加载IP组信息失败: ${error.message}`);
+    alert(`加载数据失败: ${error.message}`);
     console.error("打开IP组模态框失败", error);
   }
 }

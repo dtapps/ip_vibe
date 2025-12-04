@@ -6,13 +6,19 @@
 
     <link rel="preload" href="/static/css/index.css" as="style" />
     <link rel="preload" href="/static/css/index.dark.css" as="style" />
+    <link rel="preload" href="/static/css/select2-theme.css" as="style" />
     <link rel="preload" href="/static/js/uuid.js" as="script" />
     <link rel="preload" href="/static/js/index.js" as="script" />
     <link rel="preload" href="/static/img/icons.svg" as="image" />
 
     <link rel="stylesheet" href="/static/css/index.css" />
     <link rel="stylesheet" href="/static/css/index.dark.css" />
+    <link rel="stylesheet" href="/static/css/select2-theme.css" />
 
+    <link
+      href="/static/libs/select2/4.0.13/css/select2.min.css"
+      rel="stylesheet"
+    />
     {{ block "head" . }}{{ end }}
   </head>
   <body>
@@ -38,6 +44,8 @@
     <script>
       window.deviceCode = "{{selfDeviceCode}}";
     </script>
+    <script src="/static/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="/static/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="/static/js/uuid.js"></script>
     <script src="/static/js/index.js"></script>
     {{ end }}

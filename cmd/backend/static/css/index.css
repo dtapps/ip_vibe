@@ -530,7 +530,7 @@ button:disabled,
   }
 }
 
-/* IP 组 多选设备选择框优化 */
+/* 多选设备选择框优化 */
 .form-multiselect {
   /* 继承基础表单样式 */
   width: 100%;
@@ -839,4 +839,19 @@ button:disabled,
 .pagination .page-info {
   color: var(--text-secondary);
   background: var(--card);
+}
+/* 次要文本颜色类 */
+.text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+/* 针对 <small> 标签的样式优化 */
+small.text-secondary {
+  /* 确保继承颜色 */
+  color: var(--text-secondary);
+  /* 通常用于描述性文本，字体略小 */
+  font-size: 0.85em;
+  /* 增加顶部边距，使其与输入框/Select2 保持适当距离 */
+  display: block;
+  margin-top: 4px;
 }

@@ -226,7 +226,7 @@ async function openFormModal(id) {
       showModal("modal", "modalTitle", "添加 通知");
     }
   } catch (error) {
-    alert(`加载通知信息失败: ${error.message}`);
+    alert(`加载数据失败: ${error.message}`);
     console.error("打开通知模态框失败", error);
   }
 }
