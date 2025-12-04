@@ -11,23 +11,30 @@
     </h2>
   </div>
   <div class="card-body">
-    <div class="timeline" id="timeline">
-      {{range .List}}
-      <div class="timeline-item">
-        <div class="timeline-time">{{formatTimeOrNil .CreatedAt}}</div>
-        <div>
-          <strong>{{.ID}}</strong>:
-          <span class="text-muted">{{.ObjType}}</span> →
-          <span class="text-success">{{.ObjID}}</span>
-          {{if eq .Status "success"}}
-          <span class="badge badge-success">{{.Message}}</span>
-          {{else}}
-          <span class="badge badge-danger">{{.Message}}</span>
-          {{end}}
-        </div>
-      </div>
-      {{end}}
-    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>序号</th>
+          <th>操作类型</th>
+          <th>对象类型</th>
+          <th>对象ID</th>
+          <th>详情</th>
+          <th>时间</th>
+        </tr>
+      </thead>
+      <tbody id="table">
+        {{ range .List }}
+        <tr>
+          <td>{{.ID}}</td>
+          <td>{{.OpType}}</td>
+          <td>{{.ObjType}}</td>
+          <td>{{.ObjID}}</td>
+          <td>{{.Message}}</td>
+          <td>{{ formatTimeOrNil .CreatedAt }}</td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
     <!-- 分页 -->
     {{ template "pagination" . }}
   </div>
