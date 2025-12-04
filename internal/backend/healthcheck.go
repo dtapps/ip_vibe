@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -385,8 +384,12 @@ func (r *HealthCheckResult) ToPairsForDomain() (pairs []ToPairsStruct) {
 	}
 
 	// 端口信息
-	// pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口", Value: r.HTTPPort})
-	// pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口", Value: r.HTTPSPort})
+	if r.HTTPPort > 0 {
+		pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口", Value: r.HTTPPort})
+	}
+	if r.HTTPSPort > 0 {
+		pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口", Value: r.HTTPSPort})
+	}
 
 	if r.DNSUsed != "" {
 		pairs = append(pairs, ToPairsStruct{Key: "使用的DNS服务器", Value: r.DNSUsed})
@@ -410,8 +413,12 @@ func (r *HealthCheckResult) ToPairsForIP() (pairs []ToPairsStruct) {
 	}
 
 	// 端口信息
-	// pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口", Value: r.HTTPPort})
-	// pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口", Value: r.HTTPSPort})
+	if r.HTTPPort > 0 {
+		pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口", Value: r.HTTPPort})
+	}
+	if r.HTTPSPort > 0 {
+		pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口", Value: r.HTTPSPort})
+	}
 
 	// HTTP/HTTPS URL 字段
 	pairs = addHTTPHTTPS(pairs, r)
@@ -426,24 +433,24 @@ func (r *HealthCheckResult) ToPairsForIP() (pairs []ToPairsStruct) {
 func addHTTPHTTPS(pairs []ToPairsStruct, r *HealthCheckResult) []ToPairsStruct {
 	if r.HTTPPort > 0 {
 		if r.HTTPErr != "" {
-			pairs = append(pairs, ToPairsStruct{Key: fmt.Sprintf("HTTP (%d) 错误", r.HTTPPort), Value: r.HTTPErr})
+			pairs = append(pairs, ToPairsStruct{Key: "HTTP 错误", Value: r.HTTPErr})
 		} else {
-			pairs = append(pairs, ToPairsStruct{Key: fmt.Sprintf("HTTP (%d) 是否通", r.HTTPPort), Value: boolToStatus(r.IsHTTPHealthy)})
+			pairs = append(pairs, ToPairsStruct{Key: "HTTP 是否通", Value: boolToStatus(r.IsHTTPHealthy)})
 			pairs = append(pairs, ToPairsStruct{Key: "HTTP 状态码", Value: r.HTTPStatus})
 			if r.HTTPRTT > 0 {
-				pairs = append(pairs, ToPairsStruct{Key: "HTTP 响应时间（ms）", Value: strconv.FormatInt(r.HTTPRTT, 10)})
+				pairs = append(pairs, ToPairsStruct{Key: "HTTP 响应时间", Value: fmt.Sprintf("%d ms", r.HTTPRTT)})
 			}
 		}
 	}
 
 	if r.HTTPSPort > 0 {
 		if r.HTTPSErr != "" {
-			pairs = append(pairs, ToPairsStruct{Key: fmt.Sprintf("HTTPS (%d) 错误", r.HTTPSPort), Value: r.HTTPSErr})
+			pairs = append(pairs, ToPairsStruct{Key: "HTTPS 错误", Value: r.HTTPSErr})
 		} else {
-			pairs = append(pairs, ToPairsStruct{Key: fmt.Sprintf("HTTPS (%d) 是否通", r.HTTPSPort), Value: boolToStatus(r.IsHTTPSHealthy)})
+			pairs = append(pairs, ToPairsStruct{Key: "HTTPS 是否通", Value: boolToStatus(r.IsHTTPSHealthy)})
 			pairs = append(pairs, ToPairsStruct{Key: "HTTPS 状态码", Value: r.HTTPSStatus})
 			if r.HTTPSRTT > 0 {
-				pairs = append(pairs, ToPairsStruct{Key: "HTTPS 响应时间（ms）", Value: strconv.FormatInt(r.HTTPSRTT, 10)})
+				pairs = append(pairs, ToPairsStruct{Key: "HTTPS 响应时间", Value: fmt.Sprintf("%d ms", r.HTTPSRTT)})
 			}
 		}
 	}
@@ -455,40 +462,40 @@ func addHTTPHTTPS(pairs []ToPairsStruct, r *HealthCheckResult) []ToPairsStruct {
 func addHTTPHTTPSTCPUDP(pairs []ToPairsStruct, r *HealthCheckResult) []ToPairsStruct {
 	if r.HTTPPort > 0 {
 		if r.HTTPTCPErr != "" {
-			pairs = append(pairs, ToPairsStruct{Key: fmt.Sprintf("HTTP 端口 TCP (%d) 错误", r.HTTPPort), Value: r.HTTPTCPErr})
+			pairs = append(pairs, ToPairsStruct{Key: "HTTP TCP 错误", Value: r.HTTPTCPErr})
 		} else {
-			pairs = append(pairs, ToPairsStruct{Key: fmt.Sprintf("HTTP 端口 TCP (%d) 是否通", r.HTTPPort), Value: boolToStatus(r.IsHTTPTCPHealthy)})
+			pairs = append(pairs, ToPairsStruct{Key: "HTTP TCP 是否通", Value: boolToStatus(r.IsHTTPTCPHealthy)})
 			if r.HTTPTCPRTT > 0 {
-				pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口 TCP 响应时间（ms）", Value: strconv.FormatInt(r.HTTPTCPRTT, 10)})
+				pairs = append(pairs, ToPairsStruct{Key: "HTTP TCP 响应时间", Value: fmt.Sprintf("%d ms", r.HTTPTCPRTT)})
 			}
 		}
 
 		if r.HTTPUDPErr != "" {
-			pairs = append(pairs, ToPairsStruct{Key: fmt.Sprintf("HTTP 端口 UDP (%d) 错误", r.HTTPPort), Value: r.HTTPUDPErr})
+			pairs = append(pairs, ToPairsStruct{Key: "HTTP UDP 错误", Value: r.HTTPUDPErr})
 		} else {
-			pairs = append(pairs, ToPairsStruct{Key: fmt.Sprintf("HTTP 端口 UDP (%d) 是否通", r.HTTPPort), Value: boolToStatus(r.IsHTTPUDPHealthy)})
+			pairs = append(pairs, ToPairsStruct{Key: "HTTP UDP 是否通", Value: boolToStatus(r.IsHTTPUDPHealthy)})
 			if r.HTTPUDPRTT > 0 {
-				pairs = append(pairs, ToPairsStruct{Key: "HTTP 端口 UDP 响应时间（ms）", Value: strconv.FormatInt(r.HTTPUDPRTT, 10)})
+				pairs = append(pairs, ToPairsStruct{Key: "HTTP UDP 响应时间", Value: fmt.Sprintf("%d ms", r.HTTPUDPRTT)})
 			}
 		}
 	}
 
 	if r.HTTPSPort > 0 {
 		if r.HTTPSTCPErr != "" {
-			pairs = append(pairs, ToPairsStruct{Key: fmt.Sprintf("HTTPS 端口 TCP (%d) 错误", r.HTTPSPort), Value: r.HTTPSTCPErr})
+			pairs = append(pairs, ToPairsStruct{Key: "HTTPS TCP 错误", Value: r.HTTPSTCPErr})
 		} else {
-			pairs = append(pairs, ToPairsStruct{Key: fmt.Sprintf("HTTPS 端口 TCP (%d) 是否通", r.HTTPSPort), Value: boolToStatus(r.IsHTTPSTCPHealthy)})
+			pairs = append(pairs, ToPairsStruct{Key: "HTTPS TCP 是否通", Value: boolToStatus(r.IsHTTPSTCPHealthy)})
 			if r.HTTPSTCPRTT > 0 {
-				pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口 TCP 响应时间（ms）", Value: strconv.FormatInt(r.HTTPSTCPRTT, 10)})
+				pairs = append(pairs, ToPairsStruct{Key: "HTTPS TCP 响应时间", Value: fmt.Sprintf("%d ms", r.HTTPSTCPRTT)})
 			}
 		}
 
 		if r.HTTPSUDPErr != "" {
-			pairs = append(pairs, ToPairsStruct{Key: fmt.Sprintf("HTTPS 端口 UDP (%d) 错误", r.HTTPSPort), Value: r.HTTPSUDPErr})
+			pairs = append(pairs, ToPairsStruct{Key: "HTTPS UDP 错误", Value: r.HTTPSUDPErr})
 		} else {
-			pairs = append(pairs, ToPairsStruct{Key: fmt.Sprintf("HTTPS 端口 UDP (%d) 是否通", r.HTTPSPort), Value: boolToStatus(r.IsHTTPSUDPHealthy)})
+			pairs = append(pairs, ToPairsStruct{Key: "HTTPS UDP 是否通", Value: boolToStatus(r.IsHTTPSUDPHealthy)})
 			if r.HTTPSUDPRTT > 0 {
-				pairs = append(pairs, ToPairsStruct{Key: "HTTPS 端口 UDP 响应时间（ms）", Value: strconv.FormatInt(r.HTTPSUDPRTT, 10)})
+				pairs = append(pairs, ToPairsStruct{Key: "HTTPS UDP 响应时间", Value: fmt.Sprintf("%d ms", r.HTTPSUDPRTT)})
 			}
 		}
 	}
