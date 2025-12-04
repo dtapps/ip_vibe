@@ -163,19 +163,26 @@ function closeModal(id) {
 }
 
 // 一键复制
-function copyData(id) {
-  const pre = document.getElementById(id);
+function copyData(idEl = "popup") {
+  const modal = document.getElementById(idEl);
+  const preEl = document.getElementById(`${idEl}Pre`);
+  if (!preEl) {
+    return;
+  }
   navigator.clipboard
-    .writeText(pre.textContent)
+    .writeText(preEl.textContent)
     .then(() => {
-      const btn = document.querySelector(".ip-popup-copy");
-      const old = btn.innerHTML;
-      btn.innerHTML =
+      const copyBtn = document.getElementById(`${idEl}CopyBtn`);
+      if (!copyBtn) {
+        return;
+      }
+      const copyBtnOldContent = copyBtn.innerHTML;
+      copyBtn.innerHTML =
         '<svg class="ip-i"><use href="/static/img/icons.svg#ip-check"/></use></svg> 已复制';
-      btn.style.color = "var(--success)";
+      copyBtn.style.color = "var(--success)";
       setTimeout(() => {
-        btn.innerHTML = old;
-        btn.style.color = "";
+        copyBtn.innerHTML = copyBtnOldContent;
+        copyBtn.style.color = "";
       }, 1500);
     })
     .catch(() => alert("复制失败，请手动选择复制"));
