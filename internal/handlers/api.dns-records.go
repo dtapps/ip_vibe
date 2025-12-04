@@ -276,7 +276,7 @@ func HealthcheckDnsRecord(c *gin.Context) {
 	if err == nil {
 		for _, item := range firstDnsIpGroup.Edges.Devices {
 			item := item // 创建副本以避免闭包问题
-			if item.IPV4 != "" {
+			if item.IPV4 != "" && firstDnsRecord.Type == dnsrecord.TypeA {
 				// 检测 IP 是否可通过 HTTP/HTTPS 访问
 				eg.Go(func() error {
 					healthCheckResult, _ := backend.CheckIPHealth(egCtx, item.IPV4, 80, 443)
@@ -284,7 +284,7 @@ func HealthcheckDnsRecord(c *gin.Context) {
 					return nil
 				})
 			}
-			if item.IPV6 != "" {
+			if item.IPV6 != "" && firstDnsRecord.Type == dnsrecord.TypeAAAA {
 				// 检测 IP 是否可通过 HTTP/HTTPS 访问
 				eg.Go(func() error {
 					healthCheckResult, _ := backend.CheckIPHealth(egCtx, item.IPV6, 80, 443)
@@ -320,7 +320,7 @@ func HealthcheckDnsRecord(c *gin.Context) {
 			}
 			for _, item := range firstCdnIpGroup.Edges.Devices {
 				item := item // 创建副本以避免闭包问题
-				if item.IPV4 != "" {
+				if item.IPV4 != "" && firstCdnRecord.Type == cdnrecord.TypeA {
 					// 检测 IP 是否可通过 HTTP/HTTPS 访问
 					eg.Go(func() error {
 						healthCheckResult, _ := backend.CheckIPHealth(egCtx, item.IPV4, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
@@ -328,7 +328,7 @@ func HealthcheckDnsRecord(c *gin.Context) {
 						return nil
 					})
 				}
-				if item.IPV6 != "" {
+				if item.IPV6 != "" && firstCdnRecord.Type == cdnrecord.TypeAAAA {
 					// 检测 IP 是否可通过 HTTP/HTTPS 访问
 					eg.Go(func() error {
 						healthCheckResult, _ := backend.CheckIPHealth(egCtx, item.IPV6, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)

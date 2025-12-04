@@ -24,6 +24,8 @@ type CreateDeviceRequest struct {
 	Code        string `json:"code" binding:"required"` // 设备编号
 	Name        string `json:"name" binding:"required"` // 设备名称
 	Description string `json:"description,omitempty"`   // 设备描述
+	IPV4        string `json:"ip_v4,omitempty"`         // IP地址V4
+	IPV6        string `json:"ip_v6,omitempty"`         // IP地址V6
 }
 
 // 更新设备 请求结构
@@ -31,6 +33,8 @@ type UpdateDeviceRequest struct {
 	GetDeviceRequest
 	Name        string `json:"name" binding:"required"` // 设备名称
 	Description string `json:"description,omitempty"`   // 设备描述
+	IPV4        string `json:"ip_v4,omitempty"`         // IP地址V4
+	IPV6        string `json:"ip_v6,omitempty"`         // IP地址V6
 }
 
 // 删除设备 请求结构

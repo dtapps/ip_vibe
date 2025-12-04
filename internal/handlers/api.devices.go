@@ -85,6 +85,8 @@ func CreateDevice(c *gin.Context) {
 		SetCode(requestParams.Code).
 		SetName(requestParams.Name).
 		SetDescription(requestParams.Description).
+		SetIPV4(requestParams.IPV4).
+		SetIPV6(requestParams.IPV6).
 		Save(c)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
@@ -121,6 +123,8 @@ func UpdateDevice(c *gin.Context) {
 	saveDevice, err := global.GvaDb.Device.UpdateOne(firstDevice).
 		SetName(requestParams.Name).
 		SetDescription(requestParams.Description).
+		SetIPV4(requestParams.IPV4).
+		SetIPV6(requestParams.IPV6).
 		Save(c)
 	if err != nil {
 		if global.GvaEnv.DEBUG {

@@ -17,6 +17,8 @@ async function openFormModal(id) {
       document.getElementById("code").value = device.code;
       document.getElementById("code").disabled = true;
       document.getElementById("name").value = device.name;
+      document.getElementById("ip_v4").value = device.ip_v4;
+      document.getElementById("ip_v6").value = device.ip_v6;
 
       showModal("modal", "modalTitle", "编辑 设备");
     } catch (error) {
@@ -51,6 +53,8 @@ document.getElementById("form").onsubmit = async (e) => {
   const form_data = {
     code: document.getElementById("code").value.trim(),
     name: document.getElementById("name").value.trim(),
+    ip_v4: document.getElementById("ip_v4").value.trim(),
+    ip_v6: document.getElementById("ip_v6").value.trim(),
   };
   console.log("form_id, form_data", form_id, form_data);
 
