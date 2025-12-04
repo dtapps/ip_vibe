@@ -265,14 +265,14 @@ func HealthcheckCdnRecord(c *gin.Context) {
 		})
 	}
 
-	if firstCdnRecord.CdnDomain != "" {
-		// 检测域名是否可通（含 DNS + HTTP + HTTPS）
-		eg.Go(func() error {
-			healthCheckResult, _ := backend.CheckDomainHealth(egCtx, firstCdnRecord.CdnDomain, 80, 443, []string{})
-			results = append(results, healthCheckResult.ToPairsForDomain())
-			return nil
-		})
-	}
+	// if firstCdnRecord.CdnDomain != "" {
+	// 	// 检测域名是否可通（含 DNS + HTTP + HTTPS）
+	// 	eg.Go(func() error {
+	// 		healthCheckResult, _ := backend.CheckDomainHealth(egCtx, firstCdnRecord.CdnDomain, 80, 443, []string{})
+	// 		results = append(results, healthCheckResult.ToPairsForDomain())
+	// 		return nil
+	// 	})
+	// }
 
 	// 查询Cdn的IP组
 	// firstCdnIpGroup, err := firstCdnRecord.QueryIPGroup().
