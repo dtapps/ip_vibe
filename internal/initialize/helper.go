@@ -7,5 +7,5 @@ import (
 
 // InitOperationLogHelper 初始化操作日志助手
 func InitOperationLogHelper() {
-	global.GvaOperationLogHelper = operation_logs_helper.NewOperationLogHelper()
+	global.GvaOperationLogHelper = operation_logs_helper.NewOperationLogHelper(global.GvaEntLogDb)
 }

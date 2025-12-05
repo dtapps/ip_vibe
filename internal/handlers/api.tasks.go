@@ -100,7 +100,7 @@ func StartTask(c *gin.Context) {
 	initialize.StartGoCron()
 	if len(jobs) == 0 {
 		// 启动CDN刷新任务
-		ipUpdate := backend.NewIpUpdateService(global.GvaDb, global.GvaGoCron)
+		ipUpdate := backend.NewIpUpdateService(global.GvaEntDb, global.GvaGoCron)
 		if err := ipUpdate.StartCdnJob(c); err != nil {
 			if global.GvaEnv.DEBUG {
 				fmt.Printf("启动CDN刷新任务失败: %s\n", err.Error())

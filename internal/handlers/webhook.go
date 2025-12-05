@@ -29,7 +29,7 @@ func Webhook(c *gin.Context) {
 	}
 
 	// 查询全部通知
-	allWebhook, err := global.GvaDb.Webhook.Query().
+	allWebhook, err := global.GvaEntDb.Webhook.Query().
 		Order(ent.Desc(webhook.FieldCreatedAt)).
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {

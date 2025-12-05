@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"vibe_ip/ent"
-	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/webhook"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -17,7 +17,7 @@ import (
 func GetWebhooks(c *gin.Context) {
 	webhooks := make([]types.GetWebhookResponse, 0)
 	// 查询全部通知
-	allWebhook, err := global.GvaDb.Webhook.Query().
+	allWebhook, err := global.GvaEntDb.Webhook.Query().
 		Order(ent.Desc(webhook.FieldCreatedAt)).
 		All(c)
 	if err != nil {
@@ -51,7 +51,7 @@ func GetWebhook(c *gin.Context) {
 	}
 
 	// 查询通知
-	firstWebhook, err := global.GvaDb.Webhook.Query().
+	firstWebhook, err := global.GvaEntDb.Webhook.Query().
 		Where(webhook.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -82,7 +82,7 @@ func CreateWebhook(c *gin.Context) {
 	}
 
 	// 创建通知
-	saveWebhook, err := global.GvaDb.Webhook.Create().
+	saveWebhook, err := global.GvaEntDb.Webhook.Create().
 		SetName(requestParams.Name).
 		SetDescription(requestParams.Description).
 		SetPlatform(webhook.Platform(requestParams.Platform)).
@@ -100,7 +100,7 @@ func CreateWebhook(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataCreate(c, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "创建通知")
+	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "创建通知")
 	successResponse(c, gin.H{
 		"id": saveWebhook.ID,
 	})
@@ -116,7 +116,7 @@ func UpdateWebhook(c *gin.Context) {
 	}
 
 	// 查询通知
-	firstWebhook, err := global.GvaDb.Webhook.Query().
+	firstWebhook, err := global.GvaEntDb.Webhook.Query().
 		Where(webhook.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -124,7 +124,7 @@ func UpdateWebhook(c *gin.Context) {
 		return
 	}
 	// 更新通知
-	saveWebhook, err := global.GvaDb.Webhook.UpdateOne(firstWebhook).
+	saveWebhook, err := global.GvaEntDb.Webhook.UpdateOne(firstWebhook).
 		SetName(requestParams.Name).
 		SetDescription(requestParams.Description).
 		SetSecret(requestParams.Secret).
@@ -140,7 +140,7 @@ func UpdateWebhook(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "更新通知")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "更新通知")
 	successResponse(c, gin.H{
 		"id": saveWebhook.ID,
 	})
@@ -156,7 +156,7 @@ func UpdateWebhookActive(c *gin.Context) {
 	}
 
 	// 查询通知
-	firstWebhook, err := global.GvaDb.Webhook.Query().
+	firstWebhook, err := global.GvaEntDb.Webhook.Query().
 		Where(webhook.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -164,7 +164,7 @@ func UpdateWebhookActive(c *gin.Context) {
 		return
 	}
 	// 更新通知状态
-	saveWebhook, err := global.GvaDb.Webhook.UpdateOne(firstWebhook).
+	saveWebhook, err := global.GvaEntDb.Webhook.UpdateOne(firstWebhook).
 		SetIsActive(requestParams.IsActive).
 		Save(c)
 	if err != nil {
@@ -175,7 +175,7 @@ func UpdateWebhookActive(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "更新通知状态")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "更新通知状态")
 	successResponse(c, gin.H{
 		"id": saveWebhook.ID,
 	})
@@ -191,7 +191,7 @@ func DeleteWebhook(c *gin.Context) {
 	}
 
 	// 查询通知
-	firstWebhook, err := global.GvaDb.Webhook.Query().
+	firstWebhook, err := global.GvaEntDb.Webhook.Query().
 		Where(webhook.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -199,7 +199,7 @@ func DeleteWebhook(c *gin.Context) {
 		return
 	}
 	// 删除通知
-	err = global.GvaDb.Webhook.DeleteOne(firstWebhook).Exec(c)
+	err = global.GvaEntDb.Webhook.DeleteOne(firstWebhook).Exec(c)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
 			fmt.Printf("删除通知: %s\n", err.Error())
@@ -208,7 +208,7 @@ func DeleteWebhook(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataDelete(c, firstWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "删除通知")
+	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "删除通知")
 	successResponse(c, gin.H{
 		"id": firstWebhook.ID,
 	})

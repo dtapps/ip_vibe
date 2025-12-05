@@ -29,7 +29,7 @@ func Cdn(c *gin.Context) {
 	}
 
 	// 查询全部CDN记录
-	allCdnRecord, err := global.GvaDb.CDNRecord.Query().
+	allCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
 		WithConfig().
 		WithIPGroup().
 		Order(ent.Desc(cdnrecord.FieldCreatedAt)).

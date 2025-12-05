@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"vibe_ip/ent"
-	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/platformconfig"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -17,7 +17,7 @@ import (
 func GetConfigs(c *gin.Context) {
 	configs := make([]types.GetConfigResponse, 0)
 	// 查询全部配置
-	allConfig, err := global.GvaDb.PlatformConfig.Query().
+	allConfig, err := global.GvaEntDb.PlatformConfig.Query().
 		Order(ent.Desc(platformconfig.FieldCreatedAt)).
 		All(c)
 	if err != nil {
@@ -47,7 +47,7 @@ func GetConfig(c *gin.Context) {
 	}
 
 	// 查询配置
-	firstConfig, err := global.GvaDb.PlatformConfig.Query().
+	firstConfig, err := global.GvaEntDb.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -74,7 +74,7 @@ func CreateConfig(c *gin.Context) {
 	}
 
 	// 创建配置
-	saveConfig, err := global.GvaDb.PlatformConfig.Create().
+	saveConfig, err := global.GvaEntDb.PlatformConfig.Create().
 		SetName(requestParams.Name).
 		SetDescription(requestParams.Description).
 		SetPlatform(platformconfig.Platform(requestParams.Platform)).
@@ -89,7 +89,7 @@ func CreateConfig(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataCreate(c, saveConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "创建配置")
+	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "创建配置")
 	successResponse(c, gin.H{
 		"id": saveConfig.ID,
 	})
@@ -105,7 +105,7 @@ func UpdateConfig(c *gin.Context) {
 	}
 
 	// 查询配置
-	firstConfig, err := global.GvaDb.PlatformConfig.Query().
+	firstConfig, err := global.GvaEntDb.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -113,7 +113,7 @@ func UpdateConfig(c *gin.Context) {
 		return
 	}
 	// 更新配置
-	saveConfig, err := global.GvaDb.PlatformConfig.UpdateOne(firstConfig).
+	saveConfig, err := global.GvaEntDb.PlatformConfig.UpdateOne(firstConfig).
 		SetName(requestParams.Name).
 		SetDescription(requestParams.Description).
 		SetConfigJSON([]byte(requestParams.ConfigJSON)).
@@ -127,7 +127,7 @@ func UpdateConfig(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "更新配置")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "更新配置")
 	successResponse(c, gin.H{
 		"id": saveConfig.ID,
 	})
@@ -143,7 +143,7 @@ func DeleteConfig(c *gin.Context) {
 	}
 
 	// 查询配置
-	firstConfig, err := global.GvaDb.PlatformConfig.Query().
+	firstConfig, err := global.GvaEntDb.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -151,7 +151,7 @@ func DeleteConfig(c *gin.Context) {
 		return
 	}
 	// 删除配置
-	err = global.GvaDb.PlatformConfig.DeleteOne(firstConfig).Exec(c)
+	err = global.GvaEntDb.PlatformConfig.DeleteOne(firstConfig).Exec(c)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
 			fmt.Printf("删除配置: %s\n", err.Error())
@@ -160,7 +160,7 @@ func DeleteConfig(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataDelete(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "删除配置")
+	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "删除配置")
 	successResponse(c, gin.H{
 		"id": firstConfig.ID,
 	})

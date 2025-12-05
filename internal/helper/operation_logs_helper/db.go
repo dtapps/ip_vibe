@@ -3,38 +3,41 @@ package operation_logs_helper
 import (
 	"context"
 	"log/slog"
-	"vibe_ip/ent"
-	"vibe_ip/ent/operationlog"
+	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/ent_log/operationlog"
 )
 
 type OperationLogHelper struct {
-	db        *ent.Client
+	db        *ent_log.Client
 	dbEnabled bool
-	tx        *ent.Tx
+	tx        *ent_log.Tx
 	txEnabled bool
 }
 
-func NewOperationLogHelper() *OperationLogHelper {
-	return &OperationLogHelper{}
+func NewOperationLogHelper(db *ent_log.Client) *OperationLogHelper {
+	return &OperationLogHelper{
+		db:        db,
+		dbEnabled: db != nil,
+	}
 }
 
 // SetDb 设置数据库客户端
-func (s *OperationLogHelper) SetDb(db *ent.Client) *OperationLogHelper {
-	s.db = db
-	s.dbEnabled = true
-	return s
-}
+// func (s *OperationLogHelper) SetDb(db *ent_log.Client) *OperationLogHelper {
+// 	s.db = db
+// 	s.dbEnabled = db != nil
+// 	return s
+// }
 
 // SetTx 设置事务
-func (s *OperationLogHelper) SetTx(tx *ent.Tx) *OperationLogHelper {
-	s.tx = tx
-	s.txEnabled = true
-	return s
-}
+// func (s *OperationLogHelper) SetTx(tx *ent_log.Tx) *OperationLogHelper {
+// 	s.tx = tx
+// 	s.txEnabled = tx != nil
+// 	return s
+// }
 
 // RecordDataCreate 记录数据创建操作日志
 func (s *OperationLogHelper) RecordDataCreate(ctx context.Context, obj_id int64, obj_type operationlog.ObjType, status operationlog.Status, message string) error {
-	var create *ent.OperationLogCreate
+	var create *ent_log.OperationLogCreate
 	if s.db != nil && s.dbEnabled {
 		create = s.db.OperationLog.Create()
 	} else if s.tx != nil && s.txEnabled {
@@ -62,7 +65,7 @@ func (s *OperationLogHelper) RecordDataCreate(ctx context.Context, obj_id int64,
 
 // RecordDataUpdate 记录数据更新操作日志
 func (s *OperationLogHelper) RecordDataUpdate(ctx context.Context, obj_id int64, obj_type operationlog.ObjType, status operationlog.Status, message string) error {
-	var create *ent.OperationLogCreate
+	var create *ent_log.OperationLogCreate
 	if s.db != nil && s.dbEnabled {
 		create = s.db.OperationLog.Create()
 	} else if s.tx != nil && s.txEnabled {
@@ -90,7 +93,7 @@ func (s *OperationLogHelper) RecordDataUpdate(ctx context.Context, obj_id int64,
 
 // RecordDataDelete 记录数据删除操作日志
 func (s *OperationLogHelper) RecordDataDelete(ctx context.Context, obj_id int64, obj_type operationlog.ObjType, status operationlog.Status, message string) error {
-	var create *ent.OperationLogCreate
+	var create *ent_log.OperationLogCreate
 	if s.db != nil && s.dbEnabled {
 		create = s.db.OperationLog.Create()
 	} else if s.tx != nil && s.txEnabled {

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"vibe_ip/ent"
 	"vibe_ip/ent/ipgroup"
-	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/backend"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -19,7 +19,7 @@ import (
 func GetIPGroups(c *gin.Context) {
 	ipGroups := make([]types.GetIPGroupResponse, 0)
 	// 查询全部IP组
-	allIpGroup, err := global.GvaDb.IpGroup.Query().
+	allIpGroup, err := global.GvaEntDb.IpGroup.Query().
 		Order(ent.Desc(ipgroup.FieldCreatedAt)).
 		All(c)
 	if err != nil {
@@ -46,7 +46,7 @@ func GetIPGroup(c *gin.Context) {
 	}
 
 	// 查询IP组
-	firstIpGroup, err := global.GvaDb.IpGroup.Query().
+	firstIpGroup, err := global.GvaEntDb.IpGroup.Query().
 		Where(ipgroup.IDEQ(requestParams.ID)).
 		WithDevices().
 		First(c)
@@ -77,7 +77,7 @@ func CreateIPGroup(c *gin.Context) {
 	}
 
 	// 创建IP组
-	saveIpGroup, err := global.GvaDb.IpGroup.Create().
+	saveIpGroup, err := global.GvaEntDb.IpGroup.Create().
 		SetName(requestParams.Name).
 		SetDescription(requestParams.Description).
 		AddDeviceIDs(requestParams.Devices...).
@@ -90,7 +90,7 @@ func CreateIPGroup(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataCreate(c, saveIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "创建IP组")
+	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "创建IP组")
 	successResponse(c, gin.H{
 		"id": saveIpGroup.ID,
 	})
@@ -106,7 +106,7 @@ func UpdateIPGroup(c *gin.Context) {
 	}
 
 	// 查询IP组
-	firstIpGroup, err := global.GvaDb.IpGroup.Query().
+	firstIpGroup, err := global.GvaEntDb.IpGroup.Query().
 		Where(ipgroup.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -114,7 +114,7 @@ func UpdateIPGroup(c *gin.Context) {
 		return
 	}
 	// 更新IP组
-	saveIpGroup, err := global.GvaDb.IpGroup.UpdateOne(firstIpGroup).
+	saveIpGroup, err := global.GvaEntDb.IpGroup.UpdateOne(firstIpGroup).
 		SetName(requestParams.Name).
 		SetDescription(requestParams.Description).
 		ClearDevices().
@@ -128,7 +128,7 @@ func UpdateIPGroup(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, saveIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "更新IP组")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "更新IP组")
 	successResponse(c, gin.H{
 		"id": saveIpGroup.ID,
 	})
@@ -144,7 +144,7 @@ func DeleteIPGroup(c *gin.Context) {
 	}
 
 	// 查询IP组
-	firstIpGroup, err := global.GvaDb.IpGroup.Query().
+	firstIpGroup, err := global.GvaEntDb.IpGroup.Query().
 		Where(ipgroup.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -152,7 +152,7 @@ func DeleteIPGroup(c *gin.Context) {
 		return
 	}
 	// 删除IP组
-	err = global.GvaDb.IpGroup.DeleteOne(firstIpGroup).Exec(c)
+	err = global.GvaEntDb.IpGroup.DeleteOne(firstIpGroup).Exec(c)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
 			fmt.Printf("删除IP组: %s\n", err.Error())
@@ -161,7 +161,7 @@ func DeleteIPGroup(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataDelete(c, firstIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "删除IP组")
+	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "删除IP组")
 	successResponse(c, gin.H{
 		"id": firstIpGroup.ID,
 	})
@@ -177,7 +177,7 @@ func GetIPGroupDevices(c *gin.Context) {
 	}
 
 	// 查询IP组
-	firstIpGroup, err := global.GvaDb.IpGroup.Query().
+	firstIpGroup, err := global.GvaEntDb.IpGroup.Query().
 		Where(ipgroup.IDEQ(requestParams.ID)).
 		WithDevices().
 		First(c)
@@ -212,7 +212,7 @@ func HealthcheckIPGroup(c *gin.Context) {
 	}
 
 	// 查询IP组
-	firstIpGroup, err := global.GvaDb.IpGroup.Query().
+	firstIpGroup, err := global.GvaEntDb.IpGroup.Query().
 		Where(ipgroup.IDEQ(requestParams.ID)).
 		WithDevices().
 		First(c)

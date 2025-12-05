@@ -25,7 +25,7 @@ func (s *IpUpdateService) runDnsTask() {
 	ctx := context.Background()
 
 	// 查询全部DNS记录
-	allDnsRecord, err := global.GvaDb.DNSRecord.Query().
+	allDnsRecord, err := global.GvaEntDb.DNSRecord.Query().
 		Where(dnsrecord.IsActiveEQ(true)).
 		WithConfig().
 		All(ctx)
@@ -118,7 +118,7 @@ func (s *IpUpdateService) runCdnTask() {
 	ctx := context.Background()
 
 	// 查询全部CDN记录
-	allCdnRecord, err := global.GvaDb.CDNRecord.Query().
+	allCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
 		Where(cdnrecord.IsActiveEQ(true)).
 		WithConfig().
 		All(ctx)
@@ -264,7 +264,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 				ctx,
 				cdn_helper.ProcessService{
 					Log:      newLog,
-					Db:       global.GvaDb,
+					Db:       global.GvaEntDb,
 					RecordID: firstRecord.ID,
 					Debug:    global.GvaEnv.DEBUG,
 				},
@@ -297,7 +297,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 				ctx,
 				cdn_helper.ProcessService{
 					Log:      newLog,
-					Db:       global.GvaDb,
+					Db:       global.GvaEntDb,
 					RecordID: firstRecord.ID,
 					GroupID:  firstIPGroup.ID,
 					Debug:    global.GvaEnv.DEBUG,
@@ -381,7 +381,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 			ctx,
 			dns_helper.ProcessService{
 				Log:      newLog,
-				Db:       global.GvaDb,
+				Db:       global.GvaEntDb,
 				RecordID: firstRecord.ID,
 				Debug:    global.GvaEnv.DEBUG,
 			},
@@ -402,7 +402,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 			ctx,
 			dns_helper.ProcessService{
 				Log:      newLog,
-				Db:       global.GvaDb,
+				Db:       global.GvaEntDb,
 				RecordID: firstRecord.ID,
 				Debug:    global.GvaEnv.DEBUG,
 			},

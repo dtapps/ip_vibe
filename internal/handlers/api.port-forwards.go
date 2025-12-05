@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"vibe_ip/ent"
 	"vibe_ip/ent/deviceportforward"
-	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/backend"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -19,7 +19,7 @@ import (
 func GetPortForwards(c *gin.Context) {
 	portForwards := make([]types.GetPortForwardResponse, 0)
 	// 查询全部端口转发
-	allPortForward, err := global.GvaDb.DevicePortForward.Query().
+	allPortForward, err := global.GvaEntDb.DevicePortForward.Query().
 		Order(ent.Desc(deviceportforward.FieldCreatedAt)).
 		All(c)
 	if err != nil {
@@ -54,7 +54,7 @@ func GetPortForward(c *gin.Context) {
 	}
 
 	// 查询端口转发
-	firstPortForward, err := global.GvaDb.DevicePortForward.Query().
+	firstPortForward, err := global.GvaEntDb.DevicePortForward.Query().
 		Where(deviceportforward.IDEQ(requestParams.ID)).
 		WithDevice().
 		First(c)
@@ -87,7 +87,7 @@ func CreatePortForward(c *gin.Context) {
 	}
 
 	// 创建端口转发
-	savePortForward, err := global.GvaDb.DevicePortForward.Create().
+	savePortForward, err := global.GvaEntDb.DevicePortForward.Create().
 		SetName(requestParams.Name).
 		SetDescription(requestParams.Description).
 		SetLocalPort(requestParams.LocalPort).
@@ -104,7 +104,7 @@ func CreatePortForward(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataCreate(c, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "创建端口转发")
+	_ = global.GvaOperationLogHelper.RecordDataCreate(c, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "创建端口转发")
 	successResponse(c, gin.H{
 		"id": savePortForward.ID,
 	})
@@ -120,7 +120,7 @@ func UpdatePortForward(c *gin.Context) {
 	}
 
 	// 查询端口转发
-	firstPortForward, err := global.GvaDb.DevicePortForward.Query().
+	firstPortForward, err := global.GvaEntDb.DevicePortForward.Query().
 		Where(deviceportforward.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -128,7 +128,7 @@ func UpdatePortForward(c *gin.Context) {
 		return
 	}
 	// 更新端口转发
-	savePortForward, err := global.GvaDb.DevicePortForward.UpdateOne(firstPortForward).
+	savePortForward, err := global.GvaEntDb.DevicePortForward.UpdateOne(firstPortForward).
 		SetName(requestParams.Name).
 		SetDescription(requestParams.Description).
 		SetLocalPort(requestParams.LocalPort).
@@ -145,7 +145,7 @@ func UpdatePortForward(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发")
 	successResponse(c, gin.H{
 		"id": savePortForward.ID,
 	})
@@ -161,7 +161,7 @@ func UpdatePortForwardForward(c *gin.Context) {
 	}
 
 	// 查询端口转发
-	firstPortForward, err := global.GvaDb.DevicePortForward.Query().
+	firstPortForward, err := global.GvaEntDb.DevicePortForward.Query().
 		Where(deviceportforward.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -169,7 +169,7 @@ func UpdatePortForwardForward(c *gin.Context) {
 		return
 	}
 	// 更新端口转发状态
-	savePortForward, err := global.GvaDb.DevicePortForward.UpdateOne(firstPortForward).
+	savePortForward, err := global.GvaEntDb.DevicePortForward.UpdateOne(firstPortForward).
 		SetAutoForward(requestParams.AutoForward).
 		Save(c)
 	if err != nil {
@@ -180,7 +180,7 @@ func UpdatePortForwardForward(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发防火墙状态")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发防火墙状态")
 	successResponse(c, gin.H{
 		"id": savePortForward.ID,
 	})
@@ -196,7 +196,7 @@ func UpdatePortForwardActive(c *gin.Context) {
 	}
 
 	// 查询端口转发
-	firstPortForward, err := global.GvaDb.DevicePortForward.Query().
+	firstPortForward, err := global.GvaEntDb.DevicePortForward.Query().
 		Where(deviceportforward.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -204,7 +204,7 @@ func UpdatePortForwardActive(c *gin.Context) {
 		return
 	}
 	// 更新端口转发状态
-	savePortForward, err := global.GvaDb.DevicePortForward.UpdateOne(firstPortForward).
+	savePortForward, err := global.GvaEntDb.DevicePortForward.UpdateOne(firstPortForward).
 		SetIsActive(requestParams.IsActive).
 		Save(c)
 	if err != nil {
@@ -215,7 +215,7 @@ func UpdatePortForwardActive(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发启用状态")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发启用状态")
 	successResponse(c, gin.H{
 		"id": savePortForward.ID,
 	})
@@ -231,7 +231,7 @@ func DeletePortForward(c *gin.Context) {
 	}
 
 	// 查询端口转发
-	firstPortForward, err := global.GvaDb.DevicePortForward.Query().
+	firstPortForward, err := global.GvaEntDb.DevicePortForward.Query().
 		Where(deviceportforward.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -239,7 +239,7 @@ func DeletePortForward(c *gin.Context) {
 		return
 	}
 	// 删除端口转发
-	err = global.GvaDb.DevicePortForward.DeleteOne(firstPortForward).Exec(c)
+	err = global.GvaEntDb.DevicePortForward.DeleteOne(firstPortForward).Exec(c)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
 			fmt.Printf("删除端口转发: %s\n", err.Error())
@@ -248,7 +248,7 @@ func DeletePortForward(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataDelete(c, firstPortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "删除端口转发")
+	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstPortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "删除端口转发")
 	successResponse(c, gin.H{
 		"id": firstPortForward.ID,
 	})
@@ -264,7 +264,7 @@ func HealthcheckPortForward(c *gin.Context) {
 	}
 
 	// 查询端口转发
-	firstPortForward, err := global.GvaDb.DevicePortForward.Query().
+	firstPortForward, err := global.GvaEntDb.DevicePortForward.Query().
 		Where(deviceportforward.IDEQ(requestParams.ID)).
 		WithDevice().
 		First(c)

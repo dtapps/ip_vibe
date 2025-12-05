@@ -32,7 +32,7 @@ func WebhookSub(c *gin.Context) {
 	}
 
 	// 查询全部通知订阅
-	allWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
+	allWebhookSubscription, err := global.GvaEntDb.WebhookSubscription.Query().
 		WithWebhook().
 		Order(ent.Desc(webhooksubscription.FieldCreatedAt)).
 		Paginate(c, requestParams.Page, requestParams.PageSize)
@@ -50,21 +50,21 @@ func WebhookSub(c *gin.Context) {
 			}
 			switch item.ObjType {
 			case webhooksubscription.ObjTypeCdnRecord:
-				firstCdnRecord, err := global.GvaDb.CDNRecord.Query().
+				firstCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
 					Where(cdnrecord.IDEQ(item.ObjID)).
 					First(c)
 				if err == nil {
 					list.ObjName = firstCdnRecord.Domain
 				}
 			case webhooksubscription.ObjTypeDNSRecord:
-				firstDNSRecord, err := global.GvaDb.DNSRecord.Query().
+				firstDNSRecord, err := global.GvaEntDb.DNSRecord.Query().
 					Where(dnsrecord.IDEQ(item.ObjID)).
 					First(c)
 				if err == nil {
 					list.ObjName = firstDNSRecord.Domain
 				}
 			case webhooksubscription.ObjTypeDevice:
-				firstDevice, err := global.GvaDb.Device.Query().
+				firstDevice, err := global.GvaEntDb.Device.Query().
 					Where(device.IDEQ(item.ObjID)).
 					First(c)
 				if err == nil {

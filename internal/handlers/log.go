@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"vibe_ip/ent"
-	"vibe_ip/ent/operationlog"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -29,7 +29,7 @@ func Log(c *gin.Context) {
 	}
 
 	// 查询全部操作日志
-	allOperationLog, err := global.GvaDb.OperationLog.Query().
+	allOperationLog, err := global.GvaEntLogDb.OperationLog.Query().
 		Order(ent.Desc(operationlog.FieldCreatedAt)).
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {

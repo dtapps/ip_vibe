@@ -29,7 +29,7 @@ func DomainMonitor(c *gin.Context) {
 	}
 
 	// 查询全部域名监控
-	allDomainMonitor, err := global.GvaDb.DomainMonitor.Query().
+	allDomainMonitor, err := global.GvaEntDb.DomainMonitor.Query().
 		Order(ent.Desc(domainmonitor.FieldCreatedAt)).
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {

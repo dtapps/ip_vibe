@@ -50,13 +50,15 @@ func main() {
 
 	ctx := context.Background()
 
-	initialize.InitEnt(ctx)        // 初始化 ent
+	initialize.InitEntDb(ctx)      // 初始化 业务数据库
+	initialize.InitEntLogDb(ctx)   // 初始化 日志数据库
 	initialize.InitGoCron()        // 初始化 GoCron 调度器
 	initialize.InitRestyLog()      // 初始化 Resty 日志
 	initialize.InitThirdParty(ctx) // 初始化 第三方
 	initialize.InitSLog("backend") // 初始化 日志
 	defer func() {
-		initialize.CloseEnt()        // 关闭 ent
+		initialize.CloseEntDb()      // 关闭 业务数据库
+		initialize.CloseEntLogDb()   // 关闭 日志数据库
 		initialize.CloseGoCron()     // 关闭 GoCron 调度器
 		initialize.CloseThirdParty() // 关闭 第三方
 	}()
@@ -363,14 +365,14 @@ func main() {
 	initialize.StartGoCron()
 
 	// 启动CDN刷新任务
-	ipUpdate := backend.NewIpUpdateService(global.GvaDb, global.GvaGoCron)
+	ipUpdate := backend.NewIpUpdateService(global.GvaEntDb, global.GvaGoCron)
 	if err := ipUpdate.StartCdnJob(ctx); err != nil {
 		fmt.Printf("启动CDN刷新任务失败: %v\n", err)
 		os.Exit(1)
 	}
 
 	// 启动域名监控任务
-	domainMonitor := backend.NewDomainMonitorService(global.GvaDb, global.GvaGoCron)
+	domainMonitor := backend.NewDomainMonitorService(global.GvaEntDb, global.GvaGoCron)
 	if err := domainMonitor.StartJob(ctx); err != nil {
 		fmt.Printf("启动域名监控任务失败: %v\n", err)
 		os.Exit(1)

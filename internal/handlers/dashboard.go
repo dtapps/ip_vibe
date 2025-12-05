@@ -7,7 +7,7 @@ import (
 	"time"
 	"vibe_ip/ent"
 	"vibe_ip/ent/device"
-	"vibe_ip/ent/operationlog"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/helper/system_helper"
@@ -25,27 +25,27 @@ func Dashboard(c *gin.Context) {
 	pageData.Stats.LogLimit = 15
 
 	// 设备总数
-	pageData.Stats.DeviceCount, _ = global.GvaDb.Device.Query().Count(c)
+	pageData.Stats.DeviceCount, _ = global.GvaEntDb.Device.Query().Count(c)
 
 	// 在线设备总数 (心跳时间在 12 分钟内)
-	pageData.Stats.OnlineDeviceCount, _ = global.GvaDb.Device.Query().
+	pageData.Stats.OnlineDeviceCount, _ = global.GvaEntDb.Device.Query().
 		Where(device.LastHeartbeatAtGTE(time.Now().Add(-12 * time.Minute))).
 		Count(c)
 
 	// DNS 记录
-	pageData.Stats.DnsRecordCount, _ = global.GvaDb.DNSRecord.Query().Count(c)
+	pageData.Stats.DnsRecordCount, _ = global.GvaEntDb.DNSRecord.Query().Count(c)
 
 	// CDN 记录
-	pageData.Stats.CdnRecordCount, _ = global.GvaDb.CDNRecord.Query().Count(c)
+	pageData.Stats.CdnRecordCount, _ = global.GvaEntDb.CDNRecord.Query().Count(c)
 
 	// 通知渠道
-	pageData.Stats.WebhookCount, _ = global.GvaDb.Webhook.Query().Count(c)
+	pageData.Stats.WebhookCount, _ = global.GvaEntDb.Webhook.Query().Count(c)
 
 	// 运行任务
 	pageData.Stats.ActiveTaskCount = len(gocron_helper.NewJobHelper(global.GvaGoCron).GetJobsData(5))
 
 	// 最新操作日志
-	allOperationLog, err := global.GvaDb.OperationLog.Query().
+	allOperationLog, err := global.GvaEntLogDb.OperationLog.Query().
 		Order(ent.Desc(operationlog.FieldCreatedAt)).
 		Limit(pageData.Stats.LogLimit).
 		All(c)

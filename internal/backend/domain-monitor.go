@@ -73,6 +73,14 @@ func (s *DomainMonitorService) checkAndRunAllMonitors() {
 
 	now := time.Now()
 	for _, monitor := range allMonitor {
+		slog.InfoContext(ctx, "检查监控记录",
+			slog.Int64("id", monitor.ID),
+			slog.String("domain", monitor.Domain),
+			slog.String("protocol", monitor.CheckProtocol.String()),
+			slog.Time("last_success_at", monitor.LastSuccessAt),
+			slog.Int("check_interval", monitor.CheckInterval),
+		)
+
 		// 计算预定的下次执行时间
 		var nextRun time.Time
 		if monitor.LastSuccessAt.IsZero() {

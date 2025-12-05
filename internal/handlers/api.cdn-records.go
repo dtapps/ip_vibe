@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"vibe_ip/ent"
 	"vibe_ip/ent/cdnrecord"
-	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/backend"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -19,7 +19,7 @@ import (
 func GetCdnRecords(c *gin.Context) {
 	records := make([]types.GetCdnRecordResponse, 0)
 	// 查询全部CDN记录
-	allCdnRecord, err := global.GvaDb.CDNRecord.Query().
+	allCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
 		WithConfig().
 		WithIPGroup().
 		Order(ent.Desc(cdnrecord.FieldCreatedAt)).
@@ -61,7 +61,7 @@ func GetCdnRecord(c *gin.Context) {
 	}
 
 	// 查询CDN记录
-	firstCdnRecord, err := global.GvaDb.CDNRecord.Query().
+	firstCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
 		Where(cdnrecord.IDEQ(requestParams.ID)).
 		WithConfig().
 		WithIPGroup().
@@ -100,7 +100,7 @@ func CreateCdnRecord(c *gin.Context) {
 	}
 
 	// 创建CDN记录
-	saveCdnRecord, err := global.GvaDb.CDNRecord.Create().
+	saveCdnRecord, err := global.GvaEntDb.CDNRecord.Create().
 		SetConfigID(requestParams.ConfigID).
 		SetDomain(requestParams.Domain).
 		SetType(cdnrecord.Type(requestParams.Type)).
@@ -115,7 +115,7 @@ func CreateCdnRecord(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataCreate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "创建CDN记录")
+	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "创建CDN记录")
 	successResponse(c, gin.H{
 		"id": saveCdnRecord.ID,
 	})
@@ -131,7 +131,7 @@ func UpdateCdnRecord(c *gin.Context) {
 	}
 
 	// 查询CDN记录
-	firstCdnRecord, err := global.GvaDb.CDNRecord.Query().
+	firstCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
 		Where(cdnrecord.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -139,7 +139,7 @@ func UpdateCdnRecord(c *gin.Context) {
 		return
 	}
 	// 更新CDN记录
-	saveCdnRecord, err := global.GvaDb.CDNRecord.UpdateOne(firstCdnRecord).
+	saveCdnRecord, err := global.GvaEntDb.CDNRecord.UpdateOne(firstCdnRecord).
 		SetOriginProtocol(cdnrecord.OriginProtocol(requestParams.OriginProtocol)).
 		SetHTTPPort(requestParams.HTTPPort).
 		SetHTTPSPort(requestParams.HTTPSPort).
@@ -153,7 +153,7 @@ func UpdateCdnRecord(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录")
 	successResponse(c, gin.H{
 		"id": saveCdnRecord.ID,
 	})
@@ -169,7 +169,7 @@ func UpdateCdnRecordActive(c *gin.Context) {
 	}
 
 	// 查询CDN记录
-	firstCdnRecord, err := global.GvaDb.CDNRecord.Query().
+	firstCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
 		Where(cdnrecord.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -177,7 +177,7 @@ func UpdateCdnRecordActive(c *gin.Context) {
 		return
 	}
 	// 更新CDN记录状态
-	saveCdnRecord, err := global.GvaDb.CDNRecord.UpdateOne(firstCdnRecord).
+	saveCdnRecord, err := global.GvaEntDb.CDNRecord.UpdateOne(firstCdnRecord).
 		SetIsActive(requestParams.IsActive).
 		Save(c)
 	if err != nil {
@@ -188,7 +188,7 @@ func UpdateCdnRecordActive(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录状态")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录状态")
 	successResponse(c, gin.H{
 		"id": saveCdnRecord.ID,
 	})
@@ -204,7 +204,7 @@ func DeleteCdnRecord(c *gin.Context) {
 	}
 
 	// 查询CDN记录
-	firstCdnRecord, err := global.GvaDb.CDNRecord.Query().
+	firstCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
 		Where(cdnrecord.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -212,13 +212,13 @@ func DeleteCdnRecord(c *gin.Context) {
 		return
 	}
 	// 删除CDN记录
-	err = global.GvaDb.CDNRecord.DeleteOne(firstCdnRecord).Exec(c)
+	err = global.GvaEntDb.CDNRecord.DeleteOne(firstCdnRecord).Exec(c)
 	if err != nil {
 		errorResponse(c, http.StatusInternalServerError, "删除CDN记录失败: "+err.Error())
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataDelete(c, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "删除CDN记录")
+	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "删除CDN记录")
 	successResponse(c, gin.H{
 		"id": firstCdnRecord.ID,
 	})
@@ -234,7 +234,7 @@ func HealthcheckCdnRecord(c *gin.Context) {
 	}
 
 	// 查询CDN记录
-	firstCdnRecord, err := global.GvaDb.CDNRecord.Query().
+	firstCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
 		Where(cdnrecord.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"vibe_ip/ent"
 	"vibe_ip/ent/domainmonitor"
-	"vibe_ip/ent/operationlog"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -17,7 +17,7 @@ import (
 func GetDomainMonitors(c *gin.Context) {
 	domainMonitors := make([]types.GetDomainMonitorResponse, 0)
 	// 查询全部域名监控
-	allDomainMonitor, err := global.GvaDb.DomainMonitor.Query().
+	allDomainMonitor, err := global.GvaEntDb.DomainMonitor.Query().
 		Order(ent.Desc(domainmonitor.FieldCreatedAt)).
 		All(c)
 	if err != nil {
@@ -50,7 +50,7 @@ func GetDomainMonitor(c *gin.Context) {
 	}
 
 	// 查询域名监控
-	firstDomainMonitor, err := global.GvaDb.DomainMonitor.Query().
+	firstDomainMonitor, err := global.GvaEntDb.DomainMonitor.Query().
 		Where(domainmonitor.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -80,7 +80,7 @@ func CreateDomainMonitor(c *gin.Context) {
 	}
 
 	// 创建域名监控
-	saveDomainMonitor, err := global.GvaDb.DomainMonitor.Create().
+	saveDomainMonitor, err := global.GvaEntDb.DomainMonitor.Create().
 		SetName(requestParams.Name).
 		SetDomain(requestParams.Domain).
 		SetCheckInterval(requestParams.CheckInterval).
@@ -94,7 +94,7 @@ func CreateDomainMonitor(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataCreate(c, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "创建域名监控")
+	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "创建域名监控")
 	successResponse(c, gin.H{
 		"id": saveDomainMonitor.ID,
 	})
@@ -110,7 +110,7 @@ func UpdateDomainMonitor(c *gin.Context) {
 	}
 
 	// 查询域名监控
-	firstDomainMonitor, err := global.GvaDb.DomainMonitor.Query().
+	firstDomainMonitor, err := global.GvaEntDb.DomainMonitor.Query().
 		Where(domainmonitor.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -118,7 +118,7 @@ func UpdateDomainMonitor(c *gin.Context) {
 		return
 	}
 	// 更新域名监控
-	saveDomainMonitor, err := global.GvaDb.DomainMonitor.UpdateOne(firstDomainMonitor).
+	saveDomainMonitor, err := global.GvaEntDb.DomainMonitor.UpdateOne(firstDomainMonitor).
 		SetName(requestParams.Name).
 		SetCheckInterval(requestParams.CheckInterval).
 		Save(c)
@@ -130,7 +130,7 @@ func UpdateDomainMonitor(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控")
 	successResponse(c, gin.H{
 		"id": saveDomainMonitor.ID,
 	})
@@ -146,7 +146,7 @@ func UpdateDomainMonitorActive(c *gin.Context) {
 	}
 
 	// 查询域名监控
-	firstDomainMonitor, err := global.GvaDb.DomainMonitor.Query().
+	firstDomainMonitor, err := global.GvaEntDb.DomainMonitor.Query().
 		Where(domainmonitor.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -154,7 +154,7 @@ func UpdateDomainMonitorActive(c *gin.Context) {
 		return
 	}
 	// 更新域名监控状态
-	saveDomainMonitor, err := global.GvaDb.DomainMonitor.UpdateOne(firstDomainMonitor).
+	saveDomainMonitor, err := global.GvaEntDb.DomainMonitor.UpdateOne(firstDomainMonitor).
 		SetIsActive(requestParams.IsActive).
 		Save(c)
 	if err != nil {
@@ -165,7 +165,7 @@ func UpdateDomainMonitorActive(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控启用状态")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控启用状态")
 	successResponse(c, gin.H{
 		"id": saveDomainMonitor.ID,
 	})
@@ -181,7 +181,7 @@ func DeleteDomainMonitor(c *gin.Context) {
 	}
 
 	// 查询域名监控
-	firstDomainMonitor, err := global.GvaDb.DomainMonitor.Query().
+	firstDomainMonitor, err := global.GvaEntDb.DomainMonitor.Query().
 		Where(domainmonitor.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -189,7 +189,7 @@ func DeleteDomainMonitor(c *gin.Context) {
 		return
 	}
 	// 删除域名监控
-	err = global.GvaDb.DomainMonitor.DeleteOne(firstDomainMonitor).Exec(c)
+	err = global.GvaEntDb.DomainMonitor.DeleteOne(firstDomainMonitor).Exec(c)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
 			fmt.Printf("删除域名监控: %s\n", err.Error())
@@ -198,7 +198,7 @@ func DeleteDomainMonitor(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataDelete(c, firstDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "删除域名监控")
+	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "删除域名监控")
 	successResponse(c, gin.H{
 		"id": firstDomainMonitor.ID,
 	})

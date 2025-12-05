@@ -29,7 +29,7 @@ func Device(c *gin.Context) {
 	}
 
 	// 查询全部设备
-	allDevice, err := global.GvaDb.Device.Query().
+	allDevice, err := global.GvaEntDb.Device.Query().
 		Order(ent.Desc(device.FieldCreatedAt)).
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {

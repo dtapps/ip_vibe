@@ -29,7 +29,7 @@ func PortForward(c *gin.Context) {
 	}
 
 	// 查询全部端口转发
-	allPortForward, err := global.GvaDb.DevicePortForward.Query().
+	allPortForward, err := global.GvaEntDb.DevicePortForward.Query().
 		WithDevice().
 		Order(ent.Desc(deviceportforward.FieldCreatedAt)).
 		Paginate(c, requestParams.Page, requestParams.PageSize)

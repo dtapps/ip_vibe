@@ -29,7 +29,7 @@ func Dns(c *gin.Context) {
 	}
 
 	// 查询全部DNS记录
-	allDnsRecord, err := global.GvaDb.DNSRecord.Query().
+	allDnsRecord, err := global.GvaEntDb.DNSRecord.Query().
 		WithConfig().
 		WithIPGroup().
 		WithCdnRecord().

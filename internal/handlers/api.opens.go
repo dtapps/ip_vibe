@@ -8,9 +8,9 @@ import (
 	"vibe_ip/ent"
 	"vibe_ip/ent/device"
 	"vibe_ip/ent/deviceportforward"
-	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/webhooksubscription"
 	"vibe_ip/internal/backend"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/helper/operation_logs_helper"
@@ -55,7 +55,7 @@ func DeviceReportDeviceIp(c *gin.Context) {
 	msg := ""
 
 	// 开始事务
-	tx, err := global.GvaDb.Tx(c)
+	tx, err := global.GvaEntDb.Tx(c)
 	if err != nil {
 		errorResponse(c, http.StatusInternalServerError, "开始事务失败: "+err.Error())
 		return
@@ -197,7 +197,7 @@ func DeviceReportDeviceIp(c *gin.Context) {
 			// 发送通知 (你原来就在 go func 中，现在并入这个更集中的异步块)
 			_ = backend.NewWebhookService(asyncDb).Send(asyncCtx, webhooksubscription.ObjTypeDevice, deviceID, notifyData)
 		}
-	}(context.Background(), global.GvaDb, global.GvaOperationLogHelper)
+	}(context.Background(), global.GvaEntDb, global.GvaOperationLogHelper)
 
 	successResponse(c, gin.H{
 		"id":  deviceID,
@@ -215,7 +215,7 @@ func DevicePortForwards(c *gin.Context) {
 	}
 
 	// 查询设备
-	firstDevice, err := global.GvaDb.Device.Query().
+	firstDevice, err := global.GvaEntDb.Device.Query().
 		Where(device.CodeEQ(requestParams.DeviceCode)).
 		First(c)
 	if err != nil {

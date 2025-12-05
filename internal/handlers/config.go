@@ -29,7 +29,7 @@ func Config(c *gin.Context) {
 	}
 
 	// 查询全部配置
-	allConfig, err := global.GvaDb.PlatformConfig.Query().
+	allConfig, err := global.GvaEntDb.PlatformConfig.Query().
 		Order(ent.Desc(platformconfig.FieldCreatedAt)).
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {

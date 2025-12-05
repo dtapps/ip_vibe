@@ -7,8 +7,8 @@ import (
 	"vibe_ip/ent/cdnrecord"
 	"vibe_ip/ent/device"
 	"vibe_ip/ent/dnsrecord"
-	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/webhooksubscription"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -20,7 +20,7 @@ import (
 func GetWebhookSubs(c *gin.Context) {
 	webhooks := make([]types.GetWebhookSubResponse, 0)
 	// 查询全部通知订阅
-	allWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
+	allWebhookSubscription, err := global.GvaEntDb.WebhookSubscription.Query().
 		Order(ent.Desc(webhooksubscription.FieldCreatedAt)).
 		All(c)
 	if err != nil {
@@ -39,21 +39,21 @@ func GetWebhookSubs(c *gin.Context) {
 		}
 		switch item.ObjType {
 		case webhooksubscription.ObjTypeCdnRecord:
-			firstCDNRecord, err := global.GvaDb.CDNRecord.Query().
+			firstCDNRecord, err := global.GvaEntDb.CDNRecord.Query().
 				Where(cdnrecord.IDEQ(item.ObjID)).
 				First(c)
 			if err == nil {
 				list.ObjName = firstCDNRecord.Domain
 			}
 		case webhooksubscription.ObjTypeDNSRecord:
-			firstDNSRecord, err := global.GvaDb.DNSRecord.Query().
+			firstDNSRecord, err := global.GvaEntDb.DNSRecord.Query().
 				Where(dnsrecord.IDEQ(item.ObjID)).
 				First(c)
 			if err == nil {
 				list.ObjName = firstDNSRecord.Domain
 			}
 		case webhooksubscription.ObjTypeDevice:
-			firstDevice, err := global.GvaDb.Device.Query().
+			firstDevice, err := global.GvaEntDb.Device.Query().
 				Where(device.IDEQ(item.ObjID)).
 				First(c)
 			if err == nil {
@@ -75,7 +75,7 @@ func GetWebhookSub(c *gin.Context) {
 	}
 
 	// 查询通知订阅
-	firstWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
+	firstWebhookSubscription, err := global.GvaEntDb.WebhookSubscription.Query().
 		Where(webhooksubscription.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -93,21 +93,21 @@ func GetWebhookSub(c *gin.Context) {
 	}
 	switch firstWebhookSubscription.ObjType {
 	case webhooksubscription.ObjTypeCdnRecord:
-		firstCDNRecord, err := global.GvaDb.CDNRecord.Query().
+		firstCDNRecord, err := global.GvaEntDb.CDNRecord.Query().
 			Where(cdnrecord.IDEQ(firstWebhookSubscription.ObjID)).
 			First(c)
 		if err == nil {
 			list.ObjName = firstCDNRecord.Domain
 		}
 	case webhooksubscription.ObjTypeDNSRecord:
-		firstDNSRecord, err := global.GvaDb.DNSRecord.Query().
+		firstDNSRecord, err := global.GvaEntDb.DNSRecord.Query().
 			Where(dnsrecord.IDEQ(firstWebhookSubscription.ObjID)).
 			First(c)
 		if err == nil {
 			list.ObjName = firstDNSRecord.Domain
 		}
 	case webhooksubscription.ObjTypeDevice:
-		firstDevice, err := global.GvaDb.Device.Query().
+		firstDevice, err := global.GvaEntDb.Device.Query().
 			Where(device.IDEQ(firstWebhookSubscription.ObjID)).
 			First(c)
 		if err == nil {
@@ -128,7 +128,7 @@ func CreateWebhookSub(c *gin.Context) {
 
 	for _, objID := range requestParams.ObjIDs {
 		// 创建通知订阅
-		saveWebhookSubscription, err := global.GvaDb.WebhookSubscription.Create().
+		saveWebhookSubscription, err := global.GvaEntDb.WebhookSubscription.Create().
 			SetName(requestParams.Name).
 			SetDescription(requestParams.Description).
 			SetWebhookID(requestParams.WebhookID).
@@ -143,7 +143,7 @@ func CreateWebhookSub(c *gin.Context) {
 			return
 		}
 		// 记录操作日志
-		_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataCreate(c, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "创建通知订阅")
+		_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "创建通知订阅")
 	}
 	successResponse(c, gin.H{
 		"ids": requestParams.ObjIDs,
@@ -160,7 +160,7 @@ func UpdateWebhookSub(c *gin.Context) {
 	}
 
 	// 查询通知订阅
-	firstWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
+	firstWebhookSubscription, err := global.GvaEntDb.WebhookSubscription.Query().
 		Where(webhooksubscription.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -168,7 +168,7 @@ func UpdateWebhookSub(c *gin.Context) {
 		return
 	}
 	// 更新通知订阅
-	saveWebhookSubscription, err := global.GvaDb.WebhookSubscription.UpdateOne(firstWebhookSubscription).
+	saveWebhookSubscription, err := global.GvaEntDb.WebhookSubscription.UpdateOne(firstWebhookSubscription).
 		SetName(requestParams.Name).
 		SetDescription(requestParams.Description).
 		Save(c)
@@ -180,7 +180,7 @@ func UpdateWebhookSub(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅")
 	successResponse(c, gin.H{
 		"id": saveWebhookSubscription.ID,
 	})
@@ -196,7 +196,7 @@ func UpdateWebhookSubActive(c *gin.Context) {
 	}
 
 	// 查询通知订阅
-	firstWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
+	firstWebhookSubscription, err := global.GvaEntDb.WebhookSubscription.Query().
 		Where(webhooksubscription.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -204,7 +204,7 @@ func UpdateWebhookSubActive(c *gin.Context) {
 		return
 	}
 	// 更新通知订阅状态
-	saveWebhookSubscription, err := global.GvaDb.WebhookSubscription.UpdateOne(firstWebhookSubscription).
+	saveWebhookSubscription, err := global.GvaEntDb.WebhookSubscription.UpdateOne(firstWebhookSubscription).
 		SetIsActive(requestParams.IsActive).
 		Save(c)
 	if err != nil {
@@ -215,7 +215,7 @@ func UpdateWebhookSubActive(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅状态")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅状态")
 	successResponse(c, gin.H{
 		"id": saveWebhookSubscription.ID,
 	})
@@ -231,7 +231,7 @@ func DeleteWebhookSub(c *gin.Context) {
 	}
 
 	// 查询通知订阅
-	firstWebhookSubscription, err := global.GvaDb.WebhookSubscription.Query().
+	firstWebhookSubscription, err := global.GvaEntDb.WebhookSubscription.Query().
 		Where(webhooksubscription.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -239,7 +239,7 @@ func DeleteWebhookSub(c *gin.Context) {
 		return
 	}
 	// 删除通知订阅
-	err = global.GvaDb.WebhookSubscription.DeleteOne(firstWebhookSubscription).Exec(c)
+	err = global.GvaEntDb.WebhookSubscription.DeleteOne(firstWebhookSubscription).Exec(c)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
 			fmt.Printf("删除通知订阅: %s\n", err.Error())
@@ -248,7 +248,7 @@ func DeleteWebhookSub(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataDelete(c, firstWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "删除通知订阅")
+	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "删除通知订阅")
 	successResponse(c, gin.H{
 		"id": firstWebhookSubscription.ID,
 	})

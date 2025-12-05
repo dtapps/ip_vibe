@@ -2,6 +2,7 @@ package global
 
 import (
 	"vibe_ip/ent"
+	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/helper/operation_logs_helper"
 
 	"github.com/go-co-op/gocron/v2"
@@ -35,7 +36,8 @@ var (
 	GvaGoCron        gocron.Scheduler // 定时任务
 	GvaGoCronRunning int32            // 定时任务状态 0=停 1=运行
 
-	GvaDb *ent.Client // 数据库
+	GvaEntDb    *ent.Client     // 业务数据库
+	GvaEntLogDb *ent_log.Client // 日志数据库
 
 	GvaOperationLogHelper *operation_logs_helper.OperationLogHelper // 操作日志助手
 

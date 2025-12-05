@@ -3,7 +3,7 @@ package initialize
 import (
 	"context"
 	"log/slog"
-	"vibe_ip/ent"
+	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/global"
 
 	"go.dtapp.net/library/contrib/resty_log"
@@ -11,7 +11,7 @@ import (
 
 // 实现 LogSaver 接口
 type EntLogSaver struct {
-	db *ent.Client
+	db *ent_log.Client
 }
 
 func (s *EntLogSaver) SaveLog(ctx context.Context, data *resty_log.LogData) error {
@@ -36,7 +36,7 @@ func (s *EntLogSaver) SaveLog(ctx context.Context, data *resty_log.LogData) erro
 		)
 	}
 
-	go func(asyncCtx context.Context, asyncDb *ent.Client) {
+	go func(asyncCtx context.Context, asyncDb *ent_log.Client) {
 		_ = asyncDb.RestyLog.Create().
 			SetHostname(data.Hostname).
 			SetMethod(data.Method).
@@ -65,7 +65,7 @@ func InitRestyLog() {
 				slog.String("URL", data.URL),
 			)
 		}
-		if global.GvaDb == nil || data == nil {
+		if global.GvaEntLogDb == nil || data == nil {
 			return nil
 		}
 		if global.GvaEnv.DEBUG {
@@ -79,7 +79,7 @@ func InitRestyLog() {
 			)
 		}
 
-		go func(asyncCtx context.Context, asyncDb *ent.Client) {
+		go func(asyncCtx context.Context, asyncDb *ent_log.Client) {
 			_ = asyncDb.RestyLog.Create().
 				SetHostname(data.Hostname).
 				SetMethod(data.Method).
@@ -92,14 +92,14 @@ func InitRestyLog() {
 				SetElapseTime(data.ElapseTime).
 				SetIsError(data.IsError).
 				Exec(asyncCtx)
-		}(ctx, global.GvaDb)
+		}(ctx, global.GvaEntLogDb)
 
 		return nil
 	}
 
 	// 创建 LogSaver 实现
 	saver := &EntLogSaver{
-		db: global.GvaDb,
+		db: global.GvaEntLogDb,
 	}
 
 	// 初始化 Logger，传入回调和接口（回调优先）

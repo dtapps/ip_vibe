@@ -29,7 +29,7 @@ func IPGroup(c *gin.Context) {
 	}
 
 	// 查询全部IP组
-	allIpGroup, err := global.GvaDb.IpGroup.Query().
+	allIpGroup, err := global.GvaEntDb.IpGroup.Query().
 		WithDevices().
 		Order(ent.Desc(ipgroup.FieldCreatedAt)).
 		Paginate(c, requestParams.Page, requestParams.PageSize)

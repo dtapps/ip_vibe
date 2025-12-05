@@ -6,8 +6,8 @@ import (
 	"vibe_ip/ent"
 	"vibe_ip/ent/device"
 	"vibe_ip/ent/deviceipreport"
-	"vibe_ip/ent/operationlog"
 	"vibe_ip/internal/backend"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -20,7 +20,7 @@ import (
 func GetDevices(c *gin.Context) {
 	devices := make([]types.GetDeviceResponse, 0)
 	// 查询全部设备
-	allDevice, err := global.GvaDb.Device.Query().
+	allDevice, err := global.GvaEntDb.Device.Query().
 		Order(ent.Desc(device.FieldCreatedAt)).
 		All(c)
 	if err != nil {
@@ -52,7 +52,7 @@ func GetDevice(c *gin.Context) {
 	}
 
 	// 查询设备
-	firstDevice, err := global.GvaDb.Device.Query().
+	firstDevice, err := global.GvaEntDb.Device.Query().
 		Where(device.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -81,7 +81,7 @@ func CreateDevice(c *gin.Context) {
 	}
 
 	// 创建设备
-	saveDevice, err := global.GvaDb.Device.Create().
+	saveDevice, err := global.GvaEntDb.Device.Create().
 		SetCode(requestParams.Code).
 		SetName(requestParams.Name).
 		SetDescription(requestParams.Description).
@@ -96,7 +96,7 @@ func CreateDevice(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataCreate(c, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "创建设备")
+	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "创建设备")
 	successResponse(c, gin.H{
 		"id": saveDevice.ID,
 	})
@@ -112,7 +112,7 @@ func UpdateDevice(c *gin.Context) {
 	}
 
 	// 查询设备
-	firstDevice, err := global.GvaDb.Device.Query().
+	firstDevice, err := global.GvaEntDb.Device.Query().
 		Where(device.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -120,7 +120,7 @@ func UpdateDevice(c *gin.Context) {
 		return
 	}
 	// 更新设备
-	saveDevice, err := global.GvaDb.Device.UpdateOne(firstDevice).
+	saveDevice, err := global.GvaEntDb.Device.UpdateOne(firstDevice).
 		SetName(requestParams.Name).
 		SetDescription(requestParams.Description).
 		SetIPV4(requestParams.IPV4).
@@ -134,7 +134,7 @@ func UpdateDevice(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataUpdate(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "更新设备")
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "更新设备")
 	successResponse(c, gin.H{
 		"id": saveDevice.ID,
 	})
@@ -150,7 +150,7 @@ func DeleteDevice(c *gin.Context) {
 	}
 
 	// 查询设备
-	firstDevice, err := global.GvaDb.Device.Query().
+	firstDevice, err := global.GvaEntDb.Device.Query().
 		Where(device.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -158,7 +158,7 @@ func DeleteDevice(c *gin.Context) {
 		return
 	}
 	// 删除设备
-	err = global.GvaDb.Device.DeleteOne(firstDevice).Exec(c)
+	err = global.GvaEntDb.Device.DeleteOne(firstDevice).Exec(c)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
 			fmt.Printf("删除设备: %s\n", err.Error())
@@ -167,7 +167,7 @@ func DeleteDevice(c *gin.Context) {
 		return
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.SetDb(global.GvaDb).RecordDataDelete(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "删除设备")
+	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "删除设备")
 	successResponse(c, gin.H{
 		"id": firstDevice.ID,
 	})
@@ -183,7 +183,7 @@ func GetDeviceIpHistory(c *gin.Context) {
 	}
 
 	// 查询设备
-	firstDevice, err := global.GvaDb.Device.Query().
+	firstDevice, err := global.GvaEntDb.Device.Query().
 		Where(device.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
@@ -220,7 +220,7 @@ func HealthcheckDevice(c *gin.Context) {
 	}
 
 	// 查询设备
-	firstDevice, err := global.GvaDb.Device.Query().
+	firstDevice, err := global.GvaEntDb.Device.Query().
 		Where(device.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
