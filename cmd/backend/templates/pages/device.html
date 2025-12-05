@@ -52,9 +52,13 @@
             >
               {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
-            <button class="btn btn-sm btn-danger" onclick="onDelete('{{.ID}}')">
-              {{ template "icons" (dict "Name" "ip-delete") }} 删除
-            </button>
+            {{ template "button" (dict 
+                "Type" "danger" 
+                "IconName" "ip-delete" 
+                "Text" "删除" 
+                "URL" $urlPath
+                "NoReload" true
+            )}}
           </td>
         </tr>
         {{ end }}

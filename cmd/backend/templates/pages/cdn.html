@@ -85,20 +85,15 @@
             >
               {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
-            {{if .IsActive}}
-            <span
-              class="btn-tooltip-wrapper"
-              title="启用状态时不允许删除，请先禁止后操作再删除！"
-            >
-              <button class="btn btn-sm btn-danger" disabled>
-                {{ template "icons" (dict "Name" "ip-delete") }} 删除
-              </button>
-            </span>
-            {{else}}
-            <button class="btn btn-sm btn-danger" onclick="onDelete('{{.ID}}')">
-              {{ template "icons" (dict "Name" "ip-delete") }} 删除
-            </button>
-            {{end}}
+            {{ template "button" (dict 
+                "Type" "danger" 
+                "IconName" "ip-delete" 
+                "Text" "删除" 
+                "URL" $urlPath
+                "Disabled" .IsActive 
+                "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
+                "NoReload" true
+            )}}
           </td>
         </tr>
         {{end}}
