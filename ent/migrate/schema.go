@@ -289,9 +289,9 @@ var (
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
 		{Name: "domain", Type: field.TypeString, Comment: "域名"},
 		{Name: "check_interval", Type: field.TypeInt, Comment: "检查间隔（秒）", Default: 60},
-		{Name: "check_protocol", Type: field.TypeEnum, Comment: "检查类型（HTTP/HTTPS）", Enums: []string{"HTTP", "HTTPS"}},
+		{Name: "check_protocol", Type: field.TypeEnum, Comment: "检查类型（HTTP/HTTPS）", Enums: []string{"http", "https"}},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
-		{Name: "current_status", Type: field.TypeEnum, Comment: "当前运行状态", Enums: []string{"UP", "DOWN", "UNKNOWN"}, Default: "UNKNOWN"},
+		{Name: "current_status", Type: field.TypeEnum, Comment: "当前运行状态", Enums: []string{"up", "down", "unknown"}, Default: "unknown"},
 		{Name: "last_success_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次检查成功时间"},
 		{Name: "last_failure_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次检查失败时间"},
 	}
@@ -304,7 +304,7 @@ var (
 		Indexes: []*schema.Index{
 			{
 				Name:    "domainmonitor_domain",
-				Unique:  true,
+				Unique:  false,
 				Columns: []*schema.Column{DomainMonitorColumns[4]},
 			},
 			{
@@ -427,7 +427,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "op_type", Type: field.TypeEnum, Comment: "操作类型", Enums: []string{"data_create", "data_update", "data_delete", "device_report", "ip_refresh"}},
 		{Name: "obj_id", Type: field.TypeInt64, Comment: "对象主键"},
-		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"platform_config", "cdn_record", "dns_record", "device", "device_ip_report", "ip_group", "ip_group_device", "webhook", "webhook_subscription", "device_port_forward"}},
+		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"platform_config", "cdn_record", "dns_record", "device", "device_ip_report", "ip_group", "ip_group_device", "webhook", "webhook_subscription", "device_port_forward", "domain_monitor", "domain_monitor_history"}},
 		{Name: "old_value", Type: field.TypeString, Nullable: true, Comment: "旧值"},
 		{Name: "new_value", Type: field.TypeString, Nullable: true, Comment: "新值"},
 		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"success", "failed"}},

@@ -2,7 +2,7 @@ package types
 
 import "time"
 
-// 获取全部CDN记录 响应结构
+// 获取CDN记录 响应结构
 type GetCdnRecordResponse struct {
 	ID             int64     `json:"id,omitempty"`              // CDN 记录序号
 	ConfigID       int64     `json:"config_id"`                 // 平台配置序号

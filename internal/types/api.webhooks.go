@@ -1,6 +1,6 @@
 package types
 
-// 获取全部通知 响应结构
+// 获取通知 响应结构
 type GetWebhookResponse struct {
 	ID              int64    `json:"id"`                         // 通知序号
 	Name            string   `json:"name"`                       // 通知名称

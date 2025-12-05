@@ -22,10 +22,9 @@ func Task(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.TaskResponse{
-		List:     []gocron_helper.JobData{},
-		Page:     0,
-		PageSize: 0,
-		Total:    0,
+		CommonPageResponse: types.CommonPageResponse[gocron_helper.JobData]{
+			List: []gocron_helper.JobData{},
+		},
 	}
 
 	// 任务助手

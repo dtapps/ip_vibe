@@ -93,16 +93,18 @@ type ObjType string
 
 // ObjType values.
 const (
-	ObjTypePlatformConfig      ObjType = "platform_config"
-	ObjTypeCdnRecord           ObjType = "cdn_record"
-	ObjTypeDNSRecord           ObjType = "dns_record"
-	ObjTypeDevice              ObjType = "device"
-	ObjTypeDeviceIPReport      ObjType = "device_ip_report"
-	ObjTypeIPGroup             ObjType = "ip_group"
-	ObjTypeIPGroupDevice       ObjType = "ip_group_device"
-	ObjTypeWebhook             ObjType = "webhook"
-	ObjTypeWebhookSubscription ObjType = "webhook_subscription"
-	ObjTypeDevicePortForward   ObjType = "device_port_forward"
+	ObjTypePlatformConfig       ObjType = "platform_config"
+	ObjTypeCdnRecord            ObjType = "cdn_record"
+	ObjTypeDNSRecord            ObjType = "dns_record"
+	ObjTypeDevice               ObjType = "device"
+	ObjTypeDeviceIPReport       ObjType = "device_ip_report"
+	ObjTypeIPGroup              ObjType = "ip_group"
+	ObjTypeIPGroupDevice        ObjType = "ip_group_device"
+	ObjTypeWebhook              ObjType = "webhook"
+	ObjTypeWebhookSubscription  ObjType = "webhook_subscription"
+	ObjTypeDevicePortForward    ObjType = "device_port_forward"
+	ObjTypeDomainMonitor        ObjType = "domain_monitor"
+	ObjTypeDomainMonitorHistory ObjType = "domain_monitor_history"
 )
 
 func (ot ObjType) String() string {
@@ -112,7 +114,7 @@ func (ot ObjType) String() string {
 // ObjTypeValidator is a validator for the "obj_type" field enum values. It is called by the builders before save.
 func ObjTypeValidator(ot ObjType) error {
 	switch ot {
-	case ObjTypePlatformConfig, ObjTypeCdnRecord, ObjTypeDNSRecord, ObjTypeDevice, ObjTypeDeviceIPReport, ObjTypeIPGroup, ObjTypeIPGroupDevice, ObjTypeWebhook, ObjTypeWebhookSubscription, ObjTypeDevicePortForward:
+	case ObjTypePlatformConfig, ObjTypeCdnRecord, ObjTypeDNSRecord, ObjTypeDevice, ObjTypeDeviceIPReport, ObjTypeIPGroup, ObjTypeIPGroupDevice, ObjTypeWebhook, ObjTypeWebhookSubscription, ObjTypeDevicePortForward, ObjTypeDomainMonitor, ObjTypeDomainMonitorHistory:
 		return nil
 	default:
 		return fmt.Errorf("operationlog: invalid enum value for obj_type field: %q", ot)

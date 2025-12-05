@@ -91,8 +91,8 @@ type CheckProtocol string
 
 // CheckProtocol values.
 const (
-	CheckProtocolHTTP  CheckProtocol = "HTTP"
-	CheckProtocolHTTPS CheckProtocol = "HTTPS"
+	CheckProtocolHTTP  CheckProtocol = "http"
+	CheckProtocolHTTPS CheckProtocol = "https"
 )
 
 func (cp CheckProtocol) String() string {
@@ -112,14 +112,14 @@ func CheckProtocolValidator(cp CheckProtocol) error {
 // CurrentStatus defines the type for the "current_status" enum field.
 type CurrentStatus string
 
-// CurrentStatusUNKNOWN is the default value of the CurrentStatus enum.
-const DefaultCurrentStatus = CurrentStatusUNKNOWN
+// CurrentStatusUnknown is the default value of the CurrentStatus enum.
+const DefaultCurrentStatus = CurrentStatusUnknown
 
 // CurrentStatus values.
 const (
-	CurrentStatusUP      CurrentStatus = "UP"
-	CurrentStatusDOWN    CurrentStatus = "DOWN"
-	CurrentStatusUNKNOWN CurrentStatus = "UNKNOWN"
+	CurrentStatusUp      CurrentStatus = "up"
+	CurrentStatusDown    CurrentStatus = "down"
+	CurrentStatusUnknown CurrentStatus = "unknown"
 )
 
 func (cs CurrentStatus) String() string {
@@ -129,7 +129,7 @@ func (cs CurrentStatus) String() string {
 // CurrentStatusValidator is a validator for the "current_status" field enum values. It is called by the builders before save.
 func CurrentStatusValidator(cs CurrentStatus) error {
 	switch cs {
-	case CurrentStatusUP, CurrentStatusDOWN, CurrentStatusUNKNOWN:
+	case CurrentStatusUp, CurrentStatusDown, CurrentStatusUnknown:
 		return nil
 	default:
 		return fmt.Errorf("domainmonitor: invalid enum value for current_status field: %q", cs)

@@ -418,18 +418,6 @@ func (u *DomainMonitorUpsert) UpdateName() *DomainMonitorUpsert {
 	return u
 }
 
-// SetDomain sets the "domain" field.
-func (u *DomainMonitorUpsert) SetDomain(v string) *DomainMonitorUpsert {
-	u.Set(domainmonitor.FieldDomain, v)
-	return u
-}
-
-// UpdateDomain sets the "domain" field to the value that was provided on create.
-func (u *DomainMonitorUpsert) UpdateDomain() *DomainMonitorUpsert {
-	u.SetExcluded(domainmonitor.FieldDomain)
-	return u
-}
-
 // SetCheckInterval sets the "check_interval" field.
 func (u *DomainMonitorUpsert) SetCheckInterval(v int) *DomainMonitorUpsert {
 	u.Set(domainmonitor.FieldCheckInterval, v)
@@ -445,18 +433,6 @@ func (u *DomainMonitorUpsert) UpdateCheckInterval() *DomainMonitorUpsert {
 // AddCheckInterval adds v to the "check_interval" field.
 func (u *DomainMonitorUpsert) AddCheckInterval(v int) *DomainMonitorUpsert {
 	u.Add(domainmonitor.FieldCheckInterval, v)
-	return u
-}
-
-// SetCheckProtocol sets the "check_protocol" field.
-func (u *DomainMonitorUpsert) SetCheckProtocol(v domainmonitor.CheckProtocol) *DomainMonitorUpsert {
-	u.Set(domainmonitor.FieldCheckProtocol, v)
-	return u
-}
-
-// UpdateCheckProtocol sets the "check_protocol" field to the value that was provided on create.
-func (u *DomainMonitorUpsert) UpdateCheckProtocol() *DomainMonitorUpsert {
-	u.SetExcluded(domainmonitor.FieldCheckProtocol)
 	return u
 }
 
@@ -540,6 +516,12 @@ func (u *DomainMonitorUpsertOne) UpdateNewValues() *DomainMonitorUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(domainmonitor.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.Domain(); exists {
+			s.SetIgnore(domainmonitor.FieldDomain)
+		}
+		if _, exists := u.create.mutation.CheckProtocol(); exists {
+			s.SetIgnore(domainmonitor.FieldCheckProtocol)
+		}
 	}))
 	return u
 }
@@ -599,20 +581,6 @@ func (u *DomainMonitorUpsertOne) UpdateName() *DomainMonitorUpsertOne {
 	})
 }
 
-// SetDomain sets the "domain" field.
-func (u *DomainMonitorUpsertOne) SetDomain(v string) *DomainMonitorUpsertOne {
-	return u.Update(func(s *DomainMonitorUpsert) {
-		s.SetDomain(v)
-	})
-}
-
-// UpdateDomain sets the "domain" field to the value that was provided on create.
-func (u *DomainMonitorUpsertOne) UpdateDomain() *DomainMonitorUpsertOne {
-	return u.Update(func(s *DomainMonitorUpsert) {
-		s.UpdateDomain()
-	})
-}
-
 // SetCheckInterval sets the "check_interval" field.
 func (u *DomainMonitorUpsertOne) SetCheckInterval(v int) *DomainMonitorUpsertOne {
 	return u.Update(func(s *DomainMonitorUpsert) {
@@ -631,20 +599,6 @@ func (u *DomainMonitorUpsertOne) AddCheckInterval(v int) *DomainMonitorUpsertOne
 func (u *DomainMonitorUpsertOne) UpdateCheckInterval() *DomainMonitorUpsertOne {
 	return u.Update(func(s *DomainMonitorUpsert) {
 		s.UpdateCheckInterval()
-	})
-}
-
-// SetCheckProtocol sets the "check_protocol" field.
-func (u *DomainMonitorUpsertOne) SetCheckProtocol(v domainmonitor.CheckProtocol) *DomainMonitorUpsertOne {
-	return u.Update(func(s *DomainMonitorUpsert) {
-		s.SetCheckProtocol(v)
-	})
-}
-
-// UpdateCheckProtocol sets the "check_protocol" field to the value that was provided on create.
-func (u *DomainMonitorUpsertOne) UpdateCheckProtocol() *DomainMonitorUpsertOne {
-	return u.Update(func(s *DomainMonitorUpsert) {
-		s.UpdateCheckProtocol()
 	})
 }
 
@@ -903,6 +857,12 @@ func (u *DomainMonitorUpsertBulk) UpdateNewValues() *DomainMonitorUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(domainmonitor.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.Domain(); exists {
+				s.SetIgnore(domainmonitor.FieldDomain)
+			}
+			if _, exists := b.mutation.CheckProtocol(); exists {
+				s.SetIgnore(domainmonitor.FieldCheckProtocol)
+			}
 		}
 	}))
 	return u
@@ -963,20 +923,6 @@ func (u *DomainMonitorUpsertBulk) UpdateName() *DomainMonitorUpsertBulk {
 	})
 }
 
-// SetDomain sets the "domain" field.
-func (u *DomainMonitorUpsertBulk) SetDomain(v string) *DomainMonitorUpsertBulk {
-	return u.Update(func(s *DomainMonitorUpsert) {
-		s.SetDomain(v)
-	})
-}
-
-// UpdateDomain sets the "domain" field to the value that was provided on create.
-func (u *DomainMonitorUpsertBulk) UpdateDomain() *DomainMonitorUpsertBulk {
-	return u.Update(func(s *DomainMonitorUpsert) {
-		s.UpdateDomain()
-	})
-}
-
 // SetCheckInterval sets the "check_interval" field.
 func (u *DomainMonitorUpsertBulk) SetCheckInterval(v int) *DomainMonitorUpsertBulk {
 	return u.Update(func(s *DomainMonitorUpsert) {
@@ -995,20 +941,6 @@ func (u *DomainMonitorUpsertBulk) AddCheckInterval(v int) *DomainMonitorUpsertBu
 func (u *DomainMonitorUpsertBulk) UpdateCheckInterval() *DomainMonitorUpsertBulk {
 	return u.Update(func(s *DomainMonitorUpsert) {
 		s.UpdateCheckInterval()
-	})
-}
-
-// SetCheckProtocol sets the "check_protocol" field.
-func (u *DomainMonitorUpsertBulk) SetCheckProtocol(v domainmonitor.CheckProtocol) *DomainMonitorUpsertBulk {
-	return u.Update(func(s *DomainMonitorUpsert) {
-		s.SetCheckProtocol(v)
-	})
-}
-
-// UpdateCheckProtocol sets the "check_protocol" field to the value that was provided on create.
-func (u *DomainMonitorUpsertBulk) UpdateCheckProtocol() *DomainMonitorUpsertBulk {
-	return u.Update(func(s *DomainMonitorUpsert) {
-		s.UpdateCheckProtocol()
 	})
 }
 

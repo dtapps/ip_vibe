@@ -23,10 +23,9 @@ func Device(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.DeviceResponse{
-		List:     []types.GetDeviceResponse{},
-		Page:     0,
-		PageSize: 0,
-		Total:    0,
+		CommonPageResponse: types.CommonPageResponse[types.GetDeviceResponse]{
+			List: []types.GetDeviceResponse{},
+		},
 	}
 
 	// 查询全部设备

@@ -218,6 +218,9 @@ func main() {
 	// 端口转发页面 - 提供HTML页面并渲染数据
 	router.GET("/port-forward", handlers.PortForward)
 
+	// 域名监控页面 - 提供HTML页面并渲染数据
+	router.GET("/domain-monitor", handlers.DomainMonitor)
+
 	// 通知页面 - 提供HTML页面并渲染数据
 	router.GET("/webhook", handlers.Webhook)
 
@@ -304,6 +307,17 @@ func main() {
 			portForwards.GET("/:id/healthcheck", handlers.HealthcheckPortForward)
 		}
 
+		// 域名监控相关API
+		domainMonitors := api.Group("/domain-monitors")
+		{
+			domainMonitors.GET("", handlers.GetDomainMonitors)
+			domainMonitors.GET("/:id", handlers.GetDomainMonitor)
+			domainMonitors.POST("", handlers.CreateDomainMonitor)
+			domainMonitors.PATCH("/:id", handlers.UpdateDomainMonitor)
+			domainMonitors.PATCH("/:id/active", handlers.UpdateDomainMonitorActive)
+			domainMonitors.DELETE("/:id", handlers.DeleteDomainMonitor)
+		}
+
 		// 通知相关API
 		webhooks := api.Group("/webhooks")
 		{
@@ -352,6 +366,13 @@ func main() {
 	ipUpdate := backend.NewIpUpdateService(global.GvaDb, global.GvaGoCron)
 	if err := ipUpdate.StartCdnJob(ctx); err != nil {
 		fmt.Printf("启动CDN刷新任务失败: %v\n", err)
+		os.Exit(1)
+	}
+
+	// 启动域名监控任务
+	domainMonitor := backend.NewDomainMonitorService(global.GvaDb, global.GvaGoCron)
+	if err := domainMonitor.StartJob(ctx); err != nil {
+		fmt.Printf("启动域名监控任务失败: %v\n", err)
 		os.Exit(1)
 	}
 

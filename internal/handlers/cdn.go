@@ -23,10 +23,9 @@ func Cdn(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.CdnResponse{
-		List:     []types.GetCdnRecordResponse{},
-		Page:     0,
-		PageSize: 0,
-		Total:    0,
+		CommonPageResponse: types.CommonPageResponse[types.GetCdnRecordResponse]{
+			List: []types.GetCdnRecordResponse{},
+		},
 	}
 
 	// 查询全部CDN记录

@@ -23,10 +23,9 @@ func IPGroup(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.IPGroupResponse{
-		List:     []types.GetIPGroupResponse{},
-		Page:     0,
-		PageSize: 0,
-		Total:    0,
+		CommonPageResponse: types.CommonPageResponse[types.GetIPGroupResponse]{
+			List: []types.GetIPGroupResponse{},
+		},
 	}
 
 	// 查询全部IP组

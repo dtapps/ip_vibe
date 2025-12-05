@@ -47,6 +47,7 @@ func (DomainMonitor) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("domain").
+			Immutable().
 			Comment("域名").
 			Annotations(entsql.WithComments(true)),
 
@@ -57,6 +58,7 @@ func (DomainMonitor) Fields() []ent.Field {
 
 		field.Enum("check_protocol").
 			Values(schematype.GetDomainMonitorCheckProtocol()...).
+			Immutable().
 			Comment("检查类型（HTTP/HTTPS）").
 			Annotations(entsql.WithComments(true)),
 
@@ -100,7 +102,8 @@ func (DomainMonitor) Edges() []ent.Edge {
 func (DomainMonitor) Indexes() []ent.Index {
 	return []ent.Index{
 		// 按域名排序
-		index.Fields("domain").Unique(),
+		index.Fields("domain").
+			Annotations(entsql.WithComments(true)),
 
 		// 确保一个域名不能存在多个相同类型的记录
 		index.Fields("domain", "check_protocol").

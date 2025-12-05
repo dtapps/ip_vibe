@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// 获取全部操作日志 响应结构
+// 获取操作日志 响应结构
 type GetLogResponse struct {
 	ID        int64     `json:"id"`         // 日志序号
 	OpType    string    `json:"op_type"`    // 操作类型

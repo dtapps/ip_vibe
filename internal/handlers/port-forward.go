@@ -23,10 +23,9 @@ func PortForward(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.PortForwardResponse{
-		List:     []types.GetPortForwardResponse{},
-		Page:     0,
-		PageSize: 0,
-		Total:    0,
+		CommonPageResponse: types.CommonPageResponse[types.GetPortForwardResponse]{
+			List: []types.GetPortForwardResponse{},
+		},
 	}
 
 	// 查询全部端口转发

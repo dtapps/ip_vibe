@@ -23,10 +23,9 @@ func Log(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.LogResponse{
-		List:     []types.GetLogResponse{},
-		Page:     0,
-		PageSize: 0,
-		Total:    0,
+		CommonPageResponse: types.CommonPageResponse[types.GetLogResponse]{
+			List: []types.GetLogResponse{},
+		},
 	}
 
 	// 查询全部操作日志

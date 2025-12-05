@@ -1,6 +1,6 @@
 package types
 
-// 获取全部IP组 响应结构
+// 获取IP组 响应结构
 type GetIPGroupResponse struct {
 	ID          int64   `json:"id"`                     // IP组序号
 	Name        string  `json:"name"`                   // IP组名称

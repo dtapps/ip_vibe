@@ -6,13 +6,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 	"vibe_ip/ent/domainmonitorhistory"
 	"vibe_ip/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -27,266 +25,6 @@ type DomainMonitorHistoryUpdate struct {
 // Where appends a list predicates to the DomainMonitorHistoryUpdate builder.
 func (_u *DomainMonitorHistoryUpdate) Where(ps ...predicate.DomainMonitorHistory) *DomainMonitorHistoryUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetCheckTime sets the "check_time" field.
-func (_u *DomainMonitorHistoryUpdate) SetCheckTime(v time.Time) *DomainMonitorHistoryUpdate {
-	_u.mutation.SetCheckTime(v)
-	return _u
-}
-
-// SetNillableCheckTime sets the "check_time" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdate) SetNillableCheckTime(v *time.Time) *DomainMonitorHistoryUpdate {
-	if v != nil {
-		_u.SetCheckTime(*v)
-	}
-	return _u
-}
-
-// SetIsSuccess sets the "is_success" field.
-func (_u *DomainMonitorHistoryUpdate) SetIsSuccess(v bool) *DomainMonitorHistoryUpdate {
-	_u.mutation.SetIsSuccess(v)
-	return _u
-}
-
-// SetNillableIsSuccess sets the "is_success" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdate) SetNillableIsSuccess(v *bool) *DomainMonitorHistoryUpdate {
-	if v != nil {
-		_u.SetIsSuccess(*v)
-	}
-	return _u
-}
-
-// SetCheckDuration sets the "check_duration" field.
-func (_u *DomainMonitorHistoryUpdate) SetCheckDuration(v int) *DomainMonitorHistoryUpdate {
-	_u.mutation.ResetCheckDuration()
-	_u.mutation.SetCheckDuration(v)
-	return _u
-}
-
-// SetNillableCheckDuration sets the "check_duration" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdate) SetNillableCheckDuration(v *int) *DomainMonitorHistoryUpdate {
-	if v != nil {
-		_u.SetCheckDuration(*v)
-	}
-	return _u
-}
-
-// AddCheckDuration adds value to the "check_duration" field.
-func (_u *DomainMonitorHistoryUpdate) AddCheckDuration(v int) *DomainMonitorHistoryUpdate {
-	_u.mutation.AddCheckDuration(v)
-	return _u
-}
-
-// ClearCheckDuration clears the value of the "check_duration" field.
-func (_u *DomainMonitorHistoryUpdate) ClearCheckDuration() *DomainMonitorHistoryUpdate {
-	_u.mutation.ClearCheckDuration()
-	return _u
-}
-
-// SetStatusMessage sets the "status_message" field.
-func (_u *DomainMonitorHistoryUpdate) SetStatusMessage(v string) *DomainMonitorHistoryUpdate {
-	_u.mutation.SetStatusMessage(v)
-	return _u
-}
-
-// SetNillableStatusMessage sets the "status_message" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdate) SetNillableStatusMessage(v *string) *DomainMonitorHistoryUpdate {
-	if v != nil {
-		_u.SetStatusMessage(*v)
-	}
-	return _u
-}
-
-// ClearStatusMessage clears the value of the "status_message" field.
-func (_u *DomainMonitorHistoryUpdate) ClearStatusMessage() *DomainMonitorHistoryUpdate {
-	_u.mutation.ClearStatusMessage()
-	return _u
-}
-
-// SetHTTPStatus sets the "http_status" field.
-func (_u *DomainMonitorHistoryUpdate) SetHTTPStatus(v int) *DomainMonitorHistoryUpdate {
-	_u.mutation.ResetHTTPStatus()
-	_u.mutation.SetHTTPStatus(v)
-	return _u
-}
-
-// SetNillableHTTPStatus sets the "http_status" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdate) SetNillableHTTPStatus(v *int) *DomainMonitorHistoryUpdate {
-	if v != nil {
-		_u.SetHTTPStatus(*v)
-	}
-	return _u
-}
-
-// AddHTTPStatus adds value to the "http_status" field.
-func (_u *DomainMonitorHistoryUpdate) AddHTTPStatus(v int) *DomainMonitorHistoryUpdate {
-	_u.mutation.AddHTTPStatus(v)
-	return _u
-}
-
-// ClearHTTPStatus clears the value of the "http_status" field.
-func (_u *DomainMonitorHistoryUpdate) ClearHTTPStatus() *DomainMonitorHistoryUpdate {
-	_u.mutation.ClearHTTPStatus()
-	return _u
-}
-
-// SetIPResolved sets the "ip_resolved" field.
-func (_u *DomainMonitorHistoryUpdate) SetIPResolved(v []string) *DomainMonitorHistoryUpdate {
-	_u.mutation.SetIPResolved(v)
-	return _u
-}
-
-// AppendIPResolved appends value to the "ip_resolved" field.
-func (_u *DomainMonitorHistoryUpdate) AppendIPResolved(v []string) *DomainMonitorHistoryUpdate {
-	_u.mutation.AppendIPResolved(v)
-	return _u
-}
-
-// ClearIPResolved clears the value of the "ip_resolved" field.
-func (_u *DomainMonitorHistoryUpdate) ClearIPResolved() *DomainMonitorHistoryUpdate {
-	_u.mutation.ClearIPResolved()
-	return _u
-}
-
-// SetErrorLog sets the "error_log" field.
-func (_u *DomainMonitorHistoryUpdate) SetErrorLog(v string) *DomainMonitorHistoryUpdate {
-	_u.mutation.SetErrorLog(v)
-	return _u
-}
-
-// SetNillableErrorLog sets the "error_log" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdate) SetNillableErrorLog(v *string) *DomainMonitorHistoryUpdate {
-	if v != nil {
-		_u.SetErrorLog(*v)
-	}
-	return _u
-}
-
-// ClearErrorLog clears the value of the "error_log" field.
-func (_u *DomainMonitorHistoryUpdate) ClearErrorLog() *DomainMonitorHistoryUpdate {
-	_u.mutation.ClearErrorLog()
-	return _u
-}
-
-// SetSslExpiryDate sets the "ssl_expiry_date" field.
-func (_u *DomainMonitorHistoryUpdate) SetSslExpiryDate(v time.Time) *DomainMonitorHistoryUpdate {
-	_u.mutation.SetSslExpiryDate(v)
-	return _u
-}
-
-// SetNillableSslExpiryDate sets the "ssl_expiry_date" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdate) SetNillableSslExpiryDate(v *time.Time) *DomainMonitorHistoryUpdate {
-	if v != nil {
-		_u.SetSslExpiryDate(*v)
-	}
-	return _u
-}
-
-// ClearSslExpiryDate clears the value of the "ssl_expiry_date" field.
-func (_u *DomainMonitorHistoryUpdate) ClearSslExpiryDate() *DomainMonitorHistoryUpdate {
-	_u.mutation.ClearSslExpiryDate()
-	return _u
-}
-
-// SetSslCommonName sets the "ssl_common_name" field.
-func (_u *DomainMonitorHistoryUpdate) SetSslCommonName(v string) *DomainMonitorHistoryUpdate {
-	_u.mutation.SetSslCommonName(v)
-	return _u
-}
-
-// SetNillableSslCommonName sets the "ssl_common_name" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdate) SetNillableSslCommonName(v *string) *DomainMonitorHistoryUpdate {
-	if v != nil {
-		_u.SetSslCommonName(*v)
-	}
-	return _u
-}
-
-// ClearSslCommonName clears the value of the "ssl_common_name" field.
-func (_u *DomainMonitorHistoryUpdate) ClearSslCommonName() *DomainMonitorHistoryUpdate {
-	_u.mutation.ClearSslCommonName()
-	return _u
-}
-
-// SetSslIssuerName sets the "ssl_issuer_name" field.
-func (_u *DomainMonitorHistoryUpdate) SetSslIssuerName(v string) *DomainMonitorHistoryUpdate {
-	_u.mutation.SetSslIssuerName(v)
-	return _u
-}
-
-// SetNillableSslIssuerName sets the "ssl_issuer_name" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdate) SetNillableSslIssuerName(v *string) *DomainMonitorHistoryUpdate {
-	if v != nil {
-		_u.SetSslIssuerName(*v)
-	}
-	return _u
-}
-
-// ClearSslIssuerName clears the value of the "ssl_issuer_name" field.
-func (_u *DomainMonitorHistoryUpdate) ClearSslIssuerName() *DomainMonitorHistoryUpdate {
-	_u.mutation.ClearSslIssuerName()
-	return _u
-}
-
-// SetSslSignatureAlg sets the "ssl_signature_alg" field.
-func (_u *DomainMonitorHistoryUpdate) SetSslSignatureAlg(v string) *DomainMonitorHistoryUpdate {
-	_u.mutation.SetSslSignatureAlg(v)
-	return _u
-}
-
-// SetNillableSslSignatureAlg sets the "ssl_signature_alg" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdate) SetNillableSslSignatureAlg(v *string) *DomainMonitorHistoryUpdate {
-	if v != nil {
-		_u.SetSslSignatureAlg(*v)
-	}
-	return _u
-}
-
-// ClearSslSignatureAlg clears the value of the "ssl_signature_alg" field.
-func (_u *DomainMonitorHistoryUpdate) ClearSslSignatureAlg() *DomainMonitorHistoryUpdate {
-	_u.mutation.ClearSslSignatureAlg()
-	return _u
-}
-
-// SetSslSanList sets the "ssl_san_list" field.
-func (_u *DomainMonitorHistoryUpdate) SetSslSanList(v string) *DomainMonitorHistoryUpdate {
-	_u.mutation.SetSslSanList(v)
-	return _u
-}
-
-// SetNillableSslSanList sets the "ssl_san_list" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdate) SetNillableSslSanList(v *string) *DomainMonitorHistoryUpdate {
-	if v != nil {
-		_u.SetSslSanList(*v)
-	}
-	return _u
-}
-
-// ClearSslSanList clears the value of the "ssl_san_list" field.
-func (_u *DomainMonitorHistoryUpdate) ClearSslSanList() *DomainMonitorHistoryUpdate {
-	_u.mutation.ClearSslSanList()
-	return _u
-}
-
-// SetSslCertificateChain sets the "ssl_certificate_chain" field.
-func (_u *DomainMonitorHistoryUpdate) SetSslCertificateChain(v string) *DomainMonitorHistoryUpdate {
-	_u.mutation.SetSslCertificateChain(v)
-	return _u
-}
-
-// SetNillableSslCertificateChain sets the "ssl_certificate_chain" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdate) SetNillableSslCertificateChain(v *string) *DomainMonitorHistoryUpdate {
-	if v != nil {
-		_u.SetSslCertificateChain(*v)
-	}
-	return _u
-}
-
-// ClearSslCertificateChain clears the value of the "ssl_certificate_chain" field.
-func (_u *DomainMonitorHistoryUpdate) ClearSslCertificateChain() *DomainMonitorHistoryUpdate {
-	_u.mutation.ClearSslCertificateChain()
 	return _u
 }
 
@@ -348,85 +86,35 @@ func (_u *DomainMonitorHistoryUpdate) sqlSave(ctx context.Context) (_node int, e
 			}
 		}
 	}
-	if value, ok := _u.mutation.CheckTime(); ok {
-		_spec.SetField(domainmonitorhistory.FieldCheckTime, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.IsSuccess(); ok {
-		_spec.SetField(domainmonitorhistory.FieldIsSuccess, field.TypeBool, value)
-	}
-	if value, ok := _u.mutation.CheckDuration(); ok {
-		_spec.SetField(domainmonitorhistory.FieldCheckDuration, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedCheckDuration(); ok {
-		_spec.AddField(domainmonitorhistory.FieldCheckDuration, field.TypeInt, value)
-	}
 	if _u.mutation.CheckDurationCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldCheckDuration, field.TypeInt)
-	}
-	if value, ok := _u.mutation.StatusMessage(); ok {
-		_spec.SetField(domainmonitorhistory.FieldStatusMessage, field.TypeString, value)
 	}
 	if _u.mutation.StatusMessageCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldStatusMessage, field.TypeString)
 	}
-	if value, ok := _u.mutation.HTTPStatus(); ok {
-		_spec.SetField(domainmonitorhistory.FieldHTTPStatus, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedHTTPStatus(); ok {
-		_spec.AddField(domainmonitorhistory.FieldHTTPStatus, field.TypeInt, value)
-	}
 	if _u.mutation.HTTPStatusCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldHTTPStatus, field.TypeInt)
-	}
-	if value, ok := _u.mutation.IPResolved(); ok {
-		_spec.SetField(domainmonitorhistory.FieldIPResolved, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedIPResolved(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, domainmonitorhistory.FieldIPResolved, value)
-		})
 	}
 	if _u.mutation.IPResolvedCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldIPResolved, field.TypeJSON)
 	}
-	if value, ok := _u.mutation.ErrorLog(); ok {
-		_spec.SetField(domainmonitorhistory.FieldErrorLog, field.TypeString, value)
-	}
 	if _u.mutation.ErrorLogCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldErrorLog, field.TypeString)
-	}
-	if value, ok := _u.mutation.SslExpiryDate(); ok {
-		_spec.SetField(domainmonitorhistory.FieldSslExpiryDate, field.TypeTime, value)
 	}
 	if _u.mutation.SslExpiryDateCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldSslExpiryDate, field.TypeTime)
 	}
-	if value, ok := _u.mutation.SslCommonName(); ok {
-		_spec.SetField(domainmonitorhistory.FieldSslCommonName, field.TypeString, value)
-	}
 	if _u.mutation.SslCommonNameCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldSslCommonName, field.TypeString)
-	}
-	if value, ok := _u.mutation.SslIssuerName(); ok {
-		_spec.SetField(domainmonitorhistory.FieldSslIssuerName, field.TypeString, value)
 	}
 	if _u.mutation.SslIssuerNameCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldSslIssuerName, field.TypeString)
 	}
-	if value, ok := _u.mutation.SslSignatureAlg(); ok {
-		_spec.SetField(domainmonitorhistory.FieldSslSignatureAlg, field.TypeString, value)
-	}
 	if _u.mutation.SslSignatureAlgCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldSslSignatureAlg, field.TypeString)
 	}
-	if value, ok := _u.mutation.SslSanList(); ok {
-		_spec.SetField(domainmonitorhistory.FieldSslSanList, field.TypeString, value)
-	}
 	if _u.mutation.SslSanListCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldSslSanList, field.TypeString)
-	}
-	if value, ok := _u.mutation.SslCertificateChain(); ok {
-		_spec.SetField(domainmonitorhistory.FieldSslCertificateChain, field.TypeString, value)
 	}
 	if _u.mutation.SslCertificateChainCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldSslCertificateChain, field.TypeString)
@@ -451,266 +139,6 @@ type DomainMonitorHistoryUpdateOne struct {
 	hooks     []Hook
 	mutation  *DomainMonitorHistoryMutation
 	modifiers []func(*sql.UpdateBuilder)
-}
-
-// SetCheckTime sets the "check_time" field.
-func (_u *DomainMonitorHistoryUpdateOne) SetCheckTime(v time.Time) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.SetCheckTime(v)
-	return _u
-}
-
-// SetNillableCheckTime sets the "check_time" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdateOne) SetNillableCheckTime(v *time.Time) *DomainMonitorHistoryUpdateOne {
-	if v != nil {
-		_u.SetCheckTime(*v)
-	}
-	return _u
-}
-
-// SetIsSuccess sets the "is_success" field.
-func (_u *DomainMonitorHistoryUpdateOne) SetIsSuccess(v bool) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.SetIsSuccess(v)
-	return _u
-}
-
-// SetNillableIsSuccess sets the "is_success" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdateOne) SetNillableIsSuccess(v *bool) *DomainMonitorHistoryUpdateOne {
-	if v != nil {
-		_u.SetIsSuccess(*v)
-	}
-	return _u
-}
-
-// SetCheckDuration sets the "check_duration" field.
-func (_u *DomainMonitorHistoryUpdateOne) SetCheckDuration(v int) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.ResetCheckDuration()
-	_u.mutation.SetCheckDuration(v)
-	return _u
-}
-
-// SetNillableCheckDuration sets the "check_duration" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdateOne) SetNillableCheckDuration(v *int) *DomainMonitorHistoryUpdateOne {
-	if v != nil {
-		_u.SetCheckDuration(*v)
-	}
-	return _u
-}
-
-// AddCheckDuration adds value to the "check_duration" field.
-func (_u *DomainMonitorHistoryUpdateOne) AddCheckDuration(v int) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.AddCheckDuration(v)
-	return _u
-}
-
-// ClearCheckDuration clears the value of the "check_duration" field.
-func (_u *DomainMonitorHistoryUpdateOne) ClearCheckDuration() *DomainMonitorHistoryUpdateOne {
-	_u.mutation.ClearCheckDuration()
-	return _u
-}
-
-// SetStatusMessage sets the "status_message" field.
-func (_u *DomainMonitorHistoryUpdateOne) SetStatusMessage(v string) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.SetStatusMessage(v)
-	return _u
-}
-
-// SetNillableStatusMessage sets the "status_message" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdateOne) SetNillableStatusMessage(v *string) *DomainMonitorHistoryUpdateOne {
-	if v != nil {
-		_u.SetStatusMessage(*v)
-	}
-	return _u
-}
-
-// ClearStatusMessage clears the value of the "status_message" field.
-func (_u *DomainMonitorHistoryUpdateOne) ClearStatusMessage() *DomainMonitorHistoryUpdateOne {
-	_u.mutation.ClearStatusMessage()
-	return _u
-}
-
-// SetHTTPStatus sets the "http_status" field.
-func (_u *DomainMonitorHistoryUpdateOne) SetHTTPStatus(v int) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.ResetHTTPStatus()
-	_u.mutation.SetHTTPStatus(v)
-	return _u
-}
-
-// SetNillableHTTPStatus sets the "http_status" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdateOne) SetNillableHTTPStatus(v *int) *DomainMonitorHistoryUpdateOne {
-	if v != nil {
-		_u.SetHTTPStatus(*v)
-	}
-	return _u
-}
-
-// AddHTTPStatus adds value to the "http_status" field.
-func (_u *DomainMonitorHistoryUpdateOne) AddHTTPStatus(v int) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.AddHTTPStatus(v)
-	return _u
-}
-
-// ClearHTTPStatus clears the value of the "http_status" field.
-func (_u *DomainMonitorHistoryUpdateOne) ClearHTTPStatus() *DomainMonitorHistoryUpdateOne {
-	_u.mutation.ClearHTTPStatus()
-	return _u
-}
-
-// SetIPResolved sets the "ip_resolved" field.
-func (_u *DomainMonitorHistoryUpdateOne) SetIPResolved(v []string) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.SetIPResolved(v)
-	return _u
-}
-
-// AppendIPResolved appends value to the "ip_resolved" field.
-func (_u *DomainMonitorHistoryUpdateOne) AppendIPResolved(v []string) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.AppendIPResolved(v)
-	return _u
-}
-
-// ClearIPResolved clears the value of the "ip_resolved" field.
-func (_u *DomainMonitorHistoryUpdateOne) ClearIPResolved() *DomainMonitorHistoryUpdateOne {
-	_u.mutation.ClearIPResolved()
-	return _u
-}
-
-// SetErrorLog sets the "error_log" field.
-func (_u *DomainMonitorHistoryUpdateOne) SetErrorLog(v string) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.SetErrorLog(v)
-	return _u
-}
-
-// SetNillableErrorLog sets the "error_log" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdateOne) SetNillableErrorLog(v *string) *DomainMonitorHistoryUpdateOne {
-	if v != nil {
-		_u.SetErrorLog(*v)
-	}
-	return _u
-}
-
-// ClearErrorLog clears the value of the "error_log" field.
-func (_u *DomainMonitorHistoryUpdateOne) ClearErrorLog() *DomainMonitorHistoryUpdateOne {
-	_u.mutation.ClearErrorLog()
-	return _u
-}
-
-// SetSslExpiryDate sets the "ssl_expiry_date" field.
-func (_u *DomainMonitorHistoryUpdateOne) SetSslExpiryDate(v time.Time) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.SetSslExpiryDate(v)
-	return _u
-}
-
-// SetNillableSslExpiryDate sets the "ssl_expiry_date" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdateOne) SetNillableSslExpiryDate(v *time.Time) *DomainMonitorHistoryUpdateOne {
-	if v != nil {
-		_u.SetSslExpiryDate(*v)
-	}
-	return _u
-}
-
-// ClearSslExpiryDate clears the value of the "ssl_expiry_date" field.
-func (_u *DomainMonitorHistoryUpdateOne) ClearSslExpiryDate() *DomainMonitorHistoryUpdateOne {
-	_u.mutation.ClearSslExpiryDate()
-	return _u
-}
-
-// SetSslCommonName sets the "ssl_common_name" field.
-func (_u *DomainMonitorHistoryUpdateOne) SetSslCommonName(v string) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.SetSslCommonName(v)
-	return _u
-}
-
-// SetNillableSslCommonName sets the "ssl_common_name" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdateOne) SetNillableSslCommonName(v *string) *DomainMonitorHistoryUpdateOne {
-	if v != nil {
-		_u.SetSslCommonName(*v)
-	}
-	return _u
-}
-
-// ClearSslCommonName clears the value of the "ssl_common_name" field.
-func (_u *DomainMonitorHistoryUpdateOne) ClearSslCommonName() *DomainMonitorHistoryUpdateOne {
-	_u.mutation.ClearSslCommonName()
-	return _u
-}
-
-// SetSslIssuerName sets the "ssl_issuer_name" field.
-func (_u *DomainMonitorHistoryUpdateOne) SetSslIssuerName(v string) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.SetSslIssuerName(v)
-	return _u
-}
-
-// SetNillableSslIssuerName sets the "ssl_issuer_name" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdateOne) SetNillableSslIssuerName(v *string) *DomainMonitorHistoryUpdateOne {
-	if v != nil {
-		_u.SetSslIssuerName(*v)
-	}
-	return _u
-}
-
-// ClearSslIssuerName clears the value of the "ssl_issuer_name" field.
-func (_u *DomainMonitorHistoryUpdateOne) ClearSslIssuerName() *DomainMonitorHistoryUpdateOne {
-	_u.mutation.ClearSslIssuerName()
-	return _u
-}
-
-// SetSslSignatureAlg sets the "ssl_signature_alg" field.
-func (_u *DomainMonitorHistoryUpdateOne) SetSslSignatureAlg(v string) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.SetSslSignatureAlg(v)
-	return _u
-}
-
-// SetNillableSslSignatureAlg sets the "ssl_signature_alg" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdateOne) SetNillableSslSignatureAlg(v *string) *DomainMonitorHistoryUpdateOne {
-	if v != nil {
-		_u.SetSslSignatureAlg(*v)
-	}
-	return _u
-}
-
-// ClearSslSignatureAlg clears the value of the "ssl_signature_alg" field.
-func (_u *DomainMonitorHistoryUpdateOne) ClearSslSignatureAlg() *DomainMonitorHistoryUpdateOne {
-	_u.mutation.ClearSslSignatureAlg()
-	return _u
-}
-
-// SetSslSanList sets the "ssl_san_list" field.
-func (_u *DomainMonitorHistoryUpdateOne) SetSslSanList(v string) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.SetSslSanList(v)
-	return _u
-}
-
-// SetNillableSslSanList sets the "ssl_san_list" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdateOne) SetNillableSslSanList(v *string) *DomainMonitorHistoryUpdateOne {
-	if v != nil {
-		_u.SetSslSanList(*v)
-	}
-	return _u
-}
-
-// ClearSslSanList clears the value of the "ssl_san_list" field.
-func (_u *DomainMonitorHistoryUpdateOne) ClearSslSanList() *DomainMonitorHistoryUpdateOne {
-	_u.mutation.ClearSslSanList()
-	return _u
-}
-
-// SetSslCertificateChain sets the "ssl_certificate_chain" field.
-func (_u *DomainMonitorHistoryUpdateOne) SetSslCertificateChain(v string) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.SetSslCertificateChain(v)
-	return _u
-}
-
-// SetNillableSslCertificateChain sets the "ssl_certificate_chain" field if the given value is not nil.
-func (_u *DomainMonitorHistoryUpdateOne) SetNillableSslCertificateChain(v *string) *DomainMonitorHistoryUpdateOne {
-	if v != nil {
-		_u.SetSslCertificateChain(*v)
-	}
-	return _u
-}
-
-// ClearSslCertificateChain clears the value of the "ssl_certificate_chain" field.
-func (_u *DomainMonitorHistoryUpdateOne) ClearSslCertificateChain() *DomainMonitorHistoryUpdateOne {
-	_u.mutation.ClearSslCertificateChain()
-	return _u
 }
 
 // Mutation returns the DomainMonitorHistoryMutation object of the builder.
@@ -801,85 +229,35 @@ func (_u *DomainMonitorHistoryUpdateOne) sqlSave(ctx context.Context) (_node *Do
 			}
 		}
 	}
-	if value, ok := _u.mutation.CheckTime(); ok {
-		_spec.SetField(domainmonitorhistory.FieldCheckTime, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.IsSuccess(); ok {
-		_spec.SetField(domainmonitorhistory.FieldIsSuccess, field.TypeBool, value)
-	}
-	if value, ok := _u.mutation.CheckDuration(); ok {
-		_spec.SetField(domainmonitorhistory.FieldCheckDuration, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedCheckDuration(); ok {
-		_spec.AddField(domainmonitorhistory.FieldCheckDuration, field.TypeInt, value)
-	}
 	if _u.mutation.CheckDurationCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldCheckDuration, field.TypeInt)
-	}
-	if value, ok := _u.mutation.StatusMessage(); ok {
-		_spec.SetField(domainmonitorhistory.FieldStatusMessage, field.TypeString, value)
 	}
 	if _u.mutation.StatusMessageCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldStatusMessage, field.TypeString)
 	}
-	if value, ok := _u.mutation.HTTPStatus(); ok {
-		_spec.SetField(domainmonitorhistory.FieldHTTPStatus, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedHTTPStatus(); ok {
-		_spec.AddField(domainmonitorhistory.FieldHTTPStatus, field.TypeInt, value)
-	}
 	if _u.mutation.HTTPStatusCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldHTTPStatus, field.TypeInt)
-	}
-	if value, ok := _u.mutation.IPResolved(); ok {
-		_spec.SetField(domainmonitorhistory.FieldIPResolved, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedIPResolved(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, domainmonitorhistory.FieldIPResolved, value)
-		})
 	}
 	if _u.mutation.IPResolvedCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldIPResolved, field.TypeJSON)
 	}
-	if value, ok := _u.mutation.ErrorLog(); ok {
-		_spec.SetField(domainmonitorhistory.FieldErrorLog, field.TypeString, value)
-	}
 	if _u.mutation.ErrorLogCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldErrorLog, field.TypeString)
-	}
-	if value, ok := _u.mutation.SslExpiryDate(); ok {
-		_spec.SetField(domainmonitorhistory.FieldSslExpiryDate, field.TypeTime, value)
 	}
 	if _u.mutation.SslExpiryDateCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldSslExpiryDate, field.TypeTime)
 	}
-	if value, ok := _u.mutation.SslCommonName(); ok {
-		_spec.SetField(domainmonitorhistory.FieldSslCommonName, field.TypeString, value)
-	}
 	if _u.mutation.SslCommonNameCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldSslCommonName, field.TypeString)
-	}
-	if value, ok := _u.mutation.SslIssuerName(); ok {
-		_spec.SetField(domainmonitorhistory.FieldSslIssuerName, field.TypeString, value)
 	}
 	if _u.mutation.SslIssuerNameCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldSslIssuerName, field.TypeString)
 	}
-	if value, ok := _u.mutation.SslSignatureAlg(); ok {
-		_spec.SetField(domainmonitorhistory.FieldSslSignatureAlg, field.TypeString, value)
-	}
 	if _u.mutation.SslSignatureAlgCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldSslSignatureAlg, field.TypeString)
 	}
-	if value, ok := _u.mutation.SslSanList(); ok {
-		_spec.SetField(domainmonitorhistory.FieldSslSanList, field.TypeString, value)
-	}
 	if _u.mutation.SslSanListCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldSslSanList, field.TypeString)
-	}
-	if value, ok := _u.mutation.SslCertificateChain(); ok {
-		_spec.SetField(domainmonitorhistory.FieldSslCertificateChain, field.TypeString, value)
 	}
 	if _u.mutation.SslCertificateChainCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldSslCertificateChain, field.TypeString)

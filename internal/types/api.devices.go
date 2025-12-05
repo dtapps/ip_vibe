@@ -2,7 +2,7 @@ package types
 
 import "time"
 
-// 获取全部设备 响应结构
+// 获取设备 响应结构
 type GetDeviceResponse struct {
 	ID              int64     `json:"id,omitempty"`                // 设备序号
 	Code            string    `json:"code"`                        // 设备编号

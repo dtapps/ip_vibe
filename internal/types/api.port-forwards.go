@@ -1,6 +1,6 @@
 package types
 
-// 获取全部端口转发 响应结构
+// 获取端口转发 响应结构
 type GetPortForwardResponse struct {
 	ID          int64    `json:"id"`                    // 设备端口转发序号
 	Name        string   `json:"name"`                  // 设备端口转发名称

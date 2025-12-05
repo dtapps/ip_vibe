@@ -2,7 +2,7 @@ package types
 
 import "encoding/json"
 
-// 获取全部配置 响应结构
+// 获取配置 响应结构
 type GetConfigResponse struct {
 	ID          int64           `json:"id,omitempty"`          // 配置序号
 	Capability  string          `json:"capability"`            // 平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）

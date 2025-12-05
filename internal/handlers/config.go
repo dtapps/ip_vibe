@@ -23,10 +23,9 @@ func Config(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.ConfigResponse{
-		List:     []types.GetConfigResponse{},
-		Page:     0,
-		PageSize: 0,
-		Total:    0,
+		CommonPageResponse: types.CommonPageResponse[types.GetConfigResponse]{
+			List: []types.GetConfigResponse{},
+		},
 	}
 
 	// 查询全部配置

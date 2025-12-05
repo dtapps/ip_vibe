@@ -26,10 +26,9 @@ func WebhookSub(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.WebhookSubResponse{
-		List:     []types.GetWebhookSubResponse{},
-		Page:     0,
-		PageSize: 0,
-		Total:    0,
+		CommonPageResponse: types.CommonPageResponse[types.GetWebhookSubResponse]{
+			List: []types.GetWebhookSubResponse{},
+		},
 	}
 
 	// 查询全部通知订阅

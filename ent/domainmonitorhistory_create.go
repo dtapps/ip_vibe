@@ -398,240 +398,6 @@ type (
 	}
 )
 
-// SetCheckTime sets the "check_time" field.
-func (u *DomainMonitorHistoryUpsert) SetCheckTime(v time.Time) *DomainMonitorHistoryUpsert {
-	u.Set(domainmonitorhistory.FieldCheckTime, v)
-	return u
-}
-
-// UpdateCheckTime sets the "check_time" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsert) UpdateCheckTime() *DomainMonitorHistoryUpsert {
-	u.SetExcluded(domainmonitorhistory.FieldCheckTime)
-	return u
-}
-
-// SetIsSuccess sets the "is_success" field.
-func (u *DomainMonitorHistoryUpsert) SetIsSuccess(v bool) *DomainMonitorHistoryUpsert {
-	u.Set(domainmonitorhistory.FieldIsSuccess, v)
-	return u
-}
-
-// UpdateIsSuccess sets the "is_success" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsert) UpdateIsSuccess() *DomainMonitorHistoryUpsert {
-	u.SetExcluded(domainmonitorhistory.FieldIsSuccess)
-	return u
-}
-
-// SetCheckDuration sets the "check_duration" field.
-func (u *DomainMonitorHistoryUpsert) SetCheckDuration(v int) *DomainMonitorHistoryUpsert {
-	u.Set(domainmonitorhistory.FieldCheckDuration, v)
-	return u
-}
-
-// UpdateCheckDuration sets the "check_duration" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsert) UpdateCheckDuration() *DomainMonitorHistoryUpsert {
-	u.SetExcluded(domainmonitorhistory.FieldCheckDuration)
-	return u
-}
-
-// AddCheckDuration adds v to the "check_duration" field.
-func (u *DomainMonitorHistoryUpsert) AddCheckDuration(v int) *DomainMonitorHistoryUpsert {
-	u.Add(domainmonitorhistory.FieldCheckDuration, v)
-	return u
-}
-
-// ClearCheckDuration clears the value of the "check_duration" field.
-func (u *DomainMonitorHistoryUpsert) ClearCheckDuration() *DomainMonitorHistoryUpsert {
-	u.SetNull(domainmonitorhistory.FieldCheckDuration)
-	return u
-}
-
-// SetStatusMessage sets the "status_message" field.
-func (u *DomainMonitorHistoryUpsert) SetStatusMessage(v string) *DomainMonitorHistoryUpsert {
-	u.Set(domainmonitorhistory.FieldStatusMessage, v)
-	return u
-}
-
-// UpdateStatusMessage sets the "status_message" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsert) UpdateStatusMessage() *DomainMonitorHistoryUpsert {
-	u.SetExcluded(domainmonitorhistory.FieldStatusMessage)
-	return u
-}
-
-// ClearStatusMessage clears the value of the "status_message" field.
-func (u *DomainMonitorHistoryUpsert) ClearStatusMessage() *DomainMonitorHistoryUpsert {
-	u.SetNull(domainmonitorhistory.FieldStatusMessage)
-	return u
-}
-
-// SetHTTPStatus sets the "http_status" field.
-func (u *DomainMonitorHistoryUpsert) SetHTTPStatus(v int) *DomainMonitorHistoryUpsert {
-	u.Set(domainmonitorhistory.FieldHTTPStatus, v)
-	return u
-}
-
-// UpdateHTTPStatus sets the "http_status" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsert) UpdateHTTPStatus() *DomainMonitorHistoryUpsert {
-	u.SetExcluded(domainmonitorhistory.FieldHTTPStatus)
-	return u
-}
-
-// AddHTTPStatus adds v to the "http_status" field.
-func (u *DomainMonitorHistoryUpsert) AddHTTPStatus(v int) *DomainMonitorHistoryUpsert {
-	u.Add(domainmonitorhistory.FieldHTTPStatus, v)
-	return u
-}
-
-// ClearHTTPStatus clears the value of the "http_status" field.
-func (u *DomainMonitorHistoryUpsert) ClearHTTPStatus() *DomainMonitorHistoryUpsert {
-	u.SetNull(domainmonitorhistory.FieldHTTPStatus)
-	return u
-}
-
-// SetIPResolved sets the "ip_resolved" field.
-func (u *DomainMonitorHistoryUpsert) SetIPResolved(v []string) *DomainMonitorHistoryUpsert {
-	u.Set(domainmonitorhistory.FieldIPResolved, v)
-	return u
-}
-
-// UpdateIPResolved sets the "ip_resolved" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsert) UpdateIPResolved() *DomainMonitorHistoryUpsert {
-	u.SetExcluded(domainmonitorhistory.FieldIPResolved)
-	return u
-}
-
-// ClearIPResolved clears the value of the "ip_resolved" field.
-func (u *DomainMonitorHistoryUpsert) ClearIPResolved() *DomainMonitorHistoryUpsert {
-	u.SetNull(domainmonitorhistory.FieldIPResolved)
-	return u
-}
-
-// SetErrorLog sets the "error_log" field.
-func (u *DomainMonitorHistoryUpsert) SetErrorLog(v string) *DomainMonitorHistoryUpsert {
-	u.Set(domainmonitorhistory.FieldErrorLog, v)
-	return u
-}
-
-// UpdateErrorLog sets the "error_log" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsert) UpdateErrorLog() *DomainMonitorHistoryUpsert {
-	u.SetExcluded(domainmonitorhistory.FieldErrorLog)
-	return u
-}
-
-// ClearErrorLog clears the value of the "error_log" field.
-func (u *DomainMonitorHistoryUpsert) ClearErrorLog() *DomainMonitorHistoryUpsert {
-	u.SetNull(domainmonitorhistory.FieldErrorLog)
-	return u
-}
-
-// SetSslExpiryDate sets the "ssl_expiry_date" field.
-func (u *DomainMonitorHistoryUpsert) SetSslExpiryDate(v time.Time) *DomainMonitorHistoryUpsert {
-	u.Set(domainmonitorhistory.FieldSslExpiryDate, v)
-	return u
-}
-
-// UpdateSslExpiryDate sets the "ssl_expiry_date" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsert) UpdateSslExpiryDate() *DomainMonitorHistoryUpsert {
-	u.SetExcluded(domainmonitorhistory.FieldSslExpiryDate)
-	return u
-}
-
-// ClearSslExpiryDate clears the value of the "ssl_expiry_date" field.
-func (u *DomainMonitorHistoryUpsert) ClearSslExpiryDate() *DomainMonitorHistoryUpsert {
-	u.SetNull(domainmonitorhistory.FieldSslExpiryDate)
-	return u
-}
-
-// SetSslCommonName sets the "ssl_common_name" field.
-func (u *DomainMonitorHistoryUpsert) SetSslCommonName(v string) *DomainMonitorHistoryUpsert {
-	u.Set(domainmonitorhistory.FieldSslCommonName, v)
-	return u
-}
-
-// UpdateSslCommonName sets the "ssl_common_name" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsert) UpdateSslCommonName() *DomainMonitorHistoryUpsert {
-	u.SetExcluded(domainmonitorhistory.FieldSslCommonName)
-	return u
-}
-
-// ClearSslCommonName clears the value of the "ssl_common_name" field.
-func (u *DomainMonitorHistoryUpsert) ClearSslCommonName() *DomainMonitorHistoryUpsert {
-	u.SetNull(domainmonitorhistory.FieldSslCommonName)
-	return u
-}
-
-// SetSslIssuerName sets the "ssl_issuer_name" field.
-func (u *DomainMonitorHistoryUpsert) SetSslIssuerName(v string) *DomainMonitorHistoryUpsert {
-	u.Set(domainmonitorhistory.FieldSslIssuerName, v)
-	return u
-}
-
-// UpdateSslIssuerName sets the "ssl_issuer_name" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsert) UpdateSslIssuerName() *DomainMonitorHistoryUpsert {
-	u.SetExcluded(domainmonitorhistory.FieldSslIssuerName)
-	return u
-}
-
-// ClearSslIssuerName clears the value of the "ssl_issuer_name" field.
-func (u *DomainMonitorHistoryUpsert) ClearSslIssuerName() *DomainMonitorHistoryUpsert {
-	u.SetNull(domainmonitorhistory.FieldSslIssuerName)
-	return u
-}
-
-// SetSslSignatureAlg sets the "ssl_signature_alg" field.
-func (u *DomainMonitorHistoryUpsert) SetSslSignatureAlg(v string) *DomainMonitorHistoryUpsert {
-	u.Set(domainmonitorhistory.FieldSslSignatureAlg, v)
-	return u
-}
-
-// UpdateSslSignatureAlg sets the "ssl_signature_alg" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsert) UpdateSslSignatureAlg() *DomainMonitorHistoryUpsert {
-	u.SetExcluded(domainmonitorhistory.FieldSslSignatureAlg)
-	return u
-}
-
-// ClearSslSignatureAlg clears the value of the "ssl_signature_alg" field.
-func (u *DomainMonitorHistoryUpsert) ClearSslSignatureAlg() *DomainMonitorHistoryUpsert {
-	u.SetNull(domainmonitorhistory.FieldSslSignatureAlg)
-	return u
-}
-
-// SetSslSanList sets the "ssl_san_list" field.
-func (u *DomainMonitorHistoryUpsert) SetSslSanList(v string) *DomainMonitorHistoryUpsert {
-	u.Set(domainmonitorhistory.FieldSslSanList, v)
-	return u
-}
-
-// UpdateSslSanList sets the "ssl_san_list" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsert) UpdateSslSanList() *DomainMonitorHistoryUpsert {
-	u.SetExcluded(domainmonitorhistory.FieldSslSanList)
-	return u
-}
-
-// ClearSslSanList clears the value of the "ssl_san_list" field.
-func (u *DomainMonitorHistoryUpsert) ClearSslSanList() *DomainMonitorHistoryUpsert {
-	u.SetNull(domainmonitorhistory.FieldSslSanList)
-	return u
-}
-
-// SetSslCertificateChain sets the "ssl_certificate_chain" field.
-func (u *DomainMonitorHistoryUpsert) SetSslCertificateChain(v string) *DomainMonitorHistoryUpsert {
-	u.Set(domainmonitorhistory.FieldSslCertificateChain, v)
-	return u
-}
-
-// UpdateSslCertificateChain sets the "ssl_certificate_chain" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsert) UpdateSslCertificateChain() *DomainMonitorHistoryUpsert {
-	u.SetExcluded(domainmonitorhistory.FieldSslCertificateChain)
-	return u
-}
-
-// ClearSslCertificateChain clears the value of the "ssl_certificate_chain" field.
-func (u *DomainMonitorHistoryUpsert) ClearSslCertificateChain() *DomainMonitorHistoryUpsert {
-	u.SetNull(domainmonitorhistory.FieldSslCertificateChain)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -651,6 +417,45 @@ func (u *DomainMonitorHistoryUpsertOne) UpdateNewValues() *DomainMonitorHistoryU
 		}
 		if _, exists := u.create.mutation.MonitorID(); exists {
 			s.SetIgnore(domainmonitorhistory.FieldMonitorID)
+		}
+		if _, exists := u.create.mutation.CheckTime(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldCheckTime)
+		}
+		if _, exists := u.create.mutation.IsSuccess(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldIsSuccess)
+		}
+		if _, exists := u.create.mutation.CheckDuration(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldCheckDuration)
+		}
+		if _, exists := u.create.mutation.StatusMessage(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldStatusMessage)
+		}
+		if _, exists := u.create.mutation.HTTPStatus(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldHTTPStatus)
+		}
+		if _, exists := u.create.mutation.IPResolved(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldIPResolved)
+		}
+		if _, exists := u.create.mutation.ErrorLog(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldErrorLog)
+		}
+		if _, exists := u.create.mutation.SslExpiryDate(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldSslExpiryDate)
+		}
+		if _, exists := u.create.mutation.SslCommonName(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldSslCommonName)
+		}
+		if _, exists := u.create.mutation.SslIssuerName(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldSslIssuerName)
+		}
+		if _, exists := u.create.mutation.SslSignatureAlg(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldSslSignatureAlg)
+		}
+		if _, exists := u.create.mutation.SslSanList(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldSslSanList)
+		}
+		if _, exists := u.create.mutation.SslCertificateChain(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldSslCertificateChain)
 		}
 	}))
 	return u
@@ -681,279 +486,6 @@ func (u *DomainMonitorHistoryUpsertOne) Update(set func(*DomainMonitorHistoryUps
 		set(&DomainMonitorHistoryUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCheckTime sets the "check_time" field.
-func (u *DomainMonitorHistoryUpsertOne) SetCheckTime(v time.Time) *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetCheckTime(v)
-	})
-}
-
-// UpdateCheckTime sets the "check_time" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertOne) UpdateCheckTime() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateCheckTime()
-	})
-}
-
-// SetIsSuccess sets the "is_success" field.
-func (u *DomainMonitorHistoryUpsertOne) SetIsSuccess(v bool) *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetIsSuccess(v)
-	})
-}
-
-// UpdateIsSuccess sets the "is_success" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertOne) UpdateIsSuccess() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateIsSuccess()
-	})
-}
-
-// SetCheckDuration sets the "check_duration" field.
-func (u *DomainMonitorHistoryUpsertOne) SetCheckDuration(v int) *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetCheckDuration(v)
-	})
-}
-
-// AddCheckDuration adds v to the "check_duration" field.
-func (u *DomainMonitorHistoryUpsertOne) AddCheckDuration(v int) *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.AddCheckDuration(v)
-	})
-}
-
-// UpdateCheckDuration sets the "check_duration" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertOne) UpdateCheckDuration() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateCheckDuration()
-	})
-}
-
-// ClearCheckDuration clears the value of the "check_duration" field.
-func (u *DomainMonitorHistoryUpsertOne) ClearCheckDuration() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearCheckDuration()
-	})
-}
-
-// SetStatusMessage sets the "status_message" field.
-func (u *DomainMonitorHistoryUpsertOne) SetStatusMessage(v string) *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetStatusMessage(v)
-	})
-}
-
-// UpdateStatusMessage sets the "status_message" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertOne) UpdateStatusMessage() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateStatusMessage()
-	})
-}
-
-// ClearStatusMessage clears the value of the "status_message" field.
-func (u *DomainMonitorHistoryUpsertOne) ClearStatusMessage() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearStatusMessage()
-	})
-}
-
-// SetHTTPStatus sets the "http_status" field.
-func (u *DomainMonitorHistoryUpsertOne) SetHTTPStatus(v int) *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetHTTPStatus(v)
-	})
-}
-
-// AddHTTPStatus adds v to the "http_status" field.
-func (u *DomainMonitorHistoryUpsertOne) AddHTTPStatus(v int) *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.AddHTTPStatus(v)
-	})
-}
-
-// UpdateHTTPStatus sets the "http_status" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertOne) UpdateHTTPStatus() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateHTTPStatus()
-	})
-}
-
-// ClearHTTPStatus clears the value of the "http_status" field.
-func (u *DomainMonitorHistoryUpsertOne) ClearHTTPStatus() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearHTTPStatus()
-	})
-}
-
-// SetIPResolved sets the "ip_resolved" field.
-func (u *DomainMonitorHistoryUpsertOne) SetIPResolved(v []string) *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetIPResolved(v)
-	})
-}
-
-// UpdateIPResolved sets the "ip_resolved" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertOne) UpdateIPResolved() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateIPResolved()
-	})
-}
-
-// ClearIPResolved clears the value of the "ip_resolved" field.
-func (u *DomainMonitorHistoryUpsertOne) ClearIPResolved() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearIPResolved()
-	})
-}
-
-// SetErrorLog sets the "error_log" field.
-func (u *DomainMonitorHistoryUpsertOne) SetErrorLog(v string) *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetErrorLog(v)
-	})
-}
-
-// UpdateErrorLog sets the "error_log" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertOne) UpdateErrorLog() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateErrorLog()
-	})
-}
-
-// ClearErrorLog clears the value of the "error_log" field.
-func (u *DomainMonitorHistoryUpsertOne) ClearErrorLog() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearErrorLog()
-	})
-}
-
-// SetSslExpiryDate sets the "ssl_expiry_date" field.
-func (u *DomainMonitorHistoryUpsertOne) SetSslExpiryDate(v time.Time) *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetSslExpiryDate(v)
-	})
-}
-
-// UpdateSslExpiryDate sets the "ssl_expiry_date" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertOne) UpdateSslExpiryDate() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateSslExpiryDate()
-	})
-}
-
-// ClearSslExpiryDate clears the value of the "ssl_expiry_date" field.
-func (u *DomainMonitorHistoryUpsertOne) ClearSslExpiryDate() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearSslExpiryDate()
-	})
-}
-
-// SetSslCommonName sets the "ssl_common_name" field.
-func (u *DomainMonitorHistoryUpsertOne) SetSslCommonName(v string) *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetSslCommonName(v)
-	})
-}
-
-// UpdateSslCommonName sets the "ssl_common_name" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertOne) UpdateSslCommonName() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateSslCommonName()
-	})
-}
-
-// ClearSslCommonName clears the value of the "ssl_common_name" field.
-func (u *DomainMonitorHistoryUpsertOne) ClearSslCommonName() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearSslCommonName()
-	})
-}
-
-// SetSslIssuerName sets the "ssl_issuer_name" field.
-func (u *DomainMonitorHistoryUpsertOne) SetSslIssuerName(v string) *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetSslIssuerName(v)
-	})
-}
-
-// UpdateSslIssuerName sets the "ssl_issuer_name" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertOne) UpdateSslIssuerName() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateSslIssuerName()
-	})
-}
-
-// ClearSslIssuerName clears the value of the "ssl_issuer_name" field.
-func (u *DomainMonitorHistoryUpsertOne) ClearSslIssuerName() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearSslIssuerName()
-	})
-}
-
-// SetSslSignatureAlg sets the "ssl_signature_alg" field.
-func (u *DomainMonitorHistoryUpsertOne) SetSslSignatureAlg(v string) *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetSslSignatureAlg(v)
-	})
-}
-
-// UpdateSslSignatureAlg sets the "ssl_signature_alg" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertOne) UpdateSslSignatureAlg() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateSslSignatureAlg()
-	})
-}
-
-// ClearSslSignatureAlg clears the value of the "ssl_signature_alg" field.
-func (u *DomainMonitorHistoryUpsertOne) ClearSslSignatureAlg() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearSslSignatureAlg()
-	})
-}
-
-// SetSslSanList sets the "ssl_san_list" field.
-func (u *DomainMonitorHistoryUpsertOne) SetSslSanList(v string) *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetSslSanList(v)
-	})
-}
-
-// UpdateSslSanList sets the "ssl_san_list" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertOne) UpdateSslSanList() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateSslSanList()
-	})
-}
-
-// ClearSslSanList clears the value of the "ssl_san_list" field.
-func (u *DomainMonitorHistoryUpsertOne) ClearSslSanList() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearSslSanList()
-	})
-}
-
-// SetSslCertificateChain sets the "ssl_certificate_chain" field.
-func (u *DomainMonitorHistoryUpsertOne) SetSslCertificateChain(v string) *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetSslCertificateChain(v)
-	})
-}
-
-// UpdateSslCertificateChain sets the "ssl_certificate_chain" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertOne) UpdateSslCertificateChain() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateSslCertificateChain()
-	})
-}
-
-// ClearSslCertificateChain clears the value of the "ssl_certificate_chain" field.
-func (u *DomainMonitorHistoryUpsertOne) ClearSslCertificateChain() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearSslCertificateChain()
-	})
 }
 
 // Exec executes the query.
@@ -1140,6 +672,45 @@ func (u *DomainMonitorHistoryUpsertBulk) UpdateNewValues() *DomainMonitorHistory
 			if _, exists := b.mutation.MonitorID(); exists {
 				s.SetIgnore(domainmonitorhistory.FieldMonitorID)
 			}
+			if _, exists := b.mutation.CheckTime(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldCheckTime)
+			}
+			if _, exists := b.mutation.IsSuccess(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldIsSuccess)
+			}
+			if _, exists := b.mutation.CheckDuration(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldCheckDuration)
+			}
+			if _, exists := b.mutation.StatusMessage(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldStatusMessage)
+			}
+			if _, exists := b.mutation.HTTPStatus(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldHTTPStatus)
+			}
+			if _, exists := b.mutation.IPResolved(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldIPResolved)
+			}
+			if _, exists := b.mutation.ErrorLog(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldErrorLog)
+			}
+			if _, exists := b.mutation.SslExpiryDate(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldSslExpiryDate)
+			}
+			if _, exists := b.mutation.SslCommonName(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldSslCommonName)
+			}
+			if _, exists := b.mutation.SslIssuerName(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldSslIssuerName)
+			}
+			if _, exists := b.mutation.SslSignatureAlg(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldSslSignatureAlg)
+			}
+			if _, exists := b.mutation.SslSanList(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldSslSanList)
+			}
+			if _, exists := b.mutation.SslCertificateChain(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldSslCertificateChain)
+			}
 		}
 	}))
 	return u
@@ -1170,279 +741,6 @@ func (u *DomainMonitorHistoryUpsertBulk) Update(set func(*DomainMonitorHistoryUp
 		set(&DomainMonitorHistoryUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCheckTime sets the "check_time" field.
-func (u *DomainMonitorHistoryUpsertBulk) SetCheckTime(v time.Time) *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetCheckTime(v)
-	})
-}
-
-// UpdateCheckTime sets the "check_time" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertBulk) UpdateCheckTime() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateCheckTime()
-	})
-}
-
-// SetIsSuccess sets the "is_success" field.
-func (u *DomainMonitorHistoryUpsertBulk) SetIsSuccess(v bool) *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetIsSuccess(v)
-	})
-}
-
-// UpdateIsSuccess sets the "is_success" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertBulk) UpdateIsSuccess() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateIsSuccess()
-	})
-}
-
-// SetCheckDuration sets the "check_duration" field.
-func (u *DomainMonitorHistoryUpsertBulk) SetCheckDuration(v int) *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetCheckDuration(v)
-	})
-}
-
-// AddCheckDuration adds v to the "check_duration" field.
-func (u *DomainMonitorHistoryUpsertBulk) AddCheckDuration(v int) *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.AddCheckDuration(v)
-	})
-}
-
-// UpdateCheckDuration sets the "check_duration" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertBulk) UpdateCheckDuration() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateCheckDuration()
-	})
-}
-
-// ClearCheckDuration clears the value of the "check_duration" field.
-func (u *DomainMonitorHistoryUpsertBulk) ClearCheckDuration() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearCheckDuration()
-	})
-}
-
-// SetStatusMessage sets the "status_message" field.
-func (u *DomainMonitorHistoryUpsertBulk) SetStatusMessage(v string) *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetStatusMessage(v)
-	})
-}
-
-// UpdateStatusMessage sets the "status_message" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertBulk) UpdateStatusMessage() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateStatusMessage()
-	})
-}
-
-// ClearStatusMessage clears the value of the "status_message" field.
-func (u *DomainMonitorHistoryUpsertBulk) ClearStatusMessage() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearStatusMessage()
-	})
-}
-
-// SetHTTPStatus sets the "http_status" field.
-func (u *DomainMonitorHistoryUpsertBulk) SetHTTPStatus(v int) *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetHTTPStatus(v)
-	})
-}
-
-// AddHTTPStatus adds v to the "http_status" field.
-func (u *DomainMonitorHistoryUpsertBulk) AddHTTPStatus(v int) *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.AddHTTPStatus(v)
-	})
-}
-
-// UpdateHTTPStatus sets the "http_status" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertBulk) UpdateHTTPStatus() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateHTTPStatus()
-	})
-}
-
-// ClearHTTPStatus clears the value of the "http_status" field.
-func (u *DomainMonitorHistoryUpsertBulk) ClearHTTPStatus() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearHTTPStatus()
-	})
-}
-
-// SetIPResolved sets the "ip_resolved" field.
-func (u *DomainMonitorHistoryUpsertBulk) SetIPResolved(v []string) *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetIPResolved(v)
-	})
-}
-
-// UpdateIPResolved sets the "ip_resolved" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertBulk) UpdateIPResolved() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateIPResolved()
-	})
-}
-
-// ClearIPResolved clears the value of the "ip_resolved" field.
-func (u *DomainMonitorHistoryUpsertBulk) ClearIPResolved() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearIPResolved()
-	})
-}
-
-// SetErrorLog sets the "error_log" field.
-func (u *DomainMonitorHistoryUpsertBulk) SetErrorLog(v string) *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetErrorLog(v)
-	})
-}
-
-// UpdateErrorLog sets the "error_log" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertBulk) UpdateErrorLog() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateErrorLog()
-	})
-}
-
-// ClearErrorLog clears the value of the "error_log" field.
-func (u *DomainMonitorHistoryUpsertBulk) ClearErrorLog() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearErrorLog()
-	})
-}
-
-// SetSslExpiryDate sets the "ssl_expiry_date" field.
-func (u *DomainMonitorHistoryUpsertBulk) SetSslExpiryDate(v time.Time) *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetSslExpiryDate(v)
-	})
-}
-
-// UpdateSslExpiryDate sets the "ssl_expiry_date" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertBulk) UpdateSslExpiryDate() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateSslExpiryDate()
-	})
-}
-
-// ClearSslExpiryDate clears the value of the "ssl_expiry_date" field.
-func (u *DomainMonitorHistoryUpsertBulk) ClearSslExpiryDate() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearSslExpiryDate()
-	})
-}
-
-// SetSslCommonName sets the "ssl_common_name" field.
-func (u *DomainMonitorHistoryUpsertBulk) SetSslCommonName(v string) *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetSslCommonName(v)
-	})
-}
-
-// UpdateSslCommonName sets the "ssl_common_name" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertBulk) UpdateSslCommonName() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateSslCommonName()
-	})
-}
-
-// ClearSslCommonName clears the value of the "ssl_common_name" field.
-func (u *DomainMonitorHistoryUpsertBulk) ClearSslCommonName() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearSslCommonName()
-	})
-}
-
-// SetSslIssuerName sets the "ssl_issuer_name" field.
-func (u *DomainMonitorHistoryUpsertBulk) SetSslIssuerName(v string) *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetSslIssuerName(v)
-	})
-}
-
-// UpdateSslIssuerName sets the "ssl_issuer_name" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertBulk) UpdateSslIssuerName() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateSslIssuerName()
-	})
-}
-
-// ClearSslIssuerName clears the value of the "ssl_issuer_name" field.
-func (u *DomainMonitorHistoryUpsertBulk) ClearSslIssuerName() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearSslIssuerName()
-	})
-}
-
-// SetSslSignatureAlg sets the "ssl_signature_alg" field.
-func (u *DomainMonitorHistoryUpsertBulk) SetSslSignatureAlg(v string) *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetSslSignatureAlg(v)
-	})
-}
-
-// UpdateSslSignatureAlg sets the "ssl_signature_alg" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertBulk) UpdateSslSignatureAlg() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateSslSignatureAlg()
-	})
-}
-
-// ClearSslSignatureAlg clears the value of the "ssl_signature_alg" field.
-func (u *DomainMonitorHistoryUpsertBulk) ClearSslSignatureAlg() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearSslSignatureAlg()
-	})
-}
-
-// SetSslSanList sets the "ssl_san_list" field.
-func (u *DomainMonitorHistoryUpsertBulk) SetSslSanList(v string) *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetSslSanList(v)
-	})
-}
-
-// UpdateSslSanList sets the "ssl_san_list" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertBulk) UpdateSslSanList() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateSslSanList()
-	})
-}
-
-// ClearSslSanList clears the value of the "ssl_san_list" field.
-func (u *DomainMonitorHistoryUpsertBulk) ClearSslSanList() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearSslSanList()
-	})
-}
-
-// SetSslCertificateChain sets the "ssl_certificate_chain" field.
-func (u *DomainMonitorHistoryUpsertBulk) SetSslCertificateChain(v string) *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetSslCertificateChain(v)
-	})
-}
-
-// UpdateSslCertificateChain sets the "ssl_certificate_chain" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertBulk) UpdateSslCertificateChain() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateSslCertificateChain()
-	})
-}
-
-// ClearSslCertificateChain clears the value of the "ssl_certificate_chain" field.
-func (u *DomainMonitorHistoryUpsertBulk) ClearSslCertificateChain() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.ClearSslCertificateChain()
-	})
 }
 
 // Exec executes the query.

@@ -1,0 +1,80 @@
+{{ define "content" }}
+<h1>🌐 DDNS管理平台</h1>
+
+<div class="card">
+  <div class="card-header">
+    <h2 class="h2-icon">
+      {{ template "icons" (dict "Name" "ip-dns") }} 域名监控
+    </h2>
+    <div>
+      <button class="btn btn-primary" onclick="openFormModal()">
+        {{ template "icons" (dict "Name" "ip-plus") }} 添加记录
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <table>
+      <thead>
+        <tr>
+          <th>名称</th>
+          <th>域名</th>
+          <th>检查间隔</th>
+          <th>检查类型</th>
+          <th>当前运行状态</th>
+          <th>启用</th>
+          <th style="width: 200px; text-align: center">操作</th>
+        </tr>
+      </thead>
+      <tbody id="table">
+        {{ range .List }}
+        <tr>
+          <td>{{.Name}}</td>
+          <td>{{.Domain}}</td>
+          <td>{{.CheckInterval}}</td>
+          <td>{{.CheckProtocol}}</td>
+          <td>
+            <span class="badge badge-success">{{.CurrentStatus}}</span>
+          </td>
+          <td>
+            {{ template "switch" (dict "Checked" .IsActive "URL" (printf
+            "/api/dns-records/%d/active" .ID) ) }}
+          </td>
+          <td>
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="openFormModal('{{.ID}}')"
+            >
+              {{ template "icons" (dict "Name" "ip-edit") }} 编辑
+            </button>
+            {{if .IsActive}}
+            <span
+              class="btn-tooltip-wrapper"
+              title="启用状态时不允许删除，请先禁止后操作再删除！"
+            >
+              <button class="btn btn-sm btn-danger" disabled>
+                {{ template "icons" (dict "Name" "ip-delete") }} 删除
+              </button>
+            </span>
+            {{else}}
+            <button class="btn btn-sm btn-danger" onclick="onDelete('{{.ID}}')">
+              {{ template "icons" (dict "Name" "ip-delete") }} 删除
+            </button>
+            {{end}}
+          </td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
+    <!-- 分页 -->
+    {{ template "pagination" . }}
+  </div>
+</div>
+
+<!-- 表单 -->
+{{ template "pages/domain-monitor_form.html" . }}
+
+<!-- 弹窗 -->
+{{ template "popup" . }}
+
+<script src="/static/js/domain-monitor.js"></script>
+{{ end }}

@@ -1,0 +1,72 @@
+{{ define "pages/domain-monitor_form.html" }}
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h3 id="modalTitle">添加域名监控</h3>
+    <form id="form">
+
+      <div class="form-group">
+        <label>名称 <span style="color: red">*</span></label>
+        <input
+          type="text"
+          name="name"
+          id="name"
+          required
+          placeholder="如 example"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>域名 <span style="color: red">*</span></label>
+        <input
+          type="text"
+          name="domain"
+          id="domain"
+          required
+          placeholder="如 www.example.com"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>检查间隔（秒） <span style="color: red">*</span></label>
+        <input
+          type="number"
+          name="check_interval"
+          id="check_interval"
+          value="60"
+          required
+          placeholder="如 60"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>检查类型 <span style="color: red">*</span></label>
+        <select name="check_protocol" id="check_protocol" required onchange="onCheckProtocolSelect(this)">
+          <option value="" disabled selected>请选择检查类型</option>
+          <option value="http">HTTP</option>
+          <option value="https">HTTPS</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>通知 (多选)</label>
+        <select name="webhook_ids" id="webhook_ids" multiple></select>
+        <small class="text-secondary"
+          >选择需要接收此记录变动通知的 Webhook</small
+        >
+      </div>
+
+      <!-- 隐藏字段 -->
+      <input type="hidden" name="id" id="id" />
+
+      <div class="form-group mt-3" style="text-align: right">
+        <button type="button" class="btn" onclick="closeModal('modal')">
+          {{ template "icons" (dict "Name" "ip-close") }} 取消
+        </button>
+        <button type="submit" class="btn btn-primary">
+          {{ template "icons" (dict "Name" "ip-save") }} 保存
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{{ end }}

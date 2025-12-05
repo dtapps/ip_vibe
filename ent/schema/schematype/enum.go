@@ -94,21 +94,23 @@ var GetLogOpType = func() []string {
 }
 
 const (
-	LogObjTypePlatformConfig      string = "platform_config"      // 平台配置
-	LogObjTypeCdnRecord           string = "cdn_record"           // CDN记录
-	LogObjTypeDnsRecord           string = "dns_record"           // DNS记录
-	LogObjTypeDevice              string = "device"               // 设备
-	LogObjTypeDeviceIPRecord      string = "device_ip_report"     // 设备IP记录
-	LogObjTypeIPGroup             string = "ip_group"             // IP组
-	LogObjTypeIPGroupDevice       string = "ip_group_device"      // IP组设备
-	LogObjTypeWebhook             string = "webhook"              // 通知
-	LogObjTypeWebhookSubscription string = "webhook_subscription" // 通知订阅
-	LogObjTypeDevicePortForward   string = "device_port_forward"  // 端口转发
+	LogObjTypePlatformConfig       string = "platform_config"        // 平台配置
+	LogObjTypeCdnRecord            string = "cdn_record"             // CDN记录
+	LogObjTypeDnsRecord            string = "dns_record"             // DNS记录
+	LogObjTypeDevice               string = "device"                 // 设备
+	LogObjTypeDeviceIPRecord       string = "device_ip_report"       // 设备IP记录
+	LogObjTypeIPGroup              string = "ip_group"               // IP组
+	LogObjTypeIPGroupDevice        string = "ip_group_device"        // IP组设备
+	LogObjTypeWebhook              string = "webhook"                // 通知
+	LogObjTypeWebhookSubscription  string = "webhook_subscription"   // 通知订阅
+	LogObjTypeDevicePortForward    string = "device_port_forward"    // 端口转发
+	LogObjTypeDomainMonitor        string = "domain_monitor"         // 域名监控
+	LogObjTypeDomainMonitorHistory string = "domain_monitor_history" // 域名监控历史记录
 )
 
 // GetLogObjType 返回所有对象类型
 var GetLogObjType = func() []string {
-	return []string{LogObjTypePlatformConfig, LogObjTypeCdnRecord, LogObjTypeDnsRecord, LogObjTypeDevice, LogObjTypeDeviceIPRecord, LogObjTypeIPGroup, LogObjTypeIPGroupDevice, LogObjTypeWebhook, LogObjTypeWebhookSubscription, LogObjTypeDevicePortForward}
+	return []string{LogObjTypePlatformConfig, LogObjTypeCdnRecord, LogObjTypeDnsRecord, LogObjTypeDevice, LogObjTypeDeviceIPRecord, LogObjTypeIPGroup, LogObjTypeIPGroupDevice, LogObjTypeWebhook, LogObjTypeWebhookSubscription, LogObjTypeDevicePortForward, LogObjTypeDomainMonitor, LogObjTypeDomainMonitorHistory}
 }
 
 const (
@@ -122,8 +124,8 @@ var GetLogStatus = func() []string {
 }
 
 const (
-	DomainMonitorCheckProtocolHTTP  string = "HTTP"  // HTTP 协议
-	DomainMonitorCheckProtocolHTTPS string = "HTTPS" // HTTPS 协议
+	DomainMonitorCheckProtocolHTTP  string = "http"  // HTTP 协议
+	DomainMonitorCheckProtocolHTTPS string = "https" // HTTPS 协议
 )
 
 // GetDomainMonitorCheckProtocol 返回所有检查协议
@@ -132,9 +134,9 @@ var GetDomainMonitorCheckProtocol = func() []string {
 }
 
 const (
-	DomainMonitorStatusUp      string = "UP"      // 运行中
-	DomainMonitorStatusDown    string = "DOWN"    // 已停止
-	DomainMonitorStatusUnknown string = "UNKNOWN" // 未知状态
+	DomainMonitorStatusUp      string = "up"      // 运行中
+	DomainMonitorStatusDown    string = "down"    // 已停止
+	DomainMonitorStatusUnknown string = "unknown" // 未知状态
 )
 
 // GetDomainMonitorStatus 返回所有运行状态
