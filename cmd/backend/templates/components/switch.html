@@ -1,23 +1,61 @@
 {{ define "switch" }}
+  {{/* 支持的参数：
+    .Checked:   布尔值，是否默认选中
+    .URL:       可选，API 接口地址（用于抽象化 PATCH 操作）
+    .OnClick:   可选，自定义的 JavaScript onclick 字符串 (例如: onPatch('123'))
+    .Disabled:  可选，布尔值，是否禁用
+    .NoReload:  可选，布尔值。如果为 true，则 API 删除成功后不自动刷新页面。
+  */}}
+
+  {{ $checked := .Checked }}
+  {{ $url := .URL }}
+  {{ $onClick := .OnClick }}
+  {{ $disabled := .Disabled }}
+
+  {{ $noReload := .NoReload }}
+  {{ if not $noReload }}
+    {{ $noReload = false }}
+  {{ end }}
+
 <label class="switch">
-  {{if .Checked}}
-  <input type="checkbox" checked onchange="changeSwitchStatus('{{.URL}}', this)" />
+  {{if $checked}}
+    {{if $disabled}}
+    <input type="checkbox" checked disabled  />
+    {{else}}
+    <input type="checkbox" checked onchange="changeSwitchStatus('{{$url}}', '{{ $noReload }}', this)" />
+    {{end}}
   {{else}}
-  <input type="checkbox" onchange="changeSwitchStatus('{{.URL}}', this)"/>
+    {{if $disabled}}
+    <input type="checkbox" disabled />
+    {{else}}
+    <input type="checkbox" onchange="changeSwitchStatus('{{$url}}', '{{ $noReload }}', this)"/>
+    {{end}}
   {{end}}
   <span class="slider"></span>
 </label>
 
 <script>
- async function changeSwitchStatus(url,checkbox) {
-  try {
-        await API.patch(url, { is_active: checkbox.checked });
-    } catch (error) {
-        alert(`状态更新失败: ${error.message}`);
-        console.error("切换状态失败", error);
-        // 恢复 checkbox 状态
-        checkbox.checked = !checkbox.checked;
-    }
-  }
+      // 避免重复定义 changeSwitchStatus 函数
+      // if (typeof changeSwitchStatus === 'undefined') {
+        // 通用 API PATCH 动作
+        async function changeSwitchStatus(url,isNoReload,checkbox) {
+          try {
+            if (typeof API !== 'undefined' && typeof API.patch === 'function') {
+                await API.patch(url, { is_active: checkbox.checked });
+               // 根据 isNoReload 决定是否刷新，转换为布尔值
+                if (isNoReload!='false') {
+                    location.reload(); 
+                }
+              } else {
+                alert("API.patch 函数未定义，请确保引入了必要的 JS 库");
+            }
+            } catch (error) {
+                alert(`状态更新失败: ${error.message}`);
+            console.error("API失败", error);
+                // 恢复 checkbox 状态
+                checkbox.checked = !checkbox.checked;
+            }
+          }
+  // }
 </script>
 {{ end }}
