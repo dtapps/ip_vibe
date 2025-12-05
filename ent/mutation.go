@@ -14,6 +14,8 @@ import (
 	"vibe_ip/ent/deviceipreport"
 	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/ent/dnsrecord"
+	"vibe_ip/ent/domainmonitor"
+	"vibe_ip/ent/domainmonitorhistory"
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/ipgroupdevice"
 	"vibe_ip/ent/operationlog"
@@ -36,18 +38,20 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeCDNRecord           = "CDNRecord"
-	TypeDNSRecord           = "DNSRecord"
-	TypeDevice              = "Device"
-	TypeDeviceIpReport      = "DeviceIpReport"
-	TypeDevicePortForward   = "DevicePortForward"
-	TypeIpGroup             = "IpGroup"
-	TypeIpGroupDevice       = "IpGroupDevice"
-	TypeOperationLog        = "OperationLog"
-	TypePlatformConfig      = "PlatformConfig"
-	TypeRestyLog            = "RestyLog"
-	TypeWebhook             = "Webhook"
-	TypeWebhookSubscription = "WebhookSubscription"
+	TypeCDNRecord            = "CDNRecord"
+	TypeDNSRecord            = "DNSRecord"
+	TypeDevice               = "Device"
+	TypeDeviceIpReport       = "DeviceIpReport"
+	TypeDevicePortForward    = "DevicePortForward"
+	TypeDomainMonitor        = "DomainMonitor"
+	TypeDomainMonitorHistory = "DomainMonitorHistory"
+	TypeIpGroup              = "IpGroup"
+	TypeIpGroupDevice        = "IpGroupDevice"
+	TypeOperationLog         = "OperationLog"
+	TypePlatformConfig       = "PlatformConfig"
+	TypeRestyLog             = "RestyLog"
+	TypeWebhook              = "Webhook"
+	TypeWebhookSubscription  = "WebhookSubscription"
 )
 
 // CDNRecordMutation represents an operation that mutates the CDNRecord nodes in the graph.
@@ -5093,6 +5097,2382 @@ func (m *DevicePortForwardMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown DevicePortForward edge %s", name)
+}
+
+// DomainMonitorMutation represents an operation that mutates the DomainMonitor nodes in the graph.
+type DomainMonitorMutation struct {
+	config
+	op                     Op
+	typ                    string
+	id                     *int64
+	created_at             *time.Time
+	updated_at             *time.Time
+	name                   *string
+	domain                 *string
+	check_interval         *int
+	addcheck_interval      *int
+	check_protocol         *domainmonitor.CheckProtocol
+	is_active              *bool
+	current_status         *domainmonitor.CurrentStatus
+	last_success_at        *time.Time
+	last_failure_at        *time.Time
+	clearedFields          map[string]struct{}
+	history_records        map[int64]struct{}
+	removedhistory_records map[int64]struct{}
+	clearedhistory_records bool
+	done                   bool
+	oldValue               func(context.Context) (*DomainMonitor, error)
+	predicates             []predicate.DomainMonitor
+}
+
+var _ ent.Mutation = (*DomainMonitorMutation)(nil)
+
+// domainmonitorOption allows management of the mutation configuration using functional options.
+type domainmonitorOption func(*DomainMonitorMutation)
+
+// newDomainMonitorMutation creates new mutation for the DomainMonitor entity.
+func newDomainMonitorMutation(c config, op Op, opts ...domainmonitorOption) *DomainMonitorMutation {
+	m := &DomainMonitorMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeDomainMonitor,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withDomainMonitorID sets the ID field of the mutation.
+func withDomainMonitorID(id int64) domainmonitorOption {
+	return func(m *DomainMonitorMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *DomainMonitor
+		)
+		m.oldValue = func(ctx context.Context) (*DomainMonitor, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().DomainMonitor.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withDomainMonitor sets the old DomainMonitor of the mutation.
+func withDomainMonitor(node *DomainMonitor) domainmonitorOption {
+	return func(m *DomainMonitorMutation) {
+		m.oldValue = func(context.Context) (*DomainMonitor, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m DomainMonitorMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m DomainMonitorMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of DomainMonitor entities.
+func (m *DomainMonitorMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *DomainMonitorMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *DomainMonitorMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().DomainMonitor.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *DomainMonitorMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *DomainMonitorMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the DomainMonitor entity.
+// If the DomainMonitor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *DomainMonitorMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *DomainMonitorMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *DomainMonitorMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the DomainMonitor entity.
+// If the DomainMonitor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *DomainMonitorMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetName sets the "name" field.
+func (m *DomainMonitorMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *DomainMonitorMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the DomainMonitor entity.
+// If the DomainMonitor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *DomainMonitorMutation) ResetName() {
+	m.name = nil
+}
+
+// SetDomain sets the "domain" field.
+func (m *DomainMonitorMutation) SetDomain(s string) {
+	m.domain = &s
+}
+
+// Domain returns the value of the "domain" field in the mutation.
+func (m *DomainMonitorMutation) Domain() (r string, exists bool) {
+	v := m.domain
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDomain returns the old "domain" field's value of the DomainMonitor entity.
+// If the DomainMonitor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorMutation) OldDomain(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDomain is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDomain requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDomain: %w", err)
+	}
+	return oldValue.Domain, nil
+}
+
+// ResetDomain resets all changes to the "domain" field.
+func (m *DomainMonitorMutation) ResetDomain() {
+	m.domain = nil
+}
+
+// SetCheckInterval sets the "check_interval" field.
+func (m *DomainMonitorMutation) SetCheckInterval(i int) {
+	m.check_interval = &i
+	m.addcheck_interval = nil
+}
+
+// CheckInterval returns the value of the "check_interval" field in the mutation.
+func (m *DomainMonitorMutation) CheckInterval() (r int, exists bool) {
+	v := m.check_interval
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCheckInterval returns the old "check_interval" field's value of the DomainMonitor entity.
+// If the DomainMonitor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorMutation) OldCheckInterval(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCheckInterval is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCheckInterval requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCheckInterval: %w", err)
+	}
+	return oldValue.CheckInterval, nil
+}
+
+// AddCheckInterval adds i to the "check_interval" field.
+func (m *DomainMonitorMutation) AddCheckInterval(i int) {
+	if m.addcheck_interval != nil {
+		*m.addcheck_interval += i
+	} else {
+		m.addcheck_interval = &i
+	}
+}
+
+// AddedCheckInterval returns the value that was added to the "check_interval" field in this mutation.
+func (m *DomainMonitorMutation) AddedCheckInterval() (r int, exists bool) {
+	v := m.addcheck_interval
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCheckInterval resets all changes to the "check_interval" field.
+func (m *DomainMonitorMutation) ResetCheckInterval() {
+	m.check_interval = nil
+	m.addcheck_interval = nil
+}
+
+// SetCheckProtocol sets the "check_protocol" field.
+func (m *DomainMonitorMutation) SetCheckProtocol(dp domainmonitor.CheckProtocol) {
+	m.check_protocol = &dp
+}
+
+// CheckProtocol returns the value of the "check_protocol" field in the mutation.
+func (m *DomainMonitorMutation) CheckProtocol() (r domainmonitor.CheckProtocol, exists bool) {
+	v := m.check_protocol
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCheckProtocol returns the old "check_protocol" field's value of the DomainMonitor entity.
+// If the DomainMonitor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorMutation) OldCheckProtocol(ctx context.Context) (v domainmonitor.CheckProtocol, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCheckProtocol is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCheckProtocol requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCheckProtocol: %w", err)
+	}
+	return oldValue.CheckProtocol, nil
+}
+
+// ResetCheckProtocol resets all changes to the "check_protocol" field.
+func (m *DomainMonitorMutation) ResetCheckProtocol() {
+	m.check_protocol = nil
+}
+
+// SetIsActive sets the "is_active" field.
+func (m *DomainMonitorMutation) SetIsActive(b bool) {
+	m.is_active = &b
+}
+
+// IsActive returns the value of the "is_active" field in the mutation.
+func (m *DomainMonitorMutation) IsActive() (r bool, exists bool) {
+	v := m.is_active
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsActive returns the old "is_active" field's value of the DomainMonitor entity.
+// If the DomainMonitor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorMutation) OldIsActive(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsActive is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsActive requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsActive: %w", err)
+	}
+	return oldValue.IsActive, nil
+}
+
+// ResetIsActive resets all changes to the "is_active" field.
+func (m *DomainMonitorMutation) ResetIsActive() {
+	m.is_active = nil
+}
+
+// SetCurrentStatus sets the "current_status" field.
+func (m *DomainMonitorMutation) SetCurrentStatus(ds domainmonitor.CurrentStatus) {
+	m.current_status = &ds
+}
+
+// CurrentStatus returns the value of the "current_status" field in the mutation.
+func (m *DomainMonitorMutation) CurrentStatus() (r domainmonitor.CurrentStatus, exists bool) {
+	v := m.current_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCurrentStatus returns the old "current_status" field's value of the DomainMonitor entity.
+// If the DomainMonitor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorMutation) OldCurrentStatus(ctx context.Context) (v domainmonitor.CurrentStatus, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCurrentStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCurrentStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCurrentStatus: %w", err)
+	}
+	return oldValue.CurrentStatus, nil
+}
+
+// ResetCurrentStatus resets all changes to the "current_status" field.
+func (m *DomainMonitorMutation) ResetCurrentStatus() {
+	m.current_status = nil
+}
+
+// SetLastSuccessAt sets the "last_success_at" field.
+func (m *DomainMonitorMutation) SetLastSuccessAt(t time.Time) {
+	m.last_success_at = &t
+}
+
+// LastSuccessAt returns the value of the "last_success_at" field in the mutation.
+func (m *DomainMonitorMutation) LastSuccessAt() (r time.Time, exists bool) {
+	v := m.last_success_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastSuccessAt returns the old "last_success_at" field's value of the DomainMonitor entity.
+// If the DomainMonitor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorMutation) OldLastSuccessAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastSuccessAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastSuccessAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastSuccessAt: %w", err)
+	}
+	return oldValue.LastSuccessAt, nil
+}
+
+// ClearLastSuccessAt clears the value of the "last_success_at" field.
+func (m *DomainMonitorMutation) ClearLastSuccessAt() {
+	m.last_success_at = nil
+	m.clearedFields[domainmonitor.FieldLastSuccessAt] = struct{}{}
+}
+
+// LastSuccessAtCleared returns if the "last_success_at" field was cleared in this mutation.
+func (m *DomainMonitorMutation) LastSuccessAtCleared() bool {
+	_, ok := m.clearedFields[domainmonitor.FieldLastSuccessAt]
+	return ok
+}
+
+// ResetLastSuccessAt resets all changes to the "last_success_at" field.
+func (m *DomainMonitorMutation) ResetLastSuccessAt() {
+	m.last_success_at = nil
+	delete(m.clearedFields, domainmonitor.FieldLastSuccessAt)
+}
+
+// SetLastFailureAt sets the "last_failure_at" field.
+func (m *DomainMonitorMutation) SetLastFailureAt(t time.Time) {
+	m.last_failure_at = &t
+}
+
+// LastFailureAt returns the value of the "last_failure_at" field in the mutation.
+func (m *DomainMonitorMutation) LastFailureAt() (r time.Time, exists bool) {
+	v := m.last_failure_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastFailureAt returns the old "last_failure_at" field's value of the DomainMonitor entity.
+// If the DomainMonitor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorMutation) OldLastFailureAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastFailureAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastFailureAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastFailureAt: %w", err)
+	}
+	return oldValue.LastFailureAt, nil
+}
+
+// ClearLastFailureAt clears the value of the "last_failure_at" field.
+func (m *DomainMonitorMutation) ClearLastFailureAt() {
+	m.last_failure_at = nil
+	m.clearedFields[domainmonitor.FieldLastFailureAt] = struct{}{}
+}
+
+// LastFailureAtCleared returns if the "last_failure_at" field was cleared in this mutation.
+func (m *DomainMonitorMutation) LastFailureAtCleared() bool {
+	_, ok := m.clearedFields[domainmonitor.FieldLastFailureAt]
+	return ok
+}
+
+// ResetLastFailureAt resets all changes to the "last_failure_at" field.
+func (m *DomainMonitorMutation) ResetLastFailureAt() {
+	m.last_failure_at = nil
+	delete(m.clearedFields, domainmonitor.FieldLastFailureAt)
+}
+
+// AddHistoryRecordIDs adds the "history_records" edge to the DomainMonitorHistory entity by ids.
+func (m *DomainMonitorMutation) AddHistoryRecordIDs(ids ...int64) {
+	if m.history_records == nil {
+		m.history_records = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.history_records[ids[i]] = struct{}{}
+	}
+}
+
+// ClearHistoryRecords clears the "history_records" edge to the DomainMonitorHistory entity.
+func (m *DomainMonitorMutation) ClearHistoryRecords() {
+	m.clearedhistory_records = true
+}
+
+// HistoryRecordsCleared reports if the "history_records" edge to the DomainMonitorHistory entity was cleared.
+func (m *DomainMonitorMutation) HistoryRecordsCleared() bool {
+	return m.clearedhistory_records
+}
+
+// RemoveHistoryRecordIDs removes the "history_records" edge to the DomainMonitorHistory entity by IDs.
+func (m *DomainMonitorMutation) RemoveHistoryRecordIDs(ids ...int64) {
+	if m.removedhistory_records == nil {
+		m.removedhistory_records = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.history_records, ids[i])
+		m.removedhistory_records[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedHistoryRecords returns the removed IDs of the "history_records" edge to the DomainMonitorHistory entity.
+func (m *DomainMonitorMutation) RemovedHistoryRecordsIDs() (ids []int64) {
+	for id := range m.removedhistory_records {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// HistoryRecordsIDs returns the "history_records" edge IDs in the mutation.
+func (m *DomainMonitorMutation) HistoryRecordsIDs() (ids []int64) {
+	for id := range m.history_records {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetHistoryRecords resets all changes to the "history_records" edge.
+func (m *DomainMonitorMutation) ResetHistoryRecords() {
+	m.history_records = nil
+	m.clearedhistory_records = false
+	m.removedhistory_records = nil
+}
+
+// Where appends a list predicates to the DomainMonitorMutation builder.
+func (m *DomainMonitorMutation) Where(ps ...predicate.DomainMonitor) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the DomainMonitorMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *DomainMonitorMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.DomainMonitor, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *DomainMonitorMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *DomainMonitorMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (DomainMonitor).
+func (m *DomainMonitorMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *DomainMonitorMutation) Fields() []string {
+	fields := make([]string, 0, 10)
+	if m.created_at != nil {
+		fields = append(fields, domainmonitor.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, domainmonitor.FieldUpdatedAt)
+	}
+	if m.name != nil {
+		fields = append(fields, domainmonitor.FieldName)
+	}
+	if m.domain != nil {
+		fields = append(fields, domainmonitor.FieldDomain)
+	}
+	if m.check_interval != nil {
+		fields = append(fields, domainmonitor.FieldCheckInterval)
+	}
+	if m.check_protocol != nil {
+		fields = append(fields, domainmonitor.FieldCheckProtocol)
+	}
+	if m.is_active != nil {
+		fields = append(fields, domainmonitor.FieldIsActive)
+	}
+	if m.current_status != nil {
+		fields = append(fields, domainmonitor.FieldCurrentStatus)
+	}
+	if m.last_success_at != nil {
+		fields = append(fields, domainmonitor.FieldLastSuccessAt)
+	}
+	if m.last_failure_at != nil {
+		fields = append(fields, domainmonitor.FieldLastFailureAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *DomainMonitorMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case domainmonitor.FieldCreatedAt:
+		return m.CreatedAt()
+	case domainmonitor.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case domainmonitor.FieldName:
+		return m.Name()
+	case domainmonitor.FieldDomain:
+		return m.Domain()
+	case domainmonitor.FieldCheckInterval:
+		return m.CheckInterval()
+	case domainmonitor.FieldCheckProtocol:
+		return m.CheckProtocol()
+	case domainmonitor.FieldIsActive:
+		return m.IsActive()
+	case domainmonitor.FieldCurrentStatus:
+		return m.CurrentStatus()
+	case domainmonitor.FieldLastSuccessAt:
+		return m.LastSuccessAt()
+	case domainmonitor.FieldLastFailureAt:
+		return m.LastFailureAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *DomainMonitorMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case domainmonitor.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case domainmonitor.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case domainmonitor.FieldName:
+		return m.OldName(ctx)
+	case domainmonitor.FieldDomain:
+		return m.OldDomain(ctx)
+	case domainmonitor.FieldCheckInterval:
+		return m.OldCheckInterval(ctx)
+	case domainmonitor.FieldCheckProtocol:
+		return m.OldCheckProtocol(ctx)
+	case domainmonitor.FieldIsActive:
+		return m.OldIsActive(ctx)
+	case domainmonitor.FieldCurrentStatus:
+		return m.OldCurrentStatus(ctx)
+	case domainmonitor.FieldLastSuccessAt:
+		return m.OldLastSuccessAt(ctx)
+	case domainmonitor.FieldLastFailureAt:
+		return m.OldLastFailureAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown DomainMonitor field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DomainMonitorMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case domainmonitor.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case domainmonitor.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case domainmonitor.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case domainmonitor.FieldDomain:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDomain(v)
+		return nil
+	case domainmonitor.FieldCheckInterval:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCheckInterval(v)
+		return nil
+	case domainmonitor.FieldCheckProtocol:
+		v, ok := value.(domainmonitor.CheckProtocol)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCheckProtocol(v)
+		return nil
+	case domainmonitor.FieldIsActive:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsActive(v)
+		return nil
+	case domainmonitor.FieldCurrentStatus:
+		v, ok := value.(domainmonitor.CurrentStatus)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCurrentStatus(v)
+		return nil
+	case domainmonitor.FieldLastSuccessAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastSuccessAt(v)
+		return nil
+	case domainmonitor.FieldLastFailureAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastFailureAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DomainMonitor field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *DomainMonitorMutation) AddedFields() []string {
+	var fields []string
+	if m.addcheck_interval != nil {
+		fields = append(fields, domainmonitor.FieldCheckInterval)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *DomainMonitorMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case domainmonitor.FieldCheckInterval:
+		return m.AddedCheckInterval()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DomainMonitorMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case domainmonitor.FieldCheckInterval:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCheckInterval(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DomainMonitor numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *DomainMonitorMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(domainmonitor.FieldLastSuccessAt) {
+		fields = append(fields, domainmonitor.FieldLastSuccessAt)
+	}
+	if m.FieldCleared(domainmonitor.FieldLastFailureAt) {
+		fields = append(fields, domainmonitor.FieldLastFailureAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *DomainMonitorMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *DomainMonitorMutation) ClearField(name string) error {
+	switch name {
+	case domainmonitor.FieldLastSuccessAt:
+		m.ClearLastSuccessAt()
+		return nil
+	case domainmonitor.FieldLastFailureAt:
+		m.ClearLastFailureAt()
+		return nil
+	}
+	return fmt.Errorf("unknown DomainMonitor nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *DomainMonitorMutation) ResetField(name string) error {
+	switch name {
+	case domainmonitor.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case domainmonitor.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case domainmonitor.FieldName:
+		m.ResetName()
+		return nil
+	case domainmonitor.FieldDomain:
+		m.ResetDomain()
+		return nil
+	case domainmonitor.FieldCheckInterval:
+		m.ResetCheckInterval()
+		return nil
+	case domainmonitor.FieldCheckProtocol:
+		m.ResetCheckProtocol()
+		return nil
+	case domainmonitor.FieldIsActive:
+		m.ResetIsActive()
+		return nil
+	case domainmonitor.FieldCurrentStatus:
+		m.ResetCurrentStatus()
+		return nil
+	case domainmonitor.FieldLastSuccessAt:
+		m.ResetLastSuccessAt()
+		return nil
+	case domainmonitor.FieldLastFailureAt:
+		m.ResetLastFailureAt()
+		return nil
+	}
+	return fmt.Errorf("unknown DomainMonitor field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *DomainMonitorMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.history_records != nil {
+		edges = append(edges, domainmonitor.EdgeHistoryRecords)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *DomainMonitorMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case domainmonitor.EdgeHistoryRecords:
+		ids := make([]ent.Value, 0, len(m.history_records))
+		for id := range m.history_records {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *DomainMonitorMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removedhistory_records != nil {
+		edges = append(edges, domainmonitor.EdgeHistoryRecords)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *DomainMonitorMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case domainmonitor.EdgeHistoryRecords:
+		ids := make([]ent.Value, 0, len(m.removedhistory_records))
+		for id := range m.removedhistory_records {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *DomainMonitorMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedhistory_records {
+		edges = append(edges, domainmonitor.EdgeHistoryRecords)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *DomainMonitorMutation) EdgeCleared(name string) bool {
+	switch name {
+	case domainmonitor.EdgeHistoryRecords:
+		return m.clearedhistory_records
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *DomainMonitorMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown DomainMonitor unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *DomainMonitorMutation) ResetEdge(name string) error {
+	switch name {
+	case domainmonitor.EdgeHistoryRecords:
+		m.ResetHistoryRecords()
+		return nil
+	}
+	return fmt.Errorf("unknown DomainMonitor edge %s", name)
+}
+
+// DomainMonitorHistoryMutation represents an operation that mutates the DomainMonitorHistory nodes in the graph.
+type DomainMonitorHistoryMutation struct {
+	config
+	op                    Op
+	typ                   string
+	id                    *int64
+	check_time            *time.Time
+	is_success            *bool
+	check_duration        *int
+	addcheck_duration     *int
+	status_message        *string
+	http_status           *int
+	addhttp_status        *int
+	ip_resolved           *[]string
+	appendip_resolved     []string
+	error_log             *string
+	ssl_expiry_date       *time.Time
+	ssl_common_name       *string
+	ssl_issuer_name       *string
+	ssl_signature_alg     *string
+	ssl_san_list          *string
+	ssl_certificate_chain *string
+	clearedFields         map[string]struct{}
+	monitor               *int64
+	clearedmonitor        bool
+	done                  bool
+	oldValue              func(context.Context) (*DomainMonitorHistory, error)
+	predicates            []predicate.DomainMonitorHistory
+}
+
+var _ ent.Mutation = (*DomainMonitorHistoryMutation)(nil)
+
+// domainmonitorhistoryOption allows management of the mutation configuration using functional options.
+type domainmonitorhistoryOption func(*DomainMonitorHistoryMutation)
+
+// newDomainMonitorHistoryMutation creates new mutation for the DomainMonitorHistory entity.
+func newDomainMonitorHistoryMutation(c config, op Op, opts ...domainmonitorhistoryOption) *DomainMonitorHistoryMutation {
+	m := &DomainMonitorHistoryMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeDomainMonitorHistory,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withDomainMonitorHistoryID sets the ID field of the mutation.
+func withDomainMonitorHistoryID(id int64) domainmonitorhistoryOption {
+	return func(m *DomainMonitorHistoryMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *DomainMonitorHistory
+		)
+		m.oldValue = func(ctx context.Context) (*DomainMonitorHistory, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().DomainMonitorHistory.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withDomainMonitorHistory sets the old DomainMonitorHistory of the mutation.
+func withDomainMonitorHistory(node *DomainMonitorHistory) domainmonitorhistoryOption {
+	return func(m *DomainMonitorHistoryMutation) {
+		m.oldValue = func(context.Context) (*DomainMonitorHistory, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m DomainMonitorHistoryMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m DomainMonitorHistoryMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of DomainMonitorHistory entities.
+func (m *DomainMonitorHistoryMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *DomainMonitorHistoryMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *DomainMonitorHistoryMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().DomainMonitorHistory.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetMonitorID sets the "monitor_id" field.
+func (m *DomainMonitorHistoryMutation) SetMonitorID(i int64) {
+	m.monitor = &i
+}
+
+// MonitorID returns the value of the "monitor_id" field in the mutation.
+func (m *DomainMonitorHistoryMutation) MonitorID() (r int64, exists bool) {
+	v := m.monitor
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMonitorID returns the old "monitor_id" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldMonitorID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMonitorID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMonitorID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMonitorID: %w", err)
+	}
+	return oldValue.MonitorID, nil
+}
+
+// ResetMonitorID resets all changes to the "monitor_id" field.
+func (m *DomainMonitorHistoryMutation) ResetMonitorID() {
+	m.monitor = nil
+}
+
+// SetCheckTime sets the "check_time" field.
+func (m *DomainMonitorHistoryMutation) SetCheckTime(t time.Time) {
+	m.check_time = &t
+}
+
+// CheckTime returns the value of the "check_time" field in the mutation.
+func (m *DomainMonitorHistoryMutation) CheckTime() (r time.Time, exists bool) {
+	v := m.check_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCheckTime returns the old "check_time" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldCheckTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCheckTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCheckTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCheckTime: %w", err)
+	}
+	return oldValue.CheckTime, nil
+}
+
+// ResetCheckTime resets all changes to the "check_time" field.
+func (m *DomainMonitorHistoryMutation) ResetCheckTime() {
+	m.check_time = nil
+}
+
+// SetIsSuccess sets the "is_success" field.
+func (m *DomainMonitorHistoryMutation) SetIsSuccess(b bool) {
+	m.is_success = &b
+}
+
+// IsSuccess returns the value of the "is_success" field in the mutation.
+func (m *DomainMonitorHistoryMutation) IsSuccess() (r bool, exists bool) {
+	v := m.is_success
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsSuccess returns the old "is_success" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldIsSuccess(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsSuccess is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsSuccess requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsSuccess: %w", err)
+	}
+	return oldValue.IsSuccess, nil
+}
+
+// ResetIsSuccess resets all changes to the "is_success" field.
+func (m *DomainMonitorHistoryMutation) ResetIsSuccess() {
+	m.is_success = nil
+}
+
+// SetCheckDuration sets the "check_duration" field.
+func (m *DomainMonitorHistoryMutation) SetCheckDuration(i int) {
+	m.check_duration = &i
+	m.addcheck_duration = nil
+}
+
+// CheckDuration returns the value of the "check_duration" field in the mutation.
+func (m *DomainMonitorHistoryMutation) CheckDuration() (r int, exists bool) {
+	v := m.check_duration
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCheckDuration returns the old "check_duration" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldCheckDuration(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCheckDuration is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCheckDuration requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCheckDuration: %w", err)
+	}
+	return oldValue.CheckDuration, nil
+}
+
+// AddCheckDuration adds i to the "check_duration" field.
+func (m *DomainMonitorHistoryMutation) AddCheckDuration(i int) {
+	if m.addcheck_duration != nil {
+		*m.addcheck_duration += i
+	} else {
+		m.addcheck_duration = &i
+	}
+}
+
+// AddedCheckDuration returns the value that was added to the "check_duration" field in this mutation.
+func (m *DomainMonitorHistoryMutation) AddedCheckDuration() (r int, exists bool) {
+	v := m.addcheck_duration
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearCheckDuration clears the value of the "check_duration" field.
+func (m *DomainMonitorHistoryMutation) ClearCheckDuration() {
+	m.check_duration = nil
+	m.addcheck_duration = nil
+	m.clearedFields[domainmonitorhistory.FieldCheckDuration] = struct{}{}
+}
+
+// CheckDurationCleared returns if the "check_duration" field was cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) CheckDurationCleared() bool {
+	_, ok := m.clearedFields[domainmonitorhistory.FieldCheckDuration]
+	return ok
+}
+
+// ResetCheckDuration resets all changes to the "check_duration" field.
+func (m *DomainMonitorHistoryMutation) ResetCheckDuration() {
+	m.check_duration = nil
+	m.addcheck_duration = nil
+	delete(m.clearedFields, domainmonitorhistory.FieldCheckDuration)
+}
+
+// SetStatusMessage sets the "status_message" field.
+func (m *DomainMonitorHistoryMutation) SetStatusMessage(s string) {
+	m.status_message = &s
+}
+
+// StatusMessage returns the value of the "status_message" field in the mutation.
+func (m *DomainMonitorHistoryMutation) StatusMessage() (r string, exists bool) {
+	v := m.status_message
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatusMessage returns the old "status_message" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldStatusMessage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatusMessage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatusMessage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatusMessage: %w", err)
+	}
+	return oldValue.StatusMessage, nil
+}
+
+// ClearStatusMessage clears the value of the "status_message" field.
+func (m *DomainMonitorHistoryMutation) ClearStatusMessage() {
+	m.status_message = nil
+	m.clearedFields[domainmonitorhistory.FieldStatusMessage] = struct{}{}
+}
+
+// StatusMessageCleared returns if the "status_message" field was cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) StatusMessageCleared() bool {
+	_, ok := m.clearedFields[domainmonitorhistory.FieldStatusMessage]
+	return ok
+}
+
+// ResetStatusMessage resets all changes to the "status_message" field.
+func (m *DomainMonitorHistoryMutation) ResetStatusMessage() {
+	m.status_message = nil
+	delete(m.clearedFields, domainmonitorhistory.FieldStatusMessage)
+}
+
+// SetHTTPStatus sets the "http_status" field.
+func (m *DomainMonitorHistoryMutation) SetHTTPStatus(i int) {
+	m.http_status = &i
+	m.addhttp_status = nil
+}
+
+// HTTPStatus returns the value of the "http_status" field in the mutation.
+func (m *DomainMonitorHistoryMutation) HTTPStatus() (r int, exists bool) {
+	v := m.http_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHTTPStatus returns the old "http_status" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldHTTPStatus(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHTTPStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHTTPStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHTTPStatus: %w", err)
+	}
+	return oldValue.HTTPStatus, nil
+}
+
+// AddHTTPStatus adds i to the "http_status" field.
+func (m *DomainMonitorHistoryMutation) AddHTTPStatus(i int) {
+	if m.addhttp_status != nil {
+		*m.addhttp_status += i
+	} else {
+		m.addhttp_status = &i
+	}
+}
+
+// AddedHTTPStatus returns the value that was added to the "http_status" field in this mutation.
+func (m *DomainMonitorHistoryMutation) AddedHTTPStatus() (r int, exists bool) {
+	v := m.addhttp_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearHTTPStatus clears the value of the "http_status" field.
+func (m *DomainMonitorHistoryMutation) ClearHTTPStatus() {
+	m.http_status = nil
+	m.addhttp_status = nil
+	m.clearedFields[domainmonitorhistory.FieldHTTPStatus] = struct{}{}
+}
+
+// HTTPStatusCleared returns if the "http_status" field was cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) HTTPStatusCleared() bool {
+	_, ok := m.clearedFields[domainmonitorhistory.FieldHTTPStatus]
+	return ok
+}
+
+// ResetHTTPStatus resets all changes to the "http_status" field.
+func (m *DomainMonitorHistoryMutation) ResetHTTPStatus() {
+	m.http_status = nil
+	m.addhttp_status = nil
+	delete(m.clearedFields, domainmonitorhistory.FieldHTTPStatus)
+}
+
+// SetIPResolved sets the "ip_resolved" field.
+func (m *DomainMonitorHistoryMutation) SetIPResolved(s []string) {
+	m.ip_resolved = &s
+	m.appendip_resolved = nil
+}
+
+// IPResolved returns the value of the "ip_resolved" field in the mutation.
+func (m *DomainMonitorHistoryMutation) IPResolved() (r []string, exists bool) {
+	v := m.ip_resolved
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIPResolved returns the old "ip_resolved" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldIPResolved(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIPResolved is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIPResolved requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIPResolved: %w", err)
+	}
+	return oldValue.IPResolved, nil
+}
+
+// AppendIPResolved adds s to the "ip_resolved" field.
+func (m *DomainMonitorHistoryMutation) AppendIPResolved(s []string) {
+	m.appendip_resolved = append(m.appendip_resolved, s...)
+}
+
+// AppendedIPResolved returns the list of values that were appended to the "ip_resolved" field in this mutation.
+func (m *DomainMonitorHistoryMutation) AppendedIPResolved() ([]string, bool) {
+	if len(m.appendip_resolved) == 0 {
+		return nil, false
+	}
+	return m.appendip_resolved, true
+}
+
+// ClearIPResolved clears the value of the "ip_resolved" field.
+func (m *DomainMonitorHistoryMutation) ClearIPResolved() {
+	m.ip_resolved = nil
+	m.appendip_resolved = nil
+	m.clearedFields[domainmonitorhistory.FieldIPResolved] = struct{}{}
+}
+
+// IPResolvedCleared returns if the "ip_resolved" field was cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) IPResolvedCleared() bool {
+	_, ok := m.clearedFields[domainmonitorhistory.FieldIPResolved]
+	return ok
+}
+
+// ResetIPResolved resets all changes to the "ip_resolved" field.
+func (m *DomainMonitorHistoryMutation) ResetIPResolved() {
+	m.ip_resolved = nil
+	m.appendip_resolved = nil
+	delete(m.clearedFields, domainmonitorhistory.FieldIPResolved)
+}
+
+// SetErrorLog sets the "error_log" field.
+func (m *DomainMonitorHistoryMutation) SetErrorLog(s string) {
+	m.error_log = &s
+}
+
+// ErrorLog returns the value of the "error_log" field in the mutation.
+func (m *DomainMonitorHistoryMutation) ErrorLog() (r string, exists bool) {
+	v := m.error_log
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldErrorLog returns the old "error_log" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldErrorLog(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldErrorLog is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldErrorLog requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldErrorLog: %w", err)
+	}
+	return oldValue.ErrorLog, nil
+}
+
+// ClearErrorLog clears the value of the "error_log" field.
+func (m *DomainMonitorHistoryMutation) ClearErrorLog() {
+	m.error_log = nil
+	m.clearedFields[domainmonitorhistory.FieldErrorLog] = struct{}{}
+}
+
+// ErrorLogCleared returns if the "error_log" field was cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) ErrorLogCleared() bool {
+	_, ok := m.clearedFields[domainmonitorhistory.FieldErrorLog]
+	return ok
+}
+
+// ResetErrorLog resets all changes to the "error_log" field.
+func (m *DomainMonitorHistoryMutation) ResetErrorLog() {
+	m.error_log = nil
+	delete(m.clearedFields, domainmonitorhistory.FieldErrorLog)
+}
+
+// SetSslExpiryDate sets the "ssl_expiry_date" field.
+func (m *DomainMonitorHistoryMutation) SetSslExpiryDate(t time.Time) {
+	m.ssl_expiry_date = &t
+}
+
+// SslExpiryDate returns the value of the "ssl_expiry_date" field in the mutation.
+func (m *DomainMonitorHistoryMutation) SslExpiryDate() (r time.Time, exists bool) {
+	v := m.ssl_expiry_date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSslExpiryDate returns the old "ssl_expiry_date" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldSslExpiryDate(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSslExpiryDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSslExpiryDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSslExpiryDate: %w", err)
+	}
+	return oldValue.SslExpiryDate, nil
+}
+
+// ClearSslExpiryDate clears the value of the "ssl_expiry_date" field.
+func (m *DomainMonitorHistoryMutation) ClearSslExpiryDate() {
+	m.ssl_expiry_date = nil
+	m.clearedFields[domainmonitorhistory.FieldSslExpiryDate] = struct{}{}
+}
+
+// SslExpiryDateCleared returns if the "ssl_expiry_date" field was cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) SslExpiryDateCleared() bool {
+	_, ok := m.clearedFields[domainmonitorhistory.FieldSslExpiryDate]
+	return ok
+}
+
+// ResetSslExpiryDate resets all changes to the "ssl_expiry_date" field.
+func (m *DomainMonitorHistoryMutation) ResetSslExpiryDate() {
+	m.ssl_expiry_date = nil
+	delete(m.clearedFields, domainmonitorhistory.FieldSslExpiryDate)
+}
+
+// SetSslCommonName sets the "ssl_common_name" field.
+func (m *DomainMonitorHistoryMutation) SetSslCommonName(s string) {
+	m.ssl_common_name = &s
+}
+
+// SslCommonName returns the value of the "ssl_common_name" field in the mutation.
+func (m *DomainMonitorHistoryMutation) SslCommonName() (r string, exists bool) {
+	v := m.ssl_common_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSslCommonName returns the old "ssl_common_name" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldSslCommonName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSslCommonName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSslCommonName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSslCommonName: %w", err)
+	}
+	return oldValue.SslCommonName, nil
+}
+
+// ClearSslCommonName clears the value of the "ssl_common_name" field.
+func (m *DomainMonitorHistoryMutation) ClearSslCommonName() {
+	m.ssl_common_name = nil
+	m.clearedFields[domainmonitorhistory.FieldSslCommonName] = struct{}{}
+}
+
+// SslCommonNameCleared returns if the "ssl_common_name" field was cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) SslCommonNameCleared() bool {
+	_, ok := m.clearedFields[domainmonitorhistory.FieldSslCommonName]
+	return ok
+}
+
+// ResetSslCommonName resets all changes to the "ssl_common_name" field.
+func (m *DomainMonitorHistoryMutation) ResetSslCommonName() {
+	m.ssl_common_name = nil
+	delete(m.clearedFields, domainmonitorhistory.FieldSslCommonName)
+}
+
+// SetSslIssuerName sets the "ssl_issuer_name" field.
+func (m *DomainMonitorHistoryMutation) SetSslIssuerName(s string) {
+	m.ssl_issuer_name = &s
+}
+
+// SslIssuerName returns the value of the "ssl_issuer_name" field in the mutation.
+func (m *DomainMonitorHistoryMutation) SslIssuerName() (r string, exists bool) {
+	v := m.ssl_issuer_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSslIssuerName returns the old "ssl_issuer_name" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldSslIssuerName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSslIssuerName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSslIssuerName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSslIssuerName: %w", err)
+	}
+	return oldValue.SslIssuerName, nil
+}
+
+// ClearSslIssuerName clears the value of the "ssl_issuer_name" field.
+func (m *DomainMonitorHistoryMutation) ClearSslIssuerName() {
+	m.ssl_issuer_name = nil
+	m.clearedFields[domainmonitorhistory.FieldSslIssuerName] = struct{}{}
+}
+
+// SslIssuerNameCleared returns if the "ssl_issuer_name" field was cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) SslIssuerNameCleared() bool {
+	_, ok := m.clearedFields[domainmonitorhistory.FieldSslIssuerName]
+	return ok
+}
+
+// ResetSslIssuerName resets all changes to the "ssl_issuer_name" field.
+func (m *DomainMonitorHistoryMutation) ResetSslIssuerName() {
+	m.ssl_issuer_name = nil
+	delete(m.clearedFields, domainmonitorhistory.FieldSslIssuerName)
+}
+
+// SetSslSignatureAlg sets the "ssl_signature_alg" field.
+func (m *DomainMonitorHistoryMutation) SetSslSignatureAlg(s string) {
+	m.ssl_signature_alg = &s
+}
+
+// SslSignatureAlg returns the value of the "ssl_signature_alg" field in the mutation.
+func (m *DomainMonitorHistoryMutation) SslSignatureAlg() (r string, exists bool) {
+	v := m.ssl_signature_alg
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSslSignatureAlg returns the old "ssl_signature_alg" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldSslSignatureAlg(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSslSignatureAlg is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSslSignatureAlg requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSslSignatureAlg: %w", err)
+	}
+	return oldValue.SslSignatureAlg, nil
+}
+
+// ClearSslSignatureAlg clears the value of the "ssl_signature_alg" field.
+func (m *DomainMonitorHistoryMutation) ClearSslSignatureAlg() {
+	m.ssl_signature_alg = nil
+	m.clearedFields[domainmonitorhistory.FieldSslSignatureAlg] = struct{}{}
+}
+
+// SslSignatureAlgCleared returns if the "ssl_signature_alg" field was cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) SslSignatureAlgCleared() bool {
+	_, ok := m.clearedFields[domainmonitorhistory.FieldSslSignatureAlg]
+	return ok
+}
+
+// ResetSslSignatureAlg resets all changes to the "ssl_signature_alg" field.
+func (m *DomainMonitorHistoryMutation) ResetSslSignatureAlg() {
+	m.ssl_signature_alg = nil
+	delete(m.clearedFields, domainmonitorhistory.FieldSslSignatureAlg)
+}
+
+// SetSslSanList sets the "ssl_san_list" field.
+func (m *DomainMonitorHistoryMutation) SetSslSanList(s string) {
+	m.ssl_san_list = &s
+}
+
+// SslSanList returns the value of the "ssl_san_list" field in the mutation.
+func (m *DomainMonitorHistoryMutation) SslSanList() (r string, exists bool) {
+	v := m.ssl_san_list
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSslSanList returns the old "ssl_san_list" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldSslSanList(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSslSanList is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSslSanList requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSslSanList: %w", err)
+	}
+	return oldValue.SslSanList, nil
+}
+
+// ClearSslSanList clears the value of the "ssl_san_list" field.
+func (m *DomainMonitorHistoryMutation) ClearSslSanList() {
+	m.ssl_san_list = nil
+	m.clearedFields[domainmonitorhistory.FieldSslSanList] = struct{}{}
+}
+
+// SslSanListCleared returns if the "ssl_san_list" field was cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) SslSanListCleared() bool {
+	_, ok := m.clearedFields[domainmonitorhistory.FieldSslSanList]
+	return ok
+}
+
+// ResetSslSanList resets all changes to the "ssl_san_list" field.
+func (m *DomainMonitorHistoryMutation) ResetSslSanList() {
+	m.ssl_san_list = nil
+	delete(m.clearedFields, domainmonitorhistory.FieldSslSanList)
+}
+
+// SetSslCertificateChain sets the "ssl_certificate_chain" field.
+func (m *DomainMonitorHistoryMutation) SetSslCertificateChain(s string) {
+	m.ssl_certificate_chain = &s
+}
+
+// SslCertificateChain returns the value of the "ssl_certificate_chain" field in the mutation.
+func (m *DomainMonitorHistoryMutation) SslCertificateChain() (r string, exists bool) {
+	v := m.ssl_certificate_chain
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSslCertificateChain returns the old "ssl_certificate_chain" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldSslCertificateChain(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSslCertificateChain is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSslCertificateChain requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSslCertificateChain: %w", err)
+	}
+	return oldValue.SslCertificateChain, nil
+}
+
+// ClearSslCertificateChain clears the value of the "ssl_certificate_chain" field.
+func (m *DomainMonitorHistoryMutation) ClearSslCertificateChain() {
+	m.ssl_certificate_chain = nil
+	m.clearedFields[domainmonitorhistory.FieldSslCertificateChain] = struct{}{}
+}
+
+// SslCertificateChainCleared returns if the "ssl_certificate_chain" field was cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) SslCertificateChainCleared() bool {
+	_, ok := m.clearedFields[domainmonitorhistory.FieldSslCertificateChain]
+	return ok
+}
+
+// ResetSslCertificateChain resets all changes to the "ssl_certificate_chain" field.
+func (m *DomainMonitorHistoryMutation) ResetSslCertificateChain() {
+	m.ssl_certificate_chain = nil
+	delete(m.clearedFields, domainmonitorhistory.FieldSslCertificateChain)
+}
+
+// ClearMonitor clears the "monitor" edge to the DomainMonitor entity.
+func (m *DomainMonitorHistoryMutation) ClearMonitor() {
+	m.clearedmonitor = true
+	m.clearedFields[domainmonitorhistory.FieldMonitorID] = struct{}{}
+}
+
+// MonitorCleared reports if the "monitor" edge to the DomainMonitor entity was cleared.
+func (m *DomainMonitorHistoryMutation) MonitorCleared() bool {
+	return m.clearedmonitor
+}
+
+// MonitorIDs returns the "monitor" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// MonitorID instead. It exists only for internal usage by the builders.
+func (m *DomainMonitorHistoryMutation) MonitorIDs() (ids []int64) {
+	if id := m.monitor; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetMonitor resets all changes to the "monitor" edge.
+func (m *DomainMonitorHistoryMutation) ResetMonitor() {
+	m.monitor = nil
+	m.clearedmonitor = false
+}
+
+// Where appends a list predicates to the DomainMonitorHistoryMutation builder.
+func (m *DomainMonitorHistoryMutation) Where(ps ...predicate.DomainMonitorHistory) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the DomainMonitorHistoryMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *DomainMonitorHistoryMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.DomainMonitorHistory, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *DomainMonitorHistoryMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *DomainMonitorHistoryMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (DomainMonitorHistory).
+func (m *DomainMonitorHistoryMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *DomainMonitorHistoryMutation) Fields() []string {
+	fields := make([]string, 0, 14)
+	if m.monitor != nil {
+		fields = append(fields, domainmonitorhistory.FieldMonitorID)
+	}
+	if m.check_time != nil {
+		fields = append(fields, domainmonitorhistory.FieldCheckTime)
+	}
+	if m.is_success != nil {
+		fields = append(fields, domainmonitorhistory.FieldIsSuccess)
+	}
+	if m.check_duration != nil {
+		fields = append(fields, domainmonitorhistory.FieldCheckDuration)
+	}
+	if m.status_message != nil {
+		fields = append(fields, domainmonitorhistory.FieldStatusMessage)
+	}
+	if m.http_status != nil {
+		fields = append(fields, domainmonitorhistory.FieldHTTPStatus)
+	}
+	if m.ip_resolved != nil {
+		fields = append(fields, domainmonitorhistory.FieldIPResolved)
+	}
+	if m.error_log != nil {
+		fields = append(fields, domainmonitorhistory.FieldErrorLog)
+	}
+	if m.ssl_expiry_date != nil {
+		fields = append(fields, domainmonitorhistory.FieldSslExpiryDate)
+	}
+	if m.ssl_common_name != nil {
+		fields = append(fields, domainmonitorhistory.FieldSslCommonName)
+	}
+	if m.ssl_issuer_name != nil {
+		fields = append(fields, domainmonitorhistory.FieldSslIssuerName)
+	}
+	if m.ssl_signature_alg != nil {
+		fields = append(fields, domainmonitorhistory.FieldSslSignatureAlg)
+	}
+	if m.ssl_san_list != nil {
+		fields = append(fields, domainmonitorhistory.FieldSslSanList)
+	}
+	if m.ssl_certificate_chain != nil {
+		fields = append(fields, domainmonitorhistory.FieldSslCertificateChain)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *DomainMonitorHistoryMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case domainmonitorhistory.FieldMonitorID:
+		return m.MonitorID()
+	case domainmonitorhistory.FieldCheckTime:
+		return m.CheckTime()
+	case domainmonitorhistory.FieldIsSuccess:
+		return m.IsSuccess()
+	case domainmonitorhistory.FieldCheckDuration:
+		return m.CheckDuration()
+	case domainmonitorhistory.FieldStatusMessage:
+		return m.StatusMessage()
+	case domainmonitorhistory.FieldHTTPStatus:
+		return m.HTTPStatus()
+	case domainmonitorhistory.FieldIPResolved:
+		return m.IPResolved()
+	case domainmonitorhistory.FieldErrorLog:
+		return m.ErrorLog()
+	case domainmonitorhistory.FieldSslExpiryDate:
+		return m.SslExpiryDate()
+	case domainmonitorhistory.FieldSslCommonName:
+		return m.SslCommonName()
+	case domainmonitorhistory.FieldSslIssuerName:
+		return m.SslIssuerName()
+	case domainmonitorhistory.FieldSslSignatureAlg:
+		return m.SslSignatureAlg()
+	case domainmonitorhistory.FieldSslSanList:
+		return m.SslSanList()
+	case domainmonitorhistory.FieldSslCertificateChain:
+		return m.SslCertificateChain()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *DomainMonitorHistoryMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case domainmonitorhistory.FieldMonitorID:
+		return m.OldMonitorID(ctx)
+	case domainmonitorhistory.FieldCheckTime:
+		return m.OldCheckTime(ctx)
+	case domainmonitorhistory.FieldIsSuccess:
+		return m.OldIsSuccess(ctx)
+	case domainmonitorhistory.FieldCheckDuration:
+		return m.OldCheckDuration(ctx)
+	case domainmonitorhistory.FieldStatusMessage:
+		return m.OldStatusMessage(ctx)
+	case domainmonitorhistory.FieldHTTPStatus:
+		return m.OldHTTPStatus(ctx)
+	case domainmonitorhistory.FieldIPResolved:
+		return m.OldIPResolved(ctx)
+	case domainmonitorhistory.FieldErrorLog:
+		return m.OldErrorLog(ctx)
+	case domainmonitorhistory.FieldSslExpiryDate:
+		return m.OldSslExpiryDate(ctx)
+	case domainmonitorhistory.FieldSslCommonName:
+		return m.OldSslCommonName(ctx)
+	case domainmonitorhistory.FieldSslIssuerName:
+		return m.OldSslIssuerName(ctx)
+	case domainmonitorhistory.FieldSslSignatureAlg:
+		return m.OldSslSignatureAlg(ctx)
+	case domainmonitorhistory.FieldSslSanList:
+		return m.OldSslSanList(ctx)
+	case domainmonitorhistory.FieldSslCertificateChain:
+		return m.OldSslCertificateChain(ctx)
+	}
+	return nil, fmt.Errorf("unknown DomainMonitorHistory field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DomainMonitorHistoryMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case domainmonitorhistory.FieldMonitorID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMonitorID(v)
+		return nil
+	case domainmonitorhistory.FieldCheckTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCheckTime(v)
+		return nil
+	case domainmonitorhistory.FieldIsSuccess:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsSuccess(v)
+		return nil
+	case domainmonitorhistory.FieldCheckDuration:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCheckDuration(v)
+		return nil
+	case domainmonitorhistory.FieldStatusMessage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatusMessage(v)
+		return nil
+	case domainmonitorhistory.FieldHTTPStatus:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHTTPStatus(v)
+		return nil
+	case domainmonitorhistory.FieldIPResolved:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIPResolved(v)
+		return nil
+	case domainmonitorhistory.FieldErrorLog:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetErrorLog(v)
+		return nil
+	case domainmonitorhistory.FieldSslExpiryDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSslExpiryDate(v)
+		return nil
+	case domainmonitorhistory.FieldSslCommonName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSslCommonName(v)
+		return nil
+	case domainmonitorhistory.FieldSslIssuerName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSslIssuerName(v)
+		return nil
+	case domainmonitorhistory.FieldSslSignatureAlg:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSslSignatureAlg(v)
+		return nil
+	case domainmonitorhistory.FieldSslSanList:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSslSanList(v)
+		return nil
+	case domainmonitorhistory.FieldSslCertificateChain:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSslCertificateChain(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DomainMonitorHistory field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *DomainMonitorHistoryMutation) AddedFields() []string {
+	var fields []string
+	if m.addcheck_duration != nil {
+		fields = append(fields, domainmonitorhistory.FieldCheckDuration)
+	}
+	if m.addhttp_status != nil {
+		fields = append(fields, domainmonitorhistory.FieldHTTPStatus)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *DomainMonitorHistoryMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case domainmonitorhistory.FieldCheckDuration:
+		return m.AddedCheckDuration()
+	case domainmonitorhistory.FieldHTTPStatus:
+		return m.AddedHTTPStatus()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DomainMonitorHistoryMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case domainmonitorhistory.FieldCheckDuration:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCheckDuration(v)
+		return nil
+	case domainmonitorhistory.FieldHTTPStatus:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddHTTPStatus(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DomainMonitorHistory numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *DomainMonitorHistoryMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(domainmonitorhistory.FieldCheckDuration) {
+		fields = append(fields, domainmonitorhistory.FieldCheckDuration)
+	}
+	if m.FieldCleared(domainmonitorhistory.FieldStatusMessage) {
+		fields = append(fields, domainmonitorhistory.FieldStatusMessage)
+	}
+	if m.FieldCleared(domainmonitorhistory.FieldHTTPStatus) {
+		fields = append(fields, domainmonitorhistory.FieldHTTPStatus)
+	}
+	if m.FieldCleared(domainmonitorhistory.FieldIPResolved) {
+		fields = append(fields, domainmonitorhistory.FieldIPResolved)
+	}
+	if m.FieldCleared(domainmonitorhistory.FieldErrorLog) {
+		fields = append(fields, domainmonitorhistory.FieldErrorLog)
+	}
+	if m.FieldCleared(domainmonitorhistory.FieldSslExpiryDate) {
+		fields = append(fields, domainmonitorhistory.FieldSslExpiryDate)
+	}
+	if m.FieldCleared(domainmonitorhistory.FieldSslCommonName) {
+		fields = append(fields, domainmonitorhistory.FieldSslCommonName)
+	}
+	if m.FieldCleared(domainmonitorhistory.FieldSslIssuerName) {
+		fields = append(fields, domainmonitorhistory.FieldSslIssuerName)
+	}
+	if m.FieldCleared(domainmonitorhistory.FieldSslSignatureAlg) {
+		fields = append(fields, domainmonitorhistory.FieldSslSignatureAlg)
+	}
+	if m.FieldCleared(domainmonitorhistory.FieldSslSanList) {
+		fields = append(fields, domainmonitorhistory.FieldSslSanList)
+	}
+	if m.FieldCleared(domainmonitorhistory.FieldSslCertificateChain) {
+		fields = append(fields, domainmonitorhistory.FieldSslCertificateChain)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *DomainMonitorHistoryMutation) ClearField(name string) error {
+	switch name {
+	case domainmonitorhistory.FieldCheckDuration:
+		m.ClearCheckDuration()
+		return nil
+	case domainmonitorhistory.FieldStatusMessage:
+		m.ClearStatusMessage()
+		return nil
+	case domainmonitorhistory.FieldHTTPStatus:
+		m.ClearHTTPStatus()
+		return nil
+	case domainmonitorhistory.FieldIPResolved:
+		m.ClearIPResolved()
+		return nil
+	case domainmonitorhistory.FieldErrorLog:
+		m.ClearErrorLog()
+		return nil
+	case domainmonitorhistory.FieldSslExpiryDate:
+		m.ClearSslExpiryDate()
+		return nil
+	case domainmonitorhistory.FieldSslCommonName:
+		m.ClearSslCommonName()
+		return nil
+	case domainmonitorhistory.FieldSslIssuerName:
+		m.ClearSslIssuerName()
+		return nil
+	case domainmonitorhistory.FieldSslSignatureAlg:
+		m.ClearSslSignatureAlg()
+		return nil
+	case domainmonitorhistory.FieldSslSanList:
+		m.ClearSslSanList()
+		return nil
+	case domainmonitorhistory.FieldSslCertificateChain:
+		m.ClearSslCertificateChain()
+		return nil
+	}
+	return fmt.Errorf("unknown DomainMonitorHistory nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *DomainMonitorHistoryMutation) ResetField(name string) error {
+	switch name {
+	case domainmonitorhistory.FieldMonitorID:
+		m.ResetMonitorID()
+		return nil
+	case domainmonitorhistory.FieldCheckTime:
+		m.ResetCheckTime()
+		return nil
+	case domainmonitorhistory.FieldIsSuccess:
+		m.ResetIsSuccess()
+		return nil
+	case domainmonitorhistory.FieldCheckDuration:
+		m.ResetCheckDuration()
+		return nil
+	case domainmonitorhistory.FieldStatusMessage:
+		m.ResetStatusMessage()
+		return nil
+	case domainmonitorhistory.FieldHTTPStatus:
+		m.ResetHTTPStatus()
+		return nil
+	case domainmonitorhistory.FieldIPResolved:
+		m.ResetIPResolved()
+		return nil
+	case domainmonitorhistory.FieldErrorLog:
+		m.ResetErrorLog()
+		return nil
+	case domainmonitorhistory.FieldSslExpiryDate:
+		m.ResetSslExpiryDate()
+		return nil
+	case domainmonitorhistory.FieldSslCommonName:
+		m.ResetSslCommonName()
+		return nil
+	case domainmonitorhistory.FieldSslIssuerName:
+		m.ResetSslIssuerName()
+		return nil
+	case domainmonitorhistory.FieldSslSignatureAlg:
+		m.ResetSslSignatureAlg()
+		return nil
+	case domainmonitorhistory.FieldSslSanList:
+		m.ResetSslSanList()
+		return nil
+	case domainmonitorhistory.FieldSslCertificateChain:
+		m.ResetSslCertificateChain()
+		return nil
+	}
+	return fmt.Errorf("unknown DomainMonitorHistory field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *DomainMonitorHistoryMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.monitor != nil {
+		edges = append(edges, domainmonitorhistory.EdgeMonitor)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *DomainMonitorHistoryMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case domainmonitorhistory.EdgeMonitor:
+		if id := m.monitor; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *DomainMonitorHistoryMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *DomainMonitorHistoryMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedmonitor {
+		edges = append(edges, domainmonitorhistory.EdgeMonitor)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) EdgeCleared(name string) bool {
+	switch name {
+	case domainmonitorhistory.EdgeMonitor:
+		return m.clearedmonitor
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *DomainMonitorHistoryMutation) ClearEdge(name string) error {
+	switch name {
+	case domainmonitorhistory.EdgeMonitor:
+		m.ClearMonitor()
+		return nil
+	}
+	return fmt.Errorf("unknown DomainMonitorHistory unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *DomainMonitorHistoryMutation) ResetEdge(name string) error {
+	switch name {
+	case domainmonitorhistory.EdgeMonitor:
+		m.ResetMonitor()
+		return nil
+	}
+	return fmt.Errorf("unknown DomainMonitorHistory edge %s", name)
 }
 
 // IpGroupMutation represents an operation that mutates the IpGroup nodes in the graph.

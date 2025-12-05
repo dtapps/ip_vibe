@@ -21,6 +21,12 @@ type DeviceIpReport func(*sql.Selector)
 // DevicePortForward is the predicate function for deviceportforward builders.
 type DevicePortForward func(*sql.Selector)
 
+// DomainMonitor is the predicate function for domainmonitor builders.
+type DomainMonitor func(*sql.Selector)
+
+// DomainMonitorHistory is the predicate function for domainmonitorhistory builders.
+type DomainMonitorHistory func(*sql.Selector)
+
 // IpGroup is the predicate function for ipgroup builders.
 type IpGroup func(*sql.Selector)
 

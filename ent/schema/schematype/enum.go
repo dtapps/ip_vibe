@@ -130,3 +130,14 @@ const (
 var GetDomainMonitorCheckProtocol = func() []string {
 	return []string{DomainMonitorCheckProtocolHTTP, DomainMonitorCheckProtocolHTTPS}
 }
+
+const (
+	DomainMonitorStatusUp      string = "UP"      // 运行中
+	DomainMonitorStatusDown    string = "DOWN"    // 已停止
+	DomainMonitorStatusUnknown string = "UNKNOWN" // 未知状态
+)
+
+// GetDomainMonitorStatus 返回所有运行状态
+var GetDomainMonitorStatus = func() []string {
+	return []string{DomainMonitorStatusUp, DomainMonitorStatusDown, DomainMonitorStatusUnknown}
+}

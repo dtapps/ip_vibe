@@ -9,6 +9,7 @@ import (
 	"vibe_ip/ent/deviceipreport"
 	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/ent/dnsrecord"
+	"vibe_ip/ent/domainmonitor"
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/ipgroupdevice"
 	"vibe_ip/ent/operationlog"
@@ -132,6 +133,29 @@ func init() {
 	deviceportforwardDescIsActive := deviceportforwardFields[8].Descriptor()
 	// deviceportforward.DefaultIsActive holds the default value on creation for the is_active field.
 	deviceportforward.DefaultIsActive = deviceportforwardDescIsActive.Default.(bool)
+	domainmonitorMixin := schema.DomainMonitor{}.Mixin()
+	domainmonitorMixinFields0 := domainmonitorMixin[0].Fields()
+	_ = domainmonitorMixinFields0
+	domainmonitorFields := schema.DomainMonitor{}.Fields()
+	_ = domainmonitorFields
+	// domainmonitorDescCreatedAt is the schema descriptor for created_at field.
+	domainmonitorDescCreatedAt := domainmonitorMixinFields0[0].Descriptor()
+	// domainmonitor.DefaultCreatedAt holds the default value on creation for the created_at field.
+	domainmonitor.DefaultCreatedAt = domainmonitorDescCreatedAt.Default.(func() time.Time)
+	// domainmonitorDescUpdatedAt is the schema descriptor for updated_at field.
+	domainmonitorDescUpdatedAt := domainmonitorMixinFields0[1].Descriptor()
+	// domainmonitor.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	domainmonitor.DefaultUpdatedAt = domainmonitorDescUpdatedAt.Default.(func() time.Time)
+	// domainmonitor.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	domainmonitor.UpdateDefaultUpdatedAt = domainmonitorDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// domainmonitorDescCheckInterval is the schema descriptor for check_interval field.
+	domainmonitorDescCheckInterval := domainmonitorFields[3].Descriptor()
+	// domainmonitor.DefaultCheckInterval holds the default value on creation for the check_interval field.
+	domainmonitor.DefaultCheckInterval = domainmonitorDescCheckInterval.Default.(int)
+	// domainmonitorDescIsActive is the schema descriptor for is_active field.
+	domainmonitorDescIsActive := domainmonitorFields[5].Descriptor()
+	// domainmonitor.DefaultIsActive holds the default value on creation for the is_active field.
+	domainmonitor.DefaultIsActive = domainmonitorDescIsActive.Default.(bool)
 	ipgroupMixin := schema.IpGroup{}.Mixin()
 	ipgroupMixinFields0 := ipgroupMixin[0].Fields()
 	_ = ipgroupMixinFields0

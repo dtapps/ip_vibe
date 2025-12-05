@@ -24,6 +24,10 @@ type Tx struct {
 	DeviceIpReport *DeviceIpReportClient
 	// DevicePortForward is the client for interacting with the DevicePortForward builders.
 	DevicePortForward *DevicePortForwardClient
+	// DomainMonitor is the client for interacting with the DomainMonitor builders.
+	DomainMonitor *DomainMonitorClient
+	// DomainMonitorHistory is the client for interacting with the DomainMonitorHistory builders.
+	DomainMonitorHistory *DomainMonitorHistoryClient
 	// IpGroup is the client for interacting with the IpGroup builders.
 	IpGroup *IpGroupClient
 	// IpGroupDevice is the client for interacting with the IpGroupDevice builders.
@@ -174,6 +178,8 @@ func (tx *Tx) init() {
 	tx.Device = NewDeviceClient(tx.config)
 	tx.DeviceIpReport = NewDeviceIpReportClient(tx.config)
 	tx.DevicePortForward = NewDevicePortForwardClient(tx.config)
+	tx.DomainMonitor = NewDomainMonitorClient(tx.config)
+	tx.DomainMonitorHistory = NewDomainMonitorHistoryClient(tx.config)
 	tx.IpGroup = NewIpGroupClient(tx.config)
 	tx.IpGroupDevice = NewIpGroupDeviceClient(tx.config)
 	tx.OperationLog = NewOperationLogClient(tx.config)

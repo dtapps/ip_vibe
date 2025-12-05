@@ -68,6 +68,30 @@ func (f DevicePortForwardFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DevicePortForwardMutation", m)
 }
 
+// The DomainMonitorFunc type is an adapter to allow the use of ordinary
+// function as DomainMonitor mutator.
+type DomainMonitorFunc func(context.Context, *ent.DomainMonitorMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f DomainMonitorFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.DomainMonitorMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DomainMonitorMutation", m)
+}
+
+// The DomainMonitorHistoryFunc type is an adapter to allow the use of ordinary
+// function as DomainMonitorHistory mutator.
+type DomainMonitorHistoryFunc func(context.Context, *ent.DomainMonitorHistoryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f DomainMonitorHistoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.DomainMonitorHistoryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DomainMonitorHistoryMutation", m)
+}
+
 // The IpGroupFunc type is an adapter to allow the use of ordinary
 // function as IpGroup mutator.
 type IpGroupFunc func(context.Context, *ent.IpGroupMutation) (ent.Value, error)

@@ -281,6 +281,79 @@ var (
 			},
 		},
 	}
+	// DomainMonitorColumns holds the columns for the "domain_monitor" table.
+	DomainMonitorColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "域名监控记录序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "name", Type: field.TypeString, Comment: "名称"},
+		{Name: "domain", Type: field.TypeString, Comment: "域名"},
+		{Name: "check_interval", Type: field.TypeInt, Comment: "检查间隔（秒）", Default: 60},
+		{Name: "check_protocol", Type: field.TypeEnum, Comment: "检查类型（HTTP/HTTPS）", Enums: []string{"HTTP", "HTTPS"}},
+		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
+		{Name: "current_status", Type: field.TypeEnum, Comment: "当前运行状态", Enums: []string{"UP", "DOWN", "UNKNOWN"}, Default: "UNKNOWN"},
+		{Name: "last_success_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次检查成功时间"},
+		{Name: "last_failure_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次检查失败时间"},
+	}
+	// DomainMonitorTable holds the schema information for the "domain_monitor" table.
+	DomainMonitorTable = &schema.Table{
+		Name:       "domain_monitor",
+		Comment:    "域名监控",
+		Columns:    DomainMonitorColumns,
+		PrimaryKey: []*schema.Column{DomainMonitorColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "domainmonitor_domain",
+				Unique:  true,
+				Columns: []*schema.Column{DomainMonitorColumns[4]},
+			},
+			{
+				Name:    "domainmonitor_domain_check_protocol",
+				Unique:  true,
+				Columns: []*schema.Column{DomainMonitorColumns[4], DomainMonitorColumns[6]},
+			},
+		},
+	}
+	// DomainMonitorHistoryColumns holds the columns for the "domain_monitor_history" table.
+	DomainMonitorHistoryColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "监控历史记录序号"},
+		{Name: "check_time", Type: field.TypeTime, Comment: "检查发生的时间"},
+		{Name: "is_success", Type: field.TypeBool, Comment: "本次检查是否成功"},
+		{Name: "check_duration", Type: field.TypeInt, Nullable: true, Comment: "检查耗时（毫秒）"},
+		{Name: "status_message", Type: field.TypeString, Nullable: true, Comment: "简要状态信息（如：200 OK，连接超时）"},
+		{Name: "http_status", Type: field.TypeInt, Nullable: true, Comment: "HTTP/HTTPS 状态码"},
+		{Name: "ip_resolved", Type: field.TypeJSON, Nullable: true, Comment: "解析到的 IP 地址列表"},
+		{Name: "error_log", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "详细错误信息或异常堆栈"},
+		{Name: "ssl_expiry_date", Type: field.TypeTime, Nullable: true, Comment: "证书过期日期"},
+		{Name: "ssl_common_name", Type: field.TypeString, Nullable: true, Comment: "证书主体通用名 (Subject CN)"},
+		{Name: "ssl_issuer_name", Type: field.TypeString, Nullable: true, Comment: "证书颁发者通用名 (Issuer CN)"},
+		{Name: "ssl_signature_alg", Type: field.TypeString, Nullable: true, Comment: "证书签名算法"},
+		{Name: "ssl_san_list", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "证书主体别名列表 (SANs，用逗号分隔)"},
+		{Name: "ssl_certificate_chain", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "完整的 SSL 证书链信息 (PEM 格式文本)"},
+		{Name: "monitor_id", Type: field.TypeInt64, Comment: "关联的 DomainMonitor ID"},
+	}
+	// DomainMonitorHistoryTable holds the schema information for the "domain_monitor_history" table.
+	DomainMonitorHistoryTable = &schema.Table{
+		Name:       "domain_monitor_history",
+		Comment:    "域名监控历史记录",
+		Columns:    DomainMonitorHistoryColumns,
+		PrimaryKey: []*schema.Column{DomainMonitorHistoryColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "domain_monitor_history_domain_monitor_history_records",
+				Columns:    []*schema.Column{DomainMonitorHistoryColumns[14]},
+				RefColumns: []*schema.Column{DomainMonitorColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "domainmonitorhistory_monitor_id_check_time",
+				Unique:  false,
+				Columns: []*schema.Column{DomainMonitorHistoryColumns[14], DomainMonitorHistoryColumns[1]},
+			},
+		},
+	}
 	// IPGroupColumns holds the columns for the "ip_group" table.
 	IPGroupColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "IP组序号"},
@@ -569,6 +642,8 @@ var (
 		DeviceTable,
 		DeviceIPReportTable,
 		DevicePortForwardTable,
+		DomainMonitorTable,
+		DomainMonitorHistoryTable,
 		IPGroupTable,
 		IPGroupDeviceTable,
 		OperationLogTable,
@@ -601,6 +676,13 @@ func init() {
 	DevicePortForwardTable.ForeignKeys[0].RefTable = DeviceTable
 	DevicePortForwardTable.Annotation = &entsql.Annotation{
 		Table: "device_port_forward",
+	}
+	DomainMonitorTable.Annotation = &entsql.Annotation{
+		Table: "domain_monitor",
+	}
+	DomainMonitorHistoryTable.ForeignKeys[0].RefTable = DomainMonitorTable
+	DomainMonitorHistoryTable.Annotation = &entsql.Annotation{
+		Table: "domain_monitor_history",
 	}
 	IPGroupTable.Annotation = &entsql.Annotation{
 		Table: "ip_group",

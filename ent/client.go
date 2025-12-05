@@ -16,6 +16,8 @@ import (
 	"vibe_ip/ent/deviceipreport"
 	"vibe_ip/ent/deviceportforward"
 	"vibe_ip/ent/dnsrecord"
+	"vibe_ip/ent/domainmonitor"
+	"vibe_ip/ent/domainmonitorhistory"
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/ipgroupdevice"
 	"vibe_ip/ent/operationlog"
@@ -47,6 +49,10 @@ type Client struct {
 	DeviceIpReport *DeviceIpReportClient
 	// DevicePortForward is the client for interacting with the DevicePortForward builders.
 	DevicePortForward *DevicePortForwardClient
+	// DomainMonitor is the client for interacting with the DomainMonitor builders.
+	DomainMonitor *DomainMonitorClient
+	// DomainMonitorHistory is the client for interacting with the DomainMonitorHistory builders.
+	DomainMonitorHistory *DomainMonitorHistoryClient
 	// IpGroup is the client for interacting with the IpGroup builders.
 	IpGroup *IpGroupClient
 	// IpGroupDevice is the client for interacting with the IpGroupDevice builders.
@@ -77,6 +83,8 @@ func (c *Client) init() {
 	c.Device = NewDeviceClient(c.config)
 	c.DeviceIpReport = NewDeviceIpReportClient(c.config)
 	c.DevicePortForward = NewDevicePortForwardClient(c.config)
+	c.DomainMonitor = NewDomainMonitorClient(c.config)
+	c.DomainMonitorHistory = NewDomainMonitorHistoryClient(c.config)
 	c.IpGroup = NewIpGroupClient(c.config)
 	c.IpGroupDevice = NewIpGroupDeviceClient(c.config)
 	c.OperationLog = NewOperationLogClient(c.config)
@@ -174,20 +182,22 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                 ctx,
-		config:              cfg,
-		CDNRecord:           NewCDNRecordClient(cfg),
-		DNSRecord:           NewDNSRecordClient(cfg),
-		Device:              NewDeviceClient(cfg),
-		DeviceIpReport:      NewDeviceIpReportClient(cfg),
-		DevicePortForward:   NewDevicePortForwardClient(cfg),
-		IpGroup:             NewIpGroupClient(cfg),
-		IpGroupDevice:       NewIpGroupDeviceClient(cfg),
-		OperationLog:        NewOperationLogClient(cfg),
-		PlatformConfig:      NewPlatformConfigClient(cfg),
-		RestyLog:            NewRestyLogClient(cfg),
-		Webhook:             NewWebhookClient(cfg),
-		WebhookSubscription: NewWebhookSubscriptionClient(cfg),
+		ctx:                  ctx,
+		config:               cfg,
+		CDNRecord:            NewCDNRecordClient(cfg),
+		DNSRecord:            NewDNSRecordClient(cfg),
+		Device:               NewDeviceClient(cfg),
+		DeviceIpReport:       NewDeviceIpReportClient(cfg),
+		DevicePortForward:    NewDevicePortForwardClient(cfg),
+		DomainMonitor:        NewDomainMonitorClient(cfg),
+		DomainMonitorHistory: NewDomainMonitorHistoryClient(cfg),
+		IpGroup:              NewIpGroupClient(cfg),
+		IpGroupDevice:        NewIpGroupDeviceClient(cfg),
+		OperationLog:         NewOperationLogClient(cfg),
+		PlatformConfig:       NewPlatformConfigClient(cfg),
+		RestyLog:             NewRestyLogClient(cfg),
+		Webhook:              NewWebhookClient(cfg),
+		WebhookSubscription:  NewWebhookSubscriptionClient(cfg),
 	}, nil
 }
 
@@ -205,20 +215,22 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                 ctx,
-		config:              cfg,
-		CDNRecord:           NewCDNRecordClient(cfg),
-		DNSRecord:           NewDNSRecordClient(cfg),
-		Device:              NewDeviceClient(cfg),
-		DeviceIpReport:      NewDeviceIpReportClient(cfg),
-		DevicePortForward:   NewDevicePortForwardClient(cfg),
-		IpGroup:             NewIpGroupClient(cfg),
-		IpGroupDevice:       NewIpGroupDeviceClient(cfg),
-		OperationLog:        NewOperationLogClient(cfg),
-		PlatformConfig:      NewPlatformConfigClient(cfg),
-		RestyLog:            NewRestyLogClient(cfg),
-		Webhook:             NewWebhookClient(cfg),
-		WebhookSubscription: NewWebhookSubscriptionClient(cfg),
+		ctx:                  ctx,
+		config:               cfg,
+		CDNRecord:            NewCDNRecordClient(cfg),
+		DNSRecord:            NewDNSRecordClient(cfg),
+		Device:               NewDeviceClient(cfg),
+		DeviceIpReport:       NewDeviceIpReportClient(cfg),
+		DevicePortForward:    NewDevicePortForwardClient(cfg),
+		DomainMonitor:        NewDomainMonitorClient(cfg),
+		DomainMonitorHistory: NewDomainMonitorHistoryClient(cfg),
+		IpGroup:              NewIpGroupClient(cfg),
+		IpGroupDevice:        NewIpGroupDeviceClient(cfg),
+		OperationLog:         NewOperationLogClient(cfg),
+		PlatformConfig:       NewPlatformConfigClient(cfg),
+		RestyLog:             NewRestyLogClient(cfg),
+		Webhook:              NewWebhookClient(cfg),
+		WebhookSubscription:  NewWebhookSubscriptionClient(cfg),
 	}, nil
 }
 
@@ -249,8 +261,8 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.CDNRecord, c.DNSRecord, c.Device, c.DeviceIpReport, c.DevicePortForward,
-		c.IpGroup, c.IpGroupDevice, c.OperationLog, c.PlatformConfig, c.RestyLog,
-		c.Webhook, c.WebhookSubscription,
+		c.DomainMonitor, c.DomainMonitorHistory, c.IpGroup, c.IpGroupDevice,
+		c.OperationLog, c.PlatformConfig, c.RestyLog, c.Webhook, c.WebhookSubscription,
 	} {
 		n.Use(hooks...)
 	}
@@ -261,8 +273,8 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.CDNRecord, c.DNSRecord, c.Device, c.DeviceIpReport, c.DevicePortForward,
-		c.IpGroup, c.IpGroupDevice, c.OperationLog, c.PlatformConfig, c.RestyLog,
-		c.Webhook, c.WebhookSubscription,
+		c.DomainMonitor, c.DomainMonitorHistory, c.IpGroup, c.IpGroupDevice,
+		c.OperationLog, c.PlatformConfig, c.RestyLog, c.Webhook, c.WebhookSubscription,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -281,6 +293,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.DeviceIpReport.mutate(ctx, m)
 	case *DevicePortForwardMutation:
 		return c.DevicePortForward.mutate(ctx, m)
+	case *DomainMonitorMutation:
+		return c.DomainMonitor.mutate(ctx, m)
+	case *DomainMonitorHistoryMutation:
+		return c.DomainMonitorHistory.mutate(ctx, m)
 	case *IpGroupMutation:
 		return c.IpGroup.mutate(ctx, m)
 	case *IpGroupDeviceMutation:
@@ -1154,6 +1170,304 @@ func (c *DevicePortForwardClient) mutate(ctx context.Context, m *DevicePortForwa
 		return (&DevicePortForwardDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown DevicePortForward mutation op: %q", m.Op())
+	}
+}
+
+// DomainMonitorClient is a client for the DomainMonitor schema.
+type DomainMonitorClient struct {
+	config
+}
+
+// NewDomainMonitorClient returns a client for the DomainMonitor from the given config.
+func NewDomainMonitorClient(c config) *DomainMonitorClient {
+	return &DomainMonitorClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `domainmonitor.Hooks(f(g(h())))`.
+func (c *DomainMonitorClient) Use(hooks ...Hook) {
+	c.hooks.DomainMonitor = append(c.hooks.DomainMonitor, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `domainmonitor.Intercept(f(g(h())))`.
+func (c *DomainMonitorClient) Intercept(interceptors ...Interceptor) {
+	c.inters.DomainMonitor = append(c.inters.DomainMonitor, interceptors...)
+}
+
+// Create returns a builder for creating a DomainMonitor entity.
+func (c *DomainMonitorClient) Create() *DomainMonitorCreate {
+	mutation := newDomainMonitorMutation(c.config, OpCreate)
+	return &DomainMonitorCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of DomainMonitor entities.
+func (c *DomainMonitorClient) CreateBulk(builders ...*DomainMonitorCreate) *DomainMonitorCreateBulk {
+	return &DomainMonitorCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DomainMonitorClient) MapCreateBulk(slice any, setFunc func(*DomainMonitorCreate, int)) *DomainMonitorCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DomainMonitorCreateBulk{err: fmt.Errorf("calling to DomainMonitorClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DomainMonitorCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &DomainMonitorCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for DomainMonitor.
+func (c *DomainMonitorClient) Update() *DomainMonitorUpdate {
+	mutation := newDomainMonitorMutation(c.config, OpUpdate)
+	return &DomainMonitorUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DomainMonitorClient) UpdateOne(_m *DomainMonitor) *DomainMonitorUpdateOne {
+	mutation := newDomainMonitorMutation(c.config, OpUpdateOne, withDomainMonitor(_m))
+	return &DomainMonitorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DomainMonitorClient) UpdateOneID(id int64) *DomainMonitorUpdateOne {
+	mutation := newDomainMonitorMutation(c.config, OpUpdateOne, withDomainMonitorID(id))
+	return &DomainMonitorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for DomainMonitor.
+func (c *DomainMonitorClient) Delete() *DomainMonitorDelete {
+	mutation := newDomainMonitorMutation(c.config, OpDelete)
+	return &DomainMonitorDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *DomainMonitorClient) DeleteOne(_m *DomainMonitor) *DomainMonitorDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *DomainMonitorClient) DeleteOneID(id int64) *DomainMonitorDeleteOne {
+	builder := c.Delete().Where(domainmonitor.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DomainMonitorDeleteOne{builder}
+}
+
+// Query returns a query builder for DomainMonitor.
+func (c *DomainMonitorClient) Query() *DomainMonitorQuery {
+	return &DomainMonitorQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeDomainMonitor},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a DomainMonitor entity by its id.
+func (c *DomainMonitorClient) Get(ctx context.Context, id int64) (*DomainMonitor, error) {
+	return c.Query().Where(domainmonitor.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DomainMonitorClient) GetX(ctx context.Context, id int64) *DomainMonitor {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryHistoryRecords queries the history_records edge of a DomainMonitor.
+func (c *DomainMonitorClient) QueryHistoryRecords(_m *DomainMonitor) *DomainMonitorHistoryQuery {
+	query := (&DomainMonitorHistoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(domainmonitor.Table, domainmonitor.FieldID, id),
+			sqlgraph.To(domainmonitorhistory.Table, domainmonitorhistory.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, domainmonitor.HistoryRecordsTable, domainmonitor.HistoryRecordsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *DomainMonitorClient) Hooks() []Hook {
+	return c.hooks.DomainMonitor
+}
+
+// Interceptors returns the client interceptors.
+func (c *DomainMonitorClient) Interceptors() []Interceptor {
+	return c.inters.DomainMonitor
+}
+
+func (c *DomainMonitorClient) mutate(ctx context.Context, m *DomainMonitorMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&DomainMonitorCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&DomainMonitorUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&DomainMonitorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&DomainMonitorDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown DomainMonitor mutation op: %q", m.Op())
+	}
+}
+
+// DomainMonitorHistoryClient is a client for the DomainMonitorHistory schema.
+type DomainMonitorHistoryClient struct {
+	config
+}
+
+// NewDomainMonitorHistoryClient returns a client for the DomainMonitorHistory from the given config.
+func NewDomainMonitorHistoryClient(c config) *DomainMonitorHistoryClient {
+	return &DomainMonitorHistoryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `domainmonitorhistory.Hooks(f(g(h())))`.
+func (c *DomainMonitorHistoryClient) Use(hooks ...Hook) {
+	c.hooks.DomainMonitorHistory = append(c.hooks.DomainMonitorHistory, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `domainmonitorhistory.Intercept(f(g(h())))`.
+func (c *DomainMonitorHistoryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.DomainMonitorHistory = append(c.inters.DomainMonitorHistory, interceptors...)
+}
+
+// Create returns a builder for creating a DomainMonitorHistory entity.
+func (c *DomainMonitorHistoryClient) Create() *DomainMonitorHistoryCreate {
+	mutation := newDomainMonitorHistoryMutation(c.config, OpCreate)
+	return &DomainMonitorHistoryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of DomainMonitorHistory entities.
+func (c *DomainMonitorHistoryClient) CreateBulk(builders ...*DomainMonitorHistoryCreate) *DomainMonitorHistoryCreateBulk {
+	return &DomainMonitorHistoryCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DomainMonitorHistoryClient) MapCreateBulk(slice any, setFunc func(*DomainMonitorHistoryCreate, int)) *DomainMonitorHistoryCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DomainMonitorHistoryCreateBulk{err: fmt.Errorf("calling to DomainMonitorHistoryClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DomainMonitorHistoryCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &DomainMonitorHistoryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for DomainMonitorHistory.
+func (c *DomainMonitorHistoryClient) Update() *DomainMonitorHistoryUpdate {
+	mutation := newDomainMonitorHistoryMutation(c.config, OpUpdate)
+	return &DomainMonitorHistoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DomainMonitorHistoryClient) UpdateOne(_m *DomainMonitorHistory) *DomainMonitorHistoryUpdateOne {
+	mutation := newDomainMonitorHistoryMutation(c.config, OpUpdateOne, withDomainMonitorHistory(_m))
+	return &DomainMonitorHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DomainMonitorHistoryClient) UpdateOneID(id int64) *DomainMonitorHistoryUpdateOne {
+	mutation := newDomainMonitorHistoryMutation(c.config, OpUpdateOne, withDomainMonitorHistoryID(id))
+	return &DomainMonitorHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for DomainMonitorHistory.
+func (c *DomainMonitorHistoryClient) Delete() *DomainMonitorHistoryDelete {
+	mutation := newDomainMonitorHistoryMutation(c.config, OpDelete)
+	return &DomainMonitorHistoryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *DomainMonitorHistoryClient) DeleteOne(_m *DomainMonitorHistory) *DomainMonitorHistoryDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *DomainMonitorHistoryClient) DeleteOneID(id int64) *DomainMonitorHistoryDeleteOne {
+	builder := c.Delete().Where(domainmonitorhistory.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DomainMonitorHistoryDeleteOne{builder}
+}
+
+// Query returns a query builder for DomainMonitorHistory.
+func (c *DomainMonitorHistoryClient) Query() *DomainMonitorHistoryQuery {
+	return &DomainMonitorHistoryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeDomainMonitorHistory},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a DomainMonitorHistory entity by its id.
+func (c *DomainMonitorHistoryClient) Get(ctx context.Context, id int64) (*DomainMonitorHistory, error) {
+	return c.Query().Where(domainmonitorhistory.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DomainMonitorHistoryClient) GetX(ctx context.Context, id int64) *DomainMonitorHistory {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryMonitor queries the monitor edge of a DomainMonitorHistory.
+func (c *DomainMonitorHistoryClient) QueryMonitor(_m *DomainMonitorHistory) *DomainMonitorQuery {
+	query := (&DomainMonitorClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(domainmonitorhistory.Table, domainmonitorhistory.FieldID, id),
+			sqlgraph.To(domainmonitor.Table, domainmonitor.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, domainmonitorhistory.MonitorTable, domainmonitorhistory.MonitorColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *DomainMonitorHistoryClient) Hooks() []Hook {
+	return c.hooks.DomainMonitorHistory
+}
+
+// Interceptors returns the client interceptors.
+func (c *DomainMonitorHistoryClient) Interceptors() []Interceptor {
+	return c.inters.DomainMonitorHistory
+}
+
+func (c *DomainMonitorHistoryClient) mutate(ctx context.Context, m *DomainMonitorHistoryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&DomainMonitorHistoryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&DomainMonitorHistoryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&DomainMonitorHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&DomainMonitorHistoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown DomainMonitorHistory mutation op: %q", m.Op())
 	}
 }
 
@@ -2202,14 +2516,14 @@ func (c *WebhookSubscriptionClient) mutate(ctx context.Context, m *WebhookSubscr
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		CDNRecord, DNSRecord, Device, DeviceIpReport, DevicePortForward, IpGroup,
-		IpGroupDevice, OperationLog, PlatformConfig, RestyLog, Webhook,
-		WebhookSubscription []ent.Hook
+		CDNRecord, DNSRecord, Device, DeviceIpReport, DevicePortForward, DomainMonitor,
+		DomainMonitorHistory, IpGroup, IpGroupDevice, OperationLog, PlatformConfig,
+		RestyLog, Webhook, WebhookSubscription []ent.Hook
 	}
 	inters struct {
-		CDNRecord, DNSRecord, Device, DeviceIpReport, DevicePortForward, IpGroup,
-		IpGroupDevice, OperationLog, PlatformConfig, RestyLog, Webhook,
-		WebhookSubscription []ent.Interceptor
+		CDNRecord, DNSRecord, Device, DeviceIpReport, DevicePortForward, DomainMonitor,
+		DomainMonitorHistory, IpGroup, IpGroupDevice, OperationLog, PlatformConfig,
+		RestyLog, Webhook, WebhookSubscription []ent.Interceptor
 	}
 )
 
