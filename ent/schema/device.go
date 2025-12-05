@@ -107,9 +107,16 @@ func (Device) Edges() []ent.Edge {
 // Indexes of the Device.
 func (Device) Indexes() []ent.Index {
 	return []ent.Index{
-		// 确保一个 设备编号 不能重复
-		index.Fields("code").
-			Unique().
+		// 按最后上报时间排序
+		index.Fields("last_reported_at").
+			Annotations(entsql.WithComments(true)),
+
+		// 按最后心跳时间排序
+		index.Fields("last_heartbeat_at").
+			Annotations(entsql.WithComments(true)),
+
+		// 按创建时间排序
+		index.Fields("created_at").
 			Annotations(entsql.WithComments(true)),
 	}
 }

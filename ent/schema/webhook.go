@@ -83,7 +83,7 @@ func (Webhook) Fields() []ent.Field {
 
 		field.Bool("is_active").
 			Default(false).
-			Comment("是否启用").
+			Comment("是否活跃").
 			Annotations(entsql.WithComments(true)),
 	}
 }
@@ -104,10 +104,16 @@ func (Webhook) Edges() []ent.Edge {
 // Indexes of the Webhook.
 func (Webhook) Indexes() []ent.Index {
 	return []ent.Index{
+		// 按通知平台类型排序
 		index.Fields("platform").
 			Annotations(entsql.WithComments(true)),
 
+		// 按是否活跃排序
 		index.Fields("is_active").
+			Annotations(entsql.WithComments(true)),
+
+		// 按创建时间排序
+		index.Fields("created_at").
 			Annotations(entsql.WithComments(true)),
 	}
 }

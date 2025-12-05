@@ -18,7 +18,7 @@ import (
 type CDNRecord struct {
 	config `json:"-"`
 	// ID of the ent.
-	// CDN 记录序号
+	// CDN记录序号
 	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
@@ -26,7 +26,7 @@ type CDNRecord struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// 平台配置序号
 	ConfigID int64 `json:"config_id,omitempty"`
-	// 平台侧记录 ID
+	// 平台侧记录ID
 	RecordID string `json:"record_id,omitempty"`
 	// 域名（如 www.example.com）
 	Domain string `json:"domain,omitempty"`
@@ -38,9 +38,9 @@ type CDNRecord struct {
 	HTTPPort int `json:"http_port,omitempty"`
 	// HTTPS 回源端口
 	HTTPSPort int `json:"https_port,omitempty"`
-	// CDN 边缘域名（平台提供）
+	// CDN边缘域名（平台提供）
 	CdnDomain string `json:"cdn_domain,omitempty"`
-	// IP 组序号
+	// IP组序号
 	IPGroupID int64 `json:"ip_group_id,omitempty"`
 	// 是否活跃
 	IsActive bool `json:"is_active,omitempty"`

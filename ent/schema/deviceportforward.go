@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // DevicePortForward holds the schema definition for the DevicePortForward entity.
@@ -89,6 +90,19 @@ func (DevicePortForward) Edges() []ent.Edge {
 			Unique().
 			Required().
 			Comment("关联的设备").
+			Annotations(entsql.WithComments(true)),
+	}
+}
+
+// Indexes of the DevicePortForward.
+func (DevicePortForward) Indexes() []ent.Index {
+	return []ent.Index{
+		// 按是否活跃排序
+		index.Fields("is_active").
+			Annotations(entsql.WithComments(true)),
+
+		// 按创建时间排序
+		index.Fields("created_at").
 			Annotations(entsql.WithComments(true)),
 	}
 }

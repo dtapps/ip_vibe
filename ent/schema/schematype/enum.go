@@ -85,7 +85,7 @@ const (
 	LogOpTypeDataUpdate   string = "data_update"   // 数据更新
 	LogOpTypeDataDelete   string = "data_delete"   // 数据删除
 	LogOpTypeDeviceReport string = "device_report" // 设备上报
-	LogOpTypeIPRefresh    string = "ip_refresh"    // IP 刷新
+	LogOpTypeIPRefresh    string = "ip_refresh"    // IP刷新
 )
 
 // GetLogOpType 返回所有操作类型
@@ -95,12 +95,12 @@ var GetLogOpType = func() []string {
 
 const (
 	LogObjTypePlatformConfig      string = "platform_config"      // 平台配置
-	LogObjTypeCdnRecord           string = "cdn_record"           // CDN 记录
-	LogObjTypeDnsRecord           string = "dns_record"           // DNS 记录
+	LogObjTypeCdnRecord           string = "cdn_record"           // CDN记录
+	LogObjTypeDnsRecord           string = "dns_record"           // DNS记录
 	LogObjTypeDevice              string = "device"               // 设备
-	LogObjTypeDeviceIPRecord      string = "device_ip_report"     // 设备 IP 记录
-	LogObjTypeIPGroup             string = "ip_group"             // IP 组
-	LogObjTypeIPGroupDevice       string = "ip_group_device"      // IP 组设备
+	LogObjTypeDeviceIPRecord      string = "device_ip_report"     // 设备IP记录
+	LogObjTypeIPGroup             string = "ip_group"             // IP组
+	LogObjTypeIPGroupDevice       string = "ip_group_device"      // IP组设备
 	LogObjTypeWebhook             string = "webhook"              // 通知
 	LogObjTypeWebhookSubscription string = "webhook_subscription" // 通知订阅
 	LogObjTypeDevicePortForward   string = "device_port_forward"  // 端口转发
@@ -119,4 +119,14 @@ const (
 // GetLogStatus 返回所有状态
 var GetLogStatus = func() []string {
 	return []string{LogStatusSuccess, LogStatusFailed}
+}
+
+const (
+	DomainMonitorCheckProtocolHTTP  string = "HTTP"  // HTTP 协议
+	DomainMonitorCheckProtocolHTTPS string = "HTTPS" // HTTPS 协议
+)
+
+// GetDomainMonitorCheckProtocol 返回所有检查协议
+var GetDomainMonitorCheckProtocol = func() []string {
+	return []string{DomainMonitorCheckProtocolHTTP, DomainMonitorCheckProtocolHTTPS}
 }

@@ -95,7 +95,16 @@ func (PlatformConfig) Edges() []ent.Edge {
 // Indexes of the PlatformConfig.
 func (PlatformConfig) Indexes() []ent.Index {
 	return []ent.Index{
+		// 按平台支持的服务能力排序
+		index.Fields("capability").
+			Annotations(entsql.WithComments(true)),
+
+		// 按平台类型排序
 		index.Fields("platform").
+			Annotations(entsql.WithComments(true)),
+
+		// 按创建时间排序
+		index.Fields("created_at").
 			Annotations(entsql.WithComments(true)),
 	}
 }

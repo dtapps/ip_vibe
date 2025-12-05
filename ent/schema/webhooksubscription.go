@@ -69,7 +69,7 @@ func (WebhookSubscription) Fields() []ent.Field {
 
 		field.Bool("is_active").
 			Default(false).
-			Comment("是否启用").
+			Comment("是否活跃").
 			Annotations(entsql.WithComments(true)),
 	}
 }
@@ -90,9 +90,17 @@ func (WebhookSubscription) Edges() []ent.Edge {
 // Indexes of the WebhookSubscription.
 func (WebhookSubscription) Indexes() []ent.Index {
 	return []ent.Index{
-		// 确保一个 Webhook 不能对同一个对象（类型+ID）重复订阅
+		// 确保一个通知不能对同一个对象（类型+ID）重复订阅
 		index.Fields("webhook_id", "obj_type", "obj_id").
 			Unique().
+			Annotations(entsql.WithComments(true)),
+
+		// 按创建时间排序
+		index.Fields("created_at").
+			Annotations(entsql.WithComments(true)),
+
+		// 按通知序号排序
+		index.Fields("webhook_id").
 			Annotations(entsql.WithComments(true)),
 	}
 }

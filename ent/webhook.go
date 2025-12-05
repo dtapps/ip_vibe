@@ -39,7 +39,7 @@ type Webhook struct {
 	TemplateTitle string `json:"template_title,omitempty"`
 	// 通知内容 Go Template
 	TemplateContent string `json:"template_content,omitempty"`
-	// 是否启用
+	// 是否活跃
 	IsActive bool `json:"is_active,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the WebhookQuery when eager-loading is set.

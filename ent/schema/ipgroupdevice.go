@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // IpGroupDevice holds the schema definition for the IpGroupDevice entity.
@@ -72,5 +73,17 @@ func (IpGroupDevice) Edges() []ent.Edge {
 
 // Indexes of the IpGroupDevice.
 func (IpGroupDevice) Indexes() []ent.Index {
-	return []ent.Index{}
+	return []ent.Index{
+		// 按创建时间排序
+		index.Fields("created_at").
+			Annotations(entsql.WithComments(true)),
+
+		// 按设备序号排序
+		index.Fields("device_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 按IP组序号排序
+		index.Fields("ip_group_id").
+			Annotations(entsql.WithComments(true)),
+	}
 }

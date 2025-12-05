@@ -39,7 +39,7 @@ func (CDNRecord) Fields() []ent.Field {
 		field.Int64("id").
 			StorageKey("id").
 			Immutable().
-			Comment("CDN 记录序号").
+			Comment("CDN记录序号").
 			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
 
 		field.Int64("config_id").
@@ -49,7 +49,7 @@ func (CDNRecord) Fields() []ent.Field {
 
 		field.String("record_id").
 			Optional().
-			Comment("平台侧记录 ID").
+			Comment("平台侧记录ID").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("domain").
@@ -81,11 +81,11 @@ func (CDNRecord) Fields() []ent.Field {
 
 		field.String("cdn_domain").
 			Optional().
-			Comment("CDN 边缘域名（平台提供）").
+			Comment("CDN边缘域名（平台提供）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("ip_group_id").
-			Comment("IP 组序号").
+			Comment("IP组序号").
 			Annotations(entsql.WithComments(true)),
 
 		field.Bool("is_active").
@@ -132,18 +132,33 @@ func (CDNRecord) Edges() []ent.Edge {
 // Indexes of the CDNRecord.
 func (CDNRecord) Indexes() []ent.Index {
 	return []ent.Index{
+		// 按域名排序
 		index.Fields("domain").
 			Annotations(entsql.WithComments(true)),
 
+		// 按记录类型排序
 		index.Fields("type").
 			Annotations(entsql.WithComments(true)),
 
+		// 按是否活跃排序
 		index.Fields("is_active").
 			Annotations(entsql.WithComments(true)),
 
-		// 确保一个 域名 不能有多个相同类型的记录
+		// 确保一个域名存在多个相同类型的记录
 		index.Fields("domain", "type").
 			Unique().
+			Annotations(entsql.WithComments(true)),
+
+		// 按创建时间排序
+		index.Fields("created_at").
+			Annotations(entsql.WithComments(true)),
+
+		// 按平台配置序号排序
+		index.Fields("config_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 按IP组序号排序
+		index.Fields("ip_group_id").
 			Annotations(entsql.WithComments(true)),
 	}
 }

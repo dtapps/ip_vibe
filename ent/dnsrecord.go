@@ -19,7 +19,7 @@ import (
 type DNSRecord struct {
 	config `json:"-"`
 	// ID of the ent.
-	// DNS 记录序号
+	// DNS记录序号
 	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
@@ -27,15 +27,15 @@ type DNSRecord struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// 平台配置序号
 	ConfigID int64 `json:"config_id,omitempty"`
-	// 平台侧记录 ID
+	// 平台侧记录ID
 	RecordID string `json:"record_id,omitempty"`
 	// 域名（如 www.example.com）
 	Domain string `json:"domain,omitempty"`
 	// 记录类型（A、AAAA、CNAME等）
 	Type dnsrecord.Type `json:"type,omitempty"`
-	// IP 组序号（与 cdn_record_id 二选一）
+	// IP组序号（与 cdn_record_id 二选一）
 	IPGroupID int64 `json:"ip_group_id,omitempty"`
-	// CDN 记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）
+	// CDN记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）
 	CdnRecordID int64 `json:"cdn_record_id,omitempty"`
 	// 是否活跃
 	IsActive bool `json:"is_active,omitempty"`

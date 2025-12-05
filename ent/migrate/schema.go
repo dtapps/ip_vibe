@@ -11,19 +11,19 @@ import (
 var (
 	// CdnRecordColumns holds the columns for the "cdn_record" table.
 	CdnRecordColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "CDN 记录序号"},
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "CDN记录序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
-		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录 ID"},
+		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录ID"},
 		{Name: "domain", Type: field.TypeString, Comment: "域名（如 www.example.com）"},
 		{Name: "type", Type: field.TypeEnum, Comment: "记录类型（A、AAAA等）", Enums: []string{"A", "AAAA"}},
 		{Name: "origin_protocol", Type: field.TypeEnum, Comment: "回源协议（http、https、follow）", Enums: []string{"http", "https", "follow"}, Default: "follow"},
 		{Name: "http_port", Type: field.TypeInt, Comment: "HTTP 回源端口", Default: 80},
 		{Name: "https_port", Type: field.TypeInt, Comment: "HTTPS 回源端口", Default: 443},
-		{Name: "cdn_domain", Type: field.TypeString, Nullable: true, Comment: "CDN 边缘域名（平台提供）"},
+		{Name: "cdn_domain", Type: field.TypeString, Nullable: true, Comment: "CDN边缘域名（平台提供）"},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
 		{Name: "last_refresh_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次刷新成功时间"},
-		{Name: "ip_group_id", Type: field.TypeInt64, Comment: "IP 组序号"},
+		{Name: "ip_group_id", Type: field.TypeInt64, Comment: "IP组序号"},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
 	}
 	// CdnRecordTable holds the schema information for the "cdn_record" table.
@@ -67,20 +67,35 @@ var (
 				Unique:  true,
 				Columns: []*schema.Column{CdnRecordColumns[4], CdnRecordColumns[5]},
 			},
+			{
+				Name:    "cdnrecord_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CdnRecordColumns[1]},
+			},
+			{
+				Name:    "cdnrecord_config_id",
+				Unique:  false,
+				Columns: []*schema.Column{CdnRecordColumns[13]},
+			},
+			{
+				Name:    "cdnrecord_ip_group_id",
+				Unique:  false,
+				Columns: []*schema.Column{CdnRecordColumns[12]},
+			},
 		},
 	}
 	// DNSRecordColumns holds the columns for the "dns_record" table.
 	DNSRecordColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "DNS 记录序号"},
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "DNS记录序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
-		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录 ID"},
+		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录ID"},
 		{Name: "domain", Type: field.TypeString, Comment: "域名（如 www.example.com）"},
 		{Name: "type", Type: field.TypeEnum, Comment: "记录类型（A、AAAA、CNAME等）", Enums: []string{"A", "AAAA", "CNAME"}},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
 		{Name: "last_refresh_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次刷新成功时间"},
-		{Name: "cdn_record_id", Type: field.TypeInt64, Nullable: true, Comment: "CDN 记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）"},
-		{Name: "ip_group_id", Type: field.TypeInt64, Nullable: true, Comment: "IP 组序号（与 cdn_record_id 二选一）"},
+		{Name: "cdn_record_id", Type: field.TypeInt64, Nullable: true, Comment: "CDN记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）"},
+		{Name: "ip_group_id", Type: field.TypeInt64, Nullable: true, Comment: "IP组序号（与 cdn_record_id 二选一）"},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
 	}
 	// DNSRecordTable holds the schema information for the "dns_record" table.
@@ -130,6 +145,26 @@ var (
 				Unique:  true,
 				Columns: []*schema.Column{DNSRecordColumns[4], DNSRecordColumns[5]},
 			},
+			{
+				Name:    "dnsrecord_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DNSRecordColumns[1]},
+			},
+			{
+				Name:    "dnsrecord_config_id",
+				Unique:  false,
+				Columns: []*schema.Column{DNSRecordColumns[10]},
+			},
+			{
+				Name:    "dnsrecord_ip_group_id",
+				Unique:  false,
+				Columns: []*schema.Column{DNSRecordColumns[9]},
+			},
+			{
+				Name:    "dnsrecord_cdn_record_id",
+				Unique:  false,
+				Columns: []*schema.Column{DNSRecordColumns[8]},
+			},
 		},
 	}
 	// DeviceColumns holds the columns for the "device" table.
@@ -153,9 +188,19 @@ var (
 		PrimaryKey: []*schema.Column{DeviceColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "device_code",
-				Unique:  true,
-				Columns: []*schema.Column{DeviceColumns[3]},
+				Name:    "device_last_reported_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeviceColumns[8]},
+			},
+			{
+				Name:    "device_last_heartbeat_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeviceColumns[9]},
+			},
+			{
+				Name:    "device_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeviceColumns[1]},
 			},
 		},
 	}
@@ -182,6 +227,11 @@ var (
 			},
 		},
 		Indexes: []*schema.Index{
+			{
+				Name:    "deviceipreport_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeviceIPReportColumns[1]},
+			},
 			{
 				Name:    "deviceipreport_device_id",
 				Unique:  false,
@@ -218,13 +268,25 @@ var (
 				OnDelete:   schema.Cascade,
 			},
 		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "deviceportforward_is_active",
+				Unique:  false,
+				Columns: []*schema.Column{DevicePortForwardColumns[10]},
+			},
+			{
+				Name:    "deviceportforward_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DevicePortForwardColumns[1]},
+			},
+		},
 	}
 	// IPGroupColumns holds the columns for the "ip_group" table.
 	IPGroupColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "IP组序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
-		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录 ID"},
+		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录ID"},
 		{Name: "name", Type: field.TypeString, Comment: "IP组名称"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "IP组描述"},
 	}
@@ -234,6 +296,13 @@ var (
 		Comment:    "IP组",
 		Columns:    IPGroupColumns,
 		PrimaryKey: []*schema.Column{IPGroupColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "ipgroup_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{IPGroupColumns[1]},
+			},
+		},
 	}
 	// IPGroupDeviceColumns holds the columns for the "ip_group_device" table.
 	IPGroupDeviceColumns = []*schema.Column{
@@ -259,6 +328,23 @@ var (
 				Columns:    []*schema.Column{IPGroupDeviceColumns[2]},
 				RefColumns: []*schema.Column{IPGroupColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "ipgroupdevice_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{IPGroupDeviceColumns[0]},
+			},
+			{
+				Name:    "ipgroupdevice_device_id",
+				Unique:  false,
+				Columns: []*schema.Column{IPGroupDeviceColumns[1]},
+			},
+			{
+				Name:    "ipgroupdevice_ip_group_id",
+				Unique:  false,
+				Columns: []*schema.Column{IPGroupDeviceColumns[2]},
 			},
 		},
 	}
@@ -287,9 +373,19 @@ var (
 				Columns: []*schema.Column{OperationLogColumns[2]},
 			},
 			{
+				Name:    "operationlog_obj_id",
+				Unique:  false,
+				Columns: []*schema.Column{OperationLogColumns[3]},
+			},
+			{
 				Name:    "operationlog_obj_type",
 				Unique:  false,
 				Columns: []*schema.Column{OperationLogColumns[4]},
+			},
+			{
+				Name:    "operationlog_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{OperationLogColumns[1]},
 			},
 		},
 	}
@@ -312,9 +408,19 @@ var (
 		PrimaryKey: []*schema.Column{PlatformConfigColumns[0]},
 		Indexes: []*schema.Index{
 			{
+				Name:    "platformconfig_capability",
+				Unique:  false,
+				Columns: []*schema.Column{PlatformConfigColumns[3]},
+			},
+			{
 				Name:    "platformconfig_platform",
 				Unique:  false,
 				Columns: []*schema.Column{PlatformConfigColumns[6]},
+			},
+			{
+				Name:    "platformconfig_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PlatformConfigColumns[1]},
 			},
 		},
 	}
@@ -360,6 +466,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{RestyLogColumns[6]},
 			},
+			{
+				Name:    "restylog_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{RestyLogColumns[11]},
+			},
 		},
 	}
 	// WebhookColumns holds the columns for the "webhook" table.
@@ -375,7 +486,7 @@ var (
 		{Name: "events", Type: field.TypeJSON, Comment: "订阅的事件类型列表"},
 		{Name: "template_title", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "通知标题 Go Template"},
 		{Name: "template_content", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "通知内容 Go Template"},
-		{Name: "is_active", Type: field.TypeBool, Comment: "是否启用", Default: false},
+		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
 	}
 	// WebhookTable holds the schema information for the "webhook" table.
 	WebhookTable = &schema.Table{
@@ -394,6 +505,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{WebhookColumns[11]},
 			},
+			{
+				Name:    "webhook_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookColumns[1]},
+			},
 		},
 	}
 	// WebhookSubscriptionColumns holds the columns for the "webhook_subscription" table.
@@ -404,7 +520,7 @@ var (
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "通知订阅描述"},
 		{Name: "obj_type", Type: field.TypeEnum, Comment: "订阅对象类型", Enums: []string{"cdn_record", "dns_record", "device"}},
 		{Name: "obj_id", Type: field.TypeInt64, Comment: "订阅对象主键"},
-		{Name: "is_active", Type: field.TypeBool, Comment: "是否启用", Default: false},
+		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
 		{Name: "webhook_subscriptions", Type: field.TypeInt64, Nullable: true},
 		{Name: "webhook_id", Type: field.TypeInt64, Comment: "通知序号"},
 	}
@@ -433,6 +549,16 @@ var (
 				Name:    "webhooksubscription_webhook_id_obj_type_obj_id",
 				Unique:  true,
 				Columns: []*schema.Column{WebhookSubscriptionColumns[8], WebhookSubscriptionColumns[4], WebhookSubscriptionColumns[5]},
+			},
+			{
+				Name:    "webhooksubscription_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookSubscriptionColumns[1]},
+			},
+			{
+				Name:    "webhooksubscription_webhook_id",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookSubscriptionColumns[8]},
 			},
 		},
 	}

@@ -91,10 +91,20 @@ func (OperationLog) Edges() []ent.Edge {
 // Indexes of the OperationLog.
 func (OperationLog) Indexes() []ent.Index {
 	return []ent.Index{
+		// 按操作类型排序
 		index.Fields("op_type").
 			Annotations(entsql.WithComments(true)),
 
+		// 按对象主键排序
+		index.Fields("obj_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 按对象类型排序
 		index.Fields("obj_type").
+			Annotations(entsql.WithComments(true)),
+
+		// 按创建时间排序
+		index.Fields("created_at").
 			Annotations(entsql.WithComments(true)),
 	}
 }

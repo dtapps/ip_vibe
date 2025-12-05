@@ -22,7 +22,7 @@ type IpGroup struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 更新时间
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// 平台侧记录 ID
+	// 平台侧记录ID
 	RecordID string `json:"record_id,omitempty"`
 	// IP组名称
 	Name string `json:"name,omitempty"`

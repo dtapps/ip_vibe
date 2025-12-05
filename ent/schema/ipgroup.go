@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // IpGroup holds the schema definition for the IpGroup entity.
@@ -42,7 +43,7 @@ func (IpGroup) Fields() []ent.Field {
 
 		field.String("record_id").
 			Optional().
-			Comment("平台侧记录 ID").
+			Comment("平台侧记录ID").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
@@ -80,5 +81,9 @@ func (IpGroup) Edges() []ent.Edge {
 
 // Indexes of the IpGroup.
 func (IpGroup) Indexes() []ent.Index {
-	return []ent.Index{}
+	return []ent.Index{
+		// 按创建时间排序
+		index.Fields("created_at").
+			Annotations(entsql.WithComments(true)),
+	}
 }

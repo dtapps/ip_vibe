@@ -31,7 +31,7 @@ type WebhookSubscription struct {
 	ObjType webhooksubscription.ObjType `json:"obj_type,omitempty"`
 	// 订阅对象主键
 	ObjID int64 `json:"obj_id,omitempty"`
-	// 是否启用
+	// 是否活跃
 	IsActive bool `json:"is_active,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the WebhookSubscriptionQuery when eager-loading is set.
