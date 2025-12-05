@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
-	"vibe_ip/ent"
+	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"

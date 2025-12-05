@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
-	"vibe_ip/ent"
-	"vibe_ip/ent/domainmonitor"
+	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent/domainmonitor"
 
 	"github.com/go-co-op/gocron/v2"
 )

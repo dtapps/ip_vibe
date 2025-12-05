@@ -1,7 +1,7 @@
 package global
 
 import (
-	"vibe_ip/ent"
+	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/helper/operation_logs_helper"
 

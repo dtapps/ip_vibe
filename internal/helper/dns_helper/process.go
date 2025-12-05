@@ -2,7 +2,7 @@ package dns_helper
 
 import (
 	"log/slog"
-	"vibe_ip/ent"
+	"vibe_ip/internal/ent"
 )
 
 type ProcessService struct {

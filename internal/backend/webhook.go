@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log/slog"
 	"time"
-	"vibe_ip/ent"
-	"vibe_ip/ent/webhook"
-	"vibe_ip/ent/webhooksubscription"
+	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent/webhook"
+	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/utils"
 

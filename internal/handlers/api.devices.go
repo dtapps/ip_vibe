@@ -3,10 +3,10 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"vibe_ip/ent"
-	"vibe_ip/ent/device"
-	"vibe_ip/ent/deviceipreport"
 	"vibe_ip/internal/backend"
+	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent/device"
+	"vibe_ip/internal/ent/deviceipreport"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"

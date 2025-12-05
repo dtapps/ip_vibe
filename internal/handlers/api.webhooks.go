@@ -3,8 +3,8 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"vibe_ip/ent"
-	"vibe_ip/ent/webhook"
+	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"

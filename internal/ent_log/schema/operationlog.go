@@ -1,8 +1,8 @@
 package schema
 
 import (
-	"vibe_ip/ent/schema/schemamixin"
-	"vibe_ip/ent/schema/schematype"
+	"vibe_ip/internal/ent/schema/schemamixin"
+	"vibe_ip/internal/ent/schema/schematype"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"

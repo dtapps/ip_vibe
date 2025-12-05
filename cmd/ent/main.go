@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
@@ -9,21 +9,29 @@ import (
 
 func main() {
 
+	target := "./ent"
+	target = "./internal/ent"
+	// target = "./internal/ent_log"
+	schemaPath := target + "/schema"
+
+	fmt.Println("target", target)
+	fmt.Println("schemaPath", schemaPath)
+
 	opts := []entc.Option{
 		// entc.Dependency(
 		// 	entc.DependencyType(&http.Client{}),
 		// ),
 		entc.TemplateFiles(
-			"./ent/template/debug.tmpl",
-			// "./ent/template/stringer.tmpl",
-			"./ent/template/aggregate.tmpl",
-			"./ent/template/order_by.tmpl",
-			"./ent/template/pagination.tmpl",
-			"./ent/template/to_map.tmpl",
+			"./internal/ent/template/debug.tmpl",
+			// "./internal/ent/template/stringer.tmpl",
+			"./internal/ent/template/aggregate.tmpl",
+			"./internal/ent/template/order_by.tmpl",
+			"./internal/ent/template/pagination.tmpl",
+			"./internal/ent/template/to_map.tmpl",
 		),
 	}
-	err := entc.Generate("./ent/schema", &gen.Config{
-		Target: "./ent",
+	err := entc.Generate(schemaPath, &gen.Config{
+		Target: target,
 		Features: []gen.Feature{
 			// gen.FeatureSnapshot,
 			// gen.FeaturePrivacy,
@@ -38,8 +46,9 @@ func main() {
 		},
 	}, opts...)
 	if err != nil {
-		log.Fatalf("代码生成错误: %v", err)
+		fmt.Printf("代码生成错误: %v", err)
+		return
 	}
 
-	log.Println("代码生成成功")
+	fmt.Println("代码生成成功")
 }

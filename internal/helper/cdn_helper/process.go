@@ -2,7 +2,7 @@ package cdn_helper
 
 import (
 	"log/slog"
-	"vibe_ip/ent"
+	"vibe_ip/internal/ent"
 )
 
 const (

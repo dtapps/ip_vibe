@@ -4,7 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"time"
-	"vibe_ip/ent"
+	"vibe_ip/internal/ent"
 
 	"github.com/go-co-op/gocron/v2"
 )
