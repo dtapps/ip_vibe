@@ -5,7 +5,7 @@
       services:
         - docker # 启用 Docker 服务（用于 docker build/push）
       docker:
-        image: golang:1.25.4-trixie # 使用官方 Golang 镜像，版本固定
+        image: golang:1.25.5-trixie # 使用官方 Golang 镜像，版本固定
         volumes:
           - /root/.cache/go-build:copy-on-write # 挂载 Go 构建缓存
           - /go:copy-on-write # 挂载项目依赖目录（可选，根据需要）
