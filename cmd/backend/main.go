@@ -145,7 +145,7 @@ func main() {
 		"sub":   func(a, b int) int { return a - b },
 		"div":   func(a, b int) int { return a / b },
 		"toInt": func(i int64) int { return int(i) },
-		// switch / icons 组件
+		// switch / icons / button 组件
 		"dict": func(values ...any) (map[string]any, error) {
 			if len(values)%2 != 0 {
 				return nil, fmt.Errorf("dict expects even number of arguments")

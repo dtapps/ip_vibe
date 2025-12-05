@@ -1,0 +1,77 @@
+{{ define "button" }}
+  {{/* 支持的参数：
+    .Type:      按钮类型/颜色，如 "primary", "danger"。默认 "primary"
+    .IconName:  图标名称，如 "ip-delete"
+    .Text:      按钮文本，如 "删除", "编辑"
+    .URL:       可选，API 接口地址（用于抽象化 DELETE 操作，参考 switch 的 URL 机制）
+    .OnClick:   可选，自定义的 JavaScript onclick 字符串
+    .Disabled:  可选，布尔值，是否禁用
+    .Tooltip:   可选，如果按钮被禁用，此处提供提示文本 (title)
+  */}}
+
+  {{/* 设置默认值 */}}
+  {{ $type := .Type }}
+  {{ if not $type }}
+    {{ $type = "primary" }}
+  {{ end }}
+  
+  {{ $iconName := .IconName }}
+  {{ $text := .Text }}
+  {{ $url := .URL }}
+  {{ $onClick := .OnClick }}
+  {{ $disabled := .Disabled }}
+  {{ $tooltip := .Tooltip }}
+
+  {{/* 确定最终的 onclick 动作字符串 */}}
+  {{ $actionString := "" }}
+  {{ if $url }}
+    {{ $actionString = printf "onApiDeleteAction('%s')" $url }}
+  {{ else if $onClick }}
+    {{ $actionString = $onClick }}
+  {{ end }}
+
+  {{/* 如果禁用且提供了提示文本，则使用 Tooltip 包装器 */}}
+  {{ if and $disabled $tooltip }}
+    <span class="btn-tooltip-wrapper" title="{{ $tooltip }}">
+  {{ end }}
+
+      <button 
+        class="btn btn-sm btn-{{ $type }}" 
+        {{ if $actionString }} onclick="{{ $actionString }}" {{ end }}
+        {{ if $disabled }} disabled {{ end }}
+      >
+        {{ if $iconName }}{{ template "icons" (dict "Name" $iconName) }}{{ end }}
+        {{ $text }}
+      </button>
+
+  {{/* 结束 Tooltip 包装器 */}}
+  {{ if and $disabled $tooltip }}
+    </span>
+  {{ end }}
+  
+  {{ if $url }}
+    <script>
+      // 避免重复定义 onApiDeleteAction 函数
+      if (typeof onApiDeleteAction === 'undefined') {
+        // 通用 API DELETE 动作
+        async function onApiDeleteAction(url) {
+          if (!confirm('确定要删除此项吗？')) {
+            return;
+          }
+          try {
+            if (typeof API !== 'undefined' && typeof API.delete === 'function') {
+                await API.delete(url);
+                location.reload(); 
+            } else {
+                alert("API.delete 函数未定义，请确保引入了必要的 JS 库。");
+            }
+          } catch (error) {
+            alert(`删除失败: ${error.message}`);
+            console.error("API 删除失败", error);
+          }
+        }
+        window.onApiDeleteAction = onApiDeleteAction;
+      }
+    </script>
+  {{ end }}
+{{ end }}

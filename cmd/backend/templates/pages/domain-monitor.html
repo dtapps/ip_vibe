@@ -37,7 +37,7 @@
           </td>
           <td>
             {{ template "switch" (dict "Checked" .IsActive "URL" (printf
-            "/api/dns-records/%d/active" .ID) ) }}
+            "/api/domain-monitors/%d/active" .ID) ) }}
           </td>
           <td>
             <button
@@ -46,20 +46,16 @@
             >
               {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
-            {{if .IsActive}}
-            <span
-              class="btn-tooltip-wrapper"
-              title="启用状态时不允许删除，请先禁止后操作再删除！"
-            >
-              <button class="btn btn-sm btn-danger" disabled>
-                {{ template "icons" (dict "Name" "ip-delete") }} 删除
-              </button>
-            </span>
-            {{else}}
-            <button class="btn btn-sm btn-danger" onclick="onDelete('{{.ID}}')">
-              {{ template "icons" (dict "Name" "ip-delete") }} 删除
-            </button>
-            {{end}}
+            {{ $isDisabled := .IsActive }}
+            {{ $urlPath := printf "/api/webhook-subs/%d" .ID }}
+            {{ template "button" (dict 
+                "Type" "danger" 
+                "IconName" "ip-delete" 
+                "Text" "删除" 
+                "URL" $urlPath
+                "Disabled" $isDisabled 
+                "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
+            )}}
           </td>
         </tr>
         {{ end }}

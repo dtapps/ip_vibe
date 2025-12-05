@@ -131,17 +131,3 @@ document.getElementById("form").onsubmit = async (e) => {
     console.error("域名监控操作失败", error);
   }
 };
-
-// 删除
-async function onDelete(id) {
-  if (confirm("确定删除此域名监控？")) {
-    try {
-      await API.delete(`/api/domain-monitors/${id}`);
-      // 刷新页面
-      location.reload();
-    } catch (error) {
-      alert(`删除失败: ${error.message}`);
-      console.error("删除域名监控失败", error);
-    }
-  }
-}
