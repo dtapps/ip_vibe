@@ -382,46 +382,6 @@ func (q *IpGroupDeviceQuery) Paginate(ctx context.Context, page, size int) (*Pag
 //   - size > 1000 时限制为 1000（防止数据库压力过大）
 //
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
-func (q *OperationLogQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[OperationLog], error) {
-	if page < 1 {
-		page = 1
-	}
-	if size < 1 {
-		size = 20
-	}
-	if size > 1000 {
-		size = 1000 // 安全上限，防止 OOM 或慢查询
-	}
-
-	offset := (page - 1) * size
-
-	// 先获取总数量
-	total, err := q.Clone().Count(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	// 再获取当前页数据
-	items, err := q.Clone().Offset(offset).Limit(size).All(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return &PaginationResult[OperationLog]{
-		Items: items,
-		Total: int64(total),
-		Page:  page,
-		Size:  size,
-	}, nil
-}
-
-// Paginate 对当前查询执行分页操作。
-// 参数 page 和 size 必须为正整数；若传入非法值，将自动修正：
-//   - page < 1 时默认为 1
-//   - size < 1 时默认为 20
-//   - size > 1000 时限制为 1000（防止数据库压力过大）
-//
-// 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *PlatformConfigQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[PlatformConfig], error) {
 	if page < 1 {
 		page = 1
@@ -448,46 +408,6 @@ func (q *PlatformConfigQuery) Paginate(ctx context.Context, page, size int) (*Pa
 	}
 
 	return &PaginationResult[PlatformConfig]{
-		Items: items,
-		Total: int64(total),
-		Page:  page,
-		Size:  size,
-	}, nil
-}
-
-// Paginate 对当前查询执行分页操作。
-// 参数 page 和 size 必须为正整数；若传入非法值，将自动修正：
-//   - page < 1 时默认为 1
-//   - size < 1 时默认为 20
-//   - size > 1000 时限制为 1000（防止数据库压力过大）
-//
-// 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
-func (q *RestyLogQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[RestyLog], error) {
-	if page < 1 {
-		page = 1
-	}
-	if size < 1 {
-		size = 20
-	}
-	if size > 1000 {
-		size = 1000 // 安全上限，防止 OOM 或慢查询
-	}
-
-	offset := (page - 1) * size
-
-	// 先获取总数量
-	total, err := q.Clone().Count(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	// 再获取当前页数据
-	items, err := q.Clone().Offset(offset).Limit(size).All(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return &PaginationResult[RestyLog]{
 		Items: items,
 		Total: int64(total),
 		Page:  page,

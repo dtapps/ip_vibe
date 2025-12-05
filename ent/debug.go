@@ -103,17 +103,6 @@ func (c *IpGroupDeviceClient) Debug() *IpGroupDeviceClient {
 	return &IpGroupDeviceClient{config: cfg}
 }
 
-// Debug 返回一个新的 OperationLogClient 实例，该实例在执行数据库操作时会打印详细的 SQL 日志。
-// 如果当前客户端已处于 Debug 模式，则直接返回自身。
-// 此方法常用于开发或排查问题时，用于观察生成的 SQL 语句及执行参数。
-func (c *OperationLogClient) Debug() *OperationLogClient {
-	if c.debug {
-		return c
-	}
-	cfg := config{driver: dialect.Debug(c.driver, c.log), log: c.log, debug: true, hooks: c.hooks}
-	return &OperationLogClient{config: cfg}
-}
-
 // Debug 返回一个新的 PlatformConfigClient 实例，该实例在执行数据库操作时会打印详细的 SQL 日志。
 // 如果当前客户端已处于 Debug 模式，则直接返回自身。
 // 此方法常用于开发或排查问题时，用于观察生成的 SQL 语句及执行参数。
@@ -123,17 +112,6 @@ func (c *PlatformConfigClient) Debug() *PlatformConfigClient {
 	}
 	cfg := config{driver: dialect.Debug(c.driver, c.log), log: c.log, debug: true, hooks: c.hooks}
 	return &PlatformConfigClient{config: cfg}
-}
-
-// Debug 返回一个新的 RestyLogClient 实例，该实例在执行数据库操作时会打印详细的 SQL 日志。
-// 如果当前客户端已处于 Debug 模式，则直接返回自身。
-// 此方法常用于开发或排查问题时，用于观察生成的 SQL 语句及执行参数。
-func (c *RestyLogClient) Debug() *RestyLogClient {
-	if c.debug {
-		return c
-	}
-	cfg := config{driver: dialect.Debug(c.driver, c.log), log: c.log, debug: true, hooks: c.hooks}
-	return &RestyLogClient{config: cfg}
 }
 
 // Debug 返回一个新的 WebhookClient 实例，该实例在执行数据库操作时会打印详细的 SQL 日志。

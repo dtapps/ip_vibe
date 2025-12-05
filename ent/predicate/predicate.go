@@ -33,14 +33,8 @@ type IpGroup func(*sql.Selector)
 // IpGroupDevice is the predicate function for ipgroupdevice builders.
 type IpGroupDevice func(*sql.Selector)
 
-// OperationLog is the predicate function for operationlog builders.
-type OperationLog func(*sql.Selector)
-
 // PlatformConfig is the predicate function for platformconfig builders.
 type PlatformConfig func(*sql.Selector)
-
-// RestyLog is the predicate function for restylog builders.
-type RestyLog func(*sql.Selector)
 
 // Webhook is the predicate function for webhook builders.
 type Webhook func(*sql.Selector)

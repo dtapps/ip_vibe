@@ -421,47 +421,6 @@ var (
 			},
 		},
 	}
-	// OperationLogColumns holds the columns for the "operation_log" table.
-	OperationLogColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "日志序号"},
-		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
-		{Name: "op_type", Type: field.TypeEnum, Comment: "操作类型", Enums: []string{"data_create", "data_update", "data_delete", "device_report", "ip_refresh"}},
-		{Name: "obj_id", Type: field.TypeInt64, Comment: "对象主键"},
-		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"platform_config", "cdn_record", "dns_record", "device", "device_ip_report", "ip_group", "ip_group_device", "webhook", "webhook_subscription", "device_port_forward", "domain_monitor", "domain_monitor_history"}},
-		{Name: "old_value", Type: field.TypeString, Nullable: true, Comment: "旧值"},
-		{Name: "new_value", Type: field.TypeString, Nullable: true, Comment: "新值"},
-		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"success", "failed"}},
-		{Name: "message", Type: field.TypeString, Comment: "详情"},
-	}
-	// OperationLogTable holds the schema information for the "operation_log" table.
-	OperationLogTable = &schema.Table{
-		Name:       "operation_log",
-		Comment:    "操作日志",
-		Columns:    OperationLogColumns,
-		PrimaryKey: []*schema.Column{OperationLogColumns[0]},
-		Indexes: []*schema.Index{
-			{
-				Name:    "operationlog_op_type",
-				Unique:  false,
-				Columns: []*schema.Column{OperationLogColumns[2]},
-			},
-			{
-				Name:    "operationlog_obj_id",
-				Unique:  false,
-				Columns: []*schema.Column{OperationLogColumns[3]},
-			},
-			{
-				Name:    "operationlog_obj_type",
-				Unique:  false,
-				Columns: []*schema.Column{OperationLogColumns[4]},
-			},
-			{
-				Name:    "operationlog_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{OperationLogColumns[1]},
-			},
-		},
-	}
 	// PlatformConfigColumns holds the columns for the "platform_config" table.
 	PlatformConfigColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "配置序号"},
@@ -494,55 +453,6 @@ var (
 				Name:    "platformconfig_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{PlatformConfigColumns[1]},
-			},
-		},
-	}
-	// RestyLogColumns holds the columns for the "resty_log" table.
-	RestyLogColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "hostname", Type: field.TypeString, Comment: "请求主机名"},
-		{Name: "method", Type: field.TypeString, Comment: "请求方式"},
-		{Name: "url", Type: field.TypeString, Comment: "请求url"},
-		{Name: "request_headers", Type: field.TypeJSON, Comment: "请求header"},
-		{Name: "request_body", Type: field.TypeJSON, Nullable: true, Comment: "请求参数"},
-		{Name: "status_code", Type: field.TypeInt, Comment: "响应码"},
-		{Name: "response_headers", Type: field.TypeJSON, Comment: "响应header"},
-		{Name: "response_body", Type: field.TypeJSON, Nullable: true, Comment: "响应结果"},
-		{Name: "elapse_time", Type: field.TypeInt64, Comment: "请求耗时, 单位:毫秒"},
-		{Name: "is_error", Type: field.TypeBool, Nullable: true, Comment: "是否为错误请求（如 5xx、4xx）", Default: false},
-		{Name: "created_at", Type: field.TypeTime, Comment: "请求时间"},
-	}
-	// RestyLogTable holds the schema information for the "resty_log" table.
-	RestyLogTable = &schema.Table{
-		Name:       "resty_log",
-		Comment:    "resty 请求日志",
-		Columns:    RestyLogColumns,
-		PrimaryKey: []*schema.Column{RestyLogColumns[0]},
-		Indexes: []*schema.Index{
-			{
-				Name:    "restylog_hostname",
-				Unique:  false,
-				Columns: []*schema.Column{RestyLogColumns[1]},
-			},
-			{
-				Name:    "restylog_method",
-				Unique:  false,
-				Columns: []*schema.Column{RestyLogColumns[2]},
-			},
-			{
-				Name:    "restylog_url",
-				Unique:  false,
-				Columns: []*schema.Column{RestyLogColumns[3]},
-			},
-			{
-				Name:    "restylog_status_code",
-				Unique:  false,
-				Columns: []*schema.Column{RestyLogColumns[6]},
-			},
-			{
-				Name:    "restylog_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{RestyLogColumns[11]},
 			},
 		},
 	}
@@ -646,9 +556,7 @@ var (
 		DomainMonitorHistoryTable,
 		IPGroupTable,
 		IPGroupDeviceTable,
-		OperationLogTable,
 		PlatformConfigTable,
-		RestyLogTable,
 		WebhookTable,
 		WebhookSubscriptionTable,
 	}
@@ -692,14 +600,8 @@ func init() {
 	IPGroupDeviceTable.Annotation = &entsql.Annotation{
 		Table: "ip_group_device",
 	}
-	OperationLogTable.Annotation = &entsql.Annotation{
-		Table: "operation_log",
-	}
 	PlatformConfigTable.Annotation = &entsql.Annotation{
 		Table: "platform_config",
-	}
-	RestyLogTable.Annotation = &entsql.Annotation{
-		Table: "resty_log",
 	}
 	WebhookTable.Annotation = &entsql.Annotation{
 		Table: "webhook",

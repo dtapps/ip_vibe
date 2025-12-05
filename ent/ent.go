@@ -17,9 +17,7 @@ import (
 	"vibe_ip/ent/domainmonitorhistory"
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/ipgroupdevice"
-	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/platformconfig"
-	"vibe_ip/ent/restylog"
 	"vibe_ip/ent/webhook"
 	"vibe_ip/ent/webhooksubscription"
 
@@ -95,9 +93,7 @@ func checkColumn(t, c string) error {
 			domainmonitorhistory.Table: domainmonitorhistory.ValidColumn,
 			ipgroup.Table:              ipgroup.ValidColumn,
 			ipgroupdevice.Table:        ipgroupdevice.ValidColumn,
-			operationlog.Table:         operationlog.ValidColumn,
 			platformconfig.Table:       platformconfig.ValidColumn,
-			restylog.Table:             restylog.ValidColumn,
 			webhook.Table:              webhook.ValidColumn,
 			webhooksubscription.Table:  webhooksubscription.ValidColumn,
 		})

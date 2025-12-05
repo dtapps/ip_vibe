@@ -20,9 +20,7 @@ import (
 	"vibe_ip/ent/domainmonitorhistory"
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/ipgroupdevice"
-	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/platformconfig"
-	"vibe_ip/ent/restylog"
 	"vibe_ip/ent/webhook"
 	"vibe_ip/ent/webhooksubscription"
 
@@ -57,12 +55,8 @@ type Client struct {
 	IpGroup *IpGroupClient
 	// IpGroupDevice is the client for interacting with the IpGroupDevice builders.
 	IpGroupDevice *IpGroupDeviceClient
-	// OperationLog is the client for interacting with the OperationLog builders.
-	OperationLog *OperationLogClient
 	// PlatformConfig is the client for interacting with the PlatformConfig builders.
 	PlatformConfig *PlatformConfigClient
-	// RestyLog is the client for interacting with the RestyLog builders.
-	RestyLog *RestyLogClient
 	// Webhook is the client for interacting with the Webhook builders.
 	Webhook *WebhookClient
 	// WebhookSubscription is the client for interacting with the WebhookSubscription builders.
@@ -87,9 +81,7 @@ func (c *Client) init() {
 	c.DomainMonitorHistory = NewDomainMonitorHistoryClient(c.config)
 	c.IpGroup = NewIpGroupClient(c.config)
 	c.IpGroupDevice = NewIpGroupDeviceClient(c.config)
-	c.OperationLog = NewOperationLogClient(c.config)
 	c.PlatformConfig = NewPlatformConfigClient(c.config)
-	c.RestyLog = NewRestyLogClient(c.config)
 	c.Webhook = NewWebhookClient(c.config)
 	c.WebhookSubscription = NewWebhookSubscriptionClient(c.config)
 }
@@ -193,9 +185,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		DomainMonitorHistory: NewDomainMonitorHistoryClient(cfg),
 		IpGroup:              NewIpGroupClient(cfg),
 		IpGroupDevice:        NewIpGroupDeviceClient(cfg),
-		OperationLog:         NewOperationLogClient(cfg),
 		PlatformConfig:       NewPlatformConfigClient(cfg),
-		RestyLog:             NewRestyLogClient(cfg),
 		Webhook:              NewWebhookClient(cfg),
 		WebhookSubscription:  NewWebhookSubscriptionClient(cfg),
 	}, nil
@@ -226,9 +216,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		DomainMonitorHistory: NewDomainMonitorHistoryClient(cfg),
 		IpGroup:              NewIpGroupClient(cfg),
 		IpGroupDevice:        NewIpGroupDeviceClient(cfg),
-		OperationLog:         NewOperationLogClient(cfg),
 		PlatformConfig:       NewPlatformConfigClient(cfg),
-		RestyLog:             NewRestyLogClient(cfg),
 		Webhook:              NewWebhookClient(cfg),
 		WebhookSubscription:  NewWebhookSubscriptionClient(cfg),
 	}, nil
@@ -262,7 +250,7 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.CDNRecord, c.DNSRecord, c.Device, c.DeviceIpReport, c.DevicePortForward,
 		c.DomainMonitor, c.DomainMonitorHistory, c.IpGroup, c.IpGroupDevice,
-		c.OperationLog, c.PlatformConfig, c.RestyLog, c.Webhook, c.WebhookSubscription,
+		c.PlatformConfig, c.Webhook, c.WebhookSubscription,
 	} {
 		n.Use(hooks...)
 	}
@@ -274,7 +262,7 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.CDNRecord, c.DNSRecord, c.Device, c.DeviceIpReport, c.DevicePortForward,
 		c.DomainMonitor, c.DomainMonitorHistory, c.IpGroup, c.IpGroupDevice,
-		c.OperationLog, c.PlatformConfig, c.RestyLog, c.Webhook, c.WebhookSubscription,
+		c.PlatformConfig, c.Webhook, c.WebhookSubscription,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -301,12 +289,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.IpGroup.mutate(ctx, m)
 	case *IpGroupDeviceMutation:
 		return c.IpGroupDevice.mutate(ctx, m)
-	case *OperationLogMutation:
-		return c.OperationLog.mutate(ctx, m)
 	case *PlatformConfigMutation:
 		return c.PlatformConfig.mutate(ctx, m)
-	case *RestyLogMutation:
-		return c.RestyLog.mutate(ctx, m)
 	case *WebhookMutation:
 		return c.Webhook.mutate(ctx, m)
 	case *WebhookSubscriptionMutation:
@@ -1784,139 +1768,6 @@ func (c *IpGroupDeviceClient) mutate(ctx context.Context, m *IpGroupDeviceMutati
 	}
 }
 
-// OperationLogClient is a client for the OperationLog schema.
-type OperationLogClient struct {
-	config
-}
-
-// NewOperationLogClient returns a client for the OperationLog from the given config.
-func NewOperationLogClient(c config) *OperationLogClient {
-	return &OperationLogClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `operationlog.Hooks(f(g(h())))`.
-func (c *OperationLogClient) Use(hooks ...Hook) {
-	c.hooks.OperationLog = append(c.hooks.OperationLog, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `operationlog.Intercept(f(g(h())))`.
-func (c *OperationLogClient) Intercept(interceptors ...Interceptor) {
-	c.inters.OperationLog = append(c.inters.OperationLog, interceptors...)
-}
-
-// Create returns a builder for creating a OperationLog entity.
-func (c *OperationLogClient) Create() *OperationLogCreate {
-	mutation := newOperationLogMutation(c.config, OpCreate)
-	return &OperationLogCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of OperationLog entities.
-func (c *OperationLogClient) CreateBulk(builders ...*OperationLogCreate) *OperationLogCreateBulk {
-	return &OperationLogCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *OperationLogClient) MapCreateBulk(slice any, setFunc func(*OperationLogCreate, int)) *OperationLogCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &OperationLogCreateBulk{err: fmt.Errorf("calling to OperationLogClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*OperationLogCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &OperationLogCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for OperationLog.
-func (c *OperationLogClient) Update() *OperationLogUpdate {
-	mutation := newOperationLogMutation(c.config, OpUpdate)
-	return &OperationLogUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *OperationLogClient) UpdateOne(_m *OperationLog) *OperationLogUpdateOne {
-	mutation := newOperationLogMutation(c.config, OpUpdateOne, withOperationLog(_m))
-	return &OperationLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *OperationLogClient) UpdateOneID(id int64) *OperationLogUpdateOne {
-	mutation := newOperationLogMutation(c.config, OpUpdateOne, withOperationLogID(id))
-	return &OperationLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for OperationLog.
-func (c *OperationLogClient) Delete() *OperationLogDelete {
-	mutation := newOperationLogMutation(c.config, OpDelete)
-	return &OperationLogDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *OperationLogClient) DeleteOne(_m *OperationLog) *OperationLogDeleteOne {
-	return c.DeleteOneID(_m.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *OperationLogClient) DeleteOneID(id int64) *OperationLogDeleteOne {
-	builder := c.Delete().Where(operationlog.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &OperationLogDeleteOne{builder}
-}
-
-// Query returns a query builder for OperationLog.
-func (c *OperationLogClient) Query() *OperationLogQuery {
-	return &OperationLogQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeOperationLog},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a OperationLog entity by its id.
-func (c *OperationLogClient) Get(ctx context.Context, id int64) (*OperationLog, error) {
-	return c.Query().Where(operationlog.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *OperationLogClient) GetX(ctx context.Context, id int64) *OperationLog {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *OperationLogClient) Hooks() []Hook {
-	return c.hooks.OperationLog
-}
-
-// Interceptors returns the client interceptors.
-func (c *OperationLogClient) Interceptors() []Interceptor {
-	return c.inters.OperationLog
-}
-
-func (c *OperationLogClient) mutate(ctx context.Context, m *OperationLogMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&OperationLogCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&OperationLogUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&OperationLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&OperationLogDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown OperationLog mutation op: %q", m.Op())
-	}
-}
-
 // PlatformConfigClient is a client for the PlatformConfig schema.
 type PlatformConfigClient struct {
 	config
@@ -2079,139 +1930,6 @@ func (c *PlatformConfigClient) mutate(ctx context.Context, m *PlatformConfigMuta
 		return (&PlatformConfigDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown PlatformConfig mutation op: %q", m.Op())
-	}
-}
-
-// RestyLogClient is a client for the RestyLog schema.
-type RestyLogClient struct {
-	config
-}
-
-// NewRestyLogClient returns a client for the RestyLog from the given config.
-func NewRestyLogClient(c config) *RestyLogClient {
-	return &RestyLogClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `restylog.Hooks(f(g(h())))`.
-func (c *RestyLogClient) Use(hooks ...Hook) {
-	c.hooks.RestyLog = append(c.hooks.RestyLog, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `restylog.Intercept(f(g(h())))`.
-func (c *RestyLogClient) Intercept(interceptors ...Interceptor) {
-	c.inters.RestyLog = append(c.inters.RestyLog, interceptors...)
-}
-
-// Create returns a builder for creating a RestyLog entity.
-func (c *RestyLogClient) Create() *RestyLogCreate {
-	mutation := newRestyLogMutation(c.config, OpCreate)
-	return &RestyLogCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of RestyLog entities.
-func (c *RestyLogClient) CreateBulk(builders ...*RestyLogCreate) *RestyLogCreateBulk {
-	return &RestyLogCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *RestyLogClient) MapCreateBulk(slice any, setFunc func(*RestyLogCreate, int)) *RestyLogCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &RestyLogCreateBulk{err: fmt.Errorf("calling to RestyLogClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*RestyLogCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &RestyLogCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for RestyLog.
-func (c *RestyLogClient) Update() *RestyLogUpdate {
-	mutation := newRestyLogMutation(c.config, OpUpdate)
-	return &RestyLogUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *RestyLogClient) UpdateOne(_m *RestyLog) *RestyLogUpdateOne {
-	mutation := newRestyLogMutation(c.config, OpUpdateOne, withRestyLog(_m))
-	return &RestyLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *RestyLogClient) UpdateOneID(id int) *RestyLogUpdateOne {
-	mutation := newRestyLogMutation(c.config, OpUpdateOne, withRestyLogID(id))
-	return &RestyLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for RestyLog.
-func (c *RestyLogClient) Delete() *RestyLogDelete {
-	mutation := newRestyLogMutation(c.config, OpDelete)
-	return &RestyLogDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *RestyLogClient) DeleteOne(_m *RestyLog) *RestyLogDeleteOne {
-	return c.DeleteOneID(_m.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RestyLogClient) DeleteOneID(id int) *RestyLogDeleteOne {
-	builder := c.Delete().Where(restylog.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &RestyLogDeleteOne{builder}
-}
-
-// Query returns a query builder for RestyLog.
-func (c *RestyLogClient) Query() *RestyLogQuery {
-	return &RestyLogQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeRestyLog},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a RestyLog entity by its id.
-func (c *RestyLogClient) Get(ctx context.Context, id int) (*RestyLog, error) {
-	return c.Query().Where(restylog.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *RestyLogClient) GetX(ctx context.Context, id int) *RestyLog {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *RestyLogClient) Hooks() []Hook {
-	return c.hooks.RestyLog
-}
-
-// Interceptors returns the client interceptors.
-func (c *RestyLogClient) Interceptors() []Interceptor {
-	return c.inters.RestyLog
-}
-
-func (c *RestyLogClient) mutate(ctx context.Context, m *RestyLogMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&RestyLogCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&RestyLogUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&RestyLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&RestyLogDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown RestyLog mutation op: %q", m.Op())
 	}
 }
 
@@ -2517,13 +2235,13 @@ func (c *WebhookSubscriptionClient) mutate(ctx context.Context, m *WebhookSubscr
 type (
 	hooks struct {
 		CDNRecord, DNSRecord, Device, DeviceIpReport, DevicePortForward, DomainMonitor,
-		DomainMonitorHistory, IpGroup, IpGroupDevice, OperationLog, PlatformConfig,
-		RestyLog, Webhook, WebhookSubscription []ent.Hook
+		DomainMonitorHistory, IpGroup, IpGroupDevice, PlatformConfig, Webhook,
+		WebhookSubscription []ent.Hook
 	}
 	inters struct {
 		CDNRecord, DNSRecord, Device, DeviceIpReport, DevicePortForward, DomainMonitor,
-		DomainMonitorHistory, IpGroup, IpGroupDevice, OperationLog, PlatformConfig,
-		RestyLog, Webhook, WebhookSubscription []ent.Interceptor
+		DomainMonitorHistory, IpGroup, IpGroupDevice, PlatformConfig, Webhook,
+		WebhookSubscription []ent.Interceptor
 	}
 )
 

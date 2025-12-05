@@ -12,9 +12,7 @@ import (
 	"vibe_ip/ent/domainmonitor"
 	"vibe_ip/ent/ipgroup"
 	"vibe_ip/ent/ipgroupdevice"
-	"vibe_ip/ent/operationlog"
 	"vibe_ip/ent/platformconfig"
-	"vibe_ip/ent/restylog"
 	"vibe_ip/ent/schema"
 	"vibe_ip/ent/webhook"
 	"vibe_ip/ent/webhooksubscription"
@@ -180,15 +178,6 @@ func init() {
 	ipgroupdeviceDescCreatedAt := ipgroupdeviceMixinFields0[0].Descriptor()
 	// ipgroupdevice.DefaultCreatedAt holds the default value on creation for the created_at field.
 	ipgroupdevice.DefaultCreatedAt = ipgroupdeviceDescCreatedAt.Default.(func() time.Time)
-	operationlogMixin := schema.OperationLog{}.Mixin()
-	operationlogMixinFields0 := operationlogMixin[0].Fields()
-	_ = operationlogMixinFields0
-	operationlogFields := schema.OperationLog{}.Fields()
-	_ = operationlogFields
-	// operationlogDescCreatedAt is the schema descriptor for created_at field.
-	operationlogDescCreatedAt := operationlogMixinFields0[0].Descriptor()
-	// operationlog.DefaultCreatedAt holds the default value on creation for the created_at field.
-	operationlog.DefaultCreatedAt = operationlogDescCreatedAt.Default.(func() time.Time)
 	platformconfigMixin := schema.PlatformConfig{}.Mixin()
 	platformconfigMixinFields0 := platformconfigMixin[0].Fields()
 	_ = platformconfigMixinFields0
@@ -204,16 +193,6 @@ func init() {
 	platformconfig.DefaultUpdatedAt = platformconfigDescUpdatedAt.Default.(func() time.Time)
 	// platformconfig.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	platformconfig.UpdateDefaultUpdatedAt = platformconfigDescUpdatedAt.UpdateDefault.(func() time.Time)
-	restylogFields := schema.RestyLog{}.Fields()
-	_ = restylogFields
-	// restylogDescIsError is the schema descriptor for is_error field.
-	restylogDescIsError := restylogFields[9].Descriptor()
-	// restylog.DefaultIsError holds the default value on creation for the is_error field.
-	restylog.DefaultIsError = restylogDescIsError.Default.(bool)
-	// restylogDescCreatedAt is the schema descriptor for created_at field.
-	restylogDescCreatedAt := restylogFields[10].Descriptor()
-	// restylog.DefaultCreatedAt holds the default value on creation for the created_at field.
-	restylog.DefaultCreatedAt = restylogDescCreatedAt.Default.(func() time.Time)
 	webhookMixin := schema.Webhook{}.Mixin()
 	webhookMixinFields0 := webhookMixin[0].Fields()
 	_ = webhookMixinFields0

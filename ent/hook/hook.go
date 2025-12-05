@@ -116,18 +116,6 @@ func (f IpGroupDeviceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Valu
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.IpGroupDeviceMutation", m)
 }
 
-// The OperationLogFunc type is an adapter to allow the use of ordinary
-// function as OperationLog mutator.
-type OperationLogFunc func(context.Context, *ent.OperationLogMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f OperationLogFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.OperationLogMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OperationLogMutation", m)
-}
-
 // The PlatformConfigFunc type is an adapter to allow the use of ordinary
 // function as PlatformConfig mutator.
 type PlatformConfigFunc func(context.Context, *ent.PlatformConfigMutation) (ent.Value, error)
@@ -138,18 +126,6 @@ func (f PlatformConfigFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlatformConfigMutation", m)
-}
-
-// The RestyLogFunc type is an adapter to allow the use of ordinary
-// function as RestyLog mutator.
-type RestyLogFunc func(context.Context, *ent.RestyLogMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f RestyLogFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.RestyLogMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RestyLogMutation", m)
 }
 
 // The WebhookFunc type is an adapter to allow the use of ordinary

@@ -4,7 +4,7 @@ package restylog
 
 import (
 	"time"
-	"vibe_ip/ent/predicate"
+	"vibe_ip/internal/ent_log/predicate"
 
 	"entgo.io/ent/dialect/sql"
 )
