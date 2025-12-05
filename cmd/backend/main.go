@@ -162,6 +162,10 @@ func main() {
 			}
 			return m, nil
 		},
+		// 字符串拼接
+		"join": func(strs ...string) string {
+			return strings.Join(strs, "")
+		},
 	}
 
 	// 判断是否为开发模式：version == "dev"

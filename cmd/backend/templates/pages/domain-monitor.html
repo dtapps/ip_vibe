@@ -21,23 +21,38 @@
           <th>检查间隔</th>
           <th>检查类型</th>
           <th>当前运行状态</th>
+          <th>上次成功时间</th>
+          <th>上次失败时间</th>
           <th>启用</th>
           <th style="width: 200px; text-align: center">操作</th>
         </tr>
       </thead>
       <tbody id="table">
         {{ range .List }}
+        {{ $urlPath := printf "/api/domain-monitors/%d" .ID }}
         <tr>
           <td>{{.Name}}</td>
           <td>{{.Domain}}</td>
           <td>{{.CheckInterval}}</td>
           <td>{{.CheckProtocol}}</td>
           <td>
-            <span class="badge badge-success">{{.CurrentStatus}}</span>
+            {{if eq .CurrentStatus "up"}}
+            <span class="badge badge-success">运行中</span>
+            {{else if eq .CurrentStatus "cdn"}}
+            <span class="badge badge-warning">已停止</span>
+            {{else}}
+            <span class="badge">未知状态</span>
+            {{end}}
           </td>
+          <td>{{formatTimeOrNil .LastSuccessAt}}</td>
+          <td>{{formatTimeOrNil .LastFailureAt}}</td>
           <td>
-            {{ template "switch" (dict "Checked" .IsActive "URL" (printf
-            "/api/domain-monitors/%d/active" .ID) ) }}
+            {{ $activeUrlPath := join $urlPath "/active" }}
+            {{ template "switch" (dict 
+                "Checked" .IsActive
+                "URL" $activeUrlPath
+                "NoReload" true
+            )}}
           </td>
           <td>
             <button
@@ -46,15 +61,14 @@
             >
               {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
-            {{ $isDisabled := .IsActive }}
-            {{ $urlPath := printf "/api/webhook-subs/%d" .ID }}
             {{ template "button" (dict 
                 "Type" "danger" 
                 "IconName" "ip-delete" 
                 "Text" "删除" 
                 "URL" $urlPath
-                "Disabled" $isDisabled 
+                "Disabled" .IsActive 
                 "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
+                "NoReload" true
             )}}
           </td>
         </tr>

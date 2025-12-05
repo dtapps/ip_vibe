@@ -32,6 +32,7 @@
       </thead>
       <tbody id="table">
         {{range .List}}
+        {{ $urlPath := printf "/api/webhook-subs/%d" .ID }}
         <tr>
           <td>{{.Name}}</td>
           {{if eq .ObjType "cdn_record"}}
@@ -46,8 +47,12 @@
           <td>{{.WebhookID}}:{{.WebhookName}}</td>
           <td>{{.ObjID}}:{{.ObjName}}</td>
           <td>
-            {{ template "switch" (dict "Checked" .IsActive "URL" (printf
-            "/api/webhook-subs/%d/active" .ID) ) }}
+            {{ $activeUrlPath := join $urlPath "/active" }}
+            {{ template "switch" (dict 
+                "Checked" .IsActive
+                "URL" $activeUrlPath
+                "NoReload" true
+            )}}
           </td>
           <td>
             <button

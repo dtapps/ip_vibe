@@ -27,18 +27,27 @@
       </thead>
       <tbody id="table">
         {{ range .List }}
+        {{ $urlPath := printf "/api/port-forwards/%d" .ID }}
         <tr>
           <td>{{.Name}}</td>
           <td>{{.DeviceID}}:{{.DeviceName}}</td>
           <td>{{.LocalPort}}</td>
           <td>{{.RemoteHost}}:{{.RemotePort}}</td>
           <td>
-            {{ template "switch" (dict "Checked" .AutoForward "URL" (printf
-            "/api/port-forwards/%d/auto-forward" .ID) ) }}
+            {{ $autoForwardUrlPath := join $urlPath "/auto-forward" }}
+            {{ template "switch" (dict 
+                "Checked" .IsActive
+                "URL" $autoForwardUrlPath
+                "NoReload" true
+            )}}
           </td>
           <td>
-            {{ template "switch" (dict "Checked" .IsActive "URL" (printf
-            "/api/port-forwards/%d/active" .ID) ) }}
+            {{ $activeUrlPath := join $urlPath "/active" }}
+            {{ template "switch" (dict 
+                "Checked" .IsActive
+                "URL" $activeUrlPath
+                "NoReload" true
+            )}}
           </td>
           <td>
             <button

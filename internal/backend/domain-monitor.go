@@ -73,9 +73,12 @@ func (s *DomainMonitorService) checkAndRunAllMonitors() {
 
 	now := time.Now()
 	for _, monitor := range allMonitor {
-		slog.InfoContext(ctx, "检查监控记录",
+		newLog := s.log.With(
 			slog.Int64("id", monitor.ID),
 			slog.String("domain", monitor.Domain),
+			slog.String("protocol", monitor.CheckProtocol.String()),
+		)
+		newLog.InfoContext(ctx, "准备处理",
 			slog.String("protocol", monitor.CheckProtocol.String()),
 			slog.Time("last_success_at", monitor.LastSuccessAt),
 			slog.Int("check_interval", monitor.CheckInterval),
@@ -91,22 +94,19 @@ func (s *DomainMonitorService) checkAndRunAllMonitors() {
 			nextRun = monitor.LastSuccessAt.Add(time.Duration(monitor.CheckInterval) * time.Second)
 		}
 
-		// 如果现在已经超过了下次运行时间，则执行任务
-		if now.After(nextRun) {
+		// 如果已超过或等于下次运行时间，则执行任务
+		if now.After(nextRun) || now.Equal(nextRun) {
 			// 异步执行任务，避免阻塞主调度任务
-			go s.executeMonitorTask(context.Background(), monitor)
+			go s.executeMonitorTask(context.Background(), newLog, monitor)
 		}
 	}
 }
 
 // 负责执行单个监控任务
-func (s *DomainMonitorService) executeMonitorTask(ctx context.Context, monitor *ent.DomainMonitor) {
+func (s *DomainMonitorService) executeMonitorTask(ctx context.Context, newLog *slog.Logger, monitor *ent.DomainMonitor) {
 
-	newLog := s.log.With(
-		slog.Int64("id", monitor.ID),
-		slog.String("domain", monitor.Domain),
-		slog.String("protocol", monitor.CheckProtocol.String()),
-	)
+	newLog.InfoContext(ctx, "开始执行检查")
+	defer newLog.InfoContext(ctx, "检查完成")
 
 	// 执行检查
 	result := s.runDomainCheck(ctx, monitor.Domain, monitor.CheckProtocol.String())

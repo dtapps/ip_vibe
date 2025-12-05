@@ -30,6 +30,7 @@
       </thead>
       <tbody id="table">
         {{range .List}}
+        {{ $urlPath := printf "/api/cdn-records/%d" .ID }}
         <tr>
           <td>{{.Domain}}</td>
           <td>{{.Type}}</td>
@@ -58,8 +59,12 @@
             <span class="badge badge-success">{{.Platform}}</span>
           </td>
           <td>
-            {{ template "switch" (dict "Checked" .IsActive "URL" (printf
-            "/api/cdn-records/%d/active" .ID) ) }}
+            {{ $activeUrlPath := join $urlPath "/active" }}
+            {{ template "switch" (dict 
+                "Checked" .IsActive
+                "URL" $activeUrlPath
+                "NoReload" true
+            )}}
           </td>
           <td>
             <button

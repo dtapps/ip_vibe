@@ -24,6 +24,7 @@
       </thead>
       <tbody id="table">
         {{ range .List }}
+        {{ $urlPath := printf "/api/ip-groups/%d" .ID }}
         <tr>
           <td>{{.Name}}</td>
           <td>{{.Description}}</td>

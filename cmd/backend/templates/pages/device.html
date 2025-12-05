@@ -26,6 +26,7 @@
       </thead>
       <tbody id="table">
         {{ range .List }}
+        {{ $urlPath := printf "/api/device-monitors/%d" .ID }}
         <tr class="device-row" data-last-heartbeat="{{.LastHeartbeatAt.Unix}}">
           <td>{{.Code}}</td>
           <td>{{.Name}}</td>

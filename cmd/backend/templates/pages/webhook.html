@@ -24,6 +24,7 @@
       </thead>
       <tbody id="table">
         {{ range .List }}
+        {{ $urlPath := printf "/api/webhooks/%d" .ID }}
         <tr>
           <td>{{.Name}}</td>
           {{if eq .Platform "wechat_work"}}
@@ -44,8 +45,12 @@
           <td><span class="badge badge-success">{{.Platform}}</span></td>
           {{end}}
           <td>
-            {{ template "switch" (dict "Checked" .IsActive "URL" (printf
-            "/api/webhooks/%d/active" .ID) ) }}
+            {{ $activeUrlPath := join $urlPath "/active" }}
+            {{ template "switch" (dict 
+                "Checked" .IsActive
+                "URL" $activeUrlPath
+                "NoReload" true
+            )}}
           </td>
           <td>
             <button
