@@ -67,12 +67,12 @@
             )}}
           </td>
           <td>
-            <button
-              class="btn btn-sm btn-outline-info"
-              onclick="onHealthcheckPopup('{{.ID}}')"
-            >
-              {{ template "icons" (dict "Name" "ip-health-check") }} 检测
-            </button>
+            {{ template "button" (dict 
+                "Type" "outline-info" 
+                "IconName" "ip-health-check" 
+                "Text" "检测" 
+                "OnClick" (printf "onHealthcheckPopup('%d')" .ID)
+            )}}
             <button
               class="btn btn-sm btn-outline-info"
               onclick="onLiveIPPopup('{{.IPGroupID}}','{{.IPGroupName}}')"
