@@ -5,12 +5,14 @@ import (
 	"net/http"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/domainmonitor"
+	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 )
 
 // 获取全部域名监控
@@ -25,7 +27,7 @@ func GetDomainMonitors(c *gin.Context) {
 		return
 	}
 	for _, item := range allDomainMonitor {
-		domainMonitors = append(domainMonitors, types.GetDomainMonitorResponse{
+		list := types.GetDomainMonitorResponse{
 			ID:            item.ID,
 			Name:          item.Name,
 			Domain:        item.Domain,
@@ -35,7 +37,16 @@ func GetDomainMonitors(c *gin.Context) {
 			CurrentStatus: item.CurrentStatus.String(),
 			LastSuccessAt: item.LastSuccessAt,
 			LastFailureAt: item.LastFailureAt,
-		})
+		}
+		// 查询通知订阅
+		allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDomainMonitor)).
+			Where(webhooksubscription.ObjIDEQ(item.ID)).
+			All(c)
+		for _, item := range allWebhookSub {
+			list.Webhooks = append(list.Webhooks, item.ID)
+		}
+		domainMonitors = append(domainMonitors, list)
 	}
 	successResponse(c, domainMonitors)
 }
@@ -44,7 +55,8 @@ func GetDomainMonitors(c *gin.Context) {
 func GetDomainMonitor(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetDomainMonitorRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -57,7 +69,7 @@ func GetDomainMonitor(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询域名监控失败: "+err.Error())
 		return
 	}
-	successResponse(c, types.GetDomainMonitorResponse{
+	response := types.GetDomainMonitorResponse{
 		ID:            firstDomainMonitor.ID,
 		Name:          firstDomainMonitor.Name,
 		Domain:        firstDomainMonitor.Domain,
@@ -67,7 +79,16 @@ func GetDomainMonitor(c *gin.Context) {
 		CurrentStatus: firstDomainMonitor.CurrentStatus.String(),
 		LastSuccessAt: firstDomainMonitor.LastSuccessAt,
 		LastFailureAt: firstDomainMonitor.LastFailureAt,
-	})
+	}
+	// 查询通知订阅
+	allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDomainMonitor)).
+		Where(webhooksubscription.ObjIDEQ(requestParams.ID)).
+		All(c)
+	for _, item := range allWebhookSub {
+		response.Webhooks = append(response.Webhooks, item.ID)
+	}
+	successResponse(c, response)
 }
 
 // 创建域名监控
@@ -104,7 +125,8 @@ func CreateDomainMonitor(c *gin.Context) {
 func UpdateDomainMonitor(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateDomainMonitorRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -140,7 +162,8 @@ func UpdateDomainMonitor(c *gin.Context) {
 func UpdateDomainMonitorActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateDomainMonitorActiveRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -175,7 +198,8 @@ func UpdateDomainMonitorActive(c *gin.Context) {
 func DeleteDomainMonitor(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteDomainMonitorRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

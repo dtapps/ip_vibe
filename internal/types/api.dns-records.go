@@ -18,6 +18,8 @@ type GetDnsRecordResponse struct {
 
 	CdnRecordID        int64  `json:"cdn_record_id"`         // CDN 记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）
 	CdnRecordCdnDomain string `json:"cdn_record_cdn_domain"` // CDN 记录域名（如 cdn.example.com）
+
+	Webhooks []int64 `json:"webhooks,omitempty"` // 关联的 Webhook 列表
 }
 
 // 获取DNS记录 请求结构
@@ -32,6 +34,8 @@ type CreateDnsRecordRequest struct {
 	Type        string `json:"type" binding:"required"`      // 记录类型（A、AAAA、CNAME等）
 	IPGroupID   int64  `json:"ip_group_id,omitempty"`        // IP 组序号（与 cdn_record_id 二选一）
 	CdnRecordID int64  `json:"cdn_record_id,omitempty"`      // CDN 记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）
+
+	WebhookIDs []int64 `json:"webhook_ids,omitempty"` // 关联的 Webhook 列表
 }
 
 // 更新DNS记录 请求结构
@@ -39,6 +43,8 @@ type UpdateDnsRecordRequest struct {
 	GetDnsRecordRequest
 	IPGroupID   int64 `json:"ip_group_id,omitempty"`   // IP 组序号（与 cdn_record_id 二选一）
 	CdnRecordID int64 `json:"cdn_record_id,omitempty"` // CDN 记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）
+
+	WebhookIDs []int64 `json:"webhook_ids,omitempty"` // 关联的 Webhook 列表
 }
 
 // 更新DNS记录状态 请求结构

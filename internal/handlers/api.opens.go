@@ -24,7 +24,8 @@ import (
 func DeviceReportDeviceIp(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeviceReportDeviceIpRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.DeviceCode = c.Param("device_code")
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -209,7 +210,8 @@ func DeviceReportDeviceIp(c *gin.Context) {
 func DevicePortForwards(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DevicePortForwardsRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.DeviceCode = c.Param("device_code")
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

@@ -70,14 +70,16 @@ var GetWebhookPlatform = func() []string {
 }
 
 const (
-	WebhookSubscriptionObjTypeCdnRecord string = "cdn_record" // CDN 记录
-	WebhookSubscriptionObjTypeDnsRecord string = "dns_record" // DNS 记录
-	WebhookSubscriptionObjTypeDevice    string = "device"     // 设备
+	WebhookSubscriptionObjTypeCdnRecord     string = "cdn_record"     // CDN 记录
+	WebhookSubscriptionObjTypeDnsRecord     string = "dns_record"     // DNS 记录
+	WebhookSubscriptionObjTypeDevice        string = "device"         // 设备
+	WebhookSubscriptionObjTypeIPGroup       string = "ip_group"       // IP组
+	WebhookSubscriptionObjTypeDomainMonitor string = "domain_monitor" // 域名监控
 )
 
 // GetWebhookSubscriptionObjType 返回所有 Webhook 订阅对象类型
 var GetWebhookSubscriptionObjType = func() []string {
-	return []string{WebhookSubscriptionObjTypeCdnRecord, WebhookSubscriptionObjTypeDnsRecord, WebhookSubscriptionObjTypeDevice}
+	return []string{WebhookSubscriptionObjTypeCdnRecord, WebhookSubscriptionObjTypeDnsRecord, WebhookSubscriptionObjTypeDevice, WebhookSubscriptionObjTypeIPGroup, WebhookSubscriptionObjTypeDomainMonitor}
 }
 
 const (

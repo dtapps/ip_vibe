@@ -7,12 +7,14 @@ import (
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/deviceipreport"
+	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -28,7 +30,7 @@ func GetDevices(c *gin.Context) {
 		return
 	}
 	for _, item := range allDevice {
-		devices = append(devices, types.GetDeviceResponse{
+		list := types.GetDeviceResponse{
 			ID:              item.ID,
 			Code:            item.Code,
 			Name:            item.Name,
@@ -37,7 +39,16 @@ func GetDevices(c *gin.Context) {
 			IPV6:            item.IPV6,
 			LastReportedAt:  item.LastReportedAt,
 			LastHeartbeatAt: item.LastHeartbeatAt,
-		})
+		}
+		// 查询通知订阅
+		allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
+			Where(webhooksubscription.ObjIDEQ(item.ID)).
+			All(c)
+		for _, item := range allWebhookSub {
+			list.Webhooks = append(list.Webhooks, item.ID)
+		}
+		devices = append(devices, list)
 	}
 	successResponse(c, devices)
 }
@@ -46,7 +57,8 @@ func GetDevices(c *gin.Context) {
 func GetDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetDeviceRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -59,7 +71,7 @@ func GetDevice(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
 		return
 	}
-	successResponse(c, types.GetDeviceResponse{
+	response := types.GetDeviceResponse{
 		ID:              firstDevice.ID,
 		Code:            firstDevice.Code,
 		Name:            firstDevice.Name,
@@ -68,7 +80,16 @@ func GetDevice(c *gin.Context) {
 		IPV6:            firstDevice.IPV6,
 		LastReportedAt:  firstDevice.LastReportedAt,
 		LastHeartbeatAt: firstDevice.LastHeartbeatAt,
-	})
+	}
+	// 查询通知订阅
+	allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
+		Where(webhooksubscription.ObjIDEQ(requestParams.ID)).
+		All(c)
+	for _, item := range allWebhookSub {
+		response.Webhooks = append(response.Webhooks, item.ID)
+	}
+	successResponse(c, response)
 }
 
 // 创建设备
@@ -106,7 +127,8 @@ func CreateDevice(c *gin.Context) {
 func UpdateDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateDeviceRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -144,7 +166,8 @@ func UpdateDevice(c *gin.Context) {
 func DeleteDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteDeviceRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -177,7 +200,8 @@ func DeleteDevice(c *gin.Context) {
 func GetDeviceIpHistory(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetDeviceIpHistoryRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -214,7 +238,8 @@ func GetDeviceIpHistory(c *gin.Context) {
 func HealthcheckDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.HealthcheckDeviceRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

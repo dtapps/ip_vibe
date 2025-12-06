@@ -12,6 +12,8 @@ type GetDeviceResponse struct {
 	IPV6            string    `json:"ip_v6,omitempty"`             // IP地址V6
 	LastReportedAt  time.Time `json:"last_reported_at,omitempty"`  // 最后上报时间
 	LastHeartbeatAt time.Time `json:"last_heartbeat_at,omitempty"` // 最后心跳时间
+
+	Webhooks []int64 `json:"webhooks,omitempty"` // 关联的 Webhook 列表
 }
 
 // 获取设备 请求结构
@@ -26,6 +28,8 @@ type CreateDeviceRequest struct {
 	Description string `json:"description,omitempty"`   // 设备描述
 	IPV4        string `json:"ip_v4,omitempty"`         // IP地址V4
 	IPV6        string `json:"ip_v6,omitempty"`         // IP地址V6
+
+	WebhookIDs []int64 `json:"webhook_ids,omitempty"` // 关联的 Webhook 列表
 }
 
 // 更新设备 请求结构
@@ -35,6 +39,8 @@ type UpdateDeviceRequest struct {
 	Description string `json:"description,omitempty"`   // 设备描述
 	IPV4        string `json:"ip_v4,omitempty"`         // IP地址V4
 	IPV6        string `json:"ip_v6,omitempty"`         // IP地址V6
+
+	WebhookIDs []int64 `json:"webhook_ids,omitempty"` // 关联的 Webhook 列表
 }
 
 // 删除设备 请求结构

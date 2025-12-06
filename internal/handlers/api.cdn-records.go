@@ -6,12 +6,14 @@ import (
 	"vibe_ip/internal/backend"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -46,6 +48,14 @@ func GetCdnRecords(c *gin.Context) {
 			list.IPGroupID = ipGroup.ID
 			list.IPGroupName = ipGroup.Name
 		}
+		// 查询通知订阅
+		allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeCdnRecord)).
+			Where(webhooksubscription.ObjIDEQ(item.ID)).
+			All(c)
+		for _, item := range allWebhookSub {
+			list.Webhooks = append(list.Webhooks, item.ID)
+		}
 		records = append(records, list)
 	}
 	successResponse(c, records)
@@ -55,7 +65,8 @@ func GetCdnRecords(c *gin.Context) {
 func GetCdnRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetCdnRecordRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -86,6 +97,14 @@ func GetCdnRecord(c *gin.Context) {
 	if ipGroup, err := firstCdnRecord.Edges.IPGroupOrErr(); err == nil {
 		response.IPGroupID = ipGroup.ID
 		response.IPGroupName = ipGroup.Name
+	}
+	// 查询通知订阅
+	allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeCdnRecord)).
+		Where(webhooksubscription.ObjIDEQ(requestParams.ID)).
+		All(c)
+	for _, item := range allWebhookSub {
+		response.Webhooks = append(response.Webhooks, item.ID)
 	}
 	successResponse(c, response)
 }
@@ -125,7 +144,8 @@ func CreateCdnRecord(c *gin.Context) {
 func UpdateCdnRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateCdnRecordRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -163,7 +183,8 @@ func UpdateCdnRecord(c *gin.Context) {
 func UpdateCdnRecordActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateCdnRecordActiveRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -198,7 +219,8 @@ func UpdateCdnRecordActive(c *gin.Context) {
 func DeleteCdnRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetCdnRecordRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -228,7 +250,8 @@ func DeleteCdnRecord(c *gin.Context) {
 func HealthcheckCdnRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.HealthcheckCdnRecordRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

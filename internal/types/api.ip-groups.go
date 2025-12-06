@@ -7,6 +7,8 @@ type GetIPGroupResponse struct {
 	Description string  `json:"description,omitempty"`  // IP组描述
 	DeviceCount int     `json:"device_count,omitempty"` // 设备数
 	Devices     []int64 `json:"devices,omitempty"`      // 设备列表
+
+	Webhooks []int64 `json:"webhooks,omitempty"` // 关联的 Webhook 列表
 }
 
 // 获取IP组 请求结构
@@ -19,6 +21,8 @@ type CreateIPGroupRequest struct {
 	Name        string  `json:"name" binding:"required"`    // IP组名称
 	Description string  `json:"description,omitempty"`      // IP组描述
 	Devices     []int64 `json:"devices" binding:"required"` // 设备列表
+
+	WebhookIDs []int64 `json:"webhook_ids,omitempty"` // 关联的 Webhook 列表
 }
 
 // 更新IP组 请求结构
@@ -27,6 +31,8 @@ type UpdateIPGroupRequest struct {
 	Name        string  `json:"name" binding:"required"`    // IP组名称
 	Description string  `json:"description,omitempty"`      // IP组描述
 	Devices     []int64 `json:"devices" binding:"required"` // 设备列表
+
+	WebhookIDs []int64 `json:"webhook_ids,omitempty"` // 关联的 Webhook 列表
 }
 
 // 删除IP组 请求结构

@@ -12,6 +12,7 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -48,7 +49,8 @@ func GetPortForwards(c *gin.Context) {
 func GetPortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetPortForwardRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -114,7 +116,8 @@ func CreatePortForward(c *gin.Context) {
 func UpdatePortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdatePortForwardRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -155,7 +158,8 @@ func UpdatePortForward(c *gin.Context) {
 func UpdatePortForwardForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdatePortForwardForwardRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -190,7 +194,8 @@ func UpdatePortForwardForward(c *gin.Context) {
 func UpdatePortForwardActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdatePortForwardActiveRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -225,7 +230,8 @@ func UpdatePortForwardActive(c *gin.Context) {
 func DeletePortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeletePortForwardRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -258,7 +264,8 @@ func DeletePortForward(c *gin.Context) {
 func HealthcheckPortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.HealthcheckPortForwardRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

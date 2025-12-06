@@ -11,6 +11,7 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 )
 
 // 获取全部配置
@@ -41,7 +42,8 @@ func GetConfigs(c *gin.Context) {
 func GetConfig(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetConfigRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -99,7 +101,8 @@ func CreateConfig(c *gin.Context) {
 func UpdateConfig(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateConfigRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -137,7 +140,8 @@ func UpdateConfig(c *gin.Context) {
 func DeleteConfig(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteConfigRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

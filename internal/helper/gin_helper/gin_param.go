@@ -88,9 +88,15 @@ func BindWithDefaults(c *gin.Context, obj any, b binding.Binding) (err error) {
 
 // 快捷方法
 func BindQueryWithDefaults(c *gin.Context, obj any) (err error) {
-	setDefaults(obj) // ← 先设默认值
+	// 先设默认值
+	setDefaults(obj)
+
+	// 再绑定，覆盖传了的字段
 	err = c.ShouldBindQuery(obj)
 	if err != nil {
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("%s ShouldBindQuery: %+v ;Err: %v \n", c.Request.URL.Path, obj, err)
+		}
 		return err
 	}
 
@@ -101,10 +107,19 @@ func BindQueryWithDefaults(c *gin.Context, obj any) (err error) {
 }
 
 func BindJSONWithDefaults(c *gin.Context, obj any) (err error) {
-	setDefaults(obj)            // ← 先设默认值
-	err = c.ShouldBindJSON(obj) // ← 再绑定，覆盖传了的字段
-	if err != nil {
-		return err
+	// 先设默认值
+	setDefaults(obj)
+
+	// 仅当有 JSON body 时才绑定
+	if c.Request.ContentLength > 0 && strings.Contains(c.GetHeader("Content-Type"), "application/json") {
+		// 再绑定，覆盖传了的字段
+		err = c.ShouldBindJSON(obj)
+		if err != nil {
+			if global.GvaEnv.DEBUG {
+				fmt.Printf("%s ShouldBindJSON: %+v ;Err: %v \n", c.Request.URL.Path, obj, err)
+			}
+			return err
+		}
 	}
 
 	if global.GvaEnv.DEBUG {
@@ -117,6 +132,9 @@ func BindUriWithDefaults(c *gin.Context, obj any) (err error) {
 	setDefaults(obj)           // ← 先设默认值
 	err = c.ShouldBindUri(obj) // ← 再绑定，覆盖传了的字段
 	if err != nil {
+		if global.GvaEnv.DEBUG {
+			fmt.Printf("%s ShouldBindUri: %+v ;Err: %v \n", c.Request.URL.Path, obj, err)
+		}
 		return err
 	}
 
@@ -126,22 +144,29 @@ func BindUriWithDefaults(c *gin.Context, obj any) (err error) {
 	return nil
 }
 
-func BindUriAndJSONWithDefaults(c *gin.Context, obj any) (err error) {
-	setDefaults(obj)           // ← 先设默认值
-	err = c.ShouldBindUri(obj) // ← 再绑定，覆盖传了的字段
-	if err != nil {
-		return err
-	}
-	// 仅当有 JSON body 时才绑定
-	if c.Request.ContentLength > 0 && strings.Contains(c.GetHeader("Content-Type"), "application/json") {
-		err = c.ShouldBindJSON(obj) // ← 再绑定，覆盖传了的字段
-		if err != nil {
-			return err
-		}
-	}
+// func BindUriAndJSONWithDefaults(c *gin.Context, obj any) (err error) {
+// 	setDefaults(obj)           // ← 先设默认值
+// 	err = c.ShouldBindUri(obj) // ← 再绑定，覆盖传了的字段
+// 	if err != nil {
+// 		if global.GvaEnv.DEBUG {
+// 			fmt.Printf("%s BShouldBindUri: %+v ;Err: %v \n", c.Request.URL.Path, obj, err)
+// 		}
+// 		return err
+// 	}
+//
+// 	// 仅当有 JSON body 时才绑定
+// 	if c.Request.ContentLength > 0 && strings.Contains(c.GetHeader("Content-Type"), "application/json") {
+// 		err = c.ShouldBindJSON(obj) // ← 再绑定，覆盖传了的字段
+// 		if err != nil {
+// 			if global.GvaEnv.DEBUG {
+// 				fmt.Printf("%s ShouldBindJSON: %+v ;Err: %v \n", c.Request.URL.Path, obj, err)
+// 			}
+// 			return err
+// 		}
+// 	}
 
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s BindUriAndJSONWithDefaults: %+v ;Err: %v \n", c.Request.URL.Path, obj, err)
-	}
-	return nil
-}
+// 	if global.GvaEnv.DEBUG {
+// 		fmt.Printf("%s BindUriAndJSONWithDefaults: %+v ;Err: %v \n", c.Request.URL.Path, obj, err)
+// 	}
+// 	return nil
+// }

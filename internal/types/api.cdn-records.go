@@ -19,6 +19,8 @@ type GetCdnRecordResponse struct {
 
 	IPGroupID   int64  `json:"ip_group_id"`   // IP 组序号
 	IPGroupName string `json:"ip_group_name"` // IP 组名称
+
+	Webhooks []int64 `json:"webhooks,omitempty"` // 关联的 Webhook 列表
 }
 
 // 获取CDN记录 请求结构
@@ -35,6 +37,8 @@ type CreateCdnRecordRequest struct {
 	HTTPPort       int    `json:"http_port" binding:"required"`       // HTTP 回源端口
 	HTTPSPort      int    `json:"https_port" binding:"required"`      // HTTPS 回源端口
 	IPGroupID      int64  `json:"ip_group_id" binding:"required"`     // IP 组序号
+
+	WebhookIDs []int64 `json:"webhook_ids,omitempty"` // 关联的 Webhook 列表
 }
 
 // 更新CDN记录 请求结构
@@ -44,6 +48,8 @@ type UpdateCdnRecordRequest struct {
 	HTTPPort       int    `json:"http_port" binding:"required"`       // HTTP 回源端口
 	HTTPSPort      int    `json:"https_port" binding:"required"`      // HTTPS 回源端口
 	IPGroupID      int64  `json:"ip_group_id" binding:"required"`     // IP 组序号
+
+	WebhookIDs []int64 `json:"webhook_ids,omitempty"` // 关联的 Webhook 列表
 }
 
 // 更新CDN记录状态 请求结构

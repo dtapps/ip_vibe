@@ -6,12 +6,14 @@ import (
 	"vibe_ip/internal/backend"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/ipgroup"
+	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -21,17 +23,31 @@ func GetIPGroups(c *gin.Context) {
 	// 查询全部IP组
 	allIpGroup, err := global.GvaEntDb.IpGroup.Query().
 		Order(ent.Desc(ipgroup.FieldCreatedAt)).
+		WithDevices().
 		All(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询IP组失败: "+err.Error())
 		return
 	}
 	for _, item := range allIpGroup {
-		ipGroups = append(ipGroups, types.GetIPGroupResponse{
+		list := types.GetIPGroupResponse{
 			ID:          item.ID,
 			Name:        item.Name,
 			Description: item.Description,
-		})
+		}
+		// 设备列表
+		for _, item := range item.Edges.Devices {
+			list.Devices = append(list.Devices, item.ID)
+		}
+		// 查询通知订阅
+		allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeIPGroup)).
+			Where(webhooksubscription.ObjIDEQ(item.ID)).
+			All(c)
+		for _, item := range allWebhookSub {
+			list.Webhooks = append(list.Webhooks, item.ID)
+		}
+		ipGroups = append(ipGroups, list)
 	}
 	successResponse(c, ipGroups)
 }
@@ -40,7 +56,8 @@ func GetIPGroups(c *gin.Context) {
 func GetIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetIPGroupRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -54,17 +71,25 @@ func GetIPGroup(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询IP组失败: "+err.Error())
 		return
 	}
-	// 设备列表
-	deviceIDs := make([]int64, 0)
-	for _, item := range firstIpGroup.Edges.Devices {
-		deviceIDs = append(deviceIDs, item.ID)
-	}
-	successResponse(c, types.GetIPGroupResponse{
+	// 通知订阅
+	response := types.GetIPGroupResponse{
 		ID:          firstIpGroup.ID,
 		Name:        firstIpGroup.Name,
 		Description: firstIpGroup.Description,
-		Devices:     deviceIDs,
-	})
+	}
+	// 设备列表
+	for _, item := range firstIpGroup.Edges.Devices {
+		response.Devices = append(response.Devices, item.ID)
+	}
+	// 查询通知订阅
+	allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeIPGroup)).
+		Where(webhooksubscription.ObjIDEQ(requestParams.ID)).
+		All(c)
+	for _, item := range allWebhookSub {
+		response.Webhooks = append(response.Webhooks, item.ID)
+	}
+	successResponse(c, response)
 }
 
 // 创建IP组
@@ -100,7 +125,8 @@ func CreateIPGroup(c *gin.Context) {
 func UpdateIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateIPGroupRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -138,7 +164,8 @@ func UpdateIPGroup(c *gin.Context) {
 func DeleteIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteIPGroupRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -171,7 +198,8 @@ func DeleteIPGroup(c *gin.Context) {
 func GetIPGroupDevices(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetIPGroupDevicesRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -206,7 +234,8 @@ func GetIPGroupDevices(c *gin.Context) {
 func HealthcheckIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.HealthcheckIPGroupRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

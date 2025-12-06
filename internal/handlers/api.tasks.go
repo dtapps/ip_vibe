@@ -26,7 +26,8 @@ func GetTasks(c *gin.Context) {
 func GetTask(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetTaskRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = c.Param("id")
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -48,7 +49,8 @@ func GetTask(c *gin.Context) {
 func RunTask(c *gin.Context) {
 	// 请求参数
 	var requestParams types.RunTaskRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = c.Param("id")
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -71,7 +73,8 @@ func RunTask(c *gin.Context) {
 func DeleteTask(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteTaskRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = c.Param("id")
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

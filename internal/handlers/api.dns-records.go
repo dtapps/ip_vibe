@@ -6,12 +6,14 @@ import (
 	"vibe_ip/internal/backend"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/dnsrecord"
+	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -48,6 +50,14 @@ func GetDnsRecords(c *gin.Context) {
 			list.CdnRecordID = cdnRecord.ID
 			list.CdnRecordCdnDomain = cdnRecord.CdnDomain
 		}
+		// 查询通知订阅
+		allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDNSRecord)).
+			Where(webhooksubscription.ObjIDEQ(item.ID)).
+			All(c)
+		for _, item := range allWebhookSub {
+			list.Webhooks = append(list.Webhooks, item.ID)
+		}
 		records = append(records, list)
 	}
 	successResponse(c, records)
@@ -57,7 +67,8 @@ func GetDnsRecords(c *gin.Context) {
 func GetDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetDnsRecordRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -90,6 +101,14 @@ func GetDnsRecord(c *gin.Context) {
 	if cdnRecord, err := firstDnsRecord.Edges.CdnRecordOrErr(); err == nil {
 		response.CdnRecordID = cdnRecord.ID
 		response.CdnRecordCdnDomain = cdnRecord.CdnDomain
+	}
+	// 查询通知订阅
+	allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDNSRecord)).
+		Where(webhooksubscription.ObjIDEQ(requestParams.ID)).
+		All(c)
+	for _, item := range allWebhookSub {
+		response.Webhooks = append(response.Webhooks, item.ID)
 	}
 	successResponse(c, response)
 }
@@ -133,7 +152,8 @@ func CreateDnsRecord(c *gin.Context) {
 func UpdateDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateDnsRecordRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -173,7 +193,8 @@ func UpdateDnsRecord(c *gin.Context) {
 func UpdateDnsRecordActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateDnsRecordActiveRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -208,7 +229,8 @@ func UpdateDnsRecordActive(c *gin.Context) {
 func DeleteDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteDnsRecordRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -238,7 +260,8 @@ func DeleteDnsRecord(c *gin.Context) {
 func HealthcheckDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.HealthcheckDnsRecordRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

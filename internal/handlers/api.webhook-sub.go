@@ -14,6 +14,7 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 )
 
 // 获取全部通知订阅
@@ -69,7 +70,8 @@ func GetWebhookSubs(c *gin.Context) {
 func GetWebhookSub(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetWebhookSubRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -154,7 +156,8 @@ func CreateWebhookSub(c *gin.Context) {
 func UpdateWebhookSub(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateWebhookSubRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -190,7 +193,8 @@ func UpdateWebhookSub(c *gin.Context) {
 func UpdateWebhookSubActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateWebhookSubActiveRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -225,7 +229,8 @@ func UpdateWebhookSubActive(c *gin.Context) {
 func DeleteWebhookSub(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteWebhookSubRequest
-	if err := gin_helper.BindUriAndJSONWithDefaults(c, &requestParams); err != nil {
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

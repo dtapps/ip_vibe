@@ -14,6 +14,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/miekg/dns v1.1.68
 	github.com/quic-go/quic-go v0.57.1
+	github.com/spf13/cast v1.10.0
 	go.dtapp.net/library/contrib/resty_log v1.0.8
 	go.dtapp.net/library/service/bark v1.0.7
 	go.dtapp.net/library/service/cloudflare v1.0.0
@@ -49,7 +50,7 @@ require (
 	github.com/gin-contrib/sse v1.1.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-openapi/inflect v0.21.3 // indirect
+	github.com/go-openapi/inflect v0.21.4 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.28.0 // indirect
