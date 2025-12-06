@@ -57,6 +57,20 @@ func (_c *DomainMonitorCreate) SetName(v string) *DomainMonitorCreate {
 	return _c
 }
 
+// SetDescription sets the "description" field.
+func (_c *DomainMonitorCreate) SetDescription(v string) *DomainMonitorCreate {
+	_c.mutation.SetDescription(v)
+	return _c
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_c *DomainMonitorCreate) SetNillableDescription(v *string) *DomainMonitorCreate {
+	if v != nil {
+		_c.SetDescription(*v)
+	}
+	return _c
+}
+
 // SetDomain sets the "domain" field.
 func (_c *DomainMonitorCreate) SetDomain(v string) *DomainMonitorCreate {
 	_c.mutation.SetDomain(v)
@@ -298,6 +312,10 @@ func (_c *DomainMonitorCreate) createSpec() (*DomainMonitor, *sqlgraph.CreateSpe
 		_spec.SetField(domainmonitor.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
+	if value, ok := _c.mutation.Description(); ok {
+		_spec.SetField(domainmonitor.FieldDescription, field.TypeString, value)
+		_node.Description = value
+	}
 	if value, ok := _c.mutation.Domain(); ok {
 		_spec.SetField(domainmonitor.FieldDomain, field.TypeString, value)
 		_node.Domain = value
@@ -415,6 +433,24 @@ func (u *DomainMonitorUpsert) SetName(v string) *DomainMonitorUpsert {
 // UpdateName sets the "name" field to the value that was provided on create.
 func (u *DomainMonitorUpsert) UpdateName() *DomainMonitorUpsert {
 	u.SetExcluded(domainmonitor.FieldName)
+	return u
+}
+
+// SetDescription sets the "description" field.
+func (u *DomainMonitorUpsert) SetDescription(v string) *DomainMonitorUpsert {
+	u.Set(domainmonitor.FieldDescription, v)
+	return u
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *DomainMonitorUpsert) UpdateDescription() *DomainMonitorUpsert {
+	u.SetExcluded(domainmonitor.FieldDescription)
+	return u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *DomainMonitorUpsert) ClearDescription() *DomainMonitorUpsert {
+	u.SetNull(domainmonitor.FieldDescription)
 	return u
 }
 
@@ -578,6 +614,27 @@ func (u *DomainMonitorUpsertOne) SetName(v string) *DomainMonitorUpsertOne {
 func (u *DomainMonitorUpsertOne) UpdateName() *DomainMonitorUpsertOne {
 	return u.Update(func(s *DomainMonitorUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *DomainMonitorUpsertOne) SetDescription(v string) *DomainMonitorUpsertOne {
+	return u.Update(func(s *DomainMonitorUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *DomainMonitorUpsertOne) UpdateDescription() *DomainMonitorUpsertOne {
+	return u.Update(func(s *DomainMonitorUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *DomainMonitorUpsertOne) ClearDescription() *DomainMonitorUpsertOne {
+	return u.Update(func(s *DomainMonitorUpsert) {
+		s.ClearDescription()
 	})
 }
 
@@ -920,6 +977,27 @@ func (u *DomainMonitorUpsertBulk) SetName(v string) *DomainMonitorUpsertBulk {
 func (u *DomainMonitorUpsertBulk) UpdateName() *DomainMonitorUpsertBulk {
 	return u.Update(func(s *DomainMonitorUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *DomainMonitorUpsertBulk) SetDescription(v string) *DomainMonitorUpsertBulk {
+	return u.Update(func(s *DomainMonitorUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *DomainMonitorUpsertBulk) UpdateDescription() *DomainMonitorUpsertBulk {
+	return u.Update(func(s *DomainMonitorUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *DomainMonitorUpsertBulk) ClearDescription() *DomainMonitorUpsertBulk {
+	return u.Update(func(s *DomainMonitorUpsert) {
+		s.ClearDescription()
 	})
 }
 

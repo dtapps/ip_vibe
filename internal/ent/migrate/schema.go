@@ -287,11 +287,12 @@ var (
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
+		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "描述"},
 		{Name: "domain", Type: field.TypeString, Comment: "域名"},
 		{Name: "check_interval", Type: field.TypeInt, Comment: "检查间隔（秒）", Default: 60},
 		{Name: "check_protocol", Type: field.TypeEnum, Comment: "检查类型（HTTP/HTTPS）", Enums: []string{"http", "https"}},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
-		{Name: "current_status", Type: field.TypeEnum, Comment: "当前运行状态", Enums: []string{"up", "down", "unknown"}, Default: "unknown"},
+		{Name: "current_status", Type: field.TypeEnum, Comment: "当前运行状态", Enums: []string{"success", "failure", "unknown"}, Default: "unknown"},
 		{Name: "last_success_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次检查成功时间"},
 		{Name: "last_failure_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次检查失败时间"},
 	}
@@ -305,12 +306,12 @@ var (
 			{
 				Name:    "domainmonitor_domain",
 				Unique:  false,
-				Columns: []*schema.Column{DomainMonitorColumns[4]},
+				Columns: []*schema.Column{DomainMonitorColumns[5]},
 			},
 			{
 				Name:    "domainmonitor_domain_check_protocol",
 				Unique:  true,
-				Columns: []*schema.Column{DomainMonitorColumns[4], DomainMonitorColumns[6]},
+				Columns: []*schema.Column{DomainMonitorColumns[5], DomainMonitorColumns[7]},
 			},
 		},
 	}

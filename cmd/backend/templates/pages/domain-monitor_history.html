@@ -1,0 +1,56 @@
+{{ define "content" }}
+
+{{ $item := .Item }}
+
+{{ $apiUrlPath := printf "/api/domain-monitors/%d" $item.ID }}
+{{ $webUrlPath := printf "/domain-monitor/%d" $item.ID }}
+
+<h1>🌐 域名监控历史 - {{ $item.Name }}</h1>
+
+<div class="card" id="sectionLog">
+  <div class="card-header">
+    <h2 class="h2-icon">
+      <svg class="ip-i">
+        <use href="/static/img/icons.svg#ip-log"></use>
+      </svg>
+      全部历史
+    </h2>
+  </div>
+  <div class="card-body">
+    <table>
+      <thead>
+        <tr>
+          <th>序号</th>
+          <th>是否成功</th>
+          <th>耗时</th>
+          <th>状态</th>
+          <th>证书过期日期</th>
+          <th>证书主体通用名</th>
+          <th>证书颁发者通用名</th>
+          <th>证书签名算法</th>
+          <th>时间</th>
+        </tr>
+      </thead>
+      <tbody id="table">
+        {{ range .List }}
+        <tr>
+          <td>{{.ID}}</td>
+          <td>{{.IsSuccess}}</td>
+          <td>{{.CheckDuration}} ms</td>
+          <td>{{.StatusMessage}}</td>
+          <td>{{ formatTimeOrNil .SslExpiryDate }}</td>
+          <td>{{.SslCommonName}}</td>
+          <td>{{.SslIssuerName}}</td>
+          <td>{{.SslSignatureAlg}}</td>
+          <td>{{ formatTimeOrNil .CheckTime }}</td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
+    <!-- 分页 -->
+    {{ template "pagination" . }}
+  </div>
+</div>
+
+<script src="/static/js/log.js"></script>
+{{ end }}

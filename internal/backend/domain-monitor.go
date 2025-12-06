@@ -182,9 +182,9 @@ func (s *DomainMonitorService) executeMonitorTask(ctx context.Context, newLog *s
 // 辅助函数：根据检查结果获取 DomainMonitorStatus
 func (s *DomainMonitorService) getCurrentStatus(success bool) domainmonitor.CurrentStatus {
 	if success {
-		return domainmonitor.CurrentStatusUp
+		return domainmonitor.CurrentStatusSuccess
 	}
-	return domainmonitor.CurrentStatusDown
+	return domainmonitor.CurrentStatusFailure
 }
 
 // CheckResult 包含本次检查的所有结果

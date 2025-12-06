@@ -24,6 +24,8 @@ type DomainMonitor struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// 名称
 	Name string `json:"name,omitempty"`
+	// 描述
+	Description string `json:"description,omitempty"`
 	// 域名
 	Domain string `json:"domain,omitempty"`
 	// 检查间隔（秒）
@@ -72,7 +74,7 @@ func (*DomainMonitor) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case domainmonitor.FieldID, domainmonitor.FieldCheckInterval:
 			values[i] = new(sql.NullInt64)
-		case domainmonitor.FieldName, domainmonitor.FieldDomain, domainmonitor.FieldCheckProtocol, domainmonitor.FieldCurrentStatus:
+		case domainmonitor.FieldName, domainmonitor.FieldDescription, domainmonitor.FieldDomain, domainmonitor.FieldCheckProtocol, domainmonitor.FieldCurrentStatus:
 			values[i] = new(sql.NullString)
 		case domainmonitor.FieldCreatedAt, domainmonitor.FieldUpdatedAt, domainmonitor.FieldLastSuccessAt, domainmonitor.FieldLastFailureAt:
 			values[i] = new(sql.NullTime)
@@ -114,6 +116,12 @@ func (_m *DomainMonitor) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				_m.Name = value.String
+			}
+		case domainmonitor.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				_m.Description = value.String
 			}
 		case domainmonitor.FieldDomain:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -206,6 +214,9 @@ func (_m *DomainMonitor) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
+	builder.WriteString(", ")
+	builder.WriteString("description=")
+	builder.WriteString(_m.Description)
 	builder.WriteString(", ")
 	builder.WriteString("domain=")
 	builder.WriteString(_m.Domain)

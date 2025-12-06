@@ -1,0 +1,190 @@
+{{ define "content" }}
+<style>
+/* 假设这些样式已在 index.css 中定义，这里仅作参考和增强 */
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.detail-item {
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--border);
+}
+
+.detail-item-full {
+    grid-column: 1 / -1; /* 占据整行 */
+}
+
+.status-badge {
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.status-success { background: #10b9811a; color: var(--success); border: 1px solid var(--success); }
+.status-failure { background: #ef44441a; color: var(--danger); border: 1px solid var(--danger); }
+.status-unknown { background: #64748b1a; color: var(--text-secondary); border: 1px solid var(--text-secondary); }
+
+.ssl-expiry-info {
+    font-size: 0.9em;
+    padding: 5px 0;
+}
+</style>
+
+{{ $item := .Item }}
+
+{{ $apiUrlPath := printf "/api/domain-monitors/%d" $item.ID }}
+{{ $webUrlPath := printf "/domain-monitor/%d" $item.ID }}
+
+<h1>🌐 域名监控详情 - {{ $item.Name }}</h1>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="h2-icon">
+            {{ template "icons" (dict "Name" "ip-monitor") }} 实时状态概览
+        </h2>
+        <div class="card-actions">
+            <button class="btn btn-sm btn-outline-warning" onclick="onCheckMonitor('{{$item.ID}}', '{{$item.Domain}}')">
+                {{ template "icons" (dict "Name" "ip-refresh") }} 立即检查
+            </button>
+            <button class="btn btn-primary" onclick="openFormModal('{{$item.ID}}')">
+                {{ template "icons" (dict "Name" "ip-edit") }} 编辑配置
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="detail-grid">
+            <div class="detail-item">
+                <strong>当前状态:</strong> 
+                {{ if eq $item.CurrentStatus "success" }}
+                    <span class="status-badge status-success">✅ 成功运行</span>
+                {{ else if eq $item.CurrentStatus "failure" }}
+                    <span class="status-badge status-failure">❌ 检查失败</span>
+                {{ else }}
+                    <span class="status-badge status-unknown">❓ 状态未知</span>
+                {{ end }}
+            </div>
+            <div class="detail-item">
+                <strong>检查域名:</strong> 
+                <span class="text-primary">{{$item.Domain}}</span>
+            </div>
+            <div class="detail-item">
+                <strong>启用状态:</strong> 
+                {{ template "switch" (dict "Checked" $item.IsActive "URL" (join $apiUrlPath "/active")) }}
+            </div>
+            <div class="detail-item">
+                <strong>最后成功:</strong> 
+                <span class="text-success">{{ if $item.LastSuccessAt }}{{ formatTimeOrNil $item.LastSuccessAt }}{{ else }}N/A{{ end }}</span>
+            </div>
+            <div class="detail-item">
+                <strong>最后失败:</strong> 
+                <span class="text-danger">{{ if $item.LastFailureAt }}{{ formatTimeOrNil $item.LastFailureAt }}{{ else }}N/A{{ end }}</span>
+            </div>
+            <div class="detail-item">
+                <strong>检查间隔:</strong> 
+                {{$item.CheckInterval}} 秒  
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h2 class="h2-icon">
+            {{ template "icons" (dict "Name" "ip-settings") }} 详细配置
+        </h2>
+    </div>
+    <div class="card-body">
+        <div class="detail-grid">
+            <div class="detail-item"><strong>检查类型:</strong> {{$item.CheckProtocol}}</div>
+            <div class="detail-item"><strong>检查 URL:</strong> <a href="{{$item.Domain}}" target="_blank">{{$item.Domain}}</a></div>
+            <div class="detail-item"><strong>ID / 名称:</strong> {{$item.ID}} / {{$item.Name}}</div>
+            <div class="detail-item"><strong>创建时间:</strong> {{formatTimeOrNil $item.CreatedAt}}</div>
+            <div class="detail-item"><strong>更新时间:</strong> {{formatTimeOrNil $item.UpdatedAt}}</div>
+        </div>
+        <div class="detail-item detail-item-full">
+            <strong>描述:</strong> 
+            <p class="text-secondary">{{$item.Description}}</p>
+        </div>
+    </div>
+</div>
+
+{{ if .LatestHistory }}
+    {{ $hist := .LatestHistory }}
+<div class="card mt-4">
+    <div class="card-header">
+        <h2 class="h2-icon">
+            {{ template "icons" (dict "Name" "ip-history") }} 最近一次检查结果 ({{ $hist.CheckTime.Format "15:04:05" }})
+        </h2>
+         <a 
+            class="btn btn-sm btn-outline-info" 
+            href='{{ join $webUrlPath "/history" }}' 
+        >
+            {{ template "icons" (dict "Name" "ip-open-in-new") }} 查看全部历史
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="detail-grid">
+            <div class="detail-item">
+                <strong>本次结果:</strong> 
+                 {{ if $hist.IsSuccess }}
+                    <span class="status-badge status-success">成功</span>
+                {{ else }}
+                    <span class="status-badge status-failure">失败</span>
+                {{ end }}
+            </div>
+            <div class="detail-item">
+                <strong>响应码:</strong> 
+                <span class="badge badge-info">{{ if $hist.HTTPStatus }}{{$hist.HTTPStatus}}{{ else }}-{{ end }}</span>
+            </div>
+            <div class="detail-item">
+                <strong>请求延迟:</strong> 
+                {{$hist.CheckDuration}} ms
+            </div>
+            <div class="detail-item">
+                <strong>解析 IP:</strong> 
+                <code class="text-secondary">{{$hist.IPResolved}}</code>
+            </div>
+            
+            {{/* SSL 信息只有在 HTTPS 监控时才重要 */}}
+            {{ if eq $item.CheckProtocol "https" }}
+                {{ if $hist.SslExpiryDate }}
+                <div class="detail-item detail-item-full">
+                    <strong>证书信息:</strong> 
+                    <div class="ssl-expiry-info">
+                        <strong>过期日期:</strong> 
+                        <span class="text-warning">
+                            {{ $hist.SslExpiryDate.Format "2006-01-02 15:04:05" }}
+                            <small class="text-secondary">(剩余天数需后端计算)</small>
+                        </span>
+                    </div>
+                    <div class="ssl-expiry-info">
+                        <strong>通用名 (CN):</strong> {{ $hist.SslCommonName }}
+                    </div>
+                    <div class="ssl-expiry-info">
+                        <strong>颁发者:</strong> {{ $hist.SslIssuerName }}
+                    </div>
+                </div>
+                {{ end }}
+            {{ end }}
+        </div>
+    </div>
+</div>
+{{ else }}
+<div class="card mt-4">
+    <div class="card-body text-center text-secondary">
+        <p>暂无最近一次检查记录，请点击**“立即检查”**开始第一次监控。</p>
+    </div>
+</div>
+{{ end }}
+
+<!-- 表单 -->
+{{ template "pages/domain-monitor_form.html" . }}
+
+<!-- 弹窗 -->
+{{ template "popup" . }}
+
+<script src="/static/js/domain-monitor.js"></script>
+{{ end }}

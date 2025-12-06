@@ -50,6 +50,26 @@ func (_u *DomainMonitorUpdate) SetNillableName(v *string) *DomainMonitorUpdate {
 	return _u
 }
 
+// SetDescription sets the "description" field.
+func (_u *DomainMonitorUpdate) SetDescription(v string) *DomainMonitorUpdate {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *DomainMonitorUpdate) SetNillableDescription(v *string) *DomainMonitorUpdate {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *DomainMonitorUpdate) ClearDescription() *DomainMonitorUpdate {
+	_u.mutation.ClearDescription()
+	return _u
+}
+
 // SetCheckInterval sets the "check_interval" field.
 func (_u *DomainMonitorUpdate) SetCheckInterval(v int) *DomainMonitorUpdate {
 	_u.mutation.ResetCheckInterval()
@@ -250,6 +270,12 @@ func (_u *DomainMonitorUpdate) sqlSave(ctx context.Context) (_node int, err erro
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(domainmonitor.FieldName, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(domainmonitor.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(domainmonitor.FieldDescription, field.TypeString)
+	}
 	if value, ok := _u.mutation.CheckInterval(); ok {
 		_spec.SetField(domainmonitor.FieldCheckInterval, field.TypeInt, value)
 	}
@@ -358,6 +384,26 @@ func (_u *DomainMonitorUpdateOne) SetNillableName(v *string) *DomainMonitorUpdat
 	if v != nil {
 		_u.SetName(*v)
 	}
+	return _u
+}
+
+// SetDescription sets the "description" field.
+func (_u *DomainMonitorUpdateOne) SetDescription(v string) *DomainMonitorUpdateOne {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *DomainMonitorUpdateOne) SetNillableDescription(v *string) *DomainMonitorUpdateOne {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *DomainMonitorUpdateOne) ClearDescription() *DomainMonitorUpdateOne {
+	_u.mutation.ClearDescription()
 	return _u
 }
 
@@ -590,6 +636,12 @@ func (_u *DomainMonitorUpdateOne) sqlSave(ctx context.Context) (_node *DomainMon
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(domainmonitor.FieldName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(domainmonitor.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(domainmonitor.FieldDescription, field.TypeString)
 	}
 	if value, ok := _u.mutation.CheckInterval(); ok {
 		_spec.SetField(domainmonitor.FieldCheckInterval, field.TypeInt, value)

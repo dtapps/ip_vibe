@@ -30,6 +30,7 @@
       <tbody id="table">
         {{ range .List }}
         {{ $urlPath := printf "/api/domain-monitors/%d" .ID }}
+        {{ $webPath := printf "/domain-monitor/%d" .ID }}
         <tr>
           <td>{{.Name}}</td>
           <td>{{.Domain}}</td>
@@ -55,6 +56,13 @@
             )}}
           </td>
           <td>
+            {{ $detailWebPath := join $webPath "/detail" }}
+            <button
+              class="btn btn-sm btn-outline-info"
+              onclick="location.href='{{$detailWebPath}}'"
+            >
+              {{ template "icons" (dict "Name" "ip-eye") }} 详情
+            </button>
             <button
               class="btn btn-primary btn-sm"
               onclick="openFormModal('{{.ID}}')"

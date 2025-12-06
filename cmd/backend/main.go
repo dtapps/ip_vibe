@@ -226,6 +226,8 @@ func main() {
 
 	// 域名监控页面 - 提供HTML页面并渲染数据
 	router.GET("/domain-monitor", handlers.DomainMonitor)
+	router.GET("/domain-monitor/:id/detail", handlers.DomainMonitorDetail)
+	router.GET("/domain-monitor/:id/history", handlers.DomainMonitorHistory)
 
 	// 通知页面 - 提供HTML页面并渲染数据
 	router.GET("/webhook", handlers.Webhook)
@@ -430,9 +432,18 @@ func loadTemplates(templatePath string, funcMap template.FuncMap) multitemplate.
 			fmt.Printf("开发环境 业务页面: %s\n", name)
 		}
 
-		// 检查是否存在同名 _form.html 或 _popup.html
 		var extras []string
-		baseName := strings.TrimSuffix(p, ".html")
+
+		var baseName string
+		if strings.HasSuffix(p, "_detail.html") {
+			// 特殊情况：如 p = "index_detail.html" → baseName = "index"
+			baseName = strings.TrimSuffix(p, "_detail.html")
+		} else {
+			// 普通情况，如 p = "index.html" → baseName = "index"
+			baseName = strings.TrimSuffix(p, ".html")
+		}
+
+		// 检查对应的 _form.html 和 _popup.html
 		if formFile := baseName + "_form.html"; fileExists(formFile) {
 			extras = append(extras, formFile)
 		}
@@ -501,9 +512,18 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 			fmt.Printf("生产环境 业务页面: %s\n", name)
 		}
 
-		// 检查是否存在同名 _form.html 或 _popup.html
 		var extras []string
-		baseName := strings.TrimSuffix(p, ".html")
+
+		var baseName string
+		if strings.HasSuffix(p, "_detail.html") {
+			// 特殊情况：如 p = "index_detail.html" → baseName = "index"
+			baseName = strings.TrimSuffix(p, "_detail.html")
+		} else {
+			// 普通情况，如 p = "index.html" → baseName = "index"
+			baseName = strings.TrimSuffix(p, ".html")
+		}
+
+		// 检查对应的 _form.html 和 _popup.html
 		if formFile := baseName + "_form.html"; fileExists(formFile) {
 			extras = append(extras, formFile)
 		}
@@ -515,7 +535,8 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 		files := []string{layout, index}
 		files = append(files, components...) // 注入全部组件
 		files = append(files, extras...)     // 注入额外文件
-		files = append(files, p)             // 当前页面
+
+		files = append(files, p) // 当前页面
 		if global.GvaEnv.DEBUG {
 			fmt.Printf("生产环境 业务页面合并: %s\n", strings.Join(files, " -> "))
 		}

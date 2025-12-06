@@ -5104,6 +5104,7 @@ type DomainMonitorMutation struct {
 	created_at             *time.Time
 	updated_at             *time.Time
 	name                   *string
+	description            *string
 	domain                 *string
 	check_interval         *int
 	addcheck_interval      *int
@@ -5331,6 +5332,55 @@ func (m *DomainMonitorMutation) OldName(ctx context.Context) (v string, err erro
 // ResetName resets all changes to the "name" field.
 func (m *DomainMonitorMutation) ResetName() {
 	m.name = nil
+}
+
+// SetDescription sets the "description" field.
+func (m *DomainMonitorMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *DomainMonitorMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the DomainMonitor entity.
+// If the DomainMonitor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *DomainMonitorMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[domainmonitor.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *DomainMonitorMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[domainmonitor.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *DomainMonitorMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, domainmonitor.FieldDescription)
 }
 
 // SetDomain sets the "domain" field.
@@ -5719,7 +5769,7 @@ func (m *DomainMonitorMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DomainMonitorMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, domainmonitor.FieldCreatedAt)
 	}
@@ -5728,6 +5778,9 @@ func (m *DomainMonitorMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, domainmonitor.FieldName)
+	}
+	if m.description != nil {
+		fields = append(fields, domainmonitor.FieldDescription)
 	}
 	if m.domain != nil {
 		fields = append(fields, domainmonitor.FieldDomain)
@@ -5764,6 +5817,8 @@ func (m *DomainMonitorMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case domainmonitor.FieldName:
 		return m.Name()
+	case domainmonitor.FieldDescription:
+		return m.Description()
 	case domainmonitor.FieldDomain:
 		return m.Domain()
 	case domainmonitor.FieldCheckInterval:
@@ -5793,6 +5848,8 @@ func (m *DomainMonitorMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldUpdatedAt(ctx)
 	case domainmonitor.FieldName:
 		return m.OldName(ctx)
+	case domainmonitor.FieldDescription:
+		return m.OldDescription(ctx)
 	case domainmonitor.FieldDomain:
 		return m.OldDomain(ctx)
 	case domainmonitor.FieldCheckInterval:
@@ -5836,6 +5893,13 @@ func (m *DomainMonitorMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case domainmonitor.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
 		return nil
 	case domainmonitor.FieldDomain:
 		v, ok := value.(string)
@@ -5931,6 +5995,9 @@ func (m *DomainMonitorMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *DomainMonitorMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(domainmonitor.FieldDescription) {
+		fields = append(fields, domainmonitor.FieldDescription)
+	}
 	if m.FieldCleared(domainmonitor.FieldLastSuccessAt) {
 		fields = append(fields, domainmonitor.FieldLastSuccessAt)
 	}
@@ -5951,6 +6018,9 @@ func (m *DomainMonitorMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *DomainMonitorMutation) ClearField(name string) error {
 	switch name {
+	case domainmonitor.FieldDescription:
+		m.ClearDescription()
+		return nil
 	case domainmonitor.FieldLastSuccessAt:
 		m.ClearLastSuccessAt()
 		return nil
@@ -5973,6 +6043,9 @@ func (m *DomainMonitorMutation) ResetField(name string) error {
 		return nil
 	case domainmonitor.FieldName:
 		m.ResetName()
+		return nil
+	case domainmonitor.FieldDescription:
+		m.ResetDescription()
 		return nil
 	case domainmonitor.FieldDomain:
 		m.ResetDomain()

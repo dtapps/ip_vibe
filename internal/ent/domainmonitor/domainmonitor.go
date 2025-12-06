@@ -21,6 +21,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldDescription holds the string denoting the description field in the database.
+	FieldDescription = "description"
 	// FieldDomain holds the string denoting the domain field in the database.
 	FieldDomain = "domain"
 	// FieldCheckInterval holds the string denoting the check_interval field in the database.
@@ -54,6 +56,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldName,
+	FieldDescription,
 	FieldDomain,
 	FieldCheckInterval,
 	FieldCheckProtocol,
@@ -117,8 +120,8 @@ const DefaultCurrentStatus = CurrentStatusUnknown
 
 // CurrentStatus values.
 const (
-	CurrentStatusUp      CurrentStatus = "up"
-	CurrentStatusDown    CurrentStatus = "down"
+	CurrentStatusSuccess CurrentStatus = "success"
+	CurrentStatusFailure CurrentStatus = "failure"
 	CurrentStatusUnknown CurrentStatus = "unknown"
 )
 
@@ -129,7 +132,7 @@ func (cs CurrentStatus) String() string {
 // CurrentStatusValidator is a validator for the "current_status" field enum values. It is called by the builders before save.
 func CurrentStatusValidator(cs CurrentStatus) error {
 	switch cs {
-	case CurrentStatusUp, CurrentStatusDown, CurrentStatusUnknown:
+	case CurrentStatusSuccess, CurrentStatusFailure, CurrentStatusUnknown:
 		return nil
 	default:
 		return fmt.Errorf("domainmonitor: invalid enum value for current_status field: %q", cs)
@@ -157,6 +160,11 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
 }
 
 // ByDomain orders the results by the domain field.

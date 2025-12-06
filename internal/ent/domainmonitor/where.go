@@ -70,6 +70,11 @@ func Name(v string) predicate.DomainMonitor {
 	return predicate.DomainMonitor(sql.FieldEQ(FieldName, v))
 }
 
+// Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
+func Description(v string) predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldEQ(FieldDescription, v))
+}
+
 // Domain applies equality check predicate on the "domain" field. It's identical to DomainEQ.
 func Domain(v string) predicate.DomainMonitor {
 	return predicate.DomainMonitor(sql.FieldEQ(FieldDomain, v))
@@ -238,6 +243,81 @@ func NameEqualFold(v string) predicate.DomainMonitor {
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.DomainMonitor {
 	return predicate.DomainMonitor(sql.FieldContainsFold(FieldName, v))
+}
+
+// DescriptionEQ applies the EQ predicate on the "description" field.
+func DescriptionEQ(v string) predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldEQ(FieldDescription, v))
+}
+
+// DescriptionNEQ applies the NEQ predicate on the "description" field.
+func DescriptionNEQ(v string) predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldNEQ(FieldDescription, v))
+}
+
+// DescriptionIn applies the In predicate on the "description" field.
+func DescriptionIn(vs ...string) predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldIn(FieldDescription, vs...))
+}
+
+// DescriptionNotIn applies the NotIn predicate on the "description" field.
+func DescriptionNotIn(vs ...string) predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldNotIn(FieldDescription, vs...))
+}
+
+// DescriptionGT applies the GT predicate on the "description" field.
+func DescriptionGT(v string) predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldGT(FieldDescription, v))
+}
+
+// DescriptionGTE applies the GTE predicate on the "description" field.
+func DescriptionGTE(v string) predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldGTE(FieldDescription, v))
+}
+
+// DescriptionLT applies the LT predicate on the "description" field.
+func DescriptionLT(v string) predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldLT(FieldDescription, v))
+}
+
+// DescriptionLTE applies the LTE predicate on the "description" field.
+func DescriptionLTE(v string) predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldLTE(FieldDescription, v))
+}
+
+// DescriptionContains applies the Contains predicate on the "description" field.
+func DescriptionContains(v string) predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldContains(FieldDescription, v))
+}
+
+// DescriptionHasPrefix applies the HasPrefix predicate on the "description" field.
+func DescriptionHasPrefix(v string) predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldHasPrefix(FieldDescription, v))
+}
+
+// DescriptionHasSuffix applies the HasSuffix predicate on the "description" field.
+func DescriptionHasSuffix(v string) predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldHasSuffix(FieldDescription, v))
+}
+
+// DescriptionIsNil applies the IsNil predicate on the "description" field.
+func DescriptionIsNil() predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldIsNull(FieldDescription))
+}
+
+// DescriptionNotNil applies the NotNil predicate on the "description" field.
+func DescriptionNotNil() predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldNotNull(FieldDescription))
+}
+
+// DescriptionEqualFold applies the EqualFold predicate on the "description" field.
+func DescriptionEqualFold(v string) predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldEqualFold(FieldDescription, v))
+}
+
+// DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
+func DescriptionContainsFold(v string) predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldContainsFold(FieldDescription, v))
 }
 
 // DomainEQ applies the EQ predicate on the "domain" field.
