@@ -10,7 +10,6 @@ func (t *OperationLog) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
-
 	return m
 }
 
@@ -22,18 +21,13 @@ func (t *RestyLog) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
-
 	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
 	m["request_headers"] = t.RequestHeaders
-
 	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
 	m["request_body"] = t.RequestBody
-
 	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
 	m["response_headers"] = t.ResponseHeaders
-
 	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
 	m["response_body"] = t.ResponseBody
-
 	return m
 }

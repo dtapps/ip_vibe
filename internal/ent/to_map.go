@@ -10,7 +10,6 @@ func (t *CDNRecord) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
-
 	return m
 }
 
@@ -22,7 +21,6 @@ func (t *DNSRecord) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
-
 	return m
 }
 
@@ -34,7 +32,6 @@ func (t *Device) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
-
 	return m
 }
 
@@ -46,7 +43,6 @@ func (t *DeviceIpReport) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
-
 	return m
 }
 
@@ -58,10 +54,8 @@ func (t *DevicePortForward) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
-
 	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
 	m["protocols"] = t.Protocols
-
 	return m
 }
 
@@ -73,7 +67,6 @@ func (t *DomainMonitor) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
-
 	return m
 }
 
@@ -85,10 +78,8 @@ func (t *DomainMonitorHistory) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
-
 	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
 	m["ip_resolved"] = t.IPResolved
-
 	return m
 }
 
@@ -100,7 +91,6 @@ func (t *IpGroup) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
-
 	return m
 }
 
@@ -112,7 +102,6 @@ func (t *IpGroupDevice) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
-
 	return m
 }
 
@@ -124,10 +113,8 @@ func (t *PlatformConfig) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
-
 	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
 	m["config_json"] = t.ConfigJSON
-
 	return m
 }
 
@@ -139,10 +126,8 @@ func (t *Webhook) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
-
 	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
 	m["events"] = t.Events
-
 	return m
 }
 
@@ -154,6 +139,5 @@ func (t *WebhookSubscription) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
-
 	return m
 }

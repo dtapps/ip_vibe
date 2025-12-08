@@ -18,31 +18,27 @@ func (t *{{ $n.Name }}) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
-
-	{{ range $f := $n.Fields }}
-		{{ if $f.HasGoType }}
-			{{ if eq $f.Type.String "time.Time" }}
+	{{- range $f := $n.Fields }}
+		{{- if $f.HasGoType }}
+			{{- if eq $f.Type.String "time.Time" }}
 				if t.{{ $f.StructField }}.IsZero() {
 					m["{{ $f.Name }}"] = nil
 				} else {
 					m["{{ $f.Name }}"] = t.{{ $f.StructField }}
 				}
-
-			{{ else if and $f.Optional (not (or $f.IsJSON $f.IsOther)) }}
+			{{- else if and $f.Optional (not (or $f.IsJSON $f.IsOther)) }}
 				// 基本类型 + Optional → 指针，需解引用
 				if t.{{ $f.StructField }} != nil {
 					m["{{ $f.Name }}"] = *t.{{ $f.StructField }}
 				} else {
 					m["{{ $f.Name }}"] = nil
 				}
-
-			{{ else }}
+			{{- else }}
 				// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
 				m["{{ $f.Name }}"] = t.{{ $f.StructField }}
-			{{ end }}
-		{{ end }}
-	{{ end }}
-
+			{{- end }}
+		{{- end }}
+	{{- end }}
 	return m
 }
 

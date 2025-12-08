@@ -24,13 +24,13 @@ func (q *{{ $queryName }}) Take(ctx context.Context) (*{{ $nodeName }}, error) {
 // 行为与 GORM 的 Last(ctx) 一致。
 // 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
 func (q *{{ $queryName }}) Last(ctx context.Context) (*{{ $nodeName }}, error) {
-	{{ if $n.ID }}
+	{{- if $n.ID }}
 		// 使用默认主键 "id"
 		return q.Order({{ $table }}.ByID(sql.OrderDesc())).First(ctx)
-	{{ else }}
+	{{- else }}
 		// 未启用默认 ID（可能是复合主键或自定义主键），无法安全定义“最后一条”
 		return nil, fmt.Errorf("{{ $nodeName }} has no default 'id' primary key; Last() is unsupported")
-	{{ end }}
+	{{- end }}
 }
 
 // Find 获取所有匹配的记录。
