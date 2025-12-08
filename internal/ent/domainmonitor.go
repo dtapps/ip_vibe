@@ -22,9 +22,9 @@ type DomainMonitor struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 更新时间
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// 名称
+	// 域名监控名称
 	Name string `json:"name,omitempty"`
-	// 描述
+	// 域名监控描述
 	Description string `json:"description,omitempty"`
 	// 域名
 	Domain string `json:"domain,omitempty"`
