@@ -51,7 +51,7 @@
             }
             } catch (error) {
                 alert(`状态更新失败: ${error.message}`);
-            logger.error("API失败", error);
+            console.error("API失败", error);
                 // 恢复 checkbox 状态
                 checkbox.checked = !checkbox.checked;
             }

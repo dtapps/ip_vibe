@@ -75,7 +75,7 @@
             }
           } catch (error) {
             alert(`删除失败: ${error.message}`);
-            logger.error("API失败", error);
+            console.error("API失败", error);
           }
         }
         window.onApiDeleteAction = onApiDeleteAction;
@@ -90,18 +90,18 @@
               document.addEventListener('click', function(event) {
                   // 查找点击事件的最近祖先元素是否是我们标记的按钮
                   let target = event.target.closest('.js-custom-action-btn[data-action]');
-                  logger.log("target",target);
+                  console.log("target",target);
                   if (target) {
                       const encodedJsCode = target.getAttribute('data-action');
-                  logger.log("encodedJsCode",encodedJsCode);
+                  console.log("encodedJsCode",encodedJsCode);
                       if (encodedJsCode) {
                           try {// 解码 URL 编码的字符串
                               const jsCode = decodeURIComponent(encodedJsCode);
-                  logger.log("jsCode",jsCode);
+                  console.log("jsCode",jsCode);
                               // 使用 new Function() 构造并执行代码
                               new Function(jsCode)();
                           } catch (error) {
-                              logger.error("执行自定义动作失败:", error);
+                              console.error("执行自定义动作失败:", error);
                           }
                           event.preventDefault(); // 阻止默认的按钮行为
                       }

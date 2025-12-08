@@ -1,7 +1,7 @@
 // 选择类型 check_protocol
 function onCheckProtocolSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  logger.log("onCheckProtocolSelect", opt);
+  console.log("onCheckProtocolSelect", opt);
 }
 
 // 打开 表单 弹窗
@@ -14,7 +14,7 @@ async function openFormModal(id) {
 
     // 通知列表
     const { data: webhooks } = await API.get(`/api/webhooks`);
-    logger.log("webhooks", webhooks);
+    console.log("webhooks", webhooks);
     if (webhooks) {
       // 销毁旧实例（防止 Select2 冲突）
       if (selectId2.data("select2")) {
@@ -45,7 +45,7 @@ async function openFormModal(id) {
     // 编辑
     if (id) {
       const { data: domainMonitor } = await API.get(`/api/domain-monitors/${id}`);
-      logger.log("domainMonitor", domainMonitor);
+      console.log("domainMonitor", domainMonitor);
       if (!domainMonitor) {
         alert("域名监控数据异常");
         return;
@@ -86,7 +86,7 @@ async function openFormModal(id) {
     }
   } catch (error) {
     alert(`加载数据失败: ${error.message}`);
-    logger.error("打开域名监控模态框失败", error);
+    console.error("打开域名监控模态框失败", error);
     return;
   }
 }
@@ -106,7 +106,7 @@ document.getElementById("form").onsubmit = async (e) => {
     check_protocol: document.getElementById("check_protocol").value.trim(),
     webhook_ids: selectedWebhookIDs.map(Number),
   };
-  logger.log("form_id, form_data", form_id, form_data);
+  console.log("form_id, form_data", form_id, form_data);
 
   // 校验
   if (!form_data.domain) {
@@ -128,6 +128,6 @@ document.getElementById("form").onsubmit = async (e) => {
     location.reload();
   } catch (error) {
     alert(`操作失败: ${error.message}`);
-    logger.error("域名监控操作失败", error);
+    console.error("域名监控操作失败", error);
   }
 };

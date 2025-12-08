@@ -1,7 +1,7 @@
 // 请选择服务能力 capability
 function changeCapability(sel) {
   const opt = sel.options[sel.selectedIndex];
-  logger.log("changeCapability", opt);
+  console.log("changeCapability", opt);
 }
 
 // 请选择平台 platform
@@ -58,7 +58,7 @@ async function openFormModal(id) {
   // 编辑
   if (id) {
     const { data: config } = await API.get(`/api/configs/${id}`);
-    logger.log("config", config);
+    console.log("config", config);
     if (!config) {
       alert("配置数据异常");
       return;
@@ -126,7 +126,7 @@ document.getElementById("form").onsubmit = async (e) => {
     platform: document.getElementById("platform").value.trim(),
     config_json: document.getElementById("config_json").value.trim(),
   };
-  logger.log("form_id, form_data", form_id, form_data);
+  console.log("form_id, form_data", form_id, form_data);
 
   // 校验
   if (!form_data.capability) {
@@ -151,7 +151,7 @@ document.getElementById("form").onsubmit = async (e) => {
     location.reload();
   } catch (error) {
     alert(`操作失败: ${error.message}`);
-    logger.error("配置操作失败", error);
+    console.error("配置操作失败", error);
   }
 };
 
@@ -164,7 +164,7 @@ async function onDelete(id) {
       location.reload();
     } catch (error) {
       alert(`删除失败: ${error.message}`);
-      logger.error("删除配置失败", error);
+      console.error("删除配置失败", error);
     }
   }
 }

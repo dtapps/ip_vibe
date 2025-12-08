@@ -1,13 +1,13 @@
 // 选择通知 webhook_id
 function onWebhookIdSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  logger.log("onWebhookIdSelect", opt);
+  console.log("onWebhookIdSelect", opt);
 }
 
 // 选择订阅对象 obj_id
 function onObjIdSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  logger.log("onObjIdSelect", opt);
+  console.log("onObjIdSelect", opt);
 }
 
 // 打开 表单 弹窗
@@ -18,7 +18,7 @@ async function openFormModal(id, obj_type) {
     async () => {
       // 通知列表
       const { data: webhooks } = await API.get(`/api/webhooks`);
-      logger.log("webhooks", webhooks);
+      console.log("webhooks", webhooks);
       if (webhooks) {
         const webhookIdSelect = document.getElementById("webhook_id");
         webhookIdSelect.innerHTML = "";
@@ -38,7 +38,7 @@ async function openFormModal(id, obj_type) {
 
           // 设备列表
           const { data: devices } = await API.get(`/api/devices`);
-          logger.log("devices", devices);
+          console.log("devices", devices);
           if (devices) {
             const objIdSelect = document.getElementById("obj_id");
             objIdSelect.innerHTML = "";
@@ -56,7 +56,7 @@ async function openFormModal(id, obj_type) {
 
           // DNS列表
           const { data: dnsRecords } = await API.get(`/api/dns-records`);
-          logger.log("dnsRecords", dnsRecords);
+          console.log("dnsRecords", dnsRecords);
           if (dnsRecords) {
             const objIdSelect = document.getElementById("obj_id");
             objIdSelect.innerHTML = "";
@@ -74,7 +74,7 @@ async function openFormModal(id, obj_type) {
 
           // CDN列表
           const { data: cdnRecords } = await API.get(`/api/cdn-records`);
-          logger.log("cdnRecords", cdnRecords);
+          console.log("cdnRecords", cdnRecords);
           if (cdnRecords) {
             const objIdSelect = document.getElementById("obj_id");
             objIdSelect.innerHTML = "";
@@ -96,7 +96,7 @@ async function openFormModal(id, obj_type) {
         const { data: webhookSubscription } = await API.get(
           `/api/webhook-subs/${id}`
         );
-        logger.log("webhookSubscription", webhookSubscription);
+        console.log("webhookSubscription", webhookSubscription);
         if (!webhookSubscription) {
           alert("通知订阅数据异常");
           return;
@@ -149,7 +149,7 @@ document.getElementById("form").onsubmit = async (e) => {
       (opt) => Number(opt.value.trim())
     ),
   };
-  logger.log("form_id, form_data", form_id, form_data);
+  console.log("form_id, form_data", form_id, form_data);
 
   // 校验
   if (!form_data.name) {

@@ -5,22 +5,6 @@ window.addEventListener("scroll", () => {
     .classList.toggle("visible", window.scrollY > 300);
 });
 
-// 封装日志工具
-const logger = {
-  log(...args) {
-    if (window.isDebug) console.log(...args);
-  },
-  info(...args) {
-    if (window.isDebug) console.info(...args);
-  },
-  warn(...args) {
-    if (window.isDebug) console.warn(...args);
-  },
-  error(...args) {
-    if (window.isDebug) console.error(...args);
-  },
-};
-
 // API请求封装 - 带错误处理
 const API = {
   async get(url) {
@@ -104,7 +88,7 @@ async function withErrorHandling(asyncFn, options = {}) {
   } catch (error) {
     const errorMessage = options.errorMessage || "操作失败";
     alert(`${errorMessage}: ${error.message}`);
-    logger.error(errorMessage, error);
+    console.error(errorMessage, error);
 
     if (options.revertAction) {
       options.revertAction();
@@ -183,7 +167,7 @@ function copyData(idEl = "popup") {
   // const modal = document.getElementById(idEl);
   const preEl = document.getElementById(`${idEl}Pre`);
   if (!preEl || !preEl.textContent?.trim()) {
-    logger.log("无可复制内容");
+    console.log("无可复制内容");
     return;
   }
   const text = preEl.textContent;
@@ -211,10 +195,10 @@ function fallbackToExecCommand(text, idEl) {
     if (success) {
       showCopySuccess(idEl);
     } else {
-      logger.log("复制失败，请手动选择文本复制");
+      console.log("复制失败，请手动选择文本复制");
     }
   } catch (err) {
-    logger.log("浏览器限制，请手动复制");
+    console.log("浏览器限制，请手动复制");
   } finally {
     document.body.removeChild(textarea);
   }
@@ -287,7 +271,7 @@ function showPopupContent(
   if (modal) {
     if (options.resetClosedState) {
       if (modal.dataset.manuallyClosed === "true") {
-        logger.log(`用户已关闭弹窗 ${idEl}，跳过自动显示`);
+        console.log(`用户已关闭弹窗 ${idEl}，跳过自动显示`);
         return;
       }
     }
@@ -312,7 +296,7 @@ function showPopupContent(
 
 // 自定义 url 请求 post 接口
 async function apiPost(url, data, options = {}) {
-  logger.log("apiPost", url, data, options);
+  console.log("apiPost", url, data, options);
 
   const { errorMsg = "操作失败", reload = false } = options;
 
@@ -322,19 +306,19 @@ async function apiPost(url, data, options = {}) {
 
   try {
     const result = await API.post(url, data);
-    logger.info("apiPost", result);
+    console.info("apiPost", result);
     // 刷新页面
     if (reload) {
       location.reload();
     }
   } catch (error) {
     alert(`${errorMsg}: ${error.message}`);
-    logger.error("apiPost", error);
+    console.error("apiPost", error);
   }
 }
 // 自定义 url 请求 delete 接口
 async function apiDelete(url, options = {}) {
-  logger.log("apiDelete", url, options);
+  console.log("apiDelete", url, options);
 
   const {
     tips = "确定删除此记录？",
@@ -354,13 +338,13 @@ async function apiDelete(url, options = {}) {
 
   try {
     const result = await API.delete(url);
-    logger.info("apiDelete", result);
+    console.info("apiDelete", result);
     // 刷新页面
     if (reload) {
       location.reload();
     }
   } catch (error) {
     alert(`${errorMsg}: ${error.message}`);
-    logger.error("apiDelete", error);
+    console.error("apiDelete", error);
   }
 }

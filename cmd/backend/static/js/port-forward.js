@@ -1,13 +1,13 @@
 // 选择协议 protocols
 function onProtocolsSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  logger.log("onProtocolsSelect", opt);
+  console.log("onProtocolsSelect", opt);
 }
 
 // 选择设备 device_id
 function onDeviceIdSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  logger.log("onDeviceIdSelect", opt);
+  console.log("onDeviceIdSelect", opt);
 }
 
 // 打开 表单 弹窗
@@ -28,7 +28,7 @@ async function openFormModal(id) {
 
     // 设备列表
     const { data: devices } = await API.get(`/api/devices`);
-    logger.log("devices", devices);
+    console.log("devices", devices);
     if (devices) {
       const deviceSelect = document.getElementById("device_id");
       deviceSelect.innerHTML = "";
@@ -44,7 +44,7 @@ async function openFormModal(id) {
     // 编辑
     if (id) {
       const { data: portForward } = await API.get(`/api/port-forwards/${id}`);
-      logger.log("portForward", portForward);
+      console.log("portForward", portForward);
       if (!portForward) {
         alert("端口转发数据异常");
         return;
@@ -79,7 +79,7 @@ async function openFormModal(id) {
     }
   } catch (error) {
     alert(`加载数据失败: ${error.message}`);
-    logger.error("打开IP组模态框失败", error);
+    console.error("打开IP组模态框失败", error);
   }
 }
 
@@ -100,7 +100,7 @@ document.getElementById("form").onsubmit = async (e) => {
     ).map((opt) => opt.value.trim()),
     device_id: Number(document.getElementById("device_id").value.trim()),
   };
-  logger.log("form_id, form_data", form_id, form_data);
+  console.log("form_id, form_data", form_id, form_data);
 
   // 校验
   if (!form_data.name) {
@@ -134,7 +134,7 @@ document.getElementById("form").onsubmit = async (e) => {
     location.reload();
   } catch (error) {
     alert(`操作失败: ${error.message}`);
-    logger.error("端口转发操作失败", error);
+    console.error("端口转发操作失败", error);
   }
 };
 
@@ -147,7 +147,7 @@ async function onDelete(id) {
       location.reload();
     } catch (error) {
       alert(`删除失败: ${error.message}`);
-      logger.error("删除端口转发失败", error);
+      console.error("删除端口转发失败", error);
     }
   }
 }
@@ -161,7 +161,7 @@ async function onHealthcheckPopup(id) {
     const { data: portForwardHealthcheck } = await API.get(
       `/api/port-forwards/${id}/healthcheck`
     );
-    logger.log("portForwardHealthcheck", portForwardHealthcheck);
+    console.log("portForwardHealthcheck", portForwardHealthcheck);
     if (!portForwardHealthcheck) {
       alert("端口转发检测数据异常");
       return;
@@ -181,6 +181,6 @@ async function onHealthcheckPopup(id) {
     );
   } catch (error) {
     alert(`加载端口转发检测信息失败: ${error.message}`);
-    logger.error("查看端口转发检测信息失败", error);
+    console.error("查看端口转发检测信息失败", error);
   }
 }
