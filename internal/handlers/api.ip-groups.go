@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -116,6 +117,10 @@ func CreateIPGroup(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "创建IP组")
+
+	// 创建通知订阅
+	_ = webhook_sub_helper.Create(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeIPGroup, saveIpGroup.ID)
+
 	successResponse(c, gin.H{
 		"id": saveIpGroup.ID,
 	})
@@ -155,6 +160,10 @@ func UpdateIPGroup(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "更新IP组")
+
+	// 更新通知订阅
+	_ = webhook_sub_helper.Update(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeIPGroup, saveIpGroup.ID)
+
 	successResponse(c, gin.H{
 		"id": saveIpGroup.ID,
 	})
@@ -189,6 +198,10 @@ func DeleteIPGroup(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "删除IP组")
+
+	// 删除通知订阅
+	_ = webhook_sub_helper.Delete(c, webhooksubscription.ObjTypeIPGroup, firstIpGroup.ID)
+
 	successResponse(c, gin.H{
 		"id": firstIpGroup.ID,
 	})

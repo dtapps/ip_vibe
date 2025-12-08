@@ -11,6 +11,7 @@ import (
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -118,6 +119,10 @@ func CreateDomainMonitor(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "创建域名监控")
+
+	// 创建通知订阅
+	_ = webhook_sub_helper.Create(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
+
 	successResponse(c, gin.H{
 		"id": saveDomainMonitor.ID,
 	})
@@ -155,6 +160,10 @@ func UpdateDomainMonitor(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控")
+
+	// 更新通知订阅
+	_ = webhook_sub_helper.Update(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
+
 	successResponse(c, gin.H{
 		"id": saveDomainMonitor.ID,
 	})
@@ -191,6 +200,10 @@ func UpdateDomainMonitorActive(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控启用状态")
+
+	// 删除通知订阅
+	_ = webhook_sub_helper.Delete(c, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
+
 	successResponse(c, gin.H{
 		"id": saveDomainMonitor.ID,
 	})

@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -135,6 +136,10 @@ func CreateCdnRecord(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "创建CDN记录")
+
+	// 创建通知订阅
+	_ = webhook_sub_helper.Create(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeCdnRecord, saveCdnRecord.ID)
+
 	successResponse(c, gin.H{
 		"id": saveCdnRecord.ID,
 	})
@@ -174,6 +179,10 @@ func UpdateCdnRecord(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录")
+
+	// 更新通知订阅
+	_ = webhook_sub_helper.Update(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeCdnRecord, saveCdnRecord.ID)
+
 	successResponse(c, gin.H{
 		"id": saveCdnRecord.ID,
 	})
@@ -241,6 +250,10 @@ func DeleteCdnRecord(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "删除CDN记录")
+
+	// 删除通知订阅
+	_ = webhook_sub_helper.Delete(c, webhooksubscription.ObjTypeCdnRecord, firstCdnRecord.ID)
+
 	successResponse(c, gin.H{
 		"id": firstCdnRecord.ID,
 	})

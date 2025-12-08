@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -143,6 +144,10 @@ func CreateDnsRecord(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "创建DNS记录")
+
+	// 创建通知订阅
+	_ = webhook_sub_helper.Create(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeDNSRecord, saveDnsRecord.ID)
+
 	successResponse(c, gin.H{
 		"id": saveDnsRecord.ID,
 	})
@@ -184,6 +189,10 @@ func UpdateDnsRecord(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "更新DNS记录")
+
+	// 更新通知订阅
+	_ = webhook_sub_helper.Update(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeDNSRecord, saveDnsRecord.ID)
+
 	successResponse(c, gin.H{
 		"id": saveDnsRecord.ID,
 	})
@@ -251,6 +260,10 @@ func DeleteDnsRecord(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "删除DNS记录")
+
+	// 删除通知订阅
+	_ = webhook_sub_helper.Delete(c, webhooksubscription.ObjTypeDNSRecord, firstDnsRecord.ID)
+
 	successResponse(c, gin.H{
 		"id": firstDnsRecord.ID,
 	})

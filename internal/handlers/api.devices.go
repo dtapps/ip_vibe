@@ -11,6 +11,7 @@ import (
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -118,6 +119,10 @@ func CreateDevice(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "创建设备")
+
+	// 创建通知订阅
+	_ = webhook_sub_helper.Create(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
+
 	successResponse(c, gin.H{
 		"id": saveDevice.ID,
 	})
@@ -157,6 +162,10 @@ func UpdateDevice(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "更新设备")
+
+	// 更新通知订阅
+	_ = webhook_sub_helper.Update(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
+
 	successResponse(c, gin.H{
 		"id": saveDevice.ID,
 	})
@@ -191,6 +200,10 @@ func DeleteDevice(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "删除设备")
+
+	// 删除通知订阅
+	_ = webhook_sub_helper.Delete(c, webhooksubscription.ObjTypeDevice, firstDevice.ID)
+
 	successResponse(c, gin.H{
 		"id": firstDevice.ID,
 	})
