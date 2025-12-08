@@ -42,7 +42,7 @@
 
     {{ block "scripts" . }}
     <script>
-      window.isDebug = "{{isDebug}}";
+      window.isDebug = "{{isDebug}}" === "true"
       window.deviceCode = "{{selfDeviceCode}}";
 
       // 初始化日志静默
