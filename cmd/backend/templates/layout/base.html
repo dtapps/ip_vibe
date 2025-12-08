@@ -42,6 +42,7 @@
 
     {{ block "scripts" . }}
     <script>
+      window.isDebug = "{{isDebug}}";
       window.deviceCode = "{{selfDeviceCode}}";
     </script>
     <script src="/static/libs/jquery/3.7.1/jquery.min.js"></script>

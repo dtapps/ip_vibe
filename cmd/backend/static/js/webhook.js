@@ -69,9 +69,9 @@ function changePlatform(platform) {
 // 选择平台类型 platform
 function onPlatformSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  // console.log("onPlatformSelect", opt);
+  logger.log("onPlatformSelect", opt);
   const id = document.getElementById("id").value.trim();
-  // console.log("onPlatformSelect id", id);
+  logger.log("onPlatformSelect id", id);
 
   changePlatform(opt.value);
 
@@ -196,7 +196,7 @@ async function openFormModal(id) {
     // 编辑
     if (id) {
       const { data: webhook } = await API.get(`/api/webhooks/${id}`);
-      console.log("webhook", webhook);
+      logger.log("webhook", webhook);
       if (!webhook) {
         alert("通知数据异常");
         return;
@@ -227,7 +227,7 @@ async function openFormModal(id) {
     }
   } catch (error) {
     alert(`加载数据失败: ${error.message}`);
-    console.error("打开通知模态框失败", error);
+    logger.error("打开通知模态框失败", error);
   }
 }
 
@@ -245,7 +245,7 @@ document.getElementById("form").onsubmit = async (e) => {
     template_title: document.getElementById("template_title").value.trim(),
     template_content: document.getElementById("template_content").value.trim(),
   };
-  console.log("form_id, form_data", form_id, form_data);
+  logger.log("form_id, form_data", form_id, form_data);
 
   // 校验
   if (!form_data.name) {
@@ -273,7 +273,7 @@ document.getElementById("form").onsubmit = async (e) => {
     location.reload();
   } catch (error) {
     alert(`操作失败: ${error.message}`);
-    console.error("通知操作失败", error);
+    logger.error("通知操作失败", error);
   }
 };
 
@@ -286,7 +286,7 @@ async function onDelete(id) {
       location.reload();
     } catch (error) {
       alert(`删除失败: ${error.message}`);
-      console.error("删除通知失败", error);
+      logger.error("删除通知失败", error);
     }
   }
 }

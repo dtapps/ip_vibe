@@ -1,13 +1,13 @@
 // 选择配置 config_id
 function onConfigSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  // console.log("onConfigSelect", opt);
+  logger.log("onConfigSelect", opt);
 }
 
 // 选择类型 type
 function onTypeSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  // console.log("onTypeSelect", opt);
+  logger.log("onTypeSelect", opt);
   if (opt.value === "CNAME") {
     document.getElementById("ip_group_id").disabled = true;
     document.getElementById("cdn_record_id").disabled = false;
@@ -22,13 +22,13 @@ function onTypeSelect(sel) {
 // 选择IP组 ip_group_id
 function onIpGroupSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  // console.log("onIpGroupSelect", opt);
+  logger.log("onIpGroupSelect", opt);
 }
 
 // 选择CDN记录 cdn_record_id
 function onCdnRecordSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  // console.log("onCdnRecordSelect", opt);
+  logger.log("onCdnRecordSelect", opt);
 }
 
 // 打开 表单 弹窗
@@ -42,7 +42,7 @@ async function openFormModal(id) {
 
     // 平台配置列表
     const { data: configs } = await API.get(`/api/configs`);
-    console.log("configs", configs);
+    logger.log("configs", configs);
     if (configs) {
       const configSelect = document.getElementById("config_id");
       configSelect.innerHTML = "";
@@ -59,7 +59,7 @@ async function openFormModal(id) {
 
     // IP 组列表
     const { data: ipGroups } = await API.get(`/api/ip-groups`);
-    console.log("ipGroups", ipGroups);
+    logger.log("ipGroups", ipGroups);
     if (ipGroups) {
       const ipGroupSelect = document.getElementById("ip_group_id");
       ipGroupSelect.innerHTML = "";
@@ -74,7 +74,7 @@ async function openFormModal(id) {
 
     // CDN列表
     const { data: cdnRecords } = await API.get(`/api/cdn-records`);
-    console.log("cdnRecords", cdnRecords);
+    logger.log("cdnRecords", cdnRecords);
     if (cdnRecords) {
       const cdnRecordSelect = document.getElementById("cdn_record_id");
       cdnRecordSelect.innerHTML = "";
@@ -89,7 +89,7 @@ async function openFormModal(id) {
 
     // 通知列表
     const { data: webhooks } = await API.get(`/api/webhooks`);
-    console.log("webhooks", webhooks);
+    logger.log("webhooks", webhooks);
     if (webhooks) {
       // 销毁旧实例（防止 Select2 冲突）
       if (selectId2.data("select2")) {
@@ -120,7 +120,7 @@ async function openFormModal(id) {
     // 编辑
     if (id) {
       const { data: dnsRecord } = await API.get(`/api/dns-records/${id}`);
-      console.log("dnsRecord", dnsRecord);
+      logger.log("dnsRecord", dnsRecord);
       if (!dnsRecord) {
         alert("DNS记录数据异常");
         return;
@@ -172,7 +172,7 @@ async function openFormModal(id) {
     }
   } catch (error) {
     alert(`加载数据失败: ${error.message}`);
-    console.error("打开DNS记录模态框失败", error);
+    logger.error("打开DNS记录模态框失败", error);
     return;
   }
 }
@@ -195,7 +195,7 @@ document.getElementById("form").onsubmit = async (e) => {
     ),
     webhook_ids: selectedWebhookIDs.map(Number),
   };
-  console.log("form_id, form_data", form_id, form_data);
+  logger.log("form_id, form_data", form_id, form_data);
 
   // 校验
   if (isNaN(form_data.config_id) || form_data.config_id <= 0) {
@@ -229,7 +229,7 @@ document.getElementById("form").onsubmit = async (e) => {
     location.reload();
   } catch (error) {
     alert(`操作失败: ${error.message}`);
-    console.error("DNS记录操作失败", error);
+    logger.error("DNS记录操作失败", error);
   }
 };
 
@@ -242,7 +242,7 @@ async function onDelete(id) {
       location.reload();
     } catch (error) {
       alert(`删除失败: ${error.message}`);
-      console.error("删除DNS记录失败", error);
+      logger.error("删除DNS记录失败", error);
     }
   }
 }
@@ -256,7 +256,7 @@ async function onHealthcheckPopup(id) {
     const { data: dnsRecordHealthcheck } = await API.get(
       `/api/dns-records/${id}/healthcheck`
     );
-    console.log("dnsRecordHealthcheck", dnsRecordHealthcheck);
+    logger.log("dnsRecordHealthcheck", dnsRecordHealthcheck);
     if (!dnsRecordHealthcheck) {
       alert("DNS记录检测数据异常");
       return;
@@ -276,7 +276,7 @@ async function onHealthcheckPopup(id) {
     );
   } catch (error) {
     alert(`加载DNS记录检测信息失败: ${error.message}`);
-    console.error("查看DNS记录检测信息失败", error);
+    logger.error("查看DNS记录检测信息失败", error);
   }
 }
 
@@ -286,7 +286,7 @@ async function onLiveIPPopup(id, name) {
     const { data: ipGroupDevices } = await API.get(
       `/api/ip-groups/${id}/devices`
     );
-    console.log("ipGroupDevices", ipGroupDevices);
+    logger.log("ipGroupDevices", ipGroupDevices);
     if (!ipGroupDevices) {
       alert("IP组设备数据异常");
       return;
@@ -310,6 +310,6 @@ async function onLiveIPPopup(id, name) {
     );
   } catch (error) {
     alert(`加载IP组设备信息失败: ${error.message}`);
-    console.error("查看设备IP地址失败", error);
+    logger.error("查看设备IP地址失败", error);
   }
 }

@@ -130,6 +130,9 @@ func main() {
 
 	// 创建带 FuncMap 的 template
 	funcMap := template.FuncMap{
+		"isDebug": func() bool {
+			return global.GvaEnv.DEBUG
+		},
 		// 格式化时间为字符串，若为空则返回 "—"
 		"formatTimeOrNil": func(t time.Time) string {
 			if t.IsZero() {

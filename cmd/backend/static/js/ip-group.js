@@ -1,7 +1,7 @@
 // 选择设备 devices
 function onDevicesSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
-  // console.log("onDevicesSelect", opt);
+  logger.log("onDevicesSelect", opt);
 }
 
 // 打开 表单 弹窗
@@ -14,7 +14,7 @@ async function openFormModal(id) {
   try {
     // 设备列表
     const { data: devices } = await API.get(`/api/devices`);
-    console.log("devices", devices);
+    logger.log("devices", devices);
     if (devices) {
       // 销毁旧实例（防止 Select2 冲突）
       if (selectId2.data("select2")) {
@@ -45,7 +45,7 @@ async function openFormModal(id) {
     // 编辑
     if (id) {
       const { data: ipGroup } = await API.get(`/api/ip-groups/${id}`);
-      console.log("ipGroup", ipGroup);
+      logger.log("ipGroup", ipGroup);
       if (!ipGroup) {
         alert("IP 组数据异常");
         return;
@@ -79,7 +79,7 @@ async function openFormModal(id) {
     }
   } catch (error) {
     alert(`加载数据失败: ${error.message}`);
-    console.error("打开IP组模态框失败", error);
+    logger.error("打开IP组模态框失败", error);
   }
 }
 
@@ -96,7 +96,7 @@ document.getElementById("form").onsubmit = async (e) => {
     description: document.getElementById("description").value.trim(),
     devices: selectedDeviceIDs.map(Number),
   };
-  console.log("form_id, form_data", form_id, form_data);
+  logger.log("form_id, form_data", form_id, form_data);
 
   // 校验
   if (!form_data.name) {
@@ -118,7 +118,7 @@ document.getElementById("form").onsubmit = async (e) => {
     location.reload();
   } catch (error) {
     alert(`操作失败: ${error.message}`);
-    console.error("IP组操作失败", error);
+    logger.error("IP组操作失败", error);
   }
 };
 
@@ -131,7 +131,7 @@ async function onDelete(id) {
       location.reload();
     } catch (error) {
       alert(`删除失败: ${error.message}`);
-      console.error("删除IP组失败", error);
+      logger.error("删除IP组失败", error);
     }
   }
 }
@@ -145,7 +145,7 @@ async function onHealthcheckPopup(id) {
     const { data: ipGroupHealthcheck } = await API.get(
       `/api/ip-groups/${id}/healthcheck`
     );
-    console.log("ipGroupHealthcheck", ipGroupHealthcheck);
+    logger.log("ipGroupHealthcheck", ipGroupHealthcheck);
     if (!ipGroupHealthcheck) {
       alert("IP组检测数据异常");
       return;
@@ -165,7 +165,7 @@ async function onHealthcheckPopup(id) {
     );
   } catch (error) {
     alert(`加载IP组检测信息失败: ${error.message}`);
-    console.error("查看检测信息失败", error);
+    logger.error("查看检测信息失败", error);
   }
 }
 
@@ -175,7 +175,7 @@ async function onLiveIPPopup(id, name) {
     const { data: ipGroupDevices } = await API.get(
       `/api/ip-groups/${id}/devices`
     );
-    console.log("ipGroupDevices", ipGroupDevices);
+    logger.log("ipGroupDevices", ipGroupDevices);
     if (!ipGroupDevices) {
       alert("IP组设备数据异常");
       return;
@@ -199,6 +199,6 @@ async function onLiveIPPopup(id, name) {
     );
   } catch (error) {
     alert(`加载IP组设备信息失败: ${error.message}`);
-    console.error("查看设备IP地址失败", error);
+    logger.error("查看设备IP地址失败", error);
   }
 }

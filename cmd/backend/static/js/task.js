@@ -7,7 +7,7 @@ async function startTask() {
       location.reload();
     } catch (error) {
       alert(`启动任务失败: ${error.message}`);
-      console.error("启动任务失败", error);
+      logger.error("启动任务失败", error);
     }
   }
 }
@@ -21,7 +21,7 @@ async function stopTask() {
       location.reload();
     } catch (error) {
       alert(`停止任务失败: ${error.message}`);
-      console.error("停止任务失败", error);
+      logger.error("停止任务失败", error);
     }
   }
 }
@@ -35,7 +35,7 @@ async function cleanTask() {
       location.reload();
     } catch (error) {
       alert(`清理任务失败: ${error.message}`);
-      console.error("清理任务失败", error);
+      logger.error("清理任务失败", error);
     }
   }
 }
@@ -49,7 +49,7 @@ async function runTask(id) {
       location.reload();
     } catch (error) {
       alert(`运行任务失败: ${error.message}`);
-      console.error("运行任务失败", error);
+      logger.error("运行任务失败", error);
     }
   }
 }
@@ -58,7 +58,7 @@ async function runTask(id) {
 async function onNextRunPopup(id, name) {
   try {
     const { data: task } = await API.get(`/api/tasks/${id}`);
-    console.log("task", task);
+    logger.log("task", task);
     if (!task) {
       alert("任务数据异常");
       return;
@@ -77,6 +77,6 @@ async function onNextRunPopup(id, name) {
     );
   } catch (error) {
     alert(`加载任务执行时间失败: ${error.message}`);
-    console.error("查看任务执行时间失败", error);
+    logger.error("查看任务执行时间失败", error);
   }
 }

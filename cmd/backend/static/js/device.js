@@ -8,7 +8,7 @@ async function openFormModal(id) {
 
     // 通知列表
     const { data: webhooks } = await API.get(`/api/webhooks`);
-    console.log("webhooks", webhooks);
+    logger.log("webhooks", webhooks);
     if (webhooks) {
       // 销毁旧实例（防止 Select2 冲突）
       if (selectId2.data("select2")) {
@@ -40,7 +40,7 @@ async function openFormModal(id) {
     if (id) {
       // 设备信息
       const { data: device } = await API.get(`/api/devices/${id}`);
-      console.log("device", device);
+      logger.log("device", device);
       if (!device) {
         alert("设备数据异常");
         return;
@@ -85,7 +85,7 @@ async function openFormModal(id) {
     }
   } catch (error) {
     alert(`加载数据失败: ${error.message}`);
-    console.error("打开设备模态框失败", error);
+    logger.error("打开设备模态框失败", error);
   }
 }
 
@@ -104,7 +104,7 @@ document.getElementById("form").onsubmit = async (e) => {
     ip_v6: document.getElementById("ip_v6").value.trim(),
     webhook_ids: selectedWebhookIDs.map(Number),
   };
-  console.log("form_id, form_data", form_id, form_data);
+  logger.log("form_id, form_data", form_id, form_data);
 
   // 校验
   if (!form_data.code) {
@@ -126,7 +126,7 @@ document.getElementById("form").onsubmit = async (e) => {
     location.reload();
   } catch (error) {
     alert(`操作失败: ${error.message}`);
-    console.error("设备操作失败", error);
+    logger.error("设备操作失败", error);
   }
 };
 
@@ -139,7 +139,7 @@ async function onDelete(id) {
       location.reload();
     } catch (error) {
       alert(`删除失败: ${error.message}`);
-      console.error("删除设备失败", error);
+      logger.error("删除设备失败", error);
     }
   }
 }
@@ -153,7 +153,7 @@ async function onHealthcheckPopup(id) {
     const { data: deviceHealthcheck } = await API.get(
       `/api/devices/${id}/healthcheck`
     );
-    console.log("deviceHealthcheck", deviceHealthcheck);
+    logger.log("deviceHealthcheck", deviceHealthcheck);
     if (!deviceHealthcheck) {
       alert("设备检测数据异常");
       return;
@@ -173,7 +173,7 @@ async function onHealthcheckPopup(id) {
     );
   } catch (error) {
     alert(`加载设备检测信息失败: ${error.message}`);
-    console.error("查看设备检测信息失败", error);
+    logger.error("查看设备检测信息失败", error);
   }
 }
 
@@ -183,7 +183,7 @@ async function onHistoryIPPopup(id, name) {
     const { data: deviceIpHistory } = await API.get(
       `/api/devices/${id}/ip-history`
     );
-    console.log("deviceIpHistory", deviceIpHistory);
+    logger.log("deviceIpHistory", deviceIpHistory);
     if (!deviceIpHistory) {
       alert("设备数据异常");
       return;
@@ -207,18 +207,18 @@ async function onHistoryIPPopup(id, name) {
     );
   } catch (error) {
     alert(`加载设备IP历史失败: ${error.message}`);
-    console.error("查看设备IP历史失败", error);
+    logger.error("查看设备IP历史失败", error);
   }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
   const now = Math.floor(Date.now() / 1000);
-  // console.log("当前时间戳（秒）:", now);
+  logger.log("当前时间戳（秒）:", now);
   const tenMinutes = 12 * 60;
 
   document.querySelectorAll("#table tr[data-last-heartbeat]").forEach((row) => {
     const heartbeatAt = parseInt(row.getAttribute("data-last-heartbeat"));
-    // console.log("设备心跳时间戳:", heartbeatAt, "差值:", now - heartbeatAt);
+    logger.log("设备心跳时间戳:", heartbeatAt, "差值:", now - heartbeatAt);
 
     // 如果是零值（从未心跳），heartbeatAt <= 0
     if (heartbeatAt <= 0) {
