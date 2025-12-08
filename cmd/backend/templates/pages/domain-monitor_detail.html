@@ -117,8 +117,8 @@
     </div>
 </div>
 
-{{ if .LatestHistory }}
-    {{ $hist := .LatestHistory }}
+{{ $hist := .LatestHistory }}
+{{ if $hist.ID }}
 <div class="card mt-4">
     <div class="card-header">
         <h2 class="h2-icon">
