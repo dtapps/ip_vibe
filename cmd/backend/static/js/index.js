@@ -293,3 +293,58 @@ function showPopupContent(
 
   showModal(idEl, titleEl, title);
 }
+
+// 自定义 url 请求 post 接口
+async function apiPost(url, data, options = {}) {
+  console.log("apiPost", url, data, options);
+
+  const { errorMsg = "操作失败", reload = false } = options;
+
+  if (!url) {
+    return;
+  }
+
+  try {
+    const result = await API.post(url, data);
+    console.info("apiPost", result);
+    // 刷新页面
+    if (reload) {
+      location.reload();
+    }
+  } catch (error) {
+    alert(`${errorMsg}: ${error.message}`);
+    console.error("apiPost", error);
+  }
+}
+// 自定义 url 请求 delete 接口
+async function apiDelete(url, options = {}) {
+  console.log("apiDelete", url, options);
+
+  const {
+    tips = "确定删除此记录？",
+    errorMsg = "删除失败",
+    reload = false,
+  } = options;
+
+  if (!url) {
+    return;
+  }
+
+  // 提示是否确认删除
+  const confirmed = confirm(tips);
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const result = await API.delete(url);
+    console.info("apiDelete", result);
+    // 刷新页面
+    if (reload) {
+      location.reload();
+    }
+  } catch (error) {
+    alert(`${errorMsg}: ${error.message}`);
+    console.error("apiDelete", error);
+  }
+}

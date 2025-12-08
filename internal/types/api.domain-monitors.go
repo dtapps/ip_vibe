@@ -53,3 +53,8 @@ type UpdateDomainMonitorActiveRequest struct {
 type DeleteDomainMonitorRequest struct {
 	GetDomainMonitorRequest
 }
+
+// 检查域名监控 请求结构
+type CheckDomainMonitorRequest struct {
+	GetDomainMonitorRequest
+}

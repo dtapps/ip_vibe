@@ -5,7 +5,9 @@ import (
 	"database/sql"
 	"log"
 	"vibe_ip/internal/ent"
+	_ "vibe_ip/internal/ent/runtime"
 	"vibe_ip/internal/ent_log"
+	_ "vibe_ip/internal/ent_log/runtime"
 	"vibe_ip/internal/global"
 
 	"entgo.io/ent/dialect"

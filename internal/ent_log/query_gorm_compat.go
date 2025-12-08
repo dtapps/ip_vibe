@@ -20,7 +20,6 @@ func (q *OperationLogQuery) Take(ctx context.Context) (*OperationLog, error) {
 // 行为与 GORM 的 Last(ctx) 一致。
 // 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
 func (q *OperationLogQuery) Last(ctx context.Context) (*OperationLog, error) {
-	// 使用默认主键 "id"
 	return q.Order(operationlog.ByID(sql.OrderDesc())).First(ctx)
 }
 
@@ -40,7 +39,6 @@ func (q *RestyLogQuery) Take(ctx context.Context) (*RestyLog, error) {
 // 行为与 GORM 的 Last(ctx) 一致。
 // 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
 func (q *RestyLogQuery) Last(ctx context.Context) (*RestyLog, error) {
-	// 使用默认主键 "id"
 	return q.Order(restylog.ByID(sql.OrderDesc())).First(ctx)
 }
 

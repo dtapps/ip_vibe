@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
+	"vibe_ip/internal/backend"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/webhooksubscription"
@@ -223,6 +225,43 @@ func DeleteDomainMonitor(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "删除域名监控")
+	successResponse(c, gin.H{
+		"id": firstDomainMonitor.ID,
+	})
+}
+
+// 检查域名监控
+func CheckDomainMonitor(c *gin.Context) {
+	// 请求参数
+	var requestParams types.CheckDomainMonitorRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+
+	// 查询域名监控
+	firstDomainMonitor, err := global.GvaEntDb.DomainMonitor.Query().
+		Where(domainmonitor.IDEQ(requestParams.ID)).
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, "查询域名监控失败: "+err.Error())
+		return
+	}
+
+	// 域名监控任务
+	domainMonitor := backend.NewDomainMonitorService(global.GvaEntDb, global.GvaGoCron)
+
+	// 执行单个监控任务
+	err = domainMonitor.ExecuteMonitorTask(c, slog.With(
+		slog.Int64("id", firstDomainMonitor.ID),
+		slog.String("domain", firstDomainMonitor.Domain),
+		slog.String("protocol", firstDomainMonitor.CheckProtocol.String()),
+	), firstDomainMonitor)
+	if err != nil {
+		errorResponse(c, http.StatusInternalServerError, "检查域名监控失败: "+err.Error())
+		return
+	}
 	successResponse(c, gin.H{
 		"id": firstDomainMonitor.ID,
 	})

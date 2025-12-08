@@ -30,7 +30,6 @@ func (q *CDNRecordQuery) Take(ctx context.Context) (*CDNRecord, error) {
 // 行为与 GORM 的 Last(ctx) 一致。
 // 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
 func (q *CDNRecordQuery) Last(ctx context.Context) (*CDNRecord, error) {
-	// 使用默认主键 "id"
 	return q.Order(cdnrecord.ByID(sql.OrderDesc())).First(ctx)
 }
 
@@ -50,7 +49,6 @@ func (q *DNSRecordQuery) Take(ctx context.Context) (*DNSRecord, error) {
 // 行为与 GORM 的 Last(ctx) 一致。
 // 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
 func (q *DNSRecordQuery) Last(ctx context.Context) (*DNSRecord, error) {
-	// 使用默认主键 "id"
 	return q.Order(dnsrecord.ByID(sql.OrderDesc())).First(ctx)
 }
 
@@ -70,7 +68,6 @@ func (q *DeviceQuery) Take(ctx context.Context) (*Device, error) {
 // 行为与 GORM 的 Last(ctx) 一致。
 // 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
 func (q *DeviceQuery) Last(ctx context.Context) (*Device, error) {
-	// 使用默认主键 "id"
 	return q.Order(device.ByID(sql.OrderDesc())).First(ctx)
 }
 
@@ -90,7 +87,6 @@ func (q *DeviceIpReportQuery) Take(ctx context.Context) (*DeviceIpReport, error)
 // 行为与 GORM 的 Last(ctx) 一致。
 // 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
 func (q *DeviceIpReportQuery) Last(ctx context.Context) (*DeviceIpReport, error) {
-	// 使用默认主键 "id"
 	return q.Order(deviceipreport.ByID(sql.OrderDesc())).First(ctx)
 }
 
@@ -110,7 +106,6 @@ func (q *DevicePortForwardQuery) Take(ctx context.Context) (*DevicePortForward, 
 // 行为与 GORM 的 Last(ctx) 一致。
 // 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
 func (q *DevicePortForwardQuery) Last(ctx context.Context) (*DevicePortForward, error) {
-	// 使用默认主键 "id"
 	return q.Order(deviceportforward.ByID(sql.OrderDesc())).First(ctx)
 }
 
@@ -130,7 +125,6 @@ func (q *DomainMonitorQuery) Take(ctx context.Context) (*DomainMonitor, error) {
 // 行为与 GORM 的 Last(ctx) 一致。
 // 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
 func (q *DomainMonitorQuery) Last(ctx context.Context) (*DomainMonitor, error) {
-	// 使用默认主键 "id"
 	return q.Order(domainmonitor.ByID(sql.OrderDesc())).First(ctx)
 }
 
@@ -150,7 +144,6 @@ func (q *DomainMonitorHistoryQuery) Take(ctx context.Context) (*DomainMonitorHis
 // 行为与 GORM 的 Last(ctx) 一致。
 // 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
 func (q *DomainMonitorHistoryQuery) Last(ctx context.Context) (*DomainMonitorHistory, error) {
-	// 使用默认主键 "id"
 	return q.Order(domainmonitorhistory.ByID(sql.OrderDesc())).First(ctx)
 }
 
@@ -170,7 +163,6 @@ func (q *IpGroupQuery) Take(ctx context.Context) (*IpGroup, error) {
 // 行为与 GORM 的 Last(ctx) 一致。
 // 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
 func (q *IpGroupQuery) Last(ctx context.Context) (*IpGroup, error) {
-	// 使用默认主键 "id"
 	return q.Order(ipgroup.ByID(sql.OrderDesc())).First(ctx)
 }
 
@@ -190,7 +182,6 @@ func (q *IpGroupDeviceQuery) Take(ctx context.Context) (*IpGroupDevice, error) {
 // 行为与 GORM 的 Last(ctx) 一致。
 // 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
 func (q *IpGroupDeviceQuery) Last(ctx context.Context) (*IpGroupDevice, error) {
-	// 未启用默认 ID（可能是复合主键或自定义主键），无法安全定义“最后一条”
 	return nil, fmt.Errorf("IpGroupDevice has no default 'id' primary key; Last() is unsupported")
 }
 
@@ -210,7 +201,6 @@ func (q *PlatformConfigQuery) Take(ctx context.Context) (*PlatformConfig, error)
 // 行为与 GORM 的 Last(ctx) 一致。
 // 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
 func (q *PlatformConfigQuery) Last(ctx context.Context) (*PlatformConfig, error) {
-	// 使用默认主键 "id"
 	return q.Order(platformconfig.ByID(sql.OrderDesc())).First(ctx)
 }
 
@@ -230,7 +220,6 @@ func (q *WebhookQuery) Take(ctx context.Context) (*Webhook, error) {
 // 行为与 GORM 的 Last(ctx) 一致。
 // 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
 func (q *WebhookQuery) Last(ctx context.Context) (*Webhook, error) {
-	// 使用默认主键 "id"
 	return q.Order(webhook.ByID(sql.OrderDesc())).First(ctx)
 }
 
@@ -250,7 +239,6 @@ func (q *WebhookSubscriptionQuery) Take(ctx context.Context) (*WebhookSubscripti
 // 行为与 GORM 的 Last(ctx) 一致。
 // 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
 func (q *WebhookSubscriptionQuery) Last(ctx context.Context) (*WebhookSubscription, error) {
-	// 使用默认主键 "id"
 	return q.Order(webhooksubscription.ByID(sql.OrderDesc())).First(ctx)
 }
 

@@ -39,7 +39,7 @@ func (s *DomainMonitorService) StartJob(ctx context.Context) (err error) {
 			30*time.Second, // 最小间隔
 			60*time.Second, // 最大间隔
 		),
-		gocron.NewTask(s.checkAndRunAllMonitors),             // 执行任务
+		gocron.NewTask(s.CheckAndRunAllMonitors),             // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName("域名监控任务"),                            // 任务名称
@@ -51,8 +51,8 @@ func (s *DomainMonitorService) StartJob(ctx context.Context) (err error) {
 	return nil
 }
 
-// ，负责查找并执行到期的监控任务
-func (s *DomainMonitorService) checkAndRunAllMonitors() {
+// CheckAndRunAllMonitors 查找并执行到期的监控任务
+func (s *DomainMonitorService) CheckAndRunAllMonitors() {
 
 	var err error
 	ctx := context.Background()
@@ -97,13 +97,13 @@ func (s *DomainMonitorService) checkAndRunAllMonitors() {
 		// 如果已超过或等于下次运行时间，则执行任务
 		if now.After(nextRun) || now.Equal(nextRun) {
 			// 异步执行任务，避免阻塞主调度任务
-			go s.executeMonitorTask(context.Background(), newLog, monitor)
+			go s.ExecuteMonitorTask(context.Background(), newLog, monitor)
 		}
 	}
 }
 
-// 负责执行单个监控任务
-func (s *DomainMonitorService) executeMonitorTask(ctx context.Context, newLog *slog.Logger, monitor *ent.DomainMonitor) {
+// ExecuteMonitorTask 执行单个监控任务
+func (s *DomainMonitorService) ExecuteMonitorTask(ctx context.Context, newLog *slog.Logger, monitor *ent.DomainMonitor) (err error) {
 
 	newLog.InfoContext(ctx, "开始执行检查")
 	defer newLog.InfoContext(ctx, "检查完成")
@@ -117,7 +117,7 @@ func (s *DomainMonitorService) executeMonitorTask(ctx context.Context, newLog *s
 		newLog.ErrorContext(ctx, "开始 事务 失败",
 			slog.Any("err", err),
 		)
-		return
+		return err
 	}
 
 	// 历史记录创建
@@ -131,7 +131,7 @@ func (s *DomainMonitorService) executeMonitorTask(ctx context.Context, newLog *s
 		SetErrorLog(result.ErrorLog)
 
 	// 填充 SSL 字段
-	if monitor.CheckProtocol.String() == "https" && result.SSLExpiryDate.After(time.Time{}) {
+	if monitor.CheckProtocol == domainmonitor.CheckProtocolHTTPS && result.SSLExpiryDate.After(time.Time{}) {
 		historyCreator.SetSslExpiryDate(result.SSLExpiryDate).
 			SetSslCommonName(result.SSLCommonName).
 			SetSslIssuerName(result.SSLIssuerName).
@@ -146,10 +146,10 @@ func (s *DomainMonitorService) executeMonitorTask(ctx context.Context, newLog *s
 		newLog.ErrorContext(ctx, "保存历史记录失败",
 			slog.Any("err", err),
 		)
-		return
+		return err
 	}
 
-	// 3. 更新主表 (DomainMonitor) 的状态
+	// 更新状态
 	updater := tx.DomainMonitor.UpdateOne(monitor).
 		SetCurrentStatus(domainmonitor.CurrentStatus(s.getCurrentStatus(result.IsSuccess))) // 假设您有状态转换逻辑
 
@@ -159,24 +159,19 @@ func (s *DomainMonitorService) executeMonitorTask(ctx context.Context, newLog *s
 		updater.SetLastFailureAt(time.Now())
 	}
 
-	_, err = updater.Save(ctx)
+	err = updater.Exec(ctx)
 	if err != nil {
 		tx.Rollback()
 		newLog.ErrorContext(ctx, "更新状态失败",
 			slog.Any("err", err),
 		)
-		return
+		return err
 	}
 
 	// 提交事务
-	if err := tx.Commit(); err != nil {
-		newLog.ErrorContext(ctx, "提交事务失败",
-			slog.Any("err", err),
-		)
-		return
-	}
+	_ = tx.Commit()
 
-	// TODO: 在这里添加通知逻辑（如果需要，例如状态变更或 SSL 即将过期）
+	return nil
 }
 
 // 辅助函数：根据检查结果获取 DomainMonitorStatus

@@ -318,12 +318,13 @@ func main() {
 		// 域名监控相关API
 		domainMonitors := api.Group("/domain-monitors")
 		{
-			domainMonitors.GET("", handlers.GetDomainMonitors)
-			domainMonitors.GET("/:id", handlers.GetDomainMonitor)
-			domainMonitors.POST("", handlers.CreateDomainMonitor)
-			domainMonitors.PATCH("/:id", handlers.UpdateDomainMonitor)
-			domainMonitors.PATCH("/:id/active", handlers.UpdateDomainMonitorActive)
-			domainMonitors.DELETE("/:id", handlers.DeleteDomainMonitor)
+			domainMonitors.GET("", handlers.GetDomainMonitors)                      // 获取所有域名监控
+			domainMonitors.GET("/:id", handlers.GetDomainMonitor)                   // 获取域名监控详情
+			domainMonitors.POST("", handlers.CreateDomainMonitor)                   // 创建域名监控
+			domainMonitors.PATCH("/:id", handlers.UpdateDomainMonitor)              // 更新域名监控
+			domainMonitors.PATCH("/:id/active", handlers.UpdateDomainMonitorActive) // 更新域名监控状态
+			domainMonitors.DELETE("/:id", handlers.DeleteDomainMonitor)             // 删除域名监控
+			domainMonitors.POST("/:id/check", handlers.CheckDomainMonitor)          // 检查域名监控
 		}
 
 		// 通知相关API

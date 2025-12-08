@@ -46,7 +46,9 @@
             {{ template "icons" (dict "Name" "ip-monitor") }} 实时状态概览
         </h2>
         <div class="card-actions">
-            <button class="btn btn-sm btn-outline-warning" onclick="onCheckMonitor('{{$item.ID}}', '{{$item.Domain}}')">
+            <button class="btn btn-sm btn-outline-warning" onclick="apiPost('{{$apiUrlPath}}/check', {},{
+                reload: true
+            })">
                 {{ template "icons" (dict "Name" "ip-refresh") }} 立即检查
             </button>
             <button class="btn btn-primary" onclick="openFormModal('{{$item.ID}}')">
@@ -72,7 +74,11 @@
             </div>
             <div class="detail-item">
                 <strong>启用状态:</strong> 
-                {{ template "switch" (dict "Checked" $item.IsActive "URL" (join $apiUrlPath "/active")) }}
+                {{ template "switch" (dict 
+                    "Checked" $item.IsActive 
+                    "URL" (join $apiUrlPath "/active")
+                    "NoReload" true
+                ) }}
             </div>
             <div class="detail-item">
                 <strong>最后成功:</strong> 
