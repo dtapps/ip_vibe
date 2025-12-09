@@ -15,8 +15,10 @@ branch:
             description: 请选择Go代理
             required: true
             type: select
-            default: https://goproxy.cn,direct
+            default: https://mirrors.cloud.tencent.com/go,direct
             options:
+              - name: 腾讯云
+                value: https://mirrors.cloud.tencent.com/go,direct
               - name: 七牛云
                 value: https://goproxy.cn,direct
               - name: 全国
@@ -44,8 +46,10 @@ branch:
             description: 请选择Go代理
             required: true
             type: select
-            default: https://goproxy.cn,direct
+            default: https://mirrors.cloud.tencent.com/go,direct
             options:
+              - name: 腾讯云
+                value: https://mirrors.cloud.tencent.com/go,direct
               - name: 七牛云
                 value: https://goproxy.cn,direct
               - name: 全国
