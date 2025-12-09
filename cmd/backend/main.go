@@ -51,10 +51,10 @@ func init() {
 }
 
 // @title			IPVibe
-// @version		1.0
+// @version		dev
 // @description	IPVibe
-// @host		localhost:9999
-// @BasePath	/api/
+// @host			localhost:9999
+// @BasePath		/api/
 func main() {
 
 	ctx := context.Background()
@@ -132,6 +132,8 @@ func main() {
 	// 配置 Swagger 路由
 	// https://github.com/swaggo/swag/blob/v2/README.md
 	// https://github.com/swaggo/swag/issues/1588#issuecomment-3360487197
+	docs_2.SwaggerInfo.Version = global.GvaVersion
+	docs_3.SwaggerInfo.Version = global.GvaVersion
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/docs_2/doc.json")))
 	router.GET("/docs_2/doc.json", func(ctx *gin.Context) {
 		ctx.Writer.Header().Set("Content-Type", "application/json")

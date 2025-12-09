@@ -373,17 +373,9 @@ externalDocs:
   description: ""
   url: ""
 info:
-  contact:
-    email: support@swagger.io
-    name: API Support
-    url: http://www.swagger.io/support
   description: IPVibe
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
   title: IPVibe
-  version: "1.0"
+  version: dev
 openapi: 3.1.0
 paths:
   /cdn-records:
@@ -863,4 +855,3 @@ paths:
       - 通知
 servers:
 - url: localhost:9999/api/
-- url: https://petstore.swagger.io/v2
