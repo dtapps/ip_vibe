@@ -17,6 +17,14 @@ import (
 )
 
 // 获取全部端口转发
+//
+//	@Summary	获取全部端口转发
+//	@Tags		端口转发
+//	@Accept application/json
+//	@Produce application/json
+//	@Success	200	{object}	APIResponse{Data=[]types.GetPortForwardResponse}
+//	@Failure	404	{object}	APIResponse
+//	@Router		/port-forwards [get]
 func GetPortForwards(c *gin.Context) {
 	portForwards := make([]types.GetPortForwardResponse, 0)
 	// 查询全部端口转发

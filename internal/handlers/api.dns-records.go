@@ -19,6 +19,14 @@ import (
 )
 
 // 获取全部DNS记录
+//
+//	@Summary	获取全部DNS记录
+//	@Tags		DNS记录
+//	@Accept application/json
+//	@Produce application/json
+//	@Success	200	{object}	APIResponse{Data=[]types.GetDnsRecordResponse}
+//	@Failure	404	{object}	APIResponse
+//	@Router		/dns-records [get]
 func GetDnsRecords(c *gin.Context) {
 	records := make([]types.GetDnsRecordResponse, 0)
 	// 查询全部DNS记录

@@ -17,8 +17,30 @@ ent_new_log:
 	ent new RestyLog --target ./internal/ent_log/schema
 	ent new OperationLog --target ./internal/ent_log/schema
 
-swag:
-	swag init -g cmd/$(BINARY_NAME_BACKEND)/main.go -o internal/docs
+swag_v1_install:
+	go install github.com/swaggo/swag/cmd/swag@latest
+
+swag_v1_init:
+	swag -version
+	swag init -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal --generatedTime -output internal/docs_2
+
+swag_v1_fmt:
+	swag -version
+	swag fmt -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go
+
+swag_v2_install:
+	go install github.com/swaggo/swag/v2/cmd/swag@latest
+
+swag_v2_init:
+	swag_v2 -version 
+	swag_v2 init -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal --generatedTime --v3.1 -output internal/docs_3
+
+swag_v2_fmt:
+	swag_v2 -version
+	swag_v2 fmt -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go
+
+swag2op:
+	swag2op init -g cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal -o internal/docs_2 -openapiOutputDir internal/docs_3
 
 # 二进制文件名
 BINARY_NAME=ip_vibe

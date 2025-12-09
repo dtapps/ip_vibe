@@ -15,12 +15,14 @@ import (
 )
 
 // 获取全部配置
-// @Summary 获取全部配置
-// @Tags 配置
-// @Produce json
-// @Success 200 {object} APIResponse{Data=[]types.GetConfigResponse}
-// @Failure	404 {object} APIResponse
-// @Router /configs [get]
+//
+//	@Summary	获取全部配置
+//	@Tags		配置
+//	@Accept application/json
+//	@Produce application/json
+//	@Success	200	{object}	APIResponse{Data=[]types.GetConfigResponse}
+//	@Failure	404	{object}	APIResponse
+//	@Router		/configs [get]
 func GetConfigs(c *gin.Context) {
 	configs := make([]types.GetConfigResponse, 0)
 	// 查询全部配置

@@ -14,7 +14,8 @@ import (
 	"strings"
 	"time"
 	"vibe_ip/internal/backend"
-	_ "vibe_ip/internal/docs_2"
+	"vibe_ip/internal/docs_2"
+	"vibe_ip/internal/docs_3"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/initialize"
@@ -49,20 +50,22 @@ func init() {
 	global.GvaArch = runtime.GOARCH
 }
 
-// @title IPVibe
-// @version 1.0
-// @description     IPVibe
-// @termsOfService  http://swagger.io/terms/
+//	@title			IPVibe
+//	@version		1.0
+//	@description	IPVibe
+//	@termsOfService	http://swagger.io/terms/
 
-// @contact.name   API Support
-// @contact.url    http://www.swagger.io/support
-// @contact.email  support@swagger.io
+//	@contact.name	API Support
+//	@contact.url	http://www.swagger.io/support
+//	@contact.email	support@swagger.io
 
-// @license.name  Apache 2.0
-// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host localhost:9999
-// @BasePath /api/
+// @host		localhost:9999
+// @BasePath	/api/
+
+// @servers.url		https://petstore.swagger.io/v2
 func main() {
 
 	ctx := context.Background()
@@ -138,7 +141,19 @@ func main() {
 	})
 
 	// 配置 Swagger 路由
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// https://github.com/swaggo/swag/blob/v2/README.md
+	// https://github.com/swaggo/swag/issues/1588#issuecomment-3360487197
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/docs_2/doc.json")))
+	router.GET("/docs_2/doc.json", func(ctx *gin.Context) {
+		ctx.Writer.Header().Set("Content-Type", "application/json")
+		ctx.Writer.WriteHeader(200)
+		ctx.Writer.Write([]byte(docs_2.SwaggerInfo.ReadDoc()))
+	})
+	router.GET("/docs_3/doc.json", func(ctx *gin.Context) {
+		ctx.Writer.Header().Set("Content-Type", "application/json")
+		ctx.Writer.WriteHeader(200)
+		ctx.Writer.Write([]byte(docs_3.SwaggerInfo.ReadDoc()))
+	})
 
 	// 配置BasicAuth中间件
 	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {

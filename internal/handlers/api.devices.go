@@ -20,6 +20,14 @@ import (
 )
 
 // 获取全部设备
+//
+//	@Summary	获取全部设备
+//	@Tags		设备
+//	@Accept application/json
+//	@Produce application/json
+//	@Success	200	{object}	APIResponse{Data=[]types.GetDeviceResponse}
+//	@Failure	404	{object}	APIResponse
+//	@Router		/devices [get]
 func GetDevices(c *gin.Context) {
 	devices := make([]types.GetDeviceResponse, 0)
 	// 查询全部设备

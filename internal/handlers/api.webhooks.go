@@ -15,6 +15,14 @@ import (
 )
 
 // 获取全部通知
+//
+//	@Summary	获取全部通知
+//	@Tags		通知
+//	@Accept application/json
+//	@Produce application/json
+//	@Success	200	{object}	APIResponse{Data=[]types.GetWebhookResponse}
+//	@Failure	404	{object}	APIResponse
+//	@Router		/webhooks [get]
 func GetWebhooks(c *gin.Context) {
 	webhooks := make([]types.GetWebhookResponse, 0)
 	// 查询全部通知

@@ -18,6 +18,14 @@ import (
 )
 
 // 获取全部通知订阅
+//
+//	@Summary	获取全部通知订阅
+//	@Tags		通知订阅
+//	@Accept application/json
+//	@Produce application/json
+//	@Success	200	{object}	APIResponse{Data=[]types.GetWebhookSubResponse}
+//	@Failure	404	{object}	APIResponse
+//	@Router		/webhook-subs [get]
 func GetWebhookSubs(c *gin.Context) {
 	webhooks := make([]types.GetWebhookSubResponse, 0)
 	// 查询全部通知订阅

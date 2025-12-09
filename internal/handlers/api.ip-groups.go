@@ -19,6 +19,14 @@ import (
 )
 
 // 获取全部IP组
+//
+//	@Summary	获取全部IP组
+//	@Tags		IP组
+//	@Accept application/json
+//	@Produce application/json
+//	@Success	200	{object}	APIResponse{Data=[]types.GetIPGroupResponse}
+//	@Failure	404	{object}	APIResponse
+//	@Router		/ip-groups [get]
 func GetIPGroups(c *gin.Context) {
 	ipGroups := make([]types.GetIPGroupResponse, 0)
 	// 查询全部IP组

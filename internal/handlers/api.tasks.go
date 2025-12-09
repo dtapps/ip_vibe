@@ -14,6 +14,14 @@ import (
 )
 
 // 获取全部任务
+//
+//	@Summary	获取全部任务
+//	@Tags		任务
+//	@Accept application/json
+//	@Produce application/json
+//	@Success	200	{object}	APIResponse{Data=[]gocron_helper.JobData}
+//	@Failure	404	{object}	APIResponse
+//	@Router		/tasks [get]
 func GetTasks(c *gin.Context) {
 	// 任务助手
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)

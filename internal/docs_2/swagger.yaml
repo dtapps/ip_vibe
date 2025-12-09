@@ -8,6 +8,86 @@ definitions:
       message:
         type: string
     type: object
+  vibe_ip_internal_helper_gocron_helper.JobData:
+    properties:
+      id:
+        description: 任务序号
+        type: string
+      last_run:
+        description: 上次运行时间
+        type: string
+      name:
+        description: 任务名称
+        type: string
+      next_run:
+        description: 下次运行时间
+        type: string
+      next_runs:
+        description: 下次运行时间列表
+        items:
+          type: string
+        type: array
+      schedule:
+        description: 任务调度表达式
+        type: string
+      schedule_detail:
+        description: 任务调度表达式详情
+        type: string
+      tags:
+        description: 任务标签
+        items:
+          type: string
+        type: array
+    type: object
+  vibe_ip_internal_types.GetCdnRecordResponse:
+    properties:
+      cdn_domain:
+        description: CDN 边缘域名（平台提供）
+        type: string
+      config_id:
+        description: 平台配置序号
+        type: integer
+      domain:
+        description: 域名（如 www.example.com）
+        type: string
+      http_port:
+        description: HTTP 回源端口
+        type: integer
+      https_port:
+        description: HTTPS 回源端口
+        type: integer
+      id:
+        description: CDN 记录序号
+        type: integer
+      ip_group_id:
+        description: IP 组序号
+        type: integer
+      ip_group_name:
+        description: IP 组名称
+        type: string
+      is_active:
+        description: 是否活跃
+        type: boolean
+      last_refresh_at:
+        description: 最后一次刷新成功时间
+        type: string
+      origin_protocol:
+        description: 回源协议（http、https、follow）
+        type: string
+      platform:
+        description: 平台平台名称
+        type: string
+      record_id:
+        description: 平台侧记录 ID
+      type:
+        description: 记录类型（A、AAAA等）
+        type: string
+      webhooks:
+        description: 关联的 Webhook 列表
+        items:
+          type: integer
+        type: array
+    type: object
   vibe_ip_internal_types.GetConfigResponse:
     properties:
       capability:
@@ -31,6 +111,244 @@ definitions:
         description: 配置平台
         type: string
     type: object
+  vibe_ip_internal_types.GetDeviceResponse:
+    properties:
+      code:
+        description: 设备编号
+        type: string
+      description:
+        description: 设备描述
+        type: string
+      id:
+        description: 设备序号
+        type: integer
+      ip_v4:
+        description: IP地址V4
+        type: string
+      ip_v6:
+        description: IP地址V6
+        type: string
+      last_heartbeat_at:
+        description: 最后心跳时间
+        type: string
+      last_reported_at:
+        description: 最后上报时间
+        type: string
+      name:
+        description: 设备名称
+        type: string
+      webhooks:
+        description: 关联的 Webhook 列表
+        items:
+          type: integer
+        type: array
+    type: object
+  vibe_ip_internal_types.GetDnsRecordResponse:
+    properties:
+      cdn_record_cdn_domain:
+        description: CDN 记录域名（如 cdn.example.com）
+        type: string
+      cdn_record_id:
+        description: CDN 记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）
+        type: integer
+      config_id:
+        description: 平台配置序号
+        type: integer
+      domain:
+        description: 域名（如 www.example.com）
+        type: string
+      id:
+        description: DNS 记录序号
+        type: integer
+      ip_group_id:
+        description: IP 组序号（与 cdn_record_id 二选一）
+        type: integer
+      ip_group_name:
+        description: IP 组名称
+        type: string
+      is_active:
+        description: 是否活跃
+        type: boolean
+      last_refresh_at:
+        description: 最后一次刷新成功时间
+        type: string
+      platform:
+        description: 平台平台名称
+        type: string
+      record_id:
+        description: 平台侧记录 ID
+      type:
+        description: 记录类型（A、AAAA、CNAME等）
+        type: string
+      webhooks:
+        description: 关联的 Webhook 列表
+        items:
+          type: integer
+        type: array
+    type: object
+  vibe_ip_internal_types.GetDomainMonitorResponse:
+    properties:
+      check_interval:
+        description: 检查间隔（秒）
+        type: integer
+      check_protocol:
+        description: 检查类型（HTTP/HTTPS）
+        type: string
+      current_status:
+        description: 当前运行状态
+        type: string
+      domain:
+        description: 域名
+        type: string
+      id:
+        description: 域名监控记录序号
+        type: integer
+      is_active:
+        description: 是否活跃
+        type: boolean
+      last_failure_at:
+        description: 最后一次检查失败时间
+        type: string
+      last_success_at:
+        description: 最后一次检查成功时间
+        type: string
+      name:
+        description: 名称
+        type: string
+      webhooks:
+        description: 关联的 Webhook 列表
+        items:
+          type: integer
+        type: array
+    type: object
+  vibe_ip_internal_types.GetIPGroupResponse:
+    properties:
+      description:
+        description: IP组描述
+        type: string
+      device_count:
+        description: 设备数
+        type: integer
+      devices:
+        description: 设备列表
+        items:
+          type: integer
+        type: array
+      id:
+        description: IP组序号
+        type: integer
+      name:
+        description: IP组名称
+        type: string
+      webhooks:
+        description: 关联的 Webhook 列表
+        items:
+          type: integer
+        type: array
+    type: object
+  vibe_ip_internal_types.GetPortForwardResponse:
+    properties:
+      auto_forward:
+        description: 防火墙自动放行
+        type: boolean
+      description:
+        description: 设备端口转发描述
+        type: string
+      device_id:
+        description: 设备ID
+        type: integer
+      device_name:
+        description: 设备名称
+        type: string
+      id:
+        description: 设备端口转发序号
+        type: integer
+      is_active:
+        description: 是否活跃
+        type: boolean
+      local_port:
+        description: 本地监听端口
+        type: integer
+      name:
+        description: 设备端口转发名称
+        type: string
+      protocols:
+        description: 协议列表，支持 tcp4, tcp6, udp4, udp6
+        items:
+          type: string
+        type: array
+      remote_host:
+        description: 远程目标地址
+        type: string
+      remote_port:
+        description: 远程目标端口
+        type: integer
+    type: object
+  vibe_ip_internal_types.GetWebhookResponse:
+    properties:
+      description:
+        description: 通知描述
+        type: string
+      events:
+        description: 订阅的事件类型列表
+        items:
+          type: string
+        type: array
+      id:
+        description: 通知序号
+        type: integer
+      is_active:
+        description: 是否启用
+        type: boolean
+      name:
+        description: 通知名称
+        type: string
+      platform:
+        description: 通知平台类型
+        type: string
+      secret:
+        description: Webhook 签名密钥或额外Token
+        type: string
+      template_content:
+        description: 通知内容 Go Template
+        type: string
+      template_title:
+        description: 通知标题 Go Template
+        type: string
+      url:
+        description: Webhook URL
+        type: string
+    type: object
+  vibe_ip_internal_types.GetWebhookSubResponse:
+    properties:
+      description:
+        description: 通知订阅描述
+        type: string
+      id:
+        description: 通知订阅序号
+        type: integer
+      is_active:
+        description: 是否启用
+        type: boolean
+      name:
+        description: 通知订阅名称
+        type: string
+      obj_id:
+        description: 订阅对象主键
+        type: integer
+      obj_name:
+        description: 订阅对象名称
+        type: string
+      obj_type:
+        description: 订阅对象类型
+        type: string
+      webhook_id:
+        description: 通知序号
+        type: integer
+      webhook_name:
+        description: 通知渠道名称
+        type: string
+    type: object
 host: localhost:9999
 info:
   contact:
@@ -45,8 +363,35 @@ info:
   title: IPVibe
   version: "1.0"
 paths:
+  /cdn-records:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                Data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetCdnRecordResponse'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取全部CDN记录
+      tags:
+      - CDN记录
   /configs:
     get:
+      consumes:
+      - application/json
       produces:
       - application/json
       responses:
@@ -68,4 +413,204 @@ paths:
       summary: 获取全部配置
       tags:
       - 配置
+  /devices:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                Data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetDeviceResponse'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取全部设备
+      tags:
+      - 设备
+  /dns-records:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                Data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetDnsRecordResponse'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取全部DNS记录
+      tags:
+      - DNS记录
+  /domain-monitors:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                Data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetDomainMonitorResponse'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取全部域名监控
+      tags:
+      - 域名监控
+  /ip-groups:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                Data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetIPGroupResponse'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取全部IP组
+      tags:
+      - IP组
+  /port-forwards:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                Data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetPortForwardResponse'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取全部端口转发
+      tags:
+      - 端口转发
+  /tasks:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                Data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_helper_gocron_helper.JobData'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取全部任务
+      tags:
+      - 任务
+  /webhook-subs:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                Data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetWebhookSubResponse'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取全部通知订阅
+      tags:
+      - 通知订阅
+  /webhooks:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                Data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetWebhookResponse'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取全部通知
+      tags:
+      - 通知
 swagger: "2.0"

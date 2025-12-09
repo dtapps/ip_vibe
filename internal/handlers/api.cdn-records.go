@@ -19,6 +19,14 @@ import (
 )
 
 // 获取全部CDN记录
+//
+//	@Summary	获取全部CDN记录
+//	@Tags		CDN记录
+//	@Accept application/json
+//	@Produce application/json
+//	@Success	200	{object}	APIResponse{Data=[]types.GetCdnRecordResponse}
+//	@Failure	404	{object}	APIResponse
+//	@Router		/cdn-records [get]
 func GetCdnRecords(c *gin.Context) {
 	records := make([]types.GetCdnRecordResponse, 0)
 	// 查询全部CDN记录
