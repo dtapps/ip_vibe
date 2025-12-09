@@ -18,8 +18,8 @@ import (
 //
 //	@Summary	获取全部配置
 //	@Tags		配置
-//	@Accept application/json
-//	@Produce application/json
+//	@Accept		application/json
+//	@Produce	application/json
 //	@Success	200	{object}	APIResponse{Data=[]types.GetConfigResponse}
 //	@Failure	404	{object}	APIResponse
 //	@Router		/configs [get]

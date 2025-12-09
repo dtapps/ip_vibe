@@ -22,8 +22,8 @@ import (
 //
 //	@Summary	获取全部DNS记录
 //	@Tags		DNS记录
-//	@Accept application/json
-//	@Produce application/json
+//	@Accept		application/json
+//	@Produce	application/json
 //	@Success	200	{object}	APIResponse{Data=[]types.GetDnsRecordResponse}
 //	@Failure	404	{object}	APIResponse
 //	@Router		/dns-records [get]

@@ -50,22 +50,11 @@ func init() {
 	global.GvaArch = runtime.GOARCH
 }
 
-//	@title			IPVibe
-//	@version		1.0
-//	@description	IPVibe
-//	@termsOfService	http://swagger.io/terms/
-
-//	@contact.name	API Support
-//	@contact.url	http://www.swagger.io/support
-//	@contact.email	support@swagger.io
-
-//	@license.name	Apache 2.0
-//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
-
+// @title			IPVibe
+// @version		1.0
+// @description	IPVibe
 // @host		localhost:9999
 // @BasePath	/api/
-
-// @servers.url		https://petstore.swagger.io/v2
 func main() {
 
 	ctx := context.Background()

@@ -21,8 +21,8 @@ import (
 //
 //	@Summary	获取全部通知订阅
 //	@Tags		通知订阅
-//	@Accept application/json
-//	@Produce application/json
+//	@Accept		application/json
+//	@Produce	application/json
 //	@Success	200	{object}	APIResponse{Data=[]types.GetWebhookSubResponse}
 //	@Failure	404	{object}	APIResponse
 //	@Router		/webhook-subs [get]

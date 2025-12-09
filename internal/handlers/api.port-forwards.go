@@ -20,8 +20,8 @@ import (
 //
 //	@Summary	获取全部端口转发
 //	@Tags		端口转发
-//	@Accept application/json
-//	@Produce application/json
+//	@Accept		application/json
+//	@Produce	application/json
 //	@Success	200	{object}	APIResponse{Data=[]types.GetPortForwardResponse}
 //	@Failure	404	{object}	APIResponse
 //	@Router		/port-forwards [get]

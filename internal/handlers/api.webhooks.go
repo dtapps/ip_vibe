@@ -18,8 +18,8 @@ import (
 //
 //	@Summary	获取全部通知
 //	@Tags		通知
-//	@Accept application/json
-//	@Produce application/json
+//	@Accept		application/json
+//	@Produce	application/json
 //	@Success	200	{object}	APIResponse{Data=[]types.GetWebhookResponse}
 //	@Failure	404	{object}	APIResponse
 //	@Router		/webhooks [get]

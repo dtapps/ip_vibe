@@ -22,8 +22,8 @@ import (
 //
 //	@Summary	获取全部域名监控
 //	@Tags		域名监控
-//	@Accept application/json
-//	@Produce application/json
+//	@Accept		application/json
+//	@Produce	application/json
 //	@Success	200	{object}	APIResponse{Data=[]types.GetDomainMonitorResponse}
 //	@Failure	404	{object}	APIResponse
 //	@Router		/domain-monitors [get]

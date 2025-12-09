@@ -23,8 +23,8 @@ import (
 //
 //	@Summary	获取全部设备
 //	@Tags		设备
-//	@Accept application/json
-//	@Produce application/json
+//	@Accept		application/json
+//	@Produce	application/json
 //	@Success	200	{object}	APIResponse{Data=[]types.GetDeviceResponse}
 //	@Failure	404	{object}	APIResponse
 //	@Router		/devices [get]
