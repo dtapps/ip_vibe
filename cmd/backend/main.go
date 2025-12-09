@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 	"vibe_ip/internal/backend"
-	_ "vibe_ip/internal/docs"
+	_ "vibe_ip/internal/docs_2"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/initialize"
@@ -51,9 +51,18 @@ func init() {
 
 // @title IPVibe
 // @version 1.0
+// @description     IPVibe
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
 // @host localhost:9999
-// @BasePath /
-// @schemes http
+// @BasePath /api/
 func main() {
 
 	ctx := context.Background()

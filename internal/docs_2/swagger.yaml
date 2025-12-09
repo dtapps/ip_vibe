@@ -1,0 +1,71 @@
+basePath: /api/
+definitions:
+  internal_handlers.APIResponse:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+  vibe_ip_internal_types.GetConfigResponse:
+    properties:
+      capability:
+        description: 平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）
+        type: string
+      config_json:
+        description: 配置平台密钥等敏感信息（JSON）
+        items:
+          type: integer
+        type: array
+      description:
+        description: 配置描述
+        type: string
+      id:
+        description: 配置序号
+        type: integer
+      name:
+        description: 配置名称
+        type: string
+      platform:
+        description: 配置平台
+        type: string
+    type: object
+host: localhost:9999
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: IPVibe
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: IPVibe
+  version: "1.0"
+paths:
+  /configs:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                Data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetConfigResponse'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取全部配置
+      tags:
+      - 配置
+swagger: "2.0"
