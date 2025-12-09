@@ -10,6 +10,16 @@ generate_ent:
 # 	ent generate --feature schema/snapshot,privacy,entql,namedges,bidiedges,sql/schemaconfig,sql/lock,sql/modifier,sql/execquery,sql/upsert ./ent/schema
 	ent generate --feature namedges,bidiedges,sql/modifier,sql/execquery,sql/upsert ./ent/schema
 
+ent_new:
+	ent new Device --target ./internal/ent/schema
+
+ent_new_log:
+	ent new RestyLog --target ./internal/ent_log/schema
+	ent new OperationLog --target ./internal/ent_log/schema
+
+swag:
+	swag init -g cmd/$(BINARY_NAME_BACKEND)/main.go -o internal/docs
+
 # 二进制文件名
 BINARY_NAME=ip_vibe
 # BINARY_NAME_CLI=cli

@@ -1,0 +1,20 @@
+basePath: /
+host: localhost:9999
+info:
+  contact: {}
+  title: IPVibe
+  version: "1.0"
+paths:
+  /api/configs:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: 获取全部配置
+      tags:
+      - 配置
+schemes:
+- http
+swagger: "2.0"

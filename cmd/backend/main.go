@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 	"vibe_ip/internal/backend"
+	_ "vibe_ip/internal/docs"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/initialize"
@@ -24,6 +25,8 @@ import (
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 //go:embed templates static
@@ -46,6 +49,11 @@ func init() {
 	global.GvaArch = runtime.GOARCH
 }
 
+// @title IPVibe
+// @version 1.0
+// @host localhost:9999
+// @BasePath /
+// @schemes http
 func main() {
 
 	ctx := context.Background()
@@ -119,6 +127,9 @@ func main() {
 			"status": "ok",
 		})
 	})
+
+	// 配置 Swagger 路由
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// 配置BasicAuth中间件
 	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
