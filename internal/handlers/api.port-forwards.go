@@ -18,17 +18,19 @@ import (
 
 // 获取全部端口转发
 //
-//	@Summary	获取全部端口转发
-//	@Tags		端口转发
-//	@Accept		application/json
-//	@Produce	application/json
-//	@Success	200	{object}	APIResponse{Data=[]types.GetPortForwardResponse}
-//	@Failure	404	{object}	APIResponse
-//	@Router		/port-forwards [get]
+//	@Description	获取全部端口转发
+//	@Summary		获取全部端口转发
+//	@Tags			端口转发
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Success		200	{object}	APIResponse{data=[]types.GetPortForwardResponse}	"成功响应"
+//	@Failure		404	{object}	APIResponse{}										"错误响应"
+//	@Router			/port-forwards [get]
 func GetPortForwards(c *gin.Context) {
 	portForwards := make([]types.GetPortForwardResponse, 0)
 	// 查询全部端口转发
 	allPortForward, err := global.GvaEntDb.DevicePortForward.Query().
+		WithDevice().
 		Order(ent.Desc(deviceportforward.FieldCreatedAt)).
 		All(c)
 	if err != nil {
@@ -54,6 +56,17 @@ func GetPortForwards(c *gin.Context) {
 }
 
 // 获取端口转发
+//
+//	@Description	获取端口转发
+//	@Summary		获取端口转发
+//	@Tags			端口转发
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64											true	"设备端口转发序号"
+//	@Success		200	{object}	APIResponse{data=types.GetPortForwardResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}									"参数响应"
+//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Router			/port-forwards/{id} [get]
 func GetPortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetPortForwardRequest
@@ -88,6 +101,18 @@ func GetPortForward(c *gin.Context) {
 }
 
 // 创建端口转发
+//
+//	@Description	创建端口转发
+//	@Summary		创建端口转发
+//	@Tags			端口转发
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.CreatePortForwardRequest					true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}									"参数响应"
+//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Failure		500		{object}	APIResponse{}									"服务错误响应"
+//	@Router			/port-forwards [post]
 func CreatePortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreatePortForwardRequest
@@ -115,12 +140,24 @@ func CreatePortForward(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataCreate(c, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "创建端口转发")
-	successResponse(c, gin.H{
-		"id": savePortForward.ID,
+	successResponse(c, types.GetPortForwardRequest{
+		ID: savePortForward.ID,
 	})
 }
 
 // 更新端口转发
+//
+//	@Description	更新端口转发
+//	@Summary		更新端口转发
+//	@Tags			端口转发
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64											true	"端口转发序号"
+//	@Param			request	body		types.UpdatePortForwardRequest					true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
+//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Failure		500		{object}	APIResponse{}									"服务错误响应"
+//	@Router			/port-forwards/{id} [patch]
 func UpdatePortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdatePortForwardRequest
@@ -157,12 +194,25 @@ func UpdatePortForward(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发")
-	successResponse(c, gin.H{
-		"id": savePortForward.ID,
+	successResponse(c, types.GetPortForwardRequest{
+		ID: savePortForward.ID,
 	})
 }
 
 // 更新端口转发防火墙状态
+//
+//	@Description	更新端口转发防火墙状态
+//	@Summary		更新端口转发防火墙状态
+//	@Tags			端口转发
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64											true	"端口转发序号"
+//	@Param			request	body		types.UpdatePortForwardForwardRequest			true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}									"参数响应"
+//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Failure		500		{object}	APIResponse{}									"服务错误响应"
+//	@Router			/port-forwards/{id}/forward [patch]
 func UpdatePortForwardForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdatePortForwardForwardRequest
@@ -193,12 +243,25 @@ func UpdatePortForwardForward(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发防火墙状态")
-	successResponse(c, gin.H{
-		"id": savePortForward.ID,
+	successResponse(c, types.GetPortForwardRequest{
+		ID: savePortForward.ID,
 	})
 }
 
 // 更新端口转发启用状态
+//
+//	@Description	更新端口转发启用状态
+//	@Summary		更新端口转发启用状态
+//	@Tags			端口转发
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64											true	"端口转发序号"
+//	@Param			request	body		types.UpdatePortForwardActiveRequest			true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}									"参数响应"
+//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Failure		500		{object}	APIResponse{}									"服务错误响应"
+//	@Router			/port-forwards/{id}/active [patch]
 func UpdatePortForwardActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdatePortForwardActiveRequest
@@ -229,12 +292,24 @@ func UpdatePortForwardActive(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发启用状态")
-	successResponse(c, gin.H{
-		"id": savePortForward.ID,
+	successResponse(c, types.GetPortForwardRequest{
+		ID: savePortForward.ID,
 	})
 }
 
 // 删除端口转发
+//
+//	@Description	删除端口转发
+//	@Summary		删除端口转发
+//	@Tags			端口转发
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64											true	"端口转发序号"
+//	@Success		200	{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}									"参数响应"
+//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Failure		500	{object}	APIResponse{}									"服务错误响应"
+//	@Router			/port-forwards/{id} [delete]
 func DeletePortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeletePortForwardRequest
@@ -263,12 +338,24 @@ func DeletePortForward(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstPortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "删除端口转发")
-	successResponse(c, gin.H{
-		"id": firstPortForward.ID,
+	successResponse(c, types.GetPortForwardRequest{
+		ID: firstPortForward.ID,
 	})
 }
 
 // 检查端口转发健康状态
+//
+//	@Description	检查端口转发健康状态
+//	@Summary		检查端口转发健康状态
+//	@Tags			端口转发
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"端口转发序号"
+//	@Success		200	{object}	APIResponse{data=[][]backend.ToPairsStruct}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Failure		500	{object}	APIResponse{}								"服务错误响应"
+//	@Router			/port-forwards/{id}/healthcheck [get]
 func HealthcheckPortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.HealthcheckPortForwardRequest

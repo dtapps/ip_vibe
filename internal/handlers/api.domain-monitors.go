@@ -20,13 +20,14 @@ import (
 
 // 获取全部域名监控
 //
-//	@Summary	获取全部域名监控
-//	@Tags		域名监控
-//	@Accept		application/json
-//	@Produce	application/json
-//	@Success	200	{object}	APIResponse{Data=[]types.GetDomainMonitorResponse}
-//	@Failure	404	{object}	APIResponse
-//	@Router		/domain-monitors [get]
+//	@Description	获取全部域名监控
+//	@Summary		获取全部域名监控
+//	@Tags			域名监控
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Success		200	{object}	APIResponse{data=[]types.GetDomainMonitorResponse}	"成功响应"
+//	@Failure		404	{object}	APIResponse{}										"错误响应"
+//	@Router			/domain-monitors [get]
 func GetDomainMonitors(c *gin.Context) {
 	domainMonitors := make([]types.GetDomainMonitorResponse, 0)
 	// 查询全部域名监控
@@ -63,6 +64,17 @@ func GetDomainMonitors(c *gin.Context) {
 }
 
 // 获取域名监控
+//
+//	@Description	获取域名监控
+//	@Summary		获取域名监控
+//	@Tags			域名监控
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64												true	"域名监控记录序号"
+//	@Success		200	{object}	APIResponse{data=types.GetDomainMonitorResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}										"参数响应"
+//	@Failure		404	{object}	APIResponse{}										"错误响应"
+//	@Router			/domain-monitors/{id} [get]
 func GetDomainMonitor(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetDomainMonitorRequest
@@ -103,6 +115,18 @@ func GetDomainMonitor(c *gin.Context) {
 }
 
 // 创建域名监控
+//
+//	@Description	创建域名监控
+//	@Summary		创建域名监控
+//	@Tags			域名监控
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.CreateDomainMonitorRequest				true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetDomainMonitorRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}									"参数响应"
+//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Failure		500		{object}	APIResponse{}									"服务错误响应"
+//	@Router			/domain-monitors [post]
 func CreateDomainMonitor(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateDomainMonitorRequest
@@ -131,12 +155,24 @@ func CreateDomainMonitor(c *gin.Context) {
 	// 创建通知订阅
 	_ = webhook_sub_helper.Create(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
 
-	successResponse(c, gin.H{
-		"id": saveDomainMonitor.ID,
+	successResponse(c, types.GetDomainMonitorRequest{
+		ID: saveDomainMonitor.ID,
 	})
 }
 
 // 更新域名监控
+//
+//	@Description	更新域名监控
+//	@Summary		更新域名监控
+//	@Tags			域名监控
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64											true	"域名监控序号"
+//	@Param			request	body		types.UpdateDomainMonitorRequest				true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetDomainMonitorRequest}	"成功响应"
+//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Failure		500		{object}	APIResponse{}									"服务错误响应"
+//	@Router			/domain-monitors/{id} [patch]
 func UpdateDomainMonitor(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateDomainMonitorRequest
@@ -172,12 +208,25 @@ func UpdateDomainMonitor(c *gin.Context) {
 	// 更新通知订阅
 	_ = webhook_sub_helper.Update(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
 
-	successResponse(c, gin.H{
-		"id": saveDomainMonitor.ID,
+	successResponse(c, types.GetDomainMonitorRequest{
+		ID: saveDomainMonitor.ID,
 	})
 }
 
 // 更新域名监控启用状态
+//
+//	@Description	更新域名监控启用状态
+//	@Summary		更新域名监控启用状态
+//	@Tags			域名监控
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64											true	"域名监控序号"
+//	@Param			request	body		types.UpdateDomainMonitorActiveRequest			true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetDomainMonitorRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}									"参数响应"
+//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Failure		500		{object}	APIResponse{}									"服务错误响应"
+//	@Router			/domain-monitors/{id}/active [patch]
 func UpdateDomainMonitorActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateDomainMonitorActiveRequest
@@ -212,12 +261,24 @@ func UpdateDomainMonitorActive(c *gin.Context) {
 	// 删除通知订阅
 	_ = webhook_sub_helper.Delete(c, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
 
-	successResponse(c, gin.H{
-		"id": saveDomainMonitor.ID,
+	successResponse(c, types.GetDomainMonitorRequest{
+		ID: saveDomainMonitor.ID,
 	})
 }
 
 // 删除域名监控
+//
+//	@Description	删除域名监控
+//	@Summary		删除域名监控
+//	@Tags			域名监控
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64											true	"域名监控序号"
+//	@Success		200	{object}	APIResponse{data=types.GetDomainMonitorRequest}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}									"参数响应"
+//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Failure		500	{object}	APIResponse{}									"服务错误响应"
+//	@Router			/domain-monitors/{id} [delete]
 func DeleteDomainMonitor(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteDomainMonitorRequest
@@ -246,12 +307,24 @@ func DeleteDomainMonitor(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "删除域名监控")
-	successResponse(c, gin.H{
-		"id": firstDomainMonitor.ID,
+	successResponse(c, types.GetDomainMonitorRequest{
+		ID: firstDomainMonitor.ID,
 	})
 }
 
 // 检查域名监控
+//
+//	@Description	检查域名监控健康状态
+//	@Summary		检查域名监控健康状态
+//	@Tags			域名监控
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64											true	"域名监控序号"
+//	@Success		200	{object}	APIResponse{data=types.GetDomainMonitorRequest}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}									"参数响应"
+//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Failure		500	{object}	APIResponse{}									"服务错误响应"
+//	@Router			/domain-monitors/{id}/check [get]
 func CheckDomainMonitor(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CheckDomainMonitorRequest
@@ -283,7 +356,7 @@ func CheckDomainMonitor(c *gin.Context) {
 		errorResponse(c, http.StatusInternalServerError, "检查域名监控失败: "+err.Error())
 		return
 	}
-	successResponse(c, gin.H{
-		"id": firstDomainMonitor.ID,
+	successResponse(c, types.GetDomainMonitorRequest{
+		ID: firstDomainMonitor.ID,
 	})
 }

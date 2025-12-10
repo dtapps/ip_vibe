@@ -19,13 +19,14 @@ import (
 
 // 获取全部通知订阅
 //
-//	@Summary	获取全部通知订阅
-//	@Tags		通知订阅
-//	@Accept		application/json
-//	@Produce	application/json
-//	@Success	200	{object}	APIResponse{Data=[]types.GetWebhookSubResponse}
-//	@Failure	404	{object}	APIResponse
-//	@Router		/webhook-subs [get]
+//	@Description	获取全部通知订阅
+//	@Summary		获取全部通知订阅
+//	@Tags			通知订阅
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Success		200	{object}	APIResponse{data=[]types.GetWebhookSubResponse}	"成功响应"
+//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Router			/webhook-subs [get]
 func GetWebhookSubs(c *gin.Context) {
 	webhooks := make([]types.GetWebhookSubResponse, 0)
 	// 查询全部通知订阅
@@ -75,6 +76,17 @@ func GetWebhookSubs(c *gin.Context) {
 }
 
 // 获取通知订阅
+//
+//	@Description	获取通知订阅
+//	@Summary		获取通知订阅
+//	@Tags			通知订阅
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64											true	"通知订阅序号"
+//	@Success		200	{object}	APIResponse{data=types.GetWebhookSubResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}									"参数响应"
+//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Router			/webhook-subs/{id} [get]
 func GetWebhookSub(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetWebhookSubRequest
@@ -128,6 +140,18 @@ func GetWebhookSub(c *gin.Context) {
 }
 
 // 创建通知订阅
+//
+//	@Description	创建通知订阅
+//	@Summary		创建通知订阅
+//	@Tags			通知订阅
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.CreateWebhookSubRequest					true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetWebhookSubRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}									"参数响应"
+//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Failure		500		{object}	APIResponse{}									"服务错误响应"
+//	@Router			/webhook-subs [post]
 func CreateWebhookSub(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateWebhookSubRequest
@@ -161,6 +185,18 @@ func CreateWebhookSub(c *gin.Context) {
 }
 
 // 更新通知订阅
+//
+//	@Description	更新通知订阅
+//	@Summary		更新通知订阅
+//	@Tags			通知订阅
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64											true	"通知订阅序号"
+//	@Param			request	body		types.UpdateWebhookSubRequest					true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetWebhookSubRequest}	"成功响应"
+//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Failure		500		{object}	APIResponse{}									"服务错误响应"
+//	@Router			/webhook-subs/{id} [patch]
 func UpdateWebhookSub(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateWebhookSubRequest
@@ -192,12 +228,25 @@ func UpdateWebhookSub(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅")
-	successResponse(c, gin.H{
-		"id": saveWebhookSubscription.ID,
+	successResponse(c, types.GetWebhookSubRequest{
+		ID: saveWebhookSubscription.ID,
 	})
 }
 
-// 更新通知订阅状态
+// 更新通知订阅启用状态
+//
+//	@Description	更新通知订阅启用状态
+//	@Summary		更新通知订阅启用状态
+//	@Tags			通知订阅
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64											true	"通知订阅序号"
+//	@Param			request	body		types.UpdateWebhookSubActiveRequest				true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetWebhookSubRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}									"参数响应"
+//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Failure		500		{object}	APIResponse{}									"服务错误响应"
+//	@Router			/webhook-subs/{id}/active [patch]
 func UpdateWebhookSubActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateWebhookSubActiveRequest
@@ -228,12 +277,24 @@ func UpdateWebhookSubActive(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅状态")
-	successResponse(c, gin.H{
-		"id": saveWebhookSubscription.ID,
+	successResponse(c, types.GetWebhookSubRequest{
+		ID: saveWebhookSubscription.ID,
 	})
 }
 
 // 删除通知订阅
+//
+//	@Description	删除通知订阅
+//	@Summary		删除通知订阅
+//	@Tags			通知订阅
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64											true	"通知订阅序号"
+//	@Success		200	{object}	APIResponse{data=types.GetWebhookSubRequest}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}									"参数响应"
+//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Failure		500	{object}	APIResponse{}									"服务错误响应"
+//	@Router			/webhook-subs/{id} [delete]
 func DeleteWebhookSub(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteWebhookSubRequest
@@ -262,7 +323,7 @@ func DeleteWebhookSub(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "删除通知订阅")
-	successResponse(c, gin.H{
-		"id": firstWebhookSubscription.ID,
+	successResponse(c, types.GetWebhookSubRequest{
+		ID: firstWebhookSubscription.ID,
 	})
 }

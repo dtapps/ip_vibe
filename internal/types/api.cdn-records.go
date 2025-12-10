@@ -4,7 +4,7 @@ import "time"
 
 // 获取CDN记录 响应结构
 type GetCdnRecordResponse struct {
-	ID             int64     `json:"id,omitempty"`              // CDN 记录序号
+	ID             int64     `json:"id,omitempty"`              // CDN记录序号
 	ConfigID       int64     `json:"config_id"`                 // 平台配置序号
 	Platform       string    `json:"platform,omitempty"`        // 平台平台名称
 	RecordID       any       `json:"record_id,omitempty"`       // 平台侧记录 ID
@@ -25,7 +25,7 @@ type GetCdnRecordResponse struct {
 
 // 获取CDN记录 请求结构
 type GetCdnRecordRequest struct {
-	ID int64 `uri:"id" json:"-" binding:"required"` // CDN 记录序号
+	ID int64 `uri:"id" json:"-" binding:"required"` // CDN记录序号
 }
 
 // 创建CDN记录 请求结构

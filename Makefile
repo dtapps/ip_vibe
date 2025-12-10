@@ -20,23 +20,35 @@ ent_new_log:
 swag_v1_install:
 	go install github.com/swaggo/swag/cmd/swag@latest
 
-swag_v1_init:
+swag_v1:
+	make swag_v1_version
+	make swag_v1_fmt
+	make swag_v1_init
+
+swag_v1_version:
 	swag -version
+
+swag_v1_init:
 	swag init -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal --generatedTime -output internal/docs_2
 
 swag_v1_fmt:
-	swag -version
 	swag fmt -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go
 
 swag_v2_install:
 	go install github.com/swaggo/swag/v2/cmd/swag@latest
 
+swag_v2:
+	make swag_v2_version
+	make swag_v2_fmt
+	make swag_v2_init
+
+swag_v2_version:
+	swag_v2 -version
+
 swag_v2_init:
-	swag_v2 -version 
 	swag_v2 init -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal --generatedTime --v3.1 -output internal/docs_3
 
 swag_v2_fmt:
-	swag_v2 -version
 	swag_v2 fmt -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go
 
 swag2op:

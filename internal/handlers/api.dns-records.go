@@ -20,13 +20,14 @@ import (
 
 // 获取全部DNS记录
 //
-//	@Summary	获取全部DNS记录
-//	@Tags		DNS记录
-//	@Accept		application/json
-//	@Produce	application/json
-//	@Success	200	{object}	APIResponse{Data=[]types.GetDnsRecordResponse}
-//	@Failure	404	{object}	APIResponse
-//	@Router		/dns-records [get]
+//	@Description	获取全部DNS记录
+//	@Summary		获取全部DNS记录
+//	@Tags			DNS记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Success		200	{object}	APIResponse{data=[]types.GetDnsRecordResponse}	"成功响应"
+//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Router			/dns-records [get]
 func GetDnsRecords(c *gin.Context) {
 	records := make([]types.GetDnsRecordResponse, 0)
 	// 查询全部DNS记录
@@ -73,6 +74,17 @@ func GetDnsRecords(c *gin.Context) {
 }
 
 // 获取DNS记录
+//
+//	@Description	获取DNS记录
+//	@Summary		获取DNS记录
+//	@Tags			DNS记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64											true	"DNS记录序号"
+//	@Success		200	{object}	APIResponse{data=types.GetDnsRecordResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}									"参数响应"
+//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Router			/dns-records/{id} [get]
 func GetDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetDnsRecordRequest
@@ -123,6 +135,18 @@ func GetDnsRecord(c *gin.Context) {
 }
 
 // 创建DNS记录
+//
+//	@Description	创建DNS记录
+//	@Summary		创建DNS记录
+//	@Tags			DNS记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.CreateDnsRecordRequest				true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数响应"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Failure		500		{object}	APIResponse{}								"服务错误响应"
+//	@Router			/dns-records [post]
 func CreateDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateDnsRecordRequest
@@ -156,12 +180,24 @@ func CreateDnsRecord(c *gin.Context) {
 	// 创建通知订阅
 	_ = webhook_sub_helper.Create(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeDNSRecord, saveDnsRecord.ID)
 
-	successResponse(c, gin.H{
-		"id": saveDnsRecord.ID,
+	successResponse(c, types.GetDnsRecordRequest{
+		ID: saveDnsRecord.ID,
 	})
 }
 
 // 更新DNS记录
+//
+//	@Description	更新DNS记录
+//	@Summary		更新DNS记录
+//	@Tags			DNS记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64										true	"DNS记录序号"
+//	@Param			request	body		types.UpdateDnsRecordRequest				true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Failure		500		{object}	APIResponse{}								"服务错误响应"
+//	@Router			/dns-records/{id} [patch]
 func UpdateDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateDnsRecordRequest
@@ -201,12 +237,25 @@ func UpdateDnsRecord(c *gin.Context) {
 	// 更新通知订阅
 	_ = webhook_sub_helper.Update(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeDNSRecord, saveDnsRecord.ID)
 
-	successResponse(c, gin.H{
-		"id": saveDnsRecord.ID,
+	successResponse(c, types.GetDnsRecordRequest{
+		ID: saveDnsRecord.ID,
 	})
 }
 
-// 更新DNS记录状态
+// 更新DNS记录启用状态
+//
+//	@Description	更新DNS记录启用状态
+//	@Summary		更新DNS记录启用状态
+//	@Tags			DNS记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64										true	"DNS记录序号"
+//	@Param			request	body		types.UpdateDnsRecordActiveRequest			true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数响应"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Failure		500		{object}	APIResponse{}								"服务错误响应"
+//	@Router			/dns-records/{id}/active [patch]
 func UpdateDnsRecordActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateDnsRecordActiveRequest
@@ -237,12 +286,24 @@ func UpdateDnsRecordActive(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "更新DNS记录状态")
-	successResponse(c, gin.H{
-		"id": saveRecord.ID,
+	successResponse(c, types.GetDnsRecordRequest{
+		ID: saveRecord.ID,
 	})
 }
 
 // 删除DNS记录
+//
+//	@Description	删除DNS记录
+//	@Summary		删除DNS记录
+//	@Tags			DNS记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"DNS记录序号"
+//	@Success		200	{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Failure		500	{object}	APIResponse{}								"服务错误响应"
+//	@Router			/dns-records/{id} [delete]
 func DeleteDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteDnsRecordRequest
@@ -272,12 +333,24 @@ func DeleteDnsRecord(c *gin.Context) {
 	// 删除通知订阅
 	_ = webhook_sub_helper.Delete(c, webhooksubscription.ObjTypeDNSRecord, firstDnsRecord.ID)
 
-	successResponse(c, gin.H{
-		"id": firstDnsRecord.ID,
+	successResponse(c, types.GetDnsRecordRequest{
+		ID: firstDnsRecord.ID,
 	})
 }
 
 // 检查DNS记录健康状态
+//
+//	@Description	检查DNS记录健康状态
+//	@Summary		检查DNS记录健康状态
+//	@Tags			DNS记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"DNS记录序号"
+//	@Success		200	{object}	APIResponse{data=[][]backend.ToPairsStruct}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Failure		500	{object}	APIResponse{}								"服务错误响应"
+//	@Router			/dns-records/{id}/healthcheck [get]
 func HealthcheckDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.HealthcheckDnsRecordRequest

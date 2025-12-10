@@ -21,13 +21,14 @@ import (
 
 // 获取全部设备
 //
-//	@Summary	获取全部设备
-//	@Tags		设备
-//	@Accept		application/json
-//	@Produce	application/json
-//	@Success	200	{object}	APIResponse{Data=[]types.GetDeviceResponse}
-//	@Failure	404	{object}	APIResponse
-//	@Router		/devices [get]
+//	@Description	获取全部设备
+//	@Summary		获取全部设备
+//	@Tags			设备
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Success		200	{object}	APIResponse{data=[]types.GetDeviceResponse}	"成功响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Router			/devices [get]
 func GetDevices(c *gin.Context) {
 	devices := make([]types.GetDeviceResponse, 0)
 	// 查询全部设备
@@ -63,6 +64,17 @@ func GetDevices(c *gin.Context) {
 }
 
 // 获取设备
+//
+//	@Description	获取设备
+//	@Summary		获取设备
+//	@Tags			设备
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"设备序号"
+//	@Success		200	{object}	APIResponse{data=types.GetDeviceResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Router			/devices/{id} [get]
 func GetDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetDeviceRequest
@@ -102,6 +114,18 @@ func GetDevice(c *gin.Context) {
 }
 
 // 创建设备
+//
+//	@Description	创建设备
+//	@Summary		创建设备
+//	@Tags			设备
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.CreateDeviceRequest					true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetDeviceRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数响应"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Failure		500		{object}	APIResponse{}								"服务错误响应"
+//	@Router			/devices [post]
 func CreateDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateDeviceRequest
@@ -137,6 +161,18 @@ func CreateDevice(c *gin.Context) {
 }
 
 // 更新设备
+//
+//	@Description	更新设备
+//	@Summary		更新设备
+//	@Tags			设备
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64										true	"设备序号"
+//	@Param			request	body		types.UpdateDeviceRequest					true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetDeviceRequest}	"成功响应"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Failure		500		{object}	APIResponse{}								"服务错误响应"
+//	@Router			/devices/{id} [patch]
 func UpdateDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateDeviceRequest
@@ -174,12 +210,24 @@ func UpdateDevice(c *gin.Context) {
 	// 更新通知订阅
 	_ = webhook_sub_helper.Update(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
 
-	successResponse(c, gin.H{
-		"id": saveDevice.ID,
+	successResponse(c, types.GetDeviceRequest{
+		ID: saveDevice.ID,
 	})
 }
 
 // 删除设备
+//
+//	@Description	删除设备
+//	@Summary		删除设备
+//	@Tags			设备
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"设备序号"
+//	@Success		200	{object}	APIResponse{data=types.GetDeviceResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Failure		500	{object}	APIResponse{}								"服务错误响应"
+//	@Router			/devices/{id} [delete]
 func DeleteDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteDeviceRequest
@@ -212,12 +260,23 @@ func DeleteDevice(c *gin.Context) {
 	// 删除通知订阅
 	_ = webhook_sub_helper.Delete(c, webhooksubscription.ObjTypeDevice, firstDevice.ID)
 
-	successResponse(c, gin.H{
-		"id": firstDevice.ID,
+	successResponse(c, types.GetDeviceResponse{
+		ID: firstDevice.ID,
 	})
 }
 
 // 获取设备的IP历史记录
+//
+//	@Description	获取设备的IP历史记录
+//	@Summary		获取设备的IP历史记录
+//	@Tags			设备
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64													true	"设备序号"
+//	@Success		200	{object}	APIResponse{data=[]types.GetDeviceIpHistoryResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}											"参数响应"
+//	@Failure		404	{object}	APIResponse{}											"错误响应"
+//	@Router			/devices/{id}/ip-history [get]
 func GetDeviceIpHistory(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetDeviceIpHistoryRequest
@@ -256,6 +315,18 @@ func GetDeviceIpHistory(c *gin.Context) {
 }
 
 // 检查设备健康状态
+//
+//	@Description	检查设备健康状态
+//	@Summary		检查设备健康状态
+//	@Tags			设备
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"设备序号"
+//	@Success		200	{object}	APIResponse{data=[][]backend.ToPairsStruct}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Failure		500	{object}	APIResponse{}								"服务错误响应"
+//	@Router			/devices/{id}/healthcheck [get]
 func HealthcheckDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.HealthcheckDeviceRequest

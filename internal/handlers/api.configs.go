@@ -16,13 +16,14 @@ import (
 
 // 获取全部配置
 //
-//	@Summary	获取全部配置
-//	@Tags		配置
-//	@Accept		application/json
-//	@Produce	application/json
-//	@Success	200	{object}	APIResponse{Data=[]types.GetConfigResponse}
-//	@Failure	404	{object}	APIResponse
-//	@Router		/configs [get]
+//	@Description	获取全部配置
+//	@Summary		获取全部配置
+//	@Tags			配置
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Success		200	{object}	APIResponse{data=[]types.GetConfigResponse}	"成功响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Router			/configs [get]
 func GetConfigs(c *gin.Context) {
 	configs := make([]types.GetConfigResponse, 0)
 	// 查询全部配置
@@ -47,6 +48,17 @@ func GetConfigs(c *gin.Context) {
 }
 
 // 获取配置
+//
+//	@Description	获取配置
+//	@Summary		获取配置
+//	@Tags			配置
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"配置序号"
+//	@Success		200	{object}	APIResponse{data=types.GetConfigResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Router			/configs/{id} [get]
 func GetConfig(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetConfigRequest
@@ -75,6 +87,18 @@ func GetConfig(c *gin.Context) {
 }
 
 // 创建配置
+//
+//	@Description	创建配置
+//	@Summary		创建配置
+//	@Tags			配置
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.CreateConfigRequest					true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetConfigRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数响应"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Failure		500		{object}	APIResponse{}								"服务错误响应"
+//	@Router			/configs [post]
 func CreateConfig(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateConfigRequest
@@ -100,12 +124,24 @@ func CreateConfig(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "创建配置")
-	successResponse(c, gin.H{
-		"id": saveConfig.ID,
+	successResponse(c, types.GetConfigRequest{
+		ID: saveConfig.ID,
 	})
 }
 
 // 更新配置
+//
+//	@Description	更新配置
+//	@Summary		更新配置
+//	@Tags			配置
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64										true	"配置序号"
+//	@Param			request	body		types.UpdateConfigRequest					true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetConfigRequest}	"成功响应"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Failure		500		{object}	APIResponse{}								"服务错误响应"
+//	@Router			/configs/{id} [patch]
 func UpdateConfig(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateConfigRequest
@@ -139,12 +175,24 @@ func UpdateConfig(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "更新配置")
-	successResponse(c, gin.H{
-		"id": saveConfig.ID,
+	successResponse(c, types.GetConfigRequest{
+		ID: saveConfig.ID,
 	})
 }
 
 // 删除配置
+//
+//	@Description	删除配置
+//	@Summary		删除配置
+//	@Tags			配置
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"配置序号"
+//	@Success		200	{object}	APIResponse{data=types.GetConfigRequest}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Failure		500	{object}	APIResponse{}								"服务错误响应"
+//	@Router			/configs/{id} [delete]
 func DeleteConfig(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteConfigRequest
@@ -173,7 +221,7 @@ func DeleteConfig(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "删除配置")
-	successResponse(c, gin.H{
-		"id": firstConfig.ID,
+	successResponse(c, types.GetConfigRequest{
+		ID: firstConfig.ID,
 	})
 }

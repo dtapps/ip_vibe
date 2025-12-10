@@ -20,13 +20,14 @@ import (
 
 // 获取全部IP组
 //
-//	@Summary	获取全部IP组
-//	@Tags		IP组
-//	@Accept		application/json
-//	@Produce	application/json
-//	@Success	200	{object}	APIResponse{Data=[]types.GetIPGroupResponse}
-//	@Failure	404	{object}	APIResponse
-//	@Router		/ip-groups [get]
+//	@Description	获取全部IP组
+//	@Summary		获取全部IP组
+//	@Tags			IP组
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Success		200	{object}	APIResponse{data=[]types.GetIPGroupResponse}	"成功响应"
+//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Router			/ip-groups [get]
 func GetIPGroups(c *gin.Context) {
 	ipGroups := make([]types.GetIPGroupResponse, 0)
 	// 查询全部IP组
@@ -62,6 +63,17 @@ func GetIPGroups(c *gin.Context) {
 }
 
 // 获取IP组
+//
+//	@Description	获取IP组
+//	@Summary		获取IP组
+//	@Tags			IP组
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"IP组序号"
+//	@Success		200	{object}	APIResponse{data=types.GetIPGroupResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Router			/ip-groups/{id} [get]
 func GetIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetIPGroupRequest
@@ -102,6 +114,18 @@ func GetIPGroup(c *gin.Context) {
 }
 
 // 创建IP组
+//
+//	@Description	创建IP组
+//	@Summary		创建IP组
+//	@Tags			IP组
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.CreateIPGroupRequest					true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetIPGroupResponse}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数响应"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Failure		500		{object}	APIResponse{}								"服务错误响应"
+//	@Router			/ip-groups [post]
 func CreateIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateIPGroupRequest
@@ -135,6 +159,19 @@ func CreateIPGroup(c *gin.Context) {
 }
 
 // 更新IP组
+//
+//	@Description	更新IP组
+//	@Summary		更新IP组
+//	@Tags			IP组
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64										true	"IP组序号"
+//	@Param			request	body		types.UpdateIPGroupRequest					true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetIPGroupRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数响应"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Failure		500		{object}	APIResponse{}								"服务错误响应"
+//	@Router			/ip-groups/{id}/active [patch]
 func UpdateIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateIPGroupRequest
@@ -172,12 +209,24 @@ func UpdateIPGroup(c *gin.Context) {
 	// 更新通知订阅
 	_ = webhook_sub_helper.Update(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeIPGroup, saveIpGroup.ID)
 
-	successResponse(c, gin.H{
-		"id": saveIpGroup.ID,
+	successResponse(c, types.GetIPGroupRequest{
+		ID: saveIpGroup.ID,
 	})
 }
 
 // 删除IP组
+//
+//	@Description	删除IP组
+//	@Summary		删除IP组
+//	@Tags			IP组
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"IP组序号"
+//	@Success		200	{object}	APIResponse{data=types.GetIPGroupResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Failure		500	{object}	APIResponse{}								"服务错误响应"
+//	@Router			/ip-groups/{id} [delete]
 func DeleteIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteIPGroupRequest
@@ -210,12 +259,23 @@ func DeleteIPGroup(c *gin.Context) {
 	// 删除通知订阅
 	_ = webhook_sub_helper.Delete(c, webhooksubscription.ObjTypeIPGroup, firstIpGroup.ID)
 
-	successResponse(c, gin.H{
-		"id": firstIpGroup.ID,
+	successResponse(c, types.GetIPGroupResponse{
+		ID: firstIpGroup.ID,
 	})
 }
 
 // 获取IP组的设备列表
+//
+//	@Description	获取IP组的设备列表
+//	@Summary		获取IP组的设备列表
+//	@Tags			IP组
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"IP组序号"
+//	@Success		200	{object}	APIResponse{data=[]types.GetDeviceResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Router			/ip-groups/{id}/devices [get]
 func GetIPGroupDevices(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetIPGroupDevicesRequest
@@ -252,6 +312,18 @@ func GetIPGroupDevices(c *gin.Context) {
 }
 
 // 检查IP组健康状态
+//
+//	@Description	检查IP组健康状态
+//	@Summary		检查IP组健康状态
+//	@Tags			IP组
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"IP组序号"
+//	@Success		200	{object}	APIResponse{data=[][]backend.ToPairsStruct}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Failure		500	{object}	APIResponse{}								"服务错误响应"
+//	@Router			/ip-groups/{id}/healthcheck [get]
 func HealthcheckIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.HealthcheckIPGroupRequest

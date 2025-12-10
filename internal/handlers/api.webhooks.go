@@ -16,13 +16,14 @@ import (
 
 // 获取全部通知
 //
-//	@Summary	获取全部通知
-//	@Tags		通知
-//	@Accept		application/json
-//	@Produce	application/json
-//	@Success	200	{object}	APIResponse{Data=[]types.GetWebhookResponse}
-//	@Failure	404	{object}	APIResponse
-//	@Router		/webhooks [get]
+//	@Description	获取全部通知
+//	@Summary		获取全部通知
+//	@Tags			通知
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Success		200	{object}	APIResponse{data=[]types.GetWebhookResponse}	"成功响应"
+//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Router			/webhooks [get]
 func GetWebhooks(c *gin.Context) {
 	webhooks := make([]types.GetWebhookResponse, 0)
 	// 查询全部通知
@@ -51,6 +52,17 @@ func GetWebhooks(c *gin.Context) {
 }
 
 // 获取通知
+//
+//	@Description	获取通知
+//	@Summary		获取通知
+//	@Tags			通知
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"通知序号"
+//	@Success		200	{object}	APIResponse{data=types.GetWebhookResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Router			/webhooks/{id} [get]
 func GetWebhook(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetWebhookRequest
@@ -83,6 +95,18 @@ func GetWebhook(c *gin.Context) {
 }
 
 // 创建通知
+//
+//	@Description	创建通知
+//	@Summary		创建通知
+//	@Tags			通知
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.CreateWebhookRequest					true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetWebhookRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数响应"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Failure		500		{object}	APIResponse{}								"服务错误响应"
+//	@Router			/webhooks [post]
 func CreateWebhook(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateWebhookRequest
@@ -111,12 +135,24 @@ func CreateWebhook(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "创建通知")
-	successResponse(c, gin.H{
-		"id": saveWebhook.ID,
+	successResponse(c, types.GetWebhookRequest{
+		ID: saveWebhook.ID,
 	})
 }
 
 // 更新通知
+//
+//	@Description	更新通知
+//	@Summary		更新通知
+//	@Tags			通知
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64										true	"通知序号"
+//	@Param			request	body		types.UpdateWebhookRequest					true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetWebhookRequest}	"成功响应"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Failure		500		{object}	APIResponse{}								"服务错误响应"
+//	@Router			/webhooks/{id} [patch]
 func UpdateWebhook(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateWebhookRequest
@@ -152,12 +188,25 @@ func UpdateWebhook(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "更新通知")
-	successResponse(c, gin.H{
-		"id": saveWebhook.ID,
+	successResponse(c, types.GetWebhookRequest{
+		ID: saveWebhook.ID,
 	})
 }
 
-// 更新通知状态
+// 更新通知启用状态
+//
+//	@Description	更新通知启用状态
+//	@Summary		更新通知启用状态
+//	@Tags			通知
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64										true	"通知序号"
+//	@Param			request	body		types.UpdateWebhookActiveRequest			true	"Json 请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetWebhookRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数响应"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Failure		500		{object}	APIResponse{}								"服务错误响应"
+//	@Router			/webhooks/{id}/active [patch]
 func UpdateWebhookActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateWebhookActiveRequest
@@ -188,12 +237,24 @@ func UpdateWebhookActive(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "更新通知状态")
-	successResponse(c, gin.H{
-		"id": saveWebhook.ID,
+	successResponse(c, types.GetWebhookRequest{
+		ID: saveWebhook.ID,
 	})
 }
 
 // 删除通知
+//
+//	@Description	删除通知
+//	@Summary		删除通知
+//	@Tags			通知
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"通知序号"
+//	@Success		200	{object}	APIResponse{data=types.GetWebhookRequest}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Failure		500	{object}	APIResponse{}								"服务错误响应"
+//	@Router			/webhooks/{id} [delete]
 func DeleteWebhook(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteWebhookRequest
@@ -222,7 +283,7 @@ func DeleteWebhook(c *gin.Context) {
 	}
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "删除通知")
-	successResponse(c, gin.H{
-		"id": firstWebhook.ID,
+	successResponse(c, types.GetWebhookRequest{
+		ID: firstWebhook.ID,
 	})
 }
