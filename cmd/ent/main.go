@@ -29,8 +29,8 @@ func main() {
 			"./internal/ent/template/pagination.tmpl",
 			"./internal/ent/template/to_map.tmpl",
 			"./internal/ent/template/query_gorm_compat.tmpl",
-			"./internal/ent/template/whereif.tmpl",
-			"./internal/ent/template/orderif.tmpl",
+			"./internal/ent/template/where_if.tmpl",
+			"./internal/ent/template/order_if.tmpl",
 		),
 	}
 	err := entc.Generate(schemaPath, &gen.Config{
