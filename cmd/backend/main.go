@@ -13,12 +13,13 @@ import (
 	"runtime"
 	"strings"
 	"time"
-	"vibe_ip/internal/backend"
+	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/docs_2"
 	"vibe_ip/internal/docs_3"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/initialize"
+	"vibe_ip/internal/mcp_tool"
 
 	"github.com/denisbrodbeck/machineid"
 	"github.com/gin-contrib/cors"
@@ -26,6 +27,7 @@ import (
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -62,6 +64,7 @@ func main() {
 	initialize.InitEntDb(ctx)      // 初始化 业务数据库
 	initialize.InitEntLogDb(ctx)   // 初始化 日志数据库
 	initialize.InitGoCron()        // 初始化 GoCron 调度器
+	initialize.InitMCP()           // 初始化 MCP
 	initialize.InitRestyLog()      // 初始化 Resty 日志
 	initialize.InitThirdParty(ctx) // 初始化 第三方
 	initialize.InitSLog("backend") // 初始化 日志
@@ -174,6 +177,17 @@ func main() {
 	// 配置BasicAuth中间件
 	if len(ginAccounts) > 0 {
 		router.Use(gin.BasicAuth(ginAccounts))
+	}
+
+	// 处理 MCP
+	if global.GvaMcpServer != nil {
+		// 注册 MCP 实现
+		mcp_tool.RegisterTimeTool(global.GvaMcpServer)
+		// 注册 MCP 路由
+		httpTransport := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
+			return global.GvaMcpServer
+		}, nil)
+		router.Any("/mcp", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
 	}
 
 	// 创建带 FuncMap 的 template
@@ -423,14 +437,14 @@ func main() {
 	initialize.StartGoCron()
 
 	// 启动CDN刷新任务
-	ipUpdate := backend.NewIpUpdateService(global.GvaEntDb, global.GvaGoCron)
+	ipUpdate := service.NewIpUpdateService(global.GvaEntDb, global.GvaGoCron)
 	if err := ipUpdate.StartCdnJob(ctx); err != nil {
 		fmt.Printf("启动CDN刷新任务失败: %v\n", err)
 		os.Exit(1)
 	}
 
 	// 启动域名监控任务
-	domainMonitor := backend.NewDomainMonitorService(global.GvaEntDb, global.GvaGoCron)
+	domainMonitor := service.NewDomainMonitorService(global.GvaEntDb, global.GvaGoCron)
 	if err := domainMonitor.StartJob(ctx); err != nil {
 		fmt.Printf("启动域名监控任务失败: %v\n", err)
 		os.Exit(1)

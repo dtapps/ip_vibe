@@ -6,6 +6,7 @@ import (
 	"vibe_ip/internal/helper/operation_logs_helper"
 
 	"github.com/go-co-op/gocron/v2"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"go.dtapp.net/library/contrib/resty_log"
 	"go.dtapp.net/library/service/bark"
 	"go.dtapp.net/library/service/dingtalk"
@@ -35,6 +36,8 @@ var (
 
 	GvaGoCron        gocron.Scheduler // 定时任务
 	GvaGoCronRunning int32            // 定时任务状态 0=停 1=运行
+
+	GvaMcpServer *mcp.Server // Model Context Protocol 服务器
 
 	GvaEntDb    *ent.Client     // 业务数据库
 	GvaEntLogDb *ent_log.Client // 日志数据库
