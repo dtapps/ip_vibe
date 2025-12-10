@@ -40,7 +40,7 @@ func GetWebhookSubs(c *gin.Context) {
 	webhooks := make([]types.GetWebhookSubResponse, 0)
 	// 查询全部通知订阅
 	allWebhookSubscription, err := global.GvaEntDb.WebhookSubscription.Query().
-		WhereIf(requestParams.IsActive != nil, webhooksubscription.IsActiveEQ(*requestParams.IsActive)).
+		WhereIf(requestParams.IsActive != nil, webhooksubscription.IsActiveEQ(cast.ToBool(requestParams.IsActive))).
 		Order(ent.Desc(webhooksubscription.FieldCreatedAt)).
 		All(c)
 	if err != nil {

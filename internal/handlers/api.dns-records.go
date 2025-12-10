@@ -41,7 +41,7 @@ func GetDnsRecords(c *gin.Context) {
 	records := make([]types.GetDnsRecordResponse, 0)
 	// 查询全部DNS记录
 	allDnsRecord, err := global.GvaEntDb.DNSRecord.Query().
-		WhereIf(requestParams.IsActive != nil, dnsrecord.IsActiveEQ(*requestParams.IsActive)).
+		WhereIf(requestParams.IsActive != nil, dnsrecord.IsActiveEQ(cast.ToBool(requestParams.IsActive))).
 		WithConfig().
 		WithIPGroup().
 		WithCdnRecord().

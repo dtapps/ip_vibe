@@ -41,7 +41,7 @@ func GetDomainMonitors(c *gin.Context) {
 	domainMonitors := make([]types.GetDomainMonitorResponse, 0)
 	// 查询全部域名监控
 	allDomainMonitor, err := global.GvaEntDb.DomainMonitor.Query().
-		WhereIf(requestParams.IsActive != nil, domainmonitor.IsActiveEQ(*requestParams.IsActive)).
+		WhereIf(requestParams.IsActive != nil, domainmonitor.IsActiveEQ(cast.ToBool(requestParams.IsActive))).
 		Order(ent.Desc(domainmonitor.FieldCreatedAt)).
 		All(c)
 	if err != nil {

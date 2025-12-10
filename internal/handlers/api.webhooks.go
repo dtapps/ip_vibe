@@ -37,7 +37,7 @@ func GetWebhooks(c *gin.Context) {
 	webhooks := make([]types.GetWebhookResponse, 0)
 	// 查询全部通知
 	allWebhook, err := global.GvaEntDb.Webhook.Query().
-		WhereIf(requestParams.IsActive != nil, webhook.IsActiveEQ(*requestParams.IsActive)).
+		WhereIf(requestParams.IsActive != nil, webhook.IsActiveEQ(cast.ToBool(requestParams.IsActive))).
 		Order(ent.Desc(webhook.FieldCreatedAt)).
 		All(c)
 	if err != nil {

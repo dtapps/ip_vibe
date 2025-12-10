@@ -1,13 +1,12 @@
 package types
 
 import (
-	"database/sql"
 	"time"
 )
 
 // 获取全部CDN记录 请求结构
 type GetCdnRecordsRequest struct {
-	IsActive sql.NullBool `json:"is_active" binding:"required"` // 是否活跃
+	IsActive *bool `json:"is_active" binding:"required"` // 是否活跃
 }
 
 // 获取CDN记录 响应结构

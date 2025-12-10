@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"fmt"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/deviceipreport"
@@ -19,7 +20,18 @@ import (
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
-func (qb *CDNRecordQuery) OrderIf(condition bool, o ...cdnrecord.OrderOption) *CDNRecordQuery {
+func (qb *CDNRecordQuery) OrderIf(condition bool, o cdnrecord.OrderOption) *CDNRecordQuery {
+	fmt.Printf("OrderIf debug: condition=%t, orderOption=%v\n", condition, o)
+	if condition {
+		qb.Order(o)
+	}
+	return qb
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (qb *CDNRecordQuery) OrderIfs(condition bool, o ...cdnrecord.OrderOption) *CDNRecordQuery {
+	fmt.Printf("OrderIfs debug: condition=%t, orderOptions=%v\n", condition, o)
 	if condition {
 		qb.Order(o...)
 	}
@@ -28,7 +40,18 @@ func (qb *CDNRecordQuery) OrderIf(condition bool, o ...cdnrecord.OrderOption) *C
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
-func (qb *DNSRecordQuery) OrderIf(condition bool, o ...dnsrecord.OrderOption) *DNSRecordQuery {
+func (qb *DNSRecordQuery) OrderIf(condition bool, o dnsrecord.OrderOption) *DNSRecordQuery {
+	fmt.Printf("OrderIf debug: condition=%t, orderOption=%v\n", condition, o)
+	if condition {
+		qb.Order(o)
+	}
+	return qb
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (qb *DNSRecordQuery) OrderIfs(condition bool, o ...dnsrecord.OrderOption) *DNSRecordQuery {
+	fmt.Printf("OrderIfs debug: condition=%t, orderOptions=%v\n", condition, o)
 	if condition {
 		qb.Order(o...)
 	}
@@ -37,7 +60,18 @@ func (qb *DNSRecordQuery) OrderIf(condition bool, o ...dnsrecord.OrderOption) *D
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
-func (qb *DeviceQuery) OrderIf(condition bool, o ...device.OrderOption) *DeviceQuery {
+func (qb *DeviceQuery) OrderIf(condition bool, o device.OrderOption) *DeviceQuery {
+	fmt.Printf("OrderIf debug: condition=%t, orderOption=%v\n", condition, o)
+	if condition {
+		qb.Order(o)
+	}
+	return qb
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (qb *DeviceQuery) OrderIfs(condition bool, o ...device.OrderOption) *DeviceQuery {
+	fmt.Printf("OrderIfs debug: condition=%t, orderOptions=%v\n", condition, o)
 	if condition {
 		qb.Order(o...)
 	}
@@ -46,7 +80,18 @@ func (qb *DeviceQuery) OrderIf(condition bool, o ...device.OrderOption) *DeviceQ
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
-func (qb *DeviceIpReportQuery) OrderIf(condition bool, o ...deviceipreport.OrderOption) *DeviceIpReportQuery {
+func (qb *DeviceIpReportQuery) OrderIf(condition bool, o deviceipreport.OrderOption) *DeviceIpReportQuery {
+	fmt.Printf("OrderIf debug: condition=%t, orderOption=%v\n", condition, o)
+	if condition {
+		qb.Order(o)
+	}
+	return qb
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (qb *DeviceIpReportQuery) OrderIfs(condition bool, o ...deviceipreport.OrderOption) *DeviceIpReportQuery {
+	fmt.Printf("OrderIfs debug: condition=%t, orderOptions=%v\n", condition, o)
 	if condition {
 		qb.Order(o...)
 	}
@@ -55,7 +100,18 @@ func (qb *DeviceIpReportQuery) OrderIf(condition bool, o ...deviceipreport.Order
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
-func (qb *DevicePortForwardQuery) OrderIf(condition bool, o ...deviceportforward.OrderOption) *DevicePortForwardQuery {
+func (qb *DevicePortForwardQuery) OrderIf(condition bool, o deviceportforward.OrderOption) *DevicePortForwardQuery {
+	fmt.Printf("OrderIf debug: condition=%t, orderOption=%v\n", condition, o)
+	if condition {
+		qb.Order(o)
+	}
+	return qb
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (qb *DevicePortForwardQuery) OrderIfs(condition bool, o ...deviceportforward.OrderOption) *DevicePortForwardQuery {
+	fmt.Printf("OrderIfs debug: condition=%t, orderOptions=%v\n", condition, o)
 	if condition {
 		qb.Order(o...)
 	}
@@ -64,7 +120,18 @@ func (qb *DevicePortForwardQuery) OrderIf(condition bool, o ...deviceportforward
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
-func (qb *DomainMonitorQuery) OrderIf(condition bool, o ...domainmonitor.OrderOption) *DomainMonitorQuery {
+func (qb *DomainMonitorQuery) OrderIf(condition bool, o domainmonitor.OrderOption) *DomainMonitorQuery {
+	fmt.Printf("OrderIf debug: condition=%t, orderOption=%v\n", condition, o)
+	if condition {
+		qb.Order(o)
+	}
+	return qb
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (qb *DomainMonitorQuery) OrderIfs(condition bool, o ...domainmonitor.OrderOption) *DomainMonitorQuery {
+	fmt.Printf("OrderIfs debug: condition=%t, orderOptions=%v\n", condition, o)
 	if condition {
 		qb.Order(o...)
 	}
@@ -73,7 +140,18 @@ func (qb *DomainMonitorQuery) OrderIf(condition bool, o ...domainmonitor.OrderOp
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
-func (qb *DomainMonitorHistoryQuery) OrderIf(condition bool, o ...domainmonitorhistory.OrderOption) *DomainMonitorHistoryQuery {
+func (qb *DomainMonitorHistoryQuery) OrderIf(condition bool, o domainmonitorhistory.OrderOption) *DomainMonitorHistoryQuery {
+	fmt.Printf("OrderIf debug: condition=%t, orderOption=%v\n", condition, o)
+	if condition {
+		qb.Order(o)
+	}
+	return qb
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (qb *DomainMonitorHistoryQuery) OrderIfs(condition bool, o ...domainmonitorhistory.OrderOption) *DomainMonitorHistoryQuery {
+	fmt.Printf("OrderIfs debug: condition=%t, orderOptions=%v\n", condition, o)
 	if condition {
 		qb.Order(o...)
 	}
@@ -82,7 +160,18 @@ func (qb *DomainMonitorHistoryQuery) OrderIf(condition bool, o ...domainmonitorh
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
-func (qb *IpGroupQuery) OrderIf(condition bool, o ...ipgroup.OrderOption) *IpGroupQuery {
+func (qb *IpGroupQuery) OrderIf(condition bool, o ipgroup.OrderOption) *IpGroupQuery {
+	fmt.Printf("OrderIf debug: condition=%t, orderOption=%v\n", condition, o)
+	if condition {
+		qb.Order(o)
+	}
+	return qb
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (qb *IpGroupQuery) OrderIfs(condition bool, o ...ipgroup.OrderOption) *IpGroupQuery {
+	fmt.Printf("OrderIfs debug: condition=%t, orderOptions=%v\n", condition, o)
 	if condition {
 		qb.Order(o...)
 	}
@@ -91,7 +180,18 @@ func (qb *IpGroupQuery) OrderIf(condition bool, o ...ipgroup.OrderOption) *IpGro
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
-func (qb *IpGroupDeviceQuery) OrderIf(condition bool, o ...ipgroupdevice.OrderOption) *IpGroupDeviceQuery {
+func (qb *IpGroupDeviceQuery) OrderIf(condition bool, o ipgroupdevice.OrderOption) *IpGroupDeviceQuery {
+	fmt.Printf("OrderIf debug: condition=%t, orderOption=%v\n", condition, o)
+	if condition {
+		qb.Order(o)
+	}
+	return qb
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (qb *IpGroupDeviceQuery) OrderIfs(condition bool, o ...ipgroupdevice.OrderOption) *IpGroupDeviceQuery {
+	fmt.Printf("OrderIfs debug: condition=%t, orderOptions=%v\n", condition, o)
 	if condition {
 		qb.Order(o...)
 	}
@@ -100,7 +200,18 @@ func (qb *IpGroupDeviceQuery) OrderIf(condition bool, o ...ipgroupdevice.OrderOp
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
-func (qb *PlatformConfigQuery) OrderIf(condition bool, o ...platformconfig.OrderOption) *PlatformConfigQuery {
+func (qb *PlatformConfigQuery) OrderIf(condition bool, o platformconfig.OrderOption) *PlatformConfigQuery {
+	fmt.Printf("OrderIf debug: condition=%t, orderOption=%v\n", condition, o)
+	if condition {
+		qb.Order(o)
+	}
+	return qb
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (qb *PlatformConfigQuery) OrderIfs(condition bool, o ...platformconfig.OrderOption) *PlatformConfigQuery {
+	fmt.Printf("OrderIfs debug: condition=%t, orderOptions=%v\n", condition, o)
 	if condition {
 		qb.Order(o...)
 	}
@@ -109,7 +220,18 @@ func (qb *PlatformConfigQuery) OrderIf(condition bool, o ...platformconfig.Order
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
-func (qb *WebhookQuery) OrderIf(condition bool, o ...webhook.OrderOption) *WebhookQuery {
+func (qb *WebhookQuery) OrderIf(condition bool, o webhook.OrderOption) *WebhookQuery {
+	fmt.Printf("OrderIf debug: condition=%t, orderOption=%v\n", condition, o)
+	if condition {
+		qb.Order(o)
+	}
+	return qb
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (qb *WebhookQuery) OrderIfs(condition bool, o ...webhook.OrderOption) *WebhookQuery {
+	fmt.Printf("OrderIfs debug: condition=%t, orderOptions=%v\n", condition, o)
 	if condition {
 		qb.Order(o...)
 	}
@@ -118,7 +240,18 @@ func (qb *WebhookQuery) OrderIf(condition bool, o ...webhook.OrderOption) *Webho
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
-func (qb *WebhookSubscriptionQuery) OrderIf(condition bool, o ...webhooksubscription.OrderOption) *WebhookSubscriptionQuery {
+func (qb *WebhookSubscriptionQuery) OrderIf(condition bool, o webhooksubscription.OrderOption) *WebhookSubscriptionQuery {
+	fmt.Printf("OrderIf debug: condition=%t, orderOption=%v\n", condition, o)
+	if condition {
+		qb.Order(o)
+	}
+	return qb
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (qb *WebhookSubscriptionQuery) OrderIfs(condition bool, o ...webhooksubscription.OrderOption) *WebhookSubscriptionQuery {
+	fmt.Printf("OrderIfs debug: condition=%t, orderOptions=%v\n", condition, o)
 	if condition {
 		qb.Order(o...)
 	}

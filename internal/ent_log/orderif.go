@@ -3,13 +3,25 @@
 package ent_log
 
 import (
+	"fmt"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/restylog"
 )
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
-func (qb *OperationLogQuery) OrderIf(condition bool, o ...operationlog.OrderOption) *OperationLogQuery {
+func (qb *OperationLogQuery) OrderIf(condition bool, o operationlog.OrderOption) *OperationLogQuery {
+	fmt.Printf("OrderIf debug: condition=%t, orderOption=%v\n", condition, o)
+	if condition {
+		qb.Order(o)
+	}
+	return qb
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (qb *OperationLogQuery) OrderIfs(condition bool, o ...operationlog.OrderOption) *OperationLogQuery {
+	fmt.Printf("OrderIfs debug: condition=%t, orderOptions=%v\n", condition, o)
 	if condition {
 		qb.Order(o...)
 	}
@@ -18,7 +30,18 @@ func (qb *OperationLogQuery) OrderIf(condition bool, o ...operationlog.OrderOpti
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
-func (qb *RestyLogQuery) OrderIf(condition bool, o ...restylog.OrderOption) *RestyLogQuery {
+func (qb *RestyLogQuery) OrderIf(condition bool, o restylog.OrderOption) *RestyLogQuery {
+	fmt.Printf("OrderIf debug: condition=%t, orderOption=%v\n", condition, o)
+	if condition {
+		qb.Order(o)
+	}
+	return qb
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (qb *RestyLogQuery) OrderIfs(condition bool, o ...restylog.OrderOption) *RestyLogQuery {
+	fmt.Printf("OrderIfs debug: condition=%t, orderOptions=%v\n", condition, o)
 	if condition {
 		qb.Order(o...)
 	}

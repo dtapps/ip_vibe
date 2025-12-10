@@ -41,7 +41,7 @@ func GetCdnRecords(c *gin.Context) {
 	records := make([]types.GetCdnRecordResponse, 0)
 	// 查询全部CDN记录
 	allCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
-		WhereIf(requestParams.IsActive.Valid, cdnrecord.IsActiveEQ(requestParams.IsActive.Bool)).
+		WhereIf(requestParams.IsActive != nil, cdnrecord.IsActiveEQ(cast.ToBool(requestParams.IsActive))).
 		WithConfig().
 		WithIPGroup().
 		Order(ent.Desc(cdnrecord.FieldCreatedAt)).

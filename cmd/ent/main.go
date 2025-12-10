@@ -22,7 +22,7 @@ func main() {
 		// 	entc.DependencyType(&http.Client{}),
 		// ),
 		entc.TemplateFiles(
-			"./internal/ent/template/debug.tmpl",
+			// "./internal/ent/template/debug.tmpl",
 			// "./internal/ent/template/stringer.tmpl",
 			"./internal/ent/template/aggregate.tmpl",
 			"./internal/ent/template/order_by.tmpl",
