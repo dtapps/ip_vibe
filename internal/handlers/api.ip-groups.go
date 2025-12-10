@@ -3,7 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"vibe_ip/internal/backend"
+	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/webhooksubscription"
@@ -317,7 +317,7 @@ func GetIPGroupDevices(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"IP组序号"
-//	@Success		200	{object}	APIResponse{data=[][]backend.ToPairsStruct}	"成功响应"
+//	@Success		200	{object}	APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}								请求参数
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Failure		500	{object}	APIResponse{}								"服务错误"
@@ -342,7 +342,7 @@ func HealthcheckIPGroup(c *gin.Context) {
 	}
 
 	// 检查健康状态
-	results := make([][]backend.ToPairsStruct, 0)
+	results := make([][]service.ToPairsStruct, 0)
 
 	// 并发检查
 	eg, egCtx := errgroup.WithContext(c)
@@ -353,7 +353,7 @@ func HealthcheckIPGroup(c *gin.Context) {
 		if item.IPV4 != "" {
 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
 			eg.Go(func() error {
-				healthCheckResult, _ := backend.CheckIPHealth(egCtx, item.IPV4, 80, 443)
+				healthCheckResult, _ := service.CheckIPHealth(egCtx, item.IPV4, 80, 443)
 				results = append(results, healthCheckResult.ToPairsForIP())
 				return nil
 			})
@@ -361,7 +361,7 @@ func HealthcheckIPGroup(c *gin.Context) {
 		if item.IPV6 != "" {
 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
 			eg.Go(func() error {
-				healthCheckResult, _ := backend.CheckIPHealth(egCtx, item.IPV6, 80, 443)
+				healthCheckResult, _ := service.CheckIPHealth(egCtx, item.IPV6, 80, 443)
 				results = append(results, healthCheckResult.ToPairsForIP())
 				return nil
 			})

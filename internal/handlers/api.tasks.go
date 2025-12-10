@@ -3,7 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"vibe_ip/internal/backend"
+	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/helper/gocron_helper"
@@ -154,7 +154,7 @@ func StartTask(c *gin.Context) {
 	initialize.StartGoCron()
 	if len(jobs) == 0 {
 		// 启动CDN刷新任务
-		ipUpdate := backend.NewIpUpdateService(global.GvaEntDb, global.GvaGoCron)
+		ipUpdate := service.NewIpUpdateService(global.GvaEntDb, global.GvaGoCron)
 		if err := ipUpdate.StartCdnJob(c); err != nil {
 			if global.GvaEnv.DEBUG {
 				fmt.Printf("启动CDN刷新任务失败: %s\n", err.Error())

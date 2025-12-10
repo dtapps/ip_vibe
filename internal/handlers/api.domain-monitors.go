@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"vibe_ip/internal/backend"
+	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/webhooksubscription"
@@ -352,7 +352,7 @@ func CheckDomainMonitor(c *gin.Context) {
 	}
 
 	// 域名监控任务
-	domainMonitor := backend.NewDomainMonitorService(global.GvaEntDb, global.GvaGoCron)
+	domainMonitor := service.NewDomainMonitorService(global.GvaEntDb, global.GvaGoCron)
 
 	// 执行单个监控任务
 	err = domainMonitor.ExecuteMonitorTask(c, slog.With(
