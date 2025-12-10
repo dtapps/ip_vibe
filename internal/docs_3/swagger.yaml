@@ -310,6 +310,27 @@ components:
       - obj_type
       - webhook_id
       type: object
+    vibe_ip_internal_types.DeviceReportDeviceIpRequest:
+      properties:
+        device_name:
+          description: 设备名称
+          type: string
+        ipv4_addr:
+          description: IP地址V4
+          type: string
+        ipv6_addr:
+          description: IP地址V6
+          type: string
+      type: object
+    vibe_ip_internal_types.DeviceReportDeviceIpResponse:
+      properties:
+        device_code:
+          description: 设备编码
+          type: string
+        msg:
+          description: 消息
+          type: string
+      type: object
     vibe_ip_internal_types.GetCdnRecordRequest:
       type: object
     vibe_ip_internal_types.GetCdnRecordResponse:
@@ -944,7 +965,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.CreateCdnRecordRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -1079,7 +1100,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.UpdateCdnRecordRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -1120,7 +1141,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.UpdateCdnRecordActiveRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -1242,7 +1263,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.CreateConfigRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -1389,7 +1410,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.UpdateConfigRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -1460,7 +1481,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.CreateDeviceRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -1607,7 +1628,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.UpdateDeviceRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -1774,7 +1795,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.CreateDnsRecordRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -1921,7 +1942,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.UpdateDnsRecordRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -1968,7 +1989,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.UpdateDnsRecordActiveRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -2096,7 +2117,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.CreateDomainMonitorRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -2243,7 +2264,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.UpdateDomainMonitorRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -2290,7 +2311,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.UpdateDomainMonitorActiveRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -2418,7 +2439,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.CreateIPGroupRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -2566,7 +2587,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.UpdateIPGroupRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -2700,6 +2721,104 @@ paths:
       summary: 检查IP组健康状态
       tags:
       - IP组
+  /open/device/{device_code}/ip-report:
+    post:
+      description: 设备上报IP
+      parameters:
+      - description: 设备编码
+        in: path
+        name: device_code
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/vibe_ip_internal_types.DeviceReportDeviceIpRequest'
+        description: 请求参数
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数响应
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 服务错误响应
+      summary: 设备上报IP
+      tags:
+      - 开放
+  /open/device/{device_code}/port-forwards:
+    get:
+      description: 获取设备端口转发
+      parameters:
+      - description: 设备编码
+        in: path
+        name: device_code
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数响应
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 获取设备端口转发
+      tags:
+      - 开放
   /port-forwards:
     get:
       description: 获取全部端口转发
@@ -2739,7 +2858,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.CreatePortForwardRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -2886,7 +3005,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.UpdatePortForwardRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -2933,7 +3052,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.UpdatePortForwardActiveRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -2986,7 +3105,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.UpdatePortForwardForwardRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -3335,7 +3454,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.CreateWebhookSubRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -3482,7 +3601,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.UpdateWebhookSubRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -3529,7 +3648,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.UpdateWebhookSubActiveRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -3606,7 +3725,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.CreateWebhookRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -3753,7 +3872,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.UpdateWebhookRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":
@@ -3800,7 +3919,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/vibe_ip_internal_types.UpdateWebhookActiveRequest'
-        description: Json 请求参数
+        description: 请求参数
         required: true
       responses:
         "200":

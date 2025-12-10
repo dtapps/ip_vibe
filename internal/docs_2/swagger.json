@@ -66,7 +66,7 @@
                 "summary": "创建CDN记录",
                 "parameters": [
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -242,7 +242,7 @@
                         "required": true
                     },
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -302,7 +302,7 @@
                         "required": true
                     },
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -471,7 +471,7 @@
                 "summary": "创建配置",
                 "parameters": [
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -659,7 +659,7 @@
                         "required": true
                     },
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -759,7 +759,7 @@
                 "summary": "创建设备",
                 "parameters": [
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -947,7 +947,7 @@
                         "required": true
                     },
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -1176,7 +1176,7 @@
                 "summary": "创建DNS记录",
                 "parameters": [
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -1364,7 +1364,7 @@
                         "required": true
                     },
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -1430,7 +1430,7 @@
                         "required": true
                     },
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -1605,7 +1605,7 @@
                 "summary": "创建域名监控",
                 "parameters": [
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -1793,7 +1793,7 @@
                         "required": true
                     },
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -1859,7 +1859,7 @@
                         "required": true
                     },
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -2028,7 +2028,7 @@
                 "summary": "创建IP组",
                 "parameters": [
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -2218,7 +2218,7 @@
                         "required": true
                     },
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -2396,6 +2396,136 @@
                 }
             }
         },
+        "/open/device/{device_code}/ip-report": {
+            "post": {
+                "description": "设备上报IP",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "开放"
+                ],
+                "summary": "设备上报IP",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "设备编码",
+                        "name": "device_code",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.DeviceReportDeviceIpRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.DeviceReportDeviceIpResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "服务错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/open/device/{device_code}/port-forwards": {
+            "get": {
+                "description": "获取设备端口转发",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "开放"
+                ],
+                "summary": "获取设备端口转发",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "设备编码",
+                        "name": "device_code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/vibe_ip_internal_types.GetPortForwardResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/port-forwards": {
             "get": {
                 "description": "获取全部端口转发",
@@ -2453,7 +2583,7 @@
                 "summary": "创建端口转发",
                 "parameters": [
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -2641,7 +2771,7 @@
                         "required": true
                     },
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -2707,7 +2837,7 @@
                         "required": true
                     },
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -2779,7 +2909,7 @@
                         "required": true
                     },
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -3225,7 +3355,7 @@
                 "summary": "创建通知订阅",
                 "parameters": [
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -3413,7 +3543,7 @@
                         "required": true
                     },
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -3479,7 +3609,7 @@
                         "required": true
                     },
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -3585,7 +3715,7 @@
                 "summary": "创建通知",
                 "parameters": [
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -3773,7 +3903,7 @@
                         "required": true
                     },
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -3839,7 +3969,7 @@
                         "required": true
                     },
                     {
-                        "description": "Json 请求参数",
+                        "description": "请求参数",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -4287,6 +4417,36 @@
                 "webhook_id": {
                     "description": "通知序号",
                     "type": "integer"
+                }
+            }
+        },
+        "vibe_ip_internal_types.DeviceReportDeviceIpRequest": {
+            "type": "object",
+            "properties": {
+                "device_name": {
+                    "description": "设备名称",
+                    "type": "string"
+                },
+                "ipv4_addr": {
+                    "description": "IP地址V4",
+                    "type": "string"
+                },
+                "ipv6_addr": {
+                    "description": "IP地址V6",
+                    "type": "string"
+                }
+            }
+        },
+        "vibe_ip_internal_types.DeviceReportDeviceIpResponse": {
+            "type": "object",
+            "properties": {
+                "device_code": {
+                    "description": "设备编码",
+                    "type": "string"
+                },
+                "msg": {
+                    "description": "消息",
+                    "type": "string"
                 }
             }
         },

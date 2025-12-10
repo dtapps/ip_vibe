@@ -21,6 +21,19 @@ import (
 )
 
 // 设备上报IP
+//
+//	@Description	设备上报IP
+//	@Summary		设备上报IP
+//	@Tags			开放
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			device_code	path		string													true	"设备编码"
+//	@Param			request		body		types.DeviceReportDeviceIpRequest						true	"请求参数"
+//	@Success		200			{object}	APIResponse{data=types.DeviceReportDeviceIpResponse}	"成功响应"
+//	@Failure		400			{object}	APIResponse{}											"参数响应"
+//	@Failure		404			{object}	APIResponse{}											"错误响应"
+//	@Failure		500			{object}	APIResponse{}											"服务错误响应"
+//	@Router			/open/device/{device_code}/ip-report [post]
 func DeviceReportDeviceIp(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeviceReportDeviceIpRequest
@@ -200,13 +213,24 @@ func DeviceReportDeviceIp(c *gin.Context) {
 		}
 	}(context.Background(), global.GvaEntDb, global.GvaOperationLogHelper)
 
-	successResponse(c, gin.H{
-		"id":  deviceID,
-		"msg": msg,
+	successResponse(c, types.DeviceReportDeviceIpResponse{
+		DeviceCode: requestParams.DeviceCode,
+		Msg:        msg,
 	})
 }
 
 // 获取设备端口转发
+//
+//	@Description	获取设备端口转发
+//	@Summary		获取设备端口转发
+//	@Tags			开放
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			device_code	path		string												true	"设备编码"
+//	@Success		200			{object}	APIResponse{data=[]types.GetPortForwardResponse}	"成功响应"
+//	@Failure		400			{object}	APIResponse{}										"参数响应"
+//	@Failure		404			{object}	APIResponse{}										"错误响应"
+//	@Router			/open/device/{device_code}/port-forwards [get]
 func DevicePortForwards(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DevicePortForwardsRequest

@@ -107,7 +107,7 @@ func GetPortForward(c *gin.Context) {
 //	@Tags			端口转发
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.CreatePortForwardRequest					true	"Json 请求参数"
+//	@Param			request	body		types.CreatePortForwardRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}									"参数响应"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
@@ -153,7 +153,7 @@ func CreatePortForward(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64											true	"端口转发序号"
-//	@Param			request	body		types.UpdatePortForwardRequest					true	"Json 请求参数"
+//	@Param			request	body		types.UpdatePortForwardRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
 //	@Failure		500		{object}	APIResponse{}									"服务错误响应"
@@ -207,7 +207,7 @@ func UpdatePortForward(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64											true	"端口转发序号"
-//	@Param			request	body		types.UpdatePortForwardForwardRequest			true	"Json 请求参数"
+//	@Param			request	body		types.UpdatePortForwardForwardRequest			true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}									"参数响应"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
@@ -256,7 +256,7 @@ func UpdatePortForwardForward(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64											true	"端口转发序号"
-//	@Param			request	body		types.UpdatePortForwardActiveRequest			true	"Json 请求参数"
+//	@Param			request	body		types.UpdatePortForwardActiveRequest			true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}									"参数响应"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"

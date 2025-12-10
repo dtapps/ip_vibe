@@ -146,7 +146,7 @@ func GetWebhookSub(c *gin.Context) {
 //	@Tags			通知订阅
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.CreateWebhookSubRequest					true	"Json 请求参数"
+//	@Param			request	body		types.CreateWebhookSubRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetWebhookSubRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}									"参数响应"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
@@ -192,7 +192,7 @@ func CreateWebhookSub(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64											true	"通知订阅序号"
-//	@Param			request	body		types.UpdateWebhookSubRequest					true	"Json 请求参数"
+//	@Param			request	body		types.UpdateWebhookSubRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetWebhookSubRequest}	"成功响应"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
 //	@Failure		500		{object}	APIResponse{}									"服务错误响应"
@@ -241,7 +241,7 @@ func UpdateWebhookSub(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64											true	"通知订阅序号"
-//	@Param			request	body		types.UpdateWebhookSubActiveRequest				true	"Json 请求参数"
+//	@Param			request	body		types.UpdateWebhookSubActiveRequest				true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetWebhookSubRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}									"参数响应"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"

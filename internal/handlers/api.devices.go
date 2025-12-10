@@ -54,7 +54,9 @@ func GetDevices(c *gin.Context) {
 		list.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
 			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
 			Where(webhooksubscription.ObjIDEQ(item.ID)).
+			QueryWebhook().
 			IDs(c)
+
 		devices = append(devices, list)
 	}
 	successResponse(c, devices)
@@ -103,7 +105,9 @@ func GetDevice(c *gin.Context) {
 	response.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
 		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
 		Where(webhooksubscription.ObjIDEQ(requestParams.ID)).
+		QueryWebhook().
 		IDs(c)
+
 	successResponse(c, response)
 }
 
@@ -114,7 +118,7 @@ func GetDevice(c *gin.Context) {
 //	@Tags			设备
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.CreateDeviceRequest					true	"Json 请求参数"
+//	@Param			request	body		types.CreateDeviceRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDeviceRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}								"参数响应"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
@@ -162,7 +166,7 @@ func CreateDevice(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64										true	"设备序号"
-//	@Param			request	body		types.UpdateDeviceRequest					true	"Json 请求参数"
+//	@Param			request	body		types.UpdateDeviceRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDeviceRequest}	"成功响应"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
 //	@Failure		500		{object}	APIResponse{}								"服务错误响应"

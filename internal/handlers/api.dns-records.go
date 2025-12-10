@@ -64,7 +64,9 @@ func GetDnsRecords(c *gin.Context) {
 		list.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
 			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDNSRecord)).
 			Where(webhooksubscription.ObjIDEQ(item.ID)).
+			QueryWebhook().
 			IDs(c)
+
 		records = append(records, list)
 	}
 	successResponse(c, records)
@@ -124,7 +126,9 @@ func GetDnsRecord(c *gin.Context) {
 	response.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
 		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDNSRecord)).
 		Where(webhooksubscription.ObjIDEQ(requestParams.ID)).
+		QueryWebhook().
 		IDs(c)
+
 	successResponse(c, response)
 }
 
@@ -135,7 +139,7 @@ func GetDnsRecord(c *gin.Context) {
 //	@Tags			DNS记录
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.CreateDnsRecordRequest				true	"Json 请求参数"
+//	@Param			request	body		types.CreateDnsRecordRequest				true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}								"参数响应"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
@@ -187,7 +191,7 @@ func CreateDnsRecord(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64										true	"DNS记录序号"
-//	@Param			request	body		types.UpdateDnsRecordRequest				true	"Json 请求参数"
+//	@Param			request	body		types.UpdateDnsRecordRequest				true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
 //	@Failure		500		{object}	APIResponse{}								"服务错误响应"
@@ -244,7 +248,7 @@ func UpdateDnsRecord(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64										true	"DNS记录序号"
-//	@Param			request	body		types.UpdateDnsRecordActiveRequest			true	"Json 请求参数"
+//	@Param			request	body		types.UpdateDnsRecordActiveRequest			true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}								"参数响应"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"

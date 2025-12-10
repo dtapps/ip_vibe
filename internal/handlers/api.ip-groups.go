@@ -53,7 +53,9 @@ func GetIPGroups(c *gin.Context) {
 		list.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
 			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeIPGroup)).
 			Where(webhooksubscription.ObjIDEQ(item.ID)).
+			QueryWebhook().
 			IDs(c)
+
 		ipGroups = append(ipGroups, list)
 	}
 	successResponse(c, ipGroups)
@@ -103,7 +105,9 @@ func GetIPGroup(c *gin.Context) {
 	response.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
 		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeIPGroup)).
 		Where(webhooksubscription.ObjIDEQ(requestParams.ID)).
+		QueryWebhook().
 		IDs(c)
+
 	successResponse(c, response)
 }
 
@@ -114,7 +118,7 @@ func GetIPGroup(c *gin.Context) {
 //	@Tags			IP组
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.CreateIPGroupRequest					true	"Json 请求参数"
+//	@Param			request	body		types.CreateIPGroupRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetIPGroupResponse}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}								"参数响应"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
@@ -160,7 +164,7 @@ func CreateIPGroup(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64										true	"IP组序号"
-//	@Param			request	body		types.UpdateIPGroupRequest					true	"Json 请求参数"
+//	@Param			request	body		types.UpdateIPGroupRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetIPGroupRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}								"参数响应"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"

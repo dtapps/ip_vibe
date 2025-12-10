@@ -62,7 +62,9 @@ func GetCdnRecords(c *gin.Context) {
 		list.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
 			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeCdnRecord)).
 			Where(webhooksubscription.ObjIDEQ(item.ID)).
+			QueryWebhook().
 			IDs(c)
+
 		records = append(records, list)
 	}
 	successResponse(c, records)
@@ -120,6 +122,7 @@ func GetCdnRecord(c *gin.Context) {
 	response.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
 		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeCdnRecord)).
 		Where(webhooksubscription.ObjIDEQ(requestParams.ID)).
+		QueryWebhook().
 		IDs(c)
 
 	successResponse(c, response)
@@ -132,7 +135,7 @@ func GetCdnRecord(c *gin.Context) {
 //	@Tags			CDN记录
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.CreateCdnRecordRequest				true	"Json 请求参数"
+//	@Param			request	body		types.CreateCdnRecordRequest				true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetCdnRecordRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}								"参数响应"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
@@ -179,7 +182,7 @@ func CreateCdnRecord(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64										true	"CDN记录序号"
-//	@Param			request	body		types.UpdateCdnRecordRequest				true	"Json 请求参数"
+//	@Param			request	body		types.UpdateCdnRecordRequest				true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetCdnRecordRequest}	"成功响应"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
 //	@Router			/cdn-records/{id} [patch]
@@ -233,7 +236,7 @@ func UpdateCdnRecord(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64										true	"CDN记录序号"
-//	@Param			request	body		types.UpdateCdnRecordActiveRequest			true	"Json 请求参数"
+//	@Param			request	body		types.UpdateCdnRecordActiveRequest			true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetCdnRecordRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}								"参数响应"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"

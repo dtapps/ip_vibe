@@ -292,6 +292,27 @@ definitions:
     - obj_type
     - webhook_id
     type: object
+  vibe_ip_internal_types.DeviceReportDeviceIpRequest:
+    properties:
+      device_name:
+        description: 设备名称
+        type: string
+      ipv4_addr:
+        description: IP地址V4
+        type: string
+      ipv6_addr:
+        description: IP地址V6
+        type: string
+    type: object
+  vibe_ip_internal_types.DeviceReportDeviceIpResponse:
+    properties:
+      device_code:
+        description: 设备编码
+        type: string
+      msg:
+        description: 消息
+        type: string
+    type: object
   vibe_ip_internal_types.GetCdnRecordRequest:
     type: object
   vibe_ip_internal_types.GetCdnRecordResponse:
@@ -899,7 +920,7 @@ paths:
       - application/json
       description: 创建CDN记录
       parameters:
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -1008,7 +1029,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -1045,7 +1066,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -1148,7 +1169,7 @@ paths:
       - application/json
       description: 创建配置
       parameters:
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -1265,7 +1286,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -1325,7 +1346,7 @@ paths:
       - application/json
       description: 创建设备
       parameters:
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -1442,7 +1463,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -1582,7 +1603,7 @@ paths:
       - application/json
       description: 创建DNS记录
       parameters:
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -1699,7 +1720,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -1740,7 +1761,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -1847,7 +1868,7 @@ paths:
       - application/json
       description: 创建域名监控
       parameters:
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -1964,7 +1985,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -2005,7 +2026,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -2108,7 +2129,7 @@ paths:
       - application/json
       description: 创建IP组
       parameters:
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -2226,7 +2247,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -2339,6 +2360,86 @@ paths:
       summary: 检查IP组健康状态
       tags:
       - IP组
+  /open/device/{device_code}/ip-report:
+    post:
+      consumes:
+      - application/json
+      description: 设备上报IP
+      parameters:
+      - description: 设备编码
+        in: path
+        name: device_code
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.DeviceReportDeviceIpRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.DeviceReportDeviceIpResponse'
+              type: object
+        "400":
+          description: 参数响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "500":
+          description: 服务错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 设备上报IP
+      tags:
+      - 开放
+  /open/device/{device_code}/port-forwards:
+    get:
+      consumes:
+      - application/json
+      description: 获取设备端口转发
+      parameters:
+      - description: 设备编码
+        in: path
+        name: device_code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetPortForwardResponse'
+                  type: array
+              type: object
+        "400":
+          description: 参数响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取设备端口转发
+      tags:
+      - 开放
   /port-forwards:
     get:
       consumes:
@@ -2370,7 +2471,7 @@ paths:
       - application/json
       description: 创建端口转发
       parameters:
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -2487,7 +2588,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -2528,7 +2629,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -2573,7 +2674,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -2853,7 +2954,7 @@ paths:
       - application/json
       description: 创建通知订阅
       parameters:
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -2970,7 +3071,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -3011,7 +3112,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -3075,7 +3176,7 @@ paths:
       - application/json
       description: 创建通知
       parameters:
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -3192,7 +3293,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true
@@ -3233,7 +3334,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Json 请求参数
+      - description: 请求参数
         in: body
         name: request
         required: true

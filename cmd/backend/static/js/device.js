@@ -27,6 +27,7 @@ async function openFormModal(id) {
       }
 
       // 初始化 Select2 控件
+      console.log("select2 初始化", selectId2, select2Data);
       selectId2.select2({
         width: "100%",
         placeholder: "请选择通知 Webhook",
@@ -56,9 +57,11 @@ async function openFormModal(id) {
 
       if (device.webhooks && device.webhooks.length > 0) {
         // 高亮已选
+        console.log("select2 高亮已选", device.webhooks);
         selectId2.val(device.webhooks).trigger("change");
       } else {
         // 清空已选
+        console.log("select2 清空已选", device.webhooks);
         selectId2.val(null).trigger("change");
       }
 
@@ -79,6 +82,7 @@ async function openFormModal(id) {
       document.getElementById("code").disabled = false;
 
       // 清空已选
+        console.log("select2 清空已选",);
       selectId2.val(null).trigger("change");
 
       showModal("modal", "modalTitle", "添加 设备");
