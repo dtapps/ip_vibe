@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-	"vibe_ip/internal/backend/service"
+	"vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/deviceportforward"
@@ -209,7 +209,7 @@ func DeviceReportDeviceIp(c *gin.Context) {
 			}
 
 			// 发送通知 (你原来就在 go func 中，现在并入这个更集中的异步块)
-			_ = service.NewWebhookService(asyncDb).Send(asyncCtx, webhooksubscription.ObjTypeDevice, deviceID, notifyData)
+			_ = webhook.NewSend(asyncDb).Send(asyncCtx, webhooksubscription.ObjTypeDevice, deviceID, notifyData)
 		}
 	}(context.Background(), global.GvaEntDb, global.GvaOperationLogHelper)
 

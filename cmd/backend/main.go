@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 	"vibe_ip/internal/backend/service"
+	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/docs_2"
 	"vibe_ip/internal/docs_3"
 	"vibe_ip/internal/global"
@@ -444,7 +445,7 @@ func main() {
 	}
 
 	// 启动域名监控任务
-	domainMonitor := service.NewDomainMonitorService(global.GvaEntDb, global.GvaGoCron)
+	domainMonitor := task.NewDomainMonitorTask(global.GvaEntDb, global.GvaGoCron)
 	if err := domainMonitor.StartJob(ctx); err != nil {
 		fmt.Printf("启动域名监控任务失败: %v\n", err)
 		os.Exit(1)

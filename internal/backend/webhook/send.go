@@ -1,4 +1,4 @@
-package service
+package webhook
 
 import (
 	"context"
@@ -16,13 +16,13 @@ import (
 	"resty.dev/v3"
 )
 
-type WebhookService struct {
+type Send struct {
 	db     *ent.Client   // 数据库客户端
 	log    *slog.Logger  // 日志记录器
 	client *resty.Client // Resty HTTP 客户端
 }
 
-func NewWebhookService(db *ent.Client) *WebhookService {
+func NewSend(db *ent.Client) *Send {
 
 	// 创建一个新的 Resty 客户端
 	client := resty.New()
@@ -30,14 +30,14 @@ func NewWebhookService(db *ent.Client) *WebhookService {
 	// 设置默认超时
 	client.SetTimeout(30 * time.Second)
 
-	return &WebhookService{
+	return &Send{
 		db:     db,
 		log:    slog.With("component", "webhook"),
 		client: client,
 	}
 }
 
-func (s *WebhookService) Send(ctx context.Context, objType webhooksubscription.ObjType, objID int64, payload utils.TemplateData) (err error) {
+func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, objID int64, payload utils.TemplateData) (err error) {
 	allWebhook, err := s.db.WebhookSubscription.Query().
 		Where(
 			webhooksubscription.ObjTypeEQ(objType),
@@ -88,19 +88,19 @@ func (s *WebhookService) Send(ctx context.Context, objType webhooksubscription.O
 
 				switch item.Edges.Webhook.Platform {
 				case webhook.PlatformWechatWork:
-					err = s.SendWechatWork(egCtx, item.Edges.Webhook.URL, templateTitle, templateContent)
+					err = s.WechatWork(egCtx, item.Edges.Webhook.URL, templateTitle, templateContent)
 				case webhook.PlatformDingtalk:
-					err = s.SendDingtalk(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
+					err = s.Dingtalk(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				case webhook.PlatformFeishu:
-					err = s.SendFeishu(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
+					err = s.Feishu(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				case webhook.PlatformBark:
-					err = s.SendBark(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
+					err = s.Bark(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				case webhook.PlatformFt07:
-					err = s.SendFt07(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
+					err = s.Ft07(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				case webhook.PlatformPushDeer:
-					err = s.SendPushDeer(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
+					err = s.PushDeer(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				default:
-					err = s.SendHttp(egCtx, item.Edges.Webhook.URL, templateTitle, templateContent)
+					err = s.Http(egCtx, item.Edges.Webhook.URL, templateTitle, templateContent)
 				}
 				if err != nil {
 					s.log.ErrorContext(egCtx, "发送Webhook失败",
@@ -130,9 +130,9 @@ func (s *WebhookService) Send(ctx context.Context, objType webhooksubscription.O
 	return nil
 }
 
-// 企业微信 Webhook 发送
+// WechatWork Webhook 发送
 // https://developer.work.weixin.qq.com/document/path/99110
-func (s *WebhookService) SendWechatWork(ctx context.Context, url string, title string, content any) (err error) {
+func (s *Send) WechatWork(ctx context.Context, url string, title string, content any) (err error) {
 
 	client := global.GvaWechatWork
 
@@ -157,9 +157,9 @@ func (s *WebhookService) SendWechatWork(ctx context.Context, url string, title s
 	return nil
 }
 
-// 钉钉 Webhook 发送
+// Dingtalk Webhook 发送
 // https://open.dingtalk.com/document/group/custom-robot-access
-func (s *WebhookService) SendDingtalk(ctx context.Context, url string, secret string, title string, content any) (err error) {
+func (s *Send) Dingtalk(ctx context.Context, url string, secret string, title string, content any) (err error) {
 
 	client := global.GvaDingTalk
 
@@ -193,9 +193,9 @@ func (s *WebhookService) SendDingtalk(ctx context.Context, url string, secret st
 	return nil
 }
 
-// 飞书 Webhook 发送
+// Feishu Webhook 发送
 // https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot
-func (s *WebhookService) SendFeishu(ctx context.Context, url string, secret string, title string, content any) (err error) {
+func (s *Send) Feishu(ctx context.Context, url string, secret string, title string, content any) (err error) {
 
 	client := global.GvaFeishu
 
@@ -235,7 +235,7 @@ func (s *WebhookService) SendFeishu(ctx context.Context, url string, secret stri
 // Bark Webhook 发送
 // - 第一行
 // - 第二个
-func (s *WebhookService) SendBark(ctx context.Context, url string, key string, title string, content any) (err error) {
+func (s *Send) Bark(ctx context.Context, url string, key string, title string, content any) (err error) {
 
 	client := global.GvaBark
 
@@ -262,10 +262,10 @@ func (s *WebhookService) SendBark(ctx context.Context, url string, key string, t
 	return nil
 }
 
-// SendFt07 Webhook 发送
+// Ft07 Webhook 发送
 // - 第一行
 // - 第二个
-func (s *WebhookService) SendFt07(ctx context.Context, url string, key string, title string, content any) (err error) {
+func (s *Send) Ft07(ctx context.Context, url string, key string, title string, content any) (err error) {
 
 	client := global.GvaFt07
 
@@ -293,7 +293,7 @@ func (s *WebhookService) SendFt07(ctx context.Context, url string, key string, t
 
 // PushDeer Webhook 发送
 // https://www.pushdeer.com/dev.html
-func (s *WebhookService) SendPushDeer(ctx context.Context, url string, key string, title string, content any) (err error) {
+func (s *Send) PushDeer(ctx context.Context, url string, key string, title string, content any) (err error) {
 
 	client := global.GvaPushDeer
 
@@ -318,8 +318,8 @@ func (s *WebhookService) SendPushDeer(ctx context.Context, url string, key strin
 	return nil
 }
 
-// Webhook 发送
-func (s *WebhookService) SendHttp(ctx context.Context, url string, title string, content any) (err error) {
+// Http Webhook 发送
+func (s *Send) Http(ctx context.Context, url string, title string, content any) (err error) {
 
 	// 使用 Resty 发送请求
 	resp, err := s.client.R().

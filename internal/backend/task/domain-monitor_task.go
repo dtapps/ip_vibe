@@ -1,4 +1,4 @@
-package service
+package task
 
 import (
 	"context"
@@ -16,23 +16,23 @@ import (
 	"github.com/go-co-op/gocron/v2"
 )
 
-type DomainMonitorService struct {
+type DomainMonitorTask struct {
 	cron gocron.Scheduler // 定时任务调度器
 	job  gocron.Job       // 域名监控任务
 	db   *ent.Client      // 数据库客户端
 	log  *slog.Logger     // 日志记录器
 }
 
-func NewDomainMonitorService(db *ent.Client, cron gocron.Scheduler) *DomainMonitorService {
+func NewDomainMonitorTask(db *ent.Client, cron gocron.Scheduler) *DomainMonitorTask {
 
-	return &DomainMonitorService{
+	return &DomainMonitorTask{
 		cron: cron,
 		db:   db,
 		log:  slog.With("component", "monitor"),
 	}
 }
 
-func (s *DomainMonitorService) StartJob(ctx context.Context) (err error) {
+func (s *DomainMonitorTask) StartJob(ctx context.Context) (err error) {
 	// 每30秒到60秒执行一次
 	s.job, err = s.cron.NewJob(
 		gocron.DurationRandomJob(
@@ -52,7 +52,7 @@ func (s *DomainMonitorService) StartJob(ctx context.Context) (err error) {
 }
 
 // CheckAndRunAllMonitors 查找并执行到期的监控任务
-func (s *DomainMonitorService) CheckAndRunAllMonitors() {
+func (s *DomainMonitorTask) CheckAndRunAllMonitors() {
 
 	var err error
 	ctx := context.Background()
@@ -103,7 +103,7 @@ func (s *DomainMonitorService) CheckAndRunAllMonitors() {
 }
 
 // ExecuteMonitorTask 执行单个监控任务
-func (s *DomainMonitorService) ExecuteMonitorTask(ctx context.Context, newLog *slog.Logger, monitor *ent.DomainMonitor) (err error) {
+func (s *DomainMonitorTask) ExecuteMonitorTask(ctx context.Context, newLog *slog.Logger, monitor *ent.DomainMonitor) (err error) {
 
 	newLog.InfoContext(ctx, "开始执行检查")
 	defer newLog.InfoContext(ctx, "检查完成")
@@ -175,7 +175,7 @@ func (s *DomainMonitorService) ExecuteMonitorTask(ctx context.Context, newLog *s
 }
 
 // 辅助函数：根据检查结果获取 DomainMonitorStatus
-func (s *DomainMonitorService) getCurrentStatus(success bool) domainmonitor.CurrentStatus {
+func (s *DomainMonitorTask) getCurrentStatus(success bool) domainmonitor.CurrentStatus {
 	if success {
 		return domainmonitor.CurrentStatusSuccess
 	}
@@ -200,7 +200,7 @@ type CheckResult struct {
 }
 
 // RunDomainCheck 执行实际的网络检查并返回结果
-func (s *DomainMonitorService) runDomainCheck(ctx context.Context, domain string, protocol string) *CheckResult {
+func (s *DomainMonitorTask) runDomainCheck(ctx context.Context, domain string, protocol string) *CheckResult {
 	result := &CheckResult{
 		StatusMsg: "未执行",
 	}
