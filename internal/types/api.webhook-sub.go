@@ -1,5 +1,10 @@
 package types
 
+// 获取全部通知订阅 请求结构
+type GetWebhookSubsRequest struct {
+	IsActive *bool `json:"is_active" binding:"required"` // 是否活跃
+}
+
 // 获取通知订阅 响应结构
 type GetWebhookSubResponse struct {
 	ID          int64  `json:"id"`                     // 通知订阅序号

@@ -1,0 +1,22 @@
+{{ define "orderif" }}
+
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+{{/* 以下行告诉IntelliJ/GoLand启用基于*gen.Graph类型的自动完成 */}}
+
+{{ $pkg := base $.Config.Package }}
+{{ template "header" $ }}
+
+{{ range $n := $.Nodes }}
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (qb *{{ $n.Name }}Query) OrderIf(condition bool, o ...{{ $n.Package }}.OrderOption) *{{ $n.Name }}Query {
+	if condition {
+		qb.Order(o...)
+	}
+	return qb
+}
+
+{{ end }}
+
+{{ end }}

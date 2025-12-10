@@ -4,6 +4,11 @@ import (
 	"time"
 )
 
+// 获取全部域名监控 请求结构
+type GetDomainMonitorsRequest struct {
+	IsActive *bool `json:"is_active" binding:"required"` // 是否活跃
+}
+
 // 获取域名监控 响应结构
 type GetDomainMonitorResponse struct {
 	ID            int64     `json:"id"`              // 域名监控记录序号

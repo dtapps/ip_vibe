@@ -30,9 +30,9 @@ import (
 //	@Param			device_code	path		string													true	"设备编码"
 //	@Param			request		body		types.DeviceReportDeviceIpRequest						true	"请求参数"
 //	@Success		200			{object}	APIResponse{data=types.DeviceReportDeviceIpResponse}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}											"参数响应"
+//	@Failure		400			{object}	APIResponse{}											请求参数
 //	@Failure		404			{object}	APIResponse{}											"错误响应"
-//	@Failure		500			{object}	APIResponse{}											"服务错误响应"
+//	@Failure		500			{object}	APIResponse{}											"服务错误"
 //	@Router			/open/device/{device_code}/ip-report [post]
 func DeviceReportDeviceIp(c *gin.Context) {
 	// 请求参数
@@ -226,10 +226,10 @@ func DeviceReportDeviceIp(c *gin.Context) {
 //	@Tags			开放
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			device_code	path		string												true	"设备编码"
-//	@Success		200			{object}	APIResponse{data=[]types.GetPortForwardResponse}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}										"参数响应"
-//	@Failure		404			{object}	APIResponse{}										"错误响应"
+//	@Param			device_code	path		string													true	"设备编码"
+//	@Success		200			{object}	APIResponse{data=[]types.DevicePortForwardsResponse}	"成功响应"
+//	@Failure		400			{object}	APIResponse{}											请求参数
+//	@Failure		404			{object}	APIResponse{}											"错误响应"
 //	@Router			/open/device/{device_code}/port-forwards [get]
 func DevicePortForwards(c *gin.Context) {
 	// 请求参数
@@ -248,7 +248,7 @@ func DevicePortForwards(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
 		return
 	}
-	portForwards := make([]types.GetPortForwardResponse, 0)
+	portForwards := make([]types.DevicePortForwardsResponse, 0)
 	// 查询端口转发
 	allPortForward, err := firstDevice.QueryPortForwards().
 		Where(deviceportforward.IsActiveEQ(true)).
@@ -259,16 +259,13 @@ func DevicePortForwards(c *gin.Context) {
 		return
 	}
 	for _, item := range allPortForward {
-		portForwards = append(portForwards, types.GetPortForwardResponse{
+		portForwards = append(portForwards, types.DevicePortForwardsResponse{
 			ID:          item.ID,
-			Name:        item.Name,
-			Description: item.Description,
 			LocalPort:   item.LocalPort,
 			RemoteHost:  item.RemoteHost,
 			RemotePort:  item.RemotePort,
 			Protocols:   item.Protocols,
 			AutoForward: item.AutoForward,
-			IsActive:    item.IsActive,
 		})
 	}
 	successResponse(c, portForwards)

@@ -25,13 +25,23 @@ import (
 //	@Tags			域名监控
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Success		200	{object}	APIResponse{data=[]types.GetDomainMonitorResponse}	"成功响应"
-//	@Failure		404	{object}	APIResponse{}										"错误响应"
+//	@Param			request	body		types.GetDomainMonitorsRequest						false	"请求参数"
+//	@Success		200		{object}	APIResponse{data=[]types.GetDomainMonitorResponse}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}										"参数错误"
+//	@Failure		404		{object}	APIResponse{}										"错误响应"
 //	@Router			/domain-monitors [get]
 func GetDomainMonitors(c *gin.Context) {
+	// 请求参数
+	var requestParams types.GetDomainMonitorsRequest
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+
 	domainMonitors := make([]types.GetDomainMonitorResponse, 0)
 	// 查询全部域名监控
 	allDomainMonitor, err := global.GvaEntDb.DomainMonitor.Query().
+		WhereIf(requestParams.IsActive != nil, domainmonitor.IsActiveEQ(*requestParams.IsActive)).
 		Order(ent.Desc(domainmonitor.FieldCreatedAt)).
 		All(c)
 	if err != nil {
@@ -71,7 +81,7 @@ func GetDomainMonitors(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64												true	"域名监控记录序号"
 //	@Success		200	{object}	APIResponse{data=types.GetDomainMonitorResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}										"参数响应"
+//	@Failure		400	{object}	APIResponse{}										请求参数
 //	@Failure		404	{object}	APIResponse{}										"错误响应"
 //	@Router			/domain-monitors/{id} [get]
 func GetDomainMonitor(c *gin.Context) {
@@ -121,9 +131,9 @@ func GetDomainMonitor(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			request	body		types.CreateDomainMonitorRequest				true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDomainMonitorRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}									"参数响应"
+//	@Failure		400		{object}	APIResponse{}									请求参数
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
-//	@Failure		500		{object}	APIResponse{}									"服务错误响应"
+//	@Failure		500		{object}	APIResponse{}									"服务错误"
 //	@Router			/domain-monitors [post]
 func CreateDomainMonitor(c *gin.Context) {
 	// 请求参数
@@ -169,7 +179,7 @@ func CreateDomainMonitor(c *gin.Context) {
 //	@Param			request	body		types.UpdateDomainMonitorRequest				true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDomainMonitorRequest}	"成功响应"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
-//	@Failure		500		{object}	APIResponse{}									"服务错误响应"
+//	@Failure		500		{object}	APIResponse{}									"服务错误"
 //	@Router			/domain-monitors/{id} [patch]
 func UpdateDomainMonitor(c *gin.Context) {
 	// 请求参数
@@ -221,9 +231,9 @@ func UpdateDomainMonitor(c *gin.Context) {
 //	@Param			id		path		int64											true	"域名监控序号"
 //	@Param			request	body		types.UpdateDomainMonitorActiveRequest			true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDomainMonitorRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}									"参数响应"
+//	@Failure		400		{object}	APIResponse{}									请求参数
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
-//	@Failure		500		{object}	APIResponse{}									"服务错误响应"
+//	@Failure		500		{object}	APIResponse{}									"服务错误"
 //	@Router			/domain-monitors/{id}/active [patch]
 func UpdateDomainMonitorActive(c *gin.Context) {
 	// 请求参数
@@ -273,9 +283,9 @@ func UpdateDomainMonitorActive(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64											true	"域名监控序号"
 //	@Success		200	{object}	APIResponse{data=types.GetDomainMonitorRequest}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}									"参数响应"
+//	@Failure		400	{object}	APIResponse{}									请求参数
 //	@Failure		404	{object}	APIResponse{}									"错误响应"
-//	@Failure		500	{object}	APIResponse{}									"服务错误响应"
+//	@Failure		500	{object}	APIResponse{}									"服务错误"
 //	@Router			/domain-monitors/{id} [delete]
 func DeleteDomainMonitor(c *gin.Context) {
 	// 请求参数
@@ -319,9 +329,9 @@ func DeleteDomainMonitor(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64											true	"域名监控序号"
 //	@Success		200	{object}	APIResponse{data=types.GetDomainMonitorRequest}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}									"参数响应"
+//	@Failure		400	{object}	APIResponse{}									请求参数
 //	@Failure		404	{object}	APIResponse{}									"错误响应"
-//	@Failure		500	{object}	APIResponse{}									"服务错误响应"
+//	@Failure		500	{object}	APIResponse{}									"服务错误"
 //	@Router			/domain-monitors/{id}/check [get]
 func CheckDomainMonitor(c *gin.Context) {
 	// 请求参数

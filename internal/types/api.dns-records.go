@@ -2,6 +2,11 @@ package types
 
 import "time"
 
+// 获取全部DNS记录 请求结构
+type GetDnsRecordsRequest struct {
+	IsActive *bool `json:"is_active" binding:"required"` // 是否活跃
+}
+
 // 获取DNS记录 响应结构
 type GetDnsRecordResponse struct {
 	ID            int64     `json:"id,omitempty"`              // DNS记录序号

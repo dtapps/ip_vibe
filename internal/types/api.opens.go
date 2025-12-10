@@ -18,3 +18,13 @@ type DeviceReportDeviceIpResponse struct {
 type DevicePortForwardsRequest struct {
 	DeviceCode string `uri:"device_code" json:"-" binding:"required"` // 设备编码
 }
+
+// 获取设备端口转发 响应结构
+type DevicePortForwardsResponse struct {
+	ID          int64    `json:"id"`           // 设备端口转发序号
+	LocalPort   int      `json:"local_port"`   // 本地监听端口
+	RemoteHost  string   `json:"remote_host"`  // 远程目标地址
+	RemotePort  int      `json:"remote_port"`  // 远程目标端口
+	Protocols   []string `json:"protocols"`    // 协议列表，支持 tcp4, tcp6, udp4, udp6
+	AutoForward bool     `json:"auto_forward"` // 防火墙自动放行
+}

@@ -25,13 +25,23 @@ import (
 //	@Tags			DNS记录
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Success		200	{object}	APIResponse{data=[]types.GetDnsRecordResponse}	"成功响应"
-//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Param			request	body		types.GetDnsRecordsRequest						false	"请求参数"
+//	@Success		200		{object}	APIResponse{data=[]types.GetDnsRecordResponse}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}									"参数错误"
+//	@Failure		404		{object}	APIResponse{}									"错误响应"
 //	@Router			/dns-records [get]
 func GetDnsRecords(c *gin.Context) {
+	// 请求参数
+	var requestParams types.GetDnsRecordsRequest
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		return
+	}
+
 	records := make([]types.GetDnsRecordResponse, 0)
 	// 查询全部DNS记录
 	allDnsRecord, err := global.GvaEntDb.DNSRecord.Query().
+		WhereIf(requestParams.IsActive != nil, dnsrecord.IsActiveEQ(*requestParams.IsActive)).
 		WithConfig().
 		WithIPGroup().
 		WithCdnRecord().
@@ -81,7 +91,7 @@ func GetDnsRecords(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64											true	"DNS记录序号"
 //	@Success		200	{object}	APIResponse{data=types.GetDnsRecordResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}									"参数响应"
+//	@Failure		400	{object}	APIResponse{}									请求参数
 //	@Failure		404	{object}	APIResponse{}									"错误响应"
 //	@Router			/dns-records/{id} [get]
 func GetDnsRecord(c *gin.Context) {
@@ -141,9 +151,9 @@ func GetDnsRecord(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			request	body		types.CreateDnsRecordRequest				true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								"参数响应"
+//	@Failure		400		{object}	APIResponse{}								请求参数
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
-//	@Failure		500		{object}	APIResponse{}								"服务错误响应"
+//	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/dns-records [post]
 func CreateDnsRecord(c *gin.Context) {
 	// 请求参数
@@ -194,7 +204,7 @@ func CreateDnsRecord(c *gin.Context) {
 //	@Param			request	body		types.UpdateDnsRecordRequest				true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
-//	@Failure		500		{object}	APIResponse{}								"服务错误响应"
+//	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/dns-records/{id} [patch]
 func UpdateDnsRecord(c *gin.Context) {
 	// 请求参数
@@ -250,9 +260,9 @@ func UpdateDnsRecord(c *gin.Context) {
 //	@Param			id		path		int64										true	"DNS记录序号"
 //	@Param			request	body		types.UpdateDnsRecordActiveRequest			true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								"参数响应"
+//	@Failure		400		{object}	APIResponse{}								请求参数
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
-//	@Failure		500		{object}	APIResponse{}								"服务错误响应"
+//	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/dns-records/{id}/active [patch]
 func UpdateDnsRecordActive(c *gin.Context) {
 	// 请求参数
@@ -298,9 +308,9 @@ func UpdateDnsRecordActive(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"DNS记录序号"
 //	@Success		200	{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数响应"
+//	@Failure		400	{object}	APIResponse{}								请求参数
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
-//	@Failure		500	{object}	APIResponse{}								"服务错误响应"
+//	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/dns-records/{id} [delete]
 func DeleteDnsRecord(c *gin.Context) {
 	// 请求参数
@@ -345,9 +355,9 @@ func DeleteDnsRecord(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"DNS记录序号"
 //	@Success		200	{object}	APIResponse{data=[][]backend.ToPairsStruct}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数响应"
+//	@Failure		400	{object}	APIResponse{}								请求参数
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
-//	@Failure		500	{object}	APIResponse{}								"服务错误响应"
+//	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/dns-records/{id}/healthcheck [get]
 func HealthcheckDnsRecord(c *gin.Context) {
 	// 请求参数

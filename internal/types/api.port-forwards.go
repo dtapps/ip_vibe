@@ -1,5 +1,10 @@
 package types
 
+// 获取全部端口转发 请求结构
+type GetPortForwardsRequest struct {
+	IsActive *bool `json:"is_active" binding:"required"` // 是否活跃
+}
+
 // 获取端口转发 响应结构
 type GetPortForwardResponse struct {
 	ID          int64    `json:"id"`                    // 设备端口转发序号

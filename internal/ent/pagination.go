@@ -2,9 +2,7 @@
 
 package ent
 
-import (
-	"context"
-)
+import "context"
 
 // PaginationResult 表示分页查询的结果。
 // 包含当前页数据、总数、页码和每页大小，便于前端直接使用。
