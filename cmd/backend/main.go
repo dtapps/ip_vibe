@@ -156,9 +156,11 @@ func main() {
 		if len(ginAccounts) > 0 {
 			docsGroup.Use(gin.BasicAuth(ginAccounts))
 		}
-		// 配置版本
+		// 配置 Swagger 信息
 		docs_2.SwaggerInfo.Version = global.GvaVersion
+		docs_2.SwaggerInfo.Host = ""
 		docs_3.SwaggerInfo.Version = global.GvaVersion
+		docs_3.SwaggerInfo.Host = ""
 		docsGroup.GET("/docs_2/doc.json", func(ctx *gin.Context) {
 			ctx.Header("Content-Type", "application/json")
 			ctx.String(200, docs_2.SwaggerInfo.ReadDoc())
