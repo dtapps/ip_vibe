@@ -11,7 +11,7 @@ import (
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
 func (q *OperationLogQuery) OrderIf(condition bool, o operationlog.OrderOption) *OperationLogQuery {
-	q.log(fmt.Sprintf("OrderIf: condition=%t, orderOption=%v\n", condition, o))
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
 	if condition {
 		q.Order(o)
 	}
@@ -21,7 +21,7 @@ func (q *OperationLogQuery) OrderIf(condition bool, o operationlog.OrderOption) 
 // OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
 func (q *OperationLogQuery) OrderIfs(condition bool, o ...operationlog.OrderOption) *OperationLogQuery {
-	q.log(fmt.Sprintf("OrderIfs: condition=%t, orderOptions=%v\n", condition, o))
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
 	if condition {
 		q.Order(o...)
 	}
@@ -31,7 +31,7 @@ func (q *OperationLogQuery) OrderIfs(condition bool, o ...operationlog.OrderOpti
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
 func (q *RestyLogQuery) OrderIf(condition bool, o restylog.OrderOption) *RestyLogQuery {
-	q.log(fmt.Sprintf("OrderIf: condition=%t, orderOption=%v\n", condition, o))
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
 	if condition {
 		q.Order(o)
 	}
@@ -41,7 +41,7 @@ func (q *RestyLogQuery) OrderIf(condition bool, o restylog.OrderOption) *RestyLo
 // OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
 func (q *RestyLogQuery) OrderIfs(condition bool, o ...restylog.OrderOption) *RestyLogQuery {
-	q.log(fmt.Sprintf("OrderIfs: condition=%t, orderOptions=%v\n", condition, o))
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
 	if condition {
 		q.Order(o...)
 	}

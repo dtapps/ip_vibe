@@ -12,7 +12,7 @@
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *{{ $n.Name }}Query) WhereIf(condition bool, p predicate.{{ $n.Name }}) *{{ $n.Name }}Query {
 	{{- /* if q.debug { */}}
-    q.log(fmt.Sprintf("WhereIf: condition=%t, predicate=%v\n", condition, p))
+    q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
     {{- /* } */}}
 	if condition {
 		q.Where(p)
@@ -24,7 +24,7 @@ func (q *{{ $n.Name }}Query) WhereIf(condition bool, p predicate.{{ $n.Name }}) 
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *{{ $n.Name }}Query) WhereIfs(condition bool, p ...predicate.{{ $n.Name }}) *{{ $n.Name }}Query {
 	{{- /* if q.debug { */}}
-    q.log(fmt.Sprintf("WhereIfs: condition=%t, predicates=%v\n", condition, p))
+    q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
     {{- /* } */}}
 	if condition {
 		q.Where(p...)
@@ -37,7 +37,7 @@ func (q *{{ $n.Name }}Query) WhereIfs(condition bool, p ...predicate.{{ $n.Name 
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *{{ $n.Name }}Query) WhereIfFunc(condition bool, predicateFunc func() predicate.{{ $n.Name }}) *{{ $n.Name }}Query {
     {{- /* if q.debug { */}}
-    q.log(fmt.Sprintf("WhereIfFunc: condition=%t, predicateFunc=%p\n", condition, predicateFunc))
+    q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
     {{- /* } */}}
     if condition {
         q.Where(predicateFunc()) 

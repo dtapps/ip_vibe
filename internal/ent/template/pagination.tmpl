@@ -24,6 +24,7 @@ type PaginationResult[T any] struct {
 //   - size > 1000 时限制为 1000（防止数据库压力过大）
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *{{ $n.Name }}Query) Paginate(ctx context.Context, page, size int) (*PaginationResult[{{ $n.Name }}], error) {
+    q.log("Paginate: page=", page, ", size=", size)
 	if page < 1 {
 		page = 1
 	}

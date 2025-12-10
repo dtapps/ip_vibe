@@ -21,6 +21,7 @@ type PaginationResult[T any] struct {
 //
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *OperationLogQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[OperationLog], error) {
+	q.log("Paginate: page=", page, ", size=", size)
 	if page < 1 {
 		page = 1
 	}
@@ -61,6 +62,7 @@ func (q *OperationLogQuery) Paginate(ctx context.Context, page, size int) (*Pagi
 //
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *RestyLogQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[RestyLog], error) {
+	q.log("Paginate: page=", page, ", size=", size)
 	if page < 1 {
 		page = 1
 	}

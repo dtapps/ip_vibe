@@ -114,6 +114,7 @@ func parseSortExpr(expr string) ([]OrderItem, error) {
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
 func (q *CDNRecordQuery) OrderByExpr(expr string) *CDNRecordQuery {
+	q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
 	}
@@ -155,6 +156,7 @@ func (q *CDNRecordQuery) OrderByIDDesc() *CDNRecordQuery {
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
 func (q *DNSRecordQuery) OrderByExpr(expr string) *DNSRecordQuery {
+	q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
 	}
@@ -196,6 +198,7 @@ func (q *DNSRecordQuery) OrderByIDDesc() *DNSRecordQuery {
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
 func (q *DeviceQuery) OrderByExpr(expr string) *DeviceQuery {
+	q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
 	}
@@ -237,6 +240,7 @@ func (q *DeviceQuery) OrderByIDDesc() *DeviceQuery {
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
 func (q *DeviceIpReportQuery) OrderByExpr(expr string) *DeviceIpReportQuery {
+	q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
 	}
@@ -278,6 +282,7 @@ func (q *DeviceIpReportQuery) OrderByIDDesc() *DeviceIpReportQuery {
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
 func (q *DevicePortForwardQuery) OrderByExpr(expr string) *DevicePortForwardQuery {
+	q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
 	}
@@ -319,6 +324,7 @@ func (q *DevicePortForwardQuery) OrderByIDDesc() *DevicePortForwardQuery {
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
 func (q *DomainMonitorQuery) OrderByExpr(expr string) *DomainMonitorQuery {
+	q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
 	}
@@ -360,6 +366,7 @@ func (q *DomainMonitorQuery) OrderByIDDesc() *DomainMonitorQuery {
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
 func (q *DomainMonitorHistoryQuery) OrderByExpr(expr string) *DomainMonitorHistoryQuery {
+	q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
 	}
@@ -401,6 +408,7 @@ func (q *DomainMonitorHistoryQuery) OrderByIDDesc() *DomainMonitorHistoryQuery {
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
 func (q *IpGroupQuery) OrderByExpr(expr string) *IpGroupQuery {
+	q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
 	}
@@ -442,6 +450,7 @@ func (q *IpGroupQuery) OrderByIDDesc() *IpGroupQuery {
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
 func (q *IpGroupDeviceQuery) OrderByExpr(expr string) *IpGroupDeviceQuery {
+	q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
 	}
@@ -473,6 +482,7 @@ func (q *IpGroupDeviceQuery) OrderByExpr(expr string) *IpGroupDeviceQuery {
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
 func (q *PlatformConfigQuery) OrderByExpr(expr string) *PlatformConfigQuery {
+	q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
 	}
@@ -514,6 +524,7 @@ func (q *PlatformConfigQuery) OrderByIDDesc() *PlatformConfigQuery {
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
 func (q *WebhookQuery) OrderByExpr(expr string) *WebhookQuery {
+	q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
 	}
@@ -555,6 +566,7 @@ func (q *WebhookQuery) OrderByIDDesc() *WebhookQuery {
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
 func (q *WebhookSubscriptionQuery) OrderByExpr(expr string) *WebhookSubscriptionQuery {
+	q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
 	}

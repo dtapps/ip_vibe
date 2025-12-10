@@ -21,6 +21,7 @@ type PaginationResult[T any] struct {
 //
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *CDNRecordQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[CDNRecord], error) {
+	q.log("Paginate: page=", page, ", size=", size)
 	if page < 1 {
 		page = 1
 	}
@@ -61,6 +62,7 @@ func (q *CDNRecordQuery) Paginate(ctx context.Context, page, size int) (*Paginat
 //
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *DNSRecordQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[DNSRecord], error) {
+	q.log("Paginate: page=", page, ", size=", size)
 	if page < 1 {
 		page = 1
 	}
@@ -101,6 +103,7 @@ func (q *DNSRecordQuery) Paginate(ctx context.Context, page, size int) (*Paginat
 //
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *DeviceQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[Device], error) {
+	q.log("Paginate: page=", page, ", size=", size)
 	if page < 1 {
 		page = 1
 	}
@@ -141,6 +144,7 @@ func (q *DeviceQuery) Paginate(ctx context.Context, page, size int) (*Pagination
 //
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *DeviceIpReportQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[DeviceIpReport], error) {
+	q.log("Paginate: page=", page, ", size=", size)
 	if page < 1 {
 		page = 1
 	}
@@ -181,6 +185,7 @@ func (q *DeviceIpReportQuery) Paginate(ctx context.Context, page, size int) (*Pa
 //
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *DevicePortForwardQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[DevicePortForward], error) {
+	q.log("Paginate: page=", page, ", size=", size)
 	if page < 1 {
 		page = 1
 	}
@@ -221,6 +226,7 @@ func (q *DevicePortForwardQuery) Paginate(ctx context.Context, page, size int) (
 //
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *DomainMonitorQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[DomainMonitor], error) {
+	q.log("Paginate: page=", page, ", size=", size)
 	if page < 1 {
 		page = 1
 	}
@@ -261,6 +267,7 @@ func (q *DomainMonitorQuery) Paginate(ctx context.Context, page, size int) (*Pag
 //
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *DomainMonitorHistoryQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[DomainMonitorHistory], error) {
+	q.log("Paginate: page=", page, ", size=", size)
 	if page < 1 {
 		page = 1
 	}
@@ -301,6 +308,7 @@ func (q *DomainMonitorHistoryQuery) Paginate(ctx context.Context, page, size int
 //
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *IpGroupQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[IpGroup], error) {
+	q.log("Paginate: page=", page, ", size=", size)
 	if page < 1 {
 		page = 1
 	}
@@ -341,6 +349,7 @@ func (q *IpGroupQuery) Paginate(ctx context.Context, page, size int) (*Paginatio
 //
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *IpGroupDeviceQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[IpGroupDevice], error) {
+	q.log("Paginate: page=", page, ", size=", size)
 	if page < 1 {
 		page = 1
 	}
@@ -381,6 +390,7 @@ func (q *IpGroupDeviceQuery) Paginate(ctx context.Context, page, size int) (*Pag
 //
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *PlatformConfigQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[PlatformConfig], error) {
+	q.log("Paginate: page=", page, ", size=", size)
 	if page < 1 {
 		page = 1
 	}
@@ -421,6 +431,7 @@ func (q *PlatformConfigQuery) Paginate(ctx context.Context, page, size int) (*Pa
 //
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *WebhookQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[Webhook], error) {
+	q.log("Paginate: page=", page, ", size=", size)
 	if page < 1 {
 		page = 1
 	}
@@ -461,6 +472,7 @@ func (q *WebhookQuery) Paginate(ctx context.Context, page, size int) (*Paginatio
 //
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *WebhookSubscriptionQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[WebhookSubscription], error) {
+	q.log("Paginate: page=", page, ", size=", size)
 	if page < 1 {
 		page = 1
 	}

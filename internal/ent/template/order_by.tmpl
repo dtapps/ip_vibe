@@ -101,6 +101,7 @@ func parseSortExpr(expr string) ([]OrderItem, error) {
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
 func (q *{{ $t.Name }}Query) OrderByExpr(expr string) *{{ $t.Name }}Query {
+    q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
 	}

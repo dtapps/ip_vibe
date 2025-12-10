@@ -10,7 +10,7 @@ import (
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *CDNRecordQuery) WhereIf(condition bool, p predicate.CDNRecord) *CDNRecordQuery {
-	q.log(fmt.Sprintf("WhereIf: condition=%t, predicate=%v\n", condition, p))
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p)
 	}
@@ -20,7 +20,7 @@ func (q *CDNRecordQuery) WhereIf(condition bool, p predicate.CDNRecord) *CDNReco
 // WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *CDNRecordQuery) WhereIfs(condition bool, p ...predicate.CDNRecord) *CDNRecordQuery {
-	q.log(fmt.Sprintf("WhereIfs: condition=%t, predicates=%v\n", condition, p))
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p...)
 	}
@@ -31,7 +31,7 @@ func (q *CDNRecordQuery) WhereIfs(condition bool, p ...predicate.CDNRecord) *CDN
 // conditionFunc 决定是否应用过滤。
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *CDNRecordQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.CDNRecord) *CDNRecordQuery {
-	q.log(fmt.Sprintf("WhereIfFunc: condition=%t, predicateFunc=%p\n", condition, predicateFunc))
+	q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
 	if condition {
 		q.Where(predicateFunc())
 	}
@@ -41,7 +41,7 @@ func (q *CDNRecordQuery) WhereIfFunc(condition bool, predicateFunc func() predic
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *DNSRecordQuery) WhereIf(condition bool, p predicate.DNSRecord) *DNSRecordQuery {
-	q.log(fmt.Sprintf("WhereIf: condition=%t, predicate=%v\n", condition, p))
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p)
 	}
@@ -51,7 +51,7 @@ func (q *DNSRecordQuery) WhereIf(condition bool, p predicate.DNSRecord) *DNSReco
 // WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *DNSRecordQuery) WhereIfs(condition bool, p ...predicate.DNSRecord) *DNSRecordQuery {
-	q.log(fmt.Sprintf("WhereIfs: condition=%t, predicates=%v\n", condition, p))
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p...)
 	}
@@ -62,7 +62,7 @@ func (q *DNSRecordQuery) WhereIfs(condition bool, p ...predicate.DNSRecord) *DNS
 // conditionFunc 决定是否应用过滤。
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *DNSRecordQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.DNSRecord) *DNSRecordQuery {
-	q.log(fmt.Sprintf("WhereIfFunc: condition=%t, predicateFunc=%p\n", condition, predicateFunc))
+	q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
 	if condition {
 		q.Where(predicateFunc())
 	}
@@ -72,7 +72,7 @@ func (q *DNSRecordQuery) WhereIfFunc(condition bool, predicateFunc func() predic
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *DeviceQuery) WhereIf(condition bool, p predicate.Device) *DeviceQuery {
-	q.log(fmt.Sprintf("WhereIf: condition=%t, predicate=%v\n", condition, p))
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p)
 	}
@@ -82,7 +82,7 @@ func (q *DeviceQuery) WhereIf(condition bool, p predicate.Device) *DeviceQuery {
 // WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *DeviceQuery) WhereIfs(condition bool, p ...predicate.Device) *DeviceQuery {
-	q.log(fmt.Sprintf("WhereIfs: condition=%t, predicates=%v\n", condition, p))
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p...)
 	}
@@ -93,7 +93,7 @@ func (q *DeviceQuery) WhereIfs(condition bool, p ...predicate.Device) *DeviceQue
 // conditionFunc 决定是否应用过滤。
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *DeviceQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.Device) *DeviceQuery {
-	q.log(fmt.Sprintf("WhereIfFunc: condition=%t, predicateFunc=%p\n", condition, predicateFunc))
+	q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
 	if condition {
 		q.Where(predicateFunc())
 	}
@@ -103,7 +103,7 @@ func (q *DeviceQuery) WhereIfFunc(condition bool, predicateFunc func() predicate
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *DeviceIpReportQuery) WhereIf(condition bool, p predicate.DeviceIpReport) *DeviceIpReportQuery {
-	q.log(fmt.Sprintf("WhereIf: condition=%t, predicate=%v\n", condition, p))
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p)
 	}
@@ -113,7 +113,7 @@ func (q *DeviceIpReportQuery) WhereIf(condition bool, p predicate.DeviceIpReport
 // WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *DeviceIpReportQuery) WhereIfs(condition bool, p ...predicate.DeviceIpReport) *DeviceIpReportQuery {
-	q.log(fmt.Sprintf("WhereIfs: condition=%t, predicates=%v\n", condition, p))
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p...)
 	}
@@ -124,7 +124,7 @@ func (q *DeviceIpReportQuery) WhereIfs(condition bool, p ...predicate.DeviceIpRe
 // conditionFunc 决定是否应用过滤。
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *DeviceIpReportQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.DeviceIpReport) *DeviceIpReportQuery {
-	q.log(fmt.Sprintf("WhereIfFunc: condition=%t, predicateFunc=%p\n", condition, predicateFunc))
+	q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
 	if condition {
 		q.Where(predicateFunc())
 	}
@@ -134,7 +134,7 @@ func (q *DeviceIpReportQuery) WhereIfFunc(condition bool, predicateFunc func() p
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *DevicePortForwardQuery) WhereIf(condition bool, p predicate.DevicePortForward) *DevicePortForwardQuery {
-	q.log(fmt.Sprintf("WhereIf: condition=%t, predicate=%v\n", condition, p))
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p)
 	}
@@ -144,7 +144,7 @@ func (q *DevicePortForwardQuery) WhereIf(condition bool, p predicate.DevicePortF
 // WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *DevicePortForwardQuery) WhereIfs(condition bool, p ...predicate.DevicePortForward) *DevicePortForwardQuery {
-	q.log(fmt.Sprintf("WhereIfs: condition=%t, predicates=%v\n", condition, p))
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p...)
 	}
@@ -155,7 +155,7 @@ func (q *DevicePortForwardQuery) WhereIfs(condition bool, p ...predicate.DeviceP
 // conditionFunc 决定是否应用过滤。
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *DevicePortForwardQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.DevicePortForward) *DevicePortForwardQuery {
-	q.log(fmt.Sprintf("WhereIfFunc: condition=%t, predicateFunc=%p\n", condition, predicateFunc))
+	q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
 	if condition {
 		q.Where(predicateFunc())
 	}
@@ -165,7 +165,7 @@ func (q *DevicePortForwardQuery) WhereIfFunc(condition bool, predicateFunc func(
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *DomainMonitorQuery) WhereIf(condition bool, p predicate.DomainMonitor) *DomainMonitorQuery {
-	q.log(fmt.Sprintf("WhereIf: condition=%t, predicate=%v\n", condition, p))
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p)
 	}
@@ -175,7 +175,7 @@ func (q *DomainMonitorQuery) WhereIf(condition bool, p predicate.DomainMonitor) 
 // WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *DomainMonitorQuery) WhereIfs(condition bool, p ...predicate.DomainMonitor) *DomainMonitorQuery {
-	q.log(fmt.Sprintf("WhereIfs: condition=%t, predicates=%v\n", condition, p))
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p...)
 	}
@@ -186,7 +186,7 @@ func (q *DomainMonitorQuery) WhereIfs(condition bool, p ...predicate.DomainMonit
 // conditionFunc 决定是否应用过滤。
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *DomainMonitorQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.DomainMonitor) *DomainMonitorQuery {
-	q.log(fmt.Sprintf("WhereIfFunc: condition=%t, predicateFunc=%p\n", condition, predicateFunc))
+	q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
 	if condition {
 		q.Where(predicateFunc())
 	}
@@ -196,7 +196,7 @@ func (q *DomainMonitorQuery) WhereIfFunc(condition bool, predicateFunc func() pr
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *DomainMonitorHistoryQuery) WhereIf(condition bool, p predicate.DomainMonitorHistory) *DomainMonitorHistoryQuery {
-	q.log(fmt.Sprintf("WhereIf: condition=%t, predicate=%v\n", condition, p))
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p)
 	}
@@ -206,7 +206,7 @@ func (q *DomainMonitorHistoryQuery) WhereIf(condition bool, p predicate.DomainMo
 // WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *DomainMonitorHistoryQuery) WhereIfs(condition bool, p ...predicate.DomainMonitorHistory) *DomainMonitorHistoryQuery {
-	q.log(fmt.Sprintf("WhereIfs: condition=%t, predicates=%v\n", condition, p))
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p...)
 	}
@@ -217,7 +217,7 @@ func (q *DomainMonitorHistoryQuery) WhereIfs(condition bool, p ...predicate.Doma
 // conditionFunc 决定是否应用过滤。
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *DomainMonitorHistoryQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.DomainMonitorHistory) *DomainMonitorHistoryQuery {
-	q.log(fmt.Sprintf("WhereIfFunc: condition=%t, predicateFunc=%p\n", condition, predicateFunc))
+	q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
 	if condition {
 		q.Where(predicateFunc())
 	}
@@ -227,7 +227,7 @@ func (q *DomainMonitorHistoryQuery) WhereIfFunc(condition bool, predicateFunc fu
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *IpGroupQuery) WhereIf(condition bool, p predicate.IpGroup) *IpGroupQuery {
-	q.log(fmt.Sprintf("WhereIf: condition=%t, predicate=%v\n", condition, p))
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p)
 	}
@@ -237,7 +237,7 @@ func (q *IpGroupQuery) WhereIf(condition bool, p predicate.IpGroup) *IpGroupQuer
 // WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *IpGroupQuery) WhereIfs(condition bool, p ...predicate.IpGroup) *IpGroupQuery {
-	q.log(fmt.Sprintf("WhereIfs: condition=%t, predicates=%v\n", condition, p))
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p...)
 	}
@@ -248,7 +248,7 @@ func (q *IpGroupQuery) WhereIfs(condition bool, p ...predicate.IpGroup) *IpGroup
 // conditionFunc 决定是否应用过滤。
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *IpGroupQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.IpGroup) *IpGroupQuery {
-	q.log(fmt.Sprintf("WhereIfFunc: condition=%t, predicateFunc=%p\n", condition, predicateFunc))
+	q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
 	if condition {
 		q.Where(predicateFunc())
 	}
@@ -258,7 +258,7 @@ func (q *IpGroupQuery) WhereIfFunc(condition bool, predicateFunc func() predicat
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *IpGroupDeviceQuery) WhereIf(condition bool, p predicate.IpGroupDevice) *IpGroupDeviceQuery {
-	q.log(fmt.Sprintf("WhereIf: condition=%t, predicate=%v\n", condition, p))
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p)
 	}
@@ -268,7 +268,7 @@ func (q *IpGroupDeviceQuery) WhereIf(condition bool, p predicate.IpGroupDevice) 
 // WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *IpGroupDeviceQuery) WhereIfs(condition bool, p ...predicate.IpGroupDevice) *IpGroupDeviceQuery {
-	q.log(fmt.Sprintf("WhereIfs: condition=%t, predicates=%v\n", condition, p))
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p...)
 	}
@@ -279,7 +279,7 @@ func (q *IpGroupDeviceQuery) WhereIfs(condition bool, p ...predicate.IpGroupDevi
 // conditionFunc 决定是否应用过滤。
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *IpGroupDeviceQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.IpGroupDevice) *IpGroupDeviceQuery {
-	q.log(fmt.Sprintf("WhereIfFunc: condition=%t, predicateFunc=%p\n", condition, predicateFunc))
+	q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
 	if condition {
 		q.Where(predicateFunc())
 	}
@@ -289,7 +289,7 @@ func (q *IpGroupDeviceQuery) WhereIfFunc(condition bool, predicateFunc func() pr
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *PlatformConfigQuery) WhereIf(condition bool, p predicate.PlatformConfig) *PlatformConfigQuery {
-	q.log(fmt.Sprintf("WhereIf: condition=%t, predicate=%v\n", condition, p))
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p)
 	}
@@ -299,7 +299,7 @@ func (q *PlatformConfigQuery) WhereIf(condition bool, p predicate.PlatformConfig
 // WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *PlatformConfigQuery) WhereIfs(condition bool, p ...predicate.PlatformConfig) *PlatformConfigQuery {
-	q.log(fmt.Sprintf("WhereIfs: condition=%t, predicates=%v\n", condition, p))
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p...)
 	}
@@ -310,7 +310,7 @@ func (q *PlatformConfigQuery) WhereIfs(condition bool, p ...predicate.PlatformCo
 // conditionFunc 决定是否应用过滤。
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *PlatformConfigQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.PlatformConfig) *PlatformConfigQuery {
-	q.log(fmt.Sprintf("WhereIfFunc: condition=%t, predicateFunc=%p\n", condition, predicateFunc))
+	q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
 	if condition {
 		q.Where(predicateFunc())
 	}
@@ -320,7 +320,7 @@ func (q *PlatformConfigQuery) WhereIfFunc(condition bool, predicateFunc func() p
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *WebhookQuery) WhereIf(condition bool, p predicate.Webhook) *WebhookQuery {
-	q.log(fmt.Sprintf("WhereIf: condition=%t, predicate=%v\n", condition, p))
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p)
 	}
@@ -330,7 +330,7 @@ func (q *WebhookQuery) WhereIf(condition bool, p predicate.Webhook) *WebhookQuer
 // WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *WebhookQuery) WhereIfs(condition bool, p ...predicate.Webhook) *WebhookQuery {
-	q.log(fmt.Sprintf("WhereIfs: condition=%t, predicates=%v\n", condition, p))
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p...)
 	}
@@ -341,7 +341,7 @@ func (q *WebhookQuery) WhereIfs(condition bool, p ...predicate.Webhook) *Webhook
 // conditionFunc 决定是否应用过滤。
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *WebhookQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.Webhook) *WebhookQuery {
-	q.log(fmt.Sprintf("WhereIfFunc: condition=%t, predicateFunc=%p\n", condition, predicateFunc))
+	q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
 	if condition {
 		q.Where(predicateFunc())
 	}
@@ -351,7 +351,7 @@ func (q *WebhookQuery) WhereIfFunc(condition bool, predicateFunc func() predicat
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *WebhookSubscriptionQuery) WhereIf(condition bool, p predicate.WebhookSubscription) *WebhookSubscriptionQuery {
-	q.log(fmt.Sprintf("WhereIf: condition=%t, predicate=%v\n", condition, p))
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p)
 	}
@@ -361,7 +361,7 @@ func (q *WebhookSubscriptionQuery) WhereIf(condition bool, p predicate.WebhookSu
 // WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *WebhookSubscriptionQuery) WhereIfs(condition bool, p ...predicate.WebhookSubscription) *WebhookSubscriptionQuery {
-	q.log(fmt.Sprintf("WhereIfs: condition=%t, predicates=%v\n", condition, p))
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p...)
 	}
@@ -372,7 +372,7 @@ func (q *WebhookSubscriptionQuery) WhereIfs(condition bool, p ...predicate.Webho
 // conditionFunc 决定是否应用过滤。
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *WebhookSubscriptionQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.WebhookSubscription) *WebhookSubscriptionQuery {
-	q.log(fmt.Sprintf("WhereIfFunc: condition=%t, predicateFunc=%p\n", condition, predicateFunc))
+	q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
 	if condition {
 		q.Where(predicateFunc())
 	}

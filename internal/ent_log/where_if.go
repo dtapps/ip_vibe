@@ -10,7 +10,7 @@ import (
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *OperationLogQuery) WhereIf(condition bool, p predicate.OperationLog) *OperationLogQuery {
-	q.log(fmt.Sprintf("WhereIf: condition=%t, predicate=%v\n", condition, p))
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p)
 	}
@@ -20,7 +20,7 @@ func (q *OperationLogQuery) WhereIf(condition bool, p predicate.OperationLog) *O
 // WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *OperationLogQuery) WhereIfs(condition bool, p ...predicate.OperationLog) *OperationLogQuery {
-	q.log(fmt.Sprintf("WhereIfs: condition=%t, predicates=%v\n", condition, p))
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p...)
 	}
@@ -31,7 +31,7 @@ func (q *OperationLogQuery) WhereIfs(condition bool, p ...predicate.OperationLog
 // conditionFunc 决定是否应用过滤。
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *OperationLogQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.OperationLog) *OperationLogQuery {
-	q.log(fmt.Sprintf("WhereIfFunc: condition=%t, predicateFunc=%p\n", condition, predicateFunc))
+	q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
 	if condition {
 		q.Where(predicateFunc())
 	}
@@ -41,7 +41,7 @@ func (q *OperationLogQuery) WhereIfFunc(condition bool, predicateFunc func() pre
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *RestyLogQuery) WhereIf(condition bool, p predicate.RestyLog) *RestyLogQuery {
-	q.log(fmt.Sprintf("WhereIf: condition=%t, predicate=%v\n", condition, p))
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p)
 	}
@@ -51,7 +51,7 @@ func (q *RestyLogQuery) WhereIf(condition bool, p predicate.RestyLog) *RestyLogQ
 // WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
 func (q *RestyLogQuery) WhereIfs(condition bool, p ...predicate.RestyLog) *RestyLogQuery {
-	q.log(fmt.Sprintf("WhereIfs: condition=%t, predicates=%v\n", condition, p))
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
 	if condition {
 		q.Where(p...)
 	}
@@ -62,7 +62,7 @@ func (q *RestyLogQuery) WhereIfs(condition bool, p ...predicate.RestyLog) *Resty
 // conditionFunc 决定是否应用过滤。
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *RestyLogQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.RestyLog) *RestyLogQuery {
-	q.log(fmt.Sprintf("WhereIfFunc: condition=%t, predicateFunc=%p\n", condition, predicateFunc))
+	q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
 	if condition {
 		q.Where(predicateFunc())
 	}

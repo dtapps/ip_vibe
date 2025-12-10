@@ -104,6 +104,7 @@ func parseSortExpr(expr string) ([]OrderItem, error) {
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
 func (q *OperationLogQuery) OrderByExpr(expr string) *OperationLogQuery {
+	q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
 	}
@@ -145,6 +146,7 @@ func (q *OperationLogQuery) OrderByIDDesc() *OperationLogQuery {
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
 func (q *RestyLogQuery) OrderByExpr(expr string) *RestyLogQuery {
+	q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
 	}

@@ -12,7 +12,7 @@
 // 如果 condition 为 true，则应用给定的 Order 列表
 func (q *{{ $n.Name }}Query) OrderIf(condition bool, o {{ $n.Package }}.OrderOption) *{{ $n.Name }}Query {
 	{{- /* if q.debug { */}}
-    q.log(fmt.Sprintf("OrderIf: condition=%t, orderOption=%v\n", condition, o))
+    q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
     {{- /* } */}}
 	if condition {
 		q.Order(o)
@@ -24,7 +24,7 @@ func (q *{{ $n.Name }}Query) OrderIf(condition bool, o {{ $n.Package }}.OrderOpt
 // 如果 condition 为 true，则应用给定的 Order 列表
 func (q *{{ $n.Name }}Query) OrderIfs(condition bool, o ...{{ $n.Package }}.OrderOption) *{{ $n.Name }}Query {
 	{{- /* if q.debug { */}}
-    q.log(fmt.Sprintf("OrderIfs: condition=%t, orderOptions=%v\n", condition, o))
+    q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
     {{- /* } */}}
 	if condition {
 		q.Order(o...)
