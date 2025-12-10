@@ -11,6 +11,7 @@
     "paths": {
         "/cdn-records": {
             "get": {
+                "description": "获取全部CDN记录",
                 "consumes": [
                     "application/json"
                 ],
@@ -23,7 +24,7 @@
                 "summary": "获取全部CDN记录",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "成功响应",
                         "schema": {
                             "allOf": [
                                 {
@@ -44,7 +45,368 @@
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "创建CDN记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CDN记录"
+                ],
+                "summary": "创建CDN记录",
+                "parameters": [
+                    {
+                        "description": "Json 请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.CreateCdnRecordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "Data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetCdnRecordResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/cdn-records/{id}": {
+            "get": {
+                "description": "获取CDN记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CDN记录"
+                ],
+                "summary": "获取CDN记录",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "CDN记录 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "Data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetCdnRecordResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "获取全部任务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CDN记录"
+                ],
+                "summary": "获取CDN记录",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "CDN记录 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "Data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetCdnRecordRequest"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "更新CDN记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CDN记录"
+                ],
+                "summary": "更新CDN记录",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "CDN记录 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Json 请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.UpdateCdnRecordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "Data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetCdnRecordResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/cdn-records/{id}/active": {
+            "patch": {
+                "description": "更新CDN记录状态",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CDN记录"
+                ],
+                "summary": "更新CDN记录状态",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "CDN记录 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Json 请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.UpdateCdnRecordActiveRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "Data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetCdnRecordResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/cdn-records/{id}/healthcheck": {
+            "get": {
+                "description": "检查CDN记录健康状态",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CDN记录"
+                ],
+                "summary": "检查CDN记录健康状态",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "CDN记录 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "Data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/definitions/vibe_ip_internal_backend.ToPairsStruct"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器错误响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -312,6 +674,7 @@
         },
         "/tasks": {
             "get": {
+                "description": "获取全部任务",
                 "consumes": [
                     "application/json"
                 ],
@@ -324,7 +687,7 @@
                 "summary": "获取全部任务",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "成功响应",
                         "schema": {
                             "allOf": [
                                 {
@@ -345,7 +708,7 @@
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "错误响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -355,6 +718,7 @@
         },
         "/tasks/clean": {
             "post": {
+                "description": "清理全部任务",
                 "consumes": [
                     "application/json"
                 ],
@@ -367,13 +731,13 @@
                 "summary": "清理全部任务",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "成功响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "错误响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -383,6 +747,7 @@
         },
         "/tasks/start": {
             "post": {
+                "description": "启动调度器",
                 "consumes": [
                     "application/json"
                 ],
@@ -395,13 +760,13 @@
                 "summary": "启动调度器",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "成功响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "错误响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -411,6 +776,7 @@
         },
         "/tasks/stop": {
             "post": {
+                "description": "停止调度器",
                 "consumes": [
                     "application/json"
                 ],
@@ -423,13 +789,13 @@
                 "summary": "停止调度器",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "成功响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "错误响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -439,6 +805,7 @@
         },
         "/tasks/{id}": {
             "get": {
+                "description": "获取任务",
                 "consumes": [
                     "application/json"
                 ],
@@ -460,7 +827,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "成功响应",
                         "schema": {
                             "allOf": [
                                 {
@@ -477,8 +844,14 @@
                             ]
                         }
                     },
+                    "400": {
+                        "description": "参数响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
                     "404": {
-                        "description": "Not Found",
+                        "description": "错误响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -486,6 +859,7 @@
                 }
             },
             "post": {
+                "description": "运行任务",
                 "consumes": [
                     "application/json"
                 ],
@@ -507,13 +881,19 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "错误响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -521,6 +901,7 @@
                 }
             },
             "delete": {
+                "description": "删除任务",
                 "consumes": [
                     "application/json"
                 ],
@@ -542,13 +923,19 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "错误响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -656,6 +1043,15 @@
                 }
             }
         },
+        "vibe_ip_internal_backend.ToPairsStruct": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "value": {}
+            }
+        },
         "vibe_ip_internal_helper_gocron_helper.JobData": {
             "type": "object",
             "properties": {
@@ -698,6 +1094,58 @@
                     }
                 }
             }
+        },
+        "vibe_ip_internal_types.CreateCdnRecordRequest": {
+            "type": "object",
+            "required": [
+                "config_id",
+                "domain",
+                "http_port",
+                "https_port",
+                "ip_group_id",
+                "origin_protocol",
+                "type"
+            ],
+            "properties": {
+                "config_id": {
+                    "description": "平台配置序号",
+                    "type": "integer"
+                },
+                "domain": {
+                    "description": "域名（如 www.example.com）",
+                    "type": "string"
+                },
+                "http_port": {
+                    "description": "HTTP 回源端口",
+                    "type": "integer"
+                },
+                "https_port": {
+                    "description": "HTTPS 回源端口",
+                    "type": "integer"
+                },
+                "ip_group_id": {
+                    "description": "IP 组序号",
+                    "type": "integer"
+                },
+                "origin_protocol": {
+                    "description": "回源协议（http、https、follow）",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "记录类型（A、AAAA等）",
+                    "type": "string"
+                },
+                "webhook_ids": {
+                    "description": "关联的 Webhook 列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "vibe_ip_internal_types.GetCdnRecordRequest": {
+            "type": "object"
         },
         "vibe_ip_internal_types.GetCdnRecordResponse": {
             "type": "object",
@@ -1122,6 +1570,49 @@
                 "webhook_name": {
                     "description": "通知渠道名称",
                     "type": "string"
+                }
+            }
+        },
+        "vibe_ip_internal_types.UpdateCdnRecordActiveRequest": {
+            "type": "object",
+            "properties": {
+                "is_active": {
+                    "description": "是否活跃",
+                    "type": "boolean"
+                }
+            }
+        },
+        "vibe_ip_internal_types.UpdateCdnRecordRequest": {
+            "type": "object",
+            "required": [
+                "http_port",
+                "https_port",
+                "ip_group_id",
+                "origin_protocol"
+            ],
+            "properties": {
+                "http_port": {
+                    "description": "HTTP 回源端口",
+                    "type": "integer"
+                },
+                "https_port": {
+                    "description": "HTTPS 回源端口",
+                    "type": "integer"
+                },
+                "ip_group_id": {
+                    "description": "IP 组序号",
+                    "type": "integer"
+                },
+                "origin_protocol": {
+                    "description": "回源协议（http、https、follow）",
+                    "type": "string"
+                },
+                "webhook_ids": {
+                    "description": "关联的 Webhook 列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         }

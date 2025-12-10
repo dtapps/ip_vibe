@@ -129,29 +129,49 @@ func main() {
 		})
 	})
 
-	// 配置 Swagger 路由
-	// https://github.com/swaggo/swag/blob/v2/README.md
-	// https://github.com/swaggo/swag/issues/1588#issuecomment-3360487197
-	docs_2.SwaggerInfo.Version = global.GvaVersion
-	docs_3.SwaggerInfo.Version = global.GvaVersion
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("/docs_2/doc.json")))
-	router.GET("/docs_2/doc.json", func(ctx *gin.Context) {
-		ctx.Writer.Header().Set("Content-Type", "application/json")
-		ctx.Writer.WriteHeader(200)
-		ctx.Writer.Write([]byte(docs_2.SwaggerInfo.ReadDoc()))
-	})
-	router.GET("/docs_3/doc.json", func(ctx *gin.Context) {
-		ctx.Writer.Header().Set("Content-Type", "application/json")
-		ctx.Writer.WriteHeader(200)
-		ctx.Writer.Write([]byte(docs_3.SwaggerInfo.ReadDoc()))
-	})
-
-	// 配置BasicAuth中间件
+	// 创建一个受保护的路由组
+	var ginAccounts gin.Accounts
 	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
 		// 账户映射
-		router.Use(gin.BasicAuth(gin.Accounts{
+		ginAccounts = gin.Accounts{
 			global.GvaEnv.BASIC_AUTH_USERNAME: global.GvaEnv.BASIC_AUTH_PASSWORD,
-		}))
+		}
+	}
+
+	// Swagger 路由组
+	// https://github.com/swaggo/swag/blob/v2/README.md
+	// https://github.com/swaggo/swag/issues/1588#issuecomment-3360487197
+	swaggerGroup := router.Group("/swagger")
+	{
+		if len(ginAccounts) > 0 {
+			swaggerGroup.Use(gin.BasicAuth(ginAccounts))
+		}
+		swaggerGroup.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
+			ginSwagger.URL("/docs_2/doc.json"), // 注意：这个 URL 是 UI 内部请求的地址
+		))
+	}
+	// doc.json 路由
+	docsGroup := router.Group("")
+	{
+		if len(ginAccounts) > 0 {
+			docsGroup.Use(gin.BasicAuth(ginAccounts))
+		}
+		// 配置版本
+		docs_2.SwaggerInfo.Version = global.GvaVersion
+		docs_3.SwaggerInfo.Version = global.GvaVersion
+		docsGroup.GET("/docs_2/doc.json", func(ctx *gin.Context) {
+			ctx.Header("Content-Type", "application/json")
+			ctx.String(200, docs_2.SwaggerInfo.ReadDoc())
+		})
+		docsGroup.GET("/docs_3/doc.json", func(ctx *gin.Context) {
+			ctx.Header("Content-Type", "application/json")
+			ctx.String(200, docs_3.SwaggerInfo.ReadDoc())
+		})
+	}
+
+	// 配置BasicAuth中间件
+	if len(ginAccounts) > 0 {
+		router.Use(gin.BasicAuth(ginAccounts))
 	}
 
 	// 创建带 FuncMap 的 template

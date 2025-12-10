@@ -17,6 +17,12 @@ components:
         message:
           type: string
       type: object
+    vibe_ip_internal_backend.ToPairsStruct:
+      properties:
+        key:
+          type: string
+        value: {}
+      type: object
     vibe_ip_internal_helper_gocron_helper.JobData:
       properties:
         id:
@@ -49,6 +55,46 @@ components:
             type: string
           type: array
           uniqueItems: false
+      type: object
+    vibe_ip_internal_types.CreateCdnRecordRequest:
+      properties:
+        config_id:
+          description: 平台配置序号
+          type: integer
+        domain:
+          description: 域名（如 www.example.com）
+          type: string
+        http_port:
+          description: HTTP 回源端口
+          type: integer
+        https_port:
+          description: HTTPS 回源端口
+          type: integer
+        ip_group_id:
+          description: IP 组序号
+          type: integer
+        origin_protocol:
+          description: 回源协议（http、https、follow）
+          type: string
+        type:
+          description: 记录类型（A、AAAA等）
+          type: string
+        webhook_ids:
+          description: 关联的 Webhook 列表
+          items:
+            type: integer
+          type: array
+          uniqueItems: false
+      required:
+      - config_id
+      - domain
+      - http_port
+      - https_port
+      - ip_group_id
+      - origin_protocol
+      - type
+      type: object
+    vibe_ip_internal_types.GetCdnRecordRequest:
       type: object
     vibe_ip_internal_types.GetCdnRecordResponse:
       properties:
@@ -369,6 +415,38 @@ components:
           description: 通知渠道名称
           type: string
       type: object
+    vibe_ip_internal_types.UpdateCdnRecordActiveRequest:
+      properties:
+        is_active:
+          description: 是否活跃
+          type: boolean
+      type: object
+    vibe_ip_internal_types.UpdateCdnRecordRequest:
+      properties:
+        http_port:
+          description: HTTP 回源端口
+          type: integer
+        https_port:
+          description: HTTPS 回源端口
+          type: integer
+        ip_group_id:
+          description: IP 组序号
+          type: integer
+        origin_protocol:
+          description: 回源协议（http、https、follow）
+          type: string
+        webhook_ids:
+          description: 关联的 Webhook 列表
+          items:
+            type: integer
+          type: array
+          uniqueItems: false
+      required:
+      - http_port
+      - https_port
+      - ip_group_id
+      - origin_protocol
+      type: object
 externalDocs:
   description: ""
   url: ""
@@ -380,6 +458,7 @@ openapi: 3.1.0
 paths:
   /cdn-records:
     get:
+      description: 获取全部CDN记录
       requestBody:
         content:
           application/json:
@@ -399,14 +478,280 @@ paths:
                   message:
                     type: string
                 type: object
-          description: OK
+          description: 成功响应
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Not Found
+          description: 错误响应
       summary: 获取全部CDN记录
+      tags:
+      - CDN记录
+    post:
+      description: 创建CDN记录
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/vibe_ip_internal_types.CreateCdnRecordRequest'
+        description: Json 请求参数
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数响应
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 创建CDN记录
+      tags:
+      - CDN记录
+  /cdn-records/{id}:
+    delete:
+      description: 获取全部任务
+      parameters:
+      - description: CDN记录 ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数响应
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 获取CDN记录
+      tags:
+      - CDN记录
+    get:
+      description: 获取CDN记录
+      parameters:
+      - description: CDN记录 ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数响应
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 获取CDN记录
+      tags:
+      - CDN记录
+    patch:
+      description: 更新CDN记录
+      parameters:
+      - description: CDN记录 ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateCdnRecordRequest'
+        description: Json 请求参数
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 更新CDN记录
+      tags:
+      - CDN记录
+  /cdn-records/{id}/active:
+    patch:
+      description: 更新CDN记录状态
+      parameters:
+      - description: CDN记录 ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateCdnRecordActiveRequest'
+        description: Json 请求参数
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数响应
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 更新CDN记录状态
+      tags:
+      - CDN记录
+  /cdn-records/{id}/healthcheck:
+    get:
+      description: 检查CDN记录健康状态
+      parameters:
+      - description: CDN记录 ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数响应
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 服务器错误响应
+      summary: 检查CDN记录健康状态
       tags:
       - CDN记录
   /configs:
@@ -597,6 +942,7 @@ paths:
       - 端口转发
   /tasks:
     get:
+      description: 获取全部任务
       requestBody:
         content:
           application/json:
@@ -616,18 +962,19 @@ paths:
                   message:
                     type: string
                 type: object
-          description: OK
+          description: 成功响应
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Not Found
+          description: 错误响应
       summary: 获取全部任务
       tags:
       - 任务
   /tasks/{id}:
     delete:
+      description: 删除任务
       parameters:
       - description: 任务 ID
         in: path
@@ -646,17 +993,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: OK
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数响应
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Not Found
+          description: 错误响应
       summary: 删除任务
       tags:
       - 任务
     get:
+      description: 获取任务
       parameters:
       - description: 任务 ID
         in: path
@@ -683,17 +1037,24 @@ paths:
                   message:
                     type: string
                 type: object
-          description: OK
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数响应
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Not Found
+          description: 错误响应
       summary: 获取任务
       tags:
       - 任务
     post:
+      description: 运行任务
       parameters:
       - description: 任务 ID
         in: path
@@ -712,18 +1073,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: OK
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数响应
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Not Found
+          description: 错误响应
       summary: 运行任务
       tags:
       - 任务
   /tasks/clean:
     post:
+      description: 清理全部任务
       requestBody:
         content:
           application/json:
@@ -735,18 +1103,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: OK
+          description: 成功响应
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Not Found
+          description: 错误响应
       summary: 清理全部任务
       tags:
       - 任务
   /tasks/start:
     post:
+      description: 启动调度器
       requestBody:
         content:
           application/json:
@@ -758,18 +1127,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: OK
+          description: 成功响应
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Not Found
+          description: 错误响应
       summary: 启动调度器
       tags:
       - 任务
   /tasks/stop:
     post:
+      description: 停止调度器
       requestBody:
         content:
           application/json:
@@ -781,13 +1151,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: OK
+          description: 成功响应
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Not Found
+          description: 错误响应
       summary: 停止调度器
       tags:
       - 任务

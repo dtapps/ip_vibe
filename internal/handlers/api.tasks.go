@@ -15,13 +15,14 @@ import (
 
 // 获取全部任务
 //
-//	@Summary	获取全部任务
-//	@Tags		任务
-//	@Accept		application/json
-//	@Produce	application/json
-//	@Success	200	{object}	APIResponse{Data=[]gocron_helper.JobData}
-//	@Failure	404	{object}	APIResponse
-//	@Router		/tasks [get]
+//	@Description	获取全部任务
+//	@Summary		获取全部任务
+//	@Tags			任务
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Success		200	{object}	APIResponse{Data=[]gocron_helper.JobData}	"成功响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Router			/tasks [get]
 func GetTasks(c *gin.Context) {
 	// 任务助手
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
@@ -32,14 +33,16 @@ func GetTasks(c *gin.Context) {
 
 // 获取任务
 //
-//	@Summary	获取任务
-//	@Tags		任务
-//	@Accept		application/json
-//	@Produce	application/json
-//	@Param		id	path		string	true	"任务 ID"
-//	@Success	200	{object}	APIResponse{Data=gocron_helper.JobData}
-//	@Failure	404	{object}	APIResponse
-//	@Router		/tasks/{id} [get]
+//	@Description	获取任务
+//	@Summary		获取任务
+//	@Tags			任务
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		string									true	"任务 ID"
+//	@Success		200	{object}	APIResponse{Data=gocron_helper.JobData}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}							"参数响应"
+//	@Failure		404	{object}	APIResponse{}							"错误响应"
+//	@Router			/tasks/{id} [get]
 func GetTask(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetTaskRequest
@@ -64,14 +67,16 @@ func GetTask(c *gin.Context) {
 
 // 运行任务
 //
-//	@Summary	运行任务
-//	@Tags		任务
-//	@Accept		application/json
-//	@Produce	application/json
-//	@Param		id	path		string	true	"任务 ID"
-//	@Success	200	{object}	APIResponse
-//	@Failure	404	{object}	APIResponse
-//	@Router		/tasks/{id} [post]
+//	@Description	运行任务
+//	@Summary		运行任务
+//	@Tags			任务
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		string			true	"任务 ID"
+//	@Success		200	{object}	APIResponse{}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}	"参数响应"
+//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Router			/tasks/{id} [post]
 func RunTask(c *gin.Context) {
 	// 请求参数
 	var requestParams types.RunTaskRequest
@@ -97,14 +102,16 @@ func RunTask(c *gin.Context) {
 
 // 删除任务
 //
-//	@Summary	删除任务
-//	@Tags		任务
-//	@Accept		application/json
-//	@Produce	application/json
-//	@Param		id	path		string	true	"任务 ID"
-//	@Success	200	{object}	APIResponse
-//	@Failure	404	{object}	APIResponse
-//	@Router		/tasks/{id} [delete]
+//	@Description	删除任务
+//	@Summary		删除任务
+//	@Tags			任务
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		string			true	"任务 ID"
+//	@Success		200	{object}	APIResponse{}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}	"参数响应"
+//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Router			/tasks/{id} [delete]
 func DeleteTask(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteTaskRequest
@@ -130,13 +137,14 @@ func DeleteTask(c *gin.Context) {
 
 // 启动调度器
 //
-//	@Summary	启动调度器
-//	@Tags		任务
-//	@Accept		application/json
-//	@Produce	application/json
-//	@Success	200	{object}	APIResponse
-//	@Failure	404	{object}	APIResponse
-//	@Router		/tasks/start [post]
+//	@Description	启动调度器
+//	@Summary		启动调度器
+//	@Tags			任务
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Success		200	{object}	APIResponse{}	"成功响应"
+//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Router			/tasks/start [post]
 func StartTask(c *gin.Context) {
 	// 任务助手
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
@@ -160,13 +168,14 @@ func StartTask(c *gin.Context) {
 
 // 停止调度器
 //
-//	@Summary	停止调度器
-//	@Tags		任务
-//	@Accept		application/json
-//	@Produce	application/json
-//	@Success	200	{object}	APIResponse
-//	@Failure	404	{object}	APIResponse
-//	@Router		/tasks/stop [post]
+//	@Description	停止调度器
+//	@Summary		停止调度器
+//	@Tags			任务
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Success		200	{object}	APIResponse{}	"成功响应"
+//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Router			/tasks/stop [post]
 func StopTask(c *gin.Context) {
 	// 停止 GoCron 调度器
 	initialize.StopGoCron()
@@ -175,13 +184,14 @@ func StopTask(c *gin.Context) {
 
 // 清理全部任务
 //
-//	@Summary	清理全部任务
-//	@Tags		任务
-//	@Accept		application/json
-//	@Produce	application/json
-//	@Success	200	{object}	APIResponse
-//	@Failure	404	{object}	APIResponse
-//	@Router		/tasks/clean [post]
+//	@Description	清理全部任务
+//	@Summary		清理全部任务
+//	@Tags			任务
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Success		200	{object}	APIResponse{}	"成功响应"
+//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Router			/tasks/clean [post]
 func CleanTask(c *gin.Context) {
 	// 任务助手
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)

@@ -81,7 +81,7 @@ func BindWithDefaults(c *gin.Context, obj any, b binding.Binding) (err error) {
 	err = b.Bind(c.Request, obj) // ← 再绑定，覆盖传了的字段
 
 	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s BindWithDefaults: %+v ;Type: %v  ;Err: %v \n", c.Request.URL.Path, b.Name(), obj, err)
+		fmt.Printf("%s %s BindWithDefaults: %+v ;Type: %v  ;Err: %v \n", c.Request.Method, c.Request.URL.Path, b.Name(), obj, err)
 	}
 	return err
 }
@@ -95,13 +95,13 @@ func BindQueryWithDefaults(c *gin.Context, obj any) (err error) {
 	err = c.ShouldBindQuery(obj)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
-			fmt.Printf("%s ShouldBindQuery: %+v ;Err: %v \n", c.Request.URL.Path, obj, err)
+			fmt.Printf("%s %s ShouldBindQuery: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
 		}
 		return err
 	}
 
 	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s BindQueryWithDefaults: %+v ;Err: %v \n", c.Request.URL.Path, obj, err)
+		fmt.Printf("%s %s BindQueryWithDefaults: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
 	}
 	return nil
 }
@@ -116,14 +116,14 @@ func BindJSONWithDefaults(c *gin.Context, obj any) (err error) {
 		err = c.ShouldBindJSON(obj)
 		if err != nil {
 			if global.GvaEnv.DEBUG {
-				fmt.Printf("%s ShouldBindJSON: %+v ;Err: %v \n", c.Request.URL.Path, obj, err)
+				fmt.Printf("%s %s ShouldBindJSON: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
 			}
 			return err
 		}
 	}
 
 	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s BindJSONWithDefaults: %+v ;Err: %v \n", c.Request.URL.Path, obj, err)
+		fmt.Printf("%s %s BindJSONWithDefaults: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
 	}
 	return nil
 }
@@ -133,13 +133,13 @@ func BindUriWithDefaults(c *gin.Context, obj any) (err error) {
 	err = c.ShouldBindUri(obj) // ← 再绑定，覆盖传了的字段
 	if err != nil {
 		if global.GvaEnv.DEBUG {
-			fmt.Printf("%s ShouldBindUri: %+v ;Err: %v \n", c.Request.URL.Path, obj, err)
+			fmt.Printf("%s %s ShouldBindUri: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
 		}
 		return err
 	}
 
 	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s BindUriWithDefaults: %+v ;Err: %v \n", c.Request.URL.Path, obj, err)
+		fmt.Printf("%s %s BindUriWithDefaults: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
 	}
 	return nil
 }
@@ -149,7 +149,7 @@ func BindUriWithDefaults(c *gin.Context, obj any) (err error) {
 // 	err = c.ShouldBindUri(obj) // ← 再绑定，覆盖传了的字段
 // 	if err != nil {
 // 		if global.GvaEnv.DEBUG {
-// 			fmt.Printf("%s BShouldBindUri: %+v ;Err: %v \n", c.Request.URL.Path, obj, err)
+// 			fmt.Printf("%s %s ShouldBindUri: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
 // 		}
 // 		return err
 // 	}
@@ -159,14 +159,14 @@ func BindUriWithDefaults(c *gin.Context, obj any) (err error) {
 // 		err = c.ShouldBindJSON(obj) // ← 再绑定，覆盖传了的字段
 // 		if err != nil {
 // 			if global.GvaEnv.DEBUG {
-// 				fmt.Printf("%s ShouldBindJSON: %+v ;Err: %v \n", c.Request.URL.Path, obj, err)
+// 				fmt.Printf("%s %s ShouldBindJSON: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
 // 			}
 // 			return err
 // 		}
 // 	}
 
 // 	if global.GvaEnv.DEBUG {
-// 		fmt.Printf("%s BindUriAndJSONWithDefaults: %+v ;Err: %v \n", c.Request.URL.Path, obj, err)
+// 		fmt.Printf("%s %s BindUriAndJSONWithDefaults: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
 // 	}
 // 	return nil
 // }
