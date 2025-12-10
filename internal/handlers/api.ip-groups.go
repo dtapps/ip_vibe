@@ -50,13 +50,10 @@ func GetIPGroups(c *gin.Context) {
 			list.Devices = append(list.Devices, item.ID)
 		}
 		// 查询通知订阅
-		allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+		list.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
 			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeIPGroup)).
 			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			All(c)
-		for _, item := range allWebhookSub {
-			list.Webhooks = append(list.Webhooks, item.ID)
-		}
+			IDs(c)
 		ipGroups = append(ipGroups, list)
 	}
 	successResponse(c, ipGroups)
@@ -103,13 +100,10 @@ func GetIPGroup(c *gin.Context) {
 		response.Devices = append(response.Devices, item.ID)
 	}
 	// 查询通知订阅
-	allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+	response.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
 		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeIPGroup)).
 		Where(webhooksubscription.ObjIDEQ(requestParams.ID)).
-		All(c)
-	for _, item := range allWebhookSub {
-		response.Webhooks = append(response.Webhooks, item.ID)
-	}
+		IDs(c)
 	successResponse(c, response)
 }
 

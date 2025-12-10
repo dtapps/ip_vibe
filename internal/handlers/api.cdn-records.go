@@ -59,13 +59,10 @@ func GetCdnRecords(c *gin.Context) {
 			list.IPGroupName = ipGroup.Name
 		}
 		// 查询通知订阅
-		allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+		list.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
 			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeCdnRecord)).
 			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			All(c)
-		for _, item := range allWebhookSub {
-			list.Webhooks = append(list.Webhooks, item.ID)
-		}
+			IDs(c)
 		records = append(records, list)
 	}
 	successResponse(c, records)
@@ -120,13 +117,11 @@ func GetCdnRecord(c *gin.Context) {
 		response.IPGroupName = ipGroup.Name
 	}
 	// 查询通知订阅
-	allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+	response.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
 		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeCdnRecord)).
 		Where(webhooksubscription.ObjIDEQ(requestParams.ID)).
-		All(c)
-	for _, item := range allWebhookSub {
-		response.Webhooks = append(response.Webhooks, item.ID)
-	}
+		IDs(c)
+
 	successResponse(c, response)
 }
 

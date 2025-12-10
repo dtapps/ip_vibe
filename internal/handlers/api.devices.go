@@ -51,13 +51,10 @@ func GetDevices(c *gin.Context) {
 			LastHeartbeatAt: item.LastHeartbeatAt,
 		}
 		// 查询通知订阅
-		allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+		list.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
 			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
 			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			All(c)
-		for _, item := range allWebhookSub {
-			list.Webhooks = append(list.Webhooks, item.ID)
-		}
+			IDs(c)
 		devices = append(devices, list)
 	}
 	successResponse(c, devices)
@@ -103,13 +100,10 @@ func GetDevice(c *gin.Context) {
 		LastHeartbeatAt: firstDevice.LastHeartbeatAt,
 	}
 	// 查询通知订阅
-	allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+	response.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
 		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
 		Where(webhooksubscription.ObjIDEQ(requestParams.ID)).
-		All(c)
-	for _, item := range allWebhookSub {
-		response.Webhooks = append(response.Webhooks, item.ID)
-	}
+		IDs(c)
 	successResponse(c, response)
 }
 

@@ -51,13 +51,10 @@ func GetDomainMonitors(c *gin.Context) {
 			LastFailureAt: item.LastFailureAt,
 		}
 		// 查询通知订阅
-		allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+		list.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
 			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDomainMonitor)).
 			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			All(c)
-		for _, item := range allWebhookSub {
-			list.Webhooks = append(list.Webhooks, item.ID)
-		}
+			IDs(c)
 		domainMonitors = append(domainMonitors, list)
 	}
 	successResponse(c, domainMonitors)
@@ -104,13 +101,10 @@ func GetDomainMonitor(c *gin.Context) {
 		LastFailureAt: firstDomainMonitor.LastFailureAt,
 	}
 	// 查询通知订阅
-	allWebhookSub, _ := global.GvaEntDb.WebhookSubscription.Query().
+	response.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
 		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDomainMonitor)).
 		Where(webhooksubscription.ObjIDEQ(requestParams.ID)).
-		All(c)
-	for _, item := range allWebhookSub {
-		response.Webhooks = append(response.Webhooks, item.ID)
-	}
+		IDs(c)
 	successResponse(c, response)
 }
 
