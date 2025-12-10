@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/initialize"
-	"vibe_ip/internal/reporter"
+	"vibe_ip/internal/reporter/service"
 )
 
 var (
@@ -52,7 +52,7 @@ func main() {
 	}
 
 	// 创建服务
-	service := reporter.NewService(global.GvaGoCron)
+	service := service.NewIpReportService(global.GvaGoCron)
 	service.SetDebug(global.GvaEnv.DEBUG)
 	service.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
 	service.SetBaseURL(global.GvaEnv.HTTP_URL)

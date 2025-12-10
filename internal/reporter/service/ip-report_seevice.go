@@ -1,4 +1,4 @@
-package reporter
+package service
 
 import (
 	"context"
@@ -6,14 +6,16 @@ import (
 	"log/slog"
 	"time"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/ip_helper"
 	"vibe_ip/internal/types"
 
+	"github.com/denisbrodbeck/machineid"
 	"github.com/go-co-op/gocron/v2"
 	"github.com/quic-go/quic-go/http3"
 	"resty.dev/v3"
 )
 
-type Service struct {
+type IpReportService struct {
 	cron           gocron.Scheduler // 定时任务调度器
 	job            gocron.Job       // IP上报任务
 	log            *slog.Logger     // 日志记录器
@@ -21,8 +23,8 @@ type Service struct {
 	http3Transport *http3.Transport // HTTP/3 传输
 }
 
-// NewService 创建一个新的服务实例
-func NewService(cron gocron.Scheduler) *Service {
+// NewIpReportService 创建一个新的服务实例
+func NewIpReportService(cron gocron.Scheduler) *IpReportService {
 
 	// 创建一个新的 Resty 客户端
 	client := resty.New()
@@ -54,7 +56,7 @@ func NewService(cron gocron.Scheduler) *Service {
 	// }
 	// client.SetTransport(http3Transport)
 
-	return &Service{
+	return &IpReportService{
 		cron:   cron,
 		log:    slog.With("component", "ip-report"),
 		client: client,
@@ -63,7 +65,7 @@ func NewService(cron gocron.Scheduler) *Service {
 }
 
 // Close 关闭服务，释放资源
-func (s *Service) Close() {
+func (s *IpReportService) Close() {
 	// if s.http3Transport != nil {
 	// 	s.http3Transport.Close()
 	// }
@@ -76,26 +78,26 @@ func (s *Service) Close() {
 }
 
 // SetDebug 设置调试模式
-func (s *Service) SetDebug(debug bool) *Service {
+func (s *IpReportService) SetDebug(debug bool) *IpReportService {
 	s.client.SetDebug(debug)
 	return s
 }
 
 // SetBaseURL 设置基础URL
-func (s *Service) SetBaseURL(url string) *Service {
+func (s *IpReportService) SetBaseURL(url string) *IpReportService {
 	s.client.SetBaseURL(url)
 	return s
 }
 
 // 设置基本认证
-func (s *Service) SetBasicAuth(username, password string) *Service {
+func (s *IpReportService) SetBasicAuth(username, password string) *IpReportService {
 	if username != "" && password != "" {
 		s.client.SetBasicAuth(username, password)
 	}
 	return s
 }
 
-func (s *Service) StartJob(ctx context.Context) (err error) {
+func (s *IpReportService) StartJob(ctx context.Context) (err error) {
 	// 每8到12分钟执行一次
 	s.job, err = s.cron.NewJob(
 		gocron.DurationRandomJob(
@@ -115,7 +117,7 @@ func (s *Service) StartJob(ctx context.Context) (err error) {
 }
 
 // httpApi 发送IP上报请求
-func (s *Service) httpApi(ctx context.Context, deviceCode string, params types.DeviceReportDeviceIpRequest) (err error) {
+func (s *IpReportService) httpApi(ctx context.Context, deviceCode string, params types.DeviceReportDeviceIpRequest) (err error) {
 
 	// 使用 Resty 发送请求
 	resp, err := s.client.R().
@@ -141,4 +143,74 @@ func (s *Service) httpApi(ctx context.Context, deviceCode string, params types.D
 	}
 
 	return nil
+}
+
+func (s *IpReportService) runTask() {
+
+	var err error
+	ctx := context.Background()
+
+	// 请求参数
+	deviceCode := global.GvaEnv.DEVICE_CODE
+	params := types.DeviceReportDeviceIpRequest{
+		DeviceName: global.GvaEnv.DEVICE_NAME,
+	}
+	// 检查设备代码是否为空
+	if deviceCode == "" {
+		// 获取设备ID
+		deviceCode, err = machineid.ID()
+		if err != nil {
+			s.log.ErrorContext(ctx, "获取设备ID失败",
+				slog.Any("err", err),
+			)
+			return
+		}
+	}
+
+	// 获取设备IP
+	iPHelper := ip_helper.NewIPHelper()
+	ipv4, err := iPHelper.GetIP(ctx, ip_helper.IPTypeV4)
+	if err == nil {
+		params.IPV4Addr = ipv4.IP
+	}
+	ipv6, err := iPHelper.GetIP(ctx, ip_helper.IPTypeV6)
+	if err == nil {
+		params.IPV6Addr = ipv6.IP
+	}
+	s.log.InfoContext(ctx, "IP上报开始",
+		slog.String("device_code", deviceCode),
+		slog.String("device_name", params.DeviceName),
+		slog.String("ipv4_addr", params.IPV4Addr),
+		slog.String("ipv6_addr", params.IPV6Addr),
+	)
+	err = s.httpApi(ctx, deviceCode, params)
+	if err != nil {
+		s.log.ErrorContext(ctx, "IP上报失败",
+			slog.String("device_code", deviceCode),
+			slog.String("device_name", params.DeviceName),
+			slog.String("ipv4_addr", params.IPV4Addr),
+			slog.String("ipv6_addr", params.IPV6Addr),
+			slog.Any("err", err),
+		)
+		return
+	}
+
+	nextRun, err := s.job.NextRun()
+	if err == nil {
+		s.log.InfoContext(ctx, "IP上报成功",
+			slog.String("device_code", deviceCode),
+			slog.String("device_name", params.DeviceName),
+			slog.String("ipv4_addr", params.IPV4Addr),
+			slog.String("ipv6_addr", params.IPV6Addr),
+			slog.String("next_run_time", nextRun.Format(time.DateTime)),
+		)
+	} else {
+		s.log.InfoContext(ctx, "IP上报成功",
+			slog.String("device_code", deviceCode),
+			slog.String("device_name", params.DeviceName),
+			slog.String("ipv4_addr", params.IPV4Addr),
+			slog.String("ipv6_addr", params.IPV6Addr),
+		)
+	}
+
 }

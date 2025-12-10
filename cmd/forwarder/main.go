@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"runtime"
-	"vibe_ip/internal/forwarder"
+	"vibe_ip/internal/forwarder/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/initialize"
 )
@@ -48,7 +48,7 @@ func main() {
 	}
 
 	// 创建服务
-	service := forwarder.NewService(global.GvaGoCron)
+	service := service.NewPortForwardService(global.GvaGoCron)
 	service.SetDebug(global.GvaEnv.DEBUG)
 	service.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
 	service.SetBaseURL(global.GvaEnv.HTTP_URL)
