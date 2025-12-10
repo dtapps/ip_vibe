@@ -45,7 +45,7 @@
             echo "=============================="
 
             # 1. 配置 GOPROXY
-            echo "配置 GOPROXY..."
+            echo "配置 GOPROXY: ${INTERIOR_GOPROXY}"
             go env -w GO111MODULE=on
             go env -w GOPROXY="$INTERIOR_GOPROXY"
 
@@ -60,9 +60,8 @@
             VERSION=${INTERIOR_VERSION} make build-linux-amd64
 
             # 4. 登录 Docker Registry
-            echo "正在登录 Docker Registry: ${CNB_DOCKER_REGISTRY}"
+            echo "登录 Docker Registry: ${CNB_DOCKER_REGISTRY}"
             docker login -u "${CNB_TOKEN_USER_NAME}" -p "${CNB_TOKEN}" "${CNB_DOCKER_REGISTRY}"
-            echo "Docker 登录完成"
 
             BACKEND_IMAGE_NAME="${CNB_REPO_SLUG_LOWERCASE}/backend"  # 镜像名
             BACKEND_DOCKER_IMAGE_FULL="${CNB_DOCKER_REGISTRY}/${BACKEND_IMAGE_NAME}:${INTERIOR_VERSION}" # 版本镜像地址
@@ -77,7 +76,7 @@
             FORWARDER_DOCKER_IMAGE_LATEST="${CNB_DOCKER_REGISTRY}/${FORWARDER_IMAGE_NAME}:latest" # latest镜像地址
 
             # 5. 构建 Docker 镜像
-            echo " 构建 Docker 镜像..."
+            echo "构建 Docker 镜像: ${BACKEND_DOCKER_IMAGE_FULL} ${BACKEND_DOCKER_IMAGE_LATEST} ${REPORTER_DOCKER_IMAGE_FULL} ${REPORTER_DOCKER_IMAGE_LATEST} ${FORWARDER_DOCKER_IMAGE_FULL} ${FORWARDER_DOCKER_IMAGE_LATEST}"
             docker build \
               -f "./cmd/backend/Dockerfile" \
               -t "${BACKEND_DOCKER_IMAGE_FULL}" \
@@ -92,7 +91,7 @@
               -t "${FORWARDER_DOCKER_IMAGE_LATEST}" .
 
             # 6. 推送 Docker 镜像
-            echo " 推送 Docker 镜像..."
+            echo "推送 Docker 镜像: ${BACKEND_DOCKER_IMAGE_FULL} ${BACKEND_DOCKER_IMAGE_LATEST} ${REPORTER_DOCKER_IMAGE_FULL} ${REPORTER_DOCKER_IMAGE_LATEST} ${FORWARDER_DOCKER_IMAGE_FULL} ${FORWARDER_DOCKER_IMAGE_LATEST}"
             docker push "${BACKEND_DOCKER_IMAGE_FULL}"
             docker push "${BACKEND_DOCKER_IMAGE_LATEST}"
             docker push "${REPORTER_DOCKER_IMAGE_FULL}"
