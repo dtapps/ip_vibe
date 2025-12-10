@@ -1,11 +1,8 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
-	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/platformconfig"
-	"vibe_ip/internal/ent_log/operationlog"
+	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -25,24 +22,10 @@ import (
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Router			/configs [get]
 func GetConfigs(c *gin.Context) {
-	configs := make([]types.GetConfigResponse, 0)
-	// 查询全部配置
-	allConfig, err := global.GvaEntDb.PlatformConfig.Query().
-		Order(ent.Desc(platformconfig.FieldCreatedAt)).
-		All(c)
+	configs, err := service.NewConfigService(global.GvaEntDb).GetConfigs(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询配置失败: "+err.Error())
 		return
-	}
-	for _, item := range allConfig {
-		configs = append(configs, types.GetConfigResponse{
-			ID:          item.ID,
-			Capability:  item.Capability.String(),
-			Name:        item.Name,
-			Description: item.Description,
-			Platform:    item.Platform.String(),
-			ConfigJSON:  item.ConfigJSON,
-		})
 	}
 	successResponse(c, configs)
 }
@@ -68,22 +51,12 @@ func GetConfig(c *gin.Context) {
 		return
 	}
 
-	// 查询配置
-	firstConfig, err := global.GvaEntDb.PlatformConfig.Query().
-		Where(platformconfig.IDEQ(requestParams.ID)).
-		First(c)
+	response, err := service.NewConfigService(global.GvaEntDb).GetConfig(c, requestParams.ID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询配置失败: "+err.Error())
 		return
 	}
-	successResponse(c, types.GetConfigResponse{
-		ID:          firstConfig.ID,
-		Capability:  firstConfig.Capability.String(),
-		Name:        firstConfig.Name,
-		Description: firstConfig.Description,
-		Platform:    firstConfig.Platform.String(),
-		ConfigJSON:  firstConfig.ConfigJSON,
-	})
+	successResponse(c, response)
 }
 
 // 创建配置
@@ -107,26 +80,12 @@ func CreateConfig(c *gin.Context) {
 		return
 	}
 
-	// 创建配置
-	saveConfig, err := global.GvaEntDb.PlatformConfig.Create().
-		SetName(requestParams.Name).
-		SetDescription(requestParams.Description).
-		SetPlatform(platformconfig.Platform(requestParams.Platform)).
-		SetConfigJSON([]byte(requestParams.ConfigJSON)).
-		SetCapability(platformconfig.Capability(requestParams.Capability)).
-		Save(c)
+	response, err := service.NewConfigService(global.GvaEntDb).CreateConfig(c, &requestParams)
 	if err != nil {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("创建配置: %s\n", err.Error())
-		}
 		errorResponse(c, http.StatusInternalServerError, "创建配置失败: "+err.Error())
 		return
 	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "创建配置")
-	successResponse(c, types.GetConfigRequest{
-		ID: saveConfig.ID,
-	})
+	successResponse(c, response)
 }
 
 // 更新配置
@@ -151,33 +110,12 @@ func UpdateConfig(c *gin.Context) {
 		return
 	}
 
-	// 查询配置
-	firstConfig, err := global.GvaEntDb.PlatformConfig.Query().
-		Where(platformconfig.IDEQ(requestParams.ID)).
-		First(c)
+	response, err := service.NewConfigService(global.GvaEntDb).UpdateConfig(c, &requestParams)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询配置失败: "+err.Error())
-		return
-	}
-	// 更新配置
-	saveConfig, err := global.GvaEntDb.PlatformConfig.UpdateOne(firstConfig).
-		SetName(requestParams.Name).
-		SetDescription(requestParams.Description).
-		SetConfigJSON([]byte(requestParams.ConfigJSON)).
-		SetCapability(platformconfig.Capability(requestParams.Capability)).
-		Save(c)
-	if err != nil {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("更新配置: %s\n", err.Error())
-		}
 		errorResponse(c, http.StatusInternalServerError, "更新配置失败: "+err.Error())
 		return
 	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "更新配置")
-	successResponse(c, types.GetConfigRequest{
-		ID: saveConfig.ID,
-	})
+	successResponse(c, response)
 }
 
 // 删除配置
@@ -202,26 +140,10 @@ func DeleteConfig(c *gin.Context) {
 		return
 	}
 
-	// 查询配置
-	firstConfig, err := global.GvaEntDb.PlatformConfig.Query().
-		Where(platformconfig.IDEQ(requestParams.ID)).
-		First(c)
+	response, err := service.NewConfigService(global.GvaEntDb).DeleteConfig(c, requestParams.ID)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询配置失败: "+err.Error())
-		return
-	}
-	// 删除配置
-	err = global.GvaEntDb.PlatformConfig.DeleteOne(firstConfig).Exec(c)
-	if err != nil {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("删除配置: %s\n", err.Error())
-		}
 		errorResponse(c, http.StatusInternalServerError, "删除配置失败: "+err.Error())
 		return
 	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "删除配置")
-	successResponse(c, types.GetConfigRequest{
-		ID: firstConfig.ID,
-	})
+	successResponse(c, response)
 }

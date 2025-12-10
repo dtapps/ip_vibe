@@ -4,22 +4,12 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"vibe_ip/internal/types"
 	"vibe_ip/pkg/utils"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/google/uuid"
 )
-
-type JobData struct {
-	ID             string   `json:"id"`              // 任务序号
-	Name           string   `json:"name"`            // 任务名称
-	Tags           []string `json:"tags"`            // 任务标签
-	LastRun        string   `json:"last_run"`        // 上次运行时间
-	NextRun        string   `json:"next_run"`        // 下次运行时间
-	NextRuns       []string `json:"next_runs"`       // 下次运行时间列表
-	Schedule       string   `json:"schedule"`        // 任务调度表达式
-	ScheduleDetail string   `json:"schedule_detail"` // 任务调度表达式详情
-}
 
 // 任务助手
 type JobHelper struct {
@@ -34,7 +24,7 @@ func NewJobHelper(scheduler gocron.Scheduler) *JobHelper {
 }
 
 // 查询全部任务
-func (j *JobHelper) GetJobsData(nextRunsLimit int) (jobs []JobData) {
+func (j *JobHelper) GetJobsData(nextRunsLimit int) (jobs []types.JobData) {
 	if j.Scheduler == nil {
 		return jobs
 	}
@@ -48,7 +38,7 @@ func (j *JobHelper) GetJobsData(nextRunsLimit int) (jobs []JobData) {
 		// determine schedule info based on job name patterns or intervals
 		schedule, scheduleDetail := j.inferSchedule(job, nextRuns)
 
-		jobs = append(jobs, JobData{
+		jobs = append(jobs, types.JobData{
 			ID:             job.ID().String(),
 			Name:           job.Name(),
 			Tags:           job.Tags(),

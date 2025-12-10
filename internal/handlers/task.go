@@ -22,8 +22,8 @@ func Task(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.TaskResponse{
-		CommonPageResponse: types.CommonPageResponse[gocron_helper.JobData]{
-			List: []gocron_helper.JobData{},
+		CommonPageResponse: types.CommonPageResponse[types.JobData]{
+			List: []types.JobData{},
 		},
 	}
 

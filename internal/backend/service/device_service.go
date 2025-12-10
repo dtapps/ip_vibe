@@ -26,11 +26,13 @@ type DeviceService interface {
 }
 
 // DeviceServiceImpl 设备服务实现
-type DeviceServiceImpl struct{}
+type DeviceServiceImpl struct {
+	db *ent.Client
+}
 
 // NewDeviceService 创建设备服务实例
-func NewDeviceService() DeviceService {
-	return &DeviceServiceImpl{}
+func NewDeviceService(db *ent.Client) DeviceService {
+	return &DeviceServiceImpl{db: db}
 }
 
 // GetDevices 获取全部设备
@@ -38,7 +40,7 @@ func (s *DeviceServiceImpl) GetDevices(ctx context.Context) ([]types.GetDeviceRe
 	devices := make([]types.GetDeviceResponse, 0)
 
 	// 查询全部设备
-	allDevice, err := global.GvaEntDb.Device.Query().
+	allDevice, err := s.db.Device.Query().
 		Order(ent.Desc(device.FieldCreatedAt)).
 		All(ctx)
 	if err != nil {
@@ -58,7 +60,7 @@ func (s *DeviceServiceImpl) GetDevices(ctx context.Context) ([]types.GetDeviceRe
 		}
 
 		// 查询通知订阅
-		list.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
+		list.Webhooks, _ = s.db.WebhookSubscription.Query().
 			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
 			Where(webhooksubscription.ObjIDEQ(item.ID)).
 			QueryWebhook().
@@ -73,7 +75,7 @@ func (s *DeviceServiceImpl) GetDevices(ctx context.Context) ([]types.GetDeviceRe
 // GetDevice 获取设备
 func (s *DeviceServiceImpl) GetDevice(ctx context.Context, id int64) (*types.GetDeviceResponse, error) {
 	// 查询设备
-	firstDevice, err := global.GvaEntDb.Device.Query().
+	firstDevice, err := s.db.Device.Query().
 		Where(device.IDEQ(id)).
 		First(ctx)
 	if err != nil {
@@ -92,7 +94,7 @@ func (s *DeviceServiceImpl) GetDevice(ctx context.Context, id int64) (*types.Get
 	}
 
 	// 查询通知订阅
-	response.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
+	response.Webhooks, _ = s.db.WebhookSubscription.Query().
 		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
 		Where(webhooksubscription.ObjIDEQ(id)).
 		QueryWebhook().
@@ -104,7 +106,7 @@ func (s *DeviceServiceImpl) GetDevice(ctx context.Context, id int64) (*types.Get
 // CreateDevice 创建设备
 func (s *DeviceServiceImpl) CreateDevice(ctx context.Context, request *types.CreateDeviceRequest) (*types.GetDeviceRequest, error) {
 	// 创建设备
-	saveDevice, err := global.GvaEntDb.Device.Create().
+	saveDevice, err := s.db.Device.Create().
 		SetCode(request.Code).
 		SetName(request.Name).
 		SetDescription(request.Description).
@@ -129,7 +131,7 @@ func (s *DeviceServiceImpl) CreateDevice(ctx context.Context, request *types.Cre
 // UpdateDevice 更新设备
 func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.UpdateDeviceRequest) (*types.GetDeviceRequest, error) {
 	// 查询设备
-	firstDevice, err := global.GvaEntDb.Device.Query().
+	firstDevice, err := s.db.Device.Query().
 		Where(device.IDEQ(request.ID)).
 		First(ctx)
 	if err != nil {
@@ -137,7 +139,7 @@ func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.Upd
 	}
 
 	// 更新设备
-	saveDevice, err := global.GvaEntDb.Device.UpdateOne(firstDevice).
+	saveDevice, err := s.db.Device.UpdateOne(firstDevice).
 		SetName(request.Name).
 		SetDescription(request.Description).
 		SetIPV4(request.IPV4).
@@ -161,7 +163,7 @@ func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.Upd
 // DeleteDevice 删除设备
 func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) (*types.GetDeviceResponse, error) {
 	// 查询设备
-	firstDevice, err := global.GvaEntDb.Device.Query().
+	firstDevice, err := s.db.Device.Query().
 		Where(device.IDEQ(id)).
 		First(ctx)
 	if err != nil {
@@ -169,7 +171,7 @@ func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) (*types.
 	}
 
 	// 删除设备
-	err = global.GvaEntDb.Device.DeleteOne(firstDevice).Exec(ctx)
+	err = s.db.Device.DeleteOne(firstDevice).Exec(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -188,7 +190,7 @@ func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) (*types.
 // GetDeviceIpHistory 获取设备的IP历史记录
 func (s *DeviceServiceImpl) GetDeviceIpHistory(ctx context.Context, id int64) ([]types.GetDeviceIpHistoryResponse, error) {
 	// 查询设备
-	firstDevice, err := global.GvaEntDb.Device.Query().
+	firstDevice, err := s.db.Device.Query().
 		Where(device.IDEQ(id)).
 		First(ctx)
 	if err != nil {
@@ -219,7 +221,7 @@ func (s *DeviceServiceImpl) GetDeviceIpHistory(ctx context.Context, id int64) ([
 // HealthcheckDevice 检查设备健康状态
 func (s *DeviceServiceImpl) HealthcheckDevice(ctx context.Context, id int64) ([][]ToPairsStruct, error) {
 	// 查询设备
-	firstDevice, err := global.GvaEntDb.Device.Query().
+	firstDevice, err := s.db.Device.Query().
 		Where(device.IDEQ(id)).
 		First(ctx)
 	if err != nil {
