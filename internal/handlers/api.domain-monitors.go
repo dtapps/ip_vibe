@@ -81,7 +81,7 @@ func GetDomainMonitors(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64												true	"域名监控记录序号"
 //	@Success		200	{object}	APIResponse{data=types.GetDomainMonitorResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}										请求参数
+//	@Failure		400	{object}	APIResponse{}									"请求参数"
 //	@Failure		404	{object}	APIResponse{}										"错误响应"
 //	@Router			/domain-monitors/{id} [get]
 func GetDomainMonitor(c *gin.Context) {
@@ -131,7 +131,7 @@ func GetDomainMonitor(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			request	body		types.CreateDomainMonitorRequest				true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDomainMonitorRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}									请求参数
+//	@Failure		400		{object}	APIResponse{}								"请求参数"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
 //	@Failure		500		{object}	APIResponse{}									"服务错误"
 //	@Router			/domain-monitors [post]
@@ -231,7 +231,7 @@ func UpdateDomainMonitor(c *gin.Context) {
 //	@Param			id		path		int64											true	"域名监控序号"
 //	@Param			request	body		types.UpdateDomainMonitorActiveRequest			true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDomainMonitorRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}									请求参数
+//	@Failure		400		{object}	APIResponse{}								"请求参数"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
 //	@Failure		500		{object}	APIResponse{}									"服务错误"
 //	@Router			/domain-monitors/{id}/active [patch]
@@ -283,7 +283,7 @@ func UpdateDomainMonitorActive(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64											true	"域名监控序号"
 //	@Success		200	{object}	APIResponse{data=types.GetDomainMonitorRequest}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}									请求参数
+//	@Failure		400	{object}	APIResponse{}								"请求参数"
 //	@Failure		404	{object}	APIResponse{}									"错误响应"
 //	@Failure		500	{object}	APIResponse{}									"服务错误"
 //	@Router			/domain-monitors/{id} [delete]
@@ -329,7 +329,7 @@ func DeleteDomainMonitor(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64											true	"域名监控序号"
 //	@Success		200	{object}	APIResponse{data=types.GetDomainMonitorRequest}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}									请求参数
+//	@Failure		400	{object}	APIResponse{}								"请求参数"
 //	@Failure		404	{object}	APIResponse{}									"错误响应"
 //	@Failure		500	{object}	APIResponse{}									"服务错误"
 //	@Router			/domain-monitors/{id}/check [get]

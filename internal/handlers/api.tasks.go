@@ -40,7 +40,7 @@ func GetTasks(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		string									true	"任务 ID"
 //	@Success		200	{object}	APIResponse{data=gocron_helper.JobData}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}							请求参数
+//	@Failure		400	{object}	APIResponse{}						"请求参数"
 //	@Failure		404	{object}	APIResponse{}							"错误响应"
 //	@Router			/tasks/{id} [get]
 func GetTask(c *gin.Context) {
@@ -74,7 +74,7 @@ func GetTask(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		string			true	"任务 ID"
 //	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}	请求参数
+//	@Failure		400	{object}	APIResponse{} "请求参数"
 //	@Failure		404	{object}	APIResponse{}	"错误响应"
 //	@Router			/tasks/{id} [post]
 func RunTask(c *gin.Context) {
@@ -109,7 +109,7 @@ func RunTask(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		string			true	"任务 ID"
 //	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}	请求参数
+//	@Failure		400	{object}	APIResponse{} "请求参数"
 //	@Failure		404	{object}	APIResponse{}	"错误响应"
 //	@Router			/tasks/{id} [delete]
 func DeleteTask(c *gin.Context) {

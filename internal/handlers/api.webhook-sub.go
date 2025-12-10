@@ -94,7 +94,7 @@ func GetWebhookSubs(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64											true	"通知订阅序号"
 //	@Success		200	{object}	APIResponse{data=types.GetWebhookSubResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}									请求参数
+//	@Failure		400	{object}	APIResponse{}								"请求参数"
 //	@Failure		404	{object}	APIResponse{}									"错误响应"
 //	@Router			/webhook-subs/{id} [get]
 func GetWebhookSub(c *gin.Context) {
@@ -158,7 +158,7 @@ func GetWebhookSub(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			request	body		types.CreateWebhookSubRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetWebhookSubRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}									请求参数
+//	@Failure		400		{object}	APIResponse{}								"请求参数"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
 //	@Failure		500		{object}	APIResponse{}									"服务错误"
 //	@Router			/webhook-subs [post]
@@ -253,7 +253,7 @@ func UpdateWebhookSub(c *gin.Context) {
 //	@Param			id		path		int64											true	"通知订阅序号"
 //	@Param			request	body		types.UpdateWebhookSubActiveRequest				true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetWebhookSubRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}									请求参数
+//	@Failure		400		{object}	APIResponse{}								"请求参数"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
 //	@Failure		500		{object}	APIResponse{}									"服务错误"
 //	@Router			/webhook-subs/{id}/active [patch]
@@ -301,7 +301,7 @@ func UpdateWebhookSubActive(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64											true	"通知订阅序号"
 //	@Success		200	{object}	APIResponse{data=types.GetWebhookSubRequest}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}									请求参数
+//	@Failure		400	{object}	APIResponse{}								"请求参数"
 //	@Failure		404	{object}	APIResponse{}									"错误响应"
 //	@Failure		500	{object}	APIResponse{}									"服务错误"
 //	@Router			/webhook-subs/{id} [delete]

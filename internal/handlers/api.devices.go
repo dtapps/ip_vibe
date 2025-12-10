@@ -4,19 +4,12 @@ import (
 	"fmt"
 	"net/http"
 	"vibe_ip/internal/backend/service"
-	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/device"
-	"vibe_ip/internal/ent/deviceipreport"
-	"vibe_ip/internal/ent/webhooksubscription"
-	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
-	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
-	"golang.org/x/sync/errgroup"
 )
 
 // 获取全部设备
@@ -31,34 +24,10 @@ import (
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
 //	@Router			/devices [get]
 func GetDevices(c *gin.Context) {
-	devices := make([]types.GetDeviceResponse, 0)
-	// 查询全部设备
-	allDevice, err := global.GvaEntDb.Device.Query().
-		Order(ent.Desc(device.FieldCreatedAt)).
-		All(c)
+	devices, err := service.NewDeviceService().GetDevices(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
 		return
-	}
-	for _, item := range allDevice {
-		list := types.GetDeviceResponse{
-			ID:              item.ID,
-			Code:            item.Code,
-			Name:            item.Name,
-			Description:     item.Description,
-			IPV4:            item.IPV4,
-			IPV6:            item.IPV6,
-			LastReportedAt:  item.LastReportedAt,
-			LastHeartbeatAt: item.LastHeartbeatAt,
-		}
-		// 查询通知订阅
-		list.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
-			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
-			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			QueryWebhook().
-			IDs(c)
-
-		devices = append(devices, list)
 	}
 	successResponse(c, devices)
 }
@@ -72,7 +41,7 @@ func GetDevices(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"设备序号"
 //	@Success		200	{object}	APIResponse{data=types.GetDeviceResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								请求参数
+//	@Failure		400	{object}	APIResponse{}							"请求参数"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Router			/devices/{id} [get]
 func GetDevice(c *gin.Context) {
@@ -84,30 +53,11 @@ func GetDevice(c *gin.Context) {
 		return
 	}
 
-	// 查询设备
-	firstDevice, err := global.GvaEntDb.Device.Query().
-		Where(device.IDEQ(requestParams.ID)).
-		First(c)
+	response, err := service.NewDeviceService().GetDevice(c, requestParams.ID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
 		return
 	}
-	response := types.GetDeviceResponse{
-		ID:              firstDevice.ID,
-		Code:            firstDevice.Code,
-		Name:            firstDevice.Name,
-		Description:     firstDevice.Description,
-		IPV4:            firstDevice.IPV4,
-		IPV6:            firstDevice.IPV6,
-		LastReportedAt:  firstDevice.LastReportedAt,
-		LastHeartbeatAt: firstDevice.LastHeartbeatAt,
-	}
-	// 查询通知订阅
-	response.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
-		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
-		Where(webhooksubscription.ObjIDEQ(requestParams.ID)).
-		QueryWebhook().
-		IDs(c)
 
 	successResponse(c, response)
 }
@@ -121,7 +71,7 @@ func GetDevice(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			request	body		types.CreateDeviceRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDeviceRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								请求参数
+//	@Failure		400		{object}	APIResponse{}							"请求参数"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
 //	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/devices [post]
@@ -133,14 +83,7 @@ func CreateDevice(c *gin.Context) {
 		return
 	}
 
-	// 创建设备
-	saveDevice, err := global.GvaEntDb.Device.Create().
-		SetCode(requestParams.Code).
-		SetName(requestParams.Name).
-		SetDescription(requestParams.Description).
-		SetIPV4(requestParams.IPV4).
-		SetIPV6(requestParams.IPV6).
-		Save(c)
+	response, err := service.NewDeviceService().CreateDevice(c, &requestParams)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
 			fmt.Printf("创建设备: %s\n", err.Error())
@@ -148,15 +91,8 @@ func CreateDevice(c *gin.Context) {
 		errorResponse(c, http.StatusInternalServerError, "创建设备失败: "+err.Error())
 		return
 	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "创建设备")
 
-	// 创建通知订阅
-	_ = webhook_sub_helper.Create(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
-
-	successResponse(c, gin.H{
-		"id": saveDevice.ID,
-	})
+	successResponse(c, response)
 }
 
 // 更新设备
@@ -181,21 +117,7 @@ func UpdateDevice(c *gin.Context) {
 		return
 	}
 
-	// 查询设备
-	firstDevice, err := global.GvaEntDb.Device.Query().
-		Where(device.IDEQ(requestParams.ID)).
-		First(c)
-	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
-		return
-	}
-	// 更新设备
-	saveDevice, err := global.GvaEntDb.Device.UpdateOne(firstDevice).
-		SetName(requestParams.Name).
-		SetDescription(requestParams.Description).
-		SetIPV4(requestParams.IPV4).
-		SetIPV6(requestParams.IPV6).
-		Save(c)
+	response, err := service.NewDeviceService().UpdateDevice(c, &requestParams)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
 			fmt.Printf("更新设备: %s\n", err.Error())
@@ -203,15 +125,8 @@ func UpdateDevice(c *gin.Context) {
 		errorResponse(c, http.StatusInternalServerError, "更新设备失败: "+err.Error())
 		return
 	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "更新设备")
 
-	// 更新通知订阅
-	_ = webhook_sub_helper.Update(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
-
-	successResponse(c, types.GetDeviceRequest{
-		ID: saveDevice.ID,
-	})
+	successResponse(c, response)
 }
 
 // 删除设备
@@ -223,7 +138,7 @@ func UpdateDevice(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"设备序号"
 //	@Success		200	{object}	APIResponse{data=types.GetDeviceResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								请求参数
+//	@Failure		400	{object}	APIResponse{}							"请求参数"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/devices/{id} [delete]
@@ -236,16 +151,7 @@ func DeleteDevice(c *gin.Context) {
 		return
 	}
 
-	// 查询设备
-	firstDevice, err := global.GvaEntDb.Device.Query().
-		Where(device.IDEQ(requestParams.ID)).
-		First(c)
-	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
-		return
-	}
-	// 删除设备
-	err = global.GvaEntDb.Device.DeleteOne(firstDevice).Exec(c)
+	response, err := service.NewDeviceService().DeleteDevice(c, requestParams.ID)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
 			fmt.Printf("删除设备: %s\n", err.Error())
@@ -253,15 +159,8 @@ func DeleteDevice(c *gin.Context) {
 		errorResponse(c, http.StatusInternalServerError, "删除设备失败: "+err.Error())
 		return
 	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "删除设备")
 
-	// 删除通知订阅
-	_ = webhook_sub_helper.Delete(c, webhooksubscription.ObjTypeDevice, firstDevice.ID)
-
-	successResponse(c, types.GetDeviceResponse{
-		ID: firstDevice.ID,
-	})
+	successResponse(c, response)
 }
 
 // 获取设备的IP历史记录
@@ -273,7 +172,7 @@ func DeleteDevice(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64													true	"设备序号"
 //	@Success		200	{object}	APIResponse{data=[]types.GetDeviceIpHistoryResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}											请求参数
+//	@Failure		400	{object}	APIResponse{}										"请求参数"
 //	@Failure		404	{object}	APIResponse{}											"错误响应"
 //	@Router			/devices/{id}/ip-history [get]
 func GetDeviceIpHistory(c *gin.Context) {
@@ -285,32 +184,13 @@ func GetDeviceIpHistory(c *gin.Context) {
 		return
 	}
 
-	// 查询设备
-	firstDevice, err := global.GvaEntDb.Device.Query().
-		Where(device.IDEQ(requestParams.ID)).
-		First(c)
-	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
-		return
-	}
-	// 查询设备IP历史记录
-	firstDeviceReports, err := firstDevice.QueryIPReports().
-		Order(ent.Desc(deviceipreport.FieldCreatedAt)).
-		All(c)
+	response, err := service.NewDeviceService().GetDeviceIpHistory(c, requestParams.ID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "查询设备IP历史记录失败: "+err.Error())
 		return
 	}
-	// 设备列表
-	ips := make([]types.GetDeviceIpHistoryResponse, 0)
-	for _, item := range firstDeviceReports {
-		ips = append(ips, types.GetDeviceIpHistoryResponse{
-			IPV4:      item.IPV4,
-			IPV6:      item.IPV6,
-			CreatedAt: item.CreatedAt,
-		})
-	}
-	successResponse(c, ips)
+
+	successResponse(c, response)
 }
 
 // 检查设备健康状态
@@ -322,7 +202,7 @@ func GetDeviceIpHistory(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"设备序号"
 //	@Success		200	{object}	APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								请求参数
+//	@Failure		400	{object}	APIResponse{}							"请求参数"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/devices/{id}/healthcheck [get]
@@ -335,40 +215,9 @@ func HealthcheckDevice(c *gin.Context) {
 		return
 	}
 
-	// 查询设备
-	firstDevice, err := global.GvaEntDb.Device.Query().
-		Where(device.IDEQ(requestParams.ID)).
-		First(c)
+	// 使用服务层检查健康状态
+	results, err := service.NewDeviceService().HealthcheckDevice(c, requestParams.ID)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
-		return
-	}
-
-	// 检查健康状态
-	results := make([][]service.ToPairsStruct, 0)
-
-	// 并发检查
-	eg, egCtx := errgroup.WithContext(c)
-	eg.SetLimit(10) // 最多 10 个并发
-
-	if firstDevice.IPV4 != "" {
-		// 检测 IP 是否可通过 HTTP/HTTPS 访问
-		eg.Go(func() error {
-			healthCheckResult, _ := service.CheckIPHealth(egCtx, firstDevice.IPV4, 80, 443)
-			results = append(results, healthCheckResult.ToPairsForIP())
-			return nil
-		})
-	}
-	if firstDevice.IPV6 != "" {
-		// 检测 IP 是否可通过 HTTP/HTTPS 访问
-		eg.Go(func() error {
-			healthCheckResult, _ := service.CheckIPHealth(egCtx, firstDevice.IPV6, 80, 443)
-			results = append(results, healthCheckResult.ToPairsForIP())
-			return nil
-		})
-	}
-
-	if err = eg.Wait(); err != nil {
 		errorResponse(c, http.StatusInternalServerError, "设备健康状态检查失败: "+err.Error())
 		return
 	}

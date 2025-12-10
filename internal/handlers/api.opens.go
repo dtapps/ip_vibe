@@ -30,7 +30,7 @@ import (
 //	@Param			device_code	path		string													true	"设备编码"
 //	@Param			request		body		types.DeviceReportDeviceIpRequest						true	"请求参数"
 //	@Success		200			{object}	APIResponse{data=types.DeviceReportDeviceIpResponse}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}											请求参数
+//	@Failure		400			{object}	APIResponse{}										"请求参数"
 //	@Failure		404			{object}	APIResponse{}											"错误响应"
 //	@Failure		500			{object}	APIResponse{}											"服务错误"
 //	@Router			/open/device/{device_code}/ip-report [post]
@@ -228,7 +228,7 @@ func DeviceReportDeviceIp(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			device_code	path		string													true	"设备编码"
 //	@Success		200			{object}	APIResponse{data=[]types.DevicePortForwardsResponse}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}											请求参数
+//	@Failure		400			{object}	APIResponse{}										"请求参数"
 //	@Failure		404			{object}	APIResponse{}											"错误响应"
 //	@Router			/open/device/{device_code}/port-forwards [get]
 func DevicePortForwards(c *gin.Context) {

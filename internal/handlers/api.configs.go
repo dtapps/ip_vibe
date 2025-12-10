@@ -56,7 +56,7 @@ func GetConfigs(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"配置序号"
 //	@Success		200	{object}	APIResponse{data=types.GetConfigResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								请求参数
+//	@Failure		400	{object}	APIResponse{}							"请求参数"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Router			/configs/{id} [get]
 func GetConfig(c *gin.Context) {
@@ -95,7 +95,7 @@ func GetConfig(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			request	body		types.CreateConfigRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetConfigRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								请求参数
+//	@Failure		400		{object}	APIResponse{}							"请求参数"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
 //	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/configs [post]
@@ -189,7 +189,7 @@ func UpdateConfig(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"配置序号"
 //	@Success		200	{object}	APIResponse{data=types.GetConfigRequest}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								请求参数
+//	@Failure		400	{object}	APIResponse{}							"请求参数"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/configs/{id} [delete]

@@ -70,7 +70,7 @@ func GetWebhooks(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"通知序号"
 //	@Success		200	{object}	APIResponse{data=types.GetWebhookResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								请求参数
+//	@Failure		400	{object}	APIResponse{}							"请求参数"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Router			/webhooks/{id} [get]
 func GetWebhook(c *gin.Context) {
@@ -113,7 +113,7 @@ func GetWebhook(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			request	body		types.CreateWebhookRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetWebhookRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								请求参数
+//	@Failure		400		{object}	APIResponse{}							"请求参数"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
 //	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/webhooks [post]
@@ -213,7 +213,7 @@ func UpdateWebhook(c *gin.Context) {
 //	@Param			id		path		int64										true	"通知序号"
 //	@Param			request	body		types.UpdateWebhookActiveRequest			true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetWebhookRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								请求参数
+//	@Failure		400		{object}	APIResponse{}							"请求参数"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
 //	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/webhooks/{id}/active [patch]
@@ -261,7 +261,7 @@ func UpdateWebhookActive(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"通知序号"
 //	@Success		200	{object}	APIResponse{data=types.GetWebhookRequest}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								请求参数
+//	@Failure		400	{object}	APIResponse{}							"请求参数"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/webhooks/{id} [delete]
