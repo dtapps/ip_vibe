@@ -111,7 +111,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -168,7 +168,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -223,7 +223,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -347,7 +347,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -400,7 +400,7 @@
                                             "items": {
                                                 "type": "array",
                                                 "items": {
-                                                    "$ref": "#/definitions/vibe_ip_internal_backend.ToPairsStruct"
+                                                    "$ref": "#/definitions/vibe_ip_internal_backend_service.ToPairsStruct"
                                                 }
                                             }
                                         }
@@ -410,7 +410,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -516,7 +516,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -579,7 +579,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -634,7 +634,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -814,7 +814,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -877,7 +877,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -932,7 +932,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -1055,7 +1055,7 @@
                                             "items": {
                                                 "type": "array",
                                                 "items": {
-                                                    "$ref": "#/definitions/vibe_ip_internal_backend.ToPairsStruct"
+                                                    "$ref": "#/definitions/vibe_ip_internal_backend_service.ToPairsStruct"
                                                 }
                                             }
                                         }
@@ -1065,7 +1065,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -1131,7 +1131,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -1247,7 +1247,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -1310,7 +1310,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -1365,7 +1365,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -1501,7 +1501,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -1560,7 +1560,7 @@
                                             "items": {
                                                 "type": "array",
                                                 "items": {
-                                                    "$ref": "#/definitions/vibe_ip_internal_backend.ToPairsStruct"
+                                                    "$ref": "#/definitions/vibe_ip_internal_backend_service.ToPairsStruct"
                                                 }
                                             }
                                         }
@@ -1570,7 +1570,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -1692,7 +1692,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -1755,7 +1755,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -1810,7 +1810,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -1946,7 +1946,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -2009,7 +2009,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -2115,7 +2115,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -2178,7 +2178,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -2233,7 +2233,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -2305,7 +2305,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -2371,7 +2371,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -2424,7 +2424,7 @@
                                             "items": {
                                                 "type": "array",
                                                 "items": {
-                                                    "$ref": "#/definitions/vibe_ip_internal_backend.ToPairsStruct"
+                                                    "$ref": "#/definitions/vibe_ip_internal_backend_service.ToPairsStruct"
                                                 }
                                             }
                                         }
@@ -2434,7 +2434,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -2505,7 +2505,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -2570,7 +2570,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -2686,7 +2686,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -2749,7 +2749,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -2804,7 +2804,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -2940,7 +2940,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -3012,7 +3012,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -3071,7 +3071,7 @@
                                             "items": {
                                                 "type": "array",
                                                 "items": {
-                                                    "$ref": "#/definitions/vibe_ip_internal_backend.ToPairsStruct"
+                                                    "$ref": "#/definitions/vibe_ip_internal_backend_service.ToPairsStruct"
                                                 }
                                             }
                                         }
@@ -3081,7 +3081,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -3128,7 +3128,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/vibe_ip_internal_helper_gocron_helper.JobData"
+                                                "$ref": "#/definitions/vibe_ip_internal_types.JobData"
                                             }
                                         }
                                     }
@@ -3266,7 +3266,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_helper_gocron_helper.JobData"
+                                            "$ref": "#/definitions/vibe_ip_internal_types.JobData"
                                         }
                                     }
                                 }
@@ -3274,7 +3274,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -3316,7 +3316,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -3358,7 +3358,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -3466,7 +3466,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetWebhookSubRequest"
+                                            "$ref": "#/definitions/vibe_ip_internal_types.CreateWebhookSubResponse"
                                         }
                                     }
                                 }
@@ -3474,7 +3474,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -3537,7 +3537,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -3592,7 +3592,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -3728,7 +3728,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -3850,7 +3850,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -3913,7 +3913,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -3968,7 +3968,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -4104,7 +4104,7 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -4138,56 +4138,13 @@
                 }
             }
         },
-        "vibe_ip_internal_backend.ToPairsStruct": {
+        "vibe_ip_internal_backend_service.ToPairsStruct": {
             "type": "object",
             "properties": {
                 "key": {
                     "type": "string"
                 },
                 "value": {}
-            }
-        },
-        "vibe_ip_internal_helper_gocron_helper.JobData": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "description": "任务序号",
-                    "type": "string"
-                },
-                "last_run": {
-                    "description": "上次运行时间",
-                    "type": "string"
-                },
-                "name": {
-                    "description": "任务名称",
-                    "type": "string"
-                },
-                "next_run": {
-                    "description": "下次运行时间",
-                    "type": "string"
-                },
-                "next_runs": {
-                    "description": "下次运行时间列表",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "schedule": {
-                    "description": "任务调度表达式",
-                    "type": "string"
-                },
-                "schedule_detail": {
-                    "description": "任务调度表达式详情",
-                    "type": "string"
-                },
-                "tags": {
-                    "description": "任务标签",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
             }
         },
         "vibe_ip_internal_types.CreateCdnRecordRequest": {
@@ -4523,6 +4480,18 @@
                 "webhook_id": {
                     "description": "通知序号",
                     "type": "integer"
+                }
+            }
+        },
+        "vibe_ip_internal_types.CreateWebhookSubResponse": {
+            "type": "object",
+            "properties": {
+                "ids": {
+                    "description": "通知订阅序号列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
@@ -5127,6 +5096,49 @@
                 "is_active": {
                     "description": "是否活跃",
                     "type": "boolean"
+                }
+            }
+        },
+        "vibe_ip_internal_types.JobData": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "任务序号",
+                    "type": "string"
+                },
+                "last_run": {
+                    "description": "上次运行时间",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "任务名称",
+                    "type": "string"
+                },
+                "next_run": {
+                    "description": "下次运行时间",
+                    "type": "string"
+                },
+                "next_runs": {
+                    "description": "下次运行时间列表",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "schedule": {
+                    "description": "任务调度表达式",
+                    "type": "string"
+                },
+                "schedule_detail": {
+                    "description": "任务调度表达式详情",
+                    "type": "string"
+                },
+                "tags": {
+                    "description": "任务标签",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

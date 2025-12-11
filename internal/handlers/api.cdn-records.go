@@ -56,7 +56,7 @@ func GetCdnRecords(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64											true	"CDN记录序号"
 //	@Success		200	{object}	APIResponse{data=types.GetCdnRecordResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"请求参数"
+//	@Failure		400	{object}	APIResponse{}									"参数错误"
 //	@Failure		404	{object}	APIResponse{}									"错误响应"
 //	@Router			/cdn-records/{id} [get]
 func GetCdnRecord(c *gin.Context) {
@@ -93,7 +93,7 @@ func GetCdnRecord(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			request	body		types.CreateCdnRecordRequest				true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetCdnRecordRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}							"请求参数"
+//	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
 //	@Router			/cdn-records [post]
 func CreateCdnRecord(c *gin.Context) {
@@ -167,7 +167,7 @@ func UpdateCdnRecord(c *gin.Context) {
 //	@Param			id		path		int64										true	"CDN记录序号"
 //	@Param			request	body		types.UpdateCdnRecordActiveRequest			true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetCdnRecordRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}							"请求参数"
+//	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
 //	@Router			/cdn-records/{id}/active [patch]
 func UpdateCdnRecordActive(c *gin.Context) {
@@ -204,7 +204,7 @@ func UpdateCdnRecordActive(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"CDN记录序号"
 //	@Success		200	{object}	APIResponse{data=types.GetCdnRecordRequest}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}							"请求参数"
+//	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Router			/cdn-records/{id} [delete]
 func DeleteCdnRecord(c *gin.Context) {
@@ -241,7 +241,7 @@ func DeleteCdnRecord(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"CDN记录序号"
 //	@Success		200	{object}	APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}							"请求参数"
+//	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/cdn-records/{id}/healthcheck [get]

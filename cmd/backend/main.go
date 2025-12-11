@@ -183,7 +183,7 @@ func main() {
 	// 处理 MCP
 	if global.GvaMcpServer != nil {
 		// 注册 MCP 实现
-		mcp_tool.RegisterTimeTool(global.GvaMcpServer)
+		mcp_tool.RegisterCDNRecordTool(global.GvaMcpServer)
 		// 注册 MCP 路由
 		httpTransport := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
 			return global.GvaMcpServer

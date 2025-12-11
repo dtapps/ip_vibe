@@ -15,44 +15,11 @@ components:
         message:
           type: string
       type: object
-    vibe_ip_internal_backend.ToPairsStruct:
+    vibe_ip_internal_backend_service.ToPairsStruct:
       properties:
         key:
           type: string
         value: {}
-      type: object
-    vibe_ip_internal_helper_gocron_helper.JobData:
-      properties:
-        id:
-          description: 任务序号
-          type: string
-        last_run:
-          description: 上次运行时间
-          type: string
-        name:
-          description: 任务名称
-          type: string
-        next_run:
-          description: 下次运行时间
-          type: string
-        next_runs:
-          description: 下次运行时间列表
-          items:
-            type: string
-          type: array
-          uniqueItems: false
-        schedule:
-          description: 任务调度表达式
-          type: string
-        schedule_detail:
-          description: 任务调度表达式详情
-          type: string
-        tags:
-          description: 任务标签
-          items:
-            type: string
-          type: array
-          uniqueItems: false
       type: object
     vibe_ip_internal_types.CreateCdnRecordRequest:
       properties:
@@ -309,6 +276,15 @@ components:
       - obj_ids
       - obj_type
       - webhook_id
+      type: object
+    vibe_ip_internal_types.CreateWebhookSubResponse:
+      properties:
+        ids:
+          description: 通知订阅序号列表
+          items:
+            type: integer
+          type: array
+          uniqueItems: false
       type: object
     vibe_ip_internal_types.DevicePortForwardsResponse:
       properties:
@@ -752,6 +728,39 @@ components:
       required:
       - is_active
       type: object
+    vibe_ip_internal_types.JobData:
+      properties:
+        id:
+          description: 任务序号
+          type: string
+        last_run:
+          description: 上次运行时间
+          type: string
+        name:
+          description: 任务名称
+          type: string
+        next_run:
+          description: 下次运行时间
+          type: string
+        next_runs:
+          description: 下次运行时间列表
+          items:
+            type: string
+          type: array
+          uniqueItems: false
+        schedule:
+          description: 任务调度表达式
+          type: string
+        schedule_detail:
+          description: 任务调度表达式详情
+          type: string
+        tags:
+          description: 任务标签
+          items:
+            type: string
+          type: array
+          uniqueItems: false
+      type: object
     vibe_ip_internal_types.UpdateCdnRecordActiveRequest:
       properties:
         is_active:
@@ -1066,7 +1075,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -1111,7 +1120,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -1155,7 +1164,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -1242,7 +1251,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -1287,7 +1296,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -1364,7 +1373,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -1415,7 +1424,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -1465,7 +1474,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -1583,7 +1592,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -1634,7 +1643,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -1684,7 +1693,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -1775,7 +1784,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -1826,7 +1835,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -1904,7 +1913,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -1955,7 +1964,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2005,7 +2014,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2098,7 +2107,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2149,7 +2158,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2233,7 +2242,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2284,7 +2293,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2334,7 +2343,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2427,7 +2436,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2478,7 +2487,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2555,7 +2564,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2606,7 +2615,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2656,7 +2665,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2703,7 +2712,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2754,7 +2763,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2799,7 +2808,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2852,7 +2861,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2903,7 +2912,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -2981,7 +2990,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -3032,7 +3041,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -3082,7 +3091,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -3175,7 +3184,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -3228,7 +3237,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -3279,7 +3288,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -3354,7 +3363,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -3398,7 +3407,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -3434,7 +3443,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -3584,7 +3593,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -3635,7 +3644,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -3685,7 +3694,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -3778,7 +3787,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -3862,7 +3871,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -3913,7 +3922,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -3963,7 +3972,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -4056,7 +4065,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: Bad Request
+          description: 参数错误
         "404":
           content:
             application/json:

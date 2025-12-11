@@ -8,42 +8,11 @@ definitions:
       message:
         type: string
     type: object
-  vibe_ip_internal_backend.ToPairsStruct:
+  vibe_ip_internal_backend_service.ToPairsStruct:
     properties:
       key:
         type: string
       value: {}
-    type: object
-  vibe_ip_internal_helper_gocron_helper.JobData:
-    properties:
-      id:
-        description: 任务序号
-        type: string
-      last_run:
-        description: 上次运行时间
-        type: string
-      name:
-        description: 任务名称
-        type: string
-      next_run:
-        description: 下次运行时间
-        type: string
-      next_runs:
-        description: 下次运行时间列表
-        items:
-          type: string
-        type: array
-      schedule:
-        description: 任务调度表达式
-        type: string
-      schedule_detail:
-        description: 任务调度表达式详情
-        type: string
-      tags:
-        description: 任务标签
-        items:
-          type: string
-        type: array
     type: object
   vibe_ip_internal_types.CreateCdnRecordRequest:
     properties:
@@ -291,6 +260,14 @@ definitions:
     - obj_ids
     - obj_type
     - webhook_id
+    type: object
+  vibe_ip_internal_types.CreateWebhookSubResponse:
+    properties:
+      ids:
+        description: 通知订阅序号列表
+        items:
+          type: integer
+        type: array
     type: object
   vibe_ip_internal_types.DevicePortForwardsResponse:
     properties:
@@ -724,6 +701,37 @@ definitions:
     required:
     - is_active
     type: object
+  vibe_ip_internal_types.JobData:
+    properties:
+      id:
+        description: 任务序号
+        type: string
+      last_run:
+        description: 上次运行时间
+        type: string
+      name:
+        description: 任务名称
+        type: string
+      next_run:
+        description: 下次运行时间
+        type: string
+      next_runs:
+        description: 下次运行时间列表
+        items:
+          type: string
+        type: array
+      schedule:
+        description: 任务调度表达式
+        type: string
+      schedule_detail:
+        description: 任务调度表达式详情
+        type: string
+      tags:
+        description: 任务标签
+        items:
+          type: string
+        type: array
+    type: object
   vibe_ip_internal_types.UpdateCdnRecordActiveRequest:
     properties:
       is_active:
@@ -1020,7 +1028,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetCdnRecordRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1055,7 +1063,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetCdnRecordRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1089,7 +1097,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetCdnRecordResponse'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1166,7 +1174,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetCdnRecordRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1200,12 +1208,12 @@ paths:
                 data:
                   items:
                     items:
-                      $ref: '#/definitions/vibe_ip_internal_backend.ToPairsStruct'
+                      $ref: '#/definitions/vibe_ip_internal_backend_service.ToPairsStruct'
                     type: array
                   type: array
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1269,7 +1277,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetConfigRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1308,7 +1316,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetConfigRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1346,7 +1354,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetConfigResponse'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1452,7 +1460,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDeviceRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1491,7 +1499,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDeviceResponse'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1529,7 +1537,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDeviceResponse'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1603,12 +1611,12 @@ paths:
                 data:
                   items:
                     items:
-                      $ref: '#/definitions/vibe_ip_internal_backend.ToPairsStruct'
+                      $ref: '#/definitions/vibe_ip_internal_backend_service.ToPairsStruct'
                     type: array
                   type: array
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1649,7 +1657,7 @@ paths:
                   type: array
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1719,7 +1727,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDnsRecordRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1758,7 +1766,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDnsRecordRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1796,7 +1804,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDnsRecordResponse'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1877,7 +1885,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDnsRecordRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1915,12 +1923,12 @@ paths:
                 data:
                   items:
                     items:
-                      $ref: '#/definitions/vibe_ip_internal_backend.ToPairsStruct'
+                      $ref: '#/definitions/vibe_ip_internal_backend_service.ToPairsStruct'
                     type: array
                   type: array
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -1994,7 +2002,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDomainMonitorRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2033,7 +2041,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDomainMonitorRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2071,7 +2079,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDomainMonitorResponse'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2152,7 +2160,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDomainMonitorRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2191,7 +2199,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDomainMonitorRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2255,7 +2263,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetIPGroupResponse'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2294,7 +2302,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetIPGroupResponse'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2332,7 +2340,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetIPGroupResponse'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2373,7 +2381,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetIPGroupRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2414,7 +2422,7 @@ paths:
                   type: array
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2448,12 +2456,12 @@ paths:
                 data:
                   items:
                     items:
-                      $ref: '#/definitions/vibe_ip_internal_backend.ToPairsStruct'
+                      $ref: '#/definitions/vibe_ip_internal_backend_service.ToPairsStruct'
                     type: array
                   type: array
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2497,7 +2505,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.DeviceReportDeviceIpResponse'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2537,7 +2545,7 @@ paths:
                   type: array
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2607,7 +2615,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetPortForwardRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2646,7 +2654,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetPortForwardRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2684,7 +2692,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetPortForwardResponse'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2765,7 +2773,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetPortForwardRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2810,7 +2818,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetPortForwardRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2848,12 +2856,12 @@ paths:
                 data:
                   items:
                     items:
-                      $ref: '#/definitions/vibe_ip_internal_backend.ToPairsStruct'
+                      $ref: '#/definitions/vibe_ip_internal_backend_service.ToPairsStruct'
                     type: array
                   type: array
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2883,7 +2891,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/vibe_ip_internal_helper_gocron_helper.JobData'
+                    $ref: '#/definitions/vibe_ip_internal_types.JobData'
                   type: array
               type: object
         "404":
@@ -2912,7 +2920,7 @@ paths:
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2942,10 +2950,10 @@ paths:
             - $ref: '#/definitions/internal_handlers.APIResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/vibe_ip_internal_helper_gocron_helper.JobData'
+                  $ref: '#/definitions/vibe_ip_internal_types.JobData'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -2973,7 +2981,7 @@ paths:
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -3097,10 +3105,10 @@ paths:
             - $ref: '#/definitions/internal_handlers.APIResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetWebhookSubRequest'
+                  $ref: '#/definitions/vibe_ip_internal_types.CreateWebhookSubResponse'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -3139,7 +3147,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetWebhookSubRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -3177,7 +3185,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetWebhookSubResponse'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -3258,7 +3266,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetWebhookSubRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -3332,7 +3340,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetWebhookRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -3371,7 +3379,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetWebhookRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -3409,7 +3417,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetWebhookResponse'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
@@ -3490,7 +3498,7 @@ paths:
                   $ref: '#/definitions/vibe_ip_internal_types.GetWebhookRequest'
               type: object
         "400":
-          description: Bad Request
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":

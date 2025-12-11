@@ -49,7 +49,7 @@ func GetDevices(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"设备序号"
 //	@Success		200	{object}	APIResponse{data=types.GetDeviceResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}							"请求参数"
+//	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Router			/devices/{id} [get]
 func GetDevice(c *gin.Context) {
@@ -86,7 +86,7 @@ func GetDevice(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			request	body		types.CreateDeviceRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDeviceRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}							"请求参数"
+//	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
 //	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/devices [post]
@@ -161,7 +161,7 @@ func UpdateDevice(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"设备序号"
 //	@Success		200	{object}	APIResponse{data=types.GetDeviceResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}							"请求参数"
+//	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/devices/{id} [delete]
@@ -199,7 +199,7 @@ func DeleteDevice(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64													true	"设备序号"
 //	@Success		200	{object}	APIResponse{data=[]types.GetDeviceIpHistoryResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}										"请求参数"
+//	@Failure		400	{object}	APIResponse{}											"参数错误"
 //	@Failure		404	{object}	APIResponse{}											"错误响应"
 //	@Router			/devices/{id}/ip-history [get]
 func GetDeviceIpHistory(c *gin.Context) {
@@ -236,7 +236,7 @@ func GetDeviceIpHistory(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"设备序号"
 //	@Success		200	{object}	APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}							"请求参数"
+//	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/devices/{id}/healthcheck [get]
