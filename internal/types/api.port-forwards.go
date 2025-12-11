@@ -23,7 +23,7 @@ type GetPortForwardResponse struct {
 
 // 获取端口转发 请求结构
 type GetPortForwardRequest struct {
-	ID int64 `uri:"id" json:"-" binding:"required" jsonschema:"端口转发记录的唯一标识符"` // 设备端口转发序号
+	ID int64 `uri:"id" json:"id" binding:"required" jsonschema:"端口转发记录的唯一标识符"` // 设备端口转发序号
 }
 
 // 创建端口转发 请求结构

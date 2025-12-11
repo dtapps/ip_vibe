@@ -18,7 +18,7 @@ type GetDeviceResponse struct {
 
 // 获取设备 请求结构
 type GetDeviceRequest struct {
-	ID int64 `uri:"id" json:"-" binding:"required" jsonschema:"设备的唯一标识符"` // 设备序号
+	ID int64 `uri:"id" json:"id" binding:"required" jsonschema:"设备的唯一标识符"` // 设备序号
 }
 
 // 创建设备 请求结构

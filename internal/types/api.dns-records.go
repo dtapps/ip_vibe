@@ -29,7 +29,7 @@ type GetDnsRecordResponse struct {
 
 // 获取DNS记录 请求结构
 type GetDnsRecordRequest struct {
-	ID int64 `uri:"id" json:"-" binding:"required" jsonschema:"DNS记录的唯一标识符"` // DNS记录序号
+	ID int64 `uri:"id" json:"id" binding:"required" jsonschema:"DNS记录的唯一标识符"` // DNS记录序号
 }
 
 // 创建DNS记录 请求结构

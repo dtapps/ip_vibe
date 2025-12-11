@@ -13,7 +13,7 @@ type GetIPGroupResponse struct {
 
 // 获取IP组 请求结构
 type GetIPGroupRequest struct {
-	ID int64 `uri:"id" json:"-" binding:"required" jsonschema:"IP组的唯一标识符"` // IP组序号
+	ID int64 `uri:"id" json:"id" binding:"required" jsonschema:"IP组的唯一标识符"` // IP组序号
 }
 
 // 创建IP组 请求结构

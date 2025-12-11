@@ -26,7 +26,7 @@ type GetDomainMonitorResponse struct {
 
 // 获取域名监控 请求结构
 type GetDomainMonitorRequest struct {
-	ID int64 `uri:"id" json:"-" binding:"required" jsonschema:"域名监控记录的唯一标识符"` // 域名监控记录序号
+	ID int64 `uri:"id" json:"id" binding:"required" jsonschema:"域名监控记录的唯一标识符"` // 域名监控记录序号
 }
 
 // 创建域名监控 请求结构
