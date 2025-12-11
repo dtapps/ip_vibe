@@ -64,14 +64,14 @@ func (s *DomainMonitorServiceImpl) GetDomainMonitors(ctx context.Context, reques
 			LastSuccessAt: item.LastSuccessAt,
 			LastFailureAt: item.LastFailureAt,
 		}
-		// 查询通知订阅 (保持原始查询逻辑)
-		allWebhookSub, _ := s.db.WebhookSubscription.Query().
+
+		// 查询通知订阅
+		list.Webhooks, _ = s.db.WebhookSubscription.Query().
 			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDomainMonitor)).
 			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			All(ctx)
-		for _, sub := range allWebhookSub {
-			list.Webhooks = append(list.Webhooks, sub.ID)
-		}
+			QueryWebhook().
+			IDs(ctx)
+
 		domainMonitors = append(domainMonitors, list)
 	}
 	return domainMonitors, nil
@@ -100,14 +100,14 @@ func (s *DomainMonitorServiceImpl) GetDomainMonitor(ctx context.Context, id int6
 		LastSuccessAt: firstDomainMonitor.LastSuccessAt,
 		LastFailureAt: firstDomainMonitor.LastFailureAt,
 	}
-	// 查询通知订阅 (保持原始查询逻辑)
-	allWebhookSub, _ := s.db.WebhookSubscription.Query().
+
+	// 查询通知订阅
+	response.Webhooks, _ = s.db.WebhookSubscription.Query().
 		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDomainMonitor)).
 		Where(webhooksubscription.ObjIDEQ(id)).
-		All(ctx)
-	for _, item := range allWebhookSub {
-		response.Webhooks = append(response.Webhooks, item.ID)
-	}
+		QueryWebhook().
+		IDs(ctx)
+
 	return &response, nil
 }
 

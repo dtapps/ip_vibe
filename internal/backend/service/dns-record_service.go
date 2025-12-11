@@ -71,14 +71,14 @@ func (s *DNSRecordServiceImpl) GetDnsRecords(ctx context.Context, request *types
 			list.CdnRecordID = cdnRecord.ID
 			list.CdnRecordCdnDomain = cdnRecord.CdnDomain
 		}
-		// 查询通知订阅 (保持原始查询逻辑)
-		allWebhookSub, _ := s.db.WebhookSubscription.Query().
+
+		// 查询通知订阅
+		list.Webhooks, _ = s.db.WebhookSubscription.Query().
 			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDNSRecord)).
 			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			All(ctx)
-		for _, sub := range allWebhookSub {
-			list.Webhooks = append(list.Webhooks, sub.ID)
-		}
+			QueryWebhook().
+			IDs(ctx)
+
 		records = append(records, list)
 	}
 	return records, nil
@@ -117,14 +117,13 @@ func (s *DNSRecordServiceImpl) GetDnsRecord(ctx context.Context, id int64) (*typ
 		response.CdnRecordID = cdnRecord.ID
 		response.CdnRecordCdnDomain = cdnRecord.CdnDomain
 	}
-	// 查询通知订阅 (保持原始查询逻辑)
-	allWebhookSub, _ := s.db.WebhookSubscription.Query().
+	// 查询通知订阅
+	response.Webhooks, _ = s.db.WebhookSubscription.Query().
 		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDNSRecord)).
 		Where(webhooksubscription.ObjIDEQ(id)).
-		All(ctx)
-	for _, item := range allWebhookSub {
-		response.Webhooks = append(response.Webhooks, item.ID)
-	}
+		QueryWebhook().
+		IDs(ctx)
+
 	return &response, nil
 }
 

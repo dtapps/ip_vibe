@@ -41,7 +41,7 @@ func (s *PlatformConfigServiceImpl) GetConfigs(ctx context.Context) ([]types.Get
 	if err != nil {
 		return nil, fmt.Errorf("查询配置失败: %w", err)
 	}
-	// ⚠️ 原始映射逻辑：直接在循环中构建 DTO
+	// 原始映射逻辑：直接在循环中构建 DTO
 	for _, item := range allConfig {
 		configs = append(configs, types.GetConfigResponse{
 			ID:          item.ID,

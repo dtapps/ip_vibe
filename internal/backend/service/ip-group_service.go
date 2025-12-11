@@ -58,14 +58,14 @@ func (s *IPGroupServiceImpl) GetIPGroups(ctx context.Context) ([]types.GetIPGrou
 		for _, device := range item.Edges.Devices {
 			list.Devices = append(list.Devices, device.ID)
 		}
-		// 查询通知订阅 (保持原始查询逻辑)
-		allWebhookSub, _ := s.db.WebhookSubscription.Query().
+
+		// 查询通知订阅
+		list.Webhooks, _ = s.db.WebhookSubscription.Query().
 			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeIPGroup)).
 			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			All(ctx)
-		for _, sub := range allWebhookSub {
-			list.Webhooks = append(list.Webhooks, sub.ID)
-		}
+			QueryWebhook().
+			IDs(ctx)
+
 		ipGroups = append(ipGroups, list)
 	}
 	return ipGroups, nil
@@ -94,14 +94,14 @@ func (s *IPGroupServiceImpl) GetIPGroup(ctx context.Context, id int64) (*types.G
 	for _, item := range firstIpGroup.Edges.Devices {
 		response.Devices = append(response.Devices, item.ID)
 	}
-	// 查询通知订阅 (保持原始查询逻辑)
-	allWebhookSub, _ := s.db.WebhookSubscription.Query().
+
+	// 查询通知订阅
+	response.Webhooks, _ = s.db.WebhookSubscription.Query().
 		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeIPGroup)).
 		Where(webhooksubscription.ObjIDEQ(id)).
-		All(ctx)
-	for _, item := range allWebhookSub {
-		response.Webhooks = append(response.Webhooks, item.ID)
-	}
+		QueryWebhook().
+		IDs(ctx)
+
 	return &response, nil
 }
 

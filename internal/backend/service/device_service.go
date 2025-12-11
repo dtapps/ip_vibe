@@ -59,14 +59,14 @@ func (s *DeviceServiceImpl) GetDevices(ctx context.Context) ([]types.GetDeviceRe
 			LastReportedAt:  item.LastReportedAt,
 			LastHeartbeatAt: item.LastHeartbeatAt,
 		}
-		// 查询通知订阅 (保持原始查询逻辑)
-		allWebhookSub, _ := s.db.WebhookSubscription.Query().
+
+		// 查询通知订阅
+		list.Webhooks, _ = s.db.WebhookSubscription.Query().
 			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
 			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			All(ctx)
-		for _, sub := range allWebhookSub {
-			list.Webhooks = append(list.Webhooks, sub.ID)
-		}
+			QueryWebhook().
+			IDs(ctx)
+
 		devices = append(devices, list)
 	}
 	return devices, nil
@@ -94,14 +94,13 @@ func (s *DeviceServiceImpl) GetDevice(ctx context.Context, id int64) (*types.Get
 		LastReportedAt:  firstDevice.LastReportedAt,
 		LastHeartbeatAt: firstDevice.LastHeartbeatAt,
 	}
-	// 查询通知订阅 (保持原始查询逻辑)
-	allWebhookSub, _ := s.db.WebhookSubscription.Query().
+	// 查询通知订阅
+	response.Webhooks, _ = s.db.WebhookSubscription.Query().
 		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
 		Where(webhooksubscription.ObjIDEQ(id)).
-		All(ctx)
-	for _, item := range allWebhookSub {
-		response.Webhooks = append(response.Webhooks, item.ID)
-	}
+		QueryWebhook().
+		IDs(ctx)
+
 	return &response, nil
 }
 
