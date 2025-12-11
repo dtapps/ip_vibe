@@ -167,6 +167,15 @@ function closeModal(id) {
   modal
     .querySelectorAll(".platform-fields")
     .forEach((el) => el.classList.add("hidden"));
+
+  // 销毁旧实例（防止 Select2 冲突）
+  const webhookSelect = modal.querySelector("#webhook_ids");
+  if (webhookSelect) {
+    const $webhook = $(webhookSelect);
+    if ($webhook.data("select2")) {
+      $webhook.select2("destroy");
+    }
+  }
 }
 
 // 一键复制

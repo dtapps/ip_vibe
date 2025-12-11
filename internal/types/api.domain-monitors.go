@@ -6,7 +6,7 @@ import (
 
 // 获取全部域名监控 请求结构
 type GetDomainMonitorsRequest struct {
-	IsActive *bool `json:"is_active" query:"is_active" binding:"required" jsonschema:"指定是否只返回活跃的域名监控记录"` // 是否活跃
+	IsActive *bool `json:"is_active" form:"is_active" binding:"required" jsonschema:"指定是否只返回活跃的域名监控记录"` // 是否活跃
 }
 
 // 获取域名监控 响应结构
