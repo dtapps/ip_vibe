@@ -13,7 +13,9 @@ async function openFormModal(id) {
     const selectId2 = $("#webhook_ids");
 
     // 通知列表
-    const { data: webhooks } = await API.get(`/api/webhooks`);
+    const { data: webhooks } = await API.get(`/api/webhooks`, {
+      is_active: true,
+    });
     console.log("webhooks", webhooks);
     if (webhooks) {
       // 销毁旧实例（防止 Select2 冲突）
@@ -45,7 +47,9 @@ async function openFormModal(id) {
 
     // 编辑
     if (id) {
-      const { data: domainMonitor } = await API.get(`/api/domain-monitors/${id}`);
+      const { data: domainMonitor } = await API.get(
+        `/api/domain-monitors/${id}`
+      );
       console.log("domainMonitor", domainMonitor);
       if (!domainMonitor) {
         alert("域名监控数据异常");
@@ -57,8 +61,10 @@ async function openFormModal(id) {
       document.getElementById("name").value = domainMonitor.name;
       document.getElementById("domain").value = domainMonitor.domain;
       document.getElementById("domain").disabled = true;
-      document.getElementById("check_interval").value = domainMonitor.check_interval;
-      document.getElementById("check_protocol").value = domainMonitor.check_protocol;
+      document.getElementById("check_interval").value =
+        domainMonitor.check_interval;
+      document.getElementById("check_protocol").value =
+        domainMonitor.check_protocol;
       document.getElementById("check_protocol").disabled = true;
 
       if (domainMonitor.webhooks && domainMonitor.webhooks.length > 0) {
@@ -83,7 +89,7 @@ async function openFormModal(id) {
       document.getElementById("check_protocol").disabled = false;
 
       // 清空已选
-        console.log("select2 清空已选",);
+      console.log("select2 清空已选");
       selectId2.val(null).trigger("change");
 
       showModal("modal", "modalTitle", "添加 域名监控");
@@ -106,7 +112,9 @@ document.getElementById("form").onsubmit = async (e) => {
   const form_data = {
     name: document.getElementById("name").value.trim(),
     domain: document.getElementById("domain").value.trim(),
-    check_interval: Number(document.getElementById("check_interval").value.trim()),
+    check_interval: Number(
+      document.getElementById("check_interval").value.trim()
+    ),
     check_protocol: document.getElementById("check_protocol").value.trim(),
     webhook_ids: selectedWebhookIDs.map(Number),
   };

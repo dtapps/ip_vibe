@@ -7,9 +7,16 @@ window.addEventListener("scroll", () => {
 
 // API请求封装 - 带错误处理
 const API = {
-  async get(url) {
+  async get(url, data) {
+    // 把 data 对象转成查询字符串
+    const queryString = new URLSearchParams(data).toString();
+    // 拼到 URL 后面
+    const fullUrl = queryString ? `${url}?${queryString}` : url;
     try {
-      const response = await fetch(url);
+      const response = await fetch(fullUrl, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
       return await handleResponse(response);
     } catch (error) {
       throw handleError(error);

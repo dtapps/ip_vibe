@@ -7,7 +7,9 @@ async function openFormModal(id) {
     const selectId2 = $("#webhook_ids");
 
     // 通知列表
-    const { data: webhooks } = await API.get(`/api/webhooks`);
+    const { data: webhooks } = await API.get(`/api/webhooks`, {
+      is_active: true,
+    });
     console.log("webhooks", webhooks);
     if (webhooks) {
       // 销毁旧实例（防止 Select2 冲突）
@@ -82,7 +84,7 @@ async function openFormModal(id) {
       document.getElementById("code").disabled = false;
 
       // 清空已选
-        console.log("select2 清空已选",);
+      console.log("select2 清空已选");
       selectId2.val(null).trigger("change");
 
       showModal("modal", "modalTitle", "添加 设备");

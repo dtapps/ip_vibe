@@ -26,7 +26,7 @@ import (
 func GetWebhooks(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetWebhooksRequest
-	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}
@@ -39,7 +39,7 @@ func GetWebhooks(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.GetWebhooks(c)
+	response, err := service.GetWebhooks(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

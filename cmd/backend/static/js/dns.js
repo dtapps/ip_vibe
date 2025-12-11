@@ -36,7 +36,6 @@ async function openFormModal(id) {
   document.getElementById("form").reset();
 
   try {
-    
     // 选择 Select2 控件
     const selectId2 = $("#webhook_ids");
 
@@ -88,7 +87,9 @@ async function openFormModal(id) {
     }
 
     // 通知列表
-    const { data: webhooks } = await API.get(`/api/webhooks`);
+    const { data: webhooks } = await API.get(`/api/webhooks`, {
+      is_active: true,
+    });
     console.log("webhooks", webhooks);
     if (webhooks) {
       // 销毁旧实例（防止 Select2 冲突）
@@ -169,7 +170,7 @@ async function openFormModal(id) {
       document.getElementById("ip_group_id").disabled = true;
 
       // 清空已选
-        console.log("select2 清空已选",);
+      console.log("select2 清空已选");
       selectId2.val(null).trigger("change");
 
       showModal("modal", "modalTitle", "添加 DNS记录");

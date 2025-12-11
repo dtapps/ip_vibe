@@ -8,11 +8,13 @@ import (
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
+
+	"github.com/spf13/cast"
 )
 
 // WebhookService 通知服务接口
 type WebhookService interface {
-	GetWebhooks(ctx context.Context) ([]types.GetWebhookResponse, error)
+	GetWebhooks(ctx context.Context, params *types.GetWebhooksRequest) ([]types.GetWebhookResponse, error)
 	GetWebhook(ctx context.Context, id int64) (*types.GetWebhookResponse, error)
 	CreateWebhook(ctx context.Context, request *types.CreateWebhookRequest) (*types.GetWebhookRequest, error)
 	UpdateWebhook(ctx context.Context, request *types.UpdateWebhookRequest) (*types.GetWebhookRequest, error)
@@ -33,10 +35,11 @@ func NewWebhookService(db *ent.Client, debug bool, logHelper *operation_logs_hel
 }
 
 // GetWebhooks 获取全部通知
-func (s *WebhookServiceImpl) GetWebhooks(ctx context.Context) ([]types.GetWebhookResponse, error) {
+func (s *WebhookServiceImpl) GetWebhooks(ctx context.Context, request *types.GetWebhooksRequest) ([]types.GetWebhookResponse, error) {
 	webhooks := make([]types.GetWebhookResponse, 0)
 	// 查询全部通知
 	allWebhook, err := s.db.Webhook.Query().
+		WhereIf(request.IsActive != nil, webhook.IsActiveEQ(cast.ToBool(request.IsActive))).
 		Order(ent.Desc(webhook.FieldCreatedAt)).
 		All(ctx)
 	if err != nil {

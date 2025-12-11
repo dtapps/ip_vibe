@@ -26,7 +26,7 @@ import (
 func GetWebhookSubs(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetWebhookSubsRequest
-	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
 		return
 	}

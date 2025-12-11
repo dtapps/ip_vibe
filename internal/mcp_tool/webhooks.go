@@ -47,7 +47,7 @@ func GetWebhooks(ctx context.Context, req *mcp.CallToolRequest, params *types.Ge
 	)
 
 	// 调用
-	response, err := service.GetWebhooks(ctx)
+	response, err := service.GetWebhooks(ctx, params)
 	if err != nil {
 		return errorResponse(err.Error())
 	}

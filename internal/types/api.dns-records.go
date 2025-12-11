@@ -4,7 +4,7 @@ import "time"
 
 // 获取全部DNS记录 请求结构
 type GetDnsRecordsRequest struct {
-	IsActive *bool `json:"is_active" binding:"required" jsonschema:"指定是否只返回活跃的DNS记录"` // 是否活跃
+	IsActive *bool `json:"is_active" query:"is_active" binding:"required" jsonschema:"指定是否只返回活跃的DNS记录"` // 是否活跃
 }
 
 // 获取DNS记录 响应结构

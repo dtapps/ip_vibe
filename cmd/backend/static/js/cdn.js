@@ -62,7 +62,9 @@ async function openFormModal(id) {
     }
 
     // 通知列表
-    const { data: webhooks } = await API.get(`/api/webhooks`);
+    const { data: webhooks } = await API.get(`/api/webhooks`, {
+      is_active: true,
+    });
     console.log("webhooks", webhooks);
     if (webhooks) {
       // 销毁旧实例（防止 Select2 冲突）

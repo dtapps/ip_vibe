@@ -2,7 +2,7 @@ package types
 
 // 获取全部通知订阅 请求结构
 type GetWebhookSubsRequest struct {
-	IsActive *bool `json:"is_active" binding:"required" jsonschema:"指定是否只返回活跃的通知订阅"` // 是否活跃
+	IsActive *bool `json:"is_active" query:"is_active" binding:"required" jsonschema:"指定是否只返回活跃的通知订阅"` // 是否活跃
 }
 
 // 获取通知订阅 响应结构
