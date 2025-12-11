@@ -17,7 +17,7 @@ import (
 
 // DNSRecordService DNS记录服务接口
 type DNSRecordService interface {
-	GetDnsRecords(ctx context.Context, request *types.GetDnsRecordsRequest) ([]types.GetDnsRecordResponse, error)
+	GetDnsRecords(ctx context.Context, request *types.GetDnsRecordsRequest) ([]*types.GetDnsRecordResponse, error)
 	GetDnsRecord(ctx context.Context, id int64) (*types.GetDnsRecordResponse, error)
 	CreateDnsRecord(ctx context.Context, request *types.CreateDnsRecordRequest) (*types.GetDnsRecordRequest, error)
 	UpdateDnsRecord(ctx context.Context, request *types.UpdateDnsRecordRequest) (*types.GetDnsRecordRequest, error)
@@ -38,9 +38,51 @@ func NewDNSRecordService(db *ent.Client, debug bool, logHelper *operation_logs_h
 	return &DNSRecordServiceImpl{db: db, debug: debug, logHelper: logHelper}
 }
 
+// buildResponse 将实体转换为响应
+func (s *DNSRecordServiceImpl) buildResponse(ctx context.Context, item *ent.DNSRecord) (*types.GetDnsRecordResponse, error) {
+	resp := &types.GetDnsRecordResponse{
+		ID:            item.ID,
+		ConfigID:      item.ConfigID,
+		Platform:      item.Edges.Config.Platform.String(),
+		RecordID:      item.RecordID,
+		Domain:        item.Domain,
+		Type:          item.Type.String(),
+		IsActive:      item.IsActive,
+		LastRefreshAt: item.LastRefreshAt,
+	}
+
+	// 平台配置
+	if item.Edges.Config != nil {
+		resp.Platform = item.Edges.Config.Platform.String()
+	}
+
+	// IP 组
+	if ipGroup, err := item.Edges.IPGroupOrErr(); err == nil {
+		resp.IPGroupID = ipGroup.ID
+		resp.IPGroupName = ipGroup.Name
+	}
+
+	// CDN 记录
+	if cdnRecord, err := item.Edges.CdnRecordOrErr(); err == nil {
+		resp.CdnRecordID = cdnRecord.ID
+		resp.CdnRecordCdnDomain = cdnRecord.CdnDomain
+	}
+
+	// 查询通知订阅
+	webhookIDs, _ := s.db.WebhookSubscription.Query().
+		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDNSRecord)).
+		Where(webhooksubscription.ObjIDEQ(item.ID)).
+		QueryWebhook().
+		IDs(ctx)
+
+	resp.Webhooks = webhookIDs
+
+	return resp, nil
+}
+
 // GetDnsRecords 获取全部DNS记录
-func (s *DNSRecordServiceImpl) GetDnsRecords(ctx context.Context, request *types.GetDnsRecordsRequest) ([]types.GetDnsRecordResponse, error) {
-	records := make([]types.GetDnsRecordResponse, 0)
+func (s *DNSRecordServiceImpl) GetDnsRecords(ctx context.Context, request *types.GetDnsRecordsRequest) ([]*types.GetDnsRecordResponse, error) {
+	lists := make([]*types.GetDnsRecordResponse, 0)
 	// 查询全部DNS记录
 	allDnsRecord, err := s.db.DNSRecord.Query().
 		WhereIf(request.IsActive != nil, dnsrecord.IsActiveEQ(cast.ToBool(request.IsActive))).
@@ -53,35 +95,14 @@ func (s *DNSRecordServiceImpl) GetDnsRecords(ctx context.Context, request *types
 		return nil, fmt.Errorf("查询DNS记录失败: %w", err)
 	}
 	for _, item := range allDnsRecord {
-		list := types.GetDnsRecordResponse{
-			ID:            item.ID,
-			ConfigID:      item.ConfigID,
-			Platform:      item.Edges.Config.Platform.String(),
-			RecordID:      item.RecordID,
-			Domain:        item.Domain,
-			Type:          item.Type.String(),
-			IsActive:      item.IsActive,
-			LastRefreshAt: item.LastRefreshAt,
+		// 将实体转换为响应
+		list, err := s.buildResponse(ctx, item)
+		if err != nil {
+			return nil, err
 		}
-		if ipGroup, err := item.Edges.IPGroupOrErr(); err == nil {
-			list.IPGroupID = ipGroup.ID
-			list.IPGroupName = ipGroup.Name
-		}
-		if cdnRecord, err := item.Edges.CdnRecordOrErr(); err == nil {
-			list.CdnRecordID = cdnRecord.ID
-			list.CdnRecordCdnDomain = cdnRecord.CdnDomain
-		}
-
-		// 查询通知订阅
-		list.Webhooks, _ = s.db.WebhookSubscription.Query().
-			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDNSRecord)).
-			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			QueryWebhook().
-			IDs(ctx)
-
-		records = append(records, list)
+		lists = append(lists, list)
 	}
-	return records, nil
+	return lists, nil
 }
 
 // GetDnsRecord 获取单个DNS记录
@@ -99,32 +120,13 @@ func (s *DNSRecordServiceImpl) GetDnsRecord(ctx context.Context, id int64) (*typ
 		}
 		return nil, fmt.Errorf("查询DNS记录失败: %w", err)
 	}
-	response := types.GetDnsRecordResponse{
-		ID:            firstDnsRecord.ID,
-		ConfigID:      firstDnsRecord.ConfigID,
-		Platform:      firstDnsRecord.Edges.Config.Platform.String(),
-		RecordID:      firstDnsRecord.RecordID,
-		Domain:        firstDnsRecord.Domain,
-		Type:          firstDnsRecord.Type.String(),
-		IsActive:      firstDnsRecord.IsActive,
-		LastRefreshAt: firstDnsRecord.LastRefreshAt,
-	}
-	if ipGroup, err := firstDnsRecord.Edges.IPGroupOrErr(); err == nil {
-		response.IPGroupID = ipGroup.ID
-		response.IPGroupName = ipGroup.Name
-	}
-	if cdnRecord, err := firstDnsRecord.Edges.CdnRecordOrErr(); err == nil {
-		response.CdnRecordID = cdnRecord.ID
-		response.CdnRecordCdnDomain = cdnRecord.CdnDomain
-	}
-	// 查询通知订阅
-	response.Webhooks, _ = s.db.WebhookSubscription.Query().
-		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDNSRecord)).
-		Where(webhooksubscription.ObjIDEQ(id)).
-		QueryWebhook().
-		IDs(ctx)
 
-	return &response, nil
+	// 将实体转换为响应
+	list, err := s.buildResponse(ctx, firstDnsRecord)
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }
 
 // CreateDnsRecord 创建DNS记录

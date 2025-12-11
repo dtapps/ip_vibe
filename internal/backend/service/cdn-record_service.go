@@ -17,7 +17,7 @@ import (
 
 // CDNRecordService CDN 记录服务接口
 type CDNRecordService interface {
-	GetCdnRecords(ctx context.Context, request *types.GetCdnRecordsRequest) ([]types.GetCdnRecordResponse, error)
+	GetCdnRecords(ctx context.Context, request *types.GetCdnRecordsRequest) ([]*types.GetCdnRecordResponse, error)
 	GetCdnRecord(ctx context.Context, id int64) (*types.GetCdnRecordResponse, error)
 	CreateCdnRecord(ctx context.Context, request *types.CreateCdnRecordRequest) (*types.GetCdnRecordRequest, error)
 	UpdateCdnRecord(ctx context.Context, request *types.UpdateCdnRecordRequest) (*types.GetCdnRecordRequest, error)
@@ -38,9 +38,47 @@ func NewCDNRecordService(db *ent.Client, debug bool, logHelper *operation_logs_h
 	return &CDNRecordServiceImpl{db: db, debug: debug, logHelper: logHelper}
 }
 
+// buildResponse 将实体转换为响应
+func (s *CDNRecordServiceImpl) buildResponse(ctx context.Context, item *ent.CDNRecord) (*types.GetCdnRecordResponse, error) {
+	resp := &types.GetCdnRecordResponse{
+		ID:             item.ID,
+		ConfigID:       item.ConfigID,
+		RecordID:       item.RecordID,
+		Domain:         item.Domain,
+		Type:           item.Type.String(),
+		OriginProtocol: item.OriginProtocol.String(),
+		HTTPPort:       item.HTTPPort,
+		HTTPSPort:      item.HTTPSPort,
+		IsActive:       item.IsActive,
+		LastRefreshAt:  item.LastRefreshAt,
+	}
+
+	// 平台配置
+	if item.Edges.Config != nil {
+		resp.Platform = item.Edges.Config.Platform.String()
+	}
+
+	// IP 组
+	if ipGroup, err := item.Edges.IPGroupOrErr(); err == nil {
+		resp.IPGroupID = ipGroup.ID
+		resp.IPGroupName = ipGroup.Name
+	}
+
+	// 查询通知订阅
+	webhookIDs, _ := s.db.WebhookSubscription.Query().
+		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeCdnRecord)).
+		Where(webhooksubscription.ObjIDEQ(item.ID)).
+		QueryWebhook().
+		IDs(ctx)
+
+	resp.Webhooks = webhookIDs
+
+	return resp, nil
+}
+
 // GetCdnRecords 获取全部 CDN 记录
-func (s *CDNRecordServiceImpl) GetCdnRecords(ctx context.Context, request *types.GetCdnRecordsRequest) ([]types.GetCdnRecordResponse, error) {
-	records := make([]types.GetCdnRecordResponse, 0)
+func (s *CDNRecordServiceImpl) GetCdnRecords(ctx context.Context, request *types.GetCdnRecordsRequest) ([]*types.GetCdnRecordResponse, error) {
+	lists := make([]*types.GetCdnRecordResponse, 0)
 	// 查询全部CDN记录
 	allCdnRecord, err := s.db.CDNRecord.Query().
 		WhereIf(request.IsActive != nil, cdnrecord.IsActiveEQ(cast.ToBool(request.IsActive))).
@@ -53,33 +91,14 @@ func (s *CDNRecordServiceImpl) GetCdnRecords(ctx context.Context, request *types
 	}
 
 	for _, item := range allCdnRecord {
-		list := types.GetCdnRecordResponse{
-			ID:             item.ID,
-			ConfigID:       item.ConfigID,
-			Platform:       item.Edges.Config.Platform.String(),
-			RecordID:       item.RecordID,
-			Domain:         item.Domain,
-			Type:           item.Type.String(),
-			OriginProtocol: item.OriginProtocol.String(),
-			HTTPPort:       item.HTTPPort,
-			HTTPSPort:      item.HTTPSPort,
-			IsActive:       item.IsActive,
-			LastRefreshAt:  item.LastRefreshAt,
+		// 将实体转换为响应
+		list, err := s.buildResponse(ctx, item)
+		if err != nil {
+			return nil, err
 		}
-		if ipGroup, err := item.Edges.IPGroupOrErr(); err == nil {
-			list.IPGroupID = ipGroup.ID
-			list.IPGroupName = ipGroup.Name
-		}
-		// 查询通知订阅
-		list.Webhooks, _ = s.db.WebhookSubscription.Query().
-			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeCdnRecord)).
-			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			QueryWebhook().
-			IDs(ctx)
-
-		records = append(records, list)
+		lists = append(lists, list)
 	}
-	return records, nil
+	return lists, nil
 }
 
 // GetCdnRecord 获取单个 CDN 记录
@@ -97,31 +116,12 @@ func (s *CDNRecordServiceImpl) GetCdnRecord(ctx context.Context, id int64) (*typ
 		return nil, fmt.Errorf("查询CDN记录失败: %w", err)
 	}
 
-	response := types.GetCdnRecordResponse{
-		ID:             firstCdnRecord.ID,
-		ConfigID:       firstCdnRecord.ConfigID,
-		Platform:       firstCdnRecord.Edges.Config.Platform.String(),
-		RecordID:       firstCdnRecord.RecordID,
-		Domain:         firstCdnRecord.Domain,
-		Type:           firstCdnRecord.Type.String(),
-		OriginProtocol: firstCdnRecord.OriginProtocol.String(),
-		HTTPPort:       firstCdnRecord.HTTPPort,
-		HTTPSPort:      firstCdnRecord.HTTPSPort,
-		IsActive:       firstCdnRecord.IsActive,
-		LastRefreshAt:  firstCdnRecord.LastRefreshAt,
+	// 将实体转换为响应
+	list, err := s.buildResponse(ctx, firstCdnRecord)
+	if err != nil {
+		return nil, err
 	}
-	if ipGroup, err := firstCdnRecord.Edges.IPGroupOrErr(); err == nil {
-		response.IPGroupID = ipGroup.ID
-		response.IPGroupName = ipGroup.Name
-	}
-	// 查询通知订阅
-	response.Webhooks, _ = s.db.WebhookSubscription.Query().
-		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeCdnRecord)).
-		Where(webhooksubscription.ObjIDEQ(id)).
-		QueryWebhook().
-		IDs(ctx)
-
-	return &response, nil
+	return list, nil
 }
 
 // CreateCdnRecord 创建 CDN 记录

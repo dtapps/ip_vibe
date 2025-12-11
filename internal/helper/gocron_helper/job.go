@@ -24,7 +24,7 @@ func NewJobHelper(scheduler gocron.Scheduler) *JobHelper {
 }
 
 // 查询全部任务
-func (j *JobHelper) GetJobsData(nextRunsLimit int) (jobs []types.JobData) {
+func (j *JobHelper) GetJobsData(nextRunsLimit int) (jobs []*types.JobData) {
 	if j.Scheduler == nil {
 		return jobs
 	}
@@ -38,7 +38,7 @@ func (j *JobHelper) GetJobsData(nextRunsLimit int) (jobs []types.JobData) {
 		// determine schedule info based on job name patterns or intervals
 		schedule, scheduleDetail := j.inferSchedule(job, nextRuns)
 
-		jobs = append(jobs, types.JobData{
+		jobs = append(jobs, &types.JobData{
 			ID:             job.ID().String(),
 			Name:           job.Name(),
 			Tags:           job.Tags(),

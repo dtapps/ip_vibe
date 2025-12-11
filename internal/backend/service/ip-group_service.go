@@ -16,12 +16,12 @@ import (
 
 // IPGroupService IP组服务接口
 type IPGroupService interface {
-	GetIPGroups(ctx context.Context) ([]types.GetIPGroupResponse, error)
+	GetIPGroups(ctx context.Context) ([]*types.GetIPGroupResponse, error)
 	GetIPGroup(ctx context.Context, id int64) (*types.GetIPGroupResponse, error)
 	CreateIPGroup(ctx context.Context, request *types.CreateIPGroupRequest) (int64, error)
 	UpdateIPGroup(ctx context.Context, request *types.UpdateIPGroupRequest) (*types.GetIPGroupRequest, error)
 	DeleteIPGroup(ctx context.Context, id int64) (*types.GetIPGroupResponse, error)
-	GetIPGroupDevices(ctx context.Context, id int64) ([]types.GetDeviceResponse, error)
+	GetIPGroupDevices(ctx context.Context, id int64) ([]*types.GetDeviceResponse, error)
 	HealthcheckIPGroup(ctx context.Context, id int64) ([][]ToPairsStruct, error)
 }
 
@@ -37,9 +37,34 @@ func NewIPGroupService(db *ent.Client, debug bool, logHelper *operation_logs_hel
 	return &IPGroupServiceImpl{db: db, debug: debug, logHelper: logHelper}
 }
 
+// buildResponse 将实体转换为响应
+func (s *IPGroupServiceImpl) buildResponse(ctx context.Context, item *ent.IpGroup) (*types.GetIPGroupResponse, error) {
+	resp := &types.GetIPGroupResponse{
+		ID:          item.ID,
+		Name:        item.Name,
+		Description: item.Description,
+	}
+
+	// 设备列表
+	for _, device := range item.Edges.Devices {
+		resp.Devices = append(resp.Devices, device.ID)
+	}
+
+	// 查询通知订阅
+	webhookIDs, _ := s.db.WebhookSubscription.Query().
+		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeIPGroup)).
+		Where(webhooksubscription.ObjIDEQ(item.ID)).
+		QueryWebhook().
+		IDs(ctx)
+
+	resp.Webhooks = webhookIDs
+
+	return resp, nil
+}
+
 // GetIPGroups 获取全部IP组
-func (s *IPGroupServiceImpl) GetIPGroups(ctx context.Context) ([]types.GetIPGroupResponse, error) {
-	ipGroups := make([]types.GetIPGroupResponse, 0)
+func (s *IPGroupServiceImpl) GetIPGroups(ctx context.Context) ([]*types.GetIPGroupResponse, error) {
+	lists := make([]*types.GetIPGroupResponse, 0)
 	// 查询全部IP组
 	allIpGroup, err := s.db.IpGroup.Query().
 		Order(ent.Desc(ipgroup.FieldCreatedAt)).
@@ -49,26 +74,14 @@ func (s *IPGroupServiceImpl) GetIPGroups(ctx context.Context) ([]types.GetIPGrou
 		return nil, fmt.Errorf("查询IP组失败: %w", err)
 	}
 	for _, item := range allIpGroup {
-		list := types.GetIPGroupResponse{
-			ID:          item.ID,
-			Name:        item.Name,
-			Description: item.Description,
+		// 将实体转换为响应
+		list, err := s.buildResponse(ctx, item)
+		if err != nil {
+			return nil, err
 		}
-		// 设备列表
-		for _, device := range item.Edges.Devices {
-			list.Devices = append(list.Devices, device.ID)
-		}
-
-		// 查询通知订阅
-		list.Webhooks, _ = s.db.WebhookSubscription.Query().
-			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeIPGroup)).
-			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			QueryWebhook().
-			IDs(ctx)
-
-		ipGroups = append(ipGroups, list)
+		lists = append(lists, list)
 	}
-	return ipGroups, nil
+	return lists, nil
 }
 
 // GetIPGroup 获取单个IP组
@@ -84,25 +97,13 @@ func (s *IPGroupServiceImpl) GetIPGroup(ctx context.Context, id int64) (*types.G
 		}
 		return nil, fmt.Errorf("查询IP组失败: %w", err)
 	}
-	// 响应
-	response := types.GetIPGroupResponse{
-		ID:          firstIpGroup.ID,
-		Name:        firstIpGroup.Name,
-		Description: firstIpGroup.Description,
-	}
-	// 设备列表
-	for _, item := range firstIpGroup.Edges.Devices {
-		response.Devices = append(response.Devices, item.ID)
-	}
 
-	// 查询通知订阅
-	response.Webhooks, _ = s.db.WebhookSubscription.Query().
-		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeIPGroup)).
-		Where(webhooksubscription.ObjIDEQ(id)).
-		QueryWebhook().
-		IDs(ctx)
-
-	return &response, nil
+	// 将实体转换为响应
+	list, err := s.buildResponse(ctx, firstIpGroup)
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }
 
 // CreateIPGroup 创建IP组
@@ -198,7 +199,7 @@ func (s *IPGroupServiceImpl) DeleteIPGroup(ctx context.Context, id int64) (*type
 }
 
 // GetIPGroupDevices 获取IP组的设备列表
-func (s *IPGroupServiceImpl) GetIPGroupDevices(ctx context.Context, id int64) ([]types.GetDeviceResponse, error) {
+func (s *IPGroupServiceImpl) GetIPGroupDevices(ctx context.Context, id int64) ([]*types.GetDeviceResponse, error) {
 	// 查询IP组
 	firstIpGroup, err := s.db.IpGroup.Query().
 		Where(ipgroup.IDEQ(id)).
@@ -211,9 +212,9 @@ func (s *IPGroupServiceImpl) GetIPGroupDevices(ctx context.Context, id int64) ([
 		return nil, fmt.Errorf("查询IP组失败: %w", err)
 	}
 	// 设备列表
-	devices := make([]types.GetDeviceResponse, 0)
+	devices := make([]*types.GetDeviceResponse, 0)
 	for _, item := range firstIpGroup.Edges.Devices {
-		devices = append(devices, types.GetDeviceResponse{
+		devices = append(devices, &types.GetDeviceResponse{
 			ID:              item.ID,
 			Code:            item.Code,
 			Name:            item.Name,

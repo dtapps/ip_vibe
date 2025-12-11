@@ -15,7 +15,7 @@ import (
 
 // TaskService 任务调度服务接口
 type TaskService interface {
-	GetTasks(ctx context.Context) ([]types.JobData, error)
+	GetTasks(ctx context.Context) ([]*types.JobData, error)
 	GetTask(ctx context.Context, id string) (*types.JobData, error)
 	RunTask(ctx context.Context, id string) error
 	DeleteTask(ctx context.Context, id string) error
@@ -48,7 +48,7 @@ func (s *TaskServiceImpl) getJobsHelper() *gocron_helper.JobHelper {
 }
 
 // GetTasks 获取全部任务
-func (s *TaskServiceImpl) GetTasks(ctx context.Context) ([]types.JobData, error) {
+func (s *TaskServiceImpl) GetTasks(ctx context.Context) ([]*types.JobData, error) {
 	jobHelper := s.getJobsHelper()
 
 	// 获取任务列表
@@ -64,7 +64,7 @@ func (s *TaskServiceImpl) GetTask(ctx context.Context, id string) (*types.JobDat
 	jobs := jobHelper.GetJobsData(15)
 	for _, job := range jobs {
 		if job.ID == id {
-			return &job, nil
+			return job, nil
 		}
 	}
 	return nil, fmt.Errorf("任务不存在")

@@ -14,7 +14,7 @@ import (
 
 // WebhookService 通知服务接口
 type WebhookService interface {
-	GetWebhooks(ctx context.Context, params *types.GetWebhooksRequest) ([]types.GetWebhookResponse, error)
+	GetWebhooks(ctx context.Context, params *types.GetWebhooksRequest) ([]*types.GetWebhookResponse, error)
 	GetWebhook(ctx context.Context, id int64) (*types.GetWebhookResponse, error)
 	CreateWebhook(ctx context.Context, request *types.CreateWebhookRequest) (*types.GetWebhookRequest, error)
 	UpdateWebhook(ctx context.Context, request *types.UpdateWebhookRequest) (*types.GetWebhookRequest, error)
@@ -34,9 +34,26 @@ func NewWebhookService(db *ent.Client, debug bool, logHelper *operation_logs_hel
 	return &WebhookServiceImpl{db: db, debug: debug, logHelper: logHelper}
 }
 
+// buildResponse 将实体转换为响应
+func (s *WebhookServiceImpl) buildResponse(ctx context.Context, item *ent.Webhook) (*types.GetWebhookResponse, error) {
+	resp := &types.GetWebhookResponse{
+		ID:              item.ID,
+		Name:            item.Name,
+		Description:     item.Description,
+		Platform:        item.Platform.String(),
+		URL:             item.URL,
+		Secret:          item.Secret,
+		Events:          item.Events,
+		IsActive:        item.IsActive,
+		TemplateTitle:   item.TemplateTitle,
+		TemplateContent: item.TemplateContent,
+	}
+	return resp, nil
+}
+
 // GetWebhooks 获取全部通知
-func (s *WebhookServiceImpl) GetWebhooks(ctx context.Context, request *types.GetWebhooksRequest) ([]types.GetWebhookResponse, error) {
-	webhooks := make([]types.GetWebhookResponse, 0)
+func (s *WebhookServiceImpl) GetWebhooks(ctx context.Context, request *types.GetWebhooksRequest) ([]*types.GetWebhookResponse, error) {
+	lists := make([]*types.GetWebhookResponse, 0)
 	// 查询全部通知
 	allWebhook, err := s.db.Webhook.Query().
 		WhereIf(request.IsActive != nil, webhook.IsActiveEQ(cast.ToBool(request.IsActive))).
@@ -46,20 +63,14 @@ func (s *WebhookServiceImpl) GetWebhooks(ctx context.Context, request *types.Get
 		return nil, fmt.Errorf("查询通知失败: %w", err)
 	}
 	for _, item := range allWebhook {
-		webhooks = append(webhooks, types.GetWebhookResponse{
-			ID:              item.ID,
-			Name:            item.Name,
-			Description:     item.Description,
-			Platform:        item.Platform.String(),
-			URL:             item.URL,
-			Secret:          item.Secret,
-			Events:          item.Events,
-			IsActive:        item.IsActive,
-			TemplateTitle:   item.TemplateTitle,
-			TemplateContent: item.TemplateContent,
-		})
+		// 将实体转换为响应
+		list, err := s.buildResponse(ctx, item)
+		if err != nil {
+			return nil, err
+		}
+		lists = append(lists, list)
 	}
-	return webhooks, nil
+	return lists, nil
 }
 
 // GetWebhook 获取单个通知
@@ -75,18 +86,12 @@ func (s *WebhookServiceImpl) GetWebhook(ctx context.Context, id int64) (*types.G
 		return nil, fmt.Errorf("查询通知失败: %w", err)
 	}
 
-	return &types.GetWebhookResponse{
-		ID:              firstWebhook.ID,
-		Name:            firstWebhook.Name,
-		Description:     firstWebhook.Description,
-		Platform:        firstWebhook.Platform.String(),
-		URL:             firstWebhook.URL,
-		Secret:          firstWebhook.Secret,
-		Events:          firstWebhook.Events,
-		IsActive:        firstWebhook.IsActive,
-		TemplateTitle:   firstWebhook.TemplateTitle,
-		TemplateContent: firstWebhook.TemplateContent,
-	}, nil
+	// 将实体转换为响应
+	list, err := s.buildResponse(ctx, firstWebhook)
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }
 
 // CreateWebhook 创建通知

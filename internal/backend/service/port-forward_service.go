@@ -15,7 +15,7 @@ import (
 
 // PortForwardService 端口转发服务接口
 type PortForwardService interface {
-	GetPortForwards(ctx context.Context, request *types.GetPortForwardsRequest) ([]types.GetPortForwardResponse, error)
+	GetPortForwards(ctx context.Context, request *types.GetPortForwardsRequest) ([]*types.GetPortForwardResponse, error)
 	GetPortForward(ctx context.Context, id int64) (*types.GetPortForwardResponse, error)
 	CreatePortForward(ctx context.Context, request *types.CreatePortForwardRequest) (*types.GetPortForwardRequest, error)
 	UpdatePortForward(ctx context.Context, request *types.UpdatePortForwardRequest) (*types.GetPortForwardRequest, error)
@@ -37,9 +37,32 @@ func NewPortForwardService(db *ent.Client, debug bool, logHelper *operation_logs
 	return &PortForwardServiceImpl{db: db, debug: debug, logHelper: logHelper}
 }
 
+// buildResponse 将实体转换为响应
+func (s *PortForwardServiceImpl) buildResponse(ctx context.Context, item *ent.DevicePortForward) (*types.GetPortForwardResponse, error) {
+	resp := &types.GetPortForwardResponse{
+		ID:          item.ID,
+		Name:        item.Name,
+		Description: item.Description,
+		LocalPort:   item.LocalPort,
+		RemoteHost:  item.RemoteHost,
+		RemotePort:  item.RemotePort,
+		Protocols:   item.Protocols,
+		AutoForward: item.AutoForward,
+		IsActive:    item.IsActive,
+	}
+
+	// 设备
+	if item.Edges.Device != nil {
+		resp.DeviceID = item.Edges.Device.ID
+		resp.DeviceName = item.Edges.Device.Name
+	}
+
+	return resp, nil
+}
+
 // GetPortForwards 获取全部端口转发
-func (s *PortForwardServiceImpl) GetPortForwards(ctx context.Context, request *types.GetPortForwardsRequest) ([]types.GetPortForwardResponse, error) {
-	portForwards := make([]types.GetPortForwardResponse, 0)
+func (s *PortForwardServiceImpl) GetPortForwards(ctx context.Context, request *types.GetPortForwardsRequest) ([]*types.GetPortForwardResponse, error) {
+	lists := make([]*types.GetPortForwardResponse, 0)
 	// 查询全部端口转发
 	allPortForward, err := s.db.DevicePortForward.Query().
 		WhereIf(request.IsActive != nil, deviceportforward.IsActiveEQ(cast.ToBool(request.IsActive))).
@@ -50,29 +73,14 @@ func (s *PortForwardServiceImpl) GetPortForwards(ctx context.Context, request *t
 		return nil, fmt.Errorf("查询端口转发失败: %w", err)
 	}
 	for _, item := range allPortForward {
-		// 确保 device 存在，避免空指针 panic
-		deviceName := ""
-		deviceID := int64(0)
-		if item.Edges.Device != nil {
-			deviceName = item.Edges.Device.Name
-			deviceID = item.Edges.Device.ID
+		// 将实体转换为响应
+		list, err := s.buildResponse(ctx, item)
+		if err != nil {
+			return nil, err
 		}
-
-		portForwards = append(portForwards, types.GetPortForwardResponse{
-			ID:          item.ID,
-			Name:        item.Name,
-			Description: item.Description,
-			LocalPort:   item.LocalPort,
-			RemoteHost:  item.RemoteHost,
-			RemotePort:  item.RemotePort,
-			Protocols:   item.Protocols,
-			AutoForward: item.AutoForward,
-			IsActive:    item.IsActive,
-			DeviceID:    deviceID,
-			DeviceName:  deviceName,
-		})
+		lists = append(lists, list)
 	}
-	return portForwards, nil
+	return lists, nil
 }
 
 // GetPortForward 获取单个端口转发
@@ -89,27 +97,12 @@ func (s *PortForwardServiceImpl) GetPortForward(ctx context.Context, id int64) (
 		return nil, fmt.Errorf("查询端口转发失败: %w", err)
 	}
 
-	// 确保 device 存在
-	deviceName := ""
-	deviceID := int64(0)
-	if firstPortForward.Edges.Device != nil {
-		deviceName = firstPortForward.Edges.Device.Name
-		deviceID = firstPortForward.Edges.Device.ID
+	// 将实体转换为响应
+	list, err := s.buildResponse(ctx, firstPortForward)
+	if err != nil {
+		return nil, err
 	}
-
-	return &types.GetPortForwardResponse{
-		ID:          firstPortForward.ID,
-		Name:        firstPortForward.Name,
-		Description: firstPortForward.Description,
-		LocalPort:   firstPortForward.LocalPort,
-		RemoteHost:  firstPortForward.RemoteHost,
-		RemotePort:  firstPortForward.RemotePort,
-		Protocols:   firstPortForward.Protocols,
-		AutoForward: firstPortForward.AutoForward,
-		IsActive:    firstPortForward.IsActive,
-		DeviceID:    deviceID,
-		DeviceName:  deviceName,
-	}, nil
+	return list, nil
 }
 
 // CreatePortForward 创建端口转发

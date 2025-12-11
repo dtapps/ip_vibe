@@ -31,7 +31,12 @@ func Task(c *gin.Context) {
 	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron)
 
 	// 获取全部任务
-	pageData.List = jobHelper.GetJobsData(5)
+	jobs := jobHelper.GetJobsData(5)
+	for _, job := range jobs {
+		if job != nil {
+			pageData.List = append(pageData.List, *job)
+		}
+	}
 
 	pageData.Page = requestParams.Page
 	pageData.PageSize = requestParams.PageSize

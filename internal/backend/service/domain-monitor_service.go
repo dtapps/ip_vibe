@@ -19,7 +19,7 @@ import (
 
 // DomainMonitorService 域名监控服务接口
 type DomainMonitorService interface {
-	GetDomainMonitors(ctx context.Context, request *types.GetDomainMonitorsRequest) ([]types.GetDomainMonitorResponse, error)
+	GetDomainMonitors(ctx context.Context, request *types.GetDomainMonitorsRequest) ([]*types.GetDomainMonitorResponse, error)
 	GetDomainMonitor(ctx context.Context, id int64) (*types.GetDomainMonitorResponse, error)
 	CreateDomainMonitor(ctx context.Context, request *types.CreateDomainMonitorRequest) (*types.GetDomainMonitorRequest, error)
 	UpdateDomainMonitor(ctx context.Context, request *types.UpdateDomainMonitorRequest) (*types.GetDomainMonitorRequest, error)
@@ -41,9 +41,35 @@ func NewDomainMonitorService(db *ent.Client, debug bool, logHelper *operation_lo
 	return &DomainMonitorServiceImpl{db: db, cron: cron, debug: debug, logHelper: logHelper}
 }
 
+// buildResponse 将实体转换为响应
+func (s *DomainMonitorServiceImpl) buildResponse(ctx context.Context, item *ent.DomainMonitor) (*types.GetDomainMonitorResponse, error) {
+	resp := &types.GetDomainMonitorResponse{
+		ID:            item.ID,
+		Name:          item.Name,
+		Domain:        item.Domain,
+		CheckInterval: item.CheckInterval,
+		CheckProtocol: item.CheckProtocol.String(),
+		IsActive:      item.IsActive,
+		CurrentStatus: item.CurrentStatus.String(),
+		LastSuccessAt: item.LastSuccessAt,
+		LastFailureAt: item.LastFailureAt,
+	}
+
+	// 查询通知订阅
+	webhookIDs, _ := s.db.WebhookSubscription.Query().
+		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDomainMonitor)).
+		Where(webhooksubscription.ObjIDEQ(item.ID)).
+		QueryWebhook().
+		IDs(ctx)
+
+	resp.Webhooks = webhookIDs
+
+	return resp, nil
+}
+
 // GetDomainMonitors 获取全部域名监控
-func (s *DomainMonitorServiceImpl) GetDomainMonitors(ctx context.Context, request *types.GetDomainMonitorsRequest) ([]types.GetDomainMonitorResponse, error) {
-	domainMonitors := make([]types.GetDomainMonitorResponse, 0)
+func (s *DomainMonitorServiceImpl) GetDomainMonitors(ctx context.Context, request *types.GetDomainMonitorsRequest) ([]*types.GetDomainMonitorResponse, error) {
+	lists := make([]*types.GetDomainMonitorResponse, 0)
 	// 查询全部域名监控
 	allDomainMonitor, err := s.db.DomainMonitor.Query().
 		WhereIf(request.IsActive != nil, domainmonitor.IsActiveEQ(cast.ToBool(request.IsActive))).
@@ -53,28 +79,14 @@ func (s *DomainMonitorServiceImpl) GetDomainMonitors(ctx context.Context, reques
 		return nil, fmt.Errorf("查询域名监控失败: %w", err)
 	}
 	for _, item := range allDomainMonitor {
-		list := types.GetDomainMonitorResponse{
-			ID:            item.ID,
-			Name:          item.Name,
-			Domain:        item.Domain,
-			CheckInterval: item.CheckInterval,
-			CheckProtocol: item.CheckProtocol.String(),
-			IsActive:      item.IsActive,
-			CurrentStatus: item.CurrentStatus.String(),
-			LastSuccessAt: item.LastSuccessAt,
-			LastFailureAt: item.LastFailureAt,
+		// 将实体转换为响应
+		list, err := s.buildResponse(ctx, item)
+		if err != nil {
+			return nil, err
 		}
-
-		// 查询通知订阅
-		list.Webhooks, _ = s.db.WebhookSubscription.Query().
-			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDomainMonitor)).
-			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			QueryWebhook().
-			IDs(ctx)
-
-		domainMonitors = append(domainMonitors, list)
+		lists = append(lists, list)
 	}
-	return domainMonitors, nil
+	return lists, nil
 }
 
 // GetDomainMonitor 获取单个域名监控
@@ -89,26 +101,13 @@ func (s *DomainMonitorServiceImpl) GetDomainMonitor(ctx context.Context, id int6
 		}
 		return nil, fmt.Errorf("查询域名监控失败: %w", err)
 	}
-	response := types.GetDomainMonitorResponse{
-		ID:            firstDomainMonitor.ID,
-		Name:          firstDomainMonitor.Name,
-		Domain:        firstDomainMonitor.Domain,
-		CheckInterval: firstDomainMonitor.CheckInterval,
-		CheckProtocol: firstDomainMonitor.CheckProtocol.String(),
-		IsActive:      firstDomainMonitor.IsActive,
-		CurrentStatus: firstDomainMonitor.CurrentStatus.String(),
-		LastSuccessAt: firstDomainMonitor.LastSuccessAt,
-		LastFailureAt: firstDomainMonitor.LastFailureAt,
+
+	// 将实体转换为响应
+	list, err := s.buildResponse(ctx, firstDomainMonitor)
+	if err != nil {
+		return nil, err
 	}
-
-	// 查询通知订阅
-	response.Webhooks, _ = s.db.WebhookSubscription.Query().
-		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDomainMonitor)).
-		Where(webhooksubscription.ObjIDEQ(id)).
-		QueryWebhook().
-		IDs(ctx)
-
-	return &response, nil
+	return list, nil
 }
 
 // CreateDomainMonitor 创建域名监控

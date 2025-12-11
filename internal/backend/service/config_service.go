@@ -12,7 +12,7 @@ import (
 
 // PlatformConfigService 配置服务接口
 type PlatformConfigService interface {
-	GetConfigs(ctx context.Context) ([]types.GetConfigResponse, error)
+	GetConfigs(ctx context.Context) ([]*types.GetConfigResponse, error)
 	GetConfig(ctx context.Context, id int64) (*types.GetConfigResponse, error)
 	CreateConfig(ctx context.Context, request *types.CreateConfigRequest) (*types.GetConfigRequest, error)
 	UpdateConfig(ctx context.Context, request *types.UpdateConfigRequest) (*types.GetConfigRequest, error)
@@ -31,9 +31,22 @@ func NewPlatformConfigService(db *ent.Client, debug bool, logHelper *operation_l
 	return &PlatformConfigServiceImpl{db: db, debug: debug, logHelper: logHelper}
 }
 
+// buildResponse 将实体转换为响应
+func (s *PlatformConfigServiceImpl) buildResponse(ctx context.Context, item *ent.PlatformConfig) (*types.GetConfigResponse, error) {
+	resp := &types.GetConfigResponse{
+		ID:          item.ID,
+		Capability:  item.Capability.String(),
+		Name:        item.Name,
+		Description: item.Description,
+		Platform:    item.Platform.String(),
+		ConfigJSON:  item.ConfigJSON,
+	}
+	return resp, nil
+}
+
 // GetConfigs 获取全部配置
-func (s *PlatformConfigServiceImpl) GetConfigs(ctx context.Context) ([]types.GetConfigResponse, error) {
-	configs := make([]types.GetConfigResponse, 0)
+func (s *PlatformConfigServiceImpl) GetConfigs(ctx context.Context) ([]*types.GetConfigResponse, error) {
+	lists := make([]*types.GetConfigResponse, 0)
 	// 查询全部配置
 	allConfig, err := s.db.PlatformConfig.Query().
 		Order(ent.Desc(platformconfig.FieldCreatedAt)).
@@ -43,16 +56,14 @@ func (s *PlatformConfigServiceImpl) GetConfigs(ctx context.Context) ([]types.Get
 	}
 	// 原始映射逻辑：直接在循环中构建 DTO
 	for _, item := range allConfig {
-		configs = append(configs, types.GetConfigResponse{
-			ID:          item.ID,
-			Capability:  item.Capability.String(),
-			Name:        item.Name,
-			Description: item.Description,
-			Platform:    item.Platform.String(),
-			ConfigJSON:  item.ConfigJSON,
-		})
+		// 将实体转换为响应
+		list, err := s.buildResponse(ctx, item)
+		if err != nil {
+			return nil, err
+		}
+		lists = append(lists, list)
 	}
-	return configs, nil
+	return lists, nil
 }
 
 // GetConfig 获取单个配置
@@ -67,16 +78,13 @@ func (s *PlatformConfigServiceImpl) GetConfig(ctx context.Context, id int64) (*t
 		}
 		return nil, fmt.Errorf("查询配置失败: %w", err)
 	}
-	// ⚠️ 原始映射逻辑：直接构建 DTO
-	response := types.GetConfigResponse{
-		ID:          firstConfig.ID,
-		Capability:  firstConfig.Capability.String(),
-		Name:        firstConfig.Name,
-		Description: firstConfig.Description,
-		Platform:    firstConfig.Platform.String(),
-		ConfigJSON:  firstConfig.ConfigJSON,
+
+	// 将实体转换为响应
+	list, err := s.buildResponse(ctx, firstConfig)
+	if err != nil {
+		return nil, err
 	}
-	return &response, nil
+	return list, nil
 }
 
 // CreateConfig 创建配置

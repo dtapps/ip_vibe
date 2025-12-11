@@ -17,12 +17,12 @@ import (
 
 // DeviceService 设备服务接口
 type DeviceService interface {
-	GetDevices(ctx context.Context) ([]types.GetDeviceResponse, error)
+	GetDevices(ctx context.Context) ([]*types.GetDeviceResponse, error)
 	GetDevice(ctx context.Context, id int64) (*types.GetDeviceResponse, error)
 	CreateDevice(ctx context.Context, request *types.CreateDeviceRequest) (*types.GetDeviceRequest, error)
 	UpdateDevice(ctx context.Context, request *types.UpdateDeviceRequest) (*types.GetDeviceRequest, error)
 	DeleteDevice(ctx context.Context, id int64) (*types.GetDeviceResponse, error)
-	GetDeviceIpHistory(ctx context.Context, id int64) ([]types.GetDeviceIpHistoryResponse, error)
+	GetDeviceIpHistory(ctx context.Context, id int64) ([]*types.GetDeviceIpHistoryResponse, error)
 	HealthcheckDevice(ctx context.Context, id int64) ([][]ToPairsStruct, error)
 }
 
@@ -38,9 +38,34 @@ func NewDeviceService(db *ent.Client, debug bool, logHelper *operation_logs_help
 	return &DeviceServiceImpl{db: db, debug: debug, logHelper: logHelper}
 }
 
+// buildResponse 将实体转换为响应
+func (s *DeviceServiceImpl) buildResponse(ctx context.Context, item *ent.Device) (*types.GetDeviceResponse, error) {
+	resp := &types.GetDeviceResponse{
+		ID:              item.ID,
+		Code:            item.Code,
+		Name:            item.Name,
+		Description:     item.Description,
+		IPV4:            item.IPV4,
+		IPV6:            item.IPV6,
+		LastReportedAt:  item.LastReportedAt,
+		LastHeartbeatAt: item.LastHeartbeatAt,
+	}
+
+	// 查询通知订阅
+	webhookIDs, _ := s.db.WebhookSubscription.Query().
+		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
+		Where(webhooksubscription.ObjIDEQ(item.ID)).
+		QueryWebhook().
+		IDs(ctx)
+
+	resp.Webhooks = webhookIDs
+
+	return resp, nil
+}
+
 // GetDevices 获取全部设备
-func (s *DeviceServiceImpl) GetDevices(ctx context.Context) ([]types.GetDeviceResponse, error) {
-	devices := make([]types.GetDeviceResponse, 0)
+func (s *DeviceServiceImpl) GetDevices(ctx context.Context) ([]*types.GetDeviceResponse, error) {
+	lists := make([]*types.GetDeviceResponse, 0)
 	// 查询全部设备
 	allDevice, err := s.db.Device.Query().
 		Order(ent.Desc(device.FieldCreatedAt)).
@@ -49,27 +74,14 @@ func (s *DeviceServiceImpl) GetDevices(ctx context.Context) ([]types.GetDeviceRe
 		return nil, fmt.Errorf("查询设备失败: %w", err)
 	}
 	for _, item := range allDevice {
-		list := types.GetDeviceResponse{
-			ID:              item.ID,
-			Code:            item.Code,
-			Name:            item.Name,
-			Description:     item.Description,
-			IPV4:            item.IPV4,
-			IPV6:            item.IPV6,
-			LastReportedAt:  item.LastReportedAt,
-			LastHeartbeatAt: item.LastHeartbeatAt,
+		// 将实体转换为响应
+		list, err := s.buildResponse(ctx, item)
+		if err != nil {
+			return nil, err
 		}
-
-		// 查询通知订阅
-		list.Webhooks, _ = s.db.WebhookSubscription.Query().
-			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
-			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			QueryWebhook().
-			IDs(ctx)
-
-		devices = append(devices, list)
+		lists = append(lists, list)
 	}
-	return devices, nil
+	return lists, nil
 }
 
 // GetDevice 获取单个设备
@@ -84,24 +96,13 @@ func (s *DeviceServiceImpl) GetDevice(ctx context.Context, id int64) (*types.Get
 		}
 		return nil, fmt.Errorf("查询设备失败: %w", err)
 	}
-	response := types.GetDeviceResponse{
-		ID:              firstDevice.ID,
-		Code:            firstDevice.Code,
-		Name:            firstDevice.Name,
-		Description:     firstDevice.Description,
-		IPV4:            firstDevice.IPV4,
-		IPV6:            firstDevice.IPV6,
-		LastReportedAt:  firstDevice.LastReportedAt,
-		LastHeartbeatAt: firstDevice.LastHeartbeatAt,
-	}
-	// 查询通知订阅
-	response.Webhooks, _ = s.db.WebhookSubscription.Query().
-		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
-		Where(webhooksubscription.ObjIDEQ(id)).
-		QueryWebhook().
-		IDs(ctx)
 
-	return &response, nil
+	// 将实体转换为响应
+	list, err := s.buildResponse(ctx, firstDevice)
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }
 
 // CreateDevice 创建设备
@@ -210,7 +211,7 @@ func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) (*types.
 }
 
 // GetDeviceIpHistory 获取设备的IP历史记录
-func (s *DeviceServiceImpl) GetDeviceIpHistory(ctx context.Context, id int64) ([]types.GetDeviceIpHistoryResponse, error) {
+func (s *DeviceServiceImpl) GetDeviceIpHistory(ctx context.Context, id int64) ([]*types.GetDeviceIpHistoryResponse, error) {
 	// 查询设备 (保持原始逻辑)
 	firstDevice, err := s.db.Device.Query().
 		Where(device.IDEQ(id)).
@@ -229,9 +230,9 @@ func (s *DeviceServiceImpl) GetDeviceIpHistory(ctx context.Context, id int64) ([
 		return nil, fmt.Errorf("查询设备IP历史记录失败: %w", err)
 	}
 	// 设备列表
-	ips := make([]types.GetDeviceIpHistoryResponse, 0)
+	ips := make([]*types.GetDeviceIpHistoryResponse, 0)
 	for _, item := range firstDeviceReports {
-		ips = append(ips, types.GetDeviceIpHistoryResponse{
+		ips = append(ips, &types.GetDeviceIpHistoryResponse{
 			IPV4:      item.IPV4,
 			IPV6:      item.IPV6,
 			CreatedAt: item.CreatedAt,
