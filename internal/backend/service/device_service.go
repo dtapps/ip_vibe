@@ -116,7 +116,7 @@ func (s *DeviceServiceImpl) CreateDevice(ctx context.Context, request *types.Cre
 		SetIPV6(request.IPV6).
 		Save(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+		if s.debug {
 			fmt.Printf("创建设备: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("创建设备失败: %w", err)
@@ -125,7 +125,12 @@ func (s *DeviceServiceImpl) CreateDevice(ctx context.Context, request *types.Cre
 	_ = s.logHelper.RecordDataCreate(ctx, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "创建设备")
 
 	// 创建通知订阅 (保持原始逻辑)
-	_ = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
+	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
+	if err != nil {
+		if s.debug {
+			fmt.Printf("创建通知订阅失败: %s\n", err.Error())
+		}
+	}
 
 	return &types.GetDeviceRequest{
 		ID: saveDevice.ID,
@@ -152,7 +157,7 @@ func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.Upd
 		SetIPV6(request.IPV6).
 		Save(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+		if s.debug {
 			fmt.Printf("更新设备: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("更新设备失败: %w", err)
@@ -161,7 +166,12 @@ func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.Upd
 	_ = s.logHelper.RecordDataUpdate(ctx, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "更新设备")
 
 	// 更新通知订阅 (保持原始逻辑)
-	_ = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
+	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
+	if err != nil {
+		if s.debug {
+			fmt.Printf("更新通知订阅失败: %s\n", err.Error())
+		}
+	}
 
 	return &types.GetDeviceRequest{
 		ID: saveDevice.ID,
@@ -196,7 +206,7 @@ func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) (*types.
 	// 删除设备
 	err = s.db.Device.DeleteOne(firstDevice).Exec(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+		if s.debug {
 			fmt.Printf("删除设备: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("删除设备失败: %w", err)
@@ -205,7 +215,12 @@ func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) (*types.
 	_ = s.logHelper.RecordDataDelete(ctx, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "删除设备")
 
 	// 删除通知订阅 (保持原始逻辑)
-	_ = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDevice, firstDevice.ID)
+	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDevice, firstDevice.ID)
+	if err != nil {
+		if s.debug {
+			fmt.Printf("删除通知订阅失败: %s\n", err.Error())
+		}
+	}
 
 	return &response, nil
 }

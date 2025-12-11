@@ -145,7 +145,7 @@ func (s *DNSRecordServiceImpl) CreateDnsRecord(ctx context.Context, request *typ
 
 	saveDnsRecord, err := createDnsRecord.Save(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+		if s.debug {
 			fmt.Printf("创建DNS记录: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("创建DNS记录失败: %w", err)
@@ -154,7 +154,12 @@ func (s *DNSRecordServiceImpl) CreateDnsRecord(ctx context.Context, request *typ
 	_ = s.logHelper.RecordDataCreate(ctx, saveDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "创建DNS记录")
 
 	// 创建通知订阅
-	_ = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDNSRecord, saveDnsRecord.ID)
+	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDNSRecord, saveDnsRecord.ID)
+	if err != nil {
+		if s.debug {
+			fmt.Printf("创建通知订阅失败: %s\n", err.Error())
+		}
+	}
 
 	return &types.GetDnsRecordRequest{
 		ID: saveDnsRecord.ID,
@@ -185,7 +190,7 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *typ
 
 	saveDnsRecord, err := updateDnsRecord.Save(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+		if s.debug {
 			fmt.Printf("更新DNS记录: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("更新DNS记录失败: %w", err)
@@ -194,7 +199,12 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *typ
 	_ = s.logHelper.RecordDataUpdate(ctx, saveDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "更新DNS记录")
 
 	// 更新通知订阅
-	_ = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDNSRecord, saveDnsRecord.ID)
+	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDNSRecord, saveDnsRecord.ID)
+	if err != nil {
+		if s.debug {
+			fmt.Printf("更新通知订阅失败: %s\n", err.Error())
+		}
+	}
 
 	return &types.GetDnsRecordRequest{
 		ID: saveDnsRecord.ID,
@@ -218,7 +228,7 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecordActive(ctx context.Context, reques
 		SetIsActive(request.IsActive).
 		Save(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+		if s.debug {
 			fmt.Printf("更新DNS记录状态: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("更新DNS记录状态失败: %w", err)
@@ -252,7 +262,12 @@ func (s *DNSRecordServiceImpl) DeleteDnsRecord(ctx context.Context, id int64) (*
 	_ = s.logHelper.RecordDataDelete(ctx, firstDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "删除DNS记录")
 
 	// 删除通知订阅
-	_ = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDNSRecord, firstDnsRecord.ID)
+	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDNSRecord, firstDnsRecord.ID)
+	if err != nil {
+		if s.debug {
+			fmt.Printf("删除通知订阅失败: %s\n", err.Error())
+		}
+	}
 
 	return &types.GetDnsRecordRequest{
 		ID: firstDnsRecord.ID,

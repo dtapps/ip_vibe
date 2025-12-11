@@ -116,7 +116,7 @@ func (s *IPGroupServiceImpl) CreateIPGroup(ctx context.Context, request *types.C
 		AddDeviceIDs(request.Devices...).
 		Save(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+		if s.debug {
 			fmt.Printf("创建IP组: %s\n", err.Error())
 		}
 		return 0, fmt.Errorf("创建IP组失败: %w", err)
@@ -125,7 +125,12 @@ func (s *IPGroupServiceImpl) CreateIPGroup(ctx context.Context, request *types.C
 	_ = s.logHelper.RecordDataCreate(ctx, saveIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "创建IP组")
 
 	// 创建通知订阅
-	_ = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeIPGroup, saveIpGroup.ID)
+	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeIPGroup, saveIpGroup.ID)
+	if err != nil {
+		if s.debug {
+			fmt.Printf("创建通知订阅失败: %s\n", err.Error())
+		}
+	}
 
 	return saveIpGroup.ID, nil
 }
@@ -150,7 +155,7 @@ func (s *IPGroupServiceImpl) UpdateIPGroup(ctx context.Context, request *types.U
 		AddDeviceIDs(request.Devices...).
 		Save(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+		if s.debug {
 			fmt.Printf("更新IP组: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("更新IP组失败: %w", err)
@@ -159,7 +164,12 @@ func (s *IPGroupServiceImpl) UpdateIPGroup(ctx context.Context, request *types.U
 	_ = s.logHelper.RecordDataUpdate(ctx, saveIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "更新IP组")
 
 	// 更新通知订阅
-	_ = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeIPGroup, saveIpGroup.ID)
+	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeIPGroup, saveIpGroup.ID)
+	if err != nil {
+		if s.debug {
+			fmt.Printf("更新通知订阅失败: %s\n", err.Error())
+		}
+	}
 
 	return &types.GetIPGroupRequest{
 		ID: saveIpGroup.ID,
@@ -181,7 +191,7 @@ func (s *IPGroupServiceImpl) DeleteIPGroup(ctx context.Context, id int64) (*type
 	// 删除IP组
 	err = s.db.IpGroup.DeleteOne(firstIpGroup).Exec(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+		if s.debug {
 			fmt.Printf("删除IP组: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("删除IP组失败: %w", err)
@@ -190,7 +200,12 @@ func (s *IPGroupServiceImpl) DeleteIPGroup(ctx context.Context, id int64) (*type
 	_ = s.logHelper.RecordDataDelete(ctx, firstIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "删除IP组")
 
 	// 删除通知订阅
-	_ = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeIPGroup, firstIpGroup.ID)
+	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeIPGroup, firstIpGroup.ID)
+	if err != nil {
+		if s.debug {
+			fmt.Printf("删除通知订阅失败: %s\n", err.Error())
+		}
+	}
 
 	// 保持 Handler 逻辑，返回包含 ID 的响应结构
 	return &types.GetIPGroupResponse{

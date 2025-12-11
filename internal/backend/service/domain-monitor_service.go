@@ -120,7 +120,7 @@ func (s *DomainMonitorServiceImpl) CreateDomainMonitor(ctx context.Context, requ
 		SetCheckProtocol(domainmonitor.CheckProtocol(request.CheckProtocol)).
 		Save(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+		if s.debug {
 			fmt.Printf("创建域名监控: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("创建域名监控失败: %w", err)
@@ -129,7 +129,12 @@ func (s *DomainMonitorServiceImpl) CreateDomainMonitor(ctx context.Context, requ
 	_ = s.logHelper.RecordDataCreate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "创建域名监控")
 
 	// 创建通知订阅
-	_ = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
+	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
+	if err != nil {
+		if s.debug {
+			fmt.Printf("创建通知订阅失败: %s\n", err.Error())
+		}
+	}
 
 	return &types.GetDomainMonitorRequest{
 		ID: saveDomainMonitor.ID,
@@ -154,7 +159,7 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitor(ctx context.Context, requ
 		SetCheckInterval(request.CheckInterval).
 		Save(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+		if s.debug {
 			fmt.Printf("更新域名监控: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("更新域名监控失败: %w", err)
@@ -163,7 +168,12 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitor(ctx context.Context, requ
 	_ = s.logHelper.RecordDataUpdate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控")
 
 	// 更新通知订阅
-	_ = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
+	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
+	if err != nil {
+		if s.debug {
+			fmt.Printf("更新通知订阅失败: %s\n", err.Error())
+		}
+	}
 
 	return &types.GetDomainMonitorRequest{
 		ID: saveDomainMonitor.ID,
@@ -187,7 +197,7 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitorActive(ctx context.Context
 		SetIsActive(request.IsActive).
 		Save(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+		if s.debug {
 			fmt.Printf("更新域名监控启用状态: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("更新域名监控启用状态失败: %w", err)
@@ -195,8 +205,13 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitorActive(ctx context.Context
 	// 记录操作日志
 	_ = s.logHelper.RecordDataUpdate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控启用状态")
 
-	// 删除通知订阅 (注意：Handler 中的这部分逻辑是删除通知订阅，与名称不符，但保持 Handler 原始逻辑)
-	_ = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
+	// 删除通知订阅
+	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
+	if err != nil {
+		if s.debug {
+			fmt.Printf("删除通知订阅失败: %s\n", err.Error())
+		}
+	}
 
 	return &types.GetDomainMonitorRequest{
 		ID: saveDomainMonitor.ID,
@@ -218,7 +233,7 @@ func (s *DomainMonitorServiceImpl) DeleteDomainMonitor(ctx context.Context, id i
 	// 删除域名监控
 	err = s.db.DomainMonitor.DeleteOne(firstDomainMonitor).Exec(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+		if s.debug {
 			fmt.Printf("删除域名监控: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("删除域名监控失败: %w", err)

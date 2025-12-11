@@ -98,7 +98,7 @@ func (s *PlatformConfigServiceImpl) CreateConfig(ctx context.Context, request *t
 		SetCapability(platformconfig.Capability(request.Capability)).
 		Save(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+		if s.debug {
 			fmt.Printf("创建配置: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("创建配置失败: %w", err)
@@ -133,7 +133,7 @@ func (s *PlatformConfigServiceImpl) UpdateConfig(ctx context.Context, request *t
 		SetCapability(platformconfig.Capability(request.Capability)).
 		Save(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+		if s.debug {
 			fmt.Printf("更新配置: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("更新配置失败: %w", err)
@@ -163,7 +163,7 @@ func (s *PlatformConfigServiceImpl) DeleteConfig(ctx context.Context, id int64) 
 	// 删除配置
 	err = s.db.PlatformConfig.DeleteOne(firstConfig).Exec(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+		if s.debug {
 			fmt.Printf("删除配置: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("删除配置失败: %w", err)
