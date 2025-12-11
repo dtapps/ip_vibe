@@ -6,7 +6,6 @@ import (
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent_log/operationlog"
-	"vibe_ip/internal/global" // 仅用于访问 GvaOperationLogHelper 和类型定义
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
 )
@@ -107,7 +106,7 @@ func (s *WebhookServiceImpl) CreateWebhook(ctx context.Context, request *types.C
 		return nil, fmt.Errorf("创建通知失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataCreate(ctx, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "创建通知")
+	_ = s.logHelper.RecordDataCreate(ctx, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "创建通知")
 	return &types.GetWebhookRequest{
 		ID: saveWebhook.ID,
 	}, nil
@@ -142,7 +141,7 @@ func (s *WebhookServiceImpl) UpdateWebhook(ctx context.Context, request *types.U
 		return nil, fmt.Errorf("更新通知失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "更新通知")
+	_ = s.logHelper.RecordDataUpdate(ctx, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "更新通知")
 	return &types.GetWebhookRequest{
 		ID: saveWebhook.ID,
 	}, nil
@@ -171,7 +170,7 @@ func (s *WebhookServiceImpl) UpdateWebhookActive(ctx context.Context, request *t
 		return nil, fmt.Errorf("更新通知状态失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "更新通知状态")
+	_ = s.logHelper.RecordDataUpdate(ctx, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "更新通知状态")
 	return &types.GetWebhookRequest{
 		ID: saveWebhook.ID,
 	}, nil
@@ -198,7 +197,7 @@ func (s *WebhookServiceImpl) DeleteWebhook(ctx context.Context, id int64) (*type
 		return nil, fmt.Errorf("删除通知失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(ctx, firstWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "删除通知")
+	_ = s.logHelper.RecordDataDelete(ctx, firstWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "删除通知")
 	return &types.GetWebhookRequest{
 		ID: firstWebhook.ID,
 	}, nil

@@ -7,7 +7,6 @@ import (
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
-	"vibe_ip/internal/global" // 仅用于访问 GvaOperationLogHelper 和类型定义
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
@@ -122,7 +121,7 @@ func (s *IPGroupServiceImpl) CreateIPGroup(ctx context.Context, request *types.C
 		return 0, fmt.Errorf("创建IP组失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataCreate(ctx, saveIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "创建IP组")
+	_ = s.logHelper.RecordDataCreate(ctx, saveIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "创建IP组")
 
 	// 创建通知订阅
 	_ = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeIPGroup, saveIpGroup.ID)
@@ -156,7 +155,7 @@ func (s *IPGroupServiceImpl) UpdateIPGroup(ctx context.Context, request *types.U
 		return nil, fmt.Errorf("更新IP组失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, saveIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "更新IP组")
+	_ = s.logHelper.RecordDataUpdate(ctx, saveIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "更新IP组")
 
 	// 更新通知订阅
 	_ = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeIPGroup, saveIpGroup.ID)
@@ -187,7 +186,7 @@ func (s *IPGroupServiceImpl) DeleteIPGroup(ctx context.Context, id int64) (*type
 		return nil, fmt.Errorf("删除IP组失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(ctx, firstIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "删除IP组")
+	_ = s.logHelper.RecordDataDelete(ctx, firstIpGroup.ID, operationlog.ObjTypeIPGroup, operationlog.StatusSuccess, "删除IP组")
 
 	// 删除通知订阅
 	_ = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeIPGroup, firstIpGroup.ID)

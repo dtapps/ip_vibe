@@ -39,7 +39,7 @@ func GetWebhookSubs(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.GetWebhookSubs(c)
+	response, err := service.GetWebhookSubs(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

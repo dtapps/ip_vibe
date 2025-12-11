@@ -40,7 +40,7 @@ func GetDomainMonitors(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.GetDomainMonitors(c)
+	response, err := service.GetDomainMonitors(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

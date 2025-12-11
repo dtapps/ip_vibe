@@ -6,7 +6,6 @@ import (
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent_log/operationlog"
-	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
 )
@@ -98,7 +97,7 @@ func (s *PlatformConfigServiceImpl) CreateConfig(ctx context.Context, request *t
 	}
 
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataCreate(ctx, saveConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "创建配置")
+	_ = s.logHelper.RecordDataCreate(ctx, saveConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "创建配置")
 
 	return &types.GetConfigRequest{
 		ID: saveConfig.ID,
@@ -133,7 +132,7 @@ func (s *PlatformConfigServiceImpl) UpdateConfig(ctx context.Context, request *t
 	}
 
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "更新配置")
+	_ = s.logHelper.RecordDataUpdate(ctx, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "更新配置")
 
 	return &types.GetConfigRequest{
 		ID: saveConfig.ID,
@@ -163,7 +162,7 @@ func (s *PlatformConfigServiceImpl) DeleteConfig(ctx context.Context, id int64) 
 	}
 
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(ctx, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "删除配置")
+	_ = s.logHelper.RecordDataDelete(ctx, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "删除配置")
 
 	return &types.GetConfigRequest{
 		ID: firstConfig.ID,

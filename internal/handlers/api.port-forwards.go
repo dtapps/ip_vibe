@@ -39,7 +39,7 @@ func GetPortForwards(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.GetPortForwards(c)
+	response, err := service.GetPortForwards(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

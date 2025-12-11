@@ -3,13 +3,11 @@ package service
 import (
 	"context"
 	"fmt"
-	"vibe_ip/internal/ent" // 用于创建 IpUpdateService
-	"vibe_ip/internal/types"
-
-	// 用于访问 GvaGoCron/GvaEntDb 等，但只在构造函数中用于注入
+	"vibe_ip/internal/ent"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/initialize"
+	"vibe_ip/internal/types"
 
 	"github.com/go-co-op/gocron/v2"
 )

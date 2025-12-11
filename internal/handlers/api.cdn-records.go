@@ -39,7 +39,7 @@ func GetCdnRecords(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.GetCdnRecords(c)
+	response, err := service.GetCdnRecords(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

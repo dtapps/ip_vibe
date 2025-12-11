@@ -9,18 +9,17 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
-	"vibe_ip/internal/global" // 仅用于访问 GvaOperationLogHelper 和类型定义
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
 
-	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 )
 
 // WebhookSubService 通知订阅服务接口
 type WebhookSubService interface {
-	GetWebhookSubs(ctx context.Context) ([]types.GetWebhookSubResponse, error)
+	GetWebhookSubs(ctx context.Context, request *types.GetWebhookSubsRequest) ([]types.GetWebhookSubResponse, error)
 	GetWebhookSub(ctx context.Context, id int64) (*types.GetWebhookSubResponse, error)
-	CreateWebhookSub(ctx context.Context, request *types.CreateWebhookSubRequest) (*gin.H, error)
+	CreateWebhookSub(ctx context.Context, request *types.CreateWebhookSubRequest) (*types.CreateWebhookSubResponse, error)
 	UpdateWebhookSub(ctx context.Context, request *types.UpdateWebhookSubRequest) (*types.GetWebhookSubRequest, error)
 	UpdateWebhookSubActive(ctx context.Context, request *types.UpdateWebhookSubActiveRequest) (*types.GetWebhookSubRequest, error)
 	DeleteWebhookSub(ctx context.Context, id int64) (*types.GetWebhookSubRequest, error)
@@ -77,10 +76,11 @@ func (s *WebhookSubServiceImpl) getObjNameFromID(ctx context.Context, objType we
 }
 
 // GetWebhookSubs 获取全部通知订阅
-func (s *WebhookSubServiceImpl) GetWebhookSubs(ctx context.Context) ([]types.GetWebhookSubResponse, error) {
+func (s *WebhookSubServiceImpl) GetWebhookSubs(ctx context.Context, request *types.GetWebhookSubsRequest) ([]types.GetWebhookSubResponse, error) {
 	webhooks := make([]types.GetWebhookSubResponse, 0)
 	// 查询全部通知订阅
 	allWebhookSubscription, err := s.db.WebhookSubscription.Query().
+		WhereIf(request.IsActive != nil, webhooksubscription.IsActiveEQ(cast.ToBool(request.IsActive))).
 		Order(ent.Desc(webhooksubscription.FieldCreatedAt)).
 		All(ctx)
 	if err != nil {
@@ -136,7 +136,7 @@ func (s *WebhookSubServiceImpl) GetWebhookSub(ctx context.Context, id int64) (*t
 }
 
 // CreateWebhookSub 创建通知订阅
-func (s *WebhookSubServiceImpl) CreateWebhookSub(ctx context.Context, request *types.CreateWebhookSubRequest) (*gin.H, error) {
+func (s *WebhookSubServiceImpl) CreateWebhookSub(ctx context.Context, request *types.CreateWebhookSubRequest) (*types.CreateWebhookSubResponse, error) {
 	// 原始 Handler 逻辑是在循环内部处理错误并返回，导致只有第一个错误会被返回。
 	// 这里保持 Handler 的逻辑结构，尽管它会在第一个 ObjID 失败时立即返回。
 	for _, objID := range request.ObjIDs {
@@ -156,12 +156,11 @@ func (s *WebhookSubServiceImpl) CreateWebhookSub(ctx context.Context, request *t
 			return nil, fmt.Errorf("创建通知订阅失败: %w", err)
 		}
 		// 记录操作日志
-		_ = global.GvaOperationLogHelper.RecordDataCreate(ctx, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "创建通知订阅")
+		_ = s.logHelper.RecordDataCreate(ctx, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "创建通知订阅")
 	}
 
-	// 原始 Handler 返回的是 gin.H{ "ids": requestParams.ObjIDs }
-	return &gin.H{
-		"ids": request.ObjIDs,
+	return &types.CreateWebhookSubResponse{
+		IDs: request.ObjIDs,
 	}, nil
 }
 
@@ -189,7 +188,7 @@ func (s *WebhookSubServiceImpl) UpdateWebhookSub(ctx context.Context, request *t
 		return nil, fmt.Errorf("更新通知订阅失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅")
+	_ = s.logHelper.RecordDataUpdate(ctx, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅")
 	return &types.GetWebhookSubRequest{
 		ID: saveWebhookSubscription.ID,
 	}, nil
@@ -218,7 +217,7 @@ func (s *WebhookSubServiceImpl) UpdateWebhookSubActive(ctx context.Context, requ
 		return nil, fmt.Errorf("更新通知订阅状态失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅状态")
+	_ = s.logHelper.RecordDataUpdate(ctx, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅状态")
 	return &types.GetWebhookSubRequest{
 		ID: saveWebhookSubscription.ID,
 	}, nil
@@ -245,7 +244,7 @@ func (s *WebhookSubServiceImpl) DeleteWebhookSub(ctx context.Context, id int64) 
 		return nil, fmt.Errorf("删除通知订阅失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(ctx, firstWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "删除通知订阅")
+	_ = s.logHelper.RecordDataDelete(ctx, firstWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "删除通知订阅")
 	return &types.GetWebhookSubRequest{
 		ID: firstWebhookSubscription.ID,
 	}, nil

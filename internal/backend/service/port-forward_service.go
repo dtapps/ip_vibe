@@ -6,16 +6,16 @@ import (
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent_log/operationlog"
-	"vibe_ip/internal/global" // 仅用于访问 GvaOperationLogHelper 和类型定义
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
 
+	"github.com/spf13/cast"
 	"golang.org/x/sync/errgroup"
 )
 
 // PortForwardService 端口转发服务接口
 type PortForwardService interface {
-	GetPortForwards(ctx context.Context) ([]types.GetPortForwardResponse, error)
+	GetPortForwards(ctx context.Context, request *types.GetPortForwardsRequest) ([]types.GetPortForwardResponse, error)
 	GetPortForward(ctx context.Context, id int64) (*types.GetPortForwardResponse, error)
 	CreatePortForward(ctx context.Context, request *types.CreatePortForwardRequest) (*types.GetPortForwardRequest, error)
 	UpdatePortForward(ctx context.Context, request *types.UpdatePortForwardRequest) (*types.GetPortForwardRequest, error)
@@ -38,11 +38,12 @@ func NewPortForwardService(db *ent.Client, debug bool, logHelper *operation_logs
 }
 
 // GetPortForwards 获取全部端口转发
-func (s *PortForwardServiceImpl) GetPortForwards(ctx context.Context) ([]types.GetPortForwardResponse, error) {
+func (s *PortForwardServiceImpl) GetPortForwards(ctx context.Context, request *types.GetPortForwardsRequest) ([]types.GetPortForwardResponse, error) {
 	portForwards := make([]types.GetPortForwardResponse, 0)
 	// 查询全部端口转发
 	allPortForward, err := s.db.DevicePortForward.Query().
-		WithDevice(). // 必须加载设备信息
+		WhereIf(request.IsActive != nil, deviceportforward.IsActiveEQ(cast.ToBool(request.IsActive))).
+		WithDevice().
 		Order(ent.Desc(deviceportforward.FieldCreatedAt)).
 		All(ctx)
 	if err != nil {
@@ -130,7 +131,7 @@ func (s *PortForwardServiceImpl) CreatePortForward(ctx context.Context, request 
 		return nil, fmt.Errorf("创建端口转发失败: %w", err)
 	}
 	// 记录操作日志 (使用全局 GvaOperationLogHelper)
-	_ = global.GvaOperationLogHelper.RecordDataCreate(ctx, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "创建端口转发")
+	_ = s.logHelper.RecordDataCreate(ctx, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "创建端口转发")
 	return &types.GetPortForwardRequest{
 		ID: savePortForward.ID,
 	}, nil
@@ -165,7 +166,7 @@ func (s *PortForwardServiceImpl) UpdatePortForward(ctx context.Context, request 
 		return nil, fmt.Errorf("更新端口转发失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发")
+	_ = s.logHelper.RecordDataUpdate(ctx, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发")
 	return &types.GetPortForwardRequest{
 		ID: savePortForward.ID,
 	}, nil
@@ -194,7 +195,7 @@ func (s *PortForwardServiceImpl) UpdatePortForwardForward(ctx context.Context, r
 		return nil, fmt.Errorf("更新端口转发防火墙状态失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发防火墙状态")
+	_ = s.logHelper.RecordDataUpdate(ctx, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发防火墙状态")
 	return &types.GetPortForwardRequest{
 		ID: savePortForward.ID,
 	}, nil
@@ -223,7 +224,7 @@ func (s *PortForwardServiceImpl) UpdatePortForwardActive(ctx context.Context, re
 		return nil, fmt.Errorf("更新端口转发启用状态失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发启用状态")
+	_ = s.logHelper.RecordDataUpdate(ctx, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发启用状态")
 	return &types.GetPortForwardRequest{
 		ID: savePortForward.ID,
 	}, nil
@@ -250,7 +251,7 @@ func (s *PortForwardServiceImpl) DeletePortForward(ctx context.Context, id int64
 		return nil, fmt.Errorf("删除端口转发失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(ctx, firstPortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "删除端口转发")
+	_ = s.logHelper.RecordDataDelete(ctx, firstPortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "删除端口转发")
 	return &types.GetPortForwardRequest{
 		ID: firstPortForward.ID,
 	}, nil

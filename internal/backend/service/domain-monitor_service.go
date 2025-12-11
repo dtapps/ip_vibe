@@ -9,17 +9,17 @@ import (
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
-	"vibe_ip/internal/global" // 仅用于访问 GvaOperationLogHelper 和类型定义
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/go-co-op/gocron/v2"
+	"github.com/spf13/cast"
 )
 
 // DomainMonitorService 域名监控服务接口
 type DomainMonitorService interface {
-	GetDomainMonitors(ctx context.Context) ([]types.GetDomainMonitorResponse, error)
+	GetDomainMonitors(ctx context.Context, request *types.GetDomainMonitorsRequest) ([]types.GetDomainMonitorResponse, error)
 	GetDomainMonitor(ctx context.Context, id int64) (*types.GetDomainMonitorResponse, error)
 	CreateDomainMonitor(ctx context.Context, request *types.CreateDomainMonitorRequest) (*types.GetDomainMonitorRequest, error)
 	UpdateDomainMonitor(ctx context.Context, request *types.UpdateDomainMonitorRequest) (*types.GetDomainMonitorRequest, error)
@@ -42,10 +42,11 @@ func NewDomainMonitorService(db *ent.Client, debug bool, logHelper *operation_lo
 }
 
 // GetDomainMonitors 获取全部域名监控
-func (s *DomainMonitorServiceImpl) GetDomainMonitors(ctx context.Context) ([]types.GetDomainMonitorResponse, error) {
+func (s *DomainMonitorServiceImpl) GetDomainMonitors(ctx context.Context, request *types.GetDomainMonitorsRequest) ([]types.GetDomainMonitorResponse, error) {
 	domainMonitors := make([]types.GetDomainMonitorResponse, 0)
 	// 查询全部域名监控
 	allDomainMonitor, err := s.db.DomainMonitor.Query().
+		WhereIf(request.IsActive != nil, domainmonitor.IsActiveEQ(cast.ToBool(request.IsActive))).
 		Order(ent.Desc(domainmonitor.FieldCreatedAt)).
 		All(ctx)
 	if err != nil {
@@ -126,7 +127,7 @@ func (s *DomainMonitorServiceImpl) CreateDomainMonitor(ctx context.Context, requ
 		return nil, fmt.Errorf("创建域名监控失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataCreate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "创建域名监控")
+	_ = s.logHelper.RecordDataCreate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "创建域名监控")
 
 	// 创建通知订阅
 	_ = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
@@ -160,7 +161,7 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitor(ctx context.Context, requ
 		return nil, fmt.Errorf("更新域名监控失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控")
+	_ = s.logHelper.RecordDataUpdate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控")
 
 	// 更新通知订阅
 	_ = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
@@ -193,7 +194,7 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitorActive(ctx context.Context
 		return nil, fmt.Errorf("更新域名监控启用状态失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控启用状态")
+	_ = s.logHelper.RecordDataUpdate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控启用状态")
 
 	// 删除通知订阅 (注意：Handler 中的这部分逻辑是删除通知订阅，与名称不符，但保持 Handler 原始逻辑)
 	_ = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
@@ -224,7 +225,7 @@ func (s *DomainMonitorServiceImpl) DeleteDomainMonitor(ctx context.Context, id i
 		return nil, fmt.Errorf("删除域名监控失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(ctx, firstDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "删除域名监控")
+	_ = s.logHelper.RecordDataDelete(ctx, firstDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "删除域名监控")
 
 	return &types.GetDomainMonitorRequest{
 		ID: firstDomainMonitor.ID,

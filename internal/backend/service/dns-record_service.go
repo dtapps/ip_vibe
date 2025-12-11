@@ -7,7 +7,6 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
-	"vibe_ip/internal/global" // 仅用于访问 GvaOperationLogHelper 和类型定义
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
@@ -151,7 +150,7 @@ func (s *DNSRecordServiceImpl) CreateDnsRecord(ctx context.Context, request *typ
 		return nil, fmt.Errorf("创建DNS记录失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataCreate(ctx, saveDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "创建DNS记录")
+	_ = s.logHelper.RecordDataCreate(ctx, saveDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "创建DNS记录")
 
 	// 创建通知订阅
 	_ = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDNSRecord, saveDnsRecord.ID)
@@ -191,7 +190,7 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *typ
 		return nil, fmt.Errorf("更新DNS记录失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, saveDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "更新DNS记录")
+	_ = s.logHelper.RecordDataUpdate(ctx, saveDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "更新DNS记录")
 
 	// 更新通知订阅
 	_ = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDNSRecord, saveDnsRecord.ID)
@@ -224,7 +223,7 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecordActive(ctx context.Context, reques
 		return nil, fmt.Errorf("更新DNS记录状态失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, firstDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "更新DNS记录状态")
+	_ = s.logHelper.RecordDataUpdate(ctx, firstDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "更新DNS记录状态")
 
 	return &types.GetDnsRecordRequest{
 		ID: saveRecord.ID,
@@ -249,7 +248,7 @@ func (s *DNSRecordServiceImpl) DeleteDnsRecord(ctx context.Context, id int64) (*
 		return nil, fmt.Errorf("删除DNS记录失败: %w", err)
 	}
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(ctx, firstDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "删除DNS记录")
+	_ = s.logHelper.RecordDataDelete(ctx, firstDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "删除DNS记录")
 
 	// 删除通知订阅
 	_ = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDNSRecord, firstDnsRecord.ID)

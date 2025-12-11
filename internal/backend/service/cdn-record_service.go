@@ -7,17 +7,17 @@ import (
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
-	"vibe_ip/internal/global" // 仅用于访问 GvaOperationLogHelper 和类型定义
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
+	"github.com/spf13/cast"
 	"golang.org/x/sync/errgroup"
 )
 
 // CDNRecordService CDN 记录服务接口
 type CDNRecordService interface {
-	GetCdnRecords(ctx context.Context) ([]types.GetCdnRecordResponse, error)
+	GetCdnRecords(ctx context.Context, request *types.GetCdnRecordsRequest) ([]types.GetCdnRecordResponse, error)
 	GetCdnRecord(ctx context.Context, id int64) (*types.GetCdnRecordResponse, error)
 	CreateCdnRecord(ctx context.Context, request *types.CreateCdnRecordRequest) (*types.GetCdnRecordRequest, error)
 	UpdateCdnRecord(ctx context.Context, request *types.UpdateCdnRecordRequest) (*types.GetCdnRecordRequest, error)
@@ -39,10 +39,11 @@ func NewCDNRecordService(db *ent.Client, debug bool, logHelper *operation_logs_h
 }
 
 // GetCdnRecords 获取全部 CDN 记录
-func (s *CDNRecordServiceImpl) GetCdnRecords(ctx context.Context) ([]types.GetCdnRecordResponse, error) {
+func (s *CDNRecordServiceImpl) GetCdnRecords(ctx context.Context, request *types.GetCdnRecordsRequest) ([]types.GetCdnRecordResponse, error) {
 	records := make([]types.GetCdnRecordResponse, 0)
 	// 查询全部CDN记录
 	allCdnRecord, err := s.db.CDNRecord.Query().
+		WhereIf(request.IsActive != nil, cdnrecord.IsActiveEQ(cast.ToBool(request.IsActive))).
 		WithConfig().
 		WithIPGroup().
 		Order(ent.Desc(cdnrecord.FieldCreatedAt)).
@@ -145,7 +146,7 @@ func (s *CDNRecordServiceImpl) CreateCdnRecord(ctx context.Context, request *typ
 	}
 
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataCreate(ctx, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "创建CDN记录")
+	_ = s.logHelper.RecordDataCreate(ctx, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "创建CDN记录")
 
 	// 创建通知订阅
 	_ = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeCdnRecord, saveCdnRecord.ID)
@@ -183,7 +184,7 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *typ
 	}
 
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录")
+	_ = s.logHelper.RecordDataUpdate(ctx, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录")
 
 	// 更新通知订阅
 	_ = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeCdnRecord, saveCdnRecord.ID)
@@ -218,7 +219,7 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecordActive(ctx context.Context, reques
 	}
 
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录状态")
+	_ = s.logHelper.RecordDataUpdate(ctx, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录状态")
 
 	return &types.GetCdnRecordRequest{
 		ID: saveCdnRecord.ID,
@@ -245,7 +246,7 @@ func (s *CDNRecordServiceImpl) DeleteCdnRecord(ctx context.Context, id int64) (*
 	}
 
 	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(ctx, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "删除CDN记录")
+	_ = s.logHelper.RecordDataDelete(ctx, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "删除CDN记录")
 
 	// 删除通知订阅
 	_ = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeCdnRecord, firstCdnRecord.ID)
