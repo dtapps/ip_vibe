@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
@@ -24,12 +23,21 @@ import (
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
 //	@Router			/devices [get]
 func GetDevices(c *gin.Context) {
-	devices, err := service.NewDeviceService(global.GvaEntDb).GetDevices(c)
+
+	// 创建服务
+	service := service.NewDeviceService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.GetDevices(c)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, devices)
+	successResponse(c, response)
 }
 
 // 获取设备
@@ -53,12 +61,19 @@ func GetDevice(c *gin.Context) {
 		return
 	}
 
-	response, err := service.NewDeviceService(global.GvaEntDb).GetDevice(c, requestParams.ID)
+	// 创建服务
+	service := service.NewDeviceService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.GetDevice(c, requestParams.ID)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询设备失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-
 	successResponse(c, response)
 }
 
@@ -83,15 +98,19 @@ func CreateDevice(c *gin.Context) {
 		return
 	}
 
-	response, err := service.NewDeviceService(global.GvaEntDb).CreateDevice(c, &requestParams)
+	// 创建服务
+	service := service.NewDeviceService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.CreateDevice(c, &requestParams)
 	if err != nil {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("创建设备: %s\n", err.Error())
-		}
-		errorResponse(c, http.StatusInternalServerError, "创建设备失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-
 	successResponse(c, response)
 }
 
@@ -117,15 +136,19 @@ func UpdateDevice(c *gin.Context) {
 		return
 	}
 
-	response, err := service.NewDeviceService(global.GvaEntDb).UpdateDevice(c, &requestParams)
+	// 创建服务
+	service := service.NewDeviceService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.UpdateDevice(c, &requestParams)
 	if err != nil {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("更新设备: %s\n", err.Error())
-		}
-		errorResponse(c, http.StatusInternalServerError, "更新设备失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-
 	successResponse(c, response)
 }
 
@@ -151,15 +174,19 @@ func DeleteDevice(c *gin.Context) {
 		return
 	}
 
-	response, err := service.NewDeviceService(global.GvaEntDb).DeleteDevice(c, requestParams.ID)
+	// 创建服务
+	service := service.NewDeviceService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.DeleteDevice(c, requestParams.ID)
 	if err != nil {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("删除设备: %s\n", err.Error())
-		}
-		errorResponse(c, http.StatusInternalServerError, "删除设备失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-
 	successResponse(c, response)
 }
 
@@ -184,12 +211,19 @@ func GetDeviceIpHistory(c *gin.Context) {
 		return
 	}
 
-	response, err := service.NewDeviceService(global.GvaEntDb).GetDeviceIpHistory(c, requestParams.ID)
+	// 创建服务
+	service := service.NewDeviceService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.GetDeviceIpHistory(c, requestParams.ID)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询设备IP历史记录失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-
 	successResponse(c, response)
 }
 
@@ -215,12 +249,18 @@ func HealthcheckDevice(c *gin.Context) {
 		return
 	}
 
-	// 使用服务层检查健康状态
-	results, err := service.NewDeviceService(global.GvaEntDb).HealthcheckDevice(c, requestParams.ID)
+	// 创建服务
+	service := service.NewDeviceService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.HealthcheckDevice(c, requestParams.ID)
 	if err != nil {
-		errorResponse(c, http.StatusInternalServerError, "设备健康状态检查失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-
-	successResponse(c, results)
+	successResponse(c, response)
 }

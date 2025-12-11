@@ -22,12 +22,21 @@ import (
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Router			/configs [get]
 func GetConfigs(c *gin.Context) {
-	configs, err := service.NewConfigService(global.GvaEntDb).GetConfigs(c)
+
+	// 创建服务
+	service := service.NewPlatformConfigService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.GetConfigs(c)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询配置失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, configs)
+	successResponse(c, response)
 }
 
 // 获取配置
@@ -51,9 +60,17 @@ func GetConfig(c *gin.Context) {
 		return
 	}
 
-	response, err := service.NewConfigService(global.GvaEntDb).GetConfig(c, requestParams.ID)
+	// 创建服务
+	service := service.NewPlatformConfigService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.GetConfig(c, requestParams.ID)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询配置失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
 	successResponse(c, response)
@@ -80,9 +97,17 @@ func CreateConfig(c *gin.Context) {
 		return
 	}
 
-	response, err := service.NewConfigService(global.GvaEntDb).CreateConfig(c, &requestParams)
+	// 创建服务
+	service := service.NewPlatformConfigService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.CreateConfig(c, &requestParams)
 	if err != nil {
-		errorResponse(c, http.StatusInternalServerError, "创建配置失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
 	successResponse(c, response)
@@ -110,9 +135,17 @@ func UpdateConfig(c *gin.Context) {
 		return
 	}
 
-	response, err := service.NewConfigService(global.GvaEntDb).UpdateConfig(c, &requestParams)
+	// 创建服务
+	service := service.NewPlatformConfigService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.UpdateConfig(c, &requestParams)
 	if err != nil {
-		errorResponse(c, http.StatusInternalServerError, "更新配置失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
 	successResponse(c, response)
@@ -140,9 +173,17 @@ func DeleteConfig(c *gin.Context) {
 		return
 	}
 
-	response, err := service.NewConfigService(global.GvaEntDb).DeleteConfig(c, requestParams.ID)
+	// 创建服务
+	service := service.NewPlatformConfigService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.DeleteConfig(c, requestParams.ID)
 	if err != nil {
-		errorResponse(c, http.StatusInternalServerError, "删除配置失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
 	successResponse(c, response)

@@ -1,21 +1,14 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"vibe_ip/internal/backend/service"
-	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/dnsrecord"
-	"vibe_ip/internal/ent/webhooksubscription"
-	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
-	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
-	"golang.org/x/sync/errgroup"
 )
 
 // 获取全部DNS记录
@@ -38,48 +31,20 @@ func GetDnsRecords(c *gin.Context) {
 		return
 	}
 
-	records := make([]types.GetDnsRecordResponse, 0)
-	// 查询全部DNS记录
-	allDnsRecord, err := global.GvaEntDb.DNSRecord.Query().
-		WhereIf(requestParams.IsActive != nil, dnsrecord.IsActiveEQ(cast.ToBool(requestParams.IsActive))).
-		WithConfig().
-		WithIPGroup().
-		WithCdnRecord().
-		Order(ent.Desc(dnsrecord.FieldCreatedAt)).
-		All(c)
+	// 创建服务
+	service := service.NewDNSRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.GetDnsRecords(c, &requestParams)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询DNS记录失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	for _, item := range allDnsRecord {
-		list := types.GetDnsRecordResponse{
-			ID:            item.ID,
-			ConfigID:      item.ConfigID,
-			Platform:      item.Edges.Config.Platform.String(),
-			RecordID:      item.RecordID,
-			Domain:        item.Domain,
-			Type:          item.Type.String(),
-			IsActive:      item.IsActive,
-			LastRefreshAt: item.LastRefreshAt,
-		}
-		if ipGroup, err := item.Edges.IPGroupOrErr(); err == nil {
-			list.IPGroupID = ipGroup.ID
-			list.IPGroupName = ipGroup.Name
-		}
-		if cdnRecord, err := item.Edges.CdnRecordOrErr(); err == nil {
-			list.CdnRecordID = cdnRecord.ID
-			list.CdnRecordCdnDomain = cdnRecord.CdnDomain
-		}
-		// 查询通知订阅
-		list.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
-			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDNSRecord)).
-			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			QueryWebhook().
-			IDs(c)
-
-		records = append(records, list)
-	}
-	successResponse(c, records)
+	successResponse(c, response)
 }
 
 // 获取DNS记录
@@ -103,42 +68,19 @@ func GetDnsRecord(c *gin.Context) {
 		return
 	}
 
-	// 查询DNS记录
-	firstDnsRecord, err := global.GvaEntDb.DNSRecord.Query().
-		Where(dnsrecord.IDEQ(requestParams.ID)).
-		WithConfig().
-		WithIPGroup().
-		WithCdnRecord().
-		First(c)
+	// 创建服务
+	service := service.NewDNSRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.GetDnsRecord(c, requestParams.ID)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询DNS记录失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	response := types.GetDnsRecordResponse{
-		ID:            firstDnsRecord.ID,
-		ConfigID:      firstDnsRecord.ConfigID,
-		Platform:      firstDnsRecord.Edges.Config.Platform.String(),
-		RecordID:      firstDnsRecord.RecordID,
-		Domain:        firstDnsRecord.Domain,
-		Type:          firstDnsRecord.Type.String(),
-		IsActive:      firstDnsRecord.IsActive,
-		LastRefreshAt: firstDnsRecord.LastRefreshAt,
-	}
-	if ipGroup, err := firstDnsRecord.Edges.IPGroupOrErr(); err == nil {
-		response.IPGroupID = ipGroup.ID
-		response.IPGroupName = ipGroup.Name
-	}
-	if cdnRecord, err := firstDnsRecord.Edges.CdnRecordOrErr(); err == nil {
-		response.CdnRecordID = cdnRecord.ID
-		response.CdnRecordCdnDomain = cdnRecord.CdnDomain
-	}
-	// 查询通知订阅
-	response.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
-		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDNSRecord)).
-		Where(webhooksubscription.ObjIDEQ(requestParams.ID)).
-		QueryWebhook().
-		IDs(c)
-
 	successResponse(c, response)
 }
 
@@ -163,34 +105,20 @@ func CreateDnsRecord(c *gin.Context) {
 		return
 	}
 
-	// 创建DNS记录
-	createDnsRecord := global.GvaEntDb.DNSRecord.Create().
-		SetConfigID(requestParams.ConfigID).
-		SetDomain(requestParams.Domain).
-		SetType(dnsrecord.Type(requestParams.Type))
-	if requestParams.IPGroupID > 0 {
-		createDnsRecord.SetIPGroupID(requestParams.IPGroupID)
-	}
-	if requestParams.CdnRecordID > 0 {
-		createDnsRecord.SetCdnRecordID(requestParams.CdnRecordID)
-	}
-	saveDnsRecord, err := createDnsRecord.Save(c)
+	// 创建服务
+	service := service.NewDNSRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.CreateDnsRecord(c, &requestParams)
 	if err != nil {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("创建DNS记录: %s\n", err.Error())
-		}
-		errorResponse(c, http.StatusInternalServerError, "创建DNS记录失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "创建DNS记录")
-
-	// 创建通知订阅
-	_ = webhook_sub_helper.Create(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeDNSRecord, saveDnsRecord.ID)
-
-	successResponse(c, types.GetDnsRecordRequest{
-		ID: saveDnsRecord.ID,
-	})
+	successResponse(c, response)
 }
 
 // 更新DNS记录
@@ -215,39 +143,20 @@ func UpdateDnsRecord(c *gin.Context) {
 		return
 	}
 
-	// 查询DNS记录
-	firstDnsRecord, err := global.GvaEntDb.DNSRecord.Query().
-		Where(dnsrecord.IDEQ(requestParams.ID)).
-		First(c)
+	// 创建服务
+	service := service.NewDNSRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.UpdateDnsRecord(c, &requestParams)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询DNS记录失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	// 更新DNS记录
-	createDnsRecord := global.GvaEntDb.DNSRecord.UpdateOne(firstDnsRecord)
-	if requestParams.IPGroupID > 0 {
-		createDnsRecord.SetIPGroupID(requestParams.IPGroupID)
-	}
-	if requestParams.CdnRecordID > 0 {
-		createDnsRecord.SetCdnRecordID(requestParams.CdnRecordID)
-	}
-	saveDnsRecord, err := createDnsRecord.Save(c)
-	if err != nil {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("更新DNS记录: %s\n", err.Error())
-		}
-		errorResponse(c, http.StatusInternalServerError, "更新DNS记录失败: "+err.Error())
-		return
-	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "更新DNS记录")
-
-	// 更新通知订阅
-	_ = webhook_sub_helper.Update(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeDNSRecord, saveDnsRecord.ID)
-
-	successResponse(c, types.GetDnsRecordRequest{
-		ID: saveDnsRecord.ID,
-	})
+	successResponse(c, response)
 }
 
 // 更新DNS记录启用状态
@@ -273,30 +182,20 @@ func UpdateDnsRecordActive(c *gin.Context) {
 		return
 	}
 
-	// 查询DNS记录
-	firstDnsRecord, err := global.GvaEntDb.DNSRecord.Query().
-		Where(dnsrecord.IDEQ(requestParams.ID)).
-		First(c)
+	// 创建服务
+	service := service.NewDNSRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.UpdateDnsRecordActive(c, &requestParams)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询DNS记录失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	// 更新DNS记录状态
-	saveRecord, err := global.GvaEntDb.DNSRecord.UpdateOne(firstDnsRecord).
-		SetIsActive(requestParams.IsActive).
-		Save(c)
-	if err != nil {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("更新DNS记录状态: %s\n", err.Error())
-		}
-		errorResponse(c, http.StatusInternalServerError, "更新DNS记录状态失败: "+err.Error())
-		return
-	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "更新DNS记录状态")
-	successResponse(c, types.GetDnsRecordRequest{
-		ID: saveRecord.ID,
-	})
+	successResponse(c, response)
 }
 
 // 删除DNS记录
@@ -321,29 +220,20 @@ func DeleteDnsRecord(c *gin.Context) {
 		return
 	}
 
-	// 查询DNS记录
-	firstDnsRecord, err := global.GvaEntDb.DNSRecord.Query().
-		Where(dnsrecord.IDEQ(requestParams.ID)).
-		First(c)
+	// 创建服务
+	service := service.NewDNSRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.DeleteDnsRecord(c, requestParams.ID)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询DNS记录失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	// 删除DNS记录
-	err = global.GvaEntDb.DNSRecord.DeleteOne(firstDnsRecord).Exec(c)
-	if err != nil {
-		errorResponse(c, http.StatusInternalServerError, "删除DNS记录失败: "+err.Error())
-		return
-	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "删除DNS记录")
-
-	// 删除通知订阅
-	_ = webhook_sub_helper.Delete(c, webhooksubscription.ObjTypeDNSRecord, firstDnsRecord.ID)
-
-	successResponse(c, types.GetDnsRecordRequest{
-		ID: firstDnsRecord.ID,
-	})
+	successResponse(c, response)
 }
 
 // 检查DNS记录健康状态
@@ -368,106 +258,18 @@ func HealthcheckDnsRecord(c *gin.Context) {
 		return
 	}
 
-	// 查询DNS记录
-	firstDnsRecord, err := global.GvaEntDb.DNSRecord.Query().
-		Where(dnsrecord.IDEQ(requestParams.ID)).
-		First(c)
+	// 创建服务
+	service := service.NewDNSRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.HealthcheckDnsRecord(c, requestParams.ID)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询DNS记录失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-
-	// 检查健康状态
-	results := make([][]service.ToPairsStruct, 0)
-
-	// 并发检查
-	eg, egCtx := errgroup.WithContext(c)
-	eg.SetLimit(10) // 最多 10 个并发
-
-	if firstDnsRecord.Domain != "" {
-		// 检测域名是否可通（含 DNS + HTTP + HTTPS）
-		eg.Go(func() error {
-			healthCheckResult, _ := service.CheckDomainHealth(egCtx, firstDnsRecord.Domain, 80, 443, []string{})
-			results = append(results, healthCheckResult.ToPairsForDomain())
-			return nil
-		})
-	}
-
-	// 查询Dns的IP组
-	// firstDnsIpGroup, err := firstDnsRecord.QueryIPGroup().
-	// 	WithDevices().
-	// 	First(egCtx)
-	// if err == nil {
-	// 	for _, item := range firstDnsIpGroup.Edges.Devices {
-	// 		item := item // 创建副本以避免闭包问题
-	// 		if item.IPV4 != "" && firstDnsRecord.Type == dnsrecord.TypeA {
-	// 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
-	// 			eg.Go(func() error {
-	// 				healthCheckResult, _ := service.CheckIPHealth(egCtx, item.IPV4, 80, 443)
-	// 				results = append(results, healthCheckResult.ToPairsForIP())
-	// 				return nil
-	// 			})
-	// 		}
-	// 		if item.IPV6 != "" && firstDnsRecord.Type == dnsrecord.TypeAAAA {
-	// 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
-	// 			eg.Go(func() error {
-	// 				healthCheckResult, _ := service.CheckIPHealth(egCtx, item.IPV6, 80, 443)
-	// 				results = append(results, healthCheckResult.ToPairsForIP())
-	// 				return nil
-	// 			})
-	// 		}
-	// 	}
-	// }
-
-	// 查询CDN记录
-	// firstCdnRecord, err := firstDnsRecord.QueryCdnRecord().
-	// 	First(egCtx)
-	// if err == nil {
-	// 	if firstCdnRecord.CdnDomain != "" {
-	// 		// 检测域名是否可通（含 DNS + HTTP + HTTPS）
-	// 		eg.Go(func() error {
-	// 			healthCheckResult, _ := service.CheckDomainHealth(egCtx, firstCdnRecord.CdnDomain, 80, 443, []string{})
-	// 			results = append(results, healthCheckResult.ToPairsForDomain())
-	// 			return nil
-	// 		})
-	// 	}
-	// 	// 查询CDN的IP组
-	// 	firstCdnIpGroup, err := firstCdnRecord.QueryIPGroup().
-	// 		WithDevices().
-	// 		First(egCtx)
-	// 	if err == nil {
-	// 		switch firstCdnRecord.OriginProtocol {
-	// 		case cdnrecord.OriginProtocolHTTP:
-	// 			firstCdnRecord.HTTPSPort = 0
-	// 		case cdnrecord.OriginProtocolHTTPS:
-	// 			firstCdnRecord.HTTPPort = 0
-	// 		}
-	// 		for _, item := range firstCdnIpGroup.Edges.Devices {
-	// 			item := item // 创建副本以避免闭包问题
-	// 			if item.IPV4 != "" && firstCdnRecord.Type == cdnrecord.TypeA {
-	// 				// 检测 IP 是否可通过 HTTP/HTTPS 访问
-	// 				eg.Go(func() error {
-	// 					healthCheckResult, _ := service.CheckIPHealth(egCtx, item.IPV4, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
-	// 					results = append(results, healthCheckResult.ToPairsForIP())
-	// 					return nil
-	// 				})
-	// 			}
-	// 			if item.IPV6 != "" && firstCdnRecord.Type == cdnrecord.TypeAAAA {
-	// 				// 检测 IP 是否可通过 HTTP/HTTPS 访问
-	// 				eg.Go(func() error {
-	// 					healthCheckResult, _ := service.CheckIPHealth(egCtx, item.IPV6, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
-	// 					results = append(results, healthCheckResult.ToPairsForIP())
-	// 					return nil
-	// 				})
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-	if err = eg.Wait(); err != nil {
-		errorResponse(c, http.StatusInternalServerError, "DNS记录健康状态检查失败: "+err.Error())
-		return
-	}
-
-	successResponse(c, results)
+	successResponse(c, response)
 }

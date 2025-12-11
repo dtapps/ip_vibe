@@ -2,12 +2,14 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/deviceipreport"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
-	"vibe_ip/internal/global"
+	"vibe_ip/internal/global" // 仅用于访问 GvaOperationLogHelper 和类型定义
+	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
@@ -27,26 +29,26 @@ type DeviceService interface {
 
 // DeviceServiceImpl 设备服务实现
 type DeviceServiceImpl struct {
-	db *ent.Client
+	db        *ent.Client
+	debug     bool
+	logHelper *operation_logs_helper.OperationLogHelper
 }
 
 // NewDeviceService 创建设备服务实例
-func NewDeviceService(db *ent.Client) DeviceService {
-	return &DeviceServiceImpl{db: db}
+func NewDeviceService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper) DeviceService {
+	return &DeviceServiceImpl{db: db, debug: debug, logHelper: logHelper}
 }
 
 // GetDevices 获取全部设备
 func (s *DeviceServiceImpl) GetDevices(ctx context.Context) ([]types.GetDeviceResponse, error) {
 	devices := make([]types.GetDeviceResponse, 0)
-
 	// 查询全部设备
 	allDevice, err := s.db.Device.Query().
 		Order(ent.Desc(device.FieldCreatedAt)).
 		All(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("查询设备失败: %w", err)
 	}
-
 	for _, item := range allDevice {
 		list := types.GetDeviceResponse{
 			ID:              item.ID,
@@ -58,31 +60,32 @@ func (s *DeviceServiceImpl) GetDevices(ctx context.Context) ([]types.GetDeviceRe
 			LastReportedAt:  item.LastReportedAt,
 			LastHeartbeatAt: item.LastHeartbeatAt,
 		}
-
-		// 查询通知订阅
-		list.Webhooks, _ = s.db.WebhookSubscription.Query().
+		// 查询通知订阅 (保持原始查询逻辑)
+		allWebhookSub, _ := s.db.WebhookSubscription.Query().
 			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
 			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			QueryWebhook().
-			IDs(ctx)
-
+			All(ctx)
+		for _, sub := range allWebhookSub {
+			list.Webhooks = append(list.Webhooks, sub.ID)
+		}
 		devices = append(devices, list)
 	}
-
 	return devices, nil
 }
 
-// GetDevice 获取设备
+// GetDevice 获取单个设备
 func (s *DeviceServiceImpl) GetDevice(ctx context.Context, id int64) (*types.GetDeviceResponse, error) {
 	// 查询设备
 	firstDevice, err := s.db.Device.Query().
 		Where(device.IDEQ(id)).
 		First(ctx)
 	if err != nil {
-		return nil, err
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("查询设备失败: 记录不存在或 %w", err)
+		}
+		return nil, fmt.Errorf("查询设备失败: %w", err)
 	}
-
-	response := &types.GetDeviceResponse{
+	response := types.GetDeviceResponse{
 		ID:              firstDevice.ID,
 		Code:            firstDevice.Code,
 		Name:            firstDevice.Name,
@@ -92,15 +95,15 @@ func (s *DeviceServiceImpl) GetDevice(ctx context.Context, id int64) (*types.Get
 		LastReportedAt:  firstDevice.LastReportedAt,
 		LastHeartbeatAt: firstDevice.LastHeartbeatAt,
 	}
-
-	// 查询通知订阅
-	response.Webhooks, _ = s.db.WebhookSubscription.Query().
+	// 查询通知订阅 (保持原始查询逻辑)
+	allWebhookSub, _ := s.db.WebhookSubscription.Query().
 		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDevice)).
 		Where(webhooksubscription.ObjIDEQ(id)).
-		QueryWebhook().
-		IDs(ctx)
-
-	return response, nil
+		All(ctx)
+	for _, item := range allWebhookSub {
+		response.Webhooks = append(response.Webhooks, item.ID)
+	}
+	return &response, nil
 }
 
 // CreateDevice 创建设备
@@ -114,13 +117,15 @@ func (s *DeviceServiceImpl) CreateDevice(ctx context.Context, request *types.Cre
 		SetIPV6(request.IPV6).
 		Save(ctx)
 	if err != nil {
-		return nil, err
+		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+			fmt.Printf("创建设备: %s\n", err.Error())
+		}
+		return nil, fmt.Errorf("创建设备失败: %w", err)
 	}
-
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataCreate(ctx, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "创建设备")
 
-	// 创建通知订阅
+	// 创建通知订阅 (保持原始逻辑)
 	_ = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
 
 	return &types.GetDeviceRequest{
@@ -135,9 +140,11 @@ func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.Upd
 		Where(device.IDEQ(request.ID)).
 		First(ctx)
 	if err != nil {
-		return nil, err
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("查询设备失败: 记录不存在或 %w", err)
+		}
+		return nil, fmt.Errorf("查询设备失败: %w", err)
 	}
-
 	// 更新设备
 	saveDevice, err := s.db.Device.UpdateOne(firstDevice).
 		SetName(request.Name).
@@ -146,13 +153,15 @@ func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.Upd
 		SetIPV6(request.IPV6).
 		Save(ctx)
 	if err != nil {
-		return nil, err
+		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+			fmt.Printf("更新设备: %s\n", err.Error())
+		}
+		return nil, fmt.Errorf("更新设备失败: %w", err)
 	}
-
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "更新设备")
 
-	// 更新通知订阅
+	// 更新通知订阅 (保持原始逻辑)
 	_ = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
 
 	return &types.GetDeviceRequest{
@@ -167,44 +176,60 @@ func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) (*types.
 		Where(device.IDEQ(id)).
 		First(ctx)
 	if err != nil {
-		return nil, err
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("查询设备失败: 记录不存在或 %w", err)
+		}
+		return nil, fmt.Errorf("查询设备失败: %w", err)
+	}
+
+	// 提取原始数据用于返回
+	response := types.GetDeviceResponse{
+		ID:              firstDevice.ID,
+		Code:            firstDevice.Code,
+		Name:            firstDevice.Name,
+		Description:     firstDevice.Description,
+		IPV4:            firstDevice.IPV4,
+		IPV6:            firstDevice.IPV6,
+		LastReportedAt:  firstDevice.LastReportedAt,
+		LastHeartbeatAt: firstDevice.LastHeartbeatAt,
 	}
 
 	// 删除设备
 	err = s.db.Device.DeleteOne(firstDevice).Exec(ctx)
 	if err != nil {
-		return nil, err
+		if s.debug { // 修正：使用 s.debug 字段代替全局变量
+			fmt.Printf("删除设备: %s\n", err.Error())
+		}
+		return nil, fmt.Errorf("删除设备失败: %w", err)
 	}
-
 	// 记录操作日志
 	_ = global.GvaOperationLogHelper.RecordDataDelete(ctx, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "删除设备")
 
-	// 删除通知订阅
+	// 删除通知订阅 (保持原始逻辑)
 	_ = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDevice, firstDevice.ID)
 
-	return &types.GetDeviceResponse{
-		ID: firstDevice.ID,
-	}, nil
+	return &response, nil
 }
 
 // GetDeviceIpHistory 获取设备的IP历史记录
 func (s *DeviceServiceImpl) GetDeviceIpHistory(ctx context.Context, id int64) ([]types.GetDeviceIpHistoryResponse, error) {
-	// 查询设备
+	// 查询设备 (保持原始逻辑)
 	firstDevice, err := s.db.Device.Query().
 		Where(device.IDEQ(id)).
 		First(ctx)
 	if err != nil {
-		return nil, err
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("查询设备失败: 记录不存在或 %w", err)
+		}
+		return nil, fmt.Errorf("查询设备失败: %w", err)
 	}
-
 	// 查询设备IP历史记录
 	firstDeviceReports, err := firstDevice.QueryIPReports().
 		Order(ent.Desc(deviceipreport.FieldCreatedAt)).
 		All(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("查询设备IP历史记录失败: %w", err)
 	}
-
 	// 设备列表
 	ips := make([]types.GetDeviceIpHistoryResponse, 0)
 	for _, item := range firstDeviceReports {
@@ -214,7 +239,6 @@ func (s *DeviceServiceImpl) GetDeviceIpHistory(ctx context.Context, id int64) ([
 			CreatedAt: item.CreatedAt,
 		})
 	}
-
 	return ips, nil
 }
 
@@ -225,7 +249,10 @@ func (s *DeviceServiceImpl) HealthcheckDevice(ctx context.Context, id int64) ([]
 		Where(device.IDEQ(id)).
 		First(ctx)
 	if err != nil {
-		return nil, err
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("查询设备失败: 记录不存在或 %w", err)
+		}
+		return nil, fmt.Errorf("查询设备失败: %w", err)
 	}
 
 	// 检查健康状态
@@ -233,7 +260,7 @@ func (s *DeviceServiceImpl) HealthcheckDevice(ctx context.Context, id int64) ([]
 
 	// 并发检查
 	eg, egCtx := errgroup.WithContext(ctx)
-	eg.SetLimit(10) // 最多 10 个并发
+	eg.SetLimit(10) // 最多 10 个并发 (保持原始限制)
 
 	if firstDevice.IPV4 != "" {
 		// 检测 IP 是否可通过 HTTP/HTTPS 访问
@@ -253,7 +280,7 @@ func (s *DeviceServiceImpl) HealthcheckDevice(ctx context.Context, id int64) ([]
 	}
 
 	if err = eg.Wait(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("设备健康状态检查失败: %w", err)
 	}
 
 	return results, nil

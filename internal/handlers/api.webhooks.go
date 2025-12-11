@@ -1,11 +1,8 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
-	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/webhook"
-	"vibe_ip/internal/ent_log/operationlog"
+	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -34,31 +31,20 @@ func GetWebhooks(c *gin.Context) {
 		return
 	}
 
-	webhooks := make([]types.GetWebhookResponse, 0)
-	// 查询全部通知
-	allWebhook, err := global.GvaEntDb.Webhook.Query().
-		WhereIf(requestParams.IsActive != nil, webhook.IsActiveEQ(cast.ToBool(requestParams.IsActive))).
-		Order(ent.Desc(webhook.FieldCreatedAt)).
-		All(c)
+	// 创建服务
+	service := service.NewWebhookService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.GetWebhooks(c)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询通知失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	for _, item := range allWebhook {
-		webhooks = append(webhooks, types.GetWebhookResponse{
-			ID:              item.ID,
-			Name:            item.Name,
-			Description:     item.Description,
-			Platform:        item.Platform.String(),
-			URL:             item.URL,
-			Secret:          item.Secret,
-			Events:          item.Events,
-			IsActive:        item.IsActive,
-			TemplateTitle:   item.TemplateTitle,
-			TemplateContent: item.TemplateContent,
-		})
-	}
-	successResponse(c, webhooks)
+	successResponse(c, response)
 }
 
 // 获取通知
@@ -82,26 +68,20 @@ func GetWebhook(c *gin.Context) {
 		return
 	}
 
-	// 查询通知
-	firstWebhook, err := global.GvaEntDb.Webhook.Query().
-		Where(webhook.IDEQ(requestParams.ID)).
-		First(c)
+	// 创建服务
+	service := service.NewWebhookService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.GetWebhook(c, requestParams.ID)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询通知失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, types.GetWebhookResponse{
-		ID:              firstWebhook.ID,
-		Name:            firstWebhook.Name,
-		Description:     firstWebhook.Description,
-		Platform:        firstWebhook.Platform.String(),
-		URL:             firstWebhook.URL,
-		Secret:          firstWebhook.Secret,
-		Events:          firstWebhook.Events,
-		IsActive:        firstWebhook.IsActive,
-		TemplateTitle:   firstWebhook.TemplateTitle,
-		TemplateContent: firstWebhook.TemplateContent,
-	})
+	successResponse(c, response)
 }
 
 // 创建通知
@@ -125,29 +105,20 @@ func CreateWebhook(c *gin.Context) {
 		return
 	}
 
-	// 创建通知
-	saveWebhook, err := global.GvaEntDb.Webhook.Create().
-		SetName(requestParams.Name).
-		SetDescription(requestParams.Description).
-		SetPlatform(webhook.Platform(requestParams.Platform)).
-		SetURL(requestParams.URL).
-		SetSecret(requestParams.Secret).
-		SetEvents(requestParams.Events).
-		SetTemplateTitle(requestParams.TemplateTitle).
-		SetTemplateContent(requestParams.TemplateContent).
-		Save(c)
+	// 创建服务
+	service := service.NewWebhookService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.CreateWebhook(c, &requestParams)
 	if err != nil {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("创建通知: %s\n", err.Error())
-		}
-		errorResponse(c, http.StatusInternalServerError, "创建通知失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "创建通知")
-	successResponse(c, types.GetWebhookRequest{
-		ID: saveWebhook.ID,
-	})
+	successResponse(c, response)
 }
 
 // 更新通知
@@ -172,35 +143,20 @@ func UpdateWebhook(c *gin.Context) {
 		return
 	}
 
-	// 查询通知
-	firstWebhook, err := global.GvaEntDb.Webhook.Query().
-		Where(webhook.IDEQ(requestParams.ID)).
-		First(c)
+	// 创建服务
+	service := service.NewWebhookService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.UpdateWebhook(c, &requestParams)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询通知失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	// 更新通知
-	saveWebhook, err := global.GvaEntDb.Webhook.UpdateOne(firstWebhook).
-		SetName(requestParams.Name).
-		SetDescription(requestParams.Description).
-		SetSecret(requestParams.Secret).
-		SetEvents(requestParams.Events).
-		SetTemplateTitle(requestParams.TemplateTitle).
-		SetTemplateContent(requestParams.TemplateContent).
-		Save(c)
-	if err != nil {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("更新通知: %s\n", err.Error())
-		}
-		errorResponse(c, http.StatusInternalServerError, "更新通知失败: "+err.Error())
-		return
-	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "更新通知")
-	successResponse(c, types.GetWebhookRequest{
-		ID: saveWebhook.ID,
-	})
+	successResponse(c, response)
 }
 
 // 更新通知启用状态
@@ -226,30 +182,20 @@ func UpdateWebhookActive(c *gin.Context) {
 		return
 	}
 
-	// 查询通知
-	firstWebhook, err := global.GvaEntDb.Webhook.Query().
-		Where(webhook.IDEQ(requestParams.ID)).
-		First(c)
+	// 创建服务
+	service := service.NewWebhookService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.UpdateWebhookActive(c, &requestParams)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询通知失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	// 更新通知状态
-	saveWebhook, err := global.GvaEntDb.Webhook.UpdateOne(firstWebhook).
-		SetIsActive(requestParams.IsActive).
-		Save(c)
-	if err != nil {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("更新通知状态: %s\n", err.Error())
-		}
-		errorResponse(c, http.StatusInternalServerError, "更新通知状态失败: "+err.Error())
-		return
-	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "更新通知状态")
-	successResponse(c, types.GetWebhookRequest{
-		ID: saveWebhook.ID,
-	})
+	successResponse(c, response)
 }
 
 // 删除通知
@@ -274,26 +220,18 @@ func DeleteWebhook(c *gin.Context) {
 		return
 	}
 
-	// 查询通知
-	firstWebhook, err := global.GvaEntDb.Webhook.Query().
-		Where(webhook.IDEQ(requestParams.ID)).
-		First(c)
+	// 创建服务
+	service := service.NewWebhookService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.DeleteWebhook(c, requestParams.ID)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询通知失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	// 删除通知
-	err = global.GvaEntDb.Webhook.DeleteOne(firstWebhook).Exec(c)
-	if err != nil {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("删除通知: %s\n", err.Error())
-		}
-		errorResponse(c, http.StatusInternalServerError, "删除通知失败: "+err.Error())
-		return
-	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "删除通知")
-	successResponse(c, types.GetWebhookRequest{
-		ID: firstWebhook.ID,
-	})
+	successResponse(c, response)
 }

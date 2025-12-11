@@ -32,6 +32,11 @@ type CreateWebhookSubRequest struct {
 	ObjIDs      []int64 `json:"obj_ids" binding:"required" jsonschema:"title=订阅对象主键列表,description=订阅对象的主键ID列表,example=[1,2,3]"` // 订阅对象主键列表
 }
 
+// 创建通知订阅 响应结构
+type CreateWebhookSubResponse struct {
+	IDs []int64 `json:"ids" jsonschema:"title=通知订阅序号列表,description=通知订阅的唯一标识符列表"` // 通知订阅序号列表
+}
+
 // 更新通知订阅 请求结构
 type UpdateWebhookSubRequest struct {
 	GetWebhookSubRequest

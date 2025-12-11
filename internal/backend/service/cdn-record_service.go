@@ -1,0 +1,334 @@
+package service
+
+import (
+	"context"
+	"fmt"
+	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/webhooksubscription"
+	"vibe_ip/internal/ent_log/operationlog"
+	"vibe_ip/internal/global" // 仅用于访问 GvaOperationLogHelper 和类型定义
+	"vibe_ip/internal/helper/operation_logs_helper"
+	"vibe_ip/internal/helper/webhook_sub_helper"
+	"vibe_ip/internal/types"
+
+	"golang.org/x/sync/errgroup"
+)
+
+// CDNRecordService CDN 记录服务接口
+type CDNRecordService interface {
+	GetCdnRecords(ctx context.Context) ([]types.GetCdnRecordResponse, error)
+	GetCdnRecord(ctx context.Context, id int64) (*types.GetCdnRecordResponse, error)
+	CreateCdnRecord(ctx context.Context, request *types.CreateCdnRecordRequest) (*types.GetCdnRecordRequest, error)
+	UpdateCdnRecord(ctx context.Context, request *types.UpdateCdnRecordRequest) (*types.GetCdnRecordRequest, error)
+	UpdateCdnRecordActive(ctx context.Context, request *types.UpdateCdnRecordActiveRequest) (*types.GetCdnRecordRequest, error)
+	DeleteCdnRecord(ctx context.Context, id int64) (*types.GetCdnRecordRequest, error)
+	HealthcheckCdnRecord(ctx context.Context, id int64) ([][]ToPairsStruct, error)
+}
+
+// CDNRecordServiceImpl CDN 记录服务实现
+type CDNRecordServiceImpl struct {
+	db        *ent.Client
+	debug     bool
+	logHelper *operation_logs_helper.OperationLogHelper
+}
+
+// NewCDNRecordService 创建 CDN 记录服务实例
+func NewCDNRecordService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper) CDNRecordService {
+	return &CDNRecordServiceImpl{db: db, debug: debug, logHelper: logHelper}
+}
+
+// GetCdnRecords 获取全部 CDN 记录
+func (s *CDNRecordServiceImpl) GetCdnRecords(ctx context.Context) ([]types.GetCdnRecordResponse, error) {
+	records := make([]types.GetCdnRecordResponse, 0)
+	// 查询全部CDN记录
+	allCdnRecord, err := s.db.CDNRecord.Query().
+		WithConfig().
+		WithIPGroup().
+		Order(ent.Desc(cdnrecord.FieldCreatedAt)).
+		All(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("查询记录失败: %w", err)
+	}
+
+	for _, item := range allCdnRecord {
+		list := types.GetCdnRecordResponse{
+			ID:             item.ID,
+			ConfigID:       item.ConfigID,
+			Platform:       item.Edges.Config.Platform.String(),
+			RecordID:       item.RecordID,
+			Domain:         item.Domain,
+			Type:           item.Type.String(),
+			OriginProtocol: item.OriginProtocol.String(),
+			HTTPPort:       item.HTTPPort,
+			HTTPSPort:      item.HTTPSPort,
+			IsActive:       item.IsActive,
+			LastRefreshAt:  item.LastRefreshAt,
+		}
+		if ipGroup, err := item.Edges.IPGroupOrErr(); err == nil {
+			list.IPGroupID = ipGroup.ID
+			list.IPGroupName = ipGroup.Name
+		}
+		// 查询通知订阅
+		allWebhookSub, _ := s.db.WebhookSubscription.Query().
+			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeCdnRecord)).
+			Where(webhooksubscription.ObjIDEQ(item.ID)).
+			All(ctx)
+		for _, sub := range allWebhookSub {
+			list.Webhooks = append(list.Webhooks, sub.ID)
+		}
+		records = append(records, list)
+	}
+	return records, nil
+}
+
+// GetCdnRecord 获取单个 CDN 记录
+func (s *CDNRecordServiceImpl) GetCdnRecord(ctx context.Context, id int64) (*types.GetCdnRecordResponse, error) {
+	// 查询CDN记录
+	firstCdnRecord, err := s.db.CDNRecord.Query().
+		Where(cdnrecord.IDEQ(id)).
+		WithConfig().
+		WithIPGroup().
+		First(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("查询CDN记录失败: 记录不存在或 %w", err)
+		}
+		return nil, fmt.Errorf("查询CDN记录失败: %w", err)
+	}
+
+	response := types.GetCdnRecordResponse{
+		ID:             firstCdnRecord.ID,
+		ConfigID:       firstCdnRecord.ConfigID,
+		Platform:       firstCdnRecord.Edges.Config.Platform.String(),
+		RecordID:       firstCdnRecord.RecordID,
+		Domain:         firstCdnRecord.Domain,
+		Type:           firstCdnRecord.Type.String(),
+		OriginProtocol: firstCdnRecord.OriginProtocol.String(),
+		HTTPPort:       firstCdnRecord.HTTPPort,
+		HTTPSPort:      firstCdnRecord.HTTPSPort,
+		IsActive:       firstCdnRecord.IsActive,
+		LastRefreshAt:  firstCdnRecord.LastRefreshAt,
+	}
+	if ipGroup, err := firstCdnRecord.Edges.IPGroupOrErr(); err == nil {
+		response.IPGroupID = ipGroup.ID
+		response.IPGroupName = ipGroup.Name
+	}
+	// 查询通知订阅
+	allWebhookSub, _ := s.db.WebhookSubscription.Query().
+		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeCdnRecord)).
+		Where(webhooksubscription.ObjIDEQ(id)).
+		All(ctx)
+	for _, item := range allWebhookSub {
+		response.Webhooks = append(response.Webhooks, item.ID)
+	}
+	return &response, nil
+}
+
+// CreateCdnRecord 创建 CDN 记录
+func (s *CDNRecordServiceImpl) CreateCdnRecord(ctx context.Context, request *types.CreateCdnRecordRequest) (*types.GetCdnRecordRequest, error) {
+	// 创建CDN记录
+	saveCdnRecord, err := s.db.CDNRecord.Create().
+		SetConfigID(request.ConfigID).
+		SetDomain(request.Domain).
+		SetType(cdnrecord.Type(request.Type)).
+		SetOriginProtocol(cdnrecord.OriginProtocol(request.OriginProtocol)).
+		SetHTTPPort(request.HTTPPort).
+		SetHTTPSPort(request.HTTPSPort).
+		SetIPGroupID(request.IPGroupID).
+		Save(ctx)
+	if err != nil {
+		if s.debug { // 修正：使用 s.debug 字段
+			fmt.Printf("创建CDN记录: %s\n", err.Error())
+		}
+		return nil, fmt.Errorf("创建CDN记录失败: %w", err)
+	}
+
+	// 记录操作日志
+	_ = global.GvaOperationLogHelper.RecordDataCreate(ctx, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "创建CDN记录")
+
+	// 创建通知订阅
+	_ = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeCdnRecord, saveCdnRecord.ID)
+
+	return &types.GetCdnRecordRequest{
+		ID: saveCdnRecord.ID,
+	}, nil
+}
+
+// UpdateCdnRecord 更新 CDN 记录
+func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *types.UpdateCdnRecordRequest) (*types.GetCdnRecordRequest, error) {
+	// 查询CDN记录
+	firstCdnRecord, err := s.db.CDNRecord.Query().
+		Where(cdnrecord.IDEQ(request.ID)).
+		First(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("查询CDN记录失败: 记录不存在或 %w", err)
+		}
+		return nil, fmt.Errorf("查询CDN记录失败: %w", err)
+	}
+
+	// 更新CDN记录
+	saveCdnRecord, err := s.db.CDNRecord.UpdateOne(firstCdnRecord).
+		SetOriginProtocol(cdnrecord.OriginProtocol(request.OriginProtocol)).
+		SetHTTPPort(request.HTTPPort).
+		SetHTTPSPort(request.HTTPSPort).
+		SetIPGroupID(request.IPGroupID).
+		Save(ctx)
+	if err != nil {
+		if s.debug { // 修正：使用 s.debug 字段
+			fmt.Printf("更新CDN记录: %s\n", err.Error())
+		}
+		return nil, fmt.Errorf("更新CDN记录失败: %w", err)
+	}
+
+	// 记录操作日志
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录")
+
+	// 更新通知订阅
+	_ = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeCdnRecord, saveCdnRecord.ID)
+
+	return &types.GetCdnRecordRequest{
+		ID: saveCdnRecord.ID,
+	}, nil
+}
+
+// UpdateCdnRecordActive 更新 CDN 记录启用状态
+func (s *CDNRecordServiceImpl) UpdateCdnRecordActive(ctx context.Context, request *types.UpdateCdnRecordActiveRequest) (*types.GetCdnRecordRequest, error) {
+	// 查询CDN记录
+	firstCdnRecord, err := s.db.CDNRecord.Query().
+		Where(cdnrecord.IDEQ(request.ID)).
+		First(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("查询CDN记录失败: 记录不存在或 %w", err)
+		}
+		return nil, fmt.Errorf("查询CDN记录失败: %w", err)
+	}
+
+	// 更新CDN记录状态
+	saveCdnRecord, err := s.db.CDNRecord.UpdateOne(firstCdnRecord).
+		SetIsActive(request.IsActive).
+		Save(ctx)
+	if err != nil {
+		if s.debug { // 修正：使用 s.debug 字段
+			fmt.Printf("更新CDN记录状态: %s\n", err.Error())
+		}
+		return nil, fmt.Errorf("更新CDN记录状态失败: %w", err)
+	}
+
+	// 记录操作日志
+	_ = global.GvaOperationLogHelper.RecordDataUpdate(ctx, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录状态")
+
+	return &types.GetCdnRecordRequest{
+		ID: saveCdnRecord.ID,
+	}, nil
+}
+
+// DeleteCdnRecord 删除 CDN 记录
+func (s *CDNRecordServiceImpl) DeleteCdnRecord(ctx context.Context, id int64) (*types.GetCdnRecordRequest, error) {
+	// 查询CDN记录
+	firstCdnRecord, err := s.db.CDNRecord.Query().
+		Where(cdnrecord.IDEQ(id)).
+		First(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("查询CDN记录失败: 记录不存在或 %w", err)
+		}
+		return nil, fmt.Errorf("查询CDN记录失败: %w", err)
+	}
+
+	// 删除CDN记录
+	err = s.db.CDNRecord.DeleteOne(firstCdnRecord).Exec(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("删除CDN记录失败: %w", err)
+	}
+
+	// 记录操作日志
+	_ = global.GvaOperationLogHelper.RecordDataDelete(ctx, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "删除CDN记录")
+
+	// 删除通知订阅
+	_ = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeCdnRecord, firstCdnRecord.ID)
+
+	return &types.GetCdnRecordRequest{
+		ID: firstCdnRecord.ID,
+	}, nil
+}
+
+// HealthcheckCdnRecord 检查 CDN 记录健康状态
+func (s *CDNRecordServiceImpl) HealthcheckCdnRecord(ctx context.Context, id int64) ([][]ToPairsStruct, error) {
+	// 查询CDN记录
+	firstCdnRecord, err := s.db.CDNRecord.Query().
+		Where(cdnrecord.IDEQ(id)).
+		First(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("查询CDN记录失败: 记录不存在或 %w", err)
+		}
+		return nil, fmt.Errorf("查询CDN记录失败: %w", err)
+	}
+
+	// 端口处理逻辑保持不变
+	switch firstCdnRecord.OriginProtocol {
+	case cdnrecord.OriginProtocolHTTP:
+		firstCdnRecord.HTTPSPort = 0
+	case cdnrecord.OriginProtocolHTTPS:
+		firstCdnRecord.HTTPPort = 0
+	}
+
+	results := make([][]ToPairsStruct, 0)
+	// 并发检查 (使用 context.Context)
+	eg, egCtx := errgroup.WithContext(ctx)
+	eg.SetLimit(10) // 最多 10 个并发
+
+	if firstCdnRecord.Domain != "" {
+		// 检测域名是否可通（含 DNS + HTTP + HTTPS）
+		eg.Go(func() error {
+			healthCheckResult, _ := CheckDomainHealth(egCtx, firstCdnRecord.Domain, 80, 443, []string{})
+			results = append(results, healthCheckResult.ToPairsForDomain())
+			return nil
+		})
+	}
+
+	// 以下注释掉的逻辑保持不变
+	// if firstCdnRecord.CdnDomain != "" {
+	// 	// 检测域名是否可通（含 DNS + HTTP + HTTPS）
+	// 	eg.Go(func() error {
+	// 		healthCheckResult, _ := CheckDomainHealth(egCtx, firstCdnRecord.CdnDomain, 80, 443, []string{})
+	// 		results = append(results, healthCheckResult.ToPairsForDomain())
+	// 		return nil
+	// 	})
+	// }
+
+	// 查询Cdn的IP组
+	// firstCdnIpGroup, err := firstCdnRecord.QueryIPGroup().
+	// 	WithDevices().
+	// 	First(egCtx)
+	// if err == nil {
+	// 	for _, item := range firstCdnIpGroup.Edges.Devices {
+	// 		item := item // 创建副本以避免闭包问题
+	// 		if item.IPV4 != "" && firstCdnRecord.Type == cdnrecord.TypeA {
+	// 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
+	// 			eg.Go(func() error {
+	// 				healthCheckResult, _ := CheckIPHealth(egCtx, item.IPV4, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
+	// 				results = append(results, healthCheckResult.ToPairsForIP())
+	// 				return nil
+	// 			})
+	// 		}
+	// 		if item.IPV6 != "" && firstCdnRecord.Type == cdnrecord.TypeAAAA {
+	// 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
+	// 			eg.Go(func() error {
+	// 				healthCheckResult, _ := CheckIPHealth(egCtx, item.IPV6, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
+	// 				results = append(results, healthCheckResult.ToPairsForIP())
+	// 				return nil
+	// 			})
+	// 		}
+	// 	}
+	// }
+
+	if err = eg.Wait(); err != nil {
+		return nil, fmt.Errorf("CDN记录健康状态检查失败: %w", err)
+	}
+
+	return results, nil
+}

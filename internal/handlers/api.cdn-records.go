@@ -1,21 +1,14 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"vibe_ip/internal/backend/service"
-	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/cdnrecord"
-	"vibe_ip/internal/ent/webhooksubscription"
-	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
-	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
-	"golang.org/x/sync/errgroup"
 )
 
 // 获取全部CDN记录
@@ -38,46 +31,20 @@ func GetCdnRecords(c *gin.Context) {
 		return
 	}
 
-	records := make([]types.GetCdnRecordResponse, 0)
-	// 查询全部CDN记录
-	allCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
-		WhereIf(requestParams.IsActive != nil, cdnrecord.IsActiveEQ(cast.ToBool(requestParams.IsActive))).
-		WithConfig().
-		WithIPGroup().
-		Order(ent.Desc(cdnrecord.FieldCreatedAt)).
-		All(c)
+	// 创建服务
+	service := service.NewCDNRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.GetCdnRecords(c)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询记录失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	for _, item := range allCdnRecord {
-		list := types.GetCdnRecordResponse{
-			ID:             item.ID,
-			ConfigID:       item.ConfigID,
-			Platform:       item.Edges.Config.Platform.String(),
-			RecordID:       item.RecordID,
-			Domain:         item.Domain,
-			Type:           item.Type.String(),
-			OriginProtocol: item.OriginProtocol.String(),
-			HTTPPort:       item.HTTPPort,
-			HTTPSPort:      item.HTTPSPort,
-			IsActive:       item.IsActive,
-			LastRefreshAt:  item.LastRefreshAt,
-		}
-		if ipGroup, err := item.Edges.IPGroupOrErr(); err == nil {
-			list.IPGroupID = ipGroup.ID
-			list.IPGroupName = ipGroup.Name
-		}
-		// 查询通知订阅
-		list.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
-			Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeCdnRecord)).
-			Where(webhooksubscription.ObjIDEQ(item.ID)).
-			QueryWebhook().
-			IDs(c)
-
-		records = append(records, list)
-	}
-	successResponse(c, records)
+	successResponse(c, response)
 }
 
 // 获取CDN记录
@@ -101,40 +68,19 @@ func GetCdnRecord(c *gin.Context) {
 		return
 	}
 
-	// 查询CDN记录
-	firstCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
-		Where(cdnrecord.IDEQ(requestParams.ID)).
-		WithConfig().
-		WithIPGroup().
-		First(c)
+	// 创建服务
+	service := service.NewCDNRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.GetCdnRecord(c, requestParams.ID)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询CDN记录失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	response := types.GetCdnRecordResponse{
-		ID:             firstCdnRecord.ID,
-		ConfigID:       firstCdnRecord.ConfigID,
-		Platform:       firstCdnRecord.Edges.Config.Platform.String(),
-		RecordID:       firstCdnRecord.RecordID,
-		Domain:         firstCdnRecord.Domain,
-		Type:           firstCdnRecord.Type.String(),
-		OriginProtocol: firstCdnRecord.OriginProtocol.String(),
-		HTTPPort:       firstCdnRecord.HTTPPort,
-		HTTPSPort:      firstCdnRecord.HTTPSPort,
-		IsActive:       firstCdnRecord.IsActive,
-		LastRefreshAt:  firstCdnRecord.LastRefreshAt,
-	}
-	if ipGroup, err := firstCdnRecord.Edges.IPGroupOrErr(); err == nil {
-		response.IPGroupID = ipGroup.ID
-		response.IPGroupName = ipGroup.Name
-	}
-	// 查询通知订阅
-	response.Webhooks, _ = global.GvaEntDb.WebhookSubscription.Query().
-		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeCdnRecord)).
-		Where(webhooksubscription.ObjIDEQ(requestParams.ID)).
-		QueryWebhook().
-		IDs(c)
-
 	successResponse(c, response)
 }
 
@@ -158,30 +104,20 @@ func CreateCdnRecord(c *gin.Context) {
 		return
 	}
 
-	// 创建CDN记录
-	saveCdnRecord, err := global.GvaEntDb.CDNRecord.Create().
-		SetConfigID(requestParams.ConfigID).
-		SetDomain(requestParams.Domain).
-		SetType(cdnrecord.Type(requestParams.Type)).
-		SetOriginProtocol(cdnrecord.OriginProtocol(requestParams.OriginProtocol)).
-		SetHTTPPort(requestParams.HTTPPort).
-		SetHTTPSPort(requestParams.HTTPSPort).
-		SetIPGroupID(requestParams.IPGroupID).
-		Save(c)
+	// 创建服务
+	service := service.NewCDNRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.CreateCdnRecord(c, &requestParams)
 	if err != nil {
-		fmt.Printf("创建CDN记录: %s\n", err.Error())
-		errorResponse(c, http.StatusInternalServerError, "创建CDN记录失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataCreate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "创建CDN记录")
-
-	// 创建通知订阅
-	_ = webhook_sub_helper.Create(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeCdnRecord, saveCdnRecord.ID)
-
-	successResponse(c, types.GetCdnRecordRequest{
-		ID: saveCdnRecord.ID,
-	})
+	successResponse(c, response)
 }
 
 // 更新CDN记录
@@ -205,37 +141,20 @@ func UpdateCdnRecord(c *gin.Context) {
 		return
 	}
 
-	// 查询CDN记录
-	firstCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
-		Where(cdnrecord.IDEQ(requestParams.ID)).
-		First(c)
+	// 创建服务
+	service := service.NewCDNRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.UpdateCdnRecord(c, &requestParams)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询CDN记录失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	// 更新CDN记录
-	saveCdnRecord, err := global.GvaEntDb.CDNRecord.UpdateOne(firstCdnRecord).
-		SetOriginProtocol(cdnrecord.OriginProtocol(requestParams.OriginProtocol)).
-		SetHTTPPort(requestParams.HTTPPort).
-		SetHTTPSPort(requestParams.HTTPSPort).
-		SetIPGroupID(requestParams.IPGroupID).
-		Save(c)
-	if err != nil {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("更新CDN记录: %s\n", err.Error())
-		}
-		errorResponse(c, http.StatusInternalServerError, "更新CDN记录失败: "+err.Error())
-		return
-	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录")
-
-	// 更新通知订阅
-	_ = webhook_sub_helper.Update(c, requestParams.WebhookIDs, webhooksubscription.ObjTypeCdnRecord, saveCdnRecord.ID)
-
-	successResponse(c, types.GetCdnRecordRequest{
-		ID: saveCdnRecord.ID,
-	})
+	successResponse(c, response)
 }
 
 // 更新CDN记录启用状态
@@ -260,30 +179,20 @@ func UpdateCdnRecordActive(c *gin.Context) {
 		return
 	}
 
-	// 查询CDN记录
-	firstCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
-		Where(cdnrecord.IDEQ(requestParams.ID)).
-		First(c)
+	// 创建服务
+	service := service.NewCDNRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.UpdateCdnRecordActive(c, &requestParams)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询CDN记录失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	// 更新CDN记录状态
-	saveCdnRecord, err := global.GvaEntDb.CDNRecord.UpdateOne(firstCdnRecord).
-		SetIsActive(requestParams.IsActive).
-		Save(c)
-	if err != nil {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("更新CDN记录状态: %s\n", err.Error())
-		}
-		errorResponse(c, http.StatusInternalServerError, "更新CDN记录状态失败: "+err.Error())
-		return
-	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataUpdate(c, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录状态")
-	successResponse(c, types.GetCdnRecordRequest{
-		ID: saveCdnRecord.ID,
-	})
+	successResponse(c, response)
 }
 
 // 删除CDN记录
@@ -307,29 +216,20 @@ func DeleteCdnRecord(c *gin.Context) {
 		return
 	}
 
-	// 查询CDN记录
-	firstCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
-		Where(cdnrecord.IDEQ(requestParams.ID)).
-		First(c)
+	// 创建服务
+	service := service.NewCDNRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.DeleteCdnRecord(c, requestParams.ID)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询CDN记录失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	// 删除CDN记录
-	err = global.GvaEntDb.CDNRecord.DeleteOne(firstCdnRecord).Exec(c)
-	if err != nil {
-		errorResponse(c, http.StatusInternalServerError, "删除CDN记录失败: "+err.Error())
-		return
-	}
-	// 记录操作日志
-	_ = global.GvaOperationLogHelper.RecordDataDelete(c, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "删除CDN记录")
-
-	// 删除通知订阅
-	_ = webhook_sub_helper.Delete(c, webhooksubscription.ObjTypeCdnRecord, firstCdnRecord.ID)
-
-	successResponse(c, types.GetCdnRecordRequest{
-		ID: firstCdnRecord.ID,
-	})
+	successResponse(c, response)
 }
 
 // 检查CDN记录健康状态
@@ -354,77 +254,18 @@ func HealthcheckCdnRecord(c *gin.Context) {
 		return
 	}
 
-	// 查询CDN记录
-	firstCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
-		Where(cdnrecord.IDEQ(requestParams.ID)).
-		First(c)
+	// 创建服务
+	service := service.NewCDNRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.HealthcheckCdnRecord(c, requestParams.ID)
 	if err != nil {
-		errorResponse(c, http.StatusNotFound, "查询CDN记录失败: "+err.Error())
+		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-
-	switch firstCdnRecord.OriginProtocol {
-	case cdnrecord.OriginProtocolHTTP:
-		firstCdnRecord.HTTPSPort = 0
-	case cdnrecord.OriginProtocolHTTPS:
-		firstCdnRecord.HTTPPort = 0
-	}
-
-	// 检查健康状态
-	results := make([][]service.ToPairsStruct, 0)
-
-	// 并发检查
-	eg, egCtx := errgroup.WithContext(c)
-	eg.SetLimit(10) // 最多 10 个并发
-
-	if firstCdnRecord.Domain != "" {
-		// 检测域名是否可通（含 DNS + HTTP + HTTPS）
-		eg.Go(func() error {
-			healthCheckResult, _ := service.CheckDomainHealth(egCtx, firstCdnRecord.Domain, 80, 443, []string{})
-			results = append(results, healthCheckResult.ToPairsForDomain())
-			return nil
-		})
-	}
-
-	// if firstCdnRecord.CdnDomain != "" {
-	// 	// 检测域名是否可通（含 DNS + HTTP + HTTPS）
-	// 	eg.Go(func() error {
-	// 		healthCheckResult, _ := service.CheckDomainHealth(egCtx, firstCdnRecord.CdnDomain, 80, 443, []string{})
-	// 		results = append(results, healthCheckResult.ToPairsForDomain())
-	// 		return nil
-	// 	})
-	// }
-
-	// 查询Cdn的IP组
-	// firstCdnIpGroup, err := firstCdnRecord.QueryIPGroup().
-	// 	WithDevices().
-	// 	First(egCtx)
-	// if err == nil {
-	// 	for _, item := range firstCdnIpGroup.Edges.Devices {
-	// 		item := item // 创建副本以避免闭包问题
-	// 		if item.IPV4 != "" && firstCdnRecord.Type == cdnrecord.TypeA {
-	// 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
-	// 			eg.Go(func() error {
-	// 				healthCheckResult, _ := service.CheckIPHealth(egCtx, item.IPV4, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
-	// 				results = append(results, healthCheckResult.ToPairsForIP())
-	// 				return nil
-	// 			})
-	// 		}
-	// 		if item.IPV6 != "" && firstCdnRecord.Type == cdnrecord.TypeAAAA {
-	// 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
-	// 			eg.Go(func() error {
-	// 				healthCheckResult, _ := service.CheckIPHealth(egCtx, item.IPV6, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
-	// 				results = append(results, healthCheckResult.ToPairsForIP())
-	// 				return nil
-	// 			})
-	// 		}
-	// 	}
-	// }
-
-	if err = eg.Wait(); err != nil {
-		errorResponse(c, http.StatusInternalServerError, "CDN记录健康状态检查失败: "+err.Error())
-		return
-	}
-
-	successResponse(c, results)
+	successResponse(c, response)
 }
