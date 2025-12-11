@@ -183,7 +183,15 @@ func main() {
 	// 处理 MCP
 	if global.GvaMcpServer != nil {
 		// 注册 MCP 实现
+		mcp_tool.RegisterPlatformConfigTool(global.GvaMcpServer)
 		mcp_tool.RegisterCDNRecordTool(global.GvaMcpServer)
+		mcp_tool.RegisterDNSRecordTool(global.GvaMcpServer)
+		mcp_tool.RegisterDeviceTool(global.GvaMcpServer)
+		mcp_tool.RegisterIPGroupTool(global.GvaMcpServer)
+		mcp_tool.RegisterPortForwardTool(global.GvaMcpServer)
+		mcp_tool.RegisterDomainMonitorTool(global.GvaMcpServer)
+		mcp_tool.RegisterWebhookTool(global.GvaMcpServer)
+		mcp_tool.RegisterWebhookSubTool(global.GvaMcpServer)
 		// 注册 MCP 路由
 		httpTransport := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
 			return global.GvaMcpServer
