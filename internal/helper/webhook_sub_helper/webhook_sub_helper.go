@@ -2,24 +2,35 @@ package webhook_sub_helper
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/global"
 )
 
 // 创建通知订阅（同步 webhook_ids 列表）
 func Create(ctx context.Context, webhookIDs []int64, objType webhooksubscription.ObjType, objID int64) (err error) {
-	if len(webhookIDs) == 0 {
-		return nil
-	}
+	slog.InfoContext(ctx, "[创建通知订阅]准备",
+		slog.Any("webhookIDs", webhookIDs),
+		slog.String("objType", objType.String()),
+		slog.Int64("objID", objID),
+	)
 
 	for _, item := range webhookIDs {
 		err = global.GvaEntDb.WebhookSubscription.Create().
+			SetName(fmt.Sprintf("关联_%d_%d", objID, item)).
 			SetObjType(objType).
 			SetObjID(objID).
 			SetWebhookID(item).
 			SetIsActive(true).
 			Exec(ctx)
 		if err != nil {
+			slog.ErrorContext(ctx, "[创建通知订阅]失败",
+				slog.Any("webhookIDs", webhookIDs),
+				slog.String("objType", objType.String()),
+				slog.Int64("objID", objID),
+				slog.String("error", err.Error()),
+			)
 			return err
 		}
 	}
@@ -28,9 +39,11 @@ func Create(ctx context.Context, webhookIDs []int64, objType webhooksubscription
 
 // 更新通知订阅（同步 webhook_ids 列表）
 func Update(ctx context.Context, webhookIDs []int64, objType webhooksubscription.ObjType, objID int64) (err error) {
-	// if len(webhookIDs) == 0 {
-	// 	return nil
-	// }
+	slog.InfoContext(ctx, "[更新通知订阅]准备",
+		slog.Any("webhookIDs", webhookIDs),
+		slog.String("objType", objType.String()),
+		slog.Int64("objID", objID),
+	)
 
 	// 查询当前已存在的订阅（基于 objType + objID）
 	existingSubs, err := global.GvaEntDb.WebhookSubscription.Query().
@@ -38,6 +51,11 @@ func Update(ctx context.Context, webhookIDs []int64, objType webhooksubscription
 		Where(webhooksubscription.ObjIDEQ(objID)).
 		All(ctx)
 	if err != nil {
+		slog.ErrorContext(ctx, "[更新通知订阅]查询已存在订阅失败",
+			slog.String("objType", objType.String()),
+			slog.Int64("objID", objID),
+			slog.String("error", err.Error()),
+		)
 		return err
 	}
 
@@ -52,12 +70,21 @@ func Update(ctx context.Context, webhookIDs []int64, objType webhooksubscription
 	// 新增：webhook_ids 中有，但数据库中没有的
 	for _, id := range webhookIDs {
 		if !existingWebhookIDMap[id] {
-			global.GvaEntDb.WebhookSubscription.Create().
+			err = global.GvaEntDb.WebhookSubscription.Create().
+				SetName(fmt.Sprintf("关联_%d_%d", objID, id)).
 				SetObjType(objType).
 				SetObjID(objID).
 				SetWebhookID(id).
 				SetIsActive(true).
 				Exec(ctx)
+			if err != nil {
+				slog.ErrorContext(ctx, "[更新通知订阅]创建新增订阅失败",
+					slog.Any("webhookIDs", webhookIDs),
+					slog.String("objType", objType.String()),
+					slog.Int64("objID", objID),
+					slog.String("error", err.Error()),
+				)
+			}
 		}
 	}
 
@@ -84,6 +111,11 @@ func Update(ctx context.Context, webhookIDs []int64, objType webhooksubscription
 			Where(webhooksubscription.WebhookIDIn(toDeleteWebhookIDs...)).
 			Exec(ctx)
 		if err != nil {
+			slog.ErrorContext(ctx, "[更新通知订阅]删除已存在订阅失败",
+				slog.String("objType", objType.String()),
+				slog.Int64("objID", objID),
+				slog.String("error", err.Error()),
+			)
 			return err
 		}
 	}
@@ -93,6 +125,10 @@ func Update(ctx context.Context, webhookIDs []int64, objType webhooksubscription
 
 // 删除通知订阅（同步 webhook_ids 列表）
 func Delete(ctx context.Context, objType webhooksubscription.ObjType, objID int64) (err error) {
+	slog.InfoContext(ctx, "[删除通知订阅]准备",
+		slog.String("objType", objType.String()),
+		slog.Int64("objID", objID),
+	)
 
 	// 查询当前已存在的订阅（基于 objType + objID）
 	existingSubs, err := global.GvaEntDb.WebhookSubscription.Query().
@@ -100,6 +136,11 @@ func Delete(ctx context.Context, objType webhooksubscription.ObjType, objID int6
 		Where(webhooksubscription.ObjIDEQ(objID)).
 		All(ctx)
 	if err != nil {
+		slog.ErrorContext(ctx, "[删除通知订阅]查询已存在订阅失败",
+			slog.String("objType", objType.String()),
+			slog.Int64("objID", objID),
+			slog.String("error", err.Error()),
+		)
 		return err
 	}
 
@@ -116,6 +157,11 @@ func Delete(ctx context.Context, objType webhooksubscription.ObjType, objID int6
 		Where(webhooksubscription.WebhookIDIn(existingWebhookIDs...)).
 		Exec(ctx)
 	if err != nil {
+		slog.ErrorContext(ctx, "[删除通知订阅]删除已存在订阅失败",
+			slog.String("objType", objType.String()),
+			slog.Int64("objID", objID),
+			slog.String("error", err.Error()),
+		)
 		return err
 	}
 
