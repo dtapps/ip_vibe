@@ -258,7 +258,7 @@ async function onHealthcheckPopup(id) {
 
   try {
     const { data: dnsRecordHealthcheck } = await API.get(
-      `/api/dns-records/${id}/healthcheck`
+      `/api/dns-records/${id}/health-check`
     );
     console.log("dnsRecordHealthcheck", dnsRecordHealthcheck);
     if (!dnsRecordHealthcheck) {

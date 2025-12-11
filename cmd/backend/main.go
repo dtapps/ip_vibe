@@ -329,7 +329,7 @@ func main() {
 			cdnRecords.PATCH("/:id", handlers.UpdateCdnRecord)
 			cdnRecords.PATCH("/:id/active", handlers.UpdateCdnRecordActive)
 			cdnRecords.DELETE("/:id", handlers.DeleteCdnRecord)
-			cdnRecords.GET("/:id/healthcheck", handlers.HealthcheckCdnRecord)
+			cdnRecords.GET("/:id/health-check", handlers.HealthCheckCdnRecord)
 		}
 
 		// DNS记录管理相关API
@@ -341,7 +341,7 @@ func main() {
 			dnsRecords.PATCH("/:id", handlers.UpdateDnsRecord)
 			dnsRecords.PATCH("/:id/active", handlers.UpdateDnsRecordActive)
 			dnsRecords.DELETE("/:id", handlers.DeleteDnsRecord)
-			dnsRecords.GET("/:id/healthcheck", handlers.HealthcheckDnsRecord)
+			dnsRecords.GET("/:id/health-check", handlers.HealthCheckDnsRecord)
 		}
 
 		// 设备相关API
@@ -353,7 +353,7 @@ func main() {
 			devices.PATCH("/:id", handlers.UpdateDevice)
 			devices.DELETE("/:id", handlers.DeleteDevice)
 			devices.GET("/:id/ip-history", handlers.GetDeviceIpHistory)
-			devices.GET("/:id/healthcheck", handlers.HealthcheckDevice)
+			devices.GET("/:id/health-check", handlers.HealthCheckDevice)
 		}
 
 		// IP组相关API
@@ -365,7 +365,7 @@ func main() {
 			ipGroups.PATCH("/:id", handlers.UpdateIPGroup)
 			ipGroups.DELETE("/:id", handlers.DeleteIPGroup)
 			ipGroups.GET("/:id/devices", handlers.GetIPGroupDevices)
-			ipGroups.GET("/:id/healthcheck", handlers.HealthcheckIPGroup)
+			ipGroups.GET("/:id/health-check", handlers.HealthCheckIPGroup)
 		}
 
 		// 端口转发相关API
@@ -378,7 +378,7 @@ func main() {
 			portForwards.PATCH("/:id/forward", handlers.UpdatePortForwardForward)
 			portForwards.PATCH("/:id/active", handlers.UpdatePortForwardActive)
 			portForwards.DELETE("/:id", handlers.DeletePortForward)
-			portForwards.GET("/:id/healthcheck", handlers.HealthcheckPortForward)
+			portForwards.GET("/:id/health-check", handlers.HealthCheckPortForward)
 		}
 
 		// 域名监控相关API
@@ -422,9 +422,9 @@ func main() {
 			tasks.GET("/:id", handlers.GetTask)
 			tasks.POST("/:id", handlers.RunTask)
 			tasks.DELETE("/:id", handlers.DeleteTask)
-			tasks.POST("/start", handlers.StartTask)
-			tasks.POST("/stop", handlers.StopTask)
 			tasks.POST("/clean", handlers.CleanTask)
+			tasks.POST("/start-scheduler", handlers.StartScheduler) // 启动调度器
+			tasks.POST("/stop-scheduler", handlers.StopScheduler)   // 停止调度器
 		}
 
 		opens := api.Group("/open")

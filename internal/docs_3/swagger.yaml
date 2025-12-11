@@ -332,6 +332,12 @@ components:
           type: string
       type: object
     vibe_ip_internal_types.GetCdnRecordRequest:
+      properties:
+        id:
+          description: CDN记录序号
+          type: integer
+      required:
+      - id
       type: object
     vibe_ip_internal_types.GetCdnRecordResponse:
       properties:
@@ -392,6 +398,12 @@ components:
       - is_active
       type: object
     vibe_ip_internal_types.GetConfigRequest:
+      properties:
+        id:
+          description: 配置序号
+          type: integer
+      required:
+      - id
       type: object
     vibe_ip_internal_types.GetConfigResponse:
       properties:
@@ -430,6 +442,12 @@ components:
           type: string
       type: object
     vibe_ip_internal_types.GetDeviceRequest:
+      properties:
+        id:
+          description: 设备序号
+          type: integer
+      required:
+      - id
       type: object
     vibe_ip_internal_types.GetDeviceResponse:
       properties:
@@ -465,6 +483,12 @@ components:
           uniqueItems: false
       type: object
     vibe_ip_internal_types.GetDnsRecordRequest:
+      properties:
+        id:
+          description: DNS记录序号
+          type: integer
+      required:
+      - id
       type: object
     vibe_ip_internal_types.GetDnsRecordResponse:
       properties:
@@ -519,6 +543,12 @@ components:
       - is_active
       type: object
     vibe_ip_internal_types.GetDomainMonitorRequest:
+      properties:
+        id:
+          description: 域名监控记录序号
+          type: integer
+      required:
+      - id
       type: object
     vibe_ip_internal_types.GetDomainMonitorResponse:
       properties:
@@ -565,6 +595,12 @@ components:
       - is_active
       type: object
     vibe_ip_internal_types.GetIPGroupRequest:
+      properties:
+        id:
+          description: IP组序号
+          type: integer
+      required:
+      - id
       type: object
     vibe_ip_internal_types.GetIPGroupResponse:
       properties:
@@ -594,6 +630,12 @@ components:
           uniqueItems: false
       type: object
     vibe_ip_internal_types.GetPortForwardRequest:
+      properties:
+        id:
+          description: 设备端口转发序号
+          type: integer
+      required:
+      - id
       type: object
     vibe_ip_internal_types.GetPortForwardResponse:
       properties:
@@ -643,6 +685,12 @@ components:
       - is_active
       type: object
     vibe_ip_internal_types.GetWebhookRequest:
+      properties:
+        id:
+          description: 通知序号
+          type: integer
+      required:
+      - id
       type: object
     vibe_ip_internal_types.GetWebhookResponse:
       properties:
@@ -681,6 +729,12 @@ components:
           type: string
       type: object
     vibe_ip_internal_types.GetWebhookSubRequest:
+      properties:
+        id:
+          description: 通知订阅序号
+          type: integer
+      required:
+      - id
       type: object
     vibe_ip_internal_types.GetWebhookSubResponse:
       properties:
@@ -763,9 +817,14 @@ components:
       type: object
     vibe_ip_internal_types.UpdateCdnRecordActiveRequest:
       properties:
+        id:
+          description: CDN记录序号
+          type: integer
         is_active:
           description: 是否活跃
           type: boolean
+      required:
+      - id
       type: object
     vibe_ip_internal_types.UpdateCdnRecordRequest:
       properties:
@@ -774,6 +833,9 @@ components:
           type: integer
         https_port:
           description: HTTPS 回源端口
+          type: integer
+        id:
+          description: CDN记录序号
           type: integer
         ip_group_id:
           description: IP 组序号
@@ -790,6 +852,7 @@ components:
       required:
       - http_port
       - https_port
+      - id
       - ip_group_id
       - origin_protocol
       type: object
@@ -804,12 +867,16 @@ components:
         description:
           description: 配置描述
           type: string
+        id:
+          description: 配置序号
+          type: integer
         name:
           description: 配置名称
           type: string
       required:
       - capability
       - config_json
+      - id
       - name
       type: object
     vibe_ip_internal_types.UpdateDeviceRequest:
@@ -817,6 +884,9 @@ components:
         description:
           description: 设备描述
           type: string
+        id:
+          description: 设备序号
+          type: integer
         ip_v4:
           description: IP地址V4
           type: string
@@ -833,18 +903,27 @@ components:
           type: array
           uniqueItems: false
       required:
+      - id
       - name
       type: object
     vibe_ip_internal_types.UpdateDnsRecordActiveRequest:
       properties:
+        id:
+          description: DNS记录序号
+          type: integer
         is_active:
           description: 是否活跃
           type: boolean
+      required:
+      - id
       type: object
     vibe_ip_internal_types.UpdateDnsRecordRequest:
       properties:
         cdn_record_id:
           description: CDN 记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）
+          type: integer
+        id:
+          description: DNS记录序号
           type: integer
         ip_group_id:
           description: IP 组序号（与 cdn_record_id 二选一）
@@ -855,17 +934,27 @@ components:
             type: integer
           type: array
           uniqueItems: false
+      required:
+      - id
       type: object
     vibe_ip_internal_types.UpdateDomainMonitorActiveRequest:
       properties:
+        id:
+          description: 域名监控记录序号
+          type: integer
         is_active:
           description: 是否活跃
           type: boolean
+      required:
+      - id
       type: object
     vibe_ip_internal_types.UpdateDomainMonitorRequest:
       properties:
         check_interval:
           description: 检查间隔（秒）
+          type: integer
+        id:
+          description: 域名监控记录序号
           type: integer
         name:
           description: 名称
@@ -876,6 +965,8 @@ components:
             type: integer
           type: array
           uniqueItems: false
+      required:
+      - id
       type: object
     vibe_ip_internal_types.UpdateIPGroupRequest:
       properties:
@@ -888,6 +979,9 @@ components:
             type: integer
           type: array
           uniqueItems: false
+        id:
+          description: IP组序号
+          type: integer
         name:
           description: IP组名称
           type: string
@@ -899,19 +993,30 @@ components:
           uniqueItems: false
       required:
       - devices
+      - id
       - name
       type: object
     vibe_ip_internal_types.UpdatePortForwardActiveRequest:
       properties:
+        id:
+          description: 设备端口转发序号
+          type: integer
         is_active:
           description: 是否活跃
           type: boolean
+      required:
+      - id
       type: object
     vibe_ip_internal_types.UpdatePortForwardForwardRequest:
       properties:
         auto_forward:
           description: 防火墙自动放行
           type: boolean
+        id:
+          description: 设备端口转发序号
+          type: integer
+      required:
+      - id
       type: object
     vibe_ip_internal_types.UpdatePortForwardRequest:
       properties:
@@ -920,6 +1025,9 @@ components:
           type: string
         device_id:
           description: 设备ID
+          type: integer
+        id:
+          description: 设备端口转发序号
           type: integer
         local_port:
           description: 本地监听端口
@@ -941,6 +1049,7 @@ components:
           type: integer
       required:
       - device_id
+      - id
       - local_port
       - name
       - protocols
@@ -949,9 +1058,14 @@ components:
       type: object
     vibe_ip_internal_types.UpdateWebhookActiveRequest:
       properties:
+        id:
+          description: 通知序号
+          type: integer
         is_active:
           description: 是否启用
           type: boolean
+      required:
+      - id
       type: object
     vibe_ip_internal_types.UpdateWebhookRequest:
       properties:
@@ -964,6 +1078,9 @@ components:
             type: string
           type: array
           uniqueItems: false
+        id:
+          description: 通知序号
+          type: integer
         name:
           description: 通知名称
           type: string
@@ -977,25 +1094,35 @@ components:
           description: 通知标题 Go Template
           type: string
       required:
+      - id
       - name
       - template_content
       - template_title
       type: object
     vibe_ip_internal_types.UpdateWebhookSubActiveRequest:
       properties:
+        id:
+          description: 通知订阅序号
+          type: integer
         is_active:
           description: 是否启用
           type: boolean
+      required:
+      - id
       type: object
     vibe_ip_internal_types.UpdateWebhookSubRequest:
       properties:
         description:
           description: 通知订阅描述
           type: string
+        id:
+          description: 通知订阅序号
+          type: integer
         name:
           description: 通知订阅名称
           type: string
       required:
+      - id
       - name
       type: object
 externalDocs:
@@ -1261,7 +1388,7 @@ paths:
       summary: 更新CDN记录启用状态
       tags:
       - CDN记录
-  /cdn-records/{id}/healthcheck:
+  /cdn-records/{id}/health-check:
     get:
       description: 检查CDN记录健康状态
       parameters:
@@ -1749,7 +1876,7 @@ paths:
       summary: 更新设备
       tags:
       - 设备
-  /devices/{id}/healthcheck:
+  /devices/{id}/health-check:
     get:
       description: 检查设备健康状态
       parameters:
@@ -2123,7 +2250,7 @@ paths:
       summary: 更新DNS记录启用状态
       tags:
       - DNS记录
-  /dns-records/{id}/healthcheck:
+  /dns-records/{id}/health-check:
     get:
       description: 检查DNS记录健康状态
       parameters:
@@ -2773,7 +2900,7 @@ paths:
       summary: 获取IP组的设备列表
       tags:
       - IP组
-  /ip-groups/{id}/healthcheck:
+  /ip-groups/{id}/health-check:
     get:
       description: 检查IP组健康状态
       parameters:
@@ -3253,7 +3380,7 @@ paths:
       summary: 更新端口转发防火墙状态
       tags:
       - 端口转发
-  /port-forwards/{id}/healthcheck:
+  /port-forwards/{id}/health-check:
     get:
       description: 检查端口转发健康状态
       parameters:
@@ -3477,7 +3604,7 @@ paths:
       summary: 清理全部任务
       tags:
       - 任务
-  /tasks/start:
+  /tasks/start-scheduler:
     post:
       description: 启动调度器
       requestBody:
@@ -3501,7 +3628,7 @@ paths:
       summary: 启动调度器
       tags:
       - 任务
-  /tasks/stop:
+  /tasks/stop-scheduler:
     post:
       description: 停止调度器
       requestBody:

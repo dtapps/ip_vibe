@@ -67,6 +67,6 @@ type DeletePortForwardRequest struct {
 }
 
 // 检查端口转发健康状态 请求结构
-type HealthcheckPortForwardRequest struct {
+type HealthCheckPortForwardRequest struct {
 	GetPortForwardRequest
 }

@@ -1,5 +1,9 @@
 package types
 
+// 获取全部IP组 请求结构
+type GetIPGroupsRequest struct {
+}
+
 // 获取IP组 响应结构
 type GetIPGroupResponse struct {
 	ID          int64   `json:"id" jsonschema:"IP组的唯一标识符"`                   // IP组序号
@@ -46,6 +50,6 @@ type GetIPGroupDevicesRequest struct {
 }
 
 // 检查IP组健康状态 请求结构
-type HealthcheckIPGroupRequest struct {
+type HealthCheckIPGroupRequest struct {
 	GetIPGroupRequest
 }

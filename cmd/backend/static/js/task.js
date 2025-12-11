@@ -1,8 +1,8 @@
-// 启动全部任务
-async function startTask() {
-  if (confirm("确定启动全部任务？")) {
+// 启动调度器
+async function startTaskScheduler() {
+  if (confirm("确定启动调度器？")) {
     try {
-      await API.post(`/api/tasks/start`);
+      await API.post(`/api/tasks/start-scheduler`);
       // 刷新页面
       location.reload();
     } catch (error) {
@@ -12,11 +12,11 @@ async function startTask() {
   }
 }
 
-// 停止全部任务
-async function stopTask() {
-  if (confirm("确定停止全部任务？")) {
+// 停止调度器
+async function stopTaskScheduler() {
+  if (confirm("确定停止调度器？")) {
     try {
-      await API.post(`/api/tasks/stop`);
+      await API.post(`/api/tasks/stop-scheduler`);
       // 刷新页面
       location.reload();
     } catch (error) {

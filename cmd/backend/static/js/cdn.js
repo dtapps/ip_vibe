@@ -222,7 +222,7 @@ async function onHealthcheckPopup(id) {
 
   try {
     const { data: cdnRecordHealthcheck } = await API.get(
-      `/api/cdn-records/${id}/healthcheck`
+      `/api/cdn-records/${id}/health-check`
     );
     console.log("cdnRecordHealthcheck", cdnRecordHealthcheck);
     if (!cdnRecordHealthcheck) {

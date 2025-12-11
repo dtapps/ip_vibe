@@ -155,7 +155,7 @@ async function onHealthcheckPopup(id) {
 
   try {
     const { data: deviceHealthcheck } = await API.get(
-      `/api/devices/${id}/healthcheck`
+      `/api/devices/${id}/health-check`
     );
     console.log("deviceHealthcheck", deviceHealthcheck);
     if (!deviceHealthcheck) {

@@ -71,6 +71,6 @@ type DeleteCdnRecordRequest struct {
 }
 
 // 检查CDN记录健康状态 请求结构
-type HealthcheckCdnRecordRequest struct {
+type HealthCheckCdnRecordRequest struct {
 	GetCdnRecordRequest
 }

@@ -11,14 +11,14 @@
       <button class="btn btn-warning" disabled>
         {{ template "icons" (dict "Name" "ip-play") }} 启动
       </button>
-      <button class="btn btn-danger" onclick="stopTask()">
+      <button class="btn btn-danger" onclick="stopTaskScheduler()">
         {{ template "icons" (dict "Name" "ip-stop") }} 停止
       </button>
       <button class="btn btn-warning" disabled>
         {{ template "icons" (dict "Name" "ip-close") }} 清理
       </button>
       {{else}}
-      <button class="btn btn-warning" onclick="startTask()">
+      <button class="btn btn-warning" onclick="startTaskScheduler()">
         {{ template "icons" (dict "Name" "ip-play") }} 启动
       </button>
       <button class="btn btn-danger" disabled>

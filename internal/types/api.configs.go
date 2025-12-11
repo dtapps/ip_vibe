@@ -2,6 +2,10 @@ package types
 
 import "encoding/json"
 
+// 获取全部配置 请求结构
+type GetConfigsRequest struct {
+}
+
 // 获取配置 响应结构
 type GetConfigResponse struct {
 	ID          int64           `json:"id,omitempty" jsonschema:"配置的唯一标识符"`                                 // 配置序号

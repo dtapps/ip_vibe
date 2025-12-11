@@ -2,6 +2,10 @@ package types
 
 import "time"
 
+// 获取全部设备 请求结构
+type GetDevicesRequest struct {
+}
+
 // 获取设备 响应结构
 type GetDeviceResponse struct {
 	ID              int64     `json:"id,omitempty" jsonschema:"设备的唯一标识符"`                // 设备序号
@@ -61,6 +65,6 @@ type GetDeviceIpHistoryResponse struct {
 }
 
 // 检查设备健康状态 请求结构
-type HealthcheckDeviceRequest struct {
+type HealthCheckDeviceRequest struct {
 	GetDeviceRequest
 }

@@ -159,7 +159,7 @@ async function onHealthcheckPopup(id) {
 
   try {
     const { data: portForwardHealthcheck } = await API.get(
-      `/api/port-forwards/${id}/healthcheck`
+      `/api/port-forwards/${id}/health-check`
     );
     console.log("portForwardHealthcheck", portForwardHealthcheck);
     if (!portForwardHealthcheck) {

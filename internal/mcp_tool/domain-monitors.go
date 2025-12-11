@@ -1,0 +1,181 @@
+package mcp_tool
+
+import (
+	"context"
+	"vibe_ip/internal/backend/service"
+	"vibe_ip/internal/global"
+	"vibe_ip/internal/types"
+
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+)
+
+func RegisterDomainMonitorTool(server *mcp.Server) {
+	mcp.AddTool(server, &mcp.Tool{
+		Name:        "listDomainMonitor",
+		Description: "列出所有域名监控",
+	}, GetDomainMonitors)
+	mcp.AddTool(server, &mcp.Tool{
+		Name:        "getDomainMonitor",
+		Description: "获取域名监控",
+	}, GetDomainMonitor)
+	mcp.AddTool(server, &mcp.Tool{
+		Name:        "createDomainMonitor",
+		Description: "创建域名监控",
+	}, CreateDomainMonitor)
+	mcp.AddTool(server, &mcp.Tool{
+		Name:        "updateDomainMonitor",
+		Description: "更新域名监控",
+	}, UpdateDomainMonitor)
+	mcp.AddTool(server, &mcp.Tool{
+		Name:        "updateDomainMonitorActive",
+		Description: "更新域名监控启用状态",
+	}, UpdateDomainMonitorActive)
+	mcp.AddTool(server, &mcp.Tool{
+		Name:        "deleteDomainMonitor",
+		Description: "删除域名监控",
+	}, DeleteDomainMonitor)
+	mcp.AddTool(server, &mcp.Tool{
+		Name:        "checkDomainMonitor",
+		Description: "检查域名监控",
+	}, CheckDomainMonitor)
+}
+
+// 获取全部域名监控
+func GetDomainMonitors(ctx context.Context, req *mcp.CallToolRequest, params *types.GetDomainMonitorsRequest) (*mcp.CallToolResult, any, error) {
+
+	// 创建服务
+	service := service.NewDomainMonitorService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+		global.GvaGoCron,
+	)
+
+	// 调用
+	response, err := service.GetDomainMonitors(ctx, params)
+	if err != nil {
+		return errorResponse(err.Error())
+	}
+
+	return successResponse(response)
+}
+
+// 获取域名监控
+func GetDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *types.GetDomainMonitorRequest) (*mcp.CallToolResult, any, error) {
+
+	// 创建服务
+	service := service.NewDomainMonitorService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+		global.GvaGoCron,
+	)
+
+	// 调用
+	response, err := service.GetDomainMonitor(ctx, params.ID)
+	if err != nil {
+		return errorResponse(err.Error())
+	}
+
+	return successResponse(response)
+}
+
+// 创建域名监控
+func CreateDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *types.CreateDomainMonitorRequest) (*mcp.CallToolResult, any, error) {
+
+	// 创建服务
+	service := service.NewDomainMonitorService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+		global.GvaGoCron,
+	)
+
+	// 调用
+	response, err := service.CreateDomainMonitor(ctx, params)
+	if err != nil {
+		return errorResponse(err.Error())
+	}
+
+	return successResponse(response)
+}
+
+// 更新域名监控
+func UpdateDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateDomainMonitorRequest) (*mcp.CallToolResult, any, error) {
+
+	// 创建服务
+	service := service.NewDomainMonitorService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+		global.GvaGoCron,
+	)
+
+	// 调用
+	response, err := service.UpdateDomainMonitor(ctx, params)
+	if err != nil {
+		return errorResponse(err.Error())
+	}
+
+	return successResponse(response)
+}
+
+// 更新域名监控启用状态
+func UpdateDomainMonitorActive(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateDomainMonitorActiveRequest) (*mcp.CallToolResult, any, error) {
+
+	// 创建服务
+	service := service.NewDomainMonitorService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+		global.GvaGoCron,
+	)
+
+	// 调用
+	response, err := service.UpdateDomainMonitorActive(ctx, params)
+	if err != nil {
+		return errorResponse(err.Error())
+	}
+
+	return successResponse(response)
+}
+
+// 删除域名监控
+func DeleteDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteDomainMonitorRequest) (*mcp.CallToolResult, any, error) {
+
+	// 创建服务
+	service := service.NewDomainMonitorService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+		global.GvaGoCron,
+	)
+
+	// 调用
+	response, err := service.DeleteDomainMonitor(ctx, params.ID)
+	if err != nil {
+		return errorResponse(err.Error())
+	}
+
+	return successResponse(response)
+}
+
+// 检查域名监控
+func CheckDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *types.CheckDomainMonitorRequest) (*mcp.CallToolResult, any, error) {
+
+	// 创建服务
+	service := service.NewDomainMonitorService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+		global.GvaGoCron,
+	)
+
+	// 调用
+	response, err := service.CheckDomainMonitor(ctx, params.ID)
+	if err != nil {
+		return errorResponse(err.Error())
+	}
+
+	return successResponse(response)
+}

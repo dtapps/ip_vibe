@@ -34,6 +34,10 @@ func RegisterCDNRecordTool(server *mcp.Server) {
 		Name:        "deleteCDNRecord",
 		Description: "删除CDN记录",
 	}, DeleteCdnRecord)
+	mcp.AddTool(server, &mcp.Tool{
+		Name:        "healthCheckCDNRecord",
+		Description: "检查CDN记录是否健康",
+	}, HealthCheckCdnRecord)
 }
 
 // 获取全部CDN记录
@@ -146,7 +150,7 @@ func DeleteCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 }
 
 // 检查CDN记录健康状态
-func HealthcheckCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.HealthcheckCdnRecordRequest) (*mcp.CallToolResult, any, error) {
+func HealthCheckCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.HealthCheckCdnRecordRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewCDNRecordService(

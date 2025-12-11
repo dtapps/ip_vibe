@@ -153,6 +153,35 @@ func DeleteTask(c *gin.Context) {
 	successResponse(c, nil)
 }
 
+// 清理全部任务
+//
+//	@Description	清理全部任务
+//	@Summary		清理全部任务
+//	@Tags			任务
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Success		200	{object}	APIResponse{}	"成功响应"
+//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Router			/tasks/clean [post]
+func CleanTask(c *gin.Context) {
+
+	// 创建服务
+	service := service.NewTaskService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+		global.GvaGoCron,
+	)
+
+	// 调用
+	err := service.CleanTask(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, nil)
+}
+
 // 启动调度器
 //
 //	@Description	启动调度器
@@ -162,8 +191,8 @@ func DeleteTask(c *gin.Context) {
 //	@Produce		application/json
 //	@Success		200	{object}	APIResponse{}	"成功响应"
 //	@Failure		404	{object}	APIResponse{}	"错误响应"
-//	@Router			/tasks/start [post]
-func StartTask(c *gin.Context) {
+//	@Router			/tasks/start-scheduler [post]
+func StartScheduler(c *gin.Context) {
 
 	// 创建服务
 	service := service.NewTaskService(
@@ -191,8 +220,8 @@ func StartTask(c *gin.Context) {
 //	@Produce		application/json
 //	@Success		200	{object}	APIResponse{}	"成功响应"
 //	@Failure		404	{object}	APIResponse{}	"错误响应"
-//	@Router			/tasks/stop [post]
-func StopTask(c *gin.Context) {
+//	@Router			/tasks/stop-scheduler [post]
+func StopScheduler(c *gin.Context) {
 
 	// 创建服务
 	service := service.NewTaskService(
@@ -204,34 +233,5 @@ func StopTask(c *gin.Context) {
 
 	// 调用
 	service.StopTask(c)
-	successResponse(c, nil)
-}
-
-// 清理全部任务
-//
-//	@Description	清理全部任务
-//	@Summary		清理全部任务
-//	@Tags			任务
-//	@Accept			application/json
-//	@Produce		application/json
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		404	{object}	APIResponse{}	"错误响应"
-//	@Router			/tasks/clean [post]
-func CleanTask(c *gin.Context) {
-
-	// 创建服务
-	service := service.NewTaskService(
-		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
-		global.GvaGoCron,
-	)
-
-	// 调用
-	err := service.CleanTask(c)
-	if err != nil {
-		errorResponse(c, http.StatusNotFound, err.Error())
-		return
-	}
 	successResponse(c, nil)
 }

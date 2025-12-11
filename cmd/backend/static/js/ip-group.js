@@ -147,7 +147,7 @@ async function onHealthcheckPopup(id) {
 
   try {
     const { data: ipGroupHealthcheck } = await API.get(
-      `/api/ip-groups/${id}/healthcheck`
+      `/api/ip-groups/${id}/health-check`
     );
     console.log("ipGroupHealthcheck", ipGroupHealthcheck);
     if (!ipGroupHealthcheck) {

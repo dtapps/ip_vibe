@@ -248,10 +248,10 @@ func DeleteDnsRecord(c *gin.Context) {
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Failure		500	{object}	APIResponse{}								"服务错误"
-//	@Router			/dns-records/{id}/healthcheck [get]
-func HealthcheckDnsRecord(c *gin.Context) {
+//	@Router			/dns-records/{id}/health-check [get]
+func HealthCheckDnsRecord(c *gin.Context) {
 	// 请求参数
-	var requestParams types.HealthcheckDnsRecordRequest
+	var requestParams types.HealthCheckDnsRecordRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
