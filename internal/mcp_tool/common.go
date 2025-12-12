@@ -7,21 +7,36 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
+// errorResponse 错误响应（支持格式化）
+func errorResponse(format string, args ...any) (*mcp.CallToolResult, any, error) {
+	return nil, nil, fmt.Errorf(format, args...)
+}
+
+// successResponse 成功响应（自动处理多种数据类型）
 func successResponse(data any) (*mcp.CallToolResult, any, error) {
-	// 判断可不可以转Json字符串
-	text, err := json.Marshal(data)
-	if err != nil {
-		text = []byte(fmt.Sprintf("%v", data))
+	var content string
+
+	switch v := data.(type) {
+	case string:
+		content = v
+	case []byte:
+		content = string(v)
+	case json.RawMessage:
+		content = string(v)
+	default:
+		// 尝试JSON序列化
+		if jsonData, err := json.Marshal(data); err == nil {
+			content = string(jsonData)
+		} else {
+			content = fmt.Sprintf("%v", data)
+		}
 	}
+
 	return &mcp.CallToolResult{
 		Content: []mcp.Content{
 			&mcp.TextContent{
-				Text: string(text),
+				Text: content,
 			},
 		},
 	}, nil, nil
-}
-
-func errorResponse(message string) (*mcp.CallToolResult, any, error) {
-	return nil, nil, fmt.Errorf("%s", message)
 }

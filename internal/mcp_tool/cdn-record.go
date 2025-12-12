@@ -11,37 +11,37 @@ import (
 
 func RegisterCDNRecordTool(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "listCDNRecord",
-		Description: "列出域名对应的CDN记录",
-	}, GetCdnRecords)
+		Name:        "cdnRecordsList",
+		Description: "获取全部CDN记录",
+	}, getCdnRecordsList)
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "getCDNRecord",
-		Description: "获取CDN记录",
-	}, GetCdnRecord)
+		Name:        "cdnRecordDetail",
+		Description: "获取CDN记录详情",
+	}, getCdnRecordDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "createCDNRecord",
 		Description: "创建CDN记录",
-	}, CreateCdnRecord)
+	}, createCdnRecord)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateCDNRecord",
 		Description: "更新CDN记录",
-	}, UpdateCdnRecord)
+	}, updateCdnRecord)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateCDNRecordActive",
 		Description: "更新CDN记录启用状态",
-	}, UpdateCdnRecordActive)
+	}, updateCdnRecordActive)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deleteCDNRecord",
 		Description: "删除CDN记录",
-	}, DeleteCdnRecord)
+	}, deleteCdnRecord)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "healthCheckCDNRecord",
 		Description: "检查CDN记录是否健康",
-	}, HealthCheckCdnRecord)
+	}, healthCheckCdnRecord)
 }
 
 // 获取全部CDN记录
-func GetCdnRecords(ctx context.Context, req *mcp.CallToolRequest, params *types.GetCdnRecordsRequest) (*mcp.CallToolResult, any, error) {
+func getCdnRecordsList(ctx context.Context, req *mcp.CallToolRequest, params *types.GetCdnRecordsRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewCDNRecordService(
@@ -55,12 +55,11 @@ func GetCdnRecords(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	if err != nil {
 		return errorResponse(err.Error())
 	}
-
 	return successResponse(response)
 }
 
-// 获取CDN记录
-func GetCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.GetCdnRecordRequest) (*mcp.CallToolResult, any, error) {
+// 获取CDN记录详情
+func getCdnRecordDetail(ctx context.Context, req *mcp.CallToolRequest, params *types.GetCdnRecordRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewCDNRecordService(
@@ -78,7 +77,7 @@ func GetCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.G
 }
 
 // 创建CDN记录
-func CreateCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.CreateCdnRecordRequest) (*mcp.CallToolResult, any, error) {
+func createCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.CreateCdnRecordRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewCDNRecordService(
@@ -96,7 +95,7 @@ func CreateCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 }
 
 // 更新CDN记录
-func UpdateCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateCdnRecordRequest) (*mcp.CallToolResult, any, error) {
+func updateCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateCdnRecordRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewCDNRecordService(
@@ -114,7 +113,7 @@ func UpdateCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 }
 
 // 更新CDN记录启用状态
-func UpdateCdnRecordActive(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateCdnRecordActiveRequest) (*mcp.CallToolResult, any, error) {
+func updateCdnRecordActive(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateCdnRecordActiveRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewCDNRecordService(
@@ -132,7 +131,7 @@ func UpdateCdnRecordActive(ctx context.Context, req *mcp.CallToolRequest, params
 }
 
 // 删除CDN记录
-func DeleteCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteCdnRecordRequest) (*mcp.CallToolResult, any, error) {
+func deleteCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteCdnRecordRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewCDNRecordService(
@@ -150,7 +149,7 @@ func DeleteCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 }
 
 // 检查CDN记录健康状态
-func HealthCheckCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.HealthCheckCdnRecordRequest) (*mcp.CallToolResult, any, error) {
+func healthCheckCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.HealthCheckCdnRecordRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewCDNRecordService(

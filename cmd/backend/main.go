@@ -20,6 +20,7 @@ import (
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/initialize"
+	"vibe_ip/internal/mcp_resource"
 	"vibe_ip/internal/mcp_tool"
 
 	"github.com/denisbrodbeck/machineid"
@@ -114,9 +115,10 @@ func main() {
 		},
 		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}, // 支持所有 HTTP 方法
 		AllowHeaders: []string{
-			"Content-Type",
-			"Authorization", // 支持 Authorization 头部
-			"Cookie",        // 支持 Cookie
+			"Content-Type",         // 支持 Content-Type 头部
+			"Authorization",        // 支持 Authorization 头部
+			"Cookie",               // 支持 Cookie
+			"mcp-protocol-version", // 支持 MCP 协议版本头
 		},
 		ExposeHeaders: []string{
 			"X-Auth-Method",  // 暴露给客户端的头部
@@ -185,6 +187,7 @@ func main() {
 		// 注册 MCP 实现
 		mcp_tool.RegisterPlatformConfigTool(global.GvaMcpServer)
 		mcp_tool.RegisterCDNRecordTool(global.GvaMcpServer)
+		mcp_resource.RegisterCDNRecordResource(global.GvaMcpServer)
 		mcp_tool.RegisterDNSRecordTool(global.GvaMcpServer)
 		mcp_tool.RegisterDeviceTool(global.GvaMcpServer)
 		mcp_tool.RegisterIPGroupTool(global.GvaMcpServer)
