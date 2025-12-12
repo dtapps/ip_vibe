@@ -437,8 +437,8 @@ func main() {
 
 		opens := api.Group("/open")
 		{
-			opens.POST("/device/:device_code/ip-report", handlers.DeviceReportDeviceIp)  // open api
-			opens.GET("/device/:device_code/port-forwards", handlers.DevicePortForwards) // open api
+			opens.POST("/device/:device_code/ip-report", handlers.DeviceReportDeviceIp)  // 设备上报IP
+			opens.GET("/device/:device_code/port-forwards", handlers.DevicePortForwards) //获取设备端口转发
 		}
 	}
 
