@@ -11,10 +11,10 @@ import (
 	"github.com/spf13/cast"
 )
 
-// 获取全部配置
+// 获取全部平台配置
 //
-//	@Description	获取全部配置
-//	@Summary		获取全部配置
+//	@Description	获取全部平台配置
+//	@Summary		获取全部平台配置
 //	@Tags			配置
 //	@Accept			application/json
 //	@Produce		application/json
@@ -39,10 +39,10 @@ func GetConfigs(c *gin.Context) {
 	successResponse(c, response)
 }
 
-// 获取配置
+// 获取平台配置详情
 //
-//	@Description	获取配置
-//	@Summary		获取配置
+//	@Description	获取平台配置详情
+//	@Summary		获取平台配置详情
 //	@Tags			配置
 //	@Accept			application/json
 //	@Produce		application/json
@@ -51,7 +51,7 @@ func GetConfigs(c *gin.Context) {
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Router			/configs/{id} [get]
-func GetConfig(c *gin.Context) {
+func GetConfigDetail(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetConfigRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
@@ -76,10 +76,10 @@ func GetConfig(c *gin.Context) {
 	successResponse(c, response)
 }
 
-// 创建配置
+// 创建平台配置
 //
-//	@Description	创建配置
-//	@Summary		创建配置
+//	@Description	创建平台配置
+//	@Summary		创建平台配置
 //	@Tags			配置
 //	@Accept			application/json
 //	@Produce		application/json
@@ -113,10 +113,10 @@ func CreateConfig(c *gin.Context) {
 	successResponse(c, response)
 }
 
-// 更新配置
+// 更新平台配置
 //
-//	@Description	更新配置
-//	@Summary		更新配置
+//	@Description	更新平台配置
+//	@Summary		更新平台配置
 //	@Tags			配置
 //	@Accept			application/json
 //	@Produce		application/json
@@ -151,10 +151,10 @@ func UpdateConfig(c *gin.Context) {
 	successResponse(c, response)
 }
 
-// 删除配置
+// 删除平台配置
 //
-//	@Description	删除配置
-//	@Summary		删除配置
+//	@Description	删除平台配置
+//	@Summary		删除平台配置
 //	@Tags			配置
 //	@Accept			application/json
 //	@Produce		application/json

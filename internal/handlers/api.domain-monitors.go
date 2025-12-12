@@ -48,10 +48,10 @@ func GetDomainMonitors(c *gin.Context) {
 	successResponse(c, response)
 }
 
-// 获取域名监控
+// 获取域名监控详情
 //
-//	@Description	获取域名监控
-//	@Summary		获取域名监控
+//	@Description	获取域名监控详情
+//	@Summary		获取域名监控详情
 //	@Tags			域名监控
 //	@Accept			application/json
 //	@Produce		application/json
@@ -60,7 +60,7 @@ func GetDomainMonitors(c *gin.Context) {
 //	@Failure		400	{object}	APIResponse{}										"参数错误"
 //	@Failure		404	{object}	APIResponse{}										"错误响应"
 //	@Router			/domain-monitors/{id} [get]
-func GetDomainMonitor(c *gin.Context) {
+func GetDomainMonitorDetail(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetDomainMonitorRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))

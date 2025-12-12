@@ -47,10 +47,10 @@ func GetWebhooks(c *gin.Context) {
 	successResponse(c, response)
 }
 
-// 获取通知
+// 获取通知详情
 //
-//	@Description	获取通知
-//	@Summary		获取通知
+//	@Description	获取通知详情
+//	@Summary		获取通知详情
 //	@Tags			通知
 //	@Accept			application/json
 //	@Produce		application/json
@@ -59,7 +59,7 @@ func GetWebhooks(c *gin.Context) {
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Router			/webhooks/{id} [get]
-func GetWebhook(c *gin.Context) {
+func GetWebhookDetail(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetWebhookRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))

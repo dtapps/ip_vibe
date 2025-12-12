@@ -47,10 +47,10 @@ func GetPortForwards(c *gin.Context) {
 	successResponse(c, response)
 }
 
-// 获取端口转发
+// 获取端口转发详情
 //
-//	@Description	获取端口转发
-//	@Summary		获取端口转发
+//	@Description	获取端口转发详情
+//	@Summary		获取端口转发详情
 //	@Tags			端口转发
 //	@Accept			application/json
 //	@Produce		application/json
@@ -59,7 +59,7 @@ func GetPortForwards(c *gin.Context) {
 //	@Failure		400	{object}	APIResponse{}									"参数错误"
 //	@Failure		404	{object}	APIResponse{}									"错误响应"
 //	@Router			/port-forwards/{id} [get]
-func GetPortForward(c *gin.Context) {
+func GetPortForwardDetail(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetPortForwardRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))

@@ -39,10 +39,10 @@ func GetTasks(c *gin.Context) {
 	successResponse(c, response)
 }
 
-// 获取任务
+// 获取任务详情
 //
-//	@Description	获取任务
-//	@Summary		获取任务
+//	@Description	获取任务详情
+//	@Summary		获取任务详情
 //	@Tags			任务
 //	@Accept			application/json
 //	@Produce		application/json
@@ -51,7 +51,7 @@ func GetTasks(c *gin.Context) {
 //	@Failure		400	{object}	APIResponse{}					"参数错误"
 //	@Failure		404	{object}	APIResponse{}					"错误响应"
 //	@Router			/tasks/{id} [get]
-func GetTask(c *gin.Context) {
+func GetTaskDetail(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetTaskRequest
 	requestParams.ID = c.Param("id")
@@ -153,17 +153,17 @@ func DeleteTask(c *gin.Context) {
 	successResponse(c, nil)
 }
 
-// 清理全部任务
+// 清理所有任务
 //
-//	@Description	清理全部任务
-//	@Summary		清理全部任务
+//	@Description	清理所有任务
+//	@Summary		清理所有任务
 //	@Tags			任务
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Success		200	{object}	APIResponse{}	"成功响应"
 //	@Failure		404	{object}	APIResponse{}	"错误响应"
-//	@Router			/tasks/clean [post]
-func CleanTask(c *gin.Context) {
+//	@Router			/tasks/clean-all [post]
+func CleanAllTask(c *gin.Context) {
 
 	// 创建服务
 	service := service.NewTaskService(

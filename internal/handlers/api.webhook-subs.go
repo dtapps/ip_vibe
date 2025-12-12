@@ -47,10 +47,10 @@ func GetWebhookSubs(c *gin.Context) {
 	successResponse(c, response)
 }
 
-// 获取通知订阅
+// 获取通知订阅详情
 //
-//	@Description	获取通知订阅
-//	@Summary		获取通知订阅
+//	@Description	获取通知订阅详情
+//	@Summary		获取通知订阅详情
 //	@Tags			通知订阅
 //	@Accept			application/json
 //	@Produce		application/json
@@ -59,7 +59,7 @@ func GetWebhookSubs(c *gin.Context) {
 //	@Failure		400	{object}	APIResponse{}									"参数错误"
 //	@Failure		404	{object}	APIResponse{}									"错误响应"
 //	@Router			/webhook-subs/{id} [get]
-func GetWebhookSub(c *gin.Context) {
+func GetWebhookSubDetail(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetWebhookSubRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))

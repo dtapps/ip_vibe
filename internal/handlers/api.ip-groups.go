@@ -39,10 +39,10 @@ func GetIPGroups(c *gin.Context) {
 	successResponse(c, response)
 }
 
-// 获取IP组
+// 获取IP组详情
 //
-//	@Description	获取IP组
-//	@Summary		获取IP组
+//	@Description	获取IP组详情
+//	@Summary		获取IP组详情
 //	@Tags			IP组
 //	@Accept			application/json
 //	@Produce		application/json
@@ -51,7 +51,7 @@ func GetIPGroups(c *gin.Context) {
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Router			/ip-groups/{id} [get]
-func GetIPGroup(c *gin.Context) {
+func GetIPGroupDetail(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetIPGroupRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
@@ -190,10 +190,10 @@ func DeleteIPGroup(c *gin.Context) {
 	successResponse(c, response)
 }
 
-// 获取IP组的设备列表
+// 获取IP组设备
 //
-//	@Description	获取IP组的设备列表
-//	@Summary		获取IP组的设备列表
+//	@Description	获取IP组设备
+//	@Summary		获取IP组设备
 //	@Tags			IP组
 //	@Accept			application/json
 //	@Produce		application/json

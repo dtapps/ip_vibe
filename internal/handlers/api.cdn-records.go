@@ -47,10 +47,10 @@ func GetCdnRecords(c *gin.Context) {
 	successResponse(c, response)
 }
 
-// 获取CDN记录
+// 获取CDN记录详情
 //
-//	@Description	获取CDN记录
-//	@Summary		获取CDN记录
+//	@Description	获取CDN记录详情
+//	@Summary		获取CDN记录详情
 //	@Tags			CDN记录
 //	@Accept			application/json
 //	@Produce		application/json
@@ -59,7 +59,7 @@ func GetCdnRecords(c *gin.Context) {
 //	@Failure		400	{object}	APIResponse{}									"参数错误"
 //	@Failure		404	{object}	APIResponse{}									"错误响应"
 //	@Router			/cdn-records/{id} [get]
-func GetCdnRecord(c *gin.Context) {
+func GetCdnRecordDetail(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetCdnRecordRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))

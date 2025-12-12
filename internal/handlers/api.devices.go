@@ -40,10 +40,10 @@ func GetDevices(c *gin.Context) {
 	successResponse(c, response)
 }
 
-// 获取设备
+// 获取设备详情
 //
-//	@Description	获取设备
-//	@Summary		获取设备
+//	@Description	获取设备详情
+//	@Summary		获取设备详情
 //	@Tags			设备
 //	@Accept			application/json
 //	@Produce		application/json
@@ -52,7 +52,7 @@ func GetDevices(c *gin.Context) {
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Router			/devices/{id} [get]
-func GetDevice(c *gin.Context) {
+func GetDeviceDetail(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetDeviceRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
@@ -190,10 +190,10 @@ func DeleteDevice(c *gin.Context) {
 	successResponse(c, response)
 }
 
-// 获取设备的IP历史记录
+// 获取设备IP历史记录
 //
-//	@Description	获取设备的IP历史记录
-//	@Summary		获取设备的IP历史记录
+//	@Description	获取设备IP历史记录
+//	@Summary		获取设备IP历史记录
 //	@Tags			设备
 //	@Accept			application/json
 //	@Produce		application/json
