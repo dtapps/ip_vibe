@@ -19,9 +19,9 @@ type TaskService interface {
 	GetTask(ctx context.Context, id string) (*types.JobData, error)
 	RunTask(ctx context.Context, id string) error
 	DeleteTask(ctx context.Context, id string) error
-	StartTask(ctx context.Context) error
-	StopTask(ctx context.Context)
-	CleanTask(ctx context.Context) error
+	CleanAllTask(ctx context.Context) error
+	StartScheduler(ctx context.Context) error
+	StopScheduler(ctx context.Context)
 }
 
 // TaskServiceImpl 任务调度服务实现
@@ -106,8 +106,31 @@ func (s *TaskServiceImpl) DeleteTask(ctx context.Context, id string) error {
 	return nil
 }
 
-// StartTask 启动调度器
-func (s *TaskServiceImpl) StartTask(ctx context.Context) error {
+// CleanAllTask 清理全部任务
+func (s *TaskServiceImpl) CleanAllTask(ctx context.Context) error {
+	jobHelper := s.getJobsHelper()
+
+	// 获取任务列表
+	jobs := jobHelper.GetJobsData(5)
+
+	// 清理任务
+	for _, job := range jobs {
+		err := jobHelper.DeleteJob(job.ID)
+		if err != nil {
+			if s.debug {
+				slog.ErrorContext(ctx, "清理全部任务失败",
+					slog.String("id", job.ID),
+					slog.Any("err", err),
+				)
+			}
+			return err
+		}
+	}
+	return nil
+}
+
+// StartScheduler 启动调度器
+func (s *TaskServiceImpl) StartScheduler(ctx context.Context) error {
 	jobHelper := s.getJobsHelper()
 
 	// 获取任务列表
@@ -130,30 +153,7 @@ func (s *TaskServiceImpl) StartTask(ctx context.Context) error {
 	return nil
 }
 
-// StopTask 停止调度器
-func (s *TaskServiceImpl) StopTask(ctx context.Context) {
+// StopScheduler 停止调度器
+func (s *TaskServiceImpl) StopScheduler(ctx context.Context) {
 	initialize.StopGoCron()
-}
-
-// CleanTask 清理全部任务
-func (s *TaskServiceImpl) CleanTask(ctx context.Context) error {
-	jobHelper := s.getJobsHelper()
-
-	// 获取任务列表
-	jobs := jobHelper.GetJobsData(5)
-
-	// 清理任务
-	for _, job := range jobs {
-		err := jobHelper.DeleteJob(job.ID)
-		if err != nil {
-			if s.debug {
-				slog.ErrorContext(ctx, "清理全部任务失败",
-					slog.String("id", job.ID),
-					slog.Any("err", err),
-				)
-			}
-			return err
-		}
-	}
-	return nil
 }

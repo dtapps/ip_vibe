@@ -11,37 +11,37 @@ import (
 
 func RegisterTaskTool(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "listTask",
-		Description: "列出所有任务",
-	}, GetTasks)
+		Name:        "getTaskList",
+		Description: "获取全部任务",
+	}, getTaskList)
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "getTask",
+		Name:        "getTaskDetail",
 		Description: "获取任务",
-	}, GetTask)
+	}, getTaskDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "runTask",
 		Description: "运行任务",
-	}, RunTask)
+	}, runTask)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deleteTask",
 		Description: "删除任务",
-	}, DeleteTask)
+	}, deleteTask)
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "cleanTask",
-		Description: "清理任务",
-	}, CleanTask)
+		Name:        "cleanAllTask",
+		Description: "清理全部任务",
+	}, cleanAllTask)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "startScheduler",
 		Description: "启动调度器",
-	}, StartScheduler)
+	}, startScheduler)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "stopScheduler",
 		Description: "停止调度器",
-	}, StopScheduler)
+	}, stopScheduler)
 }
 
 // 获取全部任务
-func GetTasks(ctx context.Context, req *mcp.CallToolRequest, params *types.GetTasksRequest) (*mcp.CallToolResult, any, error) {
+func getTaskList(ctx context.Context, req *mcp.CallToolRequest, params *types.GetTasksRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewTaskService(
@@ -61,7 +61,7 @@ func GetTasks(ctx context.Context, req *mcp.CallToolRequest, params *types.GetTa
 }
 
 // 获取任务
-func GetTask(ctx context.Context, req *mcp.CallToolRequest, params *types.GetTaskRequest) (*mcp.CallToolResult, any, error) {
+func getTaskDetail(ctx context.Context, req *mcp.CallToolRequest, params *types.GetTaskRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewTaskService(
@@ -81,7 +81,7 @@ func GetTask(ctx context.Context, req *mcp.CallToolRequest, params *types.GetTas
 }
 
 // 运行任务
-func RunTask(ctx context.Context, req *mcp.CallToolRequest, params *types.RunTaskRequest) (*mcp.CallToolResult, any, error) {
+func runTask(ctx context.Context, req *mcp.CallToolRequest, params *types.RunTaskRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewTaskService(
@@ -101,7 +101,7 @@ func RunTask(ctx context.Context, req *mcp.CallToolRequest, params *types.RunTas
 }
 
 // 删除任务
-func DeleteTask(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteTaskRequest) (*mcp.CallToolResult, any, error) {
+func deleteTask(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteTaskRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewTaskService(
@@ -120,8 +120,8 @@ func DeleteTask(ctx context.Context, req *mcp.CallToolRequest, params *types.Del
 	return successResponse(nil)
 }
 
-// 清理任务
-func CleanTask(ctx context.Context, req *mcp.CallToolRequest, params *any) (*mcp.CallToolResult, any, error) {
+// 清理全部任务
+func cleanAllTask(ctx context.Context, req *mcp.CallToolRequest, params *any) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewTaskService(
@@ -132,7 +132,7 @@ func CleanTask(ctx context.Context, req *mcp.CallToolRequest, params *any) (*mcp
 	)
 
 	// 调用
-	err := service.CleanTask(ctx)
+	err := service.CleanAllTask(ctx)
 	if err != nil {
 		return errorResponse(err.Error())
 	}
@@ -141,7 +141,7 @@ func CleanTask(ctx context.Context, req *mcp.CallToolRequest, params *any) (*mcp
 }
 
 // 启动调度器
-func StartScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) (*mcp.CallToolResult, any, error) {
+func startScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewTaskService(
@@ -152,7 +152,7 @@ func StartScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) 
 	)
 
 	// 调用
-	err := service.StartTask(ctx)
+	err := service.StartScheduler(ctx)
 	if err != nil {
 		return errorResponse(err.Error())
 	}
@@ -161,7 +161,7 @@ func StartScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) 
 }
 
 // 停止调度器
-func StopScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) (*mcp.CallToolResult, any, error) {
+func stopScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewTaskService(
@@ -172,6 +172,6 @@ func StopScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) (
 	)
 
 	// 调用
-	service.StopTask(ctx)
+	service.StopScheduler(ctx)
 	return successResponse(nil)
 }

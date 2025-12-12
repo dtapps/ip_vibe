@@ -11,33 +11,33 @@ import (
 
 func RegisterWebhookTool(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "listWebhook",
-		Description: "列出所有通知",
-	}, GetWebhooks)
+		Name:        "getWebhookList",
+		Description: "获取全部通知",
+	}, getWebhookList)
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "getWebhook",
+		Name:        "getWebhookDetail",
 		Description: "获取通知",
-	}, GetWebhook)
+	}, getWebhookDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "createWebhook",
 		Description: "创建通知",
-	}, CreateWebhook)
+	}, createWebhook)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateWebhook",
 		Description: "更新通知",
-	}, UpdateWebhook)
+	}, updateWebhook)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateWebhookActive",
 		Description: "更新通知启用状态",
-	}, UpdateWebhookActive)
+	}, updateWebhookActive)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deleteWebhook",
 		Description: "删除通知",
-	}, DeleteWebhook)
+	}, deleteWebhook)
 }
 
 // 获取全部通知
-func GetWebhooks(ctx context.Context, req *mcp.CallToolRequest, params *types.GetWebhooksRequest) (*mcp.CallToolResult, any, error) {
+func getWebhookList(ctx context.Context, req *mcp.CallToolRequest, params *types.GetWebhooksRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewWebhookService(
@@ -56,7 +56,7 @@ func GetWebhooks(ctx context.Context, req *mcp.CallToolRequest, params *types.Ge
 }
 
 // 获取通知
-func GetWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.GetWebhookRequest) (*mcp.CallToolResult, any, error) {
+func getWebhookDetail(ctx context.Context, req *mcp.CallToolRequest, params *types.GetWebhookRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewWebhookService(
@@ -75,7 +75,7 @@ func GetWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.Get
 }
 
 // 创建通知
-func CreateWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.CreateWebhookRequest) (*mcp.CallToolResult, any, error) {
+func createWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.CreateWebhookRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewWebhookService(
@@ -94,7 +94,7 @@ func CreateWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 }
 
 // 更新通知
-func UpdateWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateWebhookRequest) (*mcp.CallToolResult, any, error) {
+func updateWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateWebhookRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewWebhookService(
@@ -113,7 +113,7 @@ func UpdateWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 }
 
 // 更新通知启用状态
-func UpdateWebhookActive(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateWebhookActiveRequest) (*mcp.CallToolResult, any, error) {
+func updateWebhookActive(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateWebhookActiveRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewWebhookService(
@@ -132,7 +132,7 @@ func UpdateWebhookActive(ctx context.Context, req *mcp.CallToolRequest, params *
 }
 
 // 删除通知
-func DeleteWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteWebhookRequest) (*mcp.CallToolResult, any, error) {
+func deleteWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteWebhookRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewWebhookService(

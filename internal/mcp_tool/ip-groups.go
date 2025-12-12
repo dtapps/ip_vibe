@@ -11,37 +11,37 @@ import (
 
 func RegisterIPGroupTool(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "listIPGroup",
-		Description: "列出所有IP组",
-	}, GetIPGroups)
+		Name:        "getIPGroupList",
+		Description: "获取全部IP组",
+	}, getIPGroupList)
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "getIPGroup",
+		Name:        "getIPGroupDetail",
 		Description: "获取IP组",
-	}, GetIPGroup)
+	}, getIPGroupDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "createIPGroup",
 		Description: "创建IP组",
-	}, CreateIPGroup)
+	}, createIPGroup)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateIPGroup",
 		Description: "更新IP组",
-	}, UpdateIPGroup)
+	}, updateIPGroup)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deleteIPGroup",
 		Description: "删除IP组",
-	}, DeleteIPGroup)
+	}, deleteIPGroup)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getIPGroupDevices",
 		Description: "获取IP组的设备列表",
-	}, GetIPGroupDevices)
+	}, getIPGroupDevices)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "healthCheckIPGroup",
 		Description: "检查IP组是否健康",
-	}, HealthCheckIPGroup)
+	}, healthCheckIPGroup)
 }
 
 // 获取全部IP组
-func GetIPGroups(ctx context.Context, req *mcp.CallToolRequest, params *types.GetIPGroupsRequest) (*mcp.CallToolResult, any, error) {
+func getIPGroupList(ctx context.Context, req *mcp.CallToolRequest, params *types.GetIPGroupsRequest) (*mcp.CallToolResult, any, error) {
 
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
@@ -59,7 +59,7 @@ func GetIPGroups(ctx context.Context, req *mcp.CallToolRequest, params *types.Ge
 }
 
 // 获取IP组
-func GetIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.GetIPGroupRequest) (*mcp.CallToolResult, any, error) {
+func getIPGroupDetail(ctx context.Context, req *mcp.CallToolRequest, params *types.GetIPGroupRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewIPGroupService(
@@ -78,7 +78,7 @@ func GetIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.Get
 }
 
 // 创建IP组
-func CreateIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.CreateIPGroupRequest) (*mcp.CallToolResult, any, error) {
+func createIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.CreateIPGroupRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewIPGroupService(
@@ -97,7 +97,7 @@ func CreateIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 }
 
 // 更新IP组
-func UpdateIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateIPGroupRequest) (*mcp.CallToolResult, any, error) {
+func updateIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateIPGroupRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewIPGroupService(
@@ -116,7 +116,7 @@ func UpdateIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 }
 
 // 删除IP组
-func DeleteIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteIPGroupRequest) (*mcp.CallToolResult, any, error) {
+func deleteIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteIPGroupRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewIPGroupService(
@@ -135,7 +135,7 @@ func DeleteIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 }
 
 // 获取IP组的设备列表
-func GetIPGroupDevices(ctx context.Context, req *mcp.CallToolRequest, params *types.GetIPGroupDevicesRequest) (*mcp.CallToolResult, any, error) {
+func getIPGroupDevices(ctx context.Context, req *mcp.CallToolRequest, params *types.GetIPGroupDevicesRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewIPGroupService(
@@ -154,7 +154,7 @@ func GetIPGroupDevices(ctx context.Context, req *mcp.CallToolRequest, params *ty
 }
 
 // 检查IP组健康状态
-func HealthCheckIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.HealthCheckIPGroupRequest) (*mcp.CallToolResult, any, error) {
+func healthCheckIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.HealthCheckIPGroupRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewIPGroupService(

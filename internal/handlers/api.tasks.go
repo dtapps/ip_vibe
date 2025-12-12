@@ -174,7 +174,7 @@ func CleanAllTask(c *gin.Context) {
 	)
 
 	// 调用
-	err := service.CleanTask(c)
+	err := service.CleanAllTask(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -203,7 +203,7 @@ func StartScheduler(c *gin.Context) {
 	)
 
 	// 调用
-	err := service.StartTask(c)
+	err := service.StartScheduler(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -232,6 +232,6 @@ func StopScheduler(c *gin.Context) {
 	)
 
 	// 调用
-	service.StopTask(c)
+	service.StopScheduler(c)
 	successResponse(c, nil)
 }

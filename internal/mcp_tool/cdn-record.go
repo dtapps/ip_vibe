@@ -11,11 +11,11 @@ import (
 
 func RegisterCDNRecordTool(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "cdnRecordsList",
+		Name:        "getCdnRecordList",
 		Description: "获取全部CDN记录",
-	}, getCdnRecordsList)
+	}, getCdnRecordList)
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "cdnRecordDetail",
+		Name:        "getCdnRecordDetail",
 		Description: "获取CDN记录详情",
 	}, getCdnRecordDetail)
 	mcp.AddTool(server, &mcp.Tool{
@@ -41,7 +41,7 @@ func RegisterCDNRecordTool(server *mcp.Server) {
 }
 
 // 获取全部CDN记录
-func getCdnRecordsList(ctx context.Context, req *mcp.CallToolRequest, params *types.GetCdnRecordsRequest) (*mcp.CallToolResult, any, error) {
+func getCdnRecordList(ctx context.Context, req *mcp.CallToolRequest, params *types.GetCdnRecordsRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewCDNRecordService(

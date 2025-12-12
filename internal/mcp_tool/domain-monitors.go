@@ -11,37 +11,37 @@ import (
 
 func RegisterDomainMonitorTool(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "listDomainMonitor",
-		Description: "列出所有域名监控",
-	}, GetDomainMonitors)
+		Name:        "getDomainMonitorList",
+		Description: "获取全部域名监控",
+	}, getDomainMonitorList)
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "getDomainMonitor",
+		Name:        "getDomainMonitorDetail",
 		Description: "获取域名监控",
-	}, GetDomainMonitor)
+	}, getDomainMonitorDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "createDomainMonitor",
 		Description: "创建域名监控",
-	}, CreateDomainMonitor)
+	}, createDomainMonitor)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateDomainMonitor",
 		Description: "更新域名监控",
-	}, UpdateDomainMonitor)
+	}, updateDomainMonitor)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateDomainMonitorActive",
 		Description: "更新域名监控启用状态",
-	}, UpdateDomainMonitorActive)
+	}, updateDomainMonitorActive)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deleteDomainMonitor",
 		Description: "删除域名监控",
-	}, DeleteDomainMonitor)
+	}, deleteDomainMonitor)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "checkDomainMonitor",
 		Description: "检查域名监控",
-	}, CheckDomainMonitor)
+	}, checkDomainMonitor)
 }
 
 // 获取全部域名监控
-func GetDomainMonitors(ctx context.Context, req *mcp.CallToolRequest, params *types.GetDomainMonitorsRequest) (*mcp.CallToolResult, any, error) {
+func getDomainMonitorList(ctx context.Context, req *mcp.CallToolRequest, params *types.GetDomainMonitorsRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDomainMonitorService(
@@ -61,7 +61,7 @@ func GetDomainMonitors(ctx context.Context, req *mcp.CallToolRequest, params *ty
 }
 
 // 获取域名监控
-func GetDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *types.GetDomainMonitorRequest) (*mcp.CallToolResult, any, error) {
+func getDomainMonitorDetail(ctx context.Context, req *mcp.CallToolRequest, params *types.GetDomainMonitorRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDomainMonitorService(
@@ -81,7 +81,7 @@ func GetDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *typ
 }
 
 // 创建域名监控
-func CreateDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *types.CreateDomainMonitorRequest) (*mcp.CallToolResult, any, error) {
+func createDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *types.CreateDomainMonitorRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDomainMonitorService(
@@ -101,7 +101,7 @@ func CreateDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 }
 
 // 更新域名监控
-func UpdateDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateDomainMonitorRequest) (*mcp.CallToolResult, any, error) {
+func updateDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateDomainMonitorRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDomainMonitorService(
@@ -121,7 +121,7 @@ func UpdateDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 }
 
 // 更新域名监控启用状态
-func UpdateDomainMonitorActive(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateDomainMonitorActiveRequest) (*mcp.CallToolResult, any, error) {
+func updateDomainMonitorActive(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateDomainMonitorActiveRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDomainMonitorService(
@@ -141,7 +141,7 @@ func UpdateDomainMonitorActive(ctx context.Context, req *mcp.CallToolRequest, pa
 }
 
 // 删除域名监控
-func DeleteDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteDomainMonitorRequest) (*mcp.CallToolResult, any, error) {
+func deleteDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteDomainMonitorRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDomainMonitorService(
@@ -161,7 +161,7 @@ func DeleteDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 }
 
 // 检查域名监控
-func CheckDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *types.CheckDomainMonitorRequest) (*mcp.CallToolResult, any, error) {
+func checkDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *types.CheckDomainMonitorRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDomainMonitorService(

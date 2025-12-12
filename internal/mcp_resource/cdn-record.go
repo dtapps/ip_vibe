@@ -13,13 +13,13 @@ import (
 
 func RegisterCDNRecordResource(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
-		Name:        "cdnRecordsList",
+		Name:        "getCdnRecordList",
 		Description: "获取全部CDN记录",
 		MIMEType:    MIMETypeJSON,
 		URI:         "cdn://records/all",
-	}, getCdnRecordsList)
+	}, getCdnRecordList)
 	AddResourceTemplateEx(server, &mcp.ResourceTemplate{
-		Name:        "cdnRecordDetail",
+		Name:        "getCdnRecordDetail",
 		Description: "获取CDN记录详情",
 		MIMEType:    MIMETypeJSON,
 		URITemplate: "cdn://records/{id}",
@@ -28,7 +28,7 @@ func RegisterCDNRecordResource(server *mcp.Server) {
 }
 
 // 获取全部CDN记录
-func getCdnRecordsList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.ReadResourceResult, error) {
+func getCdnRecordList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.ReadResourceResult, error) {
 
 	// 创建服务
 	service := service.NewCDNRecordService(

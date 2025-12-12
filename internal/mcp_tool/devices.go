@@ -11,37 +11,37 @@ import (
 
 func RegisterDeviceTool(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "listDevice",
-		Description: "列出所有设备",
-	}, GetDevices)
+		Name:        "getDeviceList",
+		Description: "获取全部设备",
+	}, getDeviceList)
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "getDevice",
+		Name:        "getDeviceDetail",
 		Description: "获取设备",
-	}, GetDevice)
+	}, getDeviceDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "createDevice",
 		Description: "创建设备",
-	}, CreateDevice)
+	}, createDevice)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateDevice",
 		Description: "更新设备",
-	}, UpdateDevice)
+	}, updateDevice)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deleteDevice",
 		Description: "删除设备",
-	}, DeleteDevice)
+	}, deleteDevice)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getDeviceIpHistory",
 		Description: "获取设备IP历史记录",
-	}, GetDeviceIpHistory)
+	}, getDeviceIpHistory)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "healthCheckDevice",
 		Description: "检查设备是否健康",
-	}, HealthCheckDevice)
+	}, healthCheckDevice)
 }
 
 // 获取全部设备
-func GetDevices(ctx context.Context, req *mcp.CallToolRequest, params *types.GetDevicesRequest) (*mcp.CallToolResult, any, error) {
+func getDeviceList(ctx context.Context, req *mcp.CallToolRequest, params *types.GetDevicesRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDeviceService(
@@ -60,7 +60,7 @@ func GetDevices(ctx context.Context, req *mcp.CallToolRequest, params *types.Get
 }
 
 // 获取设备
-func GetDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.GetDeviceRequest) (*mcp.CallToolResult, any, error) {
+func getDeviceDetail(ctx context.Context, req *mcp.CallToolRequest, params *types.GetDeviceRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDeviceService(
@@ -79,7 +79,7 @@ func GetDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.GetD
 }
 
 // 创建设备
-func CreateDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.CreateDeviceRequest) (*mcp.CallToolResult, any, error) {
+func createDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.CreateDeviceRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDeviceService(
@@ -98,7 +98,7 @@ func CreateDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.C
 }
 
 // 更新设备
-func UpdateDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateDeviceRequest) (*mcp.CallToolResult, any, error) {
+func updateDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateDeviceRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDeviceService(
@@ -117,7 +117,7 @@ func UpdateDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.U
 }
 
 // 删除设备
-func DeleteDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteDeviceRequest) (*mcp.CallToolResult, any, error) {
+func deleteDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteDeviceRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDeviceService(
@@ -136,7 +136,7 @@ func DeleteDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.D
 }
 
 // 获取设备的IP历史记录
-func GetDeviceIpHistory(ctx context.Context, req *mcp.CallToolRequest, params *types.GetDeviceIpHistoryRequest) (*mcp.CallToolResult, any, error) {
+func getDeviceIpHistory(ctx context.Context, req *mcp.CallToolRequest, params *types.GetDeviceIpHistoryRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDeviceService(
@@ -155,7 +155,7 @@ func GetDeviceIpHistory(ctx context.Context, req *mcp.CallToolRequest, params *t
 }
 
 // 检查设备健康状态
-func HealthCheckDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.HealthCheckDeviceRequest) (*mcp.CallToolResult, any, error) {
+func healthCheckDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.HealthCheckDeviceRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDeviceService(

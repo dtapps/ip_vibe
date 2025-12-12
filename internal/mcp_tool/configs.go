@@ -11,29 +11,29 @@ import (
 
 func RegisterPlatformConfigTool(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "listPlatformConfig",
-		Description: "列出全部配置",
-	}, GetConfigs)
+		Name:        "getPlatformConfigList",
+		Description: "获取全部配置",
+	}, getPlatformConfigList)
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "getPlatformConfig",
+		Name:        "getPlatformConfigDetail",
 		Description: "获取配置",
-	}, GetConfig)
+	}, getPlatformConfigDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "createPlatformConfig",
 		Description: "创建配置",
-	}, CreateConfig)
+	}, createPlatformConfig)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updatePlatformConfig",
 		Description: "更新配置",
-	}, UpdateConfig)
+	}, updatePlatformConfig)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deletePlatformConfig",
 		Description: "删除配置",
-	}, DeleteConfig)
+	}, deletePlatformConfig)
 }
 
 // 获取全部配置
-func GetConfigs(ctx context.Context, req *mcp.CallToolRequest, params *types.GetConfigsRequest) (*mcp.CallToolResult, any, error) {
+func getPlatformConfigList(ctx context.Context, req *mcp.CallToolRequest, params *types.GetConfigsRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewPlatformConfigService(
@@ -52,7 +52,7 @@ func GetConfigs(ctx context.Context, req *mcp.CallToolRequest, params *types.Get
 }
 
 // 获取配置
-func GetConfig(ctx context.Context, req *mcp.CallToolRequest, params *types.GetConfigRequest) (*mcp.CallToolResult, any, error) {
+func getPlatformConfigDetail(ctx context.Context, req *mcp.CallToolRequest, params *types.GetConfigRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewPlatformConfigService(
@@ -71,7 +71,7 @@ func GetConfig(ctx context.Context, req *mcp.CallToolRequest, params *types.GetC
 }
 
 // 创建配置
-func CreateConfig(ctx context.Context, req *mcp.CallToolRequest, params *types.CreateConfigRequest) (*mcp.CallToolResult, any, error) {
+func createPlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params *types.CreateConfigRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewPlatformConfigService(
@@ -90,7 +90,7 @@ func CreateConfig(ctx context.Context, req *mcp.CallToolRequest, params *types.C
 }
 
 // 更新配置
-func UpdateConfig(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateConfigRequest) (*mcp.CallToolResult, any, error) {
+func updatePlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateConfigRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewPlatformConfigService(
@@ -109,7 +109,7 @@ func UpdateConfig(ctx context.Context, req *mcp.CallToolRequest, params *types.U
 }
 
 // 删除配置
-func DeleteConfig(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteConfigRequest) (*mcp.CallToolResult, any, error) {
+func deletePlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteConfigRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewPlatformConfigService(

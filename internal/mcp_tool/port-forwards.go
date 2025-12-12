@@ -11,41 +11,41 @@ import (
 
 func RegisterPortForwardTool(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "listPortForward",
-		Description: "列出所有端口转发",
-	}, GetPortForwards)
+		Name:        "getPortForwardList",
+		Description: "获取全部端口转发",
+	}, getPortForwardList)
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "getPortForward",
+		Name:        "getPortForwardDetail",
 		Description: "获取端口转发",
-	}, GetPortForward)
+	}, getPortForwardDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "createPortForward",
 		Description: "创建端口转发",
-	}, CreatePortForward)
+	}, createPortForward)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updatePortForward",
 		Description: "更新端口转发",
-	}, UpdatePortForward)
+	}, updatePortForward)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updatePortForwardForward",
 		Description: "更新端口转发防火墙状态",
-	}, UpdatePortForwardForward)
+	}, updatePortForwardForward)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updatePortForwardActive",
 		Description: "更新端口转发启用状态",
-	}, UpdatePortForwardActive)
+	}, updatePortForwardActive)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deletePortForward",
 		Description: "删除端口转发",
-	}, DeletePortForward)
+	}, deletePortForward)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "healthCheckPortForward",
 		Description: "检查端口转发是否健康",
-	}, HealthCheckPortForward)
+	}, healthCheckPortForward)
 }
 
 // 获取全部端口转发
-func GetPortForwards(ctx context.Context, req *mcp.CallToolRequest, params *types.GetPortForwardsRequest) (*mcp.CallToolResult, any, error) {
+func getPortForwardList(ctx context.Context, req *mcp.CallToolRequest, params *types.GetPortForwardsRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewPortForwardService(
@@ -64,7 +64,7 @@ func GetPortForwards(ctx context.Context, req *mcp.CallToolRequest, params *type
 }
 
 // 获取端口转发
-func GetPortForward(ctx context.Context, req *mcp.CallToolRequest, params *types.GetPortForwardRequest) (*mcp.CallToolResult, any, error) {
+func getPortForwardDetail(ctx context.Context, req *mcp.CallToolRequest, params *types.GetPortForwardRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewPortForwardService(
@@ -83,7 +83,7 @@ func GetPortForward(ctx context.Context, req *mcp.CallToolRequest, params *types
 }
 
 // 创建端口转发
-func CreatePortForward(ctx context.Context, req *mcp.CallToolRequest, params *types.CreatePortForwardRequest) (*mcp.CallToolResult, any, error) {
+func createPortForward(ctx context.Context, req *mcp.CallToolRequest, params *types.CreatePortForwardRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewPortForwardService(
@@ -102,7 +102,7 @@ func CreatePortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 }
 
 // 更新端口转发
-func UpdatePortForward(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdatePortForwardRequest) (*mcp.CallToolResult, any, error) {
+func updatePortForward(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdatePortForwardRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewPortForwardService(
@@ -121,7 +121,7 @@ func UpdatePortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 }
 
 // 更新端口转发防火墙状态
-func UpdatePortForwardForward(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdatePortForwardForwardRequest) (*mcp.CallToolResult, any, error) {
+func updatePortForwardForward(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdatePortForwardForwardRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewPortForwardService(
@@ -140,7 +140,7 @@ func UpdatePortForwardForward(ctx context.Context, req *mcp.CallToolRequest, par
 }
 
 // 更新端口转发启用状态
-func UpdatePortForwardActive(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdatePortForwardActiveRequest) (*mcp.CallToolResult, any, error) {
+func updatePortForwardActive(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdatePortForwardActiveRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewPortForwardService(
@@ -159,7 +159,7 @@ func UpdatePortForwardActive(ctx context.Context, req *mcp.CallToolRequest, para
 }
 
 // 删除端口转发
-func DeletePortForward(ctx context.Context, req *mcp.CallToolRequest, params *types.DeletePortForwardRequest) (*mcp.CallToolResult, any, error) {
+func deletePortForward(ctx context.Context, req *mcp.CallToolRequest, params *types.DeletePortForwardRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewPortForwardService(
@@ -178,7 +178,7 @@ func DeletePortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 }
 
 // 检查端口转发健康状态
-func HealthCheckPortForward(ctx context.Context, req *mcp.CallToolRequest, params *types.HealthCheckPortForwardRequest) (*mcp.CallToolResult, any, error) {
+func healthCheckPortForward(ctx context.Context, req *mcp.CallToolRequest, params *types.HealthCheckPortForwardRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewPortForwardService(

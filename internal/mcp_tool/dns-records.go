@@ -11,37 +11,37 @@ import (
 
 func RegisterDNSRecordTool(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "listDNSRecord",
-		Description: "列出域名对应的DNS记录",
-	}, GetDnsRecords)
+		Name:        "getDNSRecordList",
+		Description: "获取全部DNS记录",
+	}, getDnsRecordList)
 	mcp.AddTool(server, &mcp.Tool{
-		Name:        "getDNSRecord",
+		Name:        "getDNSRecordDetail",
 		Description: "获取DNS记录",
-	}, GetDnsRecord)
+	}, getDnsRecordDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "createDNSRecord",
 		Description: "创建DNS记录",
-	}, CreateDnsRecord)
+	}, createDnsRecord)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateDNSRecord",
 		Description: "更新DNS记录",
-	}, UpdateDnsRecord)
+	}, updateDnsRecord)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateDNSRecordActive",
 		Description: "更新DNS记录启用状态",
-	}, UpdateDnsRecordActive)
+	}, updateDnsRecordActive)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deleteDNSRecord",
 		Description: "删除DNS记录",
-	}, DeleteDnsRecord)
+	}, deleteDnsRecord)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "healthCheckDNSRecord",
 		Description: "检查DNS记录是否健康",
-	}, HealthCheckDnsRecord)
+	}, healthCheckDnsRecord)
 }
 
 // 获取全部DNS记录
-func GetDnsRecords(ctx context.Context, req *mcp.CallToolRequest, params *types.GetDnsRecordsRequest) (*mcp.CallToolResult, any, error) {
+func getDnsRecordList(ctx context.Context, req *mcp.CallToolRequest, params *types.GetDnsRecordsRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDNSRecordService(
@@ -60,7 +60,7 @@ func GetDnsRecords(ctx context.Context, req *mcp.CallToolRequest, params *types.
 }
 
 // 获取DNS记录
-func GetDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.GetDnsRecordRequest) (*mcp.CallToolResult, any, error) {
+func getDnsRecordDetail(ctx context.Context, req *mcp.CallToolRequest, params *types.GetDnsRecordRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDNSRecordService(
@@ -79,7 +79,7 @@ func GetDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.G
 }
 
 // 创建DNS记录
-func CreateDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.CreateDnsRecordRequest) (*mcp.CallToolResult, any, error) {
+func createDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.CreateDnsRecordRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDNSRecordService(
@@ -98,7 +98,7 @@ func CreateDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 }
 
 // 更新DNS记录
-func UpdateDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateDnsRecordRequest) (*mcp.CallToolResult, any, error) {
+func updateDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateDnsRecordRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDNSRecordService(
@@ -117,7 +117,7 @@ func UpdateDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 }
 
 // 更新DNS记录启用状态
-func UpdateDnsRecordActive(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateDnsRecordActiveRequest) (*mcp.CallToolResult, any, error) {
+func updateDnsRecordActive(ctx context.Context, req *mcp.CallToolRequest, params *types.UpdateDnsRecordActiveRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDNSRecordService(
@@ -136,7 +136,7 @@ func UpdateDnsRecordActive(ctx context.Context, req *mcp.CallToolRequest, params
 }
 
 // 删除DNS记录
-func DeleteDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteDnsRecordRequest) (*mcp.CallToolResult, any, error) {
+func deleteDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.DeleteDnsRecordRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDNSRecordService(
@@ -155,7 +155,7 @@ func DeleteDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 }
 
 // 检查DNS记录健康状态
-func HealthCheckDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.HealthCheckDnsRecordRequest) (*mcp.CallToolResult, any, error) {
+func healthCheckDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *types.HealthCheckDnsRecordRequest) (*mcp.CallToolResult, any, error) {
 
 	// 创建服务
 	service := service.NewDNSRecordService(
