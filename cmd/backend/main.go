@@ -186,15 +186,23 @@ func main() {
 	if global.GvaMcpServer != nil {
 		// 注册 MCP 实现
 		mcp_tool.RegisterPlatformConfigTool(global.GvaMcpServer)
+		mcp_resource.RegisterPlatformConfigResource(global.GvaMcpServer)
 		mcp_tool.RegisterCDNRecordTool(global.GvaMcpServer)
 		mcp_resource.RegisterCDNRecordResource(global.GvaMcpServer)
 		mcp_tool.RegisterDNSRecordTool(global.GvaMcpServer)
+		mcp_resource.RegisterDNSRecordResource(global.GvaMcpServer)
 		mcp_tool.RegisterDeviceTool(global.GvaMcpServer)
+		mcp_resource.RegisterDeviceResource(global.GvaMcpServer)
 		mcp_tool.RegisterIPGroupTool(global.GvaMcpServer)
+		mcp_resource.RegisterIPGroupResource(global.GvaMcpServer)
 		mcp_tool.RegisterPortForwardTool(global.GvaMcpServer)
+		mcp_resource.RegisterPortForwardResource(global.GvaMcpServer)
 		mcp_tool.RegisterDomainMonitorTool(global.GvaMcpServer)
+		mcp_resource.RegisterDomainMonitorResource(global.GvaMcpServer)
 		mcp_tool.RegisterWebhookTool(global.GvaMcpServer)
+		mcp_resource.RegisterWebhookResource(global.GvaMcpServer)
 		mcp_tool.RegisterWebhookSubTool(global.GvaMcpServer)
+		mcp_resource.RegisterWebhookSubResource(global.GvaMcpServer)
 		// 注册 MCP 路由
 		httpTransport := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
 			return global.GvaMcpServer

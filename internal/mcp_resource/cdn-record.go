@@ -2,7 +2,6 @@ package mcp_resource
 
 import (
 	"context"
-	"fmt"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/types"
@@ -16,13 +15,13 @@ func RegisterCDNRecordResource(server *mcp.Server) {
 		Name:        "getCdnRecordList",
 		Description: "获取全部CDN记录",
 		MIMEType:    MIMETypeJSON,
-		URI:         "cdn://records/all",
+		URI:         "cdn://record/all",
 	}, getCdnRecordList)
 	AddResourceTemplateEx(server, &mcp.ResourceTemplate{
 		Name:        "getCdnRecordDetail",
 		Description: "获取CDN记录详情",
 		MIMEType:    MIMETypeJSON,
-		URITemplate: "cdn://records/{id}",
+		URITemplate: "cdn://record/{id}",
 	}, getCdnRecordDetail)
 
 }
@@ -38,7 +37,7 @@ func getCdnRecordList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.R
 	)
 
 	// 调用
-	response, err := service.GetCdnRecords(ctx, nil)
+	response, err := service.GetCdnRecords(ctx, &types.GetCdnRecordsRequest{})
 	if err != nil {
 		return errorResponse(err.Error())
 	}
@@ -51,7 +50,6 @@ func getCdnRecordDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp
 
 	// 请求参数
 	param, err := ExtractURIParams(tpl, req.Params.URI)
-	fmt.Printf("param: %+v \n", param)
 	if err != nil {
 		return errorResponse(err.Error())
 	}
@@ -70,5 +68,6 @@ func getCdnRecordDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp
 	if err != nil {
 		return errorResponse(err.Error())
 	}
+
 	return successResponse(req.Params.URI, response)
 }
