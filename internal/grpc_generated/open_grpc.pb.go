@@ -4,10 +4,11 @@
 // - protoc             v6.32.0
 // source: open.proto
 
-package __
+package grpc_generated
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

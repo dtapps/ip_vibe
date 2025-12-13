@@ -42,7 +42,6 @@ func NewDeviceOpenService(db *ent.Client, debug bool, logHelper *operation_logs_
 }
 
 // DeviceReportDeviceIp 处理设备上报IP
-// 返回 deviceID, 消息, 错误
 func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, request *types.DeviceReportDeviceIpRequest) (*types.DeviceReportDeviceIpResponse, error) {
 	// 判断IPV4和IPV6是否为空 (保持原始逻辑)
 	if request.IPV4Addr == "" && request.IPV6Addr == "" {
