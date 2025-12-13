@@ -62,7 +62,7 @@ func (DomainMonitor) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("check_protocol").
-			Values(schematype.GetDomainMonitorCheckProtocol()...).
+			Values(schematype.GetDomainMonitorCheckProtocols...).
 			Immutable().
 			Comment("检查类型（HTTP/HTTPS）").
 			Annotations(entsql.WithComments(true)),
@@ -73,7 +73,7 @@ func (DomainMonitor) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("current_status").
-			Values(schematype.GetDomainMonitorStatus()...).
+			Values(schematype.GetDomainMonitorStatuss...).
 			Default(schematype.DomainMonitorStatusUnknown).
 			Comment("当前运行状态").
 			Annotations(entsql.WithComments(true)),

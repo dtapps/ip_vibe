@@ -42,7 +42,7 @@ func (OperationLog) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
 
 		field.Enum("op_type").
-			Values(schematype.GetLogOpType()...).
+			Values(schematype.GetLogOpTypes...).
 			Immutable().
 			Comment("操作类型").
 			Annotations(entsql.WithComments(true)),
@@ -53,7 +53,7 @@ func (OperationLog) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("obj_type").
-			Values(schematype.GetLogObjType()...).
+			Values(schematype.GetLogObjTypes...).
 			Immutable().
 			Comment("对象类型").
 			Annotations(entsql.WithComments(true)),
@@ -71,7 +71,7 @@ func (OperationLog) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("status").
-			Values(schematype.GetLogStatus()...).
+			Values(schematype.GetLogStatuss...).
 			Immutable().
 			Comment("状态").
 			Annotations(entsql.WithComments(true)),

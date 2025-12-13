@@ -58,14 +58,14 @@ func (CDNRecord) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("type").
-			Values(schematype.GetCDNRecordType()...).
+			Values(schematype.GetCDNRecordTypes...).
 			Immutable().
 			Comment("记录类型（A、AAAA等）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("origin_protocol").
 			Default(schematype.OriginProtocolFollow).
-			Values(schematype.GetOriginProtocol()...).
+			Values(schematype.GetOriginProtocols...).
 			Comment("回源协议（http、https、follow）").
 			Annotations(entsql.WithComments(true)),
 

@@ -45,7 +45,7 @@ func (PlatformConfig) Fields() []ent.Field {
 
 		field.Enum("capability").
 			Default(schematype.ConfigCapabilityAll).
-			Values(schematype.GetConfigCapability()...).
+			Values(schematype.GetConfigCapabilitys...).
 			Comment("平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）").
 			Annotations(entsql.WithComments(true)),
 
@@ -59,7 +59,7 @@ func (PlatformConfig) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("platform").
-			Values(schematype.GetConfigPlatform()...).
+			Values(schematype.GetConfigPlatforms...).
 			Immutable().
 			Comment("平台类型（edgeone / cloudflare / dnspod …）").
 			Annotations(entsql.WithComments(true)),

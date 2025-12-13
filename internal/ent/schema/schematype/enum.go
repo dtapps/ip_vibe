@@ -6,10 +6,21 @@ const (
 	OriginProtocolFollow string = "follow" // 跟随协议
 )
 
-// GetOriginProtocol 返回回源协议
-var GetOriginProtocol = func() []string {
-	return []string{OriginProtocolHTTP, OriginProtocolHTTPS, OriginProtocolFollow}
+// GetOriginProtocolDescriptions 回源协议说明映射
+var GetOriginProtocolDescriptions = map[string]string{
+	OriginProtocolHTTP:   "HTTP协议",
+	OriginProtocolHTTPS:  "HTTPS协议",
+	OriginProtocolFollow: "跟随协议",
 }
+
+// GetOriginProtocols 返回回源协议
+var GetOriginProtocols = []string{
+	OriginProtocolHTTP,
+	OriginProtocolHTTPS,
+	OriginProtocolFollow,
+}
+
+// --------
 
 const (
 	RecordTypeA     string = "A"     // A记录
@@ -17,20 +28,47 @@ const (
 	RecordTypeCNAME string = "CNAME" // CNAME记录
 )
 
+// GetRecordType 记录类型说明映射
+var GetRecordTypeDescriptions = map[string]string{
+	RecordTypeA:     "A记录",
+	RecordTypeAAAA:  "AAAA记录",
+	RecordTypeCNAME: "CNAME记录",
+}
+
 // GetRecordType 返回所有记录类型
-var GetRecordType = func() []string {
-	return []string{RecordTypeA, RecordTypeAAAA, RecordTypeCNAME}
+var GetRecordTypes = []string{
+	RecordTypeA,
+	RecordTypeAAAA,
+	RecordTypeCNAME,
+}
+
+// GetDNSRecordTypeDescriptions 记录类型说明映射
+var GetDNSRecordTypeDescriptions = map[string]string{
+	RecordTypeA:     "A记录",
+	RecordTypeAAAA:  "AAAA记录",
+	RecordTypeCNAME: "CNAME记录",
 }
 
 // GetDNSRecordType 返回 DNS 记录类型
-var GetDNSRecordType = func() []string {
-	return []string{RecordTypeA, RecordTypeAAAA, RecordTypeCNAME}
+var GetDNSRecordTypes = []string{
+	RecordTypeA,
+	RecordTypeAAAA,
+	RecordTypeCNAME,
+}
+
+// GetRecorGetCDNRecordTypeDescriptionsdType 记录类型说明映射
+var GetCDNRecordTypeDescriptions = map[string]string{
+	RecordTypeA:    "A记录",
+	RecordTypeAAAA: "AAAA记录",
 }
 
 // GetCDNRecordType 返回 CDN 记录类型
-var GetCDNRecordType = func() []string {
-	return []string{RecordTypeA, RecordTypeAAAA}
+var GetCDNRecordTypes = []string{
+	RecordTypeA,
+	RecordTypeAAAA,
 }
+
+// --------
 
 const (
 	ConfigCapabilityDns string = "dns" // DNS服务能力
@@ -38,10 +76,21 @@ const (
 	ConfigCapabilityAll string = "all" // 所有服务能力
 )
 
-// GetConfigCapability 返回所有服务能力
-var GetConfigCapability = func() []string {
-	return []string{ConfigCapabilityDns, ConfigCapabilityCdn, ConfigCapabilityAll}
+// GetConfigCapabilityDescriptions 服务能力说明映射
+var GetConfigCapabilityDescriptions = map[string]string{
+	ConfigCapabilityDns: "DNS服务能力",
+	ConfigCapabilityCdn: "CDN服务能力",
+	ConfigCapabilityAll: "所有服务能力",
 }
+
+// GetConfigCapabilitys 返回所有服务能力
+var GetConfigCapabilitys = []string{
+	ConfigCapabilityDns,
+	ConfigCapabilityCdn,
+	ConfigCapabilityAll,
+}
+
+// --------
 
 const (
 	ConfigPlatformCloudflare string = "cloudflare" // Cloudflare
@@ -49,10 +98,21 @@ const (
 	ConfigPlatformDnspod     string = "dnspod"     // DNSPod
 )
 
-// GetConfigPlatform 返回所有平台类型
-var GetConfigPlatform = func() []string {
-	return []string{ConfigPlatformCloudflare, ConfigPlatformEdgeOne, ConfigPlatformDnspod}
+// GetConfigPlatformDescriptions 平台类型说明映射
+var GetConfigPlatformDescriptions = map[string]string{
+	ConfigPlatformCloudflare: "Cloudflare",
+	ConfigPlatformEdgeOne:    "EdgeOne",
+	ConfigPlatformDnspod:     "DNSPod",
 }
+
+// GetConfigPlatforms 返回所有平台类型
+var GetConfigPlatforms = []string{
+	ConfigPlatformCloudflare,
+	ConfigPlatformEdgeOne,
+	ConfigPlatformDnspod,
+}
+
+// --------
 
 const (
 	WebhookPlatformWechatWork string = "wechat_work" // 企业微信
@@ -64,10 +124,29 @@ const (
 	WebhookPlatformCustomHTTP string = "custom_http" // 自定义 HTTP 平台
 )
 
-// GetWebhookPlatform 返回所有 Webhook 平台
-var GetWebhookPlatform = func() []string {
-	return []string{WebhookPlatformWechatWork, WebhookPlatformDingtalk, WebhookPlatformFeishu, WebhookPlatformBark, WebhookPlatformFt07, WebhookPlatformPushDeer, WebhookPlatformCustomHTTP}
+// GetWebhookPlatformDescriptions Webhook 平台类型说明映射
+var GetWebhookPlatformDescriptions = map[string]string{
+	WebhookPlatformWechatWork: "企业微信",
+	WebhookPlatformDingtalk:   "钉钉",
+	WebhookPlatformFeishu:     "飞书",
+	WebhookPlatformBark:       "Bark",
+	WebhookPlatformFt07:       "Server酱",
+	WebhookPlatformPushDeer:   "PushDeer",
+	WebhookPlatformCustomHTTP: "自定义 HTTP 平台",
 }
+
+// GetWebhookPlatforms 返回所有 Webhook 平台
+var GetWebhookPlatforms = []string{
+	WebhookPlatformWechatWork,
+	WebhookPlatformDingtalk,
+	WebhookPlatformFeishu,
+	WebhookPlatformBark,
+	WebhookPlatformFt07,
+	WebhookPlatformPushDeer,
+	WebhookPlatformCustomHTTP,
+}
+
+// --------
 
 const (
 	WebhookSubscriptionObjTypeCdnRecord     string = "cdn_record"     // CDN记录
@@ -77,10 +156,25 @@ const (
 	WebhookSubscriptionObjTypeDomainMonitor string = "domain_monitor" // 域名监控
 )
 
-// GetWebhookSubscriptionObjType 返回所有 Webhook 订阅对象类型
-var GetWebhookSubscriptionObjType = func() []string {
-	return []string{WebhookSubscriptionObjTypeCdnRecord, WebhookSubscriptionObjTypeDnsRecord, WebhookSubscriptionObjTypeDevice, WebhookSubscriptionObjTypeIPGroup, WebhookSubscriptionObjTypeDomainMonitor}
+// GetWebhookSubscriptionObjTypeDescriptions Webhook 订阅对象类型说明映射
+var GetWebhookSubscriptionObjTypeDescriptions = map[string]string{
+	WebhookSubscriptionObjTypeCdnRecord:     "CDN记录",
+	WebhookSubscriptionObjTypeDnsRecord:     "DNS记录",
+	WebhookSubscriptionObjTypeDevice:        "设备",
+	WebhookSubscriptionObjTypeIPGroup:       "IP组",
+	WebhookSubscriptionObjTypeDomainMonitor: "域名监控",
 }
+
+// GetWebhookSubscriptionObjTypes 返回所有 Webhook 订阅对象类型
+var GetWebhookSubscriptionObjTypes = []string{
+	WebhookSubscriptionObjTypeCdnRecord,
+	WebhookSubscriptionObjTypeDnsRecord,
+	WebhookSubscriptionObjTypeDevice,
+	WebhookSubscriptionObjTypeIPGroup,
+	WebhookSubscriptionObjTypeDomainMonitor,
+}
+
+// --------
 
 const (
 	LogOpTypeDataCreate   string = "data_create"   // 数据创建
@@ -90,10 +184,25 @@ const (
 	LogOpTypeIPRefresh    string = "ip_refresh"    // IP刷新
 )
 
-// GetLogOpType 返回所有操作类型
-var GetLogOpType = func() []string {
-	return []string{LogOpTypeDataCreate, LogOpTypeDataUpdate, LogOpTypeDataDelete, LogOpTypeDeviceReport, LogOpTypeIPRefresh}
+// GetLogOpTypeDescriptions 操作类型说明映射
+var GetLogOpTypeDescriptions = map[string]string{
+	LogOpTypeDataCreate:   "数据创建",
+	LogOpTypeDataUpdate:   "数据更新",
+	LogOpTypeDataDelete:   "数据删除",
+	LogOpTypeDeviceReport: "设备上报",
+	LogOpTypeIPRefresh:    "IP刷新",
 }
+
+// GetLogOpTypes 返回所有操作类型
+var GetLogOpTypes = []string{
+	LogOpTypeDataCreate,
+	LogOpTypeDataUpdate,
+	LogOpTypeDataDelete,
+	LogOpTypeDeviceReport,
+	LogOpTypeIPRefresh,
+}
+
+// --------
 
 const (
 	LogObjTypePlatformConfig       string = "platform_config"        // 平台配置
@@ -110,30 +219,76 @@ const (
 	LogObjTypeDomainMonitorHistory string = "domain_monitor_history" // 域名监控历史记录
 )
 
-// GetLogObjType 返回所有对象类型
-var GetLogObjType = func() []string {
-	return []string{LogObjTypePlatformConfig, LogObjTypeCdnRecord, LogObjTypeDnsRecord, LogObjTypeDevice, LogObjTypeDeviceIPRecord, LogObjTypeIPGroup, LogObjTypeIPGroupDevice, LogObjTypeWebhook, LogObjTypeWebhookSubscription, LogObjTypeDevicePortForward, LogObjTypeDomainMonitor, LogObjTypeDomainMonitorHistory}
+// GetLogObjTypeDescriptions 对象类型说明映射
+var GetLogObjTypeDescriptions = map[string]string{
+	LogObjTypePlatformConfig:       "平台配置",
+	LogObjTypeCdnRecord:            "CDN记录",
+	LogObjTypeDnsRecord:            "DNS记录",
+	LogObjTypeDevice:               "设备",
+	LogObjTypeDeviceIPRecord:       "设备IP记录",
+	LogObjTypeIPGroup:              "IP组",
+	LogObjTypeIPGroupDevice:        "IP组设备",
+	LogObjTypeWebhook:              "通知",
+	LogObjTypeWebhookSubscription:  "通知订阅",
+	LogObjTypeDevicePortForward:    "端口转发",
+	LogObjTypeDomainMonitor:        "域名监控",
+	LogObjTypeDomainMonitorHistory: "域名监控历史记录",
 }
+
+// GetLogObjTypes 返回所有对象类型
+var GetLogObjTypes = []string{
+	LogObjTypePlatformConfig,
+	LogObjTypeCdnRecord,
+	LogObjTypeDnsRecord,
+	LogObjTypeDevice,
+	LogObjTypeDeviceIPRecord,
+	LogObjTypeIPGroup,
+	LogObjTypeIPGroupDevice,
+	LogObjTypeWebhook,
+	LogObjTypeWebhookSubscription,
+	LogObjTypeDevicePortForward,
+	LogObjTypeDomainMonitor,
+	LogObjTypeDomainMonitorHistory,
+}
+
+// --------
 
 const (
 	LogStatusSuccess string = "success" // 成功
 	LogStatusFailed  string = "failed"  // 失败
 )
 
-// GetLogStatus 返回所有状态
-var GetLogStatus = func() []string {
-	return []string{LogStatusSuccess, LogStatusFailed}
+// GetLogStatusDescriptions 状态说明映射
+var GetLogStatusDescriptions = map[string]string{
+	LogStatusSuccess: "成功",
+	LogStatusFailed:  "失败",
 }
+
+// GetLogStatuss 返回所有状态
+var GetLogStatuss = []string{
+	LogStatusSuccess,
+	LogStatusFailed,
+}
+
+// --------
 
 const (
 	DomainMonitorCheckProtocolHTTP  string = "http"  // HTTP 协议
 	DomainMonitorCheckProtocolHTTPS string = "https" // HTTPS 协议
 )
 
-// GetDomainMonitorCheckProtocol 返回所有检查协议
-var GetDomainMonitorCheckProtocol = func() []string {
-	return []string{DomainMonitorCheckProtocolHTTP, DomainMonitorCheckProtocolHTTPS}
+var GetDomainMonitorCheckProtocolDescriptions = map[string]string{
+	DomainMonitorCheckProtocolHTTP:  "HTTP协议",
+	DomainMonitorCheckProtocolHTTPS: "HTTPS协议",
 }
+
+// GetDomainMonitorCheckProtocols 返回所有检查协议
+var GetDomainMonitorCheckProtocols = []string{
+	DomainMonitorCheckProtocolHTTP,
+	DomainMonitorCheckProtocolHTTPS,
+}
+
+// --------
 
 const (
 	DomainMonitorStatusSuccess string = "success" // 成功运行
@@ -141,7 +296,16 @@ const (
 	DomainMonitorStatusUnknown string = "unknown" // 未知状态
 )
 
-// GetDomainMonitorStatus 返回所有运行状态
-var GetDomainMonitorStatus = func() []string {
-	return []string{DomainMonitorStatusSuccess, DomainMonitorStatusFailure, DomainMonitorStatusUnknown}
+// GetDomainMonitorStatusDescriptions 运行状态说明映射
+var GetDomainMonitorStatusDescriptions = map[string]string{
+	DomainMonitorStatusSuccess: "成功运行",
+	DomainMonitorStatusFailure: "检查失败",
+	DomainMonitorStatusUnknown: "未知状态",
+}
+
+// GetDomainMonitorStatuss 返回所有运行状态
+var GetDomainMonitorStatuss = []string{
+	DomainMonitorStatusSuccess,
+	DomainMonitorStatusFailure,
+	DomainMonitorStatusUnknown,
 }

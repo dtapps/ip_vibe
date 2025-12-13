@@ -23,7 +23,6 @@ func RegisterCDNRecordResource(server *mcp.Server) {
 		MIMEType:    MIMETypeJSON,
 		URITemplate: "cdn://record/{id}",
 	}, getCdnRecordDetail)
-
 }
 
 // 获取全部CDN记录

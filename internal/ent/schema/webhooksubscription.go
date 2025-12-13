@@ -57,7 +57,7 @@ func (WebhookSubscription) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("obj_type").
-			Values(schematype.GetWebhookSubscriptionObjType()...).
+			Values(schematype.GetWebhookSubscriptionObjTypes...).
 			Immutable().
 			Comment("订阅对象类型").
 			Annotations(entsql.WithComments(true)),

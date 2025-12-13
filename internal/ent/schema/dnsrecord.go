@@ -58,7 +58,7 @@ func (DNSRecord) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("type").
-			Values(schematype.GetDNSRecordType()...).
+			Values(schematype.GetDNSRecordTypes...).
 			Immutable().
 			Comment("记录类型（A、AAAA、CNAME等）").
 			Annotations(entsql.WithComments(true)),
