@@ -13,18 +13,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Config(c *gin.Context) {
+func PlatformConfig(c *gin.Context) {
 	// 请求参数
-	var requestParams types.ConfigRequest
+	var requestParams types.PlatformConfigRequest
 	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
 	// 准备页面数据
-	pageData := types.ConfigResponse{
-		CommonPageResponse: types.CommonPageResponse[types.GetConfigResponse]{
-			List: []types.GetConfigResponse{},
+	pageData := types.PlatformConfigResponse{
+		CommonPageResponse: types.CommonPageResponse[types.GetPlatformConfigResponse]{
+			List: []types.GetPlatformConfigResponse{},
 		},
 	}
 
@@ -34,7 +34,7 @@ func Config(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allConfig.Items {
-			pageData.List = append(pageData.List, types.GetConfigResponse{
+			pageData.List = append(pageData.List, types.GetPlatformConfigResponse{
 				ID:          item.ID,
 				Capability:  item.Capability.String(),
 				Name:        item.Name,
@@ -56,5 +56,5 @@ func Config(c *gin.Context) {
 	}
 
 	// 渲染模板
-	c.HTML(http.StatusOK, filepath.Join("pages", "config.html"), pageData)
+	c.HTML(http.StatusOK, filepath.Join("pages", "platform-config.html"), pageData)
 }

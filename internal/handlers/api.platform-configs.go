@@ -18,10 +18,10 @@ import (
 //	@Tags			平台配置
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Success		200	{object}	APIResponse{data=[]types.GetConfigResponse}	"成功响应"
+//	@Success		200	{object}	APIResponse{data=[]types.GetPlatformConfigResponse}	"成功响应"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
-//	@Router			/configs [get]
-func GetConfigs(c *gin.Context) {
+//	@Router			/platform-configs [get]
+func GetPlatformConfigs(c *gin.Context) {
 
 	// 创建服务
 	service := service.NewPlatformConfigService(
@@ -47,13 +47,13 @@ func GetConfigs(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"配置序号"
-//	@Success		200	{object}	APIResponse{data=types.GetConfigResponse}	"成功响应"
+//	@Success		200	{object}	APIResponse{data=types.GetPlatformConfigResponse}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
-//	@Router			/configs/{id} [get]
-func GetConfigDetail(c *gin.Context) {
+//	@Router			/platform-configs/{id} [get]
+func GetPlatformConfigDetail(c *gin.Context) {
 	// 请求参数
-	var requestParams types.GetConfigRequest
+	var requestParams types.GetPlatformConfigRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
@@ -83,14 +83,14 @@ func GetConfigDetail(c *gin.Context) {
 //	@Tags			平台配置
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.CreateConfigRequest					true	"请求参数"
+//	@Param			request	body		types.CreatePlatformConfigRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetConfigRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
-//	@Router			/configs [post]
-func CreateConfig(c *gin.Context) {
+//	@Router			/platform-configs [post]
+func CreatePlatformConfig(c *gin.Context) {
 	// 请求参数
-	var requestParams types.CreateConfigRequest
+	var requestParams types.CreatePlatformConfigRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
@@ -120,14 +120,14 @@ func CreateConfig(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64										true	"配置序号"
-//	@Param			request	body		types.UpdateConfigRequest					true	"请求参数"
+//	@Param			request	body		types.UpdatePlatformConfigRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetConfigRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
-//	@Router			/configs/{id} [patch]
-func UpdateConfig(c *gin.Context) {
+//	@Router			/platform-configs/{id} [patch]
+func UpdatePlatformConfig(c *gin.Context) {
 	// 请求参数
-	var requestParams types.UpdateConfigRequest
+	var requestParams types.UpdatePlatformConfigRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
@@ -158,13 +158,13 @@ func UpdateConfig(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"配置序号"
-//	@Success		200	{object}	APIResponse{data=types.GetConfigRequest}	"成功响应"
+//	@Success		200	{object}	APIResponse{data=types.GetPlatformConfigRequest}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
-//	@Router			/configs/{id} [delete]
-func DeleteConfig(c *gin.Context) {
+//	@Router			/platform-configs/{id} [delete]
+func DeletePlatformConfig(c *gin.Context) {
 	// 请求参数
-	var requestParams types.DeleteConfigRequest
+	var requestParams types.DeletePlatformConfigRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())

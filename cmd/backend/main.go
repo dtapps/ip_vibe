@@ -293,7 +293,7 @@ func main() {
 	router.GET("/dashboard", handlers.Dashboard)
 
 	// 平台配置页面 - 提供HTML页面并渲染数据
-	router.GET("/config", handlers.Config)
+	router.GET("/platform-config", handlers.PlatformConfig)
 
 	// CDN页面 - 提供HTML页面并渲染数据
 	router.GET("/cdn", handlers.Cdn)
@@ -330,14 +330,14 @@ func main() {
 	// API路由组
 	api := router.Group("/api")
 	{
-		// 配置相关API
-		configs := api.Group("/configs")
+		// 平台配置相关API
+		platformConfigs := api.Group("/platform-configs")
 		{
-			configs.GET("", handlers.GetConfigs)          // 获取全部平台配置
-			configs.GET("/:id", handlers.GetConfigDetail) // 获取平台配置详情
-			configs.POST("", handlers.CreateConfig)       // 创建平台配置
-			configs.PATCH("/:id", handlers.UpdateConfig)  // 更新平台配置
-			configs.DELETE("/:id", handlers.DeleteConfig) // 删除平台配置
+			platformConfigs.GET("", handlers.GetPlatformConfigs)          // 获取全部平台配置
+			platformConfigs.GET("/:id", handlers.GetPlatformConfigDetail) // 获取平台配置详情
+			platformConfigs.POST("", handlers.CreatePlatformConfig)       // 创建平台配置
+			platformConfigs.PATCH("/:id", handlers.UpdatePlatformConfig)  // 更新平台配置
+			platformConfigs.DELETE("/:id", handlers.DeletePlatformConfig) // 删除平台配置
 		}
 
 		// CDN记录管理相关API

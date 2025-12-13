@@ -52,7 +52,7 @@ func getPlatformConfigDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req
 	if err != nil {
 		return errorResponse(err.Error())
 	}
-	params := &types.GetConfigRequest{}
+	params := &types.GetPlatformConfigRequest{}
 	params.ID = cast.ToInt64(param["id"])
 
 	// 创建服务

@@ -12,11 +12,11 @@ import (
 
 // PlatformConfigService 配置服务接口
 type PlatformConfigService interface {
-	GetConfigs(ctx context.Context) ([]*types.GetConfigResponse, error)
-	GetConfig(ctx context.Context, id int64) (*types.GetConfigResponse, error)
-	CreateConfig(ctx context.Context, request *types.CreateConfigRequest) (*types.GetConfigRequest, error)
-	UpdateConfig(ctx context.Context, request *types.UpdateConfigRequest) (*types.GetConfigRequest, error)
-	DeleteConfig(ctx context.Context, id int64) (*types.GetConfigRequest, error)
+	GetConfigs(ctx context.Context) ([]*types.GetPlatformConfigResponse, error)
+	GetConfig(ctx context.Context, id int64) (*types.GetPlatformConfigResponse, error)
+	CreateConfig(ctx context.Context, request *types.CreatePlatformConfigRequest) (*types.GetPlatformConfigRequest, error)
+	UpdateConfig(ctx context.Context, request *types.UpdatePlatformConfigRequest) (*types.GetPlatformConfigRequest, error)
+	DeleteConfig(ctx context.Context, id int64) (*types.GetPlatformConfigRequest, error)
 }
 
 // PlatformConfigServiceImpl 配置服务实现
@@ -32,8 +32,8 @@ func NewPlatformConfigService(db *ent.Client, debug bool, logHelper *operation_l
 }
 
 // buildResponse 将实体转换为响应
-func (s *PlatformConfigServiceImpl) buildResponse(ctx context.Context, item *ent.PlatformConfig) (*types.GetConfigResponse, error) {
-	resp := &types.GetConfigResponse{
+func (s *PlatformConfigServiceImpl) buildResponse(ctx context.Context, item *ent.PlatformConfig) (*types.GetPlatformConfigResponse, error) {
+	resp := &types.GetPlatformConfigResponse{
 		ID:          item.ID,
 		Capability:  item.Capability.String(),
 		Name:        item.Name,
@@ -45,8 +45,8 @@ func (s *PlatformConfigServiceImpl) buildResponse(ctx context.Context, item *ent
 }
 
 // GetConfigs 获取全部配置
-func (s *PlatformConfigServiceImpl) GetConfigs(ctx context.Context) ([]*types.GetConfigResponse, error) {
-	lists := make([]*types.GetConfigResponse, 0)
+func (s *PlatformConfigServiceImpl) GetConfigs(ctx context.Context) ([]*types.GetPlatformConfigResponse, error) {
+	lists := make([]*types.GetPlatformConfigResponse, 0)
 	// 查询全部配置
 	allConfig, err := s.db.PlatformConfig.Query().
 		Order(ent.Desc(platformconfig.FieldCreatedAt)).
@@ -67,7 +67,7 @@ func (s *PlatformConfigServiceImpl) GetConfigs(ctx context.Context) ([]*types.Ge
 }
 
 // GetConfig 获取单个配置
-func (s *PlatformConfigServiceImpl) GetConfig(ctx context.Context, id int64) (*types.GetConfigResponse, error) {
+func (s *PlatformConfigServiceImpl) GetConfig(ctx context.Context, id int64) (*types.GetPlatformConfigResponse, error) {
 	// 查询配置
 	firstConfig, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(id)).
@@ -88,7 +88,7 @@ func (s *PlatformConfigServiceImpl) GetConfig(ctx context.Context, id int64) (*t
 }
 
 // CreateConfig 创建配置
-func (s *PlatformConfigServiceImpl) CreateConfig(ctx context.Context, request *types.CreateConfigRequest) (*types.GetConfigRequest, error) {
+func (s *PlatformConfigServiceImpl) CreateConfig(ctx context.Context, request *types.CreatePlatformConfigRequest) (*types.GetPlatformConfigRequest, error) {
 	// 创建配置
 	saveConfig, err := s.db.PlatformConfig.Create().
 		SetName(request.Name).
@@ -107,13 +107,13 @@ func (s *PlatformConfigServiceImpl) CreateConfig(ctx context.Context, request *t
 	// 记录操作日志
 	_ = s.logHelper.RecordDataCreate(ctx, saveConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "创建配置")
 
-	return &types.GetConfigRequest{
+	return &types.GetPlatformConfigRequest{
 		ID: saveConfig.ID,
 	}, nil
 }
 
 // UpdateConfig 更新配置
-func (s *PlatformConfigServiceImpl) UpdateConfig(ctx context.Context, request *types.UpdateConfigRequest) (*types.GetConfigRequest, error) {
+func (s *PlatformConfigServiceImpl) UpdateConfig(ctx context.Context, request *types.UpdatePlatformConfigRequest) (*types.GetPlatformConfigRequest, error) {
 	// 查询配置
 	firstConfig, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(request.ID)).
@@ -142,13 +142,13 @@ func (s *PlatformConfigServiceImpl) UpdateConfig(ctx context.Context, request *t
 	// 记录操作日志
 	_ = s.logHelper.RecordDataUpdate(ctx, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "更新配置")
 
-	return &types.GetConfigRequest{
+	return &types.GetPlatformConfigRequest{
 		ID: saveConfig.ID,
 	}, nil
 }
 
 // DeleteConfig 删除配置
-func (s *PlatformConfigServiceImpl) DeleteConfig(ctx context.Context, id int64) (*types.GetConfigRequest, error) {
+func (s *PlatformConfigServiceImpl) DeleteConfig(ctx context.Context, id int64) (*types.GetPlatformConfigRequest, error) {
 	// 查询配置
 	firstConfig, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(id)).
@@ -172,7 +172,7 @@ func (s *PlatformConfigServiceImpl) DeleteConfig(ctx context.Context, id int64) 
 	// 记录操作日志
 	_ = s.logHelper.RecordDataDelete(ctx, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "删除配置")
 
-	return &types.GetConfigRequest{
+	return &types.GetPlatformConfigRequest{
 		ID: firstConfig.ID,
 	}, nil
 }

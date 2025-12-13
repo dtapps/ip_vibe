@@ -40,7 +40,7 @@ func (PlatformConfig) Fields() []ent.Field {
 		field.Int64("id").
 			StorageKey("id").
 			Immutable().
-			Comment("配置序号").
+			Comment("平台配置序号").
 			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
 
 		field.Enum("capability").
@@ -50,12 +50,12 @@ func (PlatformConfig) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
-			Comment("配置名称").
+			Comment("平台配置名称").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("description").
 			Optional().
-			Comment("配置描述").
+			Comment("平台配置描述").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("platform").

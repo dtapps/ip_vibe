@@ -57,7 +57,7 @@ async function openFormModal(id) {
 
   // 编辑
   if (id) {
-    const { data: config } = await API.get(`/api/configs/${id}`);
+    const { data: config } = await API.get(`/api/platform-configs/${id}`);
     console.log("config", config);
     if (!config) {
       alert("配置数据异常");
@@ -142,9 +142,9 @@ document.getElementById("form").onsubmit = async (e) => {
   try {
     // 提交
     if (isNaN(form_id) || form_id <= 0) {
-      await API.post("/api/configs", form_data);
+      await API.post("/api/platform-configs", form_data);
     } else {
-      await API.patch(`/api/configs/${form_id}`, form_data);
+      await API.patch(`/api/platform-configs/${form_id}`, form_data);
     }
 
     // 刷新页面
@@ -159,7 +159,7 @@ document.getElementById("form").onsubmit = async (e) => {
 async function onDelete(id) {
   if (confirm("确定删除此配置？相关记录也会被删除")) {
     try {
-      await API.delete(`/api/configs/${id}`);
+      await API.delete(`/api/platform-configs/${id}`);
       // 刷新页面
       location.reload();
     } catch (error) {
