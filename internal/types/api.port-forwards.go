@@ -2,7 +2,7 @@ package types
 
 // 获取全部端口转发 请求结构
 type GetPortForwardsRequest struct {
-	IsActive *bool `json:"is_active" form:"is_active" jsonschema:"指定是否只返回活跃的端口转发记录"` // 是否活跃
+	IsActive *bool `json:"is_active,omitempty" form:"is_active,omitempty" jsonschema:"指定是否只返回活跃的端口转发记录"` // 是否活跃
 }
 
 // 获取端口转发 响应结构

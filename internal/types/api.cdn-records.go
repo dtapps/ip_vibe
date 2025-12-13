@@ -6,7 +6,7 @@ import (
 
 // 获取全部CDN记录 请求结构
 type GetCdnRecordsRequest struct {
-	IsActive *bool `json:"is_active" form:"is_active" jsonschema:"指定是否只返回活跃的CDN记录"` // 是否活跃
+	IsActive *bool `json:"is_active,omitempty" form:"is_active,omitempty" jsonschema:"指定是否只返回活跃的CDN记录"` // 是否活跃
 }
 
 // 获取CDN记录 响应结构
