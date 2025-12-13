@@ -2,6 +2,7 @@ package mcp_prompt
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -21,4 +22,16 @@ func successResponse(format string, args ...any) (*mcp.GetPromptResult, error) {
 			},
 		},
 	}, nil
+}
+
+func formatListWithDescriptions(items []string, descriptions map[string]string) string {
+	var lines []string
+	for _, item := range items {
+		if desc, exists := descriptions[item]; exists {
+			lines = append(lines, fmt.Sprintf("- %s: %s", item, desc))
+		} else {
+			lines = append(lines, fmt.Sprintf("- %s", item))
+		}
+	}
+	return strings.Join(lines, "\n")
 }

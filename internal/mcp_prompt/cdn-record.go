@@ -2,7 +2,6 @@ package mcp_prompt
 
 import (
 	"context"
-	"fmt"
 	"vibe_ip/internal/ent/schema/schematype"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -28,14 +27,9 @@ func cdnRecordType(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetProm
 	// 描述
 	descriptions := schematype.GetCDNRecordTypeDescriptions
 
-	var result string
-	for _, recordType := range types {
-		if desc, exists := descriptions[recordType]; exists {
-			result += fmt.Sprintf("- %s: %s\n", recordType, desc)
-		} else {
-			result += fmt.Sprintf("- %s\n", recordType)
-		}
-	}
+	// 格式化
+	var result = formatListWithDescriptions(types, descriptions)
+
 	return successResponse(result)
 }
 
@@ -48,13 +42,8 @@ func cdnRecordOriginProtocol(ctx context.Context, req *mcp.GetPromptRequest) (*m
 	// 描述
 	descriptions := schematype.GetOriginProtocolDescriptions
 
-	var result string
-	for _, recordType := range types {
-		if desc, exists := descriptions[recordType]; exists {
-			result += fmt.Sprintf("- %s: %s\n", recordType, desc)
-		} else {
-			result += fmt.Sprintf("- %s\n", recordType)
-		}
-	}
+	// 格式化
+	var result = formatListWithDescriptions(types, descriptions)
+
 	return successResponse(result)
 }
