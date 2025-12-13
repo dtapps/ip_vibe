@@ -12,13 +12,13 @@ import (
 
 func RegisterCDNRecordResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
-		Name:        "getCdnRecordList",
+		Name:        "cdnRecordList",
 		Description: "获取全部CDN记录",
 		MIMEType:    MIMETypeJSON,
 		URI:         "cdn://record/all",
 	}, getCdnRecordList)
 	AddResourceTemplateEx(server, &mcp.ResourceTemplate{
-		Name:        "getCdnRecordDetail",
+		Name:        "cdnRecordDetail",
 		Description: "获取CDN记录详情",
 		MIMEType:    MIMETypeJSON,
 		URITemplate: "cdn://record/{id}",

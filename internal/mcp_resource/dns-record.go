@@ -12,14 +12,14 @@ import (
 
 func RegisterDNSRecordResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
-		Name:        "getDNSRecordList",
+		Name:        "dnsRecordList",
 		Description: "获取全部DNS记录",
 		MIMEType:    MIMETypeJSON,
 		URI:         "dns://record/all",
 	}, getDnsRecordList)
 	AddResourceTemplateEx(server, &mcp.ResourceTemplate{
-		Name:        "getDNSRecordDetail",
-		Description: "获取DNS记录",
+		Name:        "dnsRecordDetail",
+		Description: "获取DNS记录详情",
 		MIMEType:    MIMETypeJSON,
 		URITemplate: "dns://record/{id}",
 	}, getDnsRecordDetail)

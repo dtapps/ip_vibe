@@ -12,14 +12,14 @@ import (
 
 func RegisterPortForwardResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
-		Name:        "getPortForwardList",
+		Name:        "portForwardList",
 		Description: "获取全部端口转发",
 		MIMEType:    MIMETypeJSON,
 		URI:         "portForward://record/all",
 	}, getPortForwardList)
 	AddResourceTemplateEx(server, &mcp.ResourceTemplate{
-		Name:        "getPortForwardDetail",
-		Description: "获取端口转发",
+		Name:        "portForwardDetail",
+		Description: "获取端口转发详情",
 		MIMEType:    MIMETypeJSON,
 		URITemplate: "portForward://record/{id}",
 	}, getPortForwardDetail)

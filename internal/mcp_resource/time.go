@@ -11,14 +11,15 @@ import (
 // 注册间资源
 func RegisterTimeResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
-		Name:        "current-time",
+		Name:        "currentTime",
 		Description: "获取当前时间",
+		MIMEType:    MIMETypeJSON,
 		URI:         "time://current",
-	}, getCurrentTimeResource)
+	}, currentTime)
 }
 
 // 时间相关响应
-type GetCurrentTimeResponse struct {
+type CurrentTimeResponse struct {
 	Timestamp int64  `json:"timestamp" jsonschema:"时间戳"`
 	Datetime  string `json:"datetime" jsonschema:"日期时间"`
 	Date      string `json:"date" jsonschema:"日期"`
@@ -27,15 +28,15 @@ type GetCurrentTimeResponse struct {
 	IsToday   bool   `json:"is_today" jsonschema:"是否为今天"`
 }
 
-func getCurrentTimeResource(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.ReadResourceResult, error) {
+func currentTime(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.ReadResourceResult, error) {
 	now := time.Now()
 
-	response := GetCurrentTimeResponse{
+	response := CurrentTimeResponse{
 		Timestamp: now.Unix(),
 		Datetime:  now.Format("2006-01-02 15:04:05"),
 		Date:      now.Format("2006-01-02"),
 		Time:      now.Format("15:04:05"),
-		Timezone:  global.GvaTimeZone,
+		Timezone:  global.DefaultTimezone,
 		IsToday:   now.Format("2006-01-02") == now.Format("2006-01-02"),
 	}
 

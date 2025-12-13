@@ -12,19 +12,19 @@ import (
 
 func RegisterDeviceResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
-		Name:        "getDeviceList",
+		Name:        "deviceList",
 		Description: "获取全部设备",
 		MIMEType:    MIMETypeJSON,
 		URI:         "device://record/all",
 	}, getDeviceList)
 	AddResourceTemplateEx(server, &mcp.ResourceTemplate{
-		Name:        "getDeviceDetail",
-		Description: "获取设备",
+		Name:        "deviceDetail",
+		Description: "获取设备详情",
 		MIMEType:    MIMETypeJSON,
 		URITemplate: "device://record/{id}",
 	}, getDeviceDetail)
 	AddResourceTemplateEx(server, &mcp.ResourceTemplate{
-		Name:        "getDeviceIpHistory",
+		Name:        "deviceIpHistory",
 		Description: "获取设备IP历史记录",
 		MIMEType:    MIMETypeJSON,
 		URITemplate: "device://record/{id}/ipHistory",

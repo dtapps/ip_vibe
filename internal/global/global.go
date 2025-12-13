@@ -16,6 +16,10 @@ import (
 	"go.dtapp.net/library/service/wechatqy"
 )
 
+var (
+	DefaultTimezone string = "Asia/Shanghai" // 默认时区
+)
+
 // GvaConfig 变量
 var (
 	GvaEnv struct {
@@ -33,8 +37,6 @@ var (
 	GvaGoVersion string // Go 版本
 	GvaOS        string // 操作系统
 	GvaArch      string // CPU 架构
-
-	GvaTimeZone string = "Asia/Shanghai" // 时区
 
 	GvaGoCron        gocron.Scheduler // 定时任务
 	GvaGoCronRunning int32            // 定时任务状态 0=停 1=运行

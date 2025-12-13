@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"time"
+	"vibe_ip/internal/global"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -18,7 +19,7 @@ func RegisterTimeTools(server *mcp.Server) {
 
 // 时间相关参数
 type GetCurrentTimeParams struct {
-	Format string `json:"format" jsonschema:"时间格式"`
+	Format string `json:"format,omitempty" jsonschema:"时间格式"`
 }
 
 // 时间相关响应
@@ -45,7 +46,7 @@ func getCurrentTime(ctx context.Context, req *mcp.CallToolRequest, params *GetCu
 		Datetime:  formattedTime,
 		Date:      now.Format("2006-01-02"),
 		Time:      now.Format("15:04:05"),
-		Timezone:  now.Location().String(),
+		Timezone:  global.DefaultTimezone,
 	}
 
 	return successResponse(fmt.Sprintf("当前时间: %s", formattedTime), response)

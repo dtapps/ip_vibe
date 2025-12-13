@@ -12,14 +12,14 @@ import (
 
 func RegisterPlatformConfigResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
-		Name:        "getPlatformConfigList",
+		Name:        "platformConfigList",
 		Description: "获取全部配置",
 		MIMEType:    MIMETypeJSON,
 		URI:         "platformConfig://record/all",
 	}, getPlatformConfigList)
 	AddResourceTemplateEx(server, &mcp.ResourceTemplate{
-		Name:        "getPlatformConfigDetail",
-		Description: "获取配置",
+		Name:        "platformConfigDetail",
+		Description: "获取配置详情",
 		MIMEType:    MIMETypeJSON,
 		URITemplate: "platformConfig://record/{id}",
 	}, getPlatformConfigDetail)

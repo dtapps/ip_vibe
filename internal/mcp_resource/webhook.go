@@ -12,14 +12,14 @@ import (
 
 func RegisterWebhookResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
-		Name:        "getWebhookList",
+		Name:        "webhookList",
 		Description: "获取全部通知",
 		MIMEType:    MIMETypeJSON,
 		URI:         "webhook://record/all",
 	}, getWebhookList)
 	AddResourceTemplateEx(server, &mcp.ResourceTemplate{
-		Name:        "getWebhookDetail",
-		Description: "获取通知",
+		Name:        "webhookDetail",
+		Description: "获取通知详情",
 		MIMEType:    MIMETypeJSON,
 		URITemplate: "webhook://record/{id}",
 	}, getWebhookDetail)

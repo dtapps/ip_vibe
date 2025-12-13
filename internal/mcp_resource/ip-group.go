@@ -12,19 +12,19 @@ import (
 
 func RegisterIPGroupResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
-		Name:        "getIPGroupList",
+		Name:        "ipGroupList",
 		Description: "获取全部IP组",
 		MIMEType:    MIMETypeJSON,
 		URI:         "ipGroup://record/all",
 	}, getIPGroupList)
 	AddResourceTemplateEx(server, &mcp.ResourceTemplate{
-		Name:        "getIPGroupDetail",
-		Description: "获取IP组",
+		Name:        "ipGroupDetail",
+		Description: "获取IP组详情",
 		MIMEType:    MIMETypeJSON,
 		URITemplate: "ipGroup://record/{id}",
 	}, getIPGroupDetail)
 	AddResourceTemplateEx(server, &mcp.ResourceTemplate{
-		Name:        "getIPGroupDevices",
+		Name:        "ipGroupDevices",
 		Description: "获取IP组的设备列表",
 		MIMEType:    MIMETypeJSON,
 		URITemplate: "ipGroup://record/{id}/devices",

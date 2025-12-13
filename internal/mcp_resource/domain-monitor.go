@@ -12,14 +12,14 @@ import (
 
 func RegisterDomainMonitorResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
-		Name:        "getDomainMonitorList",
+		Name:        "domainMonitorList",
 		Description: "获取全部域名监控",
 		MIMEType:    MIMETypeJSON,
 		URI:         "domainMonitor://record/all",
 	}, getDomainMonitorList)
 	AddResourceTemplateEx(server, &mcp.ResourceTemplate{
-		Name:        "getDomainMonitorDetail",
-		Description: "获取域名监控",
+		Name:        "domainMonitorDetail",
+		Description: "获取域名监控详情",
 		MIMEType:    MIMETypeJSON,
 		URITemplate: "domainMonitor://record/{id}",
 	}, getDomainMonitorDetail)

@@ -13,7 +13,7 @@ import (
 func init() {
 	if runtime.GOOS == "windows" {
 		var err error
-		time.Local, err = time.LoadLocation(global.GvaTimeZone)
+		time.Local, err = time.LoadLocation(global.DefaultTimezone)
 		if err != nil {
 			slog.Error("[初始化时间] 错误",
 				slog.Any("err", err),
