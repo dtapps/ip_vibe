@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package open;
 
-// 生成的 Go 包路径
-option go_package = "./";
+// 注意: ;前面是路径，后面是包名
+option go_package = "/;grpc_generated";
 
 service OpenService {
     // 设备上报IP

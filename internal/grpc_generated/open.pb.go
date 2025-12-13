@@ -7,12 +7,11 @@
 package grpc_generated
 
 import (
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
-
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -348,7 +347,7 @@ const file_open_proto_rawDesc = "" +
 	"\x05rules\x18\x01 \x03(\v2\x15.open.PortForwardRuleR\x05rules2\xbc\x01\n" +
 	"\vOpenService\x12K\n" +
 	"\x0eReportDeviceIP\x12\x1b.open.ReportDeviceIPRequest\x1a\x1c.open.ReportDeviceIPResponse\x12`\n" +
-	"\x15GetDevicePortForwards\x12\".open.GetDevicePortForwardsRequest\x1a#.open.GetDevicePortForwardsResponseB\x04Z\x02./b\x06proto3"
+	"\x15GetDevicePortForwards\x12\".open.GetDevicePortForwardsRequest\x1a#.open.GetDevicePortForwardsResponseB\x12Z\x10/;grpc_generatedb\x06proto3"
 
 var (
 	file_open_proto_rawDescOnce sync.Once
