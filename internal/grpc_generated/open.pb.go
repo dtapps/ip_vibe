@@ -21,6 +21,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// 设备上报IP 请求参数
 type ReportDeviceIPRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	DeviceCode    string                 `protobuf:"bytes,1,opt,name=device_code,json=deviceCode,proto3" json:"device_code,omitempty"` // 设备编码
@@ -89,6 +90,7 @@ func (x *ReportDeviceIPRequest) GetIpv6Addr() string {
 	return ""
 }
 
+// 设备上报IP 响应参数
 type ReportDeviceIPResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	DeviceCode    string                 `protobuf:"bytes,1,opt,name=device_code,json=deviceCode,proto3" json:"device_code,omitempty"` // 设备编码
@@ -141,6 +143,7 @@ func (x *ReportDeviceIPResponse) GetMsg() string {
 	return ""
 }
 
+// 获取设备端口转发 请求参数
 type GetDevicePortForwardsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	DeviceCode    string                 `protobuf:"bytes,1,opt,name=device_code,json=deviceCode,proto3" json:"device_code,omitempty"` // 设备编码
@@ -185,6 +188,7 @@ func (x *GetDevicePortForwardsRequest) GetDeviceCode() string {
 	return ""
 }
 
+// 端口转发规则列表
 type PortForwardRule struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`                                      // 设备端口转发序号
@@ -269,9 +273,10 @@ func (x *PortForwardRule) GetAutoForward() bool {
 	return false
 }
 
+// 获取设备端口转发 响应参数
 type GetDevicePortForwardsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Rules         []*PortForwardRule     `protobuf:"bytes,1,rep,name=rules,proto3" json:"rules,omitempty"`
+	Rules         []*PortForwardRule     `protobuf:"bytes,1,rep,name=rules,proto3" json:"rules,omitempty"` // 端口转发规则列表
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

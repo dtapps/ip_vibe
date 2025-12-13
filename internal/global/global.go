@@ -24,6 +24,7 @@ var (
 var (
 	GvaEnv struct {
 		DEBUG               bool   // [backend][reporter][forwarder] 是否开启调试模式
+		GRPC_PORT           string // [backend] gRPC 端口
 		HTTP_PORT           string // [backend] HTTP 端口
 		HTTP_URL            string // [reporter][forwarder] HTTP URL
 		BASIC_AUTH_USERNAME string // [backend][reporter][forwarder] 基本认证用户名

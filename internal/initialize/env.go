@@ -10,17 +10,22 @@ func init() {
 	// 从环境变量获取 [backend][reporter][forwarder] 是否开启调试模式
 	global.GvaEnv.DEBUG = os.Getenv("DEBUG") == "true"
 
-	// 从环境变量获取 [backend] HTTP 端口
-	global.GvaEnv.HTTP_PORT = os.Getenv("HTTP_PORT")
-
-	// 判断HTTP_PORT为空时设置默认端口
-	if global.GvaEnv.HTTP_PORT == "" {
-		global.GvaEnv.HTTP_PORT = ":8080" // 默认端口
+	// 从环境变量获取 [backend] gRPC 端口
+	global.GvaEnv.GRPC_PORT = os.Getenv("GRPC_PORT")
+	// if global.GvaEnv.GRPC_PORT == "" {
+	// 	global.GvaEnv.GRPC_PORT = ":50051" // grpc默认端口
+	// }
+	if global.GvaEnv.GRPC_PORT != "" && global.GvaEnv.GRPC_PORT[0] != ':' {
+		global.GvaEnv.GRPC_PORT = ":" + global.GvaEnv.GRPC_PORT // 判断GRPC_PORT前面是否有冒号
 	}
 
-	// 判断HTTP_PORT前面是否有冒号
-	if global.GvaEnv.HTTP_PORT[0] != ':' {
-		global.GvaEnv.HTTP_PORT = ":" + global.GvaEnv.HTTP_PORT
+	// 从环境变量获取 [backend] HTTP 端口
+	global.GvaEnv.HTTP_PORT = os.Getenv("HTTP_PORT")
+	if global.GvaEnv.HTTP_PORT == "" {
+		global.GvaEnv.HTTP_PORT = ":8080" // gin默认端口
+	}
+	if global.GvaEnv.HTTP_PORT != "" && global.GvaEnv.HTTP_PORT[0] != ':' {
+		global.GvaEnv.HTTP_PORT = ":" + global.GvaEnv.HTTP_PORT // 判断HTTP_PORT前面是否有冒号
 	}
 
 	// 从环境变量获取 [reporter][forwarder] HTTP URL

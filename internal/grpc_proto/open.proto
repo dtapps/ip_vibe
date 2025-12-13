@@ -13,6 +13,7 @@ service OpenService {
     rpc GetDevicePortForwards(GetDevicePortForwardsRequest) returns (GetDevicePortForwardsResponse);
 }
 
+// 设备上报IP 请求参数
 message ReportDeviceIPRequest {
     string device_code = 1;// 设备编码
     string device_name = 2;// 设备名称
@@ -20,15 +21,18 @@ message ReportDeviceIPRequest {
     string ipv6_addr = 4; // IP地址V6
 }
 
+// 设备上报IP 响应参数
 message ReportDeviceIPResponse {
     string device_code = 1;// 设备编码
     string msg = 2; // 消息
 }
 
+// 获取设备端口转发 请求参数
 message GetDevicePortForwardsRequest {
     string device_code = 1;// 设备编码
 }
 
+ // 端口转发规则列表
 message PortForwardRule {
     int64 id = 1;       // 设备端口转发序号
     int32 local_port = 2;// 本地监听端口
@@ -38,6 +42,7 @@ message PortForwardRule {
     bool auto_forward = 6; // 防火墙自动放行
 }
 
+// 获取设备端口转发 响应参数
 message GetDevicePortForwardsResponse {
     repeated PortForwardRule rules = 1; // 端口转发规则列表
 }

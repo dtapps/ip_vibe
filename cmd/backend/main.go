@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"html/template"
 	"io/fs"
-	"log"
 	"log/slog"
 	"net"
 	"net/http"
@@ -188,11 +187,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	// 使用Gin的Run方法启动服务器
+	// 启动 Gin 服务器 https://gin-gonic.com/zh-cn/
+	fmt.Printf("Gin 服务器正在启动 %s...\n", global.GvaEnv.HTTP_PORT)
 	if err := router.Run(global.GvaEnv.HTTP_PORT); err != nil {
-		fmt.Printf("服务器启动失败: %v\n", err)
+		fmt.Printf("Gin 服务器启动失败: %v\n", err)
 		os.Exit(1)
 	}
+	fmt.Printf("Gin 服务器启动成功 %s\n", global.GvaEnv.HTTP_PORT)
 }
 
 // 开发环境
@@ -638,81 +639,89 @@ func swagger_router(ctx context.Context, router *gin.Engine) {
 
 // MCP 启动
 func mcp_run(ctx context.Context, router *gin.Engine) {
+
 	// 判断是否开启 MCP 功能
-	if global.GvaMcpServer != nil {
-
-		// 注册 MCP 实现
-		mcp_resource.RegisterTimeResources(global.GvaMcpServer)
-		mcp_tool.RegisterTimeTools(global.GvaMcpServer)
-
-		mcp_prompt.RegisterPlatformConfigPrompts(global.GvaMcpServer)
-		mcp_resource.RegisterPlatformConfigResources(global.GvaMcpServer)
-		mcp_tool.RegisterPlatformConfigTools(global.GvaMcpServer)
-
-		mcp_prompt.RegisterCDNRecordPrompts(global.GvaMcpServer)
-		mcp_resource.RegisterCDNRecordResources(global.GvaMcpServer)
-		mcp_tool.RegisterCDNRecordTools(global.GvaMcpServer)
-
-		mcp_prompt.RegisterDNSRecordPrompts(global.GvaMcpServer)
-		mcp_resource.RegisterDNSRecordResources(global.GvaMcpServer)
-		mcp_tool.RegisterDNSRecordTools(global.GvaMcpServer)
-
-		mcp_prompt.RegisterDevicePrompts(global.GvaMcpServer)
-		mcp_resource.RegisterDeviceResources(global.GvaMcpServer)
-		mcp_tool.RegisterDeviceTools(global.GvaMcpServer)
-
-		mcp_prompt.RegisterIPGroupPrompts(global.GvaMcpServer)
-		mcp_resource.RegisterIPGroupResources(global.GvaMcpServer)
-		mcp_tool.RegisterIPGroupTools(global.GvaMcpServer)
-
-		mcp_prompt.RegisterPortForwardPrompts(global.GvaMcpServer)
-		mcp_resource.RegisterPortForwardResources(global.GvaMcpServer)
-		mcp_tool.RegisterPortForwardTools(global.GvaMcpServer)
-
-		mcp_prompt.RegisterDomainMonitorPrompts(global.GvaMcpServer)
-		mcp_resource.RegisterDomainMonitorResources(global.GvaMcpServer)
-		mcp_tool.RegisterDomainMonitorTools(global.GvaMcpServer)
-
-		mcp_prompt.RegisterWebhookPrompts(global.GvaMcpServer)
-		mcp_resource.RegisterWebhookResources(global.GvaMcpServer)
-		mcp_tool.RegisterWebhookTools(global.GvaMcpServer)
-
-		mcp_prompt.RegisterWebhookSubPrompts(global.GvaMcpServer)
-		mcp_resource.RegisterWebhookSubResources(global.GvaMcpServer)
-		mcp_tool.RegisterWebhookSubTools(global.GvaMcpServer)
-
-		// 注册 MCP 路由
-		httpTransport := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
-			return global.GvaMcpServer
-		}, nil)
-		router.Any("/mcp/*path", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
-		router.Any("/mcp", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
+	if global.GvaMcpServer == nil {
+		return
 	}
+
+	// 注册 MCP 实现
+	mcp_resource.RegisterTimeResources(global.GvaMcpServer)
+	mcp_tool.RegisterTimeTools(global.GvaMcpServer)
+
+	mcp_prompt.RegisterPlatformConfigPrompts(global.GvaMcpServer)
+	mcp_resource.RegisterPlatformConfigResources(global.GvaMcpServer)
+	mcp_tool.RegisterPlatformConfigTools(global.GvaMcpServer)
+
+	mcp_prompt.RegisterCDNRecordPrompts(global.GvaMcpServer)
+	mcp_resource.RegisterCDNRecordResources(global.GvaMcpServer)
+	mcp_tool.RegisterCDNRecordTools(global.GvaMcpServer)
+
+	mcp_prompt.RegisterDNSRecordPrompts(global.GvaMcpServer)
+	mcp_resource.RegisterDNSRecordResources(global.GvaMcpServer)
+	mcp_tool.RegisterDNSRecordTools(global.GvaMcpServer)
+
+	mcp_prompt.RegisterDevicePrompts(global.GvaMcpServer)
+	mcp_resource.RegisterDeviceResources(global.GvaMcpServer)
+	mcp_tool.RegisterDeviceTools(global.GvaMcpServer)
+
+	mcp_prompt.RegisterIPGroupPrompts(global.GvaMcpServer)
+	mcp_resource.RegisterIPGroupResources(global.GvaMcpServer)
+	mcp_tool.RegisterIPGroupTools(global.GvaMcpServer)
+
+	mcp_prompt.RegisterPortForwardPrompts(global.GvaMcpServer)
+	mcp_resource.RegisterPortForwardResources(global.GvaMcpServer)
+	mcp_tool.RegisterPortForwardTools(global.GvaMcpServer)
+
+	mcp_prompt.RegisterDomainMonitorPrompts(global.GvaMcpServer)
+	mcp_resource.RegisterDomainMonitorResources(global.GvaMcpServer)
+	mcp_tool.RegisterDomainMonitorTools(global.GvaMcpServer)
+
+	mcp_prompt.RegisterWebhookPrompts(global.GvaMcpServer)
+	mcp_resource.RegisterWebhookResources(global.GvaMcpServer)
+	mcp_tool.RegisterWebhookTools(global.GvaMcpServer)
+
+	mcp_prompt.RegisterWebhookSubPrompts(global.GvaMcpServer)
+	mcp_resource.RegisterWebhookSubResources(global.GvaMcpServer)
+	mcp_tool.RegisterWebhookSubTools(global.GvaMcpServer)
+
+	// 注册 MCP 路由
+	httpTransport := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
+		return global.GvaMcpServer
+	}, nil)
+	router.Any("/mcp/*path", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
+	router.Any("/mcp", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
 }
 
 // gRPC 启动
 func grpc_run(ctx context.Context, router *gin.Engine) {
+
+	// 判断是否开启 gRPC 功能
+	if global.GvaEnv.GRPC_PORT == "" {
+		return
+	}
+
 	// 创建 gRPC 服务器
 	grpcServer := grpc.NewServer(
 		grpc.MaxRecvMsgSize(10*1024*1024), // 10MB
 		grpc.MaxSendMsgSize(10*1024*1024), // 10MB
 	)
 
-	// 创建并注册 OpenService
+	// 创建并注册
 	openServer := grpc_server.NewOpenServer()
 	openServer.RegisterService(grpcServer)
 
-	// 启动 gRPC 服务器
-	lis, err := net.Listen("tcp", ":50051")
+	// 启动 gRPC 服务器 https://grpc.org.cn/
+	lis, err := net.Listen("tcp", global.GvaEnv.GRPC_PORT)
 	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
+		fmt.Printf("gRPC 服务器启动失败: %v\n", err)
+		os.Exit(1)
 	}
 
-	log.Println("gRPC server starting on :50051...")
-
-	go func() {
-		if err := grpcServer.Serve(lis); err != nil {
-			log.Fatalf("Failed to serve: %v", err)
-		}
-	}()
+	fmt.Printf("gRPC 服务器正在启动 %s...", global.GvaEnv.GRPC_PORT)
+	if err := grpcServer.Serve(lis); err != nil {
+		fmt.Printf("gRPC 服务器启动失败: %v\n", err)
+		os.Exit(1)
+	}
+	fmt.Printf("gRPC 服务器启动成功 %s\n", global.GvaEnv.GRPC_PORT)
 }
