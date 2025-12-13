@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"html/template"
 	"io/fs"
+	"log"
 	"log/slog"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -18,6 +20,7 @@ import (
 	"vibe_ip/internal/docs_2"
 	"vibe_ip/internal/docs_3"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/grpc_server"
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/mcp_prompt"
@@ -33,6 +36,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"google.golang.org/grpc"
 )
 
 //go:embed templates static
@@ -139,341 +143,33 @@ func main() {
 	// 创建一个受保护的路由组
 	var ginAccounts gin.Accounts
 	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
-		// 账户映射
 		ginAccounts = gin.Accounts{
 			global.GvaEnv.BASIC_AUTH_USERNAME: global.GvaEnv.BASIC_AUTH_PASSWORD,
 		}
 	}
 
-	// Swagger 路由组
-	// https://github.com/swaggo/swag/blob/v2/README.md
-	// https://github.com/swaggo/swag/issues/1588#issuecomment-3360487197
-	swaggerGroup := router.Group("/swagger")
-	{
-		if len(ginAccounts) > 0 {
-			swaggerGroup.Use(gin.BasicAuth(ginAccounts))
-		}
-		swaggerGroup.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
-			ginSwagger.URL("/docs_2/doc.json"), // 注意：这个 URL 是 UI 内部请求的地址
-		))
-	}
-	// doc.json 路由
-	docsGroup := router.Group("")
-	{
-		if len(ginAccounts) > 0 {
-			docsGroup.Use(gin.BasicAuth(ginAccounts))
-		}
-		// 配置 Swagger 信息
-		docs_2.SwaggerInfo.Version = global.GvaVersion
-		docs_2.SwaggerInfo.Host = ""
-		docs_3.SwaggerInfo.Version = global.GvaVersion
-		docs_3.SwaggerInfo.Host = ""
-		docsGroup.GET("/docs_2/doc.json", func(ctx *gin.Context) {
-			ctx.Header("Content-Type", "application/json")
-			ctx.String(200, docs_2.SwaggerInfo.ReadDoc())
-		})
-		docsGroup.GET("/docs_3/doc.json", func(ctx *gin.Context) {
-			ctx.Header("Content-Type", "application/json")
-			ctx.String(200, docs_3.SwaggerInfo.ReadDoc())
-		})
-	}
+	// Web 资源
+	web_resource(ctx, router)
 
 	// 配置BasicAuth中间件
 	if len(ginAccounts) > 0 {
 		router.Use(gin.BasicAuth(ginAccounts))
 	}
 
-	// 处理 MCP
-	if global.GvaMcpServer != nil {
-		// 注册 MCP 实现
-		mcp_resource.RegisterTimeResources(global.GvaMcpServer)
-		mcp_tool.RegisterTimeTools(global.GvaMcpServer)
+	// Web 路由
+	web_router(ctx, router)
 
-		mcp_prompt.RegisterPlatformConfigPrompts(global.GvaMcpServer)
-		mcp_resource.RegisterPlatformConfigResources(global.GvaMcpServer)
-		mcp_tool.RegisterPlatformConfigTools(global.GvaMcpServer)
+	// API 路由
+	api_router(ctx, router)
 
-		mcp_prompt.RegisterCDNRecordPrompts(global.GvaMcpServer)
-		mcp_resource.RegisterCDNRecordResources(global.GvaMcpServer)
-		mcp_tool.RegisterCDNRecordTools(global.GvaMcpServer)
+	// Swagger 路由
+	swagger_router(ctx, router)
 
-		mcp_prompt.RegisterDNSRecordPrompts(global.GvaMcpServer)
-		mcp_resource.RegisterDNSRecordResources(global.GvaMcpServer)
-		mcp_tool.RegisterDNSRecordTools(global.GvaMcpServer)
+	// MCP 启动
+	mcp_run(ctx, router)
 
-		mcp_prompt.RegisterDevicePrompts(global.GvaMcpServer)
-		mcp_resource.RegisterDeviceResources(global.GvaMcpServer)
-		mcp_tool.RegisterDeviceTools(global.GvaMcpServer)
-
-		mcp_prompt.RegisterIPGroupPrompts(global.GvaMcpServer)
-		mcp_resource.RegisterIPGroupResources(global.GvaMcpServer)
-		mcp_tool.RegisterIPGroupTools(global.GvaMcpServer)
-
-		mcp_prompt.RegisterPortForwardPrompts(global.GvaMcpServer)
-		mcp_resource.RegisterPortForwardResources(global.GvaMcpServer)
-		mcp_tool.RegisterPortForwardTools(global.GvaMcpServer)
-
-		mcp_prompt.RegisterDomainMonitorPrompts(global.GvaMcpServer)
-		mcp_resource.RegisterDomainMonitorResources(global.GvaMcpServer)
-		mcp_tool.RegisterDomainMonitorTools(global.GvaMcpServer)
-
-		mcp_prompt.RegisterWebhookPrompts(global.GvaMcpServer)
-		mcp_resource.RegisterWebhookResources(global.GvaMcpServer)
-		mcp_tool.RegisterWebhookTools(global.GvaMcpServer)
-
-		mcp_prompt.RegisterWebhookSubPrompts(global.GvaMcpServer)
-		mcp_resource.RegisterWebhookSubResources(global.GvaMcpServer)
-		mcp_tool.RegisterWebhookSubTools(global.GvaMcpServer)
-		// 注册 MCP 路由
-		httpTransport := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
-			return global.GvaMcpServer
-		}, nil)
-		router.Any("/mcp/*path", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
-		router.Any("/mcp", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
-	}
-
-	// 创建带 FuncMap 的 template
-	funcMap := template.FuncMap{
-		"isDebug": func() bool {
-			return global.GvaEnv.DEBUG
-		},
-		// 格式化时间为字符串，若为空则返回 "—"
-		"formatTimeOrNil": func(t time.Time) string {
-			if t.IsZero() {
-				return "—"
-			}
-			return t.Format("2006-01-02 15:04:05")
-		},
-		// 获取当前设备的 Code
-		"selfDeviceCode": func() string {
-			code, _ := machineid.ID()
-			return code
-		},
-		// pagination 组件
-		"add":   func(a, b int) int { return a + b },
-		"sub":   func(a, b int) int { return a - b },
-		"div":   func(a, b int) int { return a / b },
-		"toInt": func(i int64) int { return int(i) },
-		// switch / icons / button 组件
-		"dict": func(values ...any) (map[string]any, error) {
-			if len(values)%2 != 0 {
-				return nil, fmt.Errorf("dict expects even number of arguments")
-			}
-			m := make(map[string]any, len(values)/2)
-			for i := 0; i < len(values); i += 2 {
-				key, ok := values[i].(string)
-				if !ok {
-					return nil, fmt.Errorf("dict keys must be strings")
-				}
-				m[key] = values[i+1]
-			}
-			return m, nil
-		},
-		// 字符串拼接
-		"join": func(strs ...string) string {
-			return strings.Join(strs, "")
-		},
-	}
-
-	// 判断是否为开发模式：version == "dev"
-	devMode := global.GvaVersion == "dev"
-	if devMode {
-		// 自定义分隔符
-		// router.Delims("{{", "}}")
-
-		// 自定义模板功能
-		// router.SetFuncMap(funcMap)
-
-		// 开发：直接读本地 templates
-		// router.LoadHTMLGlob("cmd/backend/templates/**/*")
-
-		// 开发环境
-		router.HTMLRender = loadTemplates("cmd/backend/templates", funcMap)
-
-		// 静态文件服务 - 开发：直接读本地 static
-		router.StaticFS("/static", http.Dir("cmd/backend/static"))
-	} else {
-		// 生产：使用 embed
-		// templ := template.Must(
-		// 	template.New("").
-		// 		Funcs(funcMap).
-		// 		ParseFS(embeddedFiles, "templates/**/*"),
-		// )
-		// router.SetHTMLTemplate(templ)
-
-		// 生产环境
-		router.HTMLRender = loadTemplatesFS(embeddedFiles, funcMap)
-
-		// 静态文件服务 - 使用嵌入的文件系统
-		staticFS, _ := fs.Sub(embeddedFiles, "static")
-		router.StaticFS("/static", http.FS(staticFS))
-	}
-
-	// 根路径 - 提供HTML页面并渲染数据
-	router.GET("/", handlers.Dashboard)
-	router.GET("/dashboard", handlers.Dashboard)
-
-	// 平台配置页面 - 提供HTML页面并渲染数据
-	router.GET("/platform-config", handlers.PlatformConfig)
-
-	// CDN页面 - 提供HTML页面并渲染数据
-	router.GET("/cdn", handlers.Cdn)
-
-	// DNS页面 - 提供HTML页面并渲染数据
-	router.GET("/dns", handlers.Dns)
-
-	// 设备页面 - 提供HTML页面并渲染数据
-	router.GET("/device", handlers.Device)
-
-	// IP组页面 - 提供HTML页面并渲染数据
-	router.GET("/ip-group", handlers.IPGroup)
-
-	// 端口转发页面 - 提供HTML页面并渲染数据
-	router.GET("/port-forward", handlers.PortForward)
-
-	// 域名监控页面 - 提供HTML页面并渲染数据
-	router.GET("/domain-monitor", handlers.DomainMonitor)
-	router.GET("/domain-monitor/:id/detail", handlers.DomainMonitorDetail)
-	router.GET("/domain-monitor/:id/history", handlers.DomainMonitorHistory)
-
-	// 通知页面 - 提供HTML页面并渲染数据
-	router.GET("/webhook", handlers.Webhook)
-
-	// 通知订阅页面 - 提供HTML页面并渲染数据
-	router.GET("/webhook-sub", handlers.WebhookSub)
-
-	// 任务页面 - 提供HTML页面并渲染数据
-	router.GET("/task", handlers.Task)
-
-	// 日志页面 - 提供HTML页面并渲染数据
-	router.GET("/log", handlers.Log)
-
-	// API路由组
-	api := router.Group("/api")
-	{
-		// 平台配置相关API
-		platformConfigs := api.Group("/platform-configs")
-		{
-			platformConfigs.GET("", handlers.GetPlatformConfigs)          // 获取全部平台配置
-			platformConfigs.GET("/:id", handlers.GetPlatformConfigDetail) // 获取平台配置详情
-			platformConfigs.POST("", handlers.CreatePlatformConfig)       // 创建平台配置
-			platformConfigs.PATCH("/:id", handlers.UpdatePlatformConfig)  // 更新平台配置
-			platformConfigs.DELETE("/:id", handlers.DeletePlatformConfig) // 删除平台配置
-		}
-
-		// CDN记录管理相关API
-		cdnRecords := api.Group("/cdn-records")
-		{
-			cdnRecords.GET("", handlers.GetCdnRecords)                         // 获取全部CDN记录
-			cdnRecords.GET("/:id", handlers.GetCdnRecordDetail)                // 获取CDN记录详情
-			cdnRecords.POST("", handlers.CreateCdnRecord)                      // 创建CDN记录
-			cdnRecords.PATCH("/:id", handlers.UpdateCdnRecord)                 // 更新CDN记录
-			cdnRecords.PATCH("/:id/active", handlers.UpdateCdnRecordActive)    // 更新CDN记录启用状态
-			cdnRecords.DELETE("/:id", handlers.DeleteCdnRecord)                // 删除CDN记录
-			cdnRecords.GET("/:id/health-check", handlers.HealthCheckCdnRecord) // 检查CDN记录健康状态
-		}
-
-		// DNS记录管理相关API
-		dnsRecords := api.Group("/dns-records")
-		{
-			dnsRecords.GET("", handlers.GetDnsRecords)                         // 获取全部DNS记录
-			dnsRecords.GET("/:id", handlers.GetDnsRecordDetail)                // 获取DNS记录详情
-			dnsRecords.POST("", handlers.CreateDnsRecord)                      // 创建DNS记录
-			dnsRecords.PATCH("/:id", handlers.UpdateDnsRecord)                 // 更新DNS记录
-			dnsRecords.PATCH("/:id/active", handlers.UpdateDnsRecordActive)    // 更新DNS记录启用状态
-			dnsRecords.DELETE("/:id", handlers.DeleteDnsRecord)                // 删除DNS记录
-			dnsRecords.GET("/:id/health-check", handlers.HealthCheckDnsRecord) // 检查DNS记录健康状态
-		}
-
-		// 设备相关API
-		devices := api.Group("/devices")
-		{
-			devices.GET("", handlers.GetDevices)                         // 获取全部设备
-			devices.GET("/:id", handlers.GetDeviceDetail)                // 获取设备详情
-			devices.POST("", handlers.CreateDevice)                      // 创建设备
-			devices.PATCH("/:id", handlers.UpdateDevice)                 // 更新设备
-			devices.DELETE("/:id", handlers.DeleteDevice)                // 删除设备
-			devices.GET("/:id/ip-history", handlers.GetDeviceIpHistory)  // 获取设备IP历史记录
-			devices.GET("/:id/health-check", handlers.HealthCheckDevice) // 检查设备健康状态
-		}
-
-		// IP组相关API
-		ipGroups := api.Group("/ip-groups")
-		{
-			ipGroups.GET("", handlers.GetIPGroups)                         // 获取全部IP组
-			ipGroups.GET("/:id", handlers.GetIPGroupDetail)                // 获取IP组详情
-			ipGroups.POST("", handlers.CreateIPGroup)                      // 创建IP组
-			ipGroups.PATCH("/:id", handlers.UpdateIPGroup)                 // 更新IP组
-			ipGroups.DELETE("/:id", handlers.DeleteIPGroup)                // 删除IP组
-			ipGroups.GET("/:id/devices", handlers.GetIPGroupDevices)       // 获取IP组设备
-			ipGroups.GET("/:id/health-check", handlers.HealthCheckIPGroup) // 检查IP组健康状态
-		}
-
-		// 端口转发相关API
-		portForwards := api.Group("/port-forwards")
-		{
-			portForwards.GET("", handlers.GetPortForwards)                         // 获取全部端口转发
-			portForwards.GET("/:id", handlers.GetPortForwardDetail)                // 获取端口转发详情
-			portForwards.POST("", handlers.CreatePortForward)                      // 创建端口转发
-			portForwards.PATCH("/:id", handlers.UpdatePortForward)                 // 更新端口转发
-			portForwards.PATCH("/:id/forward", handlers.UpdatePortForwardForward)  // 更新端口转发防火墙状态
-			portForwards.PATCH("/:id/active", handlers.UpdatePortForwardActive)    // 更新端口转发启用状态
-			portForwards.DELETE("/:id", handlers.DeletePortForward)                // 删除端口转发
-			portForwards.GET("/:id/health-check", handlers.HealthCheckPortForward) // 检查端口转发健康状态
-		}
-
-		// 域名监控相关API
-		domainMonitors := api.Group("/domain-monitors")
-		{
-			domainMonitors.GET("", handlers.GetDomainMonitors)                      // 获取所有域名监控
-			domainMonitors.GET("/:id", handlers.GetDomainMonitorDetail)             // 获取域名监控详情
-			domainMonitors.POST("", handlers.CreateDomainMonitor)                   // 创建域名监控
-			domainMonitors.PATCH("/:id", handlers.UpdateDomainMonitor)              // 更新域名监控
-			domainMonitors.PATCH("/:id/active", handlers.UpdateDomainMonitorActive) // 更新域名监控启用状态
-			domainMonitors.DELETE("/:id", handlers.DeleteDomainMonitor)             // 删除域名监控
-			domainMonitors.POST("/:id/check", handlers.CheckDomainMonitor)          // 检查域名监控
-		}
-
-		// 通知相关API
-		webhooks := api.Group("/webhooks")
-		{
-			webhooks.GET("", handlers.GetWebhooks)                      // 获取全部通知
-			webhooks.GET("/:id", handlers.GetWebhookDetail)             // 获取通知详情
-			webhooks.POST("", handlers.CreateWebhook)                   // 创建通知
-			webhooks.PATCH("/:id", handlers.UpdateWebhook)              // 更新通知
-			webhooks.PATCH("/:id/active", handlers.UpdateWebhookActive) // 更新通知启用状态
-			webhooks.DELETE("/:id", handlers.DeleteWebhook)             // 删除通知
-		}
-
-		// 通知订阅相关API
-		webhookSubs := api.Group("/webhook-subs")
-		{
-			webhookSubs.GET("", handlers.GetWebhookSubs)                      // 获取全部通知订阅
-			webhookSubs.GET("/:id", handlers.GetWebhookSubDetail)             // 获取通知订阅详情
-			webhookSubs.POST("", handlers.CreateWebhookSub)                   // 创建通知订阅
-			webhookSubs.PATCH("/:id", handlers.UpdateWebhookSub)              // 更新通知订阅
-			webhookSubs.PATCH("/:id/active", handlers.UpdateWebhookSubActive) // 更新通知订阅启用状态
-			webhookSubs.DELETE("/:id", handlers.DeleteWebhookSub)             // 删除通知订阅
-		}
-
-		// 任务相关API
-		tasks := api.Group("/tasks")
-		{
-			tasks.GET("", handlers.GetTasks)                        // 获取全部任务
-			tasks.GET("/:id", handlers.GetTaskDetail)               // 获取任务详情
-			tasks.POST("/:id", handlers.RunTask)                    // 运行任务
-			tasks.DELETE("/:id", handlers.DeleteTask)               // 删除任务
-			tasks.POST("/clean-all", handlers.CleanAllTask)         // 清理所有任务
-			tasks.POST("/start-scheduler", handlers.StartScheduler) // 启动调度器
-			tasks.POST("/stop-scheduler", handlers.StopScheduler)   // 停止调度器
-		}
-
-		opens := api.Group("/open")
-		{
-			opens.POST("/device/:device_code/ip-report", handlers.DeviceReportDeviceIp)  // 设备上报IP
-			opens.GET("/device/:device_code/port-forwards", handlers.DevicePortForwards) //获取设备端口转发
-		}
-	}
+	// gRPC 启动
+	go grpc_run(ctx, router)
 
 	// 启动 GoCron 调度器
 	initialize.StartGoCron()
@@ -657,4 +353,366 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 	}
 
 	return r
+}
+
+// Web 资源
+func web_resource(ctx context.Context, router *gin.Engine) {
+	// 创建带 FuncMap 的 template
+	funcMap := template.FuncMap{
+		"isDebug": func() bool {
+			return global.GvaEnv.DEBUG
+		},
+		// 格式化时间为字符串，若为空则返回 "—"
+		"formatTimeOrNil": func(t time.Time) string {
+			if t.IsZero() {
+				return "—"
+			}
+			return t.Format("2006-01-02 15:04:05")
+		},
+		// 获取当前设备的 Code
+		"selfDeviceCode": func() string {
+			code, _ := machineid.ID()
+			return code
+		},
+		// pagination 组件
+		"add":   func(a, b int) int { return a + b },
+		"sub":   func(a, b int) int { return a - b },
+		"div":   func(a, b int) int { return a / b },
+		"toInt": func(i int64) int { return int(i) },
+		// switch / icons / button 组件
+		"dict": func(values ...any) (map[string]any, error) {
+			if len(values)%2 != 0 {
+				return nil, fmt.Errorf("dict expects even number of arguments")
+			}
+			m := make(map[string]any, len(values)/2)
+			for i := 0; i < len(values); i += 2 {
+				key, ok := values[i].(string)
+				if !ok {
+					return nil, fmt.Errorf("dict keys must be strings")
+				}
+				m[key] = values[i+1]
+			}
+			return m, nil
+		},
+		// 字符串拼接
+		"join": func(strs ...string) string {
+			return strings.Join(strs, "")
+		},
+	}
+
+	// 判断是否为开发模式：version == "dev"
+	devMode := global.GvaVersion == "dev"
+	if devMode {
+		// 自定义分隔符
+		// router.Delims("{{", "}}")
+
+		// 自定义模板功能
+		// router.SetFuncMap(funcMap)
+
+		// 开发：直接读本地 templates
+		// router.LoadHTMLGlob("cmd/backend/templates/**/*")
+
+		// 开发环境
+		router.HTMLRender = loadTemplates("cmd/backend/templates", funcMap)
+
+		// 静态文件服务 - 开发：直接读本地 static
+		router.StaticFS("/static", http.Dir("cmd/backend/static"))
+	} else {
+		// 生产：使用 embed
+		// templ := template.Must(
+		// 	template.New("").
+		// 		Funcs(funcMap).
+		// 		ParseFS(embeddedFiles, "templates/**/*"),
+		// )
+		// router.SetHTMLTemplate(templ)
+
+		// 生产环境
+		router.HTMLRender = loadTemplatesFS(embeddedFiles, funcMap)
+
+		// 静态文件服务 - 使用嵌入的文件系统
+		staticFS, _ := fs.Sub(embeddedFiles, "static")
+		router.StaticFS("/static", http.FS(staticFS))
+	}
+}
+
+// Web 路由
+func web_router(ctx context.Context, router *gin.Engine) {
+	// 根路径 - 提供HTML页面并渲染数据
+	router.GET("/", handlers.Dashboard)
+	router.GET("/dashboard", handlers.Dashboard)
+
+	// 平台配置页面 - 提供HTML页面并渲染数据
+	router.GET("/platform-config", handlers.PlatformConfig)
+
+	// CDN页面 - 提供HTML页面并渲染数据
+	router.GET("/cdn", handlers.Cdn)
+
+	// DNS页面 - 提供HTML页面并渲染数据
+	router.GET("/dns", handlers.Dns)
+
+	// 设备页面 - 提供HTML页面并渲染数据
+	router.GET("/device", handlers.Device)
+
+	// IP组页面 - 提供HTML页面并渲染数据
+	router.GET("/ip-group", handlers.IPGroup)
+
+	// 端口转发页面 - 提供HTML页面并渲染数据
+	router.GET("/port-forward", handlers.PortForward)
+
+	// 域名监控页面 - 提供HTML页面并渲染数据
+	router.GET("/domain-monitor", handlers.DomainMonitor)
+	router.GET("/domain-monitor/:id/detail", handlers.DomainMonitorDetail)
+	router.GET("/domain-monitor/:id/history", handlers.DomainMonitorHistory)
+
+	// 通知页面 - 提供HTML页面并渲染数据
+	router.GET("/webhook", handlers.Webhook)
+
+	// 通知订阅页面 - 提供HTML页面并渲染数据
+	router.GET("/webhook-sub", handlers.WebhookSub)
+
+	// 任务页面 - 提供HTML页面并渲染数据
+	router.GET("/task", handlers.Task)
+
+	// 日志页面 - 提供HTML页面并渲染数据
+	router.GET("/log", handlers.Log)
+}
+
+// API 路由
+func api_router(ctx context.Context, router *gin.Engine) {
+	// API路由组
+	api := router.Group("/api")
+	{
+		// 平台配置相关API
+		platformConfigs := api.Group("/platform-configs")
+		{
+			platformConfigs.GET("", handlers.GetPlatformConfigs)          // 获取全部平台配置
+			platformConfigs.GET("/:id", handlers.GetPlatformConfigDetail) // 获取平台配置详情
+			platformConfigs.POST("", handlers.CreatePlatformConfig)       // 创建平台配置
+			platformConfigs.PATCH("/:id", handlers.UpdatePlatformConfig)  // 更新平台配置
+			platformConfigs.DELETE("/:id", handlers.DeletePlatformConfig) // 删除平台配置
+		}
+
+		// CDN记录管理相关API
+		cdnRecords := api.Group("/cdn-records")
+		{
+			cdnRecords.GET("", handlers.GetCdnRecords)                         // 获取全部CDN记录
+			cdnRecords.GET("/:id", handlers.GetCdnRecordDetail)                // 获取CDN记录详情
+			cdnRecords.POST("", handlers.CreateCdnRecord)                      // 创建CDN记录
+			cdnRecords.PATCH("/:id", handlers.UpdateCdnRecord)                 // 更新CDN记录
+			cdnRecords.PATCH("/:id/active", handlers.UpdateCdnRecordActive)    // 更新CDN记录启用状态
+			cdnRecords.DELETE("/:id", handlers.DeleteCdnRecord)                // 删除CDN记录
+			cdnRecords.GET("/:id/health-check", handlers.HealthCheckCdnRecord) // 检查CDN记录健康状态
+		}
+
+		// DNS记录管理相关API
+		dnsRecords := api.Group("/dns-records")
+		{
+			dnsRecords.GET("", handlers.GetDnsRecords)                         // 获取全部DNS记录
+			dnsRecords.GET("/:id", handlers.GetDnsRecordDetail)                // 获取DNS记录详情
+			dnsRecords.POST("", handlers.CreateDnsRecord)                      // 创建DNS记录
+			dnsRecords.PATCH("/:id", handlers.UpdateDnsRecord)                 // 更新DNS记录
+			dnsRecords.PATCH("/:id/active", handlers.UpdateDnsRecordActive)    // 更新DNS记录启用状态
+			dnsRecords.DELETE("/:id", handlers.DeleteDnsRecord)                // 删除DNS记录
+			dnsRecords.GET("/:id/health-check", handlers.HealthCheckDnsRecord) // 检查DNS记录健康状态
+		}
+
+		// 设备相关API
+		devices := api.Group("/devices")
+		{
+			devices.GET("", handlers.GetDevices)                         // 获取全部设备
+			devices.GET("/:id", handlers.GetDeviceDetail)                // 获取设备详情
+			devices.POST("", handlers.CreateDevice)                      // 创建设备
+			devices.PATCH("/:id", handlers.UpdateDevice)                 // 更新设备
+			devices.DELETE("/:id", handlers.DeleteDevice)                // 删除设备
+			devices.GET("/:id/ip-history", handlers.GetDeviceIpHistory)  // 获取设备IP历史记录
+			devices.GET("/:id/health-check", handlers.HealthCheckDevice) // 检查设备健康状态
+		}
+
+		// IP组相关API
+		ipGroups := api.Group("/ip-groups")
+		{
+			ipGroups.GET("", handlers.GetIPGroups)                         // 获取全部IP组
+			ipGroups.GET("/:id", handlers.GetIPGroupDetail)                // 获取IP组详情
+			ipGroups.POST("", handlers.CreateIPGroup)                      // 创建IP组
+			ipGroups.PATCH("/:id", handlers.UpdateIPGroup)                 // 更新IP组
+			ipGroups.DELETE("/:id", handlers.DeleteIPGroup)                // 删除IP组
+			ipGroups.GET("/:id/devices", handlers.GetIPGroupDevices)       // 获取IP组设备
+			ipGroups.GET("/:id/health-check", handlers.HealthCheckIPGroup) // 检查IP组健康状态
+		}
+
+		// 端口转发相关API
+		portForwards := api.Group("/port-forwards")
+		{
+			portForwards.GET("", handlers.GetPortForwards)                         // 获取全部端口转发
+			portForwards.GET("/:id", handlers.GetPortForwardDetail)                // 获取端口转发详情
+			portForwards.POST("", handlers.CreatePortForward)                      // 创建端口转发
+			portForwards.PATCH("/:id", handlers.UpdatePortForward)                 // 更新端口转发
+			portForwards.PATCH("/:id/forward", handlers.UpdatePortForwardForward)  // 更新端口转发防火墙状态
+			portForwards.PATCH("/:id/active", handlers.UpdatePortForwardActive)    // 更新端口转发启用状态
+			portForwards.DELETE("/:id", handlers.DeletePortForward)                // 删除端口转发
+			portForwards.GET("/:id/health-check", handlers.HealthCheckPortForward) // 检查端口转发健康状态
+		}
+
+		// 域名监控相关API
+		domainMonitors := api.Group("/domain-monitors")
+		{
+			domainMonitors.GET("", handlers.GetDomainMonitors)                      // 获取所有域名监控
+			domainMonitors.GET("/:id", handlers.GetDomainMonitorDetail)             // 获取域名监控详情
+			domainMonitors.POST("", handlers.CreateDomainMonitor)                   // 创建域名监控
+			domainMonitors.PATCH("/:id", handlers.UpdateDomainMonitor)              // 更新域名监控
+			domainMonitors.PATCH("/:id/active", handlers.UpdateDomainMonitorActive) // 更新域名监控启用状态
+			domainMonitors.DELETE("/:id", handlers.DeleteDomainMonitor)             // 删除域名监控
+			domainMonitors.POST("/:id/check", handlers.CheckDomainMonitor)          // 检查域名监控
+		}
+
+		// 通知相关API
+		webhooks := api.Group("/webhooks")
+		{
+			webhooks.GET("", handlers.GetWebhooks)                      // 获取全部通知
+			webhooks.GET("/:id", handlers.GetWebhookDetail)             // 获取通知详情
+			webhooks.POST("", handlers.CreateWebhook)                   // 创建通知
+			webhooks.PATCH("/:id", handlers.UpdateWebhook)              // 更新通知
+			webhooks.PATCH("/:id/active", handlers.UpdateWebhookActive) // 更新通知启用状态
+			webhooks.DELETE("/:id", handlers.DeleteWebhook)             // 删除通知
+		}
+
+		// 通知订阅相关API
+		webhookSubs := api.Group("/webhook-subs")
+		{
+			webhookSubs.GET("", handlers.GetWebhookSubs)                      // 获取全部通知订阅
+			webhookSubs.GET("/:id", handlers.GetWebhookSubDetail)             // 获取通知订阅详情
+			webhookSubs.POST("", handlers.CreateWebhookSub)                   // 创建通知订阅
+			webhookSubs.PATCH("/:id", handlers.UpdateWebhookSub)              // 更新通知订阅
+			webhookSubs.PATCH("/:id/active", handlers.UpdateWebhookSubActive) // 更新通知订阅启用状态
+			webhookSubs.DELETE("/:id", handlers.DeleteWebhookSub)             // 删除通知订阅
+		}
+
+		// 任务相关API
+		tasks := api.Group("/tasks")
+		{
+			tasks.GET("", handlers.GetTasks)                        // 获取全部任务
+			tasks.GET("/:id", handlers.GetTaskDetail)               // 获取任务详情
+			tasks.POST("/:id", handlers.RunTask)                    // 运行任务
+			tasks.DELETE("/:id", handlers.DeleteTask)               // 删除任务
+			tasks.POST("/clean-all", handlers.CleanAllTask)         // 清理所有任务
+			tasks.POST("/start-scheduler", handlers.StartScheduler) // 启动调度器
+			tasks.POST("/stop-scheduler", handlers.StopScheduler)   // 停止调度器
+		}
+
+		opens := api.Group("/open")
+		{
+			opens.POST("/device/:device_code/ip-report", handlers.DeviceReportDeviceIp)  // 设备上报IP
+			opens.GET("/device/:device_code/port-forwards", handlers.DevicePortForwards) //获取设备端口转发
+		}
+	}
+}
+
+// Swagger 路由
+// https://github.com/swaggo/swag/blob/v2/README.md
+// https://github.com/swaggo/swag/issues/1588#issuecomment-3360487197
+func swagger_router(ctx context.Context, router *gin.Engine) {
+	swaggerGroup := router.Group("/swagger")
+	{
+		swaggerGroup.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
+			ginSwagger.URL("/docs_2/doc.json"),
+		))
+	}
+	// doc.json 路由
+	docsGroup := router.Group("")
+	{
+		// 配置 Swagger 信息
+		docs_2.SwaggerInfo.Version = global.GvaVersion
+		docs_2.SwaggerInfo.Host = ""
+		docs_3.SwaggerInfo.Version = global.GvaVersion
+		docs_3.SwaggerInfo.Host = ""
+		docsGroup.GET("/docs_2/doc.json", func(ctx *gin.Context) {
+			ctx.Header("Content-Type", "application/json")
+			ctx.String(200, docs_2.SwaggerInfo.ReadDoc())
+		})
+		docsGroup.GET("/docs_3/doc.json", func(ctx *gin.Context) {
+			ctx.Header("Content-Type", "application/json")
+			ctx.String(200, docs_3.SwaggerInfo.ReadDoc())
+		})
+	}
+}
+
+// MCP 启动
+func mcp_run(ctx context.Context, router *gin.Engine) {
+	// 判断是否开启 MCP 功能
+	if global.GvaMcpServer != nil {
+
+		// 注册 MCP 实现
+		mcp_resource.RegisterTimeResources(global.GvaMcpServer)
+		mcp_tool.RegisterTimeTools(global.GvaMcpServer)
+
+		mcp_prompt.RegisterPlatformConfigPrompts(global.GvaMcpServer)
+		mcp_resource.RegisterPlatformConfigResources(global.GvaMcpServer)
+		mcp_tool.RegisterPlatformConfigTools(global.GvaMcpServer)
+
+		mcp_prompt.RegisterCDNRecordPrompts(global.GvaMcpServer)
+		mcp_resource.RegisterCDNRecordResources(global.GvaMcpServer)
+		mcp_tool.RegisterCDNRecordTools(global.GvaMcpServer)
+
+		mcp_prompt.RegisterDNSRecordPrompts(global.GvaMcpServer)
+		mcp_resource.RegisterDNSRecordResources(global.GvaMcpServer)
+		mcp_tool.RegisterDNSRecordTools(global.GvaMcpServer)
+
+		mcp_prompt.RegisterDevicePrompts(global.GvaMcpServer)
+		mcp_resource.RegisterDeviceResources(global.GvaMcpServer)
+		mcp_tool.RegisterDeviceTools(global.GvaMcpServer)
+
+		mcp_prompt.RegisterIPGroupPrompts(global.GvaMcpServer)
+		mcp_resource.RegisterIPGroupResources(global.GvaMcpServer)
+		mcp_tool.RegisterIPGroupTools(global.GvaMcpServer)
+
+		mcp_prompt.RegisterPortForwardPrompts(global.GvaMcpServer)
+		mcp_resource.RegisterPortForwardResources(global.GvaMcpServer)
+		mcp_tool.RegisterPortForwardTools(global.GvaMcpServer)
+
+		mcp_prompt.RegisterDomainMonitorPrompts(global.GvaMcpServer)
+		mcp_resource.RegisterDomainMonitorResources(global.GvaMcpServer)
+		mcp_tool.RegisterDomainMonitorTools(global.GvaMcpServer)
+
+		mcp_prompt.RegisterWebhookPrompts(global.GvaMcpServer)
+		mcp_resource.RegisterWebhookResources(global.GvaMcpServer)
+		mcp_tool.RegisterWebhookTools(global.GvaMcpServer)
+
+		mcp_prompt.RegisterWebhookSubPrompts(global.GvaMcpServer)
+		mcp_resource.RegisterWebhookSubResources(global.GvaMcpServer)
+		mcp_tool.RegisterWebhookSubTools(global.GvaMcpServer)
+
+		// 注册 MCP 路由
+		httpTransport := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
+			return global.GvaMcpServer
+		}, nil)
+		router.Any("/mcp/*path", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
+		router.Any("/mcp", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
+	}
+}
+
+// gRPC 启动
+func grpc_run(ctx context.Context, router *gin.Engine) {
+	// 创建 gRPC 服务器
+	grpcServer := grpc.NewServer(
+		grpc.MaxRecvMsgSize(10*1024*1024), // 10MB
+		grpc.MaxSendMsgSize(10*1024*1024), // 10MB
+	)
+
+	// 创建并注册 OpenService
+	openServer := grpc_server.NewOpenServer()
+	openServer.RegisterService(grpcServer)
+
+	// 启动 gRPC 服务器
+	lis, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
+	}
+
+	log.Println("gRPC server starting on :50051...")
+
+	go func() {
+		if err := grpcServer.Serve(lis); err != nil {
+			log.Fatalf("Failed to serve: %v", err)
+		}
+	}()
 }

@@ -8,7 +8,7 @@ option go_package = "/;grpc_generated";
 service OpenService {
     // 设备上报IP
     rpc ReportDeviceIP(ReportDeviceIPRequest) returns (ReportDeviceIPResponse);
-    
+
     // 获取设备端口转发
     rpc GetDevicePortForwards(GetDevicePortForwardsRequest) returns (GetDevicePortForwardsResponse);
 }
@@ -16,7 +16,7 @@ service OpenService {
 message ReportDeviceIPRequest {
     string device_code = 1;// 设备编码
     string device_name = 2;// 设备名称
-    string ipv4_addr = 3;// IP地址V4
+    string ipv4_addr = 3; // IP地址V4
     string ipv6_addr = 4; // IP地址V6
 }
 
@@ -39,5 +39,5 @@ message PortForwardRule {
 }
 
 message GetDevicePortForwardsResponse {
-    repeated PortForwardRule rules = 1;
+    repeated PortForwardRule rules = 1; // 端口转发规则列表
 }
