@@ -42,6 +42,11 @@ func successResponse(uri string, data any) (*mcp.ReadResourceResult, error) {
 		} else {
 			content = fmt.Sprintf("%v", data)
 		}
+		// if jsonData, err := json.MarshalIndent(data, "", "  "); err == nil {
+		// 	content = string(jsonData)
+		// } else {
+		// 	content = fmt.Sprintf("%v", data)
+		// }
 	}
 
 	return &mcp.ReadResourceResult{

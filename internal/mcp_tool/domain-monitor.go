@@ -9,7 +9,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterDomainMonitorTool(server *mcp.Server) {
+func RegisterDomainMonitorTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getDomainMonitorList",
 		Description: "获取全部域名监控",
@@ -57,7 +57,7 @@ func getDomainMonitorList(ctx context.Context, req *mcp.CallToolRequest, params 
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 获取域名监控
@@ -77,7 +77,7 @@ func getDomainMonitorDetail(ctx context.Context, req *mcp.CallToolRequest, param
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 创建域名监控
@@ -97,7 +97,7 @@ func createDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 更新域名监控
@@ -117,7 +117,7 @@ func updateDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 更新域名监控启用状态
@@ -137,7 +137,7 @@ func updateDomainMonitorActive(ctx context.Context, req *mcp.CallToolRequest, pa
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 删除域名监控
@@ -157,7 +157,7 @@ func deleteDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 检查域名监控
@@ -177,5 +177,5 @@ func checkDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *t
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }

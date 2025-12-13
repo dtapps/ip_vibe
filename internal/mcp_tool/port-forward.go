@@ -9,7 +9,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterPortForwardTool(server *mcp.Server) {
+func RegisterPortForwardTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getPortForwardList",
 		Description: "获取全部端口转发",
@@ -60,7 +60,7 @@ func getPortForwardList(ctx context.Context, req *mcp.CallToolRequest, params *t
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 获取端口转发
@@ -79,7 +79,7 @@ func getPortForwardDetail(ctx context.Context, req *mcp.CallToolRequest, params 
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 创建端口转发
@@ -98,7 +98,7 @@ func createPortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 更新端口转发
@@ -117,7 +117,7 @@ func updatePortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 更新端口转发防火墙状态
@@ -136,7 +136,7 @@ func updatePortForwardForward(ctx context.Context, req *mcp.CallToolRequest, par
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 更新端口转发启用状态
@@ -155,7 +155,7 @@ func updatePortForwardActive(ctx context.Context, req *mcp.CallToolRequest, para
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 删除端口转发
@@ -174,7 +174,7 @@ func deletePortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 检查端口转发健康状态
@@ -193,5 +193,5 @@ func healthCheckPortForward(ctx context.Context, req *mcp.CallToolRequest, param
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }

@@ -4,5 +4,5 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterIPGroupPrompt(server *mcp.Server) {
+func RegisterIPGroupPrompts(server *mcp.Server) {
 }

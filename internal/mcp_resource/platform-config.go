@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-func RegisterPlatformConfigResource(server *mcp.Server) {
+func RegisterPlatformConfigResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
 		Name:        "getPlatformConfigList",
 		Description: "获取全部配置",

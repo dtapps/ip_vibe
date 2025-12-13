@@ -7,7 +7,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterCDNRecordPrompt(server *mcp.Server) {
+func RegisterCDNRecordPrompts(server *mcp.Server) {
 	server.AddPrompt(&mcp.Prompt{
 		Name:        "cdnRecordType",
 		Description: "CDN记录类型说明",

@@ -186,41 +186,44 @@ func main() {
 	// 处理 MCP
 	if global.GvaMcpServer != nil {
 		// 注册 MCP 实现
-		mcp_prompt.RegisterPlatformConfigPrompt(global.GvaMcpServer)
-		mcp_resource.RegisterPlatformConfigResource(global.GvaMcpServer)
-		mcp_tool.RegisterPlatformConfigTool(global.GvaMcpServer)
+		mcp_resource.RegisterTimeResources(global.GvaMcpServer)
+		mcp_tool.RegisterTimeTools(global.GvaMcpServer)
 
-		mcp_prompt.RegisterCDNRecordPrompt(global.GvaMcpServer)
-		mcp_resource.RegisterCDNRecordResource(global.GvaMcpServer)
-		mcp_tool.RegisterCDNRecordTool(global.GvaMcpServer)
+		mcp_prompt.RegisterPlatformConfigPrompts(global.GvaMcpServer)
+		mcp_resource.RegisterPlatformConfigResources(global.GvaMcpServer)
+		mcp_tool.RegisterPlatformConfigTools(global.GvaMcpServer)
 
-		mcp_prompt.RegisterDNSRecordPrompt(global.GvaMcpServer)
-		mcp_resource.RegisterDNSRecordResource(global.GvaMcpServer)
-		mcp_tool.RegisterDNSRecordTool(global.GvaMcpServer)
+		mcp_prompt.RegisterCDNRecordPrompts(global.GvaMcpServer)
+		mcp_resource.RegisterCDNRecordResources(global.GvaMcpServer)
+		mcp_tool.RegisterCDNRecordTools(global.GvaMcpServer)
 
-		mcp_prompt.RegisterDevicePrompt(global.GvaMcpServer)
-		mcp_resource.RegisterDeviceResource(global.GvaMcpServer)
-		mcp_tool.RegisterDeviceTool(global.GvaMcpServer)
+		mcp_prompt.RegisterDNSRecordPrompts(global.GvaMcpServer)
+		mcp_resource.RegisterDNSRecordResources(global.GvaMcpServer)
+		mcp_tool.RegisterDNSRecordTools(global.GvaMcpServer)
 
-		mcp_prompt.RegisterIPGroupPrompt(global.GvaMcpServer)
-		mcp_resource.RegisterIPGroupResource(global.GvaMcpServer)
-		mcp_tool.RegisterIPGroupTool(global.GvaMcpServer)
+		mcp_prompt.RegisterDevicePrompts(global.GvaMcpServer)
+		mcp_resource.RegisterDeviceResources(global.GvaMcpServer)
+		mcp_tool.RegisterDeviceTools(global.GvaMcpServer)
 
-		mcp_prompt.RegisterPortForwardPrompt(global.GvaMcpServer)
-		mcp_resource.RegisterPortForwardResource(global.GvaMcpServer)
-		mcp_tool.RegisterPortForwardTool(global.GvaMcpServer)
+		mcp_prompt.RegisterIPGroupPrompts(global.GvaMcpServer)
+		mcp_resource.RegisterIPGroupResources(global.GvaMcpServer)
+		mcp_tool.RegisterIPGroupTools(global.GvaMcpServer)
 
-		mcp_prompt.RegisterDomainMonitorPrompt(global.GvaMcpServer)
-		mcp_resource.RegisterDomainMonitorResource(global.GvaMcpServer)
-		mcp_tool.RegisterDomainMonitorTool(global.GvaMcpServer)
+		mcp_prompt.RegisterPortForwardPrompts(global.GvaMcpServer)
+		mcp_resource.RegisterPortForwardResources(global.GvaMcpServer)
+		mcp_tool.RegisterPortForwardTools(global.GvaMcpServer)
 
-		mcp_prompt.RegisterWebhookPrompt(global.GvaMcpServer)
-		mcp_resource.RegisterWebhookResource(global.GvaMcpServer)
-		mcp_tool.RegisterWebhookTool(global.GvaMcpServer)
+		mcp_prompt.RegisterDomainMonitorPrompts(global.GvaMcpServer)
+		mcp_resource.RegisterDomainMonitorResources(global.GvaMcpServer)
+		mcp_tool.RegisterDomainMonitorTools(global.GvaMcpServer)
 
-		mcp_prompt.RegisterWebhookSubPrompt(global.GvaMcpServer)
-		mcp_resource.RegisterWebhookSubResource(global.GvaMcpServer)
-		mcp_tool.RegisterWebhookSubTool(global.GvaMcpServer)
+		mcp_prompt.RegisterWebhookPrompts(global.GvaMcpServer)
+		mcp_resource.RegisterWebhookResources(global.GvaMcpServer)
+		mcp_tool.RegisterWebhookTools(global.GvaMcpServer)
+
+		mcp_prompt.RegisterWebhookSubPrompts(global.GvaMcpServer)
+		mcp_resource.RegisterWebhookSubResources(global.GvaMcpServer)
+		mcp_tool.RegisterWebhookSubTools(global.GvaMcpServer)
 		// 注册 MCP 路由
 		httpTransport := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
 			return global.GvaMcpServer

@@ -7,7 +7,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterDomainMonitorPrompt(server *mcp.Server) {
+func RegisterDomainMonitorPrompts(server *mcp.Server) {
 	server.AddPrompt(&mcp.Prompt{
 		Name:        "domainMonitorCheckProtocol",
 		Description: "域名监控检查类型说明",

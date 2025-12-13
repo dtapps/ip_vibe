@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-func RegisterDNSRecordResource(server *mcp.Server) {
+func RegisterDNSRecordResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
 		Name:        "getDNSRecordList",
 		Description: "获取全部DNS记录",

@@ -9,7 +9,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterDNSRecordTool(server *mcp.Server) {
+func RegisterDNSRecordTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getDNSRecordList",
 		Description: "获取全部DNS记录",
@@ -56,7 +56,7 @@ func getDnsRecordList(ctx context.Context, req *mcp.CallToolRequest, params *typ
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 获取DNS记录
@@ -75,7 +75,7 @@ func getDnsRecordDetail(ctx context.Context, req *mcp.CallToolRequest, params *t
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 创建DNS记录
@@ -94,7 +94,7 @@ func createDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 更新DNS记录
@@ -113,7 +113,7 @@ func updateDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 更新DNS记录启用状态
@@ -132,7 +132,7 @@ func updateDnsRecordActive(ctx context.Context, req *mcp.CallToolRequest, params
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 删除DNS记录
@@ -151,7 +151,7 @@ func deleteDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 检查DNS记录健康状态
@@ -170,5 +170,5 @@ func healthCheckDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params 
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }

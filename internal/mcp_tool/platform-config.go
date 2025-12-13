@@ -9,7 +9,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterPlatformConfigTool(server *mcp.Server) {
+func RegisterPlatformConfigTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getPlatformConfigList",
 		Description: "获取全部配置",
@@ -48,7 +48,7 @@ func getPlatformConfigList(ctx context.Context, req *mcp.CallToolRequest, params
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 获取配置
@@ -67,7 +67,7 @@ func getPlatformConfigDetail(ctx context.Context, req *mcp.CallToolRequest, para
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 创建配置
@@ -86,7 +86,7 @@ func createPlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 更新配置
@@ -105,7 +105,7 @@ func updatePlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 删除配置
@@ -124,5 +124,5 @@ func deletePlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }

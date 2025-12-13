@@ -4,5 +4,5 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterDevicePrompt(server *mcp.Server) {
+func RegisterDevicePrompts(server *mcp.Server) {
 }

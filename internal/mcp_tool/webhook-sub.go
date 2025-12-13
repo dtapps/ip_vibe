@@ -9,7 +9,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterWebhookSubTool(server *mcp.Server) {
+func RegisterWebhookSubTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getWebhookSubList",
 		Description: "获取全部通知订阅",
@@ -52,7 +52,7 @@ func getWebhookSubList(ctx context.Context, req *mcp.CallToolRequest, params *ty
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 获取通知订阅
@@ -71,7 +71,7 @@ func getWebhookSubDetail(ctx context.Context, req *mcp.CallToolRequest, params *
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 创建通知订阅
@@ -90,7 +90,7 @@ func createWebhookSub(ctx context.Context, req *mcp.CallToolRequest, params *typ
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 更新通知订阅
@@ -109,7 +109,7 @@ func updateWebhookSub(ctx context.Context, req *mcp.CallToolRequest, params *typ
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 更新通知订阅启用状态
@@ -128,7 +128,7 @@ func updateWebhookSubActive(ctx context.Context, req *mcp.CallToolRequest, param
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 删除通知订阅
@@ -147,5 +147,5 @@ func deleteWebhookSub(ctx context.Context, req *mcp.CallToolRequest, params *typ
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }

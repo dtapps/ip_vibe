@@ -9,7 +9,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterTaskResource(server *mcp.Server) {
+func RegisterTaskResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
 		Name:        "getTaskList",
 		Description: "获取全部任务",

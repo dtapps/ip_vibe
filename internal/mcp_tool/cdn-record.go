@@ -9,7 +9,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterCDNRecordTool(server *mcp.Server) {
+func RegisterCDNRecordTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getCdnRecordList",
 		Description: "获取全部CDN记录",
@@ -55,7 +55,7 @@ func getCdnRecordList(ctx context.Context, req *mcp.CallToolRequest, params *typ
 	if err != nil {
 		return errorResponse(err.Error())
 	}
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 获取CDN记录详情
@@ -73,7 +73,7 @@ func getCdnRecordDetail(ctx context.Context, req *mcp.CallToolRequest, params *t
 	if err != nil {
 		return errorResponse(err.Error())
 	}
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 创建CDN记录
@@ -91,7 +91,7 @@ func createCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	if err != nil {
 		return errorResponse(err.Error())
 	}
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 更新CDN记录
@@ -109,7 +109,7 @@ func updateCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	if err != nil {
 		return errorResponse(err.Error())
 	}
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 更新CDN记录启用状态
@@ -127,7 +127,7 @@ func updateCdnRecordActive(ctx context.Context, req *mcp.CallToolRequest, params
 	if err != nil {
 		return errorResponse(err.Error())
 	}
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 删除CDN记录
@@ -145,7 +145,7 @@ func deleteCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	if err != nil {
 		return errorResponse(err.Error())
 	}
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 检查CDN记录健康状态
@@ -163,5 +163,5 @@ func healthCheckCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params 
 	if err != nil {
 		return errorResponse(err.Error())
 	}
-	return successResponse(response)
+	return successResponse(response, response)
 }

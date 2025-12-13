@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-func RegisterCDNRecordResource(server *mcp.Server) {
+func RegisterCDNRecordResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
 		Name:        "getCdnRecordList",
 		Description: "获取全部CDN记录",

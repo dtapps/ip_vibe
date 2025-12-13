@@ -7,7 +7,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterPlatformConfigPrompt(server *mcp.Server) {
+func RegisterPlatformConfigPrompts(server *mcp.Server) {
 	server.AddPrompt(&mcp.Prompt{
 		Name:        "webhookSubObjectType",
 		Description: "通知订阅订阅对象类型说明",

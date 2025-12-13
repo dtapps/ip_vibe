@@ -7,7 +7,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterWebhookSubPrompt(server *mcp.Server) {
+func RegisterWebhookSubPrompts(server *mcp.Server) {
 	server.AddPrompt(&mcp.Prompt{
 		Name:        "platformConfigCapability",
 		Description: "平台配置服务能力说明",

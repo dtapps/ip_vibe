@@ -13,7 +13,7 @@ func errorResponse(format string, args ...any) (*mcp.CallToolResult, any, error)
 }
 
 // successResponse 成功响应（自动处理多种数据类型）
-func successResponse(data any) (*mcp.CallToolResult, any, error) {
+func successResponse(data any, response any) (*mcp.CallToolResult, any, error) {
 	var content string
 
 	switch v := data.(type) {
@@ -30,6 +30,11 @@ func successResponse(data any) (*mcp.CallToolResult, any, error) {
 		} else {
 			content = fmt.Sprintf("%v", data)
 		}
+		// if jsonData, err := json.MarshalIndent(data, "", "  "); err == nil {
+		// 	content = string(jsonData)
+		// } else {
+		// 	content = fmt.Sprintf("%v", data)
+		// }
 	}
 
 	return &mcp.CallToolResult{
@@ -38,5 +43,5 @@ func successResponse(data any) (*mcp.CallToolResult, any, error) {
 				Text: content,
 			},
 		},
-	}, nil, nil
+	}, response, nil
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterPortForwardPrompt(server *mcp.Server) {
+func RegisterPortForwardPrompts(server *mcp.Server) {
 	server.AddPrompt(&mcp.Prompt{
 		Name:        "portForwardProtocols",
 		Description: "端口转发协议列表说明",

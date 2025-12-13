@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-func RegisterPortForwardResource(server *mcp.Server) {
+func RegisterPortForwardResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
 		Name:        "getPortForwardList",
 		Description: "获取全部端口转发",

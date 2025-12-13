@@ -9,7 +9,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterIPGroupTool(server *mcp.Server) {
+func RegisterIPGroupTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getIPGroupList",
 		Description: "获取全部IP组",
@@ -55,7 +55,7 @@ func getIPGroupList(ctx context.Context, req *mcp.CallToolRequest, params *types
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 获取IP组
@@ -74,7 +74,7 @@ func getIPGroupDetail(ctx context.Context, req *mcp.CallToolRequest, params *typ
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 创建IP组
@@ -93,7 +93,7 @@ func createIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 更新IP组
@@ -112,7 +112,7 @@ func updateIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 删除IP组
@@ -131,7 +131,7 @@ func deleteIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 获取IP组的设备列表
@@ -150,7 +150,7 @@ func getIPGroupDevices(ctx context.Context, req *mcp.CallToolRequest, params *ty
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 检查IP组健康状态
@@ -169,5 +169,5 @@ func healthCheckIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *t
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }

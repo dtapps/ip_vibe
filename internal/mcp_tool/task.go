@@ -9,7 +9,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterTaskTool(server *mcp.Server) {
+func RegisterTaskTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getTaskList",
 		Description: "获取全部任务",
@@ -57,7 +57,7 @@ func getTaskList(ctx context.Context, req *mcp.CallToolRequest, params *types.Ge
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 获取任务
@@ -77,7 +77,7 @@ func getTaskDetail(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 运行任务
@@ -97,7 +97,7 @@ func runTask(ctx context.Context, req *mcp.CallToolRequest, params *types.RunTas
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(nil)
+	return successResponse("运行任务成功", nil)
 }
 
 // 删除任务
@@ -117,7 +117,7 @@ func deleteTask(ctx context.Context, req *mcp.CallToolRequest, params *types.Del
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(nil)
+	return successResponse("删除任务成功", nil)
 }
 
 // 清理全部任务
@@ -137,7 +137,7 @@ func cleanAllTask(ctx context.Context, req *mcp.CallToolRequest, params *any) (*
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(nil)
+	return successResponse("清理全部任务成功", nil)
 }
 
 // 启动调度器
@@ -157,7 +157,7 @@ func startScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) 
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(nil)
+	return successResponse("启动调度器成功", nil)
 }
 
 // 停止调度器
@@ -173,5 +173,5 @@ func stopScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) (
 
 	// 调用
 	service.StopScheduler(ctx)
-	return successResponse(nil)
+	return successResponse("停止调度器成功", nil)
 }

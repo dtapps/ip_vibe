@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-func RegisterIPGroupResource(server *mcp.Server) {
+func RegisterIPGroupResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
 		Name:        "getIPGroupList",
 		Description: "获取全部IP组",

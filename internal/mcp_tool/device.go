@@ -9,7 +9,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterDeviceTool(server *mcp.Server) {
+func RegisterDeviceTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getDeviceList",
 		Description: "获取全部设备",
@@ -56,7 +56,7 @@ func getDeviceList(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 获取设备
@@ -75,7 +75,7 @@ func getDeviceDetail(ctx context.Context, req *mcp.CallToolRequest, params *type
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 创建设备
@@ -94,7 +94,7 @@ func createDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.C
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 更新设备
@@ -113,7 +113,7 @@ func updateDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.U
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 删除设备
@@ -132,7 +132,7 @@ func deleteDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.D
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 获取设备的IP历史记录
@@ -151,7 +151,7 @@ func getDeviceIpHistory(ctx context.Context, req *mcp.CallToolRequest, params *t
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 检查设备健康状态
@@ -170,5 +170,5 @@ func healthCheckDevice(ctx context.Context, req *mcp.CallToolRequest, params *ty
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }

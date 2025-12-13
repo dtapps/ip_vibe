@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-func RegisterDeviceResource(server *mcp.Server) {
+func RegisterDeviceResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
 		Name:        "getDeviceList",
 		Description: "获取全部设备",

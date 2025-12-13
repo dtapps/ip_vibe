@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-func RegisterDomainMonitorResource(server *mcp.Server) {
+func RegisterDomainMonitorResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
 		Name:        "getDomainMonitorList",
 		Description: "获取全部域名监控",

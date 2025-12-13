@@ -9,7 +9,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterWebhookTool(server *mcp.Server) {
+func RegisterWebhookTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getWebhookList",
 		Description: "获取全部通知",
@@ -52,7 +52,7 @@ func getWebhookList(ctx context.Context, req *mcp.CallToolRequest, params *types
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 获取通知
@@ -71,7 +71,7 @@ func getWebhookDetail(ctx context.Context, req *mcp.CallToolRequest, params *typ
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 创建通知
@@ -90,7 +90,7 @@ func createWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 更新通知
@@ -109,7 +109,7 @@ func updateWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 更新通知启用状态
@@ -128,7 +128,7 @@ func updateWebhookActive(ctx context.Context, req *mcp.CallToolRequest, params *
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }
 
 // 删除通知
@@ -147,5 +147,5 @@ func deleteWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		return errorResponse(err.Error())
 	}
 
-	return successResponse(response)
+	return successResponse(response, response)
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func RegisterDNSRecordPrompt(server *mcp.Server) {
+func RegisterDNSRecordPrompts(server *mcp.Server) {
 	server.AddPrompt(&mcp.Prompt{
 		Name:        "dnsRecordType",
 		Description: "DNS记录类型说明",

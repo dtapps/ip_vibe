@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-func RegisterWebhookResource(server *mcp.Server) {
+func RegisterWebhookResources(server *mcp.Server) {
 	server.AddResource(&mcp.Resource{
 		Name:        "getWebhookList",
 		Description: "获取全部通知",
