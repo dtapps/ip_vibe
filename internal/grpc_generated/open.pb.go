@@ -23,10 +23,10 @@ const (
 
 type ReportDeviceIPRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	DeviceCode    string                 `protobuf:"bytes,1,opt,name=device_code,json=deviceCode,proto3" json:"device_code,omitempty"`
-	DeviceName    string                 `protobuf:"bytes,2,opt,name=device_name,json=deviceName,proto3" json:"device_name,omitempty"`
-	Ipv4Addr      string                 `protobuf:"bytes,3,opt,name=ipv4_addr,json=ipv4Addr,proto3" json:"ipv4_addr,omitempty"`
-	Ipv6Addr      string                 `protobuf:"bytes,4,opt,name=ipv6_addr,json=ipv6Addr,proto3" json:"ipv6_addr,omitempty"`
+	DeviceCode    string                 `protobuf:"bytes,1,opt,name=device_code,json=deviceCode,proto3" json:"device_code,omitempty"` // 设备编码
+	DeviceName    string                 `protobuf:"bytes,2,opt,name=device_name,json=deviceName,proto3" json:"device_name,omitempty"` // 设备名称
+	Ipv4Addr      string                 `protobuf:"bytes,3,opt,name=ipv4_addr,json=ipv4Addr,proto3" json:"ipv4_addr,omitempty"`       // IP地址V4
+	Ipv6Addr      string                 `protobuf:"bytes,4,opt,name=ipv6_addr,json=ipv6Addr,proto3" json:"ipv6_addr,omitempty"`       // IP地址V6
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -91,8 +91,8 @@ func (x *ReportDeviceIPRequest) GetIpv6Addr() string {
 
 type ReportDeviceIPResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	DeviceCode    string                 `protobuf:"bytes,1,opt,name=device_code,json=deviceCode,proto3" json:"device_code,omitempty"`
-	Msg           string                 `protobuf:"bytes,2,opt,name=msg,proto3" json:"msg,omitempty"`
+	DeviceCode    string                 `protobuf:"bytes,1,opt,name=device_code,json=deviceCode,proto3" json:"device_code,omitempty"` // 设备编码
+	Msg           string                 `protobuf:"bytes,2,opt,name=msg,proto3" json:"msg,omitempty"`                                 // 消息
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -143,7 +143,7 @@ func (x *ReportDeviceIPResponse) GetMsg() string {
 
 type GetDevicePortForwardsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	DeviceCode    string                 `protobuf:"bytes,1,opt,name=device_code,json=deviceCode,proto3" json:"device_code,omitempty"`
+	DeviceCode    string                 `protobuf:"bytes,1,opt,name=device_code,json=deviceCode,proto3" json:"device_code,omitempty"` // 设备编码
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -187,12 +187,12 @@ func (x *GetDevicePortForwardsRequest) GetDeviceCode() string {
 
 type PortForwardRule struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	LocalPort     int32                  `protobuf:"varint,2,opt,name=local_port,json=localPort,proto3" json:"local_port,omitempty"`
-	RemoteHost    string                 `protobuf:"bytes,3,opt,name=remote_host,json=remoteHost,proto3" json:"remote_host,omitempty"`
-	RemotePort    int32                  `protobuf:"varint,4,opt,name=remote_port,json=remotePort,proto3" json:"remote_port,omitempty"`
-	Protocols     []string               `protobuf:"bytes,5,rep,name=protocols,proto3" json:"protocols,omitempty"`
-	AutoForward   bool                   `protobuf:"varint,6,opt,name=auto_forward,json=autoForward,proto3" json:"auto_forward,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`                                      // 设备端口转发序号
+	LocalPort     int32                  `protobuf:"varint,2,opt,name=local_port,json=localPort,proto3" json:"local_port,omitempty"`       // 本地监听端口
+	RemoteHost    string                 `protobuf:"bytes,3,opt,name=remote_host,json=remoteHost,proto3" json:"remote_host,omitempty"`     // 远程目标地址
+	RemotePort    int32                  `protobuf:"varint,4,opt,name=remote_port,json=remotePort,proto3" json:"remote_port,omitempty"`    // 远程目标端口
+	Protocols     []string               `protobuf:"bytes,5,rep,name=protocols,proto3" json:"protocols,omitempty"`                         // 协议列表，支持 tcp4, tcp6, udp4, udp6
+	AutoForward   bool                   `protobuf:"varint,6,opt,name=auto_forward,json=autoForward,proto3" json:"auto_forward,omitempty"` // 防火墙自动放行
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
