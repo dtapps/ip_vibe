@@ -37,12 +37,12 @@
           <td>{{.CheckInterval}}</td>
           <td>{{.CheckProtocol}}</td>
           <td>
-            {{if eq .CurrentStatus "up"}}
-            <span class="badge badge-success">运行中</span>
-            {{else if eq .CurrentStatus "cdn"}}
-            <span class="badge badge-warning">已停止</span>
+            {{if eq .CurrentStatus "success"}}
+            <span class="badge badge-success">成功运行</span>
+            {{else if eq .CurrentStatus "failure"}}
+            <span class="badge badge-warning">检查失败</span>
             {{else}}
-            <span class="badge">未知状态</span>
+            <span class="badge">状态未知</span>
             {{end}}
           </td>
           <td>{{formatTimeOrNil .LastSuccessAt}}</td>
