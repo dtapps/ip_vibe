@@ -309,3 +309,28 @@ var GetDomainMonitorStatuss = []string{
 	DomainMonitorStatusFailure,
 	DomainMonitorStatusUnknown,
 }
+
+// --------
+
+const (
+	DevicePortForwardProtocolTCP4 string = "tcp4" // TCP4 协议
+	DevicePortForwardProtocolTCP6 string = "tcp6" // TCP6 协议
+	DevicePortForwardProtocolUDP4 string = "udp4" // UDP4 协议
+	DevicePortForwardProtocolUDP6 string = "udp6" // UDP6 协议
+)
+
+// GetDevicePortForwardProtocolDescriptions 端口转发协议说明映射
+var GetDevicePortForwardProtocolDescriptions = map[string]string{
+	DevicePortForwardProtocolTCP4: "TCP4协议",
+	DevicePortForwardProtocolTCP6: "TCP6协议",
+	DevicePortForwardProtocolUDP4: "UDP4协议",
+	DevicePortForwardProtocolUDP6: "UDP6协议",
+}
+
+// GetDevicePortForwardProtocols 返回所有端口转发协议
+var GetDevicePortForwardProtocols = []string{
+	DevicePortForwardProtocolTCP4,
+	DevicePortForwardProtocolTCP6,
+	DevicePortForwardProtocolUDP4,
+	DevicePortForwardProtocolUDP6,
+}

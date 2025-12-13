@@ -20,6 +20,7 @@ import (
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/initialize"
+	"vibe_ip/internal/mcp_prompt"
 	"vibe_ip/internal/mcp_resource"
 	"vibe_ip/internal/mcp_tool"
 
@@ -185,24 +186,41 @@ func main() {
 	// 处理 MCP
 	if global.GvaMcpServer != nil {
 		// 注册 MCP 实现
-		mcp_tool.RegisterPlatformConfigTool(global.GvaMcpServer)
+		mcp_prompt.RegisterPlatformConfigPrompt(global.GvaMcpServer)
 		mcp_resource.RegisterPlatformConfigResource(global.GvaMcpServer)
-		mcp_tool.RegisterCDNRecordTool(global.GvaMcpServer)
+		mcp_tool.RegisterPlatformConfigTool(global.GvaMcpServer)
+
+		mcp_prompt.RegisterCDNRecordPrompt(global.GvaMcpServer)
 		mcp_resource.RegisterCDNRecordResource(global.GvaMcpServer)
-		mcp_tool.RegisterDNSRecordTool(global.GvaMcpServer)
+		mcp_tool.RegisterCDNRecordTool(global.GvaMcpServer)
+
+		mcp_prompt.RegisterDNSRecordPrompt(global.GvaMcpServer)
 		mcp_resource.RegisterDNSRecordResource(global.GvaMcpServer)
-		mcp_tool.RegisterDeviceTool(global.GvaMcpServer)
+		mcp_tool.RegisterDNSRecordTool(global.GvaMcpServer)
+
+		mcp_prompt.RegisterDevicePrompt(global.GvaMcpServer)
 		mcp_resource.RegisterDeviceResource(global.GvaMcpServer)
-		mcp_tool.RegisterIPGroupTool(global.GvaMcpServer)
+		mcp_tool.RegisterDeviceTool(global.GvaMcpServer)
+
+		mcp_prompt.RegisterIPGroupPrompt(global.GvaMcpServer)
 		mcp_resource.RegisterIPGroupResource(global.GvaMcpServer)
-		mcp_tool.RegisterPortForwardTool(global.GvaMcpServer)
+		mcp_tool.RegisterIPGroupTool(global.GvaMcpServer)
+
+		mcp_prompt.RegisterPortForwardPrompt(global.GvaMcpServer)
 		mcp_resource.RegisterPortForwardResource(global.GvaMcpServer)
-		mcp_tool.RegisterDomainMonitorTool(global.GvaMcpServer)
+		mcp_tool.RegisterPortForwardTool(global.GvaMcpServer)
+
+		mcp_prompt.RegisterDomainMonitorPrompt(global.GvaMcpServer)
 		mcp_resource.RegisterDomainMonitorResource(global.GvaMcpServer)
-		mcp_tool.RegisterWebhookTool(global.GvaMcpServer)
+		mcp_tool.RegisterDomainMonitorTool(global.GvaMcpServer)
+
+		mcp_prompt.RegisterWebhookPrompt(global.GvaMcpServer)
 		mcp_resource.RegisterWebhookResource(global.GvaMcpServer)
-		mcp_tool.RegisterWebhookSubTool(global.GvaMcpServer)
+		mcp_tool.RegisterWebhookTool(global.GvaMcpServer)
+
+		mcp_prompt.RegisterWebhookSubPrompt(global.GvaMcpServer)
 		mcp_resource.RegisterWebhookSubResource(global.GvaMcpServer)
+		mcp_tool.RegisterWebhookSubTool(global.GvaMcpServer)
 		// 注册 MCP 路由
 		httpTransport := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
 			return global.GvaMcpServer
