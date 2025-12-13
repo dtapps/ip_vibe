@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package open;
+
+// 生成的 Go 包路径
+option go_package = "./";
+
+service OpenService {
+    // 设备上报IP
+    rpc ReportDeviceIP(ReportDeviceIPRequest) returns (ReportDeviceIPResponse);
+    
+    // 获取设备端口转发
+    rpc GetDevicePortForwards(GetDevicePortForwardsRequest) returns (GetDevicePortForwardsResponse);
+}
+
+message ReportDeviceIPRequest {
+    string device_code = 1;
+    string device_name = 2;
+    string ipv4_addr = 3;
+    string ipv6_addr = 4;
+}
+
+message ReportDeviceIPResponse {
+    string device_code = 1;
+    string msg = 2;
+}
+
+message GetDevicePortForwardsRequest {
+    string device_code = 1;
+}
+
+message PortForwardRule {
+    int64 id = 1;
+    int32 local_port = 2;
+    string remote_host = 3;
+    int32 remote_port = 4;
+    repeated string protocols = 5;
+    bool auto_forward = 6;
+}
+
+message GetDevicePortForwardsResponse {
+    repeated PortForwardRule rules = 1;
+}
