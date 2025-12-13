@@ -15,7 +15,7 @@ import (
 //
 //	@Description	获取全部平台配置
 //	@Summary		获取全部平台配置
-//	@Tags			配置
+//	@Tags			平台配置
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Success		200	{object}	APIResponse{data=[]types.GetConfigResponse}	"成功响应"
@@ -43,7 +43,7 @@ func GetConfigs(c *gin.Context) {
 //
 //	@Description	获取平台配置详情
 //	@Summary		获取平台配置详情
-//	@Tags			配置
+//	@Tags			平台配置
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"配置序号"
@@ -56,7 +56,7 @@ func GetConfigDetail(c *gin.Context) {
 	var requestParams types.GetConfigRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -80,20 +80,19 @@ func GetConfigDetail(c *gin.Context) {
 //
 //	@Description	创建平台配置
 //	@Summary		创建平台配置
-//	@Tags			配置
+//	@Tags			平台配置
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.CreateConfigRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetConfigRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
-//	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/configs [post]
 func CreateConfig(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateConfigRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -117,21 +116,21 @@ func CreateConfig(c *gin.Context) {
 //
 //	@Description	更新平台配置
 //	@Summary		更新平台配置
-//	@Tags			配置
+//	@Tags			平台配置
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64										true	"配置序号"
 //	@Param			request	body		types.UpdateConfigRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetConfigRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
-//	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/configs/{id} [patch]
 func UpdateConfig(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateConfigRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -155,21 +154,20 @@ func UpdateConfig(c *gin.Context) {
 //
 //	@Description	删除平台配置
 //	@Summary		删除平台配置
-//	@Tags			配置
+//	@Tags			平台配置
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"配置序号"
 //	@Success		200	{object}	APIResponse{data=types.GetConfigRequest}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
-//	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/configs/{id} [delete]
 func DeleteConfig(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteConfigRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 

@@ -127,7 +127,7 @@
         },
         "/cdn-records/{id}": {
             "get": {
-                "description": "获取CDN记录",
+                "description": "获取CDN记录详情",
                 "consumes": [
                     "application/json"
                 ],
@@ -137,7 +137,7 @@
                 "tags": [
                     "CDN记录"
                 ],
-                "summary": "获取CDN记录",
+                "summary": "获取CDN记录详情",
                 "parameters": [
                     {
                         "type": "integer",
@@ -286,6 +286,12 @@
                             ]
                         }
                     },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
                     "404": {
                         "description": "错误响应",
                         "schema": {
@@ -420,19 +426,13 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
         },
         "/configs": {
             "get": {
-                "description": "获取全部配置",
+                "description": "获取全部平台配置",
                 "consumes": [
                     "application/json"
                 ],
@@ -440,9 +440,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "配置"
+                    "平台配置"
                 ],
-                "summary": "获取全部配置",
+                "summary": "获取全部平台配置",
                 "responses": {
                     "200": {
                         "description": "成功响应",
@@ -474,7 +474,7 @@
                 }
             },
             "post": {
-                "description": "创建配置",
+                "description": "创建平台配置",
                 "consumes": [
                     "application/json"
                 ],
@@ -482,9 +482,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "配置"
+                    "平台配置"
                 ],
-                "summary": "创建配置",
+                "summary": "创建平台配置",
                 "parameters": [
                     {
                         "description": "请求参数",
@@ -526,19 +526,13 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
         },
         "/configs/{id}": {
             "get": {
-                "description": "获取配置",
+                "description": "获取平台配置详情",
                 "consumes": [
                     "application/json"
                 ],
@@ -546,9 +540,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "配置"
+                    "平台配置"
                 ],
-                "summary": "获取配置",
+                "summary": "获取平台配置详情",
                 "parameters": [
                     {
                         "type": "integer",
@@ -593,7 +587,7 @@
                 }
             },
             "delete": {
-                "description": "删除配置",
+                "description": "删除平台配置",
                 "consumes": [
                     "application/json"
                 ],
@@ -601,9 +595,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "配置"
+                    "平台配置"
                 ],
-                "summary": "删除配置",
+                "summary": "删除平台配置",
                 "parameters": [
                     {
                         "type": "integer",
@@ -644,17 +638,11 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             },
             "patch": {
-                "description": "更新配置",
+                "description": "更新平台配置",
                 "consumes": [
                     "application/json"
                 ],
@@ -662,9 +650,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "配置"
+                    "平台配置"
                 ],
-                "summary": "更新配置",
+                "summary": "更新平台配置",
                 "parameters": [
                     {
                         "type": "integer",
@@ -703,14 +691,14 @@
                             ]
                         }
                     },
-                    "404": {
-                        "description": "错误响应",
+                    "400": {
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
-                    "500": {
-                        "description": "服务错误",
+                    "404": {
+                        "description": "错误响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -731,16 +719,6 @@
                     "设备"
                 ],
                 "summary": "获取全部设备",
-                "parameters": [
-                    {
-                        "description": "请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/vibe_ip_internal_types.GetDeviceResponse"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "成功响应",
@@ -824,19 +802,13 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
         },
         "/devices/{id}": {
             "get": {
-                "description": "获取设备",
+                "description": "获取设备详情",
                 "consumes": [
                     "application/json"
                 ],
@@ -846,7 +818,7 @@
                 "tags": [
                     "设备"
                 ],
-                "summary": "获取设备",
+                "summary": "获取设备详情",
                 "parameters": [
                     {
                         "type": "integer",
@@ -942,12 +914,6 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             },
@@ -1001,14 +967,14 @@
                             ]
                         }
                     },
-                    "404": {
-                        "description": "错误响应",
+                    "400": {
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
-                    "500": {
-                        "description": "服务错误",
+                    "404": {
+                        "description": "错误响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -1075,19 +1041,13 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
         },
         "/devices/{id}/ip-history": {
             "get": {
-                "description": "获取设备的IP历史记录",
+                "description": "获取设备IP历史记录",
                 "consumes": [
                     "application/json"
                 ],
@@ -1097,7 +1057,7 @@
                 "tags": [
                     "设备"
                 ],
-                "summary": "获取设备的IP历史记录",
+                "summary": "获取设备IP历史记录",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1257,19 +1217,13 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
         },
         "/dns-records/{id}": {
             "get": {
-                "description": "获取DNS记录",
+                "description": "获取DNS记录详情",
                 "consumes": [
                     "application/json"
                 ],
@@ -1279,7 +1233,7 @@
                 "tags": [
                     "DNS记录"
                 ],
-                "summary": "获取DNS记录",
+                "summary": "获取DNS记录详情",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1375,12 +1329,6 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             },
@@ -1434,14 +1382,14 @@
                             ]
                         }
                     },
-                    "404": {
-                        "description": "错误响应",
+                    "400": {
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
-                    "500": {
-                        "description": "服务错误",
+                    "404": {
+                        "description": "错误响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -1511,12 +1459,6 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
@@ -1577,12 +1519,6 @@
                     },
                     "404": {
                         "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "服务错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -1702,19 +1638,13 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
         },
         "/domain-monitors/{id}": {
             "get": {
-                "description": "获取域名监控",
+                "description": "获取域名监控详情",
                 "consumes": [
                     "application/json"
                 ],
@@ -1724,7 +1654,7 @@
                 "tags": [
                     "域名监控"
                 ],
-                "summary": "获取域名监控",
+                "summary": "获取域名监控详情",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1820,12 +1750,6 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             },
@@ -1879,14 +1803,14 @@
                             ]
                         }
                     },
-                    "404": {
-                        "description": "错误响应",
+                    "400": {
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
-                    "500": {
-                        "description": "服务错误",
+                    "404": {
+                        "description": "错误响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -1956,12 +1880,6 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
@@ -2016,12 +1934,6 @@
                     },
                     "404": {
                         "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "服务错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -2125,19 +2037,13 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
         },
         "/ip-groups/{id}": {
             "get": {
-                "description": "获取IP组",
+                "description": "获取IP组详情",
                 "consumes": [
                     "application/json"
                 ],
@@ -2147,7 +2053,7 @@
                 "tags": [
                     "IP组"
                 ],
-                "summary": "获取IP组",
+                "summary": "获取IP组详情",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2243,12 +2149,6 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
@@ -2315,19 +2215,13 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
         },
         "/ip-groups/{id}/devices": {
             "get": {
-                "description": "获取IP组的设备列表",
+                "description": "获取IP组设备",
                 "consumes": [
                     "application/json"
                 ],
@@ -2337,7 +2231,7 @@
                 "tags": [
                     "IP组"
                 ],
-                "summary": "获取IP组的设备列表",
+                "summary": "获取IP组设备",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2444,12 +2338,6 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
@@ -2512,12 +2400,6 @@
                     },
                     "404": {
                         "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "服务错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -2696,19 +2578,13 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
         },
         "/port-forwards/{id}": {
             "get": {
-                "description": "获取端口转发",
+                "description": "获取端口转发详情",
                 "consumes": [
                     "application/json"
                 ],
@@ -2718,7 +2594,7 @@
                 "tags": [
                     "端口转发"
                 ],
-                "summary": "获取端口转发",
+                "summary": "获取端口转发详情",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2814,12 +2690,6 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             },
@@ -2873,14 +2743,14 @@
                             ]
                         }
                     },
-                    "404": {
-                        "description": "错误响应",
+                    "400": {
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
-                    "500": {
-                        "description": "服务错误",
+                    "404": {
+                        "description": "错误响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -2950,12 +2820,6 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
@@ -3022,12 +2886,6 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
@@ -3091,12 +2949,6 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
@@ -3145,9 +2997,9 @@
                 }
             }
         },
-        "/tasks/clean": {
+        "/tasks/clean-all": {
             "post": {
-                "description": "清理全部任务",
+                "description": "清理所有任务",
                 "consumes": [
                     "application/json"
                 ],
@@ -3157,7 +3009,7 @@
                 "tags": [
                     "任务"
                 ],
-                "summary": "清理全部任务",
+                "summary": "清理所有任务",
                 "responses": {
                     "200": {
                         "description": "成功响应",
@@ -3234,7 +3086,7 @@
         },
         "/tasks/{id}": {
             "get": {
-                "description": "获取任务",
+                "description": "获取任务详情",
                 "consumes": [
                     "application/json"
                 ],
@@ -3244,7 +3096,7 @@
                 "tags": [
                     "任务"
                 ],
-                "summary": "获取任务",
+                "summary": "获取任务详情",
                 "parameters": [
                     {
                         "type": "string",
@@ -3484,19 +3336,13 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
         },
         "/webhook-subs/{id}": {
             "get": {
-                "description": "获取通知订阅",
+                "description": "获取通知订阅详情",
                 "consumes": [
                     "application/json"
                 ],
@@ -3506,7 +3352,7 @@
                 "tags": [
                     "通知订阅"
                 ],
-                "summary": "获取通知订阅",
+                "summary": "获取通知订阅详情",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3602,12 +3448,6 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             },
@@ -3661,14 +3501,14 @@
                             ]
                         }
                     },
-                    "404": {
-                        "description": "错误响应",
+                    "400": {
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
-                    "500": {
-                        "description": "服务错误",
+                    "404": {
+                        "description": "错误响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -3735,12 +3575,6 @@
                     },
                     "404": {
                         "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "服务错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -3860,19 +3694,13 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             }
         },
         "/webhooks/{id}": {
             "get": {
-                "description": "获取通知",
+                "description": "获取通知详情",
                 "consumes": [
                     "application/json"
                 ],
@@ -3882,7 +3710,7 @@
                 "tags": [
                     "通知"
                 ],
-                "summary": "获取通知",
+                "summary": "获取通知详情",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3978,12 +3806,6 @@
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "服务错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
                     }
                 }
             },
@@ -4037,14 +3859,14 @@
                             ]
                         }
                     },
-                    "404": {
-                        "description": "错误响应",
+                    "400": {
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
-                    "500": {
-                        "description": "服务错误",
+                    "404": {
+                        "description": "错误响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -4111,12 +3933,6 @@
                     },
                     "404": {
                         "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "服务错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -4638,9 +4454,6 @@
         },
         "vibe_ip_internal_types.GetCdnRecordsRequest": {
             "type": "object",
-            "required": [
-                "is_active"
-            ],
             "properties": {
                 "is_active": {
                     "description": "是否活跃",
@@ -4838,9 +4651,6 @@
         },
         "vibe_ip_internal_types.GetDnsRecordsRequest": {
             "type": "object",
-            "required": [
-                "is_active"
-            ],
             "properties": {
                 "is_active": {
                     "description": "是否活跃",
@@ -4910,9 +4720,6 @@
         },
         "vibe_ip_internal_types.GetDomainMonitorsRequest": {
             "type": "object",
-            "required": [
-                "is_active"
-            ],
             "properties": {
                 "is_active": {
                     "description": "是否活跃",
@@ -5033,9 +4840,6 @@
         },
         "vibe_ip_internal_types.GetPortForwardsRequest": {
             "type": "object",
-            "required": [
-                "is_active"
-            ],
             "properties": {
                 "is_active": {
                     "description": "是否活跃",
@@ -5158,9 +4962,6 @@
         },
         "vibe_ip_internal_types.GetWebhookSubsRequest": {
             "type": "object",
-            "required": [
-                "is_active"
-            ],
             "properties": {
                 "is_active": {
                     "description": "是否活跃",
@@ -5170,9 +4971,6 @@
         },
         "vibe_ip_internal_types.GetWebhooksRequest": {
             "type": "object",
-            "required": [
-                "is_active"
-            ],
             "properties": {
                 "is_active": {
                     "description": "是否活跃",

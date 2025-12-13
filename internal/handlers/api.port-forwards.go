@@ -27,7 +27,7 @@ func GetPortForwards(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetPortForwardsRequest
 	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -64,7 +64,7 @@ func GetPortForwardDetail(c *gin.Context) {
 	var requestParams types.GetPortForwardRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -95,13 +95,12 @@ func GetPortForwardDetail(c *gin.Context) {
 //	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}									"参数错误"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
-//	@Failure		500		{object}	APIResponse{}									"服务错误"
 //	@Router			/port-forwards [post]
 func CreatePortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreatePortForwardRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -131,15 +130,15 @@ func CreatePortForward(c *gin.Context) {
 //	@Param			id		path		int64											true	"端口转发序号"
 //	@Param			request	body		types.UpdatePortForwardRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}									"参数错误"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
-//	@Failure		500		{object}	APIResponse{}									"服务错误"
 //	@Router			/port-forwards/{id} [patch]
 func UpdatePortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdatePortForwardRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -171,14 +170,13 @@ func UpdatePortForward(c *gin.Context) {
 //	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}									"参数错误"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
-//	@Failure		500		{object}	APIResponse{}									"服务错误"
 //	@Router			/port-forwards/{id}/forward [patch]
 func UpdatePortForwardForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdatePortForwardForwardRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -210,14 +208,13 @@ func UpdatePortForwardForward(c *gin.Context) {
 //	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}									"参数错误"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
-//	@Failure		500		{object}	APIResponse{}									"服务错误"
 //	@Router			/port-forwards/{id}/active [patch]
 func UpdatePortForwardActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdatePortForwardActiveRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -248,14 +245,13 @@ func UpdatePortForwardActive(c *gin.Context) {
 //	@Success		200	{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}									"参数错误"
 //	@Failure		404	{object}	APIResponse{}									"错误响应"
-//	@Failure		500	{object}	APIResponse{}									"服务错误"
 //	@Router			/port-forwards/{id} [delete]
 func DeletePortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeletePortForwardRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -286,14 +282,13 @@ func DeletePortForward(c *gin.Context) {
 //	@Success		200	{object}	APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
-//	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/port-forwards/{id}/health-check [get]
 func HealthCheckPortForward(c *gin.Context) {
 	// 请求参数
 	var requestParams types.HealthCheckPortForwardRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 

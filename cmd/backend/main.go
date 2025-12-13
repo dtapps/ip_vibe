@@ -207,6 +207,7 @@ func main() {
 		httpTransport := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
 			return global.GvaMcpServer
 		}, nil)
+		router.Any("/mcp/*path", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
 		router.Any("/mcp", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
 	}
 

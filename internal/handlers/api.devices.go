@@ -18,9 +18,8 @@ import (
 //	@Tags			设备
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.GetDeviceResponse						false	"请求参数"
-//	@Success		200		{object}	APIResponse{data=[]types.GetDeviceResponse}	"成功响应"
-//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Success		200	{object}	APIResponse{data=[]types.GetDeviceResponse}	"成功响应"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Router			/devices [get]
 func GetDevices(c *gin.Context) {
 
@@ -57,7 +56,7 @@ func GetDeviceDetail(c *gin.Context) {
 	var requestParams types.GetDeviceRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -88,13 +87,12 @@ func GetDeviceDetail(c *gin.Context) {
 //	@Success		200		{object}	APIResponse{data=types.GetDeviceRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
-//	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/devices [post]
 func CreateDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateDeviceRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -124,15 +122,15 @@ func CreateDevice(c *gin.Context) {
 //	@Param			id		path		int64										true	"设备序号"
 //	@Param			request	body		types.UpdateDeviceRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDeviceRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
-//	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/devices/{id} [patch]
 func UpdateDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateDeviceRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -163,14 +161,13 @@ func UpdateDevice(c *gin.Context) {
 //	@Success		200	{object}	APIResponse{data=types.GetDeviceResponse}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
-//	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/devices/{id} [delete]
 func DeleteDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteDeviceRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -207,7 +204,7 @@ func GetDeviceIpHistory(c *gin.Context) {
 	var requestParams types.GetDeviceIpHistoryRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -238,14 +235,13 @@ func GetDeviceIpHistory(c *gin.Context) {
 //	@Success		200	{object}	APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
-//	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/devices/{id}/health-check [get]
 func HealthCheckDevice(c *gin.Context) {
 	// 请求参数
 	var requestParams types.HealthCheckDeviceRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 

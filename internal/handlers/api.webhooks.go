@@ -27,7 +27,7 @@ func GetWebhooks(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetWebhooksRequest
 	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -64,7 +64,7 @@ func GetWebhookDetail(c *gin.Context) {
 	var requestParams types.GetWebhookRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -95,13 +95,12 @@ func GetWebhookDetail(c *gin.Context) {
 //	@Success		200		{object}	APIResponse{data=types.GetWebhookRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
-//	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/webhooks [post]
 func CreateWebhook(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateWebhookRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -131,15 +130,15 @@ func CreateWebhook(c *gin.Context) {
 //	@Param			id		path		int64										true	"通知序号"
 //	@Param			request	body		types.UpdateWebhookRequest					true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetWebhookRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
-//	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/webhooks/{id} [patch]
 func UpdateWebhook(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateWebhookRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -171,14 +170,13 @@ func UpdateWebhook(c *gin.Context) {
 //	@Success		200		{object}	APIResponse{data=types.GetWebhookRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
-//	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/webhooks/{id}/active [patch]
 func UpdateWebhookActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateWebhookActiveRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -209,14 +207,13 @@ func UpdateWebhookActive(c *gin.Context) {
 //	@Success		200	{object}	APIResponse{data=types.GetWebhookRequest}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
-//	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/webhooks/{id} [delete]
 func DeleteWebhook(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteWebhookRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 

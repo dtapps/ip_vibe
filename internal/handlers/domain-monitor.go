@@ -19,7 +19,7 @@ func DomainMonitor(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DomainMonitorRequest
 	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -71,7 +71,7 @@ func DomainMonitorDetail(c *gin.Context) {
 	var requestParams types.DomainMonitorDetailRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -108,7 +108,7 @@ func DomainMonitorHistory(c *gin.Context) {
 	var requestParams types.DomainMonitorHistoryRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 

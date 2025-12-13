@@ -27,7 +27,7 @@ func GetDnsRecords(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetDnsRecordsRequest
 	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -64,7 +64,7 @@ func GetDnsRecordDetail(c *gin.Context) {
 	var requestParams types.GetDnsRecordRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -95,13 +95,12 @@ func GetDnsRecordDetail(c *gin.Context) {
 //	@Success		200		{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
-//	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/dns-records [post]
 func CreateDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateDnsRecordRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -131,15 +130,15 @@ func CreateDnsRecord(c *gin.Context) {
 //	@Param			id		path		int64										true	"DNS记录序号"
 //	@Param			request	body		types.UpdateDnsRecordRequest				true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
-//	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/dns-records/{id} [patch]
 func UpdateDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateDnsRecordRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -171,14 +170,13 @@ func UpdateDnsRecord(c *gin.Context) {
 //	@Success		200		{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
-//	@Failure		500		{object}	APIResponse{}								"服务错误"
 //	@Router			/dns-records/{id}/active [patch]
 func UpdateDnsRecordActive(c *gin.Context) {
 	// 请求参数
 	var requestParams types.UpdateDnsRecordActiveRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -209,14 +207,13 @@ func UpdateDnsRecordActive(c *gin.Context) {
 //	@Success		200	{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
-//	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/dns-records/{id} [delete]
 func DeleteDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.DeleteDnsRecordRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -247,14 +244,13 @@ func DeleteDnsRecord(c *gin.Context) {
 //	@Success		200	{object}	APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
-//	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/dns-records/{id}/health-check [get]
 func HealthCheckDnsRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.HealthCheckDnsRecordRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 

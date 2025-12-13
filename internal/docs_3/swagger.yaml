@@ -393,9 +393,8 @@ components:
       properties:
         is_active:
           description: 是否活跃
+          form: is_active
           type: boolean
-      required:
-      - is_active
       type: object
     vibe_ip_internal_types.GetConfigRequest:
       properties:
@@ -538,9 +537,8 @@ components:
       properties:
         is_active:
           description: 是否活跃
+          form: is_active
           type: boolean
-      required:
-      - is_active
       type: object
     vibe_ip_internal_types.GetDomainMonitorRequest:
       properties:
@@ -590,9 +588,8 @@ components:
       properties:
         is_active:
           description: 是否活跃
+          form: is_active
           type: boolean
-      required:
-      - is_active
       type: object
     vibe_ip_internal_types.GetIPGroupRequest:
       properties:
@@ -680,9 +677,8 @@ components:
       properties:
         is_active:
           description: 是否活跃
+          form: is_active
           type: boolean
-      required:
-      - is_active
       type: object
     vibe_ip_internal_types.GetWebhookRequest:
       properties:
@@ -770,17 +766,15 @@ components:
       properties:
         is_active:
           description: 是否活跃
+          form: is_active
           type: boolean
-      required:
-      - is_active
       type: object
     vibe_ip_internal_types.GetWebhooksRequest:
       properties:
         is_active:
           description: 是否活跃
+          form: is_active
           type: boolean
-      required:
-      - is_active
       type: object
     vibe_ip_internal_types.JobData:
       properties:
@@ -1258,7 +1252,7 @@ paths:
       tags:
       - CDN记录
     get:
-      description: 获取CDN记录
+      description: 获取CDN记录详情
       parameters:
       - description: CDN记录序号
         in: path
@@ -1298,7 +1292,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 获取CDN记录
+      summary: 获取CDN记录详情
       tags:
       - CDN记录
     patch:
@@ -1332,6 +1326,12 @@ paths:
                     type: string
                 type: object
           description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
         "404":
           content:
             application/json:
@@ -1430,18 +1430,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 检查CDN记录健康状态
       tags:
       - CDN记录
   /configs:
     get:
-      description: 获取全部配置
+      description: 获取全部平台配置
       requestBody:
         content:
           application/json:
@@ -1468,11 +1462,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 获取全部配置
+      summary: 获取全部平台配置
       tags:
-      - 配置
+      - 平台配置
     post:
-      description: 创建配置
+      description: 创建平台配置
       requestBody:
         content:
           application/json:
@@ -1507,18 +1501,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
-      summary: 创建配置
+      summary: 创建平台配置
       tags:
-      - 配置
+      - 平台配置
   /configs/{id}:
     delete:
-      description: 删除配置
+      description: 删除平台配置
       parameters:
       - description: 配置序号
         in: path
@@ -1558,17 +1546,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
-      summary: 删除配置
+      summary: 删除平台配置
       tags:
-      - 配置
+      - 平台配置
     get:
-      description: 获取配置
+      description: 获取平台配置详情
       parameters:
       - description: 配置序号
         in: path
@@ -1608,11 +1590,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 获取配置
+      summary: 获取平台配置详情
       tags:
-      - 配置
+      - 平台配置
     patch:
-      description: 更新配置
+      description: 更新平台配置
       parameters:
       - description: 配置序号
         in: path
@@ -1642,21 +1624,21 @@ paths:
                     type: string
                 type: object
           description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
-      summary: 更新配置
+      summary: 更新平台配置
       tags:
-      - 配置
+      - 平台配置
   /devices:
     get:
       description: 获取全部设备
@@ -1664,8 +1646,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.GetDeviceResponse'
-        description: 请求参数
+              type: object
       responses:
         "200":
           content:
@@ -1726,12 +1707,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 创建设备
       tags:
       - 设备
@@ -1777,17 +1752,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 删除设备
       tags:
       - 设备
     get:
-      description: 获取设备
+      description: 获取设备详情
       parameters:
       - description: 设备序号
         in: path
@@ -1827,7 +1796,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 获取设备
+      summary: 获取设备详情
       tags:
       - 设备
     patch:
@@ -1861,18 +1830,18 @@ paths:
                     type: string
                 type: object
           description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 更新设备
       tags:
       - 设备
@@ -1918,18 +1887,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 检查设备健康状态
       tags:
       - 设备
   /devices/{id}/ip-history:
     get:
-      description: 获取设备的IP历史记录
+      description: 获取设备IP历史记录
       parameters:
       - description: 设备序号
         in: path
@@ -1969,7 +1932,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 获取设备的IP历史记录
+      summary: 获取设备IP历史记录
       tags:
       - 设备
   /dns-records:
@@ -2047,12 +2010,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 创建DNS记录
       tags:
       - DNS记录
@@ -2098,17 +2055,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 删除DNS记录
       tags:
       - DNS记录
     get:
-      description: 获取DNS记录
+      description: 获取DNS记录详情
       parameters:
       - description: DNS记录序号
         in: path
@@ -2148,7 +2099,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 获取DNS记录
+      summary: 获取DNS记录详情
       tags:
       - DNS记录
     patch:
@@ -2182,18 +2133,18 @@ paths:
                     type: string
                 type: object
           description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 更新DNS记录
       tags:
       - DNS记录
@@ -2241,12 +2192,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 更新DNS记录启用状态
       tags:
       - DNS记录
@@ -2292,12 +2237,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 检查DNS记录健康状态
       tags:
       - DNS记录
@@ -2376,12 +2315,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 创建域名监控
       tags:
       - 域名监控
@@ -2427,17 +2360,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 删除域名监控
       tags:
       - 域名监控
     get:
-      description: 获取域名监控
+      description: 获取域名监控详情
       parameters:
       - description: 域名监控记录序号
         in: path
@@ -2477,7 +2404,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 获取域名监控
+      summary: 获取域名监控详情
       tags:
       - 域名监控
     patch:
@@ -2511,18 +2438,18 @@ paths:
                     type: string
                 type: object
           description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 更新域名监控
       tags:
       - 域名监控
@@ -2570,12 +2497,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 更新域名监控启用状态
       tags:
       - 域名监控
@@ -2621,12 +2542,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 检查域名监控健康状态
       tags:
       - 域名监控
@@ -2698,12 +2613,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 创建IP组
       tags:
       - IP组
@@ -2749,17 +2658,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 删除IP组
       tags:
       - IP组
     get:
-      description: 获取IP组
+      description: 获取IP组详情
       parameters:
       - description: IP组序号
         in: path
@@ -2799,7 +2702,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 获取IP组
+      summary: 获取IP组详情
       tags:
       - IP组
   /ip-groups/{id}/active:
@@ -2846,18 +2749,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 更新IP组
       tags:
       - IP组
   /ip-groups/{id}/devices:
     get:
-      description: 获取IP组的设备列表
+      description: 获取IP组设备
       parameters:
       - description: IP组序号
         in: path
@@ -2897,7 +2794,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 获取IP组的设备列表
+      summary: 获取IP组设备
       tags:
       - IP组
   /ip-groups/{id}/health-check:
@@ -2942,12 +2839,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 检查IP组健康状态
       tags:
       - IP组
@@ -2995,12 +2886,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 设备上报IP
       tags:
       - 开放
@@ -3124,12 +3009,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 创建端口转发
       tags:
       - 端口转发
@@ -3175,17 +3054,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 删除端口转发
       tags:
       - 端口转发
     get:
-      description: 获取端口转发
+      description: 获取端口转发详情
       parameters:
       - description: 设备端口转发序号
         in: path
@@ -3225,7 +3098,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 获取端口转发
+      summary: 获取端口转发详情
       tags:
       - 端口转发
     patch:
@@ -3259,18 +3132,18 @@ paths:
                     type: string
                 type: object
           description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 更新端口转发
       tags:
       - 端口转发
@@ -3318,12 +3191,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 更新端口转发启用状态
       tags:
       - 端口转发
@@ -3371,12 +3238,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 更新端口转发防火墙状态
       tags:
       - 端口转发
@@ -3422,12 +3283,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 检查端口转发健康状态
       tags:
       - 端口转发
@@ -3501,7 +3356,7 @@ paths:
       tags:
       - 任务
     get:
-      description: 获取任务
+      description: 获取任务详情
       parameters:
       - description: 任务 ID
         in: path
@@ -3541,7 +3396,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 获取任务
+      summary: 获取任务详情
       tags:
       - 任务
     post:
@@ -3580,9 +3435,9 @@ paths:
       summary: 运行任务
       tags:
       - 任务
-  /tasks/clean:
+  /tasks/clean-all:
     post:
-      description: 清理全部任务
+      description: 清理所有任务
       requestBody:
         content:
           application/json:
@@ -3601,7 +3456,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 清理全部任务
+      summary: 清理所有任务
       tags:
       - 任务
   /tasks/start-scheduler:
@@ -3727,12 +3582,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 创建通知订阅
       tags:
       - 通知订阅
@@ -3778,17 +3627,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 删除通知订阅
       tags:
       - 通知订阅
     get:
-      description: 获取通知订阅
+      description: 获取通知订阅详情
       parameters:
       - description: 通知订阅序号
         in: path
@@ -3828,7 +3671,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 获取通知订阅
+      summary: 获取通知订阅详情
       tags:
       - 通知订阅
     patch:
@@ -3862,18 +3705,18 @@ paths:
                     type: string
                 type: object
           description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 更新通知订阅
       tags:
       - 通知订阅
@@ -3921,12 +3764,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 更新通知订阅启用状态
       tags:
       - 通知订阅
@@ -4005,12 +3842,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 创建通知
       tags:
       - 通知
@@ -4056,17 +3887,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 删除通知
       tags:
       - 通知
     get:
-      description: 获取通知
+      description: 获取通知详情
       parameters:
       - description: 通知序号
         in: path
@@ -4106,7 +3931,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 获取通知
+      summary: 获取通知详情
       tags:
       - 通知
     patch:
@@ -4140,18 +3965,18 @@ paths:
                     type: string
                 type: object
           description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 更新通知
       tags:
       - 通知
@@ -4199,12 +4024,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 服务错误
       summary: 更新通知启用状态
       tags:
       - 通知

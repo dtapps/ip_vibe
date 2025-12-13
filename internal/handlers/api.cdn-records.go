@@ -27,7 +27,7 @@ func GetCdnRecords(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetCdnRecordsRequest
 	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -64,7 +64,7 @@ func GetCdnRecordDetail(c *gin.Context) {
 	var requestParams types.GetCdnRecordRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -100,7 +100,7 @@ func CreateCdnRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateCdnRecordRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -130,6 +130,7 @@ func CreateCdnRecord(c *gin.Context) {
 //	@Param			id		path		int64										true	"CDN记录序号"
 //	@Param			request	body		types.UpdateCdnRecordRequest				true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetCdnRecordRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
 //	@Router			/cdn-records/{id} [patch]
 func UpdateCdnRecord(c *gin.Context) {
@@ -137,7 +138,7 @@ func UpdateCdnRecord(c *gin.Context) {
 	var requestParams types.UpdateCdnRecordRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -175,7 +176,7 @@ func UpdateCdnRecordActive(c *gin.Context) {
 	var requestParams types.UpdateCdnRecordActiveRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -212,7 +213,7 @@ func DeleteCdnRecord(c *gin.Context) {
 	var requestParams types.DeleteCdnRecordRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
@@ -243,14 +244,13 @@ func DeleteCdnRecord(c *gin.Context) {
 //	@Success		200	{object}	APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
-//	@Failure		500	{object}	APIResponse{}								"服务错误"
 //	@Router			/cdn-records/{id}/health-check [get]
 func HealthCheckCdnRecord(c *gin.Context) {
 	// 请求参数
 	var requestParams types.HealthCheckCdnRecordRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 

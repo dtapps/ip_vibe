@@ -20,7 +20,7 @@ func WebhookSub(c *gin.Context) {
 	// 请求参数
 	var requestParams types.WebhookSubRequest
 	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数")
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
 
