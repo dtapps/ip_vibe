@@ -54,6 +54,14 @@ swag_v2_fmt:
 swag2op:
 	swag2op init -g cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal -o internal/docs_2 -openapiOutputDir internal/docs_3
 
+grpc_generate:
+	@echo "Generating gRPC code..."
+	protoc --go_out=./internal/grpc_generated \
+	       --go-grpc_out=./internal/grpc_generated \
+	       --proto_path=./internal/grpc_proto \
+	       ./internal/grpc_proto/*.proto
+	echo "✅ gRPC code generated successfully!"
+
 # 二进制文件名
 BINARY_NAME=ip_vibe
 # BINARY_NAME_CLI=cli

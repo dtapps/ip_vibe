@@ -8,6 +8,7 @@ package resty
 import (
 	"bufio"
 	"bytes"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"io"
@@ -40,7 +41,7 @@ type (
 	// EventOpenFunc is a callback function type used to receive notification
 	// when Resty establishes a connection with the server for the
 	// Server-Sent Events(SSE)
-	EventOpenFunc func(url string)
+	EventOpenFunc func(url string, respHdr http.Header)
 
 	// EventMessageFunc is a callback function type used to receive event details
 	// from the Server-Sent Events(SSE) stream
@@ -49,6 +50,10 @@ type (
 	// EventErrorFunc is a callback function type used to receive notification
 	// when an error occurs with [EventSource] processing
 	EventErrorFunc func(error)
+
+	// EventRequestFailureFunc is a callback function type used to receive event
+	// details from the Server-Sent Events(SSE) request failure
+	EventRequestFailureFunc func(err error, res *http.Response)
 
 	// Event struct represents the event details from the Server-Sent Events(SSE) stream
 	Event struct {
@@ -75,6 +80,7 @@ type (
 		maxBufSize       int
 		onOpen           EventOpenFunc
 		onError          EventErrorFunc
+		onRequestFailure EventRequestFailureFunc
 		onEvent          map[string]*callback
 		log              Logger
 		closed           bool
@@ -159,6 +165,66 @@ func (es *EventSource) SetBody(body io.Reader) *EventSource {
 	return es
 }
 
+// TLSClientConfig method returns the [tls.Config] from underlying client transport
+// otherwise returns nil
+func (es *EventSource) TLSClientConfig() *tls.Config {
+	cfg, err := es.tlsConfig()
+	if err != nil {
+		es.Logger().Errorf("%v", err)
+	}
+	return cfg
+}
+
+// SetTLSClientConfig method sets TLSClientConfig for underlying client Transport.
+//
+// Values supported by https://pkg.go.dev/crypto/tls#Config can be configured.
+//
+//	// Disable SSL cert verification for local development
+//	es.SetTLSClientConfig(&tls.Config{
+//		InsecureSkipVerify: true
+//	})
+//
+// NOTE: This method overwrites existing [http.Transport.TLSClientConfig]
+func (es *EventSource) SetTLSClientConfig(tlsConfig *tls.Config) *EventSource {
+	es.lock.Lock()
+	defer es.lock.Unlock()
+
+	// TLSClientConfiger interface handling
+	if tc, ok := es.httpClient.Transport.(TLSClientConfiger); ok {
+		if err := tc.SetTLSClientConfig(tlsConfig); err != nil {
+			es.log.Errorf("%v", err)
+		}
+		return es
+	}
+
+	// default standard transport handling
+	if transport, ok := es.httpClient.Transport.(*http.Transport); ok {
+		transport.TLSClientConfig = tlsConfig
+	}
+
+	return es
+}
+
+// getting TLS client config if not exists then create one
+func (es *EventSource) tlsConfig() (*tls.Config, error) {
+	es.lock.Lock()
+	defer es.lock.Unlock()
+
+	if tc, ok := es.httpClient.Transport.(TLSClientConfiger); ok {
+		return tc.TLSClientConfig(), nil
+	}
+
+	transport, ok := es.httpClient.Transport.(*http.Transport)
+	if !ok {
+		return nil, ErrNotHttpTransportType
+	}
+
+	if transport.TLSClientConfig == nil {
+		transport.TLSClientConfig = &tls.Config{}
+	}
+	return transport.TLSClientConfig, nil
+}
+
 // AddHeader method adds a header and its value to the [EventSource] instance.
 // If the header key already exists, it appends. These headers will be sent in
 // the request while establishing a connection to the event source
@@ -229,6 +295,13 @@ func (es *EventSource) SetMaxBufSize(bufSize int) *EventSource {
 	return es
 }
 
+// Logger method returns the logger instance used by the event source instance.
+func (es *EventSource) Logger() Logger {
+	es.lock.RLock()
+	defer es.lock.RUnlock()
+	return es.log
+}
+
 // SetLogger method sets given writer for logging
 //
 // Compliant to interface [resty.Logger]
@@ -275,9 +348,30 @@ func (es *EventSource) OnError(ef EventErrorFunc) *EventSource {
 	defer es.lock.Unlock()
 	if es.onError != nil {
 		es.log.Warnf("Overwriting an existing OnError callback from=%s to=%s",
-			functionName(es.OnError), functionName(ef))
+			functionName(es.onError), functionName(ef))
 	}
 	es.onError = ef
+	return es
+}
+
+// OnRequestFailure registered callback gets triggered when the HTTP request
+// failure while establishing a SSE connection.
+//
+//	es.OnRequestFailure(func(err error, res *http.Response) {
+//		fmt.Println("Error and response:", err, res)
+//	})
+//
+// Note:
+//   - Do not forget to close the HTTP response body.
+//   - HTTP response may be nil.
+func (es *EventSource) OnRequestFailure(ef EventRequestFailureFunc) *EventSource {
+	es.lock.Lock()
+	defer es.lock.Unlock()
+	if es.onRequestFailure != nil {
+		es.log.Warnf("Overwriting an existing OnRequestFailure callback from=%s to=%s",
+			functionName(es.onRequestFailure), functionName(ef))
+	}
+	es.onRequestFailure = ef
 	return es
 }
 
@@ -385,7 +479,7 @@ func (es *EventSource) Get() error {
 		if err != nil {
 			return err
 		}
-		es.triggerOnOpen()
+		es.triggerOnOpen(res.Header.Clone())
 		if err := es.listenStream(res); err != nil {
 			return err
 		}
@@ -411,11 +505,11 @@ func (es *EventSource) isClosed() bool {
 	return es.closed
 }
 
-func (es *EventSource) triggerOnOpen() {
+func (es *EventSource) triggerOnOpen(hdr http.Header) {
 	es.lock.RLock()
 	defer es.lock.RUnlock()
 	if es.onOpen != nil {
-		es.onOpen(strings.Clone(es.url))
+		es.onOpen(strings.Clone(es.url), hdr)
 	}
 }
 
@@ -424,6 +518,14 @@ func (es *EventSource) triggerOnError(err error) {
 	defer es.lock.RUnlock()
 	if es.onError != nil {
 		es.onError(err)
+	}
+}
+
+func (es *EventSource) triggerOnRequestFailure(err error, res *http.Response) {
+	es.lock.RLock()
+	defer es.lock.RUnlock()
+	if es.onRequestFailure != nil {
+		es.onRequestFailure(err, res)
 	}
 }
 
@@ -488,6 +590,9 @@ func (es *EventSource) connect() (*http.Response, error) {
 				err = wrapErrors(fmt.Errorf("resty:sse: %v", rRes.Status()), doErr)
 			} else {
 				err = doErr
+			}
+			if err != nil {
+				es.triggerOnRequestFailure(err, resp)
 			}
 			break
 		}
@@ -677,8 +782,12 @@ func trimHeader(size int, data []byte) []byte {
 		return data
 	}
 	data = data[size:]
-	data = bytes.TrimSpace(data)
-	data = bytes.TrimSuffix(data, []byte("\n"))
+	if len(data) > 0 && data[0] == ' ' {
+		data = data[1:]
+	}
+	if len(data) > 0 && data[len(data)-1] == '\n' {
+		data = data[:len(data)-1]
+	}
 	return data
 }
 

@@ -39,7 +39,7 @@ require (
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	modernc.org/sqlite v1.40.1
-	resty.dev/v3 v3.0.0-beta.4
+	resty.dev/v3 v3.0.0-beta.5
 )
 
 require (

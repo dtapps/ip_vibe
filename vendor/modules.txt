@@ -720,6 +720,6 @@ modernc.org/memory
 ## explicit; go 1.24.0
 modernc.org/sqlite
 modernc.org/sqlite/lib
-# resty.dev/v3 v3.0.0-beta.4
+# resty.dev/v3 v3.0.0-beta.5
 ## explicit; go 1.23.0
 resty.dev/v3
