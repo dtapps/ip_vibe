@@ -21,6 +21,10 @@ type DnsPodClientSdk struct {
 	client     *dnspod.Client
 }
 
+// 云解析 DNS
+// DnsPod
+// https://cloud.tencent.com/document/product/302
+// https://cloud.tencent.com/document/product/1427
 func NewDnsPodClientSdk(ctx context.Context, secretID string, secretKey string) (*DnsPodClientSdk, error) {
 
 	var err error

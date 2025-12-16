@@ -24,8 +24,7 @@ type EdgeOneClientSdk struct {
 }
 
 // 边缘安全加速平台 EO
-// https://cloud.tencent.com/document/api/1552/80730
-// https://cloud.tencent.com/document/api/1552/80732
+// https://cloud.tencent.com/document/product/1552
 func NewEdgeOneClientSdk(ctx context.Context, secretID string, secretKey string, zoneID string) (*EdgeOneClientSdk, error) {
 
 	var err error
