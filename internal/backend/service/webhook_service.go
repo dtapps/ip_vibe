@@ -14,6 +14,7 @@ import (
 
 // WebhookService 通知服务接口
 type WebhookService interface {
+	BuildResponse(ctx context.Context, item *ent.Webhook) (*types.GetWebhookResponse, error)
 	GetWebhooks(ctx context.Context, params *types.GetWebhooksRequest) ([]*types.GetWebhookResponse, error)
 	GetWebhook(ctx context.Context, id int64) (*types.GetWebhookResponse, error)
 	CreateWebhook(ctx context.Context, request *types.CreateWebhookRequest) (*types.GetWebhookRequest, error)
@@ -34,8 +35,8 @@ func NewWebhookService(db *ent.Client, debug bool, logHelper *operation_logs_hel
 	return &WebhookServiceImpl{db: db, debug: debug, logHelper: logHelper}
 }
 
-// buildResponse 将实体转换为响应
-func (s *WebhookServiceImpl) buildResponse(ctx context.Context, item *ent.Webhook) (*types.GetWebhookResponse, error) {
+// BuildResponse 将实体转换为响应
+func (s *WebhookServiceImpl) BuildResponse(ctx context.Context, item *ent.Webhook) (*types.GetWebhookResponse, error) {
 	resp := &types.GetWebhookResponse{
 		ID:              item.ID,
 		Name:            item.Name,
@@ -64,7 +65,7 @@ func (s *WebhookServiceImpl) GetWebhooks(ctx context.Context, request *types.Get
 	}
 	for _, item := range allWebhook {
 		// 将实体转换为响应
-		list, err := s.buildResponse(ctx, item)
+		list, err := s.BuildResponse(ctx, item)
 		if err != nil {
 			return nil, err
 		}
@@ -87,7 +88,7 @@ func (s *WebhookServiceImpl) GetWebhook(ctx context.Context, id int64) (*types.G
 	}
 
 	// 将实体转换为响应
-	list, err := s.buildResponse(ctx, firstWebhook)
+	list, err := s.BuildResponse(ctx, firstWebhook)
 	if err != nil {
 		return nil, err
 	}

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cdnrecord"
@@ -17,6 +18,7 @@ import (
 
 // CDNRecordService CDN 记录服务接口
 type CDNRecordService interface {
+	BuildResponse(ctx context.Context, item *ent.CDNRecord) (*types.GetCdnRecordResponse, error)
 	GetCdnRecords(ctx context.Context, request *types.GetCdnRecordsRequest) ([]*types.GetCdnRecordResponse, error)
 	GetCdnRecord(ctx context.Context, id int64) (*types.GetCdnRecordResponse, error)
 	CreateCdnRecord(ctx context.Context, request *types.CreateCdnRecordRequest) (*types.GetCdnRecordRequest, error)
@@ -38,13 +40,13 @@ func NewCDNRecordService(db *ent.Client, debug bool, logHelper *operation_logs_h
 	return &CDNRecordServiceImpl{db: db, debug: debug, logHelper: logHelper}
 }
 
-// buildResponse 将实体转换为响应
-func (s *CDNRecordServiceImpl) buildResponse(ctx context.Context, item *ent.CDNRecord) (*types.GetCdnRecordResponse, error) {
+// BuildResponse 将实体转换为响应
+func (s *CDNRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.CDNRecord) (*types.GetCdnRecordResponse, error) {
 	resp := &types.GetCdnRecordResponse{
 		ID:             item.ID,
 		ConfigID:       item.ConfigID,
 		RecordID:       item.RecordID,
-		Domain:         item.Domain,
+		SubDomain:      item.SubDomain,
 		Type:           item.Type.String(),
 		OriginProtocol: item.OriginProtocol.String(),
 		HTTPPort:       item.HTTPPort,
@@ -56,6 +58,15 @@ func (s *CDNRecordServiceImpl) buildResponse(ctx context.Context, item *ent.CDNR
 	// 平台配置
 	if item.Edges.Config != nil {
 		resp.Platform = item.Edges.Config.Platform.String()
+		// 从平台配置中获取 ConfigJSON 里的 Domain
+		if item.Edges.Config.ConfigJSON != nil {
+			var configJSON struct {
+				DomainName string `json:"domain_name"`
+			}
+			if err := json.Unmarshal(item.Edges.Config.ConfigJSON, &configJSON); err == nil {
+				resp.DomainName = configJSON.DomainName
+			}
+		}
 	}
 
 	// IP 组
@@ -92,7 +103,7 @@ func (s *CDNRecordServiceImpl) GetCdnRecords(ctx context.Context, request *types
 
 	for _, item := range allCdnRecord {
 		// 将实体转换为响应
-		list, err := s.buildResponse(ctx, item)
+		list, err := s.BuildResponse(ctx, item)
 		if err != nil {
 			return nil, err
 		}
@@ -117,7 +128,7 @@ func (s *CDNRecordServiceImpl) GetCdnRecord(ctx context.Context, id int64) (*typ
 	}
 
 	// 将实体转换为响应
-	list, err := s.buildResponse(ctx, firstCdnRecord)
+	list, err := s.BuildResponse(ctx, firstCdnRecord)
 	if err != nil {
 		return nil, err
 	}

@@ -16,6 +16,7 @@ import (
 
 // IPGroupService IP组服务接口
 type IPGroupService interface {
+	BuildResponse(ctx context.Context, item *ent.IpGroup) (*types.GetIPGroupResponse, error)
 	GetIPGroups(ctx context.Context) ([]*types.GetIPGroupResponse, error)
 	GetIPGroup(ctx context.Context, id int64) (*types.GetIPGroupResponse, error)
 	CreateIPGroup(ctx context.Context, request *types.CreateIPGroupRequest) (int64, error)
@@ -37,8 +38,8 @@ func NewIPGroupService(db *ent.Client, debug bool, logHelper *operation_logs_hel
 	return &IPGroupServiceImpl{db: db, debug: debug, logHelper: logHelper}
 }
 
-// buildResponse 将实体转换为响应
-func (s *IPGroupServiceImpl) buildResponse(ctx context.Context, item *ent.IpGroup) (*types.GetIPGroupResponse, error) {
+// BuildResponse 将实体转换为响应
+func (s *IPGroupServiceImpl) BuildResponse(ctx context.Context, item *ent.IpGroup) (*types.GetIPGroupResponse, error) {
 	resp := &types.GetIPGroupResponse{
 		ID:          item.ID,
 		Name:        item.Name,
@@ -75,7 +76,7 @@ func (s *IPGroupServiceImpl) GetIPGroups(ctx context.Context) ([]*types.GetIPGro
 	}
 	for _, item := range allIpGroup {
 		// 将实体转换为响应
-		list, err := s.buildResponse(ctx, item)
+		list, err := s.BuildResponse(ctx, item)
 		if err != nil {
 			return nil, err
 		}
@@ -99,7 +100,7 @@ func (s *IPGroupServiceImpl) GetIPGroup(ctx context.Context, id int64) (*types.G
 	}
 
 	// 将实体转换为响应
-	list, err := s.buildResponse(ctx, firstIpGroup)
+	list, err := s.BuildResponse(ctx, firstIpGroup)
 	if err != nil {
 		return nil, err
 	}

@@ -17,6 +17,7 @@ import (
 
 // DeviceService 设备服务接口
 type DeviceService interface {
+	BuildResponse(ctx context.Context, item *ent.Device) (*types.GetDeviceResponse, error)
 	GetDevices(ctx context.Context) ([]*types.GetDeviceResponse, error)
 	GetDevice(ctx context.Context, id int64) (*types.GetDeviceResponse, error)
 	CreateDevice(ctx context.Context, request *types.CreateDeviceRequest) (*types.GetDeviceRequest, error)
@@ -38,8 +39,8 @@ func NewDeviceService(db *ent.Client, debug bool, logHelper *operation_logs_help
 	return &DeviceServiceImpl{db: db, debug: debug, logHelper: logHelper}
 }
 
-// buildResponse 将实体转换为响应
-func (s *DeviceServiceImpl) buildResponse(ctx context.Context, item *ent.Device) (*types.GetDeviceResponse, error) {
+// BuildResponse 将实体转换为响应
+func (s *DeviceServiceImpl) BuildResponse(ctx context.Context, item *ent.Device) (*types.GetDeviceResponse, error) {
 	resp := &types.GetDeviceResponse{
 		ID:              item.ID,
 		Code:            item.Code,
@@ -75,7 +76,7 @@ func (s *DeviceServiceImpl) GetDevices(ctx context.Context) ([]*types.GetDeviceR
 	}
 	for _, item := range allDevice {
 		// 将实体转换为响应
-		list, err := s.buildResponse(ctx, item)
+		list, err := s.BuildResponse(ctx, item)
 		if err != nil {
 			return nil, err
 		}
@@ -98,7 +99,7 @@ func (s *DeviceServiceImpl) GetDevice(ctx context.Context, id int64) (*types.Get
 	}
 
 	// 将实体转换为响应
-	list, err := s.buildResponse(ctx, firstDevice)
+	list, err := s.BuildResponse(ctx, firstDevice)
 	if err != nil {
 		return nil, err
 	}

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/dnsrecord"
@@ -17,6 +18,7 @@ import (
 
 // DNSRecordService DNS记录服务接口
 type DNSRecordService interface {
+	BuildResponse(ctx context.Context, item *ent.DNSRecord) (*types.GetDnsRecordResponse, error)
 	GetDnsRecords(ctx context.Context, request *types.GetDnsRecordsRequest) ([]*types.GetDnsRecordResponse, error)
 	GetDnsRecord(ctx context.Context, id int64) (*types.GetDnsRecordResponse, error)
 	CreateDnsRecord(ctx context.Context, request *types.CreateDnsRecordRequest) (*types.GetDnsRecordRequest, error)
@@ -38,14 +40,14 @@ func NewDNSRecordService(db *ent.Client, debug bool, logHelper *operation_logs_h
 	return &DNSRecordServiceImpl{db: db, debug: debug, logHelper: logHelper}
 }
 
-// buildResponse 将实体转换为响应
-func (s *DNSRecordServiceImpl) buildResponse(ctx context.Context, item *ent.DNSRecord) (*types.GetDnsRecordResponse, error) {
+// BuildResponse 将实体转换为响应
+func (s *DNSRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.DNSRecord) (*types.GetDnsRecordResponse, error) {
 	resp := &types.GetDnsRecordResponse{
 		ID:            item.ID,
 		ConfigID:      item.ConfigID,
 		Platform:      item.Edges.Config.Platform.String(),
 		RecordID:      item.RecordID,
-		Domain:        item.Domain,
+		SubDomain:     item.SubDomain,
 		Type:          item.Type.String(),
 		IsActive:      item.IsActive,
 		LastRefreshAt: item.LastRefreshAt,
@@ -54,6 +56,15 @@ func (s *DNSRecordServiceImpl) buildResponse(ctx context.Context, item *ent.DNSR
 	// 平台配置
 	if item.Edges.Config != nil {
 		resp.Platform = item.Edges.Config.Platform.String()
+		// 从平台配置中获取 ConfigJSON 里的 Domain
+		if item.Edges.Config.ConfigJSON != nil {
+			var configJSON struct {
+				DomainName string `json:"domain_name"`
+			}
+			if err := json.Unmarshal(item.Edges.Config.ConfigJSON, &configJSON); err == nil {
+				resp.DomainName = configJSON.DomainName
+			}
+		}
 	}
 
 	// IP 组
@@ -96,7 +107,7 @@ func (s *DNSRecordServiceImpl) GetDnsRecords(ctx context.Context, request *types
 	}
 	for _, item := range allDnsRecord {
 		// 将实体转换为响应
-		list, err := s.buildResponse(ctx, item)
+		list, err := s.BuildResponse(ctx, item)
 		if err != nil {
 			return nil, err
 		}
@@ -122,7 +133,7 @@ func (s *DNSRecordServiceImpl) GetDnsRecord(ctx context.Context, id int64) (*typ
 	}
 
 	// 将实体转换为响应
-	list, err := s.buildResponse(ctx, firstDnsRecord)
+	list, err := s.BuildResponse(ctx, firstDnsRecord)
 	if err != nil {
 		return nil, err
 	}

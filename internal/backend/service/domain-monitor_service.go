@@ -19,6 +19,7 @@ import (
 
 // DomainMonitorService 域名监控服务接口
 type DomainMonitorService interface {
+	BuildResponse(ctx context.Context, item *ent.DomainMonitor) (*types.GetDomainMonitorResponse, error)
 	GetDomainMonitors(ctx context.Context, request *types.GetDomainMonitorsRequest) ([]*types.GetDomainMonitorResponse, error)
 	GetDomainMonitor(ctx context.Context, id int64) (*types.GetDomainMonitorResponse, error)
 	CreateDomainMonitor(ctx context.Context, request *types.CreateDomainMonitorRequest) (*types.GetDomainMonitorRequest, error)
@@ -41,8 +42,8 @@ func NewDomainMonitorService(db *ent.Client, debug bool, logHelper *operation_lo
 	return &DomainMonitorServiceImpl{db: db, cron: cron, debug: debug, logHelper: logHelper}
 }
 
-// buildResponse 将实体转换为响应
-func (s *DomainMonitorServiceImpl) buildResponse(ctx context.Context, item *ent.DomainMonitor) (*types.GetDomainMonitorResponse, error) {
+// BuildResponse 将实体转换为响应
+func (s *DomainMonitorServiceImpl) BuildResponse(ctx context.Context, item *ent.DomainMonitor) (*types.GetDomainMonitorResponse, error) {
 	resp := &types.GetDomainMonitorResponse{
 		ID:            item.ID,
 		Name:          item.Name,
@@ -80,7 +81,7 @@ func (s *DomainMonitorServiceImpl) GetDomainMonitors(ctx context.Context, reques
 	}
 	for _, item := range allDomainMonitor {
 		// 将实体转换为响应
-		list, err := s.buildResponse(ctx, item)
+		list, err := s.BuildResponse(ctx, item)
 		if err != nil {
 			return nil, err
 		}
@@ -103,7 +104,7 @@ func (s *DomainMonitorServiceImpl) GetDomainMonitor(ctx context.Context, id int6
 	}
 
 	// 将实体转换为响应
-	list, err := s.buildResponse(ctx, firstDomainMonitor)
+	list, err := s.BuildResponse(ctx, firstDomainMonitor)
 	if err != nil {
 		return nil, err
 	}

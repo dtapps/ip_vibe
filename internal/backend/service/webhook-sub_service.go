@@ -17,7 +17,8 @@ import (
 
 // WebhookSubService 通知订阅服务接口
 type WebhookSubService interface {
-	GetWebhookSubs(ctx context.Context, request *types.GetWebhookSubsRequest) ([]types.GetWebhookSubResponse, error)
+	BuildResponse(ctx context.Context, item *ent.WebhookSubscription) (*types.GetWebhookSubResponse, error)
+	GetWebhookSubs(ctx context.Context, request *types.GetWebhookSubsRequest) ([]*types.GetWebhookSubResponse, error)
 	GetWebhookSub(ctx context.Context, id int64) (*types.GetWebhookSubResponse, error)
 	CreateWebhookSub(ctx context.Context, request *types.CreateWebhookSubRequest) (*types.CreateWebhookSubResponse, error)
 	UpdateWebhookSub(ctx context.Context, request *types.UpdateWebhookSubRequest) (*types.GetWebhookSubRequest, error)
@@ -75,9 +76,52 @@ func (s *WebhookSubServiceImpl) getObjNameFromID(ctx context.Context, objType we
 	return objName
 }
 
+// BuildResponse 将实体转换为响应
+func (s *WebhookSubServiceImpl) BuildResponse(ctx context.Context, item *ent.WebhookSubscription) (*types.GetWebhookSubResponse, error) {
+	resp := &types.GetWebhookSubResponse{
+		ID:          item.ID,
+		Name:        item.Name,
+		Description: item.Description,
+		WebhookID:   item.WebhookID,
+		ObjType:     item.ObjType.String(),
+		ObjID:       item.ObjID,
+		IsActive:    item.IsActive,
+	}
+
+	// 查询关联对象名称
+	switch item.ObjType {
+	case webhooksubscription.ObjTypeCdnRecord:
+		var firstCDNRecord *ent.CDNRecord
+		firstCDNRecord, err := s.db.CDNRecord.Query().
+			Where(cdnrecord.IDEQ(item.ObjID)).
+			First(ctx)
+		if err == nil {
+			resp.ObjName = firstCDNRecord.Domain
+		}
+	case webhooksubscription.ObjTypeDNSRecord:
+		var firstDNSRecord *ent.DNSRecord
+		firstDNSRecord, err := s.db.DNSRecord.Query().
+			Where(dnsrecord.IDEQ(item.ObjID)).
+			First(ctx)
+		if err == nil {
+			resp.ObjName = firstDNSRecord.Domain
+		}
+	case webhooksubscription.ObjTypeDevice:
+		var firstDevice *ent.Device
+		firstDevice, err := s.db.Device.Query().
+			Where(device.IDEQ(item.ObjID)).
+			First(ctx)
+		if err == nil {
+			resp.ObjName = firstDevice.Name
+		}
+	}
+
+	return resp, nil
+}
+
 // GetWebhookSubs 获取全部通知订阅
-func (s *WebhookSubServiceImpl) GetWebhookSubs(ctx context.Context, request *types.GetWebhookSubsRequest) ([]types.GetWebhookSubResponse, error) {
-	webhooks := make([]types.GetWebhookSubResponse, 0)
+func (s *WebhookSubServiceImpl) GetWebhookSubs(ctx context.Context, request *types.GetWebhookSubsRequest) ([]*types.GetWebhookSubResponse, error) {
+	lists := make([]*types.GetWebhookSubResponse, 0)
 	// 查询全部通知订阅
 	allWebhookSubscription, err := s.db.WebhookSubscription.Query().
 		WhereIf(request.IsActive != nil, webhooksubscription.IsActiveEQ(cast.ToBool(request.IsActive))).
@@ -88,23 +132,14 @@ func (s *WebhookSubServiceImpl) GetWebhookSubs(ctx context.Context, request *typ
 	}
 
 	for _, item := range allWebhookSubscription {
-		list := types.GetWebhookSubResponse{
-			ID:          item.ID,
-			Name:        item.Name,
-			Description: item.Description,
-			WebhookID:   item.WebhookID,
-			ObjType:     item.ObjType.String(),
-			ObjID:       item.ObjID,
-			IsActive:    item.IsActive,
+		// 将实体转换为响应
+		list, err := s.BuildResponse(ctx, item)
+		if err != nil {
+			return nil, err
 		}
-		// 查询关联对象名称 (保持原始逻辑，在循环内进行查询)
-		list.ObjName = s.getObjNameFromID(ctx, item.ObjType, item.ObjID)
-
-		// 原始 Handler 逻辑中这里有一个错误：webhooks = append(webhooks) 应该是 webhooks = append(webhooks, list)
-		// 迁移时假设意图是追加
-		webhooks = append(webhooks, list)
+		lists = append(lists, list)
 	}
-	return webhooks, nil
+	return lists, nil
 }
 
 // GetWebhookSub 获取单个通知订阅
@@ -120,19 +155,12 @@ func (s *WebhookSubServiceImpl) GetWebhookSub(ctx context.Context, id int64) (*t
 		return nil, fmt.Errorf("查询通知订阅失败: %w", err)
 	}
 
-	list := types.GetWebhookSubResponse{
-		ID:          firstWebhookSubscription.ID,
-		Name:        firstWebhookSubscription.Name,
-		Description: firstWebhookSubscription.Description,
-		WebhookID:   firstWebhookSubscription.WebhookID,
-		ObjType:     firstWebhookSubscription.ObjType.String(),
-		ObjID:       firstWebhookSubscription.ObjID,
-		IsActive:    firstWebhookSubscription.IsActive,
+	// 将实体转换为响应
+	list, err := s.BuildResponse(ctx, firstWebhookSubscription)
+	if err != nil {
+		return nil, err
 	}
-	// 查询关联对象名称
-	list.ObjName = s.getObjNameFromID(ctx, firstWebhookSubscription.ObjType, firstWebhookSubscription.ObjID)
-
-	return &list, nil
+	return list, nil
 }
 
 // CreateWebhookSub 创建通知订阅

@@ -12,6 +12,7 @@ import (
 
 // PlatformConfigService 配置服务接口
 type PlatformConfigService interface {
+	BuildResponse(ctx context.Context, item *ent.PlatformConfig) (*types.GetPlatformConfigResponse, error)
 	GetConfigs(ctx context.Context) ([]*types.GetPlatformConfigResponse, error)
 	GetConfig(ctx context.Context, id int64) (*types.GetPlatformConfigResponse, error)
 	CreateConfig(ctx context.Context, request *types.CreatePlatformConfigRequest) (*types.GetPlatformConfigRequest, error)
@@ -31,8 +32,8 @@ func NewPlatformConfigService(db *ent.Client, debug bool, logHelper *operation_l
 	return &PlatformConfigServiceImpl{db: db, debug: debug, logHelper: logHelper}
 }
 
-// buildResponse 将实体转换为响应
-func (s *PlatformConfigServiceImpl) buildResponse(ctx context.Context, item *ent.PlatformConfig) (*types.GetPlatformConfigResponse, error) {
+// BuildResponse 将实体转换为响应
+func (s *PlatformConfigServiceImpl) BuildResponse(ctx context.Context, item *ent.PlatformConfig) (*types.GetPlatformConfigResponse, error) {
 	resp := &types.GetPlatformConfigResponse{
 		ID:          item.ID,
 		Capability:  item.Capability.String(),
@@ -57,7 +58,7 @@ func (s *PlatformConfigServiceImpl) GetConfigs(ctx context.Context) ([]*types.Ge
 	// 原始映射逻辑：直接在循环中构建 DTO
 	for _, item := range allConfig {
 		// 将实体转换为响应
-		list, err := s.buildResponse(ctx, item)
+		list, err := s.BuildResponse(ctx, item)
 		if err != nil {
 			return nil, err
 		}
@@ -80,7 +81,7 @@ func (s *PlatformConfigServiceImpl) GetConfig(ctx context.Context, id int64) (*t
 	}
 
 	// 将实体转换为响应
-	list, err := s.buildResponse(ctx, firstConfig)
+	list, err := s.BuildResponse(ctx, firstConfig)
 	if err != nil {
 		return nil, err
 	}

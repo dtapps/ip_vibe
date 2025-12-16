@@ -15,6 +15,7 @@ import (
 
 // PortForwardService 端口转发服务接口
 type PortForwardService interface {
+	BuildResponse(ctx context.Context, item *ent.DevicePortForward) (*types.GetPortForwardResponse, error)
 	GetPortForwards(ctx context.Context, request *types.GetPortForwardsRequest) ([]*types.GetPortForwardResponse, error)
 	GetPortForward(ctx context.Context, id int64) (*types.GetPortForwardResponse, error)
 	CreatePortForward(ctx context.Context, request *types.CreatePortForwardRequest) (*types.GetPortForwardRequest, error)
@@ -37,8 +38,8 @@ func NewPortForwardService(db *ent.Client, debug bool, logHelper *operation_logs
 	return &PortForwardServiceImpl{db: db, debug: debug, logHelper: logHelper}
 }
 
-// buildResponse 将实体转换为响应
-func (s *PortForwardServiceImpl) buildResponse(ctx context.Context, item *ent.DevicePortForward) (*types.GetPortForwardResponse, error) {
+// BuildResponse 将实体转换为响应
+func (s *PortForwardServiceImpl) BuildResponse(ctx context.Context, item *ent.DevicePortForward) (*types.GetPortForwardResponse, error) {
 	resp := &types.GetPortForwardResponse{
 		ID:          item.ID,
 		Name:        item.Name,
@@ -74,7 +75,7 @@ func (s *PortForwardServiceImpl) GetPortForwards(ctx context.Context, request *t
 	}
 	for _, item := range allPortForward {
 		// 将实体转换为响应
-		list, err := s.buildResponse(ctx, item)
+		list, err := s.BuildResponse(ctx, item)
 		if err != nil {
 			return nil, err
 		}
@@ -98,7 +99,7 @@ func (s *PortForwardServiceImpl) GetPortForward(ctx context.Context, id int64) (
 	}
 
 	// 将实体转换为响应
-	list, err := s.buildResponse(ctx, firstPortForward)
+	list, err := s.BuildResponse(ctx, firstPortForward)
 	if err != nil {
 		return nil, err
 	}
