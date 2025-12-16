@@ -60,6 +60,7 @@ type CDNRecordMutation struct {
 	updated_at         *time.Time
 	record_id          *string
 	domain             *string
+	sub_domain         *string
 	_type              *cdnrecord.Type
 	origin_protocol    *cdnrecord.OriginProtocol
 	http_port          *int
@@ -377,6 +378,42 @@ func (m *CDNRecordMutation) OldDomain(ctx context.Context) (v string, err error)
 // ResetDomain resets all changes to the "domain" field.
 func (m *CDNRecordMutation) ResetDomain() {
 	m.domain = nil
+}
+
+// SetSubDomain sets the "sub_domain" field.
+func (m *CDNRecordMutation) SetSubDomain(s string) {
+	m.sub_domain = &s
+}
+
+// SubDomain returns the value of the "sub_domain" field in the mutation.
+func (m *CDNRecordMutation) SubDomain() (r string, exists bool) {
+	v := m.sub_domain
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubDomain returns the old "sub_domain" field's value of the CDNRecord entity.
+// If the CDNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CDNRecordMutation) OldSubDomain(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubDomain is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubDomain requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubDomain: %w", err)
+	}
+	return oldValue.SubDomain, nil
+}
+
+// ResetSubDomain resets all changes to the "sub_domain" field.
+func (m *CDNRecordMutation) ResetSubDomain() {
+	m.sub_domain = nil
 }
 
 // SetType sets the "type" field.
@@ -875,7 +912,7 @@ func (m *CDNRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CDNRecordMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, cdnrecord.FieldCreatedAt)
 	}
@@ -890,6 +927,9 @@ func (m *CDNRecordMutation) Fields() []string {
 	}
 	if m.domain != nil {
 		fields = append(fields, cdnrecord.FieldDomain)
+	}
+	if m.sub_domain != nil {
+		fields = append(fields, cdnrecord.FieldSubDomain)
 	}
 	if m._type != nil {
 		fields = append(fields, cdnrecord.FieldType)
@@ -933,6 +973,8 @@ func (m *CDNRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.RecordID()
 	case cdnrecord.FieldDomain:
 		return m.Domain()
+	case cdnrecord.FieldSubDomain:
+		return m.SubDomain()
 	case cdnrecord.FieldType:
 		return m.GetType()
 	case cdnrecord.FieldOriginProtocol:
@@ -968,6 +1010,8 @@ func (m *CDNRecordMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldRecordID(ctx)
 	case cdnrecord.FieldDomain:
 		return m.OldDomain(ctx)
+	case cdnrecord.FieldSubDomain:
+		return m.OldSubDomain(ctx)
 	case cdnrecord.FieldType:
 		return m.OldType(ctx)
 	case cdnrecord.FieldOriginProtocol:
@@ -1027,6 +1071,13 @@ func (m *CDNRecordMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDomain(v)
+		return nil
+	case cdnrecord.FieldSubDomain:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubDomain(v)
 		return nil
 	case cdnrecord.FieldType:
 		v, ok := value.(cdnrecord.Type)
@@ -1196,6 +1247,9 @@ func (m *CDNRecordMutation) ResetField(name string) error {
 	case cdnrecord.FieldDomain:
 		m.ResetDomain()
 		return nil
+	case cdnrecord.FieldSubDomain:
+		m.ResetSubDomain()
+		return nil
 	case cdnrecord.FieldType:
 		m.ResetType()
 		return nil
@@ -1354,6 +1408,7 @@ type DNSRecordMutation struct {
 	updated_at        *time.Time
 	record_id         *string
 	domain            *string
+	sub_domain        *string
 	_type             *dnsrecord.Type
 	is_active         *bool
 	last_refresh_at   *time.Time
@@ -1664,6 +1719,42 @@ func (m *DNSRecordMutation) OldDomain(ctx context.Context) (v string, err error)
 // ResetDomain resets all changes to the "domain" field.
 func (m *DNSRecordMutation) ResetDomain() {
 	m.domain = nil
+}
+
+// SetSubDomain sets the "sub_domain" field.
+func (m *DNSRecordMutation) SetSubDomain(s string) {
+	m.sub_domain = &s
+}
+
+// SubDomain returns the value of the "sub_domain" field in the mutation.
+func (m *DNSRecordMutation) SubDomain() (r string, exists bool) {
+	v := m.sub_domain
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubDomain returns the old "sub_domain" field's value of the DNSRecord entity.
+// If the DNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DNSRecordMutation) OldSubDomain(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubDomain is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubDomain requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubDomain: %w", err)
+	}
+	return oldValue.SubDomain, nil
+}
+
+// ResetSubDomain resets all changes to the "sub_domain" field.
+func (m *DNSRecordMutation) ResetSubDomain() {
+	m.sub_domain = nil
 }
 
 // SetType sets the "type" field.
@@ -2000,7 +2091,7 @@ func (m *DNSRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DNSRecordMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, dnsrecord.FieldCreatedAt)
 	}
@@ -2015,6 +2106,9 @@ func (m *DNSRecordMutation) Fields() []string {
 	}
 	if m.domain != nil {
 		fields = append(fields, dnsrecord.FieldDomain)
+	}
+	if m.sub_domain != nil {
+		fields = append(fields, dnsrecord.FieldSubDomain)
 	}
 	if m._type != nil {
 		fields = append(fields, dnsrecord.FieldType)
@@ -2049,6 +2143,8 @@ func (m *DNSRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.RecordID()
 	case dnsrecord.FieldDomain:
 		return m.Domain()
+	case dnsrecord.FieldSubDomain:
+		return m.SubDomain()
 	case dnsrecord.FieldType:
 		return m.GetType()
 	case dnsrecord.FieldIPGroupID:
@@ -2078,6 +2174,8 @@ func (m *DNSRecordMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldRecordID(ctx)
 	case dnsrecord.FieldDomain:
 		return m.OldDomain(ctx)
+	case dnsrecord.FieldSubDomain:
+		return m.OldSubDomain(ctx)
 	case dnsrecord.FieldType:
 		return m.OldType(ctx)
 	case dnsrecord.FieldIPGroupID:
@@ -2131,6 +2229,13 @@ func (m *DNSRecordMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDomain(v)
+		return nil
+	case dnsrecord.FieldSubDomain:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubDomain(v)
 		return nil
 	case dnsrecord.FieldType:
 		v, ok := value.(dnsrecord.Type)
@@ -2260,6 +2365,9 @@ func (m *DNSRecordMutation) ResetField(name string) error {
 		return nil
 	case dnsrecord.FieldDomain:
 		m.ResetDomain()
+		return nil
+	case dnsrecord.FieldSubDomain:
+		m.ResetSubDomain()
 		return nil
 	case dnsrecord.FieldType:
 		m.ResetType()

@@ -80,6 +80,11 @@ func Domain(v string) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldEQ(FieldDomain, v))
 }
 
+// SubDomain applies equality check predicate on the "sub_domain" field. It's identical to SubDomainEQ.
+func SubDomain(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldEQ(FieldSubDomain, v))
+}
+
 // HTTPPort applies equality check predicate on the "http_port" field. It's identical to HTTPPortEQ.
 func HTTPPort(v int) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldEQ(FieldHTTPPort, v))
@@ -348,6 +353,71 @@ func DomainEqualFold(v string) predicate.CDNRecord {
 // DomainContainsFold applies the ContainsFold predicate on the "domain" field.
 func DomainContainsFold(v string) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldContainsFold(FieldDomain, v))
+}
+
+// SubDomainEQ applies the EQ predicate on the "sub_domain" field.
+func SubDomainEQ(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldEQ(FieldSubDomain, v))
+}
+
+// SubDomainNEQ applies the NEQ predicate on the "sub_domain" field.
+func SubDomainNEQ(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldNEQ(FieldSubDomain, v))
+}
+
+// SubDomainIn applies the In predicate on the "sub_domain" field.
+func SubDomainIn(vs ...string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldIn(FieldSubDomain, vs...))
+}
+
+// SubDomainNotIn applies the NotIn predicate on the "sub_domain" field.
+func SubDomainNotIn(vs ...string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldNotIn(FieldSubDomain, vs...))
+}
+
+// SubDomainGT applies the GT predicate on the "sub_domain" field.
+func SubDomainGT(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldGT(FieldSubDomain, v))
+}
+
+// SubDomainGTE applies the GTE predicate on the "sub_domain" field.
+func SubDomainGTE(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldGTE(FieldSubDomain, v))
+}
+
+// SubDomainLT applies the LT predicate on the "sub_domain" field.
+func SubDomainLT(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldLT(FieldSubDomain, v))
+}
+
+// SubDomainLTE applies the LTE predicate on the "sub_domain" field.
+func SubDomainLTE(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldLTE(FieldSubDomain, v))
+}
+
+// SubDomainContains applies the Contains predicate on the "sub_domain" field.
+func SubDomainContains(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldContains(FieldSubDomain, v))
+}
+
+// SubDomainHasPrefix applies the HasPrefix predicate on the "sub_domain" field.
+func SubDomainHasPrefix(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldHasPrefix(FieldSubDomain, v))
+}
+
+// SubDomainHasSuffix applies the HasSuffix predicate on the "sub_domain" field.
+func SubDomainHasSuffix(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldHasSuffix(FieldSubDomain, v))
+}
+
+// SubDomainEqualFold applies the EqualFold predicate on the "sub_domain" field.
+func SubDomainEqualFold(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldEqualFold(FieldSubDomain, v))
+}
+
+// SubDomainContainsFold applies the ContainsFold predicate on the "sub_domain" field.
+func SubDomainContainsFold(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldContainsFold(FieldSubDomain, v))
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.

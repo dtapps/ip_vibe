@@ -52,9 +52,14 @@ func (CDNRecord) Fields() []ent.Field {
 			Comment("平台侧记录ID").
 			Annotations(entsql.WithComments(true)),
 
-		field.String("domain").
+		// field.String("domain").
+		// 	Immutable().
+		// 	Comment("域名（如 www.example.com）").
+		// 	Annotations(entsql.WithComments(true)),
+
+		field.String("sub_domain").
 			Immutable().
-			Comment("域名（如 www.example.com）").
+			Comment("子域名（如 www, blog, api）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("type").

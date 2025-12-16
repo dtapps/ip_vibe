@@ -25,6 +25,8 @@ const (
 	FieldRecordID = "record_id"
 	// FieldDomain holds the string denoting the domain field in the database.
 	FieldDomain = "domain"
+	// FieldSubDomain holds the string denoting the sub_domain field in the database.
+	FieldSubDomain = "sub_domain"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldOriginProtocol holds the string denoting the origin_protocol field in the database.
@@ -80,6 +82,7 @@ var Columns = []string{
 	FieldConfigID,
 	FieldRecordID,
 	FieldDomain,
+	FieldSubDomain,
 	FieldType,
 	FieldOriginProtocol,
 	FieldHTTPPort,
@@ -196,6 +199,11 @@ func ByRecordID(opts ...sql.OrderTermOption) OrderOption {
 // ByDomain orders the results by the domain field.
 func ByDomain(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDomain, opts...).ToFunc()
+}
+
+// BySubDomain orders the results by the sub_domain field.
+func BySubDomain(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSubDomain, opts...).ToFunc()
 }
 
 // ByType orders the results by the type field.

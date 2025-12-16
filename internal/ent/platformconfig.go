@@ -17,7 +17,7 @@ import (
 type PlatformConfig struct {
 	config `json:"-"`
 	// ID of the ent.
-	// 配置序号
+	// 平台配置序号
 	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
@@ -25,9 +25,9 @@ type PlatformConfig struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// 平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）
 	Capability platformconfig.Capability `json:"capability,omitempty"`
-	// 配置名称
+	// 平台配置名称
 	Name string `json:"name,omitempty"`
-	// 配置描述
+	// 平台配置描述
 	Description string `json:"description,omitempty"`
 	// 平台类型（edgeone / cloudflare / dnspod …）
 	Platform platformconfig.Platform `json:"platform,omitempty"`

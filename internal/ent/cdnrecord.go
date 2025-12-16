@@ -30,6 +30,8 @@ type CDNRecord struct {
 	RecordID string `json:"record_id,omitempty"`
 	// 域名（如 www.example.com）
 	Domain string `json:"domain,omitempty"`
+	// 子域名（如 www, blog, api）
+	SubDomain string `json:"sub_domain,omitempty"`
 	// 记录类型（A、AAAA等）
 	Type cdnrecord.Type `json:"type,omitempty"`
 	// 回源协议（http、https、follow）
@@ -106,7 +108,7 @@ func (*CDNRecord) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case cdnrecord.FieldID, cdnrecord.FieldConfigID, cdnrecord.FieldHTTPPort, cdnrecord.FieldHTTPSPort, cdnrecord.FieldIPGroupID:
 			values[i] = new(sql.NullInt64)
-		case cdnrecord.FieldRecordID, cdnrecord.FieldDomain, cdnrecord.FieldType, cdnrecord.FieldOriginProtocol, cdnrecord.FieldCdnDomain:
+		case cdnrecord.FieldRecordID, cdnrecord.FieldDomain, cdnrecord.FieldSubDomain, cdnrecord.FieldType, cdnrecord.FieldOriginProtocol, cdnrecord.FieldCdnDomain:
 			values[i] = new(sql.NullString)
 		case cdnrecord.FieldCreatedAt, cdnrecord.FieldUpdatedAt, cdnrecord.FieldLastRefreshAt:
 			values[i] = new(sql.NullTime)
@@ -160,6 +162,12 @@ func (_m *CDNRecord) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field domain", values[i])
 			} else if value.Valid {
 				_m.Domain = value.String
+			}
+		case cdnrecord.FieldSubDomain:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field sub_domain", values[i])
+			} else if value.Valid {
+				_m.SubDomain = value.String
 			}
 		case cdnrecord.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -274,6 +282,9 @@ func (_m *CDNRecord) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("domain=")
 	builder.WriteString(_m.Domain)
+	builder.WriteString(", ")
+	builder.WriteString("sub_domain=")
+	builder.WriteString(_m.SubDomain)
 	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Type))

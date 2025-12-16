@@ -80,6 +80,11 @@ func Domain(v string) predicate.DNSRecord {
 	return predicate.DNSRecord(sql.FieldEQ(FieldDomain, v))
 }
 
+// SubDomain applies equality check predicate on the "sub_domain" field. It's identical to SubDomainEQ.
+func SubDomain(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldEQ(FieldSubDomain, v))
+}
+
 // IPGroupID applies equality check predicate on the "ip_group_id" field. It's identical to IPGroupIDEQ.
 func IPGroupID(v int64) predicate.DNSRecord {
 	return predicate.DNSRecord(sql.FieldEQ(FieldIPGroupID, v))
@@ -338,6 +343,71 @@ func DomainEqualFold(v string) predicate.DNSRecord {
 // DomainContainsFold applies the ContainsFold predicate on the "domain" field.
 func DomainContainsFold(v string) predicate.DNSRecord {
 	return predicate.DNSRecord(sql.FieldContainsFold(FieldDomain, v))
+}
+
+// SubDomainEQ applies the EQ predicate on the "sub_domain" field.
+func SubDomainEQ(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldEQ(FieldSubDomain, v))
+}
+
+// SubDomainNEQ applies the NEQ predicate on the "sub_domain" field.
+func SubDomainNEQ(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldNEQ(FieldSubDomain, v))
+}
+
+// SubDomainIn applies the In predicate on the "sub_domain" field.
+func SubDomainIn(vs ...string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldIn(FieldSubDomain, vs...))
+}
+
+// SubDomainNotIn applies the NotIn predicate on the "sub_domain" field.
+func SubDomainNotIn(vs ...string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldNotIn(FieldSubDomain, vs...))
+}
+
+// SubDomainGT applies the GT predicate on the "sub_domain" field.
+func SubDomainGT(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldGT(FieldSubDomain, v))
+}
+
+// SubDomainGTE applies the GTE predicate on the "sub_domain" field.
+func SubDomainGTE(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldGTE(FieldSubDomain, v))
+}
+
+// SubDomainLT applies the LT predicate on the "sub_domain" field.
+func SubDomainLT(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldLT(FieldSubDomain, v))
+}
+
+// SubDomainLTE applies the LTE predicate on the "sub_domain" field.
+func SubDomainLTE(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldLTE(FieldSubDomain, v))
+}
+
+// SubDomainContains applies the Contains predicate on the "sub_domain" field.
+func SubDomainContains(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldContains(FieldSubDomain, v))
+}
+
+// SubDomainHasPrefix applies the HasPrefix predicate on the "sub_domain" field.
+func SubDomainHasPrefix(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldHasPrefix(FieldSubDomain, v))
+}
+
+// SubDomainHasSuffix applies the HasSuffix predicate on the "sub_domain" field.
+func SubDomainHasSuffix(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldHasSuffix(FieldSubDomain, v))
+}
+
+// SubDomainEqualFold applies the EqualFold predicate on the "sub_domain" field.
+func SubDomainEqualFold(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldEqualFold(FieldSubDomain, v))
+}
+
+// SubDomainContainsFold applies the ContainsFold predicate on the "sub_domain" field.
+func SubDomainContainsFold(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldContainsFold(FieldSubDomain, v))
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.
