@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/global"
@@ -28,6 +29,13 @@ func PortForward(c *gin.Context) {
 		},
 	}
 
+	// 创建服务
+	service := service.NewPortForwardService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
 	// 查询全部端口转发
 	allPortForward, err := global.GvaEntDb.DevicePortForward.Query().
 		WithDevice().
@@ -35,19 +43,12 @@ func PortForward(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allPortForward.Items {
-			pageData.List = append(pageData.List, types.GetPortForwardResponse{
-				ID:          item.ID,
-				Name:        item.Name,
-				Description: item.Description,
-				LocalPort:   item.LocalPort,
-				RemoteHost:  item.RemoteHost,
-				RemotePort:  item.RemotePort,
-				Protocols:   item.Protocols,
-				AutoForward: item.AutoForward,
-				IsActive:    item.IsActive,
-				DeviceID:    item.Edges.Device.ID,
-				DeviceName:  item.Edges.Device.Name,
-			})
+			list, err := service.BuildResponse(c, item)
+			if err != nil {
+				errorResponse(c, http.StatusNotFound, err.Error())
+				return
+			}
+			pageData.List = append(pageData.List, *list)
 		}
 	}
 

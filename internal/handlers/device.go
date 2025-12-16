@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/global"
@@ -28,22 +29,25 @@ func Device(c *gin.Context) {
 		},
 	}
 
+	// 创建服务
+	service := service.NewDeviceService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
 	// 查询全部设备
 	allDevice, err := global.GvaEntDb.Device.Query().
 		Order(ent.Desc(device.FieldCreatedAt)).
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allDevice.Items {
-			pageData.List = append(pageData.List, types.GetDeviceResponse{
-				ID:              item.ID,
-				Code:            item.Code,
-				Name:            item.Name,
-				Description:     item.Description,
-				IPV4:            item.IPV4,
-				IPV6:            item.IPV6,
-				LastReportedAt:  item.LastReportedAt,
-				LastHeartbeatAt: item.LastHeartbeatAt,
-			})
+			list, err := service.BuildResponse(c, item)
+			if err != nil {
+				errorResponse(c, http.StatusNotFound, err.Error())
+				return
+			}
+			pageData.List = append(pageData.List, *list)
 		}
 	}
 

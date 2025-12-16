@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/global"
@@ -28,6 +29,13 @@ func IPGroup(c *gin.Context) {
 		},
 	}
 
+	// 创建服务
+	service := service.NewIPGroupService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
 	// 查询全部IP组
 	allIpGroup, err := global.GvaEntDb.IpGroup.Query().
 		WithDevices().
@@ -35,12 +43,12 @@ func IPGroup(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allIpGroup.Items {
-			pageData.List = append(pageData.List, types.GetIPGroupResponse{
-				ID:          item.ID,
-				Name:        item.Name,
-				Description: item.Description,
-				DeviceCount: len(item.Edges.Devices),
-			})
+			list, err := service.BuildResponse(c, item)
+			if err != nil {
+				errorResponse(c, http.StatusNotFound, err.Error())
+				return
+			}
+			pageData.List = append(pageData.List, *list)
 		}
 	}
 

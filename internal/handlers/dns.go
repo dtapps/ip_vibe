@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/global"
@@ -28,6 +29,13 @@ func Dns(c *gin.Context) {
 		},
 	}
 
+	// 创建服务
+	service := service.NewDNSRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
 	// 查询全部DNS记录
 	allDnsRecord, err := global.GvaEntDb.DNSRecord.Query().
 		WithConfig().
@@ -37,25 +45,12 @@ func Dns(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allDnsRecord.Items {
-			list := types.GetDnsRecordResponse{
-				ID:            item.ID,
-				ConfigID:      item.ConfigID,
-				Platform:      item.Edges.Config.Platform.String(),
-				RecordID:      item.RecordID,
-				Domain:        item.Domain,
-				Type:          item.Type.String(),
-				IsActive:      item.IsActive,
-				LastRefreshAt: item.LastRefreshAt,
+			list, err := service.BuildResponse(c, item)
+			if err != nil {
+				errorResponse(c, http.StatusNotFound, err.Error())
+				return
 			}
-			if ipGroup, err := item.Edges.IPGroupOrErr(); err == nil {
-				list.IPGroupID = ipGroup.ID
-				list.IPGroupName = ipGroup.Name
-			}
-			if cdnRecord, err := item.Edges.CdnRecordOrErr(); err == nil {
-				list.CdnRecordID = cdnRecord.ID
-				list.CdnRecordCdnDomain = cdnRecord.CdnDomain
-			}
-			pageData.List = append(pageData.List, list)
+			pageData.List = append(pageData.List, *list)
 		}
 	}
 

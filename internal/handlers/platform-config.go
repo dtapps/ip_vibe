@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/global"
@@ -28,19 +29,25 @@ func PlatformConfig(c *gin.Context) {
 		},
 	}
 
+	// 创建服务
+	service := service.NewPlatformConfigService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
 	// 查询全部配置
 	allConfig, err := global.GvaEntDb.PlatformConfig.Query().
 		Order(ent.Desc(platformconfig.FieldCreatedAt)).
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allConfig.Items {
-			pageData.List = append(pageData.List, types.GetPlatformConfigResponse{
-				ID:          item.ID,
-				Capability:  item.Capability.String(),
-				Name:        item.Name,
-				Description: item.Description,
-				Platform:    item.Platform.String(),
-			})
+			list, err := service.BuildResponse(c, item)
+			if err != nil {
+				errorResponse(c, http.StatusNotFound, err.Error())
+				return
+			}
+			pageData.List = append(pageData.List, *list)
 		}
 	}
 

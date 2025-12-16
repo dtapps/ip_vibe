@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/domainmonitorhistory"
@@ -30,24 +31,26 @@ func DomainMonitor(c *gin.Context) {
 		},
 	}
 
+	// 创建服务
+	service := service.NewDomainMonitorService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+		global.GvaGoCron,
+	)
+
 	// 查询全部域名监控
 	allDomainMonitor, err := global.GvaEntDb.DomainMonitor.Query().
 		Order(ent.Desc(domainmonitor.FieldCreatedAt)).
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allDomainMonitor.Items {
-			list := types.GetDomainMonitorResponse{
-				ID:            item.ID,
-				Name:          item.Name,
-				Domain:        item.Domain,
-				CheckInterval: item.CheckInterval,
-				CheckProtocol: item.CheckProtocol.String(),
-				IsActive:      item.IsActive,
-				CurrentStatus: item.CurrentStatus.String(),
-				LastSuccessAt: item.LastSuccessAt,
-				LastFailureAt: item.LastFailureAt,
+			list, err := service.BuildResponse(c, item)
+			if err != nil {
+				errorResponse(c, http.StatusNotFound, err.Error())
+				return
 			}
-			pageData.List = append(pageData.List, list)
+			pageData.List = append(pageData.List, *list)
 		}
 	}
 

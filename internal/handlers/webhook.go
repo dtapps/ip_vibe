@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/global"
@@ -28,22 +29,25 @@ func Webhook(c *gin.Context) {
 		},
 	}
 
+	// 创建服务
+	service := service.NewWebhookService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
 	// 查询全部通知
 	allWebhook, err := global.GvaEntDb.Webhook.Query().
 		Order(ent.Desc(webhook.FieldCreatedAt)).
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allWebhook.Items {
-			pageData.List = append(pageData.List, types.GetWebhookResponse{
-				ID:          item.ID,
-				Name:        item.Name,
-				Description: item.Description,
-				Platform:    item.Platform.String(),
-				URL:         item.URL,
-				Secret:      item.Secret,
-				Events:      item.Events,
-				IsActive:    item.IsActive,
-			})
+			list, err := service.BuildResponse(c, item)
+			if err != nil {
+				errorResponse(c, http.StatusNotFound, err.Error())
+				return
+			}
+			pageData.List = append(pageData.List, *list)
 		}
 	}
 

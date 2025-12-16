@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/cdnrecord"
-	"vibe_ip/internal/ent/device"
-	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
@@ -31,6 +29,13 @@ func WebhookSub(c *gin.Context) {
 		},
 	}
 
+	// 创建服务
+	service := service.NewWebhookSubService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
 	// 查询全部通知订阅
 	allWebhookSubscription, err := global.GvaEntDb.WebhookSubscription.Query().
 		WithWebhook().
@@ -38,40 +43,12 @@ func WebhookSub(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allWebhookSubscription.Items {
-			list := types.GetWebhookSubResponse{
-				ID:          item.ID,
-				Name:        item.Name,
-				Description: item.Description,
-				WebhookID:   item.WebhookID,
-				WebhookName: item.Edges.Webhook.Name,
-				ObjType:     item.ObjType.String(),
-				ObjID:       item.ObjID,
-				IsActive:    item.IsActive,
+			list, err := service.BuildResponse(c, item)
+			if err != nil {
+				errorResponse(c, http.StatusNotFound, err.Error())
+				return
 			}
-			switch item.ObjType {
-			case webhooksubscription.ObjTypeCdnRecord:
-				firstCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
-					Where(cdnrecord.IDEQ(item.ObjID)).
-					First(c)
-				if err == nil {
-					list.ObjName = firstCdnRecord.Domain
-				}
-			case webhooksubscription.ObjTypeDNSRecord:
-				firstDNSRecord, err := global.GvaEntDb.DNSRecord.Query().
-					Where(dnsrecord.IDEQ(item.ObjID)).
-					First(c)
-				if err == nil {
-					list.ObjName = firstDNSRecord.Domain
-				}
-			case webhooksubscription.ObjTypeDevice:
-				firstDevice, err := global.GvaEntDb.Device.Query().
-					Where(device.IDEQ(item.ObjID)).
-					First(c)
-				if err == nil {
-					list.ObjName = firstDevice.Name
-				}
-			}
-			pageData.List = append(pageData.List, list)
+			pageData.List = append(pageData.List, *list)
 		}
 	}
 
