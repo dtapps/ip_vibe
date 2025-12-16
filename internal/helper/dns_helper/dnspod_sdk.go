@@ -88,7 +88,7 @@ func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, do
 	}
 	response, err := c.client.DescribeRecordList(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return DnsPodQueryResponse{}, fmt.Errorf("API错误: %s", err)
+		return DnsPodQueryResponse{}, fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return DnsPodQueryResponse{}, err
@@ -141,7 +141,7 @@ func (c *DnsPodClientSdk) CreateDomain(ctx context.Context, domainName string, d
 	requestParams.SubDomain = common.StringPtr(domainSub)   // 主机记录
 	_, err = c.client.CreateRecord(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return fmt.Errorf("API错误: %s", err)
+		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
@@ -182,7 +182,7 @@ func (c *DnsPodClientSdk) UpdateDomain(ctx context.Context, domainID int64, doma
 	requestParams.SubDomain = common.StringPtr(domainSub)       // 主机记录
 	_, err = c.client.ModifyRecord(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return fmt.Errorf("API错误: %s", err)
+		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err

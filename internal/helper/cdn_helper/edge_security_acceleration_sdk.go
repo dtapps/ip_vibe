@@ -87,7 +87,7 @@ func (c *EdgeSecurityAccelerationClientSdk) QueryDomain(ctx context.Context, dom
 	requestParams.PageSize = tea.Int32(500)
 	response, err := c.client.ListRecords(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
-		return EdgeSecurityAccelerationResponseQueryDomain{}, fmt.Errorf("API错误: %s", err)
+		return EdgeSecurityAccelerationResponseQueryDomain{}, fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return EdgeSecurityAccelerationResponseQueryDomain{}, err
@@ -136,7 +136,7 @@ func (c *EdgeSecurityAccelerationClientSdk) CreateDomain(ctx context.Context, do
 	requestParams.Data.Value = tea.String(originValue) // 记录值或部分内容
 	_, err = c.client.CreateRecord(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
-		return fmt.Errorf("API错误: %s", err)
+		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
@@ -171,7 +171,7 @@ func (c *EdgeSecurityAccelerationClientSdk) UpdateDomain(ctx context.Context, re
 	requestParams.Data.Value = tea.String(originValue) // 记录值或部分内容
 	_, err = c.client.UpdateRecord(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
-		return fmt.Errorf("API错误: %s", err)
+		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err

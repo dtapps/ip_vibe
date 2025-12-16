@@ -98,7 +98,7 @@ func (c *AliDnsClientSdk) QueryDomain(ctx context.Context, domainName string, do
 	}
 	response, err := c.client.DescribeDomainRecords(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
-		return AliDnsQueryResponse{}, fmt.Errorf("API错误: %s", err)
+		return AliDnsQueryResponse{}, fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return AliDnsQueryResponse{}, err
@@ -152,7 +152,7 @@ func (c *AliDnsClientSdk) CreateDomain(ctx context.Context, domainName string, d
 	requestParams.Value = tea.String(domainOrigin)    // 记录值
 	_, err = c.client.AddDomainRecord(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
-		return fmt.Errorf("API错误: %s", err)
+		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
@@ -193,7 +193,7 @@ func (c *AliDnsClientSdk) UpdateDomain(ctx context.Context, domainID string, dom
 	requestParams.Value = tea.String(domainOrigin) // 记录值
 	_, err = c.client.UpdateDomainRecord(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
-		return fmt.Errorf("API错误: %s", err)
+		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err

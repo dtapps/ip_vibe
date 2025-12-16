@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"vibe_ip/internal/utils"
 
+	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/services/dns"
 	"github.com/baidubce/bce-sdk-go/util"
 )
@@ -73,6 +74,12 @@ func (c *BaiduDnsClientSdk) QueryDomain(ctx context.Context, domainName string, 
 	requestParams.Rr = domainSub // 主机记录
 	requestParams.MaxKeys = 1000 // 每页包含的最大数量，最大数量通常不超过1000，缺省值为1000
 	response, err := c.client.ListRecord(domainMain, requestParams)
+	if _, ok := err.(*bce.BceClientError); ok {
+		return BaiduDnsQueryResponse{}, fmt.Errorf("客户端出现错误: %w", err)
+	}
+	if _, ok := err.(*bce.BceServiceError); ok {
+		return BaiduDnsQueryResponse{}, fmt.Errorf("服务出现错误: %w", err)
+	}
 	if err != nil {
 		return BaiduDnsQueryResponse{}, err
 	}
@@ -121,6 +128,12 @@ func (c *BaiduDnsClientSdk) CreateDomain(ctx context.Context, domainName string,
 	requestParams.Type = domainType    // 解析记录类型
 	requestParams.Value = domainOrigin // 记录值
 	err = c.client.CreateRecord(domainMain, requestParams, util.NewUUID())
+	if _, ok := err.(*bce.BceClientError); ok {
+		return fmt.Errorf("客户端出现错误: %w", err)
+	}
+	if _, ok := err.(*bce.BceServiceError); ok {
+		return fmt.Errorf("服务出现错误: %w", err)
+	}
 	if err != nil {
 		return err
 	}
@@ -156,6 +169,12 @@ func (c *BaiduDnsClientSdk) UpdateDomain(ctx context.Context, domainID string, d
 	requestParams.Type = domainType    // 解析记录类型
 	requestParams.Value = domainOrigin // 记录值
 	err = c.client.UpdateRecord(domainMain, domainID, requestParams, util.NewUUID())
+	if _, ok := err.(*bce.BceClientError); ok {
+		return fmt.Errorf("客户端出现错误: %w", err)
+	}
+	if _, ok := err.(*bce.BceServiceError); ok {
+		return fmt.Errorf("服务出现错误: %w", err)
+	}
 	if err != nil {
 		return err
 	}

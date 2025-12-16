@@ -83,7 +83,7 @@ func (c *EdgeOneClientSdk) QueryDomain(ctx context.Context, domainName string) (
 	}
 	response, err := c.client.DescribeAccelerationDomains(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return EdgeOneQueryDomainResponse{}, fmt.Errorf("API错误: %s", err)
+		return EdgeOneQueryDomainResponse{}, fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return EdgeOneQueryDomainResponse{}, err
@@ -149,7 +149,7 @@ func (c *EdgeOneClientSdk) CreateDomain(ctx context.Context, domainName string, 
 	requestParams.IPv6Status = common.StringPtr("on")                   // IPv6状态
 	_, err = c.client.CreateAccelerationDomain(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return fmt.Errorf("API错误: %s", err)
+		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
@@ -200,7 +200,7 @@ func (c *EdgeOneClientSdk) UpdateDomain(ctx context.Context, domainName string, 
 	requestParams.IPv6Status = common.StringPtr("on")                   // IPv6状态
 	_, err = c.client.ModifyAccelerationDomain(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return fmt.Errorf("API错误: %s", err)
+		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
@@ -227,7 +227,7 @@ func (c *EdgeOneClientSdk) QueryOriginGroup(ctx context.Context, originGroupName
 	}
 	response, err := c.client.DescribeOriginGroup(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return ResponseEdgeOneQueryOriginGroup{}, fmt.Errorf("API错误: %s", err)
+		return ResponseEdgeOneQueryOriginGroup{}, fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return ResponseEdgeOneQueryOriginGroup{}, err
@@ -271,7 +271,7 @@ func (c *EdgeOneClientSdk) CreateOriginGroup(ctx context.Context, name string, o
 	requestParams.Type = common.StringPtr("GENERAL") // 源站组类型
 	_, err := c.client.CreateOriginGroup(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return fmt.Errorf("API错误: %s", err)
+		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
@@ -307,7 +307,7 @@ func (c *EdgeOneClientSdk) UpdateOriginGroup(ctx context.Context, groupId string
 	}
 	_, err := c.client.ModifyOriginGroup(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return fmt.Errorf("API错误: %s", err)
+		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
