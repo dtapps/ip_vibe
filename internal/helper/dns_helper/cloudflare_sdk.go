@@ -107,14 +107,14 @@ func (c *CloudflareClientSdk) CreateDomain(ctx context.Context, domainName strin
 	}
 
 	// 请求
-	request := dns.ARecordParam{
+	requestParams := dns.ARecordParam{
 		Name:    cloudflare.String(domainFull),
 		Type:    cloudflare.F(dns.ARecordType(domainType)),
 		Content: cloudflare.String(domainOrigin),
 	}
 	_, err = c.client.DNS.Records.New(ctx, dns.RecordNewParams{
 		ZoneID: cloudflare.String(c.config.ZoneID),
-		Body:   request,
+		Body:   requestParams,
 	})
 	if err != nil {
 		return err
@@ -140,7 +140,7 @@ func (c *CloudflareClientSdk) UpdateDomain(ctx context.Context, domainID string,
 	}
 
 	// 请求
-	request := dns.ARecordParam{
+	requestParams := dns.ARecordParam{
 		Name:    cloudflare.String(domainFull),
 		Type:    cloudflare.F(dns.ARecordType(domainType)),
 		Content: cloudflare.String(domainOrigin),
@@ -150,7 +150,7 @@ func (c *CloudflareClientSdk) UpdateDomain(ctx context.Context, domainID string,
 		domainID,
 		dns.RecordEditParams{
 			ZoneID: cloudflare.String(c.config.ZoneID),
-			Body:   request,
+			Body:   requestParams,
 		},
 	)
 	if err != nil {

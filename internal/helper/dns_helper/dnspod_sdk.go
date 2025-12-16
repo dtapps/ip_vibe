@@ -2,6 +2,7 @@ package dns_helper
 
 import (
 	"context"
+	"fmt"
 	"vibe_ip/internal/utils"
 
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
@@ -20,9 +21,11 @@ type DnsPodClientSdk struct {
 	client     *dnspod.Client
 }
 
-func NewDnsPodClientSdk(ctx context.Context, secretID string, secretKey string) (c *DnsPodClientSdk, err error) {
+func NewDnsPodClientSdk(ctx context.Context, secretID string, secretKey string) (*DnsPodClientSdk, error) {
 
-	c = &DnsPodClientSdk{}
+	var err error
+
+	c := &DnsPodClientSdk{}
 	c.config.SecretID = secretID
 	c.config.SecretKey = secretKey
 
@@ -55,36 +58,36 @@ func (c *DnsPodClientSdk) EnableDebug() *DnsPodClientSdk {
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=DescribeRecordList
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, domainOrigin string) (resp ResponseDnsPodQuery, err error) {
-
-	// 准备请求参数
-	requestParams := dnspod.NewDescribeRecordListRequest()
+func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, domainOrigin string) (ResponseDnsPodQuery, error) {
 
 	// 解析域名
 	_, domainSub, domainMain, err := utils.ExtractDomainParts(domainName)
 	if err != nil {
-		return resp, err
+		return ResponseDnsPodQuery{}, err
 	}
-	requestParams.Domain = common.StringPtr(domainMain)
-	requestParams.Subdomain = common.StringPtr(domainSub)
 
 	// 解析IP
 	var domainType = ""
 	if domainOrigin != "" {
 		domainType, err = utils.GetRecordType(domainOrigin)
 		if err != nil {
-			return resp, err
+			return ResponseDnsPodQuery{}, err
 		}
-		requestParams.RecordType = common.StringPtr(domainType)
 	}
 
 	// 请求
+	requestParams := dnspod.NewDescribeRecordListRequest()
+	requestParams.Domain = common.StringPtr(domainMain)
+	requestParams.Subdomain = common.StringPtr(domainSub)
+	if domainType != "" {
+		requestParams.RecordType = common.StringPtr(domainType)
+	}
 	response, err := c.client.DescribeRecordList(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return
+		return ResponseDnsPodQuery{}, fmt.Errorf("API错误: %s", err)
 	}
 	if err != nil {
-		return
+		return ResponseDnsPodQuery{}, err
 	}
 
 	for _, item := range response.Response.RecordList {
@@ -101,14 +104,14 @@ func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, do
 		}
 	}
 
-	return resp, nil
+	return ResponseDnsPodQuery{}, fmt.Errorf("未找到记录")
 }
 
 // 添加记录
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=CreateRecord
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *DnsPodClientSdk) CreateDomain(ctx context.Context, domainName string, domainOrigin string) (err error) {
+func (c *DnsPodClientSdk) CreateDomain(ctx context.Context, domainName string, domainOrigin string) error {
 
 	// 解析域名
 	_, domainSub, domainMain, err := utils.ExtractDomainParts(domainName)
@@ -126,18 +129,18 @@ func (c *DnsPodClientSdk) CreateDomain(ctx context.Context, domainName string, d
 	}
 
 	// 请求
-	request := dnspod.NewCreateRecordRequest()
-	request.Domain = common.StringPtr(domainMain)
-	request.RecordType = common.StringPtr(domainType)
-	request.RecordLine = common.StringPtr("默认")
-	request.Value = common.StringPtr(domainOrigin)
-	request.SubDomain = common.StringPtr(domainSub)
-	_, err = c.client.CreateRecord(request)
+	requestParams := dnspod.NewCreateRecordRequest()
+	requestParams.Domain = common.StringPtr(domainMain)
+	requestParams.RecordType = common.StringPtr(domainType)
+	requestParams.RecordLine = common.StringPtr("默认")
+	requestParams.Value = common.StringPtr(domainOrigin)
+	requestParams.SubDomain = common.StringPtr(domainSub)
+	_, err = c.client.CreateRecord(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return
+		return fmt.Errorf("API错误: %s", err)
 	}
 	if err != nil {
-		return
+		return err
 	}
 
 	return nil
@@ -148,7 +151,7 @@ func (c *DnsPodClientSdk) CreateDomain(ctx context.Context, domainName string, d
 // domainID: 域名ID
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *DnsPodClientSdk) UpdateDomain(ctx context.Context, domainID int64, domainName string, domainOrigin string) (err error) {
+func (c *DnsPodClientSdk) UpdateDomain(ctx context.Context, domainID int64, domainName string, domainOrigin string) error {
 
 	// 解析域名
 	_, domainSub, domainMain, err := utils.ExtractDomainParts(domainName)
@@ -166,19 +169,19 @@ func (c *DnsPodClientSdk) UpdateDomain(ctx context.Context, domainID int64, doma
 	}
 
 	// 请求
-	request := dnspod.NewModifyRecordRequest()
-	request.Domain = common.StringPtr(domainMain)
-	request.RecordType = common.StringPtr(domainType)
-	request.RecordLine = common.StringPtr("默认")
-	request.Value = common.StringPtr(domainOrigin)
-	request.RecordId = common.Uint64Ptr(uint64(domainID))
-	request.SubDomain = common.StringPtr(domainSub)
-	_, err = c.client.ModifyRecord(request)
+	requestParams := dnspod.NewModifyRecordRequest()
+	requestParams.Domain = common.StringPtr(domainMain)
+	requestParams.RecordType = common.StringPtr(domainType)
+	requestParams.RecordLine = common.StringPtr("默认")
+	requestParams.Value = common.StringPtr(domainOrigin)
+	requestParams.RecordId = common.Uint64Ptr(uint64(domainID))
+	requestParams.SubDomain = common.StringPtr(domainSub)
+	_, err = c.client.ModifyRecord(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return
+		return fmt.Errorf("API错误: %s", err)
 	}
 	if err != nil {
-		return
+		return err
 	}
 
 	return nil
