@@ -430,282 +430,6 @@
                 }
             }
         },
-        "/configs": {
-            "get": {
-                "description": "获取全部平台配置",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "平台配置"
-                ],
-                "summary": "获取全部平台配置",
-                "responses": {
-                    "200": {
-                        "description": "成功响应",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/vibe_ip_internal_types.GetConfigResponse"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "404": {
-                        "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "创建平台配置",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "平台配置"
-                ],
-                "summary": "创建平台配置",
-                "parameters": [
-                    {
-                        "description": "请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/vibe_ip_internal_types.CreateConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功响应",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetConfigRequest"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/{id}": {
-            "get": {
-                "description": "获取平台配置详情",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "平台配置"
-                ],
-                "summary": "获取平台配置详情",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "配置序号",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功响应",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetConfigResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "删除平台配置",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "平台配置"
-                ],
-                "summary": "删除平台配置",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "配置序号",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功响应",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetConfigRequest"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "description": "更新平台配置",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "平台配置"
-                ],
-                "summary": "更新平台配置",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "配置序号",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/vibe_ip_internal_types.UpdateConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功响应",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetConfigRequest"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/devices": {
             "get": {
                 "description": "获取全部设备",
@@ -2466,6 +2190,282 @@
                 }
             }
         },
+        "/platform-configs": {
+            "get": {
+                "description": "获取全部平台配置",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "平台配置"
+                ],
+                "summary": "获取全部平台配置",
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/vibe_ip_internal_types.GetPlatformConfigResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "创建平台配置",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "平台配置"
+                ],
+                "summary": "创建平台配置",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.CreatePlatformConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.CreatePlatformConfigRequest"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/platform-configs/{id}": {
+            "get": {
+                "description": "获取平台配置详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "平台配置"
+                ],
+                "summary": "获取平台配置详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "配置序号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetPlatformConfigResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "删除平台配置",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "平台配置"
+                ],
+                "summary": "删除平台配置",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "配置序号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetPlatformConfigRequest"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "更新平台配置",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "平台配置"
+                ],
+                "summary": "更新平台配置",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "配置序号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.UpdatePlatformConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetPlatformConfigRequest"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/port-forwards": {
             "get": {
                 "description": "获取全部端口转发",
@@ -4012,37 +4012,6 @@
                 }
             }
         },
-        "vibe_ip_internal_types.CreateConfigRequest": {
-            "type": "object",
-            "required": [
-                "capability",
-                "config_json",
-                "name",
-                "platform"
-            ],
-            "properties": {
-                "capability": {
-                    "description": "平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）",
-                    "type": "string"
-                },
-                "config_json": {
-                    "description": "配置平台密钥等敏感信息（JSON）",
-                    "type": "string"
-                },
-                "description": {
-                    "description": "配置描述",
-                    "type": "string"
-                },
-                "name": {
-                    "description": "配置名称",
-                    "type": "string"
-                },
-                "platform": {
-                    "description": "配置平台",
-                    "type": "string"
-                }
-            }
-        },
         "vibe_ip_internal_types.CreateDeviceRequest": {
             "type": "object",
             "required": [
@@ -4172,6 +4141,37 @@
                     "items": {
                         "type": "integer"
                     }
+                }
+            }
+        },
+        "vibe_ip_internal_types.CreatePlatformConfigRequest": {
+            "type": "object",
+            "required": [
+                "capability",
+                "config_json",
+                "name",
+                "platform"
+            ],
+            "properties": {
+                "capability": {
+                    "description": "平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）",
+                    "type": "string"
+                },
+                "config_json": {
+                    "description": "配置平台密钥等敏感信息（JSON）",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "配置描述",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "配置名称",
+                    "type": "string"
+                },
+                "platform": {
+                    "description": "配置平台",
+                    "type": "string"
                 }
             }
         },
@@ -4396,7 +4396,7 @@
                     "description": "平台配置序号",
                     "type": "integer"
                 },
-                "domain": {
+                "domain_name": {
                     "description": "域名（如 www.example.com）",
                     "type": "string"
                 },
@@ -4439,6 +4439,10 @@
                 "record_id": {
                     "description": "平台侧记录 ID"
                 },
+                "sub_domain": {
+                    "description": "子域名（如 www, blog, api）",
+                    "type": "string"
+                },
                 "type": {
                     "description": "记录类型（A、AAAA等）",
                     "type": "string"
@@ -4458,50 +4462,6 @@
                 "is_active": {
                     "description": "是否活跃",
                     "type": "boolean"
-                }
-            }
-        },
-        "vibe_ip_internal_types.GetConfigRequest": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "description": "配置序号",
-                    "type": "integer"
-                }
-            }
-        },
-        "vibe_ip_internal_types.GetConfigResponse": {
-            "type": "object",
-            "properties": {
-                "capability": {
-                    "description": "平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）",
-                    "type": "string"
-                },
-                "config_json": {
-                    "description": "配置平台密钥等敏感信息（JSON）",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "description": {
-                    "description": "配置描述",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "配置序号",
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "配置名称",
-                    "type": "string"
-                },
-                "platform": {
-                    "description": "配置平台",
-                    "type": "string"
                 }
             }
         },
@@ -4605,7 +4565,7 @@
                     "description": "平台配置序号",
                     "type": "integer"
                 },
-                "domain": {
+                "domain_name": {
                     "description": "域名（如 www.example.com）",
                     "type": "string"
                 },
@@ -4635,6 +4595,10 @@
                 },
                 "record_id": {
                     "description": "平台侧记录 ID"
+                },
+                "sub_domain": {
+                    "description": "子域名（如 www, blog, api）",
+                    "type": "string"
                 },
                 "type": {
                     "description": "记录类型（A、AAAA、CNAME等）",
@@ -4771,6 +4735,50 @@
                     "items": {
                         "type": "integer"
                     }
+                }
+            }
+        },
+        "vibe_ip_internal_types.GetPlatformConfigRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "description": "配置序号",
+                    "type": "integer"
+                }
+            }
+        },
+        "vibe_ip_internal_types.GetPlatformConfigResponse": {
+            "type": "object",
+            "properties": {
+                "capability": {
+                    "description": "平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）",
+                    "type": "string"
+                },
+                "config_json": {
+                    "description": "配置平台密钥等敏感信息（JSON）",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "description": {
+                    "description": "配置描述",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "配置序号",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "配置名称",
+                    "type": "string"
+                },
+                "platform": {
+                    "description": "配置平台",
+                    "type": "string"
                 }
             }
         },
@@ -5076,37 +5084,6 @@
                 }
             }
         },
-        "vibe_ip_internal_types.UpdateConfigRequest": {
-            "type": "object",
-            "required": [
-                "capability",
-                "config_json",
-                "id",
-                "name"
-            ],
-            "properties": {
-                "capability": {
-                    "description": "平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）",
-                    "type": "string"
-                },
-                "config_json": {
-                    "description": "配置平台密钥等敏感信息（JSON）",
-                    "type": "string"
-                },
-                "description": {
-                    "description": "配置描述",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "配置序号",
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "配置名称",
-                    "type": "string"
-                }
-            }
-        },
         "vibe_ip_internal_types.UpdateDeviceRequest": {
             "type": "object",
             "required": [
@@ -5262,6 +5239,37 @@
                     "items": {
                         "type": "integer"
                     }
+                }
+            }
+        },
+        "vibe_ip_internal_types.UpdatePlatformConfigRequest": {
+            "type": "object",
+            "required": [
+                "capability",
+                "config_json",
+                "id",
+                "name"
+            ],
+            "properties": {
+                "capability": {
+                    "description": "平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）",
+                    "type": "string"
+                },
+                "config_json": {
+                    "description": "配置平台密钥等敏感信息（JSON）",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "配置描述",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "配置序号",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "配置名称",
+                    "type": "string"
                 }
             }
         },

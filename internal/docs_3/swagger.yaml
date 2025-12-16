@@ -59,29 +59,6 @@ components:
       - origin_protocol
       - type
       type: object
-    vibe_ip_internal_types.CreateConfigRequest:
-      properties:
-        capability:
-          description: 平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）
-          type: string
-        config_json:
-          description: 配置平台密钥等敏感信息（JSON）
-          type: string
-        description:
-          description: 配置描述
-          type: string
-        name:
-          description: 配置名称
-          type: string
-        platform:
-          description: 配置平台
-          type: string
-      required:
-      - capability
-      - config_json
-      - name
-      - platform
-      type: object
     vibe_ip_internal_types.CreateDeviceRequest:
       properties:
         code:
@@ -181,6 +158,29 @@ components:
       required:
       - devices
       - name
+      type: object
+    vibe_ip_internal_types.CreatePlatformConfigRequest:
+      properties:
+        capability:
+          description: 平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）
+          type: string
+        config_json:
+          description: 配置平台密钥等敏感信息（JSON）
+          type: string
+        description:
+          description: 配置描述
+          type: string
+        name:
+          description: 配置名称
+          type: string
+        platform:
+          description: 配置平台
+          type: string
+      required:
+      - capability
+      - config_json
+      - name
+      - platform
       type: object
     vibe_ip_internal_types.CreatePortForwardRequest:
       properties:
@@ -347,7 +347,7 @@ components:
         config_id:
           description: 平台配置序号
           type: integer
-        domain:
+        domain_name:
           description: 域名（如 www.example.com）
           type: string
         http_port:
@@ -379,6 +379,9 @@ components:
           type: string
         record_id:
           description: 平台侧记录 ID
+        sub_domain:
+          description: 子域名（如 www, blog, api）
+          type: string
         type:
           description: 记录类型（A、AAAA等）
           type: string
@@ -395,38 +398,6 @@ components:
           description: 是否活跃
           form: is_active
           type: boolean
-      type: object
-    vibe_ip_internal_types.GetConfigRequest:
-      properties:
-        id:
-          description: 配置序号
-          type: integer
-      required:
-      - id
-      type: object
-    vibe_ip_internal_types.GetConfigResponse:
-      properties:
-        capability:
-          description: 平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）
-          type: string
-        config_json:
-          description: 配置平台密钥等敏感信息（JSON）
-          items:
-            type: integer
-          type: array
-          uniqueItems: false
-        description:
-          description: 配置描述
-          type: string
-        id:
-          description: 配置序号
-          type: integer
-        name:
-          description: 配置名称
-          type: string
-        platform:
-          description: 配置平台
-          type: string
       type: object
     vibe_ip_internal_types.GetDeviceIpHistoryResponse:
       properties:
@@ -500,7 +471,7 @@ components:
         config_id:
           description: 平台配置序号
           type: integer
-        domain:
+        domain_name:
           description: 域名（如 www.example.com）
           type: string
         id:
@@ -523,6 +494,9 @@ components:
           type: string
         record_id:
           description: 平台侧记录 ID
+        sub_domain:
+          description: 子域名（如 www, blog, api）
+          type: string
         type:
           description: 记录类型（A、AAAA、CNAME等）
           type: string
@@ -625,6 +599,38 @@ components:
             type: integer
           type: array
           uniqueItems: false
+      type: object
+    vibe_ip_internal_types.GetPlatformConfigRequest:
+      properties:
+        id:
+          description: 配置序号
+          type: integer
+      required:
+      - id
+      type: object
+    vibe_ip_internal_types.GetPlatformConfigResponse:
+      properties:
+        capability:
+          description: 平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）
+          type: string
+        config_json:
+          description: 配置平台密钥等敏感信息（JSON）
+          items:
+            type: integer
+          type: array
+          uniqueItems: false
+        description:
+          description: 配置描述
+          type: string
+        id:
+          description: 配置序号
+          type: integer
+        name:
+          description: 配置名称
+          type: string
+        platform:
+          description: 配置平台
+          type: string
       type: object
     vibe_ip_internal_types.GetPortForwardRequest:
       properties:
@@ -850,29 +856,6 @@ components:
       - ip_group_id
       - origin_protocol
       type: object
-    vibe_ip_internal_types.UpdateConfigRequest:
-      properties:
-        capability:
-          description: 平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）
-          type: string
-        config_json:
-          description: 配置平台密钥等敏感信息（JSON）
-          type: string
-        description:
-          description: 配置描述
-          type: string
-        id:
-          description: 配置序号
-          type: integer
-        name:
-          description: 配置名称
-          type: string
-      required:
-      - capability
-      - config_json
-      - id
-      - name
-      type: object
     vibe_ip_internal_types.UpdateDeviceRequest:
       properties:
         description:
@@ -987,6 +970,29 @@ components:
           uniqueItems: false
       required:
       - devices
+      - id
+      - name
+      type: object
+    vibe_ip_internal_types.UpdatePlatformConfigRequest:
+      properties:
+        capability:
+          description: 平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）
+          type: string
+        config_json:
+          description: 配置平台密钥等敏感信息（JSON）
+          type: string
+        description:
+          description: 配置描述
+          type: string
+        id:
+          description: 配置序号
+          type: integer
+        name:
+          description: 配置名称
+          type: string
+      required:
+      - capability
+      - config_json
       - id
       - name
       type: object
@@ -1433,212 +1439,6 @@ paths:
       summary: 检查CDN记录健康状态
       tags:
       - CDN记录
-  /configs:
-    get:
-      description: 获取全部平台配置
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
-          description: 成功响应
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 错误响应
-      summary: 获取全部平台配置
-      tags:
-      - 平台配置
-    post:
-      description: 创建平台配置
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.CreateConfigRequest'
-        description: 请求参数
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
-          description: 成功响应
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 参数错误
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 错误响应
-      summary: 创建平台配置
-      tags:
-      - 平台配置
-  /configs/{id}:
-    delete:
-      description: 删除平台配置
-      parameters:
-      - description: 配置序号
-        in: path
-        name: id
-        required: true
-        schema:
-          type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
-          description: 成功响应
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 参数错误
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 错误响应
-      summary: 删除平台配置
-      tags:
-      - 平台配置
-    get:
-      description: 获取平台配置详情
-      parameters:
-      - description: 配置序号
-        in: path
-        name: id
-        required: true
-        schema:
-          type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
-          description: 成功响应
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 参数错误
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 错误响应
-      summary: 获取平台配置详情
-      tags:
-      - 平台配置
-    patch:
-      description: 更新平台配置
-      parameters:
-      - description: 配置序号
-        in: path
-        name: id
-        required: true
-        schema:
-          type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateConfigRequest'
-        description: 请求参数
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
-          description: 成功响应
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 参数错误
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 错误响应
-      summary: 更新平台配置
-      tags:
-      - 平台配置
   /devices:
     get:
       description: 获取全部设备
@@ -2934,6 +2734,212 @@ paths:
       summary: 获取设备端口转发
       tags:
       - 开放
+  /platform-configs:
+    get:
+      description: 获取全部平台配置
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 获取全部平台配置
+      tags:
+      - 平台配置
+    post:
+      description: 创建平台配置
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/vibe_ip_internal_types.CreatePlatformConfigRequest'
+        description: 请求参数
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 创建平台配置
+      tags:
+      - 平台配置
+  /platform-configs/{id}:
+    delete:
+      description: 删除平台配置
+      parameters:
+      - description: 配置序号
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 删除平台配置
+      tags:
+      - 平台配置
+    get:
+      description: 获取平台配置详情
+      parameters:
+      - description: 配置序号
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 获取平台配置详情
+      tags:
+      - 平台配置
+    patch:
+      description: 更新平台配置
+      parameters:
+      - description: 配置序号
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/vibe_ip_internal_types.UpdatePlatformConfigRequest'
+        description: 请求参数
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 更新平台配置
+      tags:
+      - 平台配置
   /port-forwards:
     get:
       description: 获取全部端口转发
