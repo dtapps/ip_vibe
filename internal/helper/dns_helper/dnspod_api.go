@@ -9,7 +9,7 @@ import (
 	"go.dtapp.net/library/service/tencent"
 )
 
-type DnsPodClient struct {
+type DnsPodClientApi struct {
 	config struct {
 		SecretID  string // 密钥ID
 		SecretKey string // 密钥密钥
@@ -17,9 +17,9 @@ type DnsPodClient struct {
 	client *tencent.Client
 }
 
-func NewDnsPodClient(ctx context.Context, secretID string, secretKey string) (c *DnsPodClient, err error) {
+func NewDnsPodClientApi(ctx context.Context, secretID string, secretKey string) (c *DnsPodClientApi, err error) {
 
-	c = &DnsPodClient{}
+	c = &DnsPodClientApi{}
 	c.config.SecretID = secretID
 	c.config.SecretKey = secretKey
 
@@ -39,7 +39,7 @@ func NewDnsPodClient(ctx context.Context, secretID string, secretKey string) (c 
 }
 
 // 开启调试
-func (c *DnsPodClient) EnableDebug() *DnsPodClient {
+func (c *DnsPodClientApi) EnableDebug() *DnsPodClientApi {
 	c.client.WithDebug()
 	return c
 }
@@ -55,7 +55,7 @@ type ResponseDnsPodQuery struct {
 // https://cloud.tencent.com/document/api/1427/56166
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *DnsPodClient) QueryDomain(ctx context.Context, domainName string, domainOrigin string) (resp ResponseDnsPodQuery, err error) {
+func (c *DnsPodClientApi) QueryDomain(ctx context.Context, domainName string, domainOrigin string) (resp ResponseDnsPodQuery, err error) {
 
 	// 解析域名
 	_, domainSub, domainMain, err := utils.ExtractDomainParts(domainName)
@@ -104,7 +104,7 @@ func (c *DnsPodClient) QueryDomain(ctx context.Context, domainName string, domai
 // https://cloud.tencent.com/document/api/1427/56180
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *DnsPodClient) CreateDomain(ctx context.Context, domainName string, domainOrigin string) (err error) {
+func (c *DnsPodClientApi) CreateDomain(ctx context.Context, domainName string, domainOrigin string) (err error) {
 
 	// 解析域名
 	_, domainSub, domainMain, err := utils.ExtractDomainParts(domainName)
@@ -147,7 +147,7 @@ func (c *DnsPodClient) CreateDomain(ctx context.Context, domainName string, doma
 // domainID: 域名ID
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *DnsPodClient) UpdateDomain(ctx context.Context, domainID int64, domainName string, domainOrigin string) (err error) {
+func (c *DnsPodClientApi) UpdateDomain(ctx context.Context, domainID int64, domainName string, domainOrigin string) (err error) {
 
 	// 解析域名
 	_, domainSub, domainMain, err := utils.ExtractDomainParts(domainName)

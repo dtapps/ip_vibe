@@ -21,6 +21,8 @@ require (
 	github.com/swaggo/gin-swagger v1.6.1
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc4
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.12
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.8
 	go.dtapp.net/library/contrib/resty_log v1.0.8
 	go.dtapp.net/library/service/bark v1.0.7
 	go.dtapp.net/library/service/cloudflare v1.0.0
