@@ -9,6 +9,7 @@ require (
 	github.com/alibabacloud-go/esa-20240910/v2 v2.40.3
 	github.com/alibabacloud-go/tea v1.3.14
 	github.com/aliyun/credentials-go v1.4.9
+	github.com/baidubce/bce-sdk-go v0.9.254
 	github.com/cloudflare/cloudflare-go/v6 v6.4.0
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/gin-contrib/cors v1.7.6

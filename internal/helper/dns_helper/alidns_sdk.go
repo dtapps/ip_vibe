@@ -11,22 +11,22 @@ import (
 	credential "github.com/aliyun/credentials-go/credentials"
 )
 
-type AlidnsClientSdk struct {
+type AliDnsClientSdk struct {
 	config struct {
 		Lang            string // 语言类型
-		AccessKeyID     string // 访问密钥ID
-		AccessKeySecret string // 访问密钥密钥
+		AccessKeyID     string // 密钥ID
+		AccessKeySecret string // 密钥密钥
 	}
 
 	credential credential.Credential
 	client     *alidns20150109.Client
 }
 
-func NewAlidnsClientSdk(accessKeyID string, accessKeySecret string) (*AlidnsClientSdk, error) {
+func NewAliDnsClientSdk(accessKeyID string, accessKeySecret string) (*AliDnsClientSdk, error) {
 
 	var err error
 
-	c := &AlidnsClientSdk{}
+	c := &AliDnsClientSdk{}
 	c.config.Lang = "zh"
 	c.config.AccessKeyID = accessKeyID
 	c.config.AccessKeySecret = accessKeySecret
@@ -53,12 +53,12 @@ func NewAlidnsClientSdk(accessKeyID string, accessKeySecret string) (*AlidnsClie
 }
 
 // 设置调试模式
-func (c *AlidnsClientSdk) SetDebug(debug bool) *AlidnsClientSdk {
+func (c *AliDnsClientSdk) SetDebug(debug bool) *AliDnsClientSdk {
 	// c.client.WithDebug(debug)
 	return c
 }
 
-type AlidnsQueryResponse struct {
+type AliDnsQueryResponse struct {
 	DomainID     string // 域名ID
 	DomainName   string // 域名名称
 	DomainType   string // 记录类型
@@ -69,12 +69,12 @@ type AlidnsQueryResponse struct {
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/DescribeDomainRecords
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *AlidnsClientSdk) QueryDomain(ctx context.Context, domainName string, domainOrigin string) (AlidnsQueryResponse, error) {
+func (c *AliDnsClientSdk) QueryDomain(ctx context.Context, domainName string, domainOrigin string) (AliDnsQueryResponse, error) {
 
 	// 解析域名
 	_, domainSub, domainMain, err := utils.ExtractDomainParts(domainName)
 	if err != nil {
-		return AlidnsQueryResponse{}, err
+		return AliDnsQueryResponse{}, err
 	}
 
 	// 解析IP
@@ -82,7 +82,7 @@ func (c *AlidnsClientSdk) QueryDomain(ctx context.Context, domainName string, do
 	if domainOrigin != "" {
 		domainType, err = utils.GetRecordType(domainOrigin)
 		if err != nil {
-			return AlidnsQueryResponse{}, err
+			return AliDnsQueryResponse{}, err
 		}
 	}
 
@@ -98,10 +98,10 @@ func (c *AlidnsClientSdk) QueryDomain(ctx context.Context, domainName string, do
 	}
 	response, err := c.client.DescribeDomainRecords(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
-		return AlidnsQueryResponse{}, fmt.Errorf("API错误: %s", err)
+		return AliDnsQueryResponse{}, fmt.Errorf("API错误: %s", err)
 	}
 	if err != nil {
-		return AlidnsQueryResponse{}, err
+		return AliDnsQueryResponse{}, err
 	}
 
 	for _, item := range response.Body.DomainRecords.Record {
@@ -109,7 +109,7 @@ func (c *AlidnsClientSdk) QueryDomain(ctx context.Context, domainName string, do
 			if domainType != "" && *item.Type != domainType {
 				continue
 			}
-			return AlidnsQueryResponse{
+			return AliDnsQueryResponse{
 				DomainID:     *item.RecordId,
 				DomainName:   *item.RR,
 				DomainType:   *item.Type,
@@ -118,14 +118,14 @@ func (c *AlidnsClientSdk) QueryDomain(ctx context.Context, domainName string, do
 		}
 	}
 
-	return AlidnsQueryResponse{}, fmt.Errorf("未找到记录")
+	return AliDnsQueryResponse{}, fmt.Errorf("未找到记录")
 }
 
 // 添加记录
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/AddDomainRecord
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *AlidnsClientSdk) CreateDomain(ctx context.Context, domainName string, domainOrigin string) error {
+func (c *AliDnsClientSdk) CreateDomain(ctx context.Context, domainName string, domainOrigin string) error {
 
 	// 解析域名
 	_, domainSub, domainMain, err := utils.ExtractDomainParts(domainName)
@@ -166,7 +166,7 @@ func (c *AlidnsClientSdk) CreateDomain(ctx context.Context, domainName string, d
 // domainID: 域名ID
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *AlidnsClientSdk) UpdateDomain(ctx context.Context, domainID string, domainName string, domainOrigin string) error {
+func (c *AliDnsClientSdk) UpdateDomain(ctx context.Context, domainID string, domainName string, domainOrigin string) error {
 
 	// 解析域名
 	_, domainSub, _, err := utils.ExtractDomainParts(domainName)

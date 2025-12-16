@@ -13,8 +13,8 @@ import (
 
 type EdgeSecurityAccelerationClientSdk struct {
 	config struct {
-		AccessKeyID     string // 访问密钥ID
-		AccessKeySecret string // 访问密钥密钥
+		AccessKeyID     string // 密钥ID
+		AccessKeySecret string // 密钥密钥
 		SiteID          int64  // 站点 ID
 	}
 
