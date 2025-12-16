@@ -10,21 +10,22 @@ import (
 	"go.dtapp.net/library/service/tencent"
 )
 
-type EdgeOneClient struct {
+type EdgeOneClientApi struct {
 	config struct {
 		SecretID  string // 密钥ID
 		SecretKey string // 密钥密钥
 		ZoneID    string // 站点 ID
 	}
+
 	client *tencent.Client
 }
 
 // 边缘安全加速平台 EO
 // https://cloud.tencent.com/document/api/1552/80730
 // https://cloud.tencent.com/document/api/1552/80732
-func NewEdgeOneClient(ctx context.Context, secretID string, secretKey string, zoneID string) (c *EdgeOneClient, err error) {
+func NewEdgeOneClientApi(ctx context.Context, secretID string, secretKey string, zoneID string) (c *EdgeOneClientApi, err error) {
 
-	c = &EdgeOneClient{}
+	c = &EdgeOneClientApi{}
 	c.config.SecretID = secretID
 	c.config.SecretKey = secretKey
 	c.config.ZoneID = zoneID
@@ -45,7 +46,7 @@ func NewEdgeOneClient(ctx context.Context, secretID string, secretKey string, zo
 }
 
 // 开启调试
-func (c *EdgeOneClient) EnableDebug() *EdgeOneClient {
+func (c *EdgeOneClientApi) EnableDebug() *EdgeOneClientApi {
 	c.client.WithDebug()
 	return c
 }
@@ -65,7 +66,7 @@ type ResponseEdgeOneQueryDomain struct {
 // 查询加速域名列表
 // https://cloud.tencent.com/document/api/1552/86336
 // domainName: 域名名称
-func (c *EdgeOneClient) QueryDomain(ctx context.Context, domainName string) (resp ResponseEdgeOneQueryDomain, err error) {
+func (c *EdgeOneClientApi) QueryDomain(ctx context.Context, domainName string) (resp ResponseEdgeOneQueryDomain, err error) {
 
 	// 解析域名
 	domainFull, _, _, err := utils.ExtractDomainParts(domainName)
@@ -123,7 +124,7 @@ func (c *EdgeOneClient) QueryDomain(ctx context.Context, domainName string) (res
 // originProtocol: follow = 遵循源站协议、http = HTTP 协议、https = HTTPS 协议
 // httpPort: HTTP回源端口
 // httpsPort: HTTPS回源端口
-func (c *EdgeOneClient) CreateDomain(ctx context.Context, domainName string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) (err error) {
+func (c *EdgeOneClientApi) CreateDomain(ctx context.Context, domainName string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) (err error) {
 
 	// 解析域名
 	domainFull, _, _, err := utils.ExtractDomainParts(domainName)
@@ -178,7 +179,7 @@ func (c *EdgeOneClient) CreateDomain(ctx context.Context, domainName string, ori
 // originProtocol: follow = 遵循源站协议、http = HTTP 协议、https = HTTPS 协议
 // httpPort: HTTP回源端口
 // httpsPort: HTTPS回源端口
-func (c *EdgeOneClient) UpdateDomain(ctx context.Context, domainName string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) (err error) {
+func (c *EdgeOneClientApi) UpdateDomain(ctx context.Context, domainName string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) (err error) {
 
 	// 解析域名
 	domainFull, _, _, err := utils.ExtractDomainParts(domainName)
@@ -235,7 +236,7 @@ type ResponseEdgeOneQueryOriginGroup struct {
 // 获取源站组列表
 // https://cloud.tencent.com/document/api/1552/80594
 // domain: 源站组名称
-func (c *EdgeOneClient) QueryOriginGroup(ctx context.Context, originGroupName string) (resp ResponseEdgeOneQueryOriginGroup, err error) {
+func (c *EdgeOneClientApi) QueryOriginGroup(ctx context.Context, originGroupName string) (resp ResponseEdgeOneQueryOriginGroup, err error) {
 
 	// 请求
 	apiResp := tencent_helper.ResponseQueryOriginGroup{}
@@ -282,7 +283,7 @@ func (c *EdgeOneClient) QueryOriginGroup(ctx context.Context, originGroupName st
 // https://cloud.tencent.com/document/api/1552/80598
 // domain: 源站组名称
 // origins: 源站组IP列表
-func (c *EdgeOneClient) CreateOriginGroup(ctx context.Context, name string, origins []string) (err error) {
+func (c *EdgeOneClientApi) CreateOriginGroup(ctx context.Context, name string, origins []string) (err error) {
 
 	records := []map[string]any{}
 	for _, v := range origins {
@@ -317,7 +318,7 @@ func (c *EdgeOneClient) CreateOriginGroup(ctx context.Context, name string, orig
 // https://cloud.tencent.com/document/api/1552/80592
 // domain: 源站组ID
 // origins: 源站组IP列表
-func (c *EdgeOneClient) UpdateOriginGroup(ctx context.Context, groupId string, origins []string) (err error) {
+func (c *EdgeOneClientApi) UpdateOriginGroup(ctx context.Context, groupId string, origins []string) (err error) {
 
 	records := []map[string]any{}
 	for _, v := range origins {
