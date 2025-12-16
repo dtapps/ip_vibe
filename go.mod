@@ -6,6 +6,7 @@ require (
 	entgo.io/ent v0.14.5
 	github.com/alibabacloud-go/alidns-20150109/v5 v5.0.0
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.13
+	github.com/alibabacloud-go/esa-20240910/v2 v2.40.3
 	github.com/alibabacloud-go/tea v1.3.14
 	github.com/aliyun/credentials-go v1.4.9
 	github.com/cloudflare/cloudflare-go/v6 v6.4.0
