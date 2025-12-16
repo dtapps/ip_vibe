@@ -1,4 +1,32 @@
-{{ define "pages/platform-config_form.html" }}
+{{ define "pages/platform-config_form.html" }}<style>
+  /* 必须的样式，用于将输入框和按钮组合 */
+  .input-group {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    position: relative; /* 确保输入框内的样式能正常工作 */
+  }
+  .input-group input {
+    flex-grow: 1;
+    border-right: none;
+    padding-right: 0; /* 留给按钮空间 */
+  }
+  .input-group .toggle-password {
+    border: 1px solid var(--border);
+    border-left: none;
+    background-color: var(--input-bg);
+    padding: 8px 12px;
+    height: 38px;
+    cursor: pointer;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    transition: background-color 0.2s;
+    line-height: 1; /* 确保图标对齐 */
+  }
+  .input-group .toggle-password:hover {
+    background-color: var(--bg-hover);
+  }
+</style>
+
 <div class="modal" id="modal">
   <div class="modal-content">
     <h3 id="modalTitle">添加平台配置</h3>
@@ -56,11 +84,22 @@
         </div>
         <div class="form-group">
           <label>Secret Key <span style="color: red">*</span></label>
-          <input
-            type="password"
-            id="edgeone_secret_key"
-            placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-          />
+          <div class="input-group">
+            <input
+              type="password"
+              id="edgeone_secret_key"
+              placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+              autocomplete="new-password"
+            />
+            <button
+              type="button"
+              class="toggle-password"
+              onclick="togglePasswordVisibility('edgeone_secret_key', this)"
+              title="显示/隐藏 Secret Key"
+            >
+              {{ template "icons" (dict "Name" "ip-eyes") }}
+            </button>
+          </div>
         </div>
         <div class="form-group">
           <label>Zone ID <span style="color: red">*</span></label>
@@ -81,11 +120,22 @@
         <h4 style="margin-bottom: 16px">CloudFlare 配置</h4>
         <div class="form-group">
           <label>API Token <span style="color: red">*</span></label>
-          <input
-            type="password"
-            id="cloudflare_api_key"
-            placeholder="your-api-token"
-          />
+          <div class="input-group">
+            <input
+              type="password"
+              id="cloudflare_api_key"
+              placeholder="your-api-token"
+              autocomplete="new-password"
+            />
+            <button
+              type="button"
+              class="toggle-password"
+              onclick="togglePasswordVisibility('cloudflare_api_key', this)"
+              title="显示/隐藏 API Token"
+            >
+              {{ template "icons" (dict "Name" "ip-eyes") }}
+            </button>
+          </div>
         </div>
         <div class="form-group">
           <label>Zone ID <span style="color: red">*</span></label>
@@ -118,11 +168,22 @@
         </div>
         <div class="form-group">
           <label>Secret Key <span style="color: red">*</span></label>
-          <input
-            type="password"
-            id="dnspod_secret_key"
-            placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-          />
+          <div class="input-group">
+            <input
+              type="password"
+              id="dnspod_secret_key"
+              placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+              autocomplete="new-password"
+            />
+            <button
+              type="button"
+              class="toggle-password"
+              onclick="togglePasswordVisibility('dnspod_secret_key', this)"
+              title="显示/隐藏 Secret Key"
+            >
+              {{ template "icons" (dict "Name" "ip-eyes") }}
+            </button>
+          </div>
         </div>
         <div class="form-group">
           <label>Domain Name <span style="color: red">*</span></label>
@@ -149,4 +210,29 @@
     </form>
   </div>
 </div>
+
+<script>
+  /**
+   * 切换密码输入框的可见性
+   * @param {string} inputId - 输入框的 ID
+   * @param {HTMLElement} buttonElement - 触发此函数的按钮元素 (this)
+   */
+  function togglePasswordVisibility(inputId, buttonElement) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    // 1. 检查当前状态并切换输入框类型
+    if (input.type === "password") {
+      input.type = "text";
+      // 2. 切换图标到 '隐藏' 状态 (ip-close)
+      buttonElement.innerHTML = `{{ template "icons" (dict "Name" "ip-close") }}`;
+      buttonElement.title = "隐藏 Secret";
+    } else {
+      input.type = "password";
+      // 3. 切换图标到 '显示' 状态 (ip-eyes)
+      buttonElement.innerHTML = `{{ template "icons" (dict "Name" "ip-eyes") }}`;
+      buttonElement.title = "显示 Secret";
+    }
+  }
+</script>
 {{ end }}
