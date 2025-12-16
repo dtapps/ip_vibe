@@ -29,7 +29,7 @@ func CloudflareProcessSingleIP(ctx context.Context, service ProcessService, para
 	}
 
 	// 初始化客户端
-	client, err := NewCloudflareClient(
+	client, err := NewCloudflareClientApi(
 		ctx,
 		platformConfig.ApiKey,
 		platformConfig.ZoneID,

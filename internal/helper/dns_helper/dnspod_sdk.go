@@ -11,14 +11,20 @@ import (
 )
 
 type DnsPodClientSdk struct {
-	credential *common.Credential
+	config struct {
+		SecretID  string // 密钥ID
+		SecretKey string // 密钥密钥
+	}
 
-	client *dnspod.Client
+	credential *common.Credential
+	client     *dnspod.Client
 }
 
 func NewDnsPodClientSdk(ctx context.Context, secretID string, secretKey string) (c *DnsPodClientSdk, err error) {
 
 	c = &DnsPodClientSdk{}
+	c.config.SecretID = secretID
+	c.config.SecretKey = secretKey
 
 	// 密钥信息
 	c.credential = common.NewCredential(
@@ -51,24 +57,29 @@ func (c *DnsPodClientSdk) EnableDebug() *DnsPodClientSdk {
 // domainOrigin: 记录类型值
 func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, domainOrigin string) (resp ResponseDnsPodQuery, err error) {
 
+	// 准备请求参数
+	requestParams := dnspod.NewDescribeRecordListRequest()
+
 	// 解析域名
 	_, domainSub, domainMain, err := utils.ExtractDomainParts(domainName)
 	if err != nil {
 		return resp, err
 	}
+	requestParams.Domain = common.StringPtr(domainMain)
+	requestParams.Subdomain = common.StringPtr(domainSub)
 
 	// 解析IP
-	domainType, err := utils.GetRecordType(domainOrigin)
-	if err != nil {
-		return resp, err
+	var domainType = ""
+	if domainOrigin != "" {
+		domainType, err = utils.GetRecordType(domainOrigin)
+		if err != nil {
+			return resp, err
+		}
+		requestParams.RecordType = common.StringPtr(domainType)
 	}
 
 	// 请求
-	request := dnspod.NewDescribeRecordListRequest()
-	request.Domain = common.StringPtr(domainMain)
-	request.Subdomain = common.StringPtr(domainSub)
-	request.RecordType = common.StringPtr(domainType)
-	response, err := c.client.DescribeRecordList(request)
+	response, err := c.client.DescribeRecordList(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
 		return
 	}
@@ -77,7 +88,10 @@ func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, do
 	}
 
 	for _, item := range response.Response.RecordList {
-		if *item.Name == domainSub && *item.Type == domainType {
+		if *item.Name == domainSub {
+			if domainType != "" && *item.Type != domainType {
+				continue
+			}
 			return ResponseDnsPodQuery{
 				DomainID:     int64(*item.RecordId),
 				DomainName:   *item.Name,

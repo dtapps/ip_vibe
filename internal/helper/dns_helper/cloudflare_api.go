@@ -9,7 +9,7 @@ import (
 	"go.dtapp.net/library/service/cloudflare"
 )
 
-type CloudflareClient struct {
+type CloudflareClientApi struct {
 	config struct {
 		ApiKey string // API 密钥
 		ZoneID string // 站点 ID
@@ -17,9 +17,9 @@ type CloudflareClient struct {
 	client *cloudflare.Client
 }
 
-func NewCloudflareClient(ctx context.Context, apiKey string, zoneID string) (c *CloudflareClient, err error) {
+func NewCloudflareClientApi(ctx context.Context, apiKey string, zoneID string) (c *CloudflareClientApi, err error) {
 
-	c = &CloudflareClient{}
+	c = &CloudflareClientApi{}
 	c.config.ApiKey = apiKey
 	c.config.ZoneID = zoneID
 
@@ -37,7 +37,7 @@ func NewCloudflareClient(ctx context.Context, apiKey string, zoneID string) (c *
 }
 
 // 开启调试
-func (c *CloudflareClient) EnableDebug() *CloudflareClient {
+func (c *CloudflareClientApi) EnableDebug() *CloudflareClientApi {
 	c.client.WithDebug()
 	return c
 }
@@ -52,7 +52,7 @@ type ResponseCloudflareQueryDomain struct {
 // 查询域名记录
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *CloudflareClient) QueryDomain(ctx context.Context, domainName string, domainOrigin string) (resp ResponseCloudflareQueryDomain, err error) {
+func (c *CloudflareClientApi) QueryDomain(ctx context.Context, domainName string, domainOrigin string) (resp ResponseCloudflareQueryDomain, err error) {
 
 	// 解析域名
 	domainFull, _, _, err := utils.ExtractDomainParts(domainName)
@@ -100,7 +100,7 @@ func (c *CloudflareClient) QueryDomain(ctx context.Context, domainName string, d
 // 创建域名记录
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *CloudflareClient) CreateDomain(ctx context.Context, domainName string, domainOrigin string) (err error) {
+func (c *CloudflareClientApi) CreateDomain(ctx context.Context, domainName string, domainOrigin string) (err error) {
 
 	// 解析域名
 	domainFull, _, _, err := utils.ExtractDomainParts(domainName)
@@ -137,7 +137,7 @@ func (c *CloudflareClient) CreateDomain(ctx context.Context, domainName string, 
 // domainID: 域名ID
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *CloudflareClient) UpdateDomain(ctx context.Context, domainID string, domainName string, domainOrigin string) (err error) {
+func (c *CloudflareClientApi) UpdateDomain(ctx context.Context, domainID string, domainName string, domainOrigin string) (err error) {
 
 	// 解析域名
 	domainFull, _, _, err := utils.ExtractDomainParts(domainName)
