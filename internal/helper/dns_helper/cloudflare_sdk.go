@@ -18,6 +18,8 @@ type CloudflareClientSdk struct {
 	client *cloudflare.Client
 }
 
+// Cloudflare
+// https://developers.cloudflare.com/api/go/
 func NewCloudflareClientSdk(ctx context.Context, apiKey string, zoneID string) (c *CloudflareClientSdk, err error) {
 
 	c = &CloudflareClientSdk{}
