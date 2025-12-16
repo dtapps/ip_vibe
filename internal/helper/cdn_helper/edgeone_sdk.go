@@ -62,12 +62,12 @@ func (c *EdgeOneClientSdk) SetDebug(debug bool) *EdgeOneClientSdk {
 // 查询加速域名列表
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeAccelerationDomains
 // domainName: 域名名称
-func (c *EdgeOneClientSdk) QueryDomain(ctx context.Context, domainName string) (ResponseEdgeOneQueryDomain, error) {
+func (c *EdgeOneClientSdk) QueryDomain(ctx context.Context, domainName string) (EdgeOneQueryDomainResponse, error) {
 
 	// 解析域名
 	domainFull, _, _, err := utils.ExtractDomainParts(domainName)
 	if err != nil {
-		return ResponseEdgeOneQueryDomain{}, err
+		return EdgeOneQueryDomainResponse{}, err
 	}
 
 	// 请求
@@ -83,15 +83,15 @@ func (c *EdgeOneClientSdk) QueryDomain(ctx context.Context, domainName string) (
 	}
 	response, err := c.client.DescribeAccelerationDomains(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return ResponseEdgeOneQueryDomain{}, fmt.Errorf("API错误: %s", err)
+		return EdgeOneQueryDomainResponse{}, fmt.Errorf("API错误: %s", err)
 	}
 	if err != nil {
-		return ResponseEdgeOneQueryDomain{}, err
+		return EdgeOneQueryDomainResponse{}, err
 	}
 
 	for _, item := range response.Response.AccelerationDomains {
 		if *item.DomainName == domainFull {
-			return ResponseEdgeOneQueryDomain{
+			return EdgeOneQueryDomainResponse{
 				// DomainID:        *item.DomainId,
 				DomainName:      *item.DomainName,
 				DomainCname:     *item.Cname,
@@ -104,7 +104,7 @@ func (c *EdgeOneClientSdk) QueryDomain(ctx context.Context, domainName string) (
 		}
 	}
 
-	return ResponseEdgeOneQueryDomain{}, fmt.Errorf("未找到记录")
+	return EdgeOneQueryDomainResponse{}, fmt.Errorf("未找到记录")
 }
 
 // 创建加速域名

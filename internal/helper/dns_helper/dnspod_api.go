@@ -2,6 +2,7 @@ package dns_helper
 
 import (
 	"context"
+	"fmt"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/tencent_helper"
 	"vibe_ip/internal/utils"
@@ -44,7 +45,7 @@ func (c *DnsPodClientApi) EnableDebug() *DnsPodClientApi {
 	return c
 }
 
-type ResponseDnsPodQuery struct {
+type DnsPodQueryResponse struct {
 	DomainID     int64  // 域名ID
 	DomainName   string // 域名名称
 	DomainType   string // 记录类型
@@ -55,18 +56,18 @@ type ResponseDnsPodQuery struct {
 // https://cloud.tencent.com/document/api/1427/56166
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *DnsPodClientApi) QueryDomain(ctx context.Context, domainName string, domainOrigin string) (resp ResponseDnsPodQuery, err error) {
+func (c *DnsPodClientApi) QueryDomain(ctx context.Context, domainName string, domainOrigin string) (DnsPodQueryResponse, error) {
 
 	// 解析域名
 	_, domainSub, domainMain, err := utils.ExtractDomainParts(domainName)
 	if err != nil {
-		return resp, err
+		return DnsPodQueryResponse{}, err
 	}
 
 	// 解析IP
 	domainType, err := utils.GetRecordType(domainOrigin)
 	if err != nil {
-		return resp, err
+		return DnsPodQueryResponse{}, err
 	}
 
 	// 请求
@@ -83,12 +84,12 @@ func (c *DnsPodClientApi) QueryDomain(ctx context.Context, domainName string, do
 		SetContext(ctx).
 		Post("")
 	if err != nil {
-		return resp, err
+		return DnsPodQueryResponse{}, err
 	}
 
 	for _, item := range apiResp.Response.RecordList {
 		if item.Name == domainSub && item.Type == domainType {
-			return ResponseDnsPodQuery{
+			return DnsPodQueryResponse{
 				DomainID:     item.RecordId,
 				DomainName:   item.Name,
 				DomainType:   item.Type,
@@ -97,14 +98,14 @@ func (c *DnsPodClientApi) QueryDomain(ctx context.Context, domainName string, do
 		}
 	}
 
-	return resp, nil
+	return DnsPodQueryResponse{}, fmt.Errorf("未找到记录")
 }
 
 // 添加记录
 // https://cloud.tencent.com/document/api/1427/56180
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *DnsPodClientApi) CreateDomain(ctx context.Context, domainName string, domainOrigin string) (err error) {
+func (c *DnsPodClientApi) CreateDomain(ctx context.Context, domainName string, domainOrigin string) error {
 
 	// 解析域名
 	_, domainSub, domainMain, err := utils.ExtractDomainParts(domainName)
@@ -147,7 +148,7 @@ func (c *DnsPodClientApi) CreateDomain(ctx context.Context, domainName string, d
 // domainID: 域名ID
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *DnsPodClientApi) UpdateDomain(ctx context.Context, domainID int64, domainName string, domainOrigin string) (err error) {
+func (c *DnsPodClientApi) UpdateDomain(ctx context.Context, domainID int64, domainName string, domainOrigin string) error {
 
 	// 解析域名
 	_, domainSub, domainMain, err := utils.ExtractDomainParts(domainName)

@@ -13,6 +13,7 @@ import (
 
 type AlidnsClientSdk struct {
 	config struct {
+		Lang            string // 语言类型
 		AccessKeyID     string // 访问密钥ID
 		AccessKeySecret string // 访问密钥密钥
 	}
@@ -26,6 +27,7 @@ func NewAlidnsClientSdk(accessKeyID string, accessKeySecret string) (*AlidnsClie
 	var err error
 
 	c := &AlidnsClientSdk{}
+	c.config.Lang = "zh"
 	c.config.AccessKeyID = accessKeyID
 	c.config.AccessKeySecret = accessKeySecret
 
@@ -86,7 +88,7 @@ func (c *AlidnsClientSdk) QueryDomain(ctx context.Context, domainName string, do
 
 	// 请求
 	requestParams := &alidns20150109.DescribeDomainRecordsRequest{
-		Lang:       tea.String("zh"),          // 设置请求和接收消息的语言类型
+		Lang:       tea.String(c.config.Lang), // 设置请求和接收消息的语言类型
 		SearchMode: tea.String("COMBINATION"), // 搜索模式
 	}
 	requestParams.DomainName = tea.String(domainMain) // 域名名称
@@ -142,7 +144,7 @@ func (c *AlidnsClientSdk) CreateDomain(ctx context.Context, domainName string, d
 
 	// 请求
 	requestParams := &alidns20150109.AddDomainRecordRequest{
-		Lang: tea.String("zh"), // 设置请求和接收消息的语言类型
+		Lang: tea.String(c.config.Lang), // 设置请求和接收消息的语言类型
 	}
 	requestParams.DomainName = tea.String(domainMain) // 域名名称
 	requestParams.RR = tea.String(domainSub)          // 主机记录
@@ -183,7 +185,7 @@ func (c *AlidnsClientSdk) UpdateDomain(ctx context.Context, domainID string, dom
 
 	// 请求
 	requestParams := &alidns20150109.UpdateDomainRecordRequest{
-		Lang: tea.String("zh"), // 设置请求和接收消息的语言类型
+		Lang: tea.String(c.config.Lang), // 设置请求和接收消息的语言类型
 	}
 	requestParams.RecordId = tea.String(domainID)  // 解析记录的ID
 	requestParams.RR = tea.String(domainSub)       // 主机记录

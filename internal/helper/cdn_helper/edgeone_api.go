@@ -2,6 +2,7 @@ package cdn_helper
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/tencent_helper"
@@ -52,7 +53,7 @@ func (c *EdgeOneClientApi) EnableDebug() *EdgeOneClientApi {
 }
 
 // 查询加速域名列表
-type ResponseEdgeOneQueryDomain struct {
+type EdgeOneQueryDomainResponse struct {
 	DomainID        string // 域名ID
 	DomainName      string // 域名名称
 	DomainCname     string // 域名别名
@@ -66,12 +67,12 @@ type ResponseEdgeOneQueryDomain struct {
 // 查询加速域名列表
 // https://cloud.tencent.com/document/api/1552/86336
 // domainName: 域名名称
-func (c *EdgeOneClientApi) QueryDomain(ctx context.Context, domainName string) (resp ResponseEdgeOneQueryDomain, err error) {
+func (c *EdgeOneClientApi) QueryDomain(ctx context.Context, domainName string) (EdgeOneQueryDomainResponse, error) {
 
 	// 解析域名
 	domainFull, _, _, err := utils.ExtractDomainParts(domainName)
 	if err != nil {
-		return resp, err
+		return EdgeOneQueryDomainResponse{}, err
 	}
 
 	// 请求
@@ -94,12 +95,12 @@ func (c *EdgeOneClientApi) QueryDomain(ctx context.Context, domainName string) (
 		SetContext(ctx).
 		Post("")
 	if err != nil {
-		return resp, err
+		return EdgeOneQueryDomainResponse{}, err
 	}
 
 	for _, item := range apiResp.Response.AccelerationDomains {
 		if item.DomainName == domainFull {
-			return ResponseEdgeOneQueryDomain{
+			return EdgeOneQueryDomainResponse{
 				DomainID:        item.DomainId,
 				DomainName:      item.DomainName,
 				DomainCname:     item.Cname,
@@ -112,7 +113,7 @@ func (c *EdgeOneClientApi) QueryDomain(ctx context.Context, domainName string) (
 		}
 	}
 
-	return resp, nil
+	return EdgeOneQueryDomainResponse{}, fmt.Errorf("未找到记录")
 }
 
 // 创建加速域名
@@ -124,7 +125,7 @@ func (c *EdgeOneClientApi) QueryDomain(ctx context.Context, domainName string) (
 // originProtocol: follow = 遵循源站协议、http = HTTP 协议、https = HTTPS 协议
 // httpPort: HTTP回源端口
 // httpsPort: HTTPS回源端口
-func (c *EdgeOneClientApi) CreateDomain(ctx context.Context, domainName string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) (err error) {
+func (c *EdgeOneClientApi) CreateDomain(ctx context.Context, domainName string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
 
 	// 解析域名
 	domainFull, _, _, err := utils.ExtractDomainParts(domainName)
@@ -179,7 +180,7 @@ func (c *EdgeOneClientApi) CreateDomain(ctx context.Context, domainName string, 
 // originProtocol: follow = 遵循源站协议、http = HTTP 协议、https = HTTPS 协议
 // httpPort: HTTP回源端口
 // httpsPort: HTTPS回源端口
-func (c *EdgeOneClientApi) UpdateDomain(ctx context.Context, domainName string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) (err error) {
+func (c *EdgeOneClientApi) UpdateDomain(ctx context.Context, domainName string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
 
 	// 解析域名
 	domainFull, _, _, err := utils.ExtractDomainParts(domainName)
@@ -236,11 +237,11 @@ type ResponseEdgeOneQueryOriginGroup struct {
 // 获取源站组列表
 // https://cloud.tencent.com/document/api/1552/80594
 // domain: 源站组名称
-func (c *EdgeOneClientApi) QueryOriginGroup(ctx context.Context, originGroupName string) (resp ResponseEdgeOneQueryOriginGroup, err error) {
+func (c *EdgeOneClientApi) QueryOriginGroup(ctx context.Context, originGroupName string) (ResponseEdgeOneQueryOriginGroup, error) {
 
 	// 请求
 	apiResp := tencent_helper.ResponseQueryOriginGroup{}
-	_, err = c.client.R().
+	_, err := c.client.R().
 		SetXTCAction("DescribeOriginGroup").
 		SetXTCVersion("2022-09-01").
 		SetBodyMap(map[string]any{
@@ -258,7 +259,7 @@ func (c *EdgeOneClientApi) QueryOriginGroup(ctx context.Context, originGroupName
 		SetContext(ctx).
 		Post("")
 	if err != nil {
-		return resp, err
+		return ResponseEdgeOneQueryOriginGroup{}, err
 	}
 
 	for _, item := range apiResp.Response.OriginGroups {
@@ -276,14 +277,14 @@ func (c *EdgeOneClientApi) QueryOriginGroup(ctx context.Context, originGroupName
 		}
 	}
 
-	return resp, nil
+	return ResponseEdgeOneQueryOriginGroup{}, nil
 }
 
 // 创建源站组
 // https://cloud.tencent.com/document/api/1552/80598
 // domain: 源站组名称
 // origins: 源站组IP列表
-func (c *EdgeOneClientApi) CreateOriginGroup(ctx context.Context, name string, origins []string) (err error) {
+func (c *EdgeOneClientApi) CreateOriginGroup(ctx context.Context, name string, origins []string) error {
 
 	records := []map[string]any{}
 	for _, v := range origins {
@@ -295,7 +296,7 @@ func (c *EdgeOneClientApi) CreateOriginGroup(ctx context.Context, name string, o
 
 	// 请求
 	apiResp := tencent_helper.ResponseCreateOriginGroup{}
-	_, err = c.client.R().
+	_, err := c.client.R().
 		SetXTCAction("CreateOriginGroup").
 		SetXTCVersion("2022-09-01").
 		SetBodyMap(map[string]any{
@@ -318,7 +319,7 @@ func (c *EdgeOneClientApi) CreateOriginGroup(ctx context.Context, name string, o
 // https://cloud.tencent.com/document/api/1552/80592
 // domain: 源站组ID
 // origins: 源站组IP列表
-func (c *EdgeOneClientApi) UpdateOriginGroup(ctx context.Context, groupId string, origins []string) (err error) {
+func (c *EdgeOneClientApi) UpdateOriginGroup(ctx context.Context, groupId string, origins []string) error {
 
 	records := []map[string]any{}
 	for _, v := range origins {
@@ -330,7 +331,7 @@ func (c *EdgeOneClientApi) UpdateOriginGroup(ctx context.Context, groupId string
 
 	// 请求
 	apiResp := tencent_helper.ResponseUpdateOriginGroup{}
-	_, err = c.client.R().
+	_, err := c.client.R().
 		SetXTCAction("ModifyOriginGroup").
 		SetXTCVersion("2022-09-01").
 		SetBodyMap(map[string]any{

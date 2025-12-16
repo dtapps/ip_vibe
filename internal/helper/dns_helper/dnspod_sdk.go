@@ -62,12 +62,12 @@ func (c *DnsPodClientSdk) SetDebug(debug bool) *DnsPodClientSdk {
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=DescribeRecordList
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, domainOrigin string) (ResponseDnsPodQuery, error) {
+func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, domainOrigin string) (DnsPodQueryResponse, error) {
 
 	// 解析域名
 	_, domainSub, domainMain, err := utils.ExtractDomainParts(domainName)
 	if err != nil {
-		return ResponseDnsPodQuery{}, err
+		return DnsPodQueryResponse{}, err
 	}
 
 	// 解析IP
@@ -75,7 +75,7 @@ func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, do
 	if domainOrigin != "" {
 		domainType, err = utils.GetRecordType(domainOrigin)
 		if err != nil {
-			return ResponseDnsPodQuery{}, err
+			return DnsPodQueryResponse{}, err
 		}
 	}
 
@@ -88,10 +88,10 @@ func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, do
 	}
 	response, err := c.client.DescribeRecordList(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return ResponseDnsPodQuery{}, fmt.Errorf("API错误: %s", err)
+		return DnsPodQueryResponse{}, fmt.Errorf("API错误: %s", err)
 	}
 	if err != nil {
-		return ResponseDnsPodQuery{}, err
+		return DnsPodQueryResponse{}, err
 	}
 
 	for _, item := range response.Response.RecordList {
@@ -99,7 +99,7 @@ func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, do
 			if domainType != "" && *item.Type != domainType {
 				continue
 			}
-			return ResponseDnsPodQuery{
+			return DnsPodQueryResponse{
 				DomainID:     int64(*item.RecordId),
 				DomainName:   *item.Name,
 				DomainType:   *item.Type,
@@ -108,7 +108,7 @@ func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, do
 		}
 	}
 
-	return ResponseDnsPodQuery{}, fmt.Errorf("未找到记录")
+	return DnsPodQueryResponse{}, fmt.Errorf("未找到记录")
 }
 
 // 添加记录

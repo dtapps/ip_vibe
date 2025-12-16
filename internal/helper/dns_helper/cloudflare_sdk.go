@@ -2,6 +2,7 @@ package dns_helper
 
 import (
 	"context"
+	"fmt"
 	"vibe_ip/internal/utils"
 
 	"github.com/cloudflare/cloudflare-go/v6"
@@ -43,7 +44,7 @@ func (c *CloudflareClientSdk) SetDebug(debug bool) *CloudflareClientSdk {
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/list/
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *CloudflareClientSdk) QueryDomain(ctx context.Context, domainName string, domainOrigin string) (resp ResponseCloudflareQueryDomain, err error) {
+func (c *CloudflareClientSdk) QueryDomain(ctx context.Context, domainName string, domainOrigin string) (CloudflareQueryDomainResponse, error) {
 
 	// 准备请求参数
 	requestParams := dns.RecordListParams{
@@ -53,7 +54,7 @@ func (c *CloudflareClientSdk) QueryDomain(ctx context.Context, domainName string
 	// 解析域名
 	domainFull, _, _, err := utils.ExtractDomainParts(domainName)
 	if err != nil {
-		return resp, err
+		return CloudflareQueryDomainResponse{}, err
 	}
 	requestParams.Name = cloudflare.F(dns.RecordListParamsName{Exact: cloudflare.String(domainFull)})
 
@@ -62,7 +63,7 @@ func (c *CloudflareClientSdk) QueryDomain(ctx context.Context, domainName string
 	if domainOrigin != "" {
 		domainType, err = utils.GetRecordType(domainOrigin)
 		if err != nil {
-			return resp, err
+			return CloudflareQueryDomainResponse{}, err
 		}
 		requestParams.Type = cloudflare.F(dns.RecordListParamsType(domainType))
 	}
@@ -70,7 +71,7 @@ func (c *CloudflareClientSdk) QueryDomain(ctx context.Context, domainName string
 	// 请求
 	page, err := c.client.DNS.Records.List(ctx, requestParams)
 	if err != nil {
-		return resp, err
+		return CloudflareQueryDomainResponse{}, err
 	}
 
 	for _, item := range page.Result {
@@ -78,7 +79,7 @@ func (c *CloudflareClientSdk) QueryDomain(ctx context.Context, domainName string
 			if domainType != "" && item.Type != dns.RecordResponseType(domainType) {
 				continue
 			}
-			return ResponseCloudflareQueryDomain{
+			return CloudflareQueryDomainResponse{
 				DomainID:     item.ID,
 				DomainName:   item.Name,
 				DomainType:   string(item.Type),
@@ -87,14 +88,14 @@ func (c *CloudflareClientSdk) QueryDomain(ctx context.Context, domainName string
 		}
 	}
 
-	return resp, nil
+	return CloudflareQueryDomainResponse{}, fmt.Errorf("未找到记录")
 }
 
 // 创建域名记录
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/create/
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *CloudflareClientSdk) CreateDomain(ctx context.Context, domainName string, domainOrigin string) (err error) {
+func (c *CloudflareClientSdk) CreateDomain(ctx context.Context, domainName string, domainOrigin string) error {
 
 	// 解析域名
 	domainFull, _, _, err := utils.ExtractDomainParts(domainName)
@@ -130,7 +131,7 @@ func (c *CloudflareClientSdk) CreateDomain(ctx context.Context, domainName strin
 // domainID: 域名ID
 // domainName: 域名名称
 // domainOrigin: 记录类型值
-func (c *CloudflareClientSdk) UpdateDomain(ctx context.Context, domainID string, domainName string, domainOrigin string) (err error) {
+func (c *CloudflareClientSdk) UpdateDomain(ctx context.Context, domainID string, domainName string, domainOrigin string) error {
 
 	// 解析域名
 	domainFull, _, _, err := utils.ExtractDomainParts(domainName)
