@@ -31,8 +31,8 @@ func NewCloudflareClientSdk(ctx context.Context, apiKey string, zoneID string) (
 	return c, nil
 }
 
-// 开启调试
-func (c *CloudflareClientSdk) EnableDebug() *CloudflareClientSdk {
+// 设置调试模式
+func (c *CloudflareClientSdk) SetDebug(debug bool) *CloudflareClientSdk {
 	// c.client.WithDebug()
 	return c
 }

@@ -48,9 +48,9 @@ func NewDnsPodClientSdk(ctx context.Context, secretID string, secretKey string) 
 	return c, nil
 }
 
-// 开启调试
-func (c *DnsPodClientSdk) EnableDebug() *DnsPodClientSdk {
-	c.client.WithDebug(true)
+// 设置调试模式
+func (c *DnsPodClientSdk) SetDebug(debug bool) *DnsPodClientSdk {
+	c.client.WithDebug(debug)
 	return c
 }
 
