@@ -29,6 +29,7 @@ function buildConfigPlatform() {
         secret_id: document.getElementById("edgeone_secret_id").value,
         secret_key: document.getElementById("edgeone_secret_key").value,
         zone_id: document.getElementById("edgeone_zone_id").value,
+        domain_name: document.getElementById("edgeone_domain_name").value,
       };
       break;
 
@@ -36,6 +37,7 @@ function buildConfigPlatform() {
       config = {
         api_key: document.getElementById("cloudflare_api_key").value,
         zone_id: document.getElementById("cloudflare_zone_id").value,
+        domain_name: document.getElementById("cloudflare_domain_name").value,
       };
       break;
 
@@ -43,6 +45,7 @@ function buildConfigPlatform() {
       config = {
         secret_id: document.getElementById("dnspod_secret_id").value,
         secret_key: document.getElementById("dnspod_secret_key").value,
+        domain_name: document.getElementById("dnspod_domain_name").value,
       };
       break;
   }
@@ -82,18 +85,24 @@ async function openFormModal(id) {
           config.config_json.secret_key || "";
         document.getElementById("edgeone_zone_id").value =
           config.config_json.zone_id || "";
+        document.getElementById("edgeone_domain_name").value =
+          config.config_json.domain_name || "";
         break;
       case "cloudflare":
         document.getElementById("cloudflare_api_key").value =
           config.config_json.api_key || "";
         document.getElementById("cloudflare_zone_id").value =
           config.config_json.zone_id || "";
+        document.getElementById("cloudflare_domain_name").value =
+          config.config_json.domain_name || "";
         break;
       case "dnspod":
         document.getElementById("dnspod_secret_id").value =
           config.config_json.secret_id || "";
         document.getElementById("dnspod_secret_key").value =
           config.config_json.secret_key || "";
+        document.getElementById("dnspod_domain_name").value =
+          config.config_json.domain_name || "";
         break;
     }
 

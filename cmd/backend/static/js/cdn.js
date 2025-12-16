@@ -31,7 +31,7 @@ async function openFormModal(id) {
     const selectId2 = $("#webhook_ids");
 
     // 平台配置列表
-    const { data: configs } = await API.get(`/api/configs`);
+    const { data: configs } = await API.get(`/api/platform-configs`);
     console.log("configs", configs);
     if (configs) {
       const configSelect = document.getElementById("config_id");
