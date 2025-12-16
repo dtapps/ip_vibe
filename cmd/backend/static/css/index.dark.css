@@ -188,4 +188,9 @@
   .pagination .disabled {
     opacity: 0.35;
   }
+  /* 域名后缀文本在暗色模式下的覆盖 */
+  .domain-suffix-text {
+    /* 与输入框的 --bg (#0f172a) 形成对比 */
+    background-color: var(--card); 
+  }
 }

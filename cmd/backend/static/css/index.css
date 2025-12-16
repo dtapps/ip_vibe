@@ -855,3 +855,66 @@ small.text-secondary {
   display: block;
   margin-top: 4px;
 }
+
+/* 输入框支持后缀文本 开始 */
+
+/* 确保输入框和后缀文本看起来像一个整体 */
+.domain-input-group {
+  display: flex;
+  align-items: stretch; /* 确保子元素（输入框和后缀）高度一致 */
+  width: 100%;
+  border: 1px solid var(--border); /* 将边框应用于整个组合 */
+  border-radius: var(--radius);
+}
+
+.domain-input-group input {
+  flex-grow: 1;
+  border: none; /* 移除输入框自身的边框 */
+  padding: 8px 12px;
+  border-radius: var(--radius) 0 0 var(--radius); /* 保持左侧圆角 */
+}
+
+.domain-suffix-text {
+  /* 后缀文本的样式 */
+  padding: 8px 12px;
+  background-color: var(--bg); /* 使用主背景色，提供轻微的视觉分离 */
+  border-left: 1px solid var(--border);
+  color: var(--text-secondary); /* 使用次要文本颜色 */
+  white-space: nowrap; /* 阻止文本换行 */
+  display: flex;
+  align-items: center; /* 垂直居中文本 */
+  border-radius: 0 var(--radius) var(--radius) 0; /* 保持右侧圆角 */
+  font-size: inherit; /* 确保字体大小继承 */
+}
+
+/* 输入框支持后缀文本 结束 */
+
+/* 输入框支持显示/隐藏密码 开始 */
+
+/* 必须的样式，用于将输入框和按钮组合 */
+.input-group {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative; /* 确保输入框内的样式能正常工作 */
+}
+.input-group input {
+  flex-grow: 1;
+  border-right: none;
+  padding-right: 0; /* 留给按钮空间 */
+}
+.input-group .toggle-password {
+  border: 1px solid var(--border);
+  border-left: none;
+  background-color: var(--input-bg);
+  padding: 8px 12px;
+  height: 38px;
+  cursor: pointer;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  transition: background-color 0.2s;
+  line-height: 1; /* 确保图标对齐 */
+}
+.input-group .toggle-password:hover {
+  background-color: var(--bg-hover);
+}
+/* 输入框支持显示/隐藏密码 结束 */

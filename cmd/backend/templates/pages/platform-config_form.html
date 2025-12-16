@@ -1,32 +1,4 @@
-{{ define "pages/platform-config_form.html" }}<style>
-  /* 必须的样式，用于将输入框和按钮组合 */
-  .input-group {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    position: relative; /* 确保输入框内的样式能正常工作 */
-  }
-  .input-group input {
-    flex-grow: 1;
-    border-right: none;
-    padding-right: 0; /* 留给按钮空间 */
-  }
-  .input-group .toggle-password {
-    border: 1px solid var(--border);
-    border-left: none;
-    background-color: var(--input-bg);
-    padding: 8px 12px;
-    height: 38px;
-    cursor: pointer;
-    border-radius: 0 var(--radius) var(--radius) 0;
-    transition: background-color 0.2s;
-    line-height: 1; /* 确保图标对齐 */
-  }
-  .input-group .toggle-password:hover {
-    background-color: var(--bg-hover);
-  }
-</style>
-
+{{ define "pages/platform-config_form.html" }}
 <div class="modal" id="modal">
   <div class="modal-content">
     <h3 id="modalTitle">添加平台配置</h3>
