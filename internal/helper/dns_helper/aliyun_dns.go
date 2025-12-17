@@ -33,8 +33,9 @@ func NewAliyunDnsClient(ctx context.Context, accessKeyID string, accessKeySecret
 
 	// 密钥信息
 	c.credential, err = credential.NewCredential(&credential.Config{
-		AccessKeyId:     tea.String(accessKeyID),
-		AccessKeySecret: tea.String(accessKeySecret),
+		Type:            tea.String("access_key"),
+		AccessKeyId:     tea.String(c.config.AccessKeyID),
+		AccessKeySecret: tea.String(c.config.AccessKeySecret),
 	})
 	if err != nil {
 		return nil, err
