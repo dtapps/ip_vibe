@@ -10,6 +10,7 @@ import (
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	teo "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901"
+	"go.dtapp.net/library/contrib/http_log"
 )
 
 type TencentEOClient struct {
@@ -19,8 +20,9 @@ type TencentEOClient struct {
 		ZoneID    string // 站点 ID
 	}
 
-	credential *common.Credential
-	client     *teo.Client
+	credential   *common.Credential
+	clientConfig *profile.ClientProfile
+	client       *teo.Client
 }
 
 // 边缘安全加速平台 EO
@@ -41,11 +43,11 @@ func NewTencentEOClient(ctx context.Context, secretID string, secretKey string, 
 	)
 
 	// 实例化一个client选项
-	cpf := profile.NewClientProfile()
-	cpf.HttpProfile.Endpoint = "teo.tencentcloudapi.com"
+	c.clientConfig = profile.NewClientProfile()
+	c.clientConfig.HttpProfile.Endpoint = "teo.tencentcloudapi.com"
 
 	// 实例化要请求产品的client对象
-	c.client, err = teo.NewClient(c.credential, "", cpf)
+	c.client, err = teo.NewClient(c.credential, "", c.clientConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -54,8 +56,17 @@ func NewTencentEOClient(ctx context.Context, secretID string, secretKey string, 
 }
 
 // 设置调试模式
-func (c *TencentEOClient) SetDebug(debug bool) *TencentEOClient {
-	c.client.WithDebug(debug)
+// func (c *TencentEOClient) SetDebug(debug bool) *TencentEOClient {
+// 	c.client.WithDebug(debug)
+// 	return c
+// }
+
+// 设置HTTP日志记录器
+func (c *TencentEOClient) SetLog(log *http_log.LoggingTransport) *TencentEOClient {
+	if log == nil {
+		return c
+	}
+	c.client.WithHttpTransport(log)
 	return c
 }
 

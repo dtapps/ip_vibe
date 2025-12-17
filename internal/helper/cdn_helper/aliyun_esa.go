@@ -3,6 +3,7 @@ package cdn_helper
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"vibe_ip/internal/utils"
 
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
@@ -10,8 +11,27 @@ import (
 	"github.com/alibabacloud-go/tea/tea"
 	credential "github.com/aliyun/credentials-go/credentials"
 	"github.com/spf13/cast"
+	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/utils/gomd5"
 )
+
+// AliHttpHandler 适配 github.com/alibabacloud-go/tea/tea 里的 HttpClient 接口
+type AliyunHttpHandler struct {
+	httpClient *http.Client
+}
+
+func NewAliyunHttpHandler(log *http_log.LoggingTransport) *AliyunHttpHandler {
+	return &AliyunHttpHandler{
+		httpClient: &http.Client{
+			Transport: log,
+		},
+	}
+}
+
+// Call 实现了 dara.HttpClient 接口要求的方法
+func (a *AliyunHttpHandler) Call(request *http.Request, transport *http.Transport) (*http.Response, error) {
+	return a.httpClient.Do(request)
+}
 
 type AliyunEsaClient struct {
 	config struct {
@@ -20,8 +40,9 @@ type AliyunEsaClient struct {
 		SiteID          int64  // 站点 ID
 	}
 
-	credential credential.Credential
-	client     *esa20240910.Client
+	credential   credential.Credential
+	clientConfig *openapi.Config
+	client       *esa20240910.Client
 }
 
 func NewAliyunEsaClient(ctx context.Context, accessKeyID string, accessKeySecret string, siteID int64) (*AliyunEsaClient, error) {
@@ -43,11 +64,14 @@ func NewAliyunEsaClient(ctx context.Context, accessKeyID string, accessKeySecret
 		return nil, err
 	}
 
-	// 实例化client对象
-	c.client, err = esa20240910.NewClient(&openapi.Config{
+	// 实例化client选项
+	c.clientConfig = &openapi.Config{
 		Credential: c.credential,
 		Endpoint:   tea.String("esa.cn-hangzhou.aliyuncs.com"),
-	})
+	}
+
+	// 实例化client对象
+	c.client, err = esa20240910.NewClient(c.clientConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -56,8 +80,20 @@ func NewAliyunEsaClient(ctx context.Context, accessKeyID string, accessKeySecret
 }
 
 // 设置调试模式
-func (c *AliyunEsaClient) SetDebug(debug bool) *AliyunEsaClient {
-	// c.client.WithDebug(debug)
+// func (c *AliyunEsaClient) SetDebug(debug bool) *AliyunEsaClient {
+// 	c.client.WithDebug(debug)
+// 	return c
+// }
+
+// 设置HTTP日志记录器
+func (c *AliyunEsaClient) SetLog(log *http_log.LoggingTransport) *AliyunEsaClient {
+	if log == nil {
+		return c
+	}
+	// 实例化client选项
+	c.clientConfig.HttpClient = NewAliyunHttpHandler(log)
+	// 实例化client对象
+	c.client, _ = esa20240910.NewClient(c.clientConfig)
 	return c
 }
 

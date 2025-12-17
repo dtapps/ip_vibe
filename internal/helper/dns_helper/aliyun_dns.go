@@ -88,13 +88,10 @@ func (c *AliyunDnsClient) SetLog(log *http_log.LoggingTransport) *AliyunDnsClien
 	if log == nil {
 		return c
 	}
-
 	// 实例化client选项
 	c.clientConfig.HttpClient = NewAliyunHttpHandler(log)
-
 	// 实例化client对象
 	c.client, _ = alidns20150109.NewClient(c.clientConfig)
-
 	return c
 }
 
