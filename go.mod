@@ -9,7 +9,7 @@ require (
 	github.com/alibabacloud-go/esa-20240910/v2 v2.41.0
 	github.com/alibabacloud-go/tea v1.3.14
 	github.com/aliyun/credentials-go v1.4.10
-	github.com/baidubce/bce-sdk-go v0.9.254
+	github.com/baidubce/bce-sdk-go v0.9.255
 	github.com/cloudflare/cloudflare-go/v6 v6.4.0
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/gin-contrib/cors v1.7.6
@@ -28,10 +28,11 @@ require (
 	github.com/swaggo/gin-swagger v1.6.1
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc4
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.12
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.13
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.8
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.4
-	go.dtapp.net/library/contrib/resty_log v1.0.8
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.13
+	go.dtapp.net/library/contrib/http_log v1.0.0
+	go.dtapp.net/library/contrib/resty_log v1.0.10
 	go.dtapp.net/library/service/bark v1.0.7
 	go.dtapp.net/library/service/dingtalk v1.0.39
 	go.dtapp.net/library/service/feishu v1.0.36
@@ -88,7 +89,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.29.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
-	github.com/goccy/go-yaml v1.19.0 // indirect
+	github.com/goccy/go-yaml v1.19.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/jsonschema-go v0.3.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.24.0 // indirect
