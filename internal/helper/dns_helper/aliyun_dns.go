@@ -3,13 +3,33 @@ package dns_helper
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"vibe_ip/internal/utils"
 
 	alidns20150109 "github.com/alibabacloud-go/alidns-20150109/v5/client"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	"github.com/alibabacloud-go/tea/tea"
 	credential "github.com/aliyun/credentials-go/credentials"
+	"go.dtapp.net/library/contrib/http_log"
 )
+
+// AliHttpHandler 适配 github.com/alibabacloud-go/tea/tea 里的 HttpClient 接口
+type AliyunHttpHandler struct {
+	httpClient *http.Client
+}
+
+func NewAliyunHttpHandler(log *http_log.LoggingTransport) *AliyunHttpHandler {
+	return &AliyunHttpHandler{
+		httpClient: &http.Client{
+			Transport: log,
+		},
+	}
+}
+
+// Call 实现了 dara.HttpClient 接口要求的方法
+func (a *AliyunHttpHandler) Call(request *http.Request, transport *http.Transport) (*http.Response, error) {
+	return a.httpClient.Do(request)
+}
 
 type AliyunDnsClient struct {
 	config struct {
@@ -18,8 +38,9 @@ type AliyunDnsClient struct {
 		AccessKeySecret string // 密钥密钥
 	}
 
-	credential credential.Credential
-	client     *alidns20150109.Client
+	credential   credential.Credential
+	clientConfig *openapi.Config
+	client       *alidns20150109.Client
 }
 
 func NewAliyunDnsClient(ctx context.Context, accessKeyID string, accessKeySecret string) (*AliyunDnsClient, error) {
@@ -41,11 +62,14 @@ func NewAliyunDnsClient(ctx context.Context, accessKeyID string, accessKeySecret
 		return nil, err
 	}
 
-	// 实例化client对象
-	c.client, err = alidns20150109.NewClient(&openapi.Config{
+	// 实例化client选项
+	c.clientConfig = &openapi.Config{
 		Credential: c.credential,
 		Endpoint:   tea.String("alidns.aliyuncs.com"),
-	})
+	}
+
+	// 实例化client对象
+	c.client, err = alidns20150109.NewClient(c.clientConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -54,8 +78,23 @@ func NewAliyunDnsClient(ctx context.Context, accessKeyID string, accessKeySecret
 }
 
 // 设置调试模式
-func (c *AliyunDnsClient) SetDebug(debug bool) *AliyunDnsClient {
-	// c.client.WithDebug(debug)
+// func (c *AliyunDnsClient) SetDebug(debug bool) *AliyunDnsClient {
+// 	c.client.WithDebug(debug)
+// 	return c
+// }
+
+// 设置HTTP日志记录器
+func (c *AliyunDnsClient) SetLog(log *http_log.LoggingTransport) *AliyunDnsClient {
+	if log == nil {
+		return c
+	}
+
+	// 实例化client选项
+	c.clientConfig.HttpClient = NewAliyunHttpHandler(log)
+
+	// 实例化client对象
+	c.client, _ = alidns20150109.NewClient(c.clientConfig)
+
 	return c
 }
 

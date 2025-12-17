@@ -38,10 +38,10 @@ func NewBaiduDnsClient(ctx context.Context, accessKeyID string, secretAccessKey 
 }
 
 // 设置调试模式
-func (c *BaiduDnsClient) SetDebug(debug bool) *BaiduDnsClient {
-	// c.client.WithDebug(debug)
-	return c
-}
+// func (c *BaiduDnsClient) SetDebug(debug bool) *BaiduDnsClient {
+// 	c.client.WithDebug(debug)
+// 	return c
+// }
 
 // 设置HTTP日志记录器
 func (c *BaiduDnsClient) SetLog(log *http_log.LoggingTransport) *BaiduDnsClient {

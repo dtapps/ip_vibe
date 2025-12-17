@@ -17,7 +17,7 @@ type EntHttpLogSaver struct {
 
 func (s *EntHttpLogSaver) HandleLog(ctx context.Context, data *http_log.LogData) error {
 	if global.GvaEnv.DEBUG {
-		slog.WarnContext(ctx, "[接口方式]准备保存日志",
+		slog.InfoContext(ctx, "[接口方式]准备保存日志",
 			slog.String("Hostname", data.Hostname),
 			slog.String("Method", data.Method),
 			slog.String("URL", data.URL),
@@ -60,7 +60,7 @@ func InitEntHttpLog() {
 	// 定义回调函数
 	saveFunc := func(ctx context.Context, data *http_log.LogData) error {
 		if global.GvaEnv.DEBUG {
-			slog.WarnContext(ctx, "[回调方式]准备保存日志",
+			slog.InfoContext(ctx, "[回调方式]准备保存日志",
 				slog.String("Hostname", data.Hostname),
 				slog.String("Method", data.Method),
 				slog.String("URL", data.URL),

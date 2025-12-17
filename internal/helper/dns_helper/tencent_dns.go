@@ -11,6 +11,7 @@ import (
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	dnspod "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323"
+	"go.dtapp.net/library/contrib/http_log"
 )
 
 type TencentDnsClient struct {
@@ -19,8 +20,9 @@ type TencentDnsClient struct {
 		SecretKey string // 密钥密钥
 	}
 
-	credential *common.Credential
-	client     *dnspod.Client
+	credential   *common.Credential
+	clientConfig *profile.ClientProfile
+	client       *dnspod.Client
 }
 
 // 云解析 DNS
@@ -42,11 +44,11 @@ func NewTencentDnsClient(ctx context.Context, secretID string, secretKey string)
 	)
 
 	// 实例化client选项
-	cpf := profile.NewClientProfile()
-	cpf.HttpProfile.Endpoint = "dnspod.tencentcloudapi.com"
+	c.clientConfig = profile.NewClientProfile()
+	c.clientConfig.HttpProfile.Endpoint = "dnspod.tencentcloudapi.com"
 
 	// 实例化client对象
-	c.client, err = dnspod.NewClient(c.credential, "", cpf)
+	c.client, err = dnspod.NewClient(c.credential, "", c.clientConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -55,8 +57,17 @@ func NewTencentDnsClient(ctx context.Context, secretID string, secretKey string)
 }
 
 // 设置调试模式
-func (c *TencentDnsClient) SetDebug(debug bool) *TencentDnsClient {
-	c.client.WithDebug(debug)
+// func (c *TencentDnsClient) SetDebug(debug bool) *TencentDnsClient {
+// 	c.client.WithDebug(debug)
+// 	return c
+// }
+
+// 设置HTTP日志记录器
+func (c *TencentDnsClient) SetLog(log *http_log.LoggingTransport) *TencentDnsClient {
+	if log == nil {
+		return c
+	}
+	c.client.WithHttpTransport(log)
 	return c
 }
 
