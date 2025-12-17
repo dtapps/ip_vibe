@@ -322,7 +322,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 	}
 
 	switch firstRecord.Edges.Config.Platform {
-	case platformconfig.PlatformEdgeone, platformconfig.PlatformTencentEo:
+	case platformconfig.PlatformTencentEo:
 
 		if len(origins) == 1 {
 			// 处理单IP
@@ -465,7 +465,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 		}
 
 		return nil
-	case platformconfig.PlatformDnspod, platformconfig.PlatformTencentDNS:
+	case platformconfig.PlatformTencentDNS:
 
 		err = dns_helper.TencentDnsProcessSingleIP(ctx,
 			dns_helper.ProcessService{
@@ -533,7 +533,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 
 func (s *IpUpdateService) allowConcurrent(item *ent.PlatformConfig) bool {
 	// EdgeOne 平台不支持并发，串行；其他并发
-	if item.Platform == platformconfig.PlatformEdgeone {
+	if item.Platform == platformconfig.PlatformTencentEo {
 		return false
 	}
 	return true

@@ -12,7 +12,7 @@ function changePlatform(platform) {
     .forEach((el) => el.classList.add("hidden"));
 
   // 显示选中平台的字段
-  const fields = document.getElementById(platform + "Fields");
+  const fields = document.getElementById(platform + "_fields");
   if (fields) {
     fields.classList.remove("hidden");
   }
@@ -24,15 +24,6 @@ function buildConfigPlatform() {
   let config = {};
 
   switch (platform) {
-    case "edgeone":
-      config = {
-        secret_id: document.getElementById("edgeone_secret_id").value,
-        secret_key: document.getElementById("edgeone_secret_key").value,
-        zone_id: document.getElementById("edgeone_zone_id").value,
-        domain_name: document.getElementById("edgeone_domain_name").value,
-      };
-      break;
-
     case "cloudflare":
       config = {
         api_key: document.getElementById("cloudflare_api_key").value,
@@ -40,12 +31,19 @@ function buildConfigPlatform() {
         domain_name: document.getElementById("cloudflare_domain_name").value,
       };
       break;
-
-    case "dnspod":
+    case "tencent_dns":
       config = {
-        secret_id: document.getElementById("dnspod_secret_id").value,
-        secret_key: document.getElementById("dnspod_secret_key").value,
-        domain_name: document.getElementById("dnspod_domain_name").value,
+        secret_id: document.getElementById("tencent_dns_secret_id").value,
+        secret_key: document.getElementById("tencent_dns_secret_key").value,
+        domain_name: document.getElementById("tencent_dns_domain_name").value,
+      };
+      break;
+    case "tencent_eo":
+      config = {
+        secret_id: document.getElementById("tencent_eo_secret_id").value,
+        secret_key: document.getElementById("tencent_eo_secret_key").value,
+        zone_id: document.getElementById("tencent_eo_zone_id").value,
+        domain_name: document.getElementById("tencent_eo_domain_name").value,
       };
       break;
   }
@@ -78,16 +76,6 @@ async function openFormModal(id) {
     changePlatform(config.platform);
 
     switch (config.platform) {
-      case "edgeone":
-        document.getElementById("edgeone_secret_id").value =
-          config.config_json.secret_id || "";
-        document.getElementById("edgeone_secret_key").value =
-          config.config_json.secret_key || "";
-        document.getElementById("edgeone_zone_id").value =
-          config.config_json.zone_id || "";
-        document.getElementById("edgeone_domain_name").value =
-          config.config_json.domain_name || "";
-        break;
       case "cloudflare":
         document.getElementById("cloudflare_api_key").value =
           config.config_json.api_key || "";
@@ -96,12 +84,22 @@ async function openFormModal(id) {
         document.getElementById("cloudflare_domain_name").value =
           config.config_json.domain_name || "";
         break;
-      case "dnspod":
-        document.getElementById("dnspod_secret_id").value =
+      case "tencent_dns":
+        document.getElementById("tencent_dns_secret_id").value =
           config.config_json.secret_id || "";
-        document.getElementById("dnspod_secret_key").value =
+        document.getElementById("tencent_dns_secret_key").value =
           config.config_json.secret_key || "";
-        document.getElementById("dnspod_domain_name").value =
+        document.getElementById("tencent_dns_domain_name").value =
+          config.config_json.domain_name || "";
+        break;
+      case "tencent_eo":
+        document.getElementById("tencent_eo_secret_id").value =
+          config.config_json.secret_id || "";
+        document.getElementById("tencent_eo_secret_key").value =
+          config.config_json.secret_key || "";
+        document.getElementById("tencent_eo_zone_id").value =
+          config.config_json.zone_id || "";
+        document.getElementById("tencent_eo_domain_name").value =
           config.config_json.domain_name || "";
         break;
     }

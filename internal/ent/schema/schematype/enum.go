@@ -94,8 +94,6 @@ var GetConfigCapabilitys = []string{
 
 const (
 	ConfigPlatformCloudflare string = "cloudflare" // Cloudflare
-	ConfigPlatformEdgeOne    string = "edgeone"    // EdgeOne
-	ConfigPlatformDnspod     string = "dnspod"     // DNSPod
 
 	ConfigPlatformTencentDns string = "tencent_dns" // 腾讯云 DNS
 	ConfigPlatformTencentEO  string = "tencent_eo"  // 腾讯云 EdgeOne
@@ -110,8 +108,6 @@ const (
 // GetConfigPlatformDescriptions 平台类型说明映射
 var GetConfigPlatformDescriptions = map[string]string{
 	ConfigPlatformCloudflare: "Cloudflare",
-	ConfigPlatformEdgeOne:    "EdgeOne",
-	ConfigPlatformDnspod:     "DNSPod",
 	ConfigPlatformTencentDns: "腾讯云 DNS",
 	ConfigPlatformTencentEO:  "腾讯云 EdgeOne",
 	ConfigPlatformAliyunDns:  "阿里云 DNS",
@@ -123,8 +119,6 @@ var GetConfigPlatformDescriptions = map[string]string{
 // GetConfigPlatforms 返回所有平台类型
 var GetConfigPlatforms = []string{
 	ConfigPlatformCloudflare,
-	ConfigPlatformEdgeOne,
-	ConfigPlatformDnspod,
 	ConfigPlatformTencentDns,
 	ConfigPlatformTencentEO,
 	ConfigPlatformAliyunDns,
