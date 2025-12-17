@@ -3,11 +3,13 @@ package dns_helper
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"vibe_ip/internal/utils"
 
 	"github.com/cloudflare/cloudflare-go/v6"
 	"github.com/cloudflare/cloudflare-go/v6/dns"
 	"github.com/cloudflare/cloudflare-go/v6/option"
+	"go.dtapp.net/library/contrib/http_log"
 )
 
 type CloudflareClient struct {
@@ -28,15 +30,29 @@ func NewCloudflareClient(ctx context.Context, apiKey string, zoneID string) (c *
 	c.config.ZoneID = zoneID
 
 	c.client = cloudflare.NewClient(
-		option.WithAPIToken(apiKey),
+		option.WithAPIToken(c.config.ApiKey),
 	)
 
 	return c, nil
 }
 
 // 设置调试模式
-func (c *CloudflareClient) SetDebug(debug bool) *CloudflareClient {
-	// c.client.WithDebug()
+// func (c *CloudflareClient) SetDebug(debug bool) *CloudflareClient {
+// 	c.client.WithDebug()
+// 	return c
+// }
+
+// 设置HTTP日志记录器
+func (c *CloudflareClient) SetLog(log *http_log.LoggingTransport) *CloudflareClient {
+	if log == nil {
+		return c
+	}
+	c.client = cloudflare.NewClient(
+		option.WithAPIToken(c.config.ApiKey),
+		option.WithHTTPClient(&http.Client{
+			Transport: log,
+		}),
+	)
 	return c
 }
 

@@ -38,8 +38,8 @@ func NewTencentEOClient(ctx context.Context, secretID string, secretKey string, 
 
 	// 密钥信息
 	c.credential = common.NewCredential(
-		secretID,
-		secretKey,
+		c.config.SecretID,
+		c.config.SecretKey,
 	)
 
 	// 实例化一个client选项
