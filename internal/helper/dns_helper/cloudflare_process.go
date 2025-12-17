@@ -11,17 +11,18 @@ import (
 
 // 处理单IP参数
 type CloudflareProcessSingleIPParams struct {
-	ConfigJSON   json.RawMessage // 配置
-	DomainName   string          // 加速域名
-	DomainOrigin string          // IP地址
+	ConfigJSON  json.RawMessage // 配置
+	SubDomain   string          // 子域名
+	RecordValue string          // 记录值
 }
 
 // 处理单IP
 func CloudflareProcessSingleIP(ctx context.Context, service ProcessService, params CloudflareProcessSingleIPParams) (err error) {
 
 	var platformConfig struct {
-		ApiKey string `json:"api_key"`
-		ZoneID string `json:"zone_id"`
+		ApiKey     string `json:"api_key"`
+		ZoneID     string `json:"zone_id"`
+		DomainName string `json:"domain_name"` // 主域名
 	}
 	err = json.Unmarshal(params.ConfigJSON, &platformConfig)
 	if err != nil {
@@ -29,7 +30,7 @@ func CloudflareProcessSingleIP(ctx context.Context, service ProcessService, para
 	}
 
 	// 初始化客户端
-	client, err := NewCloudflareClientApi(
+	client, err := NewCloudflareClientSdk(
 		ctx,
 		platformConfig.ApiKey,
 		platformConfig.ZoneID,
@@ -37,39 +38,41 @@ func CloudflareProcessSingleIP(ctx context.Context, service ProcessService, para
 	if err != nil {
 		return fmt.Errorf("初始化Cloudflare客户端失败: %w", err)
 	}
-	// 开启调试模式
-	if service.Debug {
-		client.EnableDebug()
-	}
+	// 设置调试模式
+	client.SetDebug(service.Debug)
 
 	// 查询域名记录
 	service.Log.InfoContext(ctx, "查询域名记录 请求",
-		slog.String("domain_name", params.DomainName),
-		slog.String("domain_origin", params.DomainOrigin),
+		slog.String("domain_name", platformConfig.DomainName),
+		slog.String("sub_domain", params.SubDomain),
+		slog.String("record_value", params.RecordValue),
 	)
 	queryDomain, _ := client.QueryDomain(
 		ctx,
-		params.DomainName,
-		params.DomainOrigin,
+		platformConfig.DomainName,
+		params.SubDomain,
+		params.RecordValue,
 	)
 	service.Log.InfoContext(ctx, "查询域名记录 响应",
 		slog.String("domain_id", queryDomain.DomainID),
 		slog.String("domain_name", queryDomain.DomainName),
-		slog.String("domain_type", queryDomain.DomainType),
-		slog.String("domain_origin", queryDomain.DomainOrigin),
+		slog.String("record_type", queryDomain.RecordType),
+		slog.String("record_value", queryDomain.RecordValue),
 	)
 
 	if queryDomain.DomainID == "" {
 
 		// 创建域名记录
 		service.Log.InfoContext(ctx, "创建域名记录 请求",
-			slog.String("domain_name", params.DomainName),
-			slog.String("domain_origin", params.DomainOrigin),
+			slog.String("domain_name", platformConfig.DomainName),
+			slog.String("sub_domain", params.SubDomain),
+			slog.String("record_value", params.RecordValue),
 		)
 		err = client.CreateDomain(
 			ctx,
-			params.DomainName,
-			params.DomainOrigin,
+			platformConfig.DomainName,
+			params.SubDomain,
+			params.RecordValue,
 		)
 		if err != nil {
 			return fmt.Errorf("创建域名记录失败: %w", err)
@@ -77,19 +80,21 @@ func CloudflareProcessSingleIP(ctx context.Context, service ProcessService, para
 
 		// 重新查询域名记录
 		service.Log.InfoContext(ctx, "重新查询域名记录 请求",
-			slog.String("domain_name", params.DomainName),
-			slog.String("domain_origin", params.DomainOrigin),
+			slog.String("domain_name", platformConfig.DomainName),
+			slog.String("sub_domain", params.SubDomain),
+			slog.String("record_value", params.RecordValue),
 		)
 		queryDomain, _ = client.QueryDomain(
 			ctx,
-			params.DomainName,
-			params.DomainOrigin,
+			platformConfig.DomainName,
+			params.SubDomain,
+			params.RecordValue,
 		)
 		service.Log.InfoContext(ctx, "重新查询域名记录 响应",
 			slog.String("domain_id", queryDomain.DomainID),
 			slog.String("domain_name", queryDomain.DomainName),
-			slog.String("domain_type", queryDomain.DomainType),
-			slog.String("domain_origin", queryDomain.DomainOrigin),
+			slog.String("record_type", queryDomain.RecordType),
+			slog.String("record_value", queryDomain.RecordValue),
 		)
 
 		// 更新DNS记录
@@ -108,7 +113,7 @@ func CloudflareProcessSingleIP(ctx context.Context, service ProcessService, para
 			SetLastRefreshAt(time.Now()).
 			Exec(ctx)
 
-		if utils.DNSValuesEqual(queryDomain.DomainOrigin, params.DomainOrigin) {
+		if utils.DNSValuesEqual(queryDomain.RecordValue, params.RecordValue) {
 			service.Log.InfoContext(ctx, "无需更新")
 			return nil
 		}
@@ -116,14 +121,16 @@ func CloudflareProcessSingleIP(ctx context.Context, service ProcessService, para
 		// 更新域名记录
 		service.Log.InfoContext(ctx, "更新域名记录 请求",
 			slog.String("domain_id", queryDomain.DomainID),
-			slog.String("domain_name", params.DomainName),
-			slog.String("domain_origin", params.DomainOrigin),
+			slog.String("domain_name", platformConfig.DomainName),
+			slog.String("sub_domain", params.SubDomain),
+			slog.String("record_value", params.RecordValue),
 		)
 		err = client.UpdateDomain(
 			ctx,
 			queryDomain.DomainID,
-			params.DomainName,
-			params.DomainOrigin,
+			platformConfig.DomainName,
+			params.SubDomain,
+			params.RecordValue,
 		)
 		if err != nil {
 			return fmt.Errorf("更新域名记录失败: %w", err)

@@ -58,32 +58,17 @@ func (c *AliDnsClientSdk) SetDebug(debug bool) *AliDnsClientSdk {
 	return c
 }
 
-type AliDnsQueryResponse struct {
-	DomainID     string // 域名ID
-	DomainName   string // 域名名称
-	DomainType   string // 记录类型
-	DomainOrigin string // 记录类型值
-}
-
 // 获取解析记录列表
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/DescribeDomainRecords
-// domainName: 域名名称
-// domainOrigin: 记录类型值
-func (c *AliDnsClientSdk) QueryDomain(ctx context.Context, domainName string, domainOrigin string) (AliDnsQueryResponse, error) {
+// domainName: 主域名
+// subDomain: 子域名
+// recordValue: 记录值
+func (c *AliDnsClientSdk) QueryDomain(ctx context.Context, domainName string, subDomain string, recordValue string) (QueryDomainResponse, error) {
 
-	// 解析域名
-	_, domainSub, domainMain, err := utils.ExtractDomainParts(domainName)
+	// 提取域名中的主域名和子域，同时判断记录类型
+	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, recordValue)
 	if err != nil {
-		return AliDnsQueryResponse{}, err
-	}
-
-	// 解析IP
-	var domainType = ""
-	if domainOrigin != "" {
-		domainType, err = utils.GetRecordType(domainOrigin)
-		if err != nil {
-			return AliDnsQueryResponse{}, err
-		}
+		return QueryDomainResponse{}, err
 	}
 
 	// 请求
@@ -91,53 +76,45 @@ func (c *AliDnsClientSdk) QueryDomain(ctx context.Context, domainName string, do
 		Lang:       tea.String(c.config.Lang), // 设置请求和接收消息的语言类型
 		SearchMode: tea.String("COMBINATION"), // 搜索模式
 	}
-	requestParams.DomainName = tea.String(domainMain) // 域名名称
-	requestParams.RRKeyWord = tea.String(domainSub)   // 主机记录的关键字
-	if domainType != "" {
-		requestParams.TypeKeyWord = tea.String(domainType) // 解析类型的关键字
+	requestParams.DomainName = tea.String(domainName) // 域名名称
+	requestParams.RRKeyWord = tea.String(subDomain)   // 主机记录的关键字
+	if recordType != "" {
+		requestParams.TypeKeyWord = tea.String(recordType) // 解析类型的关键字
 	}
 	response, err := c.client.DescribeDomainRecords(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
-		return AliDnsQueryResponse{}, fmt.Errorf("API错误: %w", err)
+		return QueryDomainResponse{}, fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
-		return AliDnsQueryResponse{}, err
+		return QueryDomainResponse{}, err
 	}
 
 	for _, item := range response.Body.DomainRecords.Record {
-		if *item.RR == domainSub {
-			if domainType != "" && *item.Type != domainType {
+		if tea.StringValue(item.RR) == subDomain {
+			if recordType != "" && tea.StringValue(item.Type) != recordType {
 				continue
 			}
-			return AliDnsQueryResponse{
-				DomainID:     *item.RecordId,
-				DomainName:   *item.RR,
-				DomainType:   *item.Type,
-				DomainOrigin: *item.Value,
+			return QueryDomainResponse{
+				DomainID:    tea.StringValue(item.RecordId),
+				DomainName:  tea.StringValue(item.RR),
+				RecordType:  tea.StringValue(item.Type),
+				RecordValue: tea.StringValue(item.Value),
 			}, nil
 		}
 	}
 
-	return AliDnsQueryResponse{}, fmt.Errorf("未找到记录")
+	return QueryDomainResponse{}, fmt.Errorf("未找到记录")
 }
 
 // 添加记录
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/AddDomainRecord
-// domainName: 域名名称
-// domainOrigin: 记录类型值
-func (c *AliDnsClientSdk) CreateDomain(ctx context.Context, domainName string, domainOrigin string) error {
+// domainName: 主域名
+// subDomain: 子域名
+// recordValue: 记录值
+func (c *AliDnsClientSdk) CreateDomain(ctx context.Context, domainName string, subDomain string, recordValue string) error {
 
-	// 解析域名
-	_, domainSub, domainMain, err := utils.ExtractDomainParts(domainName)
-	if err != nil {
-		return err
-	}
-	if domainSub == "" {
-		domainSub = "@"
-	}
-
-	// 解析IP
-	domainType, err := utils.GetRecordType(domainOrigin)
+	// 提取域名中的主域名和子域，同时判断记录类型
+	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, recordValue)
 	if err != nil {
 		return err
 	}
@@ -146,10 +123,10 @@ func (c *AliDnsClientSdk) CreateDomain(ctx context.Context, domainName string, d
 	requestParams := &alidns20150109.AddDomainRecordRequest{
 		Lang: tea.String(c.config.Lang), // 设置请求和接收消息的语言类型
 	}
-	requestParams.DomainName = tea.String(domainMain) // 域名名称
-	requestParams.RR = tea.String(domainSub)          // 主机记录
-	requestParams.Type = tea.String(domainType)       // 解析记录类型
-	requestParams.Value = tea.String(domainOrigin)    // 记录值
+	requestParams.DomainName = tea.String(domainName) // 域名名称
+	requestParams.RR = tea.String(subDomain)          // 主机记录
+	requestParams.Type = tea.String(recordType)       // 解析记录类型
+	requestParams.Value = tea.String(recordValue)     // 记录值
 	_, err = c.client.AddDomainRecord(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
@@ -164,21 +141,13 @@ func (c *AliDnsClientSdk) CreateDomain(ctx context.Context, domainName string, d
 // 更新域名记录
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/UpdateDomainRecord
 // domainID: 域名ID
-// domainName: 域名名称
-// domainOrigin: 记录类型值
-func (c *AliDnsClientSdk) UpdateDomain(ctx context.Context, domainID string, domainName string, domainOrigin string) error {
+// domainName: 主域名
+// subDomain: 子域名
+// recordValue: 记录值
+func (c *AliDnsClientSdk) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, recordValue string) error {
 
-	// 解析域名
-	_, domainSub, _, err := utils.ExtractDomainParts(domainName)
-	if err != nil {
-		return err
-	}
-	if domainSub == "" {
-		domainSub = "@"
-	}
-
-	// 解析IP
-	domainType, err := utils.GetRecordType(domainOrigin)
+	// 提取域名中的主域名和子域，同时判断记录类型
+	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, recordValue)
 	if err != nil {
 		return err
 	}
@@ -187,10 +156,10 @@ func (c *AliDnsClientSdk) UpdateDomain(ctx context.Context, domainID string, dom
 	requestParams := &alidns20150109.UpdateDomainRecordRequest{
 		Lang: tea.String(c.config.Lang), // 设置请求和接收消息的语言类型
 	}
-	requestParams.RecordId = tea.String(domainID)  // 解析记录的ID
-	requestParams.RR = tea.String(domainSub)       // 主机记录
-	requestParams.Type = tea.String(domainType)    // 解析记录类型
-	requestParams.Value = tea.String(domainOrigin) // 记录值
+	requestParams.RecordId = tea.String(domainID) // 解析记录的ID
+	requestParams.RR = tea.String(subDomain)      // 主机记录
+	requestParams.Type = tea.String(recordType)   // 解析记录类型
+	requestParams.Value = tea.String(recordValue) // 记录值
 	_, err = c.client.UpdateDomainRecord(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
