@@ -28,9 +28,9 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 	var originType = "IP_DOMAIN"
 
 	var platformConfig struct {
-		SecretID   string `json:"secret_id"`
-		SecretKey  string `json:"secret_key"`
-		ZoneID     string `json:"zone_id"`
+		SecretID   string `json:"secret_id"`   // 密钥ID
+		SecretKey  string `json:"secret_key"`  // 密钥Key
+		ZoneID     string `json:"zone_id"`     // 区域ID
 		DomainName string `json:"domain_name"` // 主域名
 	}
 	err = json.Unmarshal(params.ConfigJSON, &platformConfig)
@@ -65,8 +65,8 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 		slog.String("domain_id", queryDomain.DomainID),
 		slog.String("domain_name", queryDomain.DomainName),
 		slog.String("domain_cname", queryDomain.DomainCname),
-		slog.String("record_type", queryDomain.RecordType),
-		slog.String("record_value", queryDomain.RecordValue),
+		slog.String("origin_type", queryDomain.OriginType),
+		slog.String("origin_value", queryDomain.OriginValue),
 		slog.String("origin_protocol", queryDomain.OriginProtocol),
 		slog.Int("http_origin_port", queryDomain.HttpOriginPort),
 		slog.Int("https_origin_port", queryDomain.HttpsOriginPort),
@@ -112,8 +112,8 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 			slog.String("domain_id", queryDomain.DomainID),
 			slog.String("domain_name", queryDomain.DomainName),
 			slog.String("domain_cname", queryDomain.DomainCname),
-			slog.String("record_type", queryDomain.RecordType),
-			slog.String("record_value", queryDomain.RecordValue),
+			slog.String("origin_type", queryDomain.OriginType),
+			slog.String("origin_value", queryDomain.OriginValue),
 			slog.String("origin_protocol", queryDomain.OriginProtocol),
 			slog.Int("http_origin_port", queryDomain.HttpOriginPort),
 			slog.Int("https_origin_port", queryDomain.HttpsOriginPort),
@@ -140,7 +140,7 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 		var isUpdate = false
 
 		// 比较源站
-		if !utils.DNSValuesEqual(queryDomain.RecordValue, params.OriginValue) {
+		if !utils.DNSValuesEqual(queryDomain.OriginValue, params.OriginValue) {
 			isUpdate = true
 		}
 		// 比较回源协议
@@ -221,9 +221,9 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 	var originType = "ORIGIN_GROUP"
 
 	var platformConfig struct {
-		SecretID   string `json:"secret_id"`
-		SecretKey  string `json:"secret_key"`
-		ZoneID     string `json:"zone_id"`
+		SecretID   string `json:"secret_id"`   // 密钥ID
+		SecretKey  string `json:"secret_key"`  // 密钥Key
+		ZoneID     string `json:"zone_id"`     // 区域ID
 		DomainName string `json:"domain_name"` // 主域名
 	}
 	err = json.Unmarshal(params.ConfigJSON, &platformConfig)
@@ -338,8 +338,8 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 		slog.String("domain_id", queryDomain.DomainID),
 		slog.String("domain_name", queryDomain.DomainName),
 		slog.String("domain_cname", queryDomain.DomainCname),
-		slog.String("record_type", queryDomain.RecordType),
-		slog.String("record_value", queryDomain.RecordValue),
+		slog.String("origin_type", queryDomain.OriginType),
+		slog.String("origin_value", queryDomain.OriginValue),
 		slog.String("origin_protocol", queryDomain.OriginProtocol),
 		slog.Int("http_origin_port", queryDomain.HttpOriginPort),
 		slog.Int("https_origin_port", queryDomain.HttpsOriginPort),
@@ -385,8 +385,8 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 			slog.String("domain_id", queryDomain.DomainID),
 			slog.String("domain_name", queryDomain.DomainName),
 			slog.String("domain_cname", queryDomain.DomainCname),
-			slog.String("record_type", queryDomain.RecordType),
-			slog.String("record_value", queryDomain.RecordValue),
+			slog.String("origin_type", queryDomain.OriginType),
+			slog.String("origin_value", queryDomain.OriginValue),
 			slog.String("origin_protocol", queryDomain.OriginProtocol),
 			slog.Int("http_origin_port", queryDomain.HttpOriginPort),
 			slog.Int("https_origin_port", queryDomain.HttpsOriginPort),
@@ -413,7 +413,7 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 		var isUpdate = false
 
 		// 比较源站组
-		if !strings.EqualFold(queryGroup.GroupID, queryDomain.RecordValue) {
+		if !strings.EqualFold(queryGroup.GroupID, queryDomain.OriginValue) {
 			isUpdate = true
 		}
 		// 比较回源协议

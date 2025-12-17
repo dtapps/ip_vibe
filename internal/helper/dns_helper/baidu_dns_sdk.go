@@ -77,7 +77,7 @@ func (c *BaiduDnsClientSdk) QueryDomain(ctx context.Context, domainName string, 
 			return QueryDomainResponse{
 				DomainID:    item.Id,
 				DomainName:  item.Rr,
-				RecordType:  item.Type,
+				OriginType:  item.Type,
 				OriginValue: item.Value,
 			}, nil
 		}

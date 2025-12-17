@@ -20,8 +20,8 @@ type DnsPodProcessSingleIPParams struct {
 func DnsPodProcessSingleIP(ctx context.Context, service ProcessService, params DnsPodProcessSingleIPParams) (err error) {
 
 	var platformConfig struct {
-		SecretID   string `json:"secret_id"`
-		SecretKey  string `json:"secret_key"`
+		SecretID   string `json:"secret_id"`   // 密钥ID
+		SecretKey  string `json:"secret_key"`  // 密钥Key
 		DomainName string `json:"domain_name"` // 主域名
 	}
 	err = json.Unmarshal(params.ConfigJSON, &platformConfig)
@@ -56,7 +56,7 @@ func DnsPodProcessSingleIP(ctx context.Context, service ProcessService, params D
 	service.Log.InfoContext(ctx, "获取域名的解析记录列表 响应",
 		slog.String("domain_id", queryDomain.DomainID),
 		slog.String("domain_name", queryDomain.DomainName),
-		slog.String("record_type", queryDomain.RecordType),
+		slog.String("origin_type", queryDomain.OriginType),
 		slog.String("origin_value", queryDomain.OriginValue),
 	)
 
@@ -93,7 +93,7 @@ func DnsPodProcessSingleIP(ctx context.Context, service ProcessService, params D
 		service.Log.InfoContext(ctx, "重新查询加速域名列表 响应",
 			slog.String("domain_id", queryDomain.DomainID),
 			slog.String("domain_name", queryDomain.DomainName),
-			slog.String("record_type", queryDomain.RecordType),
+			slog.String("origin_type", queryDomain.OriginType),
 			slog.String("origin_value", queryDomain.OriginValue),
 		)
 

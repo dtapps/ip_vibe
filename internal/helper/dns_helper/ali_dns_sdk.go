@@ -97,7 +97,7 @@ func (c *AliDnsClientSdk) QueryDomain(ctx context.Context, domainName string, su
 			return QueryDomainResponse{
 				DomainID:    tea.StringValue(item.RecordId),
 				DomainName:  tea.StringValue(item.RR),
-				RecordType:  tea.StringValue(item.Type),
+				OriginType:  tea.StringValue(item.Type),
 				OriginValue: tea.StringValue(item.Value),
 			}, nil
 		}

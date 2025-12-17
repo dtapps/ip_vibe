@@ -5,8 +5,8 @@ type QueryDomainResponse struct {
 	DomainID        string // 域名ID
 	DomainName      string // 域名名称
 	DomainCname     string // 域名别名
-	RecordType      string // 记录类型
-	RecordValue     string // 记录值
+	OriginType      string // 源站类型
+	OriginValue     string // 源站值
 	OriginProtocol  string // 回源协议
 	HttpOriginPort  int    // HTTP回源端口
 	HttpsOriginPort int    // HTTPS回源端口

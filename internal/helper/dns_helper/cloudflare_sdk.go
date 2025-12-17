@@ -73,7 +73,7 @@ func (c *CloudflareClientSdk) QueryDomain(ctx context.Context, domainName string
 			return QueryDomainResponse{
 				DomainID:    item.ID,
 				DomainName:  item.Name,
-				RecordType:  string(item.Type),
+				OriginType:  string(item.Type),
 				OriginValue: item.Content,
 			}, nil
 		}

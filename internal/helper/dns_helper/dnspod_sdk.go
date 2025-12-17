@@ -96,7 +96,7 @@ func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, su
 			return QueryDomainResponse{
 				DomainID:    tea.ToString(item.RecordId),
 				DomainName:  tea.StringValue(item.Name),
-				RecordType:  tea.StringValue(item.Type),
+				OriginType:  tea.StringValue(item.Type),
 				OriginValue: tea.StringValue(item.Value),
 			}, nil
 		}

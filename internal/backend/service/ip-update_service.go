@@ -459,7 +459,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 			dns_helper.CloudflareProcessSingleIPParams{
 				ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
 				SubDomain:   firstRecord.SubDomain,
-				RecordValue: origin,
+				OriginValue: origin,
 			},
 		)
 		if err != nil {
@@ -480,7 +480,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 			dns_helper.DnsPodProcessSingleIPParams{
 				ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
 				SubDomain:   firstRecord.SubDomain,
-				RecordValue: origin,
+				OriginValue: origin,
 			},
 		)
 		if err != nil {

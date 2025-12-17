@@ -20,8 +20,8 @@ type CloudflareProcessSingleIPParams struct {
 func CloudflareProcessSingleIP(ctx context.Context, service ProcessService, params CloudflareProcessSingleIPParams) (err error) {
 
 	var platformConfig struct {
-		ApiKey     string `json:"api_key"`
-		ZoneID     string `json:"zone_id"`
+		ApiKey     string `json:"api_key"`     // API密钥
+		ZoneID     string `json:"zone_id"`     // 区域ID
 		DomainName string `json:"domain_name"` // 主域名
 	}
 	err = json.Unmarshal(params.ConfigJSON, &platformConfig)
@@ -56,7 +56,7 @@ func CloudflareProcessSingleIP(ctx context.Context, service ProcessService, para
 	service.Log.InfoContext(ctx, "查询域名记录 响应",
 		slog.String("domain_id", queryDomain.DomainID),
 		slog.String("domain_name", queryDomain.DomainName),
-		slog.String("record_type", queryDomain.RecordType),
+		slog.String("origin_type", queryDomain.OriginType),
 		slog.String("origin_value", queryDomain.OriginValue),
 	)
 
@@ -93,7 +93,7 @@ func CloudflareProcessSingleIP(ctx context.Context, service ProcessService, para
 		service.Log.InfoContext(ctx, "重新查询域名记录 响应",
 			slog.String("domain_id", queryDomain.DomainID),
 			slog.String("domain_name", queryDomain.DomainName),
-			slog.String("record_type", queryDomain.RecordType),
+			slog.String("origin_type", queryDomain.OriginType),
 			slog.String("origin_value", queryDomain.OriginValue),
 		)
 
