@@ -40,6 +40,7 @@ require (
 	go.dtapp.net/library/service/wechatqy v1.0.38
 	go.dtapp.net/library/utils/goarray v1.0.4
 	go.dtapp.net/library/utils/golog v1.0.178
+	go.dtapp.net/library/utils/gomd5 v1.0.3
 	go.dtapp.net/library/utils/gorequest v1.1.3
 	golang.org/x/net v0.48.0
 	golang.org/x/sync v0.19.0

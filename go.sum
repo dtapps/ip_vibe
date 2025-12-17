@@ -337,6 +337,8 @@ go.dtapp.net/library/utils/goarray v1.0.4 h1:2Zuk5cn/3/ZHmVRG542sOZToRmAyEhHTXGd
 go.dtapp.net/library/utils/goarray v1.0.4/go.mod h1:q5Xxi36LzMRF/noaMmCUCALf6pQQpaQMPRTzry2trCk=
 go.dtapp.net/library/utils/golog v1.0.178 h1:nWJhwMQdMBMoNw/wI4ooib2/GTru1YWCv1gjpwXa1gg=
 go.dtapp.net/library/utils/golog v1.0.178/go.mod h1:07z7/F2V7y2fAVfKwS9xTnMe6EGW7MVbbXsRW6MkXLI=
+go.dtapp.net/library/utils/gomd5 v1.0.3 h1:Q6UOM6iXfN9NqsSAdFU7VKipU68LWk4UlIj3d/2eAVo=
+go.dtapp.net/library/utils/gomd5 v1.0.3/go.mod h1:P5O08ejsOUF9ncx7+QqGbdQ4pZJWyjdVT2T6B94+/AY=
 go.dtapp.net/library/utils/gorequest v1.1.3 h1:+jUpQec5ej36l6cDjelb1TY5HMdlv7eTl65+X6RiNeI=
 go.dtapp.net/library/utils/gorequest v1.1.3/go.mod h1:JzZV7Ua74LJGmSAohh+/21UmJ6ql2dYvOICl81Amd08=
 go.opentelemetry.io/auto/sdk v1.2.1 h1:jXsnJ4Lmnqd11kwkBV2LgLoFMZKizbCi5fNZ/ipaZ64=
