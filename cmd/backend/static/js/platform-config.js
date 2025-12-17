@@ -46,6 +46,36 @@ function buildConfigPlatform() {
         domain_name: document.getElementById("tencent_eo_domain_name").value,
       };
       break;
+    case "aliyun_dns":
+      config = {
+        access_key_id: document.getElementById("aliyun_dns_access_key_id")
+          .value,
+        access_key_secret: document.getElementById(
+          "aliyun_dns_access_key_secret"
+        ).value,
+        domain_name: document.getElementById("aliyun_dns_domain_name").value,
+      };
+      break;
+    case "aliyun_esa":
+      config = {
+        access_key_id: document.getElementById("aliyun_esa_access_key_id")
+          .value,
+        access_key_secret: document.getElementById(
+          "aliyun_esa_access_key_secret"
+        ).value,
+        site_id: document.getElementById("aliyun_esa_site_id").value,
+        domain_name: document.getElementById("aliyun_esa_domain_name").value,
+      };
+      break;
+    case "baidu_dns":
+      config = {
+        access_key_id: document.getElementById("baidu_dns_access_key_id").value,
+        secret_access_key: document.getElementById(
+          "baidu_dns_secret_access_key"
+        ).value,
+        domain_name: document.getElementById("baidu_dns_domain_name").value,
+      };
+      break;
   }
 
   // 设置隐藏字段的值
@@ -100,6 +130,32 @@ async function openFormModal(id) {
         document.getElementById("tencent_eo_zone_id").value =
           config.config_json.zone_id || "";
         document.getElementById("tencent_eo_domain_name").value =
+          config.config_json.domain_name || "";
+        break;
+      case "aliyun_dns":
+        document.getElementById("aliyun_dns_access_key_id").value =
+          config.config_json.access_key_id || "";
+        document.getElementById("aliyun_dns_access_key_secret").value =
+          config.config_json.access_key_secret || "";
+        document.getElementById("aliyun_dns_domain_name").value =
+          config.config_json.domain_name || "";
+        break;
+      case "aliyun_esa":
+        document.getElementById("aliyun_esa_access_key_id").value =
+          config.config_json.access_key_id || "";
+        document.getElementById("aliyun_esa_access_key_secret").value =
+          config.config_json.access_key_secret || "";
+        document.getElementById("aliyun_esa_site_id").value =
+          config.config_json.site_id || 0;
+        document.getElementById("aliyun_esa_domain_name").value =
+          config.config_json.domain_name || "";
+        break;
+      case "baidu_dns":
+        document.getElementById("baidu_dns_access_key_id").value =
+          config.config_json.access_key_id || "";
+        document.getElementById("baidu_dns_secret_access_key").value =
+          config.config_json.secret_access_key || "";
+        document.getElementById("baidu_dns_domain_name").value =
           config.config_json.domain_name || "";
         break;
     }
