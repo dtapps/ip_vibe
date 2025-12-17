@@ -39,7 +39,7 @@ type GetCdnRecordRequest struct {
 // 创建CDN记录 请求结构
 type CreateCdnRecordRequest struct {
 	ConfigID       int64  `json:"config_id" binding:"required" jsonschema:"关联的平台配置ID"`                     // 平台配置序号
-	Domain         string `json:"domain" binding:"required" jsonschema:"域名（如 www.example.com）"`            // 域名（如 www.example.com）
+	SubDomain      string `json:"sub_domain" binding:"required" jsonschema:"子域名（如 www, blog, api）"`        // 子域名（如 www, blog, api）
 	Type           string `json:"type" binding:"required" jsonschema:"记录类型（A、AAAA等）"`                      // 记录类型（A、AAAA等）
 	OriginProtocol string `json:"origin_protocol" binding:"required" jsonschema:"回源协议（http、https、follow）"` // 回源协议（http、https、follow）
 	HTTPPort       int    `json:"http_port" binding:"required" jsonschema:"HTTP回源端口"`                      // HTTP 回源端口

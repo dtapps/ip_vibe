@@ -23,8 +23,6 @@ const (
 	FieldConfigID = "config_id"
 	// FieldRecordID holds the string denoting the record_id field in the database.
 	FieldRecordID = "record_id"
-	// FieldDomain holds the string denoting the domain field in the database.
-	FieldDomain = "domain"
 	// FieldSubDomain holds the string denoting the sub_domain field in the database.
 	FieldSubDomain = "sub_domain"
 	// FieldType holds the string denoting the type field in the database.
@@ -75,7 +73,6 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldConfigID,
 	FieldRecordID,
-	FieldDomain,
 	FieldSubDomain,
 	FieldType,
 	FieldIPGroupID,
@@ -155,11 +152,6 @@ func ByConfigID(opts ...sql.OrderTermOption) OrderOption {
 // ByRecordID orders the results by the record_id field.
 func ByRecordID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRecordID, opts...).ToFunc()
-}
-
-// ByDomain orders the results by the domain field.
-func ByDomain(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDomain, opts...).ToFunc()
 }
 
 // BySubDomain orders the results by the sub_domain field.

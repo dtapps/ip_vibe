@@ -73,12 +73,6 @@ func (_c *CDNRecordCreate) SetNillableRecordID(v *string) *CDNRecordCreate {
 	return _c
 }
 
-// SetDomain sets the "domain" field.
-func (_c *CDNRecordCreate) SetDomain(v string) *CDNRecordCreate {
-	_c.mutation.SetDomain(v)
-	return _c
-}
-
 // SetSubDomain sets the "sub_domain" field.
 func (_c *CDNRecordCreate) SetSubDomain(v string) *CDNRecordCreate {
 	_c.mutation.SetSubDomain(v)
@@ -284,9 +278,6 @@ func (_c *CDNRecordCreate) check() error {
 	if _, ok := _c.mutation.ConfigID(); !ok {
 		return &ValidationError{Name: "config_id", err: errors.New(`ent: missing required field "CDNRecord.config_id"`)}
 	}
-	if _, ok := _c.mutation.Domain(); !ok {
-		return &ValidationError{Name: "domain", err: errors.New(`ent: missing required field "CDNRecord.domain"`)}
-	}
 	if _, ok := _c.mutation.SubDomain(); !ok {
 		return &ValidationError{Name: "sub_domain", err: errors.New(`ent: missing required field "CDNRecord.sub_domain"`)}
 	}
@@ -368,10 +359,6 @@ func (_c *CDNRecordCreate) createSpec() (*CDNRecord, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.RecordID(); ok {
 		_spec.SetField(cdnrecord.FieldRecordID, field.TypeString, value)
 		_node.RecordID = value
-	}
-	if value, ok := _c.mutation.Domain(); ok {
-		_spec.SetField(cdnrecord.FieldDomain, field.TypeString, value)
-		_node.Domain = value
 	}
 	if value, ok := _c.mutation.SubDomain(); ok {
 		_spec.SetField(cdnrecord.FieldSubDomain, field.TypeString, value)
@@ -667,9 +654,6 @@ func (u *CDNRecordUpsertOne) UpdateNewValues() *CDNRecordUpsertOne {
 		}
 		if _, exists := u.create.mutation.ConfigID(); exists {
 			s.SetIgnore(cdnrecord.FieldConfigID)
-		}
-		if _, exists := u.create.mutation.Domain(); exists {
-			s.SetIgnore(cdnrecord.FieldDomain)
 		}
 		if _, exists := u.create.mutation.SubDomain(); exists {
 			s.SetIgnore(cdnrecord.FieldSubDomain)
@@ -1056,9 +1040,6 @@ func (u *CDNRecordUpsertBulk) UpdateNewValues() *CDNRecordUpsertBulk {
 			}
 			if _, exists := b.mutation.ConfigID(); exists {
 				s.SetIgnore(cdnrecord.FieldConfigID)
-			}
-			if _, exists := b.mutation.Domain(); exists {
-				s.SetIgnore(cdnrecord.FieldDomain)
 			}
 			if _, exists := b.mutation.SubDomain(); exists {
 				s.SetIgnore(cdnrecord.FieldSubDomain)

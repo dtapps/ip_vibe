@@ -36,7 +36,7 @@ type GetDnsRecordRequest struct {
 // 创建DNS记录 请求结构
 type CreateDnsRecordRequest struct {
 	ConfigID    int64  `json:"config_id" binding:"required" jsonschema:"关联的平台配置ID"`                          // 平台配置序号
-	Domain      string `json:"domain" binding:"required" jsonschema:"域名（如 www.example.com）"`                 // 域名（如 www.example.com）
+	SubDomain   string `json:"sub_domain" binding:"required" jsonschema:"子域名（如 www, blog, api）"`             // 子域名（如 www, blog, api）
 	Type        string `json:"type" binding:"required" jsonschema:"记录类型（A、AAAA、CNAME等）"`                     // 记录类型（A、AAAA、CNAME等）
 	IPGroupID   int64  `json:"ip_group_id,omitempty" jsonschema:"关联的IP组序号（与CDN记录序号二选一）"`                     // IP 组序号（与 cdn_record_id 二选一）
 	CdnRecordID int64  `json:"cdn_record_id,omitempty" jsonschema:"关联的CDN记录序号（与IP组序号二选一，一个CDN记录只能被一条DNS引用）"` // CDN记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）

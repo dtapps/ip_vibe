@@ -133,7 +133,7 @@ func (s *IpUpdateService) runDnsTask() {
 						slog.Int64("id", item.ID),
 						slog.String("record", "DNS"),
 						slog.String("type", item.Type.String()),
-						slog.String("domain", item.Domain),
+						slog.String("sub_domain", item.SubDomain),
 					)
 
 					if err = s.DnsUpdate(egCtx, newLog, item); err != nil {
@@ -161,7 +161,7 @@ func (s *IpUpdateService) runDnsTask() {
 				slog.Int64("id", item.ID),
 				slog.String("record", "DNS"),
 				slog.String("type", item.Type.String()),
-				slog.String("domain", item.Domain),
+				slog.String("sub_domain", item.SubDomain),
 			)
 
 			if err = s.DnsUpdate(ctx, newLog, item); err != nil {
@@ -226,7 +226,7 @@ func (s *IpUpdateService) runCdnTask() {
 						slog.Int64("id", item.ID),
 						slog.String("record", "CDN"),
 						slog.String("type", item.Type.String()),
-						slog.String("domain", item.Domain),
+						slog.String("sub_domain", item.SubDomain),
 					)
 
 					if err = s.CdnUpdate(egCtx, newLog, item); err != nil {
@@ -254,7 +254,7 @@ func (s *IpUpdateService) runCdnTask() {
 				slog.Int64("id", item.ID),
 				slog.String("record", "CDN"),
 				slog.String("type", item.Type.String()),
-				slog.String("domain", item.Domain),
+				slog.String("sub_domain", item.SubDomain),
 			)
 
 			if err = s.CdnUpdate(ctx, newLog, item); err != nil {
@@ -326,10 +326,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 
 		if len(origins) == 1 {
 			// 处理单IP
-			newLog.InfoContext(ctx, "处理单IP",
-				slog.String("domain_name", firstRecord.Domain),
-				slog.String("domain_origin", origins[0]),
-			)
+			newLog.InfoContext(ctx, "处理单IP")
 			// 清理不需要的端口
 			switch firstRecord.OriginProtocol {
 			case cdnrecord.OriginProtocolHTTP:
@@ -347,7 +344,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 				},
 				cdn_helper.EdgeOneProcessSingleIPParams{
 					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
-					DomainName:     firstRecord.Domain,
+					DomainName:     firstRecord.SubDomain,
 					DomainOrigin:   origins[0],
 					OriginProtocol: strings.ToUpper(firstRecord.OriginProtocol.String()),
 					HttpPort:       firstRecord.HTTPPort,
@@ -359,10 +356,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 			}
 		} else {
 			// 处理多IP
-			newLog.InfoContext(ctx, "处理多IP",
-				slog.String("domain_name", firstRecord.Domain),
-				slog.Any("domain_origins", origins),
-			)
+			newLog.InfoContext(ctx, "处理多IP")
 			// 清理不需要的端口
 			switch firstRecord.OriginProtocol {
 			case cdnrecord.OriginProtocolHTTP:
@@ -381,7 +375,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 				},
 				cdn_helper.EdgeOneProcessMultiIPParams{
 					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
-					DomainName:     firstRecord.Domain,
+					DomainName:     firstRecord.SubDomain,
 					DomainOrigins:  origins,
 					GroupName:      utils.GenerateShortIDBasedHash(firstIPGroup.ID, 10),
 					OriginProtocol: strings.ToUpper(firstRecord.OriginProtocol.String()),
@@ -463,9 +457,9 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 				Debug:    global.GvaEnv.DEBUG,
 			},
 			dns_helper.CloudflareProcessSingleIPParams{
-				ConfigJSON:   firstRecord.Edges.Config.ConfigJSON,
-				DomainName:   firstRecord.Domain,
-				DomainOrigin: origin,
+				ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
+				SubDomain:   firstRecord.SubDomain,
+				RecordValue: origin,
 			},
 		)
 		if err != nil {
@@ -484,9 +478,9 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 				Debug:    global.GvaEnv.DEBUG,
 			},
 			dns_helper.DnsPodProcessSingleIPParams{
-				ConfigJSON:   firstRecord.Edges.Config.ConfigJSON,
-				DomainName:   firstRecord.Domain,
-				DomainOrigin: origin,
+				ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
+				SubDomain:   firstRecord.SubDomain,
+				RecordValue: origin,
 			},
 		)
 		if err != nil {

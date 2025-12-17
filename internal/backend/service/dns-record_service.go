@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/dnsrecord"
+	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/helper/operation_logs_helper"
@@ -58,10 +58,8 @@ func (s *DNSRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.DNSR
 		resp.Platform = item.Edges.Config.Platform.String()
 		// 从平台配置中获取 ConfigJSON 里的 Domain
 		if item.Edges.Config.ConfigJSON != nil {
-			var configJSON struct {
-				DomainName string `json:"domain_name"`
-			}
-			if err := json.Unmarshal(item.Edges.Config.ConfigJSON, &configJSON); err == nil {
+			configJSON, err := schematype.ParsePCJODomainName(item.Edges.Config.ConfigJSON)
+			if err == nil {
 				resp.DomainName = configJSON.DomainName
 			}
 		}
@@ -145,7 +143,7 @@ func (s *DNSRecordServiceImpl) CreateDnsRecord(ctx context.Context, request *typ
 	// 创建DNS记录 (保持原始的链式设置逻辑)
 	createDnsRecord := s.db.DNSRecord.Create().
 		SetConfigID(request.ConfigID).
-		SetDomain(request.Domain).
+		SetSubDomain(request.SubDomain).
 		SetType(dnsrecord.Type(request.Type))
 	if request.IPGroupID > 0 {
 		createDnsRecord.SetIPGroupID(request.IPGroupID)
@@ -290,6 +288,7 @@ func (s *DNSRecordServiceImpl) HealthcheckDnsRecord(ctx context.Context, id int6
 	// 查询DNS记录
 	firstDnsRecord, err := s.db.DNSRecord.Query().
 		Where(dnsrecord.IDEQ(id)).
+		WithConfig().
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
@@ -305,88 +304,19 @@ func (s *DNSRecordServiceImpl) HealthcheckDnsRecord(ctx context.Context, id int6
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(10) // 最多 10 个并发 (保持原始限制)
 
-	if firstDnsRecord.Domain != "" {
+	if firstDnsRecord.SubDomain != "" {
+		// 将实体转换为响应
+		list, err := s.BuildResponse(ctx, firstDnsRecord)
+		if err != nil {
+			return nil, err
+		}
 		// 检测域名是否可通（含 DNS + HTTP + HTTPS）
 		eg.Go(func() error {
-			healthCheckResult, _ := CheckDomainHealth(egCtx, firstDnsRecord.Domain, 80, 443, []string{})
+			healthCheckResult, _ := CheckDomainHealth(egCtx, schematype.SplicingPCJODomainName(list.SubDomain, list.DomainName), 80, 443, []string{})
 			results = append(results, healthCheckResult.ToPairsForDomain())
 			return nil
 		})
 	}
-
-	// 以下注释掉的逻辑保持不变 (将 Handler 中的注释原封不动迁移)
-	/*
-		// 查询Dns的IP组
-		// firstDnsIpGroup, err := firstDnsRecord.QueryIPGroup().
-		// 	WithDevices().
-		// 	First(egCtx)
-		// if err == nil {
-		// 	for _, item := range firstDnsIpGroup.Edges.Devices {
-		// 		item := item // 创建副本以避免闭包问题
-		// 		if item.IPV4 != "" && firstDnsRecord.Type == dnsrecord.TypeA {
-		// 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
-		// 			eg.Go(func() error {
-		// 				healthCheckResult, _ := CheckIPHealth(egCtx, item.IPV4, 80, 443)
-		// 				results = append(results, healthCheckResult.ToPairsForIP())
-		// 				return nil
-		// 			})
-		// 		}
-		// 		if item.IPV6 != "" && firstDnsRecord.Type == dnsrecord.TypeAAAA {
-		// 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
-		// 			eg.Go(func() error {
-		// 				healthCheckResult, _ := CheckIPHealth(egCtx, item.IPV6, 80, 443)
-		// 				results = append(results, healthCheckResult.ToPairsForIP())
-		// 				return nil
-		// 			})
-		// 		}
-		// 	}
-		// }
-
-		// 查询CDN记录
-		// firstCdnRecord, err := firstDnsRecord.QueryCdnRecord().
-		// 	First(egCtx)
-		// if err == nil {
-		// 	if firstCdnRecord.CdnDomain != "" {
-		// 		// 检测域名是否可通（含 DNS + HTTP + HTTPS）
-		// 		eg.Go(func() error {
-		// 			healthCheckResult, _ := CheckDomainHealth(egCtx, firstCdnRecord.CdnDomain, 80, 443, []string{})
-		// 			results = append(results, healthCheckResult.ToPairsForDomain())
-		// 			return nil
-		// 		})
-		// 	}
-		// 	// 查询CDN的IP组
-		// 	firstCdnIpGroup, err := firstCdnRecord.QueryIPGroup().
-		// 		WithDevices().
-		// 		First(egCtx)
-		// 	if err == nil {
-		// 		switch firstCdnRecord.OriginProtocol {
-		// 		case cdnrecord.OriginProtocolHTTP:
-		// 			firstCdnRecord.HTTPSPort = 0
-		// 		case cdnrecord.OriginProtocolHTTPS:
-		// 			firstCdnRecord.HTTPPort = 0
-		// 		}
-		// 		for _, item := range firstCdnIpGroup.Edges.Devices {
-		// 			item := item // 创建副本以避免闭包问题
-		// 			if item.IPV4 != "" && firstCdnRecord.Type == cdnrecord.TypeA {
-		// 				// 检测 IP 是否可通过 HTTP/HTTPS 访问
-		// 				eg.Go(func() error {
-		// 					healthCheckResult, _ := CheckIPHealth(egCtx, item.IPV4, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
-		// 					results = append(results, healthCheckResult.ToPairsForIP())
-		// 					return nil
-		// 				})
-		// 			}
-		// 			if item.IPV6 != "" && firstCdnRecord.Type == cdnrecord.TypeAAAA {
-		// 				// 检测 IP 是否可通过 HTTP/HTTPS 访问
-		// 				eg.Go(func() error {
-		// 					healthCheckResult, _ := CheckIPHealth(egCtx, item.IPV6, firstCdnRecord.HTTPPort, firstCdnRecord.HTTPSPort)
-		// 					results = append(results, healthCheckResult.ToPairsForIP())
-		// 					return nil
-		// 				})
-		// 			}
-		// 		}
-		// 	}
-		// }
-	*/
 
 	if err = eg.Wait(); err != nil {
 		return nil, fmt.Errorf("DNS记录健康状态检查失败: %w", err)

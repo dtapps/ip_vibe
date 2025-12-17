@@ -29,8 +29,6 @@ type DNSRecord struct {
 	ConfigID int64 `json:"config_id,omitempty"`
 	// 平台侧记录ID
 	RecordID string `json:"record_id,omitempty"`
-	// 域名（如 www.example.com）
-	Domain string `json:"domain,omitempty"`
 	// 子域名（如 www, blog, api）
 	SubDomain string `json:"sub_domain,omitempty"`
 	// 记录类型（A、AAAA、CNAME等）
@@ -104,7 +102,7 @@ func (*DNSRecord) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case dnsrecord.FieldID, dnsrecord.FieldConfigID, dnsrecord.FieldIPGroupID, dnsrecord.FieldCdnRecordID:
 			values[i] = new(sql.NullInt64)
-		case dnsrecord.FieldRecordID, dnsrecord.FieldDomain, dnsrecord.FieldSubDomain, dnsrecord.FieldType:
+		case dnsrecord.FieldRecordID, dnsrecord.FieldSubDomain, dnsrecord.FieldType:
 			values[i] = new(sql.NullString)
 		case dnsrecord.FieldCreatedAt, dnsrecord.FieldUpdatedAt, dnsrecord.FieldLastRefreshAt:
 			values[i] = new(sql.NullTime)
@@ -152,12 +150,6 @@ func (_m *DNSRecord) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field record_id", values[i])
 			} else if value.Valid {
 				_m.RecordID = value.String
-			}
-		case dnsrecord.FieldDomain:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field domain", values[i])
-			} else if value.Valid {
-				_m.Domain = value.String
 			}
 		case dnsrecord.FieldSubDomain:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -257,9 +249,6 @@ func (_m *DNSRecord) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("record_id=")
 	builder.WriteString(_m.RecordID)
-	builder.WriteString(", ")
-	builder.WriteString("domain=")
-	builder.WriteString(_m.Domain)
 	builder.WriteString(", ")
 	builder.WriteString("sub_domain=")
 	builder.WriteString(_m.SubDomain)

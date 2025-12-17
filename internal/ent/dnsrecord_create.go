@@ -73,12 +73,6 @@ func (_c *DNSRecordCreate) SetNillableRecordID(v *string) *DNSRecordCreate {
 	return _c
 }
 
-// SetDomain sets the "domain" field.
-func (_c *DNSRecordCreate) SetDomain(v string) *DNSRecordCreate {
-	_c.mutation.SetDomain(v)
-	return _c
-}
-
 // SetSubDomain sets the "sub_domain" field.
 func (_c *DNSRecordCreate) SetSubDomain(v string) *DNSRecordCreate {
 	_c.mutation.SetSubDomain(v)
@@ -228,9 +222,6 @@ func (_c *DNSRecordCreate) check() error {
 	if _, ok := _c.mutation.ConfigID(); !ok {
 		return &ValidationError{Name: "config_id", err: errors.New(`ent: missing required field "DNSRecord.config_id"`)}
 	}
-	if _, ok := _c.mutation.Domain(); !ok {
-		return &ValidationError{Name: "domain", err: errors.New(`ent: missing required field "DNSRecord.domain"`)}
-	}
 	if _, ok := _c.mutation.SubDomain(); !ok {
 		return &ValidationError{Name: "sub_domain", err: errors.New(`ent: missing required field "DNSRecord.sub_domain"`)}
 	}
@@ -292,10 +283,6 @@ func (_c *DNSRecordCreate) createSpec() (*DNSRecord, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.RecordID(); ok {
 		_spec.SetField(dnsrecord.FieldRecordID, field.TypeString, value)
 		_node.RecordID = value
-	}
-	if value, ok := _c.mutation.Domain(); ok {
-		_spec.SetField(dnsrecord.FieldDomain, field.TypeString, value)
-		_node.Domain = value
 	}
 	if value, ok := _c.mutation.SubDomain(); ok {
 		_spec.SetField(dnsrecord.FieldSubDomain, field.TypeString, value)
@@ -534,9 +521,6 @@ func (u *DNSRecordUpsertOne) UpdateNewValues() *DNSRecordUpsertOne {
 		}
 		if _, exists := u.create.mutation.ConfigID(); exists {
 			s.SetIgnore(dnsrecord.FieldConfigID)
-		}
-		if _, exists := u.create.mutation.Domain(); exists {
-			s.SetIgnore(dnsrecord.FieldDomain)
 		}
 		if _, exists := u.create.mutation.SubDomain(); exists {
 			s.SetIgnore(dnsrecord.FieldSubDomain)
@@ -874,9 +858,6 @@ func (u *DNSRecordUpsertBulk) UpdateNewValues() *DNSRecordUpsertBulk {
 			}
 			if _, exists := b.mutation.ConfigID(); exists {
 				s.SetIgnore(dnsrecord.FieldConfigID)
-			}
-			if _, exists := b.mutation.Domain(); exists {
-				s.SetIgnore(dnsrecord.FieldDomain)
 			}
 			if _, exists := b.mutation.SubDomain(); exists {
 				s.SetIgnore(dnsrecord.FieldSubDomain)

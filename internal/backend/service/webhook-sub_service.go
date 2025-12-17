@@ -7,6 +7,7 @@ import (
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/dnsrecord"
+	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/helper/operation_logs_helper"
@@ -38,44 +39,6 @@ func NewWebhookSubService(db *ent.Client, debug bool, logHelper *operation_logs_
 	return &WebhookSubServiceImpl{db: db, debug: debug, logHelper: logHelper}
 }
 
-// getObjNameFromID 根据 ObjType 和 ObjID 查询关联对象的名称
-func (s *WebhookSubServiceImpl) getObjNameFromID(ctx context.Context, objType webhooksubscription.ObjType, objID int64) string {
-	var objName string
-	var err error
-
-	switch objType {
-	case webhooksubscription.ObjTypeCdnRecord:
-		var firstCDNRecord *ent.CDNRecord
-		firstCDNRecord, err = s.db.CDNRecord.Query().
-			Where(cdnrecord.IDEQ(objID)).
-			First(ctx)
-		if err == nil {
-			objName = firstCDNRecord.Domain
-		}
-	case webhooksubscription.ObjTypeDNSRecord:
-		var firstDNSRecord *ent.DNSRecord
-		firstDNSRecord, err = s.db.DNSRecord.Query().
-			Where(dnsrecord.IDEQ(objID)).
-			First(ctx)
-		if err == nil {
-			objName = firstDNSRecord.Domain
-		}
-	case webhooksubscription.ObjTypeDevice:
-		var firstDevice *ent.Device
-		firstDevice, err = s.db.Device.Query().
-			Where(device.IDEQ(objID)).
-			First(ctx)
-		if err == nil {
-			objName = firstDevice.Name
-		}
-	}
-
-	if err != nil && s.debug {
-		fmt.Printf("查询 ObjType: %s, ObjID: %d 的名称失败: %s\n", objType.String(), objID, err.Error())
-	}
-	return objName
-}
-
 // BuildResponse 将实体转换为响应
 func (s *WebhookSubServiceImpl) BuildResponse(ctx context.Context, item *ent.WebhookSubscription) (*types.GetWebhookSubResponse, error) {
 	resp := &types.GetWebhookSubResponse{
@@ -94,17 +57,29 @@ func (s *WebhookSubServiceImpl) BuildResponse(ctx context.Context, item *ent.Web
 		var firstCDNRecord *ent.CDNRecord
 		firstCDNRecord, err := s.db.CDNRecord.Query().
 			Where(cdnrecord.IDEQ(item.ObjID)).
+			WithConfig().
 			First(ctx)
 		if err == nil {
-			resp.ObjName = firstCDNRecord.Domain
+			configJSON, err := schematype.ParsePCJODomainName(firstCDNRecord.Edges.Config.ConfigJSON)
+			if err == nil {
+				resp.ObjName = firstCDNRecord.SubDomain + "." + configJSON.DomainName
+			} else {
+				resp.ObjName = firstCDNRecord.SubDomain
+			}
 		}
 	case webhooksubscription.ObjTypeDNSRecord:
 		var firstDNSRecord *ent.DNSRecord
 		firstDNSRecord, err := s.db.DNSRecord.Query().
 			Where(dnsrecord.IDEQ(item.ObjID)).
+			WithConfig().
 			First(ctx)
 		if err == nil {
-			resp.ObjName = firstDNSRecord.Domain
+			configJSON, err := schematype.ParsePCJODomainName(firstDNSRecord.Edges.Config.ConfigJSON)
+			if err == nil {
+				resp.ObjName = firstDNSRecord.SubDomain + "." + configJSON.DomainName
+			} else {
+				resp.ObjName = firstDNSRecord.SubDomain
+			}
 		}
 	case webhooksubscription.ObjTypeDevice:
 		var firstDevice *ent.Device

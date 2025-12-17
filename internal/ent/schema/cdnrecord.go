@@ -138,7 +138,7 @@ func (CDNRecord) Edges() []ent.Edge {
 func (CDNRecord) Indexes() []ent.Index {
 	return []ent.Index{
 		// 按域名排序
-		index.Fields("domain").
+		index.Fields("sub_domain").
 			Annotations(entsql.WithComments(true)),
 
 		// 按记录类型排序
@@ -150,9 +150,9 @@ func (CDNRecord) Indexes() []ent.Index {
 			Annotations(entsql.WithComments(true)),
 
 		// 确保一个域名存在多个相同类型的记录
-		index.Fields("domain", "type").
-			Unique().
-			Annotations(entsql.WithComments(true)),
+		// index.Fields("sub_domain", "type").
+		// 	Unique().
+		// 	Annotations(entsql.WithComments(true)),
 
 		// 按创建时间排序
 		index.Fields("created_at").

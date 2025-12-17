@@ -38,15 +38,15 @@ func init() {
 	// cdnrecord.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	cdnrecord.UpdateDefaultUpdatedAt = cdnrecordDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// cdnrecordDescHTTPPort is the schema descriptor for http_port field.
-	cdnrecordDescHTTPPort := cdnrecordFields[7].Descriptor()
+	cdnrecordDescHTTPPort := cdnrecordFields[6].Descriptor()
 	// cdnrecord.DefaultHTTPPort holds the default value on creation for the http_port field.
 	cdnrecord.DefaultHTTPPort = cdnrecordDescHTTPPort.Default.(int)
 	// cdnrecordDescHTTPSPort is the schema descriptor for https_port field.
-	cdnrecordDescHTTPSPort := cdnrecordFields[8].Descriptor()
+	cdnrecordDescHTTPSPort := cdnrecordFields[7].Descriptor()
 	// cdnrecord.DefaultHTTPSPort holds the default value on creation for the https_port field.
 	cdnrecord.DefaultHTTPSPort = cdnrecordDescHTTPSPort.Default.(int)
 	// cdnrecordDescIsActive is the schema descriptor for is_active field.
-	cdnrecordDescIsActive := cdnrecordFields[11].Descriptor()
+	cdnrecordDescIsActive := cdnrecordFields[10].Descriptor()
 	// cdnrecord.DefaultIsActive holds the default value on creation for the is_active field.
 	cdnrecord.DefaultIsActive = cdnrecordDescIsActive.Default.(bool)
 	dnsrecordMixin := schema.DNSRecord{}.Mixin()
@@ -65,7 +65,7 @@ func init() {
 	// dnsrecord.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	dnsrecord.UpdateDefaultUpdatedAt = dnsrecordDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// dnsrecordDescIsActive is the schema descriptor for is_active field.
-	dnsrecordDescIsActive := dnsrecordFields[8].Descriptor()
+	dnsrecordDescIsActive := dnsrecordFields[7].Descriptor()
 	// dnsrecord.DefaultIsActive holds the default value on creation for the is_active field.
 	dnsrecord.DefaultIsActive = dnsrecordDescIsActive.Default.(bool)
 	deviceMixin := schema.Device{}.Mixin()

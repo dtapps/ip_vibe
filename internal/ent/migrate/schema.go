@@ -15,7 +15,6 @@ var (
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录ID"},
-		{Name: "domain", Type: field.TypeString, Comment: "域名（如 www.example.com）"},
 		{Name: "sub_domain", Type: field.TypeString, Comment: "子域名（如 www, blog, api）"},
 		{Name: "type", Type: field.TypeEnum, Comment: "记录类型（A、AAAA等）", Enums: []string{"A", "AAAA"}},
 		{Name: "origin_protocol", Type: field.TypeEnum, Comment: "回源协议（http、https、follow）", Enums: []string{"http", "https", "follow"}, Default: "follow"},
@@ -36,37 +35,32 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cdn_record_ip_group_cdn_records",
-				Columns:    []*schema.Column{CdnRecordColumns[13]},
+				Columns:    []*schema.Column{CdnRecordColumns[12]},
 				RefColumns: []*schema.Column{IPGroupColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "cdn_record_platform_config_cdn_records",
-				Columns:    []*schema.Column{CdnRecordColumns[14]},
+				Columns:    []*schema.Column{CdnRecordColumns[13]},
 				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "cdnrecord_domain",
+				Name:    "cdnrecord_sub_domain",
 				Unique:  false,
 				Columns: []*schema.Column{CdnRecordColumns[4]},
 			},
 			{
 				Name:    "cdnrecord_type",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[6]},
+				Columns: []*schema.Column{CdnRecordColumns[5]},
 			},
 			{
 				Name:    "cdnrecord_is_active",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[11]},
-			},
-			{
-				Name:    "cdnrecord_domain_type",
-				Unique:  true,
-				Columns: []*schema.Column{CdnRecordColumns[4], CdnRecordColumns[6]},
+				Columns: []*schema.Column{CdnRecordColumns[10]},
 			},
 			{
 				Name:    "cdnrecord_created_at",
@@ -76,12 +70,12 @@ var (
 			{
 				Name:    "cdnrecord_config_id",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[14]},
+				Columns: []*schema.Column{CdnRecordColumns[13]},
 			},
 			{
 				Name:    "cdnrecord_ip_group_id",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[13]},
+				Columns: []*schema.Column{CdnRecordColumns[12]},
 			},
 		},
 	}
@@ -91,7 +85,6 @@ var (
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录ID"},
-		{Name: "domain", Type: field.TypeString, Comment: "域名（如 www.example.com）"},
 		{Name: "sub_domain", Type: field.TypeString, Comment: "子域名（如 www, blog, api）"},
 		{Name: "type", Type: field.TypeEnum, Comment: "记录类型（A、AAAA、CNAME等）", Enums: []string{"A", "AAAA", "CNAME"}},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
@@ -109,43 +102,38 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "dns_record_cdn_record_dns_records",
-				Columns:    []*schema.Column{DNSRecordColumns[9]},
+				Columns:    []*schema.Column{DNSRecordColumns[8]},
 				RefColumns: []*schema.Column{CdnRecordColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "dns_record_ip_group_dns_records",
-				Columns:    []*schema.Column{DNSRecordColumns[10]},
+				Columns:    []*schema.Column{DNSRecordColumns[9]},
 				RefColumns: []*schema.Column{IPGroupColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "dns_record_platform_config_dns_records",
-				Columns:    []*schema.Column{DNSRecordColumns[11]},
+				Columns:    []*schema.Column{DNSRecordColumns[10]},
 				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "dnsrecord_domain",
+				Name:    "dnsrecord_sub_domain",
 				Unique:  false,
 				Columns: []*schema.Column{DNSRecordColumns[4]},
 			},
 			{
 				Name:    "dnsrecord_type",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[6]},
+				Columns: []*schema.Column{DNSRecordColumns[5]},
 			},
 			{
 				Name:    "dnsrecord_is_active",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[7]},
-			},
-			{
-				Name:    "dnsrecord_domain_type",
-				Unique:  true,
-				Columns: []*schema.Column{DNSRecordColumns[4], DNSRecordColumns[6]},
+				Columns: []*schema.Column{DNSRecordColumns[6]},
 			},
 			{
 				Name:    "dnsrecord_created_at",
@@ -155,17 +143,17 @@ var (
 			{
 				Name:    "dnsrecord_config_id",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[11]},
+				Columns: []*schema.Column{DNSRecordColumns[10]},
 			},
 			{
 				Name:    "dnsrecord_ip_group_id",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[10]},
+				Columns: []*schema.Column{DNSRecordColumns[9]},
 			},
 			{
 				Name:    "dnsrecord_cdn_record_id",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[9]},
+				Columns: []*schema.Column{DNSRecordColumns[8]},
 			},
 		},
 	}
