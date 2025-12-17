@@ -99,7 +99,7 @@ func TencentDnsProcessSingleIP(ctx context.Context, service ProcessService, para
 
 		// 更新DNS记录
 		_ = service.Db.DNSRecord.UpdateOneID(service.RecordID).
-			SetRecordID(fmt.Sprintf("%d", queryDomain.DomainID)).
+			SetRecordID(fmt.Sprintf("%v", queryDomain.DomainID)).
 			SetLastRefreshAt(time.Now()).
 			Exec(ctx)
 

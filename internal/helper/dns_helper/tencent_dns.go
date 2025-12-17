@@ -94,7 +94,7 @@ func (c *TencentDnsClient) QueryDomain(ctx context.Context, domainName string, s
 				continue
 			}
 			return QueryDomainResponse{
-				DomainID:    tea.ToString(item.RecordId),
+				DomainID:    cast.ToString(*item.RecordId),
 				DomainName:  tea.StringValue(item.Name),
 				OriginType:  tea.StringValue(item.Type),
 				OriginValue: tea.StringValue(item.Value),
