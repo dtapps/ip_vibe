@@ -22,7 +22,7 @@ type AliyunEsaClient struct {
 	client     *esa20240910.Client
 }
 
-func NewAliyunEsaClient(accessKeyID string, accessKeySecret string, siteID int64) (*AliyunEsaClient, error) {
+func NewAliyunEsaClient(ctx context.Context, accessKeyID string, accessKeySecret string, siteID int64) (*AliyunEsaClient, error) {
 
 	var err error
 

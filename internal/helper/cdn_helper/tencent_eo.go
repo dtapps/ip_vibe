@@ -73,12 +73,11 @@ func (c *TencentEOClient) QueryDomain(ctx context.Context, domainName string, su
 	requestParams.ZoneId = common.StringPtr(c.config.ZoneID)
 	requestParams.Offset = common.Int64Ptr(0)
 	requestParams.Limit = common.Int64Ptr(200)
-	requestParams.Filters = []*teo.AdvancedFilter{
-		&teo.AdvancedFilter{
-			Name:   common.StringPtr("domain-name"),
-			Values: common.StringPtrs([]string{fullDomain}),
-		},
-	}
+	requestParams.Filters = make([]*teo.AdvancedFilter, 0)
+	requestParams.Filters = append(requestParams.Filters, &teo.AdvancedFilter{
+		Name:   common.StringPtr("domain-name"),
+		Values: common.StringPtrs([]string{fullDomain}),
+	})
 	response, err := c.client.DescribeAccelerationDomains(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
 		return EdgeOneQueryDomainResponse{}, fmt.Errorf("API错误: %w", err)
@@ -213,12 +212,11 @@ func (c *TencentEOClient) QueryOriginGroup(ctx context.Context, originGroupName 
 	requestParams.ZoneId = common.StringPtr(c.config.ZoneID) // 站点ID
 	requestParams.Offset = common.Uint64Ptr(0)               // 分页查询偏移量
 	requestParams.Limit = common.Uint64Ptr(1000)             // 分页查询限制数目
-	requestParams.Filters = []*teo.AdvancedFilter{
-		&teo.AdvancedFilter{
-			Name:   common.StringPtr("origin-group-name"), // 按照源站组名称进行过滤
-			Values: common.StringPtrs([]string{originGroupName}),
-		},
-	}
+	requestParams.Filters = make([]*teo.AdvancedFilter, 0)
+	requestParams.Filters = append(requestParams.Filters, &teo.AdvancedFilter{
+		Name:   common.StringPtr("origin-group-name"), // 按照源站组名称进行过滤
+		Values: common.StringPtrs([]string{originGroupName}),
+	})
 	response, err := c.client.DescribeOriginGroup(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
 		return EdgeOneQueryOriginGroupResponse{}, fmt.Errorf("API错误: %w", err)

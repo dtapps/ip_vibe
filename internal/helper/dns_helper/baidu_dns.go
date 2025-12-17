@@ -19,7 +19,7 @@ type BaiduDnsClient struct {
 	client *dns.Client
 }
 
-func NewBaiduDnsClient(accessKeyID string, secretAccessKey string) (*BaiduDnsClient, error) {
+func NewBaiduDnsClient(ctx context.Context, accessKeyID string, secretAccessKey string) (*BaiduDnsClient, error) {
 
 	var err error
 

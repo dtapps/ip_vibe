@@ -22,7 +22,7 @@ type AliyunDnsClient struct {
 	client     *alidns20150109.Client
 }
 
-func NewAliyunDnsClient(accessKeyID string, accessKeySecret string) (*AliyunDnsClient, error) {
+func NewAliyunDnsClient(ctx context.Context, accessKeyID string, accessKeySecret string) (*AliyunDnsClient, error) {
 
 	var err error
 
@@ -72,12 +72,11 @@ func (c *AliyunDnsClient) QueryDomain(ctx context.Context, domainName string, su
 	}
 
 	// 请求
-	requestParams := &alidns20150109.DescribeDomainRecordsRequest{
-		Lang:       tea.String(c.config.Lang), // 设置请求和接收消息的语言类型
-		SearchMode: tea.String("COMBINATION"), // 搜索模式
-	}
-	requestParams.DomainName = tea.String(domainName) // 域名名称
-	requestParams.RRKeyWord = tea.String(subDomain)   // 主机记录的关键字
+	requestParams := &alidns20150109.DescribeDomainRecordsRequest{}
+	requestParams.Lang = tea.String(c.config.Lang)       // 设置请求和接收消息的语言类型
+	requestParams.SearchMode = tea.String("COMBINATION") // 搜索模式
+	requestParams.DomainName = tea.String(domainName)    // 域名名称
+	requestParams.RRKeyWord = tea.String(subDomain)      // 主机记录的关键字
 	if recordType != "" {
 		requestParams.TypeKeyWord = tea.String(recordType) // 解析类型的关键字
 	}
@@ -120,9 +119,8 @@ func (c *AliyunDnsClient) CreateDomain(ctx context.Context, domainName string, s
 	}
 
 	// 请求
-	requestParams := &alidns20150109.AddDomainRecordRequest{
-		Lang: tea.String(c.config.Lang), // 设置请求和接收消息的语言类型
-	}
+	requestParams := &alidns20150109.AddDomainRecordRequest{}
+	requestParams.Lang = tea.String(c.config.Lang)    // 设置请求和接收消息的语言类型
 	requestParams.DomainName = tea.String(domainName) // 域名名称
 	requestParams.RR = tea.String(subDomain)          // 主机记录
 	requestParams.Type = tea.String(recordType)       // 解析记录类型
@@ -153,13 +151,12 @@ func (c *AliyunDnsClient) UpdateDomain(ctx context.Context, domainID string, dom
 	}
 
 	// 请求
-	requestParams := &alidns20150109.UpdateDomainRecordRequest{
-		Lang: tea.String(c.config.Lang), // 设置请求和接收消息的语言类型
-	}
-	requestParams.RecordId = tea.String(domainID) // 解析记录的ID
-	requestParams.RR = tea.String(subDomain)      // 主机记录
-	requestParams.Type = tea.String(recordType)   // 解析记录类型
-	requestParams.Value = tea.String(originValue) // 记录值
+	requestParams := &alidns20150109.UpdateDomainRecordRequest{}
+	requestParams.Lang = tea.String(c.config.Lang) // 设置请求和接收消息的语言类型
+	requestParams.RecordId = tea.String(domainID)  // 解析记录的ID
+	requestParams.RR = tea.String(subDomain)       // 主机记录
+	requestParams.Type = tea.String(recordType)    // 解析记录类型
+	requestParams.Value = tea.String(originValue)  // 记录值
 	_, err = c.client.UpdateDomainRecord(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
