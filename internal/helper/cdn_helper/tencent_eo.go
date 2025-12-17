@@ -12,7 +12,7 @@ import (
 	teo "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901"
 )
 
-type EdgeOneClientSdk struct {
+type TencentEOClient struct {
 	config struct {
 		SecretID  string // 密钥ID
 		SecretKey string // 密钥密钥
@@ -25,11 +25,11 @@ type EdgeOneClientSdk struct {
 
 // 边缘安全加速平台 EO
 // https://cloud.tencent.com/document/product/1552
-func NewEdgeOneClientSdk(ctx context.Context, secretID string, secretKey string, zoneID string) (*EdgeOneClientSdk, error) {
+func NewTencentEOClient(ctx context.Context, secretID string, secretKey string, zoneID string) (*TencentEOClient, error) {
 
 	var err error
 
-	c := &EdgeOneClientSdk{}
+	c := &TencentEOClient{}
 	c.config.SecretID = secretID
 	c.config.SecretKey = secretKey
 	c.config.ZoneID = zoneID
@@ -54,7 +54,7 @@ func NewEdgeOneClientSdk(ctx context.Context, secretID string, secretKey string,
 }
 
 // 设置调试模式
-func (c *EdgeOneClientSdk) SetDebug(debug bool) *EdgeOneClientSdk {
+func (c *TencentEOClient) SetDebug(debug bool) *TencentEOClient {
 	c.client.WithDebug(debug)
 	return c
 }
@@ -63,7 +63,7 @@ func (c *EdgeOneClientSdk) SetDebug(debug bool) *EdgeOneClientSdk {
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeAccelerationDomains
 // domainName: 主域名
 // subDomain: 子域名
-func (c *EdgeOneClientSdk) QueryDomain(ctx context.Context, domainName string, subDomain string) (EdgeOneQueryDomainResponse, error) {
+func (c *TencentEOClient) QueryDomain(ctx context.Context, domainName string, subDomain string) (EdgeOneQueryDomainResponse, error) {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	fullDomain, subDomain, domainName := utils.GetCdnDomainParts(subDomain, domainName)
@@ -115,7 +115,7 @@ func (c *EdgeOneClientSdk) QueryDomain(ctx context.Context, domainName string, s
 // originProtocol: follow = 遵循源站协议、http = HTTP 协议、https = HTTPS 协议
 // httpPort: HTTP回源端口
 // httpsPort: HTTPS回源端口
-func (c *EdgeOneClientSdk) CreateDomain(ctx context.Context, domainName string, subDomain string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
+func (c *TencentEOClient) CreateDomain(ctx context.Context, domainName string, subDomain string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	fullDomain, subDomain, domainName := utils.GetCdnDomainParts(subDomain, domainName)
@@ -164,7 +164,7 @@ func (c *EdgeOneClientSdk) CreateDomain(ctx context.Context, domainName string, 
 // originProtocol: follow = 遵循源站协议、http = HTTP 协议、https = HTTPS 协议
 // httpPort: HTTP回源端口
 // httpsPort: HTTPS回源端口
-func (c *EdgeOneClientSdk) UpdateDomain(ctx context.Context, domainName string, subDomain string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
+func (c *TencentEOClient) UpdateDomain(ctx context.Context, domainName string, subDomain string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	fullDomain, subDomain, domainName := utils.GetCdnDomainParts(subDomain, domainName)
@@ -206,7 +206,7 @@ func (c *EdgeOneClientSdk) UpdateDomain(ctx context.Context, domainName string, 
 // 获取源站组列表
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeOriginGroup
 // domain: 源站组名称
-func (c *EdgeOneClientSdk) QueryOriginGroup(ctx context.Context, originGroupName string) (EdgeOneQueryOriginGroupResponse, error) {
+func (c *TencentEOClient) QueryOriginGroup(ctx context.Context, originGroupName string) (EdgeOneQueryOriginGroupResponse, error) {
 
 	// 请求
 	requestParams := teo.NewDescribeOriginGroupRequest()
@@ -249,7 +249,7 @@ func (c *EdgeOneClientSdk) QueryOriginGroup(ctx context.Context, originGroupName
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=CreateOriginGroup
 // domain: 源站组名称
 // origins: 源站组IP列表
-func (c *EdgeOneClientSdk) CreateOriginGroup(ctx context.Context, name string, origins []string) error {
+func (c *TencentEOClient) CreateOriginGroup(ctx context.Context, name string, origins []string) error {
 
 	// 请求
 	requestParams := teo.NewCreateOriginGroupRequest()
@@ -278,7 +278,7 @@ func (c *EdgeOneClientSdk) CreateOriginGroup(ctx context.Context, name string, o
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=ModifyOriginGroup
 // domain: 源站组ID
 // origins: 源站组IP列表
-func (c *EdgeOneClientSdk) UpdateOriginGroup(ctx context.Context, groupId string, origins []string) error {
+func (c *TencentEOClient) UpdateOriginGroup(ctx context.Context, groupId string, origins []string) error {
 
 	records := []map[string]any{}
 	for _, v := range origins {

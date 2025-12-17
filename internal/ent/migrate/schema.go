@@ -420,7 +420,7 @@ var (
 		{Name: "capability", Type: field.TypeEnum, Comment: "平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）", Enums: []string{"dns", "cdn", "all"}, Default: "all"},
 		{Name: "name", Type: field.TypeString, Comment: "平台配置名称"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "平台配置描述"},
-		{Name: "platform", Type: field.TypeEnum, Comment: "平台类型（edgeone / cloudflare / dnspod …）", Enums: []string{"cloudflare", "edgeone", "dnspod"}},
+		{Name: "platform", Type: field.TypeEnum, Comment: "平台类型（edgeone / cloudflare / dnspod …）", Enums: []string{"cloudflare", "edgeone", "dnspod", "tencent_dns", "tencent_eo", "aliyun_dns", "aliyun_cdn", "aliyun_esa", "baidu_dns"}},
 		{Name: "config_json", Type: field.TypeJSON, Nullable: true, Comment: "平台密钥等敏感信息（JSON）"},
 	}
 	// PlatformConfigTable holds the schema information for the "platform_config" table.

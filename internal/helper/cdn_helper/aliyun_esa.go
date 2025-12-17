@@ -11,7 +11,7 @@ import (
 	credential "github.com/aliyun/credentials-go/credentials"
 )
 
-type EdgeSecurityAccelerationClientSdk struct {
+type AliyunEsaClient struct {
 	config struct {
 		AccessKeyID     string // 密钥ID
 		AccessKeySecret string // 密钥密钥
@@ -22,11 +22,11 @@ type EdgeSecurityAccelerationClientSdk struct {
 	client     *esa20240910.Client
 }
 
-func NewEdgeSecurityAccelerationClientSdk(accessKeyID string, accessKeySecret string, siteID int64) (*EdgeSecurityAccelerationClientSdk, error) {
+func NewAliyunEsaClient(accessKeyID string, accessKeySecret string, siteID int64) (*AliyunEsaClient, error) {
 
 	var err error
 
-	c := &EdgeSecurityAccelerationClientSdk{}
+	c := &AliyunEsaClient{}
 	c.config.AccessKeyID = accessKeyID
 	c.config.AccessKeySecret = accessKeySecret
 	c.config.SiteID = siteID
@@ -53,7 +53,7 @@ func NewEdgeSecurityAccelerationClientSdk(accessKeyID string, accessKeySecret st
 }
 
 // 设置调试模式
-func (c *EdgeSecurityAccelerationClientSdk) SetDebug(debug bool) *EdgeSecurityAccelerationClientSdk {
+func (c *AliyunEsaClient) SetDebug(debug bool) *AliyunEsaClient {
 	// c.client.WithDebug(debug)
 	return c
 }
@@ -62,7 +62,7 @@ func (c *EdgeSecurityAccelerationClientSdk) SetDebug(debug bool) *EdgeSecurityAc
 // https://next.api.aliyun.com/api/ESA/2024-09-10/ListRecords
 // domainName: 主域名
 // subDomain: 子域名
-func (c *EdgeSecurityAccelerationClientSdk) QueryDomain(ctx context.Context, domainName string, subDomain string) (EdgeSecurityAccelerationResponseQueryDomain, error) {
+func (c *AliyunEsaClient) QueryDomain(ctx context.Context, domainName string, subDomain string) (EdgeSecurityAccelerationResponseQueryDomain, error) {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	fullDomain, subDomain, domainName := utils.GetCdnDomainParts(subDomain, domainName)
@@ -106,7 +106,7 @@ func (c *EdgeSecurityAccelerationClientSdk) QueryDomain(ctx context.Context, dom
 // originProtocol: follow = 遵循源站协议、http = HTTP 协议、https = HTTPS 协议
 // httpPort: HTTP回源端口
 // httpsPort: HTTPS回源端口
-func (c *EdgeSecurityAccelerationClientSdk) CreateDomain(ctx context.Context, domainName string, subDomain string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
+func (c *AliyunEsaClient) CreateDomain(ctx context.Context, domainName string, subDomain string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	fullDomain, subDomain, domainName := utils.GetCdnDomainParts(subDomain, domainName)
@@ -140,7 +140,7 @@ func (c *EdgeSecurityAccelerationClientSdk) CreateDomain(ctx context.Context, do
 // originProtocol: follow = 遵循源站协议、http = HTTP 协议、https = HTTPS 协议
 // httpPort: HTTP回源端口
 // httpsPort: HTTPS回源端口
-func (c *EdgeSecurityAccelerationClientSdk) UpdateDomain(ctx context.Context, recordId int64, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
+func (c *AliyunEsaClient) UpdateDomain(ctx context.Context, recordId int64, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
 
 	// 请求
 	requestParams := &esa20240910.UpdateRecordRequest{}

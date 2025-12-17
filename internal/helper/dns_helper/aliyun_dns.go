@@ -11,7 +11,7 @@ import (
 	credential "github.com/aliyun/credentials-go/credentials"
 )
 
-type AliDnsClientSdk struct {
+type AliyunDnsClient struct {
 	config struct {
 		Lang            string // 语言类型
 		AccessKeyID     string // 密钥ID
@@ -22,11 +22,11 @@ type AliDnsClientSdk struct {
 	client     *alidns20150109.Client
 }
 
-func NewAliDnsClientSdk(accessKeyID string, accessKeySecret string) (*AliDnsClientSdk, error) {
+func NewAliyunDnsClient(accessKeyID string, accessKeySecret string) (*AliyunDnsClient, error) {
 
 	var err error
 
-	c := &AliDnsClientSdk{}
+	c := &AliyunDnsClient{}
 	c.config.Lang = "zh"
 	c.config.AccessKeyID = accessKeyID
 	c.config.AccessKeySecret = accessKeySecret
@@ -53,7 +53,7 @@ func NewAliDnsClientSdk(accessKeyID string, accessKeySecret string) (*AliDnsClie
 }
 
 // 设置调试模式
-func (c *AliDnsClientSdk) SetDebug(debug bool) *AliDnsClientSdk {
+func (c *AliyunDnsClient) SetDebug(debug bool) *AliyunDnsClient {
 	// c.client.WithDebug(debug)
 	return c
 }
@@ -63,7 +63,7 @@ func (c *AliDnsClientSdk) SetDebug(debug bool) *AliDnsClientSdk {
 // domainName: 主域名
 // subDomain: 子域名
 // originValue: 源站地址
-func (c *AliDnsClientSdk) QueryDomain(ctx context.Context, domainName string, subDomain string, originValue string) (QueryDomainResponse, error) {
+func (c *AliyunDnsClient) QueryDomain(ctx context.Context, domainName string, subDomain string, originValue string) (QueryDomainResponse, error) {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
@@ -111,7 +111,7 @@ func (c *AliDnsClientSdk) QueryDomain(ctx context.Context, domainName string, su
 // domainName: 主域名
 // subDomain: 子域名
 // originValue: 源站地址
-func (c *AliDnsClientSdk) CreateDomain(ctx context.Context, domainName string, subDomain string, originValue string) error {
+func (c *AliyunDnsClient) CreateDomain(ctx context.Context, domainName string, subDomain string, originValue string) error {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
@@ -144,7 +144,7 @@ func (c *AliDnsClientSdk) CreateDomain(ctx context.Context, domainName string, s
 // domainName: 主域名
 // subDomain: 子域名
 // originValue: 源站地址
-func (c *AliDnsClientSdk) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, originValue string) error {
+func (c *AliyunDnsClient) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, originValue string) error {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)

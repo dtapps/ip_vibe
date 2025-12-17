@@ -39,7 +39,7 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 	}
 
 	// 初始化客户端
-	client, err := NewEdgeOneClientSdk(
+	client, err := NewTencentEOClient(
 		ctx,
 		platformConfig.SecretID,
 		platformConfig.SecretKey,
@@ -232,7 +232,7 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 	}
 
 	// 初始化客户端
-	client, err := NewEdgeOneClientSdk(
+	client, err := NewTencentEOClient(
 		ctx,
 		platformConfig.SecretID,
 		platformConfig.SecretKey,

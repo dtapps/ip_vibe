@@ -30,7 +30,7 @@ func DnsPodProcessSingleIP(ctx context.Context, service ProcessService, params D
 	}
 
 	// 初始化客户端
-	client, err := NewDnsPodClientSdk(
+	client, err := NewTencentDnsClient(
 		ctx,
 		platformConfig.SecretID,
 		platformConfig.SecretKey,

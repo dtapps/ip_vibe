@@ -10,7 +10,7 @@ import (
 	"github.com/cloudflare/cloudflare-go/v6/option"
 )
 
-type CloudflareClientSdk struct {
+type CloudflareClient struct {
 	config struct {
 		ApiKey string // API 密钥
 		ZoneID string // 站点 ID
@@ -21,9 +21,9 @@ type CloudflareClientSdk struct {
 
 // Cloudflare
 // https://developers.cloudflare.com/api/go/
-func NewCloudflareClientSdk(ctx context.Context, apiKey string, zoneID string) (c *CloudflareClientSdk, err error) {
+func NewCloudflareClient(ctx context.Context, apiKey string, zoneID string) (c *CloudflareClient, err error) {
 
-	c = &CloudflareClientSdk{}
+	c = &CloudflareClient{}
 	c.config.ApiKey = apiKey
 	c.config.ZoneID = zoneID
 
@@ -35,7 +35,7 @@ func NewCloudflareClientSdk(ctx context.Context, apiKey string, zoneID string) (
 }
 
 // 设置调试模式
-func (c *CloudflareClientSdk) SetDebug(debug bool) *CloudflareClientSdk {
+func (c *CloudflareClient) SetDebug(debug bool) *CloudflareClient {
 	// c.client.WithDebug()
 	return c
 }
@@ -45,7 +45,7 @@ func (c *CloudflareClientSdk) SetDebug(debug bool) *CloudflareClientSdk {
 // domainName: 主域名
 // subDomain: 子域名
 // originValue: 源站地址
-func (c *CloudflareClientSdk) QueryDomain(ctx context.Context, domainName string, subDomain string, originValue string) (QueryDomainResponse, error) {
+func (c *CloudflareClient) QueryDomain(ctx context.Context, domainName string, subDomain string, originValue string) (QueryDomainResponse, error) {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	fullDomain, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
@@ -87,7 +87,7 @@ func (c *CloudflareClientSdk) QueryDomain(ctx context.Context, domainName string
 // domainName: 主域名
 // subDomain: 子域名
 // originValue: 源站地址
-func (c *CloudflareClientSdk) CreateDomain(ctx context.Context, domainName string, subDomain string, originValue string) error {
+func (c *CloudflareClient) CreateDomain(ctx context.Context, domainName string, subDomain string, originValue string) error {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	fullDomain, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
@@ -117,7 +117,7 @@ func (c *CloudflareClientSdk) CreateDomain(ctx context.Context, domainName strin
 // domainName: 主域名
 // subDomain: 子域名
 // originValue: 源站地址
-func (c *CloudflareClientSdk) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, originValue string) error {
+func (c *CloudflareClient) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, originValue string) error {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	fullDomain, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)

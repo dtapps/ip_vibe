@@ -117,6 +117,12 @@ const (
 	PlatformCloudflare Platform = "cloudflare"
 	PlatformEdgeone    Platform = "edgeone"
 	PlatformDnspod     Platform = "dnspod"
+	PlatformTencentDNS Platform = "tencent_dns"
+	PlatformTencentEo  Platform = "tencent_eo"
+	PlatformAliyunDNS  Platform = "aliyun_dns"
+	PlatformAliyunCdn  Platform = "aliyun_cdn"
+	PlatformAliyunEsa  Platform = "aliyun_esa"
+	PlatformBaiduDNS   Platform = "baidu_dns"
 )
 
 func (pl Platform) String() string {
@@ -126,7 +132,7 @@ func (pl Platform) String() string {
 // PlatformValidator is a validator for the "platform" field enum values. It is called by the builders before save.
 func PlatformValidator(pl Platform) error {
 	switch pl {
-	case PlatformCloudflare, PlatformEdgeone, PlatformDnspod:
+	case PlatformCloudflare, PlatformEdgeone, PlatformDnspod, PlatformTencentDNS, PlatformTencentEo, PlatformAliyunDNS, PlatformAliyunCdn, PlatformAliyunEsa, PlatformBaiduDNS:
 		return nil
 	default:
 		return fmt.Errorf("platformconfig: invalid enum value for platform field: %q", pl)

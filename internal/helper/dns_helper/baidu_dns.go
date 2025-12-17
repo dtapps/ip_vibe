@@ -10,7 +10,7 @@ import (
 	"github.com/baidubce/bce-sdk-go/util"
 )
 
-type BaiduDnsClientSdk struct {
+type BaiduDnsClient struct {
 	config struct {
 		AccessKeyID     string // 密钥ID
 		SecretAccessKey string // 密钥密钥
@@ -19,11 +19,11 @@ type BaiduDnsClientSdk struct {
 	client *dns.Client
 }
 
-func NewBaiduDnsClientSdk(accessKeyID string, secretAccessKey string) (*BaiduDnsClientSdk, error) {
+func NewBaiduDnsClient(accessKeyID string, secretAccessKey string) (*BaiduDnsClient, error) {
 
 	var err error
 
-	c := &BaiduDnsClientSdk{}
+	c := &BaiduDnsClient{}
 	c.config.AccessKeyID = accessKeyID
 	c.config.SecretAccessKey = secretAccessKey
 
@@ -36,7 +36,7 @@ func NewBaiduDnsClientSdk(accessKeyID string, secretAccessKey string) (*BaiduDns
 }
 
 // 设置调试模式
-func (c *BaiduDnsClientSdk) SetDebug(debug bool) *BaiduDnsClientSdk {
+func (c *BaiduDnsClient) SetDebug(debug bool) *BaiduDnsClient {
 	// c.client.WithDebug(debug)
 	return c
 }
@@ -46,7 +46,7 @@ func (c *BaiduDnsClientSdk) SetDebug(debug bool) *BaiduDnsClientSdk {
 // domainName: 主域名
 // subDomain: 子域名
 // originValue: 源站地址
-func (c *BaiduDnsClientSdk) QueryDomain(ctx context.Context, domainName string, subDomain string, originValue string) (QueryDomainResponse, error) {
+func (c *BaiduDnsClient) QueryDomain(ctx context.Context, domainName string, subDomain string, originValue string) (QueryDomainResponse, error) {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
@@ -91,7 +91,7 @@ func (c *BaiduDnsClientSdk) QueryDomain(ctx context.Context, domainName string, 
 // domainName: 主域名
 // subDomain: 子域名
 // originValue: 源站地址
-func (c *BaiduDnsClientSdk) CreateDomain(ctx context.Context, domainName string, subDomain string, originValue string) error {
+func (c *BaiduDnsClient) CreateDomain(ctx context.Context, domainName string, subDomain string, originValue string) error {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
@@ -124,7 +124,7 @@ func (c *BaiduDnsClientSdk) CreateDomain(ctx context.Context, domainName string,
 // domainName: 主域名
 // subDomain: 子域名
 // originValue: 源站地址
-func (c *BaiduDnsClientSdk) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, originValue string) error {
+func (c *BaiduDnsClient) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, originValue string) error {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)

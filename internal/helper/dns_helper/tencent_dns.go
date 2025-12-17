@@ -13,7 +13,7 @@ import (
 	dnspod "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323"
 )
 
-type DnsPodClientSdk struct {
+type TencentDnsClient struct {
 	config struct {
 		SecretID  string // 密钥ID
 		SecretKey string // 密钥密钥
@@ -27,11 +27,11 @@ type DnsPodClientSdk struct {
 // DnsPod
 // https://cloud.tencent.com/document/product/302
 // https://cloud.tencent.com/document/product/1427
-func NewDnsPodClientSdk(ctx context.Context, secretID string, secretKey string) (*DnsPodClientSdk, error) {
+func NewTencentDnsClient(ctx context.Context, secretID string, secretKey string) (*TencentDnsClient, error) {
 
 	var err error
 
-	c := &DnsPodClientSdk{}
+	c := &TencentDnsClient{}
 	c.config.SecretID = secretID
 	c.config.SecretKey = secretKey
 
@@ -55,7 +55,7 @@ func NewDnsPodClientSdk(ctx context.Context, secretID string, secretKey string) 
 }
 
 // 设置调试模式
-func (c *DnsPodClientSdk) SetDebug(debug bool) *DnsPodClientSdk {
+func (c *TencentDnsClient) SetDebug(debug bool) *TencentDnsClient {
 	c.client.WithDebug(debug)
 	return c
 }
@@ -65,7 +65,7 @@ func (c *DnsPodClientSdk) SetDebug(debug bool) *DnsPodClientSdk {
 // domainName: 主域名
 // subDomain: 子域名
 // originValue: 源站地址
-func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, subDomain string, originValue string) (QueryDomainResponse, error) {
+func (c *TencentDnsClient) QueryDomain(ctx context.Context, domainName string, subDomain string, originValue string) (QueryDomainResponse, error) {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
@@ -110,7 +110,7 @@ func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, su
 // domainName: 主域名
 // subDomain: 子域名
 // originValue: 源站地址
-func (c *DnsPodClientSdk) CreateDomain(ctx context.Context, domainName string, subDomain string, originValue string) error {
+func (c *TencentDnsClient) CreateDomain(ctx context.Context, domainName string, subDomain string, originValue string) error {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
@@ -142,7 +142,7 @@ func (c *DnsPodClientSdk) CreateDomain(ctx context.Context, domainName string, s
 // domainName: 主域名
 // subDomain: 子域名
 // originValue: 源站地址
-func (c *DnsPodClientSdk) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, originValue string) error {
+func (c *TencentDnsClient) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, originValue string) error {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
 	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
