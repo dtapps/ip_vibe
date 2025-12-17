@@ -61,14 +61,12 @@ func (c *EdgeOneClientSdk) SetDebug(debug bool) *EdgeOneClientSdk {
 
 // 查询加速域名列表
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeAccelerationDomains
-// domainName: 域名名称
-func (c *EdgeOneClientSdk) QueryDomain(ctx context.Context, domainName string) (EdgeOneQueryDomainResponse, error) {
+// domainName: 主域名
+// subDomain: 子域名
+func (c *EdgeOneClientSdk) QueryDomain(ctx context.Context, domainName string, subDomain string) (QueryDomainResponse, error) {
 
-	// 解析域名
-	domainFull, _, _, err := utils.ExtractDomainParts(domainName)
-	if err != nil {
-		return EdgeOneQueryDomainResponse{}, err
-	}
+	// 提取域名中的主域名和子域，同时判断记录类型
+	fullDomain, subDomain, domainName := utils.GetCdnDomainParts(subDomain, domainName)
 
 	// 请求
 	requestParams := teo.NewDescribeAccelerationDomainsRequest()
@@ -78,25 +76,25 @@ func (c *EdgeOneClientSdk) QueryDomain(ctx context.Context, domainName string) (
 	requestParams.Filters = []*teo.AdvancedFilter{
 		&teo.AdvancedFilter{
 			Name:   common.StringPtr("domain-name"),
-			Values: common.StringPtrs([]string{domainFull}),
+			Values: common.StringPtrs([]string{fullDomain}),
 		},
 	}
 	response, err := c.client.DescribeAccelerationDomains(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return EdgeOneQueryDomainResponse{}, fmt.Errorf("API错误: %w", err)
+		return QueryDomainResponse{}, fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
-		return EdgeOneQueryDomainResponse{}, err
+		return QueryDomainResponse{}, err
 	}
 
 	for _, item := range response.Response.AccelerationDomains {
-		if *item.DomainName == domainFull {
-			return EdgeOneQueryDomainResponse{
+		if *item.DomainName == fullDomain {
+			return QueryDomainResponse{
 				// DomainID:        *item.DomainId,
 				DomainName:      *item.DomainName,
 				DomainCname:     *item.Cname,
-				DomainType:      *item.OriginDetail.OriginType,
-				DomainOrigin:    *item.OriginDetail.Origin,
+				RecordType:      *item.OriginDetail.OriginType,
+				RecordValue:     *item.OriginDetail.Origin,
 				OriginProtocol:  *item.OriginProtocol,
 				HttpOriginPort:  int(*item.HttpOriginPort),
 				HttpsOriginPort: int(*item.HttpsOriginPort),
@@ -104,25 +102,23 @@ func (c *EdgeOneClientSdk) QueryDomain(ctx context.Context, domainName string) (
 		}
 	}
 
-	return EdgeOneQueryDomainResponse{}, fmt.Errorf("未找到记录")
+	return QueryDomainResponse{}, fmt.Errorf("未找到记录")
 }
 
 // 创建加速域名
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=CreateAccelerationDomain
-// domainName: 域名名称
+// domainName: 主域名
+// subDomain: 子域名
 // originType: IP_DOMAIN = IPV4、IPV6 或域名类型源站
 // originType: ORIGIN_GROUP = 源站组类型源站
 // originValue: 源站地址或源站组ID
 // originProtocol: follow = 遵循源站协议、http = HTTP 协议、https = HTTPS 协议
 // httpPort: HTTP回源端口
 // httpsPort: HTTPS回源端口
-func (c *EdgeOneClientSdk) CreateDomain(ctx context.Context, domainName string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
+func (c *EdgeOneClientSdk) CreateDomain(ctx context.Context, domainName string, subDomain string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
 
-	// 解析域名
-	domainFull, _, _, err := utils.ExtractDomainParts(domainName)
-	if err != nil {
-		return err
-	}
+	// 提取域名中的主域名和子域，同时判断记录类型
+	fullDomain, subDomain, domainName := utils.GetCdnDomainParts(subDomain, domainName)
 
 	// 转大写
 	originProtocol = strings.ToUpper(originProtocol)
@@ -138,7 +134,7 @@ func (c *EdgeOneClientSdk) CreateDomain(ctx context.Context, domainName string, 
 	// 请求
 	requestParams := teo.NewCreateAccelerationDomainRequest()
 	requestParams.ZoneId = common.StringPtr(c.config.ZoneID) // 加速域名所属站点 ID
-	requestParams.DomainName = common.StringPtr(domainFull)  // 加速域名
+	requestParams.DomainName = common.StringPtr(fullDomain)  // 加速域名
 	requestParams.OriginInfo = &teo.OriginInfo{
 		OriginType: common.StringPtr(originType),  // 源站类型
 		Origin:     common.StringPtr(originValue), // 源站地址
@@ -147,7 +143,7 @@ func (c *EdgeOneClientSdk) CreateDomain(ctx context.Context, domainName string, 
 	requestParams.HttpOriginPort = common.Uint64Ptr(uint64(httpPort))   // HTTP回源端口
 	requestParams.HttpsOriginPort = common.Uint64Ptr(uint64(httpsPort)) // HTTPS回源端口
 	requestParams.IPv6Status = common.StringPtr("on")                   // IPv6状态
-	_, err = c.client.CreateAccelerationDomain(requestParams)
+	_, err := c.client.CreateAccelerationDomain(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}
@@ -160,20 +156,18 @@ func (c *EdgeOneClientSdk) CreateDomain(ctx context.Context, domainName string, 
 
 // 修改加速域名信息
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=ModifyAccelerationDomain
-// domainName: 域名名称
+// domainName: 主域名
+// subDomain: 子域名
 // originType: IP_DOMAIN = IPV4、IPV6 或域名类型源站
 // originType: ORIGIN_GROUP = 源站组类型源站
 // originValue: 源站地址或源站组ID
 // originProtocol: follow = 遵循源站协议、http = HTTP 协议、https = HTTPS 协议
 // httpPort: HTTP回源端口
 // httpsPort: HTTPS回源端口
-func (c *EdgeOneClientSdk) UpdateDomain(ctx context.Context, domainName string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
+func (c *EdgeOneClientSdk) UpdateDomain(ctx context.Context, domainName string, subDomain string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
 
-	// 解析域名
-	domainFull, _, _, err := utils.ExtractDomainParts(domainName)
-	if err != nil {
-		return err
-	}
+	// 提取域名中的主域名和子域，同时判断记录类型
+	fullDomain, subDomain, domainName := utils.GetCdnDomainParts(subDomain, domainName)
 
 	// 转大写
 	originProtocol = strings.ToUpper(originProtocol)
@@ -189,7 +183,7 @@ func (c *EdgeOneClientSdk) UpdateDomain(ctx context.Context, domainName string, 
 	// 请求
 	requestParams := teo.NewModifyAccelerationDomainRequest()
 	requestParams.ZoneId = common.StringPtr(c.config.ZoneID) // 加速域名所属站点 ID
-	requestParams.DomainName = common.StringPtr(domainFull)  // 加速域名
+	requestParams.DomainName = common.StringPtr(fullDomain)  // 加速域名
 	requestParams.OriginInfo = &teo.OriginInfo{
 		OriginType: common.StringPtr(originType),  // 源站类型
 		Origin:     common.StringPtr(originValue), // 源站地址
@@ -198,7 +192,7 @@ func (c *EdgeOneClientSdk) UpdateDomain(ctx context.Context, domainName string, 
 	requestParams.HttpOriginPort = common.Uint64Ptr(uint64(httpPort))   // HTTP回源端口
 	requestParams.HttpsOriginPort = common.Uint64Ptr(uint64(httpsPort)) // HTTPS回源端口
 	requestParams.IPv6Status = common.StringPtr("on")                   // IPv6状态
-	_, err = c.client.ModifyAccelerationDomain(requestParams)
+	_, err := c.client.ModifyAccelerationDomain(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}
@@ -212,7 +206,7 @@ func (c *EdgeOneClientSdk) UpdateDomain(ctx context.Context, domainName string, 
 // 获取源站组列表
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeOriginGroup
 // domain: 源站组名称
-func (c *EdgeOneClientSdk) QueryOriginGroup(ctx context.Context, originGroupName string) (ResponseEdgeOneQueryOriginGroup, error) {
+func (c *EdgeOneClientSdk) QueryOriginGroup(ctx context.Context, originGroupName string) (EdgeOneQueryOriginGroupResponse, error) {
 
 	// 请求
 	requestParams := teo.NewDescribeOriginGroupRequest()
@@ -227,10 +221,10 @@ func (c *EdgeOneClientSdk) QueryOriginGroup(ctx context.Context, originGroupName
 	}
 	response, err := c.client.DescribeOriginGroup(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return ResponseEdgeOneQueryOriginGroup{}, fmt.Errorf("API错误: %w", err)
+		return EdgeOneQueryOriginGroupResponse{}, fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
-		return ResponseEdgeOneQueryOriginGroup{}, err
+		return EdgeOneQueryOriginGroupResponse{}, err
 	}
 
 	for _, item := range response.Response.OriginGroups {
@@ -239,7 +233,7 @@ func (c *EdgeOneClientSdk) QueryOriginGroup(ctx context.Context, originGroupName
 			for _, v := range item.Records {
 				origins = append(origins, *v.Record)
 			}
-			return ResponseEdgeOneQueryOriginGroup{
+			return EdgeOneQueryOriginGroupResponse{
 				GroupID:      *item.GroupId,
 				GroupName:    *item.Name,
 				GroupType:    *item.Type,
@@ -248,7 +242,7 @@ func (c *EdgeOneClientSdk) QueryOriginGroup(ctx context.Context, originGroupName
 		}
 	}
 
-	return ResponseEdgeOneQueryOriginGroup{}, fmt.Errorf("未找到记录")
+	return EdgeOneQueryOriginGroupResponse{}, fmt.Errorf("未找到记录")
 }
 
 // 创建源站组

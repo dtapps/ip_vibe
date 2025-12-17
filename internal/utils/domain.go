@@ -82,20 +82,31 @@ func GetFullDomain(subDomain string, mainDomain string) string {
 }
 
 // GetDnsDomainParts 提取域名中的主域名和子域，同时判断记录类型
-func GetDnsDomainParts(subDomain string, mainDomain string, recordValue string) (full, sub, main, recordType string, err error) {
-	if subDomain == "" {
-		subDomain = "@"
-	}
-	recordType, err = GetRecordType(recordValue)
-	return fmt.Sprintf("%s.%s", subDomain, mainDomain), subDomain, mainDomain, recordType, err
-}
-
 /**
-
 	// 提取域名中的主域名和子域，同时判断记录类型
 	fullDomain, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, recordValue)
 	if err != nil {
 		return QueryDomainResponse{}, err
 	}
-
 **/
+func GetDnsDomainParts(subDomain string, mainDomain string, recordValue string) (full string, sub string, main string, recordType string, err error) {
+	if subDomain == "" {
+		subDomain = "@"
+	}
+	if recordValue != "" {
+		recordType, err = GetRecordType(recordValue)
+	}
+	return fmt.Sprintf("%s.%s", subDomain, mainDomain), subDomain, mainDomain, recordType, err
+}
+
+// GetCdnDomainParts 提取域名中的主域名和子域，同时判断记录类型
+/**
+	// 提取域名中的主域名和子域，同时判断记录类型
+	fullDomain, subDomain, domainName:= utils.GetCdnDomainParts(subDomain, domainName)
+**/
+func GetCdnDomainParts(subDomain string, mainDomain string) (full string, sub string, main string) {
+	if subDomain == "" {
+		subDomain = "@"
+	}
+	return fmt.Sprintf("%s.%s", subDomain, mainDomain), subDomain, mainDomain
+}

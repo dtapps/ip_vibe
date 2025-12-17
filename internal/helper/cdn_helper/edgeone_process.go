@@ -15,8 +15,8 @@ import (
 // 处理单IP参数
 type EdgeOneProcessSingleIPParams struct {
 	ConfigJSON     json.RawMessage // 配置
-	DomainName     string          // 加速域名
-	DomainOrigin   string          // IP地址
+	SubDomain      string          // 子域名
+	OriginValue    string          // 记录值
 	OriginProtocol string          // 回源协议
 	HttpPort       int             // HTTP回源端口
 	HttpsPort      int             // HTTPS回源端口
@@ -28,9 +28,10 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 	var originType = "IP_DOMAIN"
 
 	var platformConfig struct {
-		SecretID  string `json:"secret_id"`
-		SecretKey string `json:"secret_key"`
-		ZoneID    string `json:"zone_id"`
+		SecretID   string `json:"secret_id"`
+		SecretKey  string `json:"secret_key"`
+		ZoneID     string `json:"zone_id"`
+		DomainName string `json:"domain_name"` // 主域名
 	}
 	err = json.Unmarshal(params.ConfigJSON, &platformConfig)
 	if err != nil {
@@ -38,7 +39,7 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 	}
 
 	// 初始化客户端
-	client, err := NewEdgeOneClientApi(
+	client, err := NewEdgeOneClientSdk(
 		ctx,
 		platformConfig.SecretID,
 		platformConfig.SecretKey,
@@ -47,43 +48,48 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 	if err != nil {
 		return fmt.Errorf("初始化EdgeOne客户端失败: %w", err)
 	}
-	// 开启调试模式
-	if service.Debug {
-		client.EnableDebug()
-	}
+	// 设置调试模式
+	client.SetDebug(service.Debug)
 
 	// 查询加速域名列表
 	service.Log.InfoContext(ctx, "查询加速域名列表 请求",
-		slog.String("domain_name", params.DomainName),
+		slog.String("domain_name", platformConfig.DomainName),
+		slog.String("sub_domain", params.SubDomain),
 	)
 	queryDomain, _ := client.QueryDomain(
 		ctx,
-		params.DomainName,
+		platformConfig.DomainName,
+		params.SubDomain,
 	)
 	service.Log.InfoContext(ctx, "查询加速域名列表 响应",
 		slog.String("domain_id", queryDomain.DomainID),
 		slog.String("domain_name", queryDomain.DomainName),
 		slog.String("domain_cname", queryDomain.DomainCname),
-		slog.String("domain_type", queryDomain.DomainType),
-		slog.String("domain_origin", queryDomain.DomainOrigin),
+		slog.String("record_type", queryDomain.RecordType),
+		slog.String("record_value", queryDomain.RecordValue),
+		slog.String("origin_protocol", queryDomain.OriginProtocol),
+		slog.Int("http_origin_port", queryDomain.HttpOriginPort),
+		slog.Int("https_origin_port", queryDomain.HttpsOriginPort),
 	)
 
 	if queryDomain.DomainCname == "" {
 
 		// 创建加速域名
 		service.Log.InfoContext(ctx, "创建加速域名 请求",
-			slog.String("domain_name", params.DomainName),
+			slog.String("domain_name", platformConfig.DomainName),
+			slog.String("sub_domain", params.SubDomain),
 			slog.String("origin_type", originType),
-			slog.String("origin_value", params.DomainOrigin),
+			slog.String("origin_value", params.OriginValue),
 			slog.String("origin_protocol", params.OriginProtocol),
 			slog.Int("http_port", params.HttpPort),
 			slog.Int("https_port", params.HttpsPort),
 		)
 		err = client.CreateDomain(
 			ctx,
-			params.DomainName,
+			platformConfig.DomainName,
+			params.SubDomain,
 			originType,
-			params.DomainOrigin,
+			params.OriginValue,
 			params.OriginProtocol,
 			params.HttpPort,
 			params.HttpsPort,
@@ -94,18 +100,23 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 
 		// 重新查询加速域名列表
 		service.Log.InfoContext(ctx, "重新查询加速域名列表 请求",
-			slog.String("domain_name", params.DomainName),
+			slog.String("domain_name", platformConfig.DomainName),
+			slog.String("sub_domain", params.SubDomain),
 		)
 		queryDomain, _ = client.QueryDomain(
 			ctx,
-			params.DomainName,
+			platformConfig.DomainName,
+			params.SubDomain,
 		)
 		service.Log.InfoContext(ctx, "重新查询加速域名列表 响应",
 			slog.String("domain_id", queryDomain.DomainID),
 			slog.String("domain_name", queryDomain.DomainName),
 			slog.String("domain_cname", queryDomain.DomainCname),
-			slog.String("domain_type", queryDomain.DomainType),
-			slog.String("domain_origin", queryDomain.DomainOrigin),
+			slog.String("record_type", queryDomain.RecordType),
+			slog.String("record_value", queryDomain.RecordValue),
+			slog.String("origin_protocol", queryDomain.OriginProtocol),
+			slog.Int("http_origin_port", queryDomain.HttpOriginPort),
+			slog.Int("https_origin_port", queryDomain.HttpsOriginPort),
 		)
 
 		// 更新CDN记录
@@ -129,7 +140,7 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 		var isUpdate = false
 
 		// 比较源站
-		if !utils.DNSValuesEqual(queryDomain.DomainOrigin, params.DomainOrigin) {
+		if !utils.DNSValuesEqual(queryDomain.RecordValue, params.OriginValue) {
 			isUpdate = true
 		}
 		// 比较回源协议
@@ -166,18 +177,20 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 
 		// 修改加速域名信息
 		service.Log.InfoContext(ctx, "修改加速域名信息 请求",
-			slog.String("domain_name", params.DomainName),
+			slog.String("domain_name", platformConfig.DomainName),
+			slog.String("sub_domain", params.SubDomain),
 			slog.String("origin_type", originType),
-			slog.String("origin_value", params.DomainOrigin),
+			slog.String("origin_value", params.OriginValue),
 			slog.String("origin_protocol", params.OriginProtocol),
 			slog.Int("http_port", params.HttpPort),
 			slog.Int("https_port", params.HttpsPort),
 		)
 		err = client.UpdateDomain(
 			ctx,
-			params.DomainName,
+			platformConfig.DomainName,
+			params.SubDomain,
 			originType,
-			params.DomainOrigin,
+			params.OriginValue,
 			params.OriginProtocol,
 			params.HttpPort,
 			params.HttpsPort,
@@ -194,8 +207,8 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 // 处理多IP参数
 type EdgeOneProcessMultiIPParams struct {
 	ConfigJSON     json.RawMessage // 配置
-	DomainName     string          // 加速域名
-	DomainOrigins  []string        // IP地址列表
+	SubDomain      string          // 子域名
+	OriginValues   []string        // 记录值列表
 	OriginProtocol string          // 回源协议
 	HttpPort       int             // HTTP回源端口
 	HttpsPort      int             // HTTPS回源端口
@@ -208,9 +221,10 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 	var originType = "ORIGIN_GROUP"
 
 	var platformConfig struct {
-		SecretID  string `json:"secret_id"`
-		SecretKey string `json:"secret_key"`
-		ZoneID    string `json:"zone_id"`
+		SecretID   string `json:"secret_id"`
+		SecretKey  string `json:"secret_key"`
+		ZoneID     string `json:"zone_id"`
+		DomainName string `json:"domain_name"` // 主域名
 	}
 	err = json.Unmarshal(params.ConfigJSON, &platformConfig)
 	if err != nil {
@@ -218,7 +232,7 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 	}
 
 	// 初始化客户端
-	client, err := NewEdgeOneClientApi(
+	client, err := NewEdgeOneClientSdk(
 		ctx,
 		platformConfig.SecretID,
 		platformConfig.SecretKey,
@@ -227,10 +241,8 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 	if err != nil {
 		return fmt.Errorf("初始化EdgeOne客户端失败: %w", err)
 	}
-	// 开启调试模式
-	if service.Debug {
-		client.EnableDebug()
-	}
+	// 设置调试模式
+	client.SetDebug(service.Debug)
 
 	// 获取源站组列表
 	service.Log.InfoContext(ctx, "获取源站组列表 请求",
@@ -251,12 +263,12 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 		// 创建源站组
 		service.Log.InfoContext(ctx, "创建源站组 请求",
 			slog.String("group_name", params.GroupName),
-			slog.Any("group_origins", params.DomainOrigins),
+			slog.Any("group_origins", params.OriginValues),
 		)
 		err = client.CreateOriginGroup(
 			ctx,
 			params.GroupName,
-			params.DomainOrigins,
+			params.OriginValues,
 		)
 		if err != nil {
 			return fmt.Errorf("创建源站组失败: %w", err)
@@ -284,17 +296,17 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 
 	} else {
 
-		if !goarray.CompareStringSlicesIgnoreOrder(queryGroup.GroupOrigins, params.DomainOrigins) {
+		if !goarray.CompareStringSlicesIgnoreOrder(queryGroup.GroupOrigins, params.OriginValues) {
 
 			// 修改源站组
 			service.Log.InfoContext(ctx, "修改源站组 请求",
 				slog.String("group_id", queryGroup.GroupID),
-				slog.Any("group_records", params.DomainOrigins),
+				slog.Any("group_records", params.OriginValues),
 			)
 			err = client.UpdateOriginGroup(
 				ctx,
 				queryGroup.GroupID,
-				params.DomainOrigins,
+				params.OriginValues,
 			)
 			if err != nil {
 				return fmt.Errorf("修改源站组失败: %w", err)
@@ -314,25 +326,31 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 
 	// 查询加速域名列表
 	service.Log.InfoContext(ctx, "查询加速域名列表 请求",
-		slog.String("domain_name", params.DomainName),
+		slog.String("domain_name", platformConfig.DomainName),
+		slog.String("sub_domain", params.SubDomain),
 	)
 	queryDomain, _ := client.QueryDomain(
 		ctx,
-		params.DomainName,
+		platformConfig.DomainName,
+		params.SubDomain,
 	)
 	service.Log.InfoContext(ctx, "查询加速域名列表 响应",
 		slog.String("domain_id", queryDomain.DomainID),
 		slog.String("domain_name", queryDomain.DomainName),
 		slog.String("domain_cname", queryDomain.DomainCname),
-		slog.String("domain_type", queryDomain.DomainType),
-		slog.String("domain_origin", queryDomain.DomainOrigin),
+		slog.String("record_type", queryDomain.RecordType),
+		slog.String("record_value", queryDomain.RecordValue),
+		slog.String("origin_protocol", queryDomain.OriginProtocol),
+		slog.Int("http_origin_port", queryDomain.HttpOriginPort),
+		slog.Int("https_origin_port", queryDomain.HttpsOriginPort),
 	)
 
 	if queryDomain.DomainCname == "" {
 
 		// 创建加速域名
 		service.Log.InfoContext(ctx, "创建加速域名 请求",
-			slog.String("domain_name", params.DomainName),
+			slog.String("domain_name", platformConfig.DomainName),
+			slog.String("sub_domain", params.SubDomain),
 			slog.String("origin_type", originType),
 			slog.String("origin_value", queryGroup.GroupID),
 			slog.String("origin_protocol", params.OriginProtocol),
@@ -341,7 +359,8 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 		)
 		err = client.CreateDomain(
 			ctx,
-			params.DomainName,
+			platformConfig.DomainName,
+			params.SubDomain,
 			originType,
 			queryGroup.GroupID,
 			params.OriginProtocol,
@@ -354,18 +373,23 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 
 		// 重新查询加速域名列表
 		service.Log.InfoContext(ctx, "重新查询加速域名列表 请求",
-			slog.String("domain_name", params.DomainName),
+			slog.String("domain_name", platformConfig.DomainName),
+			slog.String("sub_domain", params.SubDomain),
 		)
 		queryDomain, _ = client.QueryDomain(
 			ctx,
-			params.DomainName,
+			platformConfig.DomainName,
+			params.SubDomain,
 		)
 		service.Log.InfoContext(ctx, "重新查询加速域名列表 响应",
 			slog.String("domain_id", queryDomain.DomainID),
 			slog.String("domain_name", queryDomain.DomainName),
 			slog.String("domain_cname", queryDomain.DomainCname),
-			slog.String("domain_type", queryDomain.DomainType),
-			slog.String("domain_origin", queryDomain.DomainOrigin),
+			slog.String("record_type", queryDomain.RecordType),
+			slog.String("record_value", queryDomain.RecordValue),
+			slog.String("origin_protocol", queryDomain.OriginProtocol),
+			slog.Int("http_origin_port", queryDomain.HttpOriginPort),
+			slog.Int("https_origin_port", queryDomain.HttpsOriginPort),
 		)
 
 		// 更新CDN记录
@@ -388,8 +412,8 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 
 		var isUpdate = false
 
-		// 比较源站
-		if !strings.EqualFold(queryGroup.GroupID, queryDomain.DomainOrigin) {
+		// 比较源站组
+		if !strings.EqualFold(queryGroup.GroupID, queryDomain.RecordValue) {
 			isUpdate = true
 		}
 		// 比较回源协议
@@ -426,7 +450,8 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 
 		// 修改加速域名信息
 		service.Log.InfoContext(ctx, "修改加速域名信息 请求",
-			slog.String("domain_name", params.DomainName),
+			slog.String("domain_name", platformConfig.DomainName),
+			slog.String("sub_domain", params.SubDomain),
 			slog.String("origin_type", originType),
 			slog.String("origin_value", queryGroup.GroupID),
 			slog.String("origin_protocol", params.OriginProtocol),
@@ -435,7 +460,8 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 		)
 		err = client.UpdateDomain(
 			ctx,
-			params.DomainName,
+			platformConfig.DomainName,
+			params.SubDomain,
 			originType,
 			queryGroup.GroupID,
 			params.OriginProtocol,

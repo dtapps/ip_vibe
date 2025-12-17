@@ -344,8 +344,8 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 				},
 				cdn_helper.EdgeOneProcessSingleIPParams{
 					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
-					DomainName:     firstRecord.SubDomain,
-					DomainOrigin:   origins[0],
+					SubDomain:      firstRecord.SubDomain,
+					OriginValue:    origins[0],
 					OriginProtocol: strings.ToUpper(firstRecord.OriginProtocol.String()),
 					HttpPort:       firstRecord.HTTPPort,
 					HttpsPort:      firstRecord.HTTPSPort,
@@ -375,8 +375,8 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 				},
 				cdn_helper.EdgeOneProcessMultiIPParams{
 					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
-					DomainName:     firstRecord.SubDomain,
-					DomainOrigins:  origins,
+					SubDomain:      firstRecord.SubDomain,
+					OriginValues:   origins,
 					GroupName:      utils.GenerateShortIDBasedHash(firstIPGroup.ID, 10),
 					OriginProtocol: strings.ToUpper(firstRecord.OriginProtocol.String()),
 					HttpPort:       firstRecord.HTTPPort,
