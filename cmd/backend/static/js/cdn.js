@@ -107,8 +107,6 @@ async function openFormModal(id) {
       document.getElementById("id").disabled = true;
       document.getElementById("config_id").value = cdnRecord.config_id;
       document.getElementById("config_id").disabled = true;
-      document.getElementById("domain").value = cdnRecord.domain ?? "";
-      document.getElementById("domain").disabled = true;
       document.getElementById("sub_domain").value = cdnRecord.sub_domain;
       document.getElementById("sub_domain").disabled = true;
       document.getElementById("domain_name").innerHTML =
@@ -139,7 +137,6 @@ async function openFormModal(id) {
       document.getElementById("id").value = 0;
       document.getElementById("id").disabled = true;
       document.getElementById("config_id").disabled = false;
-      document.getElementById("domain").disabled = false;
       document.getElementById("sub_domain").disabled = false;
       document.getElementById("type").disabled = false;
       document.getElementById("http_port").value = 80;
@@ -168,7 +165,6 @@ document.getElementById("form").onsubmit = async (e) => {
   const form_id = Number(document.getElementById("id").value.trim());
   const form_data = {
     config_id: Number(document.getElementById("config_id").value.trim()),
-    domain: document.getElementById("domain").value.trim(),
     sub_domain: document.getElementById("sub_domain").value.trim(),
     type: document.getElementById("type").value.trim(),
     origin_protocol: document.getElementById("origin_protocol").value.trim(),
@@ -183,8 +179,8 @@ document.getElementById("form").onsubmit = async (e) => {
   if (isNaN(form_data.config_id) || form_data.config_id <= 0) {
     return alert("请选择配置");
   }
-  if (!form_data.domain) {
-    return alert("请输入域名");
+  if (!form_data.sub_domain) {
+    return alert("请输入子域名");
   }
   if (!form_data.type) {
     return alert("请选择记录类型");

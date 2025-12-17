@@ -72,7 +72,9 @@ async function openFormModal(id) {
     }
 
     // CDN列表
-    const { data: cdnRecords } = await API.get(`/api/cdn-records`);
+    const { data: cdnRecords } = await API.get(`/api/cdn-records`, {
+      is_active: true,
+    });
     console.log("cdnRecords", cdnRecords);
     if (cdnRecords) {
       const cdnRecordSelect = document.getElementById("cdn_record_id");
@@ -81,7 +83,7 @@ async function openFormModal(id) {
       cdnRecords.forEach((d) => {
         const opt = document.createElement("option");
         opt.value = d.id;
-        opt.text = `${d.domain}`;
+        opt.text = `${d.sub_domain}.${d.domain_name}`;
         cdnRecordSelect.appendChild(opt);
       });
     }
@@ -132,8 +134,6 @@ async function openFormModal(id) {
       document.getElementById("id").disabled = true;
       document.getElementById("config_id").value = dnsRecord.config_id;
       document.getElementById("config_id").disabled = true;
-      document.getElementById("domain").value = dnsRecord.domain ?? "";
-      document.getElementById("domain").disabled = true;
       document.getElementById("sub_domain").value = dnsRecord.sub_domain;
       document.getElementById("sub_domain").disabled = true;
       document.getElementById("domain_name").innerHTML =
@@ -168,7 +168,6 @@ async function openFormModal(id) {
       document.getElementById("id").value = 0;
       document.getElementById("id").disabled = true;
       document.getElementById("config_id").disabled = false;
-      document.getElementById("domain").disabled = false;
       document.getElementById("sub_domain").disabled = false;
       document.getElementById("type").disabled = false;
       document.getElementById("cdn_record_id").disabled = true;
@@ -197,7 +196,6 @@ document.getElementById("form").onsubmit = async (e) => {
   const form_id = Number(document.getElementById("id").value.trim());
   const form_data = {
     config_id: Number(document.getElementById("config_id").value.trim()),
-    domain: document.getElementById("domain").value.trim(),
     sub_domain: document.getElementById("sub_domain").value.trim(),
     type: document.getElementById("type").value.trim(),
     ip_group_id: Number(document.getElementById("ip_group_id").value.trim()),
@@ -212,8 +210,8 @@ document.getElementById("form").onsubmit = async (e) => {
   if (isNaN(form_data.config_id) || form_data.config_id <= 0) {
     return alert("请选择配置");
   }
-  if (!form_data.domain) {
-    return alert("请输入域名");
+  if (!form_data.sub_domain) {
+    return alert("请输入子域名");
   }
   if (!form_data.type) {
     return alert("请选择记录类型");
