@@ -64,11 +64,11 @@ func (c *DnsPodClientSdk) SetDebug(debug bool) *DnsPodClientSdk {
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=DescribeRecordList
 // domainName: 主域名
 // subDomain: 子域名
-// recordValue: 记录值
-func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, subDomain string, recordValue string) (QueryDomainResponse, error) {
+// originValue: 源站地址
+func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, subDomain string, originValue string) (QueryDomainResponse, error) {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
-	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, recordValue)
+	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
 	if err != nil {
 		return QueryDomainResponse{}, err
 	}
@@ -97,7 +97,7 @@ func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, su
 				DomainID:    tea.ToString(item.RecordId),
 				DomainName:  tea.StringValue(item.Name),
 				RecordType:  tea.StringValue(item.Type),
-				RecordValue: tea.StringValue(item.Value),
+				OriginValue: tea.StringValue(item.Value),
 			}, nil
 		}
 	}
@@ -109,11 +109,11 @@ func (c *DnsPodClientSdk) QueryDomain(ctx context.Context, domainName string, su
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=CreateRecord
 // domainName: 主域名
 // subDomain: 子域名
-// recordValue: 记录值
-func (c *DnsPodClientSdk) CreateDomain(ctx context.Context, domainName string, subDomain string, recordValue string) error {
+// originValue: 源站地址
+func (c *DnsPodClientSdk) CreateDomain(ctx context.Context, domainName string, subDomain string, originValue string) error {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
-	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, recordValue)
+	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
 	if err != nil {
 		return err
 	}
@@ -123,7 +123,7 @@ func (c *DnsPodClientSdk) CreateDomain(ctx context.Context, domainName string, s
 	requestParams.Domain = common.StringPtr(domainName)     // 域名
 	requestParams.RecordType = common.StringPtr(recordType) // 记录类型
 	requestParams.RecordLine = common.StringPtr("默认")       // 记录线路
-	requestParams.Value = common.StringPtr(recordValue)     // 记录值
+	requestParams.Value = common.StringPtr(originValue)     // 记录值
 	requestParams.SubDomain = common.StringPtr(subDomain)   // 主机记录
 	_, err = c.client.CreateRecord(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
@@ -141,11 +141,11 @@ func (c *DnsPodClientSdk) CreateDomain(ctx context.Context, domainName string, s
 // domainID: 域名ID
 // domainName: 主域名
 // subDomain: 子域名
-// recordValue: 记录值
-func (c *DnsPodClientSdk) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, recordValue string) error {
+// originValue: 源站地址
+func (c *DnsPodClientSdk) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, originValue string) error {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
-	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, recordValue)
+	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
 	if err != nil {
 		return err
 	}
@@ -155,7 +155,7 @@ func (c *DnsPodClientSdk) UpdateDomain(ctx context.Context, domainID string, dom
 	requestParams.Domain = common.StringPtr(domainName)                // 域名
 	requestParams.RecordType = common.StringPtr(recordType)            // 记录类型
 	requestParams.RecordLine = common.StringPtr("默认")                  // 记录线路
-	requestParams.Value = common.StringPtr(recordValue)                // 记录值
+	requestParams.Value = common.StringPtr(originValue)                // 记录值
 	requestParams.RecordId = common.Uint64Ptr(cast.ToUint64(domainID)) // 记录 ID
 	requestParams.SubDomain = common.StringPtr(subDomain)              // 主机记录
 	_, err = c.client.ModifyRecord(requestParams)

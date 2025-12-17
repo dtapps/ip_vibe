@@ -44,11 +44,11 @@ func (c *CloudflareClientSdk) SetDebug(debug bool) *CloudflareClientSdk {
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/list/
 // domainName: 主域名
 // subDomain: 子域名
-// recordValue: 记录值
-func (c *CloudflareClientSdk) QueryDomain(ctx context.Context, domainName string, subDomain string, recordValue string) (QueryDomainResponse, error) {
+// originValue: 源站地址
+func (c *CloudflareClientSdk) QueryDomain(ctx context.Context, domainName string, subDomain string, originValue string) (QueryDomainResponse, error) {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
-	fullDomain, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, recordValue)
+	fullDomain, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
 	if err != nil {
 		return QueryDomainResponse{}, err
 	}
@@ -74,7 +74,7 @@ func (c *CloudflareClientSdk) QueryDomain(ctx context.Context, domainName string
 				DomainID:    item.ID,
 				DomainName:  item.Name,
 				RecordType:  string(item.Type),
-				RecordValue: item.Content,
+				OriginValue: item.Content,
 			}, nil
 		}
 	}
@@ -86,11 +86,11 @@ func (c *CloudflareClientSdk) QueryDomain(ctx context.Context, domainName string
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/create/
 // domainName: 主域名
 // subDomain: 子域名
-// recordValue: 记录值
-func (c *CloudflareClientSdk) CreateDomain(ctx context.Context, domainName string, subDomain string, recordValue string) error {
+// originValue: 源站地址
+func (c *CloudflareClientSdk) CreateDomain(ctx context.Context, domainName string, subDomain string, originValue string) error {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
-	fullDomain, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, recordValue)
+	fullDomain, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
 	if err != nil {
 		return err
 	}
@@ -99,7 +99,7 @@ func (c *CloudflareClientSdk) CreateDomain(ctx context.Context, domainName strin
 	requestParams := dns.ARecordParam{}
 	requestParams.Name = cloudflare.String(fullDomain)
 	requestParams.Type = cloudflare.F(dns.ARecordType(recordType))
-	requestParams.Content = cloudflare.String(recordValue)
+	requestParams.Content = cloudflare.String(originValue)
 	_, err = c.client.DNS.Records.New(ctx, dns.RecordNewParams{
 		ZoneID: cloudflare.String(c.config.ZoneID),
 		Body:   requestParams,
@@ -116,11 +116,11 @@ func (c *CloudflareClientSdk) CreateDomain(ctx context.Context, domainName strin
 // domainID: 域名ID
 // domainName: 主域名
 // subDomain: 子域名
-// recordValue: 记录值
-func (c *CloudflareClientSdk) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, recordValue string) error {
+// originValue: 源站地址
+func (c *CloudflareClientSdk) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, originValue string) error {
 
 	// 提取域名中的主域名和子域，同时判断记录类型
-	fullDomain, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, recordValue)
+	fullDomain, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
 	if err != nil {
 		return err
 	}
@@ -129,7 +129,7 @@ func (c *CloudflareClientSdk) UpdateDomain(ctx context.Context, domainID string,
 	requestParams := dns.ARecordParam{}
 	requestParams.Name = cloudflare.String(fullDomain)
 	requestParams.Type = cloudflare.F(dns.ARecordType(recordType))
-	requestParams.Content = cloudflare.String(recordValue)
+	requestParams.Content = cloudflare.String(originValue)
 	_, err = c.client.DNS.Records.Edit(ctx, domainID, dns.RecordEditParams{
 		ZoneID: cloudflare.String(c.config.ZoneID),
 		Body:   requestParams,
