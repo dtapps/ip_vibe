@@ -8,6 +8,18 @@ import (
 	"vibe_ip/internal/ent_log"
 )
 
+// The HttpLogFunc type is an adapter to allow the use of ordinary
+// function as HttpLog mutator.
+type HttpLogFunc func(context.Context, *ent_log.HttpLogMutation) (ent_log.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f HttpLogFunc) Mutate(ctx context.Context, m ent_log.Mutation) (ent_log.Value, error) {
+	if mv, ok := m.(*ent_log.HttpLogMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent_log.HttpLogMutation", m)
+}
+
 // The OperationLogFunc type is an adapter to allow the use of ordinary
 // function as OperationLog mutator.
 type OperationLogFunc func(context.Context, *ent_log.OperationLogMutation) (ent_log.Value, error)

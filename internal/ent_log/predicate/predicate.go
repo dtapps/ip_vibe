@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// HttpLog is the predicate function for httplog builders.
+type HttpLog func(*sql.Selector)
+
 // OperationLog is the predicate function for operationlog builders.
 type OperationLog func(*sql.Selector)
 

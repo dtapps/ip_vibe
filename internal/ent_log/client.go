@@ -11,6 +11,7 @@ import (
 
 	"vibe_ip/internal/ent_log/migrate"
 
+	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/restylog"
 
@@ -26,6 +27,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// HttpLog is the client for interacting with the HttpLog builders.
+	HttpLog *HttpLogClient
 	// OperationLog is the client for interacting with the OperationLog builders.
 	OperationLog *OperationLogClient
 	// RestyLog is the client for interacting with the RestyLog builders.
@@ -41,6 +44,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.HttpLog = NewHttpLogClient(c.config)
 	c.OperationLog = NewOperationLogClient(c.config)
 	c.RestyLog = NewRestyLogClient(c.config)
 }
@@ -135,6 +139,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:          ctx,
 		config:       cfg,
+		HttpLog:      NewHttpLogClient(cfg),
 		OperationLog: NewOperationLogClient(cfg),
 		RestyLog:     NewRestyLogClient(cfg),
 	}, nil
@@ -156,6 +161,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:          ctx,
 		config:       cfg,
+		HttpLog:      NewHttpLogClient(cfg),
 		OperationLog: NewOperationLogClient(cfg),
 		RestyLog:     NewRestyLogClient(cfg),
 	}, nil
@@ -164,7 +170,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		OperationLog.
+//		HttpLog.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -186,6 +192,7 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.HttpLog.Use(hooks...)
 	c.OperationLog.Use(hooks...)
 	c.RestyLog.Use(hooks...)
 }
@@ -193,6 +200,7 @@ func (c *Client) Use(hooks ...Hook) {
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
+	c.HttpLog.Intercept(interceptors...)
 	c.OperationLog.Intercept(interceptors...)
 	c.RestyLog.Intercept(interceptors...)
 }
@@ -200,12 +208,147 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *HttpLogMutation:
+		return c.HttpLog.mutate(ctx, m)
 	case *OperationLogMutation:
 		return c.OperationLog.mutate(ctx, m)
 	case *RestyLogMutation:
 		return c.RestyLog.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent_log: unknown mutation type %T", m)
+	}
+}
+
+// HttpLogClient is a client for the HttpLog schema.
+type HttpLogClient struct {
+	config
+}
+
+// NewHttpLogClient returns a client for the HttpLog from the given config.
+func NewHttpLogClient(c config) *HttpLogClient {
+	return &HttpLogClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `httplog.Hooks(f(g(h())))`.
+func (c *HttpLogClient) Use(hooks ...Hook) {
+	c.hooks.HttpLog = append(c.hooks.HttpLog, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `httplog.Intercept(f(g(h())))`.
+func (c *HttpLogClient) Intercept(interceptors ...Interceptor) {
+	c.inters.HttpLog = append(c.inters.HttpLog, interceptors...)
+}
+
+// Create returns a builder for creating a HttpLog entity.
+func (c *HttpLogClient) Create() *HttpLogCreate {
+	mutation := newHttpLogMutation(c.config, OpCreate)
+	return &HttpLogCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of HttpLog entities.
+func (c *HttpLogClient) CreateBulk(builders ...*HttpLogCreate) *HttpLogCreateBulk {
+	return &HttpLogCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *HttpLogClient) MapCreateBulk(slice any, setFunc func(*HttpLogCreate, int)) *HttpLogCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &HttpLogCreateBulk{err: fmt.Errorf("calling to HttpLogClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*HttpLogCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &HttpLogCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for HttpLog.
+func (c *HttpLogClient) Update() *HttpLogUpdate {
+	mutation := newHttpLogMutation(c.config, OpUpdate)
+	return &HttpLogUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *HttpLogClient) UpdateOne(_m *HttpLog) *HttpLogUpdateOne {
+	mutation := newHttpLogMutation(c.config, OpUpdateOne, withHttpLog(_m))
+	return &HttpLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *HttpLogClient) UpdateOneID(id int) *HttpLogUpdateOne {
+	mutation := newHttpLogMutation(c.config, OpUpdateOne, withHttpLogID(id))
+	return &HttpLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for HttpLog.
+func (c *HttpLogClient) Delete() *HttpLogDelete {
+	mutation := newHttpLogMutation(c.config, OpDelete)
+	return &HttpLogDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *HttpLogClient) DeleteOne(_m *HttpLog) *HttpLogDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *HttpLogClient) DeleteOneID(id int) *HttpLogDeleteOne {
+	builder := c.Delete().Where(httplog.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &HttpLogDeleteOne{builder}
+}
+
+// Query returns a query builder for HttpLog.
+func (c *HttpLogClient) Query() *HttpLogQuery {
+	return &HttpLogQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeHttpLog},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a HttpLog entity by its id.
+func (c *HttpLogClient) Get(ctx context.Context, id int) (*HttpLog, error) {
+	return c.Query().Where(httplog.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *HttpLogClient) GetX(ctx context.Context, id int) *HttpLog {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *HttpLogClient) Hooks() []Hook {
+	return c.hooks.HttpLog
+}
+
+// Interceptors returns the client interceptors.
+func (c *HttpLogClient) Interceptors() []Interceptor {
+	return c.inters.HttpLog
+}
+
+func (c *HttpLogClient) mutate(ctx context.Context, m *HttpLogMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&HttpLogCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&HttpLogUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&HttpLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&HttpLogDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent_log: unknown HttpLog mutation op: %q", m.Op())
 	}
 }
 
@@ -478,10 +621,10 @@ func (c *RestyLogClient) mutate(ctx context.Context, m *RestyLogMutation) (Value
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		OperationLog, RestyLog []ent.Hook
+		HttpLog, OperationLog, RestyLog []ent.Hook
 	}
 	inters struct {
-		OperationLog, RestyLog []ent.Interceptor
+		HttpLog, OperationLog, RestyLog []ent.Interceptor
 	}
 )
 

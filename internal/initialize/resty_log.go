@@ -10,11 +10,11 @@ import (
 )
 
 // 实现 LogSaver 接口
-type EntLogSaver struct {
+type EntRestyLogSaver struct {
 	db *ent_log.Client
 }
 
-func (s *EntLogSaver) SaveLog(ctx context.Context, data *resty_log.LogData) error {
+func (s *EntRestyLogSaver) SaveLog(ctx context.Context, data *resty_log.LogData) error {
 	if global.GvaEnv.DEBUG {
 		slog.WarnContext(ctx, "[接口方式]准备保存日志",
 			slog.String("Hostname", data.Hostname),
@@ -54,7 +54,7 @@ func (s *EntLogSaver) SaveLog(ctx context.Context, data *resty_log.LogData) erro
 	return nil
 }
 
-func InitRestyLog() {
+func InitEntRestyLog() {
 
 	// 定义回调函数
 	saveFunc := func(ctx context.Context, data *resty_log.LogData) error {
@@ -98,7 +98,7 @@ func InitRestyLog() {
 	}
 
 	// 创建 LogSaver 实现
-	saver := &EntLogSaver{
+	saver := &EntRestyLogSaver{
 		db: global.GvaEntLogDb,
 	}
 

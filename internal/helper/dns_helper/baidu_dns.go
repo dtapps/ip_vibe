@@ -8,6 +8,7 @@ import (
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/services/dns"
 	"github.com/baidubce/bce-sdk-go/util"
+	"go.dtapp.net/library/contrib/http_log"
 )
 
 type BaiduDnsClient struct {
@@ -33,6 +34,14 @@ func NewBaiduDnsClient(ctx context.Context, accessKeyID string, secretAccessKey 
 	}
 
 	return c, nil
+}
+
+// 设置HTTP日志记录器
+func (c *BaiduDnsClient) SetLog(log *http_log.LoggingTransport) *BaiduDnsClient {
+	if log != nil {
+		c.client.HTTPClient.Transport = log
+	}
+	return c
 }
 
 // 设置调试模式

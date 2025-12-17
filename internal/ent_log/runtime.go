@@ -4,6 +4,7 @@ package ent_log
 
 import (
 	"time"
+	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/restylog"
 	"vibe_ip/internal/ent_log/schema"
@@ -13,6 +14,16 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	httplogFields := schema.HttpLog{}.Fields()
+	_ = httplogFields
+	// httplogDescIsError is the schema descriptor for is_error field.
+	httplogDescIsError := httplogFields[9].Descriptor()
+	// httplog.DefaultIsError holds the default value on creation for the is_error field.
+	httplog.DefaultIsError = httplogDescIsError.Default.(bool)
+	// httplogDescCreatedAt is the schema descriptor for created_at field.
+	httplogDescCreatedAt := httplogFields[10].Descriptor()
+	// httplog.DefaultCreatedAt holds the default value on creation for the created_at field.
+	httplog.DefaultCreatedAt = httplogDescCreatedAt.Default.(func() time.Time)
 	operationlogMixin := schema.OperationLog{}.Mixin()
 	operationlogMixinFields0 := operationlogMixin[0].Fields()
 	_ = operationlogMixinFields0

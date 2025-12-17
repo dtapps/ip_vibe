@@ -73,7 +73,8 @@ func main() {
 	initialize.InitEntLogDb(ctx)   // 初始化 日志数据库
 	initialize.InitGoCron()        // 初始化 GoCron 调度器
 	initialize.InitMCP()           // 初始化 MCP
-	initialize.InitRestyLog()      // 初始化 Resty 日志
+	initialize.InitEntRestyLog()   // 初始化 Resty 日志
+	initialize.InitEntHttpLog()    // 初始化 HTTP 日志
 	initialize.InitThirdParty(ctx) // 初始化 第三方
 	initialize.InitSLog("backend") // 初始化 日志
 	defer func() {

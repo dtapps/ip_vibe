@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/contrib/resty_log"
 	"go.dtapp.net/library/service/bark"
 	"go.dtapp.net/library/service/dingtalk"
@@ -49,7 +50,8 @@ var (
 
 	GvaOperationLogHelper *operation_logs_helper.OperationLogHelper // 操作日志助手
 
-	GvaRestyLog *resty_log.Logger // Resty框架日志
+	GvaHttpLog  *http_log.LoggingTransport // HTTP框架日志
+	GvaRestyLog *resty_log.Logger          // Resty框架日志
 
 	GvaWechatWork *wechatqy.Client // 企业微信
 	GvaDingTalk   *dingtalk.Client // 钉钉
