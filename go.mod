@@ -6,9 +6,9 @@ require (
 	entgo.io/ent v0.14.5
 	github.com/alibabacloud-go/alidns-20150109/v5 v5.0.0
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.13
-	github.com/alibabacloud-go/esa-20240910/v2 v2.40.3
+	github.com/alibabacloud-go/esa-20240910/v2 v2.41.0
 	github.com/alibabacloud-go/tea v1.3.14
-	github.com/aliyun/credentials-go v1.4.9
+	github.com/aliyun/credentials-go v1.4.10
 	github.com/baidubce/bce-sdk-go v0.9.254
 	github.com/cloudflare/cloudflare-go/v6 v6.4.0
 	github.com/denisbrodbeck/machineid v1.0.1
@@ -33,12 +33,10 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.4
 	go.dtapp.net/library/contrib/resty_log v1.0.8
 	go.dtapp.net/library/service/bark v1.0.7
-	go.dtapp.net/library/service/cloudflare v1.0.0
 	go.dtapp.net/library/service/dingtalk v1.0.39
 	go.dtapp.net/library/service/feishu v1.0.36
 	go.dtapp.net/library/service/ft07 v1.0.8
 	go.dtapp.net/library/service/pushdeer v1.0.8
-	go.dtapp.net/library/service/tencent v1.0.0
 	go.dtapp.net/library/service/wechatqy v1.0.38
 	go.dtapp.net/library/utils/goarray v1.0.4
 	go.dtapp.net/library/utils/golog v1.0.178

@@ -56,7 +56,7 @@ github.com/alibabacloud-go/darabonba-openapi/v2/utils
 # github.com/alibabacloud-go/debug v1.0.1
 ## explicit; go 1.18
 github.com/alibabacloud-go/debug/debug
-# github.com/alibabacloud-go/esa-20240910/v2 v2.40.3
+# github.com/alibabacloud-go/esa-20240910/v2 v2.41.0
 ## explicit; go 1.14
 github.com/alibabacloud-go/esa-20240910/v2/client
 # github.com/alibabacloud-go/tea v1.3.14
@@ -67,7 +67,7 @@ github.com/alibabacloud-go/tea/utils
 # github.com/alibabacloud-go/tea-utils/v2 v2.0.9
 ## explicit; go 1.14
 github.com/alibabacloud-go/tea-utils/v2/service
-# github.com/aliyun/credentials-go v1.4.9
+# github.com/aliyun/credentials-go v1.4.10
 ## explicit; go 1.14
 github.com/aliyun/credentials-go
 github.com/aliyun/credentials-go/credentials
@@ -582,9 +582,6 @@ go.dtapp.net/library/contrib/resty_log
 # go.dtapp.net/library/service/bark v1.0.7
 ## explicit; go 1.25.1
 go.dtapp.net/library/service/bark
-# go.dtapp.net/library/service/cloudflare v1.0.0
-## explicit; go 1.25.1
-go.dtapp.net/library/service/cloudflare
 # go.dtapp.net/library/service/dingtalk v1.0.39
 ## explicit; go 1.25.1
 go.dtapp.net/library/service/dingtalk
@@ -597,9 +594,6 @@ go.dtapp.net/library/service/ft07
 # go.dtapp.net/library/service/pushdeer v1.0.8
 ## explicit; go 1.25.1
 go.dtapp.net/library/service/pushdeer
-# go.dtapp.net/library/service/tencent v1.0.0
-## explicit; go 1.25.1
-go.dtapp.net/library/service/tencent
 # go.dtapp.net/library/service/wechatqy v1.0.38
 ## explicit; go 1.25.1
 go.dtapp.net/library/service/wechatqy

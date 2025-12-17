@@ -37,8 +37,8 @@ github.com/alibabacloud-go/debug v1.0.1 h1:MsW9SmUtbb1Fnt3ieC6NNZi6aEwrXfDksD4QA
 github.com/alibabacloud-go/debug v1.0.1/go.mod h1:8gfgZCCAC3+SCzjWtY053FrOcd4/qlH6IHTI4QyICOc=
 github.com/alibabacloud-go/endpoint-util v1.1.0 h1:r/4D3VSw888XGaeNpP994zDUaxdgTSHBbVfZlzf6b5Q=
 github.com/alibabacloud-go/endpoint-util v1.1.0/go.mod h1:O5FuCALmCKs2Ff7JFJMudHs0I5EBgecXXxZRyswlEjE=
-github.com/alibabacloud-go/esa-20240910/v2 v2.40.3 h1:c5pQ6sQUEbVMcBULTCvNd4CNSHUdJLTloUAs0ReEdgY=
-github.com/alibabacloud-go/esa-20240910/v2 v2.40.3/go.mod h1:udjpsOYX8iBicJtu5YcXp5cd69rfXCap1cGAoosXxNo=
+github.com/alibabacloud-go/esa-20240910/v2 v2.41.0 h1:8QVcJJm38bybsId14NDUsm1pLuLNOlY4ll4eXTdZLaE=
+github.com/alibabacloud-go/esa-20240910/v2 v2.41.0/go.mod h1:udjpsOYX8iBicJtu5YcXp5cd69rfXCap1cGAoosXxNo=
 github.com/alibabacloud-go/openapi-util v0.1.0 h1:0z75cIULkDrdEhkLWgi9tnLe+KhAFE/r5Pb3312/eAY=
 github.com/alibabacloud-go/openapi-util v0.1.0/go.mod h1:sQuElr4ywwFRlCCberQwKRFhRzIyG4QTP/P4y1CJ6Ws=
 github.com/alibabacloud-go/tea v1.1.0/go.mod h1:IkGyUSX4Ba1V+k4pCtJUc6jDpZLFph9QMy2VUPTwukg=
@@ -61,8 +61,8 @@ github.com/aliyun/credentials-go v1.1.2/go.mod h1:ozcZaMR5kLM7pwtCMEpVmQ242suV6q
 github.com/aliyun/credentials-go v1.3.1/go.mod h1:8jKYhQuDawt8x2+fusqa1Y6mPxemTsBEN04dgcAcYz0=
 github.com/aliyun/credentials-go v1.3.6/go.mod h1:1LxUuX7L5YrZUWzBrRyk0SwSdH4OmPrib8NVePL3fxM=
 github.com/aliyun/credentials-go v1.4.5/go.mod h1:Jm6d+xIgwJVLVWT561vy67ZRP4lPTQxMbEYRuT2Ti1U=
-github.com/aliyun/credentials-go v1.4.9 h1:E50Nu/wLHorolzVYpiwf11VK2RW5hNT9RjCiSKtRx6s=
-github.com/aliyun/credentials-go v1.4.9/go.mod h1:Jm6d+xIgwJVLVWT561vy67ZRP4lPTQxMbEYRuT2Ti1U=
+github.com/aliyun/credentials-go v1.4.10 h1:4PtFGTW6eMpKd8YUNL6yVh52c/3PZdEOklELEbn2ui8=
+github.com/aliyun/credentials-go v1.4.10/go.mod h1:Jm6d+xIgwJVLVWT561vy67ZRP4lPTQxMbEYRuT2Ti1U=
 github.com/apparentlymart/go-textseg/v15 v15.0.0 h1:uYvfpb3DyLSCGWnctWKGj857c6ew1u1fNQOlOtuGxQY=
 github.com/apparentlymart/go-textseg/v15 v15.0.0/go.mod h1:K8XmNZdhEBkdlyDdvbmmsvpAG721bKi0joRfFdHIWJ4=
 github.com/baidubce/bce-sdk-go v0.9.254 h1:A7GtBOt7z2lnV7fqlZPZefhcBFg7z6iliUAhEOiIhoE=
@@ -323,8 +323,6 @@ go.dtapp.net/library/contrib/resty_log v1.0.8 h1:JvRswUuL1bjhJWoMxK/J1P1+qkR31Gf
 go.dtapp.net/library/contrib/resty_log v1.0.8/go.mod h1:S1E2lSiV2KOkpnXv8LlJQPUnskhpRo0SzGmrPZ/V2UY=
 go.dtapp.net/library/service/bark v1.0.7 h1:Zz02Rh/N/DGCc5C9P5odxoMIbPBVlDq5LEP6yGhbmMM=
 go.dtapp.net/library/service/bark v1.0.7/go.mod h1:5a/Hxz9GYxU5ynlsZ2L7eXc83yWnVXa+Hu2Ta2spKMg=
-go.dtapp.net/library/service/cloudflare v1.0.0 h1:ncCpXpwiLPiyleIzQOGFqcxVRh/2g4QRu2fuQgvNqfI=
-go.dtapp.net/library/service/cloudflare v1.0.0/go.mod h1:TQv+5FbY72r0DlTqAy5ooBT9OjW3XpGrXxUcyIhBONY=
 go.dtapp.net/library/service/dingtalk v1.0.39 h1:4JdEMn05XGllhlRx0Fsp7snhz5u8/IrTMf212xHc+yE=
 go.dtapp.net/library/service/dingtalk v1.0.39/go.mod h1:CTeFgAm8M8eTBPhbWWVKf5TdXqptDkpSrHh2gh4CFrI=
 go.dtapp.net/library/service/feishu v1.0.36 h1:Z4s9v8XGQGvxA+OcBoqUT2wESLId+ZT9//BwtpvjPzk=
@@ -333,8 +331,6 @@ go.dtapp.net/library/service/ft07 v1.0.8 h1:GuysqXjZ97iKNnLZU4pV4EodEThRv185sKkF
 go.dtapp.net/library/service/ft07 v1.0.8/go.mod h1:8M87eVThjq96YWaXpVTyOpN0u72W2P3dO3kVief4kkE=
 go.dtapp.net/library/service/pushdeer v1.0.8 h1:DUzbijqJBc07lA+7rSpD7b4haGpaS9KoLNM2XSg5IWo=
 go.dtapp.net/library/service/pushdeer v1.0.8/go.mod h1:xGS/Pwq6tP2vFk7sD2CARDJ+IrOJqmLVLYtYNlhds+Q=
-go.dtapp.net/library/service/tencent v1.0.0 h1:0EaOA4GlIXJSDqrYl3PSJrHjUptDLbzWp4j1YiLgC0M=
-go.dtapp.net/library/service/tencent v1.0.0/go.mod h1:drRWDu5XxIyUTKtBnmsfyPDchG+XyZzTb0vQhZ5De8k=
 go.dtapp.net/library/service/wechatqy v1.0.38 h1:WkoR/tNkl6f1RTW5WDuL/2KX/hYkO9GwubwIkgkSPz0=
 go.dtapp.net/library/service/wechatqy v1.0.38/go.mod h1:FQEZVKQ9jqaem+q+PZ2ORCqYaxClpFl57oLJf15jODQ=
 go.dtapp.net/library/utils/goarray v1.0.4 h1:2Zuk5cn/3/ZHmVRG542sOZToRmAyEhHTXGdqV5YegOo=
