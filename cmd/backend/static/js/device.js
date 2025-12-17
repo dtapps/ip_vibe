@@ -54,8 +54,8 @@ async function openFormModal(id) {
       document.getElementById("code").value = device.code;
       document.getElementById("code").disabled = true;
       document.getElementById("name").value = device.name;
-      document.getElementById("ip_v4").value = device.ip_v4;
-      document.getElementById("ip_v6").value = device.ip_v6;
+      document.getElementById("ip_v4").value = device.ip_v4 || "";
+      document.getElementById("ip_v6").value = device.ip_v6 || "";
 
       if (device.webhooks && device.webhooks.length > 0) {
         // 高亮已选
