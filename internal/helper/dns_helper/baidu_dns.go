@@ -3,6 +3,7 @@ package dns_helper
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"vibe_ip/internal/utils"
 
 	"github.com/baidubce/bce-sdk-go/bce"
@@ -36,17 +37,26 @@ func NewBaiduDnsClient(ctx context.Context, accessKeyID string, secretAccessKey 
 	return c, nil
 }
 
-// 设置HTTP日志记录器
-func (c *BaiduDnsClient) SetLog(log *http_log.LoggingTransport) *BaiduDnsClient {
-	if log != nil {
-		c.client.HTTPClient.Transport = log
-	}
-	return c
-}
-
 // 设置调试模式
 func (c *BaiduDnsClient) SetDebug(debug bool) *BaiduDnsClient {
 	// c.client.WithDebug(debug)
+	return c
+}
+
+// 设置HTTP日志记录器
+func (c *BaiduDnsClient) SetLog(log *http_log.LoggingTransport) *BaiduDnsClient {
+	if log == nil {
+		return c
+	}
+	if c.client.HTTPClient == nil {
+		c.client.HTTPClient = &http.Client{}
+	}
+	// 检查 c.client 是否初始化
+	if c.client == nil || c.client.HTTPClient == nil {
+		return c
+	}
+	// 将拦截器本身赋值给 Transport
+	c.client.HTTPClient.Transport = log
 	return c
 }
 
