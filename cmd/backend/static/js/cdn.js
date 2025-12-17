@@ -107,8 +107,12 @@ async function openFormModal(id) {
       document.getElementById("id").disabled = true;
       document.getElementById("config_id").value = cdnRecord.config_id;
       document.getElementById("config_id").disabled = true;
-      document.getElementById("domain").value = cdnRecord.domain;
+      document.getElementById("domain").value = cdnRecord.domain ?? "";
       document.getElementById("domain").disabled = true;
+      document.getElementById("sub_domain").value = cdnRecord.sub_domain;
+      document.getElementById("sub_domain").disabled = true;
+      document.getElementById("domain_name").innerHTML =
+        "." + cdnRecord.domain_name;
       document.getElementById("type").value = cdnRecord.type;
       document.getElementById("type").disabled = true;
       document.getElementById("origin_protocol").value =
@@ -136,6 +140,7 @@ async function openFormModal(id) {
       document.getElementById("id").disabled = true;
       document.getElementById("config_id").disabled = false;
       document.getElementById("domain").disabled = false;
+      document.getElementById("sub_domain").disabled = false;
       document.getElementById("type").disabled = false;
       document.getElementById("http_port").value = 80;
       document.getElementById("https_port").value = 443;
@@ -164,6 +169,7 @@ document.getElementById("form").onsubmit = async (e) => {
   const form_data = {
     config_id: Number(document.getElementById("config_id").value.trim()),
     domain: document.getElementById("domain").value.trim(),
+    sub_domain: document.getElementById("sub_domain").value.trim(),
     type: document.getElementById("type").value.trim(),
     origin_protocol: document.getElementById("origin_protocol").value.trim(),
     http_port: Number(document.getElementById("http_port").value.trim()),

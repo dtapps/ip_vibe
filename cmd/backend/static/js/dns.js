@@ -132,8 +132,12 @@ async function openFormModal(id) {
       document.getElementById("id").disabled = true;
       document.getElementById("config_id").value = dnsRecord.config_id;
       document.getElementById("config_id").disabled = true;
-      document.getElementById("domain").value = dnsRecord.domain;
+      document.getElementById("domain").value = dnsRecord.domain ?? "";
       document.getElementById("domain").disabled = true;
+      document.getElementById("sub_domain").value = dnsRecord.sub_domain;
+      document.getElementById("sub_domain").disabled = true;
+      document.getElementById("domain_name").innerHTML =
+        "." + dnsRecord.domain_name;
       document.getElementById("type").value = dnsRecord.type;
       document.getElementById("type").disabled = true;
 
@@ -165,6 +169,7 @@ async function openFormModal(id) {
       document.getElementById("id").disabled = true;
       document.getElementById("config_id").disabled = false;
       document.getElementById("domain").disabled = false;
+      document.getElementById("sub_domain").disabled = false;
       document.getElementById("type").disabled = false;
       document.getElementById("cdn_record_id").disabled = true;
       document.getElementById("ip_group_id").disabled = true;
@@ -193,6 +198,7 @@ document.getElementById("form").onsubmit = async (e) => {
   const form_data = {
     config_id: Number(document.getElementById("config_id").value.trim()),
     domain: document.getElementById("domain").value.trim(),
+    sub_domain: document.getElementById("sub_domain").value.trim(),
     type: document.getElementById("type").value.trim(),
     ip_group_id: Number(document.getElementById("ip_group_id").value.trim()),
     cdn_record_id: Number(

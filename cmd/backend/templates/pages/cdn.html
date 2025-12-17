@@ -32,7 +32,7 @@
         {{range .List}}
         {{ $urlPath := printf "/api/cdn-records/%d" .ID }}
         <tr>
-          <td>{{.Domain}}</td>
+          <td>{{.SubDomain}}.{{.DomainName}}</td>
           <td>{{.Type}}</td>
           <td>
             {{if eq .OriginProtocol "follow"}}

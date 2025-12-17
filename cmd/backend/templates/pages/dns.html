@@ -29,7 +29,7 @@
         {{ range .List }}
         {{ $urlPath := printf "/api/dns-records/%d" .ID }}
         <tr>
-          <td>{{.Domain}}</td>
+          <td>{{.SubDomain}}.{{.DomainName}}</td>
           <td>{{.Type}}</td>
           <td class="text-monospace">
             {{if gt .IPGroupID 0}}
