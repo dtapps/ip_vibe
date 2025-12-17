@@ -322,7 +322,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 	}
 
 	switch firstRecord.Edges.Config.Platform {
-	case platformconfig.PlatformEdgeone:
+	case platformconfig.PlatformEdgeone, platformconfig.PlatformTencentEo:
 
 		if len(origins) == 1 {
 			// 处理单IP
@@ -334,15 +334,14 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 			case cdnrecord.OriginProtocolHTTPS:
 				firstRecord.HTTPPort = 0
 			}
-			err = cdn_helper.EdgeOneProcessSingleIP(
-				ctx,
+			err = cdn_helper.TencentEOProcessSingleIP(ctx,
 				cdn_helper.ProcessService{
 					Log:      newLog,
 					Db:       global.GvaEntDb,
 					RecordID: firstRecord.ID,
 					Debug:    global.GvaEnv.DEBUG,
 				},
-				cdn_helper.EdgeOneProcessSingleIPParams{
+				cdn_helper.TencentEOProcessSingleIPParams{
 					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
 					SubDomain:      firstRecord.SubDomain,
 					OriginValue:    origins[0],
@@ -364,8 +363,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 			case cdnrecord.OriginProtocolHTTPS:
 				firstRecord.HTTPPort = 0
 			}
-			err = cdn_helper.EdgeOneProcessMultiIP(
-				ctx,
+			err = cdn_helper.TencentEOProcessMultiIP(ctx,
 				cdn_helper.ProcessService{
 					Log:      newLog,
 					Db:       global.GvaEntDb,
@@ -373,7 +371,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 					GroupID:  firstIPGroup.ID,
 					Debug:    global.GvaEnv.DEBUG,
 				},
-				cdn_helper.EdgeOneProcessMultiIPParams{
+				cdn_helper.TencentEOProcessMultiIPParams{
 					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
 					SubDomain:      firstRecord.SubDomain,
 					OriginValues:   origins,
@@ -423,8 +421,9 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 			return fmt.Errorf("找不到IP组: %w", err)
 		}
 
-		// 查询设备
+		// 查询设备 (心跳时间在 12 分钟内)
 		allDevice, err := firstIPGroup.QueryDevices().
+			Where(device.LastHeartbeatAtGTE(time.Now().Add(-12 * time.Minute))).
 			Order(ent.Asc(device.FieldID)).
 			All(ctx)
 		if err != nil {
@@ -448,8 +447,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 	switch firstRecord.Edges.Config.Platform {
 	case platformconfig.PlatformCloudflare:
 
-		err = dns_helper.CloudflareProcessSingleIP(
-			ctx,
+		err = dns_helper.CloudflareProcessSingleIP(ctx,
 			dns_helper.ProcessService{
 				Log:      newLog,
 				Db:       global.GvaEntDb,
@@ -467,17 +465,56 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 		}
 
 		return nil
-	case platformconfig.PlatformDnspod:
+	case platformconfig.PlatformDnspod, platformconfig.PlatformTencentDNS:
 
-		err = dns_helper.DnsPodProcessSingleIP(
-			ctx,
+		err = dns_helper.TencentDnsProcessSingleIP(ctx,
 			dns_helper.ProcessService{
 				Log:      newLog,
 				Db:       global.GvaEntDb,
 				RecordID: firstRecord.ID,
 				Debug:    global.GvaEnv.DEBUG,
 			},
-			dns_helper.DnsPodProcessSingleIPParams{
+			dns_helper.TencentDnsProcessSingleIPParams{
+				ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
+				SubDomain:   firstRecord.SubDomain,
+				OriginValue: origin,
+			},
+		)
+		if err != nil {
+			return fmt.Errorf("处理单IP失败: %w", err)
+		}
+
+		return nil
+	case platformconfig.PlatformAliyunDNS:
+
+		err = dns_helper.AliyunDnsProcessSingleIP(ctx,
+			dns_helper.ProcessService{
+				Log:      newLog,
+				Db:       global.GvaEntDb,
+				RecordID: firstRecord.ID,
+				Debug:    global.GvaEnv.DEBUG,
+			},
+			dns_helper.AliyunDnsProcessSingleIPParams{
+				ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
+				SubDomain:   firstRecord.SubDomain,
+				OriginValue: origin,
+			},
+		)
+		if err != nil {
+			return fmt.Errorf("处理单IP失败: %w", err)
+		}
+
+		return nil
+	case platformconfig.PlatformBaiduDNS:
+
+		err = dns_helper.BaiduDnsProcessSingleIP(ctx,
+			dns_helper.ProcessService{
+				Log:      newLog,
+				Db:       global.GvaEntDb,
+				RecordID: firstRecord.ID,
+				Debug:    global.GvaEnv.DEBUG,
+			},
+			dns_helper.BaiduDnsProcessSingleIPParams{
 				ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
 				SubDomain:   firstRecord.SubDomain,
 				OriginValue: origin,

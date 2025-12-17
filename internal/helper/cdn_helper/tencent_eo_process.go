@@ -13,7 +13,7 @@ import (
 )
 
 // 处理单IP参数
-type EdgeOneProcessSingleIPParams struct {
+type TencentEOProcessSingleIPParams struct {
 	ConfigJSON     json.RawMessage // 配置
 	SubDomain      string          // 子域名
 	OriginValue    string          // 记录值
@@ -23,7 +23,7 @@ type EdgeOneProcessSingleIPParams struct {
 }
 
 // 处理单IP
-func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params EdgeOneProcessSingleIPParams) (err error) {
+func TencentEOProcessSingleIP(ctx context.Context, service ProcessService, params TencentEOProcessSingleIPParams) (err error) {
 
 	var originType = "IP_DOMAIN"
 
@@ -46,7 +46,7 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 		platformConfig.ZoneID,
 	)
 	if err != nil {
-		return fmt.Errorf("初始化EdgeOne客户端失败: %w", err)
+		return fmt.Errorf("初始化客户端失败: %w", err)
 	}
 	// 设置调试模式
 	client.SetDebug(service.Debug)
@@ -205,7 +205,7 @@ func EdgeOneProcessSingleIP(ctx context.Context, service ProcessService, params 
 }
 
 // 处理多IP参数
-type EdgeOneProcessMultiIPParams struct {
+type TencentEOProcessMultiIPParams struct {
 	ConfigJSON     json.RawMessage // 配置
 	SubDomain      string          // 子域名
 	OriginValues   []string        // 记录值列表
@@ -216,7 +216,7 @@ type EdgeOneProcessMultiIPParams struct {
 }
 
 // 处理多IP
-func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params EdgeOneProcessMultiIPParams) (err error) {
+func TencentEOProcessMultiIP(ctx context.Context, service ProcessService, params TencentEOProcessMultiIPParams) (err error) {
 
 	var originType = "ORIGIN_GROUP"
 
@@ -239,7 +239,7 @@ func EdgeOneProcessMultiIP(ctx context.Context, service ProcessService, params E
 		platformConfig.ZoneID,
 	)
 	if err != nil {
-		return fmt.Errorf("初始化EdgeOne客户端失败: %w", err)
+		return fmt.Errorf("初始化客户端失败: %w", err)
 	}
 	// 设置调试模式
 	client.SetDebug(service.Debug)

@@ -10,14 +10,14 @@ import (
 )
 
 // 处理单IP参数
-type DnsPodProcessSingleIPParams struct {
+type TencentDnsProcessSingleIPParams struct {
 	ConfigJSON  json.RawMessage // 配置
 	SubDomain   string          // 子域名
 	OriginValue string          // 源站地址
 }
 
 // 处理单IP
-func DnsPodProcessSingleIP(ctx context.Context, service ProcessService, params DnsPodProcessSingleIPParams) (err error) {
+func TencentDnsProcessSingleIP(ctx context.Context, service ProcessService, params TencentDnsProcessSingleIPParams) (err error) {
 
 	var platformConfig struct {
 		SecretID   string `json:"secret_id"`   // 密钥ID
@@ -36,7 +36,7 @@ func DnsPodProcessSingleIP(ctx context.Context, service ProcessService, params D
 		platformConfig.SecretKey,
 	)
 	if err != nil {
-		return fmt.Errorf("初始化DnsPod客户端失败: %w", err)
+		return fmt.Errorf("初始化客户端失败: %w", err)
 	}
 	// 设置调试模式
 	client.SetDebug(service.Debug)

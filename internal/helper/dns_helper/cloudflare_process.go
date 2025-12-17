@@ -36,7 +36,7 @@ func CloudflareProcessSingleIP(ctx context.Context, service ProcessService, para
 		platformConfig.ZoneID,
 	)
 	if err != nil {
-		return fmt.Errorf("初始化Cloudflare客户端失败: %w", err)
+		return fmt.Errorf("初始化客户端失败: %w", err)
 	}
 	// 设置调试模式
 	client.SetDebug(service.Debug)
