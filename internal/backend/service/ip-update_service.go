@@ -340,6 +340,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 					Db:       global.GvaEntDb,
 					RecordID: firstRecord.ID,
 					Debug:    global.GvaEnv.DEBUG,
+					HttpLog:  global.GvaHttpLog,
 				},
 				cdn_helper.TencentEOProcessSingleIPParams{
 					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
@@ -370,6 +371,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 					RecordID: firstRecord.ID,
 					GroupID:  firstIPGroup.ID,
 					Debug:    global.GvaEnv.DEBUG,
+					HttpLog:  global.GvaHttpLog,
 				},
 				cdn_helper.TencentEOProcessMultiIPParams{
 					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
@@ -453,6 +455,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 				Db:       global.GvaEntDb,
 				RecordID: firstRecord.ID,
 				Debug:    global.GvaEnv.DEBUG,
+				HttpLog:  global.GvaHttpLog,
 			},
 			dns_helper.CloudflareProcessSingleIPParams{
 				ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
@@ -473,6 +476,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 				Db:       global.GvaEntDb,
 				RecordID: firstRecord.ID,
 				Debug:    global.GvaEnv.DEBUG,
+				HttpLog:  global.GvaHttpLog,
 			},
 			dns_helper.TencentDnsProcessSingleIPParams{
 				ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
@@ -493,6 +497,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 				Db:       global.GvaEntDb,
 				RecordID: firstRecord.ID,
 				Debug:    global.GvaEnv.DEBUG,
+				HttpLog:  global.GvaHttpLog,
 			},
 			dns_helper.AliyunDnsProcessSingleIPParams{
 				ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
@@ -513,6 +518,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 				Db:       global.GvaEntDb,
 				RecordID: firstRecord.ID,
 				Debug:    global.GvaEnv.DEBUG,
+				HttpLog:  global.GvaHttpLog,
 			},
 			dns_helper.BaiduDnsProcessSingleIPParams{
 				ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,

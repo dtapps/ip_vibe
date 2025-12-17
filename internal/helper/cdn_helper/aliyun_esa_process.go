@@ -49,7 +49,9 @@ func AliyunEsaProcessSingleIP(ctx context.Context, service ProcessService, param
 		return fmt.Errorf("初始化客户端失败: %w", err)
 	}
 	// 设置调试模式
-	client.SetDebug(service.Debug)
+	// client.SetDebug(service.Debug)
+	// 设置HTTP日志记录器
+	client.SetLog(service.HttpLog)
 
 	// 查询加速域名列表
 	service.Log.InfoContext(ctx, "查询加速域名列表 请求",
@@ -244,7 +246,9 @@ func AliyunEsaProcessMultiIP(ctx context.Context, service ProcessService, params
 		return fmt.Errorf("初始化客户端失败: %w", err)
 	}
 	// 设置调试模式
-	client.SetDebug(service.Debug)
+	// client.SetDebug(service.Debug)
+	// 设置HTTP日志记录器
+	client.SetLog(service.HttpLog)
 
 	// 获取源站组列表
 	service.Log.InfoContext(ctx, "获取源站组列表 请求",

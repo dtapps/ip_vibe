@@ -39,7 +39,9 @@ func CloudflareProcessSingleIP(ctx context.Context, service ProcessService, para
 		return fmt.Errorf("初始化客户端失败: %w", err)
 	}
 	// 设置调试模式
-	client.SetDebug(service.Debug)
+	// client.SetDebug(service.Debug)
+	// 设置HTTP日志记录器
+	client.SetLog(service.HttpLog)
 
 	// 查询域名记录
 	service.Log.InfoContext(ctx, "查询域名记录 请求",

@@ -39,7 +39,9 @@ func BaiduDnsProcessSingleIP(ctx context.Context, service ProcessService, params
 		return fmt.Errorf("初始化客户端失败: %w", err)
 	}
 	// 设置调试模式
-	client.SetDebug(service.Debug)
+	// client.SetDebug(service.Debug)
+	// 设置HTTP日志记录器
+	client.SetLog(service.HttpLog)
 
 	// 获取域名的解析记录列表
 	service.Log.InfoContext(ctx, "获取域名的解析记录列表 请求",

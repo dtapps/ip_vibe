@@ -3,6 +3,8 @@ package cdn_helper
 import (
 	"log/slog"
 	"vibe_ip/internal/ent"
+
+	"go.dtapp.net/library/contrib/http_log"
 )
 
 const (
@@ -12,11 +14,12 @@ const (
 )
 
 type ProcessService struct {
-	Log      *slog.Logger // 日志
-	Db       *ent.Client  // 数据库
-	RecordID int64        // 记录ID
-	GroupID  int64        // 源站组ID
-	Debug    bool         // 调试模式
+	Log      *slog.Logger               // 日志
+	Db       *ent.Client                // 数据库
+	RecordID int64                      // 记录ID
+	GroupID  int64                      // 源站组ID
+	Debug    bool                       // 调试模式
+	HttpLog  *http_log.LoggingTransport // HTTP日志记录器
 }
 
 // 查询加速域名列表
