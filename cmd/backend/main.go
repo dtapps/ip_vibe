@@ -91,10 +91,11 @@ func main() {
 
 	ctx := context.Background()
 
-	initialize.InitSLog("backend")     // 初始化 日志
-	initialize.InitEntSLog("backend")  // 初始化 ent 日志
-	initialize.InitGinSLog("backend")  // 初始化 gin 日志
-	initialize.InitGrpcSLog("backend") // 初始化 gRPC 日志
+	initialize.InitSLog("backend")       // 初始化 日志
+	initialize.InitEntSLog("backend")    // 初始化 ent 日志
+	initialize.InitGinSLog("backend")    // 初始化 gin 日志
+	initialize.InitGrpcSLog("backend")   // 初始化 gRPC 日志
+	initialize.InitGocronSLog("backend") // 初始化 gocron 日志
 
 	initialize.InitEntDb(ctx)      // 初始化 业务数据库
 	initialize.InitEntLogDb(ctx)   // 初始化 日志数据库
