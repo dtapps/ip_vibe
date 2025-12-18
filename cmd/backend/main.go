@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"embed"
+	"errors"
 	"fmt"
 	"html/template"
 	"io/fs"
@@ -10,9 +11,12 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
+	"syscall"
 	"time"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/backend/task"
@@ -41,6 +45,16 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
+)
+
+// 全局资源管理
+var (
+	grpcServerInstance   *grpc.Server
+	grpcListenerInstance net.Listener
+	httpServerInstance   *http.Server
+	grpcConnInstance     *grpc.ClientConn
+	shutdownOnce         sync.Once
+	shutdownChan         = make(chan struct{})
 )
 
 //go:embed templates static
@@ -80,12 +94,6 @@ func main() {
 	initialize.InitEntHttpLog()    // 初始化 HTTP 日志
 	initialize.InitThirdParty(ctx) // 初始化 第三方
 	initialize.InitSLog("backend") // 初始化 日志
-	defer func() {
-		initialize.CloseEntDb()      // 关闭 业务数据库
-		initialize.CloseEntLogDb()   // 关闭 日志数据库
-		initialize.CloseGoCron()     // 关闭 GoCron 调度器
-		initialize.CloseThirdParty() // 关闭 第三方
-	}()
 
 	initialize.InitOperationLogHelper() // 初始化操作日志助手
 
@@ -185,24 +193,91 @@ func main() {
 	// 启动CDN刷新任务
 	ipUpdate := service.NewIpUpdateService(global.GvaEntDb, global.GvaGoCron)
 	if err := ipUpdate.StartCdnJob(ctx); err != nil {
-		fmt.Printf("启动CDN刷新任务失败: %v\n", err)
+		slog.Error("启动CDN刷新任务失败", slog.String("error", err.Error()))
 		os.Exit(1)
 	}
 
 	// 启动域名监控任务
 	domainMonitor := task.NewDomainMonitorTask(global.GvaEntDb, global.GvaGoCron)
 	if err := domainMonitor.StartJob(ctx); err != nil {
-		fmt.Printf("启动域名监控任务失败: %v\n", err)
+		slog.Error("启动域名监控任务失败", slog.String("error", err.Error()))
 		os.Exit(1)
 	}
 
-	// 启动 Gin 服务器 https://gin-gonic.com/zh-cn/
-	fmt.Printf("Gin 服务器正在启动 %s...\n", global.GvaEnv.HTTP_PORT)
-	if err := router.Run(global.GvaEnv.HTTP_PORT); err != nil {
-		fmt.Printf("Gin 服务器启动失败: %v\n", err)
-		os.Exit(1)
+	// 创建 HTTP 服务器实例（用于优雅关闭）
+	httpServerInstance = &http.Server{
+		Addr:    global.GvaEnv.HTTP_PORT,
+		Handler: router,
 	}
-	fmt.Printf("Gin 服务器启动成功 %s\n", global.GvaEnv.HTTP_PORT)
+
+	// 启动 Gin 服务器
+	slog.Info("Gin 服务器正在启动", slog.String("port", global.GvaEnv.HTTP_PORT))
+
+	// 使用 ListenAndServe 在 goroutine 中运行，以便能够捕获关闭信号
+	go func() {
+		if err := httpServerInstance.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			slog.Error("Gin 服务器启动失败", slog.String("error", err.Error()))
+			os.Exit(1)
+		}
+	}()
+
+	slog.Info("Gin 服务器启动成功", slog.String("port", global.GvaEnv.HTTP_PORT))
+
+	// 等待中断信号进行优雅关闭
+	waitForShutdown()
+}
+
+// 优雅关闭函数
+func waitForShutdown() {
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	slog.Info("收到退出信号，开始优雅关闭...")
+
+	// 执行关闭流程
+	gracefulShutdown()
+}
+
+// 优雅关闭实现
+func gracefulShutdown() {
+	shutdownOnce.Do(func() {
+		// 1. 首先关闭 HTTP 服务器（停止接收新请求）
+		slog.Info("开始关闭 HTTP 服务器...")
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+
+		if httpServerInstance != nil {
+			if err := httpServerInstance.Shutdown(ctx); err != nil {
+				slog.Error("HTTP 服务器关闭失败", slog.String("error", err.Error()))
+			} else {
+				slog.Info("HTTP 服务器已关闭")
+			}
+		}
+
+		// 2. 关闭 gRPC-Gateway 到上游的连接
+		slog.Info("开始关闭 gRPC-Gateway 连接...")
+		if grpcConnInstance != nil {
+			grpcConnInstance.Close()
+			slog.Info("gRPC-Gateway 连接已关闭")
+		}
+
+		// 3. 通知 gRPC 服务器开始优雅关闭
+		close(shutdownChan)
+
+		// 4. 等待一段时间让 goroutine 完成
+		time.Sleep(2 * time.Second)
+
+		// 5. 关闭数据库连接和其他资源（现有的 defer 逻辑）
+		slog.Info("开始关闭数据库连接...")
+
+		// 注意：这里不能调用原来的 defer，需要手动调用
+		initialize.CloseEntDb()      // 关闭 业务数据库
+		initialize.CloseEntLogDb()   // 关闭 日志数据库
+		initialize.CloseGoCron()     // 关闭 GoCron 调度器
+		initialize.CloseThirdParty() // 关闭 第三方
+
+		slog.Info("所有资源已优雅关闭")
+	})
 }
 
 // 开发环境
@@ -704,87 +779,103 @@ func mcp_run(ctx context.Context, router *gin.Engine) {
 
 // gRPC 启动
 func grpc_run(ctx context.Context) {
-
 	// 判断是否开启 gRPC 功能
 	if global.GvaEnv.GRPC_PORT == "" {
+		slog.InfoContext(ctx, "gRPC 服务器不启动，因为没有配置端口！")
 		return
 	}
 
 	// 创建 gRPC 服务器
-	grpcServer := grpc.NewServer(
+	grpcServerInstance = grpc.NewServer(
 		grpc.MaxRecvMsgSize(10*1024*1024), // 10MB
 		grpc.MaxSendMsgSize(10*1024*1024), // 10MB
 	)
 
 	// 创建并注册
 	openServer := grpc_server.NewOpenServer()
-	openServer.RegisterService(grpcServer)
+	openServer.RegisterService(grpcServerInstance)
 
-	// 启动 gRPC 服务器 https://grpc.org.cn/
-	lis, err := net.Listen("tcp", global.GvaEnv.GRPC_PORT)
+	// 启动 gRPC 服务器
+	var err error
+	grpcListenerInstance, err = net.Listen("tcp", global.GvaEnv.GRPC_PORT)
 	if err != nil {
-		fmt.Printf("gRPC 服务器启动失败: %v\n", err)
+		slog.ErrorContext(ctx, "gRPC 服务器启动失败", slog.String("error", err.Error()))
 		os.Exit(1)
 	}
 
-	fmt.Printf("gRPC 服务器正在启动 %s...", global.GvaEnv.GRPC_PORT)
-	if err := grpcServer.Serve(lis); err != nil {
-		fmt.Printf("gRPC 服务器启动失败: %v\n", err)
-		os.Exit(1)
+	slog.InfoContext(ctx, "gRPC 服务器正在启动", slog.String("port", global.GvaEnv.GRPC_PORT))
+
+	// 使用 Serve 但不阻塞，通过 channel 监听关闭信号
+	go func() {
+		if err := grpcServerInstance.Serve(grpcListenerInstance); err != nil {
+			slog.ErrorContext(ctx, "gRPC 服务器异常退出", slog.String("error", err.Error()))
+		}
+		slog.InfoContext(ctx, "gRPC 服务器已停止")
+	}()
+
+	<-shutdownChan // 等待关闭信号
+	grpcServerInstance.GracefulStop()
+	if grpcListenerInstance != nil {
+		grpcListenerInstance.Close()
 	}
-	fmt.Printf("gRPC 服务器启动成功 %s\n", global.GvaEnv.GRPC_PORT)
+	slog.InfoContext(ctx, "gRPC 服务器已优雅关闭")
 }
 
-// gw_run 启动 gRPC-Gateway，并将 /grpc 前缀挂载到 Gin
+// gRPC-Gateway 启动
 func grpc_gw_run(ctx context.Context, router *gin.Engine) {
+	// 判断是否开启 gRPC-Gateway 功能
 	if global.GvaEnv.GRPC_PORT == "" {
+		slog.Info("gRPC-Gateway 不启动，因为没有配置端口！")
 		return
 	}
 
-	// 连接上游 gRPC
+	// 连接上游 gRPC - 提升到全局，不再 defer close
 	grpcAddr := "localhost" + global.GvaEnv.GRPC_PORT
-	conn, err := grpc.NewClient(
+	var err error
+	grpcConnInstance, err = grpc.NewClient(
 		grpcAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		fmt.Printf("gRPC-Gateway 连接上游失败（忽略路由注册）: %v\n", err)
-	} else {
-		defer conn.Close()
-
-		gwMux := grpcGatewayRuntime.NewServeMux(
-			grpcGatewayRuntime.WithErrorHandler(func(
-				ctx context.Context, mux *grpcGatewayRuntime.ServeMux, marshaler grpcGatewayRuntime.Marshaler,
-				w http.ResponseWriter, r *http.Request, err error,
-			) {
-				st, ok := status.FromError(err)
-				code := http.StatusInternalServerError
-				if ok {
-					switch st.Code() {
-					case codes.Unavailable:
-						code = http.StatusServiceUnavailable
-					case codes.InvalidArgument:
-						code = http.StatusBadRequest
-					case codes.NotFound:
-						code = http.StatusNotFound
-					}
-				}
-				w.Header().Set("Content-Type", marshaler.ContentType(nil))
-				w.WriteHeader(code)
-				_ = marshaler.NewEncoder(w).Encode(map[string]any{
-					"error": err.Error(),
-					"code":  code,
-				})
-			}),
-		)
-
-		// 注册你的服务（每个服务调用一次）
-		if err := grpc_generated.RegisterOpenServiceHandler(ctx, gwMux, conn); err != nil {
-			fmt.Printf("注册 OpenService 网关路由失败（忽略路由注册）: %v\n", err)
-		}
-
-		// 关键：把网关挂到 Gin 的 /grpc 前缀（Any 兼容 GET/POST/PUT/DELETE 等）
-		router.Group("/grpc").Any("/*any", gin.WrapH(gwMux))
-		fmt.Printf("gRPC-Gateway 已挂载到 Gin，前缀: /grpc，上游: %s\n", grpcAddr)
+		slog.Error("gRPC-Gateway 连接上游失败（忽略路由注册）", slog.String("error", err.Error()))
+		return
 	}
+
+	gwMux := grpcGatewayRuntime.NewServeMux(
+		grpcGatewayRuntime.WithErrorHandler(func(
+			ctx context.Context, mux *grpcGatewayRuntime.ServeMux, marshaler grpcGatewayRuntime.Marshaler,
+			w http.ResponseWriter, r *http.Request, err error,
+		) {
+			st, ok := status.FromError(err)
+			code := http.StatusInternalServerError
+			if ok {
+				switch st.Code() {
+				case codes.Unavailable:
+					code = http.StatusServiceUnavailable
+				case codes.InvalidArgument:
+					code = http.StatusBadRequest
+				case codes.NotFound:
+					code = http.StatusNotFound
+				case codes.Canceled:
+					code = http.StatusServiceUnavailable
+				}
+			}
+			w.Header().Set("Content-Type", marshaler.ContentType(nil))
+			w.WriteHeader(code)
+			_ = marshaler.NewEncoder(w).Encode(map[string]any{
+				"error": err.Error(),
+				"code":  code,
+			})
+		}),
+	)
+
+	// 注册你的服务
+	if err := grpc_generated.RegisterOpenServiceHandler(ctx, gwMux, grpcConnInstance); err != nil {
+		slog.Error("注册 OpenService 网关路由失败", slog.String("error", err.Error()))
+		return
+	}
+
+	// 关键：把网关挂到 Gin 的 /grpc 前缀
+	router.Group("/grpc").Any("/*any", gin.WrapH(http.StripPrefix("/grpc", gwMux)))
+	slog.Info("gRPC-Gateway 已挂载到 Gin", slog.String("prefix", "/grpc"), slog.String("upstream", grpcAddr))
 }
