@@ -508,7 +508,7 @@ github.com/swaggo/swag
 # github.com/swaggo/swag/v2 v2.0.0-rc4
 ## explicit; go 1.18
 github.com/swaggo/swag/v2
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.13
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.14
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors
