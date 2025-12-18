@@ -19,6 +19,7 @@ import (
 	"vibe_ip/internal/docs_2"
 	"vibe_ip/internal/docs_3"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/grpc_server"
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/initialize"
@@ -32,12 +33,14 @@ import (
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
+	grpcGatewayRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/health"
-	healthgrpc "google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 )
 
 //go:embed templates static
@@ -171,7 +174,10 @@ func main() {
 	mcp_run(ctx, router)
 
 	// gRPC 启动
-	go grpc_run(ctx, router)
+	go grpc_run(ctx)
+
+	// gRPC-Gateway 启动
+	go grpc_gw_run(ctx, router)
 
 	// 启动 GoCron 调度器
 	initialize.StartGoCron()
@@ -697,7 +703,7 @@ func mcp_run(ctx context.Context, router *gin.Engine) {
 }
 
 // gRPC 启动
-func grpc_run(ctx context.Context, router *gin.Engine) {
+func grpc_run(ctx context.Context) {
 
 	// 判断是否开启 gRPC 功能
 	if global.GvaEnv.GRPC_PORT == "" {
@@ -709,9 +715,6 @@ func grpc_run(ctx context.Context, router *gin.Engine) {
 		grpc.MaxRecvMsgSize(10*1024*1024), // 10MB
 		grpc.MaxSendMsgSize(10*1024*1024), // 10MB
 	)
-
-	healthcheck := health.NewServer()
-	healthgrpc.RegisterHealthServer(grpcServer, healthcheck)
 
 	// 创建并注册
 	openServer := grpc_server.NewOpenServer()
@@ -730,4 +733,58 @@ func grpc_run(ctx context.Context, router *gin.Engine) {
 		os.Exit(1)
 	}
 	fmt.Printf("gRPC 服务器启动成功 %s\n", global.GvaEnv.GRPC_PORT)
+}
+
+// gw_run 启动 gRPC-Gateway，并将 /grpc 前缀挂载到 Gin
+func grpc_gw_run(ctx context.Context, router *gin.Engine) {
+	if global.GvaEnv.GRPC_PORT == "" {
+		return
+	}
+
+	// 连接上游 gRPC
+	grpcAddr := "localhost" + global.GvaEnv.GRPC_PORT
+	conn, err := grpc.NewClient(
+		grpcAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		fmt.Printf("gRPC-Gateway 连接上游失败（忽略路由注册）: %v\n", err)
+	} else {
+		defer conn.Close()
+
+		gwMux := grpcGatewayRuntime.NewServeMux(
+			grpcGatewayRuntime.WithErrorHandler(func(
+				ctx context.Context, mux *grpcGatewayRuntime.ServeMux, marshaler grpcGatewayRuntime.Marshaler,
+				w http.ResponseWriter, r *http.Request, err error,
+			) {
+				st, ok := status.FromError(err)
+				code := http.StatusInternalServerError
+				if ok {
+					switch st.Code() {
+					case codes.Unavailable:
+						code = http.StatusServiceUnavailable
+					case codes.InvalidArgument:
+						code = http.StatusBadRequest
+					case codes.NotFound:
+						code = http.StatusNotFound
+					}
+				}
+				w.Header().Set("Content-Type", marshaler.ContentType(nil))
+				w.WriteHeader(code)
+				_ = marshaler.NewEncoder(w).Encode(map[string]any{
+					"error": err.Error(),
+					"code":  code,
+				})
+			}),
+		)
+
+		// 注册你的服务（每个服务调用一次）
+		if err := grpc_generated.RegisterOpenServiceHandler(ctx, gwMux, conn); err != nil {
+			fmt.Printf("注册 OpenService 网关路由失败（忽略路由注册）: %v\n", err)
+		}
+
+		// 关键：把网关挂到 Gin 的 /grpc 前缀（Any 兼容 GET/POST/PUT/DELETE 等）
+		router.Group("/grpc").Any("/*any", gin.WrapH(gwMux))
+		fmt.Printf("gRPC-Gateway 已挂载到 Gin，前缀: /grpc，上游: %s\n", grpcAddr)
+	}
 }
