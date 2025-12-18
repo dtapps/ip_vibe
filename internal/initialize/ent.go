@@ -3,14 +3,13 @@ package initialize
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
-	"strings"
 	"vibe_ip/internal/ent"
 	_ "vibe_ip/internal/ent/runtime"
 	"vibe_ip/internal/ent_log"
 	_ "vibe_ip/internal/ent_log/runtime"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/ent_slog"
 
 	"entgo.io/ent/dialect"
 	entSql "entgo.io/ent/dialect/sql"
@@ -50,12 +49,7 @@ func InitEntDb(ctx context.Context) {
 	if global.GvaEntSlog != nil {
 		opts = append(
 			opts,
-			ent.Log(func(a ...any) {
-				sqlStr := fmt.Sprint(a...)
-				// 将 SQL 里的双引号替换为单引号，或者直接去掉，从而彻底避免 slog 的转义机制
-				cleanSql := strings.ReplaceAll(sqlStr, "\"", "'")
-				global.GvaEntSlog.WithLogger().Info("ent", "sql", cleanSql)
-			}),
+			ent.Log(ent_slog.NewSlogLogger(global.GvaEntSlog.WithLogger(), "ent").Log),
 		)
 	}
 	if global.GvaEnv.DEBUG {
@@ -110,12 +104,7 @@ func InitEntLogDb(ctx context.Context) {
 	if global.GvaEntSlog != nil {
 		opts = append(
 			opts,
-			ent_log.Log(func(a ...any) {
-				sqlStr := fmt.Sprint(a...)
-				// 将 SQL 里的双引号替换为单引号，或者直接去掉，从而彻底避免 slog 的转义机制
-				cleanSql := strings.ReplaceAll(sqlStr, "\"", "'")
-				global.GvaEntSlog.WithLogger().Info("ent_log", "sql", cleanSql)
-			}),
+			ent_log.Log(ent_slog.NewSlogLogger(global.GvaEntSlog.WithLogger(), "ent_log").Log),
 		)
 	}
 	if global.GvaEnv.DEBUG {
