@@ -9,16 +9,17 @@ option go_package = ".;grpc_generated";
 import "google/api/annotations.proto";
 
 service OpenService {
-    // 设备上报IP
-    rpc ReportDeviceIP(ReportDeviceIPRequest) returns (ReportDeviceIPResponse){
+  // 设备上报IP
+  rpc ReportDeviceIP(ReportDeviceIPRequest) returns (ReportDeviceIPResponse) {
     option (google.api.http) = {
       post: "/device/ip-report"
       body: "*"
     };
   }
 
-    // 获取设备端口转发
-    rpc GetDevicePortForwards(GetDevicePortForwardsRequest) returns (GetDevicePortForwardsResponse){
+  // 获取设备端口转发
+  rpc GetDevicePortForwards(GetDevicePortForwardsRequest)
+      returns (GetDevicePortForwardsResponse) {
     option (google.api.http) = {
       get: "/device/{device_code}/port-forwards"
     };
@@ -27,34 +28,34 @@ service OpenService {
 
 // 设备上报IP 请求参数
 message ReportDeviceIPRequest {
-    string device_code = 1;// 设备编码
-    string device_name = 2;// 设备名称
-    string ipv4_addr = 3; // IP地址V4
-    string ipv6_addr = 4; // IP地址V6
+  string device_code = 1;  // 设备编码
+  string device_name = 2;  // 设备名称
+  string ipv4_addr = 3;    // IP地址V4
+  string ipv6_addr = 4;    // IP地址V6
 }
 
 // 设备上报IP 响应参数
 message ReportDeviceIPResponse {
-    string device_code = 1;// 设备编码
-    string msg = 2; // 消息
+  string device_code = 1;  // 设备编码
+  string msg = 2;          // 消息
 }
 
 // 获取设备端口转发 请求参数
 message GetDevicePortForwardsRequest {
-    string device_code = 1;// 设备编码
+  string device_code = 1;  // 设备编码
 }
 
- // 端口转发规则列表
+// 端口转发规则列表
 message PortForwardRule {
-    int64 id = 1;       // 设备端口转发序号
-    int32 local_port = 2;// 本地监听端口
-    string remote_host = 3; // 远程目标地址
-    int32 remote_port = 4; // 远程目标端口
-    repeated string protocols = 5; // 协议列表，支持 tcp4, tcp6, udp4, udp6
-    bool auto_forward = 6; // 防火墙自动放行
+  int64 id = 1;                   // 设备端口转发序号
+  int32 local_port = 2;           // 本地监听端口
+  string remote_host = 3;         // 远程目标地址
+  int32 remote_port = 4;          // 远程目标端口
+  repeated string protocols = 5;  // 协议列表，支持 tcp4, tcp6, udp4, udp6
+  bool auto_forward = 6;          // 防火墙自动放行
 }
 
 // 获取设备端口转发 响应参数
 message GetDevicePortForwardsResponse {
-    repeated PortForwardRule rules = 1; // 端口转发规则列表
+  repeated PortForwardRule rules = 1;  // 端口转发规则列表
 }

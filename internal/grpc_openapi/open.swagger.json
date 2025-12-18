@@ -1,0 +1,201 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "open.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "OpenService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/device/ip-report": {
+      "post": {
+        "summary": "设备上报IP",
+        "operationId": "OpenService_ReportDeviceIP",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/openReportDeviceIPResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/openReportDeviceIPRequest"
+            }
+          }
+        ],
+        "tags": [
+          "OpenService"
+        ]
+      }
+    },
+    "/device/{deviceCode}/port-forwards": {
+      "get": {
+        "summary": "获取设备端口转发",
+        "operationId": "OpenService_GetDevicePortForwards",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/openGetDevicePortForwardsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "deviceCode",
+            "description": "设备编码",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "OpenService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "openGetDevicePortForwardsResponse": {
+      "type": "object",
+      "properties": {
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/openPortForwardRule"
+          },
+          "title": "端口转发规则列表"
+        }
+      },
+      "title": "获取设备端口转发 响应参数"
+    },
+    "openPortForwardRule": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64",
+          "title": "设备端口转发序号"
+        },
+        "localPort": {
+          "type": "integer",
+          "format": "int32",
+          "title": "本地监听端口"
+        },
+        "remoteHost": {
+          "type": "string",
+          "title": "远程目标地址"
+        },
+        "remotePort": {
+          "type": "integer",
+          "format": "int32",
+          "title": "远程目标端口"
+        },
+        "protocols": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "协议列表，支持 tcp4, tcp6, udp4, udp6"
+        },
+        "autoForward": {
+          "type": "boolean",
+          "title": "防火墙自动放行"
+        }
+      },
+      "title": "端口转发规则列表"
+    },
+    "openReportDeviceIPRequest": {
+      "type": "object",
+      "properties": {
+        "deviceCode": {
+          "type": "string",
+          "title": "设备编码"
+        },
+        "deviceName": {
+          "type": "string",
+          "title": "设备名称"
+        },
+        "ipv4Addr": {
+          "type": "string",
+          "title": "IP地址V4"
+        },
+        "ipv6Addr": {
+          "type": "string",
+          "title": "IP地址V6"
+        }
+      },
+      "title": "设备上报IP 请求参数"
+    },
+    "openReportDeviceIPResponse": {
+      "type": "object",
+      "properties": {
+        "deviceCode": {
+          "type": "string",
+          "title": "设备编码"
+        },
+        "msg": {
+          "type": "string",
+          "title": "消息"
+        }
+      },
+      "title": "设备上报IP 响应参数"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}
