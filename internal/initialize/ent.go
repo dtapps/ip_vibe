@@ -40,14 +40,26 @@ func InitEntDb(ctx context.Context) {
 	driver := entSql.OpenDB(dialect.SQLite, sqlDB)
 
 	// 3. 让 Ent 使用这个 DB  dialect.SQLite,
-	global.GvaEntDb = ent.NewClient(ent.Driver(driver))
-
-	// 4. 开启调试模式（仅在开发环境）
+	opts := make([]ent.Option, 0)
+	opts = append(
+		opts,
+		ent.Driver(driver),
+	)
+	opts = append(
+		opts,
+		ent.Log(func(a ...any) {
+			global.GvaEntSlog.WithLogger().Info("ent", "sql", a)
+		}),
+	)
 	if global.GvaEnv.DEBUG {
-		global.GvaEntDb = global.GvaEntDb.Debug()
+		opts = append(
+			opts,
+			ent.Debug(),
+		)
 	}
+	global.GvaEntDb = ent.NewClient(opts...)
 
-	// 5. 自动迁移
+	// 4. 自动迁移
 	if err := global.GvaEntDb.Schema.Create(ctx); err != nil {
 		log.Fatalf("[初始化 业务数据库] 自动迁移失败:%v", err)
 	}
@@ -83,14 +95,26 @@ func InitEntLogDb(ctx context.Context) {
 	driver := entSql.OpenDB(dialect.SQLite, sqlDB)
 
 	// 3. 让 Ent 使用这个 DB  dialect.SQLite,
-	global.GvaEntLogDb = ent_log.NewClient(ent_log.Driver(driver))
-
-	// 4. 开启调试模式（仅在开发环境）
+	opts := make([]ent_log.Option, 0)
+	opts = append(
+		opts,
+		ent_log.Driver(driver),
+	)
+	opts = append(
+		opts,
+		ent_log.Log(func(a ...any) {
+			global.GvaEntSlog.WithLogger().Info("ent_log", "sql", a)
+		}),
+	)
 	if global.GvaEnv.DEBUG {
-		global.GvaEntLogDb = global.GvaEntLogDb.Debug()
+		opts = append(
+			opts,
+			ent_log.Debug(),
+		)
 	}
+	global.GvaEntLogDb = ent_log.NewClient(opts...)
 
-	// 5. 自动迁移
+	// 4. 自动迁移
 	if err := global.GvaEntLogDb.Schema.Create(ctx); err != nil {
 		log.Fatalf("[初始化 日志数据库] 自动迁移失败:%v", err)
 	}

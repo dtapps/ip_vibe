@@ -91,16 +91,18 @@ func main() {
 
 	ctx := context.Background()
 
-	initialize.InitEntDb(ctx)          // 初始化 业务数据库
-	initialize.InitEntLogDb(ctx)       // 初始化 日志数据库
-	initialize.InitGoCron()            // 初始化 GoCron 调度器
-	initialize.InitMCP()               // 初始化 MCP
-	initialize.InitEntRestyLog()       // 初始化 Resty 日志
-	initialize.InitEntHttpLog()        // 初始化 HTTP 日志
-	initialize.InitThirdParty(ctx)     // 初始化 第三方
 	initialize.InitSLog("backend")     // 初始化 日志
+	initialize.InitEntSLog("backend")  // 初始化 ent 日志
 	initialize.InitGinSLog("backend")  // 初始化 gin 日志
 	initialize.InitGrpcSLog("backend") // 初始化 gRPC 日志
+
+	initialize.InitEntDb(ctx)      // 初始化 业务数据库
+	initialize.InitEntLogDb(ctx)   // 初始化 日志数据库
+	initialize.InitGoCron()        // 初始化 GoCron 调度器
+	initialize.InitMCP()           // 初始化 MCP
+	initialize.InitEntRestyLog()   // 初始化 Resty 日志
+	initialize.InitEntHttpLog()    // 初始化 HTTP 日志
+	initialize.InitThirdParty(ctx) // 初始化 第三方
 
 	initialize.InitOperationLogHelper() // 初始化操作日志助手
 

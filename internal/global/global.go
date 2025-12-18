@@ -55,8 +55,10 @@ var (
 
 	GvaOperationLogHelper *operation_logs_helper.OperationLogHelper // 操作日志助手
 
-	GvaGinSlog  *golog.SLog                // gin 日志
-	GvaGrpcSlog *golog.SLog                // gRPC 日志
+	GvaEntSlog  *golog.SLog // ent 日志
+	GvaGinSlog  *golog.SLog // gin 日志
+	GvaGrpcSlog *golog.SLog // gRPC 日志
+
 	GvaHttpLog  *http_log.LoggingTransport // HTTP框架日志
 	GvaRestyLog *resty_log.Logger          // Resty框架日志
 
