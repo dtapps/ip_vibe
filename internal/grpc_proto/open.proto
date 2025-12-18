@@ -5,12 +5,24 @@ package open;
 // 注意: ;前面是路径，后面是包名
 option go_package = "/;grpc_generated";
 
+// 引入 HTTP 注解定义
+import "google/api/annotations.proto";
+
 service OpenService {
     // 设备上报IP
-    rpc ReportDeviceIP(ReportDeviceIPRequest) returns (ReportDeviceIPResponse);
+    rpc ReportDeviceIP(ReportDeviceIPRequest) returns (ReportDeviceIPResponse){
+    option (google.api.http) = {
+      post: "/device/ip-report"
+      body: "*"
+    };
+  }
 
     // 获取设备端口转发
-    rpc GetDevicePortForwards(GetDevicePortForwardsRequest) returns (GetDevicePortForwardsResponse);
+    rpc GetDevicePortForwards(GetDevicePortForwardsRequest) returns (GetDevicePortForwardsResponse){
+    option (google.api.http) = {
+      get: "/device/{device_code}/port-forwards"
+    };
+  }
 }
 
 // 设备上报IP 请求参数

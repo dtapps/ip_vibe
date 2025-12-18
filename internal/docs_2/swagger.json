@@ -3967,21 +3967,17 @@
             "type": "object",
             "required": [
                 "config_id",
-                "domain",
                 "http_port",
                 "https_port",
                 "ip_group_id",
                 "origin_protocol",
+                "sub_domain",
                 "type"
             ],
             "properties": {
                 "config_id": {
                     "description": "平台配置序号",
                     "type": "integer"
-                },
-                "domain": {
-                    "description": "域名（如 www.example.com）",
-                    "type": "string"
                 },
                 "http_port": {
                     "description": "HTTP 回源端口",
@@ -3997,6 +3993,10 @@
                 },
                 "origin_protocol": {
                     "description": "回源协议（http、https、follow）",
+                    "type": "string"
+                },
+                "sub_domain": {
+                    "description": "子域名（如 www, blog, api）",
                     "type": "string"
                 },
                 "type": {
@@ -4052,7 +4052,7 @@
             "type": "object",
             "required": [
                 "config_id",
-                "domain",
+                "sub_domain",
                 "type"
             ],
             "properties": {
@@ -4064,13 +4064,13 @@
                     "description": "平台配置序号",
                     "type": "integer"
                 },
-                "domain": {
-                    "description": "域名（如 www.example.com）",
-                    "type": "string"
-                },
                 "ip_group_id": {
                     "description": "IP 组序号（与 cdn_record_id 二选一）",
                     "type": "integer"
+                },
+                "sub_domain": {
+                    "description": "子域名（如 www, blog, api）",
+                    "type": "string"
                 },
                 "type": {
                     "description": "记录类型（A、AAAA、CNAME等）",

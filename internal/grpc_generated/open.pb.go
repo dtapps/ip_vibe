@@ -7,6 +7,7 @@
 package grpc_generated
 
 import (
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -323,7 +324,7 @@ var File_open_proto protoreflect.FileDescriptor
 const file_open_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"open.proto\x12\x04open\"\x93\x01\n" +
+	"open.proto\x12\x04open\x1a\x1cgoogle/api/annotations.proto\"\x93\x01\n" +
 	"\x15ReportDeviceIPRequest\x12\x1f\n" +
 	"\vdevice_code\x18\x01 \x01(\tR\n" +
 	"deviceCode\x12\x1f\n" +
@@ -349,10 +350,10 @@ const file_open_proto_rawDesc = "" +
 	"\tprotocols\x18\x05 \x03(\tR\tprotocols\x12!\n" +
 	"\fauto_forward\x18\x06 \x01(\bR\vautoForward\"L\n" +
 	"\x1dGetDevicePortForwardsResponse\x12+\n" +
-	"\x05rules\x18\x01 \x03(\v2\x15.open.PortForwardRuleR\x05rules2\xbc\x01\n" +
-	"\vOpenService\x12K\n" +
-	"\x0eReportDeviceIP\x12\x1b.open.ReportDeviceIPRequest\x1a\x1c.open.ReportDeviceIPResponse\x12`\n" +
-	"\x15GetDevicePortForwards\x12\".open.GetDevicePortForwardsRequest\x1a#.open.GetDevicePortForwardsResponseB\x12Z\x10/;grpc_generatedb\x06proto3"
+	"\x05rules\x18\x01 \x03(\v2\x15.open.PortForwardRuleR\x05rules2\x88\x02\n" +
+	"\vOpenService\x12i\n" +
+	"\x0eReportDeviceIP\x12\x1b.open.ReportDeviceIPRequest\x1a\x1c.open.ReportDeviceIPResponse\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/device/ip-report\x12\x8d\x01\n" +
+	"\x15GetDevicePortForwards\x12\".open.GetDevicePortForwardsRequest\x1a#.open.GetDevicePortForwardsResponse\"+\x82\xd3\xe4\x93\x02%\x12#/device/{device_code}/port-forwardsB\x12Z\x10/;grpc_generatedb\x06proto3"
 
 var (
 	file_open_proto_rawDescOnce sync.Once

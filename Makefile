@@ -6,6 +6,11 @@ mod:
 	go mod tidy
 	go mod vendor
 
+generate:
+	make swag_v1
+	make swag_v2
+	make grpc_generate
+
 generate_ent:
 # 	ent generate --feature schema/snapshot,privacy,entql,namedges,bidiedges,sql/schemaconfig,sql/lock,sql/modifier,sql/execquery,sql/upsert ./ent/schema
 	ent generate --feature namedges,bidiedges,sql/modifier,sql/execquery,sql/upsert ./ent/schema
@@ -54,9 +59,12 @@ swag_v2_fmt:
 swag2op:
 	swag2op init -g cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal -o internal/docs_2 -openapiOutputDir internal/docs_3
 
+# -I 是 引入 googleapis 目录，用于引入 HTTP 注解定义
 grpc_generate:
 	@echo "Generating gRPC code..."
-	protoc --go_out=./internal/grpc_generated \
+	protoc -I ./internal/grpc_proto \
+	       -I $$(go env GOPATH)/src/googleapis \
+		   --go_out=./internal/grpc_generated \
 	       --go-grpc_out=./internal/grpc_generated \
 	       --proto_path=./internal/grpc_proto \
 	       ./internal/grpc_proto/*.proto
