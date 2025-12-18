@@ -19,7 +19,6 @@ require (
 	github.com/gin-gonic/gin v1.11.0
 	github.com/go-co-op/gocron/v2 v2.19.0
 	github.com/google/uuid v1.6.0
-	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
 	github.com/miekg/dns v1.1.69
 	github.com/modelcontextprotocol/go-sdk v1.1.0

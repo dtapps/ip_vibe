@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"embed"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"html/template"
@@ -32,6 +33,8 @@ import (
 	"vibe_ip/internal/mcp_resource"
 	"vibe_ip/internal/mcp_tool"
 
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+
 	"github.com/denisbrodbeck/machineid"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
@@ -45,6 +48,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/status"
 )
 
@@ -818,25 +822,42 @@ func grpc_run(ctx context.Context) {
 		return
 	}
 
-	// 鉴权拦截器
-	authInterceptor := grpc_middleware.BasicAuth(global.GvaGrpcSlog.WithLogger(), func(user, pass string) bool {
-		return user == global.GvaEnv.BASIC_AUTH_USERNAME && pass == global.GvaEnv.BASIC_AUTH_PASSWORD
-	})
-
-	// 日志拦截器
-	logInterceptor := grpc_middleware.UnaryLogger(global.GvaGrpcSlog.WithLogger())
-
 	// 创建 gRPC 服务器
-	grpcServerInstance = grpc.NewServer(
-		grpc.ChainUnaryInterceptor(
-			authInterceptor,
-			logInterceptor,
-		),
+	opts := make([]grpc.ServerOption, 0)
+	usis := make([]grpc.UnaryServerInterceptor, 0)
+	// 鉴权拦截器
+	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
+		usis = append(
+			usis,
+			grpc_middleware.BasicAuth(global.GvaGrpcSlog.WithLogger(), func(user, pass string) bool {
+				return user == global.GvaEnv.BASIC_AUTH_USERNAME && pass == global.GvaEnv.BASIC_AUTH_PASSWORD
+			}),
+		)
+	}
+	// 日志拦截器
+	usis = append(
+		usis, grpc_middleware.UnaryLogger(global.GvaGrpcSlog.WithLogger()),
+	)
+	opts = append(
+		opts,
+		grpc.ChainUnaryInterceptor(usis...),
+	)
+	opts = append(
+		opts,
 		grpc.MaxRecvMsgSize(10*1024*1024), // 10MB
+	)
+	opts = append(
+		opts,
 		grpc.MaxSendMsgSize(10*1024*1024), // 10MB
 	)
+	grpcServerInstance = grpc.NewServer(opts...)
 
-	// 创建并注册
+	// 注册健康检查服务
+	healthServer := health.NewServer()
+	healthServer.SetServingStatus("grpc.health.v1.Health", healthpb.HealthCheckResponse_SERVING) // 整体
+	healthpb.RegisterHealthServer(grpcServerInstance, healthServer)
+
+	// 注册业务服务
 	openServer := grpc_server.NewOpenServer()
 	openServer.RegisterService(grpcServerInstance)
 
@@ -866,6 +887,16 @@ func grpc_run(ctx context.Context) {
 	slog.InfoContext(ctx, "gRPC 服务器已优雅关闭")
 }
 
+type basicCreds struct {
+	username, password string
+}
+
+func (b *basicCreds) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+	cred := "Basic " + base64.StdEncoding.EncodeToString([]byte(b.username+":"+b.password))
+	return map[string]string{"authorization": cred}, nil
+}
+func (b *basicCreds) RequireTransportSecurity() bool { return false } // 若启用 TLS，建议返回 true
+
 // gRPC-Gateway 启动
 func grpc_gw_run(ctx context.Context, router *gin.Engine) {
 	// 判断是否开启 gRPC-Gateway 功能
@@ -877,10 +908,23 @@ func grpc_gw_run(ctx context.Context, router *gin.Engine) {
 	// 连接上游 gRPC - 提升到全局，不再 defer close
 	grpcAddr := "localhost" + global.GvaEnv.GRPC_PORT
 	var err error
-	grpcConnInstance, err = grpc.NewClient(
-		grpcAddr,
+
+	opts := make([]grpc.DialOption, 0)
+	opts = append(
+		opts,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
+	// 鉴权
+	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
+		opts = append(
+			opts,
+			grpc.WithPerRPCCredentials(&basicCreds{
+				username: global.GvaEnv.BASIC_AUTH_USERNAME,
+				password: global.GvaEnv.BASIC_AUTH_PASSWORD,
+			}),
+		)
+	}
+	grpcConnInstance, err = grpc.NewClient(grpcAddr, opts...)
 	if err != nil {
 		slog.Error("gRPC-Gateway 连接上游失败（忽略路由注册）", slog.String("error", err.Error()))
 		return
