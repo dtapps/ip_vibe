@@ -3,7 +3,7 @@ syntax = "proto3";
 package open;
 
 // 注意: ;前面是路径，后面是包名
-option go_package = "/;grpc_generated";
+option go_package = ".;grpc_generated";
 
 // 引入 HTTP 注解定义
 import "google/api/annotations.proto";
