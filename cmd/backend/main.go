@@ -560,6 +560,22 @@ func web_router(ctx context.Context, router *gin.Engine) {
 
 	// 日志页面 - 提供HTML页面并渲染数据
 	router.GET("/log", handlers.Log)
+
+	// 未匹配到任何路由
+	router.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, handlers.APIResponse{
+			Code:    http.StatusNotFound,
+			Message: "path not found",
+		})
+	})
+
+	// 请求方法不被允许
+	router.NoMethod(func(c *gin.Context) {
+		c.JSON(http.StatusMethodNotAllowed, handlers.APIResponse{
+			Code:    http.StatusMethodNotAllowed,
+			Message: "method not allowed",
+		})
+	})
 }
 
 // API 路由
@@ -567,6 +583,13 @@ func api_router(ctx context.Context, router *gin.Engine) {
 	// API路由组
 	api := router.Group("/api")
 	{
+		api.Any("/", func(c *gin.Context) {
+			c.JSON(http.StatusOK, handlers.APIResponse{
+				Code:    http.StatusOK,
+				Message: "api ok",
+			})
+		})
+
 		// 平台配置相关API
 		platformConfigs := api.Group("/platform-configs")
 		{
@@ -689,6 +712,14 @@ func api_router(ctx context.Context, router *gin.Engine) {
 			opens.POST("/device/:device_code/ip-report", handlers.DeviceReportDeviceIp)  // 设备上报IP
 			opens.GET("/device/:device_code/port-forwards", handlers.DevicePortForwards) //获取设备端口转发
 		}
+
+		// 分组内兜底：未匹配路径返回 JSON 404（不会与 /api/d 冲突）
+		api.Any("/:any", func(c *gin.Context) {
+			c.JSON(http.StatusNotFound, handlers.APIResponse{
+				Code:    http.StatusNotFound,
+				Message: "api path not found",
+			})
+		})
 	}
 }
 
@@ -862,9 +893,9 @@ func grpc_gw_run(ctx context.Context, router *gin.Engine) {
 			}
 			w.Header().Set("Content-Type", marshaler.ContentType(nil))
 			w.WriteHeader(code)
-			_ = marshaler.NewEncoder(w).Encode(map[string]any{
-				"error": err.Error(),
-				"code":  code,
+			_ = marshaler.NewEncoder(w).Encode(handlers.APIResponse{
+				Code:    code,
+				Message: err.Error(),
 			})
 		}),
 	)
