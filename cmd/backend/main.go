@@ -28,6 +28,7 @@ import (
 	"vibe_ip/internal/grpc_middleware"
 	"vibe_ip/internal/grpc_server"
 	"vibe_ip/internal/handlers"
+	"vibe_ip/internal/helper/gin_slog"
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/mcp_prompt"
 	"vibe_ip/internal/mcp_resource"
@@ -41,7 +42,6 @@ import (
 	"github.com/gin-gonic/gin"
 	grpcGatewayRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	sloggin "github.com/samber/slog-gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"google.golang.org/grpc"
@@ -113,14 +113,15 @@ func main() {
 		slog.String("go_version", global.GvaGoVersion),
 	)
 
-	// 强制日志颜色化
-	gin.ForceConsoleColor()
+	// 禁用控制台颜色
+	gin.DisableConsoleColor()
+
+	// 配置gin日志输出到slog
+	gin.DefaultWriter = gin_slog.NewSlogWriter(global.GvaGinSlog.WithLogger())
+	gin.DefaultErrorWriter = gin_slog.NewSlogWriter(global.GvaGinSlog.WithLogger())
 
 	// 创建Gin引擎
-	// router := gin.Default()
-	router := gin.New()
-	router.Use(sloggin.New(global.GvaGinSlog.WithLogger()))
-	router.Use(gin.Recovery())
+	router := gin.Default()
 
 	// 配置调试模式
 	if global.GvaEnv.DEBUG {
