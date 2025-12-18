@@ -45,19 +45,17 @@ var (
 	GvaOS        string // 操作系统
 	GvaArch      string // CPU 架构
 
-	GvaGoCron        gocron.Scheduler // 定时任务
-	GvaGoCronRunning int32            // 定时任务状态 0=停 1=运行
-
-	GvaMcpServer *mcp.Server // Model Context Protocol 服务器
+	GvaEntSlog  *golog.SLog // ent 日志
+	GvaGinSlog  *golog.SLog // gin 日志
+	GvaGrpcSlog *golog.SLog // gRPC 日志
 
 	GvaEntDb    *ent.Client     // 业务数据库
 	GvaEntLogDb *ent_log.Client // 日志数据库
 
-	GvaOperationLogHelper *operation_logs_helper.OperationLogHelper // 操作日志助手
+	GvaGoCron        gocron.Scheduler // 定时任务
+	GvaGoCronRunning int32            // 定时任务状态 0=停 1=运行
 
-	GvaEntSlog  *golog.SLog // ent 日志
-	GvaGinSlog  *golog.SLog // gin 日志
-	GvaGrpcSlog *golog.SLog // gRPC 日志
+	GvaMcpServer *mcp.Server // Model Context Protocol 服务器
 
 	GvaHttpLog  *http_log.LoggingTransport // HTTP框架日志
 	GvaRestyLog *resty_log.Logger          // Resty框架日志
@@ -68,4 +66,6 @@ var (
 	GvaBark       *bark.Client     // Bark
 	GvaFt07       *ft07.Client     // Server酱
 	GvaPushDeer   *pushdeer.Client // PushDeer
+
+	GvaOperationLogHelper *operation_logs_helper.OperationLogHelper // 操作日志助手
 )
