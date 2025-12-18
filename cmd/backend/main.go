@@ -212,12 +212,12 @@ func main() {
 
 	// 创建 HTTP 服务器实例（用于优雅关闭）
 	httpServerInstance = &http.Server{
-		Addr:    global.GvaEnv.HTTP_PORT,
+		Addr:    global.GvaEnv.HTTP_ADDR,
 		Handler: router,
 	}
 
 	// 启动 Gin 服务器
-	slog.Info("Gin 服务器正在启动", slog.String("port", global.GvaEnv.HTTP_PORT))
+	slog.Info("Gin 服务器正在启动", slog.String("port", global.GvaEnv.HTTP_ADDR))
 
 	// 使用 ListenAndServe 在 goroutine 中运行，以便能够捕获关闭信号
 	go func() {
@@ -227,7 +227,7 @@ func main() {
 		}
 	}()
 
-	slog.Info("Gin 服务器启动成功", slog.String("port", global.GvaEnv.HTTP_PORT))
+	slog.Info("Gin 服务器启动成功", slog.String("port", global.GvaEnv.HTTP_ADDR))
 
 	// 等待中断信号进行优雅关闭
 	waitForShutdown()
@@ -817,7 +817,7 @@ func mcp_run(ctx context.Context, router *gin.Engine) {
 // gRPC 启动
 func grpc_run(ctx context.Context) {
 	// 判断是否开启 gRPC 功能
-	if global.GvaEnv.GRPC_PORT == "" {
+	if global.GvaEnv.GRPC_ADDR == "" {
 		slog.InfoContext(ctx, "gRPC 服务器不启动，因为没有配置端口！")
 		return
 	}
@@ -863,13 +863,13 @@ func grpc_run(ctx context.Context) {
 
 	// 启动 gRPC 服务器
 	var err error
-	grpcListenerInstance, err = net.Listen("tcp", global.GvaEnv.GRPC_PORT)
+	grpcListenerInstance, err = net.Listen("tcp", global.GvaEnv.GRPC_ADDR)
 	if err != nil {
 		slog.ErrorContext(ctx, "gRPC 服务器启动失败", slog.String("error", err.Error()))
 		os.Exit(1)
 	}
 
-	slog.InfoContext(ctx, "gRPC 服务器正在启动", slog.String("port", global.GvaEnv.GRPC_PORT))
+	slog.InfoContext(ctx, "gRPC 服务器正在启动", slog.String("port", global.GvaEnv.GRPC_ADDR))
 
 	// 使用 Serve 但不阻塞，通过 channel 监听关闭信号
 	go func() {
@@ -900,13 +900,12 @@ func (b *basicCreds) RequireTransportSecurity() bool { return false } // 若启�
 // gRPC-Gateway 启动
 func grpc_gw_run(ctx context.Context, router *gin.Engine) {
 	// 判断是否开启 gRPC-Gateway 功能
-	if global.GvaEnv.GRPC_PORT == "" {
+	if global.GvaEnv.GRPC_ADDR == "" {
 		slog.Info("gRPC-Gateway 不启动，因为没有配置端口！")
 		return
 	}
 
 	// 连接上游 gRPC - 提升到全局，不再 defer close
-	grpcAddr := "localhost" + global.GvaEnv.GRPC_PORT
 	var err error
 
 	opts := make([]grpc.DialOption, 0)
@@ -924,7 +923,7 @@ func grpc_gw_run(ctx context.Context, router *gin.Engine) {
 			}),
 		)
 	}
-	grpcConnInstance, err = grpc.NewClient(grpcAddr, opts...)
+	grpcConnInstance, err = grpc.NewClient(global.GvaEnv.GRPC_ADDR, opts...)
 	if err != nil {
 		slog.Error("gRPC-Gateway 连接上游失败（忽略路由注册）", slog.String("error", err.Error()))
 		return
@@ -966,5 +965,5 @@ func grpc_gw_run(ctx context.Context, router *gin.Engine) {
 
 	// 关键：把网关挂到 Gin 的 /grpc 前缀
 	router.Group("/grpc").Any("/*any", gin.WrapH(http.StripPrefix("/grpc", gwMux)))
-	slog.Info("gRPC-Gateway 已挂载到 Gin", slog.String("prefix", "/grpc"), slog.String("upstream", grpcAddr))
+	slog.Info("gRPC-Gateway 已挂载到 Gin", slog.String("prefix", "/grpc"), slog.String("upstream", global.GvaEnv.GRPC_ADDR))
 }

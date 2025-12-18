@@ -59,14 +59,50 @@ swag_v2_fmt:
 swag2op:
 	swag2op init -g cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal -o internal/docs_2 -openapiOutputDir internal/docs_3
 
-# -I 是 引入 googleapis 目录，用于引入 HTTP 注解定义
 grpc_generate:
+	make grpc_generate_pb
+	make grpc_generate_gateway
+	make grpc_generate_openapi
+
+# -I 是 引入 googleapis 目录，用于引入 HTTP 注解定义
+grpc_generate_pb:
 	@echo "Generating gRPC code..."
 	protoc -I ./internal/grpc_proto \
 	       -I $$(go env GOPATH)/src/googleapis \
 		   --go_out=./internal/grpc_generated \
 	       --go-grpc_out=./internal/grpc_generated \
 	       --proto_path=./internal/grpc_proto \
+	       ./internal/grpc_proto/*.proto
+	echo "✅ gRPC code generated successfully!"
+
+# go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
+grpc_generate_gateway:
+	@echo "Generating gRPC-Gateway code..."
+	protoc -I ./internal/grpc_proto \
+	       -I $$(go env GOPATH)/src/googleapis \
+	       --grpc-gateway_out=./internal/grpc_generated \
+	       --grpc-gateway_opt=paths=source_relative \
+	       --grpc-gateway_opt=logtostderr=true \
+	       ./internal/grpc_proto/*.proto
+	echo "✅ gRPC and gRPC-Gateway code generated successfully!"
+
+# go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
+grpc_generate_openapi:
+	@echo "Generating OpenAPI v2 (Swagger)..."
+	protoc -I ./internal/grpc_proto \
+	       -I $$(go env GOPATH)/src/googleapis \
+	       --openapiv2_out=./internal/grpc_openapi \
+	       --openapiv2_opt=logtostderr=true \
+	       ./internal/grpc_proto/*.proto 
+	echo "✅ OpenAPI v2 generated at ./internal/grpc_openapi"
+
+# https://fuchsia.googlesource.com/third_party/googleapis/
+grpc_generate_old:
+	@echo "Generating gRPC code..."
+	protoc -I . \
+	       -I $$(go env GOPATH)/src/googleapis \
+	       --go_out=paths=source_relative:./internal/grpc_generated \
+	       --go-grpc_out=paths=source_relative:./internal/grpc_generated \
 	       ./internal/grpc_proto/*.proto
 	echo "✅ gRPC code generated successfully!"
 
@@ -82,8 +118,13 @@ BUILD_DIR=bin
 
 # 环境参数
 ENV_DEBUG=true
+
+ENV_HTTP_ADDR=0.0.0.0:9999
+ENV_GRPC_ADDR=0.0.0.0:9998
+
 ENV_HTTP_URL=http://localhost:9999
-ENV_HTTP_PORT=9999
+ENV_GRPC_URL=http://localhost:9998
+
 ENV_BASIC_AUTH_USERNAME=admin
 ENV_BASIC_AUTH_PASSWORD=123456
 
@@ -93,12 +134,14 @@ ENV_BASIC_AUTH_PASSWORD=123456
 
 dev_backend:
 	export DEBUG=$(ENV_DEBUG) && \
-	export HTTP_PORT=$(ENV_HTTP_PORT) && \
+	export HTTP_ADDR=$(ENV_HTTP_ADDR) && \
+	export GRPC_ADDR=$(ENV_GRPC_ADDR) && \
 	go run cmd/$(BINARY_NAME_BACKEND)/main.go
 
 dev_backend_basic_auth:
 	export DEBUG=$(ENV_DEBUG) && \
-	export HTTP_PORT=$(ENV_HTTP_PORT) && \
+	export HTTP_ADDR=$(ENV_HTTP_ADDR) && \
+	export GRPC_ADDR=$(ENV_GRPC_ADDR) && \
 	export BASIC_AUTH_USERNAME=$(ENV_BASIC_AUTH_USERNAME) && \
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_BACKEND)/main.go
@@ -106,11 +149,13 @@ dev_backend_basic_auth:
 dev_reporter:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_URL=$(ENV_HTTP_URL) && \
+	export GRPC_URL=$(ENV_GRPC_URL) && \
 	go run cmd/$(BINARY_NAME_REPORTER)/main.go
 
 dev_reporter_basic_auth:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_URL=$(ENV_HTTP_URL) && \
+	export GRPC_URL=$(ENV_GRPC_URL) && \
 	export BASIC_AUTH_USERNAME=$(ENV_BASIC_AUTH_USERNAME) && \
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_REPORTER)/main.go
@@ -118,11 +163,13 @@ dev_reporter_basic_auth:
 dev_forwarder:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_URL=$(ENV_HTTP_URL) && \
+	export GRPC_URL=$(ENV_GRPC_URL) && \
 	go run cmd/$(BINARY_NAME_FORWARDER)/main.go
 
 dev_forwarder_basic_auth:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_URL=$(ENV_HTTP_URL) && \
+	export GRPC_URL=$(ENV_GRPC_URL) && \
 	export BASIC_AUTH_USERNAME=$(ENV_BASIC_AUTH_USERNAME) && \
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_FORWARDER)/main.go
