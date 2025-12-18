@@ -396,6 +396,9 @@ github.com/google/jsonschema-go/jsonschema
 # github.com/google/uuid v1.6.0
 ## explicit
 github.com/google/uuid
+# github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
+## explicit; go 1.14
+github.com/grpc-ecosystem/go-grpc-middleware
 # github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
 ## explicit; go 1.24.0
 github.com/grpc-ecosystem/grpc-gateway/v2/internal/casing
@@ -802,7 +805,6 @@ google.golang.org/grpc/encoding/proto
 google.golang.org/grpc/experimental/stats
 google.golang.org/grpc/grpclog
 google.golang.org/grpc/grpclog/internal
-google.golang.org/grpc/health
 google.golang.org/grpc/health/grpc_health_v1
 google.golang.org/grpc/internal
 google.golang.org/grpc/internal/backoff

@@ -818,9 +818,20 @@ func grpc_run(ctx context.Context) {
 		return
 	}
 
+	// 鉴权拦截器
+	authInterceptor := grpc_middleware.BasicAuth(global.GvaGrpcSlog.WithLogger(), func(user, pass string) bool {
+		return user == global.GvaEnv.BASIC_AUTH_USERNAME && pass == global.GvaEnv.BASIC_AUTH_PASSWORD
+	})
+
+	// 日志拦截器
+	logInterceptor := grpc_middleware.UnaryLogger(global.GvaGrpcSlog.WithLogger())
+
 	// 创建 gRPC 服务器
 	grpcServerInstance = grpc.NewServer(
-		grpc.UnaryInterceptor(grpc_middleware.UnaryLogger(global.GvaGrpcSlog.WithLogger())),
+		grpc.ChainUnaryInterceptor(
+			authInterceptor,
+			logInterceptor,
+		),
 		grpc.MaxRecvMsgSize(10*1024*1024), // 10MB
 		grpc.MaxSendMsgSize(10*1024*1024), // 10MB
 	)
