@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"path/filepath"
+	"vibe_ip/internal/global"
 
 	"go.dtapp.net/library/utils/golog"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -20,5 +21,19 @@ func InitSLog(name string) {
 		}),
 		golog.WithSLogSetDefault(),
 		golog.WithSLogSetDefaultCtx(),
+	)
+}
+
+// InitGrpcSLog 初始化 gRPC 日志
+func InitGrpcSLog(name string) {
+	global.GvaGrpcSlog = golog.NewSlog(
+		golog.WithSLogLumberjack(&lumberjack.Logger{
+			Filename:   filepath.Join("./logs/grpc_" + name + ".log"), // 日志文件的位置
+			MaxSize:    3,                                             // 每个日志文件最大尺寸（MB）
+			MaxAge:     15,                                            // 留旧文件的最大天数
+			MaxBackups: 10 * 15,                                       // 保留的最大旧文件数量
+			LocalTime:  true,                                          // 使用本地时间创建时间戳
+			Compress:   true,                                          // 是否压缩/归档旧文件
+		}),
 	)
 }

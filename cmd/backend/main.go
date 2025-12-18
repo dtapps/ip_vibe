@@ -24,6 +24,7 @@ import (
 	"vibe_ip/internal/docs_3"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_generated"
+	"vibe_ip/internal/grpc_middleware"
 	"vibe_ip/internal/grpc_server"
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/initialize"
@@ -86,14 +87,15 @@ func main() {
 
 	ctx := context.Background()
 
-	initialize.InitEntDb(ctx)      // 初始化 业务数据库
-	initialize.InitEntLogDb(ctx)   // 初始化 日志数据库
-	initialize.InitGoCron()        // 初始化 GoCron 调度器
-	initialize.InitMCP()           // 初始化 MCP
-	initialize.InitEntRestyLog()   // 初始化 Resty 日志
-	initialize.InitEntHttpLog()    // 初始化 HTTP 日志
-	initialize.InitThirdParty(ctx) // 初始化 第三方
-	initialize.InitSLog("backend") // 初始化 日志
+	initialize.InitEntDb(ctx)          // 初始化 业务数据库
+	initialize.InitEntLogDb(ctx)       // 初始化 日志数据库
+	initialize.InitGoCron()            // 初始化 GoCron 调度器
+	initialize.InitMCP()               // 初始化 MCP
+	initialize.InitEntRestyLog()       // 初始化 Resty 日志
+	initialize.InitEntHttpLog()        // 初始化 HTTP 日志
+	initialize.InitThirdParty(ctx)     // 初始化 第三方
+	initialize.InitSLog("backend")     // 初始化 日志
+	initialize.InitGrpcSLog("backend") // 初始化 gRPC 日志
 
 	initialize.InitOperationLogHelper() // 初始化操作日志助手
 
@@ -818,6 +820,7 @@ func grpc_run(ctx context.Context) {
 
 	// 创建 gRPC 服务器
 	grpcServerInstance = grpc.NewServer(
+		grpc.UnaryInterceptor(grpc_middleware.UnaryLogger(global.GvaGrpcSlog.WithLogger())),
 		grpc.MaxRecvMsgSize(10*1024*1024), // 10MB
 		grpc.MaxSendMsgSize(10*1024*1024), // 10MB
 	)

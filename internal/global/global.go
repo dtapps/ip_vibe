@@ -15,6 +15,7 @@ import (
 	"go.dtapp.net/library/service/ft07"
 	"go.dtapp.net/library/service/pushdeer"
 	"go.dtapp.net/library/service/wechatqy"
+	"go.dtapp.net/library/utils/golog"
 )
 
 var (
@@ -50,6 +51,7 @@ var (
 
 	GvaOperationLogHelper *operation_logs_helper.OperationLogHelper // 操作日志助手
 
+	GvaGrpcSlog *golog.SLog                // gRPC 日志
 	GvaHttpLog  *http_log.LoggingTransport // HTTP框架日志
 	GvaRestyLog *resty_log.Logger          // Resty框架日志
 
