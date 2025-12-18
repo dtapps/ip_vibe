@@ -23,6 +23,7 @@ require (
 	github.com/miekg/dns v1.1.69
 	github.com/modelcontextprotocol/go-sdk v1.1.0
 	github.com/quic-go/quic-go v0.57.1
+	github.com/samber/slog-gin v1.18.0
 	github.com/spf13/cast v1.10.0
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.1

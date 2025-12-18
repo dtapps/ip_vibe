@@ -33,8 +33,6 @@ import (
 	"vibe_ip/internal/mcp_resource"
 	"vibe_ip/internal/mcp_tool"
 
-	healthpb "google.golang.org/grpc/health/grpc_health_v1"
-
 	"github.com/denisbrodbeck/machineid"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
@@ -43,12 +41,14 @@ import (
 	"github.com/gin-gonic/gin"
 	grpcGatewayRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	sloggin "github.com/samber/slog-gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/health"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"
 )
 
@@ -99,6 +99,7 @@ func main() {
 	initialize.InitEntHttpLog()        // 初始化 HTTP 日志
 	initialize.InitThirdParty(ctx)     // 初始化 第三方
 	initialize.InitSLog("backend")     // 初始化 日志
+	initialize.InitGinSLog("backend")  // 初始化 gin 日志
 	initialize.InitGrpcSLog("backend") // 初始化 gRPC 日志
 
 	initialize.InitOperationLogHelper() // 初始化操作日志助手
@@ -116,7 +117,10 @@ func main() {
 	gin.ForceConsoleColor()
 
 	// 创建Gin引擎
-	router := gin.Default()
+	// router := gin.Default()
+	router := gin.New()
+	router.Use(sloggin.New(global.GvaGinSlog.WithLogger()))
+	router.Use(gin.Recovery())
 
 	// 配置调试模式
 	if global.GvaEnv.DEBUG {
