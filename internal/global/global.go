@@ -45,9 +45,10 @@ var (
 	GvaOS        string // 操作系统
 	GvaArch      string // CPU 架构
 
-	GvaEntSlog  *golog.SLog // ent 日志
-	GvaGinSlog  *golog.SLog // gin 日志
-	GvaGrpcSlog *golog.SLog // gRPC 日志
+	GvaEntSlog    *golog.SLog // ent 日志
+	GvaGinSlog    *golog.SLog // gin 日志
+	GvaGrpcSlog   *golog.SLog // gRPC 日志
+	GvaGocronSlog *golog.SLog // gocron 日志
 
 	GvaEntDb    *ent.Client     // 业务数据库
 	GvaEntLogDb *ent_log.Client // 日志数据库

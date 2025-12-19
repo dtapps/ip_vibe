@@ -3,13 +3,18 @@ package initialize
 import (
 	"log"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gocron_slog"
 
 	"github.com/go-co-op/gocron/v2"
 )
 
 // InitGoCron 初始化 GoCron 调度器
 func InitGoCron() {
-	s, err := gocron.NewScheduler()
+	options := make([]gocron.SchedulerOption, 0)
+	if global.GvaGocronSlog != nil {
+		options = append(options, gocron.WithLogger(gocron_slog.NewSlogLogger(global.GvaGocronSlog.WithLogger())))
+	}
+	s, err := gocron.NewScheduler(options...)
 	if err != nil {
 		log.Fatalf("[初始化 GoCron] :%v", err)
 	}
