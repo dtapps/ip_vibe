@@ -16,8 +16,8 @@ type ProcessService struct {
 }
 
 type QueryDomainResponse struct {
-	DomainID    string // 域名ID
-	DomainName  string // 域名名称
-	OriginType  string // 源站类型
+	RecordID    string // 域名ID
+	FullDomain  string // 完整域名
+	RecordType  string // 记录类型
 	OriginValue string // 源站地址
 }

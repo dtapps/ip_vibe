@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"vibe_ip/internal/utils"
 
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/services/dns"
@@ -60,18 +59,12 @@ func (c *BaiduDnsClient) SetLog(log *http_log.LoggingTransport) *BaiduDnsClient 
 	return c
 }
 
-// 获取解析记录列表
+// 查询域名记录
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#查询解析记录列表
 // domainName: 主域名
 // subDomain: 子域名
-// originValue: 源站地址
-func (c *BaiduDnsClient) QueryDomain(ctx context.Context, domainName string, subDomain string, originValue string) (QueryDomainResponse, error) {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
-	if err != nil {
-		return QueryDomainResponse{}, err
-	}
+// recordType: 记录类型
+func (c *BaiduDnsClient) QueryDomain(ctx context.Context, domainName string, subDomain string, recordType string) (QueryDomainResponse, error) {
 
 	// 请求
 	requestParams := &dns.ListRecordRequest{}
@@ -94,9 +87,9 @@ func (c *BaiduDnsClient) QueryDomain(ctx context.Context, domainName string, sub
 				continue
 			}
 			return QueryDomainResponse{
-				DomainID:    item.Id,
-				DomainName:  item.Rr,
-				OriginType:  item.Type,
+				RecordID:    item.Id,
+				FullDomain:  item.Rr,
+				RecordType:  item.Type,
 				OriginValue: item.Value,
 			}, nil
 		}
@@ -105,25 +98,20 @@ func (c *BaiduDnsClient) QueryDomain(ctx context.Context, domainName string, sub
 	return QueryDomainResponse{}, fmt.Errorf("未找到记录")
 }
 
-// 添加记录
+// 创建域名记录
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#添加解析记录
 // domainName: 主域名
 // subDomain: 子域名
+// recordType: 记录类型
 // originValue: 源站地址
-func (c *BaiduDnsClient) CreateDomain(ctx context.Context, domainName string, subDomain string, originValue string) error {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
-	if err != nil {
-		return err
-	}
+func (c *BaiduDnsClient) CreateDomain(ctx context.Context, domainName string, subDomain string, recordType string, originValue string) error {
 
 	// 请求
 	requestParams := &dns.CreateRecordRequest{}
 	requestParams.Rr = subDomain      // 主机记录
 	requestParams.Type = recordType   // 解析记录类型
 	requestParams.Value = originValue // 记录值
-	err = c.client.CreateRecord(domainName, requestParams, util.NewUUID())
+	err := c.client.CreateRecord(domainName, requestParams, util.NewUUID())
 	if _, ok := err.(*bce.BceClientError); ok {
 		return fmt.Errorf("客户端出现错误: %w", err)
 	}
@@ -142,21 +130,16 @@ func (c *BaiduDnsClient) CreateDomain(ctx context.Context, domainName string, su
 // domainID: 域名ID
 // domainName: 主域名
 // subDomain: 子域名
+// recordType: 记录类型
 // originValue: 源站地址
-func (c *BaiduDnsClient) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, originValue string) error {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
-	if err != nil {
-		return err
-	}
+func (c *BaiduDnsClient) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, recordType string, originValue string) error {
 
 	// 请求
 	requestParams := &dns.UpdateRecordRequest{}
 	requestParams.Rr = subDomain      // 主机记录
 	requestParams.Type = recordType   // 解析记录类型
 	requestParams.Value = originValue // 记录值
-	err = c.client.UpdateRecord(domainName, domainID, requestParams, util.NewUUID())
+	err := c.client.UpdateRecord(domainName, domainID, requestParams, util.NewUUID())
 	if _, ok := err.(*bce.BceClientError); ok {
 		return fmt.Errorf("客户端出现错误: %w", err)
 	}

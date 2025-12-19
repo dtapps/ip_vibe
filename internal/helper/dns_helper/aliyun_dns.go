@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"vibe_ip/internal/utils"
 
 	alidns20150109 "github.com/alibabacloud-go/alidns-20150109/v5/client"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
@@ -99,14 +98,8 @@ func (c *AliyunDnsClient) SetLog(log *http_log.LoggingTransport) *AliyunDnsClien
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/DescribeDomainRecords
 // domainName: 主域名
 // subDomain: 子域名
-// originValue: 源站地址
-func (c *AliyunDnsClient) QueryDomain(ctx context.Context, domainName string, subDomain string, originValue string) (QueryDomainResponse, error) {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
-	if err != nil {
-		return QueryDomainResponse{}, err
-	}
+// recordType: 记录类型
+func (c *AliyunDnsClient) QueryDomain(ctx context.Context, domainName string, subDomain string, recordType string) (QueryDomainResponse, error) {
 
 	// 请求
 	requestParams := &alidns20150109.DescribeDomainRecordsRequest{}
@@ -131,9 +124,9 @@ func (c *AliyunDnsClient) QueryDomain(ctx context.Context, domainName string, su
 				continue
 			}
 			return QueryDomainResponse{
-				DomainID:    tea.StringValue(item.RecordId),
-				DomainName:  tea.StringValue(item.RR),
-				OriginType:  tea.StringValue(item.Type),
+				RecordID:    tea.StringValue(item.RecordId),
+				FullDomain:  tea.StringValue(item.RR),
+				RecordType:  tea.StringValue(item.Type),
 				OriginValue: tea.StringValue(item.Value),
 			}, nil
 		}
@@ -142,18 +135,13 @@ func (c *AliyunDnsClient) QueryDomain(ctx context.Context, domainName string, su
 	return QueryDomainResponse{}, fmt.Errorf("未找到记录")
 }
 
-// 添加记录
+// 创建域名记录
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/AddDomainRecord
 // domainName: 主域名
 // subDomain: 子域名
+// recordType: 记录类型
 // originValue: 源站地址
-func (c *AliyunDnsClient) CreateDomain(ctx context.Context, domainName string, subDomain string, originValue string) error {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
-	if err != nil {
-		return err
-	}
+func (c *AliyunDnsClient) CreateDomain(ctx context.Context, domainName string, subDomain string, recordType string, originValue string) error {
 
 	// 请求
 	requestParams := &alidns20150109.AddDomainRecordRequest{}
@@ -162,7 +150,7 @@ func (c *AliyunDnsClient) CreateDomain(ctx context.Context, domainName string, s
 	requestParams.RR = tea.String(subDomain)          // 主机记录
 	requestParams.Type = tea.String(recordType)       // 解析记录类型
 	requestParams.Value = tea.String(originValue)     // 记录值
-	_, err = c.client.AddDomainRecord(requestParams)
+	_, err := c.client.AddDomainRecord(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}
@@ -178,14 +166,9 @@ func (c *AliyunDnsClient) CreateDomain(ctx context.Context, domainName string, s
 // domainID: 域名ID
 // domainName: 主域名
 // subDomain: 子域名
+// recordType: 记录类型
 // originValue: 源站地址
-func (c *AliyunDnsClient) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, originValue string) error {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
-	if err != nil {
-		return err
-	}
+func (c *AliyunDnsClient) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, recordType string, originValue string) error {
 
 	// 请求
 	requestParams := &alidns20150109.UpdateDomainRecordRequest{}
@@ -194,7 +177,7 @@ func (c *AliyunDnsClient) UpdateDomain(ctx context.Context, domainID string, dom
 	requestParams.RR = tea.String(subDomain)       // 主机记录
 	requestParams.Type = tea.String(recordType)    // 解析记录类型
 	requestParams.Value = tea.String(originValue)  // 记录值
-	_, err = c.client.UpdateDomainRecord(requestParams)
+	_, err := c.client.UpdateDomainRecord(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}

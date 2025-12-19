@@ -3,7 +3,6 @@ package dns_helper
 import (
 	"context"
 	"fmt"
-	"vibe_ip/internal/utils"
 
 	"github.com/alibabacloud-go/tea/tea"
 	"github.com/spf13/cast"
@@ -71,18 +70,12 @@ func (c *TencentDnsClient) SetLog(log *http_log.LoggingTransport) *TencentDnsCli
 	return c
 }
 
-// 获取域名的解析记录列表
+// 查询域名记录
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=DescribeRecordList
 // domainName: 主域名
 // subDomain: 子域名
-// originValue: 源站地址
-func (c *TencentDnsClient) QueryDomain(ctx context.Context, domainName string, subDomain string, originValue string) (QueryDomainResponse, error) {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
-	if err != nil {
-		return QueryDomainResponse{}, err
-	}
+// recordType: 记录类型
+func (c *TencentDnsClient) QueryDomain(ctx context.Context, domainName string, subDomain string, recordType string) (QueryDomainResponse, error) {
 
 	// 请求
 	requestParams := dnspod.NewDescribeRecordListRequest()
@@ -105,9 +98,9 @@ func (c *TencentDnsClient) QueryDomain(ctx context.Context, domainName string, s
 				continue
 			}
 			return QueryDomainResponse{
-				DomainID:    cast.ToString(*item.RecordId),
-				DomainName:  tea.StringValue(item.Name),
-				OriginType:  tea.StringValue(item.Type),
+				RecordID:    cast.ToString(*item.RecordId),
+				FullDomain:  tea.StringValue(item.Name),
+				RecordType:  tea.StringValue(item.Type),
 				OriginValue: tea.StringValue(item.Value),
 			}, nil
 		}
@@ -116,18 +109,13 @@ func (c *TencentDnsClient) QueryDomain(ctx context.Context, domainName string, s
 	return QueryDomainResponse{}, fmt.Errorf("未找到记录")
 }
 
-// 添加记录
+// 创建域名记录
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=CreateRecord
 // domainName: 主域名
 // subDomain: 子域名
+// recordType: 记录类型
 // originValue: 源站地址
-func (c *TencentDnsClient) CreateDomain(ctx context.Context, domainName string, subDomain string, originValue string) error {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
-	if err != nil {
-		return err
-	}
+func (c *TencentDnsClient) CreateDomain(ctx context.Context, domainName string, subDomain string, recordType string, originValue string) error {
 
 	// 请求
 	requestParams := dnspod.NewCreateRecordRequest()
@@ -136,7 +124,7 @@ func (c *TencentDnsClient) CreateDomain(ctx context.Context, domainName string, 
 	requestParams.RecordLine = common.StringPtr("默认")       // 记录线路
 	requestParams.Value = common.StringPtr(originValue)     // 记录值
 	requestParams.SubDomain = common.StringPtr(subDomain)   // 主机记录
-	_, err = c.client.CreateRecord(requestParams)
+	_, err := c.client.CreateRecord(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}
@@ -152,14 +140,9 @@ func (c *TencentDnsClient) CreateDomain(ctx context.Context, domainName string, 
 // domainID: 域名ID
 // domainName: 主域名
 // subDomain: 子域名
+// recordType: 记录类型
 // originValue: 源站地址
-func (c *TencentDnsClient) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, originValue string) error {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	_, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
-	if err != nil {
-		return err
-	}
+func (c *TencentDnsClient) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, recordType string, originValue string) error {
 
 	// 请求
 	requestParams := dnspod.NewModifyRecordRequest()
@@ -169,7 +152,7 @@ func (c *TencentDnsClient) UpdateDomain(ctx context.Context, domainID string, do
 	requestParams.Value = common.StringPtr(originValue)                // 记录值
 	requestParams.RecordId = common.Uint64Ptr(cast.ToUint64(domainID)) // 记录 ID
 	requestParams.SubDomain = common.StringPtr(subDomain)              // 主机记录
-	_, err = c.client.ModifyRecord(requestParams)
+	_, err := c.client.ModifyRecord(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}

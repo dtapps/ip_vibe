@@ -13,13 +13,14 @@ import (
 	"go.dtapp.net/library/contrib/http_log"
 )
 
-// CloudflareProcessCloudflareImpl 实现 DNSProcess 接口
+// 实现 DNSProcess 接口
 type DNSProcessCloudflareImpl struct {
 	logger        *slog.Logger               // 日志
 	db            *ent.Client                // 数据库
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
 }
 
+// NewDNSProcessCloudflare 创建实例
 func NewDNSProcessCloudflare(logger *slog.Logger, db *ent.Client, httpTransport *http_log.LoggingTransport) DNSProcess {
 	return &DNSProcessCloudflareImpl{
 		logger:        logger,
@@ -46,7 +47,11 @@ func (d *DNSProcessCloudflareImpl) UpsertRecord(ctx context.Context, params *DNS
 	)
 
 	// 提取域名中的主域名和子域，同时判断记录类型
-	fullDomain, subDomain, domainName, recordType, originValue, err := utils.ParseDnsDomain(params.SubDomain, platformConfig.DomainName, params.OriginValue)
+	fullDomain, subDomain, domainName, recordType, originValue, err := utils.ParseDnsDomain(
+		params.SubDomain,
+		platformConfig.DomainName,
+		params.OriginValue,
+	)
 	if err != nil {
 		return fmt.Errorf("提取域名中的主域名和子域失败: %w", err)
 	}
@@ -59,7 +64,11 @@ func (d *DNSProcessCloudflareImpl) UpsertRecord(ctx context.Context, params *DNS
 	)
 
 	// 初始化客户端
-	client, err := NewCloudflareClient(ctx, platformConfig.ApiKey, platformConfig.ZoneID)
+	client, err := NewCloudflareClient(
+		ctx,
+		platformConfig.ApiKey,
+		platformConfig.ZoneID,
+	)
 	if err != nil {
 		return fmt.Errorf("初始化客户端失败: %w", err)
 	}
@@ -69,7 +78,12 @@ func (d *DNSProcessCloudflareImpl) UpsertRecord(ctx context.Context, params *DNS
 	}
 
 	// 查询域名记录
-	queryDomain, _ := client.QueryDomain(ctx, fullDomain, subDomain, recordType, originValue)
+	queryDomain, _ := client.QueryDomain(
+		ctx,
+		fullDomain,
+		subDomain,
+		recordType,
+	)
 	d.logger.InfoContext(ctx, "查询域名记录",
 		slog.String("记录ID", queryDomain.RecordID),
 		slog.String("完整域名", queryDomain.FullDomain),
@@ -80,7 +94,12 @@ func (d *DNSProcessCloudflareImpl) UpsertRecord(ctx context.Context, params *DNS
 	if queryDomain.RecordID == "" {
 
 		// 创建域名记录
-		err = client.CreateDomain(ctx, fullDomain, recordType, originValue)
+		err = client.CreateDomain(
+			ctx,
+			fullDomain,
+			recordType,
+			originValue,
+		)
 		if err != nil {
 			d.logger.InfoContext(ctx, "创建域名记录错误",
 				slog.Any("error", err),
@@ -89,7 +108,12 @@ func (d *DNSProcessCloudflareImpl) UpsertRecord(ctx context.Context, params *DNS
 		}
 
 		// 重新查询域名记录
-		queryDomain, _ = client.QueryDomain(ctx, fullDomain, subDomain, recordType, originValue)
+		queryDomain, _ = client.QueryDomain(
+			ctx,
+			fullDomain,
+			subDomain,
+			recordType,
+		)
 		d.logger.InfoContext(ctx, "重新查询域名记录",
 			slog.String("记录ID", queryDomain.RecordID),
 			slog.String("完整域名", queryDomain.FullDomain),
@@ -123,8 +147,17 @@ func (d *DNSProcessCloudflareImpl) UpsertRecord(ctx context.Context, params *DNS
 		}
 
 		// 更新域名记录
-		err = client.UpdateDomain(ctx, queryDomain.RecordID, fullDomain, recordType, originValue)
+		err = client.UpdateDomain(
+			ctx,
+			queryDomain.RecordID,
+			fullDomain,
+			recordType,
+			originValue,
+		)
 		if err != nil {
+			d.logger.InfoContext(ctx, "更新域名记录失败",
+				slog.Any("error", err),
+			)
 			return fmt.Errorf("更新域名记录失败: %w", err)
 		}
 
