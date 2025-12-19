@@ -111,13 +111,16 @@ func GetCdnDomainParts(subDomain string, mainDomain string) (full string, sub st
 	return fmt.Sprintf("%s.%s", subDomain, mainDomain), subDomain, mainDomain
 }
 
-// ParseDnsDomain 解析域名中的主域名和子域，同时判断记录类型
-func ParseDnsDomain(sD string, dn string, oV string) (fullDomain string, subDomain string, domainName string, recordType string, originValue string, err error) {
+// ParseDomain 解析域名
+func ParseDomain(sD string, dn string) (fullDomain string, subDomain string, domainName string) {
 	if sD == "" {
 		sD = "@"
 	}
-	if oV != "" {
-		recordType, err = GetRecordType(oV)
-	}
-	return fmt.Sprintf("%s.%s", sD, dn), sD, dn, recordType, oV, err
+	return fmt.Sprintf("%s.%s", sD, dn), sD, dn
+}
+
+// ParseDnsDomainType 解析域名类型
+func ParseDnsDomainType(oV string) (recordType string, originValue string, err error) {
+	recordType, err = GetRecordType(oV)
+	return recordType, oV, err
 }

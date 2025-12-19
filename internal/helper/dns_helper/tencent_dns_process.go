@@ -52,14 +52,15 @@ func (d *DNSProcessTencentDnsImpl) UpsertRecord(ctx context.Context, params *DNS
 		slog.String("源站地址", params.OriginValue),
 	)
 
-	// 提取域名中的主域名和子域，同时判断记录类型
-	fullDomain, subDomain, domainName, recordType, originValue, err := utils.ParseDnsDomain(
+	// 解析域名
+	fullDomain, subDomain, domainName := utils.ParseDomain(
 		params.SubDomain,
 		platformConfig.DomainName,
-		params.OriginValue,
 	)
+	// 解析域名类型
+	recordType, originValue, err := utils.ParseDnsDomainType(params.OriginValue)
 	if err != nil {
-		return fmt.Errorf("提取域名中的主域名和子域失败: %w", err)
+		return fmt.Errorf("解析域名类型失败: %w", err)
 	}
 	d.logger.InfoContext(ctx, "解析域名",
 		slog.String("完整域名", fullDomain),
