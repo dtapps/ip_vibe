@@ -2,6 +2,10 @@
 function onConfigSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
   console.log("onConfigSelect", opt);
+  if (opt.dataset.domain_name) {
+    document.getElementById("domain_name").innerHTML =
+      "." + opt.dataset.domain_name;
+  }
 }
 
 // 选择类型 type
@@ -42,6 +46,8 @@ async function openFormModal(id) {
           const opt = document.createElement("option");
           opt.value = d.id;
           opt.text = `${d.name}`;
+          opt.dataset.platform = d.platform;
+          opt.dataset.domain_name = d.config_json.domain_name || "";
           configSelect.appendChild(opt);
         }
       });

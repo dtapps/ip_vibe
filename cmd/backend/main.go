@@ -116,12 +116,16 @@ func main() {
 		slog.String("go_version", global.GvaGoVersion),
 	)
 
-	// 禁用控制台颜色
-	gin.DisableConsoleColor()
-
-	// 配置gin日志输出到slog
-	gin.DefaultWriter = gin_slog.NewSlogWriter(global.GvaGinSlog.WithLogger())
-	gin.DefaultErrorWriter = gin_slog.NewSlogWriter(global.GvaGinSlog.WithLogger())
+	if global.GvaGinSlog != nil {
+		// 禁用控制台颜色
+		gin.DisableConsoleColor()
+		// 配置gin日志输出到slog
+		gin.DefaultWriter = gin_slog.NewSlogWriter(global.GvaGinSlog.WithLogger())
+		gin.DefaultErrorWriter = gin_slog.NewSlogWriter(global.GvaGinSlog.WithLogger())
+	} else {
+		// 强制控制台颜色
+		gin.ForceConsoleColor()
+	}
 
 	// 创建Gin引擎
 	router := gin.Default()
