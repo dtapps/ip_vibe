@@ -82,8 +82,7 @@ func (c *BaiduDnsClient) QueryDomain(ctx context.Context, domainName string, sub
 		return QueryDomainResponse{}, err
 	}
 	if c.debug {
-		fmt.Printf("查询域名记录 请求参数: %+v\n", requestParams)
-		fmt.Printf("查询域名记录 响应参数: %+v\n", response)
+		printJSON("查询域名记录", requestParams, response)
 	}
 
 	for _, item := range response.Records {
@@ -127,7 +126,7 @@ func (c *BaiduDnsClient) CreateDomain(ctx context.Context, domainName string, su
 		return err
 	}
 	if c.debug {
-		fmt.Printf("创建域名记录 请求参数: %+v\n", requestParams)
+		printJSON("创建域名记录", requestParams, nil)
 	}
 
 	return nil
@@ -158,7 +157,7 @@ func (c *BaiduDnsClient) UpdateDomain(ctx context.Context, domainID string, doma
 		return err
 	}
 	if c.debug {
-		fmt.Printf("更新域名记录 请求参数: %+v\n", requestParams)
+		printJSON("更新域名记录", requestParams, nil)
 	}
 
 	return nil

@@ -5,6 +5,7 @@ import (
 	"net"
 	"regexp"
 	"strings"
+	"vibe_ip/internal/ent/schema/schematype"
 
 	"golang.org/x/net/publicsuffix"
 )
@@ -117,6 +118,27 @@ func ParseDomain(sD string, dn string) (fullDomain string, subDomain string, dom
 		sD = "@"
 	}
 	return fmt.Sprintf("%s.%s", sD, dn), sD, dn
+}
+
+// ParseCdnDomainType 解析域名类型
+func ParseCdnDomainType(platform string, oV []string) (recordType string, originValues []string, err error) {
+	switch platform {
+	case schematype.ConfigPlatformTencentEO:
+		if len(oV) >= 2 {
+			recordType = "ORIGIN_GROUP"
+		} else {
+			recordType = "IP_DOMAIN"
+		}
+	case schematype.ConfigPlatformAliyunEsa:
+		if len(oV) >= 2 {
+			recordType = "CNAME"
+		} else {
+			recordType = "A/AAAA"
+		}
+	default:
+		err = fmt.Errorf("平台 %s 暂不支持", platform)
+	}
+	return recordType, oV, err
 }
 
 // ParseDnsDomainType 解析域名类型

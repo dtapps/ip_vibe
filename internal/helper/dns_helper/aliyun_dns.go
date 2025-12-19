@@ -119,8 +119,7 @@ func (c *AliyunDnsClient) QueryDomain(ctx context.Context, domainName string, su
 		return QueryDomainResponse{}, err
 	}
 	if c.debug {
-		fmt.Printf("查询域名记录 请求参数: %+v\n", requestParams)
-		fmt.Printf("查询域名记录 响应参数: %+v\n", response)
+		printJSON("查询域名记录", requestParams, response)
 	}
 
 	for _, item := range response.Body.DomainRecords.Record {
@@ -163,8 +162,7 @@ func (c *AliyunDnsClient) CreateDomain(ctx context.Context, domainName string, s
 		return err
 	}
 	if c.debug {
-		fmt.Printf("创建域名记录 请求参数: %+v\n", requestParams)
-		fmt.Printf("创建域名记录 响应参数: %+v\n", response)
+		printJSON("创建域名记录", requestParams, response)
 	}
 
 	return nil
@@ -194,8 +192,7 @@ func (c *AliyunDnsClient) UpdateDomain(ctx context.Context, domainID string, dom
 		return err
 	}
 	if c.debug {
-		fmt.Printf("更新域名记录 请求参数: %+v\n", requestParams)
-		fmt.Printf("更新域名记录 响应参数: %+v\n", response)
+		printJSON("更新域名记录", requestParams, response)
 	}
 
 	return nil

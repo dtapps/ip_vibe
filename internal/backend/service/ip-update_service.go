@@ -14,7 +14,6 @@ import (
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/cdn_helper"
 	"vibe_ip/internal/helper/dns_helper"
-	"vibe_ip/pkg/utils"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
@@ -285,8 +284,20 @@ func (s *IpUpdateService) runCdnTask() {
 // WithIPGroup().
 func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, firstRecord *ent.CDNRecord) (err error) {
 
-	// 准备源
-	origins := make([]string, 0)
+	// 准备参数
+	processParams := cdn_helper.CDNProcessParams{
+		CDNRecordID: cast.ToString(firstRecord.ID),
+
+		ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
+		SubDomain:      firstRecord.SubDomain,
+		OriginProtocol: strings.ToUpper(firstRecord.OriginProtocol.String()),
+		HttpPort:       firstRecord.HTTPPort,
+		HttpsPort:      firstRecord.HTTPSPort,
+	}
+
+	newLog = newLog.With(
+		slog.String("platform", firstRecord.Edges.Config.Platform.String()),
+	)
 
 	// 查询IP组
 	firstIPGroup, err := firstRecord.QueryIPGroup().
@@ -294,6 +305,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 	if err != nil {
 		return fmt.Errorf("找不到IP组: %w", err)
 	}
+	processParams.GroupRecordID = cast.ToString(firstIPGroup.ID)
 
 	// 查询设备
 	allDevice, err := firstIPGroup.QueryDevices().
@@ -304,160 +316,50 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 	}
 	for _, item := range allDevice {
 		if item.IPV4 != "" && firstRecord.Type == cdnrecord.TypeA {
-			origins = append(origins, item.IPV4)
+			processParams.OriginValues = append(processParams.OriginValues, item.IPV4)
 		}
 		if item.IPV6 != "" && firstRecord.Type == cdnrecord.TypeAAAA {
-			origins = append(origins, item.IPV6)
+			processParams.OriginValues = append(processParams.OriginValues, item.IPV6)
 		}
 	}
 
-	// 去重源
-	origins = goarray.RemoveDuplicateElement(origins)
-
-	// 检查源是否有效
-	if len(origins) == 0 {
+	// 去重源并检查源是否有效
+	processParams.OriginValues = goarray.RemoveDuplicateElement(processParams.OriginValues)
+	if len(processParams.OriginValues) == 0 {
 		return fmt.Errorf("需要更新的源为空")
 	}
+
+	var cdnProcess cdn_helper.CDNProcess
 
 	switch firstRecord.Edges.Config.Platform {
 	case platformconfig.PlatformTencentEo:
 
-		if len(origins) == 1 {
-			// 处理单IP
-			newLog.InfoContext(ctx, "处理单IP")
-			// 清理不需要的端口
-			switch firstRecord.OriginProtocol {
-			case cdnrecord.OriginProtocolHTTP:
-				firstRecord.HTTPSPort = 0
-			case cdnrecord.OriginProtocolHTTPS:
-				firstRecord.HTTPPort = 0
-			}
-			err = cdn_helper.TencentEOProcessSingleIP(ctx,
-				cdn_helper.ProcessService{
-					Log:      newLog,
-					Db:       global.GvaEntDb,
-					RecordID: firstRecord.ID,
-					Debug:    global.GvaEnv.DEBUG,
-					HttpLog:  global.GvaHttpLog,
-				},
-				cdn_helper.TencentEOProcessSingleIPParams{
-					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
-					SubDomain:      firstRecord.SubDomain,
-					OriginValue:    origins[0],
-					OriginProtocol: strings.ToUpper(firstRecord.OriginProtocol.String()),
-					HttpPort:       firstRecord.HTTPPort,
-					HttpsPort:      firstRecord.HTTPSPort,
-				},
-			)
-			if err != nil {
-				return fmt.Errorf("处理单IP失败: %w", err)
-			}
-		} else {
-			// 处理多IP
-			newLog.InfoContext(ctx, "处理多IP")
-			// 清理不需要的端口
-			switch firstRecord.OriginProtocol {
-			case cdnrecord.OriginProtocolHTTP:
-				firstRecord.HTTPSPort = 0
-			case cdnrecord.OriginProtocolHTTPS:
-				firstRecord.HTTPPort = 0
-			}
-			err = cdn_helper.TencentEOProcessMultiIP(ctx,
-				cdn_helper.ProcessService{
-					Log:      newLog,
-					Db:       global.GvaEntDb,
-					RecordID: firstRecord.ID,
-					GroupID:  firstIPGroup.ID,
-					Debug:    global.GvaEnv.DEBUG,
-					HttpLog:  global.GvaHttpLog,
-				},
-				cdn_helper.TencentEOProcessMultiIPParams{
-					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
-					SubDomain:      firstRecord.SubDomain,
-					OriginValues:   origins,
-					GroupName:      utils.GenerateShortIDBasedHash(firstIPGroup.ID, 10),
-					OriginProtocol: strings.ToUpper(firstRecord.OriginProtocol.String()),
-					HttpPort:       firstRecord.HTTPPort,
-					HttpsPort:      firstRecord.HTTPSPort,
-				},
-			)
-			if err != nil {
-				return fmt.Errorf("处理多IP失败: %w", err)
-			}
-		}
+		cdnProcess = cdn_helper.NewCDNProcessTencentEO(
+			global.GvaEnv.DEBUG,
+			newLog,
+			global.GvaEntDb,
+			global.GvaHttpLog,
+		)
 
-		return nil
 	case platformconfig.PlatformAliyunEsa:
 
-		if len(origins) == 1 {
-			// 处理单IP
-			newLog.InfoContext(ctx, "处理单IP")
-			// 清理不需要的端口
-			switch firstRecord.OriginProtocol {
-			case cdnrecord.OriginProtocolHTTP:
-				firstRecord.HTTPSPort = 0
-			case cdnrecord.OriginProtocolHTTPS:
-				firstRecord.HTTPPort = 0
-			}
-			err = cdn_helper.AliyunEsaProcessSingleIP(ctx,
-				cdn_helper.ProcessService{
-					Log:      newLog,
-					Db:       global.GvaEntDb,
-					RecordID: firstRecord.ID,
-					Debug:    global.GvaEnv.DEBUG,
-					HttpLog:  global.GvaHttpLog,
-				},
-				cdn_helper.AliyunEsaProcessSingleIPParams{
-					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
-					SubDomain:      firstRecord.SubDomain,
-					OriginValue:    origins[0],
-					OriginProtocol: strings.ToUpper(firstRecord.OriginProtocol.String()),
-					HttpPort:       firstRecord.HTTPPort,
-					HttpsPort:      firstRecord.HTTPSPort,
-				},
-			)
-			if err != nil {
-				return fmt.Errorf("处理单IP失败: %w", err)
-			}
-		} else {
-			// 处理多IP
-			newLog.InfoContext(ctx, "处理多IP")
-			// 清理不需要的端口
-			switch firstRecord.OriginProtocol {
-			case cdnrecord.OriginProtocolHTTP:
-				firstRecord.HTTPSPort = 0
-			case cdnrecord.OriginProtocolHTTPS:
-				firstRecord.HTTPPort = 0
-			}
-			err = cdn_helper.AliyunEsaProcessMultiIP(ctx,
-				cdn_helper.ProcessService{
-					Log:      newLog,
-					Db:       global.GvaEntDb,
-					RecordID: firstRecord.ID,
-					GroupID:  firstIPGroup.ID,
-					Debug:    global.GvaEnv.DEBUG,
-					HttpLog:  global.GvaHttpLog,
-				},
-				cdn_helper.AliyunEsaProcessMultiIPParams{
-					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
-					SubDomain:      firstRecord.SubDomain,
-					OriginValues:   origins,
-					GroupName:      utils.GenerateShortIDBasedHash(firstIPGroup.ID, 10),
-					OriginProtocol: strings.ToUpper(firstRecord.OriginProtocol.String()),
-					HttpPort:       firstRecord.HTTPPort,
-					HttpsPort:      firstRecord.HTTPSPort,
-				},
-			)
-			if err != nil {
-				return fmt.Errorf("处理多IP失败: %w", err)
-			}
-		}
+		cdnProcess = cdn_helper.NewCDNProcessAliyunEsa(
+			global.GvaEnv.DEBUG,
+			newLog,
+			global.GvaEntDb,
+			global.GvaHttpLog,
+		)
 
-		return nil
 	default:
 		return fmt.Errorf("不支持类型: %s", firstRecord.Edges.Config.Platform)
 	}
 
+	// 更新CDN记录
+	err = cdnProcess.UpsertRecord(ctx, &processParams)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // 更新DNS录
@@ -465,8 +367,13 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 // WithCdnRecord()
 func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, firstRecord *ent.DNSRecord) (err error) {
 
-	// 准备源
-	origin := ""
+	// 准备参数
+	processParams := dns_helper.DNSProcessParams{
+		DNSRecordID: cast.ToString(firstRecord.ID),
+
+		ConfigJSON: firstRecord.Edges.Config.ConfigJSON,
+		SubDomain:  firstRecord.SubDomain,
+	}
 
 	newLog = newLog.With(
 		slog.String("platform", firstRecord.Edges.Config.Platform.String()),
@@ -481,8 +388,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 			return fmt.Errorf("找不到CDN记录: %w", err)
 		}
 
-		// 准备源
-		origin = firstCdnRecord.CdnDomain
+		processParams.OriginValue = firstCdnRecord.CdnDomain
 
 	} else {
 		// 查询IP组
@@ -502,100 +408,68 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 		}
 		for _, item := range allDevice {
 			if item.IPV4 != "" && firstRecord.Type == dnsrecord.TypeA {
-				origin = item.IPV4
+				processParams.OriginValue = item.IPV4
 			}
 			if item.IPV6 != "" && firstRecord.Type == dnsrecord.TypeAAAA {
-				origin = item.IPV6
+				processParams.OriginValue = item.IPV6
 			}
 		}
 	}
 
 	// 检查源是否有效
-	if origin == "" {
+	if processParams.OriginValue == "" {
 		return fmt.Errorf("需要更新的源为空")
 	}
+
+	var dnsProcess dns_helper.DNSProcess
 
 	switch firstRecord.Edges.Config.Platform {
 	case platformconfig.PlatformCloudflare:
 
-		dnsProcess := dns_helper.NewDNSProcessCloudflare(
+		dnsProcess = dns_helper.NewDNSProcessCloudflare(
 			global.GvaEnv.DEBUG,
 			newLog,
 			global.GvaEntDb,
 			global.GvaHttpLog,
 		)
-		err = dnsProcess.UpsertRecord(ctx, &dns_helper.DNSProcessParams{
-			ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
-			RecordID:    cast.ToString(firstRecord.ID),
-			SubDomain:   firstRecord.SubDomain,
-			OriginValue: origin,
-		})
-		if err != nil {
-			return err
-		}
 
-		return nil
 	case platformconfig.PlatformTencentDNS:
 
-		dnsProcess := dns_helper.NewDNSProcessTencentDns(
+		dnsProcess = dns_helper.NewDNSProcessTencentDns(
 			global.GvaEnv.DEBUG,
 			newLog,
 			global.GvaEntDb,
 			global.GvaHttpLog,
 		)
-		err = dnsProcess.UpsertRecord(ctx, &dns_helper.DNSProcessParams{
-			ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
-			RecordID:    cast.ToString(firstRecord.ID),
-			SubDomain:   firstRecord.SubDomain,
-			OriginValue: origin,
-		})
-		if err != nil {
-			return err
-		}
 
-		return nil
 	case platformconfig.PlatformAliyunDNS:
 
-		dnsProcess := dns_helper.NewDNSProcessAliyunDns(
+		dnsProcess = dns_helper.NewDNSProcessAliyunDns(
 			global.GvaEnv.DEBUG,
 			newLog,
 			global.GvaEntDb,
 			global.GvaHttpLog,
 		)
-		err = dnsProcess.UpsertRecord(ctx, &dns_helper.DNSProcessParams{
-			ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
-			RecordID:    cast.ToString(firstRecord.ID),
-			SubDomain:   firstRecord.SubDomain,
-			OriginValue: origin,
-		})
-		if err != nil {
-			return err
-		}
 
-		return nil
 	case platformconfig.PlatformBaiduDNS:
 
-		dnsProcess := dns_helper.NewDNSProcessBaiduDns(
+		dnsProcess = dns_helper.NewDNSProcessBaiduDns(
 			global.GvaEnv.DEBUG,
 			newLog,
 			global.GvaEntDb,
 			global.GvaHttpLog,
 		)
-		err = dnsProcess.UpsertRecord(ctx, &dns_helper.DNSProcessParams{
-			ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
-			RecordID:    cast.ToString(firstRecord.ID),
-			SubDomain:   firstRecord.SubDomain,
-			OriginValue: origin,
-		})
-		if err != nil {
-			return err
-		}
 
-		return nil
 	default:
 		return fmt.Errorf("不支持类型: %s", firstRecord.Edges.Config.Platform)
 	}
 
+	// 更新DNS记录
+	err = dnsProcess.UpsertRecord(ctx, &processParams)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *IpUpdateService) allowConcurrent(item *ent.PlatformConfig) bool {

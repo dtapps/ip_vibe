@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 	"strings"
-	"vibe_ip/internal/utils"
 
+	"github.com/alibabacloud-go/tea/tea"
+	"github.com/spf13/cast"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
@@ -20,6 +21,7 @@ type TencentEOClient struct {
 		ZoneID    string // 站点 ID
 	}
 
+	debug        bool // 是否开启调试模式
 	credential   *common.Credential
 	clientConfig *profile.ClientProfile
 	client       *teo.Client
@@ -56,10 +58,10 @@ func NewTencentEOClient(ctx context.Context, secretID string, secretKey string, 
 }
 
 // 设置调试模式
-// func (c *TencentEOClient) SetDebug(debug bool) *TencentEOClient {
-// 	c.client.WithDebug(debug)
-// 	return c
-// }
+func (c *TencentEOClient) SetDebug(debug bool) *TencentEOClient {
+	c.debug = debug
+	return c
+}
 
 // 设置HTTP日志记录器
 func (c *TencentEOClient) SetLog(log *http_log.LoggingTransport) *TencentEOClient {
@@ -70,14 +72,10 @@ func (c *TencentEOClient) SetLog(log *http_log.LoggingTransport) *TencentEOClien
 	return c
 }
 
-// 查询加速域名列表
+// 查询加速域名
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeAccelerationDomains
-// domainName: 主域名
-// subDomain: 子域名
-func (c *TencentEOClient) QueryDomain(ctx context.Context, domainName string, subDomain string) (EdgeOneQueryDomainResponse, error) {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	fullDomain, subDomain, domainName := utils.GetCdnDomainParts(subDomain, domainName)
+// fullDomain: 完整域名
+func (c *TencentEOClient) QueryDomain(ctx context.Context, fullDomain string) (TencentEOQueryDomainResponse, error) {
 
 	// 请求
 	requestParams := teo.NewDescribeAccelerationDomainsRequest()
@@ -91,46 +89,46 @@ func (c *TencentEOClient) QueryDomain(ctx context.Context, domainName string, su
 	})
 	response, err := c.client.DescribeAccelerationDomains(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return EdgeOneQueryDomainResponse{}, fmt.Errorf("API错误: %w", err)
+		return TencentEOQueryDomainResponse{}, fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
-		return EdgeOneQueryDomainResponse{}, err
+		return TencentEOQueryDomainResponse{}, err
+	}
+	if c.debug {
+		printJSON("查询加速域名", requestParams, response)
 	}
 
 	for _, item := range response.Response.AccelerationDomains {
-		if *item.DomainName == fullDomain {
-			return EdgeOneQueryDomainResponse{
-				// DomainID:        *item.DomainId,
-				DomainName:      *item.DomainName,
-				DomainCname:     *item.Cname,
-				OriginType:      *item.OriginDetail.OriginType,
-				OriginValue:     *item.OriginDetail.Origin,
-				OriginProtocol:  *item.OriginProtocol,
-				HttpOriginPort:  int(*item.HttpOriginPort),
-				HttpsOriginPort: int(*item.HttpsOriginPort),
+		if strings.EqualFold(tea.StringValue(item.DomainName), fullDomain) {
+			return TencentEOQueryDomainResponse{
+				// RecordID:         tea.StringValue(item.DomainId),
+				FullDomain:      tea.StringValue(item.DomainName),
+				DomainCname:     tea.StringValue(item.Cname),
+				RecordType:      tea.StringValue(item.OriginDetail.OriginType),
+				OriginValue:     tea.StringValue(item.OriginDetail.Origin),
+				OriginProtocol:  tea.StringValue(item.OriginProtocol),
+				HttpOriginPort:  cast.ToInt(tea.Uint64Value(item.HttpOriginPort)),
+				HttpsOriginPort: cast.ToInt(tea.Uint64Value(item.HttpsOriginPort)),
 			}, nil
 		}
 	}
 
-	return EdgeOneQueryDomainResponse{}, fmt.Errorf("未找到记录")
+	return TencentEOQueryDomainResponse{}, fmt.Errorf("未找到记录")
 }
 
 // 创建加速域名
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=CreateAccelerationDomain
-// domainName: 主域名
-// subDomain: 子域名
-// originType: IP_DOMAIN = IPV4、IPV6 或域名类型源站
-// originType: ORIGIN_GROUP = 源站组类型源站
+// fullDomain: 完整域名
+// recordType: IP_DOMAIN = IPV4、IPV6 或域名类型源站
+// recordType: ORIGIN_GROUP = 源站组类型源站
 // originValue: 源站地址或源站组ID
 // originProtocol: follow = 遵循源站协议、http = HTTP 协议、https = HTTPS 协议
 // httpPort: HTTP回源端口
 // httpsPort: HTTPS回源端口
-func (c *TencentEOClient) CreateDomain(ctx context.Context, domainName string, subDomain string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	fullDomain, subDomain, domainName := utils.GetCdnDomainParts(subDomain, domainName)
+func (c *TencentEOClient) CreateDomain(ctx context.Context, fullDomain string, recordType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
 
 	// 转大写
+	recordType = strings.ToUpper(recordType)
 	originProtocol = strings.ToUpper(originProtocol)
 
 	// 默认值
@@ -146,40 +144,40 @@ func (c *TencentEOClient) CreateDomain(ctx context.Context, domainName string, s
 	requestParams.ZoneId = common.StringPtr(c.config.ZoneID) // 加速域名所属站点 ID
 	requestParams.DomainName = common.StringPtr(fullDomain)  // 加速域名
 	requestParams.OriginInfo = &teo.OriginInfo{
-		OriginType: common.StringPtr(originType),  // 源站类型
+		OriginType: common.StringPtr(recordType),  // 源站类型
 		Origin:     common.StringPtr(originValue), // 源站地址
 	}
 	requestParams.OriginProtocol = common.StringPtr(originProtocol)     // 回源协议
 	requestParams.HttpOriginPort = common.Uint64Ptr(uint64(httpPort))   // HTTP回源端口
 	requestParams.HttpsOriginPort = common.Uint64Ptr(uint64(httpsPort)) // HTTPS回源端口
 	requestParams.IPv6Status = common.StringPtr("on")                   // IPv6状态
-	_, err := c.client.CreateAccelerationDomain(requestParams)
+	response, err := c.client.CreateAccelerationDomain(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
 	}
+	if c.debug {
+		printJSON("创建加速域名", requestParams, response)
+	}
 
 	return nil
 }
 
-// 修改加速域名信息
+// 更新加速域名
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=ModifyAccelerationDomain
-// domainName: 主域名
-// subDomain: 子域名
-// originType: IP_DOMAIN = IPV4、IPV6 或域名类型源站
-// originType: ORIGIN_GROUP = 源站组类型源站
+// fullDomain: 完整域名
+// recordType: IP_DOMAIN = IPV4、IPV6 或域名类型源站
+// recordType: ORIGIN_GROUP = 源站组类型源站
 // originValue: 源站地址或源站组ID
 // originProtocol: follow = 遵循源站协议、http = HTTP 协议、https = HTTPS 协议
 // httpPort: HTTP回源端口
 // httpsPort: HTTPS回源端口
-func (c *TencentEOClient) UpdateDomain(ctx context.Context, domainName string, subDomain string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	fullDomain, subDomain, domainName := utils.GetCdnDomainParts(subDomain, domainName)
+func (c *TencentEOClient) UpdateDomain(ctx context.Context, fullDomain string, recordType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
 
 	// 转大写
+	recordType = strings.ToUpper(recordType)
 	originProtocol = strings.ToUpper(originProtocol)
 
 	// 默认值
@@ -195,28 +193,31 @@ func (c *TencentEOClient) UpdateDomain(ctx context.Context, domainName string, s
 	requestParams.ZoneId = common.StringPtr(c.config.ZoneID) // 加速域名所属站点 ID
 	requestParams.DomainName = common.StringPtr(fullDomain)  // 加速域名
 	requestParams.OriginInfo = &teo.OriginInfo{
-		OriginType: common.StringPtr(originType),  // 源站类型
+		OriginType: common.StringPtr(recordType),  // 源站类型
 		Origin:     common.StringPtr(originValue), // 源站地址
 	}
 	requestParams.OriginProtocol = common.StringPtr(originProtocol)     // 回源协议
 	requestParams.HttpOriginPort = common.Uint64Ptr(uint64(httpPort))   // HTTP回源端口
 	requestParams.HttpsOriginPort = common.Uint64Ptr(uint64(httpsPort)) // HTTPS回源端口
 	requestParams.IPv6Status = common.StringPtr("on")                   // IPv6状态
-	_, err := c.client.ModifyAccelerationDomain(requestParams)
+	response, err := c.client.ModifyAccelerationDomain(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
 	}
+	if c.debug {
+		printJSON("更新加速域名", requestParams, response)
+	}
 
 	return nil
 }
 
-// 获取源站组列表
+// 查询源站组
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeOriginGroup
-// domain: 源站组名称
-func (c *TencentEOClient) QueryOriginGroup(ctx context.Context, originGroupName string) (EdgeOneQueryOriginGroupResponse, error) {
+// originGroupName: 源站组名称
+func (c *TencentEOClient) QueryOriginGroup(ctx context.Context, originGroupName string) (TencentEOQueryOriginGroupResponse, error) {
 
 	// 请求
 	requestParams := teo.NewDescribeOriginGroupRequest()
@@ -230,90 +231,91 @@ func (c *TencentEOClient) QueryOriginGroup(ctx context.Context, originGroupName 
 	})
 	response, err := c.client.DescribeOriginGroup(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
-		return EdgeOneQueryOriginGroupResponse{}, fmt.Errorf("API错误: %w", err)
+		return TencentEOQueryOriginGroupResponse{}, fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
-		return EdgeOneQueryOriginGroupResponse{}, err
+		return TencentEOQueryOriginGroupResponse{}, err
+	}
+	if c.debug {
+		printJSON("查询源站组", requestParams, response)
 	}
 
 	for _, item := range response.Response.OriginGroups {
-		if *item.Name == originGroupName {
+		if strings.EqualFold(tea.StringValue(item.Name), originGroupName) {
 			origins := []string{}
 			for _, v := range item.Records {
-				origins = append(origins, *v.Record)
+				origins = append(origins, tea.StringValue(v.Record))
 			}
-			return EdgeOneQueryOriginGroupResponse{
-				GroupID:      *item.GroupId,
-				GroupName:    *item.Name,
-				GroupType:    *item.Type,
+			return TencentEOQueryOriginGroupResponse{
+				GroupID:      tea.StringValue(item.GroupId),
+				GroupName:    tea.StringValue(item.Name),
+				GroupType:    tea.StringValue(item.Type),
 				GroupOrigins: origins,
 			}, nil
 		}
 	}
 
-	return EdgeOneQueryOriginGroupResponse{}, fmt.Errorf("未找到记录")
+	return TencentEOQueryOriginGroupResponse{}, fmt.Errorf("未找到记录")
 }
 
 // 创建源站组
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=CreateOriginGroup
-// domain: 源站组名称
-// origins: 源站组IP列表
-func (c *TencentEOClient) CreateOriginGroup(ctx context.Context, name string, origins []string) error {
+// originGroupName: 源站组名称
+// originGroupOrigins: 源站组值列表
+func (c *TencentEOClient) CreateOriginGroup(ctx context.Context, originGroupName string, originGroupOrigins []string) error {
 
 	// 请求
 	requestParams := teo.NewCreateOriginGroupRequest()
 	requestParams.ZoneId = common.StringPtr(c.config.ZoneID) // 站点ID
 	requestParams.Records = make([]*teo.OriginRecord, 0)     // 源站记录信息
-	for _, v := range origins {
+	for _, item := range originGroupOrigins {
 		requestParams.Records = append(requestParams.Records, &teo.OriginRecord{
-			Record: common.StringPtr(v),
+			Record: common.StringPtr(item),
 			Type:   common.StringPtr("IP_DOMAIN"),
 		})
 	}
-	requestParams.Name = common.StringPtr(name)      // 源站组名称
-	requestParams.Type = common.StringPtr("GENERAL") // 源站组类型
-	_, err := c.client.CreateOriginGroup(requestParams)
+	requestParams.Name = common.StringPtr(originGroupName) // 源站组名称
+	requestParams.Type = common.StringPtr("GENERAL")       // 源站组类型
+	response, err := c.client.CreateOriginGroup(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
+	}
+	if c.debug {
+		printJSON("创建源站组", requestParams, response)
 	}
 
 	return nil
 }
 
-// 修改源站组
+// 更新源站组
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=ModifyOriginGroup
-// domain: 源站组ID
-// origins: 源站组IP列表
-func (c *TencentEOClient) UpdateOriginGroup(ctx context.Context, groupId string, origins []string) error {
-
-	records := []map[string]any{}
-	for _, v := range origins {
-		records = append(records, map[string]any{
-			"Record": v,
-			"Type":   "IP_DOMAIN",
-		})
-	}
+// originGroupID: 源站组ID
+// originGroupOrigins: 源站组值列表
+func (c *TencentEOClient) UpdateOriginGroup(ctx context.Context, originGroupID string, originGroupOrigins []string) error {
 
 	// 请求
 	requestParams := teo.NewModifyOriginGroupRequest()
 	requestParams.ZoneId = common.StringPtr(c.config.ZoneID) // 站点ID
-	requestParams.GroupId = common.StringPtr(groupId)        // 源站组ID
+	requestParams.GroupId = common.StringPtr(originGroupID)  // 源站组ID
 	requestParams.Records = make([]*teo.OriginRecord, 0)     // 源站记录信息
-	for _, v := range origins {
+	for _, item := range originGroupOrigins {
 		requestParams.Records = append(requestParams.Records, &teo.OriginRecord{
-			Record: common.StringPtr(v),
+			Record: common.StringPtr(item),
 			Type:   common.StringPtr("IP_DOMAIN"),
 		})
 	}
-	_, err := c.client.ModifyOriginGroup(requestParams)
+	response, err := c.client.ModifyOriginGroup(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
+	}
+	if c.debug {
+		printJSON("更新源站组", requestParams, response)
 	}
 
 	return nil

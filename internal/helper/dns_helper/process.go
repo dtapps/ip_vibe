@@ -7,10 +7,11 @@ import (
 
 // 参数
 type DNSProcessParams struct {
+	DNSRecordID string // DNS记录ID
+
 	ConfigJSON  json.RawMessage // 配置
-	RecordID    string          // 记录ID
 	SubDomain   string          // 子域名
-	OriginValue string          // 源站地址
+	OriginValue string          // 源站值
 }
 
 type DNSProcess interface {

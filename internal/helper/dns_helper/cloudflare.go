@@ -75,8 +75,7 @@ func (c *CloudflareClient) QueryDomain(ctx context.Context, fullDomain string, s
 		return QueryDomainResponse{}, err
 	}
 	if c.debug {
-		fmt.Printf("查询域名记录 请求参数: %+v\n", requestParams)
-		fmt.Printf("查询域名记录 响应参数: %+v\n", response)
+		printJSON("查询域名记录", requestParams, response)
 	}
 
 	for _, item := range response.Result {
@@ -116,8 +115,7 @@ func (c *CloudflareClient) CreateDomain(ctx context.Context, fullDomain string, 
 		return err
 	}
 	if c.debug {
-		fmt.Printf("创建域名记录 请求参数: %+v\n", requestParams)
-		fmt.Printf("创建域名记录 响应参数: %+v\n", response)
+		printJSON("创建域名记录", requestParams, response)
 	}
 
 	return nil
@@ -144,8 +142,7 @@ func (c *CloudflareClient) UpdateDomain(ctx context.Context, domainID string, fu
 		return err
 	}
 	if c.debug {
-		fmt.Printf("更新域名记录 请求参数: %+v\n", requestParams)
-		fmt.Printf("更新域名记录 响应参数: %+v\n", response)
+		printJSON("更新域名记录", requestParams, response)
 	}
 
 	return nil

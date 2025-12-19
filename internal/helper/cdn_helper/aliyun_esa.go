@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"vibe_ip/internal/utils"
+	"strings"
 
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	esa20240910 "github.com/alibabacloud-go/esa-20240910/v2/client"
@@ -40,6 +40,7 @@ type AliyunEsaClient struct {
 		SiteID          int64  // 站点 ID
 	}
 
+	debug        bool // 是否开启调试模式
 	credential   credential.Credential
 	clientConfig *openapi.Config
 	client       *esa20240910.Client
@@ -80,10 +81,10 @@ func NewAliyunEsaClient(ctx context.Context, accessKeyID string, accessKeySecret
 }
 
 // 设置调试模式
-// func (c *AliyunEsaClient) SetDebug(debug bool) *AliyunEsaClient {
-// 	c.client.WithDebug(debug)
-// 	return c
-// }
+func (c *AliyunEsaClient) SetDebug(debug bool) *AliyunEsaClient {
+	c.debug = debug
+	return c
+}
 
 // 设置HTTP日志记录器
 func (c *AliyunEsaClient) SetLog(log *http_log.LoggingTransport) *AliyunEsaClient {
@@ -97,14 +98,10 @@ func (c *AliyunEsaClient) SetLog(log *http_log.LoggingTransport) *AliyunEsaClien
 	return c
 }
 
-// 查询加速域名列表
+// 查询加速域名
 // https://next.api.aliyun.com/api/ESA/2024-09-10/ListRecords
-// domainName: 主域名
-// subDomain: 子域名
-func (c *AliyunEsaClient) QueryDomain(ctx context.Context, domainName string, subDomain string) (EdgeSecurityAccelerationResponseQueryDomain, error) {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	fullDomain, subDomain, domainName := utils.GetCdnDomainParts(subDomain, domainName)
+// fullDomain: 完整域名
+func (c *AliyunEsaClient) QueryDomain(ctx context.Context, fullDomain string) (AliyunEsaQueryDomainResponse, error) {
 
 	// 请求
 	requestParams := &esa20240910.ListRecordsRequest{}
@@ -114,122 +111,141 @@ func (c *AliyunEsaClient) QueryDomain(ctx context.Context, domainName string, su
 	requestParams.PageSize = tea.Int32(500)
 	response, err := c.client.ListRecords(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
-		return EdgeSecurityAccelerationResponseQueryDomain{}, fmt.Errorf("API错误: %w", err)
+		return AliyunEsaQueryDomainResponse{}, fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
-		return EdgeSecurityAccelerationResponseQueryDomain{}, err
+		return AliyunEsaQueryDomainResponse{}, err
+	}
+	if c.debug {
+		printJSON("查询加速域名", requestParams, response)
 	}
 
 	for _, item := range response.Body.Records {
 		if tea.StringValue(item.RecordName) == fullDomain {
-			return EdgeSecurityAccelerationResponseQueryDomain{
-				DomainID:    cast.ToString(tea.Int64Value(item.RecordId)),
-				DomainName:  tea.StringValue(item.RecordName),
+			return AliyunEsaQueryDomainResponse{
+				RecordID:    cast.ToString(tea.Int64Value(item.RecordId)),
+				FullDomain:  tea.StringValue(item.RecordName),
 				DomainCname: tea.StringValue(item.RecordCname),
-				OriginType:  tea.StringValue(item.RecordType),
+				RecordType:  tea.StringValue(item.RecordType),
 				OriginValue: tea.StringValue(item.Data.Value),
 			}, nil
 		}
 	}
 
-	return EdgeSecurityAccelerationResponseQueryDomain{}, fmt.Errorf("未找到记录")
+	return AliyunEsaQueryDomainResponse{}, fmt.Errorf("未找到记录")
 }
 
 // 创建加速域名
 // https://next.api.aliyun.com/api/ESA/2024-09-10/CreateRecord
-// domainName: 主域名
-// subDomain: 子域名
-// originType: IP_DOMAIN = IPV4、IPV6 或域名类型源站
-// originType: ORIGIN_GROUP = 源站组类型源站
+// fullDomain: 完整域名
+// recordType: A/AAAA
+// recordType: CNAME
 // originValue: 源站地址或源站组ID
-// originProtocol: follow = 遵循源站协议、http = HTTP 协议、https = HTTPS 协议
-// httpPort: HTTP回源端口
-// httpsPort: HTTPS回源端口
-func (c *AliyunEsaClient) CreateDomain(ctx context.Context, domainName string, subDomain string, originType string, originValue string, originProtocol string, httpPort int, httpsPort int) error {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	fullDomain, subDomain, domainName := utils.GetCdnDomainParts(subDomain, domainName)
+// sourceType: Domain = 普通域名源站
+func (c *AliyunEsaClient) CreateDomain(ctx context.Context, fullDomain string, recordType string, originValue string) error {
 
 	// 请求
 	requestParams := &esa20240910.CreateRecordRequest{}
-	requestParams.SiteId = tea.Int64(c.config.SiteID)  // 站点ID
-	requestParams.RecordName = tea.String(fullDomain)  // 记录名称
-	requestParams.Proxied = tea.Bool(true)             // 记录是否开启代理加速
-	requestParams.Type = tea.String("A/AAAA")          // 记录的DNS类型
-	requestParams.Ttl = tea.Int32(1)                   // 记录的过期时间
-	requestParams.Data.Value = tea.String(originValue) // 记录值或部分内容
-	_, err := c.client.CreateRecord(requestParams)
+	requestParams.SiteId = tea.Int64(c.config.SiteID) // 站点ID
+	requestParams.RecordName = tea.String(fullDomain) // 记录名称
+	requestParams.Data = &esa20240910.CreateRecordRequestData{
+		Value: tea.String(originValue), // 记录值或部分内容
+	}
+	requestParams.Type = tea.String(recordType) // 记录的DNS类型
+	requestParams.Ttl = tea.Int32(1)            // 记录的过期时间
+	requestParams.Proxied = tea.Bool(true)      // 记录是否开启代理加速
+	requestParams.BizName = tea.String("web")   // 用于标记DNS记录的业务场景
+	response, err := c.client.CreateRecord(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
 	}
+	if c.debug {
+		printJSON("创建加速域名", requestParams, response)
+	}
 
 	return nil
 }
 
-// 修改加速域名信息
+// 更新加速域名
 // https://next.api.aliyun.com/api/ESA/2024-09-10/UpdateRecord
-// domainName: 主域名
-// subDomain: 子域名
-// originType: IP_DOMAIN = IPV4、IPV6 或域名类型源站
-// originType: ORIGIN_GROUP = 源站组类型源站
+// domainID: 域名ID
+// recordType: A/AAAA = IPV4、IPV6 或域名类型源站
+// recordType: CNAME = 源站组类型源站
 // originValue: 源站地址或源站组ID
-func (c *AliyunEsaClient) UpdateDomain(ctx context.Context, recordId string, originType string, originValue string) error {
+func (c *AliyunEsaClient) UpdateDomain(ctx context.Context, domainID string, recordType string, originValue string) error {
 
 	// 请求
 	requestParams := &esa20240910.UpdateRecordRequest{}
-	requestParams.RecordId = tea.Int64(cast.ToInt64(recordId)) // 站点ID
-	requestParams.Ttl = tea.Int32(1)                           // 记录的过期时间，单位秒
-	requestParams.Proxied = tea.Bool(true)                     // 记录是否开启代理加速
-	requestParams.Data.Value = tea.String(originValue)         // 记录值或部分内容
-	_, err := c.client.UpdateRecord(requestParams)
+	requestParams.RecordId = tea.Int64(cast.ToInt64(domainID)) // 站点ID
+	requestParams.Data = &esa20240910.UpdateRecordRequestData{
+		Value: tea.String(originValue), // 记录值或部分内容
+	}
+	requestParams.Type = tea.String(recordType) // 记录的DNS类型
+	requestParams.Ttl = tea.Int32(1)            // 记录的过期时间
+	requestParams.Proxied = tea.Bool(true)      // 记录是否开启代理加速
+	response, err := c.client.UpdateRecord(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
 	}
+	if c.debug {
+		printJSON("更新加速域名", requestParams, response)
+	}
 
 	return nil
 }
 
-// 获取源站组详情
+// 查询源站组
 // https://next.api.aliyun.com/api/ESA/2024-09-10/CreateList
-// originGroupID: 源站组ID
-func (c *AliyunEsaClient) QueryOriginGroup(ctx context.Context, originGroupID string) ([]string, error) {
+// originGroupName: 源站组名称
+func (c *AliyunEsaClient) QueryOriginGroup(ctx context.Context, originGroupName string) (AliyunEsaQueryOriginGroupResponse, error) {
 
 	// 请求
-	requestParams := &esa20240910.GetOriginPoolRequest{}
-	requestParams.SiteId = tea.Int64(c.config.SiteID)         // 站点ID
-	requestParams.Id = tea.Int64(cast.ToInt64(originGroupID)) // 源站组ID
-	response, err := c.client.GetOriginPool(requestParams)
+	requestParams := &esa20240910.ListOriginPoolsRequest{}
+	requestParams.SiteId = tea.Int64(c.config.SiteID) // 站点ID
+	requestParams.Name = tea.String(originGroupName)  // 源地址池名称
+	requestParams.MatchType = tea.String("exact")     // 按名称匹配查询类型
+	response, err := c.client.ListOriginPools(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
-		return []string{}, fmt.Errorf("API错误: %w", err)
+		return AliyunEsaQueryOriginGroupResponse{}, fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
-		return []string{}, err
+		return AliyunEsaQueryOriginGroupResponse{}, err
+	}
+	if c.debug {
+		printJSON("查询源站组", requestParams, response)
 	}
 
-	origins := []string{}
-	for _, item := range response.Body.Origins {
-		if tea.BoolValue(item.Enabled) {
-			origins = append(origins, tea.StringValue(item.Address))
+	for _, item := range response.Body.OriginPools {
+		if strings.EqualFold(tea.StringValue(item.Name), originGroupName) {
+			if tea.BoolValue(item.Enabled) {
+				origins := []string{}
+				for _, subItem := range item.Origins {
+					origins = append(origins, tea.StringValue(subItem.Address))
+				}
+				return AliyunEsaQueryOriginGroupResponse{
+					GroupID:      cast.ToString(tea.Int64Value(item.Id)),
+					GroupName:    tea.StringValue(item.Name),
+					GroupCname:   tea.StringValue(item.RecordName),
+					GroupOrigins: origins,
+				}, nil
+			}
 		}
 	}
-	if len(origins) == 0 {
-		return []string{}, fmt.Errorf("未找到记录")
-	}
 
-	return origins, nil
+	return AliyunEsaQueryOriginGroupResponse{}, fmt.Errorf("未找到记录")
 }
 
 // 创建源站组
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=CreateOriginGroup
 // originGroupName: 源站组名称
-// originValues: 源站组值列表
-func (c *AliyunEsaClient) CreateOriginGroup(ctx context.Context, originGroupName string, originValues []string) (originGroupID string, err error) {
+// originGroupOrigins: 源站组值列表
+func (c *AliyunEsaClient) CreateOriginGroup(ctx context.Context, originGroupName string, originGroupOrigins []string) error {
 
 	// 请求
 	requestParams := &esa20240910.CreateOriginPoolRequest{}
@@ -237,52 +253,57 @@ func (c *AliyunEsaClient) CreateOriginGroup(ctx context.Context, originGroupName
 	requestParams.Enabled = tea.Bool(true)                                         // 源地址池是否启用
 	requestParams.SiteId = tea.Int64(c.config.SiteID)                              // 站点ID
 	requestParams.Origins = make([]*esa20240910.CreateOriginPoolRequestOrigins, 0) // 源地址池里添加的源站信息
-	for _, v := range originValues {
+	for _, item := range originGroupOrigins {
 		requestParams.Origins = append(requestParams.Origins, &esa20240910.CreateOriginPoolRequestOrigins{
-			Address: tea.String(v),
+			Address: tea.String(item),
 			Type:    tea.String("ip_domain"),
-			Name:    tea.String(gomd5.Get16MD5Encode(v)),
+			Name:    tea.String(gomd5.Get16MD5Encode(item)),
 			Enabled: tea.Bool(true),
 		})
 	}
 	response, err := c.client.CreateOriginPool(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
-		return "", fmt.Errorf("API错误: %w", err)
+		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
-		return "", err
+		return err
+	}
+	if c.debug {
+		printJSON("创建源站组", requestParams, response)
 	}
 
-	return cast.ToString(tea.Int64Value(response.Body.Id)), nil
+	return nil
 }
 
-// 修改源站组
+// 更新源站组
 // https://next.api.aliyun.com/api/ESA/2024-09-10/UpdateList
 // originGroupID: 源站组ID
-// originGroupName: 源站组名称
-// originValues: 源站组值列表
-func (c *AliyunEsaClient) UpdateOriginGroup(ctx context.Context, originGroupID string, originValues []string) error {
+// originGroupOrigins: 源站组值列表
+func (c *AliyunEsaClient) UpdateOriginGroup(ctx context.Context, originGroupID string, originGroupOrigins []string) error {
 
 	// 请求
 	requestParams := &esa20240910.UpdateOriginPoolRequest{}
 	requestParams.Id = tea.Int64(cast.ToInt64(originGroupID))                      // 源站组ID
 	requestParams.Enabled = tea.Bool(true)                                         // 源地址池是否启用
 	requestParams.Origins = make([]*esa20240910.UpdateOriginPoolRequestOrigins, 0) // 源地址池里添加的源站信息
-	for _, v := range originValues {
+	for _, item := range originGroupOrigins {
 		requestParams.Origins = append(requestParams.Origins, &esa20240910.UpdateOriginPoolRequestOrigins{
-			Name:    tea.String(gomd5.Get16MD5Encode(v)),
-			Address: tea.String(v),
+			Name:    tea.String(gomd5.Get16MD5Encode(item)),
+			Address: tea.String(item),
 			Type:    tea.String("ip_domain"),
 			Enabled: tea.Bool(true),
 		})
 	}
 	requestParams.SiteId = tea.Int64(c.config.SiteID) // 站点ID
-	_, err := c.client.UpdateOriginPool(requestParams)
+	response, err := c.client.UpdateOriginPool(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
+	}
+	if c.debug {
+		printJSON("更新源站组", requestParams, response)
 	}
 
 	return nil

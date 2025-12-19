@@ -47,9 +47,9 @@ func (d *DNSProcessTencentDnsImpl) UpsertRecord(ctx context.Context, params *DNS
 		slog.String("主域名", platformConfig.DomainName),
 	)
 	d.logger.InfoContext(ctx, "入参",
-		slog.String("记录ID", params.RecordID),
+		slog.String("DNS记录ID", params.DNSRecordID),
 		slog.String("子域名", params.SubDomain),
-		slog.String("源站地址", params.OriginValue),
+		slog.String("源站值", params.OriginValue),
 	)
 
 	// 解析域名
@@ -67,7 +67,7 @@ func (d *DNSProcessTencentDnsImpl) UpsertRecord(ctx context.Context, params *DNS
 		slog.String("子域名", subDomain),
 		slog.String("主域名", domainName),
 		slog.String("记录类型", recordType),
-		slog.String("源站地址", originValue),
+		slog.String("源站值", originValue),
 	)
 
 	// 初始化客户端
@@ -97,7 +97,7 @@ func (d *DNSProcessTencentDnsImpl) UpsertRecord(ctx context.Context, params *DNS
 		slog.String("记录ID", queryDomain.RecordID),
 		slog.String("完整域名", queryDomain.FullDomain),
 		slog.String("记录类型", queryDomain.RecordType),
-		slog.String("源站地址", queryDomain.OriginValue),
+		slog.String("源站值", queryDomain.OriginValue),
 	)
 
 	if queryDomain.RecordID == "" {
@@ -128,12 +128,12 @@ func (d *DNSProcessTencentDnsImpl) UpsertRecord(ctx context.Context, params *DNS
 			slog.String("记录ID", queryDomain.RecordID),
 			slog.String("完整域名", queryDomain.FullDomain),
 			slog.String("记录类型", queryDomain.RecordType),
-			slog.String("源站地址", queryDomain.OriginValue),
+			slog.String("源站值", queryDomain.OriginValue),
 		)
 
 		// 更新DNS记录
-		if d.db != nil && params.RecordID != "" {
-			_ = d.db.DNSRecord.UpdateOneID(cast.ToInt64(params.RecordID)).
+		if d.db != nil && params.DNSRecordID != "" {
+			_ = d.db.DNSRecord.UpdateOneID(cast.ToInt64(params.DNSRecordID)).
 				SetRecordID(queryDomain.RecordID).
 				SetLastRefreshAt(time.Now()).
 				Exec(ctx)
@@ -144,14 +144,22 @@ func (d *DNSProcessTencentDnsImpl) UpsertRecord(ctx context.Context, params *DNS
 	} else {
 
 		// 更新DNS记录
-		if d.db != nil && params.RecordID != "" {
-			_ = d.db.DNSRecord.UpdateOneID(cast.ToInt64(params.RecordID)).
+		if d.db != nil && params.DNSRecordID != "" {
+			_ = d.db.DNSRecord.UpdateOneID(cast.ToInt64(params.DNSRecordID)).
 				SetRecordID(queryDomain.RecordID).
 				SetLastRefreshAt(time.Now()).
 				Exec(ctx)
 		}
 
+		// 是否更新
+		var isUpdate = false
+
 		if utils.DNSValuesEqual(queryDomain.OriginValue, params.OriginValue) {
+			isUpdate = true
+		}
+
+		// 判断是否需要更新
+		if !isUpdate {
 			d.logger.InfoContext(ctx, "无需更新")
 			return nil
 		}
