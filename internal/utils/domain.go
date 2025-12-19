@@ -89,12 +89,12 @@ func GetFullDomain(subDomain string, mainDomain string) string {
 		return QueryDomainResponse{}, err
 	}
 **/
-func GetDnsDomainParts(subDomain string, mainDomain string, recordValue string) (full string, sub string, main string, recordType string, err error) {
+func GetDnsDomainParts(subDomain string, mainDomain string, originValue string) (full string, sub string, main string, recordType string, err error) {
 	if subDomain == "" {
 		subDomain = "@"
 	}
-	if recordValue != "" {
-		recordType, err = GetRecordType(recordValue)
+	if originValue != "" {
+		recordType, err = GetRecordType(originValue)
 	}
 	return fmt.Sprintf("%s.%s", subDomain, mainDomain), subDomain, mainDomain, recordType, err
 }
@@ -109,4 +109,15 @@ func GetCdnDomainParts(subDomain string, mainDomain string) (full string, sub st
 		subDomain = "@"
 	}
 	return fmt.Sprintf("%s.%s", subDomain, mainDomain), subDomain, mainDomain
+}
+
+// ParseDnsDomain 解析域名中的主域名和子域，同时判断记录类型
+func ParseDnsDomain(sD string, dn string, oV string) (fullDomain string, subDomain string, domainName string, recordType string, originValue string, err error) {
+	if sD == "" {
+		sD = "@"
+	}
+	if oV != "" {
+		recordType, err = GetRecordType(oV)
+	}
+	return fmt.Sprintf("%s.%s", sD, dn), sD, dn, recordType, oV, err
 }

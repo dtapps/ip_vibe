@@ -17,6 +17,7 @@ import (
 	"vibe_ip/pkg/utils"
 
 	"github.com/go-co-op/gocron/v2"
+	"github.com/spf13/cast"
 	"go.dtapp.net/library/utils/goarray"
 	"golang.org/x/sync/errgroup"
 )
@@ -516,85 +517,73 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 	switch firstRecord.Edges.Config.Platform {
 	case platformconfig.PlatformCloudflare:
 
-		err = dns_helper.CloudflareProcessSingleIP(ctx,
-			dns_helper.ProcessService{
-				Log:      newLog,
-				Db:       global.GvaEntDb,
-				RecordID: firstRecord.ID,
-				Debug:    global.GvaEnv.DEBUG,
-				HttpLog:  global.GvaHttpLog,
-			},
-			dns_helper.CloudflareProcessSingleIPParams{
-				ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
-				SubDomain:   firstRecord.SubDomain,
-				OriginValue: origin,
-			},
+		dnsProcess := dns_helper.NewDNSProcessCloudflare(
+			newLog,
+			global.GvaEntDb,
+			global.GvaHttpLog,
 		)
+		err = dnsProcess.UpsertRecord(ctx, &dns_helper.DNSProcessParams{
+			ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
+			RecordID:    cast.ToString(firstRecord.ID),
+			SubDomain:   firstRecord.SubDomain,
+			OriginValue: origin,
+		})
 		if err != nil {
-			return fmt.Errorf("处理单IP失败: %w", err)
+			return err
 		}
 
 		return nil
 	case platformconfig.PlatformTencentDNS:
 
-		err = dns_helper.TencentDnsProcessSingleIP(ctx,
-			dns_helper.ProcessService{
-				Log:      newLog,
-				Db:       global.GvaEntDb,
-				RecordID: firstRecord.ID,
-				Debug:    global.GvaEnv.DEBUG,
-				HttpLog:  global.GvaHttpLog,
-			},
-			dns_helper.TencentDnsProcessSingleIPParams{
-				ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
-				SubDomain:   firstRecord.SubDomain,
-				OriginValue: origin,
-			},
+		dnsProcess := dns_helper.NewDNSProcessTencentDns(
+			newLog,
+			global.GvaEntDb,
+			global.GvaHttpLog,
 		)
+		err = dnsProcess.UpsertRecord(ctx, &dns_helper.DNSProcessParams{
+			ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
+			RecordID:    cast.ToString(firstRecord.ID),
+			SubDomain:   firstRecord.SubDomain,
+			OriginValue: origin,
+		})
 		if err != nil {
-			return fmt.Errorf("处理单IP失败: %w", err)
+			return err
 		}
 
 		return nil
 	case platformconfig.PlatformAliyunDNS:
 
-		err = dns_helper.AliyunDnsProcessSingleIP(ctx,
-			dns_helper.ProcessService{
-				Log:      newLog,
-				Db:       global.GvaEntDb,
-				RecordID: firstRecord.ID,
-				Debug:    global.GvaEnv.DEBUG,
-				HttpLog:  global.GvaHttpLog,
-			},
-			dns_helper.AliyunDnsProcessSingleIPParams{
-				ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
-				SubDomain:   firstRecord.SubDomain,
-				OriginValue: origin,
-			},
+		dnsProcess := dns_helper.NewDNSProcessAliyunDns(
+			newLog,
+			global.GvaEntDb,
+			global.GvaHttpLog,
 		)
+		err = dnsProcess.UpsertRecord(ctx, &dns_helper.DNSProcessParams{
+			ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
+			RecordID:    cast.ToString(firstRecord.ID),
+			SubDomain:   firstRecord.SubDomain,
+			OriginValue: origin,
+		})
 		if err != nil {
-			return fmt.Errorf("处理单IP失败: %w", err)
+			return err
 		}
 
 		return nil
 	case platformconfig.PlatformBaiduDNS:
 
-		err = dns_helper.BaiduDnsProcessSingleIP(ctx,
-			dns_helper.ProcessService{
-				Log:      newLog,
-				Db:       global.GvaEntDb,
-				RecordID: firstRecord.ID,
-				Debug:    global.GvaEnv.DEBUG,
-				HttpLog:  global.GvaHttpLog,
-			},
-			dns_helper.BaiduDnsProcessSingleIPParams{
-				ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
-				SubDomain:   firstRecord.SubDomain,
-				OriginValue: origin,
-			},
+		dnsProcess := dns_helper.NewDNSProcessBaiduDns(
+			newLog,
+			global.GvaEntDb,
+			global.GvaHttpLog,
 		)
+		err = dnsProcess.UpsertRecord(ctx, &dns_helper.DNSProcessParams{
+			ConfigJSON:  firstRecord.Edges.Config.ConfigJSON,
+			RecordID:    cast.ToString(firstRecord.ID),
+			SubDomain:   firstRecord.SubDomain,
+			OriginValue: origin,
+		})
 		if err != nil {
-			return fmt.Errorf("处理单IP失败: %w", err)
+			return err
 		}
 
 		return nil
