@@ -17,6 +17,7 @@ type CloudflareClient struct {
 		ZoneID string // 站点 ID
 	}
 
+	debug  bool // 是否开启调试模式
 	client *cloudflare.Client
 }
 
@@ -36,10 +37,10 @@ func NewCloudflareClient(ctx context.Context, apiKey string, zoneID string) (c *
 }
 
 // 设置调试模式
-// func (c *CloudflareClient) SetDebug(debug bool) *CloudflareClient {
-// 	c.client.WithDebug()
-// 	return c
-// }
+func (c *CloudflareClient) SetDebug(debug bool) *CloudflareClient {
+	c.debug = debug
+	return c
+}
 
 // 设置HTTP日志记录器
 func (c *CloudflareClient) SetLog(log *http_log.LoggingTransport) *CloudflareClient {
@@ -69,12 +70,16 @@ func (c *CloudflareClient) QueryDomain(ctx context.Context, fullDomain string, s
 	if recordType != "" {
 		requestParams.Type = cloudflare.F(dns.RecordListParamsType(recordType))
 	}
-	page, err := c.client.DNS.Records.List(ctx, requestParams)
+	response, err := c.client.DNS.Records.List(ctx, requestParams)
 	if err != nil {
 		return QueryDomainResponse{}, err
 	}
+	if c.debug {
+		fmt.Printf("查询域名记录 请求参数: %+v\n", requestParams)
+		fmt.Printf("查询域名记录 响应参数: %+v\n", response)
+	}
 
-	for _, item := range page.Result {
+	for _, item := range response.Result {
 		if item.Name == fullDomain {
 			if recordType != "" && item.Type != dns.RecordResponseType(recordType) {
 				continue
@@ -103,12 +108,16 @@ func (c *CloudflareClient) CreateDomain(ctx context.Context, fullDomain string, 
 	requestParams.Name = cloudflare.String(fullDomain)
 	requestParams.Type = cloudflare.F(dns.ARecordType(recordType))
 	requestParams.Content = cloudflare.String(originValue)
-	_, err := c.client.DNS.Records.New(ctx, dns.RecordNewParams{
+	response, err := c.client.DNS.Records.New(ctx, dns.RecordNewParams{
 		ZoneID: cloudflare.String(c.config.ZoneID),
 		Body:   requestParams,
 	})
 	if err != nil {
 		return err
+	}
+	if c.debug {
+		fmt.Printf("创建域名记录 请求参数: %+v\n", requestParams)
+		fmt.Printf("创建域名记录 响应参数: %+v\n", response)
 	}
 
 	return nil
@@ -127,12 +136,16 @@ func (c *CloudflareClient) UpdateDomain(ctx context.Context, domainID string, fu
 	requestParams.Name = cloudflare.String(fullDomain)
 	requestParams.Type = cloudflare.F(dns.ARecordType(recordType))
 	requestParams.Content = cloudflare.String(originValue)
-	_, err := c.client.DNS.Records.Edit(ctx, domainID, dns.RecordEditParams{
+	response, err := c.client.DNS.Records.Edit(ctx, domainID, dns.RecordEditParams{
 		ZoneID: cloudflare.String(c.config.ZoneID),
 		Body:   requestParams,
 	})
 	if err != nil {
 		return err
+	}
+	if c.debug {
+		fmt.Printf("更新域名记录 请求参数: %+v\n", requestParams)
+		fmt.Printf("更新域名记录 响应参数: %+v\n", response)
 	}
 
 	return nil

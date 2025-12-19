@@ -13,23 +13,18 @@ import (
 	"go.dtapp.net/library/contrib/http_log"
 )
 
-// 处理单IP参数
-type TencentDnsProcessSingleIPParams struct {
-	ConfigJSON  json.RawMessage // 配置
-	SubDomain   string          // 子域名
-	OriginValue string          // 源站地址
-}
-
 // 实现 DNSProcess 接口
 type DNSProcessTencentDnsImpl struct {
+	debug         bool                       // 调试模式
 	logger        *slog.Logger               // 日志
 	db            *ent.Client                // 数据库
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
 }
 
 // NewDNSProcessTencentDns 创建实例
-func NewDNSProcessTencentDns(logger *slog.Logger, db *ent.Client, httpTransport *http_log.LoggingTransport) DNSProcess {
+func NewDNSProcessTencentDns(debug bool, logger *slog.Logger, db *ent.Client, httpTransport *http_log.LoggingTransport) DNSProcess {
 	return &DNSProcessTencentDnsImpl{
+		debug:         debug,
 		logger:        logger,
 		db:            db,
 		httpTransport: httpTransport,
@@ -50,6 +45,11 @@ func (d *DNSProcessTencentDnsImpl) UpsertRecord(ctx context.Context, params *DNS
 	}
 	d.logger.InfoContext(ctx, "配置",
 		slog.String("主域名", platformConfig.DomainName),
+	)
+	d.logger.InfoContext(ctx, "入参",
+		slog.String("记录ID", params.RecordID),
+		slog.String("子域名", params.SubDomain),
+		slog.String("源站地址", params.OriginValue),
 	)
 
 	// 提取域名中的主域名和子域，同时判断记录类型
@@ -78,6 +78,8 @@ func (d *DNSProcessTencentDnsImpl) UpsertRecord(ctx context.Context, params *DNS
 	if err != nil {
 		return fmt.Errorf("初始化客户端失败: %w", err)
 	}
+	// 设置调试模式
+	client.SetDebug(d.debug)
 	// 设置HTTP日志记录器
 	if d.httpTransport != nil {
 		client.SetLog(d.httpTransport)
@@ -108,7 +110,7 @@ func (d *DNSProcessTencentDnsImpl) UpsertRecord(ctx context.Context, params *DNS
 			originValue,
 		)
 		if err != nil {
-			d.logger.InfoContext(ctx, "创建域名记录错误",
+			d.logger.ErrorContext(ctx, "创建域名记录错误",
 				slog.Any("error", err),
 			)
 			return fmt.Errorf("创建域名记录失败: %w", err)
@@ -163,7 +165,7 @@ func (d *DNSProcessTencentDnsImpl) UpsertRecord(ctx context.Context, params *DNS
 			originValue,
 		)
 		if err != nil {
-			d.logger.InfoContext(ctx, "更新域名记录失败",
+			d.logger.ErrorContext(ctx, "更新域名记录错误",
 				slog.Any("error", err),
 			)
 			return fmt.Errorf("更新域名记录失败: %w", err)

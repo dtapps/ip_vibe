@@ -19,6 +19,7 @@ type TencentDnsClient struct {
 		SecretKey string // 密钥密钥
 	}
 
+	debug        bool // 是否开启调试模式
 	credential   *common.Credential
 	clientConfig *profile.ClientProfile
 	client       *dnspod.Client
@@ -56,10 +57,10 @@ func NewTencentDnsClient(ctx context.Context, secretID string, secretKey string)
 }
 
 // 设置调试模式
-// func (c *TencentDnsClient) SetDebug(debug bool) *TencentDnsClient {
-// 	c.client.WithDebug(debug)
-// 	return c
-// }
+func (c *TencentDnsClient) SetDebug(debug bool) *TencentDnsClient {
+	c.debug = debug
+	return c
+}
 
 // 设置HTTP日志记录器
 func (c *TencentDnsClient) SetLog(log *http_log.LoggingTransport) *TencentDnsClient {
@@ -90,6 +91,10 @@ func (c *TencentDnsClient) QueryDomain(ctx context.Context, domainName string, s
 	}
 	if err != nil {
 		return QueryDomainResponse{}, err
+	}
+	if c.debug {
+		fmt.Printf("查询域名记录 请求参数: %+v\n", requestParams)
+		fmt.Printf("查询域名记录 响应参数: %+v\n", response)
 	}
 
 	for _, item := range response.Response.RecordList {
@@ -124,12 +129,16 @@ func (c *TencentDnsClient) CreateDomain(ctx context.Context, domainName string, 
 	requestParams.RecordLine = common.StringPtr("默认")       // 记录线路
 	requestParams.Value = common.StringPtr(originValue)     // 记录值
 	requestParams.SubDomain = common.StringPtr(subDomain)   // 主机记录
-	_, err := c.client.CreateRecord(requestParams)
+	response, err := c.client.CreateRecord(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
+	}
+	if c.debug {
+		fmt.Printf("创建域名记录 请求参数: %+v\n", requestParams)
+		fmt.Printf("创建域名记录 响应参数: %+v\n", response)
 	}
 
 	return nil
@@ -152,12 +161,16 @@ func (c *TencentDnsClient) UpdateDomain(ctx context.Context, domainID string, do
 	requestParams.Value = common.StringPtr(originValue)                // 记录值
 	requestParams.RecordId = common.Uint64Ptr(cast.ToUint64(domainID)) // 记录 ID
 	requestParams.SubDomain = common.StringPtr(subDomain)              // 主机记录
-	_, err := c.client.ModifyRecord(requestParams)
+	response, err := c.client.ModifyRecord(requestParams)
 	if _, ok := err.(*errors.TencentCloudSDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
+	}
+	if c.debug {
+		fmt.Printf("更新域名记录 请求参数: %+v\n", requestParams)
+		fmt.Printf("更新域名记录 响应参数: %+v\n", response)
 	}
 
 	return nil

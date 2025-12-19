@@ -37,6 +37,7 @@ type AliyunDnsClient struct {
 		AccessKeySecret string // 密钥密钥
 	}
 
+	debug        bool // 是否开启调试模式
 	credential   credential.Credential
 	clientConfig *openapi.Config
 	client       *alidns20150109.Client
@@ -77,10 +78,10 @@ func NewAliyunDnsClient(ctx context.Context, accessKeyID string, accessKeySecret
 }
 
 // 设置调试模式
-// func (c *AliyunDnsClient) SetDebug(debug bool) *AliyunDnsClient {
-// 	c.client.WithDebug(debug)
-// 	return c
-// }
+func (c *AliyunDnsClient) SetDebug(debug bool) *AliyunDnsClient {
+	c.debug = debug
+	return c
+}
 
 // 设置HTTP日志记录器
 func (c *AliyunDnsClient) SetLog(log *http_log.LoggingTransport) *AliyunDnsClient {
@@ -94,7 +95,7 @@ func (c *AliyunDnsClient) SetLog(log *http_log.LoggingTransport) *AliyunDnsClien
 	return c
 }
 
-// 获取解析记录列表
+// 查询域名记录
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/DescribeDomainRecords
 // domainName: 主域名
 // subDomain: 子域名
@@ -117,15 +118,19 @@ func (c *AliyunDnsClient) QueryDomain(ctx context.Context, domainName string, su
 	if err != nil {
 		return QueryDomainResponse{}, err
 	}
+	if c.debug {
+		fmt.Printf("查询域名记录 请求参数: %+v\n", requestParams)
+		fmt.Printf("查询域名记录 响应参数: %+v\n", response)
+	}
 
 	for _, item := range response.Body.DomainRecords.Record {
-		if tea.StringValue(item.RR) == subDomain {
+		if tea.StringValue(item.RR) == subDomain && tea.StringValue(item.DomainName) == domainName {
 			if recordType != "" && tea.StringValue(item.Type) != recordType {
 				continue
 			}
 			return QueryDomainResponse{
 				RecordID:    tea.StringValue(item.RecordId),
-				FullDomain:  tea.StringValue(item.RR),
+				FullDomain:  fmt.Sprintf("%s.%s", tea.StringValue(item.RR), tea.StringValue(item.DomainName)),
 				RecordType:  tea.StringValue(item.Type),
 				OriginValue: tea.StringValue(item.Value),
 			}, nil
@@ -150,12 +155,16 @@ func (c *AliyunDnsClient) CreateDomain(ctx context.Context, domainName string, s
 	requestParams.RR = tea.String(subDomain)          // 主机记录
 	requestParams.Type = tea.String(recordType)       // 解析记录类型
 	requestParams.Value = tea.String(originValue)     // 记录值
-	_, err := c.client.AddDomainRecord(requestParams)
+	response, err := c.client.AddDomainRecord(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
+	}
+	if c.debug {
+		fmt.Printf("创建域名记录 请求参数: %+v\n", requestParams)
+		fmt.Printf("创建域名记录 响应参数: %+v\n", response)
 	}
 
 	return nil
@@ -177,12 +186,16 @@ func (c *AliyunDnsClient) UpdateDomain(ctx context.Context, domainID string, dom
 	requestParams.RR = tea.String(subDomain)       // 主机记录
 	requestParams.Type = tea.String(recordType)    // 解析记录类型
 	requestParams.Value = tea.String(originValue)  // 记录值
-	_, err := c.client.UpdateDomainRecord(requestParams)
+	response, err := c.client.UpdateDomainRecord(requestParams)
 	if _, ok := err.(*tea.SDKError); ok {
 		return fmt.Errorf("API错误: %w", err)
 	}
 	if err != nil {
 		return err
+	}
+	if c.debug {
+		fmt.Printf("更新域名记录 请求参数: %+v\n", requestParams)
+		fmt.Printf("更新域名记录 响应参数: %+v\n", response)
 	}
 
 	return nil

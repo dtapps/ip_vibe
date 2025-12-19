@@ -34,11 +34,9 @@ type IpUpdateService struct {
 // NewIpUpdateService 创建 IP 更新服务
 func NewIpUpdateService(db *ent.Client, cron gocron.Scheduler, logger *slog.Logger) *IpUpdateService {
 	return &IpUpdateService{
-		db:   db,
-		cron: cron,
-		logger: logger.With(
-			slog.String("component", "ip_update"),
-		),
+		db:     db,
+		cron:   cron,
+		logger: logger,
 	}
 }
 
@@ -134,12 +132,11 @@ func (s *IpUpdateService) runDnsTask() {
 						slog.Int64("id", item.ID),
 						slog.String("record", "DNS"),
 						slog.String("type", item.Type.String()),
-						slog.String("sub_domain", item.SubDomain),
 					)
 
 					if err = s.DnsUpdate(egCtx, newLog, item); err != nil {
 						newLog.ErrorContext(egCtx, "并发处理失败",
-							slog.Any("err", err),
+							slog.Any("error", err),
 						)
 					}
 
@@ -150,7 +147,7 @@ func (s *IpUpdateService) runDnsTask() {
 
 			if err = eg.Wait(); err != nil {
 				s.logger.ErrorContext(ctx, "并发处理错误",
-					slog.Any("err", err),
+					slog.Any("error", err),
 				)
 			}
 
@@ -167,7 +164,7 @@ func (s *IpUpdateService) runDnsTask() {
 
 			if err = s.DnsUpdate(ctx, newLog, item); err != nil {
 				newLog.ErrorContext(ctx, "串行处理失败",
-					slog.Any("err", err),
+					slog.Any("error", err),
 				)
 			}
 
@@ -232,7 +229,7 @@ func (s *IpUpdateService) runCdnTask() {
 
 					if err = s.CdnUpdate(egCtx, newLog, item); err != nil {
 						newLog.ErrorContext(egCtx, "并发处理失败",
-							slog.Any("err", err),
+							slog.Any("error", err),
 						)
 					}
 
@@ -243,7 +240,7 @@ func (s *IpUpdateService) runCdnTask() {
 
 			if err = eg.Wait(); err != nil {
 				s.logger.ErrorContext(ctx, "并发处理错误",
-					slog.Any("err", err),
+					slog.Any("error", err),
 				)
 			}
 
@@ -260,7 +257,7 @@ func (s *IpUpdateService) runCdnTask() {
 
 			if err = s.CdnUpdate(ctx, newLog, item); err != nil {
 				newLog.ErrorContext(ctx, "串行处理失败",
-					slog.Any("err", err),
+					slog.Any("error", err),
 				)
 			}
 
@@ -471,6 +468,10 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 	// 准备源
 	origin := ""
 
+	newLog = newLog.With(
+		slog.String("platform", firstRecord.Edges.Config.Platform.String()),
+	)
+
 	if firstRecord.Type == dnsrecord.TypeCNAME {
 
 		// 查询CDN记录
@@ -518,6 +519,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 	case platformconfig.PlatformCloudflare:
 
 		dnsProcess := dns_helper.NewDNSProcessCloudflare(
+			global.GvaEnv.DEBUG,
 			newLog,
 			global.GvaEntDb,
 			global.GvaHttpLog,
@@ -536,6 +538,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 	case platformconfig.PlatformTencentDNS:
 
 		dnsProcess := dns_helper.NewDNSProcessTencentDns(
+			global.GvaEnv.DEBUG,
 			newLog,
 			global.GvaEntDb,
 			global.GvaHttpLog,
@@ -554,6 +557,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 	case platformconfig.PlatformAliyunDNS:
 
 		dnsProcess := dns_helper.NewDNSProcessAliyunDns(
+			global.GvaEnv.DEBUG,
 			newLog,
 			global.GvaEntDb,
 			global.GvaHttpLog,
@@ -572,6 +576,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 	case platformconfig.PlatformBaiduDNS:
 
 		dnsProcess := dns_helper.NewDNSProcessBaiduDns(
+			global.GvaEnv.DEBUG,
 			newLog,
 			global.GvaEntDb,
 			global.GvaHttpLog,

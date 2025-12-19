@@ -17,6 +17,7 @@ type BaiduDnsClient struct {
 		SecretAccessKey string // 密钥密钥
 	}
 
+	debug  bool // 是否开启调试模式
 	client *dns.Client
 }
 
@@ -37,10 +38,10 @@ func NewBaiduDnsClient(ctx context.Context, accessKeyID string, secretAccessKey 
 }
 
 // 设置调试模式
-// func (c *BaiduDnsClient) SetDebug(debug bool) *BaiduDnsClient {
-// 	c.client.WithDebug(debug)
-// 	return c
-// }
+func (c *BaiduDnsClient) SetDebug(debug bool) *BaiduDnsClient {
+	c.debug = debug
+	return c
+}
 
 // 设置HTTP日志记录器
 func (c *BaiduDnsClient) SetLog(log *http_log.LoggingTransport) *BaiduDnsClient {
@@ -79,6 +80,10 @@ func (c *BaiduDnsClient) QueryDomain(ctx context.Context, domainName string, sub
 	}
 	if err != nil {
 		return QueryDomainResponse{}, err
+	}
+	if c.debug {
+		fmt.Printf("查询域名记录 请求参数: %+v\n", requestParams)
+		fmt.Printf("查询域名记录 响应参数: %+v\n", response)
 	}
 
 	for _, item := range response.Records {
@@ -121,6 +126,9 @@ func (c *BaiduDnsClient) CreateDomain(ctx context.Context, domainName string, su
 	if err != nil {
 		return err
 	}
+	if c.debug {
+		fmt.Printf("创建域名记录 请求参数: %+v\n", requestParams)
+	}
 
 	return nil
 }
@@ -148,6 +156,9 @@ func (c *BaiduDnsClient) UpdateDomain(ctx context.Context, domainID string, doma
 	}
 	if err != nil {
 		return err
+	}
+	if c.debug {
+		fmt.Printf("更新域名记录 请求参数: %+v\n", requestParams)
 	}
 
 	return nil
