@@ -389,6 +389,73 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 		}
 
 		return nil
+	case platformconfig.PlatformAliyunEsa:
+
+		if len(origins) == 1 {
+			// 处理单IP
+			newLog.InfoContext(ctx, "处理单IP")
+			// 清理不需要的端口
+			switch firstRecord.OriginProtocol {
+			case cdnrecord.OriginProtocolHTTP:
+				firstRecord.HTTPSPort = 0
+			case cdnrecord.OriginProtocolHTTPS:
+				firstRecord.HTTPPort = 0
+			}
+			err = cdn_helper.AliyunEsaProcessSingleIP(ctx,
+				cdn_helper.ProcessService{
+					Log:      newLog,
+					Db:       global.GvaEntDb,
+					RecordID: firstRecord.ID,
+					Debug:    global.GvaEnv.DEBUG,
+					HttpLog:  global.GvaHttpLog,
+				},
+				cdn_helper.AliyunEsaProcessSingleIPParams{
+					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
+					SubDomain:      firstRecord.SubDomain,
+					OriginValue:    origins[0],
+					OriginProtocol: strings.ToUpper(firstRecord.OriginProtocol.String()),
+					HttpPort:       firstRecord.HTTPPort,
+					HttpsPort:      firstRecord.HTTPSPort,
+				},
+			)
+			if err != nil {
+				return fmt.Errorf("处理单IP失败: %w", err)
+			}
+		} else {
+			// 处理多IP
+			newLog.InfoContext(ctx, "处理多IP")
+			// 清理不需要的端口
+			switch firstRecord.OriginProtocol {
+			case cdnrecord.OriginProtocolHTTP:
+				firstRecord.HTTPSPort = 0
+			case cdnrecord.OriginProtocolHTTPS:
+				firstRecord.HTTPPort = 0
+			}
+			err = cdn_helper.AliyunEsaProcessMultiIP(ctx,
+				cdn_helper.ProcessService{
+					Log:      newLog,
+					Db:       global.GvaEntDb,
+					RecordID: firstRecord.ID,
+					GroupID:  firstIPGroup.ID,
+					Debug:    global.GvaEnv.DEBUG,
+					HttpLog:  global.GvaHttpLog,
+				},
+				cdn_helper.AliyunEsaProcessMultiIPParams{
+					ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
+					SubDomain:      firstRecord.SubDomain,
+					OriginValues:   origins,
+					GroupName:      utils.GenerateShortIDBasedHash(firstIPGroup.ID, 10),
+					OriginProtocol: strings.ToUpper(firstRecord.OriginProtocol.String()),
+					HttpPort:       firstRecord.HTTPPort,
+					HttpsPort:      firstRecord.HTTPSPort,
+				},
+			)
+			if err != nil {
+				return fmt.Errorf("处理多IP失败: %w", err)
+			}
+		}
+
+		return nil
 	default:
 		return fmt.Errorf("不支持类型: %s", firstRecord.Edges.Config.Platform)
 	}
