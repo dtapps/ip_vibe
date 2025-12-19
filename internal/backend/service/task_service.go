@@ -30,15 +30,17 @@ type TaskServiceImpl struct {
 	debug     bool
 	logHelper *operation_logs_helper.OperationLogHelper
 	cron      gocron.Scheduler
+	logger    *slog.Logger // 日志记录器
 }
 
 // NewTaskService 创建任务调度服务实例
-func NewTaskService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper, cron gocron.Scheduler) TaskService {
+func NewTaskService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper, cron gocron.Scheduler, logger *slog.Logger) TaskService {
 	return &TaskServiceImpl{
 		db:        db,
 		debug:     debug,
 		logHelper: logHelper,
 		cron:      cron,
+		logger:    logger,
 	}
 }
 
@@ -140,7 +142,7 @@ func (s *TaskServiceImpl) StartScheduler(ctx context.Context) error {
 
 	if len(jobs) == 0 {
 		// 启动CDN刷新任务
-		ipUpdate := NewIpUpdateService(s.db, s.cron)
+		ipUpdate := NewIpUpdateService(s.db, s.cron, s.logger)
 		if err := ipUpdate.StartCdnJob(ctx); err != nil {
 			if s.debug {
 				slog.ErrorContext(ctx, "启动CDN刷新任务失败",

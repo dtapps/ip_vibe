@@ -28,15 +28,15 @@ type IpUpdateService struct {
 	cron   gocron.Scheduler // 定时任务调度器
 	dnsJob gocron.Job       // DNS刷新任务
 	cdnJob gocron.Job       // CDN刷新任务
-	log    *slog.Logger     // 日志记录器
+	logger *slog.Logger     // 日志记录器
 }
 
 // NewIpUpdateService 创建 IP 更新服务
-func NewIpUpdateService(db *ent.Client, cron gocron.Scheduler) *IpUpdateService {
+func NewIpUpdateService(db *ent.Client, cron gocron.Scheduler, logger *slog.Logger) *IpUpdateService {
 	return &IpUpdateService{
 		db:   db,
 		cron: cron,
-		log: slog.With(
+		logger: logger.With(
 			slog.String("component", "ip_update"),
 		),
 	}
@@ -130,7 +130,7 @@ func (s *IpUpdateService) runDnsTask() {
 				item := item // 创建副本以避免闭包问题
 				eg.Go(func() error {
 
-					newLog := s.log.With(
+					newLog := s.logger.With(
 						slog.Int64("id", item.ID),
 						slog.String("record", "DNS"),
 						slog.String("type", item.Type.String()),
@@ -149,7 +149,7 @@ func (s *IpUpdateService) runDnsTask() {
 			}
 
 			if err = eg.Wait(); err != nil {
-				s.log.ErrorContext(ctx, "并发处理错误",
+				s.logger.ErrorContext(ctx, "并发处理错误",
 					slog.Any("err", err),
 				)
 			}
@@ -158,7 +158,7 @@ func (s *IpUpdateService) runDnsTask() {
 		// 2. 串行处理不支持并发的记录
 		for _, item := range serialRecords {
 
-			newLog := s.log.With(
+			newLog := s.logger.With(
 				slog.Int64("id", item.ID),
 				slog.String("record", "DNS"),
 				slog.String("type", item.Type.String()),
@@ -177,7 +177,7 @@ func (s *IpUpdateService) runDnsTask() {
 
 	nextRun, err := s.dnsJob.NextRun()
 	if err == nil {
-		s.log.InfoContext(ctx, "DNS更新成功",
+		s.logger.InfoContext(ctx, "DNS更新成功",
 			slog.String("next_run_time", nextRun.Format(time.DateTime)),
 		)
 
@@ -186,7 +186,7 @@ func (s *IpUpdateService) runDnsTask() {
 		// 	go s.StartCdnJob(context.Background())
 		// }
 	} else {
-		s.log.InfoContext(ctx, "DNS更新成功")
+		s.logger.InfoContext(ctx, "DNS更新成功")
 	}
 
 }
@@ -223,7 +223,7 @@ func (s *IpUpdateService) runCdnTask() {
 				item := item // 创建副本以避免闭包问题
 				eg.Go(func() error {
 
-					newLog := s.log.With(
+					newLog := s.logger.With(
 						slog.Int64("id", item.ID),
 						slog.String("record", "CDN"),
 						slog.String("type", item.Type.String()),
@@ -242,7 +242,7 @@ func (s *IpUpdateService) runCdnTask() {
 			}
 
 			if err = eg.Wait(); err != nil {
-				s.log.ErrorContext(ctx, "并发处理错误",
+				s.logger.ErrorContext(ctx, "并发处理错误",
 					slog.Any("err", err),
 				)
 			}
@@ -251,7 +251,7 @@ func (s *IpUpdateService) runCdnTask() {
 		// 2. 串行处理不支持并发的记录
 		for _, item := range serialRecords {
 
-			newLog := s.log.With(
+			newLog := s.logger.With(
 				slog.Int64("id", item.ID),
 				slog.String("record", "CDN"),
 				slog.String("type", item.Type.String()),
@@ -270,7 +270,7 @@ func (s *IpUpdateService) runCdnTask() {
 
 	nextRun, err := s.cdnJob.NextRun()
 	if err == nil {
-		s.log.InfoContext(ctx, "CDN更新成功",
+		s.logger.InfoContext(ctx, "CDN更新成功",
 			slog.String("next_run_time", nextRun.Format(time.DateTime)),
 		)
 
@@ -279,7 +279,7 @@ func (s *IpUpdateService) runCdnTask() {
 			go s.StartDnsJob(context.Background())
 		}
 	} else {
-		s.log.InfoContext(ctx, "CDN更新成功")
+		s.logger.InfoContext(ctx, "CDN更新成功")
 	}
 
 }

@@ -209,7 +209,7 @@ func main() {
 	initialize.StartGoCron()
 
 	// 启动CDN刷新任务
-	ipUpdate := service.NewIpUpdateService(global.GvaEntDb, global.GvaGoCron)
+	ipUpdate := service.NewIpUpdateService(global.GvaEntDb, global.GvaGoCron, global.GvaGocronSlog.WithLogger())
 	if err := ipUpdate.StartCdnJob(ctx); err != nil {
 		slog.Error("启动CDN刷新任务失败", slog.String("error", err.Error()))
 		os.Exit(1)

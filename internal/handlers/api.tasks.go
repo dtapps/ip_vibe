@@ -28,6 +28,7 @@ func GetTasks(c *gin.Context) {
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 调用
@@ -66,6 +67,7 @@ func GetTaskDetail(c *gin.Context) {
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 调用
@@ -104,6 +106,7 @@ func RunTask(c *gin.Context) {
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 调用
@@ -142,6 +145,7 @@ func DeleteTask(c *gin.Context) {
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 调用
@@ -171,6 +175,7 @@ func CleanAllTask(c *gin.Context) {
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 调用
@@ -200,6 +205,7 @@ func StartScheduler(c *gin.Context) {
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 调用
@@ -229,6 +235,7 @@ func StopScheduler(c *gin.Context) {
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 调用

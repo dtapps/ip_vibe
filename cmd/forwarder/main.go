@@ -31,7 +31,8 @@ func main() {
 
 	ctx := context.Background()
 
-	initialize.InitSLog("forwarder") // 初始化 日志
+	initialize.InitSLog("forwarder")     // 初始化 日志
+	initialize.InitGocronSLog("backend") // 初始化 gocron 日志
 
 	// 打印
 	slog.Info("服务启动",

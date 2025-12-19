@@ -49,6 +49,7 @@ func getTaskList(ctx context.Context, req *mcp.CallToolRequest, params *types.Ge
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 调用
@@ -69,6 +70,7 @@ func getTaskDetail(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 调用
@@ -89,6 +91,7 @@ func runTask(ctx context.Context, req *mcp.CallToolRequest, params *types.RunTas
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 调用
@@ -109,6 +112,7 @@ func deleteTask(ctx context.Context, req *mcp.CallToolRequest, params *types.Del
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 调用
@@ -129,6 +133,7 @@ func cleanAllTask(ctx context.Context, req *mcp.CallToolRequest, params *any) (*
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 调用
@@ -149,6 +154,7 @@ func startScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) 
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 调用
@@ -169,6 +175,7 @@ func stopScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) (
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 调用

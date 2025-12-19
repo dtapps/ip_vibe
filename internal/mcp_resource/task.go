@@ -33,6 +33,7 @@ func getTaskList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.ReadRe
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 调用
@@ -61,6 +62,7 @@ func getTaskDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.Read
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 调用
