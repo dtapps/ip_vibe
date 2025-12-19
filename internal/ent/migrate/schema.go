@@ -66,6 +66,9 @@ var (
 				Name:    "cdnrecord_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{CdnRecordColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
 			},
 			{
 				Name:    "cdnrecord_config_id",
@@ -139,6 +142,9 @@ var (
 				Name:    "dnsrecord_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{DNSRecordColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
 			},
 			{
 				Name:    "dnsrecord_config_id",
@@ -191,6 +197,9 @@ var (
 				Name:    "device_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{DeviceColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
 			},
 		},
 	}
@@ -221,6 +230,9 @@ var (
 				Name:    "deviceipreport_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{DeviceIPReportColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
 			},
 			{
 				Name:    "deviceipreport_device_id",
@@ -268,6 +280,9 @@ var (
 				Name:    "deviceportforward_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{DevicePortForwardColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
 			},
 		},
 	}
@@ -339,9 +354,20 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
+				Name:    "domainmonitorhistory_check_time",
+				Unique:  false,
+				Columns: []*schema.Column{DomainMonitorHistoryColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
 				Name:    "domainmonitorhistory_monitor_id_check_time",
 				Unique:  false,
 				Columns: []*schema.Column{DomainMonitorHistoryColumns[14], DomainMonitorHistoryColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
 			},
 		},
 	}
@@ -365,6 +391,9 @@ var (
 				Name:    "ipgroup_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{IPGroupColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
 			},
 		},
 	}
@@ -399,6 +428,9 @@ var (
 				Name:    "ipgroupdevice_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{IPGroupDeviceColumns[0]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
 			},
 			{
 				Name:    "ipgroupdevice_device_id",
@@ -444,6 +476,9 @@ var (
 				Name:    "platformconfig_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{PlatformConfigColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
 			},
 		},
 	}
@@ -483,6 +518,9 @@ var (
 				Name:    "webhook_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{WebhookColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
 			},
 		},
 	}
@@ -528,6 +566,9 @@ var (
 				Name:    "webhooksubscription_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{WebhookSubscriptionColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
 			},
 			{
 				Name:    "webhooksubscription_webhook_id",

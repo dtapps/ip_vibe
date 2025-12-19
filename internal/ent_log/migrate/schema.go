@@ -55,6 +55,9 @@ var (
 				Name:    "httplog_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{HTTPLogColumns[11]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
 			},
 		},
 	}
@@ -96,6 +99,9 @@ var (
 				Name:    "operationlog_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{OperationLogColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
 			},
 		},
 	}
@@ -145,6 +151,9 @@ var (
 				Name:    "restylog_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{RestyLogColumns[11]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
 			},
 		},
 	}

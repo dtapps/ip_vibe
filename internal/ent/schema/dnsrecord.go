@@ -144,7 +144,7 @@ func (DNSRecord) Indexes() []ent.Index {
 
 		// 按创建时间排序
 		index.Fields("created_at").
-			Annotations(entsql.WithComments(true)),
+			Annotations(entsql.Desc(), entsql.WithComments(true)),
 
 		// 按平台配置序号排序
 		index.Fields("config_id").

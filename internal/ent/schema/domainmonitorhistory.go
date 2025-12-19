@@ -133,8 +133,12 @@ func (DomainMonitorHistory) Edges() []ent.Edge {
 // Indexes of the DomainMonitorHistory.
 func (DomainMonitorHistory) Indexes() []ent.Index {
 	return []ent.Index{
+		// 按检查发生的时间排序
+		index.Fields("check_time").
+			Annotations(entsql.Desc(), entsql.WithComments(true)),
+
 		// 快速查询某个 Monitor 的历史记录，按时间倒序
 		index.Fields("monitor_id", "check_time").
-			Annotations(entsql.WithComments(true)),
+			Annotations(entsql.Desc(), entsql.WithComments(true)),
 	}
 }

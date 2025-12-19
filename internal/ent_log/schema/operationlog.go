@@ -105,6 +105,6 @@ func (OperationLog) Indexes() []ent.Index {
 
 		// 按创建时间排序
 		index.Fields("created_at").
-			Annotations(entsql.WithComments(true)),
+			Annotations(entsql.Desc(), entsql.WithComments(true)),
 	}
 }
