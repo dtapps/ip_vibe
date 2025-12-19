@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"vibe_ip/internal/utils"
 
 	"github.com/cloudflare/cloudflare-go/v6"
 	"github.com/cloudflare/cloudflare-go/v6/dns"
@@ -58,23 +57,18 @@ func (c *CloudflareClient) SetLog(log *http_log.LoggingTransport) *CloudflareCli
 
 // 查询域名记录
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/list/
-// domainName: 主域名
+// fullDomain: 完整域名
 // subDomain: 子域名
+// originType: 记录类型
 // originValue: 源站地址
-func (c *CloudflareClient) QueryDomain(ctx context.Context, domainName string, subDomain string, originValue string) (QueryDomainResponse, error) {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	fullDomain, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
-	if err != nil {
-		return QueryDomainResponse{}, err
-	}
+func (c *CloudflareClient) QueryDomain(ctx context.Context, fullDomain string, subDomain string, originType string, originValue string) (QueryDomainResponse, error) {
 
 	// 请求
 	requestParams := dns.RecordListParams{}
 	requestParams.ZoneID = cloudflare.String(c.config.ZoneID)
 	requestParams.Name = cloudflare.F(dns.RecordListParamsName{Exact: cloudflare.String(fullDomain)})
-	if recordType != "" {
-		requestParams.Type = cloudflare.F(dns.RecordListParamsType(recordType))
+	if originType != "" {
+		requestParams.Type = cloudflare.F(dns.RecordListParamsType(originType))
 	}
 	page, err := c.client.DNS.Records.List(ctx, requestParams)
 	if err != nil {
@@ -83,13 +77,13 @@ func (c *CloudflareClient) QueryDomain(ctx context.Context, domainName string, s
 
 	for _, item := range page.Result {
 		if item.Name == fullDomain {
-			if recordType != "" && item.Type != dns.RecordResponseType(recordType) {
+			if originType != "" && item.Type != dns.RecordResponseType(originType) {
 				continue
 			}
 			return QueryDomainResponse{
-				DomainID:    item.ID,
-				DomainName:  item.Name,
-				OriginType:  string(item.Type),
+				RecordID:    item.ID,
+				FullDomain:  item.Name,
+				RecordType:  string(item.Type),
 				OriginValue: item.Content,
 			}, nil
 		}
@@ -100,23 +94,17 @@ func (c *CloudflareClient) QueryDomain(ctx context.Context, domainName string, s
 
 // 创建域名记录
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/create/
-// domainName: 主域名
-// subDomain: 子域名
+// fullDomain: 完整域名
+// originType: 记录类型
 // originValue: 源站地址
-func (c *CloudflareClient) CreateDomain(ctx context.Context, domainName string, subDomain string, originValue string) error {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	fullDomain, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
-	if err != nil {
-		return err
-	}
+func (c *CloudflareClient) CreateDomain(ctx context.Context, fullDomain string, originType string, originValue string) error {
 
 	// 请求
 	requestParams := dns.ARecordParam{}
 	requestParams.Name = cloudflare.String(fullDomain)
-	requestParams.Type = cloudflare.F(dns.ARecordType(recordType))
+	requestParams.Type = cloudflare.F(dns.ARecordType(originType))
 	requestParams.Content = cloudflare.String(originValue)
-	_, err = c.client.DNS.Records.New(ctx, dns.RecordNewParams{
+	_, err := c.client.DNS.Records.New(ctx, dns.RecordNewParams{
 		ZoneID: cloudflare.String(c.config.ZoneID),
 		Body:   requestParams,
 	})
@@ -130,23 +118,17 @@ func (c *CloudflareClient) CreateDomain(ctx context.Context, domainName string, 
 // 更新域名记录
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/edit/
 // domainID: 域名ID
-// domainName: 主域名
-// subDomain: 子域名
+// fullDomain: 完整域名
+// originType: 记录类型
 // originValue: 源站地址
-func (c *CloudflareClient) UpdateDomain(ctx context.Context, domainID string, domainName string, subDomain string, originValue string) error {
-
-	// 提取域名中的主域名和子域，同时判断记录类型
-	fullDomain, subDomain, domainName, recordType, err := utils.GetDnsDomainParts(subDomain, domainName, originValue)
-	if err != nil {
-		return err
-	}
+func (c *CloudflareClient) UpdateDomain(ctx context.Context, domainID string, fullDomain string, originType string, originValue string) error {
 
 	// 请求
 	requestParams := dns.ARecordParam{}
 	requestParams.Name = cloudflare.String(fullDomain)
-	requestParams.Type = cloudflare.F(dns.ARecordType(recordType))
+	requestParams.Type = cloudflare.F(dns.ARecordType(originType))
 	requestParams.Content = cloudflare.String(originValue)
-	_, err = c.client.DNS.Records.Edit(ctx, domainID, dns.RecordEditParams{
+	_, err := c.client.DNS.Records.Edit(ctx, domainID, dns.RecordEditParams{
 		ZoneID: cloudflare.String(c.config.ZoneID),
 		Body:   requestParams,
 	})
