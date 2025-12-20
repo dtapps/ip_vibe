@@ -103,6 +103,8 @@ const (
 	ConfigPlatformAliyunEsa string = "aliyun_esa" // 阿里云 ESA
 
 	ConfigPlatformBaiduDns string = "baidu_dns" // 百度云 DNS
+
+	ConfigPlatformHuaweiDns string = "huawei_dns" // 华为云 DNS
 )
 
 // GetConfigPlatformDescriptions 平台类型说明映射
@@ -114,6 +116,7 @@ var GetConfigPlatformDescriptions = map[string]string{
 	ConfigPlatformAliyunCdn:  "阿里云 CDN",
 	ConfigPlatformAliyunEsa:  "阿里云 ESA",
 	ConfigPlatformBaiduDns:   "百度云 DNS",
+	ConfigPlatformHuaweiDns:  "华为云 DNS",
 }
 
 // GetConfigPlatforms 返回所有平台类型
@@ -125,6 +128,7 @@ var GetConfigPlatforms = []string{
 	ConfigPlatformAliyunCdn,
 	ConfigPlatformAliyunEsa,
 	ConfigPlatformBaiduDns,
+	ConfigPlatformHuaweiDns,
 }
 
 // --------

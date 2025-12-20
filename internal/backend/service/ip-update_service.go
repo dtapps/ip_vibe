@@ -483,6 +483,15 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 			global.GvaHttpLog,
 		)
 
+	case platformconfig.PlatformHuaweiDNS:
+
+		dnsProcess = dns_helper.NewDNSProcessHuaweiDns(
+			global.GvaEnv.DEBUG,
+			newLog,
+			global.GvaEntDb,
+			global.GvaHttpLog,
+		)
+
 	default:
 		err = fmt.Errorf("暂不支持该平台: %s", firstRecord.Edges.Config.Platform)
 		_ = s.updateDbOfDnsResponse(ctx, firstRecord.ID, err.Error())

@@ -61,7 +61,7 @@ func (PlatformConfig) Fields() []ent.Field {
 		field.Enum("platform").
 			Values(schematype.GetConfigPlatforms...).
 			Immutable().
-			Comment("平台类型（edgeone / cloudflare / dnspod …）").
+			Comment("平台类型").
 			Annotations(entsql.WithComments(true)),
 
 		field.JSON("config_json", json.RawMessage{}).

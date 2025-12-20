@@ -100,6 +100,20 @@ function buildConfigPlatform() {
           .value.trim(),
       };
       break;
+    case "huawei_dns":
+      config = {
+        access_key_id: document
+          .getElementById("huawei_dns_access_key_id")
+          .value.trim(),
+        secret_access_key: document
+          .getElementById("huawei_dns_secret_access_key")
+          .value.trim(),
+        zone_id: document.getElementById("huawei_dns_zone_id").value.trim(),
+        domain_name: document
+          .getElementById("huawei_dns_domain_name")
+          .value.trim(),
+      };
+      break;
   }
 
   // 设置隐藏字段的值
@@ -180,6 +194,16 @@ async function openFormModal(id) {
         document.getElementById("baidu_dns_secret_access_key").value =
           config.config_json.secret_access_key || "";
         document.getElementById("baidu_dns_domain_name").value =
+          config.config_json.domain_name || "";
+        break;
+      case "huawei_dns":
+        document.getElementById("huawei_dns_access_key_id").value =
+          config.config_json.access_key_id || "";
+        document.getElementById("huawei_dns_secret_access_key").value =
+          config.config_json.secret_access_key || "";
+        document.getElementById("huawei_dns_zone_id").value =
+          config.config_json.zone_id || "";
+        document.getElementById("huawei_dns_domain_name").value =
           config.config_json.domain_name || "";
         break;
     }

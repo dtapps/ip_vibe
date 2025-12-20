@@ -29,7 +29,7 @@ type PlatformConfig struct {
 	Name string `json:"name,omitempty"`
 	// 平台配置描述
 	Description string `json:"description,omitempty"`
-	// 平台类型（edgeone / cloudflare / dnspod …）
+	// 平台类型
 	Platform platformconfig.Platform `json:"platform,omitempty"`
 	// 平台密钥等敏感信息（JSON）
 	ConfigJSON json.RawMessage `json:"config_json,omitempty"`
