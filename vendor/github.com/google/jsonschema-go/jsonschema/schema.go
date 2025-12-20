@@ -285,7 +285,8 @@ func (s Schema) MarshalJSON() ([]byte, error) {
 		Items:                items,
 		schemaWithoutMethods: (*schemaWithoutMethods)(&s),
 	}
-	if len(s.Properties) > 0 {
+	// Marshal properties, even if the empty map (but not nil).
+	if s.Properties != nil {
 		ms.Properties = orderedProperties{
 			props: s.Properties,
 			order: s.PropertyOrder,

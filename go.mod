@@ -6,11 +6,11 @@ require (
 	entgo.io/ent v0.14.5
 	github.com/alibabacloud-go/alidns-20150109/v5 v5.0.0
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.13
-	github.com/alibabacloud-go/esa-20240910/v2 v2.41.0
+	github.com/alibabacloud-go/esa-20240910/v2 v2.41.1
 	github.com/alibabacloud-go/tea v1.3.14
 	github.com/aliyun/credentials-go v1.4.10
-	github.com/baidubce/bce-sdk-go v0.9.255
-	github.com/cloudflare/cloudflare-go/v6 v6.4.0
+	github.com/baidubce/bce-sdk-go v0.9.256
+	github.com/cloudflare/cloudflare-go/v6 v6.5.0
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-contrib/gzip v1.2.5
@@ -28,7 +28,7 @@ require (
 	github.com/swaggo/gin-swagger v1.6.1
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc4
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.14
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.15
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.8
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.13
 	go.dtapp.net/library/contrib/http_log v1.0.0
@@ -49,7 +49,7 @@ require (
 	google.golang.org/grpc v1.77.0
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
-	modernc.org/sqlite v1.40.1
+	modernc.org/sqlite v1.41.0
 	resty.dev/v3 v3.0.0-beta.5
 )
 
@@ -92,7 +92,7 @@ require (
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/goccy/go-yaml v1.19.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/jsonschema-go v0.4.0 // indirect
+	github.com/google/jsonschema-go v0.4.2 // indirect
 	github.com/hashicorp/hcl/v2 v2.24.0 // indirect
 	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -128,7 +128,7 @@ require (
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/arch v0.23.0 // indirect
 	golang.org/x/crypto v0.46.0 // indirect
-	golang.org/x/exp v0.0.0-20251209150349-8475f28825e9 // indirect
+	golang.org/x/exp v0.0.0-20251219203646-944ab1f22d93 // indirect
 	golang.org/x/mod v0.31.0 // indirect
 	golang.org/x/oauth2 v0.34.0 // indirect
 	golang.org/x/sys v0.39.0 // indirect
