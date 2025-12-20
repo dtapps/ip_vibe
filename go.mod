@@ -5,6 +5,7 @@ go 1.25.5
 require (
 	entgo.io/ent v0.14.5
 	github.com/alibabacloud-go/alidns-20150109/v5 v5.0.0
+	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.13
 	github.com/alibabacloud-go/esa-20240910/v2 v2.41.1
 	github.com/alibabacloud-go/tea v1.3.14
@@ -28,6 +29,7 @@ require (
 	github.com/swaggo/gin-swagger v1.6.1
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc4
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.11
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.15
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.8
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.13
@@ -40,6 +42,7 @@ require (
 	go.dtapp.net/library/service/pushdeer v1.0.8
 	go.dtapp.net/library/service/wechatqy v1.0.38
 	go.dtapp.net/library/utils/goarray v1.0.4
+	go.dtapp.net/library/utils/gojson v1.0.13
 	go.dtapp.net/library/utils/golog v1.0.178
 	go.dtapp.net/library/utils/gomd5 v1.0.3
 	go.dtapp.net/library/utils/gorequest v1.1.3

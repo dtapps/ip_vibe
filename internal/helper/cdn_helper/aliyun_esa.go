@@ -15,13 +15,13 @@ import (
 	"go.dtapp.net/library/utils/gomd5"
 )
 
-// AliHttpHandler 适配 github.com/alibabacloud-go/tea/tea 里的 HttpClient 接口
-type AliyunHttpHandler struct {
+// AliyunEsaHttpHandler 适配 github.com/alibabacloud-go/tea/tea 里的 HttpClient 接口
+type AliyunEsaHttpHandler struct {
 	httpClient *http.Client
 }
 
-func NewAliyunHttpHandler(log *http_log.LoggingTransport) *AliyunHttpHandler {
-	return &AliyunHttpHandler{
+func NewAliyunEsaHttpHandler(log *http_log.LoggingTransport) *AliyunEsaHttpHandler {
+	return &AliyunEsaHttpHandler{
 		httpClient: &http.Client{
 			Transport: log,
 		},
@@ -29,7 +29,7 @@ func NewAliyunHttpHandler(log *http_log.LoggingTransport) *AliyunHttpHandler {
 }
 
 // Call 实现了 dara.HttpClient 接口要求的方法
-func (a *AliyunHttpHandler) Call(request *http.Request, transport *http.Transport) (*http.Response, error) {
+func (a *AliyunEsaHttpHandler) Call(request *http.Request, transport *http.Transport) (*http.Response, error) {
 	return a.httpClient.Do(request)
 }
 
@@ -93,7 +93,7 @@ func (c *AliyunEsaClient) SetLog(loggingTransport *http_log.LoggingTransport) *A
 	}
 	// 实例化client选项
 	clientConfig := c.clientConfig
-	clientConfig.HttpClient = NewAliyunHttpHandler(loggingTransport)
+	clientConfig.HttpClient = NewAliyunEsaHttpHandler(loggingTransport)
 	// 实例化client对象
 	client, err := esa20240910.NewClient(clientConfig)
 	if err != nil {
@@ -147,7 +147,6 @@ func (c *AliyunEsaClient) QueryDomain(ctx context.Context, fullDomain string) (A
 // recordType: A/AAAA
 // recordType: CNAME
 // originValue: 源站地址或源站组ID
-// sourceType: Domain = 普通域名源站
 func (c *AliyunEsaClient) CreateDomain(ctx context.Context, fullDomain string, recordType string, originValue string) error {
 
 	// 请求

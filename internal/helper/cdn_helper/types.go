@@ -17,6 +17,25 @@ const (
 )
 
 // 查询加速域名
+type AliyunCdnQueryDomainResponse struct {
+	RecordID    string // 域名ID
+	FullDomain  string // 完整域名
+	DomainCname string // 域名别名
+	RecordType  string // 记录类型
+	OriginValue string // 源站值
+}
+
+// 查询加速域名
+type TencentCdnQueryDomainResponse struct {
+	RecordID       string // 域名ID
+	FullDomain     string // 完整域名
+	DomainCname    string // 域名别名
+	RecordType     string // 记录类型
+	OriginValue    string // 源站值
+	OriginProtocol string // 回源协议
+}
+
+// 查询加速域名
 type TencentEOQueryDomainResponse struct {
 	RecordID        string // 域名ID
 	FullDomain      string // 完整域名

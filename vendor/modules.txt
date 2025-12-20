@@ -48,6 +48,9 @@ github.com/alibabacloud-go/alibabacloud-gateway-spi/client
 # github.com/alibabacloud-go/alidns-20150109/v5 v5.0.0
 ## explicit; go 1.14
 github.com/alibabacloud-go/alidns-20150109/v5/client
+# github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
+## explicit; go 1.14
+github.com/alibabacloud-go/cdn-20180510/v9/client
 # github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.13
 ## explicit; go 1.14
 github.com/alibabacloud-go/darabonba-openapi/v2/client
@@ -447,6 +450,9 @@ github.com/huaweicloud/huaweicloud-sdk-go-v3/core/request
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core/response
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core/sdkerr
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core/utils
+github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2
+github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/model
+github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/region
 github.com/huaweicloud/huaweicloud-sdk-go-v3/services/dns/v2
 github.com/huaweicloud/huaweicloud-sdk-go-v3/services/dns/v2/model
 github.com/huaweicloud/huaweicloud-sdk-go-v3/services/dns/v2/region
@@ -547,6 +553,9 @@ github.com/swaggo/swag
 # github.com/swaggo/swag/v2 v2.0.0-rc4
 ## explicit; go 1.18
 github.com/swaggo/swag/v2
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.11
+## explicit; go 1.14
+github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.15
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
@@ -643,6 +652,9 @@ go.dtapp.net/library/service/wechatqy
 # go.dtapp.net/library/utils/goarray v1.0.4
 ## explicit; go 1.22.5
 go.dtapp.net/library/utils/goarray
+# go.dtapp.net/library/utils/gojson v1.0.13
+## explicit; go 1.24.1
+go.dtapp.net/library/utils/gojson
 # go.dtapp.net/library/utils/golog v1.0.178
 ## explicit; go 1.24.2
 go.dtapp.net/library/utils/golog
