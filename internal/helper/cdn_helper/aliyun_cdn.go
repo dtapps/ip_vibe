@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"vibe_ip/internal/utils"
 
 	cdn20180510 "github.com/alibabacloud-go/cdn-20180510/v9/client"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
@@ -131,7 +132,7 @@ func (c *AliyunCdnClient) QueryDomain(ctx context.Context, fullDomain string) (A
 			return AliyunCdnQueryDomainResponse{
 				RecordID:    cast.ToString(tea.Int64Value(item.DomainId)),
 				FullDomain:  tea.StringValue(item.DomainName),
-				DomainCname: tea.StringValue(item.Cname),
+				DomainCname: utils.TrimDots(tea.StringValue(item.Cname)),
 				RecordType:  tea.StringValue(item.Sources.Source[0].Type),
 				OriginValue: tea.StringValue(item.Sources.Source[0].Content),
 			}, nil

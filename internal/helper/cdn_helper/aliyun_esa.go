@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"vibe_ip/internal/utils"
 
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	esa20240910 "github.com/alibabacloud-go/esa-20240910/v2/client"
@@ -131,7 +132,7 @@ func (c *AliyunEsaClient) QueryDomain(ctx context.Context, fullDomain string) (A
 			return AliyunEsaQueryDomainResponse{
 				RecordID:    cast.ToString(tea.Int64Value(item.RecordId)),
 				FullDomain:  tea.StringValue(item.RecordName),
-				DomainCname: tea.StringValue(item.RecordCname),
+				DomainCname: utils.TrimDots(tea.StringValue(item.RecordCname)),
 				RecordType:  tea.StringValue(item.RecordType),
 				OriginValue: tea.StringValue(item.Data.Value),
 			}, nil

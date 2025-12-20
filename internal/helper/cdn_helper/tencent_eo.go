@@ -103,7 +103,7 @@ func (c *TencentEOClient) QueryDomain(ctx context.Context, fullDomain string) (T
 			return TencentEOQueryDomainResponse{
 				// RecordID:         utils.PtrToString(item.DomainId),
 				FullDomain:      utils.PtrToString(item.DomainName),
-				DomainCname:     utils.PtrToString(item.Cname),
+				DomainCname:     utils.TrimDots(utils.PtrToString(item.Cname)),
 				RecordType:      utils.PtrToString(item.OriginDetail.OriginType),
 				OriginValue:     utils.PtrToString(item.OriginDetail.Origin),
 				OriginProtocol:  utils.PtrToString(item.OriginProtocol),

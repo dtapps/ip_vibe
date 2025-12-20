@@ -330,12 +330,15 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 	}
 	processParams.GroupRecordID = cast.ToString(firstIPGroup.ID)
 
-	// 查询设备
+	// 查询设备 (心跳时间在 12 分钟内)
 	allDevice, err := firstIPGroup.QueryDevices().
+		Where(device.LastHeartbeatAtGTE(time.Now().Add(-12 * time.Minute))).
 		Order(ent.Asc(device.FieldID)).
 		All(ctx)
 	if err != nil {
-		return fmt.Errorf("找不到设备: %w", err)
+		err = fmt.Errorf("找不到设备或心跳时间不在12分钟内: %w", err)
+		_ = s.updateDbOfCdnResponse(ctx, firstRecord.ID, err.Error())
+		return err
 	}
 	for _, item := range allDevice {
 		if item.IPV4 != "" && firstRecord.Type == cdnrecord.TypeA {
@@ -429,7 +432,9 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 			Order(ent.Asc(device.FieldID)).
 			All(ctx)
 		if err != nil {
-			return fmt.Errorf("找不到设备: %w", err)
+			err = fmt.Errorf("找不到设备或心跳时间不在12分钟内: %w", err)
+			_ = s.updateDbOfDnsResponse(ctx, firstRecord.ID, err.Error())
+			return err
 		}
 		for _, item := range allDevice {
 			if item.IPV4 != "" && firstRecord.Type == dnsrecord.TypeA {

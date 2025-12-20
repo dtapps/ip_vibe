@@ -102,7 +102,7 @@ func (c *TencentCdnClient) QueryDomain(ctx context.Context, fullDomain string) (
 			return TencentCdnQueryDomainResponse{
 				RecordID:       utils.PtrToString(item.ResourceId),
 				FullDomain:     utils.PtrToString(item.Domain),
-				DomainCname:    utils.PtrToString(item.Cname),
+				DomainCname:    utils.TrimDots(utils.PtrToString(item.Cname)),
 				RecordType:     utils.PtrToString(item.Origin.OriginType),
 				OriginValue:    utils.PtrToString(item.Origin.Origins[0]),
 				OriginProtocol: utils.PtrToString(item.Origin.OriginPullProtocol),
