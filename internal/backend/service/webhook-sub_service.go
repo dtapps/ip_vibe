@@ -46,6 +46,7 @@ func (s *WebhookSubServiceImpl) BuildResponse(ctx context.Context, item *ent.Web
 		Name:        item.Name,
 		Description: item.Description,
 		WebhookID:   item.WebhookID,
+		WebhookName: item.Edges.Webhook.Name,
 		ObjType:     item.ObjType.String(),
 		ObjID:       item.ObjID,
 		IsActive:    item.IsActive,
@@ -100,6 +101,7 @@ func (s *WebhookSubServiceImpl) GetWebhookSubs(ctx context.Context, request *typ
 	// 查询全部通知订阅
 	allWebhookSubscription, err := s.db.WebhookSubscription.Query().
 		WhereIf(request.IsActive != nil, webhooksubscription.IsActiveEQ(cast.ToBool(request.IsActive))).
+		WithWebhook().
 		Order(ent.Desc(webhooksubscription.FieldCreatedAt)).
 		All(ctx)
 	if err != nil {
@@ -122,6 +124,7 @@ func (s *WebhookSubServiceImpl) GetWebhookSub(ctx context.Context, id int64) (*t
 	// 查询通知订阅
 	firstWebhookSubscription, err := s.db.WebhookSubscription.Query().
 		Where(webhooksubscription.IDEQ(id)).
+		WithWebhook().
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
