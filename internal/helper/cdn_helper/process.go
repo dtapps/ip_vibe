@@ -22,5 +22,6 @@ type CDNProcessParams struct {
 }
 
 type CDNProcess interface {
+	// 更新记录
 	UpsertRecord(ctx context.Context, params *CDNProcessParams) error
 }

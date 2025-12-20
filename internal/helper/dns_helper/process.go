@@ -15,5 +15,6 @@ type DNSProcessParams struct {
 }
 
 type DNSProcess interface {
+	// 更新记录
 	UpsertRecord(ctx context.Context, params *DNSProcessParams) error
 }
