@@ -24,6 +24,7 @@ require (
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.181
 	github.com/miekg/dns v1.1.69
 	github.com/modelcontextprotocol/go-sdk v1.1.0
+	github.com/qiniu/go-sdk/v7 v7.25.5
 	github.com/spf13/cast v1.10.0
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.1
@@ -58,6 +59,7 @@ require (
 
 require (
 	ariga.io/atlas v0.38.0 // indirect
+	github.com/BurntSushi/toml v1.6.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/MercuryEngineering/CookieMonster v0.0.0-20180304172713-1584578b3403 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect

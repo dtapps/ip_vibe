@@ -33,6 +33,10 @@ entgo.io/ent/schema/edge
 entgo.io/ent/schema/field
 entgo.io/ent/schema/index
 entgo.io/ent/schema/mixin
+# github.com/BurntSushi/toml v1.6.0
+## explicit; go 1.18
+github.com/BurntSushi/toml
+github.com/BurntSushi/toml/internal
 # github.com/KyleBanks/depth v1.2.1
 ## explicit
 github.com/KyleBanks/depth
@@ -494,6 +498,16 @@ github.com/pelletier/go-toml/v2/unstable
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
+# github.com/qiniu/go-sdk/v7 v7.25.5
+## explicit; go 1.14
+github.com/qiniu/go-sdk/v7
+github.com/qiniu/go-sdk/v7/auth
+github.com/qiniu/go-sdk/v7/cdn
+github.com/qiniu/go-sdk/v7/conf
+github.com/qiniu/go-sdk/v7/internal/configfile
+github.com/qiniu/go-sdk/v7/internal/env
+github.com/qiniu/go-sdk/v7/internal/io
+github.com/qiniu/go-sdk/v7/storagev2/defaults
 # github.com/quic-go/qpack v0.6.0
 ## explicit; go 1.24
 github.com/quic-go/qpack
