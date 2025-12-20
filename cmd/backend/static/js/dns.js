@@ -145,7 +145,6 @@ async function openFormModal(id) {
       document.getElementById("domain_name").innerHTML =
         "." + dnsRecord.domain_name;
       document.getElementById("type").value = dnsRecord.type;
-      document.getElementById("type").disabled = true;
 
       if (dnsRecord.type === "CNAME") {
         document.getElementById("cdn_record_id").value =
@@ -175,7 +174,6 @@ async function openFormModal(id) {
       document.getElementById("id").disabled = true;
       document.getElementById("config_id").disabled = false;
       document.getElementById("sub_domain").disabled = false;
-      document.getElementById("type").disabled = false;
       document.getElementById("cdn_record_id").disabled = true;
       document.getElementById("ip_group_id").disabled = true;
 

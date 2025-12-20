@@ -2,6 +2,8 @@ module vibe_ip
 
 go 1.25.5
 
+ignore ./frontend
+
 require (
 	entgo.io/ent v0.14.5
 	github.com/alibabacloud-go/alidns-20150109/v5 v5.0.0

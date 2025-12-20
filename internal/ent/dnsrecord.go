@@ -31,7 +31,7 @@ type DNSRecord struct {
 	RecordID string `json:"record_id,omitempty"`
 	// 子域名（如 www, blog, api）
 	SubDomain string `json:"sub_domain,omitempty"`
-	// 记录类型（A、AAAA、CNAME等）
+	// 记录类型（A、AAAA、CNAME）
 	Type dnsrecord.Type `json:"type,omitempty"`
 	// IP组序号（与 cdn_record_id 二选一）
 	IPGroupID int64 `json:"ip_group_id,omitempty"`

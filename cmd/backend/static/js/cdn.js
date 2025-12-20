@@ -118,7 +118,6 @@ async function openFormModal(id) {
       document.getElementById("domain_name").innerHTML =
         "." + cdnRecord.domain_name;
       document.getElementById("type").value = cdnRecord.type;
-      document.getElementById("type").disabled = true;
       document.getElementById("origin_protocol").value =
         cdnRecord.origin_protocol;
       document.getElementById("http_port").value = cdnRecord.http_port;
@@ -144,7 +143,6 @@ async function openFormModal(id) {
       document.getElementById("id").disabled = true;
       document.getElementById("config_id").disabled = false;
       document.getElementById("sub_domain").disabled = false;
-      document.getElementById("type").disabled = false;
       document.getElementById("http_port").value = 80;
       document.getElementById("https_port").value = 443;
 

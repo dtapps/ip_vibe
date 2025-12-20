@@ -469,6 +469,18 @@ func (u *DNSRecordUpsert) ClearRecordID() *DNSRecordUpsert {
 	return u
 }
 
+// SetType sets the "type" field.
+func (u *DNSRecordUpsert) SetType(v dnsrecord.Type) *DNSRecordUpsert {
+	u.Set(dnsrecord.FieldType, v)
+	return u
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *DNSRecordUpsert) UpdateType() *DNSRecordUpsert {
+	u.SetExcluded(dnsrecord.FieldType)
+	return u
+}
+
 // SetIPGroupID sets the "ip_group_id" field.
 func (u *DNSRecordUpsert) SetIPGroupID(v int64) *DNSRecordUpsert {
 	u.Set(dnsrecord.FieldIPGroupID, v)
@@ -597,9 +609,6 @@ func (u *DNSRecordUpsertOne) UpdateNewValues() *DNSRecordUpsertOne {
 		if _, exists := u.create.mutation.SubDomain(); exists {
 			s.SetIgnore(dnsrecord.FieldSubDomain)
 		}
-		if _, exists := u.create.mutation.GetType(); exists {
-			s.SetIgnore(dnsrecord.FieldType)
-		}
 	}))
 	return u
 }
@@ -663,6 +672,20 @@ func (u *DNSRecordUpsertOne) UpdateRecordID() *DNSRecordUpsertOne {
 func (u *DNSRecordUpsertOne) ClearRecordID() *DNSRecordUpsertOne {
 	return u.Update(func(s *DNSRecordUpsert) {
 		s.ClearRecordID()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *DNSRecordUpsertOne) SetType(v dnsrecord.Type) *DNSRecordUpsertOne {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.SetType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *DNSRecordUpsertOne) UpdateType() *DNSRecordUpsertOne {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.UpdateType()
 	})
 }
 
@@ -976,9 +999,6 @@ func (u *DNSRecordUpsertBulk) UpdateNewValues() *DNSRecordUpsertBulk {
 			if _, exists := b.mutation.SubDomain(); exists {
 				s.SetIgnore(dnsrecord.FieldSubDomain)
 			}
-			if _, exists := b.mutation.GetType(); exists {
-				s.SetIgnore(dnsrecord.FieldType)
-			}
 		}
 	}))
 	return u
@@ -1043,6 +1063,20 @@ func (u *DNSRecordUpsertBulk) UpdateRecordID() *DNSRecordUpsertBulk {
 func (u *DNSRecordUpsertBulk) ClearRecordID() *DNSRecordUpsertBulk {
 	return u.Update(func(s *DNSRecordUpsert) {
 		s.ClearRecordID()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *DNSRecordUpsertBulk) SetType(v dnsrecord.Type) *DNSRecordUpsertBulk {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.SetType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *DNSRecordUpsertBulk) UpdateType() *DNSRecordUpsertBulk {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.UpdateType()
 	})
 }
 

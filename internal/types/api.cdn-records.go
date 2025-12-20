@@ -17,7 +17,7 @@ type GetCdnRecordResponse struct {
 	RecordID       any       `json:"record_id,omitempty" jsonschema:"平台侧记录的唯一标识符"`            // 平台侧记录 ID
 	DomainName     string    `json:"domain_name" jsonschema:"域名（如 www.example.com）"`          // 域名（如 www.example.com）
 	SubDomain      string    `json:"sub_domain,omitempty" jsonschema:"子域名（如 www, blog, api）"` // 子域名（如 www, blog, api）
-	Type           string    `json:"type" jsonschema:"记录类型（A、AAAA等）"`                         // 记录类型（A、AAAA等）
+	Type           string    `json:"type" jsonschema:"记录类型（A、AAAA）"`                          // 记录类型（A、AAAA）
 	OriginProtocol string    `json:"origin_protocol" jsonschema:"回源协议（http、https、follow）"`    // 回源协议（http、https、follow）
 	HTTPPort       int       `json:"http_port" jsonschema:"HTTP回源端口"`                         // HTTP 回源端口
 	HTTPSPort      int       `json:"https_port" jsonschema:"HTTPS回源端口"`                       // HTTPS 回源端口
@@ -40,7 +40,7 @@ type GetCdnRecordRequest struct {
 type CreateCdnRecordRequest struct {
 	ConfigID       int64  `json:"config_id" binding:"required" jsonschema:"关联的平台配置ID"`                     // 平台配置序号
 	SubDomain      string `json:"sub_domain" binding:"required" jsonschema:"子域名（如 www, blog, api）"`        // 子域名（如 www, blog, api）
-	Type           string `json:"type" binding:"required" jsonschema:"记录类型（A、AAAA等）"`                      // 记录类型（A、AAAA等）
+	Type           string `json:"type" binding:"required" jsonschema:"记录类型（A、AAAA）"`                       // 记录类型（A、AAAA）
 	OriginProtocol string `json:"origin_protocol" binding:"required" jsonschema:"回源协议（http、https、follow）"` // 回源协议（http、https、follow）
 	HTTPPort       int    `json:"http_port" binding:"required" jsonschema:"HTTP回源端口"`                      // HTTP 回源端口
 	HTTPSPort      int    `json:"https_port" binding:"required" jsonschema:"HTTPS回源端口"`                    // HTTPS 回源端口
@@ -52,6 +52,7 @@ type CreateCdnRecordRequest struct {
 // 更新CDN记录 请求结构
 type UpdateCdnRecordRequest struct {
 	GetCdnRecordRequest
+	Type           string `json:"type" binding:"required" jsonschema:"记录类型（A、AAAA）"`                       // 记录类型（A、AAAA）
 	OriginProtocol string `json:"origin_protocol" binding:"required" jsonschema:"回源协议（http、https、follow）"` // 回源协议（http、https、follow）
 	HTTPPort       int    `json:"http_port" binding:"required" jsonschema:"HTTP回源端口"`                      // HTTP 回源端口
 	HTTPSPort      int    `json:"https_port" binding:"required" jsonschema:"HTTPS回源端口"`                    // HTTPS 回源端口

@@ -189,11 +189,14 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *typ
 	}
 
 	// 更新DNS记录 (保持原始的链式设置逻辑)
-	updateDnsRecord := s.db.DNSRecord.UpdateOne(firstDnsRecord)
+	updateDnsRecord := s.db.DNSRecord.UpdateOne(firstDnsRecord).
+		SetType(dnsrecord.Type(request.Type))
 	if request.IPGroupID > 0 {
 		updateDnsRecord.SetIPGroupID(request.IPGroupID)
+		updateDnsRecord.ClearCdnRecordID()
 	}
 	if request.CdnRecordID > 0 {
+		updateDnsRecord.ClearIPGroupID()
 		updateDnsRecord.SetCdnRecordID(request.CdnRecordID)
 	}
 

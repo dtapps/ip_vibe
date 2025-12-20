@@ -35,7 +35,7 @@ definitions:
         description: 子域名（如 www, blog, api）
         type: string
       type:
-        description: 记录类型（A、AAAA等）
+        description: 记录类型（A、AAAA）
         type: string
       webhook_ids:
         description: 关联的 Webhook 列表
@@ -92,7 +92,7 @@ definitions:
         description: 子域名（如 www, blog, api）
         type: string
       type:
-        description: 记录类型（A、AAAA、CNAME等）
+        description: 记录类型（A、AAAA、CNAME）
         type: string
       webhook_ids:
         description: 关联的 Webhook 列表
@@ -365,7 +365,7 @@ definitions:
         description: 子域名（如 www, blog, api）
         type: string
       type:
-        description: 记录类型（A、AAAA等）
+        description: 记录类型（A、AAAA）
         type: string
       webhooks:
         description: 关联的 Webhook 列表
@@ -477,7 +477,7 @@ definitions:
         description: 子域名（如 www, blog, api）
         type: string
       type:
-        description: 记录类型（A、AAAA、CNAME等）
+        description: 记录类型（A、AAAA、CNAME）
         type: string
       webhooks:
         description: 关联的 Webhook 列表
@@ -808,6 +808,9 @@ definitions:
       origin_protocol:
         description: 回源协议（http、https、follow）
         type: string
+      type:
+        description: 记录类型（A、AAAA）
+        type: string
       webhook_ids:
         description: 关联的 Webhook 列表
         items:
@@ -819,6 +822,7 @@ definitions:
     - id
     - ip_group_id
     - origin_protocol
+    - type
     type: object
   vibe_ip_internal_types.UpdateDeviceRequest:
     properties:
@@ -868,6 +872,9 @@ definitions:
       ip_group_id:
         description: IP 组序号（与 cdn_record_id 二选一）
         type: integer
+      type:
+        description: 记录类型（A、AAAA、CNAME）
+        type: string
       webhook_ids:
         description: 关联的 Webhook 列表
         items:
@@ -875,6 +882,7 @@ definitions:
         type: array
     required:
     - id
+    - type
     type: object
   vibe_ip_internal_types.UpdateDomainMonitorActiveRequest:
     properties:

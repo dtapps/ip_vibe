@@ -20,8 +20,8 @@ type QiniuCdnClient struct {
 	client *cdn.CdnManager
 }
 
-// 内容分发网络
-// https://cloud.tencent.com/document/product/1552
+// 七牛 CDN
+// https://www.qiniu.com/products/qcdn
 func NewQiniuCdnClient(ctx context.Context, config *QiniuCdnConfig) (*QiniuCdnClient, error) {
 
 	c := &QiniuCdnClient{}

@@ -349,7 +349,9 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 	// 去重源并检查源是否有效
 	processParams.OriginValues = goarray.RemoveDuplicateElement(processParams.OriginValues)
 	if len(processParams.OriginValues) == 0 {
-		return fmt.Errorf("需要更新的源为空")
+		err = fmt.Errorf("需要更新的源为空")
+		_ = s.updateDbOfCdnResponse(ctx, firstRecord.ID, err.Error())
+		return err
 	}
 
 	var cdnProcess cdn_helper.CDNProcess
@@ -441,7 +443,9 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 
 	// 检查源是否有效
 	if processParams.OriginValue == "" {
-		return fmt.Errorf("需要更新的源为空")
+		err = fmt.Errorf("需要更新的源为空")
+		_ = s.updateDbOfDnsResponse(ctx, firstRecord.ID, err.Error())
+		return err
 	}
 
 	var dnsProcess dns_helper.DNSProcess

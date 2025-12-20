@@ -57,6 +57,20 @@ func (_u *CDNRecordUpdate) ClearRecordID() *CDNRecordUpdate {
 	return _u
 }
 
+// SetType sets the "type" field.
+func (_u *CDNRecordUpdate) SetType(v cdnrecord.Type) *CDNRecordUpdate {
+	_u.mutation.SetType(v)
+	return _u
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (_u *CDNRecordUpdate) SetNillableType(v *cdnrecord.Type) *CDNRecordUpdate {
+	if v != nil {
+		_u.SetType(*v)
+	}
+	return _u
+}
+
 // SetOriginProtocol sets the "origin_protocol" field.
 func (_u *CDNRecordUpdate) SetOriginProtocol(v cdnrecord.OriginProtocol) *CDNRecordUpdate {
 	_u.mutation.SetOriginProtocol(v)
@@ -311,6 +325,11 @@ func (_u *CDNRecordUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *CDNRecordUpdate) check() error {
+	if v, ok := _u.mutation.GetType(); ok {
+		if err := cdnrecord.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.type": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.OriginProtocol(); ok {
 		if err := cdnrecord.OriginProtocolValidator(v); err != nil {
 			return &ValidationError{Name: "origin_protocol", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.origin_protocol": %w`, err)}
@@ -351,6 +370,9 @@ func (_u *CDNRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.RecordIDCleared() {
 		_spec.ClearField(cdnrecord.FieldRecordID, field.TypeString)
+	}
+	if value, ok := _u.mutation.GetType(); ok {
+		_spec.SetField(cdnrecord.FieldType, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.OriginProtocol(); ok {
 		_spec.SetField(cdnrecord.FieldOriginProtocol, field.TypeEnum, value)
@@ -513,6 +535,20 @@ func (_u *CDNRecordUpdateOne) SetNillableRecordID(v *string) *CDNRecordUpdateOne
 // ClearRecordID clears the value of the "record_id" field.
 func (_u *CDNRecordUpdateOne) ClearRecordID() *CDNRecordUpdateOne {
 	_u.mutation.ClearRecordID()
+	return _u
+}
+
+// SetType sets the "type" field.
+func (_u *CDNRecordUpdateOne) SetType(v cdnrecord.Type) *CDNRecordUpdateOne {
+	_u.mutation.SetType(v)
+	return _u
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (_u *CDNRecordUpdateOne) SetNillableType(v *cdnrecord.Type) *CDNRecordUpdateOne {
+	if v != nil {
+		_u.SetType(*v)
+	}
 	return _u
 }
 
@@ -783,6 +819,11 @@ func (_u *CDNRecordUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *CDNRecordUpdateOne) check() error {
+	if v, ok := _u.mutation.GetType(); ok {
+		if err := cdnrecord.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.type": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.OriginProtocol(); ok {
 		if err := cdnrecord.OriginProtocolValidator(v); err != nil {
 			return &ValidationError{Name: "origin_protocol", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.origin_protocol": %w`, err)}
@@ -840,6 +881,9 @@ func (_u *CDNRecordUpdateOne) sqlSave(ctx context.Context) (_node *CDNRecord, er
 	}
 	if _u.mutation.RecordIDCleared() {
 		_spec.ClearField(cdnrecord.FieldRecordID, field.TypeString)
+	}
+	if value, ok := _u.mutation.GetType(); ok {
+		_spec.SetField(cdnrecord.FieldType, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.OriginProtocol(); ok {
 		_spec.SetField(cdnrecord.FieldOriginProtocol, field.TypeEnum, value)

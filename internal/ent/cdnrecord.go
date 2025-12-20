@@ -30,7 +30,7 @@ type CDNRecord struct {
 	RecordID string `json:"record_id,omitempty"`
 	// 子域名（如 www, blog, api）
 	SubDomain string `json:"sub_domain,omitempty"`
-	// 记录类型（A、AAAA等）
+	// 记录类型（A、AAAA）
 	Type cdnrecord.Type `json:"type,omitempty"`
 	// 回源协议（http、https、follow）
 	OriginProtocol cdnrecord.OriginProtocol `json:"origin_protocol,omitempty"`

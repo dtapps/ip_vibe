@@ -15,7 +15,7 @@ type GetDnsRecordResponse struct {
 	RecordID      any       `json:"record_id,omitempty" jsonschema:"平台侧记录的唯一标识符"`            // 平台侧记录 ID
 	DomainName    string    `json:"domain_name" jsonschema:"域名（如 www.example.com）"`          // 域名（如 www.example.com）
 	SubDomain     string    `json:"sub_domain,omitempty" jsonschema:"子域名（如 www, blog, api）"` // 子域名（如 www, blog, api）
-	Type          string    `json:"type" jsonschema:"记录类型（A、AAAA、CNAME等）"`                   // 记录类型（A、AAAA、CNAME等）
+	Type          string    `json:"type" jsonschema:"记录类型（A、AAAA、CNAME）"`                    // 记录类型（A、AAAA、CNAME）
 	IsActive      bool      `json:"is_active" jsonschema:"是否活跃"`                             // 是否活跃
 	LastRefreshAt time.Time `json:"last_refresh_at,omitempty" jsonschema:"最后一次刷新成功时间"`       // 最后一次刷新成功时间
 
@@ -37,7 +37,7 @@ type GetDnsRecordRequest struct {
 type CreateDnsRecordRequest struct {
 	ConfigID    int64  `json:"config_id" binding:"required" jsonschema:"关联的平台配置ID"`                          // 平台配置序号
 	SubDomain   string `json:"sub_domain" binding:"required" jsonschema:"子域名（如 www, blog, api）"`             // 子域名（如 www, blog, api）
-	Type        string `json:"type" binding:"required" jsonschema:"记录类型（A、AAAA、CNAME等）"`                     // 记录类型（A、AAAA、CNAME等）
+	Type        string `json:"type" binding:"required" jsonschema:"记录类型（A、AAAA、CNAME）"`                      // 记录类型（A、AAAA、CNAME）
 	IPGroupID   int64  `json:"ip_group_id,omitempty" jsonschema:"关联的IP组序号（与CDN记录序号二选一）"`                     // IP 组序号（与 cdn_record_id 二选一）
 	CdnRecordID int64  `json:"cdn_record_id,omitempty" jsonschema:"关联的CDN记录序号（与IP组序号二选一，一个CDN记录只能被一条DNS引用）"` // CDN记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）
 
@@ -47,8 +47,9 @@ type CreateDnsRecordRequest struct {
 // 更新DNS记录 请求结构
 type UpdateDnsRecordRequest struct {
 	GetDnsRecordRequest
-	IPGroupID   int64 `json:"ip_group_id,omitempty" jsonschema:"关联的IP组序号（与CDN记录序号二选一）"`                     // IP 组序号（与 cdn_record_id 二选一）
-	CdnRecordID int64 `json:"cdn_record_id,omitempty" jsonschema:"关联的CDN记录序号（与IP组序号二选一，一个CDN记录只能被一条DNS引用）"` // CDN 记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）
+	Type        string `json:"type" binding:"required" jsonschema:"记录类型（A、AAAA、CNAME）"`                      // 记录类型（A、AAAA、CNAME）
+	IPGroupID   int64  `json:"ip_group_id,omitempty" jsonschema:"关联的IP组序号（与CDN记录序号二选一）"`                     // IP 组序号（与 cdn_record_id 二选一）
+	CdnRecordID int64  `json:"cdn_record_id,omitempty" jsonschema:"关联的CDN记录序号（与IP组序号二选一，一个CDN记录只能被一条DNS引用）"` // CDN 记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）
 
 	WebhookIDs []int64 `json:"webhook_ids,omitempty" jsonschema:"关联的Webhook ID列表"` // 关联的 Webhook 列表
 }

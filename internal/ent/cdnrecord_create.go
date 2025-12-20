@@ -560,6 +560,18 @@ func (u *CDNRecordUpsert) ClearRecordID() *CDNRecordUpsert {
 	return u
 }
 
+// SetType sets the "type" field.
+func (u *CDNRecordUpsert) SetType(v cdnrecord.Type) *CDNRecordUpsert {
+	u.Set(cdnrecord.FieldType, v)
+	return u
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *CDNRecordUpsert) UpdateType() *CDNRecordUpsert {
+	u.SetExcluded(cdnrecord.FieldType)
+	return u
+}
+
 // SetOriginProtocol sets the "origin_protocol" field.
 func (u *CDNRecordUpsert) SetOriginProtocol(v cdnrecord.OriginProtocol) *CDNRecordUpsert {
 	u.Set(cdnrecord.FieldOriginProtocol, v)
@@ -730,9 +742,6 @@ func (u *CDNRecordUpsertOne) UpdateNewValues() *CDNRecordUpsertOne {
 		if _, exists := u.create.mutation.SubDomain(); exists {
 			s.SetIgnore(cdnrecord.FieldSubDomain)
 		}
-		if _, exists := u.create.mutation.GetType(); exists {
-			s.SetIgnore(cdnrecord.FieldType)
-		}
 	}))
 	return u
 }
@@ -796,6 +805,20 @@ func (u *CDNRecordUpsertOne) UpdateRecordID() *CDNRecordUpsertOne {
 func (u *CDNRecordUpsertOne) ClearRecordID() *CDNRecordUpsertOne {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.ClearRecordID()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *CDNRecordUpsertOne) SetType(v cdnrecord.Type) *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *CDNRecordUpsertOne) UpdateType() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateType()
 	})
 }
 
@@ -1158,9 +1181,6 @@ func (u *CDNRecordUpsertBulk) UpdateNewValues() *CDNRecordUpsertBulk {
 			if _, exists := b.mutation.SubDomain(); exists {
 				s.SetIgnore(cdnrecord.FieldSubDomain)
 			}
-			if _, exists := b.mutation.GetType(); exists {
-				s.SetIgnore(cdnrecord.FieldType)
-			}
 		}
 	}))
 	return u
@@ -1225,6 +1245,20 @@ func (u *CDNRecordUpsertBulk) UpdateRecordID() *CDNRecordUpsertBulk {
 func (u *CDNRecordUpsertBulk) ClearRecordID() *CDNRecordUpsertBulk {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.ClearRecordID()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *CDNRecordUpsertBulk) SetType(v cdnrecord.Type) *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *CDNRecordUpsertBulk) UpdateType() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateType()
 	})
 }
 

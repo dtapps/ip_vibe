@@ -64,8 +64,7 @@ func (DNSRecord) Fields() []ent.Field {
 
 		field.Enum("type").
 			Values(schematype.GetDNSRecordTypes...).
-			Immutable().
-			Comment("记录类型（A、AAAA、CNAME等）").
+			Comment("记录类型（A、AAAA、CNAME）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("ip_group_id").

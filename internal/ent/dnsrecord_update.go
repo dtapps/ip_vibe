@@ -57,6 +57,20 @@ func (_u *DNSRecordUpdate) ClearRecordID() *DNSRecordUpdate {
 	return _u
 }
 
+// SetType sets the "type" field.
+func (_u *DNSRecordUpdate) SetType(v dnsrecord.Type) *DNSRecordUpdate {
+	_u.mutation.SetType(v)
+	return _u
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (_u *DNSRecordUpdate) SetNillableType(v *dnsrecord.Type) *DNSRecordUpdate {
+	if v != nil {
+		_u.SetType(*v)
+	}
+	return _u
+}
+
 // SetIPGroupID sets the "ip_group_id" field.
 func (_u *DNSRecordUpdate) SetIPGroupID(v int64) *DNSRecordUpdate {
 	_u.mutation.SetIPGroupID(v)
@@ -236,6 +250,11 @@ func (_u *DNSRecordUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *DNSRecordUpdate) check() error {
+	if v, ok := _u.mutation.GetType(); ok {
+		if err := dnsrecord.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "DNSRecord.type": %w`, err)}
+		}
+	}
 	if _u.mutation.ConfigCleared() && len(_u.mutation.ConfigIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "DNSRecord.config"`)
 	}
@@ -268,6 +287,9 @@ func (_u *DNSRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.RecordIDCleared() {
 		_spec.ClearField(dnsrecord.FieldRecordID, field.TypeString)
+	}
+	if value, ok := _u.mutation.GetType(); ok {
+		_spec.SetField(dnsrecord.FieldType, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(dnsrecord.FieldIsActive, field.TypeBool, value)
@@ -393,6 +415,20 @@ func (_u *DNSRecordUpdateOne) SetNillableRecordID(v *string) *DNSRecordUpdateOne
 // ClearRecordID clears the value of the "record_id" field.
 func (_u *DNSRecordUpdateOne) ClearRecordID() *DNSRecordUpdateOne {
 	_u.mutation.ClearRecordID()
+	return _u
+}
+
+// SetType sets the "type" field.
+func (_u *DNSRecordUpdateOne) SetType(v dnsrecord.Type) *DNSRecordUpdateOne {
+	_u.mutation.SetType(v)
+	return _u
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (_u *DNSRecordUpdateOne) SetNillableType(v *dnsrecord.Type) *DNSRecordUpdateOne {
+	if v != nil {
+		_u.SetType(*v)
+	}
 	return _u
 }
 
@@ -588,6 +624,11 @@ func (_u *DNSRecordUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *DNSRecordUpdateOne) check() error {
+	if v, ok := _u.mutation.GetType(); ok {
+		if err := dnsrecord.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "DNSRecord.type": %w`, err)}
+		}
+	}
 	if _u.mutation.ConfigCleared() && len(_u.mutation.ConfigIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "DNSRecord.config"`)
 	}
@@ -637,6 +678,9 @@ func (_u *DNSRecordUpdateOne) sqlSave(ctx context.Context) (_node *DNSRecord, er
 	}
 	if _u.mutation.RecordIDCleared() {
 		_spec.ClearField(dnsrecord.FieldRecordID, field.TypeString)
+	}
+	if value, ok := _u.mutation.GetType(); ok {
+		_spec.SetField(dnsrecord.FieldType, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(dnsrecord.FieldIsActive, field.TypeBool, value)

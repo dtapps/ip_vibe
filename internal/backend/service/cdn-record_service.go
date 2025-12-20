@@ -183,6 +183,7 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *typ
 
 	// 更新CDN记录
 	saveCdnRecord, err := s.db.CDNRecord.UpdateOne(firstCdnRecord).
+		SetType(cdnrecord.Type(request.Type)).
 		SetOriginProtocol(cdnrecord.OriginProtocol(request.OriginProtocol)).
 		SetHTTPPort(request.HTTPPort).
 		SetHTTPSPort(request.HTTPSPort).
