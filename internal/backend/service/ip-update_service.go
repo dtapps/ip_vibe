@@ -128,13 +128,14 @@ func (s *IpUpdateService) runDnsTask() {
 				eg.Go(func() error {
 
 					newLog := s.logger.With(
+						slog.String("processing", "concurrent"),
 						slog.Int64("id", item.ID),
 						slog.String("record", "DNS"),
 						slog.String("type", item.Type.String()),
 					)
 
 					if err = s.DnsUpdate(egCtx, newLog, item); err != nil {
-						newLog.ErrorContext(egCtx, "并发处理失败",
+						newLog.ErrorContext(egCtx, "处理失败",
 							slog.Any("error", err),
 						)
 					}
@@ -155,6 +156,7 @@ func (s *IpUpdateService) runDnsTask() {
 		for _, item := range serialRecords {
 
 			newLog := s.logger.With(
+				slog.String("processing", "serial"),
 				slog.Int64("id", item.ID),
 				slog.String("record", "DNS"),
 				slog.String("type", item.Type.String()),
@@ -162,7 +164,7 @@ func (s *IpUpdateService) runDnsTask() {
 			)
 
 			if err = s.DnsUpdate(ctx, newLog, item); err != nil {
-				newLog.ErrorContext(ctx, "串行处理失败",
+				newLog.ErrorContext(ctx, "处理失败",
 					slog.Any("error", err),
 				)
 			}
@@ -220,6 +222,7 @@ func (s *IpUpdateService) runCdnTask() {
 				eg.Go(func() error {
 
 					newLog := s.logger.With(
+						slog.String("processing", "concurrent"),
 						slog.Int64("id", item.ID),
 						slog.String("record", "CDN"),
 						slog.String("type", item.Type.String()),
@@ -227,7 +230,7 @@ func (s *IpUpdateService) runCdnTask() {
 					)
 
 					if err = s.CdnUpdate(egCtx, newLog, item); err != nil {
-						newLog.ErrorContext(egCtx, "并发处理失败",
+						newLog.ErrorContext(egCtx, "处理失败",
 							slog.Any("error", err),
 						)
 					}
@@ -248,6 +251,7 @@ func (s *IpUpdateService) runCdnTask() {
 		for _, item := range serialRecords {
 
 			newLog := s.logger.With(
+				slog.String("processing", "serial"),
 				slog.Int64("id", item.ID),
 				slog.String("record", "CDN"),
 				slog.String("type", item.Type.String()),
@@ -255,7 +259,7 @@ func (s *IpUpdateService) runCdnTask() {
 			)
 
 			if err = s.CdnUpdate(ctx, newLog, item); err != nil {
-				newLog.ErrorContext(ctx, "串行处理失败",
+				newLog.ErrorContext(ctx, "处理失败",
 					slog.Any("error", err),
 				)
 			}

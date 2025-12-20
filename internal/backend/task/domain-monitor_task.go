@@ -17,18 +17,18 @@ import (
 )
 
 type DomainMonitorTask struct {
-	cron gocron.Scheduler // 定时任务调度器
-	job  gocron.Job       // 域名监控任务
-	db   *ent.Client      // 数据库客户端
-	log  *slog.Logger     // 日志记录器
+	cron   gocron.Scheduler // 定时任务调度器
+	job    gocron.Job       // 域名监控任务
+	db     *ent.Client      // 数据库客户端
+	logger *slog.Logger     // 日志记录器
 }
 
 func NewDomainMonitorTask(db *ent.Client, cron gocron.Scheduler) *DomainMonitorTask {
 
 	return &DomainMonitorTask{
-		cron: cron,
-		db:   db,
-		log:  slog.With("component", "monitor"),
+		cron:   cron,
+		db:     db,
+		logger: slog.With("component", "monitor"),
 	}
 }
 
@@ -65,7 +65,7 @@ func (s *DomainMonitorTask) CheckAndRunAllMonitors() {
 		Where(domainmonitor.IsActive(true)).
 		All(ctx)
 	if err != nil {
-		s.log.ErrorContext(ctx, "查询 DomainMonitor 失败",
+		s.logger.ErrorContext(ctx, "查询 DomainMonitor 失败",
 			slog.Any("err", err),
 		)
 		return
@@ -73,7 +73,7 @@ func (s *DomainMonitorTask) CheckAndRunAllMonitors() {
 
 	now := time.Now()
 	for _, monitor := range allMonitor {
-		newLog := s.log.With(
+		newLog := s.logger.With(
 			slog.Int64("id", monitor.ID),
 			slog.String("domain", monitor.Domain),
 			slog.String("protocol", monitor.CheckProtocol.String()),

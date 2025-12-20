@@ -14,16 +14,14 @@ import (
 
 	"github.com/denisbrodbeck/machineid"
 	"github.com/go-co-op/gocron/v2"
-	"github.com/quic-go/quic-go/http3"
 	"resty.dev/v3"
 )
 
 type PortForwardService struct {
-	cron           gocron.Scheduler // 定时任务调度器
-	job            gocron.Job       // IP上报任务
-	log            *slog.Logger     // 日志记录器
-	client         *resty.Client    // Resty HTTP 客户端
-	http3Transport *http3.Transport // HTTP/3 传输
+	cron   gocron.Scheduler // 定时任务调度器
+	job    gocron.Job       // IP上报任务
+	client *resty.Client    // Resty HTTP 客户端
+	logger *slog.Logger     // 日志记录器
 }
 
 // NewPortForwardService 创建一个新的服务实例
@@ -49,29 +47,15 @@ func NewPortForwardService(cron gocron.Scheduler) *PortForwardService {
 	client.SetRetryWaitTime(2 * time.Second)
 	client.SetRetryMaxWaitTime(5 * time.Second)
 
-	// 设置 HTTP/3 传输
-	// http3Transport := &http3.Transport{
-	// 	TLSClientConfig: &tls.Config{},
-	// 	QUICConfig: &quic.Config{
-	// 		MaxIdleTimeout:  45 * time.Second,
-	// 		KeepAlivePeriod: 30 * time.Second,
-	// 	},
-	// }
-	// client.SetTransport(http3Transport)
-
 	return &PortForwardService{
 		cron:   cron,
-		log:    slog.With("component", "port-forwards"),
 		client: client,
-		// http3Transport: http3Transport,
+		logger: slog.With("component", "port-forwards"),
 	}
 }
 
 // Close 关闭服务，释放资源
 func (s *PortForwardService) Close() {
-	// if s.http3Transport != nil {
-	// 	s.http3Transport.Close()
-	// }
 	if s.client != nil {
 		s.client.Close()
 	}
@@ -108,31 +92,31 @@ func (s *PortForwardService) StartJob(ctx context.Context) (err error) {
 		// 获取设备ID
 		deviceCode, err = machineid.ID()
 		if err != nil {
-			s.log.ErrorContext(ctx, "获取设备ID失败",
+			s.logger.ErrorContext(ctx, "获取设备ID失败",
 				slog.Any("err", err),
 			)
 			return
 		}
 	}
-	s.log.InfoContext(ctx, "端口转发获取开始",
+	s.logger.InfoContext(ctx, "端口转发获取开始",
 		slog.String("device_code", deviceCode),
 	)
 	response, err := s.httpApi(ctx, deviceCode)
 	if err != nil {
-		s.log.ErrorContext(ctx, "端口转发获取失败",
+		s.logger.ErrorContext(ctx, "端口转发获取失败",
 			slog.String("device_code", deviceCode),
 			slog.Any("err", err),
 		)
 		return
 	}
 	if len(response.Data) == 0 {
-		s.log.InfoContext(ctx, "端口转发获取成功, 但无数据",
+		s.logger.InfoContext(ctx, "端口转发获取成功, 但无数据",
 			slog.String("device_code", deviceCode),
 		)
 		return
 	}
 	startForwarding(response.Data)
-	s.log.InfoContext(ctx, "端口转发获取成功",
+	s.logger.InfoContext(ctx, "端口转发获取成功",
 		slog.String("device_code", deviceCode),
 	)
 	return
@@ -159,7 +143,7 @@ func (s *PortForwardService) httpApi(ctx context.Context, deviceCode string) (re
 	}
 
 	// 打印响应状态和内容
-	s.log.InfoContext(ctx, "响应状态码和内容",
+	s.logger.InfoContext(ctx, "响应状态码和内容",
 		slog.Int("status_code", resp.StatusCode()),
 		slog.Any("response", resp.String()),
 	)

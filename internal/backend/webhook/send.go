@@ -18,8 +18,8 @@ import (
 
 type Send struct {
 	db     *ent.Client   // 数据库客户端
-	log    *slog.Logger  // 日志记录器
 	client *resty.Client // Resty HTTP 客户端
+	logger *slog.Logger  // 日志记录器
 }
 
 func NewSend(db *ent.Client) *Send {
@@ -32,8 +32,8 @@ func NewSend(db *ent.Client) *Send {
 
 	return &Send{
 		db:     db,
-		log:    slog.With("component", "webhook"),
 		client: client,
+		logger: slog.With("component", "webhook"),
 	}
 }
 
@@ -49,7 +49,7 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 		}).
 		All(ctx)
 	if err != nil {
-		s.log.ErrorContext(ctx, "查询Webhook订阅失败",
+		s.logger.ErrorContext(ctx, "查询Webhook订阅失败",
 			slog.Any("err", err),
 			slog.String("obj_type", objType.String()),
 			slog.Int64("obj_id", objID),
@@ -68,7 +68,7 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 
 				templateTitle, err := utils.RenderTemplate(item.Edges.Webhook.TemplateTitle, payload)
 				if err != nil {
-					s.log.ErrorContext(egCtx, "渲染模板失败",
+					s.logger.ErrorContext(egCtx, "渲染模板失败",
 						slog.Any("err", err),
 						slog.Int64("webhook_id", item.Edges.Webhook.ID),
 						slog.String("webhook_platform", item.Edges.Webhook.Platform.String()),
@@ -78,7 +78,7 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 
 				templateContent, err := utils.RenderTemplate(item.Edges.Webhook.TemplateContent, payload)
 				if err != nil {
-					s.log.ErrorContext(egCtx, "渲染模板失败",
+					s.logger.ErrorContext(egCtx, "渲染模板失败",
 						slog.Any("err", err),
 						slog.Int64("webhook_id", item.Edges.Webhook.ID),
 						slog.String("webhook_platform", item.Edges.Webhook.Platform.String()),
@@ -103,13 +103,13 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 					err = s.Http(egCtx, item.Edges.Webhook.URL, templateTitle, templateContent)
 				}
 				if err != nil {
-					s.log.ErrorContext(egCtx, "发送Webhook失败",
+					s.logger.ErrorContext(egCtx, "发送Webhook失败",
 						slog.Any("err", err),
 						slog.Int64("webhook_id", item.Edges.Webhook.ID),
 						slog.String("webhook_platform", item.Edges.Webhook.Platform.String()),
 					)
 				} else {
-					s.log.InfoContext(egCtx, "Webhook发送成功",
+					s.logger.InfoContext(egCtx, "Webhook发送成功",
 						slog.Int64("webhook_id", item.Edges.Webhook.ID),
 						slog.String("webhook_platform", item.Edges.Webhook.Platform.String()),
 					)
@@ -122,7 +122,7 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 	}
 
 	if err = eg.Wait(); err != nil {
-		s.log.ErrorContext(ctx, "并发错误",
+		s.logger.ErrorContext(ctx, "并发错误",
 			slog.Any("err", err),
 		)
 	}

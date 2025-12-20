@@ -11,16 +11,14 @@ import (
 
 	"github.com/denisbrodbeck/machineid"
 	"github.com/go-co-op/gocron/v2"
-	"github.com/quic-go/quic-go/http3"
 	"resty.dev/v3"
 )
 
 type IpReportService struct {
-	cron           gocron.Scheduler // 定时任务调度器
-	job            gocron.Job       // IP上报任务
-	log            *slog.Logger     // 日志记录器
-	client         *resty.Client    // Resty HTTP 客户端
-	http3Transport *http3.Transport // HTTP/3 传输
+	cron   gocron.Scheduler // 定时任务调度器
+	job    gocron.Job       // IP上报任务
+	client *resty.Client    // Resty HTTP 客户端
+	logger *slog.Logger     // 日志记录器
 }
 
 // NewIpReportService 创建一个新的服务实例
@@ -46,29 +44,15 @@ func NewIpReportService(cron gocron.Scheduler) *IpReportService {
 	client.SetRetryWaitTime(2 * time.Second)
 	client.SetRetryMaxWaitTime(5 * time.Second)
 
-	// 设置 HTTP/3 传输
-	// http3Transport := &http3.Transport{
-	// 	TLSClientConfig: &tls.Config{},
-	// 	QUICConfig: &quic.Config{
-	// 		MaxIdleTimeout:  45 * time.Second,
-	// 		KeepAlivePeriod: 30 * time.Second,
-	// 	},
-	// }
-	// client.SetTransport(http3Transport)
-
 	return &IpReportService{
 		cron:   cron,
-		log:    slog.With("component", "ip-report"),
 		client: client,
-		// http3Transport: http3Transport,
+		logger: slog.With("component", "ip-report"),
 	}
 }
 
 // Close 关闭服务，释放资源
 func (s *IpReportService) Close() {
-	// if s.http3Transport != nil {
-	// 	s.http3Transport.Close()
-	// }
 	if s.client != nil {
 		s.client.Close()
 	}
@@ -133,7 +117,7 @@ func (s *IpReportService) httpApi(ctx context.Context, deviceCode string, params
 	}
 
 	// 打印响应状态和内容
-	s.log.InfoContext(ctx, "响应状态码和内容",
+	s.logger.InfoContext(ctx, "响应状态码和内容",
 		slog.Int("status_code", resp.StatusCode()),
 		slog.Any("response", resp.String()),
 	)
@@ -160,7 +144,7 @@ func (s *IpReportService) runTask() {
 		// 获取设备ID
 		deviceCode, err = machineid.ID()
 		if err != nil {
-			s.log.ErrorContext(ctx, "获取设备ID失败",
+			s.logger.ErrorContext(ctx, "获取设备ID失败",
 				slog.Any("err", err),
 			)
 			return
@@ -177,7 +161,7 @@ func (s *IpReportService) runTask() {
 	if err == nil {
 		params.IPV6Addr = ipv6.IP
 	}
-	s.log.InfoContext(ctx, "IP上报开始",
+	s.logger.InfoContext(ctx, "IP上报开始",
 		slog.String("device_code", deviceCode),
 		slog.String("device_name", params.DeviceName),
 		slog.String("ipv4_addr", params.IPV4Addr),
@@ -185,7 +169,7 @@ func (s *IpReportService) runTask() {
 	)
 	err = s.httpApi(ctx, deviceCode, params)
 	if err != nil {
-		s.log.ErrorContext(ctx, "IP上报失败",
+		s.logger.ErrorContext(ctx, "IP上报失败",
 			slog.String("device_code", deviceCode),
 			slog.String("device_name", params.DeviceName),
 			slog.String("ipv4_addr", params.IPV4Addr),
@@ -197,7 +181,7 @@ func (s *IpReportService) runTask() {
 
 	nextRun, err := s.job.NextRun()
 	if err == nil {
-		s.log.InfoContext(ctx, "IP上报成功",
+		s.logger.InfoContext(ctx, "IP上报成功",
 			slog.String("device_code", deviceCode),
 			slog.String("device_name", params.DeviceName),
 			slog.String("ipv4_addr", params.IPV4Addr),
@@ -205,7 +189,7 @@ func (s *IpReportService) runTask() {
 			slog.String("next_run_time", nextRun.Format(time.DateTime)),
 		)
 	} else {
-		s.log.InfoContext(ctx, "IP上报成功",
+		s.logger.InfoContext(ctx, "IP上报成功",
 			slog.String("device_code", deviceCode),
 			slog.String("device_name", params.DeviceName),
 			slog.String("ipv4_addr", params.IPV4Addr),
