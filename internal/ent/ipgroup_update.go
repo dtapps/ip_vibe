@@ -112,6 +112,26 @@ func (_u *IpGroupUpdate) ClearLastAPIResponse() *IpGroupUpdate {
 	return _u
 }
 
+// SetLastAPIResponseAt sets the "last_api_response_at" field.
+func (_u *IpGroupUpdate) SetLastAPIResponseAt(v time.Time) *IpGroupUpdate {
+	_u.mutation.SetLastAPIResponseAt(v)
+	return _u
+}
+
+// SetNillableLastAPIResponseAt sets the "last_api_response_at" field if the given value is not nil.
+func (_u *IpGroupUpdate) SetNillableLastAPIResponseAt(v *time.Time) *IpGroupUpdate {
+	if v != nil {
+		_u.SetLastAPIResponseAt(*v)
+	}
+	return _u
+}
+
+// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
+func (_u *IpGroupUpdate) ClearLastAPIResponseAt() *IpGroupUpdate {
+	_u.mutation.ClearLastAPIResponseAt()
+	return _u
+}
+
 // AddDeviceIDs adds the "devices" edge to the Device entity by IDs.
 func (_u *IpGroupUpdate) AddDeviceIDs(ids ...int64) *IpGroupUpdate {
 	_u.mutation.AddDeviceIDs(ids...)
@@ -299,6 +319,12 @@ func (_u *IpGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.LastAPIResponseCleared() {
 		_spec.ClearField(ipgroup.FieldLastAPIResponse, field.TypeString)
+	}
+	if value, ok := _u.mutation.LastAPIResponseAt(); ok {
+		_spec.SetField(ipgroup.FieldLastAPIResponseAt, field.TypeTime, value)
+	}
+	if _u.mutation.LastAPIResponseAtCleared() {
+		_spec.ClearField(ipgroup.FieldLastAPIResponseAt, field.TypeTime)
 	}
 	if _u.mutation.DevicesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -549,6 +575,26 @@ func (_u *IpGroupUpdateOne) ClearLastAPIResponse() *IpGroupUpdateOne {
 	return _u
 }
 
+// SetLastAPIResponseAt sets the "last_api_response_at" field.
+func (_u *IpGroupUpdateOne) SetLastAPIResponseAt(v time.Time) *IpGroupUpdateOne {
+	_u.mutation.SetLastAPIResponseAt(v)
+	return _u
+}
+
+// SetNillableLastAPIResponseAt sets the "last_api_response_at" field if the given value is not nil.
+func (_u *IpGroupUpdateOne) SetNillableLastAPIResponseAt(v *time.Time) *IpGroupUpdateOne {
+	if v != nil {
+		_u.SetLastAPIResponseAt(*v)
+	}
+	return _u
+}
+
+// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
+func (_u *IpGroupUpdateOne) ClearLastAPIResponseAt() *IpGroupUpdateOne {
+	_u.mutation.ClearLastAPIResponseAt()
+	return _u
+}
+
 // AddDeviceIDs adds the "devices" edge to the Device entity by IDs.
 func (_u *IpGroupUpdateOne) AddDeviceIDs(ids ...int64) *IpGroupUpdateOne {
 	_u.mutation.AddDeviceIDs(ids...)
@@ -766,6 +812,12 @@ func (_u *IpGroupUpdateOne) sqlSave(ctx context.Context) (_node *IpGroup, err er
 	}
 	if _u.mutation.LastAPIResponseCleared() {
 		_spec.ClearField(ipgroup.FieldLastAPIResponse, field.TypeString)
+	}
+	if value, ok := _u.mutation.LastAPIResponseAt(); ok {
+		_spec.SetField(ipgroup.FieldLastAPIResponseAt, field.TypeTime, value)
+	}
+	if _u.mutation.LastAPIResponseAtCleared() {
+		_spec.ClearField(ipgroup.FieldLastAPIResponseAt, field.TypeTime)
 	}
 	if _u.mutation.DevicesCleared() {
 		edge := &sqlgraph.EdgeSpec{

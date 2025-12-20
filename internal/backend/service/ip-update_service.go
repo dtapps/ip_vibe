@@ -138,6 +138,7 @@ func (s *IpUpdateService) runDnsTask() {
 						slog.Int64("记录", item.ID),
 						slog.String("类型", item.Type.String()),
 						slog.String("子域名", item.SubDomain),
+						slog.String("平台", item.Edges.Config.Platform.String()),
 					)
 
 					if err = s.DnsUpdate(egCtx, newLog, item); err != nil {
@@ -168,6 +169,7 @@ func (s *IpUpdateService) runDnsTask() {
 				slog.Int64("记录", item.ID),
 				slog.String("类型", item.Type.String()),
 				slog.String("子域名", item.SubDomain),
+				slog.String("平台", item.Edges.Config.Platform.String()),
 			)
 
 			if err = s.DnsUpdate(ctx, newLog, item); err != nil {
@@ -239,9 +241,10 @@ func (s *IpUpdateService) runCdnTask() {
 					newLog := s.logger.With(
 						slog.String("处理方式", "并发"),
 						slog.String("处理类型", processingType),
-						slog.Int64("id", item.ID),
+						slog.Int64("记录", item.ID),
 						slog.String("类型", item.Type.String()),
 						slog.String("子域名", item.SubDomain),
+						slog.String("平台", item.Edges.Config.Platform.String()),
 					)
 
 					if err = s.CdnUpdate(egCtx, newLog, item); err != nil {
@@ -272,6 +275,7 @@ func (s *IpUpdateService) runCdnTask() {
 				slog.Int64("记录", item.ID),
 				slog.String("类型", item.Type.String()),
 				slog.String("子域名", item.SubDomain),
+				slog.String("平台", item.Edges.Config.Platform.String()),
 			)
 
 			if err = s.CdnUpdate(ctx, newLog, item); err != nil {
@@ -317,10 +321,6 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 		HttpPort:       firstRecord.HTTPPort,
 		HttpsPort:      firstRecord.HTTPSPort,
 	}
-
-	newLog = newLog.With(
-		slog.String("platform", firstRecord.Edges.Config.Platform.String()),
-	)
 
 	// 查询IP组
 	firstIPGroup, err := firstRecord.QueryIPGroup().
@@ -399,10 +399,6 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 		ConfigJSON: firstRecord.Edges.Config.ConfigJSON,
 		SubDomain:  firstRecord.SubDomain,
 	}
-
-	newLog = newLog.With(
-		slog.String("platform", firstRecord.Edges.Config.Platform.String()),
-	)
 
 	if firstRecord.Type == dnsrecord.TypeCNAME {
 
@@ -512,6 +508,7 @@ func (s *IpUpdateService) updateDbOfCdnResponse(ctx context.Context, id int64, l
 	if s.db != nil && id != 0 {
 		return s.db.CDNRecord.UpdateOneID(id).
 			SetLastAPIResponse(last_api_response).
+			SetLastAPIResponseAt(time.Now()).
 			Exec(ctx)
 	}
 	return nil
@@ -522,6 +519,7 @@ func (s *IpUpdateService) updateDbOfDnsResponse(ctx context.Context, id int64, l
 	if s.db != nil && id != 0 {
 		return s.db.DNSRecord.UpdateOneID(id).
 			SetLastAPIResponse(last_api_response).
+			SetLastAPIResponseAt(time.Now()).
 			Exec(ctx)
 	}
 	return nil

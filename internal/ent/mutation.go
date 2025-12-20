@@ -53,34 +53,35 @@ const (
 // CDNRecordMutation represents an operation that mutates the CDNRecord nodes in the graph.
 type CDNRecordMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *int64
-	created_at         *time.Time
-	updated_at         *time.Time
-	record_id          *string
-	sub_domain         *string
-	_type              *cdnrecord.Type
-	origin_protocol    *cdnrecord.OriginProtocol
-	http_port          *int
-	addhttp_port       *int
-	https_port         *int
-	addhttps_port      *int
-	cdn_domain         *string
-	is_active          *bool
-	last_refresh_at    *time.Time
-	last_api_response  *string
-	clearedFields      map[string]struct{}
-	_config            *int64
-	cleared_config     bool
-	ip_group           *int64
-	clearedip_group    bool
-	dns_records        map[int64]struct{}
-	removeddns_records map[int64]struct{}
-	cleareddns_records bool
-	done               bool
-	oldValue           func(context.Context) (*CDNRecord, error)
-	predicates         []predicate.CDNRecord
+	op                   Op
+	typ                  string
+	id                   *int64
+	created_at           *time.Time
+	updated_at           *time.Time
+	record_id            *string
+	sub_domain           *string
+	_type                *cdnrecord.Type
+	origin_protocol      *cdnrecord.OriginProtocol
+	http_port            *int
+	addhttp_port         *int
+	https_port           *int
+	addhttps_port        *int
+	cdn_domain           *string
+	is_active            *bool
+	last_refresh_at      *time.Time
+	last_api_response    *string
+	last_api_response_at *time.Time
+	clearedFields        map[string]struct{}
+	_config              *int64
+	cleared_config       bool
+	ip_group             *int64
+	clearedip_group      bool
+	dns_records          map[int64]struct{}
+	removeddns_records   map[int64]struct{}
+	cleareddns_records   bool
+	done                 bool
+	oldValue             func(context.Context) (*CDNRecord, error)
+	predicates           []predicate.CDNRecord
 }
 
 var _ ent.Mutation = (*CDNRecordMutation)(nil)
@@ -783,6 +784,55 @@ func (m *CDNRecordMutation) ResetLastAPIResponse() {
 	delete(m.clearedFields, cdnrecord.FieldLastAPIResponse)
 }
 
+// SetLastAPIResponseAt sets the "last_api_response_at" field.
+func (m *CDNRecordMutation) SetLastAPIResponseAt(t time.Time) {
+	m.last_api_response_at = &t
+}
+
+// LastAPIResponseAt returns the value of the "last_api_response_at" field in the mutation.
+func (m *CDNRecordMutation) LastAPIResponseAt() (r time.Time, exists bool) {
+	v := m.last_api_response_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastAPIResponseAt returns the old "last_api_response_at" field's value of the CDNRecord entity.
+// If the CDNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CDNRecordMutation) OldLastAPIResponseAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastAPIResponseAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastAPIResponseAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastAPIResponseAt: %w", err)
+	}
+	return oldValue.LastAPIResponseAt, nil
+}
+
+// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
+func (m *CDNRecordMutation) ClearLastAPIResponseAt() {
+	m.last_api_response_at = nil
+	m.clearedFields[cdnrecord.FieldLastAPIResponseAt] = struct{}{}
+}
+
+// LastAPIResponseAtCleared returns if the "last_api_response_at" field was cleared in this mutation.
+func (m *CDNRecordMutation) LastAPIResponseAtCleared() bool {
+	_, ok := m.clearedFields[cdnrecord.FieldLastAPIResponseAt]
+	return ok
+}
+
+// ResetLastAPIResponseAt resets all changes to the "last_api_response_at" field.
+func (m *CDNRecordMutation) ResetLastAPIResponseAt() {
+	m.last_api_response_at = nil
+	delete(m.clearedFields, cdnrecord.FieldLastAPIResponseAt)
+}
+
 // ClearConfig clears the "config" edge to the PlatformConfig entity.
 func (m *CDNRecordMutation) ClearConfig() {
 	m.cleared_config = true
@@ -925,7 +975,7 @@ func (m *CDNRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CDNRecordMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 15)
 	if m.created_at != nil {
 		fields = append(fields, cdnrecord.FieldCreatedAt)
 	}
@@ -968,6 +1018,9 @@ func (m *CDNRecordMutation) Fields() []string {
 	if m.last_api_response != nil {
 		fields = append(fields, cdnrecord.FieldLastAPIResponse)
 	}
+	if m.last_api_response_at != nil {
+		fields = append(fields, cdnrecord.FieldLastAPIResponseAt)
+	}
 	return fields
 }
 
@@ -1004,6 +1057,8 @@ func (m *CDNRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.LastRefreshAt()
 	case cdnrecord.FieldLastAPIResponse:
 		return m.LastAPIResponse()
+	case cdnrecord.FieldLastAPIResponseAt:
+		return m.LastAPIResponseAt()
 	}
 	return nil, false
 }
@@ -1041,6 +1096,8 @@ func (m *CDNRecordMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldLastRefreshAt(ctx)
 	case cdnrecord.FieldLastAPIResponse:
 		return m.OldLastAPIResponse(ctx)
+	case cdnrecord.FieldLastAPIResponseAt:
+		return m.OldLastAPIResponseAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown CDNRecord field %s", name)
 }
@@ -1148,6 +1205,13 @@ func (m *CDNRecordMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLastAPIResponse(v)
 		return nil
+	case cdnrecord.FieldLastAPIResponseAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastAPIResponseAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown CDNRecord field %s", name)
 }
@@ -1217,6 +1281,9 @@ func (m *CDNRecordMutation) ClearedFields() []string {
 	if m.FieldCleared(cdnrecord.FieldLastAPIResponse) {
 		fields = append(fields, cdnrecord.FieldLastAPIResponse)
 	}
+	if m.FieldCleared(cdnrecord.FieldLastAPIResponseAt) {
+		fields = append(fields, cdnrecord.FieldLastAPIResponseAt)
+	}
 	return fields
 }
 
@@ -1242,6 +1309,9 @@ func (m *CDNRecordMutation) ClearField(name string) error {
 		return nil
 	case cdnrecord.FieldLastAPIResponse:
 		m.ClearLastAPIResponse()
+		return nil
+	case cdnrecord.FieldLastAPIResponseAt:
+		m.ClearLastAPIResponseAt()
 		return nil
 	}
 	return fmt.Errorf("unknown CDNRecord nullable field %s", name)
@@ -1292,6 +1362,9 @@ func (m *CDNRecordMutation) ResetField(name string) error {
 		return nil
 	case cdnrecord.FieldLastAPIResponse:
 		m.ResetLastAPIResponse()
+		return nil
+	case cdnrecord.FieldLastAPIResponseAt:
+		m.ResetLastAPIResponseAt()
 		return nil
 	}
 	return fmt.Errorf("unknown CDNRecord field %s", name)
@@ -1420,27 +1493,28 @@ func (m *CDNRecordMutation) ResetEdge(name string) error {
 // DNSRecordMutation represents an operation that mutates the DNSRecord nodes in the graph.
 type DNSRecordMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *int64
-	created_at        *time.Time
-	updated_at        *time.Time
-	record_id         *string
-	sub_domain        *string
-	_type             *dnsrecord.Type
-	is_active         *bool
-	last_refresh_at   *time.Time
-	last_api_response *string
-	clearedFields     map[string]struct{}
-	_config           *int64
-	cleared_config    bool
-	ip_group          *int64
-	clearedip_group   bool
-	cdn_record        *int64
-	clearedcdn_record bool
-	done              bool
-	oldValue          func(context.Context) (*DNSRecord, error)
-	predicates        []predicate.DNSRecord
+	op                   Op
+	typ                  string
+	id                   *int64
+	created_at           *time.Time
+	updated_at           *time.Time
+	record_id            *string
+	sub_domain           *string
+	_type                *dnsrecord.Type
+	is_active            *bool
+	last_refresh_at      *time.Time
+	last_api_response    *string
+	last_api_response_at *time.Time
+	clearedFields        map[string]struct{}
+	_config              *int64
+	cleared_config       bool
+	ip_group             *int64
+	clearedip_group      bool
+	cdn_record           *int64
+	clearedcdn_record    bool
+	done                 bool
+	oldValue             func(context.Context) (*DNSRecord, error)
+	predicates           []predicate.DNSRecord
 }
 
 var _ ent.Mutation = (*DNSRecordMutation)(nil)
@@ -2008,6 +2082,55 @@ func (m *DNSRecordMutation) ResetLastAPIResponse() {
 	delete(m.clearedFields, dnsrecord.FieldLastAPIResponse)
 }
 
+// SetLastAPIResponseAt sets the "last_api_response_at" field.
+func (m *DNSRecordMutation) SetLastAPIResponseAt(t time.Time) {
+	m.last_api_response_at = &t
+}
+
+// LastAPIResponseAt returns the value of the "last_api_response_at" field in the mutation.
+func (m *DNSRecordMutation) LastAPIResponseAt() (r time.Time, exists bool) {
+	v := m.last_api_response_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastAPIResponseAt returns the old "last_api_response_at" field's value of the DNSRecord entity.
+// If the DNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DNSRecordMutation) OldLastAPIResponseAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastAPIResponseAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastAPIResponseAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastAPIResponseAt: %w", err)
+	}
+	return oldValue.LastAPIResponseAt, nil
+}
+
+// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
+func (m *DNSRecordMutation) ClearLastAPIResponseAt() {
+	m.last_api_response_at = nil
+	m.clearedFields[dnsrecord.FieldLastAPIResponseAt] = struct{}{}
+}
+
+// LastAPIResponseAtCleared returns if the "last_api_response_at" field was cleared in this mutation.
+func (m *DNSRecordMutation) LastAPIResponseAtCleared() bool {
+	_, ok := m.clearedFields[dnsrecord.FieldLastAPIResponseAt]
+	return ok
+}
+
+// ResetLastAPIResponseAt resets all changes to the "last_api_response_at" field.
+func (m *DNSRecordMutation) ResetLastAPIResponseAt() {
+	m.last_api_response_at = nil
+	delete(m.clearedFields, dnsrecord.FieldLastAPIResponseAt)
+}
+
 // ClearConfig clears the "config" edge to the PlatformConfig entity.
 func (m *DNSRecordMutation) ClearConfig() {
 	m.cleared_config = true
@@ -2123,7 +2246,7 @@ func (m *DNSRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DNSRecordMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
 		fields = append(fields, dnsrecord.FieldCreatedAt)
 	}
@@ -2157,6 +2280,9 @@ func (m *DNSRecordMutation) Fields() []string {
 	if m.last_api_response != nil {
 		fields = append(fields, dnsrecord.FieldLastAPIResponse)
 	}
+	if m.last_api_response_at != nil {
+		fields = append(fields, dnsrecord.FieldLastAPIResponseAt)
+	}
 	return fields
 }
 
@@ -2187,6 +2313,8 @@ func (m *DNSRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.LastRefreshAt()
 	case dnsrecord.FieldLastAPIResponse:
 		return m.LastAPIResponse()
+	case dnsrecord.FieldLastAPIResponseAt:
+		return m.LastAPIResponseAt()
 	}
 	return nil, false
 }
@@ -2218,6 +2346,8 @@ func (m *DNSRecordMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldLastRefreshAt(ctx)
 	case dnsrecord.FieldLastAPIResponse:
 		return m.OldLastAPIResponse(ctx)
+	case dnsrecord.FieldLastAPIResponseAt:
+		return m.OldLastAPIResponseAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown DNSRecord field %s", name)
 }
@@ -2304,6 +2434,13 @@ func (m *DNSRecordMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLastAPIResponse(v)
 		return nil
+	case dnsrecord.FieldLastAPIResponseAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastAPIResponseAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown DNSRecord field %s", name)
 }
@@ -2352,6 +2489,9 @@ func (m *DNSRecordMutation) ClearedFields() []string {
 	if m.FieldCleared(dnsrecord.FieldLastAPIResponse) {
 		fields = append(fields, dnsrecord.FieldLastAPIResponse)
 	}
+	if m.FieldCleared(dnsrecord.FieldLastAPIResponseAt) {
+		fields = append(fields, dnsrecord.FieldLastAPIResponseAt)
+	}
 	return fields
 }
 
@@ -2380,6 +2520,9 @@ func (m *DNSRecordMutation) ClearField(name string) error {
 		return nil
 	case dnsrecord.FieldLastAPIResponse:
 		m.ClearLastAPIResponse()
+		return nil
+	case dnsrecord.FieldLastAPIResponseAt:
+		m.ClearLastAPIResponseAt()
 		return nil
 	}
 	return fmt.Errorf("unknown DNSRecord nullable field %s", name)
@@ -2421,6 +2564,9 @@ func (m *DNSRecordMutation) ResetField(name string) error {
 		return nil
 	case dnsrecord.FieldLastAPIResponse:
 		m.ResetLastAPIResponse()
+		return nil
+	case dnsrecord.FieldLastAPIResponseAt:
+		m.ResetLastAPIResponseAt()
 		return nil
 	}
 	return fmt.Errorf("unknown DNSRecord field %s", name)
@@ -7693,28 +7839,29 @@ func (m *DomainMonitorHistoryMutation) ResetEdge(name string) error {
 // IpGroupMutation represents an operation that mutates the IpGroup nodes in the graph.
 type IpGroupMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *int64
-	created_at         *time.Time
-	updated_at         *time.Time
-	record_id          *string
-	name               *string
-	description        *string
-	last_api_response  *string
-	clearedFields      map[string]struct{}
-	devices            map[int64]struct{}
-	removeddevices     map[int64]struct{}
-	cleareddevices     bool
-	dns_records        map[int64]struct{}
-	removeddns_records map[int64]struct{}
-	cleareddns_records bool
-	cdn_records        map[int64]struct{}
-	removedcdn_records map[int64]struct{}
-	clearedcdn_records bool
-	done               bool
-	oldValue           func(context.Context) (*IpGroup, error)
-	predicates         []predicate.IpGroup
+	op                   Op
+	typ                  string
+	id                   *int64
+	created_at           *time.Time
+	updated_at           *time.Time
+	record_id            *string
+	name                 *string
+	description          *string
+	last_api_response    *string
+	last_api_response_at *time.Time
+	clearedFields        map[string]struct{}
+	devices              map[int64]struct{}
+	removeddevices       map[int64]struct{}
+	cleareddevices       bool
+	dns_records          map[int64]struct{}
+	removeddns_records   map[int64]struct{}
+	cleareddns_records   bool
+	cdn_records          map[int64]struct{}
+	removedcdn_records   map[int64]struct{}
+	clearedcdn_records   bool
+	done                 bool
+	oldValue             func(context.Context) (*IpGroup, error)
+	predicates           []predicate.IpGroup
 }
 
 var _ ent.Mutation = (*IpGroupMutation)(nil)
@@ -8076,6 +8223,55 @@ func (m *IpGroupMutation) ResetLastAPIResponse() {
 	delete(m.clearedFields, ipgroup.FieldLastAPIResponse)
 }
 
+// SetLastAPIResponseAt sets the "last_api_response_at" field.
+func (m *IpGroupMutation) SetLastAPIResponseAt(t time.Time) {
+	m.last_api_response_at = &t
+}
+
+// LastAPIResponseAt returns the value of the "last_api_response_at" field in the mutation.
+func (m *IpGroupMutation) LastAPIResponseAt() (r time.Time, exists bool) {
+	v := m.last_api_response_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastAPIResponseAt returns the old "last_api_response_at" field's value of the IpGroup entity.
+// If the IpGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *IpGroupMutation) OldLastAPIResponseAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastAPIResponseAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastAPIResponseAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastAPIResponseAt: %w", err)
+	}
+	return oldValue.LastAPIResponseAt, nil
+}
+
+// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
+func (m *IpGroupMutation) ClearLastAPIResponseAt() {
+	m.last_api_response_at = nil
+	m.clearedFields[ipgroup.FieldLastAPIResponseAt] = struct{}{}
+}
+
+// LastAPIResponseAtCleared returns if the "last_api_response_at" field was cleared in this mutation.
+func (m *IpGroupMutation) LastAPIResponseAtCleared() bool {
+	_, ok := m.clearedFields[ipgroup.FieldLastAPIResponseAt]
+	return ok
+}
+
+// ResetLastAPIResponseAt resets all changes to the "last_api_response_at" field.
+func (m *IpGroupMutation) ResetLastAPIResponseAt() {
+	m.last_api_response_at = nil
+	delete(m.clearedFields, ipgroup.FieldLastAPIResponseAt)
+}
+
 // AddDeviceIDs adds the "devices" edge to the Device entity by ids.
 func (m *IpGroupMutation) AddDeviceIDs(ids ...int64) {
 	if m.devices == nil {
@@ -8272,7 +8468,7 @@ func (m *IpGroupMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *IpGroupMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, ipgroup.FieldCreatedAt)
 	}
@@ -8290,6 +8486,9 @@ func (m *IpGroupMutation) Fields() []string {
 	}
 	if m.last_api_response != nil {
 		fields = append(fields, ipgroup.FieldLastAPIResponse)
+	}
+	if m.last_api_response_at != nil {
+		fields = append(fields, ipgroup.FieldLastAPIResponseAt)
 	}
 	return fields
 }
@@ -8311,6 +8510,8 @@ func (m *IpGroupMutation) Field(name string) (ent.Value, bool) {
 		return m.Description()
 	case ipgroup.FieldLastAPIResponse:
 		return m.LastAPIResponse()
+	case ipgroup.FieldLastAPIResponseAt:
+		return m.LastAPIResponseAt()
 	}
 	return nil, false
 }
@@ -8332,6 +8533,8 @@ func (m *IpGroupMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldDescription(ctx)
 	case ipgroup.FieldLastAPIResponse:
 		return m.OldLastAPIResponse(ctx)
+	case ipgroup.FieldLastAPIResponseAt:
+		return m.OldLastAPIResponseAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown IpGroup field %s", name)
 }
@@ -8383,6 +8586,13 @@ func (m *IpGroupMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLastAPIResponse(v)
 		return nil
+	case ipgroup.FieldLastAPIResponseAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastAPIResponseAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown IpGroup field %s", name)
 }
@@ -8422,6 +8632,9 @@ func (m *IpGroupMutation) ClearedFields() []string {
 	if m.FieldCleared(ipgroup.FieldLastAPIResponse) {
 		fields = append(fields, ipgroup.FieldLastAPIResponse)
 	}
+	if m.FieldCleared(ipgroup.FieldLastAPIResponseAt) {
+		fields = append(fields, ipgroup.FieldLastAPIResponseAt)
+	}
 	return fields
 }
 
@@ -8444,6 +8657,9 @@ func (m *IpGroupMutation) ClearField(name string) error {
 		return nil
 	case ipgroup.FieldLastAPIResponse:
 		m.ClearLastAPIResponse()
+		return nil
+	case ipgroup.FieldLastAPIResponseAt:
+		m.ClearLastAPIResponseAt()
 		return nil
 	}
 	return fmt.Errorf("unknown IpGroup nullable field %s", name)
@@ -8470,6 +8686,9 @@ func (m *IpGroupMutation) ResetField(name string) error {
 		return nil
 	case ipgroup.FieldLastAPIResponse:
 		m.ResetLastAPIResponse()
+		return nil
+	case ipgroup.FieldLastAPIResponseAt:
+		m.ResetLastAPIResponseAt()
 		return nil
 	}
 	return fmt.Errorf("unknown IpGroup field %s", name)

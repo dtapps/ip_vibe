@@ -107,6 +107,11 @@ func (CDNRecord) Fields() []ent.Field {
 			Optional().
 			Comment("最近一次接口的反馈").
 			Annotations(entsql.WithComments(true)),
+
+		field.Time("last_api_response_at").
+			Optional().
+			Comment("最近一次接口的反馈时间").
+			Annotations(entsql.WithComments(true)),
 	}
 }
 
