@@ -7,6 +7,8 @@ import (
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/dnsrecord"
+	"vibe_ip/internal/ent/domainmonitor"
+	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
@@ -55,7 +57,6 @@ func (s *WebhookSubServiceImpl) BuildResponse(ctx context.Context, item *ent.Web
 	// 查询关联对象名称
 	switch item.ObjType {
 	case webhooksubscription.ObjTypeCdnRecord:
-		var firstCDNRecord *ent.CDNRecord
 		firstCDNRecord, err := s.db.CDNRecord.Query().
 			Where(cdnrecord.IDEQ(item.ObjID)).
 			WithConfig().
@@ -69,7 +70,6 @@ func (s *WebhookSubServiceImpl) BuildResponse(ctx context.Context, item *ent.Web
 			}
 		}
 	case webhooksubscription.ObjTypeDNSRecord:
-		var firstDNSRecord *ent.DNSRecord
 		firstDNSRecord, err := s.db.DNSRecord.Query().
 			Where(dnsrecord.IDEQ(item.ObjID)).
 			WithConfig().
@@ -83,12 +83,25 @@ func (s *WebhookSubServiceImpl) BuildResponse(ctx context.Context, item *ent.Web
 			}
 		}
 	case webhooksubscription.ObjTypeDevice:
-		var firstDevice *ent.Device
 		firstDevice, err := s.db.Device.Query().
 			Where(device.IDEQ(item.ObjID)).
 			First(ctx)
 		if err == nil {
 			resp.ObjName = firstDevice.Name
+		}
+	case webhooksubscription.ObjTypeIPGroup:
+		firstIPGroup, err := s.db.IpGroup.Query().
+			Where(ipgroup.IDEQ(item.ObjID)).
+			First(ctx)
+		if err == nil {
+			resp.ObjName = firstIPGroup.Name
+		}
+	case webhooksubscription.ObjTypeDomainMonitor:
+		firstDomainMonitor, err := s.db.DomainMonitor.Query().
+			Where(domainmonitor.IDEQ(item.ObjID)).
+			First(ctx)
+		if err == nil {
+			resp.ObjName = firstDomainMonitor.Name
 		}
 	}
 

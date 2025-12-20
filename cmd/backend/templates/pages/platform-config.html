@@ -23,12 +23,27 @@
         </tr>
       </thead>
       <tbody id="table">
-        {{range .List}}
-        {{ $urlPath := printf "/api/platform-configs/%d" .ID }}
+        {{range .List}} {{ $urlPath := printf "/api/platform-configs/%d" .ID }}
         <tr>
           <td>{{.Name}}</td>
           <td>
+            {{if eq .Platform "cloudflare"}}
+            <span class="badge badge-success">CloudFlare</span>
+            {{else if eq .Platform "tencent_dns"}}
+            <span class="badge badge-success">腾讯云 DNS</span>
+            {{else if eq .Platform "tencent_eo"}}
+            <span class="badge badge-success">腾讯云 EdgeOne</span>
+            {{else if eq .Platform "aliyun_dns"}}
+            <span class="badge badge-success">阿里云 DNS</span>
+            {{else if eq .Platform "aliyun_esa"}}
+            <span class="badge badge-success">阿里云 ESA</span>
+            {{else if eq .Platform "baidu_dns"}}
+            <span class="badge badge-success">百度云 DNS</span>
+            {{else if eq .Platform "huawei_dns"}}
+            <span class="badge badge-success">华为云 DNS</span>
+            {{else}}
             <span class="badge badge-success">{{.Platform}}</span>
+            {{end}}
           </td>
           <td>
             {{if eq .Capability "all"}}
@@ -38,7 +53,7 @@
             {{else if eq .Capability "dns"}}
             <span style="color: var(--success)">仅 DNS</span>
             {{else}}
-            <span>-</span>
+            <span>{{.Capability}}</span>
             {{end}}
           </td>
           <td>
@@ -48,13 +63,8 @@
             >
               {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
-            {{ template "button" (dict 
-                "Type" "danger" 
-                "IconName" "ip-delete" 
-                "Text" "删除" 
-                "URL" $urlPath
-                "NoReload" true
-            )}}
+            {{ template "button" (dict "Type" "danger" "IconName" "ip-delete"
+            "Text" "删除" "URL" $urlPath "NoReload" true )}}
           </td>
         </tr>
         {{end}}
