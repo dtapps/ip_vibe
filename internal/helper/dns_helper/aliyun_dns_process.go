@@ -34,11 +34,7 @@ func NewDNSProcessAliyunDns(debug bool, logger *slog.Logger, db *ent.Client, htt
 // 处理记录
 func (d *DNSProcessAliyunDnsImpl) UpsertRecord(ctx context.Context, params *DNSProcessParams) error {
 
-	var platformConfig struct {
-		AccessKeyID     string `json:"access_key_id"`     // 密钥ID
-		AccessKeySecret string `json:"access_key_secret"` // 密钥Key
-		DomainName      string `json:"domain_name"`       // 主域名
-	}
+	var platformConfig AliyunDnsConfig
 	err := json.Unmarshal(params.ConfigJSON, &platformConfig)
 	if err != nil {
 		return fmt.Errorf("解析配置失败: %w", err)
@@ -73,8 +69,7 @@ func (d *DNSProcessAliyunDnsImpl) UpsertRecord(ctx context.Context, params *DNSP
 	// 初始化客户端
 	client, err := NewAliyunDnsClient(
 		ctx,
-		platformConfig.AccessKeyID,
-		platformConfig.AccessKeySecret,
+		&platformConfig,
 	)
 	if err != nil {
 		return fmt.Errorf("初始化客户端失败: %w", err)

@@ -11,23 +11,24 @@ import (
 	"go.dtapp.net/library/contrib/http_log"
 )
 
-type BaiduDnsClient struct {
-	config struct {
-		AccessKeyID     string // 密钥ID
-		SecretAccessKey string // 密钥密钥
-	}
+type BaiduDnsConfig struct {
+	AccessKeyID     string `json:"access_key_id"`     // 密钥ID
+	SecretAccessKey string `json:"secret_access_key"` // 密钥Key
+	DomainName      string `json:"domain_name"`       // 主域名
+}
 
-	debug  bool // 是否开启调试模式
+type BaiduDnsClient struct {
+	config *BaiduDnsConfig // 配置
+	debug  bool            // 是否开启调试模式
 	client *dns.Client
 }
 
-func NewBaiduDnsClient(ctx context.Context, accessKeyID string, secretAccessKey string) (*BaiduDnsClient, error) {
+func NewBaiduDnsClient(ctx context.Context, config *BaiduDnsConfig) (*BaiduDnsClient, error) {
 
 	var err error
 
 	c := &BaiduDnsClient{}
-	c.config.AccessKeyID = accessKeyID
-	c.config.SecretAccessKey = secretAccessKey
+	c.config = config
 
 	c.client, err = dns.NewClient(c.config.AccessKeyID, c.config.SecretAccessKey, "dns.baidubce.com")
 	if err != nil {
@@ -44,8 +45,8 @@ func (c *BaiduDnsClient) SetDebug(debug bool) *BaiduDnsClient {
 }
 
 // 设置HTTP日志记录器
-func (c *BaiduDnsClient) SetLog(log *http_log.LoggingTransport) *BaiduDnsClient {
-	if log == nil {
+func (c *BaiduDnsClient) SetLog(loggingTransport *http_log.LoggingTransport) *BaiduDnsClient {
+	if loggingTransport == nil {
 		return c
 	}
 	if c.client.HTTPClient == nil {
@@ -56,7 +57,7 @@ func (c *BaiduDnsClient) SetLog(log *http_log.LoggingTransport) *BaiduDnsClient 
 		return c
 	}
 	// 将拦截器本身赋值给 Transport
-	c.client.HTTPClient.Transport = log
+	c.client.HTTPClient.Transport = loggingTransport
 	return c
 }
 

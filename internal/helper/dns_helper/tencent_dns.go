@@ -3,8 +3,8 @@ package dns_helper
 import (
 	"context"
 	"fmt"
+	"vibe_ip/internal/utils"
 
-	"github.com/alibabacloud-go/tea/tea"
 	"github.com/spf13/cast"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors"
@@ -13,13 +13,15 @@ import (
 	"go.dtapp.net/library/contrib/http_log"
 )
 
-type TencentDnsClient struct {
-	config struct {
-		SecretID  string // 密钥ID
-		SecretKey string // 密钥密钥
-	}
+type TencentDnsConfig struct {
+	SecretID   string `json:"secret_id"`   // 密钥ID
+	SecretKey  string `json:"secret_key"`  // 密钥Key
+	DomainName string `json:"domain_name"` // 主域名
+}
 
-	debug        bool // 是否开启调试模式
+type TencentDnsClient struct {
+	config       *TencentDnsConfig // 配置
+	debug        bool              // 是否开启调试模式
 	credential   *common.Credential
 	clientConfig *profile.ClientProfile
 	client       *dnspod.Client
@@ -29,13 +31,12 @@ type TencentDnsClient struct {
 // DnsPod
 // https://cloud.tencent.com/document/product/302
 // https://cloud.tencent.com/document/product/1427
-func NewTencentDnsClient(ctx context.Context, secretID string, secretKey string) (*TencentDnsClient, error) {
+func NewTencentDnsClient(ctx context.Context, config *TencentDnsConfig) (*TencentDnsClient, error) {
 
 	var err error
 
 	c := &TencentDnsClient{}
-	c.config.SecretID = secretID
-	c.config.SecretKey = secretKey
+	c.config = config
 
 	// 密钥信息
 	c.credential = common.NewCredential(
@@ -63,11 +64,11 @@ func (c *TencentDnsClient) SetDebug(debug bool) *TencentDnsClient {
 }
 
 // 设置HTTP日志记录器
-func (c *TencentDnsClient) SetLog(log *http_log.LoggingTransport) *TencentDnsClient {
-	if log == nil {
+func (c *TencentDnsClient) SetLog(loggingTransport *http_log.LoggingTransport) *TencentDnsClient {
+	if loggingTransport == nil {
 		return c
 	}
-	c.client.WithHttpTransport(log)
+	c.client.WithHttpTransport(loggingTransport)
 	return c
 }
 
@@ -97,15 +98,15 @@ func (c *TencentDnsClient) QueryDomain(ctx context.Context, domainName string, s
 	}
 
 	for _, item := range response.Response.RecordList {
-		if tea.StringValue(item.Name) == subDomain {
-			if recordType != "" && tea.StringValue(item.Type) != recordType {
+		if utils.PtrToString(item.Name) == subDomain {
+			if recordType != "" && utils.PtrToString(item.Type) != recordType {
 				continue
 			}
 			return QueryDomainResponse{
 				RecordID:    cast.ToString(*item.RecordId),
-				FullDomain:  tea.StringValue(item.Name),
-				RecordType:  tea.StringValue(item.Type),
-				OriginValue: tea.StringValue(item.Value),
+				FullDomain:  utils.PtrToString(item.Name),
+				RecordType:  utils.PtrToString(item.Type),
+				OriginValue: utils.PtrToString(item.Value),
 			}, nil
 		}
 	}

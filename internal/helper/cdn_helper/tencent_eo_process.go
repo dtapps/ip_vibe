@@ -37,12 +37,7 @@ func NewCDNProcessTencentEO(debug bool, logger *slog.Logger, db *ent.Client, htt
 // 处理记录
 func (d *CDNProcessTencentEOImpl) UpsertRecord(ctx context.Context, params *CDNProcessParams) error {
 
-	var platformConfig struct {
-		SecretID   string `json:"secret_id"`   // 密钥ID
-		SecretKey  string `json:"secret_key"`  // 密钥Key
-		ZoneID     string `json:"zone_id"`     // 区域ID
-		DomainName string `json:"domain_name"` // 主域名
-	}
+	var platformConfig TencentEOConfig
 	err := json.Unmarshal(params.ConfigJSON, &platformConfig)
 	if err != nil {
 		return fmt.Errorf("解析配置失败: %w", err)
@@ -84,9 +79,7 @@ func (d *CDNProcessTencentEOImpl) UpsertRecord(ctx context.Context, params *CDNP
 	// 初始化客户端
 	client, err := NewTencentEOClient(
 		ctx,
-		platformConfig.SecretID,
-		platformConfig.SecretKey,
-		platformConfig.ZoneID,
+		&platformConfig,
 	)
 	if err != nil {
 		return fmt.Errorf("初始化客户端失败: %w", err)

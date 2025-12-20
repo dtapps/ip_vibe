@@ -11,23 +11,24 @@ import (
 	"go.dtapp.net/library/contrib/http_log"
 )
 
-type CloudflareClient struct {
-	config struct {
-		ApiKey string // API 密钥
-		ZoneID string // 站点 ID
-	}
+type CloudflareConfig struct {
+	ApiKey     string `json:"api_key"`     // API密钥
+	ZoneID     string `json:"zone_id"`     // 区域ID
+	DomainName string `json:"domain_name"` // 主域名
+}
 
-	debug  bool // 是否开启调试模式
+type CloudflareClient struct {
+	config *CloudflareConfig // 配置
+	debug  bool              // 是否开启调试模式
 	client *cloudflare.Client
 }
 
 // Cloudflare
 // https://developers.cloudflare.com/api/go/
-func NewCloudflareClient(ctx context.Context, apiKey string, zoneID string) (c *CloudflareClient, err error) {
+func NewCloudflareClient(ctx context.Context, config *CloudflareConfig) (c *CloudflareClient, err error) {
 
 	c = &CloudflareClient{}
-	c.config.ApiKey = apiKey
-	c.config.ZoneID = zoneID
+	c.config = config
 
 	c.client = cloudflare.NewClient(
 		option.WithAPIToken(c.config.ApiKey),
@@ -43,14 +44,14 @@ func (c *CloudflareClient) SetDebug(debug bool) *CloudflareClient {
 }
 
 // 设置HTTP日志记录器
-func (c *CloudflareClient) SetLog(log *http_log.LoggingTransport) *CloudflareClient {
-	if log == nil {
+func (c *CloudflareClient) SetLog(loggingTransport *http_log.LoggingTransport) *CloudflareClient {
+	if loggingTransport == nil {
 		return c
 	}
 	c.client = cloudflare.NewClient(
 		option.WithAPIToken(c.config.ApiKey),
 		option.WithHTTPClient(&http.Client{
-			Transport: log,
+			Transport: loggingTransport,
 		}),
 	)
 	return c

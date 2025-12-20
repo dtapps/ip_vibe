@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"vibe_ip/internal/utils"
 
-	"github.com/alibabacloud-go/tea/tea"
 	"github.com/spf13/cast"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors"
@@ -14,14 +14,16 @@ import (
 	"go.dtapp.net/library/contrib/http_log"
 )
 
-type TencentEOClient struct {
-	config struct {
-		SecretID  string // 密钥ID
-		SecretKey string // 密钥密钥
-		ZoneID    string // 站点 ID
-	}
+type TencentEOConfig struct {
+	SecretID   string `json:"secret_id"`   // 密钥ID
+	SecretKey  string `json:"secret_key"`  // 密钥Key
+	ZoneID     string `json:"zone_id"`     // 区域ID
+	DomainName string `json:"domain_name"` // 主域名
+}
 
-	debug        bool // 是否开启调试模式
+type TencentEOClient struct {
+	config       *TencentEOConfig // 配置
+	debug        bool             // 是否开启调试模式
 	credential   *common.Credential
 	clientConfig *profile.ClientProfile
 	client       *teo.Client
@@ -29,14 +31,12 @@ type TencentEOClient struct {
 
 // 边缘安全加速平台 EO
 // https://cloud.tencent.com/document/product/1552
-func NewTencentEOClient(ctx context.Context, secretID string, secretKey string, zoneID string) (*TencentEOClient, error) {
+func NewTencentEOClient(ctx context.Context, config *TencentEOConfig) (*TencentEOClient, error) {
 
 	var err error
 
 	c := &TencentEOClient{}
-	c.config.SecretID = secretID
-	c.config.SecretKey = secretKey
-	c.config.ZoneID = zoneID
+	c.config = config
 
 	// 密钥信息
 	c.credential = common.NewCredential(
@@ -64,11 +64,11 @@ func (c *TencentEOClient) SetDebug(debug bool) *TencentEOClient {
 }
 
 // 设置HTTP日志记录器
-func (c *TencentEOClient) SetLog(log *http_log.LoggingTransport) *TencentEOClient {
-	if log == nil {
+func (c *TencentEOClient) SetLog(loggingTransport *http_log.LoggingTransport) *TencentEOClient {
+	if loggingTransport == nil {
 		return c
 	}
-	c.client.WithHttpTransport(log)
+	c.client.WithHttpTransport(loggingTransport)
 	return c
 }
 
@@ -99,16 +99,16 @@ func (c *TencentEOClient) QueryDomain(ctx context.Context, fullDomain string) (T
 	}
 
 	for _, item := range response.Response.AccelerationDomains {
-		if strings.EqualFold(tea.StringValue(item.DomainName), fullDomain) {
+		if strings.EqualFold(utils.PtrToString(item.DomainName), fullDomain) {
 			return TencentEOQueryDomainResponse{
-				// RecordID:         tea.StringValue(item.DomainId),
-				FullDomain:      tea.StringValue(item.DomainName),
-				DomainCname:     tea.StringValue(item.Cname),
-				RecordType:      tea.StringValue(item.OriginDetail.OriginType),
-				OriginValue:     tea.StringValue(item.OriginDetail.Origin),
-				OriginProtocol:  tea.StringValue(item.OriginProtocol),
-				HttpOriginPort:  cast.ToInt(tea.Uint64Value(item.HttpOriginPort)),
-				HttpsOriginPort: cast.ToInt(tea.Uint64Value(item.HttpsOriginPort)),
+				// RecordID:         utils.PtrToString(item.DomainId),
+				FullDomain:      utils.PtrToString(item.DomainName),
+				DomainCname:     utils.PtrToString(item.Cname),
+				RecordType:      utils.PtrToString(item.OriginDetail.OriginType),
+				OriginValue:     utils.PtrToString(item.OriginDetail.Origin),
+				OriginProtocol:  utils.PtrToString(item.OriginProtocol),
+				HttpOriginPort:  cast.ToInt(utils.PtrToUint64(item.HttpOriginPort)),
+				HttpsOriginPort: cast.ToInt(utils.PtrToUint64(item.HttpsOriginPort)),
 			}, nil
 		}
 	}
@@ -241,15 +241,15 @@ func (c *TencentEOClient) QueryOriginGroup(ctx context.Context, originGroupName 
 	}
 
 	for _, item := range response.Response.OriginGroups {
-		if strings.EqualFold(tea.StringValue(item.Name), originGroupName) {
+		if strings.EqualFold(utils.PtrToString(item.Name), originGroupName) {
 			origins := []string{}
 			for _, v := range item.Records {
-				origins = append(origins, tea.StringValue(v.Record))
+				origins = append(origins, utils.PtrToString(v.Record))
 			}
 			return TencentEOQueryOriginGroupResponse{
-				GroupID:      tea.StringValue(item.GroupId),
-				GroupName:    tea.StringValue(item.Name),
-				GroupType:    tea.StringValue(item.Type),
+				GroupID:      utils.PtrToString(item.GroupId),
+				GroupName:    utils.PtrToString(item.Name),
+				GroupType:    utils.PtrToString(item.Type),
 				GroupOrigins: origins,
 			}, nil
 		}

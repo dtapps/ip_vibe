@@ -33,27 +33,27 @@ func (a *AliyunHttpHandler) Call(request *http.Request, transport *http.Transpor
 	return a.httpClient.Do(request)
 }
 
-type AliyunEsaClient struct {
-	config struct {
-		AccessKeyID     string // 密钥ID
-		AccessKeySecret string // 密钥密钥
-		SiteID          int64  // 站点 ID
-	}
+type AliyunEsaConfig struct {
+	AccessKeyID     string `json:"access_key_id"`     // 访问密钥ID
+	AccessKeySecret string `json:"access_key_secret"` // 访问密钥Key
+	SiteID          int64  `json:"site_id"`           // 站点ID
+	DomainName      string `json:"domain_name"`       // 主域名
+}
 
-	debug        bool // 是否开启调试模式
+type AliyunEsaClient struct {
+	config       *AliyunEsaConfig // 配置
+	debug        bool             // 是否开启调试模式
 	credential   credential.Credential
 	clientConfig *openapi.Config
 	client       *esa20240910.Client
 }
 
-func NewAliyunEsaClient(ctx context.Context, accessKeyID string, accessKeySecret string, siteID int64) (*AliyunEsaClient, error) {
+func NewAliyunEsaClient(ctx context.Context, config *AliyunEsaConfig) (*AliyunEsaClient, error) {
 
 	var err error
 
 	c := &AliyunEsaClient{}
-	c.config.AccessKeyID = accessKeyID
-	c.config.AccessKeySecret = accessKeySecret
-	c.config.SiteID = siteID
+	c.config = config
 
 	// 密钥信息
 	c.credential, err = credential.NewCredential(&credential.Config{
@@ -87,14 +87,20 @@ func (c *AliyunEsaClient) SetDebug(debug bool) *AliyunEsaClient {
 }
 
 // 设置HTTP日志记录器
-func (c *AliyunEsaClient) SetLog(log *http_log.LoggingTransport) *AliyunEsaClient {
-	if log == nil {
+func (c *AliyunEsaClient) SetLog(loggingTransport *http_log.LoggingTransport) *AliyunEsaClient {
+	if loggingTransport == nil {
 		return c
 	}
 	// 实例化client选项
-	c.clientConfig.HttpClient = NewAliyunHttpHandler(log)
+	clientConfig := c.clientConfig
+	clientConfig.HttpClient = NewAliyunHttpHandler(loggingTransport)
 	// 实例化client对象
-	c.client, _ = esa20240910.NewClient(c.clientConfig)
+	client, err := esa20240910.NewClient(clientConfig)
+	if err != nil {
+		return c
+	}
+	c.clientConfig = clientConfig
+	c.client = client
 	return c
 }
 

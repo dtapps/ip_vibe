@@ -30,27 +30,28 @@ func (a *AliyunHttpHandler) Call(request *http.Request, transport *http.Transpor
 	return a.httpClient.Do(request)
 }
 
-type AliyunDnsClient struct {
-	config struct {
-		Lang            string // 语言类型
-		AccessKeyID     string // 密钥ID
-		AccessKeySecret string // 密钥密钥
-	}
+type AliyunDnsConfig struct {
+	lang            string // 语言类型
+	AccessKeyID     string `json:"access_key_id"`     // 密钥ID
+	AccessKeySecret string `json:"access_key_secret"` // 密钥Key
+	DomainName      string `json:"domain_name"`       // 主域名
+}
 
-	debug        bool // 是否开启调试模式
+type AliyunDnsClient struct {
+	config       *AliyunDnsConfig // 配置
+	debug        bool             // 是否开启调试模式
 	credential   credential.Credential
 	clientConfig *openapi.Config
 	client       *alidns20150109.Client
 }
 
-func NewAliyunDnsClient(ctx context.Context, accessKeyID string, accessKeySecret string) (*AliyunDnsClient, error) {
+func NewAliyunDnsClient(ctx context.Context, config *AliyunDnsConfig) (*AliyunDnsClient, error) {
 
 	var err error
 
 	c := &AliyunDnsClient{}
-	c.config.Lang = "zh"
-	c.config.AccessKeyID = accessKeyID
-	c.config.AccessKeySecret = accessKeySecret
+	c.config = config
+	c.config.lang = "zh"
 
 	// 密钥信息
 	c.credential, err = credential.NewCredential(&credential.Config{
@@ -84,14 +85,20 @@ func (c *AliyunDnsClient) SetDebug(debug bool) *AliyunDnsClient {
 }
 
 // 设置HTTP日志记录器
-func (c *AliyunDnsClient) SetLog(log *http_log.LoggingTransport) *AliyunDnsClient {
-	if log == nil {
+func (c *AliyunDnsClient) SetLog(loggingTransport *http_log.LoggingTransport) *AliyunDnsClient {
+	if loggingTransport == nil {
 		return c
 	}
 	// 实例化client选项
-	c.clientConfig.HttpClient = NewAliyunHttpHandler(log)
+	clientConfig := c.clientConfig
+	clientConfig.HttpClient = NewAliyunHttpHandler(loggingTransport)
 	// 实例化client对象
-	c.client, _ = alidns20150109.NewClient(c.clientConfig)
+	client, err := alidns20150109.NewClient(clientConfig)
+	if err != nil {
+		return c
+	}
+	c.clientConfig = clientConfig
+	c.client = client
 	return c
 }
 
@@ -104,7 +111,7 @@ func (c *AliyunDnsClient) QueryDomain(ctx context.Context, domainName string, su
 
 	// 请求
 	requestParams := &alidns20150109.DescribeDomainRecordsRequest{}
-	requestParams.Lang = tea.String(c.config.Lang)       // 设置请求和接收消息的语言类型
+	requestParams.Lang = tea.String(c.config.lang)       // 设置请求和接收消息的语言类型
 	requestParams.SearchMode = tea.String("COMBINATION") // 搜索模式
 	requestParams.DomainName = tea.String(domainName)    // 域名名称
 	requestParams.RRKeyWord = tea.String(subDomain)      // 主机记录的关键字
@@ -149,7 +156,7 @@ func (c *AliyunDnsClient) CreateDomain(ctx context.Context, domainName string, s
 
 	// 请求
 	requestParams := &alidns20150109.AddDomainRecordRequest{}
-	requestParams.Lang = tea.String(c.config.Lang)    // 设置请求和接收消息的语言类型
+	requestParams.Lang = tea.String(c.config.lang)    // 设置请求和接收消息的语言类型
 	requestParams.DomainName = tea.String(domainName) // 域名名称
 	requestParams.RR = tea.String(subDomain)          // 主机记录
 	requestParams.Type = tea.String(recordType)       // 解析记录类型
@@ -179,7 +186,7 @@ func (c *AliyunDnsClient) UpdateDomain(ctx context.Context, domainID string, dom
 
 	// 请求
 	requestParams := &alidns20150109.UpdateDomainRecordRequest{}
-	requestParams.Lang = tea.String(c.config.Lang) // 设置请求和接收消息的语言类型
+	requestParams.Lang = tea.String(c.config.lang) // 设置请求和接收消息的语言类型
 	requestParams.RecordId = tea.String(domainID)  // 解析记录的ID
 	requestParams.RR = tea.String(subDomain)       // 主机记录
 	requestParams.Type = tea.String(recordType)    // 解析记录类型

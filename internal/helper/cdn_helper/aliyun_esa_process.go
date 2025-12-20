@@ -37,12 +37,7 @@ func NewCDNProcessAliyunEsa(debug bool, logger *slog.Logger, db *ent.Client, htt
 // 处理记录
 func (d *CDNProcessAliyunEsaImpl) UpsertRecord(ctx context.Context, params *CDNProcessParams) error {
 
-	var platformConfig struct {
-		AccessKeyID     string `json:"access_key_id"`     // 访问密钥ID
-		AccessKeySecret string `json:"access_key_secret"` // 访问密钥Key
-		SiteID          int64  `json:"site_id"`           // 站点ID
-		DomainName      string `json:"domain_name"`       // 主域名
-	}
+	var platformConfig AliyunEsaConfig
 	err := json.Unmarshal(params.ConfigJSON, &platformConfig)
 	if err != nil {
 		return fmt.Errorf("解析配置失败: %w", err)
@@ -84,9 +79,7 @@ func (d *CDNProcessAliyunEsaImpl) UpsertRecord(ctx context.Context, params *CDNP
 	// 初始化客户端
 	client, err := NewAliyunEsaClient(
 		ctx,
-		platformConfig.AccessKeyID,
-		platformConfig.AccessKeySecret,
-		platformConfig.SiteID,
+		&platformConfig,
 	)
 	if err != nil {
 		return fmt.Errorf("初始化客户端失败: %w", err)

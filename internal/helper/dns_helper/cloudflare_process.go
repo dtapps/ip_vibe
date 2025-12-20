@@ -34,11 +34,7 @@ func NewDNSProcessCloudflare(debug bool, logger *slog.Logger, db *ent.Client, ht
 // 处理记录
 func (d *DNSProcessCloudflareImpl) UpsertRecord(ctx context.Context, params *DNSProcessParams) error {
 
-	var platformConfig struct {
-		ApiKey     string `json:"api_key"`     // API密钥
-		ZoneID     string `json:"zone_id"`     // 区域ID
-		DomainName string `json:"domain_name"` // 主域名
-	}
+	var platformConfig CloudflareConfig
 	err := json.Unmarshal(params.ConfigJSON, &platformConfig)
 	if err != nil {
 		return fmt.Errorf("解析配置失败: %w", err)
@@ -74,8 +70,7 @@ func (d *DNSProcessCloudflareImpl) UpsertRecord(ctx context.Context, params *DNS
 	// 初始化客户端
 	client, err := NewCloudflareClient(
 		ctx,
-		platformConfig.ApiKey,
-		platformConfig.ZoneID,
+		&platformConfig,
 	)
 	if err != nil {
 		return fmt.Errorf("初始化客户端失败: %w", err)

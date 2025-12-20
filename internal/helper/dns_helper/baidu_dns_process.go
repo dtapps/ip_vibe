@@ -34,11 +34,7 @@ func NewDNSProcessBaiduDns(debug bool, logger *slog.Logger, db *ent.Client, http
 // 处理记录
 func (d *DNSProcessBaiduDnsImpl) UpsertRecord(ctx context.Context, params *DNSProcessParams) error {
 
-	var platformConfig struct {
-		AccessKeyID     string `json:"access_key_id"`     // 密钥ID
-		SecretAccessKey string `json:"secret_access_key"` // 密钥Key
-		DomainName      string `json:"domain_name"`       // 主域名
-	}
+	var platformConfig BaiduDnsConfig
 	err := json.Unmarshal(params.ConfigJSON, &platformConfig)
 	if err != nil {
 		return fmt.Errorf("解析配置失败: %w", err)
@@ -73,8 +69,7 @@ func (d *DNSProcessBaiduDnsImpl) UpsertRecord(ctx context.Context, params *DNSPr
 	// 初始化客户端
 	client, err := NewBaiduDnsClient(
 		ctx,
-		platformConfig.AccessKeyID,
-		platformConfig.SecretAccessKey,
+		&platformConfig,
 	)
 	if err != nil {
 		return fmt.Errorf("初始化客户端失败: %w", err)
