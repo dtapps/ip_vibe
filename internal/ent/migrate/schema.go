@@ -23,6 +23,7 @@ var (
 		{Name: "cdn_domain", Type: field.TypeString, Nullable: true, Comment: "CDN边缘域名（平台提供）"},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
 		{Name: "last_refresh_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次刷新成功时间"},
+		{Name: "last_api_response", Type: field.TypeString, Nullable: true, Comment: "最近一次接口的反馈"},
 		{Name: "ip_group_id", Type: field.TypeInt64, Comment: "IP组序号"},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
 	}
@@ -35,13 +36,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cdn_record_ip_group_cdn_records",
-				Columns:    []*schema.Column{CdnRecordColumns[12]},
+				Columns:    []*schema.Column{CdnRecordColumns[13]},
 				RefColumns: []*schema.Column{IPGroupColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "cdn_record_platform_config_cdn_records",
-				Columns:    []*schema.Column{CdnRecordColumns[13]},
+				Columns:    []*schema.Column{CdnRecordColumns[14]},
 				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -73,12 +74,12 @@ var (
 			{
 				Name:    "cdnrecord_config_id",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[13]},
+				Columns: []*schema.Column{CdnRecordColumns[14]},
 			},
 			{
 				Name:    "cdnrecord_ip_group_id",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[12]},
+				Columns: []*schema.Column{CdnRecordColumns[13]},
 			},
 		},
 	}
@@ -92,6 +93,7 @@ var (
 		{Name: "type", Type: field.TypeEnum, Comment: "记录类型（A、AAAA、CNAME等）", Enums: []string{"A", "AAAA", "CNAME"}},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
 		{Name: "last_refresh_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次刷新成功时间"},
+		{Name: "last_api_response", Type: field.TypeString, Nullable: true, Comment: "最近一次接口的反馈"},
 		{Name: "cdn_record_id", Type: field.TypeInt64, Nullable: true, Comment: "CDN记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）"},
 		{Name: "ip_group_id", Type: field.TypeInt64, Nullable: true, Comment: "IP组序号（与 cdn_record_id 二选一）"},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
@@ -105,19 +107,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "dns_record_cdn_record_dns_records",
-				Columns:    []*schema.Column{DNSRecordColumns[8]},
+				Columns:    []*schema.Column{DNSRecordColumns[9]},
 				RefColumns: []*schema.Column{CdnRecordColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "dns_record_ip_group_dns_records",
-				Columns:    []*schema.Column{DNSRecordColumns[9]},
+				Columns:    []*schema.Column{DNSRecordColumns[10]},
 				RefColumns: []*schema.Column{IPGroupColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "dns_record_platform_config_dns_records",
-				Columns:    []*schema.Column{DNSRecordColumns[10]},
+				Columns:    []*schema.Column{DNSRecordColumns[11]},
 				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -149,17 +151,17 @@ var (
 			{
 				Name:    "dnsrecord_config_id",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[10]},
+				Columns: []*schema.Column{DNSRecordColumns[11]},
 			},
 			{
 				Name:    "dnsrecord_ip_group_id",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[9]},
+				Columns: []*schema.Column{DNSRecordColumns[10]},
 			},
 			{
 				Name:    "dnsrecord_cdn_record_id",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[8]},
+				Columns: []*schema.Column{DNSRecordColumns[9]},
 			},
 		},
 	}
@@ -379,6 +381,7 @@ var (
 		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录ID"},
 		{Name: "name", Type: field.TypeString, Comment: "IP组名称"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "IP组描述"},
+		{Name: "last_api_response", Type: field.TypeString, Nullable: true, Comment: "最近一次接口的反馈"},
 	}
 	// IPGroupTable holds the schema information for the "ip_group" table.
 	IPGroupTable = &schema.Table{

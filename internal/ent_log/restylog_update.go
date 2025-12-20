@@ -4,16 +4,13 @@ package ent_log
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
 	"vibe_ip/internal/ent_log/predicate"
 	"vibe_ip/internal/ent_log/restylog"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -28,172 +25,6 @@ type RestyLogUpdate struct {
 // Where appends a list predicates to the RestyLogUpdate builder.
 func (_u *RestyLogUpdate) Where(ps ...predicate.RestyLog) *RestyLogUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetHostname sets the "hostname" field.
-func (_u *RestyLogUpdate) SetHostname(v string) *RestyLogUpdate {
-	_u.mutation.SetHostname(v)
-	return _u
-}
-
-// SetNillableHostname sets the "hostname" field if the given value is not nil.
-func (_u *RestyLogUpdate) SetNillableHostname(v *string) *RestyLogUpdate {
-	if v != nil {
-		_u.SetHostname(*v)
-	}
-	return _u
-}
-
-// SetMethod sets the "method" field.
-func (_u *RestyLogUpdate) SetMethod(v string) *RestyLogUpdate {
-	_u.mutation.SetMethod(v)
-	return _u
-}
-
-// SetNillableMethod sets the "method" field if the given value is not nil.
-func (_u *RestyLogUpdate) SetNillableMethod(v *string) *RestyLogUpdate {
-	if v != nil {
-		_u.SetMethod(*v)
-	}
-	return _u
-}
-
-// SetURL sets the "url" field.
-func (_u *RestyLogUpdate) SetURL(v string) *RestyLogUpdate {
-	_u.mutation.SetURL(v)
-	return _u
-}
-
-// SetNillableURL sets the "url" field if the given value is not nil.
-func (_u *RestyLogUpdate) SetNillableURL(v *string) *RestyLogUpdate {
-	if v != nil {
-		_u.SetURL(*v)
-	}
-	return _u
-}
-
-// SetRequestHeaders sets the "request_headers" field.
-func (_u *RestyLogUpdate) SetRequestHeaders(v map[string][]string) *RestyLogUpdate {
-	_u.mutation.SetRequestHeaders(v)
-	return _u
-}
-
-// SetRequestBody sets the "request_body" field.
-func (_u *RestyLogUpdate) SetRequestBody(v json.RawMessage) *RestyLogUpdate {
-	_u.mutation.SetRequestBody(v)
-	return _u
-}
-
-// AppendRequestBody appends value to the "request_body" field.
-func (_u *RestyLogUpdate) AppendRequestBody(v json.RawMessage) *RestyLogUpdate {
-	_u.mutation.AppendRequestBody(v)
-	return _u
-}
-
-// ClearRequestBody clears the value of the "request_body" field.
-func (_u *RestyLogUpdate) ClearRequestBody() *RestyLogUpdate {
-	_u.mutation.ClearRequestBody()
-	return _u
-}
-
-// SetStatusCode sets the "status_code" field.
-func (_u *RestyLogUpdate) SetStatusCode(v int) *RestyLogUpdate {
-	_u.mutation.ResetStatusCode()
-	_u.mutation.SetStatusCode(v)
-	return _u
-}
-
-// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
-func (_u *RestyLogUpdate) SetNillableStatusCode(v *int) *RestyLogUpdate {
-	if v != nil {
-		_u.SetStatusCode(*v)
-	}
-	return _u
-}
-
-// AddStatusCode adds value to the "status_code" field.
-func (_u *RestyLogUpdate) AddStatusCode(v int) *RestyLogUpdate {
-	_u.mutation.AddStatusCode(v)
-	return _u
-}
-
-// SetResponseHeaders sets the "response_headers" field.
-func (_u *RestyLogUpdate) SetResponseHeaders(v map[string][]string) *RestyLogUpdate {
-	_u.mutation.SetResponseHeaders(v)
-	return _u
-}
-
-// SetResponseBody sets the "response_body" field.
-func (_u *RestyLogUpdate) SetResponseBody(v json.RawMessage) *RestyLogUpdate {
-	_u.mutation.SetResponseBody(v)
-	return _u
-}
-
-// AppendResponseBody appends value to the "response_body" field.
-func (_u *RestyLogUpdate) AppendResponseBody(v json.RawMessage) *RestyLogUpdate {
-	_u.mutation.AppendResponseBody(v)
-	return _u
-}
-
-// ClearResponseBody clears the value of the "response_body" field.
-func (_u *RestyLogUpdate) ClearResponseBody() *RestyLogUpdate {
-	_u.mutation.ClearResponseBody()
-	return _u
-}
-
-// SetElapseTime sets the "elapse_time" field.
-func (_u *RestyLogUpdate) SetElapseTime(v int64) *RestyLogUpdate {
-	_u.mutation.ResetElapseTime()
-	_u.mutation.SetElapseTime(v)
-	return _u
-}
-
-// SetNillableElapseTime sets the "elapse_time" field if the given value is not nil.
-func (_u *RestyLogUpdate) SetNillableElapseTime(v *int64) *RestyLogUpdate {
-	if v != nil {
-		_u.SetElapseTime(*v)
-	}
-	return _u
-}
-
-// AddElapseTime adds value to the "elapse_time" field.
-func (_u *RestyLogUpdate) AddElapseTime(v int64) *RestyLogUpdate {
-	_u.mutation.AddElapseTime(v)
-	return _u
-}
-
-// SetIsError sets the "is_error" field.
-func (_u *RestyLogUpdate) SetIsError(v bool) *RestyLogUpdate {
-	_u.mutation.SetIsError(v)
-	return _u
-}
-
-// SetNillableIsError sets the "is_error" field if the given value is not nil.
-func (_u *RestyLogUpdate) SetNillableIsError(v *bool) *RestyLogUpdate {
-	if v != nil {
-		_u.SetIsError(*v)
-	}
-	return _u
-}
-
-// ClearIsError clears the value of the "is_error" field.
-func (_u *RestyLogUpdate) ClearIsError() *RestyLogUpdate {
-	_u.mutation.ClearIsError()
-	return _u
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (_u *RestyLogUpdate) SetCreatedAt(v time.Time) *RestyLogUpdate {
-	_u.mutation.SetCreatedAt(v)
-	return _u
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_u *RestyLogUpdate) SetNillableCreatedAt(v *time.Time) *RestyLogUpdate {
-	if v != nil {
-		_u.SetCreatedAt(*v)
-	}
 	return _u
 }
 
@@ -244,63 +75,23 @@ func (_u *RestyLogUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
-	if value, ok := _u.mutation.Hostname(); ok {
-		_spec.SetField(restylog.FieldHostname, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Method(); ok {
-		_spec.SetField(restylog.FieldMethod, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.URL(); ok {
-		_spec.SetField(restylog.FieldURL, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.RequestHeaders(); ok {
-		_spec.SetField(restylog.FieldRequestHeaders, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.RequestBody(); ok {
-		_spec.SetField(restylog.FieldRequestBody, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedRequestBody(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, restylog.FieldRequestBody, value)
-		})
-	}
 	if _u.mutation.RequestBodyCleared() {
 		_spec.ClearField(restylog.FieldRequestBody, field.TypeJSON)
-	}
-	if value, ok := _u.mutation.StatusCode(); ok {
-		_spec.SetField(restylog.FieldStatusCode, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedStatusCode(); ok {
-		_spec.AddField(restylog.FieldStatusCode, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.ResponseHeaders(); ok {
-		_spec.SetField(restylog.FieldResponseHeaders, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.ResponseBody(); ok {
-		_spec.SetField(restylog.FieldResponseBody, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedResponseBody(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, restylog.FieldResponseBody, value)
-		})
 	}
 	if _u.mutation.ResponseBodyCleared() {
 		_spec.ClearField(restylog.FieldResponseBody, field.TypeJSON)
 	}
-	if value, ok := _u.mutation.ElapseTime(); ok {
-		_spec.SetField(restylog.FieldElapseTime, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.AddedElapseTime(); ok {
-		_spec.AddField(restylog.FieldElapseTime, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.IsError(); ok {
-		_spec.SetField(restylog.FieldIsError, field.TypeBool, value)
-	}
 	if _u.mutation.IsErrorCleared() {
 		_spec.ClearField(restylog.FieldIsError, field.TypeBool)
 	}
-	if value, ok := _u.mutation.CreatedAt(); ok {
-		_spec.SetField(restylog.FieldCreatedAt, field.TypeTime, value)
+	if _u.mutation.GoVersionCleared() {
+		_spec.ClearField(restylog.FieldGoVersion, field.TypeString)
+	}
+	if _u.mutation.PluginVersionCleared() {
+		_spec.ClearField(restylog.FieldPluginVersion, field.TypeString)
+	}
+	if _u.mutation.RestyVersionCleared() {
+		_spec.ClearField(restylog.FieldRestyVersion, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -322,172 +113,6 @@ type RestyLogUpdateOne struct {
 	hooks     []Hook
 	mutation  *RestyLogMutation
 	modifiers []func(*sql.UpdateBuilder)
-}
-
-// SetHostname sets the "hostname" field.
-func (_u *RestyLogUpdateOne) SetHostname(v string) *RestyLogUpdateOne {
-	_u.mutation.SetHostname(v)
-	return _u
-}
-
-// SetNillableHostname sets the "hostname" field if the given value is not nil.
-func (_u *RestyLogUpdateOne) SetNillableHostname(v *string) *RestyLogUpdateOne {
-	if v != nil {
-		_u.SetHostname(*v)
-	}
-	return _u
-}
-
-// SetMethod sets the "method" field.
-func (_u *RestyLogUpdateOne) SetMethod(v string) *RestyLogUpdateOne {
-	_u.mutation.SetMethod(v)
-	return _u
-}
-
-// SetNillableMethod sets the "method" field if the given value is not nil.
-func (_u *RestyLogUpdateOne) SetNillableMethod(v *string) *RestyLogUpdateOne {
-	if v != nil {
-		_u.SetMethod(*v)
-	}
-	return _u
-}
-
-// SetURL sets the "url" field.
-func (_u *RestyLogUpdateOne) SetURL(v string) *RestyLogUpdateOne {
-	_u.mutation.SetURL(v)
-	return _u
-}
-
-// SetNillableURL sets the "url" field if the given value is not nil.
-func (_u *RestyLogUpdateOne) SetNillableURL(v *string) *RestyLogUpdateOne {
-	if v != nil {
-		_u.SetURL(*v)
-	}
-	return _u
-}
-
-// SetRequestHeaders sets the "request_headers" field.
-func (_u *RestyLogUpdateOne) SetRequestHeaders(v map[string][]string) *RestyLogUpdateOne {
-	_u.mutation.SetRequestHeaders(v)
-	return _u
-}
-
-// SetRequestBody sets the "request_body" field.
-func (_u *RestyLogUpdateOne) SetRequestBody(v json.RawMessage) *RestyLogUpdateOne {
-	_u.mutation.SetRequestBody(v)
-	return _u
-}
-
-// AppendRequestBody appends value to the "request_body" field.
-func (_u *RestyLogUpdateOne) AppendRequestBody(v json.RawMessage) *RestyLogUpdateOne {
-	_u.mutation.AppendRequestBody(v)
-	return _u
-}
-
-// ClearRequestBody clears the value of the "request_body" field.
-func (_u *RestyLogUpdateOne) ClearRequestBody() *RestyLogUpdateOne {
-	_u.mutation.ClearRequestBody()
-	return _u
-}
-
-// SetStatusCode sets the "status_code" field.
-func (_u *RestyLogUpdateOne) SetStatusCode(v int) *RestyLogUpdateOne {
-	_u.mutation.ResetStatusCode()
-	_u.mutation.SetStatusCode(v)
-	return _u
-}
-
-// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
-func (_u *RestyLogUpdateOne) SetNillableStatusCode(v *int) *RestyLogUpdateOne {
-	if v != nil {
-		_u.SetStatusCode(*v)
-	}
-	return _u
-}
-
-// AddStatusCode adds value to the "status_code" field.
-func (_u *RestyLogUpdateOne) AddStatusCode(v int) *RestyLogUpdateOne {
-	_u.mutation.AddStatusCode(v)
-	return _u
-}
-
-// SetResponseHeaders sets the "response_headers" field.
-func (_u *RestyLogUpdateOne) SetResponseHeaders(v map[string][]string) *RestyLogUpdateOne {
-	_u.mutation.SetResponseHeaders(v)
-	return _u
-}
-
-// SetResponseBody sets the "response_body" field.
-func (_u *RestyLogUpdateOne) SetResponseBody(v json.RawMessage) *RestyLogUpdateOne {
-	_u.mutation.SetResponseBody(v)
-	return _u
-}
-
-// AppendResponseBody appends value to the "response_body" field.
-func (_u *RestyLogUpdateOne) AppendResponseBody(v json.RawMessage) *RestyLogUpdateOne {
-	_u.mutation.AppendResponseBody(v)
-	return _u
-}
-
-// ClearResponseBody clears the value of the "response_body" field.
-func (_u *RestyLogUpdateOne) ClearResponseBody() *RestyLogUpdateOne {
-	_u.mutation.ClearResponseBody()
-	return _u
-}
-
-// SetElapseTime sets the "elapse_time" field.
-func (_u *RestyLogUpdateOne) SetElapseTime(v int64) *RestyLogUpdateOne {
-	_u.mutation.ResetElapseTime()
-	_u.mutation.SetElapseTime(v)
-	return _u
-}
-
-// SetNillableElapseTime sets the "elapse_time" field if the given value is not nil.
-func (_u *RestyLogUpdateOne) SetNillableElapseTime(v *int64) *RestyLogUpdateOne {
-	if v != nil {
-		_u.SetElapseTime(*v)
-	}
-	return _u
-}
-
-// AddElapseTime adds value to the "elapse_time" field.
-func (_u *RestyLogUpdateOne) AddElapseTime(v int64) *RestyLogUpdateOne {
-	_u.mutation.AddElapseTime(v)
-	return _u
-}
-
-// SetIsError sets the "is_error" field.
-func (_u *RestyLogUpdateOne) SetIsError(v bool) *RestyLogUpdateOne {
-	_u.mutation.SetIsError(v)
-	return _u
-}
-
-// SetNillableIsError sets the "is_error" field if the given value is not nil.
-func (_u *RestyLogUpdateOne) SetNillableIsError(v *bool) *RestyLogUpdateOne {
-	if v != nil {
-		_u.SetIsError(*v)
-	}
-	return _u
-}
-
-// ClearIsError clears the value of the "is_error" field.
-func (_u *RestyLogUpdateOne) ClearIsError() *RestyLogUpdateOne {
-	_u.mutation.ClearIsError()
-	return _u
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (_u *RestyLogUpdateOne) SetCreatedAt(v time.Time) *RestyLogUpdateOne {
-	_u.mutation.SetCreatedAt(v)
-	return _u
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_u *RestyLogUpdateOne) SetNillableCreatedAt(v *time.Time) *RestyLogUpdateOne {
-	if v != nil {
-		_u.SetCreatedAt(*v)
-	}
-	return _u
 }
 
 // Mutation returns the RestyLogMutation object of the builder.
@@ -567,63 +192,23 @@ func (_u *RestyLogUpdateOne) sqlSave(ctx context.Context) (_node *RestyLog, err 
 			}
 		}
 	}
-	if value, ok := _u.mutation.Hostname(); ok {
-		_spec.SetField(restylog.FieldHostname, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Method(); ok {
-		_spec.SetField(restylog.FieldMethod, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.URL(); ok {
-		_spec.SetField(restylog.FieldURL, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.RequestHeaders(); ok {
-		_spec.SetField(restylog.FieldRequestHeaders, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.RequestBody(); ok {
-		_spec.SetField(restylog.FieldRequestBody, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedRequestBody(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, restylog.FieldRequestBody, value)
-		})
-	}
 	if _u.mutation.RequestBodyCleared() {
 		_spec.ClearField(restylog.FieldRequestBody, field.TypeJSON)
-	}
-	if value, ok := _u.mutation.StatusCode(); ok {
-		_spec.SetField(restylog.FieldStatusCode, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedStatusCode(); ok {
-		_spec.AddField(restylog.FieldStatusCode, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.ResponseHeaders(); ok {
-		_spec.SetField(restylog.FieldResponseHeaders, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.ResponseBody(); ok {
-		_spec.SetField(restylog.FieldResponseBody, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedResponseBody(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, restylog.FieldResponseBody, value)
-		})
 	}
 	if _u.mutation.ResponseBodyCleared() {
 		_spec.ClearField(restylog.FieldResponseBody, field.TypeJSON)
 	}
-	if value, ok := _u.mutation.ElapseTime(); ok {
-		_spec.SetField(restylog.FieldElapseTime, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.AddedElapseTime(); ok {
-		_spec.AddField(restylog.FieldElapseTime, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.IsError(); ok {
-		_spec.SetField(restylog.FieldIsError, field.TypeBool, value)
-	}
 	if _u.mutation.IsErrorCleared() {
 		_spec.ClearField(restylog.FieldIsError, field.TypeBool)
 	}
-	if value, ok := _u.mutation.CreatedAt(); ok {
-		_spec.SetField(restylog.FieldCreatedAt, field.TypeTime, value)
+	if _u.mutation.GoVersionCleared() {
+		_spec.ClearField(restylog.FieldGoVersion, field.TypeString)
+	}
+	if _u.mutation.PluginVersionCleared() {
+		_spec.ClearField(restylog.FieldPluginVersion, field.TypeString)
+	}
+	if _u.mutation.RestyVersionCleared() {
+		_spec.ClearField(restylog.FieldRestyVersion, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &RestyLog{config: _u.config}

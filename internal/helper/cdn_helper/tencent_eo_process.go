@@ -246,27 +246,15 @@ func (d *CDNProcessTencentEOImpl) UpsertRecord(ctx context.Context, params *CDNP
 			slog.Int("HTTPS回源端口", queryDomain.HttpsOriginPort),
 		)
 
-		// 更新CDN记录
-		if d.db != nil && params.CDNRecordID != "" {
-			_ = d.db.CDNRecord.UpdateOneID(cast.ToInt64(params.CDNRecordID)).
-				SetRecordID(queryDomain.RecordID).
-				SetCdnDomain(queryDomain.DomainCname).
-				SetLastRefreshAt(time.Now()).
-				Exec(ctx)
-		}
+		// 更新CDN记录的RecordID和CDN别名
+		_ = d.updateDbOfApiInfo(ctx, params.CDNRecordID, queryDomain.RecordID, queryDomain.DomainCname)
 
 		d.logger.InfoContext(ctx, "创建成功")
 		return nil
 	} else {
 
-		// 更新CDN记录
-		if d.db != nil && params.CDNRecordID != "" {
-			_ = d.db.CDNRecord.UpdateOneID(cast.ToInt64(params.CDNRecordID)).
-				SetRecordID(queryDomain.RecordID).
-				SetCdnDomain(queryDomain.DomainCname).
-				SetLastRefreshAt(time.Now()).
-				Exec(ctx)
-		}
+		// 更新CDN记录的RecordID和CDN别名
+		_ = d.updateDbOfApiInfo(ctx, params.CDNRecordID, queryDomain.RecordID, queryDomain.DomainCname)
 
 		// 是否更新
 		var isUpdate = false
@@ -328,4 +316,16 @@ func (d *CDNProcessTencentEOImpl) UpsertRecord(ctx context.Context, params *CDNP
 		d.logger.InfoContext(ctx, "更新成功")
 		return nil
 	}
+}
+
+// 更新CDN记录的RecordID和CDN别名
+func (d *CDNProcessTencentEOImpl) updateDbOfApiInfo(ctx context.Context, id string, recordID string, cdnDomain string) error {
+	if d.db != nil && id != "" {
+		return d.db.CDNRecord.UpdateOneID(cast.ToInt64(id)).
+			SetRecordID(recordID).
+			SetCdnDomain(cdnDomain).
+			SetLastRefreshAt(time.Now()).
+			Exec(ctx)
+	}
+	return nil
 }

@@ -131,25 +131,15 @@ func (d *DNSProcessCloudflareImpl) UpsertRecord(ctx context.Context, params *DNS
 			slog.String("源站值", queryDomain.OriginValue),
 		)
 
-		// 更新DNS记录
-		if d.db != nil && params.DNSRecordID != "" {
-			_ = d.db.DNSRecord.UpdateOneID(cast.ToInt64(params.DNSRecordID)).
-				SetRecordID(queryDomain.RecordID).
-				SetLastRefreshAt(time.Now()).
-				Exec(ctx)
-		}
+		// 更新DNS记录的RecordID
+		_ = d.updateDbOfApiInfo(ctx, params.DNSRecordID, queryDomain.RecordID)
 
 		d.logger.InfoContext(ctx, "创建成功")
 		return nil
 	} else {
 
-		// 更新DNS记录
-		if d.db != nil && params.DNSRecordID != "" {
-			_ = d.db.DNSRecord.UpdateOneID(cast.ToInt64(params.DNSRecordID)).
-				SetRecordID(queryDomain.RecordID).
-				SetLastRefreshAt(time.Now()).
-				Exec(ctx)
-		}
+		// 更新DNS记录的RecordID
+		_ = d.updateDbOfApiInfo(ctx, params.DNSRecordID, queryDomain.RecordID)
 
 		// 是否更新
 		var isUpdate = false
@@ -182,4 +172,15 @@ func (d *DNSProcessCloudflareImpl) UpsertRecord(ctx context.Context, params *DNS
 		d.logger.InfoContext(ctx, "更新成功")
 		return nil
 	}
+}
+
+// 更新DNS记录的RecordID
+func (d *DNSProcessCloudflareImpl) updateDbOfApiInfo(ctx context.Context, id string, recordID string) error {
+	if d.db != nil && id != "" {
+		return d.db.DNSRecord.UpdateOneID(cast.ToInt64(id)).
+			SetRecordID(recordID).
+			SetLastRefreshAt(time.Now()).
+			Exec(ctx)
+	}
+	return nil
 }

@@ -53,6 +53,8 @@ type HttpLogMutation struct {
 	addelapse_time      *int64
 	is_error            *bool
 	created_at          *time.Time
+	go_version          *string
+	plugin_version      *string
 	clearedFields       map[string]struct{}
 	done                bool
 	oldValue            func(context.Context) (*HttpLog, error)
@@ -664,6 +666,104 @@ func (m *HttpLogMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
+// SetGoVersion sets the "go_version" field.
+func (m *HttpLogMutation) SetGoVersion(s string) {
+	m.go_version = &s
+}
+
+// GoVersion returns the value of the "go_version" field in the mutation.
+func (m *HttpLogMutation) GoVersion() (r string, exists bool) {
+	v := m.go_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGoVersion returns the old "go_version" field's value of the HttpLog entity.
+// If the HttpLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HttpLogMutation) OldGoVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGoVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGoVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGoVersion: %w", err)
+	}
+	return oldValue.GoVersion, nil
+}
+
+// ClearGoVersion clears the value of the "go_version" field.
+func (m *HttpLogMutation) ClearGoVersion() {
+	m.go_version = nil
+	m.clearedFields[httplog.FieldGoVersion] = struct{}{}
+}
+
+// GoVersionCleared returns if the "go_version" field was cleared in this mutation.
+func (m *HttpLogMutation) GoVersionCleared() bool {
+	_, ok := m.clearedFields[httplog.FieldGoVersion]
+	return ok
+}
+
+// ResetGoVersion resets all changes to the "go_version" field.
+func (m *HttpLogMutation) ResetGoVersion() {
+	m.go_version = nil
+	delete(m.clearedFields, httplog.FieldGoVersion)
+}
+
+// SetPluginVersion sets the "plugin_version" field.
+func (m *HttpLogMutation) SetPluginVersion(s string) {
+	m.plugin_version = &s
+}
+
+// PluginVersion returns the value of the "plugin_version" field in the mutation.
+func (m *HttpLogMutation) PluginVersion() (r string, exists bool) {
+	v := m.plugin_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPluginVersion returns the old "plugin_version" field's value of the HttpLog entity.
+// If the HttpLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HttpLogMutation) OldPluginVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPluginVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPluginVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPluginVersion: %w", err)
+	}
+	return oldValue.PluginVersion, nil
+}
+
+// ClearPluginVersion clears the value of the "plugin_version" field.
+func (m *HttpLogMutation) ClearPluginVersion() {
+	m.plugin_version = nil
+	m.clearedFields[httplog.FieldPluginVersion] = struct{}{}
+}
+
+// PluginVersionCleared returns if the "plugin_version" field was cleared in this mutation.
+func (m *HttpLogMutation) PluginVersionCleared() bool {
+	_, ok := m.clearedFields[httplog.FieldPluginVersion]
+	return ok
+}
+
+// ResetPluginVersion resets all changes to the "plugin_version" field.
+func (m *HttpLogMutation) ResetPluginVersion() {
+	m.plugin_version = nil
+	delete(m.clearedFields, httplog.FieldPluginVersion)
+}
+
 // Where appends a list predicates to the HttpLogMutation builder.
 func (m *HttpLogMutation) Where(ps ...predicate.HttpLog) {
 	m.predicates = append(m.predicates, ps...)
@@ -698,7 +798,7 @@ func (m *HttpLogMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *HttpLogMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 13)
 	if m.hostname != nil {
 		fields = append(fields, httplog.FieldHostname)
 	}
@@ -732,6 +832,12 @@ func (m *HttpLogMutation) Fields() []string {
 	if m.created_at != nil {
 		fields = append(fields, httplog.FieldCreatedAt)
 	}
+	if m.go_version != nil {
+		fields = append(fields, httplog.FieldGoVersion)
+	}
+	if m.plugin_version != nil {
+		fields = append(fields, httplog.FieldPluginVersion)
+	}
 	return fields
 }
 
@@ -762,6 +868,10 @@ func (m *HttpLogMutation) Field(name string) (ent.Value, bool) {
 		return m.IsError()
 	case httplog.FieldCreatedAt:
 		return m.CreatedAt()
+	case httplog.FieldGoVersion:
+		return m.GoVersion()
+	case httplog.FieldPluginVersion:
+		return m.PluginVersion()
 	}
 	return nil, false
 }
@@ -793,6 +903,10 @@ func (m *HttpLogMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldIsError(ctx)
 	case httplog.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
+	case httplog.FieldGoVersion:
+		return m.OldGoVersion(ctx)
+	case httplog.FieldPluginVersion:
+		return m.OldPluginVersion(ctx)
 	}
 	return nil, fmt.Errorf("unknown HttpLog field %s", name)
 }
@@ -879,6 +993,20 @@ func (m *HttpLogMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCreatedAt(v)
 		return nil
+	case httplog.FieldGoVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGoVersion(v)
+		return nil
+	case httplog.FieldPluginVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPluginVersion(v)
+		return nil
 	}
 	return fmt.Errorf("unknown HttpLog field %s", name)
 }
@@ -945,6 +1073,12 @@ func (m *HttpLogMutation) ClearedFields() []string {
 	if m.FieldCleared(httplog.FieldIsError) {
 		fields = append(fields, httplog.FieldIsError)
 	}
+	if m.FieldCleared(httplog.FieldGoVersion) {
+		fields = append(fields, httplog.FieldGoVersion)
+	}
+	if m.FieldCleared(httplog.FieldPluginVersion) {
+		fields = append(fields, httplog.FieldPluginVersion)
+	}
 	return fields
 }
 
@@ -967,6 +1101,12 @@ func (m *HttpLogMutation) ClearField(name string) error {
 		return nil
 	case httplog.FieldIsError:
 		m.ClearIsError()
+		return nil
+	case httplog.FieldGoVersion:
+		m.ClearGoVersion()
+		return nil
+	case httplog.FieldPluginVersion:
+		m.ClearPluginVersion()
 		return nil
 	}
 	return fmt.Errorf("unknown HttpLog nullable field %s", name)
@@ -1008,6 +1148,12 @@ func (m *HttpLogMutation) ResetField(name string) error {
 		return nil
 	case httplog.FieldCreatedAt:
 		m.ResetCreatedAt()
+		return nil
+	case httplog.FieldGoVersion:
+		m.ResetGoVersion()
+		return nil
+	case httplog.FieldPluginVersion:
+		m.ResetPluginVersion()
 		return nil
 	}
 	return fmt.Errorf("unknown HttpLog field %s", name)
@@ -1869,6 +2015,9 @@ type RestyLogMutation struct {
 	addelapse_time      *int64
 	is_error            *bool
 	created_at          *time.Time
+	go_version          *string
+	plugin_version      *string
+	resty_version       *string
 	clearedFields       map[string]struct{}
 	done                bool
 	oldValue            func(context.Context) (*RestyLog, error)
@@ -2480,6 +2629,153 @@ func (m *RestyLogMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
+// SetGoVersion sets the "go_version" field.
+func (m *RestyLogMutation) SetGoVersion(s string) {
+	m.go_version = &s
+}
+
+// GoVersion returns the value of the "go_version" field in the mutation.
+func (m *RestyLogMutation) GoVersion() (r string, exists bool) {
+	v := m.go_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGoVersion returns the old "go_version" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldGoVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGoVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGoVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGoVersion: %w", err)
+	}
+	return oldValue.GoVersion, nil
+}
+
+// ClearGoVersion clears the value of the "go_version" field.
+func (m *RestyLogMutation) ClearGoVersion() {
+	m.go_version = nil
+	m.clearedFields[restylog.FieldGoVersion] = struct{}{}
+}
+
+// GoVersionCleared returns if the "go_version" field was cleared in this mutation.
+func (m *RestyLogMutation) GoVersionCleared() bool {
+	_, ok := m.clearedFields[restylog.FieldGoVersion]
+	return ok
+}
+
+// ResetGoVersion resets all changes to the "go_version" field.
+func (m *RestyLogMutation) ResetGoVersion() {
+	m.go_version = nil
+	delete(m.clearedFields, restylog.FieldGoVersion)
+}
+
+// SetPluginVersion sets the "plugin_version" field.
+func (m *RestyLogMutation) SetPluginVersion(s string) {
+	m.plugin_version = &s
+}
+
+// PluginVersion returns the value of the "plugin_version" field in the mutation.
+func (m *RestyLogMutation) PluginVersion() (r string, exists bool) {
+	v := m.plugin_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPluginVersion returns the old "plugin_version" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldPluginVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPluginVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPluginVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPluginVersion: %w", err)
+	}
+	return oldValue.PluginVersion, nil
+}
+
+// ClearPluginVersion clears the value of the "plugin_version" field.
+func (m *RestyLogMutation) ClearPluginVersion() {
+	m.plugin_version = nil
+	m.clearedFields[restylog.FieldPluginVersion] = struct{}{}
+}
+
+// PluginVersionCleared returns if the "plugin_version" field was cleared in this mutation.
+func (m *RestyLogMutation) PluginVersionCleared() bool {
+	_, ok := m.clearedFields[restylog.FieldPluginVersion]
+	return ok
+}
+
+// ResetPluginVersion resets all changes to the "plugin_version" field.
+func (m *RestyLogMutation) ResetPluginVersion() {
+	m.plugin_version = nil
+	delete(m.clearedFields, restylog.FieldPluginVersion)
+}
+
+// SetRestyVersion sets the "resty_version" field.
+func (m *RestyLogMutation) SetRestyVersion(s string) {
+	m.resty_version = &s
+}
+
+// RestyVersion returns the value of the "resty_version" field in the mutation.
+func (m *RestyLogMutation) RestyVersion() (r string, exists bool) {
+	v := m.resty_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRestyVersion returns the old "resty_version" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldRestyVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRestyVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRestyVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRestyVersion: %w", err)
+	}
+	return oldValue.RestyVersion, nil
+}
+
+// ClearRestyVersion clears the value of the "resty_version" field.
+func (m *RestyLogMutation) ClearRestyVersion() {
+	m.resty_version = nil
+	m.clearedFields[restylog.FieldRestyVersion] = struct{}{}
+}
+
+// RestyVersionCleared returns if the "resty_version" field was cleared in this mutation.
+func (m *RestyLogMutation) RestyVersionCleared() bool {
+	_, ok := m.clearedFields[restylog.FieldRestyVersion]
+	return ok
+}
+
+// ResetRestyVersion resets all changes to the "resty_version" field.
+func (m *RestyLogMutation) ResetRestyVersion() {
+	m.resty_version = nil
+	delete(m.clearedFields, restylog.FieldRestyVersion)
+}
+
 // Where appends a list predicates to the RestyLogMutation builder.
 func (m *RestyLogMutation) Where(ps ...predicate.RestyLog) {
 	m.predicates = append(m.predicates, ps...)
@@ -2514,7 +2810,7 @@ func (m *RestyLogMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RestyLogMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 14)
 	if m.hostname != nil {
 		fields = append(fields, restylog.FieldHostname)
 	}
@@ -2548,6 +2844,15 @@ func (m *RestyLogMutation) Fields() []string {
 	if m.created_at != nil {
 		fields = append(fields, restylog.FieldCreatedAt)
 	}
+	if m.go_version != nil {
+		fields = append(fields, restylog.FieldGoVersion)
+	}
+	if m.plugin_version != nil {
+		fields = append(fields, restylog.FieldPluginVersion)
+	}
+	if m.resty_version != nil {
+		fields = append(fields, restylog.FieldRestyVersion)
+	}
 	return fields
 }
 
@@ -2578,6 +2883,12 @@ func (m *RestyLogMutation) Field(name string) (ent.Value, bool) {
 		return m.IsError()
 	case restylog.FieldCreatedAt:
 		return m.CreatedAt()
+	case restylog.FieldGoVersion:
+		return m.GoVersion()
+	case restylog.FieldPluginVersion:
+		return m.PluginVersion()
+	case restylog.FieldRestyVersion:
+		return m.RestyVersion()
 	}
 	return nil, false
 }
@@ -2609,6 +2920,12 @@ func (m *RestyLogMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldIsError(ctx)
 	case restylog.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
+	case restylog.FieldGoVersion:
+		return m.OldGoVersion(ctx)
+	case restylog.FieldPluginVersion:
+		return m.OldPluginVersion(ctx)
+	case restylog.FieldRestyVersion:
+		return m.OldRestyVersion(ctx)
 	}
 	return nil, fmt.Errorf("unknown RestyLog field %s", name)
 }
@@ -2695,6 +3012,27 @@ func (m *RestyLogMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCreatedAt(v)
 		return nil
+	case restylog.FieldGoVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGoVersion(v)
+		return nil
+	case restylog.FieldPluginVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPluginVersion(v)
+		return nil
+	case restylog.FieldRestyVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRestyVersion(v)
+		return nil
 	}
 	return fmt.Errorf("unknown RestyLog field %s", name)
 }
@@ -2761,6 +3099,15 @@ func (m *RestyLogMutation) ClearedFields() []string {
 	if m.FieldCleared(restylog.FieldIsError) {
 		fields = append(fields, restylog.FieldIsError)
 	}
+	if m.FieldCleared(restylog.FieldGoVersion) {
+		fields = append(fields, restylog.FieldGoVersion)
+	}
+	if m.FieldCleared(restylog.FieldPluginVersion) {
+		fields = append(fields, restylog.FieldPluginVersion)
+	}
+	if m.FieldCleared(restylog.FieldRestyVersion) {
+		fields = append(fields, restylog.FieldRestyVersion)
+	}
 	return fields
 }
 
@@ -2783,6 +3130,15 @@ func (m *RestyLogMutation) ClearField(name string) error {
 		return nil
 	case restylog.FieldIsError:
 		m.ClearIsError()
+		return nil
+	case restylog.FieldGoVersion:
+		m.ClearGoVersion()
+		return nil
+	case restylog.FieldPluginVersion:
+		m.ClearPluginVersion()
+		return nil
+	case restylog.FieldRestyVersion:
+		m.ClearRestyVersion()
 		return nil
 	}
 	return fmt.Errorf("unknown RestyLog nullable field %s", name)
@@ -2824,6 +3180,15 @@ func (m *RestyLogMutation) ResetField(name string) error {
 		return nil
 	case restylog.FieldCreatedAt:
 		m.ResetCreatedAt()
+		return nil
+	case restylog.FieldGoVersion:
+		m.ResetGoVersion()
+		return nil
+	case restylog.FieldPluginVersion:
+		m.ResetPluginVersion()
+		return nil
+	case restylog.FieldRestyVersion:
+		m.ResetRestyVersion()
 		return nil
 	}
 	return fmt.Errorf("unknown RestyLog field %s", name)

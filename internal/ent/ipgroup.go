@@ -28,6 +28,8 @@ type IpGroup struct {
 	Name string `json:"name,omitempty"`
 	// IP组描述
 	Description string `json:"description,omitempty"`
+	// 最近一次接口的反馈
+	LastAPIResponse string `json:"last_api_response,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the IpGroupQuery when eager-loading is set.
 	Edges        IpGroupEdges `json:"edges"`
@@ -96,7 +98,7 @@ func (*IpGroup) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case ipgroup.FieldID:
 			values[i] = new(sql.NullInt64)
-		case ipgroup.FieldRecordID, ipgroup.FieldName, ipgroup.FieldDescription:
+		case ipgroup.FieldRecordID, ipgroup.FieldName, ipgroup.FieldDescription, ipgroup.FieldLastAPIResponse:
 			values[i] = new(sql.NullString)
 		case ipgroup.FieldCreatedAt, ipgroup.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -150,6 +152,12 @@ func (_m *IpGroup) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
 				_m.Description = value.String
+			}
+		case ipgroup.FieldLastAPIResponse:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field last_api_response", values[i])
+			} else if value.Valid {
+				_m.LastAPIResponse = value.String
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -221,6 +229,9 @@ func (_m *IpGroup) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(_m.Description)
+	builder.WriteString(", ")
+	builder.WriteString("last_api_response=")
+	builder.WriteString(_m.LastAPIResponse)
 	builder.WriteByte(')')
 	return builder.String()
 }

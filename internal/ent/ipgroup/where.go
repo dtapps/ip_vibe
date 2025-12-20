@@ -80,6 +80,11 @@ func Description(v string) predicate.IpGroup {
 	return predicate.IpGroup(sql.FieldEQ(FieldDescription, v))
 }
 
+// LastAPIResponse applies equality check predicate on the "last_api_response" field. It's identical to LastAPIResponseEQ.
+func LastAPIResponse(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldEQ(FieldLastAPIResponse, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.IpGroup {
 	return predicate.IpGroup(sql.FieldEQ(FieldCreatedAt, v))
@@ -373,6 +378,81 @@ func DescriptionEqualFold(v string) predicate.IpGroup {
 // DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
 func DescriptionContainsFold(v string) predicate.IpGroup {
 	return predicate.IpGroup(sql.FieldContainsFold(FieldDescription, v))
+}
+
+// LastAPIResponseEQ applies the EQ predicate on the "last_api_response" field.
+func LastAPIResponseEQ(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldEQ(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseNEQ applies the NEQ predicate on the "last_api_response" field.
+func LastAPIResponseNEQ(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldNEQ(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseIn applies the In predicate on the "last_api_response" field.
+func LastAPIResponseIn(vs ...string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldIn(FieldLastAPIResponse, vs...))
+}
+
+// LastAPIResponseNotIn applies the NotIn predicate on the "last_api_response" field.
+func LastAPIResponseNotIn(vs ...string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldNotIn(FieldLastAPIResponse, vs...))
+}
+
+// LastAPIResponseGT applies the GT predicate on the "last_api_response" field.
+func LastAPIResponseGT(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldGT(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseGTE applies the GTE predicate on the "last_api_response" field.
+func LastAPIResponseGTE(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldGTE(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseLT applies the LT predicate on the "last_api_response" field.
+func LastAPIResponseLT(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldLT(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseLTE applies the LTE predicate on the "last_api_response" field.
+func LastAPIResponseLTE(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldLTE(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseContains applies the Contains predicate on the "last_api_response" field.
+func LastAPIResponseContains(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldContains(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseHasPrefix applies the HasPrefix predicate on the "last_api_response" field.
+func LastAPIResponseHasPrefix(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldHasPrefix(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseHasSuffix applies the HasSuffix predicate on the "last_api_response" field.
+func LastAPIResponseHasSuffix(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldHasSuffix(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseIsNil applies the IsNil predicate on the "last_api_response" field.
+func LastAPIResponseIsNil() predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldIsNull(FieldLastAPIResponse))
+}
+
+// LastAPIResponseNotNil applies the NotNil predicate on the "last_api_response" field.
+func LastAPIResponseNotNil() predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldNotNull(FieldLastAPIResponse))
+}
+
+// LastAPIResponseEqualFold applies the EqualFold predicate on the "last_api_response" field.
+func LastAPIResponseEqualFold(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldEqualFold(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseContainsFold applies the ContainsFold predicate on the "last_api_response" field.
+func LastAPIResponseContainsFold(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldContainsFold(FieldLastAPIResponse, v))
 }
 
 // HasDevices applies the HasEdge predicate on the "devices" edge.

@@ -49,6 +49,8 @@ func (s *EntHttpLogSaver) HandleLog(ctx context.Context, data *http_log.LogData)
 			SetResponseBody(data.ResponseBody).
 			SetElapseTime(data.ElapseTime).
 			SetIsError(data.IsError).
+			SetGoVersion(data.GoVersion).
+			SetPluginVersion(data.PluginVersion).
 			Exec(asyncCtx)
 	}(ctx, s.db)
 
@@ -92,6 +94,8 @@ func InitEntHttpLog() {
 				SetResponseBody(data.ResponseBody).
 				SetElapseTime(data.ElapseTime).
 				SetIsError(data.IsError).
+				SetGoVersion(data.GoVersion).
+				SetPluginVersion(data.PluginVersion).
 				Exec(asyncCtx)
 		}(ctx, global.GvaEntLogDb)
 

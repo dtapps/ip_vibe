@@ -89,6 +89,16 @@ func CreatedAt(v time.Time) predicate.HttpLog {
 	return predicate.HttpLog(sql.FieldEQ(FieldCreatedAt, v))
 }
 
+// GoVersion applies equality check predicate on the "go_version" field. It's identical to GoVersionEQ.
+func GoVersion(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldEQ(FieldGoVersion, v))
+}
+
+// PluginVersion applies equality check predicate on the "plugin_version" field. It's identical to PluginVersionEQ.
+func PluginVersion(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldEQ(FieldPluginVersion, v))
+}
+
 // HostnameEQ applies the EQ predicate on the "hostname" field.
 func HostnameEQ(v string) predicate.HttpLog {
 	return predicate.HttpLog(sql.FieldEQ(FieldHostname, v))
@@ -442,6 +452,156 @@ func CreatedAtLT(v time.Time) predicate.HttpLog {
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.HttpLog {
 	return predicate.HttpLog(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// GoVersionEQ applies the EQ predicate on the "go_version" field.
+func GoVersionEQ(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldEQ(FieldGoVersion, v))
+}
+
+// GoVersionNEQ applies the NEQ predicate on the "go_version" field.
+func GoVersionNEQ(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldNEQ(FieldGoVersion, v))
+}
+
+// GoVersionIn applies the In predicate on the "go_version" field.
+func GoVersionIn(vs ...string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldIn(FieldGoVersion, vs...))
+}
+
+// GoVersionNotIn applies the NotIn predicate on the "go_version" field.
+func GoVersionNotIn(vs ...string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldNotIn(FieldGoVersion, vs...))
+}
+
+// GoVersionGT applies the GT predicate on the "go_version" field.
+func GoVersionGT(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldGT(FieldGoVersion, v))
+}
+
+// GoVersionGTE applies the GTE predicate on the "go_version" field.
+func GoVersionGTE(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldGTE(FieldGoVersion, v))
+}
+
+// GoVersionLT applies the LT predicate on the "go_version" field.
+func GoVersionLT(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldLT(FieldGoVersion, v))
+}
+
+// GoVersionLTE applies the LTE predicate on the "go_version" field.
+func GoVersionLTE(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldLTE(FieldGoVersion, v))
+}
+
+// GoVersionContains applies the Contains predicate on the "go_version" field.
+func GoVersionContains(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldContains(FieldGoVersion, v))
+}
+
+// GoVersionHasPrefix applies the HasPrefix predicate on the "go_version" field.
+func GoVersionHasPrefix(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldHasPrefix(FieldGoVersion, v))
+}
+
+// GoVersionHasSuffix applies the HasSuffix predicate on the "go_version" field.
+func GoVersionHasSuffix(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldHasSuffix(FieldGoVersion, v))
+}
+
+// GoVersionIsNil applies the IsNil predicate on the "go_version" field.
+func GoVersionIsNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldIsNull(FieldGoVersion))
+}
+
+// GoVersionNotNil applies the NotNil predicate on the "go_version" field.
+func GoVersionNotNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldNotNull(FieldGoVersion))
+}
+
+// GoVersionEqualFold applies the EqualFold predicate on the "go_version" field.
+func GoVersionEqualFold(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldEqualFold(FieldGoVersion, v))
+}
+
+// GoVersionContainsFold applies the ContainsFold predicate on the "go_version" field.
+func GoVersionContainsFold(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldContainsFold(FieldGoVersion, v))
+}
+
+// PluginVersionEQ applies the EQ predicate on the "plugin_version" field.
+func PluginVersionEQ(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldEQ(FieldPluginVersion, v))
+}
+
+// PluginVersionNEQ applies the NEQ predicate on the "plugin_version" field.
+func PluginVersionNEQ(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldNEQ(FieldPluginVersion, v))
+}
+
+// PluginVersionIn applies the In predicate on the "plugin_version" field.
+func PluginVersionIn(vs ...string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldIn(FieldPluginVersion, vs...))
+}
+
+// PluginVersionNotIn applies the NotIn predicate on the "plugin_version" field.
+func PluginVersionNotIn(vs ...string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldNotIn(FieldPluginVersion, vs...))
+}
+
+// PluginVersionGT applies the GT predicate on the "plugin_version" field.
+func PluginVersionGT(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldGT(FieldPluginVersion, v))
+}
+
+// PluginVersionGTE applies the GTE predicate on the "plugin_version" field.
+func PluginVersionGTE(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldGTE(FieldPluginVersion, v))
+}
+
+// PluginVersionLT applies the LT predicate on the "plugin_version" field.
+func PluginVersionLT(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldLT(FieldPluginVersion, v))
+}
+
+// PluginVersionLTE applies the LTE predicate on the "plugin_version" field.
+func PluginVersionLTE(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldLTE(FieldPluginVersion, v))
+}
+
+// PluginVersionContains applies the Contains predicate on the "plugin_version" field.
+func PluginVersionContains(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldContains(FieldPluginVersion, v))
+}
+
+// PluginVersionHasPrefix applies the HasPrefix predicate on the "plugin_version" field.
+func PluginVersionHasPrefix(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldHasPrefix(FieldPluginVersion, v))
+}
+
+// PluginVersionHasSuffix applies the HasSuffix predicate on the "plugin_version" field.
+func PluginVersionHasSuffix(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldHasSuffix(FieldPluginVersion, v))
+}
+
+// PluginVersionIsNil applies the IsNil predicate on the "plugin_version" field.
+func PluginVersionIsNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldIsNull(FieldPluginVersion))
+}
+
+// PluginVersionNotNil applies the NotNil predicate on the "plugin_version" field.
+func PluginVersionNotNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldNotNull(FieldPluginVersion))
+}
+
+// PluginVersionEqualFold applies the EqualFold predicate on the "plugin_version" field.
+func PluginVersionEqualFold(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldEqualFold(FieldPluginVersion, v))
+}
+
+// PluginVersionContainsFold applies the ContainsFold predicate on the "plugin_version" field.
+func PluginVersionContainsFold(v string) predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldContainsFold(FieldPluginVersion, v))
 }
 
 // And groups predicates with the AND operator between them.

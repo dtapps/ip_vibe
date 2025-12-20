@@ -39,7 +39,13 @@ type RestyLog struct {
 	// 是否为错误请求（如 5xx、4xx）
 	IsError bool `json:"is_error,omitempty"`
 	// 请求时间
-	CreatedAt    time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// go 版本
+	GoVersion string `json:"go_version,omitempty"`
+	// plugin 版本
+	PluginVersion string `json:"plugin_version,omitempty"`
+	// resty 版本
+	RestyVersion string `json:"resty_version,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -54,7 +60,7 @@ func (*RestyLog) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case restylog.FieldID, restylog.FieldStatusCode, restylog.FieldElapseTime:
 			values[i] = new(sql.NullInt64)
-		case restylog.FieldHostname, restylog.FieldMethod, restylog.FieldURL:
+		case restylog.FieldHostname, restylog.FieldMethod, restylog.FieldURL, restylog.FieldGoVersion, restylog.FieldPluginVersion, restylog.FieldRestyVersion:
 			values[i] = new(sql.NullString)
 		case restylog.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -153,6 +159,24 @@ func (_m *RestyLog) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.CreatedAt = value.Time
 			}
+		case restylog.FieldGoVersion:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field go_version", values[i])
+			} else if value.Valid {
+				_m.GoVersion = value.String
+			}
+		case restylog.FieldPluginVersion:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field plugin_version", values[i])
+			} else if value.Valid {
+				_m.PluginVersion = value.String
+			}
+		case restylog.FieldRestyVersion:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field resty_version", values[i])
+			} else if value.Valid {
+				_m.RestyVersion = value.String
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -221,6 +245,15 @@ func (_m *RestyLog) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("go_version=")
+	builder.WriteString(_m.GoVersion)
+	builder.WriteString(", ")
+	builder.WriteString("plugin_version=")
+	builder.WriteString(_m.PluginVersion)
+	builder.WriteString(", ")
+	builder.WriteString("resty_version=")
+	builder.WriteString(_m.RestyVersion)
 	builder.WriteByte(')')
 	return builder.String()
 }

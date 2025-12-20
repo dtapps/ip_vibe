@@ -110,6 +110,11 @@ func LastRefreshAt(v time.Time) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldEQ(FieldLastRefreshAt, v))
 }
 
+// LastAPIResponse applies equality check predicate on the "last_api_response" field. It's identical to LastAPIResponseEQ.
+func LastAPIResponse(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldEQ(FieldLastAPIResponse, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldEQ(FieldCreatedAt, v))
@@ -623,6 +628,81 @@ func LastRefreshAtIsNil() predicate.CDNRecord {
 // LastRefreshAtNotNil applies the NotNil predicate on the "last_refresh_at" field.
 func LastRefreshAtNotNil() predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldNotNull(FieldLastRefreshAt))
+}
+
+// LastAPIResponseEQ applies the EQ predicate on the "last_api_response" field.
+func LastAPIResponseEQ(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldEQ(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseNEQ applies the NEQ predicate on the "last_api_response" field.
+func LastAPIResponseNEQ(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldNEQ(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseIn applies the In predicate on the "last_api_response" field.
+func LastAPIResponseIn(vs ...string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldIn(FieldLastAPIResponse, vs...))
+}
+
+// LastAPIResponseNotIn applies the NotIn predicate on the "last_api_response" field.
+func LastAPIResponseNotIn(vs ...string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldNotIn(FieldLastAPIResponse, vs...))
+}
+
+// LastAPIResponseGT applies the GT predicate on the "last_api_response" field.
+func LastAPIResponseGT(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldGT(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseGTE applies the GTE predicate on the "last_api_response" field.
+func LastAPIResponseGTE(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldGTE(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseLT applies the LT predicate on the "last_api_response" field.
+func LastAPIResponseLT(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldLT(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseLTE applies the LTE predicate on the "last_api_response" field.
+func LastAPIResponseLTE(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldLTE(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseContains applies the Contains predicate on the "last_api_response" field.
+func LastAPIResponseContains(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldContains(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseHasPrefix applies the HasPrefix predicate on the "last_api_response" field.
+func LastAPIResponseHasPrefix(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldHasPrefix(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseHasSuffix applies the HasSuffix predicate on the "last_api_response" field.
+func LastAPIResponseHasSuffix(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldHasSuffix(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseIsNil applies the IsNil predicate on the "last_api_response" field.
+func LastAPIResponseIsNil() predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldIsNull(FieldLastAPIResponse))
+}
+
+// LastAPIResponseNotNil applies the NotNil predicate on the "last_api_response" field.
+func LastAPIResponseNotNil() predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldNotNull(FieldLastAPIResponse))
+}
+
+// LastAPIResponseEqualFold applies the EqualFold predicate on the "last_api_response" field.
+func LastAPIResponseEqualFold(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldEqualFold(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseContainsFold applies the ContainsFold predicate on the "last_api_response" field.
+func LastAPIResponseContainsFold(v string) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldContainsFold(FieldLastAPIResponse, v))
 }
 
 // HasConfig applies the HasEdge predicate on the "config" edge.

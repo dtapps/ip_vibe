@@ -35,6 +35,12 @@ const (
 	FieldIsError = "is_error"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
+	// FieldGoVersion holds the string denoting the go_version field in the database.
+	FieldGoVersion = "go_version"
+	// FieldPluginVersion holds the string denoting the plugin_version field in the database.
+	FieldPluginVersion = "plugin_version"
+	// FieldRestyVersion holds the string denoting the resty_version field in the database.
+	FieldRestyVersion = "resty_version"
 	// Table holds the table name of the restylog in the database.
 	Table = "resty_log"
 )
@@ -53,6 +59,9 @@ var Columns = []string{
 	FieldElapseTime,
 	FieldIsError,
 	FieldCreatedAt,
+	FieldGoVersion,
+	FieldPluginVersion,
+	FieldRestyVersion,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -70,6 +79,12 @@ var (
 	DefaultIsError bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// DefaultGoVersion holds the default value on creation for the "go_version" field.
+	DefaultGoVersion string
+	// DefaultPluginVersion holds the default value on creation for the "plugin_version" field.
+	DefaultPluginVersion string
+	// DefaultRestyVersion holds the default value on creation for the "resty_version" field.
+	DefaultRestyVersion string
 )
 
 // OrderOption defines the ordering options for the RestyLog queries.
@@ -113,4 +128,19 @@ func ByIsError(opts ...sql.OrderTermOption) OrderOption {
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByGoVersion orders the results by the go_version field.
+func ByGoVersion(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldGoVersion, opts...).ToFunc()
+}
+
+// ByPluginVersion orders the results by the plugin_version field.
+func ByPluginVersion(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPluginVersion, opts...).ToFunc()
+}
+
+// ByRestyVersion orders the results by the resty_version field.
+func ByRestyVersion(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRestyVersion, opts...).ToFunc()
 }

@@ -100,6 +100,11 @@ func LastRefreshAt(v time.Time) predicate.DNSRecord {
 	return predicate.DNSRecord(sql.FieldEQ(FieldLastRefreshAt, v))
 }
 
+// LastAPIResponse applies equality check predicate on the "last_api_response" field. It's identical to LastAPIResponseEQ.
+func LastAPIResponse(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldEQ(FieldLastAPIResponse, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.DNSRecord {
 	return predicate.DNSRecord(sql.FieldEQ(FieldCreatedAt, v))
@@ -478,6 +483,81 @@ func LastRefreshAtIsNil() predicate.DNSRecord {
 // LastRefreshAtNotNil applies the NotNil predicate on the "last_refresh_at" field.
 func LastRefreshAtNotNil() predicate.DNSRecord {
 	return predicate.DNSRecord(sql.FieldNotNull(FieldLastRefreshAt))
+}
+
+// LastAPIResponseEQ applies the EQ predicate on the "last_api_response" field.
+func LastAPIResponseEQ(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldEQ(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseNEQ applies the NEQ predicate on the "last_api_response" field.
+func LastAPIResponseNEQ(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldNEQ(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseIn applies the In predicate on the "last_api_response" field.
+func LastAPIResponseIn(vs ...string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldIn(FieldLastAPIResponse, vs...))
+}
+
+// LastAPIResponseNotIn applies the NotIn predicate on the "last_api_response" field.
+func LastAPIResponseNotIn(vs ...string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldNotIn(FieldLastAPIResponse, vs...))
+}
+
+// LastAPIResponseGT applies the GT predicate on the "last_api_response" field.
+func LastAPIResponseGT(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldGT(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseGTE applies the GTE predicate on the "last_api_response" field.
+func LastAPIResponseGTE(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldGTE(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseLT applies the LT predicate on the "last_api_response" field.
+func LastAPIResponseLT(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldLT(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseLTE applies the LTE predicate on the "last_api_response" field.
+func LastAPIResponseLTE(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldLTE(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseContains applies the Contains predicate on the "last_api_response" field.
+func LastAPIResponseContains(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldContains(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseHasPrefix applies the HasPrefix predicate on the "last_api_response" field.
+func LastAPIResponseHasPrefix(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldHasPrefix(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseHasSuffix applies the HasSuffix predicate on the "last_api_response" field.
+func LastAPIResponseHasSuffix(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldHasSuffix(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseIsNil applies the IsNil predicate on the "last_api_response" field.
+func LastAPIResponseIsNil() predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldIsNull(FieldLastAPIResponse))
+}
+
+// LastAPIResponseNotNil applies the NotNil predicate on the "last_api_response" field.
+func LastAPIResponseNotNil() predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldNotNull(FieldLastAPIResponse))
+}
+
+// LastAPIResponseEqualFold applies the EqualFold predicate on the "last_api_response" field.
+func LastAPIResponseEqualFold(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldEqualFold(FieldLastAPIResponse, v))
+}
+
+// LastAPIResponseContainsFold applies the ContainsFold predicate on the "last_api_response" field.
+func LastAPIResponseContainsFold(v string) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldContainsFold(FieldLastAPIResponse, v))
 }
 
 // HasConfig applies the HasEdge predicate on the "config" edge.

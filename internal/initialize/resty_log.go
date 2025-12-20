@@ -48,6 +48,9 @@ func (s *EntRestyLogSaver) SaveLog(ctx context.Context, data *resty_log.LogData)
 			SetResponseBody(data.ResponseBody).
 			SetElapseTime(data.ElapseTime).
 			SetIsError(data.IsError).
+			SetGoVersion(data.GoVersion).
+			SetPluginVersion(data.PluginVersion).
+			SetRestyVersion(data.RestyVersion).
 			Exec(asyncCtx)
 	}(ctx, s.db)
 
@@ -91,6 +94,9 @@ func InitEntRestyLog() {
 				SetResponseBody(data.ResponseBody).
 				SetElapseTime(data.ElapseTime).
 				SetIsError(data.IsError).
+				SetGoVersion(data.GoVersion).
+				SetPluginVersion(data.PluginVersion).
+				SetRestyVersion(data.RestyVersion).
 				Exec(asyncCtx)
 		}(ctx, global.GvaEntLogDb)
 

@@ -39,8 +39,12 @@ type HttpLog struct {
 	// 是否为错误请求（如 5xx、4xx）
 	IsError bool `json:"is_error,omitempty"`
 	// 请求时间
-	CreatedAt    time.Time `json:"created_at,omitempty"`
-	selectValues sql.SelectValues
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// go 版本
+	GoVersion string `json:"go_version,omitempty"`
+	// plugin 版本
+	PluginVersion string `json:"plugin_version,omitempty"`
+	selectValues  sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -54,7 +58,7 @@ func (*HttpLog) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case httplog.FieldID, httplog.FieldStatusCode, httplog.FieldElapseTime:
 			values[i] = new(sql.NullInt64)
-		case httplog.FieldHostname, httplog.FieldMethod, httplog.FieldURL:
+		case httplog.FieldHostname, httplog.FieldMethod, httplog.FieldURL, httplog.FieldGoVersion, httplog.FieldPluginVersion:
 			values[i] = new(sql.NullString)
 		case httplog.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -153,6 +157,18 @@ func (_m *HttpLog) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.CreatedAt = value.Time
 			}
+		case httplog.FieldGoVersion:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field go_version", values[i])
+			} else if value.Valid {
+				_m.GoVersion = value.String
+			}
+		case httplog.FieldPluginVersion:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field plugin_version", values[i])
+			} else if value.Valid {
+				_m.PluginVersion = value.String
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -221,6 +237,12 @@ func (_m *HttpLog) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("go_version=")
+	builder.WriteString(_m.GoVersion)
+	builder.WriteString(", ")
+	builder.WriteString("plugin_version=")
+	builder.WriteString(_m.PluginVersion)
 	builder.WriteByte(')')
 	return builder.String()
 }

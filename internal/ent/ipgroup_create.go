@@ -87,6 +87,20 @@ func (_c *IpGroupCreate) SetNillableDescription(v *string) *IpGroupCreate {
 	return _c
 }
 
+// SetLastAPIResponse sets the "last_api_response" field.
+func (_c *IpGroupCreate) SetLastAPIResponse(v string) *IpGroupCreate {
+	_c.mutation.SetLastAPIResponse(v)
+	return _c
+}
+
+// SetNillableLastAPIResponse sets the "last_api_response" field if the given value is not nil.
+func (_c *IpGroupCreate) SetNillableLastAPIResponse(v *string) *IpGroupCreate {
+	if v != nil {
+		_c.SetLastAPIResponse(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *IpGroupCreate) SetID(v int64) *IpGroupCreate {
 	_c.mutation.SetID(v)
@@ -246,6 +260,10 @@ func (_c *IpGroupCreate) createSpec() (*IpGroup, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Description(); ok {
 		_spec.SetField(ipgroup.FieldDescription, field.TypeString, value)
 		_node.Description = value
+	}
+	if value, ok := _c.mutation.LastAPIResponse(); ok {
+		_spec.SetField(ipgroup.FieldLastAPIResponse, field.TypeString, value)
+		_node.LastAPIResponse = value
 	}
 	if nodes := _c.mutation.DevicesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -411,6 +429,24 @@ func (u *IpGroupUpsert) ClearDescription() *IpGroupUpsert {
 	return u
 }
 
+// SetLastAPIResponse sets the "last_api_response" field.
+func (u *IpGroupUpsert) SetLastAPIResponse(v string) *IpGroupUpsert {
+	u.Set(ipgroup.FieldLastAPIResponse, v)
+	return u
+}
+
+// UpdateLastAPIResponse sets the "last_api_response" field to the value that was provided on create.
+func (u *IpGroupUpsert) UpdateLastAPIResponse() *IpGroupUpsert {
+	u.SetExcluded(ipgroup.FieldLastAPIResponse)
+	return u
+}
+
+// ClearLastAPIResponse clears the value of the "last_api_response" field.
+func (u *IpGroupUpsert) ClearLastAPIResponse() *IpGroupUpsert {
+	u.SetNull(ipgroup.FieldLastAPIResponse)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -529,6 +565,27 @@ func (u *IpGroupUpsertOne) UpdateDescription() *IpGroupUpsertOne {
 func (u *IpGroupUpsertOne) ClearDescription() *IpGroupUpsertOne {
 	return u.Update(func(s *IpGroupUpsert) {
 		s.ClearDescription()
+	})
+}
+
+// SetLastAPIResponse sets the "last_api_response" field.
+func (u *IpGroupUpsertOne) SetLastAPIResponse(v string) *IpGroupUpsertOne {
+	return u.Update(func(s *IpGroupUpsert) {
+		s.SetLastAPIResponse(v)
+	})
+}
+
+// UpdateLastAPIResponse sets the "last_api_response" field to the value that was provided on create.
+func (u *IpGroupUpsertOne) UpdateLastAPIResponse() *IpGroupUpsertOne {
+	return u.Update(func(s *IpGroupUpsert) {
+		s.UpdateLastAPIResponse()
+	})
+}
+
+// ClearLastAPIResponse clears the value of the "last_api_response" field.
+func (u *IpGroupUpsertOne) ClearLastAPIResponse() *IpGroupUpsertOne {
+	return u.Update(func(s *IpGroupUpsert) {
+		s.ClearLastAPIResponse()
 	})
 }
 
@@ -816,6 +873,27 @@ func (u *IpGroupUpsertBulk) UpdateDescription() *IpGroupUpsertBulk {
 func (u *IpGroupUpsertBulk) ClearDescription() *IpGroupUpsertBulk {
 	return u.Update(func(s *IpGroupUpsert) {
 		s.ClearDescription()
+	})
+}
+
+// SetLastAPIResponse sets the "last_api_response" field.
+func (u *IpGroupUpsertBulk) SetLastAPIResponse(v string) *IpGroupUpsertBulk {
+	return u.Update(func(s *IpGroupUpsert) {
+		s.SetLastAPIResponse(v)
+	})
+}
+
+// UpdateLastAPIResponse sets the "last_api_response" field to the value that was provided on create.
+func (u *IpGroupUpsertBulk) UpdateLastAPIResponse() *IpGroupUpsertBulk {
+	return u.Update(func(s *IpGroupUpsert) {
+		s.UpdateLastAPIResponse()
+	})
+}
+
+// ClearLastAPIResponse clears the value of the "last_api_response" field.
+func (u *IpGroupUpsertBulk) ClearLastAPIResponse() *IpGroupUpsertBulk {
+	return u.Update(func(s *IpGroupUpsert) {
+		s.ClearLastAPIResponse()
 	})
 }
 

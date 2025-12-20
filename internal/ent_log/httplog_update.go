@@ -4,16 +4,13 @@ package ent_log
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -28,172 +25,6 @@ type HttpLogUpdate struct {
 // Where appends a list predicates to the HttpLogUpdate builder.
 func (_u *HttpLogUpdate) Where(ps ...predicate.HttpLog) *HttpLogUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetHostname sets the "hostname" field.
-func (_u *HttpLogUpdate) SetHostname(v string) *HttpLogUpdate {
-	_u.mutation.SetHostname(v)
-	return _u
-}
-
-// SetNillableHostname sets the "hostname" field if the given value is not nil.
-func (_u *HttpLogUpdate) SetNillableHostname(v *string) *HttpLogUpdate {
-	if v != nil {
-		_u.SetHostname(*v)
-	}
-	return _u
-}
-
-// SetMethod sets the "method" field.
-func (_u *HttpLogUpdate) SetMethod(v string) *HttpLogUpdate {
-	_u.mutation.SetMethod(v)
-	return _u
-}
-
-// SetNillableMethod sets the "method" field if the given value is not nil.
-func (_u *HttpLogUpdate) SetNillableMethod(v *string) *HttpLogUpdate {
-	if v != nil {
-		_u.SetMethod(*v)
-	}
-	return _u
-}
-
-// SetURL sets the "url" field.
-func (_u *HttpLogUpdate) SetURL(v string) *HttpLogUpdate {
-	_u.mutation.SetURL(v)
-	return _u
-}
-
-// SetNillableURL sets the "url" field if the given value is not nil.
-func (_u *HttpLogUpdate) SetNillableURL(v *string) *HttpLogUpdate {
-	if v != nil {
-		_u.SetURL(*v)
-	}
-	return _u
-}
-
-// SetRequestHeaders sets the "request_headers" field.
-func (_u *HttpLogUpdate) SetRequestHeaders(v map[string][]string) *HttpLogUpdate {
-	_u.mutation.SetRequestHeaders(v)
-	return _u
-}
-
-// SetRequestBody sets the "request_body" field.
-func (_u *HttpLogUpdate) SetRequestBody(v json.RawMessage) *HttpLogUpdate {
-	_u.mutation.SetRequestBody(v)
-	return _u
-}
-
-// AppendRequestBody appends value to the "request_body" field.
-func (_u *HttpLogUpdate) AppendRequestBody(v json.RawMessage) *HttpLogUpdate {
-	_u.mutation.AppendRequestBody(v)
-	return _u
-}
-
-// ClearRequestBody clears the value of the "request_body" field.
-func (_u *HttpLogUpdate) ClearRequestBody() *HttpLogUpdate {
-	_u.mutation.ClearRequestBody()
-	return _u
-}
-
-// SetStatusCode sets the "status_code" field.
-func (_u *HttpLogUpdate) SetStatusCode(v int) *HttpLogUpdate {
-	_u.mutation.ResetStatusCode()
-	_u.mutation.SetStatusCode(v)
-	return _u
-}
-
-// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
-func (_u *HttpLogUpdate) SetNillableStatusCode(v *int) *HttpLogUpdate {
-	if v != nil {
-		_u.SetStatusCode(*v)
-	}
-	return _u
-}
-
-// AddStatusCode adds value to the "status_code" field.
-func (_u *HttpLogUpdate) AddStatusCode(v int) *HttpLogUpdate {
-	_u.mutation.AddStatusCode(v)
-	return _u
-}
-
-// SetResponseHeaders sets the "response_headers" field.
-func (_u *HttpLogUpdate) SetResponseHeaders(v map[string][]string) *HttpLogUpdate {
-	_u.mutation.SetResponseHeaders(v)
-	return _u
-}
-
-// SetResponseBody sets the "response_body" field.
-func (_u *HttpLogUpdate) SetResponseBody(v json.RawMessage) *HttpLogUpdate {
-	_u.mutation.SetResponseBody(v)
-	return _u
-}
-
-// AppendResponseBody appends value to the "response_body" field.
-func (_u *HttpLogUpdate) AppendResponseBody(v json.RawMessage) *HttpLogUpdate {
-	_u.mutation.AppendResponseBody(v)
-	return _u
-}
-
-// ClearResponseBody clears the value of the "response_body" field.
-func (_u *HttpLogUpdate) ClearResponseBody() *HttpLogUpdate {
-	_u.mutation.ClearResponseBody()
-	return _u
-}
-
-// SetElapseTime sets the "elapse_time" field.
-func (_u *HttpLogUpdate) SetElapseTime(v int64) *HttpLogUpdate {
-	_u.mutation.ResetElapseTime()
-	_u.mutation.SetElapseTime(v)
-	return _u
-}
-
-// SetNillableElapseTime sets the "elapse_time" field if the given value is not nil.
-func (_u *HttpLogUpdate) SetNillableElapseTime(v *int64) *HttpLogUpdate {
-	if v != nil {
-		_u.SetElapseTime(*v)
-	}
-	return _u
-}
-
-// AddElapseTime adds value to the "elapse_time" field.
-func (_u *HttpLogUpdate) AddElapseTime(v int64) *HttpLogUpdate {
-	_u.mutation.AddElapseTime(v)
-	return _u
-}
-
-// SetIsError sets the "is_error" field.
-func (_u *HttpLogUpdate) SetIsError(v bool) *HttpLogUpdate {
-	_u.mutation.SetIsError(v)
-	return _u
-}
-
-// SetNillableIsError sets the "is_error" field if the given value is not nil.
-func (_u *HttpLogUpdate) SetNillableIsError(v *bool) *HttpLogUpdate {
-	if v != nil {
-		_u.SetIsError(*v)
-	}
-	return _u
-}
-
-// ClearIsError clears the value of the "is_error" field.
-func (_u *HttpLogUpdate) ClearIsError() *HttpLogUpdate {
-	_u.mutation.ClearIsError()
-	return _u
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (_u *HttpLogUpdate) SetCreatedAt(v time.Time) *HttpLogUpdate {
-	_u.mutation.SetCreatedAt(v)
-	return _u
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_u *HttpLogUpdate) SetNillableCreatedAt(v *time.Time) *HttpLogUpdate {
-	if v != nil {
-		_u.SetCreatedAt(*v)
-	}
 	return _u
 }
 
@@ -244,63 +75,20 @@ func (_u *HttpLogUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
-	if value, ok := _u.mutation.Hostname(); ok {
-		_spec.SetField(httplog.FieldHostname, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Method(); ok {
-		_spec.SetField(httplog.FieldMethod, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.URL(); ok {
-		_spec.SetField(httplog.FieldURL, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.RequestHeaders(); ok {
-		_spec.SetField(httplog.FieldRequestHeaders, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.RequestBody(); ok {
-		_spec.SetField(httplog.FieldRequestBody, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedRequestBody(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, httplog.FieldRequestBody, value)
-		})
-	}
 	if _u.mutation.RequestBodyCleared() {
 		_spec.ClearField(httplog.FieldRequestBody, field.TypeJSON)
-	}
-	if value, ok := _u.mutation.StatusCode(); ok {
-		_spec.SetField(httplog.FieldStatusCode, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedStatusCode(); ok {
-		_spec.AddField(httplog.FieldStatusCode, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.ResponseHeaders(); ok {
-		_spec.SetField(httplog.FieldResponseHeaders, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.ResponseBody(); ok {
-		_spec.SetField(httplog.FieldResponseBody, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedResponseBody(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, httplog.FieldResponseBody, value)
-		})
 	}
 	if _u.mutation.ResponseBodyCleared() {
 		_spec.ClearField(httplog.FieldResponseBody, field.TypeJSON)
 	}
-	if value, ok := _u.mutation.ElapseTime(); ok {
-		_spec.SetField(httplog.FieldElapseTime, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.AddedElapseTime(); ok {
-		_spec.AddField(httplog.FieldElapseTime, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.IsError(); ok {
-		_spec.SetField(httplog.FieldIsError, field.TypeBool, value)
-	}
 	if _u.mutation.IsErrorCleared() {
 		_spec.ClearField(httplog.FieldIsError, field.TypeBool)
 	}
-	if value, ok := _u.mutation.CreatedAt(); ok {
-		_spec.SetField(httplog.FieldCreatedAt, field.TypeTime, value)
+	if _u.mutation.GoVersionCleared() {
+		_spec.ClearField(httplog.FieldGoVersion, field.TypeString)
+	}
+	if _u.mutation.PluginVersionCleared() {
+		_spec.ClearField(httplog.FieldPluginVersion, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -322,172 +110,6 @@ type HttpLogUpdateOne struct {
 	hooks     []Hook
 	mutation  *HttpLogMutation
 	modifiers []func(*sql.UpdateBuilder)
-}
-
-// SetHostname sets the "hostname" field.
-func (_u *HttpLogUpdateOne) SetHostname(v string) *HttpLogUpdateOne {
-	_u.mutation.SetHostname(v)
-	return _u
-}
-
-// SetNillableHostname sets the "hostname" field if the given value is not nil.
-func (_u *HttpLogUpdateOne) SetNillableHostname(v *string) *HttpLogUpdateOne {
-	if v != nil {
-		_u.SetHostname(*v)
-	}
-	return _u
-}
-
-// SetMethod sets the "method" field.
-func (_u *HttpLogUpdateOne) SetMethod(v string) *HttpLogUpdateOne {
-	_u.mutation.SetMethod(v)
-	return _u
-}
-
-// SetNillableMethod sets the "method" field if the given value is not nil.
-func (_u *HttpLogUpdateOne) SetNillableMethod(v *string) *HttpLogUpdateOne {
-	if v != nil {
-		_u.SetMethod(*v)
-	}
-	return _u
-}
-
-// SetURL sets the "url" field.
-func (_u *HttpLogUpdateOne) SetURL(v string) *HttpLogUpdateOne {
-	_u.mutation.SetURL(v)
-	return _u
-}
-
-// SetNillableURL sets the "url" field if the given value is not nil.
-func (_u *HttpLogUpdateOne) SetNillableURL(v *string) *HttpLogUpdateOne {
-	if v != nil {
-		_u.SetURL(*v)
-	}
-	return _u
-}
-
-// SetRequestHeaders sets the "request_headers" field.
-func (_u *HttpLogUpdateOne) SetRequestHeaders(v map[string][]string) *HttpLogUpdateOne {
-	_u.mutation.SetRequestHeaders(v)
-	return _u
-}
-
-// SetRequestBody sets the "request_body" field.
-func (_u *HttpLogUpdateOne) SetRequestBody(v json.RawMessage) *HttpLogUpdateOne {
-	_u.mutation.SetRequestBody(v)
-	return _u
-}
-
-// AppendRequestBody appends value to the "request_body" field.
-func (_u *HttpLogUpdateOne) AppendRequestBody(v json.RawMessage) *HttpLogUpdateOne {
-	_u.mutation.AppendRequestBody(v)
-	return _u
-}
-
-// ClearRequestBody clears the value of the "request_body" field.
-func (_u *HttpLogUpdateOne) ClearRequestBody() *HttpLogUpdateOne {
-	_u.mutation.ClearRequestBody()
-	return _u
-}
-
-// SetStatusCode sets the "status_code" field.
-func (_u *HttpLogUpdateOne) SetStatusCode(v int) *HttpLogUpdateOne {
-	_u.mutation.ResetStatusCode()
-	_u.mutation.SetStatusCode(v)
-	return _u
-}
-
-// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
-func (_u *HttpLogUpdateOne) SetNillableStatusCode(v *int) *HttpLogUpdateOne {
-	if v != nil {
-		_u.SetStatusCode(*v)
-	}
-	return _u
-}
-
-// AddStatusCode adds value to the "status_code" field.
-func (_u *HttpLogUpdateOne) AddStatusCode(v int) *HttpLogUpdateOne {
-	_u.mutation.AddStatusCode(v)
-	return _u
-}
-
-// SetResponseHeaders sets the "response_headers" field.
-func (_u *HttpLogUpdateOne) SetResponseHeaders(v map[string][]string) *HttpLogUpdateOne {
-	_u.mutation.SetResponseHeaders(v)
-	return _u
-}
-
-// SetResponseBody sets the "response_body" field.
-func (_u *HttpLogUpdateOne) SetResponseBody(v json.RawMessage) *HttpLogUpdateOne {
-	_u.mutation.SetResponseBody(v)
-	return _u
-}
-
-// AppendResponseBody appends value to the "response_body" field.
-func (_u *HttpLogUpdateOne) AppendResponseBody(v json.RawMessage) *HttpLogUpdateOne {
-	_u.mutation.AppendResponseBody(v)
-	return _u
-}
-
-// ClearResponseBody clears the value of the "response_body" field.
-func (_u *HttpLogUpdateOne) ClearResponseBody() *HttpLogUpdateOne {
-	_u.mutation.ClearResponseBody()
-	return _u
-}
-
-// SetElapseTime sets the "elapse_time" field.
-func (_u *HttpLogUpdateOne) SetElapseTime(v int64) *HttpLogUpdateOne {
-	_u.mutation.ResetElapseTime()
-	_u.mutation.SetElapseTime(v)
-	return _u
-}
-
-// SetNillableElapseTime sets the "elapse_time" field if the given value is not nil.
-func (_u *HttpLogUpdateOne) SetNillableElapseTime(v *int64) *HttpLogUpdateOne {
-	if v != nil {
-		_u.SetElapseTime(*v)
-	}
-	return _u
-}
-
-// AddElapseTime adds value to the "elapse_time" field.
-func (_u *HttpLogUpdateOne) AddElapseTime(v int64) *HttpLogUpdateOne {
-	_u.mutation.AddElapseTime(v)
-	return _u
-}
-
-// SetIsError sets the "is_error" field.
-func (_u *HttpLogUpdateOne) SetIsError(v bool) *HttpLogUpdateOne {
-	_u.mutation.SetIsError(v)
-	return _u
-}
-
-// SetNillableIsError sets the "is_error" field if the given value is not nil.
-func (_u *HttpLogUpdateOne) SetNillableIsError(v *bool) *HttpLogUpdateOne {
-	if v != nil {
-		_u.SetIsError(*v)
-	}
-	return _u
-}
-
-// ClearIsError clears the value of the "is_error" field.
-func (_u *HttpLogUpdateOne) ClearIsError() *HttpLogUpdateOne {
-	_u.mutation.ClearIsError()
-	return _u
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (_u *HttpLogUpdateOne) SetCreatedAt(v time.Time) *HttpLogUpdateOne {
-	_u.mutation.SetCreatedAt(v)
-	return _u
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_u *HttpLogUpdateOne) SetNillableCreatedAt(v *time.Time) *HttpLogUpdateOne {
-	if v != nil {
-		_u.SetCreatedAt(*v)
-	}
-	return _u
 }
 
 // Mutation returns the HttpLogMutation object of the builder.
@@ -567,63 +189,20 @@ func (_u *HttpLogUpdateOne) sqlSave(ctx context.Context) (_node *HttpLog, err er
 			}
 		}
 	}
-	if value, ok := _u.mutation.Hostname(); ok {
-		_spec.SetField(httplog.FieldHostname, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Method(); ok {
-		_spec.SetField(httplog.FieldMethod, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.URL(); ok {
-		_spec.SetField(httplog.FieldURL, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.RequestHeaders(); ok {
-		_spec.SetField(httplog.FieldRequestHeaders, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.RequestBody(); ok {
-		_spec.SetField(httplog.FieldRequestBody, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedRequestBody(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, httplog.FieldRequestBody, value)
-		})
-	}
 	if _u.mutation.RequestBodyCleared() {
 		_spec.ClearField(httplog.FieldRequestBody, field.TypeJSON)
-	}
-	if value, ok := _u.mutation.StatusCode(); ok {
-		_spec.SetField(httplog.FieldStatusCode, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedStatusCode(); ok {
-		_spec.AddField(httplog.FieldStatusCode, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.ResponseHeaders(); ok {
-		_spec.SetField(httplog.FieldResponseHeaders, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.ResponseBody(); ok {
-		_spec.SetField(httplog.FieldResponseBody, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedResponseBody(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, httplog.FieldResponseBody, value)
-		})
 	}
 	if _u.mutation.ResponseBodyCleared() {
 		_spec.ClearField(httplog.FieldResponseBody, field.TypeJSON)
 	}
-	if value, ok := _u.mutation.ElapseTime(); ok {
-		_spec.SetField(httplog.FieldElapseTime, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.AddedElapseTime(); ok {
-		_spec.AddField(httplog.FieldElapseTime, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.IsError(); ok {
-		_spec.SetField(httplog.FieldIsError, field.TypeBool, value)
-	}
 	if _u.mutation.IsErrorCleared() {
 		_spec.ClearField(httplog.FieldIsError, field.TypeBool)
 	}
-	if value, ok := _u.mutation.CreatedAt(); ok {
-		_spec.SetField(httplog.FieldCreatedAt, field.TypeTime, value)
+	if _u.mutation.GoVersionCleared() {
+		_spec.ClearField(httplog.FieldGoVersion, field.TypeString)
+	}
+	if _u.mutation.PluginVersionCleared() {
+		_spec.ClearField(httplog.FieldPluginVersion, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &HttpLog{config: _u.config}

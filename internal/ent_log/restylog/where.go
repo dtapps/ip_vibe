@@ -89,6 +89,21 @@ func CreatedAt(v time.Time) predicate.RestyLog {
 	return predicate.RestyLog(sql.FieldEQ(FieldCreatedAt, v))
 }
 
+// GoVersion applies equality check predicate on the "go_version" field. It's identical to GoVersionEQ.
+func GoVersion(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldEQ(FieldGoVersion, v))
+}
+
+// PluginVersion applies equality check predicate on the "plugin_version" field. It's identical to PluginVersionEQ.
+func PluginVersion(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldEQ(FieldPluginVersion, v))
+}
+
+// RestyVersion applies equality check predicate on the "resty_version" field. It's identical to RestyVersionEQ.
+func RestyVersion(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldEQ(FieldRestyVersion, v))
+}
+
 // HostnameEQ applies the EQ predicate on the "hostname" field.
 func HostnameEQ(v string) predicate.RestyLog {
 	return predicate.RestyLog(sql.FieldEQ(FieldHostname, v))
@@ -442,6 +457,231 @@ func CreatedAtLT(v time.Time) predicate.RestyLog {
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.RestyLog {
 	return predicate.RestyLog(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// GoVersionEQ applies the EQ predicate on the "go_version" field.
+func GoVersionEQ(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldEQ(FieldGoVersion, v))
+}
+
+// GoVersionNEQ applies the NEQ predicate on the "go_version" field.
+func GoVersionNEQ(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldNEQ(FieldGoVersion, v))
+}
+
+// GoVersionIn applies the In predicate on the "go_version" field.
+func GoVersionIn(vs ...string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldIn(FieldGoVersion, vs...))
+}
+
+// GoVersionNotIn applies the NotIn predicate on the "go_version" field.
+func GoVersionNotIn(vs ...string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldNotIn(FieldGoVersion, vs...))
+}
+
+// GoVersionGT applies the GT predicate on the "go_version" field.
+func GoVersionGT(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldGT(FieldGoVersion, v))
+}
+
+// GoVersionGTE applies the GTE predicate on the "go_version" field.
+func GoVersionGTE(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldGTE(FieldGoVersion, v))
+}
+
+// GoVersionLT applies the LT predicate on the "go_version" field.
+func GoVersionLT(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldLT(FieldGoVersion, v))
+}
+
+// GoVersionLTE applies the LTE predicate on the "go_version" field.
+func GoVersionLTE(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldLTE(FieldGoVersion, v))
+}
+
+// GoVersionContains applies the Contains predicate on the "go_version" field.
+func GoVersionContains(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldContains(FieldGoVersion, v))
+}
+
+// GoVersionHasPrefix applies the HasPrefix predicate on the "go_version" field.
+func GoVersionHasPrefix(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldHasPrefix(FieldGoVersion, v))
+}
+
+// GoVersionHasSuffix applies the HasSuffix predicate on the "go_version" field.
+func GoVersionHasSuffix(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldHasSuffix(FieldGoVersion, v))
+}
+
+// GoVersionIsNil applies the IsNil predicate on the "go_version" field.
+func GoVersionIsNil() predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldIsNull(FieldGoVersion))
+}
+
+// GoVersionNotNil applies the NotNil predicate on the "go_version" field.
+func GoVersionNotNil() predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldNotNull(FieldGoVersion))
+}
+
+// GoVersionEqualFold applies the EqualFold predicate on the "go_version" field.
+func GoVersionEqualFold(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldEqualFold(FieldGoVersion, v))
+}
+
+// GoVersionContainsFold applies the ContainsFold predicate on the "go_version" field.
+func GoVersionContainsFold(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldContainsFold(FieldGoVersion, v))
+}
+
+// PluginVersionEQ applies the EQ predicate on the "plugin_version" field.
+func PluginVersionEQ(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldEQ(FieldPluginVersion, v))
+}
+
+// PluginVersionNEQ applies the NEQ predicate on the "plugin_version" field.
+func PluginVersionNEQ(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldNEQ(FieldPluginVersion, v))
+}
+
+// PluginVersionIn applies the In predicate on the "plugin_version" field.
+func PluginVersionIn(vs ...string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldIn(FieldPluginVersion, vs...))
+}
+
+// PluginVersionNotIn applies the NotIn predicate on the "plugin_version" field.
+func PluginVersionNotIn(vs ...string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldNotIn(FieldPluginVersion, vs...))
+}
+
+// PluginVersionGT applies the GT predicate on the "plugin_version" field.
+func PluginVersionGT(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldGT(FieldPluginVersion, v))
+}
+
+// PluginVersionGTE applies the GTE predicate on the "plugin_version" field.
+func PluginVersionGTE(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldGTE(FieldPluginVersion, v))
+}
+
+// PluginVersionLT applies the LT predicate on the "plugin_version" field.
+func PluginVersionLT(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldLT(FieldPluginVersion, v))
+}
+
+// PluginVersionLTE applies the LTE predicate on the "plugin_version" field.
+func PluginVersionLTE(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldLTE(FieldPluginVersion, v))
+}
+
+// PluginVersionContains applies the Contains predicate on the "plugin_version" field.
+func PluginVersionContains(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldContains(FieldPluginVersion, v))
+}
+
+// PluginVersionHasPrefix applies the HasPrefix predicate on the "plugin_version" field.
+func PluginVersionHasPrefix(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldHasPrefix(FieldPluginVersion, v))
+}
+
+// PluginVersionHasSuffix applies the HasSuffix predicate on the "plugin_version" field.
+func PluginVersionHasSuffix(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldHasSuffix(FieldPluginVersion, v))
+}
+
+// PluginVersionIsNil applies the IsNil predicate on the "plugin_version" field.
+func PluginVersionIsNil() predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldIsNull(FieldPluginVersion))
+}
+
+// PluginVersionNotNil applies the NotNil predicate on the "plugin_version" field.
+func PluginVersionNotNil() predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldNotNull(FieldPluginVersion))
+}
+
+// PluginVersionEqualFold applies the EqualFold predicate on the "plugin_version" field.
+func PluginVersionEqualFold(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldEqualFold(FieldPluginVersion, v))
+}
+
+// PluginVersionContainsFold applies the ContainsFold predicate on the "plugin_version" field.
+func PluginVersionContainsFold(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldContainsFold(FieldPluginVersion, v))
+}
+
+// RestyVersionEQ applies the EQ predicate on the "resty_version" field.
+func RestyVersionEQ(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldEQ(FieldRestyVersion, v))
+}
+
+// RestyVersionNEQ applies the NEQ predicate on the "resty_version" field.
+func RestyVersionNEQ(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldNEQ(FieldRestyVersion, v))
+}
+
+// RestyVersionIn applies the In predicate on the "resty_version" field.
+func RestyVersionIn(vs ...string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldIn(FieldRestyVersion, vs...))
+}
+
+// RestyVersionNotIn applies the NotIn predicate on the "resty_version" field.
+func RestyVersionNotIn(vs ...string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldNotIn(FieldRestyVersion, vs...))
+}
+
+// RestyVersionGT applies the GT predicate on the "resty_version" field.
+func RestyVersionGT(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldGT(FieldRestyVersion, v))
+}
+
+// RestyVersionGTE applies the GTE predicate on the "resty_version" field.
+func RestyVersionGTE(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldGTE(FieldRestyVersion, v))
+}
+
+// RestyVersionLT applies the LT predicate on the "resty_version" field.
+func RestyVersionLT(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldLT(FieldRestyVersion, v))
+}
+
+// RestyVersionLTE applies the LTE predicate on the "resty_version" field.
+func RestyVersionLTE(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldLTE(FieldRestyVersion, v))
+}
+
+// RestyVersionContains applies the Contains predicate on the "resty_version" field.
+func RestyVersionContains(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldContains(FieldRestyVersion, v))
+}
+
+// RestyVersionHasPrefix applies the HasPrefix predicate on the "resty_version" field.
+func RestyVersionHasPrefix(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldHasPrefix(FieldRestyVersion, v))
+}
+
+// RestyVersionHasSuffix applies the HasSuffix predicate on the "resty_version" field.
+func RestyVersionHasSuffix(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldHasSuffix(FieldRestyVersion, v))
+}
+
+// RestyVersionIsNil applies the IsNil predicate on the "resty_version" field.
+func RestyVersionIsNil() predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldIsNull(FieldRestyVersion))
+}
+
+// RestyVersionNotNil applies the NotNil predicate on the "resty_version" field.
+func RestyVersionNotNil() predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldNotNull(FieldRestyVersion))
+}
+
+// RestyVersionEqualFold applies the EqualFold predicate on the "resty_version" field.
+func RestyVersionEqualFold(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldEqualFold(FieldRestyVersion, v))
+}
+
+// RestyVersionContainsFold applies the ContainsFold predicate on the "resty_version" field.
+func RestyVersionContainsFold(v string) predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldContainsFold(FieldRestyVersion, v))
 }
 
 // And groups predicates with the AND operator between them.

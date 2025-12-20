@@ -357,8 +357,10 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 	// 更新CDN记录
 	err = cdnProcess.UpsertRecord(ctx, &processParams)
 	if err != nil {
+		_ = s.updateDbOfCdnResponse(ctx, firstRecord.ID, err.Error())
 		return err
 	}
+	_ = s.updateDbOfDnsResponse(ctx, firstRecord.ID, "ok")
 	return nil
 }
 
@@ -467,8 +469,10 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 	// 更新DNS记录
 	err = dnsProcess.UpsertRecord(ctx, &processParams)
 	if err != nil {
+		_ = s.updateDbOfDnsResponse(ctx, firstRecord.ID, err.Error())
 		return err
 	}
+	_ = s.updateDbOfDnsResponse(ctx, firstRecord.ID, "ok")
 	return nil
 }
 
@@ -478,4 +482,24 @@ func (s *IpUpdateService) allowConcurrent(item *ent.PlatformConfig) bool {
 		return false
 	}
 	return true
+}
+
+// 更新CDN记录的LastAPIResponse
+func (s *IpUpdateService) updateDbOfCdnResponse(ctx context.Context, id int64, last_api_response string) error {
+	if s.db != nil && id != 0 {
+		return s.db.CDNRecord.UpdateOneID(id).
+			SetLastAPIResponse(last_api_response).
+			Exec(ctx)
+	}
+	return nil
+}
+
+// 更新DNS记录的LastAPIResponse
+func (s *IpUpdateService) updateDbOfDnsResponse(ctx context.Context, id int64, last_api_response string) error {
+	if s.db != nil && id != 0 {
+		return s.db.DNSRecord.UpdateOneID(id).
+			SetLastAPIResponse(last_api_response).
+			Exec(ctx)
+	}
+	return nil
 }

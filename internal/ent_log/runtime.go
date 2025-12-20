@@ -24,6 +24,14 @@ func init() {
 	httplogDescCreatedAt := httplogFields[10].Descriptor()
 	// httplog.DefaultCreatedAt holds the default value on creation for the created_at field.
 	httplog.DefaultCreatedAt = httplogDescCreatedAt.Default.(func() time.Time)
+	// httplogDescGoVersion is the schema descriptor for go_version field.
+	httplogDescGoVersion := httplogFields[11].Descriptor()
+	// httplog.DefaultGoVersion holds the default value on creation for the go_version field.
+	httplog.DefaultGoVersion = httplogDescGoVersion.Default.(string)
+	// httplogDescPluginVersion is the schema descriptor for plugin_version field.
+	httplogDescPluginVersion := httplogFields[12].Descriptor()
+	// httplog.DefaultPluginVersion holds the default value on creation for the plugin_version field.
+	httplog.DefaultPluginVersion = httplogDescPluginVersion.Default.(string)
 	operationlogMixin := schema.OperationLog{}.Mixin()
 	operationlogMixinFields0 := operationlogMixin[0].Fields()
 	_ = operationlogMixinFields0
@@ -43,4 +51,16 @@ func init() {
 	restylogDescCreatedAt := restylogFields[10].Descriptor()
 	// restylog.DefaultCreatedAt holds the default value on creation for the created_at field.
 	restylog.DefaultCreatedAt = restylogDescCreatedAt.Default.(func() time.Time)
+	// restylogDescGoVersion is the schema descriptor for go_version field.
+	restylogDescGoVersion := restylogFields[11].Descriptor()
+	// restylog.DefaultGoVersion holds the default value on creation for the go_version field.
+	restylog.DefaultGoVersion = restylogDescGoVersion.Default.(string)
+	// restylogDescPluginVersion is the schema descriptor for plugin_version field.
+	restylogDescPluginVersion := restylogFields[12].Descriptor()
+	// restylog.DefaultPluginVersion holds the default value on creation for the plugin_version field.
+	restylog.DefaultPluginVersion = restylogDescPluginVersion.Default.(string)
+	// restylogDescRestyVersion is the schema descriptor for resty_version field.
+	restylogDescRestyVersion := restylogFields[13].Descriptor()
+	// restylog.DefaultRestyVersion holds the default value on creation for the resty_version field.
+	restylog.DefaultRestyVersion = restylogDescRestyVersion.Default.(string)
 }

@@ -23,6 +23,8 @@ var (
 		{Name: "elapse_time", Type: field.TypeInt64, Comment: "请求耗时, 单位:毫秒"},
 		{Name: "is_error", Type: field.TypeBool, Nullable: true, Comment: "是否为错误请求（如 5xx、4xx）", Default: false},
 		{Name: "created_at", Type: field.TypeTime, Comment: "请求时间"},
+		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "go 版本", Default: "go1.26rc1"},
+		{Name: "plugin_version", Type: field.TypeString, Nullable: true, Comment: "plugin 版本", Default: "1.0.0"},
 	}
 	// HTTPLogTable holds the schema information for the "http_log" table.
 	HTTPLogTable = &schema.Table{
@@ -119,6 +121,9 @@ var (
 		{Name: "elapse_time", Type: field.TypeInt64, Comment: "请求耗时, 单位:毫秒"},
 		{Name: "is_error", Type: field.TypeBool, Nullable: true, Comment: "是否为错误请求（如 5xx、4xx）", Default: false},
 		{Name: "created_at", Type: field.TypeTime, Comment: "请求时间"},
+		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "go 版本", Default: "go1.26rc1"},
+		{Name: "plugin_version", Type: field.TypeString, Nullable: true, Comment: "plugin 版本", Default: "1.0.10"},
+		{Name: "resty_version", Type: field.TypeString, Nullable: true, Comment: "resty 版本", Default: "3.0.0-beta.5"},
 	}
 	// RestyLogTable holds the schema information for the "resty_log" table.
 	RestyLogTable = &schema.Table{

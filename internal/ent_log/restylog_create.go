@@ -105,6 +105,48 @@ func (_c *RestyLogCreate) SetNillableCreatedAt(v *time.Time) *RestyLogCreate {
 	return _c
 }
 
+// SetGoVersion sets the "go_version" field.
+func (_c *RestyLogCreate) SetGoVersion(v string) *RestyLogCreate {
+	_c.mutation.SetGoVersion(v)
+	return _c
+}
+
+// SetNillableGoVersion sets the "go_version" field if the given value is not nil.
+func (_c *RestyLogCreate) SetNillableGoVersion(v *string) *RestyLogCreate {
+	if v != nil {
+		_c.SetGoVersion(*v)
+	}
+	return _c
+}
+
+// SetPluginVersion sets the "plugin_version" field.
+func (_c *RestyLogCreate) SetPluginVersion(v string) *RestyLogCreate {
+	_c.mutation.SetPluginVersion(v)
+	return _c
+}
+
+// SetNillablePluginVersion sets the "plugin_version" field if the given value is not nil.
+func (_c *RestyLogCreate) SetNillablePluginVersion(v *string) *RestyLogCreate {
+	if v != nil {
+		_c.SetPluginVersion(*v)
+	}
+	return _c
+}
+
+// SetRestyVersion sets the "resty_version" field.
+func (_c *RestyLogCreate) SetRestyVersion(v string) *RestyLogCreate {
+	_c.mutation.SetRestyVersion(v)
+	return _c
+}
+
+// SetNillableRestyVersion sets the "resty_version" field if the given value is not nil.
+func (_c *RestyLogCreate) SetNillableRestyVersion(v *string) *RestyLogCreate {
+	if v != nil {
+		_c.SetRestyVersion(*v)
+	}
+	return _c
+}
+
 // Mutation returns the RestyLogMutation object of the builder.
 func (_c *RestyLogCreate) Mutation() *RestyLogMutation {
 	return _c.mutation
@@ -147,6 +189,18 @@ func (_c *RestyLogCreate) defaults() {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := restylog.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
+	}
+	if _, ok := _c.mutation.GoVersion(); !ok {
+		v := restylog.DefaultGoVersion
+		_c.mutation.SetGoVersion(v)
+	}
+	if _, ok := _c.mutation.PluginVersion(); !ok {
+		v := restylog.DefaultPluginVersion
+		_c.mutation.SetPluginVersion(v)
+	}
+	if _, ok := _c.mutation.RestyVersion(); !ok {
+		v := restylog.DefaultRestyVersion
+		_c.mutation.SetRestyVersion(v)
 	}
 }
 
@@ -247,6 +301,18 @@ func (_c *RestyLogCreate) createSpec() (*RestyLog, *sqlgraph.CreateSpec) {
 		_spec.SetField(restylog.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
+	if value, ok := _c.mutation.GoVersion(); ok {
+		_spec.SetField(restylog.FieldGoVersion, field.TypeString, value)
+		_node.GoVersion = value
+	}
+	if value, ok := _c.mutation.PluginVersion(); ok {
+		_spec.SetField(restylog.FieldPluginVersion, field.TypeString, value)
+		_node.PluginVersion = value
+	}
+	if value, ok := _c.mutation.RestyVersion(); ok {
+		_spec.SetField(restylog.FieldRestyVersion, field.TypeString, value)
+		_node.RestyVersion = value
+	}
 	return _node, _spec
 }
 
@@ -299,168 +365,6 @@ type (
 	}
 )
 
-// SetHostname sets the "hostname" field.
-func (u *RestyLogUpsert) SetHostname(v string) *RestyLogUpsert {
-	u.Set(restylog.FieldHostname, v)
-	return u
-}
-
-// UpdateHostname sets the "hostname" field to the value that was provided on create.
-func (u *RestyLogUpsert) UpdateHostname() *RestyLogUpsert {
-	u.SetExcluded(restylog.FieldHostname)
-	return u
-}
-
-// SetMethod sets the "method" field.
-func (u *RestyLogUpsert) SetMethod(v string) *RestyLogUpsert {
-	u.Set(restylog.FieldMethod, v)
-	return u
-}
-
-// UpdateMethod sets the "method" field to the value that was provided on create.
-func (u *RestyLogUpsert) UpdateMethod() *RestyLogUpsert {
-	u.SetExcluded(restylog.FieldMethod)
-	return u
-}
-
-// SetURL sets the "url" field.
-func (u *RestyLogUpsert) SetURL(v string) *RestyLogUpsert {
-	u.Set(restylog.FieldURL, v)
-	return u
-}
-
-// UpdateURL sets the "url" field to the value that was provided on create.
-func (u *RestyLogUpsert) UpdateURL() *RestyLogUpsert {
-	u.SetExcluded(restylog.FieldURL)
-	return u
-}
-
-// SetRequestHeaders sets the "request_headers" field.
-func (u *RestyLogUpsert) SetRequestHeaders(v map[string][]string) *RestyLogUpsert {
-	u.Set(restylog.FieldRequestHeaders, v)
-	return u
-}
-
-// UpdateRequestHeaders sets the "request_headers" field to the value that was provided on create.
-func (u *RestyLogUpsert) UpdateRequestHeaders() *RestyLogUpsert {
-	u.SetExcluded(restylog.FieldRequestHeaders)
-	return u
-}
-
-// SetRequestBody sets the "request_body" field.
-func (u *RestyLogUpsert) SetRequestBody(v json.RawMessage) *RestyLogUpsert {
-	u.Set(restylog.FieldRequestBody, v)
-	return u
-}
-
-// UpdateRequestBody sets the "request_body" field to the value that was provided on create.
-func (u *RestyLogUpsert) UpdateRequestBody() *RestyLogUpsert {
-	u.SetExcluded(restylog.FieldRequestBody)
-	return u
-}
-
-// ClearRequestBody clears the value of the "request_body" field.
-func (u *RestyLogUpsert) ClearRequestBody() *RestyLogUpsert {
-	u.SetNull(restylog.FieldRequestBody)
-	return u
-}
-
-// SetStatusCode sets the "status_code" field.
-func (u *RestyLogUpsert) SetStatusCode(v int) *RestyLogUpsert {
-	u.Set(restylog.FieldStatusCode, v)
-	return u
-}
-
-// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
-func (u *RestyLogUpsert) UpdateStatusCode() *RestyLogUpsert {
-	u.SetExcluded(restylog.FieldStatusCode)
-	return u
-}
-
-// AddStatusCode adds v to the "status_code" field.
-func (u *RestyLogUpsert) AddStatusCode(v int) *RestyLogUpsert {
-	u.Add(restylog.FieldStatusCode, v)
-	return u
-}
-
-// SetResponseHeaders sets the "response_headers" field.
-func (u *RestyLogUpsert) SetResponseHeaders(v map[string][]string) *RestyLogUpsert {
-	u.Set(restylog.FieldResponseHeaders, v)
-	return u
-}
-
-// UpdateResponseHeaders sets the "response_headers" field to the value that was provided on create.
-func (u *RestyLogUpsert) UpdateResponseHeaders() *RestyLogUpsert {
-	u.SetExcluded(restylog.FieldResponseHeaders)
-	return u
-}
-
-// SetResponseBody sets the "response_body" field.
-func (u *RestyLogUpsert) SetResponseBody(v json.RawMessage) *RestyLogUpsert {
-	u.Set(restylog.FieldResponseBody, v)
-	return u
-}
-
-// UpdateResponseBody sets the "response_body" field to the value that was provided on create.
-func (u *RestyLogUpsert) UpdateResponseBody() *RestyLogUpsert {
-	u.SetExcluded(restylog.FieldResponseBody)
-	return u
-}
-
-// ClearResponseBody clears the value of the "response_body" field.
-func (u *RestyLogUpsert) ClearResponseBody() *RestyLogUpsert {
-	u.SetNull(restylog.FieldResponseBody)
-	return u
-}
-
-// SetElapseTime sets the "elapse_time" field.
-func (u *RestyLogUpsert) SetElapseTime(v int64) *RestyLogUpsert {
-	u.Set(restylog.FieldElapseTime, v)
-	return u
-}
-
-// UpdateElapseTime sets the "elapse_time" field to the value that was provided on create.
-func (u *RestyLogUpsert) UpdateElapseTime() *RestyLogUpsert {
-	u.SetExcluded(restylog.FieldElapseTime)
-	return u
-}
-
-// AddElapseTime adds v to the "elapse_time" field.
-func (u *RestyLogUpsert) AddElapseTime(v int64) *RestyLogUpsert {
-	u.Add(restylog.FieldElapseTime, v)
-	return u
-}
-
-// SetIsError sets the "is_error" field.
-func (u *RestyLogUpsert) SetIsError(v bool) *RestyLogUpsert {
-	u.Set(restylog.FieldIsError, v)
-	return u
-}
-
-// UpdateIsError sets the "is_error" field to the value that was provided on create.
-func (u *RestyLogUpsert) UpdateIsError() *RestyLogUpsert {
-	u.SetExcluded(restylog.FieldIsError)
-	return u
-}
-
-// ClearIsError clears the value of the "is_error" field.
-func (u *RestyLogUpsert) ClearIsError() *RestyLogUpsert {
-	u.SetNull(restylog.FieldIsError)
-	return u
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (u *RestyLogUpsert) SetCreatedAt(v time.Time) *RestyLogUpsert {
-	u.Set(restylog.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *RestyLogUpsert) UpdateCreatedAt() *RestyLogUpsert {
-	u.SetExcluded(restylog.FieldCreatedAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -471,6 +375,50 @@ func (u *RestyLogUpsert) UpdateCreatedAt() *RestyLogUpsert {
 //		Exec(ctx)
 func (u *RestyLogUpsertOne) UpdateNewValues() *RestyLogUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.Hostname(); exists {
+			s.SetIgnore(restylog.FieldHostname)
+		}
+		if _, exists := u.create.mutation.Method(); exists {
+			s.SetIgnore(restylog.FieldMethod)
+		}
+		if _, exists := u.create.mutation.URL(); exists {
+			s.SetIgnore(restylog.FieldURL)
+		}
+		if _, exists := u.create.mutation.RequestHeaders(); exists {
+			s.SetIgnore(restylog.FieldRequestHeaders)
+		}
+		if _, exists := u.create.mutation.RequestBody(); exists {
+			s.SetIgnore(restylog.FieldRequestBody)
+		}
+		if _, exists := u.create.mutation.StatusCode(); exists {
+			s.SetIgnore(restylog.FieldStatusCode)
+		}
+		if _, exists := u.create.mutation.ResponseHeaders(); exists {
+			s.SetIgnore(restylog.FieldResponseHeaders)
+		}
+		if _, exists := u.create.mutation.ResponseBody(); exists {
+			s.SetIgnore(restylog.FieldResponseBody)
+		}
+		if _, exists := u.create.mutation.ElapseTime(); exists {
+			s.SetIgnore(restylog.FieldElapseTime)
+		}
+		if _, exists := u.create.mutation.IsError(); exists {
+			s.SetIgnore(restylog.FieldIsError)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(restylog.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.GoVersion(); exists {
+			s.SetIgnore(restylog.FieldGoVersion)
+		}
+		if _, exists := u.create.mutation.PluginVersion(); exists {
+			s.SetIgnore(restylog.FieldPluginVersion)
+		}
+		if _, exists := u.create.mutation.RestyVersion(); exists {
+			s.SetIgnore(restylog.FieldRestyVersion)
+		}
+	}))
 	return u
 }
 
@@ -499,195 +447,6 @@ func (u *RestyLogUpsertOne) Update(set func(*RestyLogUpsert)) *RestyLogUpsertOne
 		set(&RestyLogUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetHostname sets the "hostname" field.
-func (u *RestyLogUpsertOne) SetHostname(v string) *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetHostname(v)
-	})
-}
-
-// UpdateHostname sets the "hostname" field to the value that was provided on create.
-func (u *RestyLogUpsertOne) UpdateHostname() *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateHostname()
-	})
-}
-
-// SetMethod sets the "method" field.
-func (u *RestyLogUpsertOne) SetMethod(v string) *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetMethod(v)
-	})
-}
-
-// UpdateMethod sets the "method" field to the value that was provided on create.
-func (u *RestyLogUpsertOne) UpdateMethod() *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateMethod()
-	})
-}
-
-// SetURL sets the "url" field.
-func (u *RestyLogUpsertOne) SetURL(v string) *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetURL(v)
-	})
-}
-
-// UpdateURL sets the "url" field to the value that was provided on create.
-func (u *RestyLogUpsertOne) UpdateURL() *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateURL()
-	})
-}
-
-// SetRequestHeaders sets the "request_headers" field.
-func (u *RestyLogUpsertOne) SetRequestHeaders(v map[string][]string) *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetRequestHeaders(v)
-	})
-}
-
-// UpdateRequestHeaders sets the "request_headers" field to the value that was provided on create.
-func (u *RestyLogUpsertOne) UpdateRequestHeaders() *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateRequestHeaders()
-	})
-}
-
-// SetRequestBody sets the "request_body" field.
-func (u *RestyLogUpsertOne) SetRequestBody(v json.RawMessage) *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetRequestBody(v)
-	})
-}
-
-// UpdateRequestBody sets the "request_body" field to the value that was provided on create.
-func (u *RestyLogUpsertOne) UpdateRequestBody() *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateRequestBody()
-	})
-}
-
-// ClearRequestBody clears the value of the "request_body" field.
-func (u *RestyLogUpsertOne) ClearRequestBody() *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.ClearRequestBody()
-	})
-}
-
-// SetStatusCode sets the "status_code" field.
-func (u *RestyLogUpsertOne) SetStatusCode(v int) *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetStatusCode(v)
-	})
-}
-
-// AddStatusCode adds v to the "status_code" field.
-func (u *RestyLogUpsertOne) AddStatusCode(v int) *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.AddStatusCode(v)
-	})
-}
-
-// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
-func (u *RestyLogUpsertOne) UpdateStatusCode() *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateStatusCode()
-	})
-}
-
-// SetResponseHeaders sets the "response_headers" field.
-func (u *RestyLogUpsertOne) SetResponseHeaders(v map[string][]string) *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetResponseHeaders(v)
-	})
-}
-
-// UpdateResponseHeaders sets the "response_headers" field to the value that was provided on create.
-func (u *RestyLogUpsertOne) UpdateResponseHeaders() *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateResponseHeaders()
-	})
-}
-
-// SetResponseBody sets the "response_body" field.
-func (u *RestyLogUpsertOne) SetResponseBody(v json.RawMessage) *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetResponseBody(v)
-	})
-}
-
-// UpdateResponseBody sets the "response_body" field to the value that was provided on create.
-func (u *RestyLogUpsertOne) UpdateResponseBody() *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateResponseBody()
-	})
-}
-
-// ClearResponseBody clears the value of the "response_body" field.
-func (u *RestyLogUpsertOne) ClearResponseBody() *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.ClearResponseBody()
-	})
-}
-
-// SetElapseTime sets the "elapse_time" field.
-func (u *RestyLogUpsertOne) SetElapseTime(v int64) *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetElapseTime(v)
-	})
-}
-
-// AddElapseTime adds v to the "elapse_time" field.
-func (u *RestyLogUpsertOne) AddElapseTime(v int64) *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.AddElapseTime(v)
-	})
-}
-
-// UpdateElapseTime sets the "elapse_time" field to the value that was provided on create.
-func (u *RestyLogUpsertOne) UpdateElapseTime() *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateElapseTime()
-	})
-}
-
-// SetIsError sets the "is_error" field.
-func (u *RestyLogUpsertOne) SetIsError(v bool) *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetIsError(v)
-	})
-}
-
-// UpdateIsError sets the "is_error" field to the value that was provided on create.
-func (u *RestyLogUpsertOne) UpdateIsError() *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateIsError()
-	})
-}
-
-// ClearIsError clears the value of the "is_error" field.
-func (u *RestyLogUpsertOne) ClearIsError() *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.ClearIsError()
-	})
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (u *RestyLogUpsertOne) SetCreatedAt(v time.Time) *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *RestyLogUpsertOne) UpdateCreatedAt() *RestyLogUpsertOne {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateCreatedAt()
-	})
 }
 
 // Exec executes the query.
@@ -864,6 +623,52 @@ type RestyLogUpsertBulk struct {
 //		Exec(ctx)
 func (u *RestyLogUpsertBulk) UpdateNewValues() *RestyLogUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.Hostname(); exists {
+				s.SetIgnore(restylog.FieldHostname)
+			}
+			if _, exists := b.mutation.Method(); exists {
+				s.SetIgnore(restylog.FieldMethod)
+			}
+			if _, exists := b.mutation.URL(); exists {
+				s.SetIgnore(restylog.FieldURL)
+			}
+			if _, exists := b.mutation.RequestHeaders(); exists {
+				s.SetIgnore(restylog.FieldRequestHeaders)
+			}
+			if _, exists := b.mutation.RequestBody(); exists {
+				s.SetIgnore(restylog.FieldRequestBody)
+			}
+			if _, exists := b.mutation.StatusCode(); exists {
+				s.SetIgnore(restylog.FieldStatusCode)
+			}
+			if _, exists := b.mutation.ResponseHeaders(); exists {
+				s.SetIgnore(restylog.FieldResponseHeaders)
+			}
+			if _, exists := b.mutation.ResponseBody(); exists {
+				s.SetIgnore(restylog.FieldResponseBody)
+			}
+			if _, exists := b.mutation.ElapseTime(); exists {
+				s.SetIgnore(restylog.FieldElapseTime)
+			}
+			if _, exists := b.mutation.IsError(); exists {
+				s.SetIgnore(restylog.FieldIsError)
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(restylog.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.GoVersion(); exists {
+				s.SetIgnore(restylog.FieldGoVersion)
+			}
+			if _, exists := b.mutation.PluginVersion(); exists {
+				s.SetIgnore(restylog.FieldPluginVersion)
+			}
+			if _, exists := b.mutation.RestyVersion(); exists {
+				s.SetIgnore(restylog.FieldRestyVersion)
+			}
+		}
+	}))
 	return u
 }
 
@@ -892,195 +697,6 @@ func (u *RestyLogUpsertBulk) Update(set func(*RestyLogUpsert)) *RestyLogUpsertBu
 		set(&RestyLogUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetHostname sets the "hostname" field.
-func (u *RestyLogUpsertBulk) SetHostname(v string) *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetHostname(v)
-	})
-}
-
-// UpdateHostname sets the "hostname" field to the value that was provided on create.
-func (u *RestyLogUpsertBulk) UpdateHostname() *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateHostname()
-	})
-}
-
-// SetMethod sets the "method" field.
-func (u *RestyLogUpsertBulk) SetMethod(v string) *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetMethod(v)
-	})
-}
-
-// UpdateMethod sets the "method" field to the value that was provided on create.
-func (u *RestyLogUpsertBulk) UpdateMethod() *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateMethod()
-	})
-}
-
-// SetURL sets the "url" field.
-func (u *RestyLogUpsertBulk) SetURL(v string) *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetURL(v)
-	})
-}
-
-// UpdateURL sets the "url" field to the value that was provided on create.
-func (u *RestyLogUpsertBulk) UpdateURL() *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateURL()
-	})
-}
-
-// SetRequestHeaders sets the "request_headers" field.
-func (u *RestyLogUpsertBulk) SetRequestHeaders(v map[string][]string) *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetRequestHeaders(v)
-	})
-}
-
-// UpdateRequestHeaders sets the "request_headers" field to the value that was provided on create.
-func (u *RestyLogUpsertBulk) UpdateRequestHeaders() *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateRequestHeaders()
-	})
-}
-
-// SetRequestBody sets the "request_body" field.
-func (u *RestyLogUpsertBulk) SetRequestBody(v json.RawMessage) *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetRequestBody(v)
-	})
-}
-
-// UpdateRequestBody sets the "request_body" field to the value that was provided on create.
-func (u *RestyLogUpsertBulk) UpdateRequestBody() *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateRequestBody()
-	})
-}
-
-// ClearRequestBody clears the value of the "request_body" field.
-func (u *RestyLogUpsertBulk) ClearRequestBody() *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.ClearRequestBody()
-	})
-}
-
-// SetStatusCode sets the "status_code" field.
-func (u *RestyLogUpsertBulk) SetStatusCode(v int) *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetStatusCode(v)
-	})
-}
-
-// AddStatusCode adds v to the "status_code" field.
-func (u *RestyLogUpsertBulk) AddStatusCode(v int) *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.AddStatusCode(v)
-	})
-}
-
-// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
-func (u *RestyLogUpsertBulk) UpdateStatusCode() *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateStatusCode()
-	})
-}
-
-// SetResponseHeaders sets the "response_headers" field.
-func (u *RestyLogUpsertBulk) SetResponseHeaders(v map[string][]string) *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetResponseHeaders(v)
-	})
-}
-
-// UpdateResponseHeaders sets the "response_headers" field to the value that was provided on create.
-func (u *RestyLogUpsertBulk) UpdateResponseHeaders() *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateResponseHeaders()
-	})
-}
-
-// SetResponseBody sets the "response_body" field.
-func (u *RestyLogUpsertBulk) SetResponseBody(v json.RawMessage) *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetResponseBody(v)
-	})
-}
-
-// UpdateResponseBody sets the "response_body" field to the value that was provided on create.
-func (u *RestyLogUpsertBulk) UpdateResponseBody() *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateResponseBody()
-	})
-}
-
-// ClearResponseBody clears the value of the "response_body" field.
-func (u *RestyLogUpsertBulk) ClearResponseBody() *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.ClearResponseBody()
-	})
-}
-
-// SetElapseTime sets the "elapse_time" field.
-func (u *RestyLogUpsertBulk) SetElapseTime(v int64) *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetElapseTime(v)
-	})
-}
-
-// AddElapseTime adds v to the "elapse_time" field.
-func (u *RestyLogUpsertBulk) AddElapseTime(v int64) *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.AddElapseTime(v)
-	})
-}
-
-// UpdateElapseTime sets the "elapse_time" field to the value that was provided on create.
-func (u *RestyLogUpsertBulk) UpdateElapseTime() *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateElapseTime()
-	})
-}
-
-// SetIsError sets the "is_error" field.
-func (u *RestyLogUpsertBulk) SetIsError(v bool) *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetIsError(v)
-	})
-}
-
-// UpdateIsError sets the "is_error" field to the value that was provided on create.
-func (u *RestyLogUpsertBulk) UpdateIsError() *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateIsError()
-	})
-}
-
-// ClearIsError clears the value of the "is_error" field.
-func (u *RestyLogUpsertBulk) ClearIsError() *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.ClearIsError()
-	})
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (u *RestyLogUpsertBulk) SetCreatedAt(v time.Time) *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *RestyLogUpsertBulk) UpdateCreatedAt() *RestyLogUpsertBulk {
-	return u.Update(func(s *RestyLogUpsert) {
-		s.UpdateCreatedAt()
-	})
 }
 
 // Exec executes the query.

@@ -46,6 +46,8 @@ type CDNRecord struct {
 	IsActive bool `json:"is_active,omitempty"`
 	// 最后一次刷新成功时间
 	LastRefreshAt time.Time `json:"last_refresh_at,omitempty"`
+	// 最近一次接口的反馈
+	LastAPIResponse string `json:"last_api_response,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CDNRecordQuery when eager-loading is set.
 	Edges        CDNRecordEdges `json:"edges"`
@@ -106,7 +108,7 @@ func (*CDNRecord) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case cdnrecord.FieldID, cdnrecord.FieldConfigID, cdnrecord.FieldHTTPPort, cdnrecord.FieldHTTPSPort, cdnrecord.FieldIPGroupID:
 			values[i] = new(sql.NullInt64)
-		case cdnrecord.FieldRecordID, cdnrecord.FieldSubDomain, cdnrecord.FieldType, cdnrecord.FieldOriginProtocol, cdnrecord.FieldCdnDomain:
+		case cdnrecord.FieldRecordID, cdnrecord.FieldSubDomain, cdnrecord.FieldType, cdnrecord.FieldOriginProtocol, cdnrecord.FieldCdnDomain, cdnrecord.FieldLastAPIResponse:
 			values[i] = new(sql.NullString)
 		case cdnrecord.FieldCreatedAt, cdnrecord.FieldUpdatedAt, cdnrecord.FieldLastRefreshAt:
 			values[i] = new(sql.NullTime)
@@ -209,6 +211,12 @@ func (_m *CDNRecord) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.LastRefreshAt = value.Time
 			}
+		case cdnrecord.FieldLastAPIResponse:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field last_api_response", values[i])
+			} else if value.Valid {
+				_m.LastAPIResponse = value.String
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -298,6 +306,9 @@ func (_m *CDNRecord) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("last_refresh_at=")
 	builder.WriteString(_m.LastRefreshAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("last_api_response=")
+	builder.WriteString(_m.LastAPIResponse)
 	builder.WriteByte(')')
 	return builder.String()
 }

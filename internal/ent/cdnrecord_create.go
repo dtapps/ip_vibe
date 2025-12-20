@@ -175,6 +175,20 @@ func (_c *CDNRecordCreate) SetNillableLastRefreshAt(v *time.Time) *CDNRecordCrea
 	return _c
 }
 
+// SetLastAPIResponse sets the "last_api_response" field.
+func (_c *CDNRecordCreate) SetLastAPIResponse(v string) *CDNRecordCreate {
+	_c.mutation.SetLastAPIResponse(v)
+	return _c
+}
+
+// SetNillableLastAPIResponse sets the "last_api_response" field if the given value is not nil.
+func (_c *CDNRecordCreate) SetNillableLastAPIResponse(v *string) *CDNRecordCreate {
+	if v != nil {
+		_c.SetLastAPIResponse(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *CDNRecordCreate) SetID(v int64) *CDNRecordCreate {
 	_c.mutation.SetID(v)
@@ -391,6 +405,10 @@ func (_c *CDNRecordCreate) createSpec() (*CDNRecord, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.LastRefreshAt(); ok {
 		_spec.SetField(cdnrecord.FieldLastRefreshAt, field.TypeTime, value)
 		_node.LastRefreshAt = value
+	}
+	if value, ok := _c.mutation.LastAPIResponse(); ok {
+		_spec.SetField(cdnrecord.FieldLastAPIResponse, field.TypeString, value)
+		_node.LastAPIResponse = value
 	}
 	if nodes := _c.mutation.ConfigIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -632,6 +650,24 @@ func (u *CDNRecordUpsert) ClearLastRefreshAt() *CDNRecordUpsert {
 	return u
 }
 
+// SetLastAPIResponse sets the "last_api_response" field.
+func (u *CDNRecordUpsert) SetLastAPIResponse(v string) *CDNRecordUpsert {
+	u.Set(cdnrecord.FieldLastAPIResponse, v)
+	return u
+}
+
+// UpdateLastAPIResponse sets the "last_api_response" field to the value that was provided on create.
+func (u *CDNRecordUpsert) UpdateLastAPIResponse() *CDNRecordUpsert {
+	u.SetExcluded(cdnrecord.FieldLastAPIResponse)
+	return u
+}
+
+// ClearLastAPIResponse clears the value of the "last_api_response" field.
+func (u *CDNRecordUpsert) ClearLastAPIResponse() *CDNRecordUpsert {
+	u.SetNull(cdnrecord.FieldLastAPIResponse)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -850,6 +886,27 @@ func (u *CDNRecordUpsertOne) UpdateLastRefreshAt() *CDNRecordUpsertOne {
 func (u *CDNRecordUpsertOne) ClearLastRefreshAt() *CDNRecordUpsertOne {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.ClearLastRefreshAt()
+	})
+}
+
+// SetLastAPIResponse sets the "last_api_response" field.
+func (u *CDNRecordUpsertOne) SetLastAPIResponse(v string) *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetLastAPIResponse(v)
+	})
+}
+
+// UpdateLastAPIResponse sets the "last_api_response" field to the value that was provided on create.
+func (u *CDNRecordUpsertOne) UpdateLastAPIResponse() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateLastAPIResponse()
+	})
+}
+
+// ClearLastAPIResponse clears the value of the "last_api_response" field.
+func (u *CDNRecordUpsertOne) ClearLastAPIResponse() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.ClearLastAPIResponse()
 	})
 }
 
@@ -1237,6 +1294,27 @@ func (u *CDNRecordUpsertBulk) UpdateLastRefreshAt() *CDNRecordUpsertBulk {
 func (u *CDNRecordUpsertBulk) ClearLastRefreshAt() *CDNRecordUpsertBulk {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.ClearLastRefreshAt()
+	})
+}
+
+// SetLastAPIResponse sets the "last_api_response" field.
+func (u *CDNRecordUpsertBulk) SetLastAPIResponse(v string) *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetLastAPIResponse(v)
+	})
+}
+
+// UpdateLastAPIResponse sets the "last_api_response" field to the value that was provided on create.
+func (u *CDNRecordUpsertBulk) UpdateLastAPIResponse() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateLastAPIResponse()
+	})
+}
+
+// ClearLastAPIResponse clears the value of the "last_api_response" field.
+func (u *CDNRecordUpsertBulk) ClearLastAPIResponse() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.ClearLastAPIResponse()
 	})
 }
 

@@ -105,6 +105,34 @@ func (_c *HttpLogCreate) SetNillableCreatedAt(v *time.Time) *HttpLogCreate {
 	return _c
 }
 
+// SetGoVersion sets the "go_version" field.
+func (_c *HttpLogCreate) SetGoVersion(v string) *HttpLogCreate {
+	_c.mutation.SetGoVersion(v)
+	return _c
+}
+
+// SetNillableGoVersion sets the "go_version" field if the given value is not nil.
+func (_c *HttpLogCreate) SetNillableGoVersion(v *string) *HttpLogCreate {
+	if v != nil {
+		_c.SetGoVersion(*v)
+	}
+	return _c
+}
+
+// SetPluginVersion sets the "plugin_version" field.
+func (_c *HttpLogCreate) SetPluginVersion(v string) *HttpLogCreate {
+	_c.mutation.SetPluginVersion(v)
+	return _c
+}
+
+// SetNillablePluginVersion sets the "plugin_version" field if the given value is not nil.
+func (_c *HttpLogCreate) SetNillablePluginVersion(v *string) *HttpLogCreate {
+	if v != nil {
+		_c.SetPluginVersion(*v)
+	}
+	return _c
+}
+
 // Mutation returns the HttpLogMutation object of the builder.
 func (_c *HttpLogCreate) Mutation() *HttpLogMutation {
 	return _c.mutation
@@ -147,6 +175,14 @@ func (_c *HttpLogCreate) defaults() {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := httplog.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
+	}
+	if _, ok := _c.mutation.GoVersion(); !ok {
+		v := httplog.DefaultGoVersion
+		_c.mutation.SetGoVersion(v)
+	}
+	if _, ok := _c.mutation.PluginVersion(); !ok {
+		v := httplog.DefaultPluginVersion
+		_c.mutation.SetPluginVersion(v)
 	}
 }
 
@@ -247,6 +283,14 @@ func (_c *HttpLogCreate) createSpec() (*HttpLog, *sqlgraph.CreateSpec) {
 		_spec.SetField(httplog.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
+	if value, ok := _c.mutation.GoVersion(); ok {
+		_spec.SetField(httplog.FieldGoVersion, field.TypeString, value)
+		_node.GoVersion = value
+	}
+	if value, ok := _c.mutation.PluginVersion(); ok {
+		_spec.SetField(httplog.FieldPluginVersion, field.TypeString, value)
+		_node.PluginVersion = value
+	}
 	return _node, _spec
 }
 
@@ -299,168 +343,6 @@ type (
 	}
 )
 
-// SetHostname sets the "hostname" field.
-func (u *HttpLogUpsert) SetHostname(v string) *HttpLogUpsert {
-	u.Set(httplog.FieldHostname, v)
-	return u
-}
-
-// UpdateHostname sets the "hostname" field to the value that was provided on create.
-func (u *HttpLogUpsert) UpdateHostname() *HttpLogUpsert {
-	u.SetExcluded(httplog.FieldHostname)
-	return u
-}
-
-// SetMethod sets the "method" field.
-func (u *HttpLogUpsert) SetMethod(v string) *HttpLogUpsert {
-	u.Set(httplog.FieldMethod, v)
-	return u
-}
-
-// UpdateMethod sets the "method" field to the value that was provided on create.
-func (u *HttpLogUpsert) UpdateMethod() *HttpLogUpsert {
-	u.SetExcluded(httplog.FieldMethod)
-	return u
-}
-
-// SetURL sets the "url" field.
-func (u *HttpLogUpsert) SetURL(v string) *HttpLogUpsert {
-	u.Set(httplog.FieldURL, v)
-	return u
-}
-
-// UpdateURL sets the "url" field to the value that was provided on create.
-func (u *HttpLogUpsert) UpdateURL() *HttpLogUpsert {
-	u.SetExcluded(httplog.FieldURL)
-	return u
-}
-
-// SetRequestHeaders sets the "request_headers" field.
-func (u *HttpLogUpsert) SetRequestHeaders(v map[string][]string) *HttpLogUpsert {
-	u.Set(httplog.FieldRequestHeaders, v)
-	return u
-}
-
-// UpdateRequestHeaders sets the "request_headers" field to the value that was provided on create.
-func (u *HttpLogUpsert) UpdateRequestHeaders() *HttpLogUpsert {
-	u.SetExcluded(httplog.FieldRequestHeaders)
-	return u
-}
-
-// SetRequestBody sets the "request_body" field.
-func (u *HttpLogUpsert) SetRequestBody(v json.RawMessage) *HttpLogUpsert {
-	u.Set(httplog.FieldRequestBody, v)
-	return u
-}
-
-// UpdateRequestBody sets the "request_body" field to the value that was provided on create.
-func (u *HttpLogUpsert) UpdateRequestBody() *HttpLogUpsert {
-	u.SetExcluded(httplog.FieldRequestBody)
-	return u
-}
-
-// ClearRequestBody clears the value of the "request_body" field.
-func (u *HttpLogUpsert) ClearRequestBody() *HttpLogUpsert {
-	u.SetNull(httplog.FieldRequestBody)
-	return u
-}
-
-// SetStatusCode sets the "status_code" field.
-func (u *HttpLogUpsert) SetStatusCode(v int) *HttpLogUpsert {
-	u.Set(httplog.FieldStatusCode, v)
-	return u
-}
-
-// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
-func (u *HttpLogUpsert) UpdateStatusCode() *HttpLogUpsert {
-	u.SetExcluded(httplog.FieldStatusCode)
-	return u
-}
-
-// AddStatusCode adds v to the "status_code" field.
-func (u *HttpLogUpsert) AddStatusCode(v int) *HttpLogUpsert {
-	u.Add(httplog.FieldStatusCode, v)
-	return u
-}
-
-// SetResponseHeaders sets the "response_headers" field.
-func (u *HttpLogUpsert) SetResponseHeaders(v map[string][]string) *HttpLogUpsert {
-	u.Set(httplog.FieldResponseHeaders, v)
-	return u
-}
-
-// UpdateResponseHeaders sets the "response_headers" field to the value that was provided on create.
-func (u *HttpLogUpsert) UpdateResponseHeaders() *HttpLogUpsert {
-	u.SetExcluded(httplog.FieldResponseHeaders)
-	return u
-}
-
-// SetResponseBody sets the "response_body" field.
-func (u *HttpLogUpsert) SetResponseBody(v json.RawMessage) *HttpLogUpsert {
-	u.Set(httplog.FieldResponseBody, v)
-	return u
-}
-
-// UpdateResponseBody sets the "response_body" field to the value that was provided on create.
-func (u *HttpLogUpsert) UpdateResponseBody() *HttpLogUpsert {
-	u.SetExcluded(httplog.FieldResponseBody)
-	return u
-}
-
-// ClearResponseBody clears the value of the "response_body" field.
-func (u *HttpLogUpsert) ClearResponseBody() *HttpLogUpsert {
-	u.SetNull(httplog.FieldResponseBody)
-	return u
-}
-
-// SetElapseTime sets the "elapse_time" field.
-func (u *HttpLogUpsert) SetElapseTime(v int64) *HttpLogUpsert {
-	u.Set(httplog.FieldElapseTime, v)
-	return u
-}
-
-// UpdateElapseTime sets the "elapse_time" field to the value that was provided on create.
-func (u *HttpLogUpsert) UpdateElapseTime() *HttpLogUpsert {
-	u.SetExcluded(httplog.FieldElapseTime)
-	return u
-}
-
-// AddElapseTime adds v to the "elapse_time" field.
-func (u *HttpLogUpsert) AddElapseTime(v int64) *HttpLogUpsert {
-	u.Add(httplog.FieldElapseTime, v)
-	return u
-}
-
-// SetIsError sets the "is_error" field.
-func (u *HttpLogUpsert) SetIsError(v bool) *HttpLogUpsert {
-	u.Set(httplog.FieldIsError, v)
-	return u
-}
-
-// UpdateIsError sets the "is_error" field to the value that was provided on create.
-func (u *HttpLogUpsert) UpdateIsError() *HttpLogUpsert {
-	u.SetExcluded(httplog.FieldIsError)
-	return u
-}
-
-// ClearIsError clears the value of the "is_error" field.
-func (u *HttpLogUpsert) ClearIsError() *HttpLogUpsert {
-	u.SetNull(httplog.FieldIsError)
-	return u
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (u *HttpLogUpsert) SetCreatedAt(v time.Time) *HttpLogUpsert {
-	u.Set(httplog.FieldCreatedAt, v)
-	return u
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *HttpLogUpsert) UpdateCreatedAt() *HttpLogUpsert {
-	u.SetExcluded(httplog.FieldCreatedAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -471,6 +353,47 @@ func (u *HttpLogUpsert) UpdateCreatedAt() *HttpLogUpsert {
 //		Exec(ctx)
 func (u *HttpLogUpsertOne) UpdateNewValues() *HttpLogUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.Hostname(); exists {
+			s.SetIgnore(httplog.FieldHostname)
+		}
+		if _, exists := u.create.mutation.Method(); exists {
+			s.SetIgnore(httplog.FieldMethod)
+		}
+		if _, exists := u.create.mutation.URL(); exists {
+			s.SetIgnore(httplog.FieldURL)
+		}
+		if _, exists := u.create.mutation.RequestHeaders(); exists {
+			s.SetIgnore(httplog.FieldRequestHeaders)
+		}
+		if _, exists := u.create.mutation.RequestBody(); exists {
+			s.SetIgnore(httplog.FieldRequestBody)
+		}
+		if _, exists := u.create.mutation.StatusCode(); exists {
+			s.SetIgnore(httplog.FieldStatusCode)
+		}
+		if _, exists := u.create.mutation.ResponseHeaders(); exists {
+			s.SetIgnore(httplog.FieldResponseHeaders)
+		}
+		if _, exists := u.create.mutation.ResponseBody(); exists {
+			s.SetIgnore(httplog.FieldResponseBody)
+		}
+		if _, exists := u.create.mutation.ElapseTime(); exists {
+			s.SetIgnore(httplog.FieldElapseTime)
+		}
+		if _, exists := u.create.mutation.IsError(); exists {
+			s.SetIgnore(httplog.FieldIsError)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(httplog.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.GoVersion(); exists {
+			s.SetIgnore(httplog.FieldGoVersion)
+		}
+		if _, exists := u.create.mutation.PluginVersion(); exists {
+			s.SetIgnore(httplog.FieldPluginVersion)
+		}
+	}))
 	return u
 }
 
@@ -499,195 +422,6 @@ func (u *HttpLogUpsertOne) Update(set func(*HttpLogUpsert)) *HttpLogUpsertOne {
 		set(&HttpLogUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetHostname sets the "hostname" field.
-func (u *HttpLogUpsertOne) SetHostname(v string) *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetHostname(v)
-	})
-}
-
-// UpdateHostname sets the "hostname" field to the value that was provided on create.
-func (u *HttpLogUpsertOne) UpdateHostname() *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateHostname()
-	})
-}
-
-// SetMethod sets the "method" field.
-func (u *HttpLogUpsertOne) SetMethod(v string) *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetMethod(v)
-	})
-}
-
-// UpdateMethod sets the "method" field to the value that was provided on create.
-func (u *HttpLogUpsertOne) UpdateMethod() *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateMethod()
-	})
-}
-
-// SetURL sets the "url" field.
-func (u *HttpLogUpsertOne) SetURL(v string) *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetURL(v)
-	})
-}
-
-// UpdateURL sets the "url" field to the value that was provided on create.
-func (u *HttpLogUpsertOne) UpdateURL() *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateURL()
-	})
-}
-
-// SetRequestHeaders sets the "request_headers" field.
-func (u *HttpLogUpsertOne) SetRequestHeaders(v map[string][]string) *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetRequestHeaders(v)
-	})
-}
-
-// UpdateRequestHeaders sets the "request_headers" field to the value that was provided on create.
-func (u *HttpLogUpsertOne) UpdateRequestHeaders() *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateRequestHeaders()
-	})
-}
-
-// SetRequestBody sets the "request_body" field.
-func (u *HttpLogUpsertOne) SetRequestBody(v json.RawMessage) *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetRequestBody(v)
-	})
-}
-
-// UpdateRequestBody sets the "request_body" field to the value that was provided on create.
-func (u *HttpLogUpsertOne) UpdateRequestBody() *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateRequestBody()
-	})
-}
-
-// ClearRequestBody clears the value of the "request_body" field.
-func (u *HttpLogUpsertOne) ClearRequestBody() *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.ClearRequestBody()
-	})
-}
-
-// SetStatusCode sets the "status_code" field.
-func (u *HttpLogUpsertOne) SetStatusCode(v int) *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetStatusCode(v)
-	})
-}
-
-// AddStatusCode adds v to the "status_code" field.
-func (u *HttpLogUpsertOne) AddStatusCode(v int) *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.AddStatusCode(v)
-	})
-}
-
-// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
-func (u *HttpLogUpsertOne) UpdateStatusCode() *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateStatusCode()
-	})
-}
-
-// SetResponseHeaders sets the "response_headers" field.
-func (u *HttpLogUpsertOne) SetResponseHeaders(v map[string][]string) *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetResponseHeaders(v)
-	})
-}
-
-// UpdateResponseHeaders sets the "response_headers" field to the value that was provided on create.
-func (u *HttpLogUpsertOne) UpdateResponseHeaders() *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateResponseHeaders()
-	})
-}
-
-// SetResponseBody sets the "response_body" field.
-func (u *HttpLogUpsertOne) SetResponseBody(v json.RawMessage) *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetResponseBody(v)
-	})
-}
-
-// UpdateResponseBody sets the "response_body" field to the value that was provided on create.
-func (u *HttpLogUpsertOne) UpdateResponseBody() *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateResponseBody()
-	})
-}
-
-// ClearResponseBody clears the value of the "response_body" field.
-func (u *HttpLogUpsertOne) ClearResponseBody() *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.ClearResponseBody()
-	})
-}
-
-// SetElapseTime sets the "elapse_time" field.
-func (u *HttpLogUpsertOne) SetElapseTime(v int64) *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetElapseTime(v)
-	})
-}
-
-// AddElapseTime adds v to the "elapse_time" field.
-func (u *HttpLogUpsertOne) AddElapseTime(v int64) *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.AddElapseTime(v)
-	})
-}
-
-// UpdateElapseTime sets the "elapse_time" field to the value that was provided on create.
-func (u *HttpLogUpsertOne) UpdateElapseTime() *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateElapseTime()
-	})
-}
-
-// SetIsError sets the "is_error" field.
-func (u *HttpLogUpsertOne) SetIsError(v bool) *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetIsError(v)
-	})
-}
-
-// UpdateIsError sets the "is_error" field to the value that was provided on create.
-func (u *HttpLogUpsertOne) UpdateIsError() *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateIsError()
-	})
-}
-
-// ClearIsError clears the value of the "is_error" field.
-func (u *HttpLogUpsertOne) ClearIsError() *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.ClearIsError()
-	})
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (u *HttpLogUpsertOne) SetCreatedAt(v time.Time) *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *HttpLogUpsertOne) UpdateCreatedAt() *HttpLogUpsertOne {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateCreatedAt()
-	})
 }
 
 // Exec executes the query.
@@ -864,6 +598,49 @@ type HttpLogUpsertBulk struct {
 //		Exec(ctx)
 func (u *HttpLogUpsertBulk) UpdateNewValues() *HttpLogUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.Hostname(); exists {
+				s.SetIgnore(httplog.FieldHostname)
+			}
+			if _, exists := b.mutation.Method(); exists {
+				s.SetIgnore(httplog.FieldMethod)
+			}
+			if _, exists := b.mutation.URL(); exists {
+				s.SetIgnore(httplog.FieldURL)
+			}
+			if _, exists := b.mutation.RequestHeaders(); exists {
+				s.SetIgnore(httplog.FieldRequestHeaders)
+			}
+			if _, exists := b.mutation.RequestBody(); exists {
+				s.SetIgnore(httplog.FieldRequestBody)
+			}
+			if _, exists := b.mutation.StatusCode(); exists {
+				s.SetIgnore(httplog.FieldStatusCode)
+			}
+			if _, exists := b.mutation.ResponseHeaders(); exists {
+				s.SetIgnore(httplog.FieldResponseHeaders)
+			}
+			if _, exists := b.mutation.ResponseBody(); exists {
+				s.SetIgnore(httplog.FieldResponseBody)
+			}
+			if _, exists := b.mutation.ElapseTime(); exists {
+				s.SetIgnore(httplog.FieldElapseTime)
+			}
+			if _, exists := b.mutation.IsError(); exists {
+				s.SetIgnore(httplog.FieldIsError)
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(httplog.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.GoVersion(); exists {
+				s.SetIgnore(httplog.FieldGoVersion)
+			}
+			if _, exists := b.mutation.PluginVersion(); exists {
+				s.SetIgnore(httplog.FieldPluginVersion)
+			}
+		}
+	}))
 	return u
 }
 
@@ -892,195 +669,6 @@ func (u *HttpLogUpsertBulk) Update(set func(*HttpLogUpsert)) *HttpLogUpsertBulk 
 		set(&HttpLogUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetHostname sets the "hostname" field.
-func (u *HttpLogUpsertBulk) SetHostname(v string) *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetHostname(v)
-	})
-}
-
-// UpdateHostname sets the "hostname" field to the value that was provided on create.
-func (u *HttpLogUpsertBulk) UpdateHostname() *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateHostname()
-	})
-}
-
-// SetMethod sets the "method" field.
-func (u *HttpLogUpsertBulk) SetMethod(v string) *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetMethod(v)
-	})
-}
-
-// UpdateMethod sets the "method" field to the value that was provided on create.
-func (u *HttpLogUpsertBulk) UpdateMethod() *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateMethod()
-	})
-}
-
-// SetURL sets the "url" field.
-func (u *HttpLogUpsertBulk) SetURL(v string) *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetURL(v)
-	})
-}
-
-// UpdateURL sets the "url" field to the value that was provided on create.
-func (u *HttpLogUpsertBulk) UpdateURL() *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateURL()
-	})
-}
-
-// SetRequestHeaders sets the "request_headers" field.
-func (u *HttpLogUpsertBulk) SetRequestHeaders(v map[string][]string) *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetRequestHeaders(v)
-	})
-}
-
-// UpdateRequestHeaders sets the "request_headers" field to the value that was provided on create.
-func (u *HttpLogUpsertBulk) UpdateRequestHeaders() *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateRequestHeaders()
-	})
-}
-
-// SetRequestBody sets the "request_body" field.
-func (u *HttpLogUpsertBulk) SetRequestBody(v json.RawMessage) *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetRequestBody(v)
-	})
-}
-
-// UpdateRequestBody sets the "request_body" field to the value that was provided on create.
-func (u *HttpLogUpsertBulk) UpdateRequestBody() *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateRequestBody()
-	})
-}
-
-// ClearRequestBody clears the value of the "request_body" field.
-func (u *HttpLogUpsertBulk) ClearRequestBody() *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.ClearRequestBody()
-	})
-}
-
-// SetStatusCode sets the "status_code" field.
-func (u *HttpLogUpsertBulk) SetStatusCode(v int) *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetStatusCode(v)
-	})
-}
-
-// AddStatusCode adds v to the "status_code" field.
-func (u *HttpLogUpsertBulk) AddStatusCode(v int) *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.AddStatusCode(v)
-	})
-}
-
-// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
-func (u *HttpLogUpsertBulk) UpdateStatusCode() *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateStatusCode()
-	})
-}
-
-// SetResponseHeaders sets the "response_headers" field.
-func (u *HttpLogUpsertBulk) SetResponseHeaders(v map[string][]string) *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetResponseHeaders(v)
-	})
-}
-
-// UpdateResponseHeaders sets the "response_headers" field to the value that was provided on create.
-func (u *HttpLogUpsertBulk) UpdateResponseHeaders() *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateResponseHeaders()
-	})
-}
-
-// SetResponseBody sets the "response_body" field.
-func (u *HttpLogUpsertBulk) SetResponseBody(v json.RawMessage) *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetResponseBody(v)
-	})
-}
-
-// UpdateResponseBody sets the "response_body" field to the value that was provided on create.
-func (u *HttpLogUpsertBulk) UpdateResponseBody() *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateResponseBody()
-	})
-}
-
-// ClearResponseBody clears the value of the "response_body" field.
-func (u *HttpLogUpsertBulk) ClearResponseBody() *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.ClearResponseBody()
-	})
-}
-
-// SetElapseTime sets the "elapse_time" field.
-func (u *HttpLogUpsertBulk) SetElapseTime(v int64) *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetElapseTime(v)
-	})
-}
-
-// AddElapseTime adds v to the "elapse_time" field.
-func (u *HttpLogUpsertBulk) AddElapseTime(v int64) *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.AddElapseTime(v)
-	})
-}
-
-// UpdateElapseTime sets the "elapse_time" field to the value that was provided on create.
-func (u *HttpLogUpsertBulk) UpdateElapseTime() *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateElapseTime()
-	})
-}
-
-// SetIsError sets the "is_error" field.
-func (u *HttpLogUpsertBulk) SetIsError(v bool) *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetIsError(v)
-	})
-}
-
-// UpdateIsError sets the "is_error" field to the value that was provided on create.
-func (u *HttpLogUpsertBulk) UpdateIsError() *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateIsError()
-	})
-}
-
-// ClearIsError clears the value of the "is_error" field.
-func (u *HttpLogUpsertBulk) ClearIsError() *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.ClearIsError()
-	})
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (u *HttpLogUpsertBulk) SetCreatedAt(v time.Time) *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.SetCreatedAt(v)
-	})
-}
-
-// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
-func (u *HttpLogUpsertBulk) UpdateCreatedAt() *HttpLogUpsertBulk {
-	return u.Update(func(s *HttpLogUpsert) {
-		s.UpdateCreatedAt()
-	})
 }
 
 // Exec executes the query.

@@ -54,6 +54,11 @@ func (IpGroup) Fields() []ent.Field {
 			Optional().
 			Comment("IP组描述").
 			Annotations(entsql.WithComments(true)),
+
+		field.String("last_api_response").
+			Optional().
+			Comment("最近一次接口的反馈").
+			Annotations(entsql.WithComments(true)),
 	}
 }
 

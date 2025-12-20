@@ -41,6 +41,8 @@ const (
 	FieldIsActive = "is_active"
 	// FieldLastRefreshAt holds the string denoting the last_refresh_at field in the database.
 	FieldLastRefreshAt = "last_refresh_at"
+	// FieldLastAPIResponse holds the string denoting the last_api_response field in the database.
+	FieldLastAPIResponse = "last_api_response"
 	// EdgeConfig holds the string denoting the config edge name in mutations.
 	EdgeConfig = "config"
 	// EdgeIPGroup holds the string denoting the ip_group edge name in mutations.
@@ -88,6 +90,7 @@ var Columns = []string{
 	FieldIPGroupID,
 	FieldIsActive,
 	FieldLastRefreshAt,
+	FieldLastAPIResponse,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -236,6 +239,11 @@ func ByIsActive(opts ...sql.OrderTermOption) OrderOption {
 // ByLastRefreshAt orders the results by the last_refresh_at field.
 func ByLastRefreshAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastRefreshAt, opts...).ToFunc()
+}
+
+// ByLastAPIResponse orders the results by the last_api_response field.
+func ByLastAPIResponse(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastAPIResponse, opts...).ToFunc()
 }
 
 // ByConfigField orders the results by config field.
