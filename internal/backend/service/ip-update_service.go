@@ -98,6 +98,11 @@ func (s *IpUpdateService) StartCdnJob(ctx context.Context) (err error) {
 func (s *IpUpdateService) runDnsTask() {
 
 	ctx := context.Background()
+	processingType := "DNS"
+
+	s.logger.InfoContext(ctx, "开始执行",
+		slog.String("处理类型", processingType),
+	)
 
 	// 查询全部DNS记录
 	allDnsRecord, err := global.GvaEntDb.DNSRecord.Query().
@@ -128,10 +133,11 @@ func (s *IpUpdateService) runDnsTask() {
 				eg.Go(func() error {
 
 					newLog := s.logger.With(
-						slog.String("processing", "concurrent"),
-						slog.Int64("id", item.ID),
-						slog.String("record", "DNS"),
-						slog.String("type", item.Type.String()),
+						slog.String("处理方式", "并发"),
+						slog.String("处理类型", processingType),
+						slog.Int64("记录", item.ID),
+						slog.String("类型", item.Type.String()),
+						slog.String("子域名", item.SubDomain),
 					)
 
 					if err = s.DnsUpdate(egCtx, newLog, item); err != nil {
@@ -147,6 +153,7 @@ func (s *IpUpdateService) runDnsTask() {
 
 			if err = eg.Wait(); err != nil {
 				s.logger.ErrorContext(ctx, "并发处理错误",
+					slog.String("处理类型", processingType),
 					slog.Any("error", err),
 				)
 			}
@@ -156,11 +163,11 @@ func (s *IpUpdateService) runDnsTask() {
 		for _, item := range serialRecords {
 
 			newLog := s.logger.With(
-				slog.String("processing", "serial"),
-				slog.Int64("id", item.ID),
-				slog.String("record", "DNS"),
-				slog.String("type", item.Type.String()),
-				slog.String("sub_domain", item.SubDomain),
+				slog.String("处理方式", "串行"),
+				slog.String("处理类型", processingType),
+				slog.Int64("记录", item.ID),
+				slog.String("类型", item.Type.String()),
+				slog.String("子域名", item.SubDomain),
 			)
 
 			if err = s.DnsUpdate(ctx, newLog, item); err != nil {
@@ -175,8 +182,9 @@ func (s *IpUpdateService) runDnsTask() {
 
 	nextRun, err := s.dnsJob.NextRun()
 	if err == nil {
-		s.logger.InfoContext(ctx, "DNS更新成功",
-			slog.String("next_run_time", nextRun.Format(time.DateTime)),
+		s.logger.InfoContext(ctx, "执行完成",
+			slog.String("处理类型", processingType),
+			slog.String("下次运行时间", nextRun.Format(time.DateTime)),
 		)
 
 		// 判断CDN任务是否存在
@@ -184,7 +192,9 @@ func (s *IpUpdateService) runDnsTask() {
 		// 	go s.StartCdnJob(context.Background())
 		// }
 	} else {
-		s.logger.InfoContext(ctx, "DNS更新成功")
+		s.logger.InfoContext(ctx, "执行完成",
+			slog.String("处理类型", processingType),
+		)
 	}
 
 }
@@ -192,6 +202,11 @@ func (s *IpUpdateService) runDnsTask() {
 func (s *IpUpdateService) runCdnTask() {
 
 	ctx := context.Background()
+	processingType := "CDN"
+
+	s.logger.InfoContext(ctx, "开始执行",
+		slog.String("处理类型", processingType),
+	)
 
 	// 查询全部CDN记录
 	allCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
@@ -222,11 +237,11 @@ func (s *IpUpdateService) runCdnTask() {
 				eg.Go(func() error {
 
 					newLog := s.logger.With(
-						slog.String("processing", "concurrent"),
+						slog.String("处理方式", "并发"),
+						slog.String("处理类型", processingType),
 						slog.Int64("id", item.ID),
-						slog.String("record", "CDN"),
-						slog.String("type", item.Type.String()),
-						slog.String("sub_domain", item.SubDomain),
+						slog.String("类型", item.Type.String()),
+						slog.String("子域名", item.SubDomain),
 					)
 
 					if err = s.CdnUpdate(egCtx, newLog, item); err != nil {
@@ -242,6 +257,7 @@ func (s *IpUpdateService) runCdnTask() {
 
 			if err = eg.Wait(); err != nil {
 				s.logger.ErrorContext(ctx, "并发处理错误",
+					slog.String("处理类型", processingType),
 					slog.Any("error", err),
 				)
 			}
@@ -251,11 +267,11 @@ func (s *IpUpdateService) runCdnTask() {
 		for _, item := range serialRecords {
 
 			newLog := s.logger.With(
-				slog.String("processing", "serial"),
-				slog.Int64("id", item.ID),
-				slog.String("record", "CDN"),
-				slog.String("type", item.Type.String()),
-				slog.String("sub_domain", item.SubDomain),
+				slog.String("处理方式", "串行"),
+				slog.String("处理类型", processingType),
+				slog.Int64("记录", item.ID),
+				slog.String("类型", item.Type.String()),
+				slog.String("子域名", item.SubDomain),
 			)
 
 			if err = s.CdnUpdate(ctx, newLog, item); err != nil {
@@ -270,8 +286,9 @@ func (s *IpUpdateService) runCdnTask() {
 
 	nextRun, err := s.cdnJob.NextRun()
 	if err == nil {
-		s.logger.InfoContext(ctx, "CDN更新成功",
-			slog.String("next_run_time", nextRun.Format(time.DateTime)),
+		s.logger.InfoContext(ctx, "执行完成",
+			slog.String("处理类型", processingType),
+			slog.String("下次运行时间", nextRun.Format(time.DateTime)),
 		)
 
 		// 判断DNS任务是否存在
@@ -279,7 +296,9 @@ func (s *IpUpdateService) runCdnTask() {
 			go s.StartDnsJob(context.Background())
 		}
 	} else {
-		s.logger.InfoContext(ctx, "CDN更新成功")
+		s.logger.InfoContext(ctx, "执行完成",
+			slog.String("处理类型", processingType),
+		)
 	}
 
 }
