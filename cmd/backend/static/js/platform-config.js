@@ -20,60 +20,84 @@ function changePlatform(platform) {
 
 // 组装JSON配置
 function buildConfigPlatform() {
-  const platform = document.getElementById("platform").value;
+  const platform = document.getElementById("platform").value.trim();
   let config = {};
 
   switch (platform) {
     case "cloudflare":
       config = {
-        api_key: document.getElementById("cloudflare_api_key").value,
-        zone_id: document.getElementById("cloudflare_zone_id").value,
-        domain_name: document.getElementById("cloudflare_domain_name").value,
+        api_key: document.getElementById("cloudflare_api_key").value.trim(),
+        zone_id: document.getElementById("cloudflare_zone_id").value.trim(),
+        domain_name: document
+          .getElementById("cloudflare_domain_name")
+          .value.trim(),
       };
       break;
     case "tencent_dns":
       config = {
-        secret_id: document.getElementById("tencent_dns_secret_id").value,
-        secret_key: document.getElementById("tencent_dns_secret_key").value,
-        domain_name: document.getElementById("tencent_dns_domain_name").value,
+        secret_id: document
+          .getElementById("tencent_dns_secret_id")
+          .value.trim(),
+        secret_key: document
+          .getElementById("tencent_dns_secret_key")
+          .value.trim(),
+        domain_name: document
+          .getElementById("tencent_dns_domain_name")
+          .value.trim(),
       };
       break;
     case "tencent_eo":
       config = {
-        secret_id: document.getElementById("tencent_eo_secret_id").value,
-        secret_key: document.getElementById("tencent_eo_secret_key").value,
-        zone_id: document.getElementById("tencent_eo_zone_id").value,
-        domain_name: document.getElementById("tencent_eo_domain_name").value,
+        secret_id: document.getElementById("tencent_eo_secret_id").value.trim(),
+        secret_key: document
+          .getElementById("tencent_eo_secret_key")
+          .value.trim(),
+        zone_id: document.getElementById("tencent_eo_zone_id").value.trim(),
+        domain_name: document
+          .getElementById("tencent_eo_domain_name")
+          .value.trim(),
       };
       break;
     case "aliyun_dns":
       config = {
-        access_key_id: document.getElementById("aliyun_dns_access_key_id")
-          .value,
-        access_key_secret: document.getElementById(
-          "aliyun_dns_access_key_secret"
-        ).value,
-        domain_name: document.getElementById("aliyun_dns_domain_name").value,
+        access_key_id: document
+          .getElementById("aliyun_dns_access_key_id")
+          .value.trim(),
+        access_key_secret: document
+          .getElementById("aliyun_dns_access_key_secret")
+          .value.trim(),
+        domain_name: document
+          .getElementById("aliyun_dns_domain_name")
+          .value.trim(),
       };
       break;
     case "aliyun_esa":
       config = {
-        access_key_id: document.getElementById("aliyun_esa_access_key_id")
-          .value,
-        access_key_secret: document.getElementById(
-          "aliyun_esa_access_key_secret"
-        ).value,
-        site_id: document.getElementById("aliyun_esa_site_id").value,
-        domain_name: document.getElementById("aliyun_esa_domain_name").value,
+        access_key_id: document
+          .getElementById("aliyun_esa_access_key_id")
+          .value.trim(),
+        access_key_secret: document
+          .getElementById("aliyun_esa_access_key_secret")
+          .value.trim(),
+        site_id: Number(
+          document.getElementById("aliyun_esa_site_id").value.trim()
+        ),
+        domain_name: document
+          .getElementById("aliyun_esa_domain_name")
+          .value.trim(),
       };
       break;
     case "baidu_dns":
       config = {
-        access_key_id: document.getElementById("baidu_dns_access_key_id").value,
-        secret_access_key: document.getElementById(
-          "baidu_dns_secret_access_key"
-        ).value,
-        domain_name: document.getElementById("baidu_dns_domain_name").value,
+        access_key_id: document
+          .getElementById("baidu_dns_access_key_id")
+          .value.trim(),
+        secret_access_key: document
+          .getElementById("baidu_dns_secret_access_key")
+          .value.trim(),
+        domain_name: document
+          .getElementById("baidu_dns_domain_name")
+          .value.trim(),
       };
       break;
   }
