@@ -383,7 +383,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 		_ = s.updateDbOfCdnResponse(ctx, firstRecord.ID, err.Error())
 		return err
 	}
-	_ = s.updateDbOfDnsResponse(ctx, firstRecord.ID, "ok")
+	_ = s.updateDbOfCdnResponse(ctx, firstRecord.ID, "ok")
 	return nil
 }
 
