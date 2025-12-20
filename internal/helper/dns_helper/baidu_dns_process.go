@@ -139,7 +139,7 @@ func (d *DNSProcessBaiduDnsImpl) UpsertRecord(ctx context.Context, params *DNSPr
 		// 是否更新
 		var isUpdate = false
 
-		if utils.DNSValuesEqual(queryDomain.OriginValue, params.OriginValue) {
+		if !utils.DNSValuesEqual(queryDomain.OriginValue, originValue) {
 			isUpdate = true
 		}
 

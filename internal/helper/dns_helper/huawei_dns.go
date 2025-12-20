@@ -124,13 +124,13 @@ func (c *HuaweiDnsClient) QueryDomain(ctx context.Context, fullDomain string, re
 	}
 
 	for _, item := range *response.Recordsets {
-		if utils.PtrToString(item.Name) == fullDomain {
+		if strings.EqualFold(utils.TrimDots(utils.PtrToString(item.Name)), utils.TrimDots(fullDomain)) {
 			if recordType != "" && utils.PtrToString(item.Type) != recordType {
 				continue
 			}
 			return QueryDomainResponse{
 				RecordID:    utils.PtrToString(item.Id),
-				FullDomain:  utils.PtrToString(item.Name),
+				FullDomain:  utils.TrimDots(utils.PtrToString(item.Name)),
 				RecordType:  utils.PtrToString(item.Type),
 				OriginValue: strings.Join(utils.PtrToStrings(item.Records), ","),
 			}, nil

@@ -139,7 +139,7 @@ func (d *DNSProcessTencentDnsImpl) UpsertRecord(ctx context.Context, params *DNS
 		// 是否更新
 		var isUpdate = false
 
-		if utils.DNSValuesEqual(queryDomain.OriginValue, params.OriginValue) {
+		if !utils.DNSValuesEqual(queryDomain.OriginValue, originValue) {
 			isUpdate = true
 		}
 

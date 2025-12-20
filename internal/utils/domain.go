@@ -146,3 +146,8 @@ func ParseDnsDomainType(oV string) (recordType string, originValue string, err e
 	recordType, err = GetRecordType(oV)
 	return recordType, oV, err
 }
+
+// TrimDots 去除字符串首尾的点号
+func TrimDots(s string) string {
+	return strings.Trim(s, ".")
+}
