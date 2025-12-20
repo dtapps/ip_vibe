@@ -374,7 +374,9 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 		)
 
 	default:
-		return fmt.Errorf("不支持类型: %s", firstRecord.Edges.Config.Platform)
+		err = fmt.Errorf("暂不支持该平台: %s", firstRecord.Edges.Config.Platform)
+		_ = s.updateDbOfCdnResponse(ctx, firstRecord.ID, err.Error())
+		return err
 	}
 
 	// 更新CDN记录
@@ -482,7 +484,9 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 		)
 
 	default:
-		return fmt.Errorf("不支持类型: %s", firstRecord.Edges.Config.Platform)
+		err = fmt.Errorf("暂不支持该平台: %s", firstRecord.Edges.Config.Platform)
+		_ = s.updateDbOfDnsResponse(ctx, firstRecord.ID, err.Error())
+		return err
 	}
 
 	// 更新DNS记录
