@@ -221,9 +221,6 @@ func (_c *RestyLogCreate) check() error {
 	if _, ok := _c.mutation.URL(); !ok {
 		return &ValidationError{Name: "url", err: errors.New(`ent_log: missing required field "RestyLog.url"`)}
 	}
-	if _, ok := _c.mutation.RequestHeaders(); !ok {
-		return &ValidationError{Name: "request_headers", err: errors.New(`ent_log: missing required field "RestyLog.request_headers"`)}
-	}
 	if _, ok := _c.mutation.StatusCode(); !ok {
 		return &ValidationError{Name: "status_code", err: errors.New(`ent_log: missing required field "RestyLog.status_code"`)}
 	}
@@ -231,9 +228,6 @@ func (_c *RestyLogCreate) check() error {
 		if err := restylog.StatusCodeValidator(v); err != nil {
 			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent_log: validator failed for field "RestyLog.status_code": %w`, err)}
 		}
-	}
-	if _, ok := _c.mutation.ResponseHeaders(); !ok {
-		return &ValidationError{Name: "response_headers", err: errors.New(`ent_log: missing required field "RestyLog.response_headers"`)}
 	}
 	if _, ok := _c.mutation.ElapseTime(); !ok {
 		return &ValidationError{Name: "elapse_time", err: errors.New(`ent_log: missing required field "RestyLog.elapse_time"`)}

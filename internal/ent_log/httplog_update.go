@@ -75,8 +75,14 @@ func (_u *HttpLogUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
+	if _u.mutation.RequestHeadersCleared() {
+		_spec.ClearField(httplog.FieldRequestHeaders, field.TypeJSON)
+	}
 	if _u.mutation.RequestBodyCleared() {
 		_spec.ClearField(httplog.FieldRequestBody, field.TypeJSON)
+	}
+	if _u.mutation.ResponseHeadersCleared() {
+		_spec.ClearField(httplog.FieldResponseHeaders, field.TypeJSON)
 	}
 	if _u.mutation.ResponseBodyCleared() {
 		_spec.ClearField(httplog.FieldResponseBody, field.TypeJSON)
@@ -189,8 +195,14 @@ func (_u *HttpLogUpdateOne) sqlSave(ctx context.Context) (_node *HttpLog, err er
 			}
 		}
 	}
+	if _u.mutation.RequestHeadersCleared() {
+		_spec.ClearField(httplog.FieldRequestHeaders, field.TypeJSON)
+	}
 	if _u.mutation.RequestBodyCleared() {
 		_spec.ClearField(httplog.FieldRequestBody, field.TypeJSON)
+	}
+	if _u.mutation.ResponseHeadersCleared() {
+		_spec.ClearField(httplog.FieldResponseHeaders, field.TypeJSON)
 	}
 	if _u.mutation.ResponseBodyCleared() {
 		_spec.ClearField(httplog.FieldResponseBody, field.TypeJSON)

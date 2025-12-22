@@ -75,8 +75,14 @@ func (_u *RestyLogUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
+	if _u.mutation.RequestHeadersCleared() {
+		_spec.ClearField(restylog.FieldRequestHeaders, field.TypeJSON)
+	}
 	if _u.mutation.RequestBodyCleared() {
 		_spec.ClearField(restylog.FieldRequestBody, field.TypeJSON)
+	}
+	if _u.mutation.ResponseHeadersCleared() {
+		_spec.ClearField(restylog.FieldResponseHeaders, field.TypeJSON)
 	}
 	if _u.mutation.ResponseBodyCleared() {
 		_spec.ClearField(restylog.FieldResponseBody, field.TypeJSON)
@@ -192,8 +198,14 @@ func (_u *RestyLogUpdateOne) sqlSave(ctx context.Context) (_node *RestyLog, err 
 			}
 		}
 	}
+	if _u.mutation.RequestHeadersCleared() {
+		_spec.ClearField(restylog.FieldRequestHeaders, field.TypeJSON)
+	}
 	if _u.mutation.RequestBodyCleared() {
 		_spec.ClearField(restylog.FieldRequestBody, field.TypeJSON)
+	}
+	if _u.mutation.ResponseHeadersCleared() {
+		_spec.ClearField(restylog.FieldResponseHeaders, field.TypeJSON)
 	}
 	if _u.mutation.ResponseBodyCleared() {
 		_spec.ClearField(restylog.FieldResponseBody, field.TypeJSON)

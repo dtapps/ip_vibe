@@ -304,9 +304,22 @@ func (m *HttpLogMutation) OldRequestHeaders(ctx context.Context) (v map[string][
 	return oldValue.RequestHeaders, nil
 }
 
+// ClearRequestHeaders clears the value of the "request_headers" field.
+func (m *HttpLogMutation) ClearRequestHeaders() {
+	m.request_headers = nil
+	m.clearedFields[httplog.FieldRequestHeaders] = struct{}{}
+}
+
+// RequestHeadersCleared returns if the "request_headers" field was cleared in this mutation.
+func (m *HttpLogMutation) RequestHeadersCleared() bool {
+	_, ok := m.clearedFields[httplog.FieldRequestHeaders]
+	return ok
+}
+
 // ResetRequestHeaders resets all changes to the "request_headers" field.
 func (m *HttpLogMutation) ResetRequestHeaders() {
 	m.request_headers = nil
+	delete(m.clearedFields, httplog.FieldRequestHeaders)
 }
 
 // SetRequestBody sets the "request_body" field.
@@ -461,9 +474,22 @@ func (m *HttpLogMutation) OldResponseHeaders(ctx context.Context) (v map[string]
 	return oldValue.ResponseHeaders, nil
 }
 
+// ClearResponseHeaders clears the value of the "response_headers" field.
+func (m *HttpLogMutation) ClearResponseHeaders() {
+	m.response_headers = nil
+	m.clearedFields[httplog.FieldResponseHeaders] = struct{}{}
+}
+
+// ResponseHeadersCleared returns if the "response_headers" field was cleared in this mutation.
+func (m *HttpLogMutation) ResponseHeadersCleared() bool {
+	_, ok := m.clearedFields[httplog.FieldResponseHeaders]
+	return ok
+}
+
 // ResetResponseHeaders resets all changes to the "response_headers" field.
 func (m *HttpLogMutation) ResetResponseHeaders() {
 	m.response_headers = nil
+	delete(m.clearedFields, httplog.FieldResponseHeaders)
 }
 
 // SetResponseBody sets the "response_body" field.
@@ -1070,8 +1096,14 @@ func (m *HttpLogMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *HttpLogMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(httplog.FieldRequestHeaders) {
+		fields = append(fields, httplog.FieldRequestHeaders)
+	}
 	if m.FieldCleared(httplog.FieldRequestBody) {
 		fields = append(fields, httplog.FieldRequestBody)
+	}
+	if m.FieldCleared(httplog.FieldResponseHeaders) {
+		fields = append(fields, httplog.FieldResponseHeaders)
 	}
 	if m.FieldCleared(httplog.FieldResponseBody) {
 		fields = append(fields, httplog.FieldResponseBody)
@@ -1099,8 +1131,14 @@ func (m *HttpLogMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *HttpLogMutation) ClearField(name string) error {
 	switch name {
+	case httplog.FieldRequestHeaders:
+		m.ClearRequestHeaders()
+		return nil
 	case httplog.FieldRequestBody:
 		m.ClearRequestBody()
+		return nil
+	case httplog.FieldResponseHeaders:
+		m.ClearResponseHeaders()
 		return nil
 	case httplog.FieldResponseBody:
 		m.ClearResponseBody()
@@ -2273,9 +2311,22 @@ func (m *RestyLogMutation) OldRequestHeaders(ctx context.Context) (v map[string]
 	return oldValue.RequestHeaders, nil
 }
 
+// ClearRequestHeaders clears the value of the "request_headers" field.
+func (m *RestyLogMutation) ClearRequestHeaders() {
+	m.request_headers = nil
+	m.clearedFields[restylog.FieldRequestHeaders] = struct{}{}
+}
+
+// RequestHeadersCleared returns if the "request_headers" field was cleared in this mutation.
+func (m *RestyLogMutation) RequestHeadersCleared() bool {
+	_, ok := m.clearedFields[restylog.FieldRequestHeaders]
+	return ok
+}
+
 // ResetRequestHeaders resets all changes to the "request_headers" field.
 func (m *RestyLogMutation) ResetRequestHeaders() {
 	m.request_headers = nil
+	delete(m.clearedFields, restylog.FieldRequestHeaders)
 }
 
 // SetRequestBody sets the "request_body" field.
@@ -2430,9 +2481,22 @@ func (m *RestyLogMutation) OldResponseHeaders(ctx context.Context) (v map[string
 	return oldValue.ResponseHeaders, nil
 }
 
+// ClearResponseHeaders clears the value of the "response_headers" field.
+func (m *RestyLogMutation) ClearResponseHeaders() {
+	m.response_headers = nil
+	m.clearedFields[restylog.FieldResponseHeaders] = struct{}{}
+}
+
+// ResponseHeadersCleared returns if the "response_headers" field was cleared in this mutation.
+func (m *RestyLogMutation) ResponseHeadersCleared() bool {
+	_, ok := m.clearedFields[restylog.FieldResponseHeaders]
+	return ok
+}
+
 // ResetResponseHeaders resets all changes to the "response_headers" field.
 func (m *RestyLogMutation) ResetResponseHeaders() {
 	m.response_headers = nil
+	delete(m.clearedFields, restylog.FieldResponseHeaders)
 }
 
 // SetResponseBody sets the "response_body" field.
@@ -3102,8 +3166,14 @@ func (m *RestyLogMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *RestyLogMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(restylog.FieldRequestHeaders) {
+		fields = append(fields, restylog.FieldRequestHeaders)
+	}
 	if m.FieldCleared(restylog.FieldRequestBody) {
 		fields = append(fields, restylog.FieldRequestBody)
+	}
+	if m.FieldCleared(restylog.FieldResponseHeaders) {
+		fields = append(fields, restylog.FieldResponseHeaders)
 	}
 	if m.FieldCleared(restylog.FieldResponseBody) {
 		fields = append(fields, restylog.FieldResponseBody)
@@ -3134,8 +3204,14 @@ func (m *RestyLogMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *RestyLogMutation) ClearField(name string) error {
 	switch name {
+	case restylog.FieldRequestHeaders:
+		m.ClearRequestHeaders()
+		return nil
 	case restylog.FieldRequestBody:
 		m.ClearRequestBody()
+		return nil
+	case restylog.FieldResponseHeaders:
+		m.ClearResponseHeaders()
 		return nil
 	case restylog.FieldResponseBody:
 		m.ClearResponseBody()

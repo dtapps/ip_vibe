@@ -203,9 +203,6 @@ func (_c *HttpLogCreate) check() error {
 	if _, ok := _c.mutation.URL(); !ok {
 		return &ValidationError{Name: "url", err: errors.New(`ent_log: missing required field "HttpLog.url"`)}
 	}
-	if _, ok := _c.mutation.RequestHeaders(); !ok {
-		return &ValidationError{Name: "request_headers", err: errors.New(`ent_log: missing required field "HttpLog.request_headers"`)}
-	}
 	if _, ok := _c.mutation.StatusCode(); !ok {
 		return &ValidationError{Name: "status_code", err: errors.New(`ent_log: missing required field "HttpLog.status_code"`)}
 	}
@@ -213,9 +210,6 @@ func (_c *HttpLogCreate) check() error {
 		if err := httplog.StatusCodeValidator(v); err != nil {
 			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent_log: validator failed for field "HttpLog.status_code": %w`, err)}
 		}
-	}
-	if _, ok := _c.mutation.ResponseHeaders(); !ok {
-		return &ValidationError{Name: "response_headers", err: errors.New(`ent_log: missing required field "HttpLog.response_headers"`)}
 	}
 	if _, ok := _c.mutation.ElapseTime(); !ok {
 		return &ValidationError{Name: "elapse_time", err: errors.New(`ent_log: missing required field "HttpLog.elapse_time"`)}

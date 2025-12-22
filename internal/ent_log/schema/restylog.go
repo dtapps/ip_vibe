@@ -39,29 +39,30 @@ func (RestyLog) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
 
 		field.String("hostname").
-			Comment("请求主机名").
 			Immutable().
+			Comment("请求主机名").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("method").
-			Comment("请求方式").
 			Immutable().
+			Comment("请求方式").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("url").
-			Comment("请求url").
 			Immutable().
+			Comment("请求url").
 			Annotations(entsql.WithComments(true)),
 
 		field.JSON("request_headers", map[string][]string{}).
-			Comment("请求header").
+			Optional().
 			Immutable().
+			Comment("请求header").
 			Annotations(entsql.WithComments(true)),
 
 		field.JSON("request_body", json.RawMessage{}).
 			Optional().
-			Comment("请求参数").
 			Immutable().
+			Comment("请求参数").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int("status_code").
@@ -71,54 +72,55 @@ func (RestyLog) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.JSON("response_headers", map[string][]string{}).
-			Comment("响应header").
+			Optional().
 			Immutable().
+			Comment("响应header").
 			Annotations(entsql.WithComments(true)),
 
 		field.JSON("response_body", json.RawMessage{}).
 			Optional().
-			Comment("响应结果").
 			Immutable().
+			Comment("响应结果").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("elapse_time").
-			Comment("请求耗时, 单位:毫秒").
 			Positive().
 			Immutable().
+			Comment("请求耗时, 单位:毫秒").
 			Annotations(entsql.WithComments(true)),
 
 		field.Bool("is_error").
-			Optional().
 			Default(false).
-			Comment("是否为错误请求（如 5xx、4xx）").
+			Optional().
 			Immutable().
+			Comment("是否为错误请求（如 5xx、4xx）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Time("created_at").
 			Default(time.Now).
-			Comment("请求时间").
 			Immutable().
+			Comment("请求时间").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("go_version").
 			Default(runtime.Version()).
 			Optional().
-			Comment("go 版本").
 			Immutable().
+			Comment("go 版本").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("plugin_version").
 			Default(resty_log.Version).
 			Optional().
-			Comment("plugin 版本").
 			Immutable().
+			Comment("plugin 版本").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("resty_version").
 			Default(resty.Version).
 			Optional().
-			Comment("resty 版本").
 			Immutable().
+			Comment("resty 版本").
 			Annotations(entsql.WithComments(true)),
 	}
 }

@@ -294,6 +294,16 @@ func URLContainsFold(v string) predicate.HttpLog {
 	return predicate.HttpLog(sql.FieldContainsFold(FieldURL, v))
 }
 
+// RequestHeadersIsNil applies the IsNil predicate on the "request_headers" field.
+func RequestHeadersIsNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldIsNull(FieldRequestHeaders))
+}
+
+// RequestHeadersNotNil applies the NotNil predicate on the "request_headers" field.
+func RequestHeadersNotNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldNotNull(FieldRequestHeaders))
+}
+
 // RequestBodyIsNil applies the IsNil predicate on the "request_body" field.
 func RequestBodyIsNil() predicate.HttpLog {
 	return predicate.HttpLog(sql.FieldIsNull(FieldRequestBody))
@@ -342,6 +352,16 @@ func StatusCodeLT(v int) predicate.HttpLog {
 // StatusCodeLTE applies the LTE predicate on the "status_code" field.
 func StatusCodeLTE(v int) predicate.HttpLog {
 	return predicate.HttpLog(sql.FieldLTE(FieldStatusCode, v))
+}
+
+// ResponseHeadersIsNil applies the IsNil predicate on the "response_headers" field.
+func ResponseHeadersIsNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldIsNull(FieldResponseHeaders))
+}
+
+// ResponseHeadersNotNil applies the NotNil predicate on the "response_headers" field.
+func ResponseHeadersNotNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldNotNull(FieldResponseHeaders))
 }
 
 // ResponseBodyIsNil applies the IsNil predicate on the "response_body" field.
