@@ -284,18 +284,6 @@ input:checked + .slider:before {
   background: #f9fafb;
 }
 
-/* 图标 */
-.ip-i {
-  width: 1.2em;
-  height: 1.2em;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vertical-align: -0.18em;
-}
-
 /* 带图标的 h2 */
 .h2-icon {
   display: inline-flex;

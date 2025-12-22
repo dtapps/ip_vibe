@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display:none">
+
   <!-- 加号 -->
   <symbol id="ip-plus" viewBox="0 0 48 48">
     <path d="M24 4v40M4 24h40" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
@@ -133,12 +134,8 @@
 
 <!-- 运行 -->
 <symbol id="ip-running" viewBox="0 0 48 48">
-  <style>
-    .ring{transform-origin:center;animation:spin 1.2s linear infinite;}
-    @keyframes spin{to{transform:rotate(360deg)}}
-  </style>
-  <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-dasharray="90 270" class="ring" fill="none"/>
-</symbol>
+    <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-dasharray="90 270" class="ip-ani-spin" fill="none"/>
+  </symbol>
 
 <!-- 端口转发 -->
 <symbol id="ip-forward" viewBox="0 0 48 48">
@@ -172,5 +169,23 @@
   <circle cx="24" cy="24" r="18" fill="none" stroke="currentColor" stroke-width="2.5"/>
   <path d="M18 24l3 3 6-6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
 </symbol>
+
+<!-- 测试 / 检查 -->
+<symbol id="ip-test" viewBox="0 0 48 48">
+    <circle cx="24" cy="24" r="18" fill="none" stroke="currentColor" stroke-width="4"/>
+    <path d="M16 24l4 4 8-8" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+<!-- 测试 / 实验室 -->
+<symbol id="ip-lab" viewBox="0 0 48 48">
+    <path d="M12 12h24v24H12zM20 8v8m8-8v8M16 32h16M24 20v12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="24" cy="24" r="2.5" fill="currentColor" stroke="none"/>
+  </symbol>
+
+<!-- 添加测试 -->
+<symbol id="ip-add-test" viewBox="0 0 48 48">
+    <path d="M18 8v28a4 4 0 004 4h4a4 4 0 004-4V8M14 40h20" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M20 36v-20M34 14v6m-3-3h6" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+  </symbol>
 
 </svg>

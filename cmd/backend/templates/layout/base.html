@@ -1,64 +1,59 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <title>{{ block "title" . }}DDNS管理平台{{ end }}</title>
 
-    <link rel="preload" href="/static/css/index.css" as="style" />
-    <link rel="preload" href="/static/css/index.dark.css" as="style" />
-    <link rel="preload" href="/static/css/select2-theme.css" as="style" />
-    <link rel="preload" href="/static/js/uuid.js" as="script" />
-    <link rel="preload" href="/static/js/index.js" as="script" />
-    <link rel="preload" href="/static/img/icons.svg" as="image" />
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ block "title" . }}DDNS管理平台{{ end }}</title>
 
-    <link rel="stylesheet" href="/static/css/index.css" />
-    <link rel="stylesheet" href="/static/css/index.dark.css" />
-    <link rel="stylesheet" href="/static/css/select2-theme.css" />
+  <link rel="preload" href="/static/js/uuid.js" as="script" />
+  <link rel="preload" href="/static/js/index.js" as="script" />
+  <link rel="preload" href="/static/img/icons.svg" as="image" type="image/svg+xml" crossorigin="anonymous" />
 
-    <link
-      href="/static/libs/select2/4.0.13/css/select2.min.css"
-      rel="stylesheet"
-    />
-    {{ block "head" . }}{{ end }}
-  </head>
-  <body>
-    {{ block "body" . }}{{ end }}
+  <link rel="stylesheet" href="/static/css/index.css" />
+  <link rel="stylesheet" href="/static/css/index.dark.css" media="(prefers-color-scheme: dark)" />
+  <link rel="stylesheet" href="/static/css/icons.css" />
 
-    <!-- 右边工具栏 -->
-    <a
-      href="javascript:location.reload()"
-      class="refresh-page"
-      aria-label="刷新页面"
-    >
-      <svg class="ip-i">
-        <use href="/static/img/icons.svg#ip-refresh" />
-      </svg>
-    </a>
-    <a href="#" class="back-top" aria-label="回到顶部">
-      <svg class="ip-i">
-        <use href="/static/img/icons.svg#ip-top" />
-      </svg>
-    </a>
+  <link rel="stylesheet" href="/static/css/select2-theme.css" />
+  <link href="/static/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
-    {{ block "scripts" . }}
-    <script>
-      window.isDebug = "{{isDebug}}" === "true"
-      window.deviceCode = "{{selfDeviceCode}}";
+  {{ block "head" . }}{{ end }}
+</head>
 
-      // 初始化日志静默
-      if (!window.isDebug) {
-        const noop = () => {};
-        console.log = noop;
-        console.info = noop;
-        console.debug = noop;
-        console.warn = noop;
-        console.error = noop;
-      }
-    </script>
-    <script src="/static/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="/static/libs/select2/4.0.13/js/select2.min.js"></script>
-    <script src="/static/js/uuid.js"></script>
-    <script src="/static/js/index.js"></script>
-    {{ end }}
-  </body>
+<body>
+  {{ block "body" . }}{{ end }}
+
+  <!-- 右边工具栏 -->
+  <a href="javascript:location.reload()" class="refresh-page" aria-label="刷新页面">
+    <svg class="ip-i">
+      <use href="/static/img/icons.svg#ip-refresh" />
+    </svg>
+  </a>
+  <a href="#" class="back-top" aria-label="回到顶部">
+    <svg class="ip-i">
+      <use href="/static/img/icons.svg#ip-top" />
+    </svg>
+  </a>
+
+  {{ block "scripts" . }}
+  <script>
+    window.isDebug = "{{isDebug}}" === "true";
+    window.deviceCode = "{{selfDeviceCode}}";
+
+    // 初始化日志静默
+    if (!window.isDebug) {
+      const noop = () => { };
+      console.log = noop;
+      console.info = noop;
+      console.debug = noop;
+      console.warn = noop;
+      console.error = noop;
+    }
+  </script>
+  <script src="/static/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="/static/libs/select2/4.0.13/js/select2.min.js"></script>
+  <script src="/static/js/uuid.js"></script>
+  <script src="/static/js/index.js"></script>
+  {{ end }}
+</body>
+
 </html>
