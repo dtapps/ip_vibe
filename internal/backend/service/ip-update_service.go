@@ -104,21 +104,96 @@ func (s *IpUpdateService) runDnsTask() {
 		slog.String("处理类型", processingType),
 	)
 
+	// 分组记录
+	var concurrentRecords, serialRecords []*PendingDnsRecord
+
 	// 查询全部DNS记录
 	allDnsRecord, err := global.GvaEntDb.DNSRecord.Query().
 		Where(dnsrecord.IsActiveEQ(true)).
+		// 预加载 配置
 		WithConfig().
+		// 预加载 CDN记录
+		WithCdnRecord().
+		// 预加载 IP组
+		WithIPGroup(func(withIPGroup *ent.IpGroupQuery) {
+			// 在 IP组 里查询设备
+			withIPGroup.WithDevices(func(withDevices *ent.DeviceQuery) {
+				// 设备心跳时间在 12 分钟内
+				withDevices.Where(device.LastHeartbeatAtGTE(time.Now().Add(-12 * time.Minute)))
+				withDevices.Order(ent.Asc(device.FieldID))
+			})
+		}).
 		All(ctx)
 	if err == nil {
 
-		var concurrentRecords, serialRecords []*ent.DNSRecord
-
 		// 按策略分组
-		for _, item := range allDnsRecord {
-			if s.allowConcurrent(item.Edges.Config) {
-				concurrentRecords = append(concurrentRecords, item)
+		for _, dnsRecord := range allDnsRecord {
+
+			// 创建待处理记录
+			pendingRecord := &PendingDnsRecord{
+				item:     dnsRecord,
+				platform: dnsRecord.Edges.Config.Platform,
+				params: &dns_helper.DNSProcessParams{
+					DNSRecordID: cast.ToString(dnsRecord.ID),
+
+					ConfigJSON: dnsRecord.Edges.Config.ConfigJSON,
+					SubDomain:  dnsRecord.SubDomain,
+				},
+			}
+
+			if dnsRecord.Type == dnsrecord.TypeCNAME {
+
+				// 获取关联的 CNAME 记录
+				cdnRecord := dnsRecord.Edges.CdnRecord
+				if cdnRecord == nil {
+					// err = fmt.Errorf("记录 %d 没有关联的 CNAME 记录", dnsRecord.ID)
+					// _ = s.updateDbOfDnsResponse(ctx, dnsRecord.ID, err.Error())
+					continue
+				}
+				pendingRecord.params.OriginValue = cdnRecord.CdnDomain
+
 			} else {
-				serialRecords = append(serialRecords, item)
+
+				// 获取关联的 IPGroup
+				ipGroup := dnsRecord.Edges.IPGroup
+				if ipGroup == nil {
+					// err = fmt.Errorf("记录 %d 没有关联的 IP组", dnsRecord.ID)
+					// _ = s.updateDbOfDnsResponse(ctx, dnsRecord.ID, err.Error())
+					continue
+				}
+				pendingRecord.params.GroupRecordID = cast.ToString(ipGroup.ID)
+
+				// 获取关联的设备列表
+				devices := ipGroup.Edges.Devices
+				if len(devices) == 0 {
+					// err = fmt.Errorf("记录 %d 没有可用设备", ipGroup.ID)
+					// _ = s.updateDbOfDnsResponse(ctx, dnsRecord.ID, err.Error())
+					continue
+				}
+
+				// 收集该记录的源IP
+				for _, device := range devices {
+					if device.IPV4 != "" && dnsRecord.Type == dnsrecord.TypeA {
+						pendingRecord.params.OriginValue = device.IPV4
+					}
+					if device.IPV6 != "" && dnsRecord.Type == dnsrecord.TypeAAAA {
+						pendingRecord.params.OriginValue = device.IPV6
+					}
+				}
+
+			}
+
+			if pendingRecord.params.OriginValue == "" {
+				// err = fmt.Errorf("记录 %d 需要更新的源为空", dnsRecord.ID)
+				// _ = s.updateDbOfDnsResponse(ctx, dnsRecord.ID, err.Error())
+				continue
+			}
+
+			// 按策略分组
+			if s.allowConcurrent(dnsRecord.Edges.Config) {
+				concurrentRecords = append(concurrentRecords, pendingRecord)
+			} else {
+				serialRecords = append(serialRecords, pendingRecord)
 			}
 		}
 
@@ -135,14 +210,15 @@ func (s *IpUpdateService) runDnsTask() {
 					newLog := s.logger.With(
 						slog.String("处理方式", "并发"),
 						slog.String("处理类型", processingType),
-						slog.Int64("记录", item.ID),
-						slog.String("类型", item.Type.String()),
-						slog.String("子域名", item.SubDomain),
-						slog.String("平台", item.Edges.Config.Platform.String()),
+						slog.Int64("记录", item.item.ID),
+						slog.String("类型", item.item.Type.String()),
+						slog.String("子域名", item.item.SubDomain),
+						slog.String("平台", item.platform.String()),
 					)
 
 					if err = s.DnsUpdate(egCtx, newLog, item); err != nil {
 						newLog.ErrorContext(egCtx, "处理失败",
+							slog.Any("处理参数", item.params),
 							slog.Any("error", err),
 						)
 					}
@@ -166,14 +242,15 @@ func (s *IpUpdateService) runDnsTask() {
 			newLog := s.logger.With(
 				slog.String("处理方式", "串行"),
 				slog.String("处理类型", processingType),
-				slog.Int64("记录", item.ID),
-				slog.String("类型", item.Type.String()),
-				slog.String("子域名", item.SubDomain),
-				slog.String("平台", item.Edges.Config.Platform.String()),
+				slog.Int64("记录", item.item.ID),
+				slog.String("类型", item.item.Type.String()),
+				slog.String("子域名", item.item.SubDomain),
+				slog.String("平台", item.platform.String()),
 			)
 
 			if err = s.DnsUpdate(ctx, newLog, item); err != nil {
 				newLog.ErrorContext(ctx, "处理失败",
+					slog.Any("处理参数", item.params),
 					slog.Any("error", err),
 				)
 			}
@@ -186,6 +263,8 @@ func (s *IpUpdateService) runDnsTask() {
 	if err == nil {
 		s.logger.InfoContext(ctx, "执行完成",
 			slog.String("处理类型", processingType),
+			slog.Int("并发记录数", len(concurrentRecords)),
+			slog.Int("串行记录数", len(serialRecords)),
 			slog.String("下次运行时间", nextRun.Format(time.DateTime)),
 		)
 
@@ -195,6 +274,8 @@ func (s *IpUpdateService) runDnsTask() {
 		// }
 	} else {
 		s.logger.InfoContext(ctx, "执行完成",
+			slog.Int("并发记录数", len(concurrentRecords)),
+			slog.Int("串行记录数", len(serialRecords)),
 			slog.String("处理类型", processingType),
 		)
 	}
@@ -210,21 +291,84 @@ func (s *IpUpdateService) runCdnTask() {
 		slog.String("处理类型", processingType),
 	)
 
+	// 分组记录
+	var concurrentRecords, serialRecords []*PendingCdnRecord
+
 	// 查询全部CDN记录
 	allCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
 		Where(cdnrecord.IsActiveEQ(true)).
+		// 预加载 配置
 		WithConfig().
+		// 预加载 IP组
+		WithIPGroup(func(withIPGroup *ent.IpGroupQuery) {
+			// 在 IP组 里查询设备
+			withIPGroup.WithDevices(func(withDevices *ent.DeviceQuery) {
+				// 设备心跳时间在 12 分钟内
+				withDevices.Where(device.LastHeartbeatAtGTE(time.Now().Add(-12 * time.Minute)))
+				withDevices.Order(ent.Asc(device.FieldID))
+			})
+		}).
 		All(ctx)
 	if err == nil {
 
-		var concurrentRecords, serialRecords []*ent.CDNRecord
-
 		// 按策略分组
-		for _, item := range allCdnRecord {
-			if s.allowConcurrent(item.Edges.Config) {
-				concurrentRecords = append(concurrentRecords, item)
+		for _, cdnRecord := range allCdnRecord {
+
+			// 创建待处理记录
+			pendingRecord := &PendingCdnRecord{
+				item:     cdnRecord,
+				platform: cdnRecord.Edges.Config.Platform,
+				params: &cdn_helper.CDNProcessParams{
+					CDNRecordID: cast.ToString(cdnRecord.ID),
+
+					ConfigJSON:     cdnRecord.Edges.Config.ConfigJSON,
+					SubDomain:      cdnRecord.SubDomain,
+					OriginProtocol: strings.ToUpper(cdnRecord.OriginProtocol.String()),
+					HttpPort:       cdnRecord.HTTPPort,
+					HttpsPort:      cdnRecord.HTTPSPort,
+				},
+			}
+
+			// 获取关联的 IPGroup
+			ipGroup := cdnRecord.Edges.IPGroup
+			if ipGroup == nil {
+				// err = fmt.Errorf("记录 %d 没有关联的 IP组", cdnRecord.ID)
+				// _ = s.updateDbOfCdnResponse(ctx, cdnRecord.ID, err.Error())
+				continue
+			}
+			pendingRecord.params.GroupRecordID = cast.ToString(ipGroup.ID)
+
+			// 获取关联的设备列表
+			devices := ipGroup.Edges.Devices
+			if len(devices) == 0 {
+				// err = fmt.Errorf("记录 %d 没有可用设备", cdnRecord.ID)
+				// _ = s.updateDbOfCdnResponse(ctx, cdnRecord.ID, err.Error())
+				continue
+			}
+
+			// 收集该记录的源IP
+			for _, device := range devices {
+				if device.IPV4 != "" && cdnRecord.Type == cdnrecord.TypeA {
+					pendingRecord.params.OriginValues = append(pendingRecord.params.OriginValues, device.IPV4)
+				}
+				if device.IPV6 != "" && cdnRecord.Type == cdnrecord.TypeAAAA {
+					pendingRecord.params.OriginValues = append(pendingRecord.params.OriginValues, device.IPV6)
+				}
+			}
+
+			// 去重
+			pendingRecord.params.OriginValues = goarray.RemoveDuplicateElement(pendingRecord.params.OriginValues)
+			if len(pendingRecord.params.OriginValues) == 0 {
+				// err = fmt.Errorf("记录 %d 需要更新的源为空", cdnRecord.ID)
+				// _ = s.updateDbOfCdnResponse(ctx, cdnRecord.ID, err.Error())
+				continue
+			}
+
+			// 按策略分组
+			if s.allowConcurrent(cdnRecord.Edges.Config) {
+				concurrentRecords = append(concurrentRecords, pendingRecord)
 			} else {
-				serialRecords = append(serialRecords, item)
+				serialRecords = append(serialRecords, pendingRecord)
 			}
 		}
 
@@ -241,14 +385,15 @@ func (s *IpUpdateService) runCdnTask() {
 					newLog := s.logger.With(
 						slog.String("处理方式", "并发"),
 						slog.String("处理类型", processingType),
-						slog.Int64("记录", item.ID),
-						slog.String("类型", item.Type.String()),
-						slog.String("子域名", item.SubDomain),
-						slog.String("平台", item.Edges.Config.Platform.String()),
+						slog.Int64("记录", item.item.ID),
+						slog.String("类型", item.item.Type.String()),
+						slog.String("子域名", item.item.SubDomain),
+						slog.String("平台", item.platform.String()),
 					)
 
 					if err = s.CdnUpdate(egCtx, newLog, item); err != nil {
 						newLog.ErrorContext(egCtx, "处理失败",
+							slog.Any("处理参数", item.params),
 							slog.Any("error", err),
 						)
 					}
@@ -272,14 +417,15 @@ func (s *IpUpdateService) runCdnTask() {
 			newLog := s.logger.With(
 				slog.String("处理方式", "串行"),
 				slog.String("处理类型", processingType),
-				slog.Int64("记录", item.ID),
-				slog.String("类型", item.Type.String()),
-				slog.String("子域名", item.SubDomain),
-				slog.String("平台", item.Edges.Config.Platform.String()),
+				slog.Int64("记录", item.item.ID),
+				slog.String("类型", item.item.Type.String()),
+				slog.String("子域名", item.item.SubDomain),
+				slog.String("平台", item.platform.String()),
 			)
 
 			if err = s.CdnUpdate(ctx, newLog, item); err != nil {
 				newLog.ErrorContext(ctx, "处理失败",
+					slog.Any("处理参数", item.params),
 					slog.Any("error", err),
 				)
 			}
@@ -292,6 +438,8 @@ func (s *IpUpdateService) runCdnTask() {
 	if err == nil {
 		s.logger.InfoContext(ctx, "执行完成",
 			slog.String("处理类型", processingType),
+			slog.Int("并发记录数", len(concurrentRecords)),
+			slog.Int("串行记录数", len(serialRecords)),
 			slog.String("下次运行时间", nextRun.Format(time.DateTime)),
 		)
 
@@ -301,65 +449,28 @@ func (s *IpUpdateService) runCdnTask() {
 		}
 	} else {
 		s.logger.InfoContext(ctx, "执行完成",
+			slog.Int("并发记录数", len(concurrentRecords)),
+			slog.Int("串行记录数", len(serialRecords)),
 			slog.String("处理类型", processingType),
 		)
 	}
 
 }
 
+// 待处理
+type PendingCdnRecord struct {
+	item     *ent.CDNRecord               // CDN记录
+	platform platformconfig.Platform      // 平台
+	params   *cdn_helper.CDNProcessParams // 处理参数
+}
+
 // 更新CDN记录
-// WithIPGroup().
-func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, firstRecord *ent.CDNRecord) (err error) {
-
-	// 准备参数
-	processParams := cdn_helper.CDNProcessParams{
-		CDNRecordID: cast.ToString(firstRecord.ID),
-
-		ConfigJSON:     firstRecord.Edges.Config.ConfigJSON,
-		SubDomain:      firstRecord.SubDomain,
-		OriginProtocol: strings.ToUpper(firstRecord.OriginProtocol.String()),
-		HttpPort:       firstRecord.HTTPPort,
-		HttpsPort:      firstRecord.HTTPSPort,
-	}
-
-	// 查询IP组
-	firstIPGroup, err := firstRecord.QueryIPGroup().
-		First(ctx)
-	if err != nil {
-		return fmt.Errorf("找不到IP组: %w", err)
-	}
-	processParams.GroupRecordID = cast.ToString(firstIPGroup.ID)
-
-	// 查询设备 (心跳时间在 12 分钟内)
-	allDevice, err := firstIPGroup.QueryDevices().
-		Where(device.LastHeartbeatAtGTE(time.Now().Add(-12 * time.Minute))).
-		Order(ent.Asc(device.FieldID)).
-		All(ctx)
-	if err != nil {
-		err = fmt.Errorf("找不到设备或心跳时间不在12分钟内: %w", err)
-		_ = s.updateDbOfCdnResponse(ctx, firstRecord.ID, err.Error())
-		return err
-	}
-	for _, item := range allDevice {
-		if item.IPV4 != "" && firstRecord.Type == cdnrecord.TypeA {
-			processParams.OriginValues = append(processParams.OriginValues, item.IPV4)
-		}
-		if item.IPV6 != "" && firstRecord.Type == cdnrecord.TypeAAAA {
-			processParams.OriginValues = append(processParams.OriginValues, item.IPV6)
-		}
-	}
-
-	// 去重源并检查源是否有效
-	processParams.OriginValues = goarray.RemoveDuplicateElement(processParams.OriginValues)
-	if len(processParams.OriginValues) == 0 {
-		err = fmt.Errorf("需要更新的源为空")
-		_ = s.updateDbOfCdnResponse(ctx, firstRecord.ID, err.Error())
-		return err
-	}
+// pendingRecord：待处理记录
+func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, pendingRecord *PendingCdnRecord) (err error) {
 
 	var cdnProcess cdn_helper.CDNProcess
 
-	switch firstRecord.Edges.Config.Platform {
+	switch pendingRecord.platform {
 	case platformconfig.PlatformTencentEo:
 
 		cdnProcess = cdn_helper.NewCDNProcessTencentEO(
@@ -379,83 +490,34 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, fi
 		)
 
 	default:
-		err = fmt.Errorf("暂不支持该平台: %s", firstRecord.Edges.Config.Platform)
-		_ = s.updateDbOfCdnResponse(ctx, firstRecord.ID, err.Error())
+		err = fmt.Errorf("暂不支持该平台: %s", pendingRecord.platform.String())
+		_ = s.updateDbOfCdnResponse(ctx, pendingRecord.item.ID, err.Error())
 		return err
 	}
 
 	// 更新CDN记录
-	err = cdnProcess.UpsertRecord(ctx, &processParams)
+	err = cdnProcess.UpsertRecord(ctx, pendingRecord.params)
 	if err != nil {
-		_ = s.updateDbOfCdnResponse(ctx, firstRecord.ID, err.Error())
+		_ = s.updateDbOfCdnResponse(ctx, pendingRecord.item.ID, err.Error())
 		return err
 	}
-	_ = s.updateDbOfCdnResponse(ctx, firstRecord.ID, "ok")
+	_ = s.updateDbOfCdnResponse(ctx, pendingRecord.item.ID, "ok")
 	return nil
 }
 
-// 更新DNS录
-// WithIPGroup().
-// WithCdnRecord()
-func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, firstRecord *ent.DNSRecord) (err error) {
+// 待处理
+type PendingDnsRecord struct {
+	item     *ent.DNSRecord               // DNS记录
+	platform platformconfig.Platform      // 平台
+	params   *dns_helper.DNSProcessParams // 处理参数
+}
 
-	// 准备参数
-	processParams := dns_helper.DNSProcessParams{
-		DNSRecordID: cast.ToString(firstRecord.ID),
-
-		ConfigJSON: firstRecord.Edges.Config.ConfigJSON,
-		SubDomain:  firstRecord.SubDomain,
-	}
-
-	if firstRecord.Type == dnsrecord.TypeCNAME {
-
-		// 查询CDN记录
-		firstCdnRecord, err := firstRecord.QueryCdnRecord().
-			First(ctx)
-		if err != nil {
-			return fmt.Errorf("找不到CDN记录: %w", err)
-		}
-
-		processParams.OriginValue = firstCdnRecord.CdnDomain
-
-	} else {
-		// 查询IP组
-		firstIPGroup, err := firstRecord.QueryIPGroup().
-			First(ctx)
-		if err != nil {
-			return fmt.Errorf("找不到IP组: %w", err)
-		}
-
-		// 查询设备 (心跳时间在 12 分钟内)
-		allDevice, err := firstIPGroup.QueryDevices().
-			Where(device.LastHeartbeatAtGTE(time.Now().Add(-12 * time.Minute))).
-			Order(ent.Asc(device.FieldID)).
-			All(ctx)
-		if err != nil {
-			err = fmt.Errorf("找不到设备或心跳时间不在12分钟内: %w", err)
-			_ = s.updateDbOfDnsResponse(ctx, firstRecord.ID, err.Error())
-			return err
-		}
-		for _, item := range allDevice {
-			if item.IPV4 != "" && firstRecord.Type == dnsrecord.TypeA {
-				processParams.OriginValue = item.IPV4
-			}
-			if item.IPV6 != "" && firstRecord.Type == dnsrecord.TypeAAAA {
-				processParams.OriginValue = item.IPV6
-			}
-		}
-	}
-
-	// 检查源是否有效
-	if processParams.OriginValue == "" {
-		err = fmt.Errorf("需要更新的源为空")
-		_ = s.updateDbOfDnsResponse(ctx, firstRecord.ID, err.Error())
-		return err
-	}
+// 更新DNS记录
+func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, pendingRecord *PendingDnsRecord) (err error) {
 
 	var dnsProcess dns_helper.DNSProcess
 
-	switch firstRecord.Edges.Config.Platform {
+	switch pendingRecord.platform {
 	case platformconfig.PlatformCloudflare:
 
 		dnsProcess = dns_helper.NewDNSProcessCloudflare(
@@ -502,18 +564,18 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, fi
 		)
 
 	default:
-		err = fmt.Errorf("暂不支持该平台: %s", firstRecord.Edges.Config.Platform)
-		_ = s.updateDbOfDnsResponse(ctx, firstRecord.ID, err.Error())
+		err = fmt.Errorf("暂不支持该平台: %s", pendingRecord.platform.String())
+		_ = s.updateDbOfDnsResponse(ctx, pendingRecord.item.ID, err.Error())
 		return err
 	}
 
 	// 更新DNS记录
-	err = dnsProcess.UpsertRecord(ctx, &processParams)
+	err = dnsProcess.UpsertRecord(ctx, pendingRecord.params)
 	if err != nil {
-		_ = s.updateDbOfDnsResponse(ctx, firstRecord.ID, err.Error())
+		_ = s.updateDbOfDnsResponse(ctx, pendingRecord.item.ID, err.Error())
 		return err
 	}
-	_ = s.updateDbOfDnsResponse(ctx, firstRecord.ID, "ok")
+	_ = s.updateDbOfDnsResponse(ctx, pendingRecord.item.ID, "ok")
 	return nil
 }
 
