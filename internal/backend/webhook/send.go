@@ -232,7 +232,7 @@ func (s *Send) Dingtalk(ctx context.Context, url string, secret string, title st
 
 // Feishu Webhook 发送
 // https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot
-func (s *Send) Feishu(ctx context.Context, url string, secret string, title string, content any) (err error) {
+func (s *Send) Feishu(ctx context.Context, url string, secret string, title string, content string) (err error) {
 
 	client := global.GvaFeishu
 
@@ -241,7 +241,10 @@ func (s *Send) Feishu(ctx context.Context, url string, secret string, title stri
 	params.Set("msg_type", "post")
 	params.Set("content", map[string]any{
 		"post": map[string]any{
-			"zh_cn": content,
+			"zh_cn": map[string]any{
+				"title":   title,
+				"content": StringToTextArray(content),
+			},
 		}})
 
 	// 请求

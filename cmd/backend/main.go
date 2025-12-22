@@ -288,11 +288,17 @@ func gracefulShutdown() {
 		// 5. 关闭数据库连接和其他资源（现有的 defer 逻辑）
 		slog.Info("开始关闭数据库连接...")
 
-		// 注意：这里不能调用原来的 defer，需要手动调用
-		initialize.CloseEntDb()      // 关闭 业务数据库
-		initialize.CloseEntLogDb()   // 关闭 日志数据库
-		initialize.CloseGoCron()     // 关闭 GoCron 调度器
-		initialize.CloseThirdParty() // 关闭 第三方
+		// 6. 关闭 第三方服务
+		// initialize.CloseThirdParty()
+
+		// 7. 关闭 GoCron 调度器
+		initialize.CloseGoCron()
+
+		// 8. 关闭 业务数据库
+		initialize.CloseEntDb()
+
+		// 9. 关闭 日志数据库
+		initialize.CloseEntLogDb()
 
 		slog.Info("所有资源已优雅关闭")
 	})
