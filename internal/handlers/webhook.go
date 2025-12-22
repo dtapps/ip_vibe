@@ -35,7 +35,7 @@ func Webhook(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
-		webhookService.NewSend(global.GvaEntDb),
+		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
 	)
 
 	// 查询全部通知

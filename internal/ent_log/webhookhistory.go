@@ -3,6 +3,7 @@
 package ent_log
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -32,10 +33,8 @@ type WebhookHistory struct {
 	Title string `json:"title,omitempty"`
 	// 发送的内容
 	Content string `json:"content,omitempty"`
-	// HTTP响应状态码
-	StatusCode int `json:"status_code,omitempty"`
 	// 响应内容
-	Response string `json:"response,omitempty"`
+	Response json.RawMessage `json:"response,omitempty"`
 	// 是否发送成功
 	Success bool `json:"success,omitempty"`
 	// 错误信息
@@ -48,11 +47,13 @@ func (*WebhookHistory) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case webhookhistory.FieldResponse:
+			values[i] = new([]byte)
 		case webhookhistory.FieldSuccess:
 			values[i] = new(sql.NullBool)
-		case webhookhistory.FieldID, webhookhistory.FieldWebhookID, webhookhistory.FieldSubscriptionID, webhookhistory.FieldStatusCode:
+		case webhookhistory.FieldID, webhookhistory.FieldWebhookID, webhookhistory.FieldSubscriptionID:
 			values[i] = new(sql.NullInt64)
-		case webhookhistory.FieldURL, webhookhistory.FieldTitle, webhookhistory.FieldContent, webhookhistory.FieldResponse, webhookhistory.FieldErrorMessage:
+		case webhookhistory.FieldURL, webhookhistory.FieldTitle, webhookhistory.FieldContent, webhookhistory.FieldErrorMessage:
 			values[i] = new(sql.NullString)
 		case webhookhistory.FieldCreatedAt, webhookhistory.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -119,17 +120,13 @@ func (_m *WebhookHistory) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Content = value.String
 			}
-		case webhookhistory.FieldStatusCode:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field status_code", values[i])
-			} else if value.Valid {
-				_m.StatusCode = int(value.Int64)
-			}
 		case webhookhistory.FieldResponse:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field response", values[i])
-			} else if value.Valid {
-				_m.Response = value.String
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Response); err != nil {
+					return fmt.Errorf("unmarshal field response: %w", err)
+				}
 			}
 		case webhookhistory.FieldSuccess:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -200,11 +197,8 @@ func (_m *WebhookHistory) String() string {
 	builder.WriteString("content=")
 	builder.WriteString(_m.Content)
 	builder.WriteString(", ")
-	builder.WriteString("status_code=")
-	builder.WriteString(fmt.Sprintf("%v", _m.StatusCode))
-	builder.WriteString(", ")
 	builder.WriteString("response=")
-	builder.WriteString(_m.Response)
+	builder.WriteString(fmt.Sprintf("%v", _m.Response))
 	builder.WriteString(", ")
 	builder.WriteString("success=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Success))

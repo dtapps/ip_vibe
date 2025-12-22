@@ -221,12 +221,6 @@ components:
         description:
           description: 通知描述
           type: string
-        events:
-          description: 订阅的事件类型列表
-          items:
-            type: string
-          type: array
-          uniqueItems: false
         name:
           description: 通知名称
           type: string
@@ -699,12 +693,6 @@ components:
         description:
           description: 通知描述
           type: string
-        events:
-          description: 订阅的事件类型列表
-          items:
-            type: string
-          type: array
-          uniqueItems: false
         id:
           description: 通知序号
           type: integer
@@ -1080,12 +1068,6 @@ components:
         description:
           description: 通知描述
           type: string
-        events:
-          description: 订阅的事件类型列表
-          items:
-            type: string
-          type: array
-          uniqueItems: false
         id:
           description: 通知序号
           type: integer
@@ -1100,6 +1082,9 @@ components:
           type: string
         template_title:
           description: 通知标题 Go Template
+          type: string
+        url:
+          description: Webhook URL
           type: string
       required:
       - id
@@ -4039,6 +4024,51 @@ paths:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
       summary: 更新通知启用状态
+      tags:
+      - 通知
+  /webhooks/{id}/test:
+    post:
+      description: 测试通知
+      parameters:
+      - description: 通知序号
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 测试通知
       tags:
       - 通知
 servers:

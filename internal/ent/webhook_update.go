@@ -13,7 +13,6 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -102,18 +101,6 @@ func (_u *WebhookUpdate) SetNillableSecret(v *string) *WebhookUpdate {
 // ClearSecret clears the value of the "secret" field.
 func (_u *WebhookUpdate) ClearSecret() *WebhookUpdate {
 	_u.mutation.ClearSecret()
-	return _u
-}
-
-// SetEvents sets the "events" field.
-func (_u *WebhookUpdate) SetEvents(v []string) *WebhookUpdate {
-	_u.mutation.SetEvents(v)
-	return _u
-}
-
-// AppendEvents appends value to the "events" field.
-func (_u *WebhookUpdate) AppendEvents(v []string) *WebhookUpdate {
-	_u.mutation.AppendEvents(v)
 	return _u
 }
 
@@ -284,14 +271,6 @@ func (_u *WebhookUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.SecretCleared() {
 		_spec.ClearField(webhook.FieldSecret, field.TypeString)
 	}
-	if value, ok := _u.mutation.Events(); ok {
-		_spec.SetField(webhook.FieldEvents, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedEvents(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, webhook.FieldEvents, value)
-		})
-	}
 	if value, ok := _u.mutation.TemplateTitle(); ok {
 		_spec.SetField(webhook.FieldTemplateTitle, field.TypeString, value)
 	}
@@ -445,18 +424,6 @@ func (_u *WebhookUpdateOne) SetNillableSecret(v *string) *WebhookUpdateOne {
 // ClearSecret clears the value of the "secret" field.
 func (_u *WebhookUpdateOne) ClearSecret() *WebhookUpdateOne {
 	_u.mutation.ClearSecret()
-	return _u
-}
-
-// SetEvents sets the "events" field.
-func (_u *WebhookUpdateOne) SetEvents(v []string) *WebhookUpdateOne {
-	_u.mutation.SetEvents(v)
-	return _u
-}
-
-// AppendEvents appends value to the "events" field.
-func (_u *WebhookUpdateOne) AppendEvents(v []string) *WebhookUpdateOne {
-	_u.mutation.AppendEvents(v)
 	return _u
 }
 
@@ -656,14 +623,6 @@ func (_u *WebhookUpdateOne) sqlSave(ctx context.Context) (_node *Webhook, err er
 	}
 	if _u.mutation.SecretCleared() {
 		_spec.ClearField(webhook.FieldSecret, field.TypeString)
-	}
-	if value, ok := _u.mutation.Events(); ok {
-		_spec.SetField(webhook.FieldEvents, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedEvents(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, webhook.FieldEvents, value)
-		})
 	}
 	if value, ok := _u.mutation.TemplateTitle(); ok {
 		_spec.SetField(webhook.FieldTemplateTitle, field.TypeString, value)

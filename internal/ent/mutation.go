@@ -8667,8 +8667,6 @@ type WebhookMutation struct {
 	platform             *webhook.Platform
 	url                  *string
 	secret               *string
-	events               *[]string
-	appendevents         []string
 	template_title       *string
 	template_content     *string
 	is_active            *bool
@@ -9063,57 +9061,6 @@ func (m *WebhookMutation) ResetSecret() {
 	delete(m.clearedFields, webhook.FieldSecret)
 }
 
-// SetEvents sets the "events" field.
-func (m *WebhookMutation) SetEvents(s []string) {
-	m.events = &s
-	m.appendevents = nil
-}
-
-// Events returns the value of the "events" field in the mutation.
-func (m *WebhookMutation) Events() (r []string, exists bool) {
-	v := m.events
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldEvents returns the old "events" field's value of the Webhook entity.
-// If the Webhook object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WebhookMutation) OldEvents(ctx context.Context) (v []string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldEvents is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldEvents requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldEvents: %w", err)
-	}
-	return oldValue.Events, nil
-}
-
-// AppendEvents adds s to the "events" field.
-func (m *WebhookMutation) AppendEvents(s []string) {
-	m.appendevents = append(m.appendevents, s...)
-}
-
-// AppendedEvents returns the list of values that were appended to the "events" field in this mutation.
-func (m *WebhookMutation) AppendedEvents() ([]string, bool) {
-	if len(m.appendevents) == 0 {
-		return nil, false
-	}
-	return m.appendevents, true
-}
-
-// ResetEvents resets all changes to the "events" field.
-func (m *WebhookMutation) ResetEvents() {
-	m.events = nil
-	m.appendevents = nil
-}
-
 // SetTemplateTitle sets the "template_title" field.
 func (m *WebhookMutation) SetTemplateTitle(s string) {
 	m.template_title = &s
@@ -9336,7 +9283,7 @@ func (m *WebhookMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *WebhookMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, webhook.FieldCreatedAt)
 	}
@@ -9357,9 +9304,6 @@ func (m *WebhookMutation) Fields() []string {
 	}
 	if m.secret != nil {
 		fields = append(fields, webhook.FieldSecret)
-	}
-	if m.events != nil {
-		fields = append(fields, webhook.FieldEvents)
 	}
 	if m.template_title != nil {
 		fields = append(fields, webhook.FieldTemplateTitle)
@@ -9392,8 +9336,6 @@ func (m *WebhookMutation) Field(name string) (ent.Value, bool) {
 		return m.URL()
 	case webhook.FieldSecret:
 		return m.Secret()
-	case webhook.FieldEvents:
-		return m.Events()
 	case webhook.FieldTemplateTitle:
 		return m.TemplateTitle()
 	case webhook.FieldTemplateContent:
@@ -9423,8 +9365,6 @@ func (m *WebhookMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldURL(ctx)
 	case webhook.FieldSecret:
 		return m.OldSecret(ctx)
-	case webhook.FieldEvents:
-		return m.OldEvents(ctx)
 	case webhook.FieldTemplateTitle:
 		return m.OldTemplateTitle(ctx)
 	case webhook.FieldTemplateContent:
@@ -9488,13 +9428,6 @@ func (m *WebhookMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSecret(v)
-		return nil
-	case webhook.FieldEvents:
-		v, ok := value.([]string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetEvents(v)
 		return nil
 	case webhook.FieldTemplateTitle:
 		v, ok := value.(string)
@@ -9613,9 +9546,6 @@ func (m *WebhookMutation) ResetField(name string) error {
 		return nil
 	case webhook.FieldSecret:
 		m.ResetSecret()
-		return nil
-	case webhook.FieldEvents:
-		m.ResetEvents()
 		return nil
 	case webhook.FieldTemplateTitle:
 		m.ResetTemplateTitle()

@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"encoding/json"
 	"vibe_ip/internal/ent/schema/schemamixin"
 
 	"entgo.io/ent"
@@ -52,36 +53,37 @@ func (WebhookHistory) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("url").
+			Immutable().
 			Comment("发送的URL").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("title").
 			Optional().
+			Immutable().
 			Comment("发送的标题").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("content").
 			Optional().
+			Immutable().
 			Comment("发送的内容").
 			Annotations(entsql.WithComments(true)),
 
-		field.Int("status_code").
+		field.JSON("response", json.RawMessage{}).
 			Optional().
-			Comment("HTTP响应状态码").
-			Annotations(entsql.WithComments(true)),
-
-		field.Text("response").
-			Optional().
+			Immutable().
 			Comment("响应内容").
 			Annotations(entsql.WithComments(true)),
 
 		field.Bool("success").
 			Default(false).
+			Immutable().
 			Comment("是否发送成功").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("error_message").
 			Optional().
+			Immutable().
 			Comment("错误信息").
 			Annotations(entsql.WithComments(true)),
 	}

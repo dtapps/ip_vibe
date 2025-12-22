@@ -217,8 +217,7 @@ var (
 		{Name: "url", Type: field.TypeString, Comment: "发送的URL"},
 		{Name: "title", Type: field.TypeString, Nullable: true, Comment: "发送的标题"},
 		{Name: "content", Type: field.TypeString, Nullable: true, Comment: "发送的内容"},
-		{Name: "status_code", Type: field.TypeInt, Nullable: true, Comment: "HTTP响应状态码"},
-		{Name: "response", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "响应内容"},
+		{Name: "response", Type: field.TypeJSON, Nullable: true, Comment: "响应内容"},
 		{Name: "success", Type: field.TypeBool, Comment: "是否发送成功", Default: false},
 		{Name: "error_message", Type: field.TypeString, Nullable: true, Comment: "错误信息"},
 	}
@@ -242,7 +241,7 @@ var (
 			{
 				Name:    "webhookhistory_success",
 				Unique:  false,
-				Columns: []*schema.Column{WebhookHistoryColumns[10]},
+				Columns: []*schema.Column{WebhookHistoryColumns[9]},
 			},
 			{
 				Name:    "webhookhistory_created_at",
@@ -263,7 +262,7 @@ var (
 			{
 				Name:    "webhookhistory_success_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{WebhookHistoryColumns[10], WebhookHistoryColumns[1]},
+				Columns: []*schema.Column{WebhookHistoryColumns[9], WebhookHistoryColumns[1]},
 				Annotation: &entsql.IndexAnnotation{
 					Desc: true,
 				},

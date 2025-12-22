@@ -27,8 +27,6 @@ const (
 	FieldTitle = "title"
 	// FieldContent holds the string denoting the content field in the database.
 	FieldContent = "content"
-	// FieldStatusCode holds the string denoting the status_code field in the database.
-	FieldStatusCode = "status_code"
 	// FieldResponse holds the string denoting the response field in the database.
 	FieldResponse = "response"
 	// FieldSuccess holds the string denoting the success field in the database.
@@ -49,7 +47,6 @@ var Columns = []string{
 	FieldURL,
 	FieldTitle,
 	FieldContent,
-	FieldStatusCode,
 	FieldResponse,
 	FieldSuccess,
 	FieldErrorMessage,
@@ -117,16 +114,6 @@ func ByTitle(opts ...sql.OrderTermOption) OrderOption {
 // ByContent orders the results by the content field.
 func ByContent(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldContent, opts...).ToFunc()
-}
-
-// ByStatusCode orders the results by the status_code field.
-func ByStatusCode(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStatusCode, opts...).ToFunc()
-}
-
-// ByResponse orders the results by the response field.
-func ByResponse(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldResponse, opts...).ToFunc()
 }
 
 // BySuccess orders the results by the success field.

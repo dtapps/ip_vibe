@@ -3,7 +3,7 @@ package grpc_server
 import (
 	"context"
 	"vibe_ip/internal/backend/service"
-	"vibe_ip/internal/backend/webhook"
+	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/types"
@@ -24,7 +24,7 @@ func NewOpenServer() *OpenServer {
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
-		webhook.NewSend(global.GvaEntDb),
+		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
 	)
 
 	return &OpenServer{

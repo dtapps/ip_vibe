@@ -61,14 +61,9 @@ func (Webhook) Fields() []ent.Field {
 			Comment("Webhook URL").
 			Annotations(entsql.WithComments(true)),
 
-		// 密钥：用于签名验证或特殊 Token
 		field.String("secret").
 			Optional().
 			Comment("Webhook 签名密钥或额外Token").
-			Annotations(entsql.WithComments(true)),
-
-		field.JSON("events", []string{}).
-			Comment("订阅的事件类型列表").
 			Annotations(entsql.WithComments(true)),
 
 		field.Text("template_title").

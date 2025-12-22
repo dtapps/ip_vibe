@@ -209,7 +209,7 @@ func init() {
 	// webhook.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	webhook.UpdateDefaultUpdatedAt = webhookDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// webhookDescIsActive is the schema descriptor for is_active field.
-	webhookDescIsActive := webhookFields[9].Descriptor()
+	webhookDescIsActive := webhookFields[8].Descriptor()
 	// webhook.DefaultIsActive holds the default value on creation for the is_active field.
 	webhook.DefaultIsActive = webhookDescIsActive.Default.(bool)
 	webhooksubscriptionMixin := schema.WebhookSubscription{}.Mixin()

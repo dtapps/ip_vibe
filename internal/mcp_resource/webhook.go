@@ -34,7 +34,7 @@ func getWebhookList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.Rea
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
-		webhookService.NewSend(global.GvaEntDb),
+		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
 	)
 
 	// 调用
@@ -62,7 +62,7 @@ func getWebhookDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.R
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
-		webhookService.NewSend(global.GvaEntDb),
+		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
 	)
 
 	// 调用

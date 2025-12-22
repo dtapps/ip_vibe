@@ -2,36 +2,39 @@ package webhook
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
+	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/utils"
 
+	"go.dtapp.net/library/service/dingtalk"
+	"go.dtapp.net/library/service/feishu"
 	"go.dtapp.net/library/utils/gorequest"
 	"golang.org/x/sync/errgroup"
 	"resty.dev/v3"
 )
 
 type Send struct {
-	db     *ent.Client   // 数据库客户端
-	client *resty.Client // Resty HTTP 客户端
-	logger *slog.Logger  // 日志记录器
+	db     *ent.Client     // 数据库客户端
+	logDb  *ent_log.Client // 日志数据库客户端
+	client *resty.Client   // Resty HTTP 客户端
+	logger *slog.Logger    // 日志记录器
 }
 
-func NewSend(db *ent.Client) *Send {
-
+func NewSend(db *ent.Client, logDb *ent_log.Client) *Send {
 	// 创建一个新的 Resty 客户端
 	client := resty.New()
-
 	// 设置默认超时
 	client.SetTimeout(30 * time.Second)
-
 	return &Send{
 		db:     db,
+		logDb:  logDb,
 		client: client,
 		logger: slog.With("component", "webhook"),
 	}
@@ -45,17 +48,17 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 			webhooksubscription.ObjIDEQ(objID),
 		).
 		Where(webhooksubscription.IsActiveEQ(true)).
-		WithWebhook(func(wq *ent.WebhookQuery) {
-			wq.Where(webhook.IsActiveEQ(true))
+		WithWebhook(func(withWebhook *ent.WebhookQuery) {
+			withWebhook.Where(webhook.IsActiveEQ(true))
 		}).
 		All(ctx)
 	if err != nil {
-		s.logger.ErrorContext(ctx, "查询Webhook订阅失败",
-			slog.Any("err", err),
+		s.logger.ErrorContext(ctx, "查询通知订阅失败",
 			slog.String("obj_type", objType.String()),
 			slog.Int64("obj_id", objID),
+			slog.Any("err", err),
 		)
-		return fmt.Errorf("查询Webhook订阅失败: %w", err)
+		return fmt.Errorf("查询通知订阅失败: %w", err)
 	}
 
 	eg, egCtx := errgroup.WithContext(ctx)
@@ -70,9 +73,9 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 				templateTitle, err := utils.RenderTemplate(item.Edges.Webhook.TemplateTitle, payload)
 				if err != nil {
 					s.logger.ErrorContext(egCtx, "渲染标题模板失败",
-						slog.Any("err", err),
 						slog.Int64("webhook_id", item.Edges.Webhook.ID),
 						slog.String("webhook_platform", item.Edges.Webhook.Platform.String()),
+						slog.Any("err", err),
 					)
 					return fmt.Errorf("渲染标题模板失败: %w", err)
 				}
@@ -80,34 +83,48 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 				templateContent, err := utils.RenderTemplate(item.Edges.Webhook.TemplateContent, payload)
 				if err != nil {
 					s.logger.ErrorContext(egCtx, "渲染内容模板失败",
-						slog.Any("err", err),
 						slog.Int64("webhook_id", item.Edges.Webhook.ID),
 						slog.String("webhook_platform", item.Edges.Webhook.Platform.String()),
+						slog.Any("err", err),
 					)
 					return fmt.Errorf("渲染内容模板失败: %w", err)
 				}
 
+				var resp json.RawMessage
 				switch item.Edges.Webhook.Platform {
 				case webhook.PlatformWechatWork:
-					err = s.WechatWork(egCtx, item.Edges.Webhook.URL, templateTitle, templateContent)
+					resp, err = s.WechatWork(egCtx, item.Edges.Webhook.URL, templateTitle, templateContent)
 				case webhook.PlatformDingtalk:
-					err = s.Dingtalk(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
+					resp, err = s.Dingtalk(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				case webhook.PlatformFeishu:
-					err = s.Feishu(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
+					resp, err = s.Feishu(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				case webhook.PlatformBark:
-					err = s.Bark(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
+					resp, err = s.Bark(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				case webhook.PlatformFt07:
-					err = s.Ft07(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
+					resp, err = s.Ft07(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				case webhook.PlatformPushDeer:
-					err = s.PushDeer(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
+					resp, err = s.PushDeer(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				default:
-					err = s.Http(egCtx, item.Edges.Webhook.URL, templateTitle, templateContent)
+					resp, err = s.Http(egCtx, item.Edges.Webhook.URL, templateTitle, templateContent)
 				}
+
+				// 记录到域名监控历史
+				_ = s.logDb.WebhookHistory.Create().
+					SetWebhookID(item.Edges.Webhook.ID).
+					SetSubscriptionID(item.ID).
+					SetURL(item.Edges.Webhook.URL).
+					SetTitle(templateTitle).
+					SetContent(templateContent).
+					SetResponse(resp).
+					SetSuccess(err == nil).
+					SetErrorMessage(fmt.Sprintf("%v", err)).
+					Exec(egCtx)
+
 				if err != nil {
 					s.logger.ErrorContext(egCtx, "发送Webhook失败",
-						slog.Any("err", err),
 						slog.Int64("webhook_id", item.Edges.Webhook.ID),
 						slog.String("webhook_platform", item.Edges.Webhook.Platform.String()),
+						slog.Any("err", err),
 					)
 				} else {
 					s.logger.InfoContext(egCtx, "Webhook发送成功",
@@ -117,13 +134,15 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 				}
 			}
 
-			// 返回nil而不是错误，这样单个Webhook订阅更新失败不会导致整个errgroup取消上下文
+			// 返回nil而不是错误，这样单个通知订阅更新失败不会导致整个errgroup取消上下文
 			return nil
 		})
 	}
 
 	if err = eg.Wait(); err != nil {
 		s.logger.ErrorContext(ctx, "并发错误",
+			slog.String("obj_type", objType.String()),
+			slog.Int64("obj_id", objID),
 			slog.Any("err", err),
 		)
 	}
@@ -132,44 +151,83 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 }
 
 // 测试通知
-func (s *Send) Test(ctx context.Context, webhookData *ent.Webhook, payload utils.TemplateData) (err error) {
-
-	templateTitle, err := utils.RenderTemplate(webhookData.TemplateTitle, payload)
+func (s *Send) Test(ctx context.Context, id int64, payload utils.TemplateData) (err error) {
+	// 查询通知
+	firstWebhook, err := s.db.Webhook.Query().
+		Where(webhook.IDEQ(id)).
+		First(ctx)
 	if err != nil {
+		s.logger.ErrorContext(ctx, "查询通知失败",
+			slog.Int64("webhook_id", id),
+			slog.Any("err", err),
+		)
+		return fmt.Errorf("查询通知失败: %w", err)
+	}
+
+	templateTitle, err := utils.RenderTemplate(firstWebhook.TemplateTitle, payload)
+	if err != nil {
+		s.logger.ErrorContext(ctx, "渲染标题模板失败",
+			slog.Int64("webhook_id", id),
+			slog.Any("err", err),
+		)
 		return fmt.Errorf("渲染标题模板失败: %w", err)
 	}
 
-	templateContent, err := utils.RenderTemplate(webhookData.TemplateContent, payload)
+	templateContent, err := utils.RenderTemplate(firstWebhook.TemplateContent, payload)
 	if err != nil {
+		s.logger.ErrorContext(ctx, "渲染内容模板失败",
+			slog.Int64("webhook_id", id),
+			slog.Any("err", err),
+		)
 		return fmt.Errorf("渲染内容模板失败: %w", err)
 	}
 
-	switch webhookData.Platform {
+	var resp json.RawMessage
+	switch firstWebhook.Platform {
 	case webhook.PlatformWechatWork:
-		err = s.WechatWork(ctx, webhookData.URL, templateTitle, templateContent)
+		resp, err = s.WechatWork(ctx, firstWebhook.URL, templateTitle, templateContent)
 	case webhook.PlatformDingtalk:
-		err = s.Dingtalk(ctx, webhookData.URL, webhookData.Secret, templateTitle, templateContent)
+		resp, err = s.Dingtalk(ctx, firstWebhook.URL, firstWebhook.Secret, templateTitle, templateContent)
 	case webhook.PlatformFeishu:
-		err = s.Feishu(ctx, webhookData.URL, webhookData.Secret, templateTitle, templateContent)
+		resp, err = s.Feishu(ctx, firstWebhook.URL, firstWebhook.Secret, templateTitle, templateContent)
 	case webhook.PlatformBark:
-		err = s.Bark(ctx, webhookData.URL, webhookData.Secret, templateTitle, templateContent)
+		resp, err = s.Bark(ctx, firstWebhook.URL, firstWebhook.Secret, templateTitle, templateContent)
 	case webhook.PlatformFt07:
-		err = s.Ft07(ctx, webhookData.URL, webhookData.Secret, templateTitle, templateContent)
+		resp, err = s.Ft07(ctx, firstWebhook.URL, firstWebhook.Secret, templateTitle, templateContent)
 	case webhook.PlatformPushDeer:
-		err = s.PushDeer(ctx, webhookData.URL, webhookData.Secret, templateTitle, templateContent)
+		resp, err = s.PushDeer(ctx, firstWebhook.URL, firstWebhook.Secret, templateTitle, templateContent)
 	default:
-		err = s.Http(ctx, webhookData.URL, templateTitle, templateContent)
-	}
-	if err != nil {
-		return fmt.Errorf("发送Webhook失败: %w", err)
+		resp, err = s.Http(ctx, firstWebhook.URL, templateTitle, templateContent)
 	}
 
-	return nil
+	// 记录到域名监控历史
+	_ = s.logDb.WebhookHistory.Create().
+		SetWebhookID(id).
+		SetURL(firstWebhook.URL).
+		SetTitle(templateTitle).
+		SetContent(templateContent).
+		SetResponse(resp).
+		SetSuccess(err == nil).
+		SetErrorMessage(fmt.Sprintf("%v", err)).
+		Exec(ctx)
+
+	if err != nil {
+		s.logger.ErrorContext(ctx, "发送Webhook失败",
+			slog.Int64("webhook_id", id),
+			slog.Any("err", err),
+		)
+		return fmt.Errorf("发送Webhook失败: %w", err)
+	} else {
+		s.logger.InfoContext(ctx, "Webhook发送成功",
+			slog.Int64("webhook_id", id),
+		)
+		return nil
+	}
 }
 
 // WechatWork Webhook 发送
 // https://developer.work.weixin.qq.com/document/path/99110
-func (s *Send) WechatWork(ctx context.Context, url string, title string, content any) (err error) {
+func (s *Send) WechatWork(ctx context.Context, url string, title string, content any) (response json.RawMessage, err error) {
 
 	client := global.GvaWechatWork
 
@@ -181,22 +239,22 @@ func (s *Send) WechatWork(ctx context.Context, url string, title string, content
 	})
 
 	// 请求
-	_, err = client.WebhookSendURL(
+	resp, err := client.WebhookSendURL(
 		ctx,
 		url,
 		"markdown",
 		params,
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return json.RawMessage(gorequest.JsonEncodeNoError(resp)), nil
 }
 
 // Dingtalk Webhook 发送
 // https://open.dingtalk.com/document/group/custom-robot-access
-func (s *Send) Dingtalk(ctx context.Context, url string, secret string, title string, content any) (err error) {
+func (s *Send) Dingtalk(ctx context.Context, url string, secret string, title string, content any) (response json.RawMessage, err error) {
 
 	client := global.GvaDingTalk
 
@@ -206,33 +264,31 @@ func (s *Send) Dingtalk(ctx context.Context, url string, secret string, title st
 	params.Set("markdown", content)
 
 	// 请求
+	var resp dingtalk.RobotSend
 	if secret != "" {
-		_, err = client.RobotSendSignURL(
+		resp, err = client.RobotSendSignURL(
 			ctx,
 			url,
 			secret,
 			params,
 		)
-		if err != nil {
-			return err
-		}
 	} else {
-		_, err = client.RobotSendURL(
+		resp, err = client.RobotSendURL(
 			ctx,
 			url,
 			params,
 		)
-		if err != nil {
-			return err
-		}
+	}
+	if err != nil {
+		return nil, err
 	}
 
-	return nil
+	return json.RawMessage(gorequest.JsonEncodeNoError(resp)), nil
 }
 
 // Feishu Webhook 发送
 // https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot
-func (s *Send) Feishu(ctx context.Context, url string, secret string, title string, content string) (err error) {
+func (s *Send) Feishu(ctx context.Context, url string, secret string, title string, content string) (response json.RawMessage, err error) {
 
 	client := global.GvaFeishu
 
@@ -248,34 +304,32 @@ func (s *Send) Feishu(ctx context.Context, url string, secret string, title stri
 		}})
 
 	// 请求
+	var resp feishu.WebhookSend
 	if secret != "" {
-		_, err = client.WebhookSendSignURL(
+		resp, err = client.WebhookSendSignURL(
 			ctx,
 			url,
 			secret,
 			params,
 		)
-		if err != nil {
-			return err
-		}
 	} else {
-		_, err = client.WebhookSendURL(
+		resp, err = client.WebhookSendURL(
 			ctx,
 			url,
 			params,
 		)
-		if err != nil {
-			return err
-		}
+	}
+	if err != nil {
+		return nil, err
 	}
 
-	return nil
+	return json.RawMessage(gorequest.JsonEncodeNoError(resp)), nil
 }
 
 // Bark Webhook 发送
 // - 第一行
 // - 第二个
-func (s *Send) Bark(ctx context.Context, url string, key string, title string, content any) (err error) {
+func (s *Send) Bark(ctx context.Context, url string, key string, title string, content any) (response json.RawMessage, err error) {
 
 	client := global.GvaBark
 
@@ -294,18 +348,18 @@ func (s *Send) Bark(ctx context.Context, url string, key string, title string, c
 	params.Set("isArchive", 1)
 
 	// 请求
-	_, err = client.Push(ctx, params)
+	resp, err := client.Push(ctx, params)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return json.RawMessage(gorequest.JsonEncodeNoError(resp)), nil
 }
 
 // Ft07 Webhook 发送
 // - 第一行
 // - 第二个
-func (s *Send) Ft07(ctx context.Context, url string, key string, title string, content any) (err error) {
+func (s *Send) Ft07(ctx context.Context, url string, key string, title string, content any) (response json.RawMessage, err error) {
 
 	client := global.GvaFt07
 
@@ -323,17 +377,17 @@ func (s *Send) Ft07(ctx context.Context, url string, key string, title string, c
 	params.Set("tags", "ip_vibe")
 
 	// 请求
-	_, err = client.Push(ctx, params)
+	resp, err := client.Push(ctx, params)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return json.RawMessage(gorequest.JsonEncodeNoError(resp)), nil
 }
 
 // PushDeer Webhook 发送
 // https://www.pushdeer.com/dev.html
-func (s *Send) PushDeer(ctx context.Context, url string, key string, title string, content any) (err error) {
+func (s *Send) PushDeer(ctx context.Context, url string, key string, title string, content any) (response json.RawMessage, err error) {
 
 	client := global.GvaPushDeer
 
@@ -350,16 +404,16 @@ func (s *Send) PushDeer(ctx context.Context, url string, key string, title strin
 	params.Set("type", "markdown")
 
 	// 请求
-	_, err = client.MessagePush(ctx, title, params)
+	resp, err := client.MessagePush(ctx, title, params)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return json.RawMessage(gorequest.JsonEncodeNoError(resp)), nil
 }
 
 // Http Webhook 发送
-func (s *Send) Http(ctx context.Context, url string, title string, content any) (err error) {
+func (s *Send) Http(ctx context.Context, url string, title string, content any) (response json.RawMessage, err error) {
 
 	// 使用 Resty 发送请求
 	resp, err := s.client.R().
@@ -372,13 +426,8 @@ func (s *Send) Http(ctx context.Context, url string, title string, content any) 
 		Post(url)
 
 	if err != nil {
-		return fmt.Errorf("发送HTTP请求失败: %w", err)
+		return nil, err
 	}
 
-	// 检查响应状态码
-	if resp.StatusCode() != 200 {
-		return fmt.Errorf("HTTP请求失败，状态码: %d", resp.StatusCode())
-	}
-
-	return nil
+	return resp.Bytes(), nil
 }

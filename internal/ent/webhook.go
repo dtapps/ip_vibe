@@ -3,7 +3,6 @@
 package ent
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -33,8 +32,6 @@ type Webhook struct {
 	URL string `json:"url,omitempty"`
 	// Webhook 签名密钥或额外Token
 	Secret string `json:"secret,omitempty"`
-	// 订阅的事件类型列表
-	Events []string `json:"events,omitempty"`
 	// 通知标题 Go Template
 	TemplateTitle string `json:"template_title,omitempty"`
 	// 通知内容 Go Template
@@ -71,8 +68,6 @@ func (*Webhook) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case webhook.FieldEvents:
-			values[i] = new([]byte)
 		case webhook.FieldIsActive:
 			values[i] = new(sql.NullBool)
 		case webhook.FieldID:
@@ -143,14 +138,6 @@ func (_m *Webhook) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field secret", values[i])
 			} else if value.Valid {
 				_m.Secret = value.String
-			}
-		case webhook.FieldEvents:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field events", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &_m.Events); err != nil {
-					return fmt.Errorf("unmarshal field events: %w", err)
-				}
 			}
 		case webhook.FieldTemplateTitle:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -231,9 +218,6 @@ func (_m *Webhook) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("secret=")
 	builder.WriteString(_m.Secret)
-	builder.WriteString(", ")
-	builder.WriteString("events=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Events))
 	builder.WriteString(", ")
 	builder.WriteString("template_title=")
 	builder.WriteString(_m.TemplateTitle)

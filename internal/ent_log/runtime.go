@@ -128,7 +128,7 @@ func init() {
 	// webhookhistory.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	webhookhistory.UpdateDefaultUpdatedAt = webhookhistoryDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// webhookhistoryDescSuccess is the schema descriptor for success field.
-	webhookhistoryDescSuccess := webhookhistoryFields[8].Descriptor()
+	webhookhistoryDescSuccess := webhookhistoryFields[7].Descriptor()
 	// webhookhistory.DefaultSuccess holds the default value on creation for the success field.
 	webhookhistory.DefaultSuccess = webhookhistoryDescSuccess.Default.(bool)
 }

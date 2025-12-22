@@ -89,16 +89,6 @@ func Content(v string) predicate.WebhookHistory {
 	return predicate.WebhookHistory(sql.FieldEQ(FieldContent, v))
 }
 
-// StatusCode applies equality check predicate on the "status_code" field. It's identical to StatusCodeEQ.
-func StatusCode(v int) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldEQ(FieldStatusCode, v))
-}
-
-// Response applies equality check predicate on the "response" field. It's identical to ResponseEQ.
-func Response(v string) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldEQ(FieldResponse, v))
-}
-
 // Success applies equality check predicate on the "success" field. It's identical to SuccessEQ.
 func Success(v bool) predicate.WebhookHistory {
 	return predicate.WebhookHistory(sql.FieldEQ(FieldSuccess, v))
@@ -494,111 +484,6 @@ func ContentContainsFold(v string) predicate.WebhookHistory {
 	return predicate.WebhookHistory(sql.FieldContainsFold(FieldContent, v))
 }
 
-// StatusCodeEQ applies the EQ predicate on the "status_code" field.
-func StatusCodeEQ(v int) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldEQ(FieldStatusCode, v))
-}
-
-// StatusCodeNEQ applies the NEQ predicate on the "status_code" field.
-func StatusCodeNEQ(v int) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldNEQ(FieldStatusCode, v))
-}
-
-// StatusCodeIn applies the In predicate on the "status_code" field.
-func StatusCodeIn(vs ...int) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldIn(FieldStatusCode, vs...))
-}
-
-// StatusCodeNotIn applies the NotIn predicate on the "status_code" field.
-func StatusCodeNotIn(vs ...int) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldNotIn(FieldStatusCode, vs...))
-}
-
-// StatusCodeGT applies the GT predicate on the "status_code" field.
-func StatusCodeGT(v int) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldGT(FieldStatusCode, v))
-}
-
-// StatusCodeGTE applies the GTE predicate on the "status_code" field.
-func StatusCodeGTE(v int) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldGTE(FieldStatusCode, v))
-}
-
-// StatusCodeLT applies the LT predicate on the "status_code" field.
-func StatusCodeLT(v int) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldLT(FieldStatusCode, v))
-}
-
-// StatusCodeLTE applies the LTE predicate on the "status_code" field.
-func StatusCodeLTE(v int) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldLTE(FieldStatusCode, v))
-}
-
-// StatusCodeIsNil applies the IsNil predicate on the "status_code" field.
-func StatusCodeIsNil() predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldIsNull(FieldStatusCode))
-}
-
-// StatusCodeNotNil applies the NotNil predicate on the "status_code" field.
-func StatusCodeNotNil() predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldNotNull(FieldStatusCode))
-}
-
-// ResponseEQ applies the EQ predicate on the "response" field.
-func ResponseEQ(v string) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldEQ(FieldResponse, v))
-}
-
-// ResponseNEQ applies the NEQ predicate on the "response" field.
-func ResponseNEQ(v string) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldNEQ(FieldResponse, v))
-}
-
-// ResponseIn applies the In predicate on the "response" field.
-func ResponseIn(vs ...string) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldIn(FieldResponse, vs...))
-}
-
-// ResponseNotIn applies the NotIn predicate on the "response" field.
-func ResponseNotIn(vs ...string) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldNotIn(FieldResponse, vs...))
-}
-
-// ResponseGT applies the GT predicate on the "response" field.
-func ResponseGT(v string) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldGT(FieldResponse, v))
-}
-
-// ResponseGTE applies the GTE predicate on the "response" field.
-func ResponseGTE(v string) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldGTE(FieldResponse, v))
-}
-
-// ResponseLT applies the LT predicate on the "response" field.
-func ResponseLT(v string) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldLT(FieldResponse, v))
-}
-
-// ResponseLTE applies the LTE predicate on the "response" field.
-func ResponseLTE(v string) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldLTE(FieldResponse, v))
-}
-
-// ResponseContains applies the Contains predicate on the "response" field.
-func ResponseContains(v string) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldContains(FieldResponse, v))
-}
-
-// ResponseHasPrefix applies the HasPrefix predicate on the "response" field.
-func ResponseHasPrefix(v string) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldHasPrefix(FieldResponse, v))
-}
-
-// ResponseHasSuffix applies the HasSuffix predicate on the "response" field.
-func ResponseHasSuffix(v string) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldHasSuffix(FieldResponse, v))
-}
-
 // ResponseIsNil applies the IsNil predicate on the "response" field.
 func ResponseIsNil() predicate.WebhookHistory {
 	return predicate.WebhookHistory(sql.FieldIsNull(FieldResponse))
@@ -607,16 +492,6 @@ func ResponseIsNil() predicate.WebhookHistory {
 // ResponseNotNil applies the NotNil predicate on the "response" field.
 func ResponseNotNil() predicate.WebhookHistory {
 	return predicate.WebhookHistory(sql.FieldNotNull(FieldResponse))
-}
-
-// ResponseEqualFold applies the EqualFold predicate on the "response" field.
-func ResponseEqualFold(v string) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldEqualFold(FieldResponse, v))
-}
-
-// ResponseContainsFold applies the ContainsFold predicate on the "response" field.
-func ResponseContainsFold(v string) predicate.WebhookHistory {
-	return predicate.WebhookHistory(sql.FieldContainsFold(FieldResponse, v))
 }
 
 // SuccessEQ applies the EQ predicate on the "success" field.

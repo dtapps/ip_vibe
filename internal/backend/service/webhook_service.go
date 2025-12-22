@@ -54,7 +54,6 @@ func (s *WebhookServiceImpl) BuildResponse(ctx context.Context, item *ent.Webhoo
 		Platform:        item.Platform.String(),
 		URL:             item.URL,
 		Secret:          item.Secret,
-		Events:          item.Events,
 		IsActive:        item.IsActive,
 		TemplateTitle:   item.TemplateTitle,
 		TemplateContent: item.TemplateContent,
@@ -114,7 +113,6 @@ func (s *WebhookServiceImpl) CreateWebhook(ctx context.Context, request *types.C
 		SetPlatform(webhook.Platform(request.Platform)).
 		SetURL(request.URL).
 		SetSecret(request.Secret).
-		SetEvents(request.Events).
 		SetTemplateTitle(request.TemplateTitle).
 		SetTemplateContent(request.TemplateContent).
 		Save(ctx)
@@ -149,7 +147,6 @@ func (s *WebhookServiceImpl) UpdateWebhook(ctx context.Context, request *types.U
 		SetDescription(request.Description).
 		SetURL(request.URL).
 		SetSecret(request.Secret).
-		SetEvents(request.Events).
 		SetTemplateTitle(request.TemplateTitle).
 		SetTemplateContent(request.TemplateContent).
 		Save(ctx)
@@ -224,30 +221,20 @@ func (s *WebhookServiceImpl) DeleteWebhook(ctx context.Context, id int64) (*type
 
 // TestWebhook 测试通知
 func (s *WebhookServiceImpl) TestWebhook(ctx context.Context, id int64) (*types.GetWebhookRequest, error) {
-	// 查询通知
-	firstWebhook, err := s.db.Webhook.Query().
-		Where(webhook.IDEQ(id)).
-		First(ctx)
-	if err != nil {
-		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询通知失败: 记录不存在或 %w", err)
-		}
-		return nil, fmt.Errorf("查询通知失败: %w", err)
-	}
 
 	// 通知模板数据 (保持原始结构)
 	notifyData := utils.TemplateData{
 		EventType:  "TEST",
 		EventTime:  time.Now().Format("2006-01-02 15:04:05"),
 		EventBody:  "测试通知事件",
-		DeviceCode: firstWebhook.Name,
-		DeviceName: firstWebhook.Name,
+		DeviceCode: "测试设备代码",
+		DeviceName: "测试设备名称",
 		IPv4Addr:   "0.0.0.0",
 		IPv6Addr:   "0000:0000:0000:0000:0000:0000:0000:0000",
 	}
 
 	// 测试通知
-	err = s.webhookService.Test(ctx, firstWebhook, notifyData)
+	err := s.webhookService.Test(ctx, id, notifyData)
 	if err != nil {
 		if s.debug {
 			fmt.Printf("测试通知: %s\n", err.Error())
@@ -256,6 +243,6 @@ func (s *WebhookServiceImpl) TestWebhook(ctx context.Context, id int64) (*types.
 	}
 
 	return &types.GetWebhookRequest{
-		ID: firstWebhook.ID,
+		ID: id,
 	}, nil
 }

@@ -113,8 +113,6 @@ func (t *Webhook) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
-	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
-	m["events"] = t.Events
 	return m
 }
 

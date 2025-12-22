@@ -207,11 +207,6 @@ definitions:
       description:
         description: 通知描述
         type: string
-      events:
-        description: 订阅的事件类型列表
-        items:
-          type: string
-        type: array
       name:
         description: 通知名称
         type: string
@@ -669,11 +664,6 @@ definitions:
       description:
         description: 通知描述
         type: string
-      events:
-        description: 订阅的事件类型列表
-        items:
-          type: string
-        type: array
       id:
         description: 通知序号
         type: integer
@@ -1038,11 +1028,6 @@ definitions:
       description:
         description: 通知描述
         type: string
-      events:
-        description: 订阅的事件类型列表
-        items:
-          type: string
-        type: array
       id:
         description: 通知序号
         type: integer
@@ -1057,6 +1042,9 @@ definitions:
         type: string
       template_title:
         description: 通知标题 Go Template
+        type: string
+      url:
+        description: Webhook URL
         type: string
     required:
     - id
@@ -3517,6 +3505,41 @@ paths:
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 更新通知启用状态
+      tags:
+      - 通知
+  /webhooks/{id}/test:
+    post:
+      consumes:
+      - application/json
+      description: 测试通知
+      parameters:
+      - description: 通知序号
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetWebhookRequest'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 测试通知
       tags:
       - 通知
 swagger: "2.0"

@@ -447,7 +447,6 @@ var (
 		{Name: "platform", Type: field.TypeEnum, Comment: "通知平台类型", Enums: []string{"wechat_work", "dingtalk", "feishu", "bark", "ft07", "push_deer", "custom_http"}},
 		{Name: "url", Type: field.TypeString, Comment: "Webhook URL"},
 		{Name: "secret", Type: field.TypeString, Nullable: true, Comment: "Webhook 签名密钥或额外Token"},
-		{Name: "events", Type: field.TypeJSON, Comment: "订阅的事件类型列表"},
 		{Name: "template_title", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "通知标题 Go Template"},
 		{Name: "template_content", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "通知内容 Go Template"},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
@@ -467,7 +466,7 @@ var (
 			{
 				Name:    "webhook_is_active",
 				Unique:  false,
-				Columns: []*schema.Column{WebhookColumns[11]},
+				Columns: []*schema.Column{WebhookColumns[10]},
 			},
 			{
 				Name:    "webhook_created_at",

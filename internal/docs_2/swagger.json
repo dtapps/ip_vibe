@@ -3939,6 +3939,63 @@
                     }
                 }
             }
+        },
+        "/webhooks/{id}/test": {
+            "post": {
+                "description": "测试通知",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "通知"
+                ],
+                "summary": "测试通知",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "通知序号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetWebhookRequest"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -4231,13 +4288,6 @@
                 "description": {
                     "description": "通知描述",
                     "type": "string"
-                },
-                "events": {
-                    "description": "订阅的事件类型列表",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "name": {
                     "description": "通知名称",
@@ -4874,13 +4924,6 @@
                     "description": "通知描述",
                     "type": "string"
                 },
-                "events": {
-                    "description": "订阅的事件类型列表",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "id": {
                     "description": "通知序号",
                     "type": "integer"
@@ -5393,13 +5436,6 @@
                     "description": "通知描述",
                     "type": "string"
                 },
-                "events": {
-                    "description": "订阅的事件类型列表",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "id": {
                     "description": "通知序号",
                     "type": "integer"
@@ -5418,6 +5454,10 @@
                 },
                 "template_title": {
                     "description": "通知标题 Go Template",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "Webhook URL",
                     "type": "string"
                 }
             }

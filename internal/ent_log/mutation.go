@@ -4824,9 +4824,8 @@ type WebhookHistoryMutation struct {
 	url                *string
 	title              *string
 	content            *string
-	status_code        *int
-	addstatus_code     *int
-	response           *string
+	response           *json.RawMessage
+	appendresponse     json.RawMessage
 	success            *bool
 	error_message      *string
 	clearedFields      map[string]struct{}
@@ -5271,83 +5270,14 @@ func (m *WebhookHistoryMutation) ResetContent() {
 	delete(m.clearedFields, webhookhistory.FieldContent)
 }
 
-// SetStatusCode sets the "status_code" field.
-func (m *WebhookHistoryMutation) SetStatusCode(i int) {
-	m.status_code = &i
-	m.addstatus_code = nil
-}
-
-// StatusCode returns the value of the "status_code" field in the mutation.
-func (m *WebhookHistoryMutation) StatusCode() (r int, exists bool) {
-	v := m.status_code
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldStatusCode returns the old "status_code" field's value of the WebhookHistory entity.
-// If the WebhookHistory object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WebhookHistoryMutation) OldStatusCode(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldStatusCode is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldStatusCode requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldStatusCode: %w", err)
-	}
-	return oldValue.StatusCode, nil
-}
-
-// AddStatusCode adds i to the "status_code" field.
-func (m *WebhookHistoryMutation) AddStatusCode(i int) {
-	if m.addstatus_code != nil {
-		*m.addstatus_code += i
-	} else {
-		m.addstatus_code = &i
-	}
-}
-
-// AddedStatusCode returns the value that was added to the "status_code" field in this mutation.
-func (m *WebhookHistoryMutation) AddedStatusCode() (r int, exists bool) {
-	v := m.addstatus_code
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearStatusCode clears the value of the "status_code" field.
-func (m *WebhookHistoryMutation) ClearStatusCode() {
-	m.status_code = nil
-	m.addstatus_code = nil
-	m.clearedFields[webhookhistory.FieldStatusCode] = struct{}{}
-}
-
-// StatusCodeCleared returns if the "status_code" field was cleared in this mutation.
-func (m *WebhookHistoryMutation) StatusCodeCleared() bool {
-	_, ok := m.clearedFields[webhookhistory.FieldStatusCode]
-	return ok
-}
-
-// ResetStatusCode resets all changes to the "status_code" field.
-func (m *WebhookHistoryMutation) ResetStatusCode() {
-	m.status_code = nil
-	m.addstatus_code = nil
-	delete(m.clearedFields, webhookhistory.FieldStatusCode)
-}
-
 // SetResponse sets the "response" field.
-func (m *WebhookHistoryMutation) SetResponse(s string) {
-	m.response = &s
+func (m *WebhookHistoryMutation) SetResponse(jm json.RawMessage) {
+	m.response = &jm
+	m.appendresponse = nil
 }
 
 // Response returns the value of the "response" field in the mutation.
-func (m *WebhookHistoryMutation) Response() (r string, exists bool) {
+func (m *WebhookHistoryMutation) Response() (r json.RawMessage, exists bool) {
 	v := m.response
 	if v == nil {
 		return
@@ -5358,7 +5288,7 @@ func (m *WebhookHistoryMutation) Response() (r string, exists bool) {
 // OldResponse returns the old "response" field's value of the WebhookHistory entity.
 // If the WebhookHistory object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WebhookHistoryMutation) OldResponse(ctx context.Context) (v string, err error) {
+func (m *WebhookHistoryMutation) OldResponse(ctx context.Context) (v json.RawMessage, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldResponse is only allowed on UpdateOne operations")
 	}
@@ -5372,9 +5302,23 @@ func (m *WebhookHistoryMutation) OldResponse(ctx context.Context) (v string, err
 	return oldValue.Response, nil
 }
 
+// AppendResponse adds jm to the "response" field.
+func (m *WebhookHistoryMutation) AppendResponse(jm json.RawMessage) {
+	m.appendresponse = append(m.appendresponse, jm...)
+}
+
+// AppendedResponse returns the list of values that were appended to the "response" field in this mutation.
+func (m *WebhookHistoryMutation) AppendedResponse() (json.RawMessage, bool) {
+	if len(m.appendresponse) == 0 {
+		return nil, false
+	}
+	return m.appendresponse, true
+}
+
 // ClearResponse clears the value of the "response" field.
 func (m *WebhookHistoryMutation) ClearResponse() {
 	m.response = nil
+	m.appendresponse = nil
 	m.clearedFields[webhookhistory.FieldResponse] = struct{}{}
 }
 
@@ -5387,6 +5331,7 @@ func (m *WebhookHistoryMutation) ResponseCleared() bool {
 // ResetResponse resets all changes to the "response" field.
 func (m *WebhookHistoryMutation) ResetResponse() {
 	m.response = nil
+	m.appendresponse = nil
 	delete(m.clearedFields, webhookhistory.FieldResponse)
 }
 
@@ -5509,7 +5454,7 @@ func (m *WebhookHistoryMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *WebhookHistoryMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, webhookhistory.FieldCreatedAt)
 	}
@@ -5530,9 +5475,6 @@ func (m *WebhookHistoryMutation) Fields() []string {
 	}
 	if m.content != nil {
 		fields = append(fields, webhookhistory.FieldContent)
-	}
-	if m.status_code != nil {
-		fields = append(fields, webhookhistory.FieldStatusCode)
 	}
 	if m.response != nil {
 		fields = append(fields, webhookhistory.FieldResponse)
@@ -5565,8 +5507,6 @@ func (m *WebhookHistoryMutation) Field(name string) (ent.Value, bool) {
 		return m.Title()
 	case webhookhistory.FieldContent:
 		return m.Content()
-	case webhookhistory.FieldStatusCode:
-		return m.StatusCode()
 	case webhookhistory.FieldResponse:
 		return m.Response()
 	case webhookhistory.FieldSuccess:
@@ -5596,8 +5536,6 @@ func (m *WebhookHistoryMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldTitle(ctx)
 	case webhookhistory.FieldContent:
 		return m.OldContent(ctx)
-	case webhookhistory.FieldStatusCode:
-		return m.OldStatusCode(ctx)
 	case webhookhistory.FieldResponse:
 		return m.OldResponse(ctx)
 	case webhookhistory.FieldSuccess:
@@ -5662,15 +5600,8 @@ func (m *WebhookHistoryMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetContent(v)
 		return nil
-	case webhookhistory.FieldStatusCode:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetStatusCode(v)
-		return nil
 	case webhookhistory.FieldResponse:
-		v, ok := value.(string)
+		v, ok := value.(json.RawMessage)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -5704,9 +5635,6 @@ func (m *WebhookHistoryMutation) AddedFields() []string {
 	if m.addsubscription_id != nil {
 		fields = append(fields, webhookhistory.FieldSubscriptionID)
 	}
-	if m.addstatus_code != nil {
-		fields = append(fields, webhookhistory.FieldStatusCode)
-	}
 	return fields
 }
 
@@ -5719,8 +5647,6 @@ func (m *WebhookHistoryMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedWebhookID()
 	case webhookhistory.FieldSubscriptionID:
 		return m.AddedSubscriptionID()
-	case webhookhistory.FieldStatusCode:
-		return m.AddedStatusCode()
 	}
 	return nil, false
 }
@@ -5744,13 +5670,6 @@ func (m *WebhookHistoryMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddSubscriptionID(v)
 		return nil
-	case webhookhistory.FieldStatusCode:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddStatusCode(v)
-		return nil
 	}
 	return fmt.Errorf("unknown WebhookHistory numeric field %s", name)
 }
@@ -5767,9 +5686,6 @@ func (m *WebhookHistoryMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(webhookhistory.FieldContent) {
 		fields = append(fields, webhookhistory.FieldContent)
-	}
-	if m.FieldCleared(webhookhistory.FieldStatusCode) {
-		fields = append(fields, webhookhistory.FieldStatusCode)
 	}
 	if m.FieldCleared(webhookhistory.FieldResponse) {
 		fields = append(fields, webhookhistory.FieldResponse)
@@ -5799,9 +5715,6 @@ func (m *WebhookHistoryMutation) ClearField(name string) error {
 		return nil
 	case webhookhistory.FieldContent:
 		m.ClearContent()
-		return nil
-	case webhookhistory.FieldStatusCode:
-		m.ClearStatusCode()
 		return nil
 	case webhookhistory.FieldResponse:
 		m.ClearResponse()
@@ -5837,9 +5750,6 @@ func (m *WebhookHistoryMutation) ResetField(name string) error {
 		return nil
 	case webhookhistory.FieldContent:
 		m.ResetContent()
-		return nil
-	case webhookhistory.FieldStatusCode:
-		m.ResetStatusCode()
 		return nil
 	case webhookhistory.FieldResponse:
 		m.ResetResponse()

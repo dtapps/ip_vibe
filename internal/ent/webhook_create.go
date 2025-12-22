@@ -97,12 +97,6 @@ func (_c *WebhookCreate) SetNillableSecret(v *string) *WebhookCreate {
 	return _c
 }
 
-// SetEvents sets the "events" field.
-func (_c *WebhookCreate) SetEvents(v []string) *WebhookCreate {
-	_c.mutation.SetEvents(v)
-	return _c
-}
-
 // SetTemplateTitle sets the "template_title" field.
 func (_c *WebhookCreate) SetTemplateTitle(v string) *WebhookCreate {
 	_c.mutation.SetTemplateTitle(v)
@@ -237,9 +231,6 @@ func (_c *WebhookCreate) check() error {
 	if _, ok := _c.mutation.URL(); !ok {
 		return &ValidationError{Name: "url", err: errors.New(`ent: missing required field "Webhook.url"`)}
 	}
-	if _, ok := _c.mutation.Events(); !ok {
-		return &ValidationError{Name: "events", err: errors.New(`ent: missing required field "Webhook.events"`)}
-	}
 	if _, ok := _c.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "Webhook.is_active"`)}
 	}
@@ -303,10 +294,6 @@ func (_c *WebhookCreate) createSpec() (*Webhook, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Secret(); ok {
 		_spec.SetField(webhook.FieldSecret, field.TypeString, value)
 		_node.Secret = value
-	}
-	if value, ok := _c.mutation.Events(); ok {
-		_spec.SetField(webhook.FieldEvents, field.TypeJSON, value)
-		_node.Events = value
 	}
 	if value, ok := _c.mutation.TemplateTitle(); ok {
 		_spec.SetField(webhook.FieldTemplateTitle, field.TypeString, value)
@@ -457,18 +444,6 @@ func (u *WebhookUpsert) UpdateSecret() *WebhookUpsert {
 // ClearSecret clears the value of the "secret" field.
 func (u *WebhookUpsert) ClearSecret() *WebhookUpsert {
 	u.SetNull(webhook.FieldSecret)
-	return u
-}
-
-// SetEvents sets the "events" field.
-func (u *WebhookUpsert) SetEvents(v []string) *WebhookUpsert {
-	u.Set(webhook.FieldEvents, v)
-	return u
-}
-
-// UpdateEvents sets the "events" field to the value that was provided on create.
-func (u *WebhookUpsert) UpdateEvents() *WebhookUpsert {
-	u.SetExcluded(webhook.FieldEvents)
 	return u
 }
 
@@ -655,20 +630,6 @@ func (u *WebhookUpsertOne) UpdateSecret() *WebhookUpsertOne {
 func (u *WebhookUpsertOne) ClearSecret() *WebhookUpsertOne {
 	return u.Update(func(s *WebhookUpsert) {
 		s.ClearSecret()
-	})
-}
-
-// SetEvents sets the "events" field.
-func (u *WebhookUpsertOne) SetEvents(v []string) *WebhookUpsertOne {
-	return u.Update(func(s *WebhookUpsert) {
-		s.SetEvents(v)
-	})
-}
-
-// UpdateEvents sets the "events" field to the value that was provided on create.
-func (u *WebhookUpsertOne) UpdateEvents() *WebhookUpsertOne {
-	return u.Update(func(s *WebhookUpsert) {
-		s.UpdateEvents()
 	})
 }
 
@@ -1029,20 +990,6 @@ func (u *WebhookUpsertBulk) UpdateSecret() *WebhookUpsertBulk {
 func (u *WebhookUpsertBulk) ClearSecret() *WebhookUpsertBulk {
 	return u.Update(func(s *WebhookUpsert) {
 		s.ClearSecret()
-	})
-}
-
-// SetEvents sets the "events" field.
-func (u *WebhookUpsertBulk) SetEvents(v []string) *WebhookUpsertBulk {
-	return u.Update(func(s *WebhookUpsert) {
-		s.SetEvents(v)
-	})
-}
-
-// UpdateEvents sets the "events" field to the value that was provided on create.
-func (u *WebhookUpsertBulk) UpdateEvents() *WebhookUpsertBulk {
-	return u.Update(func(s *WebhookUpsert) {
-		s.UpdateEvents()
 	})
 }
 

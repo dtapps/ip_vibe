@@ -35,141 +35,6 @@ func (_u *WebhookHistoryUpdate) SetUpdatedAt(v time.Time) *WebhookHistoryUpdate 
 	return _u
 }
 
-// SetURL sets the "url" field.
-func (_u *WebhookHistoryUpdate) SetURL(v string) *WebhookHistoryUpdate {
-	_u.mutation.SetURL(v)
-	return _u
-}
-
-// SetNillableURL sets the "url" field if the given value is not nil.
-func (_u *WebhookHistoryUpdate) SetNillableURL(v *string) *WebhookHistoryUpdate {
-	if v != nil {
-		_u.SetURL(*v)
-	}
-	return _u
-}
-
-// SetTitle sets the "title" field.
-func (_u *WebhookHistoryUpdate) SetTitle(v string) *WebhookHistoryUpdate {
-	_u.mutation.SetTitle(v)
-	return _u
-}
-
-// SetNillableTitle sets the "title" field if the given value is not nil.
-func (_u *WebhookHistoryUpdate) SetNillableTitle(v *string) *WebhookHistoryUpdate {
-	if v != nil {
-		_u.SetTitle(*v)
-	}
-	return _u
-}
-
-// ClearTitle clears the value of the "title" field.
-func (_u *WebhookHistoryUpdate) ClearTitle() *WebhookHistoryUpdate {
-	_u.mutation.ClearTitle()
-	return _u
-}
-
-// SetContent sets the "content" field.
-func (_u *WebhookHistoryUpdate) SetContent(v string) *WebhookHistoryUpdate {
-	_u.mutation.SetContent(v)
-	return _u
-}
-
-// SetNillableContent sets the "content" field if the given value is not nil.
-func (_u *WebhookHistoryUpdate) SetNillableContent(v *string) *WebhookHistoryUpdate {
-	if v != nil {
-		_u.SetContent(*v)
-	}
-	return _u
-}
-
-// ClearContent clears the value of the "content" field.
-func (_u *WebhookHistoryUpdate) ClearContent() *WebhookHistoryUpdate {
-	_u.mutation.ClearContent()
-	return _u
-}
-
-// SetStatusCode sets the "status_code" field.
-func (_u *WebhookHistoryUpdate) SetStatusCode(v int) *WebhookHistoryUpdate {
-	_u.mutation.ResetStatusCode()
-	_u.mutation.SetStatusCode(v)
-	return _u
-}
-
-// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
-func (_u *WebhookHistoryUpdate) SetNillableStatusCode(v *int) *WebhookHistoryUpdate {
-	if v != nil {
-		_u.SetStatusCode(*v)
-	}
-	return _u
-}
-
-// AddStatusCode adds value to the "status_code" field.
-func (_u *WebhookHistoryUpdate) AddStatusCode(v int) *WebhookHistoryUpdate {
-	_u.mutation.AddStatusCode(v)
-	return _u
-}
-
-// ClearStatusCode clears the value of the "status_code" field.
-func (_u *WebhookHistoryUpdate) ClearStatusCode() *WebhookHistoryUpdate {
-	_u.mutation.ClearStatusCode()
-	return _u
-}
-
-// SetResponse sets the "response" field.
-func (_u *WebhookHistoryUpdate) SetResponse(v string) *WebhookHistoryUpdate {
-	_u.mutation.SetResponse(v)
-	return _u
-}
-
-// SetNillableResponse sets the "response" field if the given value is not nil.
-func (_u *WebhookHistoryUpdate) SetNillableResponse(v *string) *WebhookHistoryUpdate {
-	if v != nil {
-		_u.SetResponse(*v)
-	}
-	return _u
-}
-
-// ClearResponse clears the value of the "response" field.
-func (_u *WebhookHistoryUpdate) ClearResponse() *WebhookHistoryUpdate {
-	_u.mutation.ClearResponse()
-	return _u
-}
-
-// SetSuccess sets the "success" field.
-func (_u *WebhookHistoryUpdate) SetSuccess(v bool) *WebhookHistoryUpdate {
-	_u.mutation.SetSuccess(v)
-	return _u
-}
-
-// SetNillableSuccess sets the "success" field if the given value is not nil.
-func (_u *WebhookHistoryUpdate) SetNillableSuccess(v *bool) *WebhookHistoryUpdate {
-	if v != nil {
-		_u.SetSuccess(*v)
-	}
-	return _u
-}
-
-// SetErrorMessage sets the "error_message" field.
-func (_u *WebhookHistoryUpdate) SetErrorMessage(v string) *WebhookHistoryUpdate {
-	_u.mutation.SetErrorMessage(v)
-	return _u
-}
-
-// SetNillableErrorMessage sets the "error_message" field if the given value is not nil.
-func (_u *WebhookHistoryUpdate) SetNillableErrorMessage(v *string) *WebhookHistoryUpdate {
-	if v != nil {
-		_u.SetErrorMessage(*v)
-	}
-	return _u
-}
-
-// ClearErrorMessage clears the value of the "error_message" field.
-func (_u *WebhookHistoryUpdate) ClearErrorMessage() *WebhookHistoryUpdate {
-	_u.mutation.ClearErrorMessage()
-	return _u
-}
-
 // Mutation returns the WebhookHistoryMutation object of the builder.
 func (_u *WebhookHistoryUpdate) Mutation() *WebhookHistoryMutation {
 	return _u.mutation
@@ -232,41 +97,14 @@ func (_u *WebhookHistoryUpdate) sqlSave(ctx context.Context) (_node int, err err
 	if _u.mutation.SubscriptionIDCleared() {
 		_spec.ClearField(webhookhistory.FieldSubscriptionID, field.TypeInt64)
 	}
-	if value, ok := _u.mutation.URL(); ok {
-		_spec.SetField(webhookhistory.FieldURL, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Title(); ok {
-		_spec.SetField(webhookhistory.FieldTitle, field.TypeString, value)
-	}
 	if _u.mutation.TitleCleared() {
 		_spec.ClearField(webhookhistory.FieldTitle, field.TypeString)
-	}
-	if value, ok := _u.mutation.Content(); ok {
-		_spec.SetField(webhookhistory.FieldContent, field.TypeString, value)
 	}
 	if _u.mutation.ContentCleared() {
 		_spec.ClearField(webhookhistory.FieldContent, field.TypeString)
 	}
-	if value, ok := _u.mutation.StatusCode(); ok {
-		_spec.SetField(webhookhistory.FieldStatusCode, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedStatusCode(); ok {
-		_spec.AddField(webhookhistory.FieldStatusCode, field.TypeInt, value)
-	}
-	if _u.mutation.StatusCodeCleared() {
-		_spec.ClearField(webhookhistory.FieldStatusCode, field.TypeInt)
-	}
-	if value, ok := _u.mutation.Response(); ok {
-		_spec.SetField(webhookhistory.FieldResponse, field.TypeString, value)
-	}
 	if _u.mutation.ResponseCleared() {
-		_spec.ClearField(webhookhistory.FieldResponse, field.TypeString)
-	}
-	if value, ok := _u.mutation.Success(); ok {
-		_spec.SetField(webhookhistory.FieldSuccess, field.TypeBool, value)
-	}
-	if value, ok := _u.mutation.ErrorMessage(); ok {
-		_spec.SetField(webhookhistory.FieldErrorMessage, field.TypeString, value)
+		_spec.ClearField(webhookhistory.FieldResponse, field.TypeJSON)
 	}
 	if _u.mutation.ErrorMessageCleared() {
 		_spec.ClearField(webhookhistory.FieldErrorMessage, field.TypeString)
@@ -296,141 +134,6 @@ type WebhookHistoryUpdateOne struct {
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *WebhookHistoryUpdateOne) SetUpdatedAt(v time.Time) *WebhookHistoryUpdateOne {
 	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
-// SetURL sets the "url" field.
-func (_u *WebhookHistoryUpdateOne) SetURL(v string) *WebhookHistoryUpdateOne {
-	_u.mutation.SetURL(v)
-	return _u
-}
-
-// SetNillableURL sets the "url" field if the given value is not nil.
-func (_u *WebhookHistoryUpdateOne) SetNillableURL(v *string) *WebhookHistoryUpdateOne {
-	if v != nil {
-		_u.SetURL(*v)
-	}
-	return _u
-}
-
-// SetTitle sets the "title" field.
-func (_u *WebhookHistoryUpdateOne) SetTitle(v string) *WebhookHistoryUpdateOne {
-	_u.mutation.SetTitle(v)
-	return _u
-}
-
-// SetNillableTitle sets the "title" field if the given value is not nil.
-func (_u *WebhookHistoryUpdateOne) SetNillableTitle(v *string) *WebhookHistoryUpdateOne {
-	if v != nil {
-		_u.SetTitle(*v)
-	}
-	return _u
-}
-
-// ClearTitle clears the value of the "title" field.
-func (_u *WebhookHistoryUpdateOne) ClearTitle() *WebhookHistoryUpdateOne {
-	_u.mutation.ClearTitle()
-	return _u
-}
-
-// SetContent sets the "content" field.
-func (_u *WebhookHistoryUpdateOne) SetContent(v string) *WebhookHistoryUpdateOne {
-	_u.mutation.SetContent(v)
-	return _u
-}
-
-// SetNillableContent sets the "content" field if the given value is not nil.
-func (_u *WebhookHistoryUpdateOne) SetNillableContent(v *string) *WebhookHistoryUpdateOne {
-	if v != nil {
-		_u.SetContent(*v)
-	}
-	return _u
-}
-
-// ClearContent clears the value of the "content" field.
-func (_u *WebhookHistoryUpdateOne) ClearContent() *WebhookHistoryUpdateOne {
-	_u.mutation.ClearContent()
-	return _u
-}
-
-// SetStatusCode sets the "status_code" field.
-func (_u *WebhookHistoryUpdateOne) SetStatusCode(v int) *WebhookHistoryUpdateOne {
-	_u.mutation.ResetStatusCode()
-	_u.mutation.SetStatusCode(v)
-	return _u
-}
-
-// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
-func (_u *WebhookHistoryUpdateOne) SetNillableStatusCode(v *int) *WebhookHistoryUpdateOne {
-	if v != nil {
-		_u.SetStatusCode(*v)
-	}
-	return _u
-}
-
-// AddStatusCode adds value to the "status_code" field.
-func (_u *WebhookHistoryUpdateOne) AddStatusCode(v int) *WebhookHistoryUpdateOne {
-	_u.mutation.AddStatusCode(v)
-	return _u
-}
-
-// ClearStatusCode clears the value of the "status_code" field.
-func (_u *WebhookHistoryUpdateOne) ClearStatusCode() *WebhookHistoryUpdateOne {
-	_u.mutation.ClearStatusCode()
-	return _u
-}
-
-// SetResponse sets the "response" field.
-func (_u *WebhookHistoryUpdateOne) SetResponse(v string) *WebhookHistoryUpdateOne {
-	_u.mutation.SetResponse(v)
-	return _u
-}
-
-// SetNillableResponse sets the "response" field if the given value is not nil.
-func (_u *WebhookHistoryUpdateOne) SetNillableResponse(v *string) *WebhookHistoryUpdateOne {
-	if v != nil {
-		_u.SetResponse(*v)
-	}
-	return _u
-}
-
-// ClearResponse clears the value of the "response" field.
-func (_u *WebhookHistoryUpdateOne) ClearResponse() *WebhookHistoryUpdateOne {
-	_u.mutation.ClearResponse()
-	return _u
-}
-
-// SetSuccess sets the "success" field.
-func (_u *WebhookHistoryUpdateOne) SetSuccess(v bool) *WebhookHistoryUpdateOne {
-	_u.mutation.SetSuccess(v)
-	return _u
-}
-
-// SetNillableSuccess sets the "success" field if the given value is not nil.
-func (_u *WebhookHistoryUpdateOne) SetNillableSuccess(v *bool) *WebhookHistoryUpdateOne {
-	if v != nil {
-		_u.SetSuccess(*v)
-	}
-	return _u
-}
-
-// SetErrorMessage sets the "error_message" field.
-func (_u *WebhookHistoryUpdateOne) SetErrorMessage(v string) *WebhookHistoryUpdateOne {
-	_u.mutation.SetErrorMessage(v)
-	return _u
-}
-
-// SetNillableErrorMessage sets the "error_message" field if the given value is not nil.
-func (_u *WebhookHistoryUpdateOne) SetNillableErrorMessage(v *string) *WebhookHistoryUpdateOne {
-	if v != nil {
-		_u.SetErrorMessage(*v)
-	}
-	return _u
-}
-
-// ClearErrorMessage clears the value of the "error_message" field.
-func (_u *WebhookHistoryUpdateOne) ClearErrorMessage() *WebhookHistoryUpdateOne {
-	_u.mutation.ClearErrorMessage()
 	return _u
 }
 
@@ -526,41 +229,14 @@ func (_u *WebhookHistoryUpdateOne) sqlSave(ctx context.Context) (_node *WebhookH
 	if _u.mutation.SubscriptionIDCleared() {
 		_spec.ClearField(webhookhistory.FieldSubscriptionID, field.TypeInt64)
 	}
-	if value, ok := _u.mutation.URL(); ok {
-		_spec.SetField(webhookhistory.FieldURL, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Title(); ok {
-		_spec.SetField(webhookhistory.FieldTitle, field.TypeString, value)
-	}
 	if _u.mutation.TitleCleared() {
 		_spec.ClearField(webhookhistory.FieldTitle, field.TypeString)
-	}
-	if value, ok := _u.mutation.Content(); ok {
-		_spec.SetField(webhookhistory.FieldContent, field.TypeString, value)
 	}
 	if _u.mutation.ContentCleared() {
 		_spec.ClearField(webhookhistory.FieldContent, field.TypeString)
 	}
-	if value, ok := _u.mutation.StatusCode(); ok {
-		_spec.SetField(webhookhistory.FieldStatusCode, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedStatusCode(); ok {
-		_spec.AddField(webhookhistory.FieldStatusCode, field.TypeInt, value)
-	}
-	if _u.mutation.StatusCodeCleared() {
-		_spec.ClearField(webhookhistory.FieldStatusCode, field.TypeInt)
-	}
-	if value, ok := _u.mutation.Response(); ok {
-		_spec.SetField(webhookhistory.FieldResponse, field.TypeString, value)
-	}
 	if _u.mutation.ResponseCleared() {
-		_spec.ClearField(webhookhistory.FieldResponse, field.TypeString)
-	}
-	if value, ok := _u.mutation.Success(); ok {
-		_spec.SetField(webhookhistory.FieldSuccess, field.TypeBool, value)
-	}
-	if value, ok := _u.mutation.ErrorMessage(); ok {
-		_spec.SetField(webhookhistory.FieldErrorMessage, field.TypeString, value)
+		_spec.ClearField(webhookhistory.FieldResponse, field.TypeJSON)
 	}
 	if _u.mutation.ErrorMessageCleared() {
 		_spec.ClearField(webhookhistory.FieldErrorMessage, field.TypeString)

@@ -29,8 +29,6 @@ const (
 	FieldURL = "url"
 	// FieldSecret holds the string denoting the secret field in the database.
 	FieldSecret = "secret"
-	// FieldEvents holds the string denoting the events field in the database.
-	FieldEvents = "events"
 	// FieldTemplateTitle holds the string denoting the template_title field in the database.
 	FieldTemplateTitle = "template_title"
 	// FieldTemplateContent holds the string denoting the template_content field in the database.
@@ -60,7 +58,6 @@ var Columns = []string{
 	FieldPlatform,
 	FieldURL,
 	FieldSecret,
-	FieldEvents,
 	FieldTemplateTitle,
 	FieldTemplateContent,
 	FieldIsActive,

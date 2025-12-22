@@ -4,6 +4,7 @@ package ent_log
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -104,31 +105,9 @@ func (_c *WebhookHistoryCreate) SetNillableContent(v *string) *WebhookHistoryCre
 	return _c
 }
 
-// SetStatusCode sets the "status_code" field.
-func (_c *WebhookHistoryCreate) SetStatusCode(v int) *WebhookHistoryCreate {
-	_c.mutation.SetStatusCode(v)
-	return _c
-}
-
-// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
-func (_c *WebhookHistoryCreate) SetNillableStatusCode(v *int) *WebhookHistoryCreate {
-	if v != nil {
-		_c.SetStatusCode(*v)
-	}
-	return _c
-}
-
 // SetResponse sets the "response" field.
-func (_c *WebhookHistoryCreate) SetResponse(v string) *WebhookHistoryCreate {
+func (_c *WebhookHistoryCreate) SetResponse(v json.RawMessage) *WebhookHistoryCreate {
 	_c.mutation.SetResponse(v)
-	return _c
-}
-
-// SetNillableResponse sets the "response" field if the given value is not nil.
-func (_c *WebhookHistoryCreate) SetNillableResponse(v *string) *WebhookHistoryCreate {
-	if v != nil {
-		_c.SetResponse(*v)
-	}
 	return _c
 }
 
@@ -293,12 +272,8 @@ func (_c *WebhookHistoryCreate) createSpec() (*WebhookHistory, *sqlgraph.CreateS
 		_spec.SetField(webhookhistory.FieldContent, field.TypeString, value)
 		_node.Content = value
 	}
-	if value, ok := _c.mutation.StatusCode(); ok {
-		_spec.SetField(webhookhistory.FieldStatusCode, field.TypeInt, value)
-		_node.StatusCode = value
-	}
 	if value, ok := _c.mutation.Response(); ok {
-		_spec.SetField(webhookhistory.FieldResponse, field.TypeString, value)
+		_spec.SetField(webhookhistory.FieldResponse, field.TypeJSON, value)
 		_node.Response = value
 	}
 	if value, ok := _c.mutation.Success(); ok {
@@ -373,126 +348,6 @@ func (u *WebhookHistoryUpsert) UpdateUpdatedAt() *WebhookHistoryUpsert {
 	return u
 }
 
-// SetURL sets the "url" field.
-func (u *WebhookHistoryUpsert) SetURL(v string) *WebhookHistoryUpsert {
-	u.Set(webhookhistory.FieldURL, v)
-	return u
-}
-
-// UpdateURL sets the "url" field to the value that was provided on create.
-func (u *WebhookHistoryUpsert) UpdateURL() *WebhookHistoryUpsert {
-	u.SetExcluded(webhookhistory.FieldURL)
-	return u
-}
-
-// SetTitle sets the "title" field.
-func (u *WebhookHistoryUpsert) SetTitle(v string) *WebhookHistoryUpsert {
-	u.Set(webhookhistory.FieldTitle, v)
-	return u
-}
-
-// UpdateTitle sets the "title" field to the value that was provided on create.
-func (u *WebhookHistoryUpsert) UpdateTitle() *WebhookHistoryUpsert {
-	u.SetExcluded(webhookhistory.FieldTitle)
-	return u
-}
-
-// ClearTitle clears the value of the "title" field.
-func (u *WebhookHistoryUpsert) ClearTitle() *WebhookHistoryUpsert {
-	u.SetNull(webhookhistory.FieldTitle)
-	return u
-}
-
-// SetContent sets the "content" field.
-func (u *WebhookHistoryUpsert) SetContent(v string) *WebhookHistoryUpsert {
-	u.Set(webhookhistory.FieldContent, v)
-	return u
-}
-
-// UpdateContent sets the "content" field to the value that was provided on create.
-func (u *WebhookHistoryUpsert) UpdateContent() *WebhookHistoryUpsert {
-	u.SetExcluded(webhookhistory.FieldContent)
-	return u
-}
-
-// ClearContent clears the value of the "content" field.
-func (u *WebhookHistoryUpsert) ClearContent() *WebhookHistoryUpsert {
-	u.SetNull(webhookhistory.FieldContent)
-	return u
-}
-
-// SetStatusCode sets the "status_code" field.
-func (u *WebhookHistoryUpsert) SetStatusCode(v int) *WebhookHistoryUpsert {
-	u.Set(webhookhistory.FieldStatusCode, v)
-	return u
-}
-
-// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
-func (u *WebhookHistoryUpsert) UpdateStatusCode() *WebhookHistoryUpsert {
-	u.SetExcluded(webhookhistory.FieldStatusCode)
-	return u
-}
-
-// AddStatusCode adds v to the "status_code" field.
-func (u *WebhookHistoryUpsert) AddStatusCode(v int) *WebhookHistoryUpsert {
-	u.Add(webhookhistory.FieldStatusCode, v)
-	return u
-}
-
-// ClearStatusCode clears the value of the "status_code" field.
-func (u *WebhookHistoryUpsert) ClearStatusCode() *WebhookHistoryUpsert {
-	u.SetNull(webhookhistory.FieldStatusCode)
-	return u
-}
-
-// SetResponse sets the "response" field.
-func (u *WebhookHistoryUpsert) SetResponse(v string) *WebhookHistoryUpsert {
-	u.Set(webhookhistory.FieldResponse, v)
-	return u
-}
-
-// UpdateResponse sets the "response" field to the value that was provided on create.
-func (u *WebhookHistoryUpsert) UpdateResponse() *WebhookHistoryUpsert {
-	u.SetExcluded(webhookhistory.FieldResponse)
-	return u
-}
-
-// ClearResponse clears the value of the "response" field.
-func (u *WebhookHistoryUpsert) ClearResponse() *WebhookHistoryUpsert {
-	u.SetNull(webhookhistory.FieldResponse)
-	return u
-}
-
-// SetSuccess sets the "success" field.
-func (u *WebhookHistoryUpsert) SetSuccess(v bool) *WebhookHistoryUpsert {
-	u.Set(webhookhistory.FieldSuccess, v)
-	return u
-}
-
-// UpdateSuccess sets the "success" field to the value that was provided on create.
-func (u *WebhookHistoryUpsert) UpdateSuccess() *WebhookHistoryUpsert {
-	u.SetExcluded(webhookhistory.FieldSuccess)
-	return u
-}
-
-// SetErrorMessage sets the "error_message" field.
-func (u *WebhookHistoryUpsert) SetErrorMessage(v string) *WebhookHistoryUpsert {
-	u.Set(webhookhistory.FieldErrorMessage, v)
-	return u
-}
-
-// UpdateErrorMessage sets the "error_message" field to the value that was provided on create.
-func (u *WebhookHistoryUpsert) UpdateErrorMessage() *WebhookHistoryUpsert {
-	u.SetExcluded(webhookhistory.FieldErrorMessage)
-	return u
-}
-
-// ClearErrorMessage clears the value of the "error_message" field.
-func (u *WebhookHistoryUpsert) ClearErrorMessage() *WebhookHistoryUpsert {
-	u.SetNull(webhookhistory.FieldErrorMessage)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -518,6 +373,24 @@ func (u *WebhookHistoryUpsertOne) UpdateNewValues() *WebhookHistoryUpsertOne {
 		}
 		if _, exists := u.create.mutation.SubscriptionID(); exists {
 			s.SetIgnore(webhookhistory.FieldSubscriptionID)
+		}
+		if _, exists := u.create.mutation.URL(); exists {
+			s.SetIgnore(webhookhistory.FieldURL)
+		}
+		if _, exists := u.create.mutation.Title(); exists {
+			s.SetIgnore(webhookhistory.FieldTitle)
+		}
+		if _, exists := u.create.mutation.Content(); exists {
+			s.SetIgnore(webhookhistory.FieldContent)
+		}
+		if _, exists := u.create.mutation.Response(); exists {
+			s.SetIgnore(webhookhistory.FieldResponse)
+		}
+		if _, exists := u.create.mutation.Success(); exists {
+			s.SetIgnore(webhookhistory.FieldSuccess)
+		}
+		if _, exists := u.create.mutation.ErrorMessage(); exists {
+			s.SetIgnore(webhookhistory.FieldErrorMessage)
 		}
 	}))
 	return u
@@ -561,146 +434,6 @@ func (u *WebhookHistoryUpsertOne) SetUpdatedAt(v time.Time) *WebhookHistoryUpser
 func (u *WebhookHistoryUpsertOne) UpdateUpdatedAt() *WebhookHistoryUpsertOne {
 	return u.Update(func(s *WebhookHistoryUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetURL sets the "url" field.
-func (u *WebhookHistoryUpsertOne) SetURL(v string) *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.SetURL(v)
-	})
-}
-
-// UpdateURL sets the "url" field to the value that was provided on create.
-func (u *WebhookHistoryUpsertOne) UpdateURL() *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.UpdateURL()
-	})
-}
-
-// SetTitle sets the "title" field.
-func (u *WebhookHistoryUpsertOne) SetTitle(v string) *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.SetTitle(v)
-	})
-}
-
-// UpdateTitle sets the "title" field to the value that was provided on create.
-func (u *WebhookHistoryUpsertOne) UpdateTitle() *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.UpdateTitle()
-	})
-}
-
-// ClearTitle clears the value of the "title" field.
-func (u *WebhookHistoryUpsertOne) ClearTitle() *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.ClearTitle()
-	})
-}
-
-// SetContent sets the "content" field.
-func (u *WebhookHistoryUpsertOne) SetContent(v string) *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.SetContent(v)
-	})
-}
-
-// UpdateContent sets the "content" field to the value that was provided on create.
-func (u *WebhookHistoryUpsertOne) UpdateContent() *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.UpdateContent()
-	})
-}
-
-// ClearContent clears the value of the "content" field.
-func (u *WebhookHistoryUpsertOne) ClearContent() *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.ClearContent()
-	})
-}
-
-// SetStatusCode sets the "status_code" field.
-func (u *WebhookHistoryUpsertOne) SetStatusCode(v int) *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.SetStatusCode(v)
-	})
-}
-
-// AddStatusCode adds v to the "status_code" field.
-func (u *WebhookHistoryUpsertOne) AddStatusCode(v int) *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.AddStatusCode(v)
-	})
-}
-
-// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
-func (u *WebhookHistoryUpsertOne) UpdateStatusCode() *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.UpdateStatusCode()
-	})
-}
-
-// ClearStatusCode clears the value of the "status_code" field.
-func (u *WebhookHistoryUpsertOne) ClearStatusCode() *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.ClearStatusCode()
-	})
-}
-
-// SetResponse sets the "response" field.
-func (u *WebhookHistoryUpsertOne) SetResponse(v string) *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.SetResponse(v)
-	})
-}
-
-// UpdateResponse sets the "response" field to the value that was provided on create.
-func (u *WebhookHistoryUpsertOne) UpdateResponse() *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.UpdateResponse()
-	})
-}
-
-// ClearResponse clears the value of the "response" field.
-func (u *WebhookHistoryUpsertOne) ClearResponse() *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.ClearResponse()
-	})
-}
-
-// SetSuccess sets the "success" field.
-func (u *WebhookHistoryUpsertOne) SetSuccess(v bool) *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.SetSuccess(v)
-	})
-}
-
-// UpdateSuccess sets the "success" field to the value that was provided on create.
-func (u *WebhookHistoryUpsertOne) UpdateSuccess() *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.UpdateSuccess()
-	})
-}
-
-// SetErrorMessage sets the "error_message" field.
-func (u *WebhookHistoryUpsertOne) SetErrorMessage(v string) *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.SetErrorMessage(v)
-	})
-}
-
-// UpdateErrorMessage sets the "error_message" field to the value that was provided on create.
-func (u *WebhookHistoryUpsertOne) UpdateErrorMessage() *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.UpdateErrorMessage()
-	})
-}
-
-// ClearErrorMessage clears the value of the "error_message" field.
-func (u *WebhookHistoryUpsertOne) ClearErrorMessage() *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.ClearErrorMessage()
 	})
 }
 
@@ -895,6 +628,24 @@ func (u *WebhookHistoryUpsertBulk) UpdateNewValues() *WebhookHistoryUpsertBulk {
 			if _, exists := b.mutation.SubscriptionID(); exists {
 				s.SetIgnore(webhookhistory.FieldSubscriptionID)
 			}
+			if _, exists := b.mutation.URL(); exists {
+				s.SetIgnore(webhookhistory.FieldURL)
+			}
+			if _, exists := b.mutation.Title(); exists {
+				s.SetIgnore(webhookhistory.FieldTitle)
+			}
+			if _, exists := b.mutation.Content(); exists {
+				s.SetIgnore(webhookhistory.FieldContent)
+			}
+			if _, exists := b.mutation.Response(); exists {
+				s.SetIgnore(webhookhistory.FieldResponse)
+			}
+			if _, exists := b.mutation.Success(); exists {
+				s.SetIgnore(webhookhistory.FieldSuccess)
+			}
+			if _, exists := b.mutation.ErrorMessage(); exists {
+				s.SetIgnore(webhookhistory.FieldErrorMessage)
+			}
 		}
 	}))
 	return u
@@ -938,146 +689,6 @@ func (u *WebhookHistoryUpsertBulk) SetUpdatedAt(v time.Time) *WebhookHistoryUpse
 func (u *WebhookHistoryUpsertBulk) UpdateUpdatedAt() *WebhookHistoryUpsertBulk {
 	return u.Update(func(s *WebhookHistoryUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetURL sets the "url" field.
-func (u *WebhookHistoryUpsertBulk) SetURL(v string) *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.SetURL(v)
-	})
-}
-
-// UpdateURL sets the "url" field to the value that was provided on create.
-func (u *WebhookHistoryUpsertBulk) UpdateURL() *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.UpdateURL()
-	})
-}
-
-// SetTitle sets the "title" field.
-func (u *WebhookHistoryUpsertBulk) SetTitle(v string) *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.SetTitle(v)
-	})
-}
-
-// UpdateTitle sets the "title" field to the value that was provided on create.
-func (u *WebhookHistoryUpsertBulk) UpdateTitle() *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.UpdateTitle()
-	})
-}
-
-// ClearTitle clears the value of the "title" field.
-func (u *WebhookHistoryUpsertBulk) ClearTitle() *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.ClearTitle()
-	})
-}
-
-// SetContent sets the "content" field.
-func (u *WebhookHistoryUpsertBulk) SetContent(v string) *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.SetContent(v)
-	})
-}
-
-// UpdateContent sets the "content" field to the value that was provided on create.
-func (u *WebhookHistoryUpsertBulk) UpdateContent() *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.UpdateContent()
-	})
-}
-
-// ClearContent clears the value of the "content" field.
-func (u *WebhookHistoryUpsertBulk) ClearContent() *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.ClearContent()
-	})
-}
-
-// SetStatusCode sets the "status_code" field.
-func (u *WebhookHistoryUpsertBulk) SetStatusCode(v int) *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.SetStatusCode(v)
-	})
-}
-
-// AddStatusCode adds v to the "status_code" field.
-func (u *WebhookHistoryUpsertBulk) AddStatusCode(v int) *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.AddStatusCode(v)
-	})
-}
-
-// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
-func (u *WebhookHistoryUpsertBulk) UpdateStatusCode() *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.UpdateStatusCode()
-	})
-}
-
-// ClearStatusCode clears the value of the "status_code" field.
-func (u *WebhookHistoryUpsertBulk) ClearStatusCode() *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.ClearStatusCode()
-	})
-}
-
-// SetResponse sets the "response" field.
-func (u *WebhookHistoryUpsertBulk) SetResponse(v string) *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.SetResponse(v)
-	})
-}
-
-// UpdateResponse sets the "response" field to the value that was provided on create.
-func (u *WebhookHistoryUpsertBulk) UpdateResponse() *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.UpdateResponse()
-	})
-}
-
-// ClearResponse clears the value of the "response" field.
-func (u *WebhookHistoryUpsertBulk) ClearResponse() *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.ClearResponse()
-	})
-}
-
-// SetSuccess sets the "success" field.
-func (u *WebhookHistoryUpsertBulk) SetSuccess(v bool) *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.SetSuccess(v)
-	})
-}
-
-// UpdateSuccess sets the "success" field to the value that was provided on create.
-func (u *WebhookHistoryUpsertBulk) UpdateSuccess() *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.UpdateSuccess()
-	})
-}
-
-// SetErrorMessage sets the "error_message" field.
-func (u *WebhookHistoryUpsertBulk) SetErrorMessage(v string) *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.SetErrorMessage(v)
-	})
-}
-
-// UpdateErrorMessage sets the "error_message" field to the value that was provided on create.
-func (u *WebhookHistoryUpsertBulk) UpdateErrorMessage() *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.UpdateErrorMessage()
-	})
-}
-
-// ClearErrorMessage clears the value of the "error_message" field.
-func (u *WebhookHistoryUpsertBulk) ClearErrorMessage() *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.ClearErrorMessage()
 	})
 }
 
