@@ -82,14 +82,6 @@ CREATE INDEX `dnsrecord_ip_group_id` ON `dns_record` (`ip_group_id`);
 CREATE INDEX `dnsrecord_cdn_record_id` ON `dns_record` (`cdn_record_id`);
 
 
--- domain_monitor_history definition
-
-CREATE TABLE `domain_monitor_history` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `check_time` datetime NOT NULL, `is_success` bool NOT NULL, `check_duration` integer NULL, `status_message` text NULL, `http_status` integer NULL, `ip_resolved` json NULL, `error_log` text NULL, `ssl_expiry_date` datetime NULL, `ssl_common_name` text NULL, `ssl_issuer_name` text NULL, `ssl_signature_alg` text NULL, `ssl_san_list` text NULL, `ssl_certificate_chain` text NULL, `monitor_id` integer NOT NULL, CONSTRAINT `domain_monitor_history_domain_monitor_history_records` FOREIGN KEY (`monitor_id`) REFERENCES `domain_monitor` (`id`) ON DELETE CASCADE);
-
-CREATE INDEX `domainmonitorhistory_monitor_id_check_time` ON `domain_monitor_history` (`monitor_id`, `check_time`);
-CREATE INDEX `domainmonitorhistory_check_time` ON `domain_monitor_history` (`check_time` DESC);
-
-
 -- ip_group_device definition
 
 CREATE TABLE "ip_group_device" (`created_at` datetime NOT NULL, `device_id` integer NOT NULL, `ip_group_id` integer NOT NULL, PRIMARY KEY (`device_id`, `ip_group_id`), CONSTRAINT `ip_group_device_device_device` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`) ON DELETE NO ACTION, CONSTRAINT `ip_group_device_ip_group_ip_group` FOREIGN KEY (`ip_group_id`) REFERENCES `ip_group` (`id`) ON DELETE NO ACTION);
