@@ -25,19 +25,19 @@ type DeviceOpenService interface {
 
 // DeviceOpenServiceImpl 设备服务实现
 type DeviceOpenServiceImpl struct {
-	db          *ent.Client
-	debug       bool
-	logHelper   *operation_logs_helper.OperationLogHelper
-	webhookSend *webhook.Send
+	db             *ent.Client
+	debug          bool
+	logHelper      *operation_logs_helper.OperationLogHelper
+	webhookService *webhook.Send
 }
 
 // NewDeviceOpenService 创建设备服务实例
-func NewDeviceOpenService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper, webhookSend *webhook.Send) DeviceOpenService {
+func NewDeviceOpenService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper, webhookService *webhook.Send) DeviceOpenService {
 	return &DeviceOpenServiceImpl{
-		db:          db,
-		debug:       debug,
-		logHelper:   logHelper,
-		webhookSend: webhookSend,
+		db:             db,
+		debug:          debug,
+		logHelper:      logHelper,
+		webhookService: webhookService,
 	}
 }
 
@@ -178,7 +178,7 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 
 	// --- 异步处理非核心写入和通知 ---
 	// 使用独立的 Go Routine 和 Background Context，不阻塞 HTTP 响应
-	// 注入 Service 自身的依赖 (s.db, s.logHelper, s.webhookSend)
+	// 注入 Service 自身的依赖 (s.db, s.logHelper, s.webhookService)
 	go func(asyncCtx context.Context, s *DeviceOpenServiceImpl) {
 
 		// 记录 Device 相关的操作日志 (保持原始逻辑)
@@ -204,8 +204,8 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 				_ = s.logHelper.RecordDataCreate(asyncCtx, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "接口创建设备IP报告")
 			}
 
-			// 发送通知 (使用注入的 WebhookSend)
-			_ = s.webhookSend.Send(asyncCtx, webhooksubscription.ObjTypeDevice, deviceID, notifyData)
+			// 发送通知 (使用注入的 webhookService)
+			_ = s.webhookService.Send(asyncCtx, webhooksubscription.ObjTypeDevice, deviceID, notifyData)
 		}
 	}(context.Background(), s)
 

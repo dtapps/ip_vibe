@@ -3,6 +3,7 @@ package mcp_resource
 import (
 	"context"
 	"vibe_ip/internal/backend/service"
+	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/types"
 
@@ -33,6 +34,7 @@ func getWebhookList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.Rea
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		webhookService.NewSend(global.GvaEntDb),
 	)
 
 	// 调用
@@ -60,6 +62,7 @@ func getWebhookDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.R
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		webhookService.NewSend(global.GvaEntDb),
 	)
 
 	// 调用

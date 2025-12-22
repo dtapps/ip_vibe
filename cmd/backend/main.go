@@ -140,8 +140,8 @@ func main() {
 	// 配置请求ID中间件
 	router.Use(requestid.New())
 
-	// 配置Gzip压缩中间件
-	router.Use(gzip.Gzip(gzip.DefaultCompression))
+	// 配置 Gzip 压缩，但排除 SVG 文件
+	router.Use(gzip.Gzip(gzip.DefaultCompression, gzip.WithExcludedExtensions([]string{".svg"})))
 
 	// 配置CORS中间件
 	router.Use(cors.New(cors.Config{
@@ -700,6 +700,7 @@ func api_router(ctx context.Context, router *gin.Engine) {
 			webhooks.PATCH("/:id", handlers.UpdateWebhook)              // 更新通知
 			webhooks.PATCH("/:id/active", handlers.UpdateWebhookActive) // 更新通知启用状态
 			webhooks.DELETE("/:id", handlers.DeleteWebhook)             // 删除通知
+			webhooks.POST("/:id/test", handlers.TestWebhook)            // 测试通知
 		}
 
 		// 通知订阅相关API

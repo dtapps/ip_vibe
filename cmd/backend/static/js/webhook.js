@@ -213,7 +213,7 @@ async function openFormModal(id) {
       document.getElementById("template_content").value =
         webhook.template_content;
 
-      changeWebhookPlatform(webhook.platform);
+      changePlatform(webhook.platform);
 
       showModal("modal", "modalTitle", "编辑 通知");
     }
@@ -276,6 +276,20 @@ document.getElementById("form").onsubmit = async (e) => {
     console.error("通知操作失败", error);
   }
 };
+
+// 测试
+async function onTest(id) {
+  if (confirm("确定测试此通知？")) {
+    try {
+      await API.post(`/api/webhooks/${id}/test`);
+      // 刷新页面
+      location.reload();
+    } catch (error) {
+      alert(`测试失败: ${error.message}`);
+      console.error("测试通知失败", error);
+    }
+  }
+}
 
 // 删除
 async function onDelete(id) {

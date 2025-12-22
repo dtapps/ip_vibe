@@ -37,6 +37,7 @@ func NewSend(db *ent.Client) *Send {
 	}
 }
 
+// 发送通知
 func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, objID int64, payload utils.TemplateData) (err error) {
 	allWebhook, err := s.db.WebhookSubscription.Query().
 		Where(
@@ -68,22 +69,22 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 
 				templateTitle, err := utils.RenderTemplate(item.Edges.Webhook.TemplateTitle, payload)
 				if err != nil {
-					s.logger.ErrorContext(egCtx, "渲染模板失败",
+					s.logger.ErrorContext(egCtx, "渲染标题模板失败",
 						slog.Any("err", err),
 						slog.Int64("webhook_id", item.Edges.Webhook.ID),
 						slog.String("webhook_platform", item.Edges.Webhook.Platform.String()),
 					)
-					return nil
+					return fmt.Errorf("渲染标题模板失败: %w", err)
 				}
 
 				templateContent, err := utils.RenderTemplate(item.Edges.Webhook.TemplateContent, payload)
 				if err != nil {
-					s.logger.ErrorContext(egCtx, "渲染模板失败",
+					s.logger.ErrorContext(egCtx, "渲染内容模板失败",
 						slog.Any("err", err),
 						slog.Int64("webhook_id", item.Edges.Webhook.ID),
 						slog.String("webhook_platform", item.Edges.Webhook.Platform.String()),
 					)
-					return nil
+					return fmt.Errorf("渲染内容模板失败: %w", err)
 				}
 
 				switch item.Edges.Webhook.Platform {
@@ -125,6 +126,42 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 		s.logger.ErrorContext(ctx, "并发错误",
 			slog.Any("err", err),
 		)
+	}
+
+	return nil
+}
+
+// 测试通知
+func (s *Send) Test(ctx context.Context, webhookData *ent.Webhook, payload utils.TemplateData) (err error) {
+
+	templateTitle, err := utils.RenderTemplate(webhookData.TemplateTitle, payload)
+	if err != nil {
+		return fmt.Errorf("渲染标题模板失败: %w", err)
+	}
+
+	templateContent, err := utils.RenderTemplate(webhookData.TemplateContent, payload)
+	if err != nil {
+		return fmt.Errorf("渲染内容模板失败: %w", err)
+	}
+
+	switch webhookData.Platform {
+	case webhook.PlatformWechatWork:
+		err = s.WechatWork(ctx, webhookData.URL, templateTitle, templateContent)
+	case webhook.PlatformDingtalk:
+		err = s.Dingtalk(ctx, webhookData.URL, webhookData.Secret, templateTitle, templateContent)
+	case webhook.PlatformFeishu:
+		err = s.Feishu(ctx, webhookData.URL, webhookData.Secret, templateTitle, templateContent)
+	case webhook.PlatformBark:
+		err = s.Bark(ctx, webhookData.URL, webhookData.Secret, templateTitle, templateContent)
+	case webhook.PlatformFt07:
+		err = s.Ft07(ctx, webhookData.URL, webhookData.Secret, templateTitle, templateContent)
+	case webhook.PlatformPushDeer:
+		err = s.PushDeer(ctx, webhookData.URL, webhookData.Secret, templateTitle, templateContent)
+	default:
+		err = s.Http(ctx, webhookData.URL, templateTitle, templateContent)
+	}
+	if err != nil {
+		return fmt.Errorf("发送Webhook失败: %w", err)
 	}
 
 	return nil

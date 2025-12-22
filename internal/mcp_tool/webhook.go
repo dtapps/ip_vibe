@@ -3,6 +3,7 @@ package mcp_tool
 import (
 	"context"
 	"vibe_ip/internal/backend/service"
+	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/types"
 
@@ -44,6 +45,7 @@ func getWebhookList(ctx context.Context, req *mcp.CallToolRequest, params *types
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		webhookService.NewSend(global.GvaEntDb),
 	)
 
 	// 调用
@@ -63,6 +65,7 @@ func getWebhookDetail(ctx context.Context, req *mcp.CallToolRequest, params *typ
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		webhookService.NewSend(global.GvaEntDb),
 	)
 
 	// 调用
@@ -82,6 +85,7 @@ func createWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		webhookService.NewSend(global.GvaEntDb),
 	)
 
 	// 调用
@@ -101,6 +105,7 @@ func updateWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		webhookService.NewSend(global.GvaEntDb),
 	)
 
 	// 调用
@@ -120,6 +125,7 @@ func updateWebhookActive(ctx context.Context, req *mcp.CallToolRequest, params *
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		webhookService.NewSend(global.GvaEntDb),
 	)
 
 	// 调用
@@ -139,6 +145,7 @@ func deleteWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		webhookService.NewSend(global.GvaEntDb),
 	)
 
 	// 调用

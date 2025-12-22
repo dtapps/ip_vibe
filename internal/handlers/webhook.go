@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
+	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/global"
@@ -34,6 +35,7 @@ func Webhook(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		webhookService.NewSend(global.GvaEntDb),
 	)
 
 	// 查询全部通知

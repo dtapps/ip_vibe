@@ -41,6 +41,7 @@ type UpdateWebhookRequest struct {
 	GetWebhookRequest
 	Name            string   `json:"name" binding:"required" jsonschema:"通知的名称"`                        // 通知名称
 	Description     string   `json:"description,omitempty" jsonschema:"通知的描述信息"`                        // 通知描述
+	URL             string   `json:"url" jsonschema:"Webhook的URL地址"`                                    // Webhook URL
 	Secret          string   `json:"secret" jsonschema:"Webhook签名密钥或额外Token"`                           // Webhook 签名密钥或额外Token
 	Events          []string `json:"events" jsonschema:"订阅的事件类型列表"`                                     // 订阅的事件类型列表
 	TemplateTitle   string   `json:"template_title" binding:"required" jsonschema:"通知标题的Go Template"`   // 通知标题 Go Template
@@ -55,5 +56,10 @@ type UpdateWebhookActiveRequest struct {
 
 // 删除通知 请求结构
 type DeleteWebhookRequest struct {
+	GetWebhookRequest
+}
+
+// 测试通知 请求结构
+type TestWebhookRequest struct {
 	GetWebhookRequest
 }

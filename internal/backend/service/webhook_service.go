@@ -3,11 +3,14 @@ package service
 import (
 	"context"
 	"fmt"
+	"time"
+	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
+	"vibe_ip/internal/utils"
 
 	"github.com/spf13/cast"
 )
@@ -21,18 +24,25 @@ type WebhookService interface {
 	UpdateWebhook(ctx context.Context, request *types.UpdateWebhookRequest) (*types.GetWebhookRequest, error)
 	UpdateWebhookActive(ctx context.Context, request *types.UpdateWebhookActiveRequest) (*types.GetWebhookRequest, error)
 	DeleteWebhook(ctx context.Context, id int64) (*types.GetWebhookRequest, error)
+	TestWebhook(ctx context.Context, id int64) (*types.GetWebhookRequest, error)
 }
 
 // WebhookServiceImpl 通知服务实现
 type WebhookServiceImpl struct {
-	db        *ent.Client
-	debug     bool
-	logHelper *operation_logs_helper.OperationLogHelper
+	db             *ent.Client
+	debug          bool
+	logHelper      *operation_logs_helper.OperationLogHelper
+	webhookService *webhookService.Send
 }
 
 // NewWebhookService 创建通知服务实例
-func NewWebhookService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper) WebhookService {
-	return &WebhookServiceImpl{db: db, debug: debug, logHelper: logHelper}
+func NewWebhookService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper, webhookService *webhookService.Send) WebhookService {
+	return &WebhookServiceImpl{
+		db:             db,
+		debug:          debug,
+		logHelper:      logHelper,
+		webhookService: webhookService,
+	}
 }
 
 // BuildResponse 将实体转换为响应
@@ -137,7 +147,7 @@ func (s *WebhookServiceImpl) UpdateWebhook(ctx context.Context, request *types.U
 	saveWebhook, err := s.db.Webhook.UpdateOne(firstWebhook).
 		SetName(request.Name).
 		SetDescription(request.Description).
-		// Platform 和 URL 不允许通过 UpdateWebhook 更新，保持原始 Handler 逻辑
+		SetURL(request.URL).
 		SetSecret(request.Secret).
 		SetEvents(request.Events).
 		SetTemplateTitle(request.TemplateTitle).
@@ -207,6 +217,44 @@ func (s *WebhookServiceImpl) DeleteWebhook(ctx context.Context, id int64) (*type
 	}
 	// 记录操作日志
 	_ = s.logHelper.RecordDataDelete(ctx, firstWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "删除通知")
+	return &types.GetWebhookRequest{
+		ID: firstWebhook.ID,
+	}, nil
+}
+
+// TestWebhook 测试通知
+func (s *WebhookServiceImpl) TestWebhook(ctx context.Context, id int64) (*types.GetWebhookRequest, error) {
+	// 查询通知
+	firstWebhook, err := s.db.Webhook.Query().
+		Where(webhook.IDEQ(id)).
+		First(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("查询通知失败: 记录不存在或 %w", err)
+		}
+		return nil, fmt.Errorf("查询通知失败: %w", err)
+	}
+
+	// 通知模板数据 (保持原始结构)
+	notifyData := utils.TemplateData{
+		EventType:  "TEST",
+		EventTime:  time.Now().Format("2006-01-02 15:04:05"),
+		EventBody:  "测试通知事件",
+		DeviceCode: firstWebhook.Name,
+		DeviceName: firstWebhook.Name,
+		IPv4Addr:   "0.0.0.0",
+		IPv6Addr:   "0000:0000:0000:0000:0000:0000:0000:0000",
+	}
+
+	// 测试通知
+	err = s.webhookService.Test(ctx, firstWebhook, notifyData)
+	if err != nil {
+		if s.debug {
+			fmt.Printf("测试通知: %s\n", err.Error())
+		}
+		return nil, fmt.Errorf("测试通知失败: %w", err)
+	}
+
 	return &types.GetWebhookRequest{
 		ID: firstWebhook.ID,
 	}, nil

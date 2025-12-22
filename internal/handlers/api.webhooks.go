@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"vibe_ip/internal/backend/service"
+	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -36,6 +37,7 @@ func GetWebhooks(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		webhookService.NewSend(global.GvaEntDb),
 	)
 
 	// 调用
@@ -73,6 +75,7 @@ func GetWebhookDetail(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		webhookService.NewSend(global.GvaEntDb),
 	)
 
 	// 调用
@@ -109,6 +112,7 @@ func CreateWebhook(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		webhookService.NewSend(global.GvaEntDb),
 	)
 
 	// 调用
@@ -147,6 +151,7 @@ func UpdateWebhook(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		webhookService.NewSend(global.GvaEntDb),
 	)
 
 	// 调用
@@ -185,6 +190,7 @@ func UpdateWebhookActive(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		webhookService.NewSend(global.GvaEntDb),
 	)
 
 	// 调用
@@ -222,10 +228,49 @@ func DeleteWebhook(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		webhookService.NewSend(global.GvaEntDb),
 	)
 
 	// 调用
 	response, err := service.DeleteWebhook(c, requestParams.ID)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, response)
+}
+
+// 测试通知
+//
+//	@Description	测试通知
+//	@Summary		测试通知
+//	@Tags			通知
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"通知序号"
+//	@Success		200	{object}	APIResponse{data=types.GetWebhookRequest}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数错误"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Router			/webhooks/{id}/test [post]
+func TestWebhook(c *gin.Context) {
+	// 请求参数
+	var requestParams types.TestWebhookRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewWebhookService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+		webhookService.NewSend(global.GvaEntDb),
+	)
+
+	// 调用
+	response, err := service.TestWebhook(c, requestParams.ID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
