@@ -4,16 +4,33 @@ package ent_log
 
 import (
 	"time"
+	"vibe_ip/internal/ent_log/domainmonitorhistory"
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/restylog"
 	"vibe_ip/internal/ent_log/schema"
+	"vibe_ip/internal/ent_log/webhookhistory"
 )
 
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	domainmonitorhistoryMixin := schema.DomainMonitorHistory{}.Mixin()
+	domainmonitorhistoryMixinFields0 := domainmonitorhistoryMixin[0].Fields()
+	_ = domainmonitorhistoryMixinFields0
+	domainmonitorhistoryFields := schema.DomainMonitorHistory{}.Fields()
+	_ = domainmonitorhistoryFields
+	// domainmonitorhistoryDescCreatedAt is the schema descriptor for created_at field.
+	domainmonitorhistoryDescCreatedAt := domainmonitorhistoryMixinFields0[0].Descriptor()
+	// domainmonitorhistory.DefaultCreatedAt holds the default value on creation for the created_at field.
+	domainmonitorhistory.DefaultCreatedAt = domainmonitorhistoryDescCreatedAt.Default.(func() time.Time)
+	// domainmonitorhistoryDescUpdatedAt is the schema descriptor for updated_at field.
+	domainmonitorhistoryDescUpdatedAt := domainmonitorhistoryMixinFields0[1].Descriptor()
+	// domainmonitorhistory.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	domainmonitorhistory.DefaultUpdatedAt = domainmonitorhistoryDescUpdatedAt.Default.(func() time.Time)
+	// domainmonitorhistory.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	domainmonitorhistory.UpdateDefaultUpdatedAt = domainmonitorhistoryDescUpdatedAt.UpdateDefault.(func() time.Time)
 	httplogFields := schema.HttpLog{}.Fields()
 	_ = httplogFields
 	// httplogDescStatusCode is the schema descriptor for status_code field.
@@ -95,4 +112,23 @@ func init() {
 	restylogDescID := restylogFields[0].Descriptor()
 	// restylog.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	restylog.IDValidator = restylogDescID.Validators[0].(func(int64) error)
+	webhookhistoryMixin := schema.WebhookHistory{}.Mixin()
+	webhookhistoryMixinFields0 := webhookhistoryMixin[0].Fields()
+	_ = webhookhistoryMixinFields0
+	webhookhistoryFields := schema.WebhookHistory{}.Fields()
+	_ = webhookhistoryFields
+	// webhookhistoryDescCreatedAt is the schema descriptor for created_at field.
+	webhookhistoryDescCreatedAt := webhookhistoryMixinFields0[0].Descriptor()
+	// webhookhistory.DefaultCreatedAt holds the default value on creation for the created_at field.
+	webhookhistory.DefaultCreatedAt = webhookhistoryDescCreatedAt.Default.(func() time.Time)
+	// webhookhistoryDescUpdatedAt is the schema descriptor for updated_at field.
+	webhookhistoryDescUpdatedAt := webhookhistoryMixinFields0[1].Descriptor()
+	// webhookhistory.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	webhookhistory.DefaultUpdatedAt = webhookhistoryDescUpdatedAt.Default.(func() time.Time)
+	// webhookhistory.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	webhookhistory.UpdateDefaultUpdatedAt = webhookhistoryDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// webhookhistoryDescSuccess is the schema descriptor for success field.
+	webhookhistoryDescSuccess := webhookhistoryFields[8].Descriptor()
+	// webhookhistory.DefaultSuccess holds the default value on creation for the success field.
+	webhookhistory.DefaultSuccess = webhookhistoryDescSuccess.Default.(bool)
 }

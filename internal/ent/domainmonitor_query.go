@@ -4,11 +4,9 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"fmt"
 	"math"
 	"vibe_ip/internal/ent/domainmonitor"
-	"vibe_ip/internal/ent/domainmonitorhistory"
 	"vibe_ip/internal/ent/predicate"
 
 	"entgo.io/ent"
@@ -20,13 +18,11 @@ import (
 // DomainMonitorQuery is the builder for querying DomainMonitor entities.
 type DomainMonitorQuery struct {
 	config
-	ctx                     *QueryContext
-	order                   []domainmonitor.OrderOption
-	inters                  []Interceptor
-	predicates              []predicate.DomainMonitor
-	withHistoryRecords      *DomainMonitorHistoryQuery
-	modifiers               []func(*sql.Selector)
-	withNamedHistoryRecords map[string]*DomainMonitorHistoryQuery
+	ctx        *QueryContext
+	order      []domainmonitor.OrderOption
+	inters     []Interceptor
+	predicates []predicate.DomainMonitor
+	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -61,28 +57,6 @@ func (_q *DomainMonitorQuery) Unique(unique bool) *DomainMonitorQuery {
 func (_q *DomainMonitorQuery) Order(o ...domainmonitor.OrderOption) *DomainMonitorQuery {
 	_q.order = append(_q.order, o...)
 	return _q
-}
-
-// QueryHistoryRecords chains the current query on the "history_records" edge.
-func (_q *DomainMonitorQuery) QueryHistoryRecords() *DomainMonitorHistoryQuery {
-	query := (&DomainMonitorHistoryClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(domainmonitor.Table, domainmonitor.FieldID, selector),
-			sqlgraph.To(domainmonitorhistory.Table, domainmonitorhistory.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, domainmonitor.HistoryRecordsTable, domainmonitor.HistoryRecordsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // First returns the first DomainMonitor entity from the query.
@@ -272,28 +246,16 @@ func (_q *DomainMonitorQuery) Clone() *DomainMonitorQuery {
 		return nil
 	}
 	return &DomainMonitorQuery{
-		config:             _q.config,
-		ctx:                _q.ctx.Clone(),
-		order:              append([]domainmonitor.OrderOption{}, _q.order...),
-		inters:             append([]Interceptor{}, _q.inters...),
-		predicates:         append([]predicate.DomainMonitor{}, _q.predicates...),
-		withHistoryRecords: _q.withHistoryRecords.Clone(),
+		config:     _q.config,
+		ctx:        _q.ctx.Clone(),
+		order:      append([]domainmonitor.OrderOption{}, _q.order...),
+		inters:     append([]Interceptor{}, _q.inters...),
+		predicates: append([]predicate.DomainMonitor{}, _q.predicates...),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
 		modifiers: append([]func(*sql.Selector){}, _q.modifiers...),
 	}
-}
-
-// WithHistoryRecords tells the query-builder to eager-load the nodes that are connected to
-// the "history_records" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *DomainMonitorQuery) WithHistoryRecords(opts ...func(*DomainMonitorHistoryQuery)) *DomainMonitorQuery {
-	query := (&DomainMonitorHistoryClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withHistoryRecords = query
-	return _q
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -372,11 +334,8 @@ func (_q *DomainMonitorQuery) prepareQuery(ctx context.Context) error {
 
 func (_q *DomainMonitorQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*DomainMonitor, error) {
 	var (
-		nodes       = []*DomainMonitor{}
-		_spec       = _q.querySpec()
-		loadedTypes = [1]bool{
-			_q.withHistoryRecords != nil,
-		}
+		nodes = []*DomainMonitor{}
+		_spec = _q.querySpec()
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*DomainMonitor).scanValues(nil, columns)
@@ -384,7 +343,6 @@ func (_q *DomainMonitorQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &DomainMonitor{config: _q.config}
 		nodes = append(nodes, node)
-		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(_q.modifiers) > 0 {
@@ -399,62 +357,7 @@ func (_q *DomainMonitorQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := _q.withHistoryRecords; query != nil {
-		if err := _q.loadHistoryRecords(ctx, query, nodes,
-			func(n *DomainMonitor) { n.Edges.HistoryRecords = []*DomainMonitorHistory{} },
-			func(n *DomainMonitor, e *DomainMonitorHistory) {
-				n.Edges.HistoryRecords = append(n.Edges.HistoryRecords, e)
-				if !e.Edges.loadedTypes[0] {
-					e.Edges.Monitor = n
-				}
-			}); err != nil {
-			return nil, err
-		}
-	}
-	for name, query := range _q.withNamedHistoryRecords {
-		if err := _q.loadHistoryRecords(ctx, query, nodes,
-			func(n *DomainMonitor) { n.appendNamedHistoryRecords(name) },
-			func(n *DomainMonitor, e *DomainMonitorHistory) {
-				n.appendNamedHistoryRecords(name, e)
-				if !e.Edges.loadedTypes[0] {
-					e.Edges.Monitor = n
-				}
-			}); err != nil {
-			return nil, err
-		}
-	}
 	return nodes, nil
-}
-
-func (_q *DomainMonitorQuery) loadHistoryRecords(ctx context.Context, query *DomainMonitorHistoryQuery, nodes []*DomainMonitor, init func(*DomainMonitor), assign func(*DomainMonitor, *DomainMonitorHistory)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int64]*DomainMonitor)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(domainmonitorhistory.FieldMonitorID)
-	}
-	query.Where(predicate.DomainMonitorHistory(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(domainmonitor.HistoryRecordsColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.MonitorID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "monitor_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
 }
 
 func (_q *DomainMonitorQuery) sqlCount(ctx context.Context) (int, error) {
@@ -548,20 +451,6 @@ func (_q *DomainMonitorQuery) sqlQuery(ctx context.Context) *sql.Selector {
 func (_q *DomainMonitorQuery) Modify(modifiers ...func(s *sql.Selector)) *DomainMonitorSelect {
 	_q.modifiers = append(_q.modifiers, modifiers...)
 	return _q.Select()
-}
-
-// WithNamedHistoryRecords tells the query-builder to eager-load the nodes that are connected to the "history_records"
-// edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (_q *DomainMonitorQuery) WithNamedHistoryRecords(name string, opts ...func(*DomainMonitorHistoryQuery)) *DomainMonitorQuery {
-	query := (&DomainMonitorHistoryClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	if _q.withNamedHistoryRecords == nil {
-		_q.withNamedHistoryRecords = make(map[string]*DomainMonitorHistoryQuery)
-	}
-	_q.withNamedHistoryRecords[name] = query
-	return _q
 }
 
 // DomainMonitorGroupBy is the group-by builder for DomainMonitor entities.

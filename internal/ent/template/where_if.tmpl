@@ -37,7 +37,7 @@ func (q *{{ $n.Name }}Query) WhereIfs(condition bool, p ...predicate.{{ $n.Name 
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *{{ $n.Name }}Query) WhereIfFunc(condition bool, predicateFunc func() predicate.{{ $n.Name }}) *{{ $n.Name }}Query {
     {{- /* if q.debug { */}}
-    q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
+    q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
     {{- /* } */}}
     if condition {
         q.Where(predicateFunc()) 

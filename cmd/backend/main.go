@@ -216,7 +216,7 @@ func main() {
 	}
 
 	// 启动域名监控任务
-	domainMonitor := task.NewDomainMonitorTask(global.GvaEntDb, global.GvaGoCron)
+	domainMonitor := task.NewDomainMonitorTask(global.GvaEntDb, global.GvaEntLogDb, global.GvaGoCron)
 	if err := domainMonitor.StartJob(ctx); err != nil {
 		slog.Error("启动域名监控任务失败", slog.String("error", err.Error()))
 		os.Exit(1)

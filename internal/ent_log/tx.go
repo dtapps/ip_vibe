@@ -14,12 +14,16 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// DomainMonitorHistory is the client for interacting with the DomainMonitorHistory builders.
+	DomainMonitorHistory *DomainMonitorHistoryClient
 	// HttpLog is the client for interacting with the HttpLog builders.
 	HttpLog *HttpLogClient
 	// OperationLog is the client for interacting with the OperationLog builders.
 	OperationLog *OperationLogClient
 	// RestyLog is the client for interacting with the RestyLog builders.
 	RestyLog *RestyLogClient
+	// WebhookHistory is the client for interacting with the WebhookHistory builders.
+	WebhookHistory *WebhookHistoryClient
 
 	// lazily loaded.
 	client     *Client
@@ -151,9 +155,11 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.DomainMonitorHistory = NewDomainMonitorHistoryClient(tx.config)
 	tx.HttpLog = NewHttpLogClient(tx.config)
 	tx.OperationLog = NewOperationLogClient(tx.config)
 	tx.RestyLog = NewRestyLogClient(tx.config)
+	tx.WebhookHistory = NewWebhookHistoryClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.
@@ -163,7 +169,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: HttpLog.QueryXXX(), the query will be executed
+// applies a query, for example: DomainMonitorHistory.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

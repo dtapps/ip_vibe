@@ -17,12 +17,10 @@ import (
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
-	"vibe_ip/internal/ent/domainmonitorhistory"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/webhook"
-	"vibe_ip/internal/ent/webhooklog"
 	"vibe_ip/internal/ent/webhooksubscription"
 
 	"entgo.io/ent"
@@ -50,8 +48,6 @@ type Client struct {
 	DevicePortForward *DevicePortForwardClient
 	// DomainMonitor is the client for interacting with the DomainMonitor builders.
 	DomainMonitor *DomainMonitorClient
-	// DomainMonitorHistory is the client for interacting with the DomainMonitorHistory builders.
-	DomainMonitorHistory *DomainMonitorHistoryClient
 	// IpGroup is the client for interacting with the IpGroup builders.
 	IpGroup *IpGroupClient
 	// IpGroupDevice is the client for interacting with the IpGroupDevice builders.
@@ -60,8 +56,6 @@ type Client struct {
 	PlatformConfig *PlatformConfigClient
 	// Webhook is the client for interacting with the Webhook builders.
 	Webhook *WebhookClient
-	// WebhookLog is the client for interacting with the WebhookLog builders.
-	WebhookLog *WebhookLogClient
 	// WebhookSubscription is the client for interacting with the WebhookSubscription builders.
 	WebhookSubscription *WebhookSubscriptionClient
 }
@@ -81,12 +75,10 @@ func (c *Client) init() {
 	c.DeviceIpReport = NewDeviceIpReportClient(c.config)
 	c.DevicePortForward = NewDevicePortForwardClient(c.config)
 	c.DomainMonitor = NewDomainMonitorClient(c.config)
-	c.DomainMonitorHistory = NewDomainMonitorHistoryClient(c.config)
 	c.IpGroup = NewIpGroupClient(c.config)
 	c.IpGroupDevice = NewIpGroupDeviceClient(c.config)
 	c.PlatformConfig = NewPlatformConfigClient(c.config)
 	c.Webhook = NewWebhookClient(c.config)
-	c.WebhookLog = NewWebhookLogClient(c.config)
 	c.WebhookSubscription = NewWebhookSubscriptionClient(c.config)
 }
 
@@ -178,21 +170,19 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                  ctx,
-		config:               cfg,
-		CDNRecord:            NewCDNRecordClient(cfg),
-		DNSRecord:            NewDNSRecordClient(cfg),
-		Device:               NewDeviceClient(cfg),
-		DeviceIpReport:       NewDeviceIpReportClient(cfg),
-		DevicePortForward:    NewDevicePortForwardClient(cfg),
-		DomainMonitor:        NewDomainMonitorClient(cfg),
-		DomainMonitorHistory: NewDomainMonitorHistoryClient(cfg),
-		IpGroup:              NewIpGroupClient(cfg),
-		IpGroupDevice:        NewIpGroupDeviceClient(cfg),
-		PlatformConfig:       NewPlatformConfigClient(cfg),
-		Webhook:              NewWebhookClient(cfg),
-		WebhookLog:           NewWebhookLogClient(cfg),
-		WebhookSubscription:  NewWebhookSubscriptionClient(cfg),
+		ctx:                 ctx,
+		config:              cfg,
+		CDNRecord:           NewCDNRecordClient(cfg),
+		DNSRecord:           NewDNSRecordClient(cfg),
+		Device:              NewDeviceClient(cfg),
+		DeviceIpReport:      NewDeviceIpReportClient(cfg),
+		DevicePortForward:   NewDevicePortForwardClient(cfg),
+		DomainMonitor:       NewDomainMonitorClient(cfg),
+		IpGroup:             NewIpGroupClient(cfg),
+		IpGroupDevice:       NewIpGroupDeviceClient(cfg),
+		PlatformConfig:      NewPlatformConfigClient(cfg),
+		Webhook:             NewWebhookClient(cfg),
+		WebhookSubscription: NewWebhookSubscriptionClient(cfg),
 	}, nil
 }
 
@@ -210,21 +200,19 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                  ctx,
-		config:               cfg,
-		CDNRecord:            NewCDNRecordClient(cfg),
-		DNSRecord:            NewDNSRecordClient(cfg),
-		Device:               NewDeviceClient(cfg),
-		DeviceIpReport:       NewDeviceIpReportClient(cfg),
-		DevicePortForward:    NewDevicePortForwardClient(cfg),
-		DomainMonitor:        NewDomainMonitorClient(cfg),
-		DomainMonitorHistory: NewDomainMonitorHistoryClient(cfg),
-		IpGroup:              NewIpGroupClient(cfg),
-		IpGroupDevice:        NewIpGroupDeviceClient(cfg),
-		PlatformConfig:       NewPlatformConfigClient(cfg),
-		Webhook:              NewWebhookClient(cfg),
-		WebhookLog:           NewWebhookLogClient(cfg),
-		WebhookSubscription:  NewWebhookSubscriptionClient(cfg),
+		ctx:                 ctx,
+		config:              cfg,
+		CDNRecord:           NewCDNRecordClient(cfg),
+		DNSRecord:           NewDNSRecordClient(cfg),
+		Device:              NewDeviceClient(cfg),
+		DeviceIpReport:      NewDeviceIpReportClient(cfg),
+		DevicePortForward:   NewDevicePortForwardClient(cfg),
+		DomainMonitor:       NewDomainMonitorClient(cfg),
+		IpGroup:             NewIpGroupClient(cfg),
+		IpGroupDevice:       NewIpGroupDeviceClient(cfg),
+		PlatformConfig:      NewPlatformConfigClient(cfg),
+		Webhook:             NewWebhookClient(cfg),
+		WebhookSubscription: NewWebhookSubscriptionClient(cfg),
 	}, nil
 }
 
@@ -255,8 +243,8 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.CDNRecord, c.DNSRecord, c.Device, c.DeviceIpReport, c.DevicePortForward,
-		c.DomainMonitor, c.DomainMonitorHistory, c.IpGroup, c.IpGroupDevice,
-		c.PlatformConfig, c.Webhook, c.WebhookLog, c.WebhookSubscription,
+		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.Webhook,
+		c.WebhookSubscription,
 	} {
 		n.Use(hooks...)
 	}
@@ -267,8 +255,8 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.CDNRecord, c.DNSRecord, c.Device, c.DeviceIpReport, c.DevicePortForward,
-		c.DomainMonitor, c.DomainMonitorHistory, c.IpGroup, c.IpGroupDevice,
-		c.PlatformConfig, c.Webhook, c.WebhookLog, c.WebhookSubscription,
+		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.Webhook,
+		c.WebhookSubscription,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -289,8 +277,6 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.DevicePortForward.mutate(ctx, m)
 	case *DomainMonitorMutation:
 		return c.DomainMonitor.mutate(ctx, m)
-	case *DomainMonitorHistoryMutation:
-		return c.DomainMonitorHistory.mutate(ctx, m)
 	case *IpGroupMutation:
 		return c.IpGroup.mutate(ctx, m)
 	case *IpGroupDeviceMutation:
@@ -299,8 +285,6 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.PlatformConfig.mutate(ctx, m)
 	case *WebhookMutation:
 		return c.Webhook.mutate(ctx, m)
-	case *WebhookLogMutation:
-		return c.WebhookLog.mutate(ctx, m)
 	case *WebhookSubscriptionMutation:
 		return c.WebhookSubscription.mutate(ctx, m)
 	default:
@@ -1273,22 +1257,6 @@ func (c *DomainMonitorClient) GetX(ctx context.Context, id int64) *DomainMonitor
 	return obj
 }
 
-// QueryHistoryRecords queries the history_records edge of a DomainMonitor.
-func (c *DomainMonitorClient) QueryHistoryRecords(_m *DomainMonitor) *DomainMonitorHistoryQuery {
-	query := (&DomainMonitorHistoryClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(domainmonitor.Table, domainmonitor.FieldID, id),
-			sqlgraph.To(domainmonitorhistory.Table, domainmonitorhistory.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, domainmonitor.HistoryRecordsTable, domainmonitor.HistoryRecordsColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *DomainMonitorClient) Hooks() []Hook {
 	return c.hooks.DomainMonitor
@@ -1311,155 +1279,6 @@ func (c *DomainMonitorClient) mutate(ctx context.Context, m *DomainMonitorMutati
 		return (&DomainMonitorDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown DomainMonitor mutation op: %q", m.Op())
-	}
-}
-
-// DomainMonitorHistoryClient is a client for the DomainMonitorHistory schema.
-type DomainMonitorHistoryClient struct {
-	config
-}
-
-// NewDomainMonitorHistoryClient returns a client for the DomainMonitorHistory from the given config.
-func NewDomainMonitorHistoryClient(c config) *DomainMonitorHistoryClient {
-	return &DomainMonitorHistoryClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `domainmonitorhistory.Hooks(f(g(h())))`.
-func (c *DomainMonitorHistoryClient) Use(hooks ...Hook) {
-	c.hooks.DomainMonitorHistory = append(c.hooks.DomainMonitorHistory, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `domainmonitorhistory.Intercept(f(g(h())))`.
-func (c *DomainMonitorHistoryClient) Intercept(interceptors ...Interceptor) {
-	c.inters.DomainMonitorHistory = append(c.inters.DomainMonitorHistory, interceptors...)
-}
-
-// Create returns a builder for creating a DomainMonitorHistory entity.
-func (c *DomainMonitorHistoryClient) Create() *DomainMonitorHistoryCreate {
-	mutation := newDomainMonitorHistoryMutation(c.config, OpCreate)
-	return &DomainMonitorHistoryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of DomainMonitorHistory entities.
-func (c *DomainMonitorHistoryClient) CreateBulk(builders ...*DomainMonitorHistoryCreate) *DomainMonitorHistoryCreateBulk {
-	return &DomainMonitorHistoryCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *DomainMonitorHistoryClient) MapCreateBulk(slice any, setFunc func(*DomainMonitorHistoryCreate, int)) *DomainMonitorHistoryCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &DomainMonitorHistoryCreateBulk{err: fmt.Errorf("calling to DomainMonitorHistoryClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*DomainMonitorHistoryCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &DomainMonitorHistoryCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for DomainMonitorHistory.
-func (c *DomainMonitorHistoryClient) Update() *DomainMonitorHistoryUpdate {
-	mutation := newDomainMonitorHistoryMutation(c.config, OpUpdate)
-	return &DomainMonitorHistoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *DomainMonitorHistoryClient) UpdateOne(_m *DomainMonitorHistory) *DomainMonitorHistoryUpdateOne {
-	mutation := newDomainMonitorHistoryMutation(c.config, OpUpdateOne, withDomainMonitorHistory(_m))
-	return &DomainMonitorHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *DomainMonitorHistoryClient) UpdateOneID(id int64) *DomainMonitorHistoryUpdateOne {
-	mutation := newDomainMonitorHistoryMutation(c.config, OpUpdateOne, withDomainMonitorHistoryID(id))
-	return &DomainMonitorHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for DomainMonitorHistory.
-func (c *DomainMonitorHistoryClient) Delete() *DomainMonitorHistoryDelete {
-	mutation := newDomainMonitorHistoryMutation(c.config, OpDelete)
-	return &DomainMonitorHistoryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *DomainMonitorHistoryClient) DeleteOne(_m *DomainMonitorHistory) *DomainMonitorHistoryDeleteOne {
-	return c.DeleteOneID(_m.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *DomainMonitorHistoryClient) DeleteOneID(id int64) *DomainMonitorHistoryDeleteOne {
-	builder := c.Delete().Where(domainmonitorhistory.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &DomainMonitorHistoryDeleteOne{builder}
-}
-
-// Query returns a query builder for DomainMonitorHistory.
-func (c *DomainMonitorHistoryClient) Query() *DomainMonitorHistoryQuery {
-	return &DomainMonitorHistoryQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeDomainMonitorHistory},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a DomainMonitorHistory entity by its id.
-func (c *DomainMonitorHistoryClient) Get(ctx context.Context, id int64) (*DomainMonitorHistory, error) {
-	return c.Query().Where(domainmonitorhistory.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *DomainMonitorHistoryClient) GetX(ctx context.Context, id int64) *DomainMonitorHistory {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryMonitor queries the monitor edge of a DomainMonitorHistory.
-func (c *DomainMonitorHistoryClient) QueryMonitor(_m *DomainMonitorHistory) *DomainMonitorQuery {
-	query := (&DomainMonitorClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(domainmonitorhistory.Table, domainmonitorhistory.FieldID, id),
-			sqlgraph.To(domainmonitor.Table, domainmonitor.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, domainmonitorhistory.MonitorTable, domainmonitorhistory.MonitorColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *DomainMonitorHistoryClient) Hooks() []Hook {
-	return c.hooks.DomainMonitorHistory
-}
-
-// Interceptors returns the client interceptors.
-func (c *DomainMonitorHistoryClient) Interceptors() []Interceptor {
-	return c.inters.DomainMonitorHistory
-}
-
-func (c *DomainMonitorHistoryClient) mutate(ctx context.Context, m *DomainMonitorHistoryMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&DomainMonitorHistoryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&DomainMonitorHistoryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&DomainMonitorHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&DomainMonitorHistoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown DomainMonitorHistory mutation op: %q", m.Op())
 	}
 }
 
@@ -2065,22 +1884,6 @@ func (c *WebhookClient) QuerySubscriptions(_m *Webhook) *WebhookSubscriptionQuer
 	return query
 }
 
-// QueryLogs queries the logs edge of a Webhook.
-func (c *WebhookClient) QueryLogs(_m *Webhook) *WebhookLogQuery {
-	query := (&WebhookLogClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(webhook.Table, webhook.FieldID, id),
-			sqlgraph.To(webhooklog.Table, webhooklog.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, webhook.LogsTable, webhook.LogsColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *WebhookClient) Hooks() []Hook {
 	return c.hooks.Webhook
@@ -2103,171 +1906,6 @@ func (c *WebhookClient) mutate(ctx context.Context, m *WebhookMutation) (Value, 
 		return (&WebhookDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Webhook mutation op: %q", m.Op())
-	}
-}
-
-// WebhookLogClient is a client for the WebhookLog schema.
-type WebhookLogClient struct {
-	config
-}
-
-// NewWebhookLogClient returns a client for the WebhookLog from the given config.
-func NewWebhookLogClient(c config) *WebhookLogClient {
-	return &WebhookLogClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `webhooklog.Hooks(f(g(h())))`.
-func (c *WebhookLogClient) Use(hooks ...Hook) {
-	c.hooks.WebhookLog = append(c.hooks.WebhookLog, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `webhooklog.Intercept(f(g(h())))`.
-func (c *WebhookLogClient) Intercept(interceptors ...Interceptor) {
-	c.inters.WebhookLog = append(c.inters.WebhookLog, interceptors...)
-}
-
-// Create returns a builder for creating a WebhookLog entity.
-func (c *WebhookLogClient) Create() *WebhookLogCreate {
-	mutation := newWebhookLogMutation(c.config, OpCreate)
-	return &WebhookLogCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of WebhookLog entities.
-func (c *WebhookLogClient) CreateBulk(builders ...*WebhookLogCreate) *WebhookLogCreateBulk {
-	return &WebhookLogCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *WebhookLogClient) MapCreateBulk(slice any, setFunc func(*WebhookLogCreate, int)) *WebhookLogCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &WebhookLogCreateBulk{err: fmt.Errorf("calling to WebhookLogClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*WebhookLogCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &WebhookLogCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for WebhookLog.
-func (c *WebhookLogClient) Update() *WebhookLogUpdate {
-	mutation := newWebhookLogMutation(c.config, OpUpdate)
-	return &WebhookLogUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *WebhookLogClient) UpdateOne(_m *WebhookLog) *WebhookLogUpdateOne {
-	mutation := newWebhookLogMutation(c.config, OpUpdateOne, withWebhookLog(_m))
-	return &WebhookLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *WebhookLogClient) UpdateOneID(id int64) *WebhookLogUpdateOne {
-	mutation := newWebhookLogMutation(c.config, OpUpdateOne, withWebhookLogID(id))
-	return &WebhookLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for WebhookLog.
-func (c *WebhookLogClient) Delete() *WebhookLogDelete {
-	mutation := newWebhookLogMutation(c.config, OpDelete)
-	return &WebhookLogDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *WebhookLogClient) DeleteOne(_m *WebhookLog) *WebhookLogDeleteOne {
-	return c.DeleteOneID(_m.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *WebhookLogClient) DeleteOneID(id int64) *WebhookLogDeleteOne {
-	builder := c.Delete().Where(webhooklog.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &WebhookLogDeleteOne{builder}
-}
-
-// Query returns a query builder for WebhookLog.
-func (c *WebhookLogClient) Query() *WebhookLogQuery {
-	return &WebhookLogQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeWebhookLog},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a WebhookLog entity by its id.
-func (c *WebhookLogClient) Get(ctx context.Context, id int64) (*WebhookLog, error) {
-	return c.Query().Where(webhooklog.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *WebhookLogClient) GetX(ctx context.Context, id int64) *WebhookLog {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryWebhook queries the webhook edge of a WebhookLog.
-func (c *WebhookLogClient) QueryWebhook(_m *WebhookLog) *WebhookQuery {
-	query := (&WebhookClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(webhooklog.Table, webhooklog.FieldID, id),
-			sqlgraph.To(webhook.Table, webhook.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, webhooklog.WebhookTable, webhooklog.WebhookColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QuerySubscription queries the subscription edge of a WebhookLog.
-func (c *WebhookLogClient) QuerySubscription(_m *WebhookLog) *WebhookSubscriptionQuery {
-	query := (&WebhookSubscriptionClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(webhooklog.Table, webhooklog.FieldID, id),
-			sqlgraph.To(webhooksubscription.Table, webhooksubscription.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, webhooklog.SubscriptionTable, webhooklog.SubscriptionColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *WebhookLogClient) Hooks() []Hook {
-	return c.hooks.WebhookLog
-}
-
-// Interceptors returns the client interceptors.
-func (c *WebhookLogClient) Interceptors() []Interceptor {
-	return c.inters.WebhookLog
-}
-
-func (c *WebhookLogClient) mutate(ctx context.Context, m *WebhookLogMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&WebhookLogCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&WebhookLogUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&WebhookLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&WebhookLogDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown WebhookLog mutation op: %q", m.Op())
 	}
 }
 
@@ -2395,22 +2033,6 @@ func (c *WebhookSubscriptionClient) QueryWebhook(_m *WebhookSubscription) *Webho
 	return query
 }
 
-// QueryLogs queries the logs edge of a WebhookSubscription.
-func (c *WebhookSubscriptionClient) QueryLogs(_m *WebhookSubscription) *WebhookLogQuery {
-	query := (&WebhookLogClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(webhooksubscription.Table, webhooksubscription.FieldID, id),
-			sqlgraph.To(webhooklog.Table, webhooklog.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, webhooksubscription.LogsTable, webhooksubscription.LogsColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *WebhookSubscriptionClient) Hooks() []Hook {
 	return c.hooks.WebhookSubscription
@@ -2440,13 +2062,12 @@ func (c *WebhookSubscriptionClient) mutate(ctx context.Context, m *WebhookSubscr
 type (
 	hooks struct {
 		CDNRecord, DNSRecord, Device, DeviceIpReport, DevicePortForward, DomainMonitor,
-		DomainMonitorHistory, IpGroup, IpGroupDevice, PlatformConfig, Webhook,
-		WebhookLog, WebhookSubscription []ent.Hook
+		IpGroup, IpGroupDevice, PlatformConfig, Webhook, WebhookSubscription []ent.Hook
 	}
 	inters struct {
 		CDNRecord, DNSRecord, Device, DeviceIpReport, DevicePortForward, DomainMonitor,
-		DomainMonitorHistory, IpGroup, IpGroupDevice, PlatformConfig, Webhook,
-		WebhookLog, WebhookSubscription []ent.Interceptor
+		IpGroup, IpGroupDevice, PlatformConfig, Webhook,
+		WebhookSubscription []ent.Interceptor
 	}
 )
 

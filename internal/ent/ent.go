@@ -14,12 +14,10 @@ import (
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
-	"vibe_ip/internal/ent/domainmonitorhistory"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/webhook"
-	"vibe_ip/internal/ent/webhooklog"
 	"vibe_ip/internal/ent/webhooksubscription"
 
 	"entgo.io/ent"
@@ -85,19 +83,17 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			cdnrecord.Table:            cdnrecord.ValidColumn,
-			dnsrecord.Table:            dnsrecord.ValidColumn,
-			device.Table:               device.ValidColumn,
-			deviceipreport.Table:       deviceipreport.ValidColumn,
-			deviceportforward.Table:    deviceportforward.ValidColumn,
-			domainmonitor.Table:        domainmonitor.ValidColumn,
-			domainmonitorhistory.Table: domainmonitorhistory.ValidColumn,
-			ipgroup.Table:              ipgroup.ValidColumn,
-			ipgroupdevice.Table:        ipgroupdevice.ValidColumn,
-			platformconfig.Table:       platformconfig.ValidColumn,
-			webhook.Table:              webhook.ValidColumn,
-			webhooklog.Table:           webhooklog.ValidColumn,
-			webhooksubscription.Table:  webhooksubscription.ValidColumn,
+			cdnrecord.Table:           cdnrecord.ValidColumn,
+			dnsrecord.Table:           dnsrecord.ValidColumn,
+			device.Table:              device.ValidColumn,
+			deviceipreport.Table:      deviceipreport.ValidColumn,
+			deviceportforward.Table:   deviceportforward.ValidColumn,
+			domainmonitor.Table:       domainmonitor.ValidColumn,
+			ipgroup.Table:             ipgroup.ValidColumn,
+			ipgroupdevice.Table:       ipgroupdevice.ValidColumn,
+			platformconfig.Table:      platformconfig.ValidColumn,
+			webhook.Table:             webhook.ValidColumn,
+			webhooksubscription.Table: webhooksubscription.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

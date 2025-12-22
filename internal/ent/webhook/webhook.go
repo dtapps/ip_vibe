@@ -39,8 +39,6 @@ const (
 	FieldIsActive = "is_active"
 	// EdgeSubscriptions holds the string denoting the subscriptions edge name in mutations.
 	EdgeSubscriptions = "subscriptions"
-	// EdgeLogs holds the string denoting the logs edge name in mutations.
-	EdgeLogs = "logs"
 	// Table holds the table name of the webhook in the database.
 	Table = "webhook"
 	// SubscriptionsTable is the table that holds the subscriptions relation/edge.
@@ -50,13 +48,6 @@ const (
 	SubscriptionsInverseTable = "webhook_subscription"
 	// SubscriptionsColumn is the table column denoting the subscriptions relation/edge.
 	SubscriptionsColumn = "webhook_subscriptions"
-	// LogsTable is the table that holds the logs relation/edge.
-	LogsTable = "webhook_log"
-	// LogsInverseTable is the table name for the WebhookLog entity.
-	// It exists in this package in order to avoid circular dependency with the "webhooklog" package.
-	LogsInverseTable = "webhook_log"
-	// LogsColumn is the table column denoting the logs relation/edge.
-	LogsColumn = "webhook_id"
 )
 
 // Columns holds all SQL columns for webhook fields.
@@ -195,31 +186,10 @@ func BySubscriptions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newSubscriptionsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-
-// ByLogsCount orders the results by logs count.
-func ByLogsCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newLogsStep(), opts...)
-	}
-}
-
-// ByLogs orders the results by logs terms.
-func ByLogs(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newLogsStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
 func newSubscriptionsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(SubscriptionsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, SubscriptionsTable, SubscriptionsColumn),
-	)
-}
-func newLogsStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(LogsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, LogsTable, LogsColumn),
 	)
 }

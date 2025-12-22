@@ -15,7 +15,6 @@ import (
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/schema"
 	"vibe_ip/internal/ent/webhook"
-	"vibe_ip/internal/ent/webhooklog"
 	"vibe_ip/internal/ent/webhooksubscription"
 )
 
@@ -213,25 +212,6 @@ func init() {
 	webhookDescIsActive := webhookFields[9].Descriptor()
 	// webhook.DefaultIsActive holds the default value on creation for the is_active field.
 	webhook.DefaultIsActive = webhookDescIsActive.Default.(bool)
-	webhooklogMixin := schema.WebhookLog{}.Mixin()
-	webhooklogMixinFields0 := webhooklogMixin[0].Fields()
-	_ = webhooklogMixinFields0
-	webhooklogFields := schema.WebhookLog{}.Fields()
-	_ = webhooklogFields
-	// webhooklogDescCreatedAt is the schema descriptor for created_at field.
-	webhooklogDescCreatedAt := webhooklogMixinFields0[0].Descriptor()
-	// webhooklog.DefaultCreatedAt holds the default value on creation for the created_at field.
-	webhooklog.DefaultCreatedAt = webhooklogDescCreatedAt.Default.(func() time.Time)
-	// webhooklogDescUpdatedAt is the schema descriptor for updated_at field.
-	webhooklogDescUpdatedAt := webhooklogMixinFields0[1].Descriptor()
-	// webhooklog.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	webhooklog.DefaultUpdatedAt = webhooklogDescUpdatedAt.Default.(func() time.Time)
-	// webhooklog.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	webhooklog.UpdateDefaultUpdatedAt = webhooklogDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// webhooklogDescSuccess is the schema descriptor for success field.
-	webhooklogDescSuccess := webhooklogFields[8].Descriptor()
-	// webhooklog.DefaultSuccess holds the default value on creation for the success field.
-	webhooklog.DefaultSuccess = webhooklogDescSuccess.Default.(bool)
 	webhooksubscriptionMixin := schema.WebhookSubscription{}.Mixin()
 	webhooksubscriptionMixinFields0 := webhooksubscriptionMixin[0].Fields()
 	_ = webhooksubscriptionMixinFields0

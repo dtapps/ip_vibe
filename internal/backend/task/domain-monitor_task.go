@@ -12,6 +12,7 @@ import (
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/domainmonitor"
+	"vibe_ip/internal/ent_log"
 
 	"github.com/go-co-op/gocron/v2"
 )
@@ -19,15 +20,16 @@ import (
 type DomainMonitorTask struct {
 	cron   gocron.Scheduler // 定时任务调度器
 	job    gocron.Job       // 域名监控任务
-	db     *ent.Client      // 数据库客户端
+	db     *ent.Client      // 业务数据库客户端
+	logDb  *ent_log.Client  // 日志数据库客户端
 	logger *slog.Logger     // 日志记录器
 }
 
-func NewDomainMonitorTask(db *ent.Client, cron gocron.Scheduler) *DomainMonitorTask {
-
+func NewDomainMonitorTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler) *DomainMonitorTask {
 	return &DomainMonitorTask{
 		cron:   cron,
 		db:     db,
+		logDb:  logDb,
 		logger: slog.With("component", "monitor"),
 	}
 }
@@ -111,17 +113,8 @@ func (s *DomainMonitorTask) ExecuteMonitorTask(ctx context.Context, newLog *slog
 	// 执行检查
 	result := s.runDomainCheck(ctx, monitor.Domain, monitor.CheckProtocol.String())
 
-	// 开始事务
-	tx, err := s.db.Tx(ctx)
-	if err != nil {
-		newLog.ErrorContext(ctx, "开始 事务 失败",
-			slog.Any("err", err),
-		)
-		return err
-	}
-
 	// 历史记录创建
-	historyCreator := tx.DomainMonitorHistory.Create().
+	historyCreator := s.logDb.DomainMonitorHistory.Create().
 		SetMonitorID(monitor.ID).
 		SetCheckTime(time.Now()).
 		SetIsSuccess(result.IsSuccess).
@@ -142,7 +135,6 @@ func (s *DomainMonitorTask) ExecuteMonitorTask(ctx context.Context, newLog *slog
 
 	_, err = historyCreator.Save(ctx)
 	if err != nil {
-		tx.Rollback()
 		newLog.ErrorContext(ctx, "保存历史记录失败",
 			slog.Any("err", err),
 		)
@@ -150,7 +142,7 @@ func (s *DomainMonitorTask) ExecuteMonitorTask(ctx context.Context, newLog *slog
 	}
 
 	// 更新状态
-	updater := tx.DomainMonitor.UpdateOne(monitor).
+	updater := s.db.DomainMonitor.UpdateOne(monitor).
 		SetCurrentStatus(domainmonitor.CurrentStatus(s.getCurrentStatus(result.IsSuccess))) // 假设您有状态转换逻辑
 
 	if result.IsSuccess {
@@ -161,15 +153,11 @@ func (s *DomainMonitorTask) ExecuteMonitorTask(ctx context.Context, newLog *slog
 
 	err = updater.Exec(ctx)
 	if err != nil {
-		tx.Rollback()
 		newLog.ErrorContext(ctx, "更新状态失败",
 			slog.Any("err", err),
 		)
 		return err
 	}
-
-	// 提交事务
-	_ = tx.Commit()
 
 	return nil
 }

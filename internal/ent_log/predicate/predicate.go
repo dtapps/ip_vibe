@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// DomainMonitorHistory is the predicate function for domainmonitorhistory builders.
+type DomainMonitorHistory func(*sql.Selector)
+
 // HttpLog is the predicate function for httplog builders.
 type HttpLog func(*sql.Selector)
 
@@ -14,3 +17,6 @@ type OperationLog func(*sql.Selector)
 
 // RestyLog is the predicate function for restylog builders.
 type RestyLog func(*sql.Selector)
+
+// WebhookHistory is the predicate function for webhookhistory builders.
+type WebhookHistory func(*sql.Selector)

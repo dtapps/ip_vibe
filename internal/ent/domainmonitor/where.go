@@ -7,7 +7,6 @@ import (
 	"vibe_ip/internal/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // ID filters vertices based on their ID field.
@@ -573,29 +572,6 @@ func LastFailureAtIsNil() predicate.DomainMonitor {
 // LastFailureAtNotNil applies the NotNil predicate on the "last_failure_at" field.
 func LastFailureAtNotNil() predicate.DomainMonitor {
 	return predicate.DomainMonitor(sql.FieldNotNull(FieldLastFailureAt))
-}
-
-// HasHistoryRecords applies the HasEdge predicate on the "history_records" edge.
-func HasHistoryRecords() predicate.DomainMonitor {
-	return predicate.DomainMonitor(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, HistoryRecordsTable, HistoryRecordsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasHistoryRecordsWith applies the HasEdge predicate on the "history_records" edge with a given conditions (other predicates).
-func HasHistoryRecordsWith(preds ...predicate.DomainMonitorHistory) predicate.DomainMonitor {
-	return predicate.DomainMonitor(func(s *sql.Selector) {
-		step := newHistoryRecordsStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
 }
 
 // And groups predicates with the AND operator between them.

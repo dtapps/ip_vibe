@@ -23,7 +23,7 @@ func (HttpLog) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entsql.Annotation{Table: "http_log"},
 		entsql.WithComments(true),
-		schema.Comment("http 请求日志"),
+		schema.Comment("http请求日志"),
 	}
 }
 

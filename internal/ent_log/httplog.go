@@ -13,7 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// http 请求日志
+// http请求日志
 type HttpLog struct {
 	config `json:"-"`
 	// ID of the ent.

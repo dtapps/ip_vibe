@@ -6,34 +6,33 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
-	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 )
 
-// WebhookLog holds the schema definition for the WebhookLog entity.
-type WebhookLog struct {
+// WebhookHistory holds the schema definition for the WebhookHistory entity.
+type WebhookHistory struct {
 	ent.Schema
 }
 
-// Annotations of the WebhookLog.
-func (WebhookLog) Annotations() []schema.Annotation {
+// Annotations of the WebhookHistory.
+func (WebhookHistory) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "webhook_log"},
-		schema.Comment("通知发送日志"),
+		entsql.Annotation{Table: "webhook_history"},
+		schema.Comment("通知历史记录"),
 		entsql.WithComments(true),
 	}
 }
 
-// Mixin of the WebhookLog.
-func (WebhookLog) Mixin() []ent.Mixin {
+// Mixin of the WebhookHistory.
+func (WebhookHistory) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		schemamixin.AtMixin{},
 	}
 }
 
-// Fields of the WebhookLog.
-func (WebhookLog) Fields() []ent.Field {
+// Fields of the WebhookHistory.
+func (WebhookHistory) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").
 			StorageKey("id").
@@ -88,35 +87,20 @@ func (WebhookLog) Fields() []ent.Field {
 	}
 }
 
-// Edges of the WebhookLog.
-func (WebhookLog) Edges() []ent.Edge {
-	return []ent.Edge{
-		// 多对一：WebhookLog -> Webhook
-		edge.From("webhook", Webhook.Type).
-			Ref("logs").
-			Field("webhook_id").
-			Unique().
-			Required().
-			Immutable().
-			Comment("关联的通知（必需）").
-			Annotations(entsql.WithComments(true)),
-
-		// 多对一：WebhookLog -> WebhookSubscription
-		edge.From("subscription", WebhookSubscription.Type).
-			Ref("logs").
-			Field("subscription_id").
-			Unique().
-			Immutable().
-			Comment("关联的通知订阅（可选）").
-			Annotations(entsql.WithComments(true)),
-	}
+// Edges of the WebhookHistory.
+func (WebhookHistory) Edges() []ent.Edge {
+	return nil
 }
 
-// Indexes of the WebhookLog.
-func (WebhookLog) Indexes() []ent.Index {
+// Indexes of the WebhookHistory.
+func (WebhookHistory) Indexes() []ent.Index {
 	return []ent.Index{
 		// 按通知分组
 		index.Fields("webhook_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 按通知订阅分组
+		index.Fields("subscription_id").
 			Annotations(entsql.WithComments(true)),
 
 		// 按发送状态分组

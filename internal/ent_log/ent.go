@@ -8,9 +8,11 @@ import (
 	"fmt"
 	"reflect"
 	"sync"
+	"vibe_ip/internal/ent_log/domainmonitorhistory"
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/restylog"
+	"vibe_ip/internal/ent_log/webhookhistory"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -75,9 +77,11 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			httplog.Table:      httplog.ValidColumn,
-			operationlog.Table: operationlog.ValidColumn,
-			restylog.Table:     restylog.ValidColumn,
+			domainmonitorhistory.Table: domainmonitorhistory.ValidColumn,
+			httplog.Table:              httplog.ValidColumn,
+			operationlog.Table:         operationlog.ValidColumn,
+			restylog.Table:             restylog.ValidColumn,
+			webhookhistory.Table:       webhookhistory.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

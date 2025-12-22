@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -37,17 +36,8 @@ const (
 	FieldLastSuccessAt = "last_success_at"
 	// FieldLastFailureAt holds the string denoting the last_failure_at field in the database.
 	FieldLastFailureAt = "last_failure_at"
-	// EdgeHistoryRecords holds the string denoting the history_records edge name in mutations.
-	EdgeHistoryRecords = "history_records"
 	// Table holds the table name of the domainmonitor in the database.
 	Table = "domain_monitor"
-	// HistoryRecordsTable is the table that holds the history_records relation/edge.
-	HistoryRecordsTable = "domain_monitor_history"
-	// HistoryRecordsInverseTable is the table name for the DomainMonitorHistory entity.
-	// It exists in this package in order to avoid circular dependency with the "domainmonitorhistory" package.
-	HistoryRecordsInverseTable = "domain_monitor_history"
-	// HistoryRecordsColumn is the table column denoting the history_records relation/edge.
-	HistoryRecordsColumn = "monitor_id"
 )
 
 // Columns holds all SQL columns for domainmonitor fields.
@@ -200,25 +190,4 @@ func ByLastSuccessAt(opts ...sql.OrderTermOption) OrderOption {
 // ByLastFailureAt orders the results by the last_failure_at field.
 func ByLastFailureAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastFailureAt, opts...).ToFunc()
-}
-
-// ByHistoryRecordsCount orders the results by history_records count.
-func ByHistoryRecordsCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newHistoryRecordsStep(), opts...)
-	}
-}
-
-// ByHistoryRecords orders the results by history_records terms.
-func ByHistoryRecords(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newHistoryRecordsStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-func newHistoryRecordsStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(HistoryRecordsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, HistoryRecordsTable, HistoryRecordsColumn),
-	)
 }

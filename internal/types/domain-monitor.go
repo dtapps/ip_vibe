@@ -1,6 +1,9 @@
 package types
 
-import "vibe_ip/internal/ent"
+import (
+	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent_log"
+)
 
 // 域名监控页面 请求结构
 type DomainMonitorRequest struct {
@@ -20,7 +23,7 @@ type DomainMonitorDetailRequest struct {
 // 域名监控详情页面 响应结构
 type DomainMonitorDetailResponse struct {
 	Item          ent.DomainMonitor
-	LatestHistory ent.DomainMonitorHistory
+	LatestHistory ent_log.DomainMonitorHistory
 }
 
 // 域名监控页面 请求结构
@@ -31,6 +34,6 @@ type DomainMonitorHistoryRequest struct {
 
 // 域名监控页面 响应结构
 type DomainMonitorHistoryResponse struct {
-	CommonPageResponse[ent.DomainMonitorHistory]
+	CommonPageResponse[ent_log.DomainMonitorHistory]
 	Item ent.DomainMonitor
 }

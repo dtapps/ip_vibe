@@ -44,12 +44,9 @@ type WebhookSubscription struct {
 type WebhookSubscriptionEdges struct {
 	// 关联的通知
 	Webhook *Webhook `json:"webhook,omitempty"`
-	// 关联的通知日志
-	Logs []*WebhookLog `json:"logs,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
-	namedLogs   map[string][]*WebhookLog
+	loadedTypes [1]bool
 }
 
 // WebhookOrErr returns the Webhook value or an error if the edge
@@ -61,15 +58,6 @@ func (e WebhookSubscriptionEdges) WebhookOrErr() (*Webhook, error) {
 		return nil, &NotFoundError{label: webhook.Label}
 	}
 	return nil, &NotLoadedError{edge: "webhook"}
-}
-
-// LogsOrErr returns the Logs value or an error if the edge
-// was not loaded in eager-loading.
-func (e WebhookSubscriptionEdges) LogsOrErr() ([]*WebhookLog, error) {
-	if e.loadedTypes[1] {
-		return e.Logs, nil
-	}
-	return nil, &NotLoadedError{edge: "logs"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -175,11 +163,6 @@ func (_m *WebhookSubscription) QueryWebhook() *WebhookQuery {
 	return NewWebhookSubscriptionClient(_m.config).QueryWebhook(_m)
 }
 
-// QueryLogs queries the "logs" edge of the WebhookSubscription entity.
-func (_m *WebhookSubscription) QueryLogs() *WebhookLogQuery {
-	return NewWebhookSubscriptionClient(_m.config).QueryLogs(_m)
-}
-
 // Update returns a builder for updating this WebhookSubscription.
 // Note that you need to call WebhookSubscription.Unwrap() before calling this method if this WebhookSubscription
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -225,30 +208,6 @@ func (_m *WebhookSubscription) String() string {
 	builder.WriteString(fmt.Sprintf("%v", _m.IsActive))
 	builder.WriteByte(')')
 	return builder.String()
-}
-
-// NamedLogs returns the Logs named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (_m *WebhookSubscription) NamedLogs(name string) ([]*WebhookLog, error) {
-	if _m.Edges.namedLogs == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := _m.Edges.namedLogs[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (_m *WebhookSubscription) appendNamedLogs(name string, edges ...*WebhookLog) {
-	if _m.Edges.namedLogs == nil {
-		_m.Edges.namedLogs = make(map[string][]*WebhookLog)
-	}
-	if len(edges) == 0 {
-		_m.Edges.namedLogs[name] = []*WebhookLog{}
-	} else {
-		_m.Edges.namedLogs[name] = append(_m.Edges.namedLogs[name], edges...)
-	}
 }
 
 // WebhookSubscriptions is a parsable slice of WebhookSubscription.

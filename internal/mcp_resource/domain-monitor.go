@@ -31,6 +31,7 @@ func getDomainMonitorList(ctx context.Context, req *mcp.ReadResourceRequest) (*m
 	// 创建服务
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -59,6 +60,7 @@ func getDomainMonitorDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req 
 	// 创建服务
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,

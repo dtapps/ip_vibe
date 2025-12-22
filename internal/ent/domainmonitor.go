@@ -40,29 +40,7 @@ type DomainMonitor struct {
 	LastSuccessAt time.Time `json:"last_success_at,omitempty"`
 	// 最后一次检查失败时间
 	LastFailureAt time.Time `json:"last_failure_at,omitempty"`
-	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the DomainMonitorQuery when eager-loading is set.
-	Edges        DomainMonitorEdges `json:"edges"`
-	selectValues sql.SelectValues
-}
-
-// DomainMonitorEdges holds the relations/edges for other nodes in the graph.
-type DomainMonitorEdges struct {
-	// 关联的监控历史记录
-	HistoryRecords []*DomainMonitorHistory `json:"history_records,omitempty"`
-	// loadedTypes holds the information for reporting if a
-	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes         [1]bool
-	namedHistoryRecords map[string][]*DomainMonitorHistory
-}
-
-// HistoryRecordsOrErr returns the HistoryRecords value or an error if the edge
-// was not loaded in eager-loading.
-func (e DomainMonitorEdges) HistoryRecordsOrErr() ([]*DomainMonitorHistory, error) {
-	if e.loadedTypes[0] {
-		return e.HistoryRecords, nil
-	}
-	return nil, &NotLoadedError{edge: "history_records"}
+	selectValues  sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -178,11 +156,6 @@ func (_m *DomainMonitor) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
-// QueryHistoryRecords queries the "history_records" edge of the DomainMonitor entity.
-func (_m *DomainMonitor) QueryHistoryRecords() *DomainMonitorHistoryQuery {
-	return NewDomainMonitorClient(_m.config).QueryHistoryRecords(_m)
-}
-
 // Update returns a builder for updating this DomainMonitor.
 // Note that you need to call DomainMonitor.Unwrap() before calling this method if this DomainMonitor
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -240,30 +213,6 @@ func (_m *DomainMonitor) String() string {
 	builder.WriteString(_m.LastFailureAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
-}
-
-// NamedHistoryRecords returns the HistoryRecords named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (_m *DomainMonitor) NamedHistoryRecords(name string) ([]*DomainMonitorHistory, error) {
-	if _m.Edges.namedHistoryRecords == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := _m.Edges.namedHistoryRecords[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (_m *DomainMonitor) appendNamedHistoryRecords(name string, edges ...*DomainMonitorHistory) {
-	if _m.Edges.namedHistoryRecords == nil {
-		_m.Edges.namedHistoryRecords = make(map[string][]*DomainMonitorHistory)
-	}
-	if len(edges) == 0 {
-		_m.Edges.namedHistoryRecords[name] = []*DomainMonitorHistory{}
-	} else {
-		_m.Edges.namedHistoryRecords[name] = append(_m.Edges.namedHistoryRecords[name], edges...)
-	}
 }
 
 // DomainMonitors is a parsable slice of DomainMonitor.

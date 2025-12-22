@@ -51,13 +51,10 @@ type Webhook struct {
 type WebhookEdges struct {
 	// 关联的通知订阅
 	Subscriptions []*WebhookSubscription `json:"subscriptions,omitempty"`
-	// 关联的通知日志
-	Logs []*WebhookLog `json:"logs,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes        [2]bool
+	loadedTypes        [1]bool
 	namedSubscriptions map[string][]*WebhookSubscription
-	namedLogs          map[string][]*WebhookLog
 }
 
 // SubscriptionsOrErr returns the Subscriptions value or an error if the edge
@@ -67,15 +64,6 @@ func (e WebhookEdges) SubscriptionsOrErr() ([]*WebhookSubscription, error) {
 		return e.Subscriptions, nil
 	}
 	return nil, &NotLoadedError{edge: "subscriptions"}
-}
-
-// LogsOrErr returns the Logs value or an error if the edge
-// was not loaded in eager-loading.
-func (e WebhookEdges) LogsOrErr() ([]*WebhookLog, error) {
-	if e.loadedTypes[1] {
-		return e.Logs, nil
-	}
-	return nil, &NotLoadedError{edge: "logs"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -200,11 +188,6 @@ func (_m *Webhook) QuerySubscriptions() *WebhookSubscriptionQuery {
 	return NewWebhookClient(_m.config).QuerySubscriptions(_m)
 }
 
-// QueryLogs queries the "logs" edge of the Webhook entity.
-func (_m *Webhook) QueryLogs() *WebhookLogQuery {
-	return NewWebhookClient(_m.config).QueryLogs(_m)
-}
-
 // Update returns a builder for updating this Webhook.
 // Note that you need to call Webhook.Unwrap() before calling this method if this Webhook
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -285,30 +268,6 @@ func (_m *Webhook) appendNamedSubscriptions(name string, edges ...*WebhookSubscr
 		_m.Edges.namedSubscriptions[name] = []*WebhookSubscription{}
 	} else {
 		_m.Edges.namedSubscriptions[name] = append(_m.Edges.namedSubscriptions[name], edges...)
-	}
-}
-
-// NamedLogs returns the Logs named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (_m *Webhook) NamedLogs(name string) ([]*WebhookLog, error) {
-	if _m.Edges.namedLogs == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := _m.Edges.namedLogs[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (_m *Webhook) appendNamedLogs(name string, edges ...*WebhookLog) {
-	if _m.Edges.namedLogs == nil {
-		_m.Edges.namedLogs = make(map[string][]*WebhookLog)
-	}
-	if len(edges) == 0 {
-		_m.Edges.namedLogs[name] = []*WebhookLog{}
-	} else {
-		_m.Edges.namedLogs[name] = append(_m.Edges.namedLogs[name], edges...)
 	}
 }
 

@@ -9,6 +9,51 @@ import (
 )
 
 var (
+	// DomainMonitorHistoryColumns holds the columns for the "domain_monitor_history" table.
+	DomainMonitorHistoryColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "监控历史记录序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "monitor_id", Type: field.TypeInt64, Comment: "关联的 DomainMonitor ID"},
+		{Name: "check_time", Type: field.TypeTime, Comment: "检查发生的时间"},
+		{Name: "is_success", Type: field.TypeBool, Comment: "本次检查是否成功"},
+		{Name: "check_duration", Type: field.TypeInt, Nullable: true, Comment: "检查耗时（毫秒）"},
+		{Name: "status_message", Type: field.TypeString, Nullable: true, Comment: "简要状态信息（如：200 OK，连接超时）"},
+		{Name: "http_status", Type: field.TypeInt, Nullable: true, Comment: "HTTP/HTTPS 状态码"},
+		{Name: "ip_resolved", Type: field.TypeJSON, Nullable: true, Comment: "解析到的 IP 地址列表"},
+		{Name: "error_log", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "详细错误信息或异常堆栈"},
+		{Name: "ssl_expiry_date", Type: field.TypeTime, Nullable: true, Comment: "证书过期日期"},
+		{Name: "ssl_common_name", Type: field.TypeString, Nullable: true, Comment: "证书主体通用名 (Subject CN)"},
+		{Name: "ssl_issuer_name", Type: field.TypeString, Nullable: true, Comment: "证书颁发者通用名 (Issuer CN)"},
+		{Name: "ssl_signature_alg", Type: field.TypeString, Nullable: true, Comment: "证书签名算法"},
+		{Name: "ssl_san_list", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "证书主体别名列表 (SANs，用逗号分隔)"},
+		{Name: "ssl_certificate_chain", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "完整的 SSL 证书链信息 (PEM 格式文本)"},
+	}
+	// DomainMonitorHistoryTable holds the schema information for the "domain_monitor_history" table.
+	DomainMonitorHistoryTable = &schema.Table{
+		Name:       "domain_monitor_history",
+		Comment:    "域名监控历史记录",
+		Columns:    DomainMonitorHistoryColumns,
+		PrimaryKey: []*schema.Column{DomainMonitorHistoryColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "domainmonitorhistory_check_time",
+				Unique:  false,
+				Columns: []*schema.Column{DomainMonitorHistoryColumns[4]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "domainmonitorhistory_monitor_id_check_time",
+				Unique:  false,
+				Columns: []*schema.Column{DomainMonitorHistoryColumns[3], DomainMonitorHistoryColumns[4]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+		},
+	}
 	// HTTPLogColumns holds the columns for the "http_log" table.
 	HTTPLogColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "请求日志序号"},
@@ -29,7 +74,7 @@ var (
 	// HTTPLogTable holds the schema information for the "http_log" table.
 	HTTPLogTable = &schema.Table{
 		Name:       "http_log",
-		Comment:    "http 请求日志",
+		Comment:    "http请求日志",
 		Columns:    HTTPLogColumns,
 		PrimaryKey: []*schema.Column{HTTPLogColumns[0]},
 		Indexes: []*schema.Index{
@@ -128,7 +173,7 @@ var (
 	// RestyLogTable holds the schema information for the "resty_log" table.
 	RestyLogTable = &schema.Table{
 		Name:       "resty_log",
-		Comment:    "resty 请求日志",
+		Comment:    "resty请求日志",
 		Columns:    RestyLogColumns,
 		PrimaryKey: []*schema.Column{RestyLogColumns[0]},
 		Indexes: []*schema.Index{
@@ -162,15 +207,83 @@ var (
 			},
 		},
 	}
+	// WebhookHistoryColumns holds the columns for the "webhook_history" table.
+	WebhookHistoryColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "通知日志序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "webhook_id", Type: field.TypeInt64, Comment: "通知序号"},
+		{Name: "subscription_id", Type: field.TypeInt64, Nullable: true, Comment: "通知订阅序号（可选，直接触发时为空）"},
+		{Name: "url", Type: field.TypeString, Comment: "发送的URL"},
+		{Name: "title", Type: field.TypeString, Nullable: true, Comment: "发送的标题"},
+		{Name: "content", Type: field.TypeString, Nullable: true, Comment: "发送的内容"},
+		{Name: "status_code", Type: field.TypeInt, Nullable: true, Comment: "HTTP响应状态码"},
+		{Name: "response", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "响应内容"},
+		{Name: "success", Type: field.TypeBool, Comment: "是否发送成功", Default: false},
+		{Name: "error_message", Type: field.TypeString, Nullable: true, Comment: "错误信息"},
+	}
+	// WebhookHistoryTable holds the schema information for the "webhook_history" table.
+	WebhookHistoryTable = &schema.Table{
+		Name:       "webhook_history",
+		Comment:    "通知历史记录",
+		Columns:    WebhookHistoryColumns,
+		PrimaryKey: []*schema.Column{WebhookHistoryColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "webhookhistory_webhook_id",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookHistoryColumns[3]},
+			},
+			{
+				Name:    "webhookhistory_subscription_id",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookHistoryColumns[4]},
+			},
+			{
+				Name:    "webhookhistory_success",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookHistoryColumns[10]},
+			},
+			{
+				Name:    "webhookhistory_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookHistoryColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "webhookhistory_webhook_id_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookHistoryColumns[3], WebhookHistoryColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "webhookhistory_success_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookHistoryColumns[10], WebhookHistoryColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		DomainMonitorHistoryTable,
 		HTTPLogTable,
 		OperationLogTable,
 		RestyLogTable,
+		WebhookHistoryTable,
 	}
 )
 
 func init() {
+	DomainMonitorHistoryTable.Annotation = &entsql.Annotation{
+		Table: "domain_monitor_history",
+	}
 	HTTPLogTable.Annotation = &entsql.Annotation{
 		Table: "http_log",
 	}
@@ -179,5 +292,8 @@ func init() {
 	}
 	RestyLogTable.Annotation = &entsql.Annotation{
 		Table: "resty_log",
+	}
+	WebhookHistoryTable.Annotation = &entsql.Annotation{
+		Table: "webhook_history",
 	}
 }

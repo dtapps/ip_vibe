@@ -7,7 +7,8 @@ import (
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/domainmonitor"
-	"vibe_ip/internal/ent/domainmonitorhistory"
+	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/ent_log/domainmonitorhistory"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -34,6 +35,7 @@ func DomainMonitor(c *gin.Context) {
 	// 创建服务
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -91,7 +93,8 @@ func DomainMonitorDetail(c *gin.Context) {
 	pageData.Item = *firstDomainMonitor
 
 	// 查询最新的监控记录
-	latestHistory, err := firstDomainMonitor.QueryHistoryRecords().
+	latestHistory, err := global.GvaEntLogDb.DomainMonitorHistory.Query().
+		Where(domainmonitorhistory.MonitorIDEQ(requestParams.ID)).
 		Order(ent.Desc(domainmonitorhistory.FieldCheckTime)).
 		First(c)
 	if err == nil {
@@ -117,8 +120,8 @@ func DomainMonitorHistory(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.DomainMonitorHistoryResponse{
-		CommonPageResponse: types.CommonPageResponse[ent.DomainMonitorHistory]{
-			List: []ent.DomainMonitorHistory{},
+		CommonPageResponse: types.CommonPageResponse[ent_log.DomainMonitorHistory]{
+			List: []ent_log.DomainMonitorHistory{},
 		},
 	}
 
@@ -133,7 +136,8 @@ func DomainMonitorHistory(c *gin.Context) {
 	pageData.Item = *firstDomainMonitor
 
 	// 查询全部域名监控
-	allDomainMonitor, err := firstDomainMonitor.QueryHistoryRecords().
+	allDomainMonitor, err := global.GvaEntLogDb.DomainMonitorHistory.Query().
+		Where(domainmonitorhistory.MonitorIDEQ(requestParams.ID)).
 		Order(ent.Desc(domainmonitorhistory.FieldCheckTime)).
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {

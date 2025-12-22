@@ -24,9 +24,6 @@ type DevicePortForward func(*sql.Selector)
 // DomainMonitor is the predicate function for domainmonitor builders.
 type DomainMonitor func(*sql.Selector)
 
-// DomainMonitorHistory is the predicate function for domainmonitorhistory builders.
-type DomainMonitorHistory func(*sql.Selector)
-
 // IpGroup is the predicate function for ipgroup builders.
 type IpGroup func(*sql.Selector)
 
@@ -38,9 +35,6 @@ type PlatformConfig func(*sql.Selector)
 
 // Webhook is the predicate function for webhook builders.
 type Webhook func(*sql.Selector)
-
-// WebhookLog is the predicate function for webhooklog builders.
-type WebhookLog func(*sql.Selector)
 
 // WebhookSubscription is the predicate function for webhooksubscription builders.
 type WebhookSubscription func(*sql.Selector)

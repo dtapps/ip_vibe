@@ -80,18 +80,6 @@ func (f DomainMonitorFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Valu
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DomainMonitorMutation", m)
 }
 
-// The DomainMonitorHistoryFunc type is an adapter to allow the use of ordinary
-// function as DomainMonitorHistory mutator.
-type DomainMonitorHistoryFunc func(context.Context, *ent.DomainMonitorHistoryMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f DomainMonitorHistoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.DomainMonitorHistoryMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DomainMonitorHistoryMutation", m)
-}
-
 // The IpGroupFunc type is an adapter to allow the use of ordinary
 // function as IpGroup mutator.
 type IpGroupFunc func(context.Context, *ent.IpGroupMutation) (ent.Value, error)
@@ -138,18 +126,6 @@ func (f WebhookFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.WebhookMutation", m)
-}
-
-// The WebhookLogFunc type is an adapter to allow the use of ordinary
-// function as WebhookLog mutator.
-type WebhookLogFunc func(context.Context, *ent.WebhookLogMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f WebhookLogFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.WebhookLogMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.WebhookLogMutation", m)
 }
 
 // The WebhookSubscriptionFunc type is an adapter to allow the use of ordinary

@@ -24,7 +24,7 @@ func (RestyLog) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entsql.Annotation{Table: "resty_log"},
 		entsql.WithComments(true),
-		schema.Comment("resty 请求日志"),
+		schema.Comment("resty请求日志"),
 	}
 }
 

@@ -1,10 +1,11 @@
 package schema
 
 import (
+	"vibe_ip/internal/ent/schema/schemamixin"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
-	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 )
@@ -20,6 +21,13 @@ func (DomainMonitorHistory) Annotations() []schema.Annotation {
 		entsql.Annotation{Table: "domain_monitor_history"},
 		schema.Comment("域名监控历史记录"),
 		entsql.WithComments(true),
+	}
+}
+
+// Mixin of the DomainMonitorHistory.
+func (DomainMonitorHistory) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		schemamixin.AtMixin{},
 	}
 }
 
@@ -117,17 +125,7 @@ func (DomainMonitorHistory) Fields() []ent.Field {
 
 // Edges of the DomainMonitorHistory.
 func (DomainMonitorHistory) Edges() []ent.Edge {
-	return []ent.Edge{
-		// 一对多 DomainMonitor -> DomainMonitorHistory
-		edge.From("monitor", DomainMonitor.Type).
-			Ref("history_records").
-			Field("monitor_id").
-			Unique().
-			Required().
-			Immutable().
-			Comment("关联的域名监控").
-			Annotations(entsql.WithComments(true)),
-	}
+	return nil
 }
 
 // Indexes of the DomainMonitorHistory.

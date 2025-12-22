@@ -8,6 +8,18 @@ import (
 	"vibe_ip/internal/ent_log"
 )
 
+// The DomainMonitorHistoryFunc type is an adapter to allow the use of ordinary
+// function as DomainMonitorHistory mutator.
+type DomainMonitorHistoryFunc func(context.Context, *ent_log.DomainMonitorHistoryMutation) (ent_log.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f DomainMonitorHistoryFunc) Mutate(ctx context.Context, m ent_log.Mutation) (ent_log.Value, error) {
+	if mv, ok := m.(*ent_log.DomainMonitorHistoryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent_log.DomainMonitorHistoryMutation", m)
+}
+
 // The HttpLogFunc type is an adapter to allow the use of ordinary
 // function as HttpLog mutator.
 type HttpLogFunc func(context.Context, *ent_log.HttpLogMutation) (ent_log.Value, error)
@@ -42,6 +54,18 @@ func (f RestyLogFunc) Mutate(ctx context.Context, m ent_log.Mutation) (ent_log.V
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent_log.RestyLogMutation", m)
+}
+
+// The WebhookHistoryFunc type is an adapter to allow the use of ordinary
+// function as WebhookHistory mutator.
+type WebhookHistoryFunc func(context.Context, *ent_log.WebhookHistoryMutation) (ent_log.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f WebhookHistoryFunc) Mutate(ctx context.Context, m ent_log.Mutation) (ent_log.Value, error) {
+	if mv, ok := m.(*ent_log.WebhookHistoryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent_log.WebhookHistoryMutation", m)
 }
 
 // Condition is a hook condition function.

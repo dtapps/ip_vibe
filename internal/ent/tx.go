@@ -26,8 +26,6 @@ type Tx struct {
 	DevicePortForward *DevicePortForwardClient
 	// DomainMonitor is the client for interacting with the DomainMonitor builders.
 	DomainMonitor *DomainMonitorClient
-	// DomainMonitorHistory is the client for interacting with the DomainMonitorHistory builders.
-	DomainMonitorHistory *DomainMonitorHistoryClient
 	// IpGroup is the client for interacting with the IpGroup builders.
 	IpGroup *IpGroupClient
 	// IpGroupDevice is the client for interacting with the IpGroupDevice builders.
@@ -36,8 +34,6 @@ type Tx struct {
 	PlatformConfig *PlatformConfigClient
 	// Webhook is the client for interacting with the Webhook builders.
 	Webhook *WebhookClient
-	// WebhookLog is the client for interacting with the WebhookLog builders.
-	WebhookLog *WebhookLogClient
 	// WebhookSubscription is the client for interacting with the WebhookSubscription builders.
 	WebhookSubscription *WebhookSubscriptionClient
 
@@ -177,12 +173,10 @@ func (tx *Tx) init() {
 	tx.DeviceIpReport = NewDeviceIpReportClient(tx.config)
 	tx.DevicePortForward = NewDevicePortForwardClient(tx.config)
 	tx.DomainMonitor = NewDomainMonitorClient(tx.config)
-	tx.DomainMonitorHistory = NewDomainMonitorHistoryClient(tx.config)
 	tx.IpGroup = NewIpGroupClient(tx.config)
 	tx.IpGroupDevice = NewIpGroupDeviceClient(tx.config)
 	tx.PlatformConfig = NewPlatformConfigClient(tx.config)
 	tx.Webhook = NewWebhookClient(tx.config)
-	tx.WebhookLog = NewWebhookLogClient(tx.config)
 	tx.WebhookSubscription = NewWebhookSubscriptionClient(tx.config)
 }
 

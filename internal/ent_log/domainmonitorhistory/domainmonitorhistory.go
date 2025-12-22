@@ -3,8 +3,9 @@
 package domainmonitorhistory
 
 import (
+	"time"
+
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -12,6 +13,10 @@ const (
 	Label = "domain_monitor_history"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
+	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	FieldUpdatedAt = "updated_at"
 	// FieldMonitorID holds the string denoting the monitor_id field in the database.
 	FieldMonitorID = "monitor_id"
 	// FieldCheckTime holds the string denoting the check_time field in the database.
@@ -40,22 +45,15 @@ const (
 	FieldSslSanList = "ssl_san_list"
 	// FieldSslCertificateChain holds the string denoting the ssl_certificate_chain field in the database.
 	FieldSslCertificateChain = "ssl_certificate_chain"
-	// EdgeMonitor holds the string denoting the monitor edge name in mutations.
-	EdgeMonitor = "monitor"
 	// Table holds the table name of the domainmonitorhistory in the database.
 	Table = "domain_monitor_history"
-	// MonitorTable is the table that holds the monitor relation/edge.
-	MonitorTable = "domain_monitor_history"
-	// MonitorInverseTable is the table name for the DomainMonitor entity.
-	// It exists in this package in order to avoid circular dependency with the "domainmonitor" package.
-	MonitorInverseTable = "domain_monitor"
-	// MonitorColumn is the table column denoting the monitor relation/edge.
-	MonitorColumn = "monitor_id"
 )
 
 // Columns holds all SQL columns for domainmonitorhistory fields.
 var Columns = []string{
 	FieldID,
+	FieldCreatedAt,
+	FieldUpdatedAt,
 	FieldMonitorID,
 	FieldCheckTime,
 	FieldIsSuccess,
@@ -82,12 +80,31 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+var (
+	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
+	DefaultCreatedAt func() time.Time
+	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
+	DefaultUpdatedAt func() time.Time
+	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
+	UpdateDefaultUpdatedAt func() time.Time
+)
+
 // OrderOption defines the ordering options for the DomainMonitorHistory queries.
 type OrderOption func(*sql.Selector)
 
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
 // ByMonitorID orders the results by the monitor_id field.
@@ -153,18 +170,4 @@ func BySslSanList(opts ...sql.OrderTermOption) OrderOption {
 // BySslCertificateChain orders the results by the ssl_certificate_chain field.
 func BySslCertificateChain(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSslCertificateChain, opts...).ToFunc()
-}
-
-// ByMonitorField orders the results by monitor field.
-func ByMonitorField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newMonitorStep(), sql.OrderByField(field, opts...))
-	}
-}
-func newMonitorStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(MonitorInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, MonitorTable, MonitorColumn),
-	)
 }

@@ -11,9 +11,11 @@ import (
 
 	"vibe_ip/internal/ent_log/migrate"
 
+	"vibe_ip/internal/ent_log/domainmonitorhistory"
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/restylog"
+	"vibe_ip/internal/ent_log/webhookhistory"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -27,12 +29,16 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// DomainMonitorHistory is the client for interacting with the DomainMonitorHistory builders.
+	DomainMonitorHistory *DomainMonitorHistoryClient
 	// HttpLog is the client for interacting with the HttpLog builders.
 	HttpLog *HttpLogClient
 	// OperationLog is the client for interacting with the OperationLog builders.
 	OperationLog *OperationLogClient
 	// RestyLog is the client for interacting with the RestyLog builders.
 	RestyLog *RestyLogClient
+	// WebhookHistory is the client for interacting with the WebhookHistory builders.
+	WebhookHistory *WebhookHistoryClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -44,9 +50,11 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.DomainMonitorHistory = NewDomainMonitorHistoryClient(c.config)
 	c.HttpLog = NewHttpLogClient(c.config)
 	c.OperationLog = NewOperationLogClient(c.config)
 	c.RestyLog = NewRestyLogClient(c.config)
+	c.WebhookHistory = NewWebhookHistoryClient(c.config)
 }
 
 type (
@@ -137,11 +145,13 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:          ctx,
-		config:       cfg,
-		HttpLog:      NewHttpLogClient(cfg),
-		OperationLog: NewOperationLogClient(cfg),
-		RestyLog:     NewRestyLogClient(cfg),
+		ctx:                  ctx,
+		config:               cfg,
+		DomainMonitorHistory: NewDomainMonitorHistoryClient(cfg),
+		HttpLog:              NewHttpLogClient(cfg),
+		OperationLog:         NewOperationLogClient(cfg),
+		RestyLog:             NewRestyLogClient(cfg),
+		WebhookHistory:       NewWebhookHistoryClient(cfg),
 	}, nil
 }
 
@@ -159,18 +169,20 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:          ctx,
-		config:       cfg,
-		HttpLog:      NewHttpLogClient(cfg),
-		OperationLog: NewOperationLogClient(cfg),
-		RestyLog:     NewRestyLogClient(cfg),
+		ctx:                  ctx,
+		config:               cfg,
+		DomainMonitorHistory: NewDomainMonitorHistoryClient(cfg),
+		HttpLog:              NewHttpLogClient(cfg),
+		OperationLog:         NewOperationLogClient(cfg),
+		RestyLog:             NewRestyLogClient(cfg),
+		WebhookHistory:       NewWebhookHistoryClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		HttpLog.
+//		DomainMonitorHistory.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -192,30 +204,171 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.DomainMonitorHistory.Use(hooks...)
 	c.HttpLog.Use(hooks...)
 	c.OperationLog.Use(hooks...)
 	c.RestyLog.Use(hooks...)
+	c.WebhookHistory.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
+	c.DomainMonitorHistory.Intercept(interceptors...)
 	c.HttpLog.Intercept(interceptors...)
 	c.OperationLog.Intercept(interceptors...)
 	c.RestyLog.Intercept(interceptors...)
+	c.WebhookHistory.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *DomainMonitorHistoryMutation:
+		return c.DomainMonitorHistory.mutate(ctx, m)
 	case *HttpLogMutation:
 		return c.HttpLog.mutate(ctx, m)
 	case *OperationLogMutation:
 		return c.OperationLog.mutate(ctx, m)
 	case *RestyLogMutation:
 		return c.RestyLog.mutate(ctx, m)
+	case *WebhookHistoryMutation:
+		return c.WebhookHistory.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent_log: unknown mutation type %T", m)
+	}
+}
+
+// DomainMonitorHistoryClient is a client for the DomainMonitorHistory schema.
+type DomainMonitorHistoryClient struct {
+	config
+}
+
+// NewDomainMonitorHistoryClient returns a client for the DomainMonitorHistory from the given config.
+func NewDomainMonitorHistoryClient(c config) *DomainMonitorHistoryClient {
+	return &DomainMonitorHistoryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `domainmonitorhistory.Hooks(f(g(h())))`.
+func (c *DomainMonitorHistoryClient) Use(hooks ...Hook) {
+	c.hooks.DomainMonitorHistory = append(c.hooks.DomainMonitorHistory, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `domainmonitorhistory.Intercept(f(g(h())))`.
+func (c *DomainMonitorHistoryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.DomainMonitorHistory = append(c.inters.DomainMonitorHistory, interceptors...)
+}
+
+// Create returns a builder for creating a DomainMonitorHistory entity.
+func (c *DomainMonitorHistoryClient) Create() *DomainMonitorHistoryCreate {
+	mutation := newDomainMonitorHistoryMutation(c.config, OpCreate)
+	return &DomainMonitorHistoryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of DomainMonitorHistory entities.
+func (c *DomainMonitorHistoryClient) CreateBulk(builders ...*DomainMonitorHistoryCreate) *DomainMonitorHistoryCreateBulk {
+	return &DomainMonitorHistoryCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DomainMonitorHistoryClient) MapCreateBulk(slice any, setFunc func(*DomainMonitorHistoryCreate, int)) *DomainMonitorHistoryCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DomainMonitorHistoryCreateBulk{err: fmt.Errorf("calling to DomainMonitorHistoryClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DomainMonitorHistoryCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &DomainMonitorHistoryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for DomainMonitorHistory.
+func (c *DomainMonitorHistoryClient) Update() *DomainMonitorHistoryUpdate {
+	mutation := newDomainMonitorHistoryMutation(c.config, OpUpdate)
+	return &DomainMonitorHistoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DomainMonitorHistoryClient) UpdateOne(_m *DomainMonitorHistory) *DomainMonitorHistoryUpdateOne {
+	mutation := newDomainMonitorHistoryMutation(c.config, OpUpdateOne, withDomainMonitorHistory(_m))
+	return &DomainMonitorHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DomainMonitorHistoryClient) UpdateOneID(id int64) *DomainMonitorHistoryUpdateOne {
+	mutation := newDomainMonitorHistoryMutation(c.config, OpUpdateOne, withDomainMonitorHistoryID(id))
+	return &DomainMonitorHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for DomainMonitorHistory.
+func (c *DomainMonitorHistoryClient) Delete() *DomainMonitorHistoryDelete {
+	mutation := newDomainMonitorHistoryMutation(c.config, OpDelete)
+	return &DomainMonitorHistoryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *DomainMonitorHistoryClient) DeleteOne(_m *DomainMonitorHistory) *DomainMonitorHistoryDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *DomainMonitorHistoryClient) DeleteOneID(id int64) *DomainMonitorHistoryDeleteOne {
+	builder := c.Delete().Where(domainmonitorhistory.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DomainMonitorHistoryDeleteOne{builder}
+}
+
+// Query returns a query builder for DomainMonitorHistory.
+func (c *DomainMonitorHistoryClient) Query() *DomainMonitorHistoryQuery {
+	return &DomainMonitorHistoryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeDomainMonitorHistory},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a DomainMonitorHistory entity by its id.
+func (c *DomainMonitorHistoryClient) Get(ctx context.Context, id int64) (*DomainMonitorHistory, error) {
+	return c.Query().Where(domainmonitorhistory.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DomainMonitorHistoryClient) GetX(ctx context.Context, id int64) *DomainMonitorHistory {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *DomainMonitorHistoryClient) Hooks() []Hook {
+	return c.hooks.DomainMonitorHistory
+}
+
+// Interceptors returns the client interceptors.
+func (c *DomainMonitorHistoryClient) Interceptors() []Interceptor {
+	return c.inters.DomainMonitorHistory
+}
+
+func (c *DomainMonitorHistoryClient) mutate(ctx context.Context, m *DomainMonitorHistoryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&DomainMonitorHistoryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&DomainMonitorHistoryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&DomainMonitorHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&DomainMonitorHistoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent_log: unknown DomainMonitorHistory mutation op: %q", m.Op())
 	}
 }
 
@@ -618,13 +771,147 @@ func (c *RestyLogClient) mutate(ctx context.Context, m *RestyLogMutation) (Value
 	}
 }
 
+// WebhookHistoryClient is a client for the WebhookHistory schema.
+type WebhookHistoryClient struct {
+	config
+}
+
+// NewWebhookHistoryClient returns a client for the WebhookHistory from the given config.
+func NewWebhookHistoryClient(c config) *WebhookHistoryClient {
+	return &WebhookHistoryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `webhookhistory.Hooks(f(g(h())))`.
+func (c *WebhookHistoryClient) Use(hooks ...Hook) {
+	c.hooks.WebhookHistory = append(c.hooks.WebhookHistory, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `webhookhistory.Intercept(f(g(h())))`.
+func (c *WebhookHistoryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.WebhookHistory = append(c.inters.WebhookHistory, interceptors...)
+}
+
+// Create returns a builder for creating a WebhookHistory entity.
+func (c *WebhookHistoryClient) Create() *WebhookHistoryCreate {
+	mutation := newWebhookHistoryMutation(c.config, OpCreate)
+	return &WebhookHistoryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of WebhookHistory entities.
+func (c *WebhookHistoryClient) CreateBulk(builders ...*WebhookHistoryCreate) *WebhookHistoryCreateBulk {
+	return &WebhookHistoryCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *WebhookHistoryClient) MapCreateBulk(slice any, setFunc func(*WebhookHistoryCreate, int)) *WebhookHistoryCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &WebhookHistoryCreateBulk{err: fmt.Errorf("calling to WebhookHistoryClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*WebhookHistoryCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &WebhookHistoryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for WebhookHistory.
+func (c *WebhookHistoryClient) Update() *WebhookHistoryUpdate {
+	mutation := newWebhookHistoryMutation(c.config, OpUpdate)
+	return &WebhookHistoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *WebhookHistoryClient) UpdateOne(_m *WebhookHistory) *WebhookHistoryUpdateOne {
+	mutation := newWebhookHistoryMutation(c.config, OpUpdateOne, withWebhookHistory(_m))
+	return &WebhookHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *WebhookHistoryClient) UpdateOneID(id int64) *WebhookHistoryUpdateOne {
+	mutation := newWebhookHistoryMutation(c.config, OpUpdateOne, withWebhookHistoryID(id))
+	return &WebhookHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for WebhookHistory.
+func (c *WebhookHistoryClient) Delete() *WebhookHistoryDelete {
+	mutation := newWebhookHistoryMutation(c.config, OpDelete)
+	return &WebhookHistoryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *WebhookHistoryClient) DeleteOne(_m *WebhookHistory) *WebhookHistoryDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *WebhookHistoryClient) DeleteOneID(id int64) *WebhookHistoryDeleteOne {
+	builder := c.Delete().Where(webhookhistory.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &WebhookHistoryDeleteOne{builder}
+}
+
+// Query returns a query builder for WebhookHistory.
+func (c *WebhookHistoryClient) Query() *WebhookHistoryQuery {
+	return &WebhookHistoryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeWebhookHistory},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a WebhookHistory entity by its id.
+func (c *WebhookHistoryClient) Get(ctx context.Context, id int64) (*WebhookHistory, error) {
+	return c.Query().Where(webhookhistory.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *WebhookHistoryClient) GetX(ctx context.Context, id int64) *WebhookHistory {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *WebhookHistoryClient) Hooks() []Hook {
+	return c.hooks.WebhookHistory
+}
+
+// Interceptors returns the client interceptors.
+func (c *WebhookHistoryClient) Interceptors() []Interceptor {
+	return c.inters.WebhookHistory
+}
+
+func (c *WebhookHistoryClient) mutate(ctx context.Context, m *WebhookHistoryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&WebhookHistoryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&WebhookHistoryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&WebhookHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&WebhookHistoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent_log: unknown WebhookHistory mutation op: %q", m.Op())
+	}
+}
+
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		HttpLog, OperationLog, RestyLog []ent.Hook
+		DomainMonitorHistory, HttpLog, OperationLog, RestyLog, WebhookHistory []ent.Hook
 	}
 	inters struct {
-		HttpLog, OperationLog, RestyLog []ent.Interceptor
+		DomainMonitorHistory, HttpLog, OperationLog, RestyLog,
+		WebhookHistory []ent.Interceptor
 	}
 )
 

@@ -324,57 +324,6 @@ var (
 			},
 		},
 	}
-	// DomainMonitorHistoryColumns holds the columns for the "domain_monitor_history" table.
-	DomainMonitorHistoryColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "监控历史记录序号"},
-		{Name: "check_time", Type: field.TypeTime, Comment: "检查发生的时间"},
-		{Name: "is_success", Type: field.TypeBool, Comment: "本次检查是否成功"},
-		{Name: "check_duration", Type: field.TypeInt, Nullable: true, Comment: "检查耗时（毫秒）"},
-		{Name: "status_message", Type: field.TypeString, Nullable: true, Comment: "简要状态信息（如：200 OK，连接超时）"},
-		{Name: "http_status", Type: field.TypeInt, Nullable: true, Comment: "HTTP/HTTPS 状态码"},
-		{Name: "ip_resolved", Type: field.TypeJSON, Nullable: true, Comment: "解析到的 IP 地址列表"},
-		{Name: "error_log", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "详细错误信息或异常堆栈"},
-		{Name: "ssl_expiry_date", Type: field.TypeTime, Nullable: true, Comment: "证书过期日期"},
-		{Name: "ssl_common_name", Type: field.TypeString, Nullable: true, Comment: "证书主体通用名 (Subject CN)"},
-		{Name: "ssl_issuer_name", Type: field.TypeString, Nullable: true, Comment: "证书颁发者通用名 (Issuer CN)"},
-		{Name: "ssl_signature_alg", Type: field.TypeString, Nullable: true, Comment: "证书签名算法"},
-		{Name: "ssl_san_list", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "证书主体别名列表 (SANs，用逗号分隔)"},
-		{Name: "ssl_certificate_chain", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "完整的 SSL 证书链信息 (PEM 格式文本)"},
-		{Name: "monitor_id", Type: field.TypeInt64, Comment: "关联的 DomainMonitor ID"},
-	}
-	// DomainMonitorHistoryTable holds the schema information for the "domain_monitor_history" table.
-	DomainMonitorHistoryTable = &schema.Table{
-		Name:       "domain_monitor_history",
-		Comment:    "域名监控历史记录",
-		Columns:    DomainMonitorHistoryColumns,
-		PrimaryKey: []*schema.Column{DomainMonitorHistoryColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "domain_monitor_history_domain_monitor_history_records",
-				Columns:    []*schema.Column{DomainMonitorHistoryColumns[14]},
-				RefColumns: []*schema.Column{DomainMonitorColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "domainmonitorhistory_check_time",
-				Unique:  false,
-				Columns: []*schema.Column{DomainMonitorHistoryColumns[1]},
-				Annotation: &entsql.IndexAnnotation{
-					Desc: true,
-				},
-			},
-			{
-				Name:    "domainmonitorhistory_monitor_id_check_time",
-				Unique:  false,
-				Columns: []*schema.Column{DomainMonitorHistoryColumns[14], DomainMonitorHistoryColumns[1]},
-				Annotation: &entsql.IndexAnnotation{
-					Desc: true,
-				},
-			},
-		},
-	}
 	// IPGroupColumns holds the columns for the "ip_group" table.
 	IPGroupColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "IP组序号"},
@@ -530,78 +479,6 @@ var (
 			},
 		},
 	}
-	// WebhookLogColumns holds the columns for the "webhook_log" table.
-	WebhookLogColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "通知日志序号"},
-		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
-		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
-		{Name: "url", Type: field.TypeString, Comment: "发送的URL"},
-		{Name: "title", Type: field.TypeString, Nullable: true, Comment: "发送的标题"},
-		{Name: "content", Type: field.TypeString, Nullable: true, Comment: "发送的内容"},
-		{Name: "status_code", Type: field.TypeInt, Nullable: true, Comment: "HTTP响应状态码"},
-		{Name: "response", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "响应内容"},
-		{Name: "success", Type: field.TypeBool, Comment: "是否发送成功", Default: false},
-		{Name: "error_message", Type: field.TypeString, Nullable: true, Comment: "错误信息"},
-		{Name: "webhook_id", Type: field.TypeInt64, Comment: "通知序号"},
-		{Name: "subscription_id", Type: field.TypeInt64, Nullable: true, Comment: "通知订阅序号（可选，直接触发时为空）"},
-	}
-	// WebhookLogTable holds the schema information for the "webhook_log" table.
-	WebhookLogTable = &schema.Table{
-		Name:       "webhook_log",
-		Comment:    "通知发送日志",
-		Columns:    WebhookLogColumns,
-		PrimaryKey: []*schema.Column{WebhookLogColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "webhook_log_webhook_logs",
-				Columns:    []*schema.Column{WebhookLogColumns[10]},
-				RefColumns: []*schema.Column{WebhookColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-			{
-				Symbol:     "webhook_log_webhook_subscription_logs",
-				Columns:    []*schema.Column{WebhookLogColumns[11]},
-				RefColumns: []*schema.Column{WebhookSubscriptionColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "webhooklog_webhook_id",
-				Unique:  false,
-				Columns: []*schema.Column{WebhookLogColumns[10]},
-			},
-			{
-				Name:    "webhooklog_success",
-				Unique:  false,
-				Columns: []*schema.Column{WebhookLogColumns[8]},
-			},
-			{
-				Name:    "webhooklog_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{WebhookLogColumns[1]},
-				Annotation: &entsql.IndexAnnotation{
-					Desc: true,
-				},
-			},
-			{
-				Name:    "webhooklog_webhook_id_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{WebhookLogColumns[10], WebhookLogColumns[1]},
-				Annotation: &entsql.IndexAnnotation{
-					Desc: true,
-				},
-			},
-			{
-				Name:    "webhooklog_success_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{WebhookLogColumns[8], WebhookLogColumns[1]},
-				Annotation: &entsql.IndexAnnotation{
-					Desc: true,
-				},
-			},
-		},
-	}
 	// WebhookSubscriptionColumns holds the columns for the "webhook_subscription" table.
 	WebhookSubscriptionColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "通知订阅序号"},
@@ -663,12 +540,10 @@ var (
 		DeviceIPReportTable,
 		DevicePortForwardTable,
 		DomainMonitorTable,
-		DomainMonitorHistoryTable,
 		IPGroupTable,
 		IPGroupDeviceTable,
 		PlatformConfigTable,
 		WebhookTable,
-		WebhookLogTable,
 		WebhookSubscriptionTable,
 	}
 )
@@ -699,10 +574,6 @@ func init() {
 	DomainMonitorTable.Annotation = &entsql.Annotation{
 		Table: "domain_monitor",
 	}
-	DomainMonitorHistoryTable.ForeignKeys[0].RefTable = DomainMonitorTable
-	DomainMonitorHistoryTable.Annotation = &entsql.Annotation{
-		Table: "domain_monitor_history",
-	}
 	IPGroupTable.Annotation = &entsql.Annotation{
 		Table: "ip_group",
 	}
@@ -716,11 +587,6 @@ func init() {
 	}
 	WebhookTable.Annotation = &entsql.Annotation{
 		Table: "webhook",
-	}
-	WebhookLogTable.ForeignKeys[0].RefTable = WebhookTable
-	WebhookLogTable.ForeignKeys[1].RefTable = WebhookSubscriptionTable
-	WebhookLogTable.Annotation = &entsql.Annotation{
-		Table: "webhook_log",
 	}
 	WebhookSubscriptionTable.ForeignKeys[0].RefTable = WebhookTable
 	WebhookSubscriptionTable.ForeignKeys[1].RefTable = WebhookTable

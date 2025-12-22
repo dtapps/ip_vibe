@@ -46,6 +46,7 @@ func getDomainMonitorList(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 创建服务
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -66,6 +67,7 @@ func getDomainMonitorDetail(ctx context.Context, req *mcp.CallToolRequest, param
 	// 创建服务
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -86,6 +88,7 @@ func createDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 	// 创建服务
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -106,6 +109,7 @@ func updateDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 	// 创建服务
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -126,6 +130,7 @@ func updateDomainMonitorActive(ctx context.Context, req *mcp.CallToolRequest, pa
 	// 创建服务
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -146,6 +151,7 @@ func deleteDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 	// 创建服务
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -166,6 +172,7 @@ func checkDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *t
 	// 创建服务
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,

@@ -4,10 +4,9 @@ package domainmonitorhistory
 
 import (
 	"time"
-	"vibe_ip/internal/ent/predicate"
+	"vibe_ip/internal/ent_log/predicate"
 
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // ID filters vertices based on their ID field.
@@ -53,6 +52,16 @@ func IDLT(id int64) predicate.DomainMonitorHistory {
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id int64) predicate.DomainMonitorHistory {
 	return predicate.DomainMonitorHistory(sql.FieldLTE(FieldID, id))
+}
+
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
+func UpdatedAt(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
 // MonitorID applies equality check predicate on the "monitor_id" field. It's identical to MonitorIDEQ.
@@ -120,6 +129,86 @@ func SslCertificateChain(v string) predicate.DomainMonitorHistory {
 	return predicate.DomainMonitorHistory(sql.FieldEQ(FieldSslCertificateChain, v))
 }
 
+// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+func CreatedAtEQ(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+func CreatedAtNEQ(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldNEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtIn applies the In predicate on the "created_at" field.
+func CreatedAtIn(vs ...time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldNotIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtGT applies the GT predicate on the "created_at" field.
+func CreatedAtGT(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldGT(FieldCreatedAt, v))
+}
+
+// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+func CreatedAtGTE(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldGTE(FieldCreatedAt, v))
+}
+
+// CreatedAtLT applies the LT predicate on the "created_at" field.
+func CreatedAtLT(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldLT(FieldCreatedAt, v))
+}
+
+// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+func CreatedAtLTE(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
+func UpdatedAtEQ(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
+func UpdatedAtNEQ(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldNEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtIn applies the In predicate on the "updated_at" field.
+func UpdatedAtIn(vs ...time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
+func UpdatedAtNotIn(vs ...time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldNotIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtGT applies the GT predicate on the "updated_at" field.
+func UpdatedAtGT(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldGT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
+func UpdatedAtGTE(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldGTE(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLT applies the LT predicate on the "updated_at" field.
+func UpdatedAtLT(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldLT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
+func UpdatedAtLTE(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
 // MonitorIDEQ applies the EQ predicate on the "monitor_id" field.
 func MonitorIDEQ(v int64) predicate.DomainMonitorHistory {
 	return predicate.DomainMonitorHistory(sql.FieldEQ(FieldMonitorID, v))
@@ -138,6 +227,26 @@ func MonitorIDIn(vs ...int64) predicate.DomainMonitorHistory {
 // MonitorIDNotIn applies the NotIn predicate on the "monitor_id" field.
 func MonitorIDNotIn(vs ...int64) predicate.DomainMonitorHistory {
 	return predicate.DomainMonitorHistory(sql.FieldNotIn(FieldMonitorID, vs...))
+}
+
+// MonitorIDGT applies the GT predicate on the "monitor_id" field.
+func MonitorIDGT(v int64) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldGT(FieldMonitorID, v))
+}
+
+// MonitorIDGTE applies the GTE predicate on the "monitor_id" field.
+func MonitorIDGTE(v int64) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldGTE(FieldMonitorID, v))
+}
+
+// MonitorIDLT applies the LT predicate on the "monitor_id" field.
+func MonitorIDLT(v int64) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldLT(FieldMonitorID, v))
+}
+
+// MonitorIDLTE applies the LTE predicate on the "monitor_id" field.
+func MonitorIDLTE(v int64) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldLTE(FieldMonitorID, v))
 }
 
 // CheckTimeEQ applies the EQ predicate on the "check_time" field.
@@ -873,29 +982,6 @@ func SslCertificateChainEqualFold(v string) predicate.DomainMonitorHistory {
 // SslCertificateChainContainsFold applies the ContainsFold predicate on the "ssl_certificate_chain" field.
 func SslCertificateChainContainsFold(v string) predicate.DomainMonitorHistory {
 	return predicate.DomainMonitorHistory(sql.FieldContainsFold(FieldSslCertificateChain, v))
-}
-
-// HasMonitor applies the HasEdge predicate on the "monitor" edge.
-func HasMonitor() predicate.DomainMonitorHistory {
-	return predicate.DomainMonitorHistory(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, MonitorTable, MonitorColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasMonitorWith applies the HasEdge predicate on the "monitor" edge with a given conditions (other predicates).
-func HasMonitorWith(preds ...predicate.DomainMonitor) predicate.DomainMonitorHistory {
-	return predicate.DomainMonitorHistory(func(s *sql.Selector) {
-		step := newMonitorStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
 }
 
 // And groups predicates with the AND operator between them.

@@ -13,7 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// resty 请求日志
+// resty请求日志
 type RestyLog struct {
 	config `json:"-"`
 	// ID of the ent.

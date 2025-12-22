@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/internal/ent/domainmonitor"
-	"vibe_ip/internal/ent/domainmonitorhistory"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -157,21 +156,6 @@ func (_c *DomainMonitorCreate) SetNillableLastFailureAt(v *time.Time) *DomainMon
 func (_c *DomainMonitorCreate) SetID(v int64) *DomainMonitorCreate {
 	_c.mutation.SetID(v)
 	return _c
-}
-
-// AddHistoryRecordIDs adds the "history_records" edge to the DomainMonitorHistory entity by IDs.
-func (_c *DomainMonitorCreate) AddHistoryRecordIDs(ids ...int64) *DomainMonitorCreate {
-	_c.mutation.AddHistoryRecordIDs(ids...)
-	return _c
-}
-
-// AddHistoryRecords adds the "history_records" edges to the DomainMonitorHistory entity.
-func (_c *DomainMonitorCreate) AddHistoryRecords(v ...*DomainMonitorHistory) *DomainMonitorCreate {
-	ids := make([]int64, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _c.AddHistoryRecordIDs(ids...)
 }
 
 // Mutation returns the DomainMonitorMutation object of the builder.
@@ -343,22 +327,6 @@ func (_c *DomainMonitorCreate) createSpec() (*DomainMonitor, *sqlgraph.CreateSpe
 	if value, ok := _c.mutation.LastFailureAt(); ok {
 		_spec.SetField(domainmonitor.FieldLastFailureAt, field.TypeTime, value)
 		_node.LastFailureAt = value
-	}
-	if nodes := _c.mutation.HistoryRecordsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   domainmonitor.HistoryRecordsTable,
-			Columns: []string{domainmonitor.HistoryRecordsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(domainmonitorhistory.FieldID, field.TypeInt64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

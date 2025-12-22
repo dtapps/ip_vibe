@@ -7,7 +7,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
-	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 )
@@ -92,15 +91,7 @@ func (DomainMonitor) Fields() []ent.Field {
 
 // Edges of the DomainMonitor.
 func (DomainMonitor) Edges() []ent.Edge {
-	return []ent.Edge{
-		// 一对多 DomainMonitor -> DomainMonitorHistory
-		edge.To("history_records", DomainMonitorHistory.Type).
-			Comment("关联的监控历史记录").
-			Annotations(entsql.Annotation{
-				// 级联删除：删除 DomainMonitor 时，其所有 DomainMonitorHistory 记录也应删除
-				OnDelete: entsql.Cascade,
-			}, entsql.WithComments(true)),
-	}
+	return []ent.Edge{}
 }
 
 // Indexes of the DomainMonitor.

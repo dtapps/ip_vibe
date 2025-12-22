@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/internal/ent/webhook"
-	"vibe_ip/internal/ent/webhooklog"
 	"vibe_ip/internal/ent/webhooksubscription"
 
 	"entgo.io/ent/dialect/sql"
@@ -99,21 +98,6 @@ func (_c *WebhookSubscriptionCreate) SetID(v int64) *WebhookSubscriptionCreate {
 // SetWebhook sets the "webhook" edge to the Webhook entity.
 func (_c *WebhookSubscriptionCreate) SetWebhook(v *Webhook) *WebhookSubscriptionCreate {
 	return _c.SetWebhookID(v.ID)
-}
-
-// AddLogIDs adds the "logs" edge to the WebhookLog entity by IDs.
-func (_c *WebhookSubscriptionCreate) AddLogIDs(ids ...int64) *WebhookSubscriptionCreate {
-	_c.mutation.AddLogIDs(ids...)
-	return _c
-}
-
-// AddLogs adds the "logs" edges to the WebhookLog entity.
-func (_c *WebhookSubscriptionCreate) AddLogs(v ...*WebhookLog) *WebhookSubscriptionCreate {
-	ids := make([]int64, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _c.AddLogIDs(ids...)
 }
 
 // Mutation returns the WebhookSubscriptionMutation object of the builder.
@@ -261,22 +245,6 @@ func (_c *WebhookSubscriptionCreate) createSpec() (*WebhookSubscription, *sqlgra
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.WebhookID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.LogsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   webhooksubscription.LogsTable,
-			Columns: []string{webhooksubscription.LogsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(webhooklog.FieldID, field.TypeInt64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

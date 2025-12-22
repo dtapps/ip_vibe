@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/internal/ent/domainmonitor"
-	"vibe_ip/internal/ent/domainmonitorhistory"
 	"vibe_ip/internal/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
@@ -159,45 +158,9 @@ func (_u *DomainMonitorUpdate) ClearLastFailureAt() *DomainMonitorUpdate {
 	return _u
 }
 
-// AddHistoryRecordIDs adds the "history_records" edge to the DomainMonitorHistory entity by IDs.
-func (_u *DomainMonitorUpdate) AddHistoryRecordIDs(ids ...int64) *DomainMonitorUpdate {
-	_u.mutation.AddHistoryRecordIDs(ids...)
-	return _u
-}
-
-// AddHistoryRecords adds the "history_records" edges to the DomainMonitorHistory entity.
-func (_u *DomainMonitorUpdate) AddHistoryRecords(v ...*DomainMonitorHistory) *DomainMonitorUpdate {
-	ids := make([]int64, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddHistoryRecordIDs(ids...)
-}
-
 // Mutation returns the DomainMonitorMutation object of the builder.
 func (_u *DomainMonitorUpdate) Mutation() *DomainMonitorMutation {
 	return _u.mutation
-}
-
-// ClearHistoryRecords clears all "history_records" edges to the DomainMonitorHistory entity.
-func (_u *DomainMonitorUpdate) ClearHistoryRecords() *DomainMonitorUpdate {
-	_u.mutation.ClearHistoryRecords()
-	return _u
-}
-
-// RemoveHistoryRecordIDs removes the "history_records" edge to DomainMonitorHistory entities by IDs.
-func (_u *DomainMonitorUpdate) RemoveHistoryRecordIDs(ids ...int64) *DomainMonitorUpdate {
-	_u.mutation.RemoveHistoryRecordIDs(ids...)
-	return _u
-}
-
-// RemoveHistoryRecords removes "history_records" edges to DomainMonitorHistory entities.
-func (_u *DomainMonitorUpdate) RemoveHistoryRecords(v ...*DomainMonitorHistory) *DomainMonitorUpdate {
-	ids := make([]int64, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveHistoryRecordIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -299,51 +262,6 @@ func (_u *DomainMonitorUpdate) sqlSave(ctx context.Context) (_node int, err erro
 	}
 	if _u.mutation.LastFailureAtCleared() {
 		_spec.ClearField(domainmonitor.FieldLastFailureAt, field.TypeTime)
-	}
-	if _u.mutation.HistoryRecordsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   domainmonitor.HistoryRecordsTable,
-			Columns: []string{domainmonitor.HistoryRecordsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(domainmonitorhistory.FieldID, field.TypeInt64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedHistoryRecordsIDs(); len(nodes) > 0 && !_u.mutation.HistoryRecordsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   domainmonitor.HistoryRecordsTable,
-			Columns: []string{domainmonitor.HistoryRecordsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(domainmonitorhistory.FieldID, field.TypeInt64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.HistoryRecordsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   domainmonitor.HistoryRecordsTable,
-			Columns: []string{domainmonitor.HistoryRecordsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(domainmonitorhistory.FieldID, field.TypeInt64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -496,45 +414,9 @@ func (_u *DomainMonitorUpdateOne) ClearLastFailureAt() *DomainMonitorUpdateOne {
 	return _u
 }
 
-// AddHistoryRecordIDs adds the "history_records" edge to the DomainMonitorHistory entity by IDs.
-func (_u *DomainMonitorUpdateOne) AddHistoryRecordIDs(ids ...int64) *DomainMonitorUpdateOne {
-	_u.mutation.AddHistoryRecordIDs(ids...)
-	return _u
-}
-
-// AddHistoryRecords adds the "history_records" edges to the DomainMonitorHistory entity.
-func (_u *DomainMonitorUpdateOne) AddHistoryRecords(v ...*DomainMonitorHistory) *DomainMonitorUpdateOne {
-	ids := make([]int64, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddHistoryRecordIDs(ids...)
-}
-
 // Mutation returns the DomainMonitorMutation object of the builder.
 func (_u *DomainMonitorUpdateOne) Mutation() *DomainMonitorMutation {
 	return _u.mutation
-}
-
-// ClearHistoryRecords clears all "history_records" edges to the DomainMonitorHistory entity.
-func (_u *DomainMonitorUpdateOne) ClearHistoryRecords() *DomainMonitorUpdateOne {
-	_u.mutation.ClearHistoryRecords()
-	return _u
-}
-
-// RemoveHistoryRecordIDs removes the "history_records" edge to DomainMonitorHistory entities by IDs.
-func (_u *DomainMonitorUpdateOne) RemoveHistoryRecordIDs(ids ...int64) *DomainMonitorUpdateOne {
-	_u.mutation.RemoveHistoryRecordIDs(ids...)
-	return _u
-}
-
-// RemoveHistoryRecords removes "history_records" edges to DomainMonitorHistory entities.
-func (_u *DomainMonitorUpdateOne) RemoveHistoryRecords(v ...*DomainMonitorHistory) *DomainMonitorUpdateOne {
-	ids := make([]int64, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveHistoryRecordIDs(ids...)
 }
 
 // Where appends a list predicates to the DomainMonitorUpdate builder.
@@ -666,51 +548,6 @@ func (_u *DomainMonitorUpdateOne) sqlSave(ctx context.Context) (_node *DomainMon
 	}
 	if _u.mutation.LastFailureAtCleared() {
 		_spec.ClearField(domainmonitor.FieldLastFailureAt, field.TypeTime)
-	}
-	if _u.mutation.HistoryRecordsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   domainmonitor.HistoryRecordsTable,
-			Columns: []string{domainmonitor.HistoryRecordsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(domainmonitorhistory.FieldID, field.TypeInt64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedHistoryRecordsIDs(); len(nodes) > 0 && !_u.mutation.HistoryRecordsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   domainmonitor.HistoryRecordsTable,
-			Columns: []string{domainmonitor.HistoryRecordsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(domainmonitorhistory.FieldID, field.TypeInt64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.HistoryRecordsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   domainmonitor.HistoryRecordsTable,
-			Columns: []string{domainmonitor.HistoryRecordsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(domainmonitorhistory.FieldID, field.TypeInt64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &DomainMonitor{config: _u.config}

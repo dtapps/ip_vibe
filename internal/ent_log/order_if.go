@@ -4,10 +4,32 @@ package ent_log
 
 import (
 	"fmt"
+	"vibe_ip/internal/ent_log/domainmonitorhistory"
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/restylog"
+	"vibe_ip/internal/ent_log/webhookhistory"
 )
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *DomainMonitorHistoryQuery) OrderIf(condition bool, o domainmonitorhistory.OrderOption) *DomainMonitorHistoryQuery {
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o)
+	}
+	return q
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *DomainMonitorHistoryQuery) OrderIfs(condition bool, o ...domainmonitorhistory.OrderOption) *DomainMonitorHistoryQuery {
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o...)
+	}
+	return q
+}
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
@@ -62,6 +84,26 @@ func (q *RestyLogQuery) OrderIf(condition bool, o restylog.OrderOption) *RestyLo
 // OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
 func (q *RestyLogQuery) OrderIfs(condition bool, o ...restylog.OrderOption) *RestyLogQuery {
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o...)
+	}
+	return q
+}
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *WebhookHistoryQuery) OrderIf(condition bool, o webhookhistory.OrderOption) *WebhookHistoryQuery {
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o)
+	}
+	return q
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *WebhookHistoryQuery) OrderIfs(condition bool, o ...webhookhistory.OrderOption) *WebhookHistoryQuery {
 	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
 	if condition {
 		q.Order(o...)
