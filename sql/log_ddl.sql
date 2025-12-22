@@ -1,6 +1,6 @@
 -- http_log definition
 
-CREATE TABLE "http_log" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `hostname` text NOT NULL, `method` text NOT NULL, `url` text NOT NULL, `request_headers` json NOT NULL, `request_body` json NULL, `status_code` integer NOT NULL, `response_headers` json NOT NULL, `response_body` json NULL, `elapse_time` integer NOT NULL, `is_error` bool NULL DEFAULT (false), `created_at` datetime NOT NULL);
+CREATE TABLE "http_log" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `hostname` text NOT NULL, `method` text NOT NULL, `url` text NOT NULL, `request_headers` json NOT NULL, `request_body` json NULL, `status_code` integer NOT NULL, `response_headers` json NOT NULL, `response_body` json NULL, `elapse_time` integer NOT NULL, `is_error` bool NULL DEFAULT (false), `created_at` datetime NOT NULL, `go_version` text NULL DEFAULT ('go1.26rc1'), `plugin_version` text NULL DEFAULT ('1.0.0'));
 
 CREATE INDEX `httplog_hostname` ON `http_log` (`hostname`);
 CREATE INDEX `httplog_method` ON `http_log` (`method`);
@@ -21,7 +21,7 @@ CREATE INDEX `operationlog_created_at` ON `operation_log` (`created_at` DESC);
 
 -- resty_log definition
 
-CREATE TABLE "resty_log" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `hostname` text NOT NULL, `method` text NOT NULL, `url` text NOT NULL, `request_headers` json NOT NULL, `request_body` json NULL, `status_code` integer NOT NULL, `response_headers` json NOT NULL, `response_body` json NULL, `elapse_time` integer NOT NULL, `is_error` bool NULL DEFAULT (false), `created_at` datetime NOT NULL);
+CREATE TABLE "resty_log" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `hostname` text NOT NULL, `method` text NOT NULL, `url` text NOT NULL, `request_headers` json NOT NULL, `request_body` json NULL, `status_code` integer NOT NULL, `response_headers` json NOT NULL, `response_body` json NULL, `elapse_time` integer NOT NULL, `is_error` bool NULL DEFAULT (false), `created_at` datetime NOT NULL, `go_version` text NULL DEFAULT ('go1.26rc1'), `plugin_version` text NULL DEFAULT ('1.0.10'), `resty_version` text NULL DEFAULT ('3.0.0-beta.5'));
 
 CREATE INDEX `restylog_hostname` ON `resty_log` (`hostname`);
 CREATE INDEX `restylog_method` ON `resty_log` (`method`);
