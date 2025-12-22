@@ -35,8 +35,8 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc4
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.11
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.15
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.8
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.16
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.16
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.13
 	go.dtapp.net/library/contrib/http_log v1.0.0
 	go.dtapp.net/library/contrib/resty_log v1.0.10
@@ -99,7 +99,7 @@ require (
 	github.com/go-openapi/swag/yamlutils v0.25.4 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.29.0 // indirect
+	github.com/go-playground/validator/v10 v10.30.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/goccy/go-yaml v1.19.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
@@ -117,7 +117,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
-	github.com/quic-go/quic-go v0.57.1 // indirect
+	github.com/quic-go/quic-go v0.58.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/sv-tools/openapi v0.2.1 // indirect
