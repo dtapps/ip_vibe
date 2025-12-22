@@ -143,15 +143,25 @@ IPV6地址: [[.IPv6Addr]]
         document.getElementById(
           "template_content"
         ).value = `事件类型: [[.EventType]]
+        
 事件时间: [[.EventTime]]
+
 事件内容: [[.EventBody]]
+
 设备编号: [[.DeviceCode]]
+
 设备名称: [[.DeviceName]]
+
 IPV4地址: [[.IPv4Addr]]
+
 IPV6地址: [[.IPv6Addr]]
+
 记录域名: [[.RecordDomain]]
+
 记录类型: [[.RecordType]]
+
 平台名称: [[.PlatformName]]
+
 平台类型: [[.PlatformType]]`;
         break;
       case "push_deer":
