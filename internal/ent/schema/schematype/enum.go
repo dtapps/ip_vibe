@@ -71,23 +71,26 @@ var GetCDNRecordTypes = []string{
 // --------
 
 const (
+	ConfigCapabilityAll string = "all" // 全部服务能力
 	ConfigCapabilityDns string = "dns" // DNS服务能力
 	ConfigCapabilityCdn string = "cdn" // CDN服务能力
-	ConfigCapabilityAll string = "all" // 所有服务能力
+	ConfigCapabilitySsl string = "ssl" // SSL服务能力
 )
 
 // GetConfigCapabilityDescriptions 服务能力说明映射
 var GetConfigCapabilityDescriptions = map[string]string{
+	ConfigCapabilityAll: "全部服务能力",
 	ConfigCapabilityDns: "DNS服务能力",
 	ConfigCapabilityCdn: "CDN服务能力",
-	ConfigCapabilityAll: "所有服务能力",
+	ConfigCapabilitySsl: "SSL服务能力",
 }
 
 // GetConfigCapabilitys 返回所有服务能力
 var GetConfigCapabilitys = []string{
+	ConfigCapabilityAll,
 	ConfigCapabilityDns,
 	ConfigCapabilityCdn,
-	ConfigCapabilityAll,
+	ConfigCapabilitySsl,
 }
 
 // --------

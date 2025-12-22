@@ -1,26 +1,169 @@
+/**
+ * 判断是否需要 domain_name 字段
+ * @param {string} capability - 服务能力
+ * @returns {boolean} 是否需要 domain_name 字段
+ */
+function needsDomainField(capability) {
+  return capability === "all" || capability === "cdn" || capability === "dns";
+}
+
+/**
+ * 判断是否需要 email 字段
+ * @param {string} capability - 服务能力
+ * @returns {boolean} 是否需要 email 字段
+ */
+function needsEmailField(capability) {
+  return capability === "all" || capability === "ssl";
+}
+
+/**
+ * 获取 domain_name 和 email 字段值及类型
+ * @param {string} platform - 平台名称
+ * @param {string} capability - 服务能力
+ * @returns {Object} { domain_name?: string, email?: string }
+ */
+function getDomainAndEmailFieldInfo(platform, capability) {
+  const result = {};
+
+  // 总是尝试获取 domain_name（如果字段存在）
+  const domainField = document.getElementById(`${platform}_domain_name`);
+  if (domainField && needsDomainField(capability)) {
+    const value = domainField.value.trim();
+    if (value) {
+      result.domain_name = value;
+    }
+  }
+
+  // 总是尝试获取 email（如果字段存在）
+  const emailField = document.getElementById(`${platform}_email`);
+  if (emailField && needsEmailField(capability)) {
+    const value = emailField.value.trim();
+    if (value) {
+      result.email = value;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * 直接返回键值对，根据服务能力判断返回 domain_name 和/或 email
+ * @param {string} platform - 平台名称
+ * @param {string} capability - 服务能力
+ * @returns {Object} { domain_name?: string, email?: string }
+ */
+function getDomainAndEmailKeyValue(platform, capability) {
+  return getDomainAndEmailFieldInfo(platform, capability);
+}
+
+/**
+ * 设置 domain_name 和 email 字段值
+ * @param {string} platform - 平台名称
+ * @param {string} capability - 服务能力
+ * @param {string} domain_name_value - domain_name 值
+ * @param {string} email_value - email 值
+ * @returns {Object} { domain_name?: string, email?: string }
+ */
+function setDomainAndEmailField(
+  platform,
+  capability,
+  domain_name_value,
+  email_value
+) {
+  const result = {};
+
+  // 设置 domain_name（如果需要且值不为空）
+  if (needsDomainField(capability)) {
+    const domainField = document.getElementById(`${platform}_domain_name`);
+    if (domainField) {
+      domainField.value = domain_name_value || "";
+      if (domain_name_value) {
+        result.domain_name = domain_name_value;
+      }
+    }
+  }
+
+  // 设置 email（如果需要且值不为空）
+  if (needsEmailField(capability)) {
+    const emailField = document.getElementById(`${platform}_email`);
+    if (emailField) {
+      emailField.value = email_value || "";
+      if (email_value) {
+        result.email = email_value;
+      }
+    }
+  }
+
+  return result;
+}
+
 // 请选择服务能力 capability
 function changeCapability(sel) {
-  const opt = sel.options[sel.selectedIndex];
-  console.log("changeCapability", opt);
+  console.log("changeCapability", sel);
+
+  const capability = sel.value;
+  const domainOrEmailGroups = document.querySelectorAll(
+    ".domain-or-email-group"
+  );
+
+  domainOrEmailGroups.forEach((group) => {
+    const domainField = group.querySelector(".domain-field");
+    const emailField = group.querySelector(".email-field");
+    const domainLabel = group.querySelector('[data-type="domain"]');
+    const emailLabel = group.querySelector('[data-type="email"]');
+
+    if (capability === "all") {
+      // 同时显示 domain 和 email
+      domainField.classList.remove("hidden");
+      emailField.classList.remove("hidden");
+      domainLabel.classList.remove("hidden");
+      emailLabel.classList.remove("hidden");
+    } else if (capability === "ssl") {
+      // 只显示 email，隐藏 domain
+      domainField.classList.add("hidden");
+      emailField.classList.remove("hidden");
+      domainLabel.classList.add("hidden");
+      emailLabel.classList.remove("hidden");
+
+      // 清空 domain 字段值
+      domainField.value = "";
+    } else {
+      // 只显示 domain，隐藏 email
+      domainField.classList.remove("hidden");
+      emailField.classList.add("hidden");
+      domainLabel.classList.remove("hidden");
+      emailLabel.classList.add("hidden");
+
+      // 清空 email 字段值
+      emailField.value = "";
+    }
+  });
 }
 
 // 请选择平台 platform
 function changePlatform(platform) {
   // 隐藏所有平台字段
-  document
-    .querySelectorAll(".platform-fields")
-    .forEach((el) => el.classList.add("hidden"));
+  document.querySelectorAll(".platform-fields").forEach((el) => {
+    el.classList.add("hidden");
+  });
 
   // 显示选中平台的字段
   const fields = document.getElementById(platform + "_fields");
   if (fields) {
     fields.classList.remove("hidden");
+
+    // 根据当前 capability 设置字段显示
+    const currentCapability = document.getElementById("capability").value;
+    if (currentCapability) {
+      changeCapability({ value: currentCapability });
+    }
   }
 }
 
 // 组装JSON配置
 function buildConfigPlatform() {
   const platform = document.getElementById("platform").value.trim();
+  const capability = document.getElementById("capability").value.trim();
   let config = {};
 
   switch (platform) {
@@ -28,9 +171,6 @@ function buildConfigPlatform() {
       config = {
         api_key: document.getElementById("cloudflare_api_key").value.trim(),
         zone_id: document.getElementById("cloudflare_zone_id").value.trim(),
-        domain_name: document
-          .getElementById("cloudflare_domain_name")
-          .value.trim(),
       };
       break;
     case "tencent_dns":
@@ -41,9 +181,6 @@ function buildConfigPlatform() {
         secret_key: document
           .getElementById("tencent_dns_secret_key")
           .value.trim(),
-        domain_name: document
-          .getElementById("tencent_dns_domain_name")
-          .value.trim(),
       };
       break;
     case "tencent_eo":
@@ -53,9 +190,6 @@ function buildConfigPlatform() {
           .getElementById("tencent_eo_secret_key")
           .value.trim(),
         zone_id: document.getElementById("tencent_eo_zone_id").value.trim(),
-        domain_name: document
-          .getElementById("tencent_eo_domain_name")
-          .value.trim(),
       };
       break;
     case "aliyun_dns":
@@ -65,9 +199,6 @@ function buildConfigPlatform() {
           .value.trim(),
         access_key_secret: document
           .getElementById("aliyun_dns_access_key_secret")
-          .value.trim(),
-        domain_name: document
-          .getElementById("aliyun_dns_domain_name")
           .value.trim(),
       };
       break;
@@ -82,9 +213,6 @@ function buildConfigPlatform() {
         site_id: Number(
           document.getElementById("aliyun_esa_site_id").value.trim()
         ),
-        domain_name: document
-          .getElementById("aliyun_esa_domain_name")
-          .value.trim(),
       };
       break;
     case "baidu_dns":
@@ -94,9 +222,6 @@ function buildConfigPlatform() {
           .value.trim(),
         secret_access_key: document
           .getElementById("baidu_dns_secret_access_key")
-          .value.trim(),
-        domain_name: document
-          .getElementById("baidu_dns_domain_name")
           .value.trim(),
       };
       break;
@@ -109,12 +234,12 @@ function buildConfigPlatform() {
           .getElementById("huawei_dns_secret_access_key")
           .value.trim(),
         zone_id: document.getElementById("huawei_dns_zone_id").value.trim(),
-        domain_name: document
-          .getElementById("huawei_dns_domain_name")
-          .value.trim(),
       };
       break;
   }
+
+  // 合并 domain_name 和 email 字段（可能同时存在）
+  Object.assign(config, getDomainAndEmailKeyValue(platform, capability));
 
   // 设置隐藏字段的值
   document.getElementById("config_json").value = JSON.stringify(config);
@@ -143,22 +268,23 @@ async function openFormModal(id) {
     // 解析JSON并填充表单
     changePlatform(config.platform);
 
+    // 根据 capability 设置字段显示
+    setTimeout(() => {
+      changeCapability({ value: config.capability });
+    }, 100);
+
     switch (config.platform) {
       case "cloudflare":
         document.getElementById("cloudflare_api_key").value =
           config.config_json.api_key || "";
         document.getElementById("cloudflare_zone_id").value =
           config.config_json.zone_id || "";
-        document.getElementById("cloudflare_domain_name").value =
-          config.config_json.domain_name || "";
         break;
       case "tencent_dns":
         document.getElementById("tencent_dns_secret_id").value =
           config.config_json.secret_id || "";
         document.getElementById("tencent_dns_secret_key").value =
           config.config_json.secret_key || "";
-        document.getElementById("tencent_dns_domain_name").value =
-          config.config_json.domain_name || "";
         break;
       case "tencent_eo":
         document.getElementById("tencent_eo_secret_id").value =
@@ -167,16 +293,12 @@ async function openFormModal(id) {
           config.config_json.secret_key || "";
         document.getElementById("tencent_eo_zone_id").value =
           config.config_json.zone_id || "";
-        document.getElementById("tencent_eo_domain_name").value =
-          config.config_json.domain_name || "";
         break;
       case "aliyun_dns":
         document.getElementById("aliyun_dns_access_key_id").value =
           config.config_json.access_key_id || "";
         document.getElementById("aliyun_dns_access_key_secret").value =
           config.config_json.access_key_secret || "";
-        document.getElementById("aliyun_dns_domain_name").value =
-          config.config_json.domain_name || "";
         break;
       case "aliyun_esa":
         document.getElementById("aliyun_esa_access_key_id").value =
@@ -185,16 +307,12 @@ async function openFormModal(id) {
           config.config_json.access_key_secret || "";
         document.getElementById("aliyun_esa_site_id").value =
           config.config_json.site_id || 0;
-        document.getElementById("aliyun_esa_domain_name").value =
-          config.config_json.domain_name || "";
         break;
       case "baidu_dns":
         document.getElementById("baidu_dns_access_key_id").value =
           config.config_json.access_key_id || "";
         document.getElementById("baidu_dns_secret_access_key").value =
           config.config_json.secret_access_key || "";
-        document.getElementById("baidu_dns_domain_name").value =
-          config.config_json.domain_name || "";
         break;
       case "huawei_dns":
         document.getElementById("huawei_dns_access_key_id").value =
@@ -203,10 +321,16 @@ async function openFormModal(id) {
           config.config_json.secret_access_key || "";
         document.getElementById("huawei_dns_zone_id").value =
           config.config_json.zone_id || "";
-        document.getElementById("huawei_dns_domain_name").value =
-          config.config_json.domain_name || "";
         break;
     }
+
+    // 设置 domain_name 或 email 字段值
+    setDomainAndEmailField(
+      config.platform,
+      config.capability,
+      config.config_json.domain_name || "",
+      config.config_json.email || ""
+    );
 
     showModal("modal", "modalTitle", "编辑 平台配置");
   }
@@ -220,6 +344,19 @@ async function openFormModal(id) {
       .forEach((el) => el.classList.add("hidden"));
     document.getElementById("platform").disabled = false;
 
+    // 重置所有字段显示
+    document.querySelectorAll(".domain-or-email-group").forEach((group) => {
+      const domainField = group.querySelector(".domain-field");
+      const emailField = group.querySelector(".email-field");
+      const domainLabel = group.querySelector('[data-type="domain"]');
+      const emailLabel = group.querySelector('[data-type="email"]');
+
+      domainField.classList.remove("hidden");
+      emailField.classList.add("hidden");
+      domainLabel.classList.remove("hidden");
+      emailLabel.classList.add("hidden");
+    });
+
     showModal("modal", "modalTitle", "添加 平台配置");
   }
 }
@@ -227,7 +364,9 @@ async function openFormModal(id) {
 // 表单提交
 document.getElementById("form").onsubmit = async (e) => {
   e.preventDefault();
-  buildConfigPlatform(); // 组装JSON
+
+  // 组装JSON
+  buildConfigPlatform();
 
   // 表单数据
   const form_id = Number(document.getElementById("id").value.trim());

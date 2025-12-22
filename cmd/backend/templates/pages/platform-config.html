@@ -47,13 +47,15 @@
           </td>
           <td>
             {{if eq .Capability "all"}}
-            <span style="color: var(--primary)">CDN + DNS</span>
+            <span style="color: var(--primary)">全部</span>
             {{else if eq .Capability "cdn"}}
-            <span style="color: var(--warning)">仅 CDN</span>
+            <span style="color: var(--success)">仅 CDN</span>
             {{else if eq .Capability "dns"}}
             <span style="color: var(--success)">仅 DNS</span>
+            {{else if eq .Capability "ssl"}}
+            <span style="color: var(--success)">仅 SSL</span>
             {{else}}
-            <span>{{.Capability}}</span>
+            <span style="color: var(--warning)">{{.Capability}}</span>
             {{end}}
           </td>
           <td>

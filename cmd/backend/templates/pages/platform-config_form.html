@@ -1,4 +1,35 @@
 {{ define "pages/platform-config_form.html" }}
+<style>
+  .hidden {
+    display: none !important;
+  }
+
+  .field-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .toggle-password {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    margin-left: 8px;
+    color: #666;
+  }
+
+  .toggle-password:hover {
+    color: #333;
+  }
+</style>
+
 <div class="modal" id="modal">
   <div class="modal-content">
     <h3 id="modalTitle">添加平台配置</h3>
@@ -11,9 +42,10 @@
           required
           onchange="changeCapability(this)"
         >
-          <option value="all" selected>CDN + DNS</option>
+          <option value="all" selected>全部</option>
           <option value="cdn">仅 CDN</option>
           <option value="dns">仅 DNS</option>
+          <option value="ssl">仅 SSL</option>
         </select>
       </div>
 
@@ -77,12 +109,29 @@
             placeholder="your-zone-id"
           />
         </div>
-        <div class="form-group">
-          <label>Domain Name <span style="color: red">*</span></label>
+        <div
+          class="form-group domain-or-email-group"
+          data-platform="cloudflare"
+        >
+          <label class="field-label" data-type="domain"
+            >Domain Name <span style="color: red">*</span></label
+          >
           <input
             type="text"
             id="cloudflare_domain_name"
+            class="field-input domain-field"
             placeholder="your-domain.com"
+            data-type="domain"
+          />
+          <label class="field-label hidden" data-type="email"
+            >Email <span style="color: red">*</span></label
+          >
+          <input
+            type="email"
+            id="cloudflare_email"
+            class="field-input email-field hidden"
+            placeholder="your-email@example.com"
+            data-type="email"
           />
         </div>
       </div>
@@ -117,12 +166,29 @@
             </button>
           </div>
         </div>
-        <div class="form-group">
-          <label>Domain Name <span style="color: red">*</span></label>
+        <div
+          class="form-group domain-or-email-group"
+          data-platform="tencent_dns"
+        >
+          <label class="field-label" data-type="domain"
+            >Domain Name <span style="color: red">*</span></label
+          >
           <input
             type="text"
             id="tencent_dns_domain_name"
+            class="field-input domain-field"
             placeholder="your-domain.com"
+            data-type="domain"
+          />
+          <label class="field-label hidden" data-type="email"
+            >Email <span style="color: red">*</span></label
+          >
+          <input
+            type="email"
+            id="tencent_dns_email"
+            class="field-input email-field hidden"
+            placeholder="your-email@example.com"
+            data-type="email"
           />
         </div>
       </div>
@@ -165,12 +231,29 @@
             placeholder="zone-xxxxxxxx"
           />
         </div>
-        <div class="form-group">
-          <label>Domain Name <span style="color: red">*</span></label>
+        <div
+          class="form-group domain-or-email-group"
+          data-platform="tencent_eo"
+        >
+          <label class="field-label" data-type="domain"
+            >Domain Name <span style="color: red">*</span></label
+          >
           <input
             type="text"
             id="tencent_eo_domain_name"
+            class="field-input domain-field"
             placeholder="your-domain.com"
+            data-type="domain"
+          />
+          <label class="field-label hidden" data-type="email"
+            >Email <span style="color: red">*</span></label
+          >
+          <input
+            type="email"
+            id="tencent_eo_email"
+            class="field-input email-field hidden"
+            placeholder="your-email@example.com"
+            data-type="email"
           />
         </div>
       </div>
@@ -205,12 +288,29 @@
             </button>
           </div>
         </div>
-        <div class="form-group">
-          <label>Domain Name <span style="color: red">*</span></label>
+        <div
+          class="form-group domain-or-email-group"
+          data-platform="aliyun_dns"
+        >
+          <label class="field-label" data-type="domain"
+            >Domain Name <span style="color: red">*</span></label
+          >
           <input
             type="text"
             id="aliyun_dns_domain_name"
+            class="field-input domain-field"
             placeholder="your-domain.com"
+            data-type="domain"
+          />
+          <label class="field-label hidden" data-type="email"
+            >Email <span style="color: red">*</span></label
+          >
+          <input
+            type="email"
+            id="aliyun_dns_email"
+            class="field-input email-field hidden"
+            placeholder="your-email@example.com"
+            data-type="email"
           />
         </div>
       </div>
@@ -253,12 +353,29 @@
             placeholder="zone-xxxxxxxx"
           />
         </div>
-        <div class="form-group">
-          <label>Domain Name <span style="color: red">*</span></label>
+        <div
+          class="form-group domain-or-email-group"
+          data-platform="aliyun_esa"
+        >
+          <label class="field-label" data-type="domain"
+            >Domain Name <span style="color: red">*</span></label
+          >
           <input
             type="text"
             id="aliyun_esa_domain_name"
+            class="field-input domain-field"
             placeholder="your-domain.com"
+            data-type="domain"
+          />
+          <label class="field-label hidden" data-type="email"
+            >Email <span style="color: red">*</span></label
+          >
+          <input
+            type="email"
+            id="aliyun_esa_email"
+            class="field-input email-field hidden"
+            placeholder="your-email@example.com"
+            data-type="email"
           />
         </div>
       </div>
@@ -293,12 +410,26 @@
             </button>
           </div>
         </div>
-        <div class="form-group">
-          <label>Domain Name <span style="color: red">*</span></label>
+        <div class="form-group domain-or-email-group" data-platform="baidu_dns">
+          <label class="field-label" data-type="domain"
+            >Domain Name <span style="color: red">*</span></label
+          >
           <input
             type="text"
             id="baidu_dns_domain_name"
+            class="field-input domain-field"
             placeholder="your-domain.com"
+            data-type="domain"
+          />
+          <label class="field-label hidden" data-type="email"
+            >Email <span style="color: red">*</span></label
+          >
+          <input
+            type="email"
+            id="baidu_dns_email"
+            class="field-input email-field hidden"
+            placeholder="your-email@example.com"
+            data-type="email"
           />
         </div>
       </div>
@@ -341,12 +472,29 @@
             placeholder="zone-xxxxxxxx"
           />
         </div>
-        <div class="form-group">
-          <label>Domain Name <span style="color: red">*</span></label>
+        <div
+          class="form-group domain-or-email-group"
+          data-platform="huawei_dns"
+        >
+          <label class="field-label" data-type="domain"
+            >Domain Name <span style="color: red">*</span></label
+          >
           <input
             type="text"
             id="huawei_dns_domain_name"
+            class="field-input domain-field"
             placeholder="your-domain.com"
+            data-type="domain"
+          />
+          <label class="field-label hidden" data-type="email"
+            >Email <span style="color: red">*</span></label
+          >
+          <input
+            type="email"
+            id="huawei_dns_email"
+            class="field-input email-field hidden"
+            placeholder="your-email@example.com"
+            data-type="email"
           />
         </div>
       </div>
