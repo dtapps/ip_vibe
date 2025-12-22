@@ -36,6 +36,8 @@ type Tx struct {
 	PlatformConfig *PlatformConfigClient
 	// Webhook is the client for interacting with the Webhook builders.
 	Webhook *WebhookClient
+	// WebhookLog is the client for interacting with the WebhookLog builders.
+	WebhookLog *WebhookLogClient
 	// WebhookSubscription is the client for interacting with the WebhookSubscription builders.
 	WebhookSubscription *WebhookSubscriptionClient
 
@@ -180,6 +182,7 @@ func (tx *Tx) init() {
 	tx.IpGroupDevice = NewIpGroupDeviceClient(tx.config)
 	tx.PlatformConfig = NewPlatformConfigClient(tx.config)
 	tx.Webhook = NewWebhookClient(tx.config)
+	tx.WebhookLog = NewWebhookLogClient(tx.config)
 	tx.WebhookSubscription = NewWebhookSubscriptionClient(tx.config)
 }
 

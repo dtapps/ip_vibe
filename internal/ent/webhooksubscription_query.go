@@ -4,10 +4,12 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 	"vibe_ip/internal/ent/predicate"
 	"vibe_ip/internal/ent/webhook"
+	"vibe_ip/internal/ent/webhooklog"
 	"vibe_ip/internal/ent/webhooksubscription"
 
 	"entgo.io/ent"
@@ -19,13 +21,15 @@ import (
 // WebhookSubscriptionQuery is the builder for querying WebhookSubscription entities.
 type WebhookSubscriptionQuery struct {
 	config
-	ctx         *QueryContext
-	order       []webhooksubscription.OrderOption
-	inters      []Interceptor
-	predicates  []predicate.WebhookSubscription
-	withWebhook *WebhookQuery
-	withFKs     bool
-	modifiers   []func(*sql.Selector)
+	ctx           *QueryContext
+	order         []webhooksubscription.OrderOption
+	inters        []Interceptor
+	predicates    []predicate.WebhookSubscription
+	withWebhook   *WebhookQuery
+	withLogs      *WebhookLogQuery
+	withFKs       bool
+	modifiers     []func(*sql.Selector)
+	withNamedLogs map[string]*WebhookLogQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -77,6 +81,28 @@ func (_q *WebhookSubscriptionQuery) QueryWebhook() *WebhookQuery {
 			sqlgraph.From(webhooksubscription.Table, webhooksubscription.FieldID, selector),
 			sqlgraph.To(webhook.Table, webhook.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, webhooksubscription.WebhookTable, webhooksubscription.WebhookColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryLogs chains the current query on the "logs" edge.
+func (_q *WebhookSubscriptionQuery) QueryLogs() *WebhookLogQuery {
+	query := (&WebhookLogClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(webhooksubscription.Table, webhooksubscription.FieldID, selector),
+			sqlgraph.To(webhooklog.Table, webhooklog.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, webhooksubscription.LogsTable, webhooksubscription.LogsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -277,6 +303,7 @@ func (_q *WebhookSubscriptionQuery) Clone() *WebhookSubscriptionQuery {
 		inters:      append([]Interceptor{}, _q.inters...),
 		predicates:  append([]predicate.WebhookSubscription{}, _q.predicates...),
 		withWebhook: _q.withWebhook.Clone(),
+		withLogs:    _q.withLogs.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -292,6 +319,17 @@ func (_q *WebhookSubscriptionQuery) WithWebhook(opts ...func(*WebhookQuery)) *We
 		opt(query)
 	}
 	_q.withWebhook = query
+	return _q
+}
+
+// WithLogs tells the query-builder to eager-load the nodes that are connected to
+// the "logs" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *WebhookSubscriptionQuery) WithLogs(opts ...func(*WebhookLogQuery)) *WebhookSubscriptionQuery {
+	query := (&WebhookLogClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withLogs = query
 	return _q
 }
 
@@ -374,8 +412,9 @@ func (_q *WebhookSubscriptionQuery) sqlAll(ctx context.Context, hooks ...queryHo
 		nodes       = []*WebhookSubscription{}
 		withFKs     = _q.withFKs
 		_spec       = _q.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			_q.withWebhook != nil,
+			_q.withLogs != nil,
 		}
 	)
 	if withFKs {
@@ -408,6 +447,30 @@ func (_q *WebhookSubscriptionQuery) sqlAll(ctx context.Context, hooks ...queryHo
 			return nil, err
 		}
 	}
+	if query := _q.withLogs; query != nil {
+		if err := _q.loadLogs(ctx, query, nodes,
+			func(n *WebhookSubscription) { n.Edges.Logs = []*WebhookLog{} },
+			func(n *WebhookSubscription, e *WebhookLog) {
+				n.Edges.Logs = append(n.Edges.Logs, e)
+				if !e.Edges.loadedTypes[1] {
+					e.Edges.Subscription = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedLogs {
+		if err := _q.loadLogs(ctx, query, nodes,
+			func(n *WebhookSubscription) { n.appendNamedLogs(name) },
+			func(n *WebhookSubscription, e *WebhookLog) {
+				n.appendNamedLogs(name, e)
+				if !e.Edges.loadedTypes[1] {
+					e.Edges.Subscription = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
@@ -437,6 +500,36 @@ func (_q *WebhookSubscriptionQuery) loadWebhook(ctx context.Context, query *Webh
 		for i := range nodes {
 			assign(nodes[i], n)
 		}
+	}
+	return nil
+}
+func (_q *WebhookSubscriptionQuery) loadLogs(ctx context.Context, query *WebhookLogQuery, nodes []*WebhookSubscription, init func(*WebhookSubscription), assign func(*WebhookSubscription, *WebhookLog)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int64]*WebhookSubscription)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(webhooklog.FieldSubscriptionID)
+	}
+	query.Where(predicate.WebhookLog(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(webhooksubscription.LogsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.SubscriptionID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "subscription_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }
@@ -535,6 +628,20 @@ func (_q *WebhookSubscriptionQuery) sqlQuery(ctx context.Context) *sql.Selector 
 func (_q *WebhookSubscriptionQuery) Modify(modifiers ...func(s *sql.Selector)) *WebhookSubscriptionSelect {
 	_q.modifiers = append(_q.modifiers, modifiers...)
 	return _q.Select()
+}
+
+// WithNamedLogs tells the query-builder to eager-load the nodes that are connected to the "logs"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *WebhookSubscriptionQuery) WithNamedLogs(name string, opts ...func(*WebhookLogQuery)) *WebhookSubscriptionQuery {
+	query := (&WebhookLogClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedLogs == nil {
+		_q.withNamedLogs = make(map[string]*WebhookLogQuery)
+	}
+	_q.withNamedLogs[name] = query
+	return _q
 }
 
 // WebhookSubscriptionGroupBy is the group-by builder for WebhookSubscription entities.

@@ -140,6 +140,18 @@ func (f WebhookFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.WebhookMutation", m)
 }
 
+// The WebhookLogFunc type is an adapter to allow the use of ordinary
+// function as WebhookLog mutator.
+type WebhookLogFunc func(context.Context, *ent.WebhookLogMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f WebhookLogFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.WebhookLogMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.WebhookLogMutation", m)
+}
+
 // The WebhookSubscriptionFunc type is an adapter to allow the use of ordinary
 // function as WebhookSubscription mutator.
 type WebhookSubscriptionFunc func(context.Context, *ent.WebhookSubscriptionMutation) (ent.Value, error)

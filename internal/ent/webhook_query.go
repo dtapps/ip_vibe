@@ -9,6 +9,7 @@ import (
 	"math"
 	"vibe_ip/internal/ent/predicate"
 	"vibe_ip/internal/ent/webhook"
+	"vibe_ip/internal/ent/webhooklog"
 	"vibe_ip/internal/ent/webhooksubscription"
 
 	"entgo.io/ent"
@@ -25,8 +26,10 @@ type WebhookQuery struct {
 	inters                 []Interceptor
 	predicates             []predicate.Webhook
 	withSubscriptions      *WebhookSubscriptionQuery
+	withLogs               *WebhookLogQuery
 	modifiers              []func(*sql.Selector)
 	withNamedSubscriptions map[string]*WebhookSubscriptionQuery
+	withNamedLogs          map[string]*WebhookLogQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -78,6 +81,28 @@ func (_q *WebhookQuery) QuerySubscriptions() *WebhookSubscriptionQuery {
 			sqlgraph.From(webhook.Table, webhook.FieldID, selector),
 			sqlgraph.To(webhooksubscription.Table, webhooksubscription.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, webhook.SubscriptionsTable, webhook.SubscriptionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryLogs chains the current query on the "logs" edge.
+func (_q *WebhookQuery) QueryLogs() *WebhookLogQuery {
+	query := (&WebhookLogClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(webhook.Table, webhook.FieldID, selector),
+			sqlgraph.To(webhooklog.Table, webhooklog.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, webhook.LogsTable, webhook.LogsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -278,6 +303,7 @@ func (_q *WebhookQuery) Clone() *WebhookQuery {
 		inters:            append([]Interceptor{}, _q.inters...),
 		predicates:        append([]predicate.Webhook{}, _q.predicates...),
 		withSubscriptions: _q.withSubscriptions.Clone(),
+		withLogs:          _q.withLogs.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -293,6 +319,17 @@ func (_q *WebhookQuery) WithSubscriptions(opts ...func(*WebhookSubscriptionQuery
 		opt(query)
 	}
 	_q.withSubscriptions = query
+	return _q
+}
+
+// WithLogs tells the query-builder to eager-load the nodes that are connected to
+// the "logs" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *WebhookQuery) WithLogs(opts ...func(*WebhookLogQuery)) *WebhookQuery {
+	query := (&WebhookLogClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withLogs = query
 	return _q
 }
 
@@ -374,8 +411,9 @@ func (_q *WebhookQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Webh
 	var (
 		nodes       = []*Webhook{}
 		_spec       = _q.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			_q.withSubscriptions != nil,
+			_q.withLogs != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -406,10 +444,34 @@ func (_q *WebhookQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Webh
 			return nil, err
 		}
 	}
+	if query := _q.withLogs; query != nil {
+		if err := _q.loadLogs(ctx, query, nodes,
+			func(n *Webhook) { n.Edges.Logs = []*WebhookLog{} },
+			func(n *Webhook, e *WebhookLog) {
+				n.Edges.Logs = append(n.Edges.Logs, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Webhook = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
 	for name, query := range _q.withNamedSubscriptions {
 		if err := _q.loadSubscriptions(ctx, query, nodes,
 			func(n *Webhook) { n.appendNamedSubscriptions(name) },
 			func(n *Webhook, e *WebhookSubscription) { n.appendNamedSubscriptions(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedLogs {
+		if err := _q.loadLogs(ctx, query, nodes,
+			func(n *Webhook) { n.appendNamedLogs(name) },
+			func(n *Webhook, e *WebhookLog) {
+				n.appendNamedLogs(name, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Webhook = n
+				}
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -442,6 +504,36 @@ func (_q *WebhookQuery) loadSubscriptions(ctx context.Context, query *WebhookSub
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "webhook_subscriptions" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *WebhookQuery) loadLogs(ctx context.Context, query *WebhookLogQuery, nodes []*Webhook, init func(*Webhook), assign func(*Webhook, *WebhookLog)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int64]*Webhook)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(webhooklog.FieldWebhookID)
+	}
+	query.Where(predicate.WebhookLog(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(webhook.LogsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.WebhookID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "webhook_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -552,6 +644,20 @@ func (_q *WebhookQuery) WithNamedSubscriptions(name string, opts ...func(*Webhoo
 		_q.withNamedSubscriptions = make(map[string]*WebhookSubscriptionQuery)
 	}
 	_q.withNamedSubscriptions[name] = query
+	return _q
+}
+
+// WithNamedLogs tells the query-builder to eager-load the nodes that are connected to the "logs"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *WebhookQuery) WithNamedLogs(name string, opts ...func(*WebhookLogQuery)) *WebhookQuery {
+	query := (&WebhookLogClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedLogs == nil {
+		_q.withNamedLogs = make(map[string]*WebhookLogQuery)
+	}
+	_q.withNamedLogs[name] = query
 	return _q
 }
 

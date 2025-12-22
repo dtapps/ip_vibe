@@ -21,6 +21,7 @@ import (
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
 	"vibe_ip/internal/ent/webhook"
+	"vibe_ip/internal/ent/webhooklog"
 	"vibe_ip/internal/ent/webhooksubscription"
 
 	"entgo.io/ent"
@@ -47,6 +48,7 @@ const (
 	TypeIpGroupDevice        = "IpGroupDevice"
 	TypePlatformConfig       = "PlatformConfig"
 	TypeWebhook              = "Webhook"
+	TypeWebhookLog           = "WebhookLog"
 	TypeWebhookSubscription  = "WebhookSubscription"
 )
 
@@ -10159,6 +10161,9 @@ type WebhookMutation struct {
 	subscriptions        map[int64]struct{}
 	removedsubscriptions map[int64]struct{}
 	clearedsubscriptions bool
+	logs                 map[int64]struct{}
+	removedlogs          map[int64]struct{}
+	clearedlogs          bool
 	done                 bool
 	oldValue             func(context.Context) (*Webhook, error)
 	predicates           []predicate.Webhook
@@ -10785,6 +10790,60 @@ func (m *WebhookMutation) ResetSubscriptions() {
 	m.removedsubscriptions = nil
 }
 
+// AddLogIDs adds the "logs" edge to the WebhookLog entity by ids.
+func (m *WebhookMutation) AddLogIDs(ids ...int64) {
+	if m.logs == nil {
+		m.logs = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.logs[ids[i]] = struct{}{}
+	}
+}
+
+// ClearLogs clears the "logs" edge to the WebhookLog entity.
+func (m *WebhookMutation) ClearLogs() {
+	m.clearedlogs = true
+}
+
+// LogsCleared reports if the "logs" edge to the WebhookLog entity was cleared.
+func (m *WebhookMutation) LogsCleared() bool {
+	return m.clearedlogs
+}
+
+// RemoveLogIDs removes the "logs" edge to the WebhookLog entity by IDs.
+func (m *WebhookMutation) RemoveLogIDs(ids ...int64) {
+	if m.removedlogs == nil {
+		m.removedlogs = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.logs, ids[i])
+		m.removedlogs[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedLogs returns the removed IDs of the "logs" edge to the WebhookLog entity.
+func (m *WebhookMutation) RemovedLogsIDs() (ids []int64) {
+	for id := range m.removedlogs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// LogsIDs returns the "logs" edge IDs in the mutation.
+func (m *WebhookMutation) LogsIDs() (ids []int64) {
+	for id := range m.logs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetLogs resets all changes to the "logs" edge.
+func (m *WebhookMutation) ResetLogs() {
+	m.logs = nil
+	m.clearedlogs = false
+	m.removedlogs = nil
+}
+
 // Where appends a list predicates to the WebhookMutation builder.
 func (m *WebhookMutation) Where(ps ...predicate.Webhook) {
 	m.predicates = append(m.predicates, ps...)
@@ -11115,9 +11174,12 @@ func (m *WebhookMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *WebhookMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.subscriptions != nil {
 		edges = append(edges, webhook.EdgeSubscriptions)
+	}
+	if m.logs != nil {
+		edges = append(edges, webhook.EdgeLogs)
 	}
 	return edges
 }
@@ -11132,15 +11194,24 @@ func (m *WebhookMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case webhook.EdgeLogs:
+		ids := make([]ent.Value, 0, len(m.logs))
+		for id := range m.logs {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *WebhookMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removedsubscriptions != nil {
 		edges = append(edges, webhook.EdgeSubscriptions)
+	}
+	if m.removedlogs != nil {
+		edges = append(edges, webhook.EdgeLogs)
 	}
 	return edges
 }
@@ -11155,15 +11226,24 @@ func (m *WebhookMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case webhook.EdgeLogs:
+		ids := make([]ent.Value, 0, len(m.removedlogs))
+		for id := range m.removedlogs {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *WebhookMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedsubscriptions {
 		edges = append(edges, webhook.EdgeSubscriptions)
+	}
+	if m.clearedlogs {
+		edges = append(edges, webhook.EdgeLogs)
 	}
 	return edges
 }
@@ -11174,6 +11254,8 @@ func (m *WebhookMutation) EdgeCleared(name string) bool {
 	switch name {
 	case webhook.EdgeSubscriptions:
 		return m.clearedsubscriptions
+	case webhook.EdgeLogs:
+		return m.clearedlogs
 	}
 	return false
 }
@@ -11193,8 +11275,1137 @@ func (m *WebhookMutation) ResetEdge(name string) error {
 	case webhook.EdgeSubscriptions:
 		m.ResetSubscriptions()
 		return nil
+	case webhook.EdgeLogs:
+		m.ResetLogs()
+		return nil
 	}
 	return fmt.Errorf("unknown Webhook edge %s", name)
+}
+
+// WebhookLogMutation represents an operation that mutates the WebhookLog nodes in the graph.
+type WebhookLogMutation struct {
+	config
+	op                  Op
+	typ                 string
+	id                  *int64
+	created_at          *time.Time
+	updated_at          *time.Time
+	url                 *string
+	title               *string
+	content             *string
+	status_code         *int
+	addstatus_code      *int
+	response            *string
+	success             *bool
+	error_message       *string
+	clearedFields       map[string]struct{}
+	webhook             *int64
+	clearedwebhook      bool
+	subscription        *int64
+	clearedsubscription bool
+	done                bool
+	oldValue            func(context.Context) (*WebhookLog, error)
+	predicates          []predicate.WebhookLog
+}
+
+var _ ent.Mutation = (*WebhookLogMutation)(nil)
+
+// webhooklogOption allows management of the mutation configuration using functional options.
+type webhooklogOption func(*WebhookLogMutation)
+
+// newWebhookLogMutation creates new mutation for the WebhookLog entity.
+func newWebhookLogMutation(c config, op Op, opts ...webhooklogOption) *WebhookLogMutation {
+	m := &WebhookLogMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeWebhookLog,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withWebhookLogID sets the ID field of the mutation.
+func withWebhookLogID(id int64) webhooklogOption {
+	return func(m *WebhookLogMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *WebhookLog
+		)
+		m.oldValue = func(ctx context.Context) (*WebhookLog, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().WebhookLog.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withWebhookLog sets the old WebhookLog of the mutation.
+func withWebhookLog(node *WebhookLog) webhooklogOption {
+	return func(m *WebhookLogMutation) {
+		m.oldValue = func(context.Context) (*WebhookLog, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m WebhookLogMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m WebhookLogMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of WebhookLog entities.
+func (m *WebhookLogMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *WebhookLogMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *WebhookLogMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().WebhookLog.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *WebhookLogMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *WebhookLogMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the WebhookLog entity.
+// If the WebhookLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookLogMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *WebhookLogMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *WebhookLogMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *WebhookLogMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the WebhookLog entity.
+// If the WebhookLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookLogMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *WebhookLogMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetWebhookID sets the "webhook_id" field.
+func (m *WebhookLogMutation) SetWebhookID(i int64) {
+	m.webhook = &i
+}
+
+// WebhookID returns the value of the "webhook_id" field in the mutation.
+func (m *WebhookLogMutation) WebhookID() (r int64, exists bool) {
+	v := m.webhook
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWebhookID returns the old "webhook_id" field's value of the WebhookLog entity.
+// If the WebhookLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookLogMutation) OldWebhookID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWebhookID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWebhookID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWebhookID: %w", err)
+	}
+	return oldValue.WebhookID, nil
+}
+
+// ResetWebhookID resets all changes to the "webhook_id" field.
+func (m *WebhookLogMutation) ResetWebhookID() {
+	m.webhook = nil
+}
+
+// SetSubscriptionID sets the "subscription_id" field.
+func (m *WebhookLogMutation) SetSubscriptionID(i int64) {
+	m.subscription = &i
+}
+
+// SubscriptionID returns the value of the "subscription_id" field in the mutation.
+func (m *WebhookLogMutation) SubscriptionID() (r int64, exists bool) {
+	v := m.subscription
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubscriptionID returns the old "subscription_id" field's value of the WebhookLog entity.
+// If the WebhookLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookLogMutation) OldSubscriptionID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubscriptionID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubscriptionID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubscriptionID: %w", err)
+	}
+	return oldValue.SubscriptionID, nil
+}
+
+// ClearSubscriptionID clears the value of the "subscription_id" field.
+func (m *WebhookLogMutation) ClearSubscriptionID() {
+	m.subscription = nil
+	m.clearedFields[webhooklog.FieldSubscriptionID] = struct{}{}
+}
+
+// SubscriptionIDCleared returns if the "subscription_id" field was cleared in this mutation.
+func (m *WebhookLogMutation) SubscriptionIDCleared() bool {
+	_, ok := m.clearedFields[webhooklog.FieldSubscriptionID]
+	return ok
+}
+
+// ResetSubscriptionID resets all changes to the "subscription_id" field.
+func (m *WebhookLogMutation) ResetSubscriptionID() {
+	m.subscription = nil
+	delete(m.clearedFields, webhooklog.FieldSubscriptionID)
+}
+
+// SetURL sets the "url" field.
+func (m *WebhookLogMutation) SetURL(s string) {
+	m.url = &s
+}
+
+// URL returns the value of the "url" field in the mutation.
+func (m *WebhookLogMutation) URL() (r string, exists bool) {
+	v := m.url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldURL returns the old "url" field's value of the WebhookLog entity.
+// If the WebhookLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookLogMutation) OldURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldURL: %w", err)
+	}
+	return oldValue.URL, nil
+}
+
+// ResetURL resets all changes to the "url" field.
+func (m *WebhookLogMutation) ResetURL() {
+	m.url = nil
+}
+
+// SetTitle sets the "title" field.
+func (m *WebhookLogMutation) SetTitle(s string) {
+	m.title = &s
+}
+
+// Title returns the value of the "title" field in the mutation.
+func (m *WebhookLogMutation) Title() (r string, exists bool) {
+	v := m.title
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTitle returns the old "title" field's value of the WebhookLog entity.
+// If the WebhookLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookLogMutation) OldTitle(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTitle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTitle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTitle: %w", err)
+	}
+	return oldValue.Title, nil
+}
+
+// ClearTitle clears the value of the "title" field.
+func (m *WebhookLogMutation) ClearTitle() {
+	m.title = nil
+	m.clearedFields[webhooklog.FieldTitle] = struct{}{}
+}
+
+// TitleCleared returns if the "title" field was cleared in this mutation.
+func (m *WebhookLogMutation) TitleCleared() bool {
+	_, ok := m.clearedFields[webhooklog.FieldTitle]
+	return ok
+}
+
+// ResetTitle resets all changes to the "title" field.
+func (m *WebhookLogMutation) ResetTitle() {
+	m.title = nil
+	delete(m.clearedFields, webhooklog.FieldTitle)
+}
+
+// SetContent sets the "content" field.
+func (m *WebhookLogMutation) SetContent(s string) {
+	m.content = &s
+}
+
+// Content returns the value of the "content" field in the mutation.
+func (m *WebhookLogMutation) Content() (r string, exists bool) {
+	v := m.content
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContent returns the old "content" field's value of the WebhookLog entity.
+// If the WebhookLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookLogMutation) OldContent(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldContent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldContent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContent: %w", err)
+	}
+	return oldValue.Content, nil
+}
+
+// ClearContent clears the value of the "content" field.
+func (m *WebhookLogMutation) ClearContent() {
+	m.content = nil
+	m.clearedFields[webhooklog.FieldContent] = struct{}{}
+}
+
+// ContentCleared returns if the "content" field was cleared in this mutation.
+func (m *WebhookLogMutation) ContentCleared() bool {
+	_, ok := m.clearedFields[webhooklog.FieldContent]
+	return ok
+}
+
+// ResetContent resets all changes to the "content" field.
+func (m *WebhookLogMutation) ResetContent() {
+	m.content = nil
+	delete(m.clearedFields, webhooklog.FieldContent)
+}
+
+// SetStatusCode sets the "status_code" field.
+func (m *WebhookLogMutation) SetStatusCode(i int) {
+	m.status_code = &i
+	m.addstatus_code = nil
+}
+
+// StatusCode returns the value of the "status_code" field in the mutation.
+func (m *WebhookLogMutation) StatusCode() (r int, exists bool) {
+	v := m.status_code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatusCode returns the old "status_code" field's value of the WebhookLog entity.
+// If the WebhookLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookLogMutation) OldStatusCode(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatusCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatusCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatusCode: %w", err)
+	}
+	return oldValue.StatusCode, nil
+}
+
+// AddStatusCode adds i to the "status_code" field.
+func (m *WebhookLogMutation) AddStatusCode(i int) {
+	if m.addstatus_code != nil {
+		*m.addstatus_code += i
+	} else {
+		m.addstatus_code = &i
+	}
+}
+
+// AddedStatusCode returns the value that was added to the "status_code" field in this mutation.
+func (m *WebhookLogMutation) AddedStatusCode() (r int, exists bool) {
+	v := m.addstatus_code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearStatusCode clears the value of the "status_code" field.
+func (m *WebhookLogMutation) ClearStatusCode() {
+	m.status_code = nil
+	m.addstatus_code = nil
+	m.clearedFields[webhooklog.FieldStatusCode] = struct{}{}
+}
+
+// StatusCodeCleared returns if the "status_code" field was cleared in this mutation.
+func (m *WebhookLogMutation) StatusCodeCleared() bool {
+	_, ok := m.clearedFields[webhooklog.FieldStatusCode]
+	return ok
+}
+
+// ResetStatusCode resets all changes to the "status_code" field.
+func (m *WebhookLogMutation) ResetStatusCode() {
+	m.status_code = nil
+	m.addstatus_code = nil
+	delete(m.clearedFields, webhooklog.FieldStatusCode)
+}
+
+// SetResponse sets the "response" field.
+func (m *WebhookLogMutation) SetResponse(s string) {
+	m.response = &s
+}
+
+// Response returns the value of the "response" field in the mutation.
+func (m *WebhookLogMutation) Response() (r string, exists bool) {
+	v := m.response
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResponse returns the old "response" field's value of the WebhookLog entity.
+// If the WebhookLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookLogMutation) OldResponse(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResponse is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResponse requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResponse: %w", err)
+	}
+	return oldValue.Response, nil
+}
+
+// ClearResponse clears the value of the "response" field.
+func (m *WebhookLogMutation) ClearResponse() {
+	m.response = nil
+	m.clearedFields[webhooklog.FieldResponse] = struct{}{}
+}
+
+// ResponseCleared returns if the "response" field was cleared in this mutation.
+func (m *WebhookLogMutation) ResponseCleared() bool {
+	_, ok := m.clearedFields[webhooklog.FieldResponse]
+	return ok
+}
+
+// ResetResponse resets all changes to the "response" field.
+func (m *WebhookLogMutation) ResetResponse() {
+	m.response = nil
+	delete(m.clearedFields, webhooklog.FieldResponse)
+}
+
+// SetSuccess sets the "success" field.
+func (m *WebhookLogMutation) SetSuccess(b bool) {
+	m.success = &b
+}
+
+// Success returns the value of the "success" field in the mutation.
+func (m *WebhookLogMutation) Success() (r bool, exists bool) {
+	v := m.success
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSuccess returns the old "success" field's value of the WebhookLog entity.
+// If the WebhookLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookLogMutation) OldSuccess(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSuccess is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSuccess requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSuccess: %w", err)
+	}
+	return oldValue.Success, nil
+}
+
+// ResetSuccess resets all changes to the "success" field.
+func (m *WebhookLogMutation) ResetSuccess() {
+	m.success = nil
+}
+
+// SetErrorMessage sets the "error_message" field.
+func (m *WebhookLogMutation) SetErrorMessage(s string) {
+	m.error_message = &s
+}
+
+// ErrorMessage returns the value of the "error_message" field in the mutation.
+func (m *WebhookLogMutation) ErrorMessage() (r string, exists bool) {
+	v := m.error_message
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldErrorMessage returns the old "error_message" field's value of the WebhookLog entity.
+// If the WebhookLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebhookLogMutation) OldErrorMessage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldErrorMessage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldErrorMessage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldErrorMessage: %w", err)
+	}
+	return oldValue.ErrorMessage, nil
+}
+
+// ClearErrorMessage clears the value of the "error_message" field.
+func (m *WebhookLogMutation) ClearErrorMessage() {
+	m.error_message = nil
+	m.clearedFields[webhooklog.FieldErrorMessage] = struct{}{}
+}
+
+// ErrorMessageCleared returns if the "error_message" field was cleared in this mutation.
+func (m *WebhookLogMutation) ErrorMessageCleared() bool {
+	_, ok := m.clearedFields[webhooklog.FieldErrorMessage]
+	return ok
+}
+
+// ResetErrorMessage resets all changes to the "error_message" field.
+func (m *WebhookLogMutation) ResetErrorMessage() {
+	m.error_message = nil
+	delete(m.clearedFields, webhooklog.FieldErrorMessage)
+}
+
+// ClearWebhook clears the "webhook" edge to the Webhook entity.
+func (m *WebhookLogMutation) ClearWebhook() {
+	m.clearedwebhook = true
+	m.clearedFields[webhooklog.FieldWebhookID] = struct{}{}
+}
+
+// WebhookCleared reports if the "webhook" edge to the Webhook entity was cleared.
+func (m *WebhookLogMutation) WebhookCleared() bool {
+	return m.clearedwebhook
+}
+
+// WebhookIDs returns the "webhook" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// WebhookID instead. It exists only for internal usage by the builders.
+func (m *WebhookLogMutation) WebhookIDs() (ids []int64) {
+	if id := m.webhook; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetWebhook resets all changes to the "webhook" edge.
+func (m *WebhookLogMutation) ResetWebhook() {
+	m.webhook = nil
+	m.clearedwebhook = false
+}
+
+// ClearSubscription clears the "subscription" edge to the WebhookSubscription entity.
+func (m *WebhookLogMutation) ClearSubscription() {
+	m.clearedsubscription = true
+	m.clearedFields[webhooklog.FieldSubscriptionID] = struct{}{}
+}
+
+// SubscriptionCleared reports if the "subscription" edge to the WebhookSubscription entity was cleared.
+func (m *WebhookLogMutation) SubscriptionCleared() bool {
+	return m.SubscriptionIDCleared() || m.clearedsubscription
+}
+
+// SubscriptionIDs returns the "subscription" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SubscriptionID instead. It exists only for internal usage by the builders.
+func (m *WebhookLogMutation) SubscriptionIDs() (ids []int64) {
+	if id := m.subscription; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSubscription resets all changes to the "subscription" edge.
+func (m *WebhookLogMutation) ResetSubscription() {
+	m.subscription = nil
+	m.clearedsubscription = false
+}
+
+// Where appends a list predicates to the WebhookLogMutation builder.
+func (m *WebhookLogMutation) Where(ps ...predicate.WebhookLog) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the WebhookLogMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *WebhookLogMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.WebhookLog, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *WebhookLogMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *WebhookLogMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (WebhookLog).
+func (m *WebhookLogMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *WebhookLogMutation) Fields() []string {
+	fields := make([]string, 0, 11)
+	if m.created_at != nil {
+		fields = append(fields, webhooklog.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, webhooklog.FieldUpdatedAt)
+	}
+	if m.webhook != nil {
+		fields = append(fields, webhooklog.FieldWebhookID)
+	}
+	if m.subscription != nil {
+		fields = append(fields, webhooklog.FieldSubscriptionID)
+	}
+	if m.url != nil {
+		fields = append(fields, webhooklog.FieldURL)
+	}
+	if m.title != nil {
+		fields = append(fields, webhooklog.FieldTitle)
+	}
+	if m.content != nil {
+		fields = append(fields, webhooklog.FieldContent)
+	}
+	if m.status_code != nil {
+		fields = append(fields, webhooklog.FieldStatusCode)
+	}
+	if m.response != nil {
+		fields = append(fields, webhooklog.FieldResponse)
+	}
+	if m.success != nil {
+		fields = append(fields, webhooklog.FieldSuccess)
+	}
+	if m.error_message != nil {
+		fields = append(fields, webhooklog.FieldErrorMessage)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *WebhookLogMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case webhooklog.FieldCreatedAt:
+		return m.CreatedAt()
+	case webhooklog.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case webhooklog.FieldWebhookID:
+		return m.WebhookID()
+	case webhooklog.FieldSubscriptionID:
+		return m.SubscriptionID()
+	case webhooklog.FieldURL:
+		return m.URL()
+	case webhooklog.FieldTitle:
+		return m.Title()
+	case webhooklog.FieldContent:
+		return m.Content()
+	case webhooklog.FieldStatusCode:
+		return m.StatusCode()
+	case webhooklog.FieldResponse:
+		return m.Response()
+	case webhooklog.FieldSuccess:
+		return m.Success()
+	case webhooklog.FieldErrorMessage:
+		return m.ErrorMessage()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *WebhookLogMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case webhooklog.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case webhooklog.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case webhooklog.FieldWebhookID:
+		return m.OldWebhookID(ctx)
+	case webhooklog.FieldSubscriptionID:
+		return m.OldSubscriptionID(ctx)
+	case webhooklog.FieldURL:
+		return m.OldURL(ctx)
+	case webhooklog.FieldTitle:
+		return m.OldTitle(ctx)
+	case webhooklog.FieldContent:
+		return m.OldContent(ctx)
+	case webhooklog.FieldStatusCode:
+		return m.OldStatusCode(ctx)
+	case webhooklog.FieldResponse:
+		return m.OldResponse(ctx)
+	case webhooklog.FieldSuccess:
+		return m.OldSuccess(ctx)
+	case webhooklog.FieldErrorMessage:
+		return m.OldErrorMessage(ctx)
+	}
+	return nil, fmt.Errorf("unknown WebhookLog field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *WebhookLogMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case webhooklog.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case webhooklog.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case webhooklog.FieldWebhookID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWebhookID(v)
+		return nil
+	case webhooklog.FieldSubscriptionID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubscriptionID(v)
+		return nil
+	case webhooklog.FieldURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetURL(v)
+		return nil
+	case webhooklog.FieldTitle:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTitle(v)
+		return nil
+	case webhooklog.FieldContent:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContent(v)
+		return nil
+	case webhooklog.FieldStatusCode:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatusCode(v)
+		return nil
+	case webhooklog.FieldResponse:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResponse(v)
+		return nil
+	case webhooklog.FieldSuccess:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSuccess(v)
+		return nil
+	case webhooklog.FieldErrorMessage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetErrorMessage(v)
+		return nil
+	}
+	return fmt.Errorf("unknown WebhookLog field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *WebhookLogMutation) AddedFields() []string {
+	var fields []string
+	if m.addstatus_code != nil {
+		fields = append(fields, webhooklog.FieldStatusCode)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *WebhookLogMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case webhooklog.FieldStatusCode:
+		return m.AddedStatusCode()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *WebhookLogMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case webhooklog.FieldStatusCode:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatusCode(v)
+		return nil
+	}
+	return fmt.Errorf("unknown WebhookLog numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *WebhookLogMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(webhooklog.FieldSubscriptionID) {
+		fields = append(fields, webhooklog.FieldSubscriptionID)
+	}
+	if m.FieldCleared(webhooklog.FieldTitle) {
+		fields = append(fields, webhooklog.FieldTitle)
+	}
+	if m.FieldCleared(webhooklog.FieldContent) {
+		fields = append(fields, webhooklog.FieldContent)
+	}
+	if m.FieldCleared(webhooklog.FieldStatusCode) {
+		fields = append(fields, webhooklog.FieldStatusCode)
+	}
+	if m.FieldCleared(webhooklog.FieldResponse) {
+		fields = append(fields, webhooklog.FieldResponse)
+	}
+	if m.FieldCleared(webhooklog.FieldErrorMessage) {
+		fields = append(fields, webhooklog.FieldErrorMessage)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *WebhookLogMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *WebhookLogMutation) ClearField(name string) error {
+	switch name {
+	case webhooklog.FieldSubscriptionID:
+		m.ClearSubscriptionID()
+		return nil
+	case webhooklog.FieldTitle:
+		m.ClearTitle()
+		return nil
+	case webhooklog.FieldContent:
+		m.ClearContent()
+		return nil
+	case webhooklog.FieldStatusCode:
+		m.ClearStatusCode()
+		return nil
+	case webhooklog.FieldResponse:
+		m.ClearResponse()
+		return nil
+	case webhooklog.FieldErrorMessage:
+		m.ClearErrorMessage()
+		return nil
+	}
+	return fmt.Errorf("unknown WebhookLog nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *WebhookLogMutation) ResetField(name string) error {
+	switch name {
+	case webhooklog.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case webhooklog.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case webhooklog.FieldWebhookID:
+		m.ResetWebhookID()
+		return nil
+	case webhooklog.FieldSubscriptionID:
+		m.ResetSubscriptionID()
+		return nil
+	case webhooklog.FieldURL:
+		m.ResetURL()
+		return nil
+	case webhooklog.FieldTitle:
+		m.ResetTitle()
+		return nil
+	case webhooklog.FieldContent:
+		m.ResetContent()
+		return nil
+	case webhooklog.FieldStatusCode:
+		m.ResetStatusCode()
+		return nil
+	case webhooklog.FieldResponse:
+		m.ResetResponse()
+		return nil
+	case webhooklog.FieldSuccess:
+		m.ResetSuccess()
+		return nil
+	case webhooklog.FieldErrorMessage:
+		m.ResetErrorMessage()
+		return nil
+	}
+	return fmt.Errorf("unknown WebhookLog field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *WebhookLogMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.webhook != nil {
+		edges = append(edges, webhooklog.EdgeWebhook)
+	}
+	if m.subscription != nil {
+		edges = append(edges, webhooklog.EdgeSubscription)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *WebhookLogMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case webhooklog.EdgeWebhook:
+		if id := m.webhook; id != nil {
+			return []ent.Value{*id}
+		}
+	case webhooklog.EdgeSubscription:
+		if id := m.subscription; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *WebhookLogMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *WebhookLogMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *WebhookLogMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedwebhook {
+		edges = append(edges, webhooklog.EdgeWebhook)
+	}
+	if m.clearedsubscription {
+		edges = append(edges, webhooklog.EdgeSubscription)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *WebhookLogMutation) EdgeCleared(name string) bool {
+	switch name {
+	case webhooklog.EdgeWebhook:
+		return m.clearedwebhook
+	case webhooklog.EdgeSubscription:
+		return m.clearedsubscription
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *WebhookLogMutation) ClearEdge(name string) error {
+	switch name {
+	case webhooklog.EdgeWebhook:
+		m.ClearWebhook()
+		return nil
+	case webhooklog.EdgeSubscription:
+		m.ClearSubscription()
+		return nil
+	}
+	return fmt.Errorf("unknown WebhookLog unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *WebhookLogMutation) ResetEdge(name string) error {
+	switch name {
+	case webhooklog.EdgeWebhook:
+		m.ResetWebhook()
+		return nil
+	case webhooklog.EdgeSubscription:
+		m.ResetSubscription()
+		return nil
+	}
+	return fmt.Errorf("unknown WebhookLog edge %s", name)
 }
 
 // WebhookSubscriptionMutation represents an operation that mutates the WebhookSubscription nodes in the graph.
@@ -11213,6 +12424,9 @@ type WebhookSubscriptionMutation struct {
 	clearedFields  map[string]struct{}
 	webhook        *int64
 	clearedwebhook bool
+	logs           map[int64]struct{}
+	removedlogs    map[int64]struct{}
+	clearedlogs    bool
 	done           bool
 	oldValue       func(context.Context) (*WebhookSubscription, error)
 	predicates     []predicate.WebhookSubscription
@@ -11634,6 +12848,60 @@ func (m *WebhookSubscriptionMutation) ResetWebhook() {
 	m.clearedwebhook = false
 }
 
+// AddLogIDs adds the "logs" edge to the WebhookLog entity by ids.
+func (m *WebhookSubscriptionMutation) AddLogIDs(ids ...int64) {
+	if m.logs == nil {
+		m.logs = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.logs[ids[i]] = struct{}{}
+	}
+}
+
+// ClearLogs clears the "logs" edge to the WebhookLog entity.
+func (m *WebhookSubscriptionMutation) ClearLogs() {
+	m.clearedlogs = true
+}
+
+// LogsCleared reports if the "logs" edge to the WebhookLog entity was cleared.
+func (m *WebhookSubscriptionMutation) LogsCleared() bool {
+	return m.clearedlogs
+}
+
+// RemoveLogIDs removes the "logs" edge to the WebhookLog entity by IDs.
+func (m *WebhookSubscriptionMutation) RemoveLogIDs(ids ...int64) {
+	if m.removedlogs == nil {
+		m.removedlogs = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.logs, ids[i])
+		m.removedlogs[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedLogs returns the removed IDs of the "logs" edge to the WebhookLog entity.
+func (m *WebhookSubscriptionMutation) RemovedLogsIDs() (ids []int64) {
+	for id := range m.removedlogs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// LogsIDs returns the "logs" edge IDs in the mutation.
+func (m *WebhookSubscriptionMutation) LogsIDs() (ids []int64) {
+	for id := range m.logs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetLogs resets all changes to the "logs" edge.
+func (m *WebhookSubscriptionMutation) ResetLogs() {
+	m.logs = nil
+	m.clearedlogs = false
+	m.removedlogs = nil
+}
+
 // Where appends a list predicates to the WebhookSubscriptionMutation builder.
 func (m *WebhookSubscriptionMutation) Where(ps ...predicate.WebhookSubscription) {
 	m.predicates = append(m.predicates, ps...)
@@ -11893,9 +13161,12 @@ func (m *WebhookSubscriptionMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *WebhookSubscriptionMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.webhook != nil {
 		edges = append(edges, webhooksubscription.EdgeWebhook)
+	}
+	if m.logs != nil {
+		edges = append(edges, webhooksubscription.EdgeLogs)
 	}
 	return edges
 }
@@ -11908,27 +13179,47 @@ func (m *WebhookSubscriptionMutation) AddedIDs(name string) []ent.Value {
 		if id := m.webhook; id != nil {
 			return []ent.Value{*id}
 		}
+	case webhooksubscription.EdgeLogs:
+		ids := make([]ent.Value, 0, len(m.logs))
+		for id := range m.logs {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *WebhookSubscriptionMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.removedlogs != nil {
+		edges = append(edges, webhooksubscription.EdgeLogs)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *WebhookSubscriptionMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case webhooksubscription.EdgeLogs:
+		ids := make([]ent.Value, 0, len(m.removedlogs))
+		for id := range m.removedlogs {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *WebhookSubscriptionMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedwebhook {
 		edges = append(edges, webhooksubscription.EdgeWebhook)
+	}
+	if m.clearedlogs {
+		edges = append(edges, webhooksubscription.EdgeLogs)
 	}
 	return edges
 }
@@ -11939,6 +13230,8 @@ func (m *WebhookSubscriptionMutation) EdgeCleared(name string) bool {
 	switch name {
 	case webhooksubscription.EdgeWebhook:
 		return m.clearedwebhook
+	case webhooksubscription.EdgeLogs:
+		return m.clearedlogs
 	}
 	return false
 }
@@ -11960,6 +13253,9 @@ func (m *WebhookSubscriptionMutation) ResetEdge(name string) error {
 	switch name {
 	case webhooksubscription.EdgeWebhook:
 		m.ResetWebhook()
+		return nil
+	case webhooksubscription.EdgeLogs:
+		m.ResetLogs()
 		return nil
 	}
 	return fmt.Errorf("unknown WebhookSubscription edge %s", name)

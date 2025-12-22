@@ -15,6 +15,7 @@ import (
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/webhook"
+	"vibe_ip/internal/ent/webhooklog"
 	"vibe_ip/internal/ent/webhooksubscription"
 )
 
@@ -231,6 +232,26 @@ func (q *WebhookQuery) OrderIf(condition bool, o webhook.OrderOption) *WebhookQu
 // OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
 func (q *WebhookQuery) OrderIfs(condition bool, o ...webhook.OrderOption) *WebhookQuery {
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o...)
+	}
+	return q
+}
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *WebhookLogQuery) OrderIf(condition bool, o webhooklog.OrderOption) *WebhookLogQuery {
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o)
+	}
+	return q
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *WebhookLogQuery) OrderIfs(condition bool, o ...webhooklog.OrderOption) *WebhookLogQuery {
 	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
 	if condition {
 		q.Order(o...)

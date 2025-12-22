@@ -663,6 +663,29 @@ func HasSubscriptionsWith(preds ...predicate.WebhookSubscription) predicate.Webh
 	})
 }
 
+// HasLogs applies the HasEdge predicate on the "logs" edge.
+func HasLogs() predicate.Webhook {
+	return predicate.Webhook(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, LogsTable, LogsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasLogsWith applies the HasEdge predicate on the "logs" edge with a given conditions (other predicates).
+func HasLogsWith(preds ...predicate.WebhookLog) predicate.Webhook {
+	return predicate.Webhook(func(s *sql.Selector) {
+		step := newLogsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Webhook) predicate.Webhook {
 	return predicate.Webhook(sql.AndPredicates(predicates...))

@@ -530,6 +530,78 @@ var (
 			},
 		},
 	}
+	// WebhookLogColumns holds the columns for the "webhook_log" table.
+	WebhookLogColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "通知日志序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "url", Type: field.TypeString, Comment: "发送的URL"},
+		{Name: "title", Type: field.TypeString, Nullable: true, Comment: "发送的标题"},
+		{Name: "content", Type: field.TypeString, Nullable: true, Comment: "发送的内容"},
+		{Name: "status_code", Type: field.TypeInt, Nullable: true, Comment: "HTTP响应状态码"},
+		{Name: "response", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "响应内容"},
+		{Name: "success", Type: field.TypeBool, Comment: "是否发送成功", Default: false},
+		{Name: "error_message", Type: field.TypeString, Nullable: true, Comment: "错误信息"},
+		{Name: "webhook_id", Type: field.TypeInt64, Comment: "通知序号"},
+		{Name: "subscription_id", Type: field.TypeInt64, Nullable: true, Comment: "通知订阅序号（可选，直接触发时为空）"},
+	}
+	// WebhookLogTable holds the schema information for the "webhook_log" table.
+	WebhookLogTable = &schema.Table{
+		Name:       "webhook_log",
+		Comment:    "通知发送日志",
+		Columns:    WebhookLogColumns,
+		PrimaryKey: []*schema.Column{WebhookLogColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "webhook_log_webhook_logs",
+				Columns:    []*schema.Column{WebhookLogColumns[10]},
+				RefColumns: []*schema.Column{WebhookColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "webhook_log_webhook_subscription_logs",
+				Columns:    []*schema.Column{WebhookLogColumns[11]},
+				RefColumns: []*schema.Column{WebhookSubscriptionColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "webhooklog_webhook_id",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookLogColumns[10]},
+			},
+			{
+				Name:    "webhooklog_success",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookLogColumns[8]},
+			},
+			{
+				Name:    "webhooklog_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookLogColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "webhooklog_webhook_id_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookLogColumns[10], WebhookLogColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "webhooklog_success_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookLogColumns[8], WebhookLogColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+		},
+	}
 	// WebhookSubscriptionColumns holds the columns for the "webhook_subscription" table.
 	WebhookSubscriptionColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "通知订阅序号"},
@@ -596,6 +668,7 @@ var (
 		IPGroupDeviceTable,
 		PlatformConfigTable,
 		WebhookTable,
+		WebhookLogTable,
 		WebhookSubscriptionTable,
 	}
 )
@@ -643,6 +716,11 @@ func init() {
 	}
 	WebhookTable.Annotation = &entsql.Annotation{
 		Table: "webhook",
+	}
+	WebhookLogTable.ForeignKeys[0].RefTable = WebhookTable
+	WebhookLogTable.ForeignKeys[1].RefTable = WebhookSubscriptionTable
+	WebhookLogTable.Annotation = &entsql.Annotation{
+		Table: "webhook_log",
 	}
 	WebhookSubscriptionTable.ForeignKeys[0].RefTable = WebhookTable
 	WebhookSubscriptionTable.ForeignKeys[1].RefTable = WebhookTable

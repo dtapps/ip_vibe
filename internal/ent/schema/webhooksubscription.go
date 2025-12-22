@@ -84,6 +84,13 @@ func (WebhookSubscription) Edges() []ent.Edge {
 			Immutable().
 			Comment("关联的通知").
 			Annotations(entsql.WithComments(true)),
+
+		// 一对多 WebhookSubscription -> WebhookLog
+		edge.To("logs", WebhookLog.Type).
+			Comment("关联的通知日志").
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}, entsql.WithComments(true)),
 	}
 }
 

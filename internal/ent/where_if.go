@@ -350,6 +350,37 @@ func (q *WebhookQuery) WhereIfFunc(condition bool, predicateFunc func() predicat
 
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
+func (q *WebhookLogQuery) WhereIf(condition bool, p predicate.WebhookLog) *WebhookLogQuery {
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p)
+	}
+	return q
+}
+
+// WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *WebhookLogQuery) WhereIfs(condition bool, p ...predicate.WebhookLog) *WebhookLogQuery {
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p...)
+	}
+	return q
+}
+
+// WhereIfFunc 动态地添加一个 WHERE 子句到查询构建器。
+// conditionFunc 决定是否应用过滤。
+// predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
+func (q *WebhookLogQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.WebhookLog) *WebhookLogQuery {
+	q.log("WhereIfFunc: condition=", condition, ", predicateFunc=", fmt.Sprintf("%#v", predicateFunc))
+	if condition {
+		q.Where(predicateFunc())
+	}
+	return q
+}
+
+// WhereIf 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
 func (q *WebhookSubscriptionQuery) WhereIf(condition bool, p predicate.WebhookSubscription) *WebhookSubscriptionQuery {
 	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
