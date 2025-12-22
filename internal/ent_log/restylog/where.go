@@ -10,47 +10,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.RestyLog {
+func ID(id int64) predicate.RestyLog {
 	return predicate.RestyLog(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.RestyLog {
+func IDEQ(id int64) predicate.RestyLog {
 	return predicate.RestyLog(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.RestyLog {
+func IDNEQ(id int64) predicate.RestyLog {
 	return predicate.RestyLog(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.RestyLog {
+func IDIn(ids ...int64) predicate.RestyLog {
 	return predicate.RestyLog(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.RestyLog {
+func IDNotIn(ids ...int64) predicate.RestyLog {
 	return predicate.RestyLog(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.RestyLog {
+func IDGT(id int64) predicate.RestyLog {
 	return predicate.RestyLog(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.RestyLog {
+func IDGTE(id int64) predicate.RestyLog {
 	return predicate.RestyLog(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.RestyLog {
+func IDLT(id int64) predicate.RestyLog {
 	return predicate.RestyLog(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.RestyLog {
+func IDLTE(id int64) predicate.RestyLog {
 	return predicate.RestyLog(sql.FieldLTE(FieldID, id))
 }
 

@@ -83,8 +83,8 @@ func (_q *HttpLogQuery) FirstX(ctx context.Context) *HttpLog {
 
 // FirstID returns the first HttpLog ID from the query.
 // Returns a *NotFoundError when no HttpLog ID was found.
-func (_q *HttpLogQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (_q *HttpLogQuery) FirstID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -96,7 +96,7 @@ func (_q *HttpLogQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *HttpLogQuery) FirstIDX(ctx context.Context) int {
+func (_q *HttpLogQuery) FirstIDX(ctx context.Context) int64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -134,8 +134,8 @@ func (_q *HttpLogQuery) OnlyX(ctx context.Context) *HttpLog {
 // OnlyID is like Only, but returns the only HttpLog ID in the query.
 // Returns a *NotSingularError when more than one HttpLog ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *HttpLogQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (_q *HttpLogQuery) OnlyID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -151,7 +151,7 @@ func (_q *HttpLogQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *HttpLogQuery) OnlyIDX(ctx context.Context) int {
+func (_q *HttpLogQuery) OnlyIDX(ctx context.Context) int64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -179,7 +179,7 @@ func (_q *HttpLogQuery) AllX(ctx context.Context) []*HttpLog {
 }
 
 // IDs executes the query and returns a list of HttpLog IDs.
-func (_q *HttpLogQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (_q *HttpLogQuery) IDs(ctx context.Context) (ids []int64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -191,7 +191,7 @@ func (_q *HttpLogQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *HttpLogQuery) IDsX(ctx context.Context) []int {
+func (_q *HttpLogQuery) IDsX(ctx context.Context) []int64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -373,7 +373,7 @@ func (_q *HttpLogQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *HttpLogQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(httplog.Table, httplog.Columns, sqlgraph.NewFieldSpec(httplog.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(httplog.Table, httplog.Columns, sqlgraph.NewFieldSpec(httplog.FieldID, field.TypeInt64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

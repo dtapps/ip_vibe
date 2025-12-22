@@ -72,6 +72,10 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// StatusCodeValidator is a validator for the "status_code" field. It is called by the builders before save.
+	StatusCodeValidator func(int) error
+	// ElapseTimeValidator is a validator for the "elapse_time" field. It is called by the builders before save.
+	ElapseTimeValidator func(int64) error
 	// DefaultIsError holds the default value on creation for the "is_error" field.
 	DefaultIsError bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
@@ -80,6 +84,8 @@ var (
 	DefaultGoVersion string
 	// DefaultPluginVersion holds the default value on creation for the "plugin_version" field.
 	DefaultPluginVersion string
+	// IDValidator is a validator for the "id" field. It is called by the builders before save.
+	IDValidator func(int64) error
 )
 
 // OrderOption defines the ordering options for the HttpLog queries.

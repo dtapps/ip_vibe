@@ -60,6 +60,10 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// ObjIDValidator is a validator for the "obj_id" field. It is called by the builders before save.
+	ObjIDValidator func(int64) error
+	// IDValidator is a validator for the "id" field. It is called by the builders before save.
+	IDValidator func(int64) error
 )
 
 // OpType defines the type for the "op_type" enum field.

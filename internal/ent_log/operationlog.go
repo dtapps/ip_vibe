@@ -16,7 +16,7 @@ import (
 type OperationLog struct {
 	config `json:"-"`
 	// ID of the ent.
-	// 日志序号
+	// 操作日志序号
 	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`

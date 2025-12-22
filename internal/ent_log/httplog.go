@@ -17,7 +17,8 @@ import (
 type HttpLog struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	// 请求日志序号
+	ID int64 `json:"id,omitempty"`
 	// 请求主机名
 	Hostname string `json:"hostname,omitempty"`
 	// 请求方式
@@ -82,7 +83,7 @@ func (_m *HttpLog) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			_m.ID = int(value.Int64)
+			_m.ID = int64(value.Int64)
 		case httplog.FieldHostname:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field hostname", values[i])

@@ -133,6 +133,12 @@ func (_c *HttpLogCreate) SetNillablePluginVersion(v *string) *HttpLogCreate {
 	return _c
 }
 
+// SetID sets the "id" field.
+func (_c *HttpLogCreate) SetID(v int64) *HttpLogCreate {
+	_c.mutation.SetID(v)
+	return _c
+}
+
 // Mutation returns the HttpLogMutation object of the builder.
 func (_c *HttpLogCreate) Mutation() *HttpLogMutation {
 	return _c.mutation
@@ -203,14 +209,29 @@ func (_c *HttpLogCreate) check() error {
 	if _, ok := _c.mutation.StatusCode(); !ok {
 		return &ValidationError{Name: "status_code", err: errors.New(`ent_log: missing required field "HttpLog.status_code"`)}
 	}
+	if v, ok := _c.mutation.StatusCode(); ok {
+		if err := httplog.StatusCodeValidator(v); err != nil {
+			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent_log: validator failed for field "HttpLog.status_code": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.ResponseHeaders(); !ok {
 		return &ValidationError{Name: "response_headers", err: errors.New(`ent_log: missing required field "HttpLog.response_headers"`)}
 	}
 	if _, ok := _c.mutation.ElapseTime(); !ok {
 		return &ValidationError{Name: "elapse_time", err: errors.New(`ent_log: missing required field "HttpLog.elapse_time"`)}
 	}
+	if v, ok := _c.mutation.ElapseTime(); ok {
+		if err := httplog.ElapseTimeValidator(v); err != nil {
+			return &ValidationError{Name: "elapse_time", err: fmt.Errorf(`ent_log: validator failed for field "HttpLog.elapse_time": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent_log: missing required field "HttpLog.created_at"`)}
+	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := httplog.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent_log: validator failed for field "HttpLog.id": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -226,8 +247,10 @@ func (_c *HttpLogCreate) sqlSave(ctx context.Context) (*HttpLog, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = int64(id)
+	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
 	return _node, nil
@@ -236,9 +259,13 @@ func (_c *HttpLogCreate) sqlSave(ctx context.Context) (*HttpLog, error) {
 func (_c *HttpLogCreate) createSpec() (*HttpLog, *sqlgraph.CreateSpec) {
 	var (
 		_node = &HttpLog{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(httplog.Table, sqlgraph.NewFieldSpec(httplog.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(httplog.Table, sqlgraph.NewFieldSpec(httplog.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
+	if id, ok := _c.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := _c.mutation.Hostname(); ok {
 		_spec.SetField(httplog.FieldHostname, field.TypeString, value)
 		_node.Hostname = value
@@ -343,17 +370,23 @@ type (
 	}
 )
 
-// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.HttpLog.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(httplog.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 func (u *HttpLogUpsertOne) UpdateNewValues() *HttpLogUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(httplog.FieldID)
+		}
 		if _, exists := u.create.mutation.Hostname(); exists {
 			s.SetIgnore(httplog.FieldHostname)
 		}
@@ -440,7 +473,7 @@ func (u *HttpLogUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *HttpLogUpsertOne) ID(ctx context.Context) (id int, err error) {
+func (u *HttpLogUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -449,7 +482,7 @@ func (u *HttpLogUpsertOne) ID(ctx context.Context) (id int, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *HttpLogUpsertOne) IDX(ctx context.Context) int {
+func (u *HttpLogUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -504,9 +537,9 @@ func (_c *HttpLogCreateBulk) Save(ctx context.Context) ([]*HttpLog, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -594,12 +627,18 @@ type HttpLogUpsertBulk struct {
 //	client.HttpLog.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(httplog.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 func (u *HttpLogUpsertBulk) UpdateNewValues() *HttpLogUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(httplog.FieldID)
+			}
 			if _, exists := b.mutation.Hostname(); exists {
 				s.SetIgnore(httplog.FieldHostname)
 			}

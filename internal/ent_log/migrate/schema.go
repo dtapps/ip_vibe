@@ -11,7 +11,7 @@ import (
 var (
 	// HTTPLogColumns holds the columns for the "http_log" table.
 	HTTPLogColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "请求日志序号"},
 		{Name: "hostname", Type: field.TypeString, Comment: "请求主机名"},
 		{Name: "method", Type: field.TypeString, Comment: "请求方式"},
 		{Name: "url", Type: field.TypeString, Comment: "请求url"},
@@ -65,7 +65,7 @@ var (
 	}
 	// OperationLogColumns holds the columns for the "operation_log" table.
 	OperationLogColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "日志序号"},
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "操作日志序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "op_type", Type: field.TypeEnum, Comment: "操作类型", Enums: []string{"data_create", "data_update", "data_delete", "device_report", "ip_refresh"}},
 		{Name: "obj_id", Type: field.TypeInt64, Comment: "对象主键"},
@@ -109,7 +109,7 @@ var (
 	}
 	// RestyLogColumns holds the columns for the "resty_log" table.
 	RestyLogColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "请求日志序号"},
 		{Name: "hostname", Type: field.TypeString, Comment: "请求主机名"},
 		{Name: "method", Type: field.TypeString, Comment: "请求方式"},
 		{Name: "url", Type: field.TypeString, Comment: "请求url"},

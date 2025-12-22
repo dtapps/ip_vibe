@@ -280,7 +280,7 @@ func (c *HttpLogClient) UpdateOne(_m *HttpLog) *HttpLogUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *HttpLogClient) UpdateOneID(id int) *HttpLogUpdateOne {
+func (c *HttpLogClient) UpdateOneID(id int64) *HttpLogUpdateOne {
 	mutation := newHttpLogMutation(c.config, OpUpdateOne, withHttpLogID(id))
 	return &HttpLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -297,7 +297,7 @@ func (c *HttpLogClient) DeleteOne(_m *HttpLog) *HttpLogDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *HttpLogClient) DeleteOneID(id int) *HttpLogDeleteOne {
+func (c *HttpLogClient) DeleteOneID(id int64) *HttpLogDeleteOne {
 	builder := c.Delete().Where(httplog.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -314,12 +314,12 @@ func (c *HttpLogClient) Query() *HttpLogQuery {
 }
 
 // Get returns a HttpLog entity by its id.
-func (c *HttpLogClient) Get(ctx context.Context, id int) (*HttpLog, error) {
+func (c *HttpLogClient) Get(ctx context.Context, id int64) (*HttpLog, error) {
 	return c.Query().Where(httplog.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *HttpLogClient) GetX(ctx context.Context, id int) *HttpLog {
+func (c *HttpLogClient) GetX(ctx context.Context, id int64) *HttpLog {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -546,7 +546,7 @@ func (c *RestyLogClient) UpdateOne(_m *RestyLog) *RestyLogUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *RestyLogClient) UpdateOneID(id int) *RestyLogUpdateOne {
+func (c *RestyLogClient) UpdateOneID(id int64) *RestyLogUpdateOne {
 	mutation := newRestyLogMutation(c.config, OpUpdateOne, withRestyLogID(id))
 	return &RestyLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -563,7 +563,7 @@ func (c *RestyLogClient) DeleteOne(_m *RestyLog) *RestyLogDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RestyLogClient) DeleteOneID(id int) *RestyLogDeleteOne {
+func (c *RestyLogClient) DeleteOneID(id int64) *RestyLogDeleteOne {
 	builder := c.Delete().Where(restylog.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -580,12 +580,12 @@ func (c *RestyLogClient) Query() *RestyLogQuery {
 }
 
 // Get returns a RestyLog entity by its id.
-func (c *RestyLogClient) Get(ctx context.Context, id int) (*RestyLog, error) {
+func (c *RestyLogClient) Get(ctx context.Context, id int64) (*RestyLog, error) {
 	return c.Query().Where(restylog.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *RestyLogClient) GetX(ctx context.Context, id int) *RestyLog {
+func (c *RestyLogClient) GetX(ctx context.Context, id int64) *RestyLog {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

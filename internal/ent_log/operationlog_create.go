@@ -157,6 +157,11 @@ func (_c *OperationLogCreate) check() error {
 	if _, ok := _c.mutation.ObjID(); !ok {
 		return &ValidationError{Name: "obj_id", err: errors.New(`ent_log: missing required field "OperationLog.obj_id"`)}
 	}
+	if v, ok := _c.mutation.ObjID(); ok {
+		if err := operationlog.ObjIDValidator(v); err != nil {
+			return &ValidationError{Name: "obj_id", err: fmt.Errorf(`ent_log: validator failed for field "OperationLog.obj_id": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.ObjType(); !ok {
 		return &ValidationError{Name: "obj_type", err: errors.New(`ent_log: missing required field "OperationLog.obj_type"`)}
 	}
@@ -175,6 +180,11 @@ func (_c *OperationLogCreate) check() error {
 	}
 	if _, ok := _c.mutation.Message(); !ok {
 		return &ValidationError{Name: "message", err: errors.New(`ent_log: missing required field "OperationLog.message"`)}
+	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := operationlog.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent_log: validator failed for field "OperationLog.id": %w`, err)}
+		}
 	}
 	return nil
 }

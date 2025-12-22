@@ -67,7 +67,7 @@ func (_u *RestyLogUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Resty
 }
 
 func (_u *RestyLogUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(restylog.Table, restylog.Columns, sqlgraph.NewFieldSpec(restylog.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(restylog.Table, restylog.Columns, sqlgraph.NewFieldSpec(restylog.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -167,7 +167,7 @@ func (_u *RestyLogUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Re
 }
 
 func (_u *RestyLogUpdateOne) sqlSave(ctx context.Context) (_node *RestyLog, err error) {
-	_spec := sqlgraph.NewUpdateSpec(restylog.Table, restylog.Columns, sqlgraph.NewFieldSpec(restylog.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(restylog.Table, restylog.Columns, sqlgraph.NewFieldSpec(restylog.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent_log: missing "RestyLog.id" for update`)}

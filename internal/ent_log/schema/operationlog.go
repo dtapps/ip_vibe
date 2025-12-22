@@ -37,8 +37,9 @@ func (OperationLog) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").
 			StorageKey("id").
+			Positive().
 			Immutable().
-			Comment("日志序号").
+			Comment("操作日志序号").
 			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
 
 		field.Enum("op_type").
@@ -48,6 +49,7 @@ func (OperationLog) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("obj_id").
+			Positive().
 			Immutable().
 			Comment("对象主键").
 			Annotations(entsql.WithComments(true)),

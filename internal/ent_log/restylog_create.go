@@ -147,6 +147,12 @@ func (_c *RestyLogCreate) SetNillableRestyVersion(v *string) *RestyLogCreate {
 	return _c
 }
 
+// SetID sets the "id" field.
+func (_c *RestyLogCreate) SetID(v int64) *RestyLogCreate {
+	_c.mutation.SetID(v)
+	return _c
+}
+
 // Mutation returns the RestyLogMutation object of the builder.
 func (_c *RestyLogCreate) Mutation() *RestyLogMutation {
 	return _c.mutation
@@ -221,14 +227,29 @@ func (_c *RestyLogCreate) check() error {
 	if _, ok := _c.mutation.StatusCode(); !ok {
 		return &ValidationError{Name: "status_code", err: errors.New(`ent_log: missing required field "RestyLog.status_code"`)}
 	}
+	if v, ok := _c.mutation.StatusCode(); ok {
+		if err := restylog.StatusCodeValidator(v); err != nil {
+			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent_log: validator failed for field "RestyLog.status_code": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.ResponseHeaders(); !ok {
 		return &ValidationError{Name: "response_headers", err: errors.New(`ent_log: missing required field "RestyLog.response_headers"`)}
 	}
 	if _, ok := _c.mutation.ElapseTime(); !ok {
 		return &ValidationError{Name: "elapse_time", err: errors.New(`ent_log: missing required field "RestyLog.elapse_time"`)}
 	}
+	if v, ok := _c.mutation.ElapseTime(); ok {
+		if err := restylog.ElapseTimeValidator(v); err != nil {
+			return &ValidationError{Name: "elapse_time", err: fmt.Errorf(`ent_log: validator failed for field "RestyLog.elapse_time": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent_log: missing required field "RestyLog.created_at"`)}
+	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := restylog.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent_log: validator failed for field "RestyLog.id": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -244,8 +265,10 @@ func (_c *RestyLogCreate) sqlSave(ctx context.Context) (*RestyLog, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = int64(id)
+	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
 	return _node, nil
@@ -254,9 +277,13 @@ func (_c *RestyLogCreate) sqlSave(ctx context.Context) (*RestyLog, error) {
 func (_c *RestyLogCreate) createSpec() (*RestyLog, *sqlgraph.CreateSpec) {
 	var (
 		_node = &RestyLog{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(restylog.Table, sqlgraph.NewFieldSpec(restylog.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(restylog.Table, sqlgraph.NewFieldSpec(restylog.FieldID, field.TypeInt64))
 	)
 	_spec.OnConflict = _c.conflict
+	if id, ok := _c.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := _c.mutation.Hostname(); ok {
 		_spec.SetField(restylog.FieldHostname, field.TypeString, value)
 		_node.Hostname = value
@@ -365,17 +392,23 @@ type (
 	}
 )
 
-// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.RestyLog.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(restylog.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 func (u *RestyLogUpsertOne) UpdateNewValues() *RestyLogUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(restylog.FieldID)
+		}
 		if _, exists := u.create.mutation.Hostname(); exists {
 			s.SetIgnore(restylog.FieldHostname)
 		}
@@ -465,7 +498,7 @@ func (u *RestyLogUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *RestyLogUpsertOne) ID(ctx context.Context) (id int, err error) {
+func (u *RestyLogUpsertOne) ID(ctx context.Context) (id int64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -474,7 +507,7 @@ func (u *RestyLogUpsertOne) ID(ctx context.Context) (id int, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *RestyLogUpsertOne) IDX(ctx context.Context) int {
+func (u *RestyLogUpsertOne) IDX(ctx context.Context) int64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -529,9 +562,9 @@ func (_c *RestyLogCreateBulk) Save(ctx context.Context) ([]*RestyLog, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -619,12 +652,18 @@ type RestyLogUpsertBulk struct {
 //	client.RestyLog.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(restylog.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 func (u *RestyLogUpsertBulk) UpdateNewValues() *RestyLogUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(restylog.FieldID)
+			}
 			if _, exists := b.mutation.Hostname(); exists {
 				s.SetIgnore(restylog.FieldHostname)
 			}
