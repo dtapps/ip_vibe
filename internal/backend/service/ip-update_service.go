@@ -18,6 +18,7 @@ import (
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
 	"go.dtapp.net/library/utils/goarray"
+	"go.dtapp.net/library/utils/gomd5"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -337,6 +338,7 @@ func (s *IpUpdateService) runCdnTask() {
 				continue
 			}
 			pendingRecord.params.GroupRecordID = cast.ToString(ipGroup.ID)
+			pendingRecord.params.GroupName = gomd5.Get16MD5Encode(pendingRecord.params.GroupRecordID)
 
 			// 获取关联的设备列表
 			devices := ipGroup.Edges.Devices
