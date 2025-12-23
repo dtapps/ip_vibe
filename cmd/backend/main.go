@@ -213,7 +213,6 @@ func main() {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -227,7 +226,6 @@ func main() {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -241,7 +239,6 @@ func main() {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)

@@ -153,7 +153,6 @@ func (s *TaskServiceImpl) StartScheduler(ctx context.Context) error {
 			s.db,
 			s.dbLog,
 			s.cron,
-			s.logger,
 			s.httpTransport,
 			s.debug,
 		)

@@ -13,6 +13,7 @@ import (
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/global"
 
 	"github.com/go-co-op/gocron/v2"
 	"go.dtapp.net/library/contrib/http_log"
@@ -31,12 +32,18 @@ type DomainMonitorTask struct {
 }
 
 // 创建实例
-func NewDomainMonitorTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) *DomainMonitorTask {
+func NewDomainMonitorTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, httpTransport *http_log.LoggingTransport, debug bool) *DomainMonitorTask {
+	logger := slog.Default()
+	if global.GvaGocronSlog != nil {
+		logger = global.GvaGocronSlog.WithLogger()
+	}
 	return &DomainMonitorTask{
-		cron:          cron,
-		db:            db,
-		logDb:         logDb,
-		logger:        logger,
+		cron:  cron,
+		db:    db,
+		logDb: logDb,
+		logger: logger.With(
+			slog.String("任务", "域名监控"),
+		),
 		httpTransport: httpTransport,
 		debug:         debug,
 	}
@@ -49,6 +56,12 @@ func (s *DomainMonitorTask) Close() {
 	}
 }
 
+// 自定义 logger
+func (s *DomainMonitorTask) setLogger(logger *slog.Logger) *DomainMonitorTask {
+	s.logger = logger
+	return s
+}
+
 func (s *DomainMonitorTask) StartDomainMonitorJob(ctx context.Context) (err error) {
 	// 每30秒到60秒执行一次
 	s.dmjob, err = s.cron.NewJob(
@@ -56,7 +69,7 @@ func (s *DomainMonitorTask) StartDomainMonitorJob(ctx context.Context) (err erro
 			30*time.Second, // 最小间隔
 			60*time.Second, // 最大间隔
 		),
-		gocron.NewTask(s.CheckAndRunAllMonitors),             // 执行任务
+		gocron.NewTask(s.RunDomainMonitorTask),               // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName("域名监控任务"),                            // 任务名称
@@ -91,10 +104,15 @@ func (m *DomainMonitorTask) CalculateNextRun(domainMonitor *ent.DomainMonitor, n
 	return nextRun
 }
 
-// CheckAndRunAllMonitors 查找并执行到期的监控任务
-func (s *DomainMonitorTask) CheckAndRunAllMonitors() {
+// 运行域名监控任务
+func (s *DomainMonitorTask) RunDomainMonitorTask() {
 
 	ctx := context.Background()
+
+	logger := s.logger.With(
+		slog.String("类型", "DomainMonitor"),
+	)
+	logger.InfoContext(ctx, "开始执行")
 
 	// 分组记录
 	var concurrentRecords []*ent.DomainMonitor
@@ -103,67 +121,78 @@ func (s *DomainMonitorTask) CheckAndRunAllMonitors() {
 	allDomainMonitors, err := s.db.DomainMonitor.Query().
 		Where(domainmonitor.IsActive(true)).
 		All(ctx)
-	if err != nil {
-		s.logger.ErrorContext(ctx, "查询 DomainMonitor 失败",
-			slog.Any("err", err),
-		)
-		return
-	}
+	if err == nil {
+		now := time.Now()
+		for _, domainMonitor := range allDomainMonitors {
+			// 计算下次执行时间
+			nextRun := s.CalculateNextRun(domainMonitor, now)
 
-	now := time.Now()
-	for _, domainMonitor := range allDomainMonitors {
-		// 计算下次执行时间
-		nextRun := s.CalculateNextRun(domainMonitor, now)
-
-		// 如果已超过或等于下次运行时间，则执行任务
-		if now.After(nextRun) || now.Equal(nextRun) {
-			// 按策略分组
-			concurrentRecords = append(concurrentRecords, domainMonitor)
+			// 如果已超过或等于下次运行时间，则执行任务
+			if now.After(nextRun) || now.Equal(nextRun) {
+				// 按策略分组
+				concurrentRecords = append(concurrentRecords, domainMonitor)
+			}
 		}
-	}
 
-	// 1. 并发处理支持并发的记录
-	if len(concurrentRecords) > 0 {
+		// 1. 并发处理支持并发的记录
+		if len(concurrentRecords) > 0 {
 
-		eg, egCtx := errgroup.WithContext(ctx)
-		eg.SetLimit(10) // 最多 10 个并发
+			eg, egCtx := errgroup.WithContext(ctx)
+			eg.SetLimit(10) // 最多 10 个并发
 
-		for _, item := range concurrentRecords {
-			item := item // 创建副本以避免闭包问题
-			eg.Go(func() error {
+			for _, item := range concurrentRecords {
+				item := item // 创建副本以避免闭包问题
+				eg.Go(func() error {
 
-				newLog := s.logger.With(
-					slog.String("处理方式", "并发"),
-					slog.Int64("记录", item.ID),
-					slog.String("域名", item.Domain),
-					slog.String("协议", item.CheckProtocol.String()),
-				)
-
-				if err = s.ExecuteMonitorTask(egCtx, newLog, item); err != nil {
-					newLog.ErrorContext(egCtx, "处理失败",
-						slog.Any("error", err),
+					logger = logger.With(
+						slog.String("处理方式", "并发"),
 					)
-				}
 
-				// 返回nil而不是错误，这样单个DNS记录更新失败不会导致整个errgroup取消上下文
-				return nil
-			})
+					if err = s.ExecuteMonitorTask(egCtx, logger, item); err != nil {
+						logger.ErrorContext(egCtx, "处理失败",
+							slog.Any("error", err),
+						)
+					}
+
+					// 返回nil而不是错误，这样单个DNS记录更新失败不会导致整个errgroup取消上下文
+					return nil
+				})
+			}
+
+			if err = eg.Wait(); err != nil {
+				logger.ErrorContext(ctx, "并发处理错误",
+					slog.Any("error", err),
+				)
+			}
+
 		}
+	}
 
-		if err = eg.Wait(); err != nil {
-			s.logger.ErrorContext(ctx, "并发处理错误",
-				slog.Any("error", err),
-			)
-		}
-
+	nextRun, err := s.dmjob.NextRun()
+	if err == nil {
+		logger.InfoContext(ctx, "执行完成",
+			slog.Int("并发记录数", len(concurrentRecords)),
+			slog.String("下次运行时间", nextRun.Format(time.DateTime)),
+		)
+	} else {
+		logger.InfoContext(ctx, "执行完成",
+			slog.Int("并发记录数", len(concurrentRecords)),
+		)
 	}
 }
 
 // ExecuteMonitorTask 执行单个监控任务
 func (s *DomainMonitorTask) ExecuteMonitorTask(ctx context.Context, logger *slog.Logger, domainMonitor *ent.DomainMonitor) (err error) {
 
-	logger.InfoContext(ctx, "开始执行检查")
-	defer logger.InfoContext(ctx, "检查完成")
+	// 日志
+	logger = logger.With(
+		slog.String("处理方式", "并发"),
+		slog.Int64("记录", domainMonitor.ID),
+		slog.String("域名", domainMonitor.Domain),
+		slog.String("协议", domainMonitor.CheckProtocol.String()),
+	)
+	logger.InfoContext(ctx, "开始处理")
+	defer logger.InfoContext(ctx, "处理完成")
 
 	// 执行检查
 	result := s.runDomainCheck(ctx, domainMonitor.Domain, domainMonitor.CheckProtocol.String())

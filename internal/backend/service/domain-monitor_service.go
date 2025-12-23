@@ -277,21 +277,12 @@ func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id in
 		s.db,
 		s.dbLog,
 		s.cron,
-		s.logger,
 		s.httpTransport,
 		s.debug,
 	)
 
 	// 执行单个监控任务
-	// 注意：这里需要传入 slog.Logger，Service 无法直接访问 gin.Context
-	// 为了保持 Handler 逻辑的迁移，我们直接使用 slog.With 构造 Logger
-	logger := slog.With(
-		slog.Int64("id", firstDomainMonitor.ID),
-		slog.String("domain", firstDomainMonitor.Domain),
-		slog.String("protocol", firstDomainMonitor.CheckProtocol.String()),
-	)
-
-	err = domainMonitorService.ExecuteMonitorTask(ctx, logger, firstDomainMonitor)
+	err = domainMonitorService.ExecuteMonitorTask(ctx, slog.Default(), firstDomainMonitor)
 	if err != nil {
 		return nil, fmt.Errorf("检查域名监控失败: %w", err)
 	}

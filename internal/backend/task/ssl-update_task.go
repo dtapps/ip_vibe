@@ -15,6 +15,7 @@ import (
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
+	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/ssl_helper"
 
 	"github.com/go-acme/lego/v4/certificate"
@@ -37,12 +38,18 @@ type SSLUpdateTask struct {
 }
 
 // 创建实例
-func NewSSLUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) *SSLUpdateTask {
+func NewSSLUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, httpTransport *http_log.LoggingTransport, debug bool) *SSLUpdateTask {
+	logger := slog.Default()
+	if global.GvaGocronSlog != nil {
+		logger = global.GvaGocronSlog.WithLogger()
+	}
 	return &SSLUpdateTask{
-		db:            db,
-		logDb:         logDb,
-		cron:          cron,
-		logger:        logger,
+		db:    db,
+		logDb: logDb,
+		cron:  cron,
+		logger: logger.With(
+			slog.String("任务", "SSL更新"),
+		),
 		httpTransport: httpTransport,
 		debug:         debug,
 	}
@@ -55,7 +62,13 @@ func (s *SSLUpdateTask) Close() {
 	}
 }
 
-// 启动 SSL 刷新 任务
+// 自定义 logger
+func (s *SSLUpdateTask) setLogger(logger *slog.Logger) *SSLUpdateTask {
+	s.logger = logger
+	return s
+}
+
+// 启动SSL任务
 func (s *SSLUpdateTask) StartSSLJob(ctx context.Context) (err error) {
 	// 判断是否存在SSL任务
 	if s.sslJob != nil {
@@ -104,15 +117,15 @@ func (s *SSLUpdateTask) CalculateNextRun(sslRecord *ent.SSLRecord, now time.Time
 	return nextRun
 }
 
-// 运行SSL刷新任务
+// 运行SSL任务
 func (s *SSLUpdateTask) RunSSLTask() {
 
 	ctx := context.Background()
-	processingType := "SSL"
 
-	s.logger.InfoContext(ctx, "开始执行",
-		slog.String("处理类型", processingType),
+	logger := s.logger.With(
+		slog.String("类型", "SSL"),
 	)
+	logger.InfoContext(ctx, "开始执行")
 
 	// 分组记录
 	var concurrentRecords, serialRecords []*PendingSSLRecord
@@ -166,15 +179,12 @@ func (s *SSLUpdateTask) RunSSLTask() {
 				item := item // 创建副本以避免闭包问题
 				eg.Go(func() error {
 
-					logger := s.logger.With(
+					logger = logger.With(
 						slog.String("处理方式", "并发"),
-						slog.String("处理类型", processingType),
-						slog.String("平台", item.Platform.String()),
 					)
 
 					if err = s.SSLUpdate(egCtx, logger, item); err != nil {
 						logger.ErrorContext(egCtx, "处理失败",
-							slog.Any("处理参数", item.Params),
 							slog.Any("error", err),
 						)
 					}
@@ -185,8 +195,7 @@ func (s *SSLUpdateTask) RunSSLTask() {
 			}
 
 			if err = eg.Wait(); err != nil {
-				s.logger.ErrorContext(ctx, "并发处理错误",
-					slog.String("处理类型", processingType),
+				logger.ErrorContext(ctx, "并发处理错误",
 					slog.Any("error", err),
 				)
 			}
@@ -195,15 +204,12 @@ func (s *SSLUpdateTask) RunSSLTask() {
 		// 2. 串行处理不支持并发的记录
 		for _, item := range serialRecords {
 
-			logger := s.logger.With(
+			logger = logger.With(
 				slog.String("处理方式", "串行"),
-				slog.String("处理类型", processingType),
-				slog.String("平台", item.Platform.String()),
 			)
 
 			if err = s.SSLUpdate(ctx, logger, item); err != nil {
 				logger.ErrorContext(ctx, "处理失败",
-					slog.Any("处理参数", item.Params),
 					slog.Any("error", err),
 				)
 			}
@@ -214,20 +220,17 @@ func (s *SSLUpdateTask) RunSSLTask() {
 
 	nextRun, err := s.sslJob.NextRun()
 	if err == nil {
-		s.logger.InfoContext(ctx, "执行完成",
-			slog.String("处理类型", processingType),
+		logger.InfoContext(ctx, "执行完成",
 			slog.Int("并发记录数", len(concurrentRecords)),
 			slog.Int("串行记录数", len(serialRecords)),
 			slog.String("下次运行时间", nextRun.Format(time.DateTime)),
 		)
 	} else {
-		s.logger.InfoContext(ctx, "执行完成",
+		logger.InfoContext(ctx, "执行完成",
 			slog.Int("并发记录数", len(concurrentRecords)),
 			slog.Int("串行记录数", len(serialRecords)),
-			slog.String("处理类型", processingType),
 		)
 	}
-
 }
 
 // 待处理
@@ -238,16 +241,17 @@ type PendingSSLRecord struct {
 }
 
 // 更新SSL记录
-// pendingRecord：待处理记录
 func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingSSLRecord) (err error) {
 
+	// 日志
 	logger = logger.With(
 		slog.String("记录", pendingRecord.Params.SSLRecordID),
+		slog.String("提供商", pendingRecord.Item.Provider.String()),
+		slog.String("平台", pendingRecord.Platform.String()),
 		slog.Any("域名列表", pendingRecord.Params.Domains),
 	)
-
-	logger.InfoContext(ctx, "开始执行申请")
-	defer logger.InfoContext(ctx, "申请完成")
+	logger.InfoContext(ctx, "开始处理")
+	defer logger.InfoContext(ctx, "处理完成")
 
 	// 初始化SSL处理
 	var sslProcess ssl_helper.SSLProcess
@@ -314,7 +318,6 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 		updateOne.SetLastAPIResponseAt(time.Now())
 		_ = updateOne.Exec(ctx)
 		logger.ErrorContext(ctx, "配置失败",
-			slog.Any("处理参数", pendingRecord.Params),
 			slog.Any("error", err),
 		)
 		return err
@@ -327,7 +330,6 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 		updateOne.SetLastAPIResponseAt(time.Now())
 		_ = updateOne.Exec(ctx)
 		logger.ErrorContext(ctx, "申请失败",
-			slog.Any("处理参数", pendingRecord.Params),
 			slog.Any("error", err),
 		)
 		return err
@@ -340,7 +342,6 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 		updateOne.SetLastAPIResponseAt(time.Now())
 		_ = updateOne.Exec(ctx)
 		logger.ErrorContext(ctx, "解析证书有效期失败",
-			slog.Any("处理参数", pendingRecord.Params),
 			slog.Any("error", err),
 		)
 		return err
@@ -385,7 +386,7 @@ type CertificateValidity struct {
 	NotAfter  time.Time
 }
 
-// ParseCertificateValidity 从 lego Resource 解析证书有效期
+// 从 lego Resource 解析证书有效期
 func (s *SSLUpdateTask) ParseCertificateValidity(res *certificate.Resource) (*CertificateValidity, error) {
 	if res == nil || len(res.Certificate) == 0 {
 		return nil, errors.New("certificate data is empty")
@@ -438,13 +439,13 @@ func (s *SSLUpdateTask) AddTask(ctx context.Context, pendingRecord *PendingSSLRe
 	return err
 }
 
+// 执行SSL证书申请任务
 func (s *SSLUpdateTask) executeSSLUpdate(taskCtx context.Context, taskLogger *slog.Logger, taskPendingRecord *PendingSSLRecord) {
-	// 增强日志记录器
+	// 日志
 	taskLogger = taskLogger.With(
 		slog.String("处理方式", "手动"),
-		slog.String("平台", taskPendingRecord.Platform.String()),
 	)
-
+	// 处理
 	err := s.SSLUpdate(taskCtx, taskLogger, taskPendingRecord)
 	if err != nil {
 		taskLogger.ErrorContext(taskCtx, "处理失败",

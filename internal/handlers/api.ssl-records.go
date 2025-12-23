@@ -37,7 +37,6 @@ func GetSSLRecords(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -85,7 +84,6 @@ func GetSSLRecordDetail(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -132,7 +130,6 @@ func CreateSSLRecord(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -181,7 +178,6 @@ func UpdateSSLRecord(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -230,7 +226,6 @@ func UpdateSSLRecordAutoRenewal(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -279,7 +274,6 @@ func UpdateSSLRecordActive(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -327,7 +321,6 @@ func DeleteSSLRecord(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -375,7 +368,6 @@ func ApplySSLRecord(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)

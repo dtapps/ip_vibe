@@ -12,6 +12,7 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/cdn_helper"
 	"vibe_ip/internal/helper/dns_helper"
 
@@ -36,12 +37,18 @@ type IPUpdateTask struct {
 }
 
 // 创建实例
-func NewIPUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) *IPUpdateTask {
+func NewIPUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, httpTransport *http_log.LoggingTransport, debug bool) *IPUpdateTask {
+	logger := slog.Default()
+	if global.GvaGocronSlog != nil {
+		logger = global.GvaGocronSlog.WithLogger()
+	}
 	return &IPUpdateTask{
-		db:            db,
-		logDb:         logDb,
-		cron:          cron,
-		logger:        logger,
+		db:    db,
+		logDb: logDb,
+		cron:  cron,
+		logger: logger.With(
+			slog.String("任务", "IP更新"),
+		),
 		httpTransport: httpTransport,
 		debug:         debug,
 	}
@@ -57,7 +64,13 @@ func (s *IPUpdateTask) Close() {
 	}
 }
 
-// 启动 DNS刷新 任务，延迟 1 分钟添加，确保 CDN 先跑
+// 自定义 logger
+func (s *IPUpdateTask) setLogger(logger *slog.Logger) *IPUpdateTask {
+	s.logger = logger
+	return s
+}
+
+// 启动DNS任务，延迟 1 分钟添加，确保CDN先跑
 func (s *IPUpdateTask) StartDnsJob(ctx context.Context) (err error) {
 	// 判断是否存在DNS任务
 	if s.dnsJob != nil {
@@ -68,7 +81,7 @@ func (s *IPUpdateTask) StartDnsJob(ctx context.Context) (err error) {
 	// 每10分钟执行一次
 	s.dnsJob, err = s.cron.NewJob(
 		gocron.DurationJob(10*time.Minute),                   // 每10分钟执行一次
-		gocron.NewTask(s.runDnsTask),                         // 执行任务
+		gocron.NewTask(s.RunDnsTask),                         // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName("DNS记录刷新"),                           // 任务名称
@@ -80,7 +93,7 @@ func (s *IPUpdateTask) StartDnsJob(ctx context.Context) (err error) {
 	return nil
 }
 
-// 启动 CDN 刷新 任务
+// 启动CDN任务
 func (s *IPUpdateTask) StartCdnJob(ctx context.Context) (err error) {
 	// 判断是否存在CDN任务
 	if s.cdnJob != nil {
@@ -91,7 +104,7 @@ func (s *IPUpdateTask) StartCdnJob(ctx context.Context) (err error) {
 	// 每10分钟执行一次
 	s.cdnJob, err = s.cron.NewJob(
 		gocron.DurationJob(10*time.Minute),                   // 每10分钟执行一次
-		gocron.NewTask(s.runCdnTask),                         // 执行任务
+		gocron.NewTask(s.RunCdnTask),                         // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName("CDN记录刷新"),                           // 任务名称
@@ -103,14 +116,16 @@ func (s *IPUpdateTask) StartCdnJob(ctx context.Context) (err error) {
 	return nil
 }
 
-func (s *IPUpdateTask) runDnsTask() {
+// 运行DNS任务
+func (s *IPUpdateTask) RunDnsTask() {
 
 	ctx := context.Background()
-	processingType := "DNS"
 
-	s.logger.InfoContext(ctx, "开始执行",
-		slog.String("处理类型", processingType),
+	// 日志
+	logger := s.logger.With(
+		slog.String("类型", "DNS"),
 	)
+	logger.InfoContext(ctx, "开始执行")
 
 	// 分组记录
 	var concurrentRecords, serialRecords []*PendingDnsRecord
@@ -215,18 +230,12 @@ func (s *IPUpdateTask) runDnsTask() {
 				item := item // 创建副本以避免闭包问题
 				eg.Go(func() error {
 
-					newLog := s.logger.With(
+					logger = logger.With(
 						slog.String("处理方式", "并发"),
-						slog.String("处理类型", processingType),
-						slog.Int64("记录", item.item.ID),
-						slog.String("类型", item.item.Type.String()),
-						slog.String("子域名", item.item.SubDomain),
-						slog.String("平台", item.platform.String()),
 					)
 
-					if err = s.DnsUpdate(egCtx, newLog, item); err != nil {
-						newLog.ErrorContext(egCtx, "处理失败",
-							slog.Any("处理参数", item.params),
+					if err = s.DnsUpdate(egCtx, logger, item); err != nil {
+						logger.ErrorContext(egCtx, "处理失败",
 							slog.Any("error", err),
 						)
 					}
@@ -237,8 +246,7 @@ func (s *IPUpdateTask) runDnsTask() {
 			}
 
 			if err = eg.Wait(); err != nil {
-				s.logger.ErrorContext(ctx, "并发处理错误",
-					slog.String("处理类型", processingType),
+				logger.ErrorContext(ctx, "并发处理错误",
 					slog.Any("error", err),
 				)
 			}
@@ -247,18 +255,12 @@ func (s *IPUpdateTask) runDnsTask() {
 		// 2. 串行处理不支持并发的记录
 		for _, item := range serialRecords {
 
-			newLog := s.logger.With(
+			logger = logger.With(
 				slog.String("处理方式", "串行"),
-				slog.String("处理类型", processingType),
-				slog.Int64("记录", item.item.ID),
-				slog.String("类型", item.item.Type.String()),
-				slog.String("子域名", item.item.SubDomain),
-				slog.String("平台", item.platform.String()),
 			)
 
-			if err = s.DnsUpdate(ctx, newLog, item); err != nil {
-				newLog.ErrorContext(ctx, "处理失败",
-					slog.Any("处理参数", item.params),
+			if err = s.DnsUpdate(ctx, logger, item); err != nil {
+				logger.ErrorContext(ctx, "处理失败",
 					slog.Any("error", err),
 				)
 			}
@@ -269,35 +271,33 @@ func (s *IPUpdateTask) runDnsTask() {
 
 	nextRun, err := s.dnsJob.NextRun()
 	if err == nil {
-		s.logger.InfoContext(ctx, "执行完成",
-			slog.String("处理类型", processingType),
+		logger.InfoContext(ctx, "执行完成",
 			slog.Int("并发记录数", len(concurrentRecords)),
 			slog.Int("串行记录数", len(serialRecords)),
 			slog.String("下次运行时间", nextRun.Format(time.DateTime)),
 		)
-
 		// 判断CDN任务是否存在
 		// if s.cdnJob == nil {
 		// 	go s.StartCdnJob(context.Background())
 		// }
 	} else {
-		s.logger.InfoContext(ctx, "执行完成",
+		logger.InfoContext(ctx, "执行完成",
 			slog.Int("并发记录数", len(concurrentRecords)),
 			slog.Int("串行记录数", len(serialRecords)),
-			slog.String("处理类型", processingType),
 		)
 	}
-
 }
 
-func (s *IPUpdateTask) runCdnTask() {
+// 运行CDN任务
+func (s *IPUpdateTask) RunCdnTask() {
 
 	ctx := context.Background()
-	processingType := "CDN"
 
-	s.logger.InfoContext(ctx, "开始执行",
-		slog.String("处理类型", processingType),
+	// 日志
+	logger := s.logger.With(
+		slog.String("类型", "CDN"),
 	)
+	logger.InfoContext(ctx, "开始执行")
 
 	// 分组记录
 	var concurrentRecords, serialRecords []*PendingCdnRecord
@@ -391,18 +391,12 @@ func (s *IPUpdateTask) runCdnTask() {
 				item := item // 创建副本以避免闭包问题
 				eg.Go(func() error {
 
-					newLog := s.logger.With(
+					logger = logger.With(
 						slog.String("处理方式", "并发"),
-						slog.String("处理类型", processingType),
-						slog.Int64("记录", item.item.ID),
-						slog.String("类型", item.item.Type.String()),
-						slog.String("子域名", item.item.SubDomain),
-						slog.String("平台", item.platform.String()),
 					)
 
-					if err = s.CdnUpdate(egCtx, newLog, item); err != nil {
-						newLog.ErrorContext(egCtx, "处理失败",
-							slog.Any("处理参数", item.params),
+					if err = s.CdnUpdate(egCtx, logger, item); err != nil {
+						logger.ErrorContext(egCtx, "处理失败",
 							slog.Any("error", err),
 						)
 					}
@@ -413,8 +407,7 @@ func (s *IPUpdateTask) runCdnTask() {
 			}
 
 			if err = eg.Wait(); err != nil {
-				s.logger.ErrorContext(ctx, "并发处理错误",
-					slog.String("处理类型", processingType),
+				logger.ErrorContext(ctx, "并发处理错误",
 					slog.Any("error", err),
 				)
 			}
@@ -423,18 +416,12 @@ func (s *IPUpdateTask) runCdnTask() {
 		// 2. 串行处理不支持并发的记录
 		for _, item := range serialRecords {
 
-			newLog := s.logger.With(
+			logger = logger.With(
 				slog.String("处理方式", "串行"),
-				slog.String("处理类型", processingType),
-				slog.Int64("记录", item.item.ID),
-				slog.String("类型", item.item.Type.String()),
-				slog.String("子域名", item.item.SubDomain),
-				slog.String("平台", item.platform.String()),
 			)
 
-			if err = s.CdnUpdate(ctx, newLog, item); err != nil {
-				newLog.ErrorContext(ctx, "处理失败",
-					slog.Any("处理参数", item.params),
+			if err = s.CdnUpdate(ctx, logger, item); err != nil {
+				logger.ErrorContext(ctx, "处理失败",
 					slog.Any("error", err),
 				)
 			}
@@ -445,25 +432,21 @@ func (s *IPUpdateTask) runCdnTask() {
 
 	nextRun, err := s.cdnJob.NextRun()
 	if err == nil {
-		s.logger.InfoContext(ctx, "执行完成",
-			slog.String("处理类型", processingType),
+		logger.InfoContext(ctx, "执行完成",
 			slog.Int("并发记录数", len(concurrentRecords)),
 			slog.Int("串行记录数", len(serialRecords)),
 			slog.String("下次运行时间", nextRun.Format(time.DateTime)),
 		)
-
 		// 判断DNS任务是否存在
 		if s.dnsJob == nil {
 			go s.StartDnsJob(context.Background())
 		}
 	} else {
-		s.logger.InfoContext(ctx, "执行完成",
+		logger.InfoContext(ctx, "执行完成",
 			slog.Int("并发记录数", len(concurrentRecords)),
 			slog.Int("串行记录数", len(serialRecords)),
-			slog.String("处理类型", processingType),
 		)
 	}
-
 }
 
 // 待处理
@@ -475,6 +458,16 @@ type PendingCdnRecord struct {
 
 // 更新 CDN 记录
 func (s *IPUpdateTask) CdnUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingCdnRecord) (err error) {
+
+	// 日志
+	logger = logger.With(
+		slog.String("记录", pendingRecord.params.CDNRecordID),
+		slog.String("提供商", pendingRecord.item.Type.String()),
+		slog.String("平台", pendingRecord.platform.String()),
+		slog.String("子域名", pendingRecord.item.SubDomain),
+	)
+	logger.InfoContext(ctx, "开始处理")
+	defer logger.InfoContext(ctx, "处理完成")
 
 	var cdnProcess cdn_helper.CDNProcess
 
@@ -518,6 +511,16 @@ type PendingDnsRecord struct {
 
 // 更新DNS记录
 func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingDnsRecord) (err error) {
+
+	// 日志
+	logger = logger.With(
+		slog.String("记录", pendingRecord.params.DNSRecordID),
+		slog.String("提供商", pendingRecord.item.Type.String()),
+		slog.String("平台", pendingRecord.platform.String()),
+		slog.String("子域名", pendingRecord.item.SubDomain),
+	)
+	logger.InfoContext(ctx, "开始处理")
+	defer logger.InfoContext(ctx, "处理完成")
 
 	var dnsProcess dns_helper.DNSProcess
 
