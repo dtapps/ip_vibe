@@ -364,3 +364,31 @@ async function apiDelete(url, options = {}) {
     console.error("apiDelete", error);
   }
 }
+
+document.querySelectorAll(".simple-tooltip").forEach((item) => {
+  item.addEventListener("mouseenter", function (e) {
+    // 创建提示框
+    const tooltip = document.createElement("div");
+    tooltip.className =
+      "tooltip-content tooltip-" + (this.dataset.position || "top");
+    tooltip.textContent = this.dataset.tooltip;
+
+    // 添加到页面
+    this.appendChild(tooltip);
+
+    // 显示
+    tooltip.style.display = "block";
+
+    // 保存引用，用于移除
+    this._tooltip = tooltip;
+  });
+
+  item.addEventListener("mouseleave", function (e) {
+    // 隐藏并移除
+    if (this._tooltip) {
+      this._tooltip.style.display = "none";
+      this.removeChild(this._tooltip);
+      this._tooltip = null;
+    }
+  });
+});

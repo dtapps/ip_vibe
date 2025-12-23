@@ -55,7 +55,7 @@
             <span>-</span>
             {{end}}
           </td>
-          <td>
+          <td class="simple-tooltip" data-tooltip="{{.ConfigName}}">
             {{template "PlatformBadge" (dict
             "Platform" .Platform
             )}}

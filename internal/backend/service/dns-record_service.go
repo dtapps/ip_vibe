@@ -55,6 +55,7 @@ func (s *DNSRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.DNSR
 
 	// 平台配置
 	if item.Edges.Config != nil {
+		resp.ConfigName = item.Edges.Config.Name
 		resp.Platform = item.Edges.Config.Platform.String()
 		// 从平台配置中获取 ConfigJSON 里的 Domain
 		if item.Edges.Config.ConfigJSON != nil {

@@ -13,6 +13,7 @@ type GetSSLRecordsRequest struct {
 type GetSSLRecordResponse struct {
 	ID                    int64     `json:"id,omitempty" jsonschema:"SSL记录序号"`                             // SSL记录序号
 	ConfigID              int64     `json:"config_id" jsonschema:"平台配置序号"`                                 // 平台配置序号
+	ConfigName            string    `json:"config_name" jsonschema:"平台配置序号"`                               // 平台配置名称
 	Platform              string    `json:"platform,omitempty" jsonschema:"平台平台名称"`                        // 平台平台名称
 	Domain                string    `json:"domain" jsonschema:"域名（支持通配符 *.example.com 或精确域名，多个域名之间用逗号分隔）"` // 域名（支持通配符 *.example.com 或精确域名，多个域名之间用逗号分隔）
 	CertDomain            string    `json:"cert_domain,omitempty" jsonschema:"证书域名"`                       // 证书域名

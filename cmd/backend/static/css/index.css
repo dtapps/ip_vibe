@@ -906,3 +906,43 @@ small.text-secondary {
   background-color: var(--bg-hover);
 }
 /* 输入框支持显示/隐藏密码 结束 */
+
+/* 修复：不破坏原有布局 */
+.simple-tooltip {
+  position: relative; /* 只添加相对定位，不改变 display */
+  cursor: pointer;
+}
+
+/* 关键：不要设置 display: inline-block */
+/* .simple-tooltip { display: inline-block; } ← 删除这行 */
+
+.tooltip-content {
+  position: absolute;
+  background: #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+  z-index: 1000;
+  display: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  /* 默认显示在上方 */
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 5px;
+}
+
+.tooltip-content::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-top-color: #333;
+}

@@ -6,15 +6,16 @@ import (
 
 // 获取全部CDN记录 请求结构
 type GetCdnRecordsRequest struct {
-	IsActive *bool `json:"is_active,omitempty" form:"is_active,omitempty" jsonschema:"指定是否只返回活跃的CDN记录"` // 是否活跃
+	IsActive *bool `json:"is_active,omitempty" form:"is_active,omitempty" jsonschema:"是否活跃"` // 是否活跃
 }
 
 // 获取CDN记录 响应结构
 type GetCdnRecordResponse struct {
-	ID             int64     `json:"id,omitempty" jsonschema:"CDN记录的唯一标识符"`                   // CDN记录序号
-	ConfigID       int64     `json:"config_id" jsonschema:"关联的平台配置ID"`                        // 平台配置序号
+	ID             int64     `json:"id,omitempty" jsonschema:"CDN记录序号"`                       // CDN记录序号
+	ConfigID       int64     `json:"config_id" jsonschema:"平台配置序号"`                           // 平台配置序号
+	ConfigName     string    `json:"config_name" jsonschema:"平台配置名称"`                         // 平台配置名称
 	Platform       string    `json:"platform,omitempty" jsonschema:"平台平台名称"`                  // 平台平台名称
-	RecordID       any       `json:"record_id,omitempty" jsonschema:"平台侧记录的唯一标识符"`            // 平台侧记录 ID
+	RecordID       any       `json:"record_id,omitempty" jsonschema:"平台侧记录ID"`                // 平台侧记录ID
 	DomainName     string    `json:"domain_name" jsonschema:"域名（如 www.example.com）"`          // 域名（如 www.example.com）
 	SubDomain      string    `json:"sub_domain,omitempty" jsonschema:"子域名（如 www, blog, api）"` // 子域名（如 www, blog, api）
 	Type           string    `json:"type" jsonschema:"记录类型（A、AAAA）"`                          // 记录类型（A、AAAA）
@@ -33,7 +34,7 @@ type GetCdnRecordResponse struct {
 
 // 获取CDN记录 请求结构
 type GetCdnRecordRequest struct {
-	ID int64 `uri:"id" json:"id" binding:"required" jsonschema:"CDN记录的唯一标识符"` // CDN记录序号
+	ID int64 `uri:"id" json:"id" binding:"required" jsonschema:"CDN记录序号"` // CDN记录序号
 }
 
 // 创建CDN记录 请求结构

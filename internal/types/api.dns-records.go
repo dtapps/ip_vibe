@@ -4,15 +4,16 @@ import "time"
 
 // 获取全部DNS记录 请求结构
 type GetDnsRecordsRequest struct {
-	IsActive *bool `json:"is_active,omitempty" form:"is_active,omitempty" jsonschema:"指定是否只返回活跃的DNS记录"` // 是否活跃
+	IsActive *bool `json:"is_active,omitempty" form:"is_active,omitempty" jsonschema:"是否活跃"` // 是否活跃
 }
 
 // 获取DNS记录 响应结构
 type GetDnsRecordResponse struct {
-	ID            int64     `json:"id,omitempty" jsonschema:"DNS记录的唯一标识符"`                   // DNS记录序号
+	ID            int64     `json:"id,omitempty" jsonschema:"DNS记录序号"`                       // DNS记录序号
 	ConfigID      int64     `json:"config_id" jsonschema:"关联的平台配置ID"`                        // 平台配置序号
+	ConfigName    string    `json:"config_name" jsonschema:"平台配置序号"`                         // 平台配置名称
 	Platform      string    `json:"platform,omitempty" jsonschema:"平台平台名称"`                  // 平台平台名称
-	RecordID      any       `json:"record_id,omitempty" jsonschema:"平台侧记录的唯一标识符"`            // 平台侧记录 ID
+	RecordID      any       `json:"record_id,omitempty" jsonschema:"平台侧记录ID"`                // 平台侧记录ID
 	DomainName    string    `json:"domain_name" jsonschema:"域名（如 www.example.com）"`          // 域名（如 www.example.com）
 	SubDomain     string    `json:"sub_domain,omitempty" jsonschema:"子域名（如 www, blog, api）"` // 子域名（如 www, blog, api）
 	Type          string    `json:"type" jsonschema:"记录类型（A、AAAA、CNAME）"`                    // 记录类型（A、AAAA、CNAME）
@@ -30,7 +31,7 @@ type GetDnsRecordResponse struct {
 
 // 获取DNS记录 请求结构
 type GetDnsRecordRequest struct {
-	ID int64 `uri:"id" json:"id" binding:"required" jsonschema:"DNS记录的唯一标识符"` // DNS记录序号
+	ID int64 `uri:"id" json:"id" binding:"required" jsonschema:"DNS记录序号"` // DNS记录序号
 }
 
 // 创建DNS记录 请求结构
