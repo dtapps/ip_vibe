@@ -32,7 +32,7 @@ type WebhookSubService interface {
 
 // WebhookSubServiceImpl 通知订阅服务实现
 type WebhookSubServiceImpl struct {
-	db        *ent.Client
+	db        *ent.Client // 数据库客户端
 	debug     bool
 	logHelper *operation_logs_helper.OperationLogHelper
 }

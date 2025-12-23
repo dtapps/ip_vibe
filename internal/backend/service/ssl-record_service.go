@@ -32,10 +32,10 @@ type SSLRecordService interface {
 
 // SSLRecordServiceImpl SSL 记录服务实现
 type SSLRecordServiceImpl struct {
-	db            *ent.Client
+	db            *ent.Client // 数据库客户端
 	debug         bool
 	logHelper     *operation_logs_helper.OperationLogHelper
-	sslUpdateTask *task.SSLUpdateTask
+	sslUpdateTask *task.SSLUpdateTask // SSL刷新任务
 }
 
 // NewSSLRecordService 创建 SSL 记录服务实例

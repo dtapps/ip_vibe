@@ -29,7 +29,7 @@ type DeviceService interface {
 
 // DeviceServiceImpl 设备服务实现
 type DeviceServiceImpl struct {
-	db        *ent.Client
+	db        *ent.Client // 数据库客户端
 	debug     bool
 	logHelper *operation_logs_helper.OperationLogHelper
 }

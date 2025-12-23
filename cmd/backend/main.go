@@ -19,7 +19,6 @@ import (
 	"sync"
 	"syscall"
 	"time"
-	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/docs_2"
 	"vibe_ip/internal/docs_3"
@@ -209,16 +208,23 @@ func main() {
 	// 启动 GoCron 调度器
 	initialize.StartGoCron()
 
-	// 启动CDN刷新任务
-	ipUpdate := service.NewIpUpdateService(global.GvaEntDb, global.GvaGoCron, global.GvaGocronSlog.WithLogger())
+	// 启动 CDN、DNS 刷新任务
+	ipUpdate := task.NewIPUpdateTask(global.GvaEntDb, global.GvaEntLogDb, global.GvaGoCron, global.GvaGocronSlog.WithLogger())
 	if err := ipUpdate.StartCdnJob(ctx); err != nil {
-		slog.Error("启动CDN刷新任务失败", slog.String("error", err.Error()))
+		slog.Error("启动CDN、DNS刷新任务失败", slog.String("error", err.Error()))
+		os.Exit(1)
+	}
+
+	// 启动 SSL 刷新任务
+	sslUpdate := task.NewSSLUpdateTask(global.GvaEntDb, global.GvaEntLogDb, global.GvaGoCron, global.GvaGocronSlog.WithLogger())
+	if err := sslUpdate.StartSSLJob(ctx); err != nil {
+		slog.Error("启动SSL刷新任务失败", slog.String("error", err.Error()))
 		os.Exit(1)
 	}
 
 	// 启动域名监控任务
-	domainMonitor := task.NewDomainMonitorTask(global.GvaEntDb, global.GvaEntLogDb, global.GvaGoCron)
-	if err := domainMonitor.StartJob(ctx); err != nil {
+	domainMonitor := task.NewDomainMonitorTask(global.GvaEntDb, global.GvaEntLogDb, global.GvaGoCron, global.GvaGocronSlog.WithLogger())
+	if err := domainMonitor.StartDomainMonitorJob(ctx); err != nil {
 		slog.Error("启动域名监控任务失败", slog.String("error", err.Error()))
 		os.Exit(1)
 	}

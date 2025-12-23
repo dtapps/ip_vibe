@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/initialize"
@@ -26,17 +28,19 @@ type TaskService interface {
 
 // TaskServiceImpl 任务调度服务实现
 type TaskServiceImpl struct {
-	db        *ent.Client
+	db        *ent.Client     // 数据库客户端
+	dbLog     *ent_log.Client // 日志数据库客户端
 	debug     bool
 	logHelper *operation_logs_helper.OperationLogHelper
-	cron      gocron.Scheduler
-	logger    *slog.Logger // 日志记录器
+	cron      gocron.Scheduler // 定时任务调度器
+	logger    *slog.Logger     // 日志记录器
 }
 
 // NewTaskService 创建任务调度服务实例
-func NewTaskService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper, cron gocron.Scheduler, logger *slog.Logger) TaskService {
+func NewTaskService(db *ent.Client, dbLog *ent_log.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper, cron gocron.Scheduler, logger *slog.Logger) TaskService {
 	return &TaskServiceImpl{
 		db:        db,
+		dbLog:     dbLog,
 		debug:     debug,
 		logHelper: logHelper,
 		cron:      cron,
@@ -142,14 +146,14 @@ func (s *TaskServiceImpl) StartScheduler(ctx context.Context) error {
 
 	if len(jobs) == 0 {
 		// 启动CDN刷新任务
-		ipUpdate := NewIpUpdateService(s.db, s.cron, s.logger)
+		ipUpdate := task.NewIPUpdateTask(s.db, s.dbLog, s.cron, s.logger)
 		if err := ipUpdate.StartCdnJob(ctx); err != nil {
 			if s.debug {
-				slog.ErrorContext(ctx, "启动CDN刷新任务失败",
+				slog.ErrorContext(ctx, "启动CDN、DNS刷新任务失败",
 					slog.Any("err", err),
 				)
 			}
-			return fmt.Errorf("启动CDN刷新任务失败: %w", err)
+			return fmt.Errorf("启动CDN、DNS刷新任务失败: %w", err)
 		}
 	}
 	return nil

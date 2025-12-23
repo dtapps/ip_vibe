@@ -28,7 +28,7 @@ type IPGroupService interface {
 
 // IPGroupServiceImpl IP组服务实现
 type IPGroupServiceImpl struct {
-	db        *ent.Client
+	db        *ent.Client // 数据库客户端
 	debug     bool
 	logHelper *operation_logs_helper.OperationLogHelper
 }

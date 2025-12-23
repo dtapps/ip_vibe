@@ -17,26 +17,35 @@ import (
 	"github.com/go-co-op/gocron/v2"
 )
 
+// 域名监控任务
 type DomainMonitorTask struct {
-	cron   gocron.Scheduler // 定时任务调度器
-	job    gocron.Job       // 域名监控任务
 	db     *ent.Client      // 业务数据库客户端
 	logDb  *ent_log.Client  // 日志数据库客户端
+	cron   gocron.Scheduler // 定时任务调度器
+	dmjob  gocron.Job       // 域名监控任务
 	logger *slog.Logger     // 日志记录器
 }
 
-func NewDomainMonitorTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler) *DomainMonitorTask {
+// 创建实例
+func NewDomainMonitorTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger) *DomainMonitorTask {
 	return &DomainMonitorTask{
 		cron:   cron,
 		db:     db,
 		logDb:  logDb,
-		logger: slog.With("component", "monitor"),
+		logger: logger,
 	}
 }
 
-func (s *DomainMonitorTask) StartJob(ctx context.Context) (err error) {
+// Close 关闭服务，释放资源
+func (s *DomainMonitorTask) Close() {
+	if s.cron != nil && s.dmjob != nil {
+		_ = s.cron.RemoveJob(s.dmjob.ID())
+	}
+}
+
+func (s *DomainMonitorTask) StartDomainMonitorJob(ctx context.Context) (err error) {
 	// 每30秒到60秒执行一次
-	s.job, err = s.cron.NewJob(
+	s.dmjob, err = s.cron.NewJob(
 		gocron.DurationRandomJob(
 			30*time.Second, // 最小间隔
 			60*time.Second, // 最大间隔

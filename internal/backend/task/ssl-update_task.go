@@ -23,6 +23,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+// SSL更新任务
 type SSLUpdateTask struct {
 	db     *ent.Client      // 数据库客户端
 	logDb  *ent_log.Client  // 日志数据库客户端
@@ -31,7 +32,7 @@ type SSLUpdateTask struct {
 	logger *slog.Logger     // 日志记录器
 }
 
-// NewSSLUpdateTask 创建实例
+// 创建实例
 func NewSSLUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger) *SSLUpdateTask {
 	return &SSLUpdateTask{
 		db:     db,
@@ -59,9 +60,9 @@ func (s *SSLUpdateTask) StartSSLJob(ctx context.Context) (err error) {
 		gocron.DurationJob(10*time.Hour),                     // 每10小时执行一次
 		gocron.NewTask(s.runSSLTask),                         // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
-		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
-		gocron.WithName("SSL记录刷新"),                           // 任务名称
-		gocron.WithTags("ssl_update"),                        // 任务标签
+		// gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
+		gocron.WithName("SSL记录刷新"),    // 任务名称
+		gocron.WithTags("ssl_update"), // 任务标签
 	)
 	if err != nil {
 		return err

@@ -1,4 +1,4 @@
-package service
+package task
 
 import (
 	"context"
@@ -11,6 +11,7 @@ import (
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/platformconfig"
+	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/cdn_helper"
 	"vibe_ip/internal/helper/dns_helper"
@@ -22,26 +23,28 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// IP更新
-type IpUpdateService struct {
+// IP更新任务
+type IPUpdateTask struct {
 	db     *ent.Client      // 数据库客户端
+	logDb  *ent_log.Client  // 日志数据库客户端
 	cron   gocron.Scheduler // 定时任务调度器
 	dnsJob gocron.Job       // DNS刷新任务
 	cdnJob gocron.Job       // CDN刷新任务
 	logger *slog.Logger     // 日志记录器
 }
 
-// NewIpUpdateService 创建 IP 更新服务
-func NewIpUpdateService(db *ent.Client, cron gocron.Scheduler, logger *slog.Logger) *IpUpdateService {
-	return &IpUpdateService{
+// 创建实例
+func NewIPUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger) *IPUpdateTask {
+	return &IPUpdateTask{
 		db:     db,
+		logDb:  logDb,
 		cron:   cron,
 		logger: logger,
 	}
 }
 
 // Close 关闭服务，释放资源
-func (s *IpUpdateService) Close() {
+func (s *IPUpdateTask) Close() {
 	if s.cron != nil && s.dnsJob != nil {
 		_ = s.cron.RemoveJob(s.dnsJob.ID())
 	}
@@ -51,7 +54,7 @@ func (s *IpUpdateService) Close() {
 }
 
 // 启动 DNS刷新 任务，延迟 1 分钟添加，确保 CDN 先跑
-func (s *IpUpdateService) StartDnsJob(ctx context.Context) (err error) {
+func (s *IPUpdateTask) StartDnsJob(ctx context.Context) (err error) {
 	// 判断是否存在DNS任务
 	if s.dnsJob != nil {
 		return nil
@@ -73,8 +76,8 @@ func (s *IpUpdateService) StartDnsJob(ctx context.Context) (err error) {
 	return nil
 }
 
-// 启动 CDN刷新 任务
-func (s *IpUpdateService) StartCdnJob(ctx context.Context) (err error) {
+// 启动 CDN 刷新 任务
+func (s *IPUpdateTask) StartCdnJob(ctx context.Context) (err error) {
 	// 判断是否存在CDN任务
 	if s.cdnJob != nil {
 		return nil
@@ -96,7 +99,7 @@ func (s *IpUpdateService) StartCdnJob(ctx context.Context) (err error) {
 	return nil
 }
 
-func (s *IpUpdateService) runDnsTask() {
+func (s *IPUpdateTask) runDnsTask() {
 
 	ctx := context.Background()
 	processingType := "DNS"
@@ -283,7 +286,7 @@ func (s *IpUpdateService) runDnsTask() {
 
 }
 
-func (s *IpUpdateService) runCdnTask() {
+func (s *IPUpdateTask) runCdnTask() {
 
 	ctx := context.Background()
 	processingType := "CDN"
@@ -466,9 +469,8 @@ type PendingCdnRecord struct {
 	params   *cdn_helper.CDNProcessParams // 处理参数
 }
 
-// 更新CDN记录
-// pendingRecord：待处理记录
-func (s *IpUpdateService) CdnUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingCdnRecord) (err error) {
+// 更新 CDN 记录
+func (s *IPUpdateTask) CdnUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingCdnRecord) (err error) {
 
 	var cdnProcess cdn_helper.CDNProcess
 
@@ -515,8 +517,7 @@ type PendingDnsRecord struct {
 }
 
 // 更新DNS记录
-// pendingRecord：待处理记录
-func (s *IpUpdateService) DnsUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingDnsRecord) (err error) {
+func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingDnsRecord) (err error) {
 
 	var dnsProcess dns_helper.DNSProcess
 
@@ -583,7 +584,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, logger *slog.Logger, pe
 }
 
 // 更新CDN记录的LastAPIResponse
-func (s *IpUpdateService) updateDbOfCdnResponse(ctx context.Context, id int64, last_api_response string) error {
+func (s *IPUpdateTask) updateDbOfCdnResponse(ctx context.Context, id int64, last_api_response string) error {
 	if s.db != nil && id != 0 {
 		return s.db.CDNRecord.UpdateOneID(id).
 			SetLastAPIResponse(last_api_response).
@@ -594,7 +595,7 @@ func (s *IpUpdateService) updateDbOfCdnResponse(ctx context.Context, id int64, l
 }
 
 // 更新DNS记录的LastAPIResponse
-func (s *IpUpdateService) updateDbOfDnsResponse(ctx context.Context, id int64, last_api_response string) error {
+func (s *IPUpdateTask) updateDbOfDnsResponse(ctx context.Context, id int64, last_api_response string) error {
 	if s.db != nil && id != 0 {
 		return s.db.DNSRecord.UpdateOneID(id).
 			SetLastAPIResponse(last_api_response).

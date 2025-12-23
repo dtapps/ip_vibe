@@ -25,7 +25,7 @@ type DeviceOpenService interface {
 
 // DeviceOpenServiceImpl 设备服务实现
 type DeviceOpenServiceImpl struct {
-	db             *ent.Client
+	db             *ent.Client // 数据库客户端
 	debug          bool
 	logHelper      *operation_logs_helper.OperationLogHelper
 	webhookService *webhook.Send

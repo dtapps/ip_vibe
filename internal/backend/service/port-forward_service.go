@@ -28,7 +28,7 @@ type PortForwardService interface {
 
 // PortForwardServiceImpl 端口转发服务实现
 type PortForwardServiceImpl struct {
-	db        *ent.Client
+	db        *ent.Client // 数据库客户端
 	debug     bool
 	logHelper *operation_logs_helper.OperationLogHelper
 }

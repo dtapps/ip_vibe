@@ -51,6 +51,7 @@ func getTaskList(ctx context.Context, req *mcp.CallToolRequest, params *types.Ge
 	// 创建服务
 	service := service.NewTaskService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -72,6 +73,7 @@ func getTaskDetail(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	// 创建服务
 	service := service.NewTaskService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -93,6 +95,7 @@ func runTask(ctx context.Context, req *mcp.CallToolRequest, params *types.RunTas
 	// 创建服务
 	service := service.NewTaskService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -114,6 +117,7 @@ func deleteTask(ctx context.Context, req *mcp.CallToolRequest, params *types.Del
 	// 创建服务
 	service := service.NewTaskService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -135,6 +139,7 @@ func cleanAllTask(ctx context.Context, req *mcp.CallToolRequest, params *any) (*
 	// 创建服务
 	service := service.NewTaskService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -156,6 +161,7 @@ func startScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) 
 	// 创建服务
 	service := service.NewTaskService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -177,6 +183,7 @@ func stopScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) (
 	// 创建服务
 	service := service.NewTaskService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,

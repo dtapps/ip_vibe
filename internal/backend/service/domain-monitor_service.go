@@ -36,12 +36,20 @@ type DomainMonitorServiceImpl struct {
 	logDb     *ent_log.Client
 	debug     bool
 	logHelper *operation_logs_helper.OperationLogHelper
-	cron      gocron.Scheduler
+	cron      gocron.Scheduler // 定时任务调度器
+	logger    *slog.Logger     // 日志记录器
 }
 
 // NewDomainMonitorService 创建域名监控服务实例
-func NewDomainMonitorService(db *ent.Client, logDb *ent_log.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper, cron gocron.Scheduler) DomainMonitorService {
-	return &DomainMonitorServiceImpl{db: db, logDb: logDb, cron: cron, debug: debug, logHelper: logHelper}
+func NewDomainMonitorService(db *ent.Client, logDb *ent_log.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper, cron gocron.Scheduler, logger *slog.Logger) DomainMonitorService {
+	return &DomainMonitorServiceImpl{
+		db:        db,
+		logDb:     logDb,
+		cron:      cron,
+		debug:     debug,
+		logHelper: logHelper,
+		logger:    logger,
+	}
 }
 
 // BuildResponse 将实体转换为响应
@@ -263,7 +271,7 @@ func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id in
 	}
 
 	// 域名监控任务 (保持 Handler 中创建依赖的原始逻辑，但使用 Service 内部的注入依赖)
-	domainMonitorService := task.NewDomainMonitorTask(s.db, s.logDb, s.cron)
+	domainMonitorService := task.NewDomainMonitorTask(s.db, s.logDb, s.cron, s.logger)
 
 	// 执行单个监控任务
 	// 注意：这里需要传入 slog.Logger，Service 无法直接访问 gin.Context

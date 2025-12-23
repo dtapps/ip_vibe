@@ -39,6 +39,7 @@ func DomainMonitor(c *gin.Context) {
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
 	)
 
 	// 查询全部域名监控

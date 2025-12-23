@@ -30,7 +30,7 @@ type DNSRecordService interface {
 
 // DNSRecordServiceImpl DNS 记录服务实现
 type DNSRecordServiceImpl struct {
-	db        *ent.Client
+	db        *ent.Client // 数据库客户端
 	debug     bool
 	logHelper *operation_logs_helper.OperationLogHelper
 }

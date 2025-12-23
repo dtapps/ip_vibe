@@ -22,7 +22,7 @@ type PlatformConfigService interface {
 
 // PlatformConfigServiceImpl 配置服务实现
 type PlatformConfigServiceImpl struct {
-	db        *ent.Client
+	db        *ent.Client // 数据库客户端
 	debug     bool
 	logHelper *operation_logs_helper.OperationLogHelper
 }

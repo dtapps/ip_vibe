@@ -25,6 +25,7 @@ func GetTasks(c *gin.Context) {
 	// 创建服务
 	service := service.NewTaskService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -64,6 +65,7 @@ func GetTaskDetail(c *gin.Context) {
 	// 创建服务
 	service := service.NewTaskService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -103,6 +105,7 @@ func RunTask(c *gin.Context) {
 	// 创建服务
 	service := service.NewTaskService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -142,6 +145,7 @@ func DeleteTask(c *gin.Context) {
 	// 创建服务
 	service := service.NewTaskService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -172,6 +176,7 @@ func CleanAllTask(c *gin.Context) {
 	// 创建服务
 	service := service.NewTaskService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -202,6 +207,7 @@ func StartScheduler(c *gin.Context) {
 	// 创建服务
 	service := service.NewTaskService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
@@ -232,6 +238,7 @@ func StopScheduler(c *gin.Context) {
 	// 创建服务
 	service := service.NewTaskService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
