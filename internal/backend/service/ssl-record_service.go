@@ -66,6 +66,7 @@ func (s *SSLRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.SSLR
 		Status:                item.Status.String(),
 		Provider:              item.Provider.String(),
 		IsActive:              item.IsActive,
+		RenewalDays:           item.RenewalDays,
 		IsAutoRenewal:         item.IsAutoRenewal,
 		LastRefreshAt:         item.LastRefreshAt,
 	}
@@ -141,6 +142,7 @@ func (s *SSLRecordServiceImpl) CreateSSLRecord(ctx context.Context, request *typ
 		SetConfigID(request.ConfigID).
 		SetDomain(request.Domain).
 		SetProvider(sslrecord.Provider(request.Provider)).
+		SetRenewalDays(request.RenewalDays).
 		Save(ctx)
 	if err != nil {
 		if s.debug {
@@ -181,6 +183,7 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecord(ctx context.Context, request *typ
 	// 更新SSL记录
 	saveSSLRecord, err := s.db.SSLRecord.UpdateOne(firstSSLRecord).
 		SetProvider(sslrecord.Provider(request.Provider)).
+		SetRenewalDays(request.RenewalDays).
 		Save(ctx)
 	if err != nil {
 		if s.debug {

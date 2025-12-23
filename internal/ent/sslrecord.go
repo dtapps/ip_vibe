@@ -51,6 +51,8 @@ type SSLRecord struct {
 	Provider sslrecord.Provider `json:"provider,omitempty"`
 	// 是否活跃
 	IsActive bool `json:"is_active,omitempty"`
+	// 过期前多少天开始续期
+	RenewalDays int `json:"renewal_days,omitempty"`
 	// 是否自动续期
 	IsAutoRenewal bool `json:"is_auto_renewal,omitempty"`
 	// 最后一次刷新成功时间
@@ -92,7 +94,7 @@ func (*SSLRecord) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case sslrecord.FieldIsActive, sslrecord.FieldIsAutoRenewal:
 			values[i] = new(sql.NullBool)
-		case sslrecord.FieldID, sslrecord.FieldConfigID:
+		case sslrecord.FieldID, sslrecord.FieldConfigID, sslrecord.FieldRenewalDays:
 			values[i] = new(sql.NullInt64)
 		case sslrecord.FieldDomain, sslrecord.FieldCertDomain, sslrecord.FieldCertURL, sslrecord.FieldCertStableURL, sslrecord.FieldCertPrivateKey, sslrecord.FieldCertCertificate, sslrecord.FieldCertIssuerCertificate, sslrecord.FieldCertCsr, sslrecord.FieldStatus, sslrecord.FieldProvider, sslrecord.FieldLastAPIResponse:
 			values[i] = new(sql.NullString)
@@ -215,6 +217,12 @@ func (_m *SSLRecord) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.IsActive = value.Bool
 			}
+		case sslrecord.FieldRenewalDays:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field renewal_days", values[i])
+			} else if value.Valid {
+				_m.RenewalDays = int(value.Int64)
+			}
 		case sslrecord.FieldIsAutoRenewal:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field is_auto_renewal", values[i])
@@ -326,6 +334,9 @@ func (_m *SSLRecord) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_active=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsActive))
+	builder.WriteString(", ")
+	builder.WriteString("renewal_days=")
+	builder.WriteString(fmt.Sprintf("%v", _m.RenewalDays))
 	builder.WriteString(", ")
 	builder.WriteString("is_auto_renewal=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsAutoRenewal))

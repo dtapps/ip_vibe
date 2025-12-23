@@ -257,6 +257,27 @@ func (_u *SSLRecordUpdate) SetNillableIsActive(v *bool) *SSLRecordUpdate {
 	return _u
 }
 
+// SetRenewalDays sets the "renewal_days" field.
+func (_u *SSLRecordUpdate) SetRenewalDays(v int) *SSLRecordUpdate {
+	_u.mutation.ResetRenewalDays()
+	_u.mutation.SetRenewalDays(v)
+	return _u
+}
+
+// SetNillableRenewalDays sets the "renewal_days" field if the given value is not nil.
+func (_u *SSLRecordUpdate) SetNillableRenewalDays(v *int) *SSLRecordUpdate {
+	if v != nil {
+		_u.SetRenewalDays(*v)
+	}
+	return _u
+}
+
+// AddRenewalDays adds value to the "renewal_days" field.
+func (_u *SSLRecordUpdate) AddRenewalDays(v int) *SSLRecordUpdate {
+	_u.mutation.AddRenewalDays(v)
+	return _u
+}
+
 // SetIsAutoRenewal sets the "is_auto_renewal" field.
 func (_u *SSLRecordUpdate) SetIsAutoRenewal(v bool) *SSLRecordUpdate {
 	_u.mutation.SetIsAutoRenewal(v)
@@ -473,6 +494,12 @@ func (_u *SSLRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(sslrecord.FieldIsActive, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.RenewalDays(); ok {
+		_spec.SetField(sslrecord.FieldRenewalDays, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedRenewalDays(); ok {
+		_spec.AddField(sslrecord.FieldRenewalDays, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.IsAutoRenewal(); ok {
 		_spec.SetField(sslrecord.FieldIsAutoRenewal, field.TypeBool, value)
@@ -745,6 +772,27 @@ func (_u *SSLRecordUpdateOne) SetNillableIsActive(v *bool) *SSLRecordUpdateOne {
 	return _u
 }
 
+// SetRenewalDays sets the "renewal_days" field.
+func (_u *SSLRecordUpdateOne) SetRenewalDays(v int) *SSLRecordUpdateOne {
+	_u.mutation.ResetRenewalDays()
+	_u.mutation.SetRenewalDays(v)
+	return _u
+}
+
+// SetNillableRenewalDays sets the "renewal_days" field if the given value is not nil.
+func (_u *SSLRecordUpdateOne) SetNillableRenewalDays(v *int) *SSLRecordUpdateOne {
+	if v != nil {
+		_u.SetRenewalDays(*v)
+	}
+	return _u
+}
+
+// AddRenewalDays adds value to the "renewal_days" field.
+func (_u *SSLRecordUpdateOne) AddRenewalDays(v int) *SSLRecordUpdateOne {
+	_u.mutation.AddRenewalDays(v)
+	return _u
+}
+
 // SetIsAutoRenewal sets the "is_auto_renewal" field.
 func (_u *SSLRecordUpdateOne) SetIsAutoRenewal(v bool) *SSLRecordUpdateOne {
 	_u.mutation.SetIsAutoRenewal(v)
@@ -991,6 +1039,12 @@ func (_u *SSLRecordUpdateOne) sqlSave(ctx context.Context) (_node *SSLRecord, er
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(sslrecord.FieldIsActive, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.RenewalDays(); ok {
+		_spec.SetField(sslrecord.FieldRenewalDays, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedRenewalDays(); ok {
+		_spec.AddField(sslrecord.FieldRenewalDays, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.IsAutoRenewal(); ok {
 		_spec.SetField(sslrecord.FieldIsAutoRenewal, field.TypeBool, value)

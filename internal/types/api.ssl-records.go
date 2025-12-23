@@ -28,6 +28,7 @@ type GetSSLRecordResponse struct {
 	Status                string    `json:"status" jsonschema:"证书状态"`                                      // 证书状态
 	Provider              string    `json:"provider" jsonschema:"CA提供商"`                                   // CA提供商
 	IsActive              bool      `json:"is_active" jsonschema:"是否活跃"`                                   // 是否活跃
+	RenewalDays           int       `json:"renewal_days,omitempty" jsonschema:"过期前多少天开始续期"`                // 过期前多少天开始续期
 	IsAutoRenewal         bool      `json:"is_auto_renewal" jsonschema:"是否自动续期"`                           // 是否自动续期
 	LastRefreshAt         time.Time `json:"last_refresh_at,omitempty" jsonschema:"最后一次刷新成功时间"`             // 最后一次刷新成功时间
 
@@ -41,9 +42,10 @@ type GetSSLRecordRequest struct {
 
 // 创建 SSL 记录 请求结构
 type CreateSSLRecordRequest struct {
-	ConfigID int64  `json:"config_id" binding:"required" jsonschema:"平台配置序号"`                               // 平台配置序号
-	Domain   string `json:"domain" binding:"required" jsonschema:"域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名"` // 域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名
-	Provider string `json:"provider" binding:"required" jsonschema:"CA提供商"`                                 // CA提供商
+	ConfigID    int64  `json:"config_id" binding:"required" jsonschema:"平台配置序号"`                               // 平台配置序号
+	Domain      string `json:"domain" binding:"required" jsonschema:"域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名"` // 域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名
+	Provider    string `json:"provider" binding:"required" jsonschema:"CA提供商"`                                 // CA提供商
+	RenewalDays int    `json:"renewal_days" jsonschema:"过期前多少天开始续期"`                                           // 过期前多少天开始续期
 
 	WebhookIDs []int64 `json:"webhook_ids,omitempty" jsonschema:"关联的Webhook ID列表"` // 关联的 Webhook 列表
 }
@@ -51,7 +53,8 @@ type CreateSSLRecordRequest struct {
 // 更新 SSL 记录 请求结构
 type UpdateSSLRecordRequest struct {
 	GetSSLRecordRequest
-	Provider string `json:"provider" binding:"required" jsonschema:"CA提供商"` // CA提供商
+	Provider    string `json:"provider" binding:"required" jsonschema:"CA提供商"` // CA提供商
+	RenewalDays int    `json:"renewal_days" jsonschema:"过期前多少天开始续期"`           // 过期前多少天开始续期
 
 	WebhookIDs []int64 `json:"webhook_ids,omitempty" jsonschema:"关联的Webhook ID列表"` // 关联的 Webhook 列表
 }

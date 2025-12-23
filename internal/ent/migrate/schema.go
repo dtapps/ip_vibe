@@ -478,6 +478,7 @@ var (
 		{Name: "status", Type: field.TypeEnum, Comment: "证书状态", Enums: []string{"valid", "expired", "revoked", "pending"}, Default: "pending"},
 		{Name: "provider", Type: field.TypeEnum, Comment: "CA提供商", Enums: []string{"letsencrypt"}, Default: "letsencrypt"},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
+		{Name: "renewal_days", Type: field.TypeInt, Comment: "过期前多少天开始续期", Default: 30},
 		{Name: "is_auto_renewal", Type: field.TypeBool, Comment: "是否自动续期", Default: false},
 		{Name: "last_refresh_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次刷新成功时间"},
 		{Name: "last_api_response", Type: field.TypeString, Nullable: true, Comment: "最近一次接口的反馈"},
@@ -493,7 +494,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "ssl_record_platform_config_ssl_records",
-				Columns:    []*schema.Column{SslRecordColumns[20]},
+				Columns:    []*schema.Column{SslRecordColumns[21]},
 				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -543,7 +544,7 @@ var (
 			{
 				Name:    "sslrecord_is_auto_renewal",
 				Unique:  false,
-				Columns: []*schema.Column{SslRecordColumns[16]},
+				Columns: []*schema.Column{SslRecordColumns[17]},
 			},
 		},
 	}

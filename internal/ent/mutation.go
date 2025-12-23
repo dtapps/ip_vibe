@@ -8760,6 +8760,8 @@ type SSLRecordMutation struct {
 	status                  *sslrecord.Status
 	provider                *sslrecord.Provider
 	is_active               *bool
+	renewal_days            *int
+	addrenewal_days         *int
 	is_auto_renewal         *bool
 	last_refresh_at         *time.Time
 	last_api_response       *string
@@ -9569,6 +9571,62 @@ func (m *SSLRecordMutation) ResetIsActive() {
 	m.is_active = nil
 }
 
+// SetRenewalDays sets the "renewal_days" field.
+func (m *SSLRecordMutation) SetRenewalDays(i int) {
+	m.renewal_days = &i
+	m.addrenewal_days = nil
+}
+
+// RenewalDays returns the value of the "renewal_days" field in the mutation.
+func (m *SSLRecordMutation) RenewalDays() (r int, exists bool) {
+	v := m.renewal_days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRenewalDays returns the old "renewal_days" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldRenewalDays(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRenewalDays is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRenewalDays requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRenewalDays: %w", err)
+	}
+	return oldValue.RenewalDays, nil
+}
+
+// AddRenewalDays adds i to the "renewal_days" field.
+func (m *SSLRecordMutation) AddRenewalDays(i int) {
+	if m.addrenewal_days != nil {
+		*m.addrenewal_days += i
+	} else {
+		m.addrenewal_days = &i
+	}
+}
+
+// AddedRenewalDays returns the value that was added to the "renewal_days" field in this mutation.
+func (m *SSLRecordMutation) AddedRenewalDays() (r int, exists bool) {
+	v := m.addrenewal_days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRenewalDays resets all changes to the "renewal_days" field.
+func (m *SSLRecordMutation) ResetRenewalDays() {
+	m.renewal_days = nil
+	m.addrenewal_days = nil
+}
+
 // SetIsAutoRenewal sets the "is_auto_renewal" field.
 func (m *SSLRecordMutation) SetIsAutoRenewal(b bool) {
 	m.is_auto_renewal = &b
@@ -9813,7 +9871,7 @@ func (m *SSLRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SSLRecordMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 21)
 	if m.created_at != nil {
 		fields = append(fields, sslrecord.FieldCreatedAt)
 	}
@@ -9861,6 +9919,9 @@ func (m *SSLRecordMutation) Fields() []string {
 	}
 	if m.is_active != nil {
 		fields = append(fields, sslrecord.FieldIsActive)
+	}
+	if m.renewal_days != nil {
+		fields = append(fields, sslrecord.FieldRenewalDays)
 	}
 	if m.is_auto_renewal != nil {
 		fields = append(fields, sslrecord.FieldIsAutoRenewal)
@@ -9914,6 +9975,8 @@ func (m *SSLRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.Provider()
 	case sslrecord.FieldIsActive:
 		return m.IsActive()
+	case sslrecord.FieldRenewalDays:
+		return m.RenewalDays()
 	case sslrecord.FieldIsAutoRenewal:
 		return m.IsAutoRenewal()
 	case sslrecord.FieldLastRefreshAt:
@@ -9963,6 +10026,8 @@ func (m *SSLRecordMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldProvider(ctx)
 	case sslrecord.FieldIsActive:
 		return m.OldIsActive(ctx)
+	case sslrecord.FieldRenewalDays:
+		return m.OldRenewalDays(ctx)
 	case sslrecord.FieldIsAutoRenewal:
 		return m.OldIsAutoRenewal(ctx)
 	case sslrecord.FieldLastRefreshAt:
@@ -10092,6 +10157,13 @@ func (m *SSLRecordMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIsActive(v)
 		return nil
+	case sslrecord.FieldRenewalDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRenewalDays(v)
+		return nil
 	case sslrecord.FieldIsAutoRenewal:
 		v, ok := value.(bool)
 		if !ok {
@@ -10128,6 +10200,9 @@ func (m *SSLRecordMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *SSLRecordMutation) AddedFields() []string {
 	var fields []string
+	if m.addrenewal_days != nil {
+		fields = append(fields, sslrecord.FieldRenewalDays)
+	}
 	return fields
 }
 
@@ -10136,6 +10211,8 @@ func (m *SSLRecordMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *SSLRecordMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case sslrecord.FieldRenewalDays:
+		return m.AddedRenewalDays()
 	}
 	return nil, false
 }
@@ -10145,6 +10222,13 @@ func (m *SSLRecordMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *SSLRecordMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case sslrecord.FieldRenewalDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRenewalDays(v)
+		return nil
 	}
 	return fmt.Errorf("unknown SSLRecord numeric field %s", name)
 }
@@ -10294,6 +10378,9 @@ func (m *SSLRecordMutation) ResetField(name string) error {
 		return nil
 	case sslrecord.FieldIsActive:
 		m.ResetIsActive()
+		return nil
+	case sslrecord.FieldRenewalDays:
+		m.ResetRenewalDays()
 		return nil
 	case sslrecord.FieldIsAutoRenewal:
 		m.ResetIsAutoRenewal()

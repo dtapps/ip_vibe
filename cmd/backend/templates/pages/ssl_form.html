@@ -22,6 +22,11 @@
       </div>
 
       <div class="form-group">
+        <label>过期前多少天开始续期</label>
+        <input type="number" name="renewal_days" id="renewal_days" placeholder="默认 30 天" />
+      </div>
+
+      <div class="form-group">
         <label>通知 (多选)</label>
         <select name="webhook_ids" id="webhook_ids" multiple></select>
         <small class="text-secondary">选择需要接收此记录变动通知的 Webhook</small>

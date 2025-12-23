@@ -16,6 +16,7 @@ import (
 
 	"github.com/go-co-op/gocron/v2"
 	"go.dtapp.net/library/contrib/http_log"
+	"golang.org/x/sync/errgroup"
 )
 
 // 域名监控任务
@@ -67,17 +68,39 @@ func (s *DomainMonitorTask) StartDomainMonitorJob(ctx context.Context) (err erro
 	return nil
 }
 
+// 计算下次执行时间
+func (m *DomainMonitorTask) CalculateNextRun(domainMonitor *ent.DomainMonitor, now time.Time) time.Time {
+	var nextRun time.Time
+
+	// 基于成功时间计算
+	if domainMonitor.LastSuccessAt.IsZero() {
+		// 如果从未成功过，立即运行
+		nextRun = now
+	} else {
+		// 下次运行时间 = 上次成功时间 + 检查间隔
+		nextRun = domainMonitor.LastSuccessAt.Add(time.Duration(domainMonitor.CheckInterval) * time.Second)
+	}
+
+	// 如果是失败状态就使用上次失败时间（覆盖上面的计算）
+	if domainMonitor.CurrentStatus == domainmonitor.CurrentStatusFailure {
+		if !domainMonitor.LastFailureAt.IsZero() {
+			nextRun = domainMonitor.LastFailureAt.Add(time.Duration(domainMonitor.CheckInterval) * time.Second)
+		}
+	}
+
+	return nextRun
+}
+
 // CheckAndRunAllMonitors 查找并执行到期的监控任务
 func (s *DomainMonitorTask) CheckAndRunAllMonitors() {
 
-	var err error
 	ctx := context.Background()
 
-	// 查找所有活跃且需要检查的任务
-	// 判断逻辑：当前时间 > (上次成功时间 + 检查间隔) 或者上次失败时间 > (上次成功时间 + 检查间隔)
+	// 分组记录
+	var concurrentRecords []*ent.DomainMonitor
 
-	// 查找所有活跃的监控记录，让后续逻辑判断是否到期
-	allMonitor, err := s.db.DomainMonitor.Query().
+	// 查询全部域名监控
+	allDomainMonitors, err := s.db.DomainMonitor.Query().
 		Where(domainmonitor.IsActive(true)).
 		All(ctx)
 	if err != nil {
@@ -88,55 +111,66 @@ func (s *DomainMonitorTask) CheckAndRunAllMonitors() {
 	}
 
 	now := time.Now()
-	for _, monitor := range allMonitor {
-		newLog := s.logger.With(
-			slog.Int64("id", monitor.ID),
-			slog.String("domain", monitor.Domain),
-			slog.String("protocol", monitor.CheckProtocol.String()),
-		)
-
-		// 计算预定的下次执行时间
-		var nextRun time.Time
-		if monitor.LastSuccessAt.IsZero() {
-			// 如果从未成功过，立即运行
-			nextRun = now
-		} else {
-			// 下次运行时间 = 上次成功时间 + 检查间隔
-			nextRun = monitor.LastSuccessAt.Add(time.Duration(monitor.CheckInterval) * time.Second)
-		}
-
-		// 如果是失败状态就使用上次失败时间
-		if monitor.CurrentStatus == domainmonitor.CurrentStatusFailure {
-			if !monitor.LastFailureAt.IsZero() {
-				nextRun = monitor.LastFailureAt.Add(time.Duration(monitor.CheckInterval) * time.Second)
-			}
-		}
+	for _, domainMonitor := range allDomainMonitors {
+		// 计算下次执行时间
+		nextRun := s.CalculateNextRun(domainMonitor, now)
 
 		// 如果已超过或等于下次运行时间，则执行任务
 		if now.After(nextRun) || now.Equal(nextRun) {
-			newLog.InfoContext(ctx, "准备处理",
-				slog.String("protocol", monitor.CheckProtocol.String()),
-				slog.Time("last_success_at", monitor.LastSuccessAt),
-				slog.Int("check_interval", monitor.CheckInterval),
-			)
-			// 异步执行任务，避免阻塞主调度任务
-			go s.ExecuteMonitorTask(context.Background(), newLog, monitor)
+			// 按策略分组
+			concurrentRecords = append(concurrentRecords, domainMonitor)
 		}
+	}
+
+	// 1. 并发处理支持并发的记录
+	if len(concurrentRecords) > 0 {
+
+		eg, egCtx := errgroup.WithContext(ctx)
+		eg.SetLimit(10) // 最多 10 个并发
+
+		for _, item := range concurrentRecords {
+			item := item // 创建副本以避免闭包问题
+			eg.Go(func() error {
+
+				newLog := s.logger.With(
+					slog.String("处理方式", "并发"),
+					slog.Int64("记录", item.ID),
+					slog.String("域名", item.Domain),
+					slog.String("协议", item.CheckProtocol.String()),
+				)
+
+				if err = s.ExecuteMonitorTask(egCtx, newLog, item); err != nil {
+					newLog.ErrorContext(egCtx, "处理失败",
+						slog.Any("error", err),
+					)
+				}
+
+				// 返回nil而不是错误，这样单个DNS记录更新失败不会导致整个errgroup取消上下文
+				return nil
+			})
+		}
+
+		if err = eg.Wait(); err != nil {
+			s.logger.ErrorContext(ctx, "并发处理错误",
+				slog.Any("error", err),
+			)
+		}
+
 	}
 }
 
 // ExecuteMonitorTask 执行单个监控任务
-func (s *DomainMonitorTask) ExecuteMonitorTask(ctx context.Context, newLog *slog.Logger, monitor *ent.DomainMonitor) (err error) {
+func (s *DomainMonitorTask) ExecuteMonitorTask(ctx context.Context, logger *slog.Logger, domainMonitor *ent.DomainMonitor) (err error) {
 
-	newLog.InfoContext(ctx, "开始执行检查")
-	defer newLog.InfoContext(ctx, "检查完成")
+	logger.InfoContext(ctx, "开始执行检查")
+	defer logger.InfoContext(ctx, "检查完成")
 
 	// 执行检查
-	result := s.runDomainCheck(ctx, monitor.Domain, monitor.CheckProtocol.String())
+	result := s.runDomainCheck(ctx, domainMonitor.Domain, domainMonitor.CheckProtocol.String())
 
 	// 历史记录创建
 	historyCreator := s.logDb.DomainMonitorHistory.Create().
-		SetMonitorID(monitor.ID).
+		SetMonitorID(domainMonitor.ID).
 		SetCheckTime(time.Now()).
 		SetIsSuccess(result.IsSuccess).
 		SetCheckDuration(int(result.Duration.Milliseconds())).
@@ -145,7 +179,7 @@ func (s *DomainMonitorTask) ExecuteMonitorTask(ctx context.Context, newLog *slog
 		SetErrorLog(result.ErrorLog)
 
 	// 填充 SSL 字段
-	if monitor.CheckProtocol == domainmonitor.CheckProtocolHTTPS && result.SSLExpiryDate.After(time.Time{}) {
+	if domainMonitor.CheckProtocol == domainmonitor.CheckProtocolHTTPS && result.SSLExpiryDate.After(time.Time{}) {
 		historyCreator.SetSslExpiryDate(result.SSLExpiryDate).
 			SetSslCommonName(result.SSLCommonName).
 			SetSslIssuerName(result.SSLIssuerName).
@@ -156,25 +190,25 @@ func (s *DomainMonitorTask) ExecuteMonitorTask(ctx context.Context, newLog *slog
 
 	_, err = historyCreator.Save(ctx)
 	if err != nil {
-		newLog.ErrorContext(ctx, "保存历史记录失败",
+		logger.ErrorContext(ctx, "保存历史记录失败",
 			slog.Any("err", err),
 		)
 		return err
 	}
 
 	// 更新状态
-	updater := s.db.DomainMonitor.UpdateOne(monitor).
-		SetCurrentStatus(domainmonitor.CurrentStatus(s.getCurrentStatus(result.IsSuccess))) // 假设您有状态转换逻辑
+	updaterOne := s.db.DomainMonitor.UpdateOne(domainMonitor)
+	updaterOne.SetCurrentStatus(domainmonitor.CurrentStatus(s.getCurrentStatus(result.IsSuccess)))
 
 	if result.IsSuccess {
-		updater.SetLastSuccessAt(time.Now())
+		updaterOne.SetLastSuccessAt(time.Now())
 	} else {
-		updater.SetLastFailureAt(time.Now())
+		updaterOne.SetLastFailureAt(time.Now())
 	}
 
-	err = updater.Exec(ctx)
+	err = updaterOne.Exec(ctx)
 	if err != nil {
-		newLog.ErrorContext(ctx, "更新状态失败",
+		logger.ErrorContext(ctx, "更新状态失败",
 			slog.Any("err", err),
 		)
 		return err

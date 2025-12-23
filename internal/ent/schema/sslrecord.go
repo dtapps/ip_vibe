@@ -117,6 +117,11 @@ func (SSLRecord) Fields() []ent.Field {
 			Comment("是否活跃").
 			Annotations(entsql.WithComments(true)),
 
+		field.Int("renewal_days").
+			Default(30).
+			Comment("过期前多少天开始续期").
+			Annotations(entsql.WithComments(true)),
+
 		field.Bool("is_auto_renewal").
 			Default(false).
 			Comment("是否自动续期").

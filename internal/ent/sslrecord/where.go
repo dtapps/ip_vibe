@@ -125,6 +125,11 @@ func IsActive(v bool) predicate.SSLRecord {
 	return predicate.SSLRecord(sql.FieldEQ(FieldIsActive, v))
 }
 
+// RenewalDays applies equality check predicate on the "renewal_days" field. It's identical to RenewalDaysEQ.
+func RenewalDays(v int) predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldEQ(FieldRenewalDays, v))
+}
+
 // IsAutoRenewal applies equality check predicate on the "is_auto_renewal" field. It's identical to IsAutoRenewalEQ.
 func IsAutoRenewal(v bool) predicate.SSLRecord {
 	return predicate.SSLRecord(sql.FieldEQ(FieldIsAutoRenewal, v))
@@ -983,6 +988,46 @@ func IsActiveEQ(v bool) predicate.SSLRecord {
 // IsActiveNEQ applies the NEQ predicate on the "is_active" field.
 func IsActiveNEQ(v bool) predicate.SSLRecord {
 	return predicate.SSLRecord(sql.FieldNEQ(FieldIsActive, v))
+}
+
+// RenewalDaysEQ applies the EQ predicate on the "renewal_days" field.
+func RenewalDaysEQ(v int) predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldEQ(FieldRenewalDays, v))
+}
+
+// RenewalDaysNEQ applies the NEQ predicate on the "renewal_days" field.
+func RenewalDaysNEQ(v int) predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldNEQ(FieldRenewalDays, v))
+}
+
+// RenewalDaysIn applies the In predicate on the "renewal_days" field.
+func RenewalDaysIn(vs ...int) predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldIn(FieldRenewalDays, vs...))
+}
+
+// RenewalDaysNotIn applies the NotIn predicate on the "renewal_days" field.
+func RenewalDaysNotIn(vs ...int) predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldNotIn(FieldRenewalDays, vs...))
+}
+
+// RenewalDaysGT applies the GT predicate on the "renewal_days" field.
+func RenewalDaysGT(v int) predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldGT(FieldRenewalDays, v))
+}
+
+// RenewalDaysGTE applies the GTE predicate on the "renewal_days" field.
+func RenewalDaysGTE(v int) predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldGTE(FieldRenewalDays, v))
+}
+
+// RenewalDaysLT applies the LT predicate on the "renewal_days" field.
+func RenewalDaysLT(v int) predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldLT(FieldRenewalDays, v))
+}
+
+// RenewalDaysLTE applies the LTE predicate on the "renewal_days" field.
+func RenewalDaysLTE(v int) predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldLTE(FieldRenewalDays, v))
 }
 
 // IsAutoRenewalEQ applies the EQ predicate on the "is_auto_renewal" field.

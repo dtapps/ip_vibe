@@ -231,6 +231,20 @@ func (_c *SSLRecordCreate) SetNillableIsActive(v *bool) *SSLRecordCreate {
 	return _c
 }
 
+// SetRenewalDays sets the "renewal_days" field.
+func (_c *SSLRecordCreate) SetRenewalDays(v int) *SSLRecordCreate {
+	_c.mutation.SetRenewalDays(v)
+	return _c
+}
+
+// SetNillableRenewalDays sets the "renewal_days" field if the given value is not nil.
+func (_c *SSLRecordCreate) SetNillableRenewalDays(v *int) *SSLRecordCreate {
+	if v != nil {
+		_c.SetRenewalDays(*v)
+	}
+	return _c
+}
+
 // SetIsAutoRenewal sets the "is_auto_renewal" field.
 func (_c *SSLRecordCreate) SetIsAutoRenewal(v bool) *SSLRecordCreate {
 	_c.mutation.SetIsAutoRenewal(v)
@@ -353,6 +367,10 @@ func (_c *SSLRecordCreate) defaults() {
 		v := sslrecord.DefaultIsActive
 		_c.mutation.SetIsActive(v)
 	}
+	if _, ok := _c.mutation.RenewalDays(); !ok {
+		v := sslrecord.DefaultRenewalDays
+		_c.mutation.SetRenewalDays(v)
+	}
 	if _, ok := _c.mutation.IsAutoRenewal(); !ok {
 		v := sslrecord.DefaultIsAutoRenewal
 		_c.mutation.SetIsAutoRenewal(v)
@@ -396,6 +414,9 @@ func (_c *SSLRecordCreate) check() error {
 	}
 	if _, ok := _c.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "SSLRecord.is_active"`)}
+	}
+	if _, ok := _c.mutation.RenewalDays(); !ok {
+		return &ValidationError{Name: "renewal_days", err: errors.New(`ent: missing required field "SSLRecord.renewal_days"`)}
 	}
 	if _, ok := _c.mutation.IsAutoRenewal(); !ok {
 		return &ValidationError{Name: "is_auto_renewal", err: errors.New(`ent: missing required field "SSLRecord.is_auto_renewal"`)}
@@ -500,6 +521,10 @@ func (_c *SSLRecordCreate) createSpec() (*SSLRecord, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.IsActive(); ok {
 		_spec.SetField(sslrecord.FieldIsActive, field.TypeBool, value)
 		_node.IsActive = value
+	}
+	if value, ok := _c.mutation.RenewalDays(); ok {
+		_spec.SetField(sslrecord.FieldRenewalDays, field.TypeInt, value)
+		_node.RenewalDays = value
 	}
 	if value, ok := _c.mutation.IsAutoRenewal(); ok {
 		_spec.SetField(sslrecord.FieldIsAutoRenewal, field.TypeBool, value)
@@ -793,6 +818,24 @@ func (u *SSLRecordUpsert) SetIsActive(v bool) *SSLRecordUpsert {
 // UpdateIsActive sets the "is_active" field to the value that was provided on create.
 func (u *SSLRecordUpsert) UpdateIsActive() *SSLRecordUpsert {
 	u.SetExcluded(sslrecord.FieldIsActive)
+	return u
+}
+
+// SetRenewalDays sets the "renewal_days" field.
+func (u *SSLRecordUpsert) SetRenewalDays(v int) *SSLRecordUpsert {
+	u.Set(sslrecord.FieldRenewalDays, v)
+	return u
+}
+
+// UpdateRenewalDays sets the "renewal_days" field to the value that was provided on create.
+func (u *SSLRecordUpsert) UpdateRenewalDays() *SSLRecordUpsert {
+	u.SetExcluded(sslrecord.FieldRenewalDays)
+	return u
+}
+
+// AddRenewalDays adds v to the "renewal_days" field.
+func (u *SSLRecordUpsert) AddRenewalDays(v int) *SSLRecordUpsert {
+	u.Add(sslrecord.FieldRenewalDays, v)
 	return u
 }
 
@@ -1161,6 +1204,27 @@ func (u *SSLRecordUpsertOne) SetIsActive(v bool) *SSLRecordUpsertOne {
 func (u *SSLRecordUpsertOne) UpdateIsActive() *SSLRecordUpsertOne {
 	return u.Update(func(s *SSLRecordUpsert) {
 		s.UpdateIsActive()
+	})
+}
+
+// SetRenewalDays sets the "renewal_days" field.
+func (u *SSLRecordUpsertOne) SetRenewalDays(v int) *SSLRecordUpsertOne {
+	return u.Update(func(s *SSLRecordUpsert) {
+		s.SetRenewalDays(v)
+	})
+}
+
+// AddRenewalDays adds v to the "renewal_days" field.
+func (u *SSLRecordUpsertOne) AddRenewalDays(v int) *SSLRecordUpsertOne {
+	return u.Update(func(s *SSLRecordUpsert) {
+		s.AddRenewalDays(v)
+	})
+}
+
+// UpdateRenewalDays sets the "renewal_days" field to the value that was provided on create.
+func (u *SSLRecordUpsertOne) UpdateRenewalDays() *SSLRecordUpsertOne {
+	return u.Update(func(s *SSLRecordUpsert) {
+		s.UpdateRenewalDays()
 	})
 }
 
@@ -1706,6 +1770,27 @@ func (u *SSLRecordUpsertBulk) SetIsActive(v bool) *SSLRecordUpsertBulk {
 func (u *SSLRecordUpsertBulk) UpdateIsActive() *SSLRecordUpsertBulk {
 	return u.Update(func(s *SSLRecordUpsert) {
 		s.UpdateIsActive()
+	})
+}
+
+// SetRenewalDays sets the "renewal_days" field.
+func (u *SSLRecordUpsertBulk) SetRenewalDays(v int) *SSLRecordUpsertBulk {
+	return u.Update(func(s *SSLRecordUpsert) {
+		s.SetRenewalDays(v)
+	})
+}
+
+// AddRenewalDays adds v to the "renewal_days" field.
+func (u *SSLRecordUpsertBulk) AddRenewalDays(v int) *SSLRecordUpsertBulk {
+	return u.Update(func(s *SSLRecordUpsert) {
+		s.AddRenewalDays(v)
+	})
+}
+
+// UpdateRenewalDays sets the "renewal_days" field to the value that was provided on create.
+func (u *SSLRecordUpsertBulk) UpdateRenewalDays() *SSLRecordUpsertBulk {
+	return u.Update(func(s *SSLRecordUpsert) {
+		s.UpdateRenewalDays()
 	})
 }
 

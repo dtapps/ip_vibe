@@ -47,6 +47,8 @@ const (
 	FieldProvider = "provider"
 	// FieldIsActive holds the string denoting the is_active field in the database.
 	FieldIsActive = "is_active"
+	// FieldRenewalDays holds the string denoting the renewal_days field in the database.
+	FieldRenewalDays = "renewal_days"
 	// FieldIsAutoRenewal holds the string denoting the is_auto_renewal field in the database.
 	FieldIsAutoRenewal = "is_auto_renewal"
 	// FieldLastRefreshAt holds the string denoting the last_refresh_at field in the database.
@@ -87,6 +89,7 @@ var Columns = []string{
 	FieldStatus,
 	FieldProvider,
 	FieldIsActive,
+	FieldRenewalDays,
 	FieldIsAutoRenewal,
 	FieldLastRefreshAt,
 	FieldLastAPIResponse,
@@ -114,6 +117,8 @@ var (
 	ConfigIDValidator func(int64) error
 	// DefaultIsActive holds the default value on creation for the "is_active" field.
 	DefaultIsActive bool
+	// DefaultRenewalDays holds the default value on creation for the "renewal_days" field.
+	DefaultRenewalDays int
 	// DefaultIsAutoRenewal holds the default value on creation for the "is_auto_renewal" field.
 	DefaultIsAutoRenewal bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -259,6 +264,11 @@ func ByProvider(opts ...sql.OrderTermOption) OrderOption {
 // ByIsActive orders the results by the is_active field.
 func ByIsActive(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsActive, opts...).ToFunc()
+}
+
+// ByRenewalDays orders the results by the renewal_days field.
+func ByRenewalDays(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRenewalDays, opts...).ToFunc()
 }
 
 // ByIsAutoRenewal orders the results by the is_auto_renewal field.

@@ -90,6 +90,8 @@ async function openFormModal(id) {
       document.getElementById("domain").value = sslRecord.domain;
       document.getElementById("domain").disabled = true;
       document.getElementById("provider").value = sslRecord.provider;
+      document.getElementById("renewal_days").value =
+        sslRecord.renewal_days || 30;
 
       if (sslRecord.webhooks && sslRecord.webhooks.length > 0) {
         // 高亮已选
@@ -110,6 +112,7 @@ async function openFormModal(id) {
       document.getElementById("id").disabled = true;
       document.getElementById("config_id").disabled = false;
       document.getElementById("domain").disabled = false;
+      document.getElementById("renewal_days").value = 30;
 
       // 清空已选
       console.log("select2 清空已选");
@@ -136,6 +139,7 @@ document.getElementById("form").onsubmit = async (e) => {
     config_id: Number(document.getElementById("config_id").value.trim()),
     domain: document.getElementById("domain").value.trim(),
     provider: document.getElementById("provider").value.trim(),
+    renewal_days: Number(document.getElementById("renewal_days").value.trim()),
     webhook_ids: selectedWebhookIDs.map(Number),
   };
   console.log("form_id, form_data", form_id, form_data);

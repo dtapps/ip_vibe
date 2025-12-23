@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"math/rand"
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/platformconfig"
@@ -74,6 +75,34 @@ func (s *SSLUpdateTask) StartSSLJob(ctx context.Context) (err error) {
 	return nil
 }
 
+// 计算下次执行时间
+func (s *SSLUpdateTask) CalculateNextRun(sslRecord *ent.SSLRecord, now time.Time) time.Time {
+	// 如果是首次申请（没有过期时间），立即执行
+	if sslRecord.NotAfter.IsZero() {
+		return now
+	}
+
+	// 计算理想的续期时间：过期前 RenewalDays 天
+	idealRenewalTime := sslRecord.NotAfter.Add(-time.Duration(sslRecord.RenewalDays) * 24 * time.Hour)
+
+	// 如果理想续期时间已经过去，说明需要立即续期
+	if idealRenewalTime.Before(now) {
+		return now
+	}
+
+	// 添加一些随机性，避免所有证书同时续期
+	// 在理想时间前后随机偏移最多6小时
+	randomOffset := time.Duration(rand.Intn(7200)-3600) * time.Second // -1小时到+1小时
+	nextRun := idealRenewalTime.Add(randomOffset)
+
+	// 确保不会设置到过去
+	if nextRun.Before(now) {
+		nextRun = now
+	}
+
+	return nextRun
+}
+
 func (s *SSLUpdateTask) runSSLTask() {
 
 	ctx := context.Background()
@@ -95,25 +124,32 @@ func (s *SSLUpdateTask) runSSLTask() {
 		All(ctx)
 	if err == nil {
 
+		now := time.Now()
+
 		// 按策略分组
 		for _, sslRecord := range allSSLRecords {
+			// 计算下次执行时间
+			nextRun := s.CalculateNextRun(sslRecord, now)
 
-			// 创建待处理记录
-			pendingRecord := &PendingSSLRecord{
-				Item:     sslRecord,
-				Platform: sslRecord.Edges.Config.Platform,
-				Params: &ssl_helper.SSLProcessParams{
-					SSLRecordID: cast.ToString(sslRecord.ID),
+			// 如果已超过或等于下次运行时间，则执行任务
+			if now.After(nextRun) || now.Equal(nextRun) {
+				// 创建待处理记录
+				pendingRecord := &PendingSSLRecord{
+					Item:     sslRecord,
+					Platform: sslRecord.Edges.Config.Platform,
+					Params: &ssl_helper.SSLProcessParams{
+						SSLRecordID: cast.ToString(sslRecord.ID),
 
-					ConfigJSON: sslRecord.Edges.Config.ConfigJSON,
-				},
-			}
+						ConfigJSON: sslRecord.Edges.Config.ConfigJSON,
+					},
+				}
 
-			// 按策略分组
-			if allowConcurrent(sslRecord.Edges.Config) {
-				concurrentRecords = append(concurrentRecords, pendingRecord)
-			} else {
-				serialRecords = append(serialRecords, pendingRecord)
+				// 按策略分组
+				if allowConcurrent(sslRecord.Edges.Config) {
+					concurrentRecords = append(concurrentRecords, pendingRecord)
+				} else {
+					serialRecords = append(serialRecords, pendingRecord)
+				}
 			}
 		}
 

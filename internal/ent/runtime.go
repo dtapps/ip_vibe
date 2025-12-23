@@ -269,8 +269,12 @@ func init() {
 	sslrecordDescIsActive := sslrecordFields[14].Descriptor()
 	// sslrecord.DefaultIsActive holds the default value on creation for the is_active field.
 	sslrecord.DefaultIsActive = sslrecordDescIsActive.Default.(bool)
+	// sslrecordDescRenewalDays is the schema descriptor for renewal_days field.
+	sslrecordDescRenewalDays := sslrecordFields[15].Descriptor()
+	// sslrecord.DefaultRenewalDays holds the default value on creation for the renewal_days field.
+	sslrecord.DefaultRenewalDays = sslrecordDescRenewalDays.Default.(int)
 	// sslrecordDescIsAutoRenewal is the schema descriptor for is_auto_renewal field.
-	sslrecordDescIsAutoRenewal := sslrecordFields[15].Descriptor()
+	sslrecordDescIsAutoRenewal := sslrecordFields[16].Descriptor()
 	// sslrecord.DefaultIsAutoRenewal holds the default value on creation for the is_auto_renewal field.
 	sslrecord.DefaultIsAutoRenewal = sslrecordDescIsAutoRenewal.Default.(bool)
 	// sslrecordDescID is the schema descriptor for id field.
