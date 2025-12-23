@@ -13,7 +13,6 @@ require (
 	github.com/alibabacloud-go/tea v1.3.14
 	github.com/aliyun/credentials-go v1.4.10
 	github.com/baidubce/bce-sdk-go v0.9.256
-	github.com/casbin/ent-adapter v1.2.0
 	github.com/cloudflare/cloudflare-go/v6 v6.5.0
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/gin-contrib/cors v1.7.6
@@ -51,6 +50,7 @@ require (
 	go.dtapp.net/library/utils/golog v1.0.178
 	go.dtapp.net/library/utils/gomd5 v1.0.3
 	go.dtapp.net/library/utils/gorequest v1.1.3
+	go.dtapp.net/library/utils/gostring v1.0.32
 	golang.org/x/net v0.48.0
 	golang.org/x/sync v0.19.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20251222181119-0a764e51fe1b
@@ -131,6 +131,8 @@ require (
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	github.com/zclconf/go-cty v1.17.0 // indirect
 	github.com/zclconf/go-cty-yaml v1.2.0 // indirect
+	go.dtapp.net/library/utils/gorandom v1.0.5 // indirect
+	go.dtapp.net/library/utils/gotime v1.0.17 // indirect
 	go.mongodb.org/mongo-driver v1.17.6 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/bridges/otelslog v0.14.0 // indirect

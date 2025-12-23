@@ -58,6 +58,7 @@
             {{ template "switch" (dict
             "Checked" .IsAutoRenewal
             "URL" $autoRenewalUrlPath
+            "ApiDataKey" "is_auto_renewal"
             "NoReload" true
             )}}
           </td>
@@ -66,10 +67,14 @@
             {{ template "switch" (dict
             "Checked" .IsActive
             "URL" $activeUrlPath
+            "ApiDataKey" "is_active"
             "NoReload" true
             )}}
           </td>
           <td>
+            <button class="btn btn-secondary btn-sm" onclick="applySSL('{{.ID}}')">
+              {{ template "icons" (dict "Name" "ip-ssl-apply") }} 申请
+            </button>
             <button class="btn btn-primary btn-sm" onclick="openFormModal('{{.ID}}')">
               {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>

@@ -166,3 +166,17 @@ document.getElementById("form").onsubmit = async (e) => {
     console.error("SSL记录操作失败", error);
   }
 };
+
+// 删除
+async function applySSL(id) {
+  if (confirm("确定申请新的SSL证书？")) {
+    try {
+      await API.delete(`/api/ssl-records/${id}/apply`);
+      // 刷新页面
+      location.reload();
+    } catch (error) {
+      alert(`申请失败: ${error.message}`);
+      console.error("申请新的SSL证书失败", error);
+    }
+  }
+}

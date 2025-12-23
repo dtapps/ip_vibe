@@ -72,3 +72,8 @@ type UpdateSSLRecordActiveRequest struct {
 type DeleteSSLRecordRequest struct {
 	GetSSLRecordRequest
 }
+
+// 申请新的SSL证书 请求结构
+type ApplySSLRecordRequest struct {
+	GetSSLRecordRequest
+}

@@ -699,6 +699,7 @@ func api_router(ctx context.Context, router *gin.Engine) {
 			sslRecords.PATCH("/:id/auto-renewal", handlers.UpdateSSLRecordAutoRenewal) // 更新SSL记录自动续费状态
 			sslRecords.PATCH("/:id/active", handlers.UpdateSSLRecordActive)            // 更新SSL记录启用状态
 			sslRecords.DELETE("/:id", handlers.DeleteSSLRecord)                        // 删除SSL记录
+			sslRecords.POST("/:id/apply", handlers.ApplySSLRecord)                     // 申请新的SSL证书
 		}
 
 		// 域名监控相关API

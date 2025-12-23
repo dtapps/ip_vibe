@@ -5,6 +5,7 @@ import (
 	"crypto"
 	"encoding/json"
 
+	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-acme/lego/v4/registration"
 )
 
@@ -19,7 +20,7 @@ type SSLProcess interface {
 	// 配置
 	Configure(ctx context.Context, params *SSLProcessParams) error
 	// 申请
-	Apply(ctx context.Context, params *SSLProcessParams) error
+	Apply(ctx context.Context, domains []string) (*certificate.Resource, error)
 }
 
 type LegoConfig struct {

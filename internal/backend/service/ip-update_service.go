@@ -191,7 +191,7 @@ func (s *IpUpdateService) runDnsTask() {
 			}
 
 			// 按策略分组
-			if s.allowConcurrent(dnsRecord.Edges.Config) {
+			if allowConcurrent(dnsRecord.Edges.Config) {
 				concurrentRecords = append(concurrentRecords, pendingRecord)
 			} else {
 				serialRecords = append(serialRecords, pendingRecord)
@@ -367,7 +367,7 @@ func (s *IpUpdateService) runCdnTask() {
 			}
 
 			// 按策略分组
-			if s.allowConcurrent(cdnRecord.Edges.Config) {
+			if allowConcurrent(cdnRecord.Edges.Config) {
 				concurrentRecords = append(concurrentRecords, pendingRecord)
 			} else {
 				serialRecords = append(serialRecords, pendingRecord)
@@ -468,7 +468,7 @@ type PendingCdnRecord struct {
 
 // 更新CDN记录
 // pendingRecord：待处理记录
-func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, pendingRecord *PendingCdnRecord) (err error) {
+func (s *IpUpdateService) CdnUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingCdnRecord) (err error) {
 
 	var cdnProcess cdn_helper.CDNProcess
 
@@ -477,7 +477,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, pe
 
 		cdnProcess = cdn_helper.NewCDNProcessTencentEO(
 			global.GvaEnv.DEBUG,
-			newLog,
+			logger,
 			global.GvaEntDb,
 			global.GvaHttpLog,
 		)
@@ -486,7 +486,7 @@ func (s *IpUpdateService) CdnUpdate(ctx context.Context, newLog *slog.Logger, pe
 
 		cdnProcess = cdn_helper.NewCDNProcessAliyunEsa(
 			global.GvaEnv.DEBUG,
-			newLog,
+			logger,
 			global.GvaEntDb,
 			global.GvaHttpLog,
 		)
@@ -515,7 +515,8 @@ type PendingDnsRecord struct {
 }
 
 // 更新DNS记录
-func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, pendingRecord *PendingDnsRecord) (err error) {
+// pendingRecord：待处理记录
+func (s *IpUpdateService) DnsUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingDnsRecord) (err error) {
 
 	var dnsProcess dns_helper.DNSProcess
 
@@ -524,7 +525,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, pe
 
 		dnsProcess = dns_helper.NewDNSProcessCloudflare(
 			global.GvaEnv.DEBUG,
-			newLog,
+			logger,
 			global.GvaEntDb,
 			global.GvaHttpLog,
 		)
@@ -533,7 +534,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, pe
 
 		dnsProcess = dns_helper.NewDNSProcessTencentDns(
 			global.GvaEnv.DEBUG,
-			newLog,
+			logger,
 			global.GvaEntDb,
 			global.GvaHttpLog,
 		)
@@ -542,7 +543,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, pe
 
 		dnsProcess = dns_helper.NewDNSProcessAliyunDns(
 			global.GvaEnv.DEBUG,
-			newLog,
+			logger,
 			global.GvaEntDb,
 			global.GvaHttpLog,
 		)
@@ -551,7 +552,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, pe
 
 		dnsProcess = dns_helper.NewDNSProcessBaiduDns(
 			global.GvaEnv.DEBUG,
-			newLog,
+			logger,
 			global.GvaEntDb,
 			global.GvaHttpLog,
 		)
@@ -560,7 +561,7 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, pe
 
 		dnsProcess = dns_helper.NewDNSProcessHuaweiDns(
 			global.GvaEnv.DEBUG,
-			newLog,
+			logger,
 			global.GvaEntDb,
 			global.GvaHttpLog,
 		)
@@ -579,14 +580,6 @@ func (s *IpUpdateService) DnsUpdate(ctx context.Context, newLog *slog.Logger, pe
 	}
 	_ = s.updateDbOfDnsResponse(ctx, pendingRecord.item.ID, "ok")
 	return nil
-}
-
-func (s *IpUpdateService) allowConcurrent(item *ent.PlatformConfig) bool {
-	// EdgeOne 平台不支持并发，串行；其他并发
-	if item.Platform == platformconfig.PlatformTencentEo {
-		return false
-	}
-	return true
 }
 
 // 更新CDN记录的LastAPIResponse

@@ -8,9 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
-	"os"
 
-	"github.com/casbin/ent-adapter/ent"
 	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-acme/lego/v4/lego"
@@ -23,7 +21,6 @@ import (
 type SSLProcessCloudflareImpl struct {
 	debug         bool                       // 调试模式
 	logger        *slog.Logger               // 日志
-	db            *ent.Client                // 数据库
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
 
 	platformConfig CloudflareConfigure // 平台配置
@@ -33,11 +30,10 @@ type SSLProcessCloudflareImpl struct {
 }
 
 // NewSSLProcessCloudflare 创建实例
-func NewSSLProcessCloudflare(debug bool, logger *slog.Logger, db *ent.Client, httpTransport *http_log.LoggingTransport) SSLProcess {
+func NewSSLProcessCloudflare(debug bool, logger *slog.Logger, httpTransport *http_log.LoggingTransport) SSLProcess {
 	return &SSLProcessCloudflareImpl{
 		debug:         debug,
 		logger:        logger,
-		db:            db,
 		httpTransport: httpTransport,
 	}
 }
@@ -79,7 +75,9 @@ func (d *SSLProcessCloudflareImpl) Configure(ctx context.Context, params *SSLPro
 	config.Certificate.KeyType = certcrypto.RSA2048
 
 	// 设置 HTTP 客户端传输 (用于记录日志)
-	config.HTTPClient.Transport = d.httpTransport
+	if d.httpTransport != nil {
+		config.HTTPClient.Transport = d.httpTransport
+	}
 
 	// 创建 ACME 客户端
 	d.client, err = lego.NewClient(config)
@@ -91,59 +89,42 @@ func (d *SSLProcessCloudflareImpl) Configure(ctx context.Context, params *SSLPro
 }
 
 // 申请
-func (d *SSLProcessCloudflareImpl) Apply(ctx context.Context, params *SSLProcessParams) error {
-
-	// 要申请的域名列表
-	domains := []string{"example.com", "*.example.com"} // 可以同时申请主域名和通配符域名
+// domains 域名列表，可以同时申请主域名和通配符域名
+func (d *SSLProcessCloudflareImpl) Apply(ctx context.Context, domains []string) (res *certificate.Resource, err error) {
 
 	// 设置 DNS-01 挑战提供者 (Cloudflare)
 	cfProvider, err := cloudflare.NewDNSProviderConfig(&cloudflare.Config{
 		AuthToken: d.platformConfig.ApiKey,
 	})
 	if err != nil {
-		return fmt.Errorf("无法创建 Cloudflare DNS 提供者: %w", err)
+		return nil, fmt.Errorf("无法创建 Cloudflare DNS 提供者: %w", err)
 	}
 
 	// 将 DNS Provider 传递给 lego 客户端
 	err = d.client.Challenge.SetDNS01Provider(cfProvider)
 	if err != nil {
-		return fmt.Errorf("无法设置 DNS-01 提供者: %w", err)
+		return nil, fmt.Errorf("无法设置 DNS-01 提供者: %w", err)
 	}
 
 	// 向 CA 注册账户
 	// TermsOfServiceAgreed: true 表示自动同意服务条款
 	reg, err := d.client.Registration.Register(registration.RegisterOptions{TermsOfServiceAgreed: true})
 	if err != nil {
-		return fmt.Errorf("无法注册 ACME 账户: %w", err)
+		return nil, fmt.Errorf("无法注册 ACME 账户: %w", err)
 	}
 	d.legoConfig.Registration = reg
-	fmt.Println("ACME 账户注册成功！")
 
 	// 请求证书
-	fmt.Printf("正在为域名 %v 申请证书...\n", domains)
 	request := certificate.ObtainRequest{
 		Domains: domains,
 		Bundle:  true, // 是否将中间证书一起返回
 	}
 
-	certificates, err := d.client.Certificate.Obtain(request)
+	// 获取证书
+	res, err = d.client.Certificate.Obtain(request)
 	if err != nil {
-		return fmt.Errorf("无法获取证书: %w", err)
+		return nil, fmt.Errorf("无法获取证书: %w", err)
 	}
 
-	// 7. 保存证书和私钥到文件
-	err = os.WriteFile("certificates/"+domains[0]+"_fullchain.pem", certificates.Certificate, 0644)
-	if err != nil {
-		return fmt.Errorf("无法写入证书文件: %w", err)
-	}
-	err = os.WriteFile("certificates/"+domains[0]+"_private.key", certificates.PrivateKey, 0600) // 私钥权限设为 600
-	if err != nil {
-		return fmt.Errorf("无法写入私钥文件: %w", err)
-	}
-
-	fmt.Println("🎉 证书申请成功！")
-	fmt.Printf("证书已保存到: certificates/%s_fullchain.pem\n", domains[0])
-	fmt.Printf("私钥已保存到: certificates/%s_private.key\n", domains[0])
-
-	return nil
+	return res, nil
 }
