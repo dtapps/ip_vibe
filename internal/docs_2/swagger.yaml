@@ -202,6 +202,30 @@ definitions:
     - remote_host
     - remote_port
     type: object
+  vibe_ip_internal_types.CreateSSLRecordRequest:
+    properties:
+      config_id:
+        description: 平台配置序号
+        type: integer
+      domain:
+        description: 域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名
+        type: string
+      provider:
+        description: CA提供商
+        type: string
+      renewal_days:
+        description: 过期前多少天开始续期
+        type: integer
+      webhook_ids:
+        description: 关联的 Webhook 列表
+        items:
+          type: integer
+        type: array
+    required:
+    - config_id
+    - domain
+    - provider
+    type: object
   vibe_ip_internal_types.CreateWebhookRequest:
     properties:
       description:
@@ -230,39 +254,6 @@ definitions:
     - platform
     - template_content
     - template_title
-    type: object
-  vibe_ip_internal_types.CreateWebhookSubRequest:
-    properties:
-      description:
-        description: 通知订阅描述
-        type: string
-      name:
-        description: 通知订阅名称
-        type: string
-      obj_ids:
-        description: 订阅对象主键列表
-        items:
-          type: integer
-        type: array
-      obj_type:
-        description: 订阅对象类型
-        type: string
-      webhook_id:
-        description: 通知序号
-        type: integer
-    required:
-    - name
-    - obj_ids
-    - obj_type
-    - webhook_id
-    type: object
-  vibe_ip_internal_types.CreateWebhookSubResponse:
-    properties:
-      ids:
-        description: 通知订阅序号列表
-        items:
-          type: integer
-        type: array
     type: object
   vibe_ip_internal_types.DevicePortForwardsResponse:
     properties:
@@ -324,6 +315,9 @@ definitions:
       config_id:
         description: 平台配置序号
         type: integer
+      config_name:
+        description: 平台配置名称
+        type: string
       domain_name:
         description: 域名（如 www.example.com）
         type: string
@@ -355,7 +349,7 @@ definitions:
         description: 平台平台名称
         type: string
       record_id:
-        description: 平台侧记录 ID
+        description: 平台侧记录ID
       sub_domain:
         description: 子域名（如 www, blog, api）
         type: string
@@ -445,6 +439,9 @@ definitions:
       config_id:
         description: 平台配置序号
         type: integer
+      config_name:
+        description: 平台配置名称
+        type: string
       domain_name:
         description: 域名（如 www.example.com）
         type: string
@@ -467,7 +464,7 @@ definitions:
         description: 平台平台名称
         type: string
       record_id:
-        description: 平台侧记录 ID
+        description: 平台侧记录ID
       sub_domain:
         description: 子域名（如 www, blog, api）
         type: string
@@ -646,6 +643,88 @@ definitions:
         type: integer
     type: object
   vibe_ip_internal_types.GetPortForwardsRequest:
+    properties:
+      is_active:
+        description: 是否活跃
+        type: boolean
+    type: object
+  vibe_ip_internal_types.GetSSLRecordRequest:
+    properties:
+      id:
+        description: SSL记录序号
+        type: integer
+    required:
+    - id
+    type: object
+  vibe_ip_internal_types.GetSSLRecordResponse:
+    properties:
+      cert_certificate:
+        description: 证书(PEM格式)
+        type: string
+      cert_csr:
+        description: 证书签名请求(PEM格式)
+        type: string
+      cert_domain:
+        description: 证书域名
+        type: string
+      cert_issuer_certificate:
+        description: 颁发者证书(PEM格式)
+        type: string
+      cert_private_key:
+        description: 私钥(PEM格式)
+        type: string
+      cert_stable_url:
+        description: 稳定证书URL
+        type: string
+      cert_url:
+        description: 证书URL
+        type: string
+      config_id:
+        description: 平台配置序号
+        type: integer
+      config_name:
+        description: 平台配置名称
+        type: string
+      domain:
+        description: 域名（支持通配符 *.example.com 或精确域名，多个域名之间用逗号分隔）
+        type: string
+      id:
+        description: SSL记录序号
+        type: integer
+      is_active:
+        description: 是否活跃
+        type: boolean
+      is_auto_renewal:
+        description: 是否自动续期
+        type: boolean
+      last_refresh_at:
+        description: 最后一次刷新成功时间
+        type: string
+      not_after:
+        description: 证书过期时间
+        type: string
+      not_before:
+        description: 证书生效时间
+        type: string
+      platform:
+        description: 平台平台名称
+        type: string
+      provider:
+        description: CA提供商
+        type: string
+      renewal_days:
+        description: 过期前多少天开始续期
+        type: integer
+      status:
+        description: 证书状态
+        type: string
+      webhooks:
+        description: 关联的 Webhook 列表
+        items:
+          type: integer
+        type: array
+    type: object
+  vibe_ip_internal_types.GetSSLRecordsRequest:
     properties:
       is_active:
         description: 是否活跃
@@ -1012,6 +1091,48 @@ definitions:
     - remote_host
     - remote_port
     type: object
+  vibe_ip_internal_types.UpdateSSLRecordActiveRequest:
+    properties:
+      id:
+        description: SSL记录序号
+        type: integer
+      is_active:
+        description: 是否活跃
+        type: boolean
+    required:
+    - id
+    type: object
+  vibe_ip_internal_types.UpdateSSLRecordAutoRenewalRequest:
+    properties:
+      id:
+        description: SSL记录序号
+        type: integer
+      is_auto_renewal:
+        description: 是否自动续期
+        type: boolean
+    required:
+    - id
+    type: object
+  vibe_ip_internal_types.UpdateSSLRecordRequest:
+    properties:
+      id:
+        description: SSL记录序号
+        type: integer
+      provider:
+        description: CA提供商
+        type: string
+      renewal_days:
+        description: 过期前多少天开始续期
+        type: integer
+      webhook_ids:
+        description: 关联的 Webhook 列表
+        items:
+          type: integer
+        type: array
+    required:
+    - id
+    - provider
+    type: object
   vibe_ip_internal_types.UpdateWebhookActiveRequest:
     properties:
       id:
@@ -1062,21 +1183,6 @@ definitions:
         type: boolean
     required:
     - id
-    type: object
-  vibe_ip_internal_types.UpdateWebhookSubRequest:
-    properties:
-      description:
-        description: 通知订阅描述
-        type: string
-      id:
-        description: 通知订阅序号
-        type: integer
-      name:
-        description: 通知订阅名称
-        type: string
-    required:
-    - id
-    - name
     type: object
 host: localhost:9999
 info:
@@ -1162,7 +1268,6 @@ paths:
       description: 删除CDN记录
       parameters:
       - description: CDN记录序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1196,7 +1301,6 @@ paths:
       description: 获取CDN记录详情
       parameters:
       - description: CDN记录序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1230,7 +1334,6 @@ paths:
       description: 更新CDN记录
       parameters:
       - description: CDN记录序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1271,7 +1374,6 @@ paths:
       description: 更新CDN记录启用状态
       parameters:
       - description: CDN记录序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1312,7 +1414,6 @@ paths:
       description: 检查CDN记录健康状态
       parameters:
       - description: CDN记录序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1411,7 +1512,6 @@ paths:
       description: 删除设备
       parameters:
       - description: 设备序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1445,7 +1545,6 @@ paths:
       description: 获取设备详情
       parameters:
       - description: 设备序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1479,7 +1578,6 @@ paths:
       description: 更新设备
       parameters:
       - description: 设备序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1520,7 +1618,6 @@ paths:
       description: 检查设备健康状态
       parameters:
       - description: 设备序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1559,7 +1656,6 @@ paths:
       description: 获取设备IP历史记录
       parameters:
       - description: 设备序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1666,7 +1762,6 @@ paths:
       description: 删除DNS记录
       parameters:
       - description: DNS记录序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1700,7 +1795,6 @@ paths:
       description: 获取DNS记录详情
       parameters:
       - description: DNS记录序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1734,7 +1828,6 @@ paths:
       description: 更新DNS记录
       parameters:
       - description: DNS记录序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1775,7 +1868,6 @@ paths:
       description: 更新DNS记录启用状态
       parameters:
       - description: DNS记录序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1816,7 +1908,6 @@ paths:
       description: 检查DNS记录健康状态
       parameters:
       - description: DNS记录序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1925,7 +2016,6 @@ paths:
       description: 删除域名监控
       parameters:
       - description: 域名监控序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1959,7 +2049,6 @@ paths:
       description: 获取域名监控详情
       parameters:
       - description: 域名监控记录序号
-        format: int64
         in: path
         name: id
         required: true
@@ -1993,7 +2082,6 @@ paths:
       description: 更新域名监控
       parameters:
       - description: 域名监控序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2034,7 +2122,6 @@ paths:
       description: 更新域名监控启用状态
       parameters:
       - description: 域名监控序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2075,7 +2162,6 @@ paths:
       description: 检查域名监控健康状态
       parameters:
       - description: 域名监控序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2170,7 +2256,6 @@ paths:
       description: 删除IP组
       parameters:
       - description: IP组序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2204,7 +2289,6 @@ paths:
       description: 获取IP组详情
       parameters:
       - description: IP组序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2239,7 +2323,6 @@ paths:
       description: 更新IP组
       parameters:
       - description: IP组序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2280,7 +2363,6 @@ paths:
       description: 获取IP组设备
       parameters:
       - description: IP组序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2317,7 +2399,6 @@ paths:
       description: 检查IP组健康状态
       parameters:
       - description: IP组序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2492,7 +2573,6 @@ paths:
       description: 删除平台配置
       parameters:
       - description: 配置序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2526,7 +2606,6 @@ paths:
       description: 获取平台配置详情
       parameters:
       - description: 配置序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2560,7 +2639,6 @@ paths:
       description: 更新平台配置
       parameters:
       - description: 配置序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2671,7 +2749,6 @@ paths:
       description: 删除端口转发
       parameters:
       - description: 端口转发序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2705,7 +2782,6 @@ paths:
       description: 获取端口转发详情
       parameters:
       - description: 设备端口转发序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2739,7 +2815,6 @@ paths:
       description: 更新端口转发
       parameters:
       - description: 端口转发序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2780,7 +2855,6 @@ paths:
       description: 更新端口转发启用状态
       parameters:
       - description: 端口转发序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2821,7 +2895,6 @@ paths:
       description: 更新端口转发防火墙状态
       parameters:
       - description: 端口转发序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2862,7 +2935,6 @@ paths:
       description: 检查端口转发健康状态
       parameters:
       - description: 端口转发序号
-        format: int64
         in: path
         name: id
         required: true
@@ -2894,6 +2966,296 @@ paths:
       summary: 检查端口转发健康状态
       tags:
       - 端口转发
+  /ssl-records:
+    get:
+      consumes:
+      - application/json
+      description: 获取全部SSL记录
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordResponse'
+                  type: array
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取全部SSL记录
+      tags:
+      - SSL记录
+    post:
+      consumes:
+      - application/json
+      description: 创建SSL记录
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.CreateSSLRecordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordRequest'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 创建SSL记录
+      tags:
+      - SSL记录
+  /ssl-records/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除SSL记录
+      parameters:
+      - description: SSL记录序号
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordRequest'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 删除SSL记录
+      tags:
+      - SSL记录
+    get:
+      consumes:
+      - application/json
+      description: 获取SSL记录详情
+      parameters:
+      - description: SSL记录序号
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordResponse'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取SSL记录详情
+      tags:
+      - SSL记录
+    patch:
+      consumes:
+      - application/json
+      description: 更新SSL记录
+      parameters:
+      - description: SSL记录序号
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.UpdateSSLRecordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordRequest'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 更新SSL记录
+      tags:
+      - SSL记录
+  /ssl-records/{id}/active:
+    patch:
+      consumes:
+      - application/json
+      description: 更新SSL记录启用状态
+      parameters:
+      - description: SSL记录序号
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.UpdateSSLRecordActiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordRequest'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 更新SSL记录启用状态
+      tags:
+      - SSL记录
+  /ssl-records/{id}/apply:
+    post:
+      consumes:
+      - application/json
+      description: 申请新的SSL证书
+      parameters:
+      - description: SSL记录序号
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordRequest'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 申请新的SSL证书
+      tags:
+      - SSL记录
+  /ssl-records/{id}/auto-renewal:
+    patch:
+      consumes:
+      - application/json
+      description: 更新SSL记录自动续费状态
+      parameters:
+      - description: SSL记录序号
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.UpdateSSLRecordAutoRenewalRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordRequest'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 更新SSL记录自动续费状态
+      tags:
+      - SSL记录
   /tasks:
     get:
       consumes:
@@ -3103,40 +3465,6 @@ paths:
       summary: 获取全部通知订阅
       tags:
       - 通知订阅
-    post:
-      consumes:
-      - application/json
-      description: 创建通知订阅
-      parameters:
-      - description: 请求参数
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/vibe_ip_internal_types.CreateWebhookSubRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功响应
-          schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.CreateWebhookSubResponse'
-              type: object
-        "400":
-          description: 参数错误
-          schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
-        "404":
-          description: 错误响应
-          schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
-      summary: 创建通知订阅
-      tags:
-      - 通知订阅
   /webhook-subs/{id}:
     delete:
       consumes:
@@ -3144,7 +3472,6 @@ paths:
       description: 删除通知订阅
       parameters:
       - description: 通知订阅序号
-        format: int64
         in: path
         name: id
         required: true
@@ -3172,80 +3499,6 @@ paths:
       summary: 删除通知订阅
       tags:
       - 通知订阅
-    get:
-      consumes:
-      - application/json
-      description: 获取通知订阅详情
-      parameters:
-      - description: 通知订阅序号
-        format: int64
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功响应
-          schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetWebhookSubResponse'
-              type: object
-        "400":
-          description: 参数错误
-          schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
-        "404":
-          description: 错误响应
-          schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
-      summary: 获取通知订阅详情
-      tags:
-      - 通知订阅
-    patch:
-      consumes:
-      - application/json
-      description: 更新通知订阅
-      parameters:
-      - description: 通知订阅序号
-        format: int64
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: 请求参数
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/vibe_ip_internal_types.UpdateWebhookSubRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功响应
-          schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetWebhookSubRequest'
-              type: object
-        "400":
-          description: 参数错误
-          schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
-        "404":
-          description: 错误响应
-          schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
-      summary: 更新通知订阅
-      tags:
-      - 通知订阅
   /webhook-subs/{id}/active:
     patch:
       consumes:
@@ -3253,7 +3506,6 @@ paths:
       description: 更新通知订阅启用状态
       parameters:
       - description: 通知订阅序号
-        format: int64
         in: path
         name: id
         required: true
@@ -3364,7 +3616,6 @@ paths:
       description: 删除通知
       parameters:
       - description: 通知序号
-        format: int64
         in: path
         name: id
         required: true
@@ -3398,7 +3649,6 @@ paths:
       description: 获取通知详情
       parameters:
       - description: 通知序号
-        format: int64
         in: path
         name: id
         required: true
@@ -3432,7 +3682,6 @@ paths:
       description: 更新通知
       parameters:
       - description: 通知序号
-        format: int64
         in: path
         name: id
         required: true
@@ -3473,7 +3722,6 @@ paths:
       description: 更新通知启用状态
       parameters:
       - description: 通知序号
-        format: int64
         in: path
         name: id
         required: true
@@ -3514,7 +3762,6 @@ paths:
       description: 测试通知
       parameters:
       - description: 通知序号
-        format: int64
         in: path
         name: id
         required: true

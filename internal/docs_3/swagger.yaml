@@ -216,6 +216,31 @@ components:
       - remote_host
       - remote_port
       type: object
+    vibe_ip_internal_types.CreateSSLRecordRequest:
+      properties:
+        config_id:
+          description: 平台配置序号
+          type: integer
+        domain:
+          description: 域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名
+          type: string
+        provider:
+          description: CA提供商
+          type: string
+        renewal_days:
+          description: 过期前多少天开始续期
+          type: integer
+        webhook_ids:
+          description: 关联的 Webhook 列表
+          items:
+            type: integer
+          type: array
+          uniqueItems: false
+      required:
+      - config_id
+      - domain
+      - provider
+      type: object
     vibe_ip_internal_types.CreateWebhookRequest:
       properties:
         description:
@@ -244,41 +269,6 @@ components:
       - platform
       - template_content
       - template_title
-      type: object
-    vibe_ip_internal_types.CreateWebhookSubRequest:
-      properties:
-        description:
-          description: 通知订阅描述
-          type: string
-        name:
-          description: 通知订阅名称
-          type: string
-        obj_ids:
-          description: 订阅对象主键列表
-          items:
-            type: integer
-          type: array
-          uniqueItems: false
-        obj_type:
-          description: 订阅对象类型
-          type: string
-        webhook_id:
-          description: 通知序号
-          type: integer
-      required:
-      - name
-      - obj_ids
-      - obj_type
-      - webhook_id
-      type: object
-    vibe_ip_internal_types.CreateWebhookSubResponse:
-      properties:
-        ids:
-          description: 通知订阅序号列表
-          items:
-            type: integer
-          type: array
-          uniqueItems: false
       type: object
     vibe_ip_internal_types.DevicePortForwardsResponse:
       properties:
@@ -341,6 +331,9 @@ components:
         config_id:
           description: 平台配置序号
           type: integer
+        config_name:
+          description: 平台配置名称
+          type: string
         domain_name:
           description: 域名（如 www.example.com）
           type: string
@@ -372,7 +365,7 @@ components:
           description: 平台平台名称
           type: string
         record_id:
-          description: 平台侧记录 ID
+          description: 平台侧记录ID
         sub_domain:
           description: 子域名（如 www, blog, api）
           type: string
@@ -465,6 +458,9 @@ components:
         config_id:
           description: 平台配置序号
           type: integer
+        config_name:
+          description: 平台配置名称
+          type: string
         domain_name:
           description: 域名（如 www.example.com）
           type: string
@@ -487,7 +483,7 @@ components:
           description: 平台平台名称
           type: string
         record_id:
-          description: 平台侧记录 ID
+          description: 平台侧记录ID
         sub_domain:
           description: 子域名（如 www, blog, api）
           type: string
@@ -674,6 +670,90 @@ components:
           type: integer
       type: object
     vibe_ip_internal_types.GetPortForwardsRequest:
+      properties:
+        is_active:
+          description: 是否活跃
+          form: is_active
+          type: boolean
+      type: object
+    vibe_ip_internal_types.GetSSLRecordRequest:
+      properties:
+        id:
+          description: SSL记录序号
+          type: integer
+      required:
+      - id
+      type: object
+    vibe_ip_internal_types.GetSSLRecordResponse:
+      properties:
+        cert_certificate:
+          description: 证书(PEM格式)
+          type: string
+        cert_csr:
+          description: 证书签名请求(PEM格式)
+          type: string
+        cert_domain:
+          description: 证书域名
+          type: string
+        cert_issuer_certificate:
+          description: 颁发者证书(PEM格式)
+          type: string
+        cert_private_key:
+          description: 私钥(PEM格式)
+          type: string
+        cert_stable_url:
+          description: 稳定证书URL
+          type: string
+        cert_url:
+          description: 证书URL
+          type: string
+        config_id:
+          description: 平台配置序号
+          type: integer
+        config_name:
+          description: 平台配置名称
+          type: string
+        domain:
+          description: 域名（支持通配符 *.example.com 或精确域名，多个域名之间用逗号分隔）
+          type: string
+        id:
+          description: SSL记录序号
+          type: integer
+        is_active:
+          description: 是否活跃
+          type: boolean
+        is_auto_renewal:
+          description: 是否自动续期
+          type: boolean
+        last_refresh_at:
+          description: 最后一次刷新成功时间
+          type: string
+        not_after:
+          description: 证书过期时间
+          type: string
+        not_before:
+          description: 证书生效时间
+          type: string
+        platform:
+          description: 平台平台名称
+          type: string
+        provider:
+          description: CA提供商
+          type: string
+        renewal_days:
+          description: 过期前多少天开始续期
+          type: integer
+        status:
+          description: 证书状态
+          type: string
+        webhooks:
+          description: 关联的 Webhook 列表
+          items:
+            type: integer
+          type: array
+          uniqueItems: false
+      type: object
+    vibe_ip_internal_types.GetSSLRecordsRequest:
       properties:
         is_active:
           description: 是否活跃
@@ -1052,6 +1132,49 @@ components:
       - remote_host
       - remote_port
       type: object
+    vibe_ip_internal_types.UpdateSSLRecordActiveRequest:
+      properties:
+        id:
+          description: SSL记录序号
+          type: integer
+        is_active:
+          description: 是否活跃
+          type: boolean
+      required:
+      - id
+      type: object
+    vibe_ip_internal_types.UpdateSSLRecordAutoRenewalRequest:
+      properties:
+        id:
+          description: SSL记录序号
+          type: integer
+        is_auto_renewal:
+          description: 是否自动续期
+          type: boolean
+      required:
+      - id
+      type: object
+    vibe_ip_internal_types.UpdateSSLRecordRequest:
+      properties:
+        id:
+          description: SSL记录序号
+          type: integer
+        provider:
+          description: CA提供商
+          type: string
+        renewal_days:
+          description: 过期前多少天开始续期
+          type: integer
+        webhook_ids:
+          description: 关联的 Webhook 列表
+          items:
+            type: integer
+          type: array
+          uniqueItems: false
+      required:
+      - id
+      - provider
+      type: object
     vibe_ip_internal_types.UpdateWebhookActiveRequest:
       properties:
         id:
@@ -1102,21 +1225,6 @@ components:
           type: boolean
       required:
       - id
-      type: object
-    vibe_ip_internal_types.UpdateWebhookSubRequest:
-      properties:
-        description:
-          description: 通知订阅描述
-          type: string
-        id:
-          description: 通知订阅序号
-          type: integer
-        name:
-          description: 通知订阅名称
-          type: string
-      required:
-      - id
-      - name
       type: object
 externalDocs:
   description: ""
@@ -3285,6 +3393,358 @@ paths:
       summary: 检查端口转发健康状态
       tags:
       - 端口转发
+  /ssl-records:
+    get:
+      description: 获取全部SSL记录
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/vibe_ip_internal_types.GetSSLRecordsRequest'
+        description: 请求参数
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 获取全部SSL记录
+      tags:
+      - SSL记录
+    post:
+      description: 创建SSL记录
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/vibe_ip_internal_types.CreateSSLRecordRequest'
+        description: 请求参数
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 创建SSL记录
+      tags:
+      - SSL记录
+  /ssl-records/{id}:
+    delete:
+      description: 删除SSL记录
+      parameters:
+      - description: SSL记录序号
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 删除SSL记录
+      tags:
+      - SSL记录
+    get:
+      description: 获取SSL记录详情
+      parameters:
+      - description: SSL记录序号
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 获取SSL记录详情
+      tags:
+      - SSL记录
+    patch:
+      description: 更新SSL记录
+      parameters:
+      - description: SSL记录序号
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateSSLRecordRequest'
+        description: 请求参数
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 更新SSL记录
+      tags:
+      - SSL记录
+  /ssl-records/{id}/active:
+    patch:
+      description: 更新SSL记录启用状态
+      parameters:
+      - description: SSL记录序号
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateSSLRecordActiveRequest'
+        description: 请求参数
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 更新SSL记录启用状态
+      tags:
+      - SSL记录
+  /ssl-records/{id}/apply:
+    post:
+      description: 申请新的SSL证书
+      parameters:
+      - description: SSL记录序号
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 申请新的SSL证书
+      tags:
+      - SSL记录
+  /ssl-records/{id}/auto-renewal:
+    patch:
+      description: 更新SSL记录自动续费状态
+      parameters:
+      - description: SSL记录序号
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateSSLRecordAutoRenewalRequest'
+        description: 请求参数
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 更新SSL记录自动续费状态
+      tags:
+      - SSL记录
   /tasks:
     get:
       description: 获取全部任务
@@ -3545,45 +4005,6 @@ paths:
       summary: 获取全部通知订阅
       tags:
       - 通知订阅
-    post:
-      description: 创建通知订阅
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.CreateWebhookSubRequest'
-        description: 请求参数
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
-          description: 成功响应
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 参数错误
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 错误响应
-      summary: 创建通知订阅
-      tags:
-      - 通知订阅
   /webhook-subs/{id}:
     delete:
       description: 删除通知订阅
@@ -3627,96 +4048,6 @@ paths:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
       summary: 删除通知订阅
-      tags:
-      - 通知订阅
-    get:
-      description: 获取通知订阅详情
-      parameters:
-      - description: 通知订阅序号
-        in: path
-        name: id
-        required: true
-        schema:
-          type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
-          description: 成功响应
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 参数错误
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 错误响应
-      summary: 获取通知订阅详情
-      tags:
-      - 通知订阅
-    patch:
-      description: 更新通知订阅
-      parameters:
-      - description: 通知订阅序号
-        in: path
-        name: id
-        required: true
-        schema:
-          type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateWebhookSubRequest'
-        description: 请求参数
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
-          description: 成功响应
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 参数错误
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internal_handlers.APIResponse'
-          description: 错误响应
-      summary: 更新通知订阅
       tags:
       - 通知订阅
   /webhook-subs/{id}/active:

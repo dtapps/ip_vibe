@@ -11,6 +11,27 @@ generate:
 	make swag_v2
 	make grpc_generate
 
+# 安装
+install-tools:
+	go install entgo.io/ent/cmd/ent@latest && \
+	go install github.com/swaggo/swag/cmd/swag@v1.16.3 && mv $(shell go env GOPATH)/bin/swag $(shell go env GOPATH)/bin/swag_v1 && \
+	go install github.com/swaggo/swag/v2/cmd/swag@latest && mv $(shell go env GOPATH)/bin/swag $(shell go env GOPATH)/bin/swag_v2 && \
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest && \
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest && \
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
+	@echo "All tools installed successfully"
+
+# 验证安装
+verify-tools:
+	@test -f $(shell go env GOPATH)/bin/ent && echo "✅ ent found" || echo "❌ ent not found"
+	@test -f $(shell go env GOPATH)/bin/swag_v1 && echo "✅ swag_v1 found" || echo "❌ swag_v1 not found"
+	@test -f $(shell go env GOPATH)/bin/swag_v2 && echo "✅ swag_v2 found" || echo "❌ swag_v2 not found"
+	@test -f $(shell go env GOPATH)/bin/protoc-gen-go && echo "✅ protoc-gen-go found" || echo "❌ protoc-gen-go not found"
+	@test -f $(shell go env GOPATH)/bin/protoc-gen-go-grpc && echo "✅ protoc-gen-go-grpc found" || echo "❌ protoc-gen-go-grpc not found"
+	@test -f $(shell go env GOPATH)/bin/protoc-gen-grpc-gateway && echo "✅ protoc-gen-grpc-gateway found" || echo "❌ protoc-gen-grpc-gateway not found"
+	@test -f $(shell go env GOPATH)/bin/protoc-gen-openapiv2 && echo "✅ protoc-gen-openapiv2 found" || echo "❌ protoc-gen-openapiv2 not found"
+
 generate_ent:
 # 	ent generate --feature schema/snapshot,privacy,entql,namedges,bidiedges,sql/schemaconfig,sql/lock,sql/modifier,sql/execquery,sql/upsert ./ent/schema
 	ent generate --feature namedges,bidiedges,sql/modifier,sql/execquery,sql/upsert ./ent/schema
@@ -20,10 +41,6 @@ ent_new:
 
 ent_new_log:
 	ent new RestyLog --target ./internal/ent_log/schema
-	ent new OperationLog --target ./internal/ent_log/schema
-
-swag_v1_install:
-	go install github.com/swaggo/swag/cmd/swag@latest
 
 swag_v1:
 	make swag_v1_version
@@ -31,16 +48,13 @@ swag_v1:
 	make swag_v1_init
 
 swag_v1_version:
-	swag -version
+	swag_v1 -version
 
 swag_v1_init:
-	swag init -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal --generatedTime -output internal/docs_2
+	swag_v1 init -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal --generatedTime -output internal/docs_2
 
 swag_v1_fmt:
-	swag fmt -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go
-
-swag_v2_install:
-	go install github.com/swaggo/swag/v2/cmd/swag@latest
+	swag_v1 fmt -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go
 
 swag_v2:
 	make swag_v2_version
@@ -75,7 +89,6 @@ grpc_generate_pb:
 	       ./internal/grpc_proto/*.proto
 	echo "✅ gRPC code generated successfully!"
 
-# go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
 grpc_generate_gateway:
 	@echo "Generating gRPC-Gateway code..."
 	protoc -I ./internal/grpc_proto \
@@ -86,7 +99,6 @@ grpc_generate_gateway:
 	       ./internal/grpc_proto/*.proto
 	echo "✅ gRPC and gRPC-Gateway code generated successfully!"
 
-# go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
 grpc_generate_openapi:
 	@echo "Generating OpenAPI v2 (Swagger)..."
 	protoc -I ./internal/grpc_proto \
