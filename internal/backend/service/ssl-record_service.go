@@ -3,11 +3,14 @@ package service
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/helper/operation_logs_helper"
+	"vibe_ip/internal/helper/ssl_helper"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
@@ -24,18 +27,25 @@ type SSLRecordService interface {
 	UpdateSSLRecordAutoRenewal(ctx context.Context, request *types.UpdateSSLRecordAutoRenewalRequest) (*types.GetSSLRecordRequest, error)
 	UpdateSSLRecordActive(ctx context.Context, request *types.UpdateSSLRecordActiveRequest) (*types.GetSSLRecordRequest, error)
 	DeleteSSLRecord(ctx context.Context, id int64) (*types.GetSSLRecordRequest, error)
+	ApplySSLRecord(ctx context.Context, id int64) (*types.GetSSLRecordRequest, error)
 }
 
 // SSLRecordServiceImpl SSL 记录服务实现
 type SSLRecordServiceImpl struct {
-	db        *ent.Client
-	debug     bool
-	logHelper *operation_logs_helper.OperationLogHelper
+	db            *ent.Client
+	debug         bool
+	logHelper     *operation_logs_helper.OperationLogHelper
+	sslUpdateTask *task.SSLUpdateTask
 }
 
 // NewSSLRecordService 创建 SSL 记录服务实例
-func NewSSLRecordService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper) SSLRecordService {
-	return &SSLRecordServiceImpl{db: db, debug: debug, logHelper: logHelper}
+func NewSSLRecordService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper, sslUpdateTask *task.SSLUpdateTask) SSLRecordService {
+	return &SSLRecordServiceImpl{
+		db:            db,
+		debug:         debug,
+		logHelper:     logHelper,
+		sslUpdateTask: sslUpdateTask,
+	}
 }
 
 // BuildResponse 将实体转换为响应
@@ -197,7 +207,7 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecord(ctx context.Context, request *typ
 
 // UpdateSSLRecordAutoRenewal 更新 SSL 记录自动续期状态
 func (s *SSLRecordServiceImpl) UpdateSSLRecordAutoRenewal(ctx context.Context, request *types.UpdateSSLRecordAutoRenewalRequest) (*types.GetSSLRecordRequest, error) {
-	// 查询CDN记录
+	// 查询SSL记录
 	firstSSLRecord, err := s.db.SSLRecord.Query().
 		Where(sslrecord.IDEQ(request.ID)).
 		First(ctx)
@@ -229,7 +239,7 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecordAutoRenewal(ctx context.Context, r
 
 // UpdateSSLRecordActive 更新 SSL 记录启用状态
 func (s *SSLRecordServiceImpl) UpdateSSLRecordActive(ctx context.Context, request *types.UpdateSSLRecordActiveRequest) (*types.GetSSLRecordRequest, error) {
-	// 查询CDN记录
+	// 查询SSL记录
 	firstSSLRecord, err := s.db.SSLRecord.Query().
 		Where(sslrecord.IDEQ(request.ID)).
 		First(ctx)
@@ -261,7 +271,7 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecordActive(ctx context.Context, reques
 
 // DeleteSSLRecord 删除 CDN 记录
 func (s *SSLRecordServiceImpl) DeleteSSLRecord(ctx context.Context, id int64) (*types.GetSSLRecordRequest, error) {
-	// 查询CDN记录
+	// 查询SSL记录
 	firstSSLRecord, err := s.db.SSLRecord.Query().
 		Where(sslrecord.IDEQ(id)).
 		First(ctx)
@@ -288,6 +298,45 @@ func (s *SSLRecordServiceImpl) DeleteSSLRecord(ctx context.Context, id int64) (*
 			fmt.Printf("删除通知订阅失败: %s\n", err.Error())
 		}
 	}
+
+	return &types.GetSSLRecordRequest{
+		ID: firstSSLRecord.ID,
+	}, nil
+}
+
+// ApplySSLRecord 申请新的SSL证书
+func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) (*types.GetSSLRecordRequest, error) {
+	// 查询SSL记录
+	firstSSLRecord, err := s.db.SSLRecord.Query().
+		Where(sslrecord.IDEQ(id)).
+		First(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("查询SSL记录失败: 记录不存在或 %w", err)
+		}
+		return nil, fmt.Errorf("查询SSL记录失败: %w", err)
+	}
+
+	// 申请新的SSL证书
+	err = s.sslUpdateTask.SSLUpdate(
+		ctx,
+		slog.Default(),
+		&task.PendingSSLRecord{
+			item:     firstSSLRecord,
+			platform: firstSSLRecord.Edges.Config.Platform,
+			params: &ssl_helper.SSLProcessParams{
+				SSLRecordID: cast.ToString(firstSSLRecord.ID),
+
+				ConfigJSON: firstSSLRecord.Edges.Config.ConfigJSON,
+			},
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("申请新的SSL证书失败: %w", err)
+	}
+
+	// 记录操作日志
+	_ = s.logHelper.RecordDataUpdate(ctx, firstSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "申请新的SSL证书")
 
 	return &types.GetSSLRecordRequest{
 		ID: firstSSLRecord.ID,

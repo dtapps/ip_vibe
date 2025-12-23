@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"vibe_ip/internal/backend/service"
+	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -31,11 +32,20 @@ func GetSSLRecords(c *gin.Context) {
 		return
 	}
 
+	// 创建SSL更新任务
+	sslUpdateTask := task.NewSSLUpdateTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
+	)
+
 	// 创建服务
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		sslUpdateTask,
 	)
 
 	// 调用
@@ -68,11 +78,20 @@ func GetSSLRecordDetail(c *gin.Context) {
 		return
 	}
 
+	// 创建SSL更新任务
+	sslUpdateTask := task.NewSSLUpdateTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
+	)
+
 	// 创建服务
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		sslUpdateTask,
 	)
 
 	// 调用
@@ -104,11 +123,20 @@ func CreateSSLRecord(c *gin.Context) {
 		return
 	}
 
+	// 创建SSL更新任务
+	sslUpdateTask := task.NewSSLUpdateTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
+	)
+
 	// 创建服务
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		sslUpdateTask,
 	)
 
 	// 调用
@@ -142,11 +170,20 @@ func UpdateSSLRecord(c *gin.Context) {
 		return
 	}
 
+	// 创建SSL更新任务
+	sslUpdateTask := task.NewSSLUpdateTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
+	)
+
 	// 创建服务
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		sslUpdateTask,
 	)
 
 	// 调用
@@ -180,11 +217,20 @@ func UpdateSSLRecordAutoRenewal(c *gin.Context) {
 		return
 	}
 
+	// 创建SSL更新任务
+	sslUpdateTask := task.NewSSLUpdateTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
+	)
+
 	// 创建服务
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		sslUpdateTask,
 	)
 
 	// 调用
@@ -218,11 +264,20 @@ func UpdateSSLRecordActive(c *gin.Context) {
 		return
 	}
 
+	// 创建SSL更新任务
+	sslUpdateTask := task.NewSSLUpdateTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
+	)
+
 	// 创建服务
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		sslUpdateTask,
 	)
 
 	// 调用
@@ -255,15 +310,70 @@ func DeleteSSLRecord(c *gin.Context) {
 		return
 	}
 
+	// 创建SSL更新任务
+	sslUpdateTask := task.NewSSLUpdateTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
+	)
+
 	// 创建服务
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		sslUpdateTask,
 	)
 
 	// 调用
 	response, err := service.DeleteSSLRecord(c, requestParams.ID)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, response)
+}
+
+// 申请新的SSL证书
+//
+//	@Description	申请新的SSL证书
+//	@Summary		申请新的SSL证书
+//	@Tags			SSL记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"SSL记录序号"
+//	@Success		200	{object}	APIResponse{data=types.GetSSLRecordRequest}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数错误"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Router			/ssl-records/{id}/apply [post]
+func ApplySSLRecord(c *gin.Context) {
+	// 请求参数
+	var requestParams types.ApplySSLRecordRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建SSL更新任务
+	sslUpdateTask := task.NewSSLUpdateTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
+	)
+
+	// 创建服务
+	service := service.NewSSLRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+		sslUpdateTask,
+	)
+
+	// 调用
+	response, err := service.ApplySSLRecord(c, requestParams.ID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

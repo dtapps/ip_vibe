@@ -17,6 +17,12 @@ import (
 	"go.dtapp.net/library/contrib/http_log"
 )
 
+// 客户端配置
+type CloudflareConfigure struct {
+	ApiKey string `json:"api_key"` // API密钥
+	Email  string `json:"email"`   // 邮箱
+}
+
 // 实现 SSLProcess 接口
 type SSLProcessCloudflareImpl struct {
 	debug         bool                       // 调试模式
@@ -36,11 +42,6 @@ func NewSSLProcessCloudflare(debug bool, logger *slog.Logger, httpTransport *htt
 		logger:        logger,
 		httpTransport: httpTransport,
 	}
-}
-
-type CloudflareConfigure struct {
-	ApiKey string `json:"api_key"` // API密钥
-	Email  string `json:"email"`   // 邮箱
 }
 
 // 配置
@@ -92,7 +93,7 @@ func (d *SSLProcessCloudflareImpl) Configure(ctx context.Context, params *SSLPro
 // domains 域名列表，可以同时申请主域名和通配符域名
 func (d *SSLProcessCloudflareImpl) Apply(ctx context.Context, domains []string) (res *certificate.Resource, err error) {
 
-	// 设置 DNS-01 挑战提供者 (Cloudflare)
+	// 设置 DNS-01 挑战提供者
 	cfProvider, err := cloudflare.NewDNSProviderConfig(&cloudflare.Config{
 		AuthToken: d.platformConfig.ApiKey,
 	})

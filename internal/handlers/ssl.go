@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
+	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/global"
@@ -29,11 +30,20 @@ func Ssl(c *gin.Context) {
 		},
 	}
 
+	// 创建SSL更新任务
+	sslUpdateTask := task.NewSSLUpdateTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
+	)
+
 	// 创建服务
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
+		sslUpdateTask,
 	)
 
 	// 查询全部SSL记录
