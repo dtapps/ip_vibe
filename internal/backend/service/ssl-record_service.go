@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/sslrecord"
@@ -323,9 +322,8 @@ func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) (*t
 	}
 
 	// 申请新的SSL证书
-	err = s.sslUpdateTask.SSLUpdate(
+	err = s.sslUpdateTask.AddTask(
 		ctx,
-		slog.Default(),
 		&task.PendingSSLRecord{
 			Item:     firstSSLRecord,
 			Platform: firstSSLRecord.Edges.Config.Platform,

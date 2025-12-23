@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log/slog"
 	"math/rand"
+	"strings"
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/platformconfig"
@@ -63,10 +64,10 @@ func (s *SSLUpdateTask) StartSSLJob(ctx context.Context) (err error) {
 	// 每10小时执行一次
 	s.sslJob, err = s.cron.NewJob(
 		gocron.DurationJob(10*time.Hour),                     // 每10小时执行一次
-		gocron.NewTask(s.runSSLTask),                         // 执行任务
+		gocron.NewTask(s.RunSSLTask),                         // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		// gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
-		gocron.WithName("SSL记录刷新"),    // 任务名称
+		gocron.WithName("SSL证书刷新"),    // 任务名称
 		gocron.WithTags("ssl_update"), // 任务标签
 	)
 	if err != nil {
@@ -103,7 +104,8 @@ func (s *SSLUpdateTask) CalculateNextRun(sslRecord *ent.SSLRecord, now time.Time
 	return nextRun
 }
 
-func (s *SSLUpdateTask) runSSLTask() {
+// 运行SSL刷新任务
+func (s *SSLUpdateTask) RunSSLTask() {
 
 	ctx := context.Background()
 	processingType := "SSL"
@@ -164,14 +166,14 @@ func (s *SSLUpdateTask) runSSLTask() {
 				item := item // 创建副本以避免闭包问题
 				eg.Go(func() error {
 
-					newLog := s.logger.With(
+					logger := s.logger.With(
 						slog.String("处理方式", "并发"),
 						slog.String("处理类型", processingType),
 						slog.String("平台", item.Platform.String()),
 					)
 
-					if err = s.SSLUpdate(egCtx, newLog, item); err != nil {
-						newLog.ErrorContext(egCtx, "处理失败",
+					if err = s.SSLUpdate(egCtx, logger, item); err != nil {
+						logger.ErrorContext(egCtx, "处理失败",
 							slog.Any("处理参数", item.Params),
 							slog.Any("error", err),
 						)
@@ -193,14 +195,14 @@ func (s *SSLUpdateTask) runSSLTask() {
 		// 2. 串行处理不支持并发的记录
 		for _, item := range serialRecords {
 
-			newLog := s.logger.With(
+			logger := s.logger.With(
 				slog.String("处理方式", "串行"),
 				slog.String("处理类型", processingType),
 				slog.String("平台", item.Platform.String()),
 			)
 
-			if err = s.SSLUpdate(ctx, newLog, item); err != nil {
-				newLog.ErrorContext(ctx, "处理失败",
+			if err = s.SSLUpdate(ctx, logger, item); err != nil {
+				logger.ErrorContext(ctx, "处理失败",
 					slog.Any("处理参数", item.Params),
 					slog.Any("error", err),
 				)
@@ -405,4 +407,49 @@ func (s *SSLUpdateTask) ParseCertificateValidity(res *certificate.Resource) (*Ce
 		NotBefore: cert.NotBefore,
 		NotAfter:  cert.NotAfter,
 	}, nil
+}
+
+// 手动添加SSL证书申请任务
+func (s *SSLUpdateTask) AddTask(ctx context.Context, pendingRecord *PendingSSLRecord) (err error) {
+	// 任务名称
+	taskName := fmt.Sprintf("SSL证书申请-%s", pendingRecord.Params.SSLRecordID)
+	// 获取所有现有任务
+	allJobs := s.cron.Jobs()
+	// 检查是否已存在同名任务
+	for _, job := range allJobs {
+		if strings.EqualFold(job.Name(), taskName) {
+			return fmt.Errorf("任务 %s 已存在，无法重复添加", taskName)
+		}
+	}
+	// 不存在同名任务，添加新任务
+	_, err = s.cron.NewJob(
+		gocron.OneTimeJob(
+			gocron.OneTimeJobStartDateTime(time.Now().Add(5*time.Second)), // 5秒后开始
+		),
+		gocron.NewTask(
+			s.executeSSLUpdate,
+			ctx,
+			s.logger,
+			pendingRecord,
+		),
+		gocron.WithSingletonMode(gocron.LimitModeWait), // 单例模式
+		gocron.WithName(taskName),                      // 任务名称
+	)
+	return err
+}
+
+func (s *SSLUpdateTask) executeSSLUpdate(taskCtx context.Context, taskLogger *slog.Logger, taskPendingRecord *PendingSSLRecord) {
+	// 增强日志记录器
+	taskLogger = taskLogger.With(
+		slog.String("处理方式", "手动"),
+		slog.String("平台", taskPendingRecord.Platform.String()),
+	)
+
+	err := s.SSLUpdate(taskCtx, taskLogger, taskPendingRecord)
+	if err != nil {
+		taskLogger.ErrorContext(taskCtx, "处理失败",
+			slog.Any("处理参数", taskPendingRecord.Params),
+			slog.Any("error", err),
+		)
+	}
 }
