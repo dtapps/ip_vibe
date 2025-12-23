@@ -17,6 +17,7 @@ import (
 
 	"github.com/go-co-op/gocron/v2"
 	"go.dtapp.net/library/contrib/http_log"
+	"go.dtapp.net/library/utils/gorandom"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -110,7 +111,7 @@ func (s *DomainMonitorTask) RunDomainMonitorTask() {
 	ctx := context.Background()
 
 	logger := s.logger.With(
-		slog.String("类型", "DomainMonitor"),
+		slog.String("执行编号", s.dmjob.ID().String()),
 	)
 	logger.InfoContext(ctx, "开始执行")
 
@@ -186,7 +187,7 @@ func (s *DomainMonitorTask) ExecuteMonitorTask(ctx context.Context, logger *slog
 
 	// 日志
 	logger = logger.With(
-		slog.String("处理方式", "并发"),
+		slog.String("处理编号", gorandom.Alphanumeric(10)),
 		slog.Int64("记录", domainMonitor.ID),
 		slog.String("域名", domainMonitor.Domain),
 		slog.String("协议", domainMonitor.CheckProtocol.String()),

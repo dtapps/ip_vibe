@@ -21,6 +21,7 @@ import (
 	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/utils/goarray"
 	"go.dtapp.net/library/utils/gomd5"
+	"go.dtapp.net/library/utils/gorandom"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -123,6 +124,7 @@ func (s *IPUpdateTask) RunDnsTask() {
 
 	// 日志
 	logger := s.logger.With(
+		slog.String("执行编号", s.dnsJob.ID().String()),
 		slog.String("类型", "DNS"),
 	)
 	logger.InfoContext(ctx, "开始执行")
@@ -295,6 +297,7 @@ func (s *IPUpdateTask) RunCdnTask() {
 
 	// 日志
 	logger := s.logger.With(
+		slog.String("执行编号", s.cdnJob.ID().String()),
 		slog.String("类型", "CDN"),
 	)
 	logger.InfoContext(ctx, "开始执行")
@@ -461,6 +464,7 @@ func (s *IPUpdateTask) CdnUpdate(ctx context.Context, logger *slog.Logger, pendi
 
 	// 日志
 	logger = logger.With(
+		slog.String("处理编号", gorandom.Alphanumeric(10)),
 		slog.String("记录", pendingRecord.params.CDNRecordID),
 		slog.String("提供商", pendingRecord.item.Type.String()),
 		slog.String("平台", pendingRecord.platform.String()),
@@ -514,6 +518,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, pendi
 
 	// 日志
 	logger = logger.With(
+		slog.String("处理编号", gorandom.Alphanumeric(10)),
 		slog.String("记录", pendingRecord.params.DNSRecordID),
 		slog.String("提供商", pendingRecord.item.Type.String()),
 		slog.String("平台", pendingRecord.platform.String()),

@@ -22,6 +22,7 @@ import (
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
 	"go.dtapp.net/library/contrib/http_log"
+	"go.dtapp.net/library/utils/gorandom"
 	"go.dtapp.net/library/utils/gostring"
 	"golang.org/x/sync/errgroup"
 )
@@ -123,6 +124,7 @@ func (s *SSLUpdateTask) RunSSLTask() {
 	ctx := context.Background()
 
 	logger := s.logger.With(
+		slog.String("执行编号", s.sslJob.ID().String()),
 		slog.String("类型", "SSL"),
 	)
 	logger.InfoContext(ctx, "开始执行")
@@ -245,6 +247,7 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 
 	// 日志
 	logger = logger.With(
+		slog.String("处理编号", gorandom.Alphanumeric(10)),
 		slog.String("记录", pendingRecord.Params.SSLRecordID),
 		slog.String("提供商", pendingRecord.Item.Provider.String()),
 		slog.String("平台", pendingRecord.Platform.String()),
