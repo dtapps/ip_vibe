@@ -14,6 +14,7 @@ type SSLProcessParams struct {
 	SSLRecordID string // SSL记录ID
 
 	ConfigJSON json.RawMessage // 配置
+	Domains    []string        // 域名列表
 }
 
 type SSLProcess interface {

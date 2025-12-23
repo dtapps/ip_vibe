@@ -141,6 +141,7 @@ func (s *SSLUpdateTask) runSSLTask() {
 						SSLRecordID: cast.ToString(sslRecord.ID),
 
 						ConfigJSON: sslRecord.Edges.Config.ConfigJSON,
+						Domains:    gostring.Split(sslRecord.Domain, ","),
 					},
 				}
 
@@ -166,8 +167,6 @@ func (s *SSLUpdateTask) runSSLTask() {
 					newLog := s.logger.With(
 						slog.String("处理方式", "并发"),
 						slog.String("处理类型", processingType),
-						slog.Int64("记录", item.Item.ID),
-						slog.String("域名", item.Item.Domain),
 						slog.String("平台", item.Platform.String()),
 					)
 
@@ -197,8 +196,6 @@ func (s *SSLUpdateTask) runSSLTask() {
 			newLog := s.logger.With(
 				slog.String("处理方式", "串行"),
 				slog.String("处理类型", processingType),
-				slog.Int64("记录", item.Item.ID),
-				slog.String("域名", item.Item.Domain),
 				slog.String("平台", item.Platform.String()),
 			)
 
@@ -242,11 +239,16 @@ type PendingSSLRecord struct {
 // pendingRecord：待处理记录
 func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingSSLRecord) (err error) {
 
+	logger = logger.With(
+		slog.String("记录", pendingRecord.Params.SSLRecordID),
+		slog.Any("域名列表", pendingRecord.Params.Domains),
+	)
+
+	logger.InfoContext(ctx, "开始执行申请")
+	defer logger.InfoContext(ctx, "申请完成")
+
 	// 初始化SSL处理
 	var sslProcess ssl_helper.SSLProcess
-
-	// 准备域名列表
-	domains := gostring.Split(pendingRecord.Item.Domain, ",")
 
 	// 准备保存
 	updateOne := s.db.SSLRecord.UpdateOneID(pendingRecord.Item.ID)
@@ -317,7 +319,7 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 	}
 
 	// 申请
-	res, err := sslProcess.Apply(ctx, domains)
+	res, err := sslProcess.Apply(ctx, pendingRecord.Params.Domains)
 	if err != nil {
 		updateOne.SetLastAPIResponse(err.Error())
 		updateOne.SetLastAPIResponseAt(time.Now())

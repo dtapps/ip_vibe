@@ -15,6 +15,7 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/spf13/cast"
+	"go.dtapp.net/library/utils/gostring"
 )
 
 // SSLRecordService SSL 记录服务接口
@@ -332,6 +333,7 @@ func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) (*t
 				SSLRecordID: cast.ToString(firstSSLRecord.ID),
 
 				ConfigJSON: firstSSLRecord.Edges.Config.ConfigJSON,
+				Domains:    gostring.Split(firstSSLRecord.Domain, ","),
 			},
 		},
 	)
