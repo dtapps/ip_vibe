@@ -1,0 +1,47 @@
+{{ define "order_field_by" }}
+
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+{{/* 以下行告诉IntelliJ/GoLand启用基于*gen.Graph类型的自动完成 */}}
+
+{{/* 添加生成的文件的基头信息 */}}
+{{ $pkg := base $.Config.Package }}
+{{ template "header" $ }}
+
+{{ range $n := $.Nodes }}
+
+{{ range $f := $n.Fields }}
+
+{{/* 跳过边字段，只对普通字段生成排序方法 */}}
+{{ if $f.IsEdgeField }}
+    {{ continue }}
+{{ end }}
+
+{{/* 生成降序方法 */}}
+// OrderBy{{ $f.StructField }}Desc 按字段 {{ $f.Name }} 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *{{ $n.Name }}Query，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//   records, err := client.{{ $n.Name }}.Query().
+//       OrderBy{{ $f.StructField }}Desc().
+//       Limit(10).
+//       All(ctx)
+func (q *{{ $n.Name }}Query) OrderBy{{ $f.StructField }}Desc() *{{ $n.Name }}Query {
+    return q.Order(Desc({{ $n.Package }}.Field{{ $f.StructField }}))
+}
+
+// OrderBy{{ $f.StructField }}Asc 按字段 {{ $f.Name }} 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *{{ $n.Name }}Query，支持链式调用其他查询方法。
+// 示例：
+//   records, err := client.{{ $n.Name }}.Query().
+//       OrderBy{{ $f.StructField }}Asc().
+//       All(ctx)
+func (q *{{ $n.Name }}Query) OrderBy{{ $f.StructField }}Asc() *{{ $n.Name }}Query {
+    return q.Order(Asc({{ $n.Package }}.Field{{ $f.StructField }}))
+}
+
+{{ end }}
+
+{{ end }}
+
+{{ end }}

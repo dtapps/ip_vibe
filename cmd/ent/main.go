@@ -26,6 +26,7 @@ func main() {
 			// "./internal/ent/template/stringer.tmpl",
 			"./internal/ent/template/aggregate.tmpl",
 			"./internal/ent/template/order_by.tmpl",
+			"./internal/ent/template/order_field_by.tmpl",
 			"./internal/ent/template/pagination.tmpl",
 			"./internal/ent/template/to_map.tmpl",
 			"./internal/ent/template/query_gorm_compat.tmpl",
