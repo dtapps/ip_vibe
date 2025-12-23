@@ -322,9 +322,9 @@ func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) (*t
 		ctx,
 		slog.Default(),
 		&task.PendingSSLRecord{
-			item:     firstSSLRecord,
-			platform: firstSSLRecord.Edges.Config.Platform,
-			params: &ssl_helper.SSLProcessParams{
+			Item:     firstSSLRecord,
+			Platform: firstSSLRecord.Edges.Config.Platform,
+			Params: &ssl_helper.SSLProcessParams{
 				SSLRecordID: cast.ToString(firstSSLRecord.ID),
 
 				ConfigJSON: firstSSLRecord.Edges.Config.ConfigJSON,

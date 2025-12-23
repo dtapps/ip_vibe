@@ -95,9 +95,9 @@ func (s *SSLUpdateTask) runSSLTask() {
 
 			// 创建待处理记录
 			pendingRecord := &PendingSSLRecord{
-				item:     sslRecord,
-				platform: sslRecord.Edges.Config.Platform,
-				params: &ssl_helper.SSLProcessParams{
+				Item:     sslRecord,
+				Platform: sslRecord.Edges.Config.Platform,
+				Params: &ssl_helper.SSLProcessParams{
 					SSLRecordID: cast.ToString(sslRecord.ID),
 
 					ConfigJSON: sslRecord.Edges.Config.ConfigJSON,
@@ -125,14 +125,14 @@ func (s *SSLUpdateTask) runSSLTask() {
 					newLog := s.logger.With(
 						slog.String("处理方式", "并发"),
 						slog.String("处理类型", processingType),
-						slog.Int64("记录", item.item.ID),
-						slog.String("域名", item.item.Domain),
-						slog.String("平台", item.platform.String()),
+						slog.Int64("记录", item.Item.ID),
+						slog.String("域名", item.Item.Domain),
+						slog.String("平台", item.Platform.String()),
 					)
 
 					if err = s.SSLUpdate(egCtx, newLog, item); err != nil {
 						newLog.ErrorContext(egCtx, "处理失败",
-							slog.Any("处理参数", item.params),
+							slog.Any("处理参数", item.Params),
 							slog.Any("error", err),
 						)
 					}
@@ -156,14 +156,14 @@ func (s *SSLUpdateTask) runSSLTask() {
 			newLog := s.logger.With(
 				slog.String("处理方式", "串行"),
 				slog.String("处理类型", processingType),
-				slog.Int64("记录", item.item.ID),
-				slog.String("域名", item.item.Domain),
-				slog.String("平台", item.platform.String()),
+				slog.Int64("记录", item.Item.ID),
+				slog.String("域名", item.Item.Domain),
+				slog.String("平台", item.Platform.String()),
 			)
 
 			if err = s.SSLUpdate(ctx, newLog, item); err != nil {
 				newLog.ErrorContext(ctx, "处理失败",
-					slog.Any("处理参数", item.params),
+					slog.Any("处理参数", item.Params),
 					slog.Any("error", err),
 				)
 			}
@@ -192,9 +192,9 @@ func (s *SSLUpdateTask) runSSLTask() {
 
 // 待处理
 type PendingSSLRecord struct {
-	item     *ent.SSLRecord               // SSL记录
-	platform platformconfig.Platform      // 平台
-	params   *ssl_helper.SSLProcessParams // 处理参数
+	Item     *ent.SSLRecord               // SSL记录
+	Platform platformconfig.Platform      // 平台
+	Params   *ssl_helper.SSLProcessParams // 处理参数
 }
 
 // 更新SSL记录
@@ -205,13 +205,13 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 	var sslProcess ssl_helper.SSLProcess
 
 	// 准备域名列表
-	domains := gostring.Split(pendingRecord.item.Domain, ",")
+	domains := gostring.Split(pendingRecord.Item.Domain, ",")
 
 	// 准备保存
-	updateOne := s.db.SSLRecord.UpdateOneID(pendingRecord.item.ID)
+	updateOne := s.db.SSLRecord.UpdateOneID(pendingRecord.Item.ID)
 	createLogOne := s.logDb.SSLCertificateHistory.Create()
 
-	switch pendingRecord.platform {
+	switch pendingRecord.Platform {
 	case platformconfig.PlatformCloudflare:
 		sslProcess = ssl_helper.NewSSLProcessCloudflare(
 			global.GvaEnv.DEBUG,
@@ -255,7 +255,7 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 			global.GvaHttpLog,
 		)
 	default:
-		err = fmt.Errorf("暂不支持该平台: %s", pendingRecord.platform.String())
+		err = fmt.Errorf("暂不支持该平台: %s", pendingRecord.Platform.String())
 		updateOne.SetLastAPIResponse(err.Error())
 		updateOne.SetLastAPIResponseAt(time.Now())
 		_ = updateOne.Exec(ctx)
@@ -263,7 +263,7 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 	}
 
 	// 配置
-	err = sslProcess.Configure(ctx, pendingRecord.params)
+	err = sslProcess.Configure(ctx, pendingRecord.Params)
 	if err != nil {
 		updateOne.SetLastAPIResponse(err.Error())
 		updateOne.SetLastAPIResponseAt(time.Now())
@@ -305,7 +305,7 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 	_ = updateOne.Exec(ctx)
 
 	// 保存到SSL证书申请历史记录
-	createLogOne.SetSslRecordID(pendingRecord.item.ID)
+	createLogOne.SetSslRecordID(pendingRecord.Item.ID)
 	createLogOne.SetCertDomain(res.Domain)
 	createLogOne.SetCertURL(res.CertURL)
 	createLogOne.SetCertStableURL(res.CertStableURL)
@@ -315,7 +315,7 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 	createLogOne.SetCertCsr(string(res.CSR))
 	createLogOne.SetNotBefore(certValidity.NotBefore)
 	createLogOne.SetNotAfter(certValidity.NotAfter)
-	createLogOne.SetProvider(sslcertificatehistory.Provider(pendingRecord.item.Provider))
+	createLogOne.SetProvider(sslcertificatehistory.Provider(pendingRecord.Item.Provider))
 	_ = createLogOne.Exec(ctx)
 
 	return nil
