@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/go-acme/lego/providers/dns/alidns"
 	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-acme/lego/v4/lego"
+	"github.com/go-acme/lego/v4/providers/dns/alidns"
 	"github.com/go-acme/lego/v4/registration"
 	"go.dtapp.net/library/contrib/http_log"
 )
