@@ -32,6 +32,8 @@ type Tx struct {
 	IpGroupDevice *IpGroupDeviceClient
 	// PlatformConfig is the client for interacting with the PlatformConfig builders.
 	PlatformConfig *PlatformConfigClient
+	// SSLRecord is the client for interacting with the SSLRecord builders.
+	SSLRecord *SSLRecordClient
 	// Webhook is the client for interacting with the Webhook builders.
 	Webhook *WebhookClient
 	// WebhookSubscription is the client for interacting with the WebhookSubscription builders.
@@ -176,6 +178,7 @@ func (tx *Tx) init() {
 	tx.IpGroup = NewIpGroupClient(tx.config)
 	tx.IpGroupDevice = NewIpGroupDeviceClient(tx.config)
 	tx.PlatformConfig = NewPlatformConfigClient(tx.config)
+	tx.SSLRecord = NewSSLRecordClient(tx.config)
 	tx.Webhook = NewWebhookClient(tx.config)
 	tx.WebhookSubscription = NewWebhookSubscriptionClient(tx.config)
 }

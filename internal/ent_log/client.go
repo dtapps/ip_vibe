@@ -15,6 +15,7 @@ import (
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/restylog"
+	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/ent_log/webhookhistory"
 
 	"entgo.io/ent"
@@ -37,6 +38,8 @@ type Client struct {
 	OperationLog *OperationLogClient
 	// RestyLog is the client for interacting with the RestyLog builders.
 	RestyLog *RestyLogClient
+	// SSLCertificateHistory is the client for interacting with the SSLCertificateHistory builders.
+	SSLCertificateHistory *SSLCertificateHistoryClient
 	// WebhookHistory is the client for interacting with the WebhookHistory builders.
 	WebhookHistory *WebhookHistoryClient
 }
@@ -54,6 +57,7 @@ func (c *Client) init() {
 	c.HttpLog = NewHttpLogClient(c.config)
 	c.OperationLog = NewOperationLogClient(c.config)
 	c.RestyLog = NewRestyLogClient(c.config)
+	c.SSLCertificateHistory = NewSSLCertificateHistoryClient(c.config)
 	c.WebhookHistory = NewWebhookHistoryClient(c.config)
 }
 
@@ -145,13 +149,14 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                  ctx,
-		config:               cfg,
-		DomainMonitorHistory: NewDomainMonitorHistoryClient(cfg),
-		HttpLog:              NewHttpLogClient(cfg),
-		OperationLog:         NewOperationLogClient(cfg),
-		RestyLog:             NewRestyLogClient(cfg),
-		WebhookHistory:       NewWebhookHistoryClient(cfg),
+		ctx:                   ctx,
+		config:                cfg,
+		DomainMonitorHistory:  NewDomainMonitorHistoryClient(cfg),
+		HttpLog:               NewHttpLogClient(cfg),
+		OperationLog:          NewOperationLogClient(cfg),
+		RestyLog:              NewRestyLogClient(cfg),
+		SSLCertificateHistory: NewSSLCertificateHistoryClient(cfg),
+		WebhookHistory:        NewWebhookHistoryClient(cfg),
 	}, nil
 }
 
@@ -169,13 +174,14 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                  ctx,
-		config:               cfg,
-		DomainMonitorHistory: NewDomainMonitorHistoryClient(cfg),
-		HttpLog:              NewHttpLogClient(cfg),
-		OperationLog:         NewOperationLogClient(cfg),
-		RestyLog:             NewRestyLogClient(cfg),
-		WebhookHistory:       NewWebhookHistoryClient(cfg),
+		ctx:                   ctx,
+		config:                cfg,
+		DomainMonitorHistory:  NewDomainMonitorHistoryClient(cfg),
+		HttpLog:               NewHttpLogClient(cfg),
+		OperationLog:          NewOperationLogClient(cfg),
+		RestyLog:              NewRestyLogClient(cfg),
+		SSLCertificateHistory: NewSSLCertificateHistoryClient(cfg),
+		WebhookHistory:        NewWebhookHistoryClient(cfg),
 	}, nil
 }
 
@@ -204,21 +210,23 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.DomainMonitorHistory.Use(hooks...)
-	c.HttpLog.Use(hooks...)
-	c.OperationLog.Use(hooks...)
-	c.RestyLog.Use(hooks...)
-	c.WebhookHistory.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.DomainMonitorHistory, c.HttpLog, c.OperationLog, c.RestyLog,
+		c.SSLCertificateHistory, c.WebhookHistory,
+	} {
+		n.Use(hooks...)
+	}
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.DomainMonitorHistory.Intercept(interceptors...)
-	c.HttpLog.Intercept(interceptors...)
-	c.OperationLog.Intercept(interceptors...)
-	c.RestyLog.Intercept(interceptors...)
-	c.WebhookHistory.Intercept(interceptors...)
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.DomainMonitorHistory, c.HttpLog, c.OperationLog, c.RestyLog,
+		c.SSLCertificateHistory, c.WebhookHistory,
+	} {
+		n.Intercept(interceptors...)
+	}
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -232,6 +240,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.OperationLog.mutate(ctx, m)
 	case *RestyLogMutation:
 		return c.RestyLog.mutate(ctx, m)
+	case *SSLCertificateHistoryMutation:
+		return c.SSLCertificateHistory.mutate(ctx, m)
 	case *WebhookHistoryMutation:
 		return c.WebhookHistory.mutate(ctx, m)
 	default:
@@ -771,6 +781,139 @@ func (c *RestyLogClient) mutate(ctx context.Context, m *RestyLogMutation) (Value
 	}
 }
 
+// SSLCertificateHistoryClient is a client for the SSLCertificateHistory schema.
+type SSLCertificateHistoryClient struct {
+	config
+}
+
+// NewSSLCertificateHistoryClient returns a client for the SSLCertificateHistory from the given config.
+func NewSSLCertificateHistoryClient(c config) *SSLCertificateHistoryClient {
+	return &SSLCertificateHistoryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `sslcertificatehistory.Hooks(f(g(h())))`.
+func (c *SSLCertificateHistoryClient) Use(hooks ...Hook) {
+	c.hooks.SSLCertificateHistory = append(c.hooks.SSLCertificateHistory, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `sslcertificatehistory.Intercept(f(g(h())))`.
+func (c *SSLCertificateHistoryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SSLCertificateHistory = append(c.inters.SSLCertificateHistory, interceptors...)
+}
+
+// Create returns a builder for creating a SSLCertificateHistory entity.
+func (c *SSLCertificateHistoryClient) Create() *SSLCertificateHistoryCreate {
+	mutation := newSSLCertificateHistoryMutation(c.config, OpCreate)
+	return &SSLCertificateHistoryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SSLCertificateHistory entities.
+func (c *SSLCertificateHistoryClient) CreateBulk(builders ...*SSLCertificateHistoryCreate) *SSLCertificateHistoryCreateBulk {
+	return &SSLCertificateHistoryCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SSLCertificateHistoryClient) MapCreateBulk(slice any, setFunc func(*SSLCertificateHistoryCreate, int)) *SSLCertificateHistoryCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SSLCertificateHistoryCreateBulk{err: fmt.Errorf("calling to SSLCertificateHistoryClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SSLCertificateHistoryCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SSLCertificateHistoryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SSLCertificateHistory.
+func (c *SSLCertificateHistoryClient) Update() *SSLCertificateHistoryUpdate {
+	mutation := newSSLCertificateHistoryMutation(c.config, OpUpdate)
+	return &SSLCertificateHistoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SSLCertificateHistoryClient) UpdateOne(_m *SSLCertificateHistory) *SSLCertificateHistoryUpdateOne {
+	mutation := newSSLCertificateHistoryMutation(c.config, OpUpdateOne, withSSLCertificateHistory(_m))
+	return &SSLCertificateHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SSLCertificateHistoryClient) UpdateOneID(id int64) *SSLCertificateHistoryUpdateOne {
+	mutation := newSSLCertificateHistoryMutation(c.config, OpUpdateOne, withSSLCertificateHistoryID(id))
+	return &SSLCertificateHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SSLCertificateHistory.
+func (c *SSLCertificateHistoryClient) Delete() *SSLCertificateHistoryDelete {
+	mutation := newSSLCertificateHistoryMutation(c.config, OpDelete)
+	return &SSLCertificateHistoryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SSLCertificateHistoryClient) DeleteOne(_m *SSLCertificateHistory) *SSLCertificateHistoryDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SSLCertificateHistoryClient) DeleteOneID(id int64) *SSLCertificateHistoryDeleteOne {
+	builder := c.Delete().Where(sslcertificatehistory.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SSLCertificateHistoryDeleteOne{builder}
+}
+
+// Query returns a query builder for SSLCertificateHistory.
+func (c *SSLCertificateHistoryClient) Query() *SSLCertificateHistoryQuery {
+	return &SSLCertificateHistoryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSSLCertificateHistory},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SSLCertificateHistory entity by its id.
+func (c *SSLCertificateHistoryClient) Get(ctx context.Context, id int64) (*SSLCertificateHistory, error) {
+	return c.Query().Where(sslcertificatehistory.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SSLCertificateHistoryClient) GetX(ctx context.Context, id int64) *SSLCertificateHistory {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SSLCertificateHistoryClient) Hooks() []Hook {
+	return c.hooks.SSLCertificateHistory
+}
+
+// Interceptors returns the client interceptors.
+func (c *SSLCertificateHistoryClient) Interceptors() []Interceptor {
+	return c.inters.SSLCertificateHistory
+}
+
+func (c *SSLCertificateHistoryClient) mutate(ctx context.Context, m *SSLCertificateHistoryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SSLCertificateHistoryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SSLCertificateHistoryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SSLCertificateHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SSLCertificateHistoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent_log: unknown SSLCertificateHistory mutation op: %q", m.Op())
+	}
+}
+
 // WebhookHistoryClient is a client for the WebhookHistory schema.
 type WebhookHistoryClient struct {
 	config
@@ -907,10 +1050,11 @@ func (c *WebhookHistoryClient) mutate(ctx context.Context, m *WebhookHistoryMuta
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		DomainMonitorHistory, HttpLog, OperationLog, RestyLog, WebhookHistory []ent.Hook
+		DomainMonitorHistory, HttpLog, OperationLog, RestyLog, SSLCertificateHistory,
+		WebhookHistory []ent.Hook
 	}
 	inters struct {
-		DomainMonitorHistory, HttpLog, OperationLog, RestyLog,
+		DomainMonitorHistory, HttpLog, OperationLog, RestyLog, SSLCertificateHistory,
 		WebhookHistory []ent.Interceptor
 	}
 )

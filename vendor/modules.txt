@@ -63,7 +63,7 @@ github.com/alibabacloud-go/darabonba-openapi/v2/utils
 # github.com/alibabacloud-go/debug v1.0.1
 ## explicit; go 1.18
 github.com/alibabacloud-go/debug/debug
-# github.com/alibabacloud-go/esa-20240910/v2 v2.41.1
+# github.com/alibabacloud-go/esa-20240910/v2 v2.42.0
 ## explicit; go 1.14
 github.com/alibabacloud-go/esa-20240910/v2/client
 # github.com/alibabacloud-go/tea v1.3.14
@@ -510,7 +510,7 @@ github.com/miekg/dns
 # github.com/mitchellh/go-wordwrap v1.0.1
 ## explicit; go 1.14
 github.com/mitchellh/go-wordwrap
-# github.com/modelcontextprotocol/go-sdk v1.1.0
+# github.com/modelcontextprotocol/go-sdk v1.2.0
 ## explicit; go 1.23.0
 github.com/modelcontextprotocol/go-sdk/auth
 github.com/modelcontextprotocol/go-sdk/internal/jsonrpc2
@@ -518,6 +518,7 @@ github.com/modelcontextprotocol/go-sdk/internal/util
 github.com/modelcontextprotocol/go-sdk/internal/xcontext
 github.com/modelcontextprotocol/go-sdk/jsonrpc
 github.com/modelcontextprotocol/go-sdk/mcp
+github.com/modelcontextprotocol/go-sdk/oauthex
 # github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
 ## explicit
 github.com/modern-go/concurrent
@@ -595,10 +596,10 @@ github.com/swaggo/swag
 # github.com/swaggo/swag/v2 v2.0.0-rc4
 ## explicit; go 1.18
 github.com/swaggo/swag/v2
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.11
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.17
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.16
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.17
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors
@@ -609,7 +610,7 @@ github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/regions
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.16
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.13
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.17
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901
 # github.com/tidwall/gjson v1.18.0
@@ -860,12 +861,12 @@ golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/typeparams
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/genproto/googleapis/api v0.0.0-20251213004720-97cd9d5aeac2
+# google.golang.org/genproto/googleapis/api v0.0.0-20251222181119-0a764e51fe1b
 ## explicit; go 1.24.0
 google.golang.org/genproto/googleapis/api
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20251213004720-97cd9d5aeac2
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20251222181119-0a764e51fe1b
 ## explicit; go 1.24.0
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.77.0

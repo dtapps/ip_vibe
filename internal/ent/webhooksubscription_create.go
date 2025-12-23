@@ -156,6 +156,11 @@ func (_c *WebhookSubscriptionCreate) check() error {
 	if _, ok := _c.mutation.WebhookID(); !ok {
 		return &ValidationError{Name: "webhook_id", err: errors.New(`ent: missing required field "WebhookSubscription.webhook_id"`)}
 	}
+	if v, ok := _c.mutation.WebhookID(); ok {
+		if err := webhooksubscription.WebhookIDValidator(v); err != nil {
+			return &ValidationError{Name: "webhook_id", err: fmt.Errorf(`ent: validator failed for field "WebhookSubscription.webhook_id": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.ObjType(); !ok {
 		return &ValidationError{Name: "obj_type", err: errors.New(`ent: missing required field "WebhookSubscription.obj_type"`)}
 	}
@@ -167,8 +172,18 @@ func (_c *WebhookSubscriptionCreate) check() error {
 	if _, ok := _c.mutation.ObjID(); !ok {
 		return &ValidationError{Name: "obj_id", err: errors.New(`ent: missing required field "WebhookSubscription.obj_id"`)}
 	}
+	if v, ok := _c.mutation.ObjID(); ok {
+		if err := webhooksubscription.ObjIDValidator(v); err != nil {
+			return &ValidationError{Name: "obj_id", err: fmt.Errorf(`ent: validator failed for field "WebhookSubscription.obj_id": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "WebhookSubscription.is_active"`)}
+	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := webhooksubscription.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "WebhookSubscription.id": %w`, err)}
+		}
 	}
 	if len(_c.mutation.WebhookIDs()) == 0 {
 		return &ValidationError{Name: "webhook", err: errors.New(`ent: missing required edge "WebhookSubscription.webhook"`)}

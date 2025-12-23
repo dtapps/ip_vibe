@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/types"
+	"vibe_ip/internal/utils"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -13,30 +14,37 @@ func RegisterIPGroupTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getIPGroupList",
 		Description: "获取全部IP组",
+		InputSchema: utils.AutoSchema(types.GetIPGroupsRequest{}),
 	}, getIPGroupList)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getIPGroupDetail",
 		Description: "获取IP组",
+		InputSchema: utils.AutoSchema(types.GetIPGroupRequest{}),
 	}, getIPGroupDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "createIPGroup",
 		Description: "创建IP组",
+		InputSchema: utils.AutoSchema(types.CreateIPGroupRequest{}),
 	}, createIPGroup)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateIPGroup",
 		Description: "更新IP组",
+		InputSchema: utils.AutoSchema(types.UpdateIPGroupRequest{}),
 	}, updateIPGroup)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deleteIPGroup",
 		Description: "删除IP组",
+		InputSchema: utils.AutoSchema(types.DeleteIPGroupRequest{}),
 	}, deleteIPGroup)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getIPGroupDevices",
 		Description: "获取IP组的设备列表",
+		InputSchema: utils.AutoSchema(types.GetIPGroupDevicesRequest{}),
 	}, getIPGroupDevices)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "healthCheckIPGroup",
 		Description: "检查IP组是否健康",
+		InputSchema: utils.AutoSchema(types.HealthCheckIPGroupRequest{}),
 	}, healthCheckIPGroup)
 }
 

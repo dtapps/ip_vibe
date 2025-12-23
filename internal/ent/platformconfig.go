@@ -32,7 +32,7 @@ type PlatformConfig struct {
 	// 平台类型
 	Platform platformconfig.Platform `json:"platform,omitempty"`
 	// 平台密钥等敏感信息（JSON）
-	ConfigJSON json.RawMessage `json:"config_json,omitempty"`
+	ConfigJSON json.RawMessage `json:"-"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlatformConfigQuery when eager-loading is set.
 	Edges        PlatformConfigEdges `json:"edges"`
@@ -45,11 +45,14 @@ type PlatformConfigEdges struct {
 	DNSRecords []*DNSRecord `json:"dns_records,omitempty"`
 	// 关联的CDN记录
 	CdnRecords []*CDNRecord `json:"cdn_records,omitempty"`
+	// 关联的SSL记录
+	SslRecords []*SSLRecord `json:"ssl_records,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes     [2]bool
+	loadedTypes     [3]bool
 	namedDNSRecords map[string][]*DNSRecord
 	namedCdnRecords map[string][]*CDNRecord
+	namedSslRecords map[string][]*SSLRecord
 }
 
 // DNSRecordsOrErr returns the DNSRecords value or an error if the edge
@@ -68,6 +71,15 @@ func (e PlatformConfigEdges) CdnRecordsOrErr() ([]*CDNRecord, error) {
 		return e.CdnRecords, nil
 	}
 	return nil, &NotLoadedError{edge: "cdn_records"}
+}
+
+// SslRecordsOrErr returns the SslRecords value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlatformConfigEdges) SslRecordsOrErr() ([]*SSLRecord, error) {
+	if e.loadedTypes[2] {
+		return e.SslRecords, nil
+	}
+	return nil, &NotLoadedError{edge: "ssl_records"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -171,6 +183,11 @@ func (_m *PlatformConfig) QueryCdnRecords() *CDNRecordQuery {
 	return NewPlatformConfigClient(_m.config).QueryCdnRecords(_m)
 }
 
+// QuerySslRecords queries the "ssl_records" edge of the PlatformConfig entity.
+func (_m *PlatformConfig) QuerySslRecords() *SSLRecordQuery {
+	return NewPlatformConfigClient(_m.config).QuerySslRecords(_m)
+}
+
 // Update returns a builder for updating this PlatformConfig.
 // Note that you need to call PlatformConfig.Unwrap() before calling this method if this PlatformConfig
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -212,8 +229,7 @@ func (_m *PlatformConfig) String() string {
 	builder.WriteString("platform=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Platform))
 	builder.WriteString(", ")
-	builder.WriteString("config_json=")
-	builder.WriteString(fmt.Sprintf("%v", _m.ConfigJSON))
+	builder.WriteString("config_json=<sensitive>")
 	builder.WriteByte(')')
 	return builder.String()
 }
@@ -263,6 +279,30 @@ func (_m *PlatformConfig) appendNamedCdnRecords(name string, edges ...*CDNRecord
 		_m.Edges.namedCdnRecords[name] = []*CDNRecord{}
 	} else {
 		_m.Edges.namedCdnRecords[name] = append(_m.Edges.namedCdnRecords[name], edges...)
+	}
+}
+
+// NamedSslRecords returns the SslRecords named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *PlatformConfig) NamedSslRecords(name string) ([]*SSLRecord, error) {
+	if _m.Edges.namedSslRecords == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedSslRecords[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *PlatformConfig) appendNamedSslRecords(name string, edges ...*SSLRecord) {
+	if _m.Edges.namedSslRecords == nil {
+		_m.Edges.namedSslRecords = make(map[string][]*SSLRecord)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedSslRecords[name] = []*SSLRecord{}
+	} else {
+		_m.Edges.namedSslRecords[name] = append(_m.Edges.namedSslRecords[name], edges...)
 	}
 }
 

@@ -37,10 +37,11 @@ func (WebhookSubscription) Mixin() []ent.Mixin {
 func (WebhookSubscription) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").
-			StorageKey("id").
+			StorageKey("id"). // 用 id 覆盖 框架的 id
+			Positive().       // 正数
 			Immutable().
 			Comment("通知订阅序号").
-			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
+			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
 			Comment("通知订阅名称").
@@ -52,6 +53,7 @@ func (WebhookSubscription) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("webhook_id").
+			Positive(). // 正数
 			Immutable().
 			Comment("通知序号").
 			Annotations(entsql.WithComments(true)),
@@ -63,6 +65,7 @@ func (WebhookSubscription) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("obj_id").
+			Positive(). // 正数
 			Immutable().
 			Comment("订阅对象主键").
 			Annotations(entsql.WithComments(true)),
@@ -90,14 +93,14 @@ func (WebhookSubscription) Edges() []ent.Edge {
 // Indexes of the WebhookSubscription.
 func (WebhookSubscription) Indexes() []ent.Index {
 	return []ent.Index{
+		// 按创建时间排序
+		index.Fields("created_at").
+			Annotations(entsql.Desc(), entsql.WithComments(true)),
+
 		// 确保一个通知不能对同一个对象（类型+ID）重复订阅
 		index.Fields("webhook_id", "obj_type", "obj_id").
 			Unique().
 			Annotations(entsql.WithComments(true)),
-
-		// 按创建时间排序
-		index.Fields("created_at").
-			Annotations(entsql.Desc(), entsql.WithComments(true)),
 
 		// 按通知序号排序
 		index.Fields("webhook_id").

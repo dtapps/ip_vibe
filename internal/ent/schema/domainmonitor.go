@@ -36,7 +36,8 @@ func (DomainMonitor) Mixin() []ent.Mixin {
 func (DomainMonitor) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").
-			StorageKey("id").
+			StorageKey("id"). // 用 id 覆盖 框架的 id
+			Positive().       // 正数
 			Immutable().
 			Comment("域名监控记录序号").
 			Annotations(entsql.WithComments(true)),
@@ -97,6 +98,10 @@ func (DomainMonitor) Edges() []ent.Edge {
 // Indexes of the DomainMonitor.
 func (DomainMonitor) Indexes() []ent.Index {
 	return []ent.Index{
+		// 按创建时间排序
+		index.Fields("created_at").
+			Annotations(entsql.Desc(), entsql.WithComments(true)),
+
 		// 按域名排序
 		index.Fields("domain").
 			Annotations(entsql.WithComments(true)),

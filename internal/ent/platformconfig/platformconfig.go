@@ -33,6 +33,8 @@ const (
 	EdgeDNSRecords = "dns_records"
 	// EdgeCdnRecords holds the string denoting the cdn_records edge name in mutations.
 	EdgeCdnRecords = "cdn_records"
+	// EdgeSslRecords holds the string denoting the ssl_records edge name in mutations.
+	EdgeSslRecords = "ssl_records"
 	// Table holds the table name of the platformconfig in the database.
 	Table = "platform_config"
 	// DNSRecordsTable is the table that holds the dns_records relation/edge.
@@ -49,6 +51,13 @@ const (
 	CdnRecordsInverseTable = "cdn_record"
 	// CdnRecordsColumn is the table column denoting the cdn_records relation/edge.
 	CdnRecordsColumn = "config_id"
+	// SslRecordsTable is the table that holds the ssl_records relation/edge.
+	SslRecordsTable = "ssl_record"
+	// SslRecordsInverseTable is the table name for the SSLRecord entity.
+	// It exists in this package in order to avoid circular dependency with the "sslrecord" package.
+	SslRecordsInverseTable = "ssl_record"
+	// SslRecordsColumn is the table column denoting the ssl_records relation/edge.
+	SslRecordsColumn = "config_id"
 )
 
 // Columns holds all SQL columns for platformconfig fields.
@@ -80,6 +89,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// IDValidator is a validator for the "id" field. It is called by the builders before save.
+	IDValidator func(int64) error
 )
 
 // Capability defines the type for the "capability" enum field.
@@ -204,6 +215,20 @@ func ByCdnRecords(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCdnRecordsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// BySslRecordsCount orders the results by ssl_records count.
+func BySslRecordsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSslRecordsStep(), opts...)
+	}
+}
+
+// BySslRecords orders the results by ssl_records terms.
+func BySslRecords(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSslRecordsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newDNSRecordsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -216,5 +241,12 @@ func newCdnRecordsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CdnRecordsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CdnRecordsTable, CdnRecordsColumn),
+	)
+}
+func newSslRecordsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SslRecordsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SslRecordsTable, SslRecordsColumn),
 	)
 }

@@ -36,10 +36,11 @@ func (DevicePortForward) Mixin() []ent.Mixin {
 func (DevicePortForward) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").
-			StorageKey("id").
+			StorageKey("id"). // 用 id 覆盖 框架的 id
+			Positive().       // 正数
 			Immutable().
 			Comment("设备端口转发序号").
-			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
+			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
 			Comment("设备端口转发名称").
@@ -51,7 +52,7 @@ func (DevicePortForward) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Int("local_port").
-			Positive().
+			Positive(). // 正数
 			Comment("本地监听端口").
 			Annotations(entsql.WithComments(true)),
 
@@ -61,7 +62,7 @@ func (DevicePortForward) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Int("remote_port").
-			Positive().
+			Positive(). // 正数
 			Comment("远程目标端口").
 			Annotations(entsql.WithComments(true)),
 
@@ -97,12 +98,12 @@ func (DevicePortForward) Edges() []ent.Edge {
 // Indexes of the DevicePortForward.
 func (DevicePortForward) Indexes() []ent.Index {
 	return []ent.Index{
-		// 按是否活跃排序
-		index.Fields("is_active").
-			Annotations(entsql.WithComments(true)),
-
 		// 按创建时间排序
 		index.Fields("created_at").
 			Annotations(entsql.Desc(), entsql.WithComments(true)),
+
+		// 按是否活跃排序
+		index.Fields("is_active").
+			Annotations(entsql.WithComments(true)),
 	}
 }

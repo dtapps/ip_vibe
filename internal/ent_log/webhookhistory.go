@@ -17,15 +17,13 @@ import (
 type WebhookHistory struct {
 	config `json:"-"`
 	// ID of the ent.
-	// 通知日志序号
+	// 通知历史记录序号
 	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
-	// 更新时间
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// 通知序号
+	// 关联 Webhook ID
 	WebhookID int64 `json:"webhook_id,omitempty"`
-	// 通知订阅序号（可选，直接触发时为空）
+	// 关联 WebhookSubscription ID
 	SubscriptionID int64 `json:"subscription_id,omitempty"`
 	// 发送的URL
 	URL string `json:"url,omitempty"`
@@ -55,7 +53,7 @@ func (*WebhookHistory) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case webhookhistory.FieldURL, webhookhistory.FieldTitle, webhookhistory.FieldContent, webhookhistory.FieldErrorMessage:
 			values[i] = new(sql.NullString)
-		case webhookhistory.FieldCreatedAt, webhookhistory.FieldUpdatedAt:
+		case webhookhistory.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -83,12 +81,6 @@ func (_m *WebhookHistory) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				_m.CreatedAt = value.Time
-			}
-		case webhookhistory.FieldUpdatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
-			} else if value.Valid {
-				_m.UpdatedAt = value.Time
 			}
 		case webhookhistory.FieldWebhookID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -178,9 +170,6 @@ func (_m *WebhookHistory) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("updated_at=")
-	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("webhook_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.WebhookID))

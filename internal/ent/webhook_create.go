@@ -234,6 +234,11 @@ func (_c *WebhookCreate) check() error {
 	if _, ok := _c.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "Webhook.is_active"`)}
 	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := webhook.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Webhook.id": %w`, err)}
+		}
+	}
 	return nil
 }
 

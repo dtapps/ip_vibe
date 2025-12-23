@@ -114,6 +114,16 @@ func (_u *IpGroupDeviceUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *IpGroupDeviceUpdate) check() error {
+	if v, ok := _u.mutation.DeviceID(); ok {
+		if err := ipgroupdevice.DeviceIDValidator(v); err != nil {
+			return &ValidationError{Name: "device_id", err: fmt.Errorf(`ent: validator failed for field "IpGroupDevice.device_id": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.IPGroupID(); ok {
+		if err := ipgroupdevice.IPGroupIDValidator(v); err != nil {
+			return &ValidationError{Name: "ip_group_id", err: fmt.Errorf(`ent: validator failed for field "IpGroupDevice.ip_group_id": %w`, err)}
+		}
+	}
 	if _u.mutation.DeviceCleared() && len(_u.mutation.DeviceIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "IpGroupDevice.device"`)
 	}
@@ -318,6 +328,16 @@ func (_u *IpGroupDeviceUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *IpGroupDeviceUpdateOne) check() error {
+	if v, ok := _u.mutation.DeviceID(); ok {
+		if err := ipgroupdevice.DeviceIDValidator(v); err != nil {
+			return &ValidationError{Name: "device_id", err: fmt.Errorf(`ent: validator failed for field "IpGroupDevice.device_id": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.IPGroupID(); ok {
+		if err := ipgroupdevice.IPGroupIDValidator(v); err != nil {
+			return &ValidationError{Name: "ip_group_id", err: fmt.Errorf(`ent: validator failed for field "IpGroupDevice.ip_group_id": %w`, err)}
+		}
+	}
 	if _u.mutation.DeviceCleared() && len(_u.mutation.DeviceIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "IpGroupDevice.device"`)
 	}

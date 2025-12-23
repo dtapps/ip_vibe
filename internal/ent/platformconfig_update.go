@@ -12,6 +12,7 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
+	"vibe_ip/internal/ent/sslrecord"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -135,6 +136,21 @@ func (_u *PlatformConfigUpdate) AddCdnRecords(v ...*CDNRecord) *PlatformConfigUp
 	return _u.AddCdnRecordIDs(ids...)
 }
 
+// AddSslRecordIDs adds the "ssl_records" edge to the SSLRecord entity by IDs.
+func (_u *PlatformConfigUpdate) AddSslRecordIDs(ids ...int64) *PlatformConfigUpdate {
+	_u.mutation.AddSslRecordIDs(ids...)
+	return _u
+}
+
+// AddSslRecords adds the "ssl_records" edges to the SSLRecord entity.
+func (_u *PlatformConfigUpdate) AddSslRecords(v ...*SSLRecord) *PlatformConfigUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSslRecordIDs(ids...)
+}
+
 // Mutation returns the PlatformConfigMutation object of the builder.
 func (_u *PlatformConfigUpdate) Mutation() *PlatformConfigMutation {
 	return _u.mutation
@@ -180,6 +196,27 @@ func (_u *PlatformConfigUpdate) RemoveCdnRecords(v ...*CDNRecord) *PlatformConfi
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveCdnRecordIDs(ids...)
+}
+
+// ClearSslRecords clears all "ssl_records" edges to the SSLRecord entity.
+func (_u *PlatformConfigUpdate) ClearSslRecords() *PlatformConfigUpdate {
+	_u.mutation.ClearSslRecords()
+	return _u
+}
+
+// RemoveSslRecordIDs removes the "ssl_records" edge to SSLRecord entities by IDs.
+func (_u *PlatformConfigUpdate) RemoveSslRecordIDs(ids ...int64) *PlatformConfigUpdate {
+	_u.mutation.RemoveSslRecordIDs(ids...)
+	return _u
+}
+
+// RemoveSslRecords removes "ssl_records" edges to SSLRecord entities.
+func (_u *PlatformConfigUpdate) RemoveSslRecords(v ...*SSLRecord) *PlatformConfigUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSslRecordIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -362,6 +399,51 @@ func (_u *PlatformConfigUpdate) sqlSave(ctx context.Context) (_node int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.SslRecordsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.SslRecordsTable,
+			Columns: []string{platformconfig.SslRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sslrecord.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSslRecordsIDs(); len(nodes) > 0 && !_u.mutation.SslRecordsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.SslRecordsTable,
+			Columns: []string{platformconfig.SslRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sslrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SslRecordsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.SslRecordsTable,
+			Columns: []string{platformconfig.SslRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sslrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -486,6 +568,21 @@ func (_u *PlatformConfigUpdateOne) AddCdnRecords(v ...*CDNRecord) *PlatformConfi
 	return _u.AddCdnRecordIDs(ids...)
 }
 
+// AddSslRecordIDs adds the "ssl_records" edge to the SSLRecord entity by IDs.
+func (_u *PlatformConfigUpdateOne) AddSslRecordIDs(ids ...int64) *PlatformConfigUpdateOne {
+	_u.mutation.AddSslRecordIDs(ids...)
+	return _u
+}
+
+// AddSslRecords adds the "ssl_records" edges to the SSLRecord entity.
+func (_u *PlatformConfigUpdateOne) AddSslRecords(v ...*SSLRecord) *PlatformConfigUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSslRecordIDs(ids...)
+}
+
 // Mutation returns the PlatformConfigMutation object of the builder.
 func (_u *PlatformConfigUpdateOne) Mutation() *PlatformConfigMutation {
 	return _u.mutation
@@ -531,6 +628,27 @@ func (_u *PlatformConfigUpdateOne) RemoveCdnRecords(v ...*CDNRecord) *PlatformCo
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveCdnRecordIDs(ids...)
+}
+
+// ClearSslRecords clears all "ssl_records" edges to the SSLRecord entity.
+func (_u *PlatformConfigUpdateOne) ClearSslRecords() *PlatformConfigUpdateOne {
+	_u.mutation.ClearSslRecords()
+	return _u
+}
+
+// RemoveSslRecordIDs removes the "ssl_records" edge to SSLRecord entities by IDs.
+func (_u *PlatformConfigUpdateOne) RemoveSslRecordIDs(ids ...int64) *PlatformConfigUpdateOne {
+	_u.mutation.RemoveSslRecordIDs(ids...)
+	return _u
+}
+
+// RemoveSslRecords removes "ssl_records" edges to SSLRecord entities.
+func (_u *PlatformConfigUpdateOne) RemoveSslRecords(v ...*SSLRecord) *PlatformConfigUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSslRecordIDs(ids...)
 }
 
 // Where appends a list predicates to the PlatformConfigUpdate builder.
@@ -736,6 +854,51 @@ func (_u *PlatformConfigUpdateOne) sqlSave(ctx context.Context) (_node *Platform
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cdnrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SslRecordsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.SslRecordsTable,
+			Columns: []string{platformconfig.SslRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sslrecord.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSslRecordsIDs(); len(nodes) > 0 && !_u.mutation.SslRecordsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.SslRecordsTable,
+			Columns: []string{platformconfig.SslRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sslrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SslRecordsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.SslRecordsTable,
+			Columns: []string{platformconfig.SslRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sslrecord.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

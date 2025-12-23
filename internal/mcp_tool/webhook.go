@@ -6,6 +6,7 @@ import (
 	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/types"
+	"vibe_ip/internal/utils"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -14,26 +15,32 @@ func RegisterWebhookTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getWebhookList",
 		Description: "获取全部通知",
+		InputSchema: utils.AutoSchema(types.GetWebhooksRequest{}),
 	}, getWebhookList)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getWebhookDetail",
 		Description: "获取通知",
+		InputSchema: utils.AutoSchema(types.GetWebhookRequest{}),
 	}, getWebhookDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "createWebhook",
 		Description: "创建通知",
+		InputSchema: utils.AutoSchema(types.CreateWebhookRequest{}),
 	}, createWebhook)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateWebhook",
 		Description: "更新通知",
+		InputSchema: utils.AutoSchema(types.UpdateWebhookRequest{}),
 	}, updateWebhook)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateWebhookActive",
 		Description: "更新通知启用状态",
+		InputSchema: utils.AutoSchema(types.UpdateWebhookActiveRequest{}),
 	}, updateWebhookActive)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deleteWebhook",
 		Description: "删除通知",
+		InputSchema: utils.AutoSchema(types.DeleteWebhookRequest{}),
 	}, deleteWebhook)
 }
 

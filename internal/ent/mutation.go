@@ -19,6 +19,7 @@ import (
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
+	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
 
@@ -44,6 +45,7 @@ const (
 	TypeIpGroup             = "IpGroup"
 	TypeIpGroupDevice       = "IpGroupDevice"
 	TypePlatformConfig      = "PlatformConfig"
+	TypeSSLRecord           = "SSLRecord"
 	TypeWebhook             = "Webhook"
 	TypeWebhookSubscription = "WebhookSubscription"
 )
@@ -7785,6 +7787,9 @@ type PlatformConfigMutation struct {
 	cdn_records        map[int64]struct{}
 	removedcdn_records map[int64]struct{}
 	clearedcdn_records bool
+	ssl_records        map[int64]struct{}
+	removedssl_records map[int64]struct{}
+	clearedssl_records bool
 	done               bool
 	oldValue           func(context.Context) (*PlatformConfig, error)
 	predicates         []predicate.PlatformConfig
@@ -8296,6 +8301,60 @@ func (m *PlatformConfigMutation) ResetCdnRecords() {
 	m.removedcdn_records = nil
 }
 
+// AddSslRecordIDs adds the "ssl_records" edge to the SSLRecord entity by ids.
+func (m *PlatformConfigMutation) AddSslRecordIDs(ids ...int64) {
+	if m.ssl_records == nil {
+		m.ssl_records = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.ssl_records[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSslRecords clears the "ssl_records" edge to the SSLRecord entity.
+func (m *PlatformConfigMutation) ClearSslRecords() {
+	m.clearedssl_records = true
+}
+
+// SslRecordsCleared reports if the "ssl_records" edge to the SSLRecord entity was cleared.
+func (m *PlatformConfigMutation) SslRecordsCleared() bool {
+	return m.clearedssl_records
+}
+
+// RemoveSslRecordIDs removes the "ssl_records" edge to the SSLRecord entity by IDs.
+func (m *PlatformConfigMutation) RemoveSslRecordIDs(ids ...int64) {
+	if m.removedssl_records == nil {
+		m.removedssl_records = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.ssl_records, ids[i])
+		m.removedssl_records[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSslRecords returns the removed IDs of the "ssl_records" edge to the SSLRecord entity.
+func (m *PlatformConfigMutation) RemovedSslRecordsIDs() (ids []int64) {
+	for id := range m.removedssl_records {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SslRecordsIDs returns the "ssl_records" edge IDs in the mutation.
+func (m *PlatformConfigMutation) SslRecordsIDs() (ids []int64) {
+	for id := range m.ssl_records {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSslRecords resets all changes to the "ssl_records" edge.
+func (m *PlatformConfigMutation) ResetSslRecords() {
+	m.ssl_records = nil
+	m.clearedssl_records = false
+	m.removedssl_records = nil
+}
+
 // Where appends a list predicates to the PlatformConfigMutation builder.
 func (m *PlatformConfigMutation) Where(ps ...predicate.PlatformConfig) {
 	m.predicates = append(m.predicates, ps...)
@@ -8546,12 +8605,15 @@ func (m *PlatformConfigMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlatformConfigMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.dns_records != nil {
 		edges = append(edges, platformconfig.EdgeDNSRecords)
 	}
 	if m.cdn_records != nil {
 		edges = append(edges, platformconfig.EdgeCdnRecords)
+	}
+	if m.ssl_records != nil {
+		edges = append(edges, platformconfig.EdgeSslRecords)
 	}
 	return edges
 }
@@ -8572,18 +8634,27 @@ func (m *PlatformConfigMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case platformconfig.EdgeSslRecords:
+		ids := make([]ent.Value, 0, len(m.ssl_records))
+		for id := range m.ssl_records {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlatformConfigMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removeddns_records != nil {
 		edges = append(edges, platformconfig.EdgeDNSRecords)
 	}
 	if m.removedcdn_records != nil {
 		edges = append(edges, platformconfig.EdgeCdnRecords)
+	}
+	if m.removedssl_records != nil {
+		edges = append(edges, platformconfig.EdgeSslRecords)
 	}
 	return edges
 }
@@ -8604,18 +8675,27 @@ func (m *PlatformConfigMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case platformconfig.EdgeSslRecords:
+		ids := make([]ent.Value, 0, len(m.removedssl_records))
+		for id := range m.removedssl_records {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlatformConfigMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.cleareddns_records {
 		edges = append(edges, platformconfig.EdgeDNSRecords)
 	}
 	if m.clearedcdn_records {
 		edges = append(edges, platformconfig.EdgeCdnRecords)
+	}
+	if m.clearedssl_records {
+		edges = append(edges, platformconfig.EdgeSslRecords)
 	}
 	return edges
 }
@@ -8628,6 +8708,8 @@ func (m *PlatformConfigMutation) EdgeCleared(name string) bool {
 		return m.cleareddns_records
 	case platformconfig.EdgeCdnRecords:
 		return m.clearedcdn_records
+	case platformconfig.EdgeSslRecords:
+		return m.clearedssl_records
 	}
 	return false
 }
@@ -8650,8 +8732,1619 @@ func (m *PlatformConfigMutation) ResetEdge(name string) error {
 	case platformconfig.EdgeCdnRecords:
 		m.ResetCdnRecords()
 		return nil
+	case platformconfig.EdgeSslRecords:
+		m.ResetSslRecords()
+		return nil
 	}
 	return fmt.Errorf("unknown PlatformConfig edge %s", name)
+}
+
+// SSLRecordMutation represents an operation that mutates the SSLRecord nodes in the graph.
+type SSLRecordMutation struct {
+	config
+	op                      Op
+	typ                     string
+	id                      *int64
+	created_at              *time.Time
+	updated_at              *time.Time
+	domain                  *string
+	cert_domain             *string
+	cert_url                *string
+	cert_stable_url         *string
+	cert_private_key        *string
+	cert_certificate        *string
+	cert_issuer_certificate *string
+	cert_csr                *string
+	not_before              *time.Time
+	not_after               *time.Time
+	status                  *sslrecord.Status
+	provider                *sslrecord.Provider
+	is_active               *bool
+	is_auto_renewal         *bool
+	last_refresh_at         *time.Time
+	last_api_response       *string
+	last_api_response_at    *time.Time
+	clearedFields           map[string]struct{}
+	_config                 *int64
+	cleared_config          bool
+	done                    bool
+	oldValue                func(context.Context) (*SSLRecord, error)
+	predicates              []predicate.SSLRecord
+}
+
+var _ ent.Mutation = (*SSLRecordMutation)(nil)
+
+// sslrecordOption allows management of the mutation configuration using functional options.
+type sslrecordOption func(*SSLRecordMutation)
+
+// newSSLRecordMutation creates new mutation for the SSLRecord entity.
+func newSSLRecordMutation(c config, op Op, opts ...sslrecordOption) *SSLRecordMutation {
+	m := &SSLRecordMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeSSLRecord,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withSSLRecordID sets the ID field of the mutation.
+func withSSLRecordID(id int64) sslrecordOption {
+	return func(m *SSLRecordMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *SSLRecord
+		)
+		m.oldValue = func(ctx context.Context) (*SSLRecord, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().SSLRecord.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withSSLRecord sets the old SSLRecord of the mutation.
+func withSSLRecord(node *SSLRecord) sslrecordOption {
+	return func(m *SSLRecordMutation) {
+		m.oldValue = func(context.Context) (*SSLRecord, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m SSLRecordMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m SSLRecordMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of SSLRecord entities.
+func (m *SSLRecordMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *SSLRecordMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *SSLRecordMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().SSLRecord.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *SSLRecordMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *SSLRecordMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *SSLRecordMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *SSLRecordMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *SSLRecordMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *SSLRecordMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetConfigID sets the "config_id" field.
+func (m *SSLRecordMutation) SetConfigID(i int64) {
+	m._config = &i
+}
+
+// ConfigID returns the value of the "config_id" field in the mutation.
+func (m *SSLRecordMutation) ConfigID() (r int64, exists bool) {
+	v := m._config
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldConfigID returns the old "config_id" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldConfigID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldConfigID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldConfigID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldConfigID: %w", err)
+	}
+	return oldValue.ConfigID, nil
+}
+
+// ResetConfigID resets all changes to the "config_id" field.
+func (m *SSLRecordMutation) ResetConfigID() {
+	m._config = nil
+}
+
+// SetDomain sets the "domain" field.
+func (m *SSLRecordMutation) SetDomain(s string) {
+	m.domain = &s
+}
+
+// Domain returns the value of the "domain" field in the mutation.
+func (m *SSLRecordMutation) Domain() (r string, exists bool) {
+	v := m.domain
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDomain returns the old "domain" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldDomain(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDomain is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDomain requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDomain: %w", err)
+	}
+	return oldValue.Domain, nil
+}
+
+// ResetDomain resets all changes to the "domain" field.
+func (m *SSLRecordMutation) ResetDomain() {
+	m.domain = nil
+}
+
+// SetCertDomain sets the "cert_domain" field.
+func (m *SSLRecordMutation) SetCertDomain(s string) {
+	m.cert_domain = &s
+}
+
+// CertDomain returns the value of the "cert_domain" field in the mutation.
+func (m *SSLRecordMutation) CertDomain() (r string, exists bool) {
+	v := m.cert_domain
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCertDomain returns the old "cert_domain" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldCertDomain(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCertDomain is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCertDomain requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCertDomain: %w", err)
+	}
+	return oldValue.CertDomain, nil
+}
+
+// ClearCertDomain clears the value of the "cert_domain" field.
+func (m *SSLRecordMutation) ClearCertDomain() {
+	m.cert_domain = nil
+	m.clearedFields[sslrecord.FieldCertDomain] = struct{}{}
+}
+
+// CertDomainCleared returns if the "cert_domain" field was cleared in this mutation.
+func (m *SSLRecordMutation) CertDomainCleared() bool {
+	_, ok := m.clearedFields[sslrecord.FieldCertDomain]
+	return ok
+}
+
+// ResetCertDomain resets all changes to the "cert_domain" field.
+func (m *SSLRecordMutation) ResetCertDomain() {
+	m.cert_domain = nil
+	delete(m.clearedFields, sslrecord.FieldCertDomain)
+}
+
+// SetCertURL sets the "cert_url" field.
+func (m *SSLRecordMutation) SetCertURL(s string) {
+	m.cert_url = &s
+}
+
+// CertURL returns the value of the "cert_url" field in the mutation.
+func (m *SSLRecordMutation) CertURL() (r string, exists bool) {
+	v := m.cert_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCertURL returns the old "cert_url" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldCertURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCertURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCertURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCertURL: %w", err)
+	}
+	return oldValue.CertURL, nil
+}
+
+// ClearCertURL clears the value of the "cert_url" field.
+func (m *SSLRecordMutation) ClearCertURL() {
+	m.cert_url = nil
+	m.clearedFields[sslrecord.FieldCertURL] = struct{}{}
+}
+
+// CertURLCleared returns if the "cert_url" field was cleared in this mutation.
+func (m *SSLRecordMutation) CertURLCleared() bool {
+	_, ok := m.clearedFields[sslrecord.FieldCertURL]
+	return ok
+}
+
+// ResetCertURL resets all changes to the "cert_url" field.
+func (m *SSLRecordMutation) ResetCertURL() {
+	m.cert_url = nil
+	delete(m.clearedFields, sslrecord.FieldCertURL)
+}
+
+// SetCertStableURL sets the "cert_stable_url" field.
+func (m *SSLRecordMutation) SetCertStableURL(s string) {
+	m.cert_stable_url = &s
+}
+
+// CertStableURL returns the value of the "cert_stable_url" field in the mutation.
+func (m *SSLRecordMutation) CertStableURL() (r string, exists bool) {
+	v := m.cert_stable_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCertStableURL returns the old "cert_stable_url" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldCertStableURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCertStableURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCertStableURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCertStableURL: %w", err)
+	}
+	return oldValue.CertStableURL, nil
+}
+
+// ClearCertStableURL clears the value of the "cert_stable_url" field.
+func (m *SSLRecordMutation) ClearCertStableURL() {
+	m.cert_stable_url = nil
+	m.clearedFields[sslrecord.FieldCertStableURL] = struct{}{}
+}
+
+// CertStableURLCleared returns if the "cert_stable_url" field was cleared in this mutation.
+func (m *SSLRecordMutation) CertStableURLCleared() bool {
+	_, ok := m.clearedFields[sslrecord.FieldCertStableURL]
+	return ok
+}
+
+// ResetCertStableURL resets all changes to the "cert_stable_url" field.
+func (m *SSLRecordMutation) ResetCertStableURL() {
+	m.cert_stable_url = nil
+	delete(m.clearedFields, sslrecord.FieldCertStableURL)
+}
+
+// SetCertPrivateKey sets the "cert_private_key" field.
+func (m *SSLRecordMutation) SetCertPrivateKey(s string) {
+	m.cert_private_key = &s
+}
+
+// CertPrivateKey returns the value of the "cert_private_key" field in the mutation.
+func (m *SSLRecordMutation) CertPrivateKey() (r string, exists bool) {
+	v := m.cert_private_key
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCertPrivateKey returns the old "cert_private_key" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldCertPrivateKey(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCertPrivateKey is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCertPrivateKey requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCertPrivateKey: %w", err)
+	}
+	return oldValue.CertPrivateKey, nil
+}
+
+// ResetCertPrivateKey resets all changes to the "cert_private_key" field.
+func (m *SSLRecordMutation) ResetCertPrivateKey() {
+	m.cert_private_key = nil
+}
+
+// SetCertCertificate sets the "cert_certificate" field.
+func (m *SSLRecordMutation) SetCertCertificate(s string) {
+	m.cert_certificate = &s
+}
+
+// CertCertificate returns the value of the "cert_certificate" field in the mutation.
+func (m *SSLRecordMutation) CertCertificate() (r string, exists bool) {
+	v := m.cert_certificate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCertCertificate returns the old "cert_certificate" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldCertCertificate(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCertCertificate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCertCertificate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCertCertificate: %w", err)
+	}
+	return oldValue.CertCertificate, nil
+}
+
+// ResetCertCertificate resets all changes to the "cert_certificate" field.
+func (m *SSLRecordMutation) ResetCertCertificate() {
+	m.cert_certificate = nil
+}
+
+// SetCertIssuerCertificate sets the "cert_issuer_certificate" field.
+func (m *SSLRecordMutation) SetCertIssuerCertificate(s string) {
+	m.cert_issuer_certificate = &s
+}
+
+// CertIssuerCertificate returns the value of the "cert_issuer_certificate" field in the mutation.
+func (m *SSLRecordMutation) CertIssuerCertificate() (r string, exists bool) {
+	v := m.cert_issuer_certificate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCertIssuerCertificate returns the old "cert_issuer_certificate" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldCertIssuerCertificate(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCertIssuerCertificate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCertIssuerCertificate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCertIssuerCertificate: %w", err)
+	}
+	return oldValue.CertIssuerCertificate, nil
+}
+
+// ClearCertIssuerCertificate clears the value of the "cert_issuer_certificate" field.
+func (m *SSLRecordMutation) ClearCertIssuerCertificate() {
+	m.cert_issuer_certificate = nil
+	m.clearedFields[sslrecord.FieldCertIssuerCertificate] = struct{}{}
+}
+
+// CertIssuerCertificateCleared returns if the "cert_issuer_certificate" field was cleared in this mutation.
+func (m *SSLRecordMutation) CertIssuerCertificateCleared() bool {
+	_, ok := m.clearedFields[sslrecord.FieldCertIssuerCertificate]
+	return ok
+}
+
+// ResetCertIssuerCertificate resets all changes to the "cert_issuer_certificate" field.
+func (m *SSLRecordMutation) ResetCertIssuerCertificate() {
+	m.cert_issuer_certificate = nil
+	delete(m.clearedFields, sslrecord.FieldCertIssuerCertificate)
+}
+
+// SetCertCsr sets the "cert_csr" field.
+func (m *SSLRecordMutation) SetCertCsr(s string) {
+	m.cert_csr = &s
+}
+
+// CertCsr returns the value of the "cert_csr" field in the mutation.
+func (m *SSLRecordMutation) CertCsr() (r string, exists bool) {
+	v := m.cert_csr
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCertCsr returns the old "cert_csr" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldCertCsr(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCertCsr is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCertCsr requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCertCsr: %w", err)
+	}
+	return oldValue.CertCsr, nil
+}
+
+// ClearCertCsr clears the value of the "cert_csr" field.
+func (m *SSLRecordMutation) ClearCertCsr() {
+	m.cert_csr = nil
+	m.clearedFields[sslrecord.FieldCertCsr] = struct{}{}
+}
+
+// CertCsrCleared returns if the "cert_csr" field was cleared in this mutation.
+func (m *SSLRecordMutation) CertCsrCleared() bool {
+	_, ok := m.clearedFields[sslrecord.FieldCertCsr]
+	return ok
+}
+
+// ResetCertCsr resets all changes to the "cert_csr" field.
+func (m *SSLRecordMutation) ResetCertCsr() {
+	m.cert_csr = nil
+	delete(m.clearedFields, sslrecord.FieldCertCsr)
+}
+
+// SetNotBefore sets the "not_before" field.
+func (m *SSLRecordMutation) SetNotBefore(t time.Time) {
+	m.not_before = &t
+}
+
+// NotBefore returns the value of the "not_before" field in the mutation.
+func (m *SSLRecordMutation) NotBefore() (r time.Time, exists bool) {
+	v := m.not_before
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNotBefore returns the old "not_before" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldNotBefore(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNotBefore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNotBefore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNotBefore: %w", err)
+	}
+	return oldValue.NotBefore, nil
+}
+
+// ClearNotBefore clears the value of the "not_before" field.
+func (m *SSLRecordMutation) ClearNotBefore() {
+	m.not_before = nil
+	m.clearedFields[sslrecord.FieldNotBefore] = struct{}{}
+}
+
+// NotBeforeCleared returns if the "not_before" field was cleared in this mutation.
+func (m *SSLRecordMutation) NotBeforeCleared() bool {
+	_, ok := m.clearedFields[sslrecord.FieldNotBefore]
+	return ok
+}
+
+// ResetNotBefore resets all changes to the "not_before" field.
+func (m *SSLRecordMutation) ResetNotBefore() {
+	m.not_before = nil
+	delete(m.clearedFields, sslrecord.FieldNotBefore)
+}
+
+// SetNotAfter sets the "not_after" field.
+func (m *SSLRecordMutation) SetNotAfter(t time.Time) {
+	m.not_after = &t
+}
+
+// NotAfter returns the value of the "not_after" field in the mutation.
+func (m *SSLRecordMutation) NotAfter() (r time.Time, exists bool) {
+	v := m.not_after
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNotAfter returns the old "not_after" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldNotAfter(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNotAfter is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNotAfter requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNotAfter: %w", err)
+	}
+	return oldValue.NotAfter, nil
+}
+
+// ClearNotAfter clears the value of the "not_after" field.
+func (m *SSLRecordMutation) ClearNotAfter() {
+	m.not_after = nil
+	m.clearedFields[sslrecord.FieldNotAfter] = struct{}{}
+}
+
+// NotAfterCleared returns if the "not_after" field was cleared in this mutation.
+func (m *SSLRecordMutation) NotAfterCleared() bool {
+	_, ok := m.clearedFields[sslrecord.FieldNotAfter]
+	return ok
+}
+
+// ResetNotAfter resets all changes to the "not_after" field.
+func (m *SSLRecordMutation) ResetNotAfter() {
+	m.not_after = nil
+	delete(m.clearedFields, sslrecord.FieldNotAfter)
+}
+
+// SetStatus sets the "status" field.
+func (m *SSLRecordMutation) SetStatus(s sslrecord.Status) {
+	m.status = &s
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *SSLRecordMutation) Status() (r sslrecord.Status, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldStatus(ctx context.Context) (v sslrecord.Status, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *SSLRecordMutation) ResetStatus() {
+	m.status = nil
+}
+
+// SetProvider sets the "provider" field.
+func (m *SSLRecordMutation) SetProvider(s sslrecord.Provider) {
+	m.provider = &s
+}
+
+// Provider returns the value of the "provider" field in the mutation.
+func (m *SSLRecordMutation) Provider() (r sslrecord.Provider, exists bool) {
+	v := m.provider
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProvider returns the old "provider" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldProvider(ctx context.Context) (v sslrecord.Provider, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProvider is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProvider requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProvider: %w", err)
+	}
+	return oldValue.Provider, nil
+}
+
+// ResetProvider resets all changes to the "provider" field.
+func (m *SSLRecordMutation) ResetProvider() {
+	m.provider = nil
+}
+
+// SetIsActive sets the "is_active" field.
+func (m *SSLRecordMutation) SetIsActive(b bool) {
+	m.is_active = &b
+}
+
+// IsActive returns the value of the "is_active" field in the mutation.
+func (m *SSLRecordMutation) IsActive() (r bool, exists bool) {
+	v := m.is_active
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsActive returns the old "is_active" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldIsActive(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsActive is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsActive requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsActive: %w", err)
+	}
+	return oldValue.IsActive, nil
+}
+
+// ResetIsActive resets all changes to the "is_active" field.
+func (m *SSLRecordMutation) ResetIsActive() {
+	m.is_active = nil
+}
+
+// SetIsAutoRenewal sets the "is_auto_renewal" field.
+func (m *SSLRecordMutation) SetIsAutoRenewal(b bool) {
+	m.is_auto_renewal = &b
+}
+
+// IsAutoRenewal returns the value of the "is_auto_renewal" field in the mutation.
+func (m *SSLRecordMutation) IsAutoRenewal() (r bool, exists bool) {
+	v := m.is_auto_renewal
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsAutoRenewal returns the old "is_auto_renewal" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldIsAutoRenewal(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsAutoRenewal is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsAutoRenewal requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsAutoRenewal: %w", err)
+	}
+	return oldValue.IsAutoRenewal, nil
+}
+
+// ResetIsAutoRenewal resets all changes to the "is_auto_renewal" field.
+func (m *SSLRecordMutation) ResetIsAutoRenewal() {
+	m.is_auto_renewal = nil
+}
+
+// SetLastRefreshAt sets the "last_refresh_at" field.
+func (m *SSLRecordMutation) SetLastRefreshAt(t time.Time) {
+	m.last_refresh_at = &t
+}
+
+// LastRefreshAt returns the value of the "last_refresh_at" field in the mutation.
+func (m *SSLRecordMutation) LastRefreshAt() (r time.Time, exists bool) {
+	v := m.last_refresh_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastRefreshAt returns the old "last_refresh_at" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldLastRefreshAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastRefreshAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastRefreshAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastRefreshAt: %w", err)
+	}
+	return oldValue.LastRefreshAt, nil
+}
+
+// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
+func (m *SSLRecordMutation) ClearLastRefreshAt() {
+	m.last_refresh_at = nil
+	m.clearedFields[sslrecord.FieldLastRefreshAt] = struct{}{}
+}
+
+// LastRefreshAtCleared returns if the "last_refresh_at" field was cleared in this mutation.
+func (m *SSLRecordMutation) LastRefreshAtCleared() bool {
+	_, ok := m.clearedFields[sslrecord.FieldLastRefreshAt]
+	return ok
+}
+
+// ResetLastRefreshAt resets all changes to the "last_refresh_at" field.
+func (m *SSLRecordMutation) ResetLastRefreshAt() {
+	m.last_refresh_at = nil
+	delete(m.clearedFields, sslrecord.FieldLastRefreshAt)
+}
+
+// SetLastAPIResponse sets the "last_api_response" field.
+func (m *SSLRecordMutation) SetLastAPIResponse(s string) {
+	m.last_api_response = &s
+}
+
+// LastAPIResponse returns the value of the "last_api_response" field in the mutation.
+func (m *SSLRecordMutation) LastAPIResponse() (r string, exists bool) {
+	v := m.last_api_response
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastAPIResponse returns the old "last_api_response" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldLastAPIResponse(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastAPIResponse is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastAPIResponse requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastAPIResponse: %w", err)
+	}
+	return oldValue.LastAPIResponse, nil
+}
+
+// ClearLastAPIResponse clears the value of the "last_api_response" field.
+func (m *SSLRecordMutation) ClearLastAPIResponse() {
+	m.last_api_response = nil
+	m.clearedFields[sslrecord.FieldLastAPIResponse] = struct{}{}
+}
+
+// LastAPIResponseCleared returns if the "last_api_response" field was cleared in this mutation.
+func (m *SSLRecordMutation) LastAPIResponseCleared() bool {
+	_, ok := m.clearedFields[sslrecord.FieldLastAPIResponse]
+	return ok
+}
+
+// ResetLastAPIResponse resets all changes to the "last_api_response" field.
+func (m *SSLRecordMutation) ResetLastAPIResponse() {
+	m.last_api_response = nil
+	delete(m.clearedFields, sslrecord.FieldLastAPIResponse)
+}
+
+// SetLastAPIResponseAt sets the "last_api_response_at" field.
+func (m *SSLRecordMutation) SetLastAPIResponseAt(t time.Time) {
+	m.last_api_response_at = &t
+}
+
+// LastAPIResponseAt returns the value of the "last_api_response_at" field in the mutation.
+func (m *SSLRecordMutation) LastAPIResponseAt() (r time.Time, exists bool) {
+	v := m.last_api_response_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastAPIResponseAt returns the old "last_api_response_at" field's value of the SSLRecord entity.
+// If the SSLRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLRecordMutation) OldLastAPIResponseAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastAPIResponseAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastAPIResponseAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastAPIResponseAt: %w", err)
+	}
+	return oldValue.LastAPIResponseAt, nil
+}
+
+// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
+func (m *SSLRecordMutation) ClearLastAPIResponseAt() {
+	m.last_api_response_at = nil
+	m.clearedFields[sslrecord.FieldLastAPIResponseAt] = struct{}{}
+}
+
+// LastAPIResponseAtCleared returns if the "last_api_response_at" field was cleared in this mutation.
+func (m *SSLRecordMutation) LastAPIResponseAtCleared() bool {
+	_, ok := m.clearedFields[sslrecord.FieldLastAPIResponseAt]
+	return ok
+}
+
+// ResetLastAPIResponseAt resets all changes to the "last_api_response_at" field.
+func (m *SSLRecordMutation) ResetLastAPIResponseAt() {
+	m.last_api_response_at = nil
+	delete(m.clearedFields, sslrecord.FieldLastAPIResponseAt)
+}
+
+// ClearConfig clears the "config" edge to the PlatformConfig entity.
+func (m *SSLRecordMutation) ClearConfig() {
+	m.cleared_config = true
+	m.clearedFields[sslrecord.FieldConfigID] = struct{}{}
+}
+
+// ConfigCleared reports if the "config" edge to the PlatformConfig entity was cleared.
+func (m *SSLRecordMutation) ConfigCleared() bool {
+	return m.cleared_config
+}
+
+// ConfigIDs returns the "config" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ConfigID instead. It exists only for internal usage by the builders.
+func (m *SSLRecordMutation) ConfigIDs() (ids []int64) {
+	if id := m._config; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetConfig resets all changes to the "config" edge.
+func (m *SSLRecordMutation) ResetConfig() {
+	m._config = nil
+	m.cleared_config = false
+}
+
+// Where appends a list predicates to the SSLRecordMutation builder.
+func (m *SSLRecordMutation) Where(ps ...predicate.SSLRecord) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the SSLRecordMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *SSLRecordMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.SSLRecord, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *SSLRecordMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *SSLRecordMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (SSLRecord).
+func (m *SSLRecordMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *SSLRecordMutation) Fields() []string {
+	fields := make([]string, 0, 20)
+	if m.created_at != nil {
+		fields = append(fields, sslrecord.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, sslrecord.FieldUpdatedAt)
+	}
+	if m._config != nil {
+		fields = append(fields, sslrecord.FieldConfigID)
+	}
+	if m.domain != nil {
+		fields = append(fields, sslrecord.FieldDomain)
+	}
+	if m.cert_domain != nil {
+		fields = append(fields, sslrecord.FieldCertDomain)
+	}
+	if m.cert_url != nil {
+		fields = append(fields, sslrecord.FieldCertURL)
+	}
+	if m.cert_stable_url != nil {
+		fields = append(fields, sslrecord.FieldCertStableURL)
+	}
+	if m.cert_private_key != nil {
+		fields = append(fields, sslrecord.FieldCertPrivateKey)
+	}
+	if m.cert_certificate != nil {
+		fields = append(fields, sslrecord.FieldCertCertificate)
+	}
+	if m.cert_issuer_certificate != nil {
+		fields = append(fields, sslrecord.FieldCertIssuerCertificate)
+	}
+	if m.cert_csr != nil {
+		fields = append(fields, sslrecord.FieldCertCsr)
+	}
+	if m.not_before != nil {
+		fields = append(fields, sslrecord.FieldNotBefore)
+	}
+	if m.not_after != nil {
+		fields = append(fields, sslrecord.FieldNotAfter)
+	}
+	if m.status != nil {
+		fields = append(fields, sslrecord.FieldStatus)
+	}
+	if m.provider != nil {
+		fields = append(fields, sslrecord.FieldProvider)
+	}
+	if m.is_active != nil {
+		fields = append(fields, sslrecord.FieldIsActive)
+	}
+	if m.is_auto_renewal != nil {
+		fields = append(fields, sslrecord.FieldIsAutoRenewal)
+	}
+	if m.last_refresh_at != nil {
+		fields = append(fields, sslrecord.FieldLastRefreshAt)
+	}
+	if m.last_api_response != nil {
+		fields = append(fields, sslrecord.FieldLastAPIResponse)
+	}
+	if m.last_api_response_at != nil {
+		fields = append(fields, sslrecord.FieldLastAPIResponseAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *SSLRecordMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case sslrecord.FieldCreatedAt:
+		return m.CreatedAt()
+	case sslrecord.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case sslrecord.FieldConfigID:
+		return m.ConfigID()
+	case sslrecord.FieldDomain:
+		return m.Domain()
+	case sslrecord.FieldCertDomain:
+		return m.CertDomain()
+	case sslrecord.FieldCertURL:
+		return m.CertURL()
+	case sslrecord.FieldCertStableURL:
+		return m.CertStableURL()
+	case sslrecord.FieldCertPrivateKey:
+		return m.CertPrivateKey()
+	case sslrecord.FieldCertCertificate:
+		return m.CertCertificate()
+	case sslrecord.FieldCertIssuerCertificate:
+		return m.CertIssuerCertificate()
+	case sslrecord.FieldCertCsr:
+		return m.CertCsr()
+	case sslrecord.FieldNotBefore:
+		return m.NotBefore()
+	case sslrecord.FieldNotAfter:
+		return m.NotAfter()
+	case sslrecord.FieldStatus:
+		return m.Status()
+	case sslrecord.FieldProvider:
+		return m.Provider()
+	case sslrecord.FieldIsActive:
+		return m.IsActive()
+	case sslrecord.FieldIsAutoRenewal:
+		return m.IsAutoRenewal()
+	case sslrecord.FieldLastRefreshAt:
+		return m.LastRefreshAt()
+	case sslrecord.FieldLastAPIResponse:
+		return m.LastAPIResponse()
+	case sslrecord.FieldLastAPIResponseAt:
+		return m.LastAPIResponseAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *SSLRecordMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case sslrecord.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case sslrecord.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case sslrecord.FieldConfigID:
+		return m.OldConfigID(ctx)
+	case sslrecord.FieldDomain:
+		return m.OldDomain(ctx)
+	case sslrecord.FieldCertDomain:
+		return m.OldCertDomain(ctx)
+	case sslrecord.FieldCertURL:
+		return m.OldCertURL(ctx)
+	case sslrecord.FieldCertStableURL:
+		return m.OldCertStableURL(ctx)
+	case sslrecord.FieldCertPrivateKey:
+		return m.OldCertPrivateKey(ctx)
+	case sslrecord.FieldCertCertificate:
+		return m.OldCertCertificate(ctx)
+	case sslrecord.FieldCertIssuerCertificate:
+		return m.OldCertIssuerCertificate(ctx)
+	case sslrecord.FieldCertCsr:
+		return m.OldCertCsr(ctx)
+	case sslrecord.FieldNotBefore:
+		return m.OldNotBefore(ctx)
+	case sslrecord.FieldNotAfter:
+		return m.OldNotAfter(ctx)
+	case sslrecord.FieldStatus:
+		return m.OldStatus(ctx)
+	case sslrecord.FieldProvider:
+		return m.OldProvider(ctx)
+	case sslrecord.FieldIsActive:
+		return m.OldIsActive(ctx)
+	case sslrecord.FieldIsAutoRenewal:
+		return m.OldIsAutoRenewal(ctx)
+	case sslrecord.FieldLastRefreshAt:
+		return m.OldLastRefreshAt(ctx)
+	case sslrecord.FieldLastAPIResponse:
+		return m.OldLastAPIResponse(ctx)
+	case sslrecord.FieldLastAPIResponseAt:
+		return m.OldLastAPIResponseAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown SSLRecord field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SSLRecordMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case sslrecord.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case sslrecord.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case sslrecord.FieldConfigID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConfigID(v)
+		return nil
+	case sslrecord.FieldDomain:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDomain(v)
+		return nil
+	case sslrecord.FieldCertDomain:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCertDomain(v)
+		return nil
+	case sslrecord.FieldCertURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCertURL(v)
+		return nil
+	case sslrecord.FieldCertStableURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCertStableURL(v)
+		return nil
+	case sslrecord.FieldCertPrivateKey:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCertPrivateKey(v)
+		return nil
+	case sslrecord.FieldCertCertificate:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCertCertificate(v)
+		return nil
+	case sslrecord.FieldCertIssuerCertificate:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCertIssuerCertificate(v)
+		return nil
+	case sslrecord.FieldCertCsr:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCertCsr(v)
+		return nil
+	case sslrecord.FieldNotBefore:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNotBefore(v)
+		return nil
+	case sslrecord.FieldNotAfter:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNotAfter(v)
+		return nil
+	case sslrecord.FieldStatus:
+		v, ok := value.(sslrecord.Status)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case sslrecord.FieldProvider:
+		v, ok := value.(sslrecord.Provider)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProvider(v)
+		return nil
+	case sslrecord.FieldIsActive:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsActive(v)
+		return nil
+	case sslrecord.FieldIsAutoRenewal:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsAutoRenewal(v)
+		return nil
+	case sslrecord.FieldLastRefreshAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastRefreshAt(v)
+		return nil
+	case sslrecord.FieldLastAPIResponse:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastAPIResponse(v)
+		return nil
+	case sslrecord.FieldLastAPIResponseAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastAPIResponseAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SSLRecord field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *SSLRecordMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *SSLRecordMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SSLRecordMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown SSLRecord numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *SSLRecordMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(sslrecord.FieldCertDomain) {
+		fields = append(fields, sslrecord.FieldCertDomain)
+	}
+	if m.FieldCleared(sslrecord.FieldCertURL) {
+		fields = append(fields, sslrecord.FieldCertURL)
+	}
+	if m.FieldCleared(sslrecord.FieldCertStableURL) {
+		fields = append(fields, sslrecord.FieldCertStableURL)
+	}
+	if m.FieldCleared(sslrecord.FieldCertIssuerCertificate) {
+		fields = append(fields, sslrecord.FieldCertIssuerCertificate)
+	}
+	if m.FieldCleared(sslrecord.FieldCertCsr) {
+		fields = append(fields, sslrecord.FieldCertCsr)
+	}
+	if m.FieldCleared(sslrecord.FieldNotBefore) {
+		fields = append(fields, sslrecord.FieldNotBefore)
+	}
+	if m.FieldCleared(sslrecord.FieldNotAfter) {
+		fields = append(fields, sslrecord.FieldNotAfter)
+	}
+	if m.FieldCleared(sslrecord.FieldLastRefreshAt) {
+		fields = append(fields, sslrecord.FieldLastRefreshAt)
+	}
+	if m.FieldCleared(sslrecord.FieldLastAPIResponse) {
+		fields = append(fields, sslrecord.FieldLastAPIResponse)
+	}
+	if m.FieldCleared(sslrecord.FieldLastAPIResponseAt) {
+		fields = append(fields, sslrecord.FieldLastAPIResponseAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *SSLRecordMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *SSLRecordMutation) ClearField(name string) error {
+	switch name {
+	case sslrecord.FieldCertDomain:
+		m.ClearCertDomain()
+		return nil
+	case sslrecord.FieldCertURL:
+		m.ClearCertURL()
+		return nil
+	case sslrecord.FieldCertStableURL:
+		m.ClearCertStableURL()
+		return nil
+	case sslrecord.FieldCertIssuerCertificate:
+		m.ClearCertIssuerCertificate()
+		return nil
+	case sslrecord.FieldCertCsr:
+		m.ClearCertCsr()
+		return nil
+	case sslrecord.FieldNotBefore:
+		m.ClearNotBefore()
+		return nil
+	case sslrecord.FieldNotAfter:
+		m.ClearNotAfter()
+		return nil
+	case sslrecord.FieldLastRefreshAt:
+		m.ClearLastRefreshAt()
+		return nil
+	case sslrecord.FieldLastAPIResponse:
+		m.ClearLastAPIResponse()
+		return nil
+	case sslrecord.FieldLastAPIResponseAt:
+		m.ClearLastAPIResponseAt()
+		return nil
+	}
+	return fmt.Errorf("unknown SSLRecord nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *SSLRecordMutation) ResetField(name string) error {
+	switch name {
+	case sslrecord.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case sslrecord.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case sslrecord.FieldConfigID:
+		m.ResetConfigID()
+		return nil
+	case sslrecord.FieldDomain:
+		m.ResetDomain()
+		return nil
+	case sslrecord.FieldCertDomain:
+		m.ResetCertDomain()
+		return nil
+	case sslrecord.FieldCertURL:
+		m.ResetCertURL()
+		return nil
+	case sslrecord.FieldCertStableURL:
+		m.ResetCertStableURL()
+		return nil
+	case sslrecord.FieldCertPrivateKey:
+		m.ResetCertPrivateKey()
+		return nil
+	case sslrecord.FieldCertCertificate:
+		m.ResetCertCertificate()
+		return nil
+	case sslrecord.FieldCertIssuerCertificate:
+		m.ResetCertIssuerCertificate()
+		return nil
+	case sslrecord.FieldCertCsr:
+		m.ResetCertCsr()
+		return nil
+	case sslrecord.FieldNotBefore:
+		m.ResetNotBefore()
+		return nil
+	case sslrecord.FieldNotAfter:
+		m.ResetNotAfter()
+		return nil
+	case sslrecord.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case sslrecord.FieldProvider:
+		m.ResetProvider()
+		return nil
+	case sslrecord.FieldIsActive:
+		m.ResetIsActive()
+		return nil
+	case sslrecord.FieldIsAutoRenewal:
+		m.ResetIsAutoRenewal()
+		return nil
+	case sslrecord.FieldLastRefreshAt:
+		m.ResetLastRefreshAt()
+		return nil
+	case sslrecord.FieldLastAPIResponse:
+		m.ResetLastAPIResponse()
+		return nil
+	case sslrecord.FieldLastAPIResponseAt:
+		m.ResetLastAPIResponseAt()
+		return nil
+	}
+	return fmt.Errorf("unknown SSLRecord field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *SSLRecordMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m._config != nil {
+		edges = append(edges, sslrecord.EdgeConfig)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *SSLRecordMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case sslrecord.EdgeConfig:
+		if id := m._config; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *SSLRecordMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *SSLRecordMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *SSLRecordMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.cleared_config {
+		edges = append(edges, sslrecord.EdgeConfig)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *SSLRecordMutation) EdgeCleared(name string) bool {
+	switch name {
+	case sslrecord.EdgeConfig:
+		return m.cleared_config
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *SSLRecordMutation) ClearEdge(name string) error {
+	switch name {
+	case sslrecord.EdgeConfig:
+		m.ClearConfig()
+		return nil
+	}
+	return fmt.Errorf("unknown SSLRecord unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *SSLRecordMutation) ResetEdge(name string) error {
+	switch name {
+	case sslrecord.EdgeConfig:
+		m.ResetConfig()
+		return nil
+	}
+	return fmt.Errorf("unknown SSLRecord edge %s", name)
 }
 
 // WebhookMutation represents an operation that mutates the Webhook nodes in the graph.

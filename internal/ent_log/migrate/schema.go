@@ -11,9 +11,8 @@ import (
 var (
 	// DomainMonitorHistoryColumns holds the columns for the "domain_monitor_history" table.
 	DomainMonitorHistoryColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "监控历史记录序号"},
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "域名监控历史记录序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
-		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "monitor_id", Type: field.TypeInt64, Comment: "关联的 DomainMonitor ID"},
 		{Name: "check_time", Type: field.TypeTime, Comment: "检查发生的时间"},
 		{Name: "is_success", Type: field.TypeBool, Comment: "本次检查是否成功"},
@@ -37,9 +36,22 @@ var (
 		PrimaryKey: []*schema.Column{DomainMonitorHistoryColumns[0]},
 		Indexes: []*schema.Index{
 			{
+				Name:    "domainmonitorhistory_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DomainMonitorHistoryColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "domainmonitorhistory_monitor_id",
+				Unique:  false,
+				Columns: []*schema.Column{DomainMonitorHistoryColumns[2]},
+			},
+			{
 				Name:    "domainmonitorhistory_check_time",
 				Unique:  false,
-				Columns: []*schema.Column{DomainMonitorHistoryColumns[4]},
+				Columns: []*schema.Column{DomainMonitorHistoryColumns[3]},
 				Annotation: &entsql.IndexAnnotation{
 					Desc: true,
 				},
@@ -47,7 +59,7 @@ var (
 			{
 				Name:    "domainmonitorhistory_monitor_id_check_time",
 				Unique:  false,
-				Columns: []*schema.Column{DomainMonitorHistoryColumns[3], DomainMonitorHistoryColumns[4]},
+				Columns: []*schema.Column{DomainMonitorHistoryColumns[2], DomainMonitorHistoryColumns[3]},
 				Annotation: &entsql.IndexAnnotation{
 					Desc: true,
 				},
@@ -207,13 +219,50 @@ var (
 			},
 		},
 	}
+	// SslCertificateHistoryColumns holds the columns for the "ssl_certificate_history" table.
+	SslCertificateHistoryColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "SSL证书申请历史记录序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "ssl_record_id", Type: field.TypeInt64, Comment: "关联 SSLRecord ID"},
+		{Name: "cert_domain", Type: field.TypeString, Nullable: true, Comment: "证书域名"},
+		{Name: "cert_url", Type: field.TypeString, Nullable: true, Comment: "证书URL"},
+		{Name: "cert_stable_url", Type: field.TypeString, Nullable: true, Comment: "稳定证书URL"},
+		{Name: "cert_private_key", Type: field.TypeString, Size: 2147483647, Comment: "私钥(PEM格式)"},
+		{Name: "cert_certificate", Type: field.TypeString, Size: 2147483647, Comment: "证书(PEM格式)"},
+		{Name: "cert_issuer_certificate", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "颁发者证书(PEM格式)"},
+		{Name: "cert_csr", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "证书签名请求(PEM格式)"},
+		{Name: "not_before", Type: field.TypeTime, Nullable: true, Comment: "证书生效时间"},
+		{Name: "not_after", Type: field.TypeTime, Nullable: true, Comment: "证书过期时间"},
+		{Name: "provider", Type: field.TypeEnum, Comment: "CA提供商", Enums: []string{"letsencrypt"}, Default: "letsencrypt"},
+	}
+	// SslCertificateHistoryTable holds the schema information for the "ssl_certificate_history" table.
+	SslCertificateHistoryTable = &schema.Table{
+		Name:       "ssl_certificate_history",
+		Comment:    "SSL证书申请历史记录",
+		Columns:    SslCertificateHistoryColumns,
+		PrimaryKey: []*schema.Column{SslCertificateHistoryColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "sslcertificatehistory_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SslCertificateHistoryColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "sslcertificatehistory_ssl_record_id",
+				Unique:  false,
+				Columns: []*schema.Column{SslCertificateHistoryColumns[2]},
+			},
+		},
+	}
 	// WebhookHistoryColumns holds the columns for the "webhook_history" table.
 	WebhookHistoryColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "通知日志序号"},
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "通知历史记录序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
-		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
-		{Name: "webhook_id", Type: field.TypeInt64, Comment: "通知序号"},
-		{Name: "subscription_id", Type: field.TypeInt64, Nullable: true, Comment: "通知订阅序号（可选，直接触发时为空）"},
+		{Name: "webhook_id", Type: field.TypeInt64, Comment: "关联 Webhook ID"},
+		{Name: "subscription_id", Type: field.TypeInt64, Nullable: true, Comment: "关联 WebhookSubscription ID"},
 		{Name: "url", Type: field.TypeString, Comment: "发送的URL"},
 		{Name: "title", Type: field.TypeString, Nullable: true, Comment: "发送的标题"},
 		{Name: "content", Type: field.TypeString, Nullable: true, Comment: "发送的内容"},
@@ -229,21 +278,6 @@ var (
 		PrimaryKey: []*schema.Column{WebhookHistoryColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "webhookhistory_webhook_id",
-				Unique:  false,
-				Columns: []*schema.Column{WebhookHistoryColumns[3]},
-			},
-			{
-				Name:    "webhookhistory_subscription_id",
-				Unique:  false,
-				Columns: []*schema.Column{WebhookHistoryColumns[4]},
-			},
-			{
-				Name:    "webhookhistory_success",
-				Unique:  false,
-				Columns: []*schema.Column{WebhookHistoryColumns[9]},
-			},
-			{
 				Name:    "webhookhistory_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{WebhookHistoryColumns[1]},
@@ -252,9 +286,24 @@ var (
 				},
 			},
 			{
+				Name:    "webhookhistory_webhook_id",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookHistoryColumns[2]},
+			},
+			{
+				Name:    "webhookhistory_subscription_id",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookHistoryColumns[3]},
+			},
+			{
+				Name:    "webhookhistory_success",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookHistoryColumns[8]},
+			},
+			{
 				Name:    "webhookhistory_webhook_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{WebhookHistoryColumns[3], WebhookHistoryColumns[1]},
+				Columns: []*schema.Column{WebhookHistoryColumns[2], WebhookHistoryColumns[1]},
 				Annotation: &entsql.IndexAnnotation{
 					Desc: true,
 				},
@@ -262,7 +311,7 @@ var (
 			{
 				Name:    "webhookhistory_success_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{WebhookHistoryColumns[9], WebhookHistoryColumns[1]},
+				Columns: []*schema.Column{WebhookHistoryColumns[8], WebhookHistoryColumns[1]},
 				Annotation: &entsql.IndexAnnotation{
 					Desc: true,
 				},
@@ -275,6 +324,7 @@ var (
 		HTTPLogTable,
 		OperationLogTable,
 		RestyLogTable,
+		SslCertificateHistoryTable,
 		WebhookHistoryTable,
 	}
 )
@@ -291,6 +341,9 @@ func init() {
 	}
 	RestyLogTable.Annotation = &entsql.Annotation{
 		Table: "resty_log",
+	}
+	SslCertificateHistoryTable.Annotation = &entsql.Annotation{
+		Table: "ssl_certificate_history",
 	}
 	WebhookHistoryTable.Annotation = &entsql.Annotation{
 		Table: "webhook_history",

@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/types"
+	"vibe_ip/internal/utils"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -13,30 +14,37 @@ func RegisterCDNRecordTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getCdnRecordList",
 		Description: "获取全部CDN记录",
+		InputSchema: utils.AutoSchema(types.GetCdnRecordsRequest{}),
 	}, getCdnRecordList)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getCdnRecordDetail",
 		Description: "获取CDN记录详情",
+		InputSchema: utils.AutoSchema(types.GetCdnRecordRequest{}),
 	}, getCdnRecordDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "createCDNRecord",
 		Description: "创建CDN记录",
+		InputSchema: utils.AutoSchema(types.CreateCdnRecordRequest{}),
 	}, createCdnRecord)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateCDNRecord",
 		Description: "更新CDN记录",
+		InputSchema: utils.AutoSchema(types.UpdateCdnRecordRequest{}),
 	}, updateCdnRecord)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateCDNRecordActive",
 		Description: "更新CDN记录启用状态",
+		InputSchema: utils.AutoSchema(types.UpdateCdnRecordActiveRequest{}),
 	}, updateCdnRecordActive)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deleteCDNRecord",
 		Description: "删除CDN记录",
+		InputSchema: utils.AutoSchema(types.DeleteCdnRecordRequest{}),
 	}, deleteCdnRecord)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "healthCheckCDNRecord",
 		Description: "检查CDN记录是否健康",
+		InputSchema: utils.AutoSchema(types.HealthCheckCdnRecordRequest{}),
 	}, healthCheckCdnRecord)
 }
 

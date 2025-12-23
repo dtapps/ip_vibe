@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/types"
+	"vibe_ip/internal/utils"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -13,30 +14,37 @@ func RegisterDeviceTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getDeviceList",
 		Description: "获取全部设备",
+		InputSchema: utils.AutoSchema(types.GetDevicesRequest{}),
 	}, getDeviceList)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getDeviceDetail",
 		Description: "获取设备",
+		InputSchema: utils.AutoSchema(types.GetDeviceRequest{}),
 	}, getDeviceDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "createDevice",
 		Description: "创建设备",
+		InputSchema: utils.AutoSchema(types.CreateDeviceRequest{}),
 	}, createDevice)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateDevice",
 		Description: "更新设备",
+		InputSchema: utils.AutoSchema(types.UpdateDeviceRequest{}),
 	}, updateDevice)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deleteDevice",
 		Description: "删除设备",
+		InputSchema: utils.AutoSchema(types.DeleteDeviceRequest{}),
 	}, deleteDevice)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getDeviceIpHistory",
 		Description: "获取设备IP历史记录",
+		InputSchema: utils.AutoSchema(types.GetDeviceIpHistoryRequest{}),
 	}, getDeviceIpHistory)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "healthCheckDevice",
 		Description: "检查设备是否健康",
+		InputSchema: utils.AutoSchema(types.HealthCheckDeviceRequest{}),
 	}, healthCheckDevice)
 }
 

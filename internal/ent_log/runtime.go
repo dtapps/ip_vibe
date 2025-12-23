@@ -9,6 +9,7 @@ import (
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/restylog"
 	"vibe_ip/internal/ent_log/schema"
+	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/ent_log/webhookhistory"
 )
 
@@ -25,12 +26,10 @@ func init() {
 	domainmonitorhistoryDescCreatedAt := domainmonitorhistoryMixinFields0[0].Descriptor()
 	// domainmonitorhistory.DefaultCreatedAt holds the default value on creation for the created_at field.
 	domainmonitorhistory.DefaultCreatedAt = domainmonitorhistoryDescCreatedAt.Default.(func() time.Time)
-	// domainmonitorhistoryDescUpdatedAt is the schema descriptor for updated_at field.
-	domainmonitorhistoryDescUpdatedAt := domainmonitorhistoryMixinFields0[1].Descriptor()
-	// domainmonitorhistory.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	domainmonitorhistory.DefaultUpdatedAt = domainmonitorhistoryDescUpdatedAt.Default.(func() time.Time)
-	// domainmonitorhistory.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	domainmonitorhistory.UpdateDefaultUpdatedAt = domainmonitorhistoryDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// domainmonitorhistoryDescID is the schema descriptor for id field.
+	domainmonitorhistoryDescID := domainmonitorhistoryFields[0].Descriptor()
+	// domainmonitorhistory.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	domainmonitorhistory.IDValidator = domainmonitorhistoryDescID.Validators[0].(func(int64) error)
 	httplogFields := schema.HttpLog{}.Fields()
 	_ = httplogFields
 	// httplogDescStatusCode is the schema descriptor for status_code field.
@@ -112,6 +111,19 @@ func init() {
 	restylogDescID := restylogFields[0].Descriptor()
 	// restylog.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	restylog.IDValidator = restylogDescID.Validators[0].(func(int64) error)
+	sslcertificatehistoryMixin := schema.SSLCertificateHistory{}.Mixin()
+	sslcertificatehistoryMixinFields0 := sslcertificatehistoryMixin[0].Fields()
+	_ = sslcertificatehistoryMixinFields0
+	sslcertificatehistoryFields := schema.SSLCertificateHistory{}.Fields()
+	_ = sslcertificatehistoryFields
+	// sslcertificatehistoryDescCreatedAt is the schema descriptor for created_at field.
+	sslcertificatehistoryDescCreatedAt := sslcertificatehistoryMixinFields0[0].Descriptor()
+	// sslcertificatehistory.DefaultCreatedAt holds the default value on creation for the created_at field.
+	sslcertificatehistory.DefaultCreatedAt = sslcertificatehistoryDescCreatedAt.Default.(func() time.Time)
+	// sslcertificatehistoryDescID is the schema descriptor for id field.
+	sslcertificatehistoryDescID := sslcertificatehistoryFields[0].Descriptor()
+	// sslcertificatehistory.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	sslcertificatehistory.IDValidator = sslcertificatehistoryDescID.Validators[0].(func(int64) error)
 	webhookhistoryMixin := schema.WebhookHistory{}.Mixin()
 	webhookhistoryMixinFields0 := webhookhistoryMixin[0].Fields()
 	_ = webhookhistoryMixinFields0
@@ -121,14 +133,12 @@ func init() {
 	webhookhistoryDescCreatedAt := webhookhistoryMixinFields0[0].Descriptor()
 	// webhookhistory.DefaultCreatedAt holds the default value on creation for the created_at field.
 	webhookhistory.DefaultCreatedAt = webhookhistoryDescCreatedAt.Default.(func() time.Time)
-	// webhookhistoryDescUpdatedAt is the schema descriptor for updated_at field.
-	webhookhistoryDescUpdatedAt := webhookhistoryMixinFields0[1].Descriptor()
-	// webhookhistory.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	webhookhistory.DefaultUpdatedAt = webhookhistoryDescUpdatedAt.Default.(func() time.Time)
-	// webhookhistory.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	webhookhistory.UpdateDefaultUpdatedAt = webhookhistoryDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// webhookhistoryDescSuccess is the schema descriptor for success field.
 	webhookhistoryDescSuccess := webhookhistoryFields[7].Descriptor()
 	// webhookhistory.DefaultSuccess holds the default value on creation for the success field.
 	webhookhistory.DefaultSuccess = webhookhistoryDescSuccess.Default.(bool)
+	// webhookhistoryDescID is the schema descriptor for id field.
+	webhookhistoryDescID := webhookhistoryFields[0].Descriptor()
+	// webhookhistory.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	webhookhistory.IDValidator = webhookhistoryDescID.Validators[0].(func(int64) error)
 }

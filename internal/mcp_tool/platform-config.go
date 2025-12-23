@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/types"
+	"vibe_ip/internal/utils"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -13,22 +14,27 @@ func RegisterPlatformConfigTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getPlatformConfigList",
 		Description: "获取全部配置",
+		InputSchema: utils.AutoSchema(types.GetPlatformConfigsRequest{}),
 	}, getPlatformConfigList)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getPlatformConfigDetail",
 		Description: "获取配置",
+		InputSchema: utils.AutoSchema(types.GetPlatformConfigRequest{}),
 	}, getPlatformConfigDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "createPlatformConfig",
 		Description: "创建配置",
+		InputSchema: utils.AutoSchema(types.CreatePlatformConfigRequest{}),
 	}, createPlatformConfig)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updatePlatformConfig",
 		Description: "更新配置",
+		InputSchema: utils.AutoSchema(types.UpdatePlatformConfigRequest{}),
 	}, updatePlatformConfig)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deletePlatformConfig",
 		Description: "删除配置",
+		InputSchema: utils.AutoSchema(types.DeletePlatformConfigRequest{}),
 	}, deletePlatformConfig)
 }
 

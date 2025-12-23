@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/types"
+	"vibe_ip/internal/utils"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -13,30 +14,37 @@ func RegisterDomainMonitorTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getDomainMonitorList",
 		Description: "获取全部域名监控",
+		InputSchema: utils.AutoSchema(types.GetDomainMonitorsRequest{}),
 	}, getDomainMonitorList)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getDomainMonitorDetail",
 		Description: "获取域名监控",
+		InputSchema: utils.AutoSchema(types.GetDomainMonitorRequest{}),
 	}, getDomainMonitorDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "createDomainMonitor",
 		Description: "创建域名监控",
+		InputSchema: utils.AutoSchema(types.CreateDomainMonitorRequest{}),
 	}, createDomainMonitor)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateDomainMonitor",
 		Description: "更新域名监控",
+		InputSchema: utils.AutoSchema(types.UpdateDomainMonitorRequest{}),
 	}, updateDomainMonitor)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updateDomainMonitorActive",
 		Description: "更新域名监控启用状态",
+		InputSchema: utils.AutoSchema(types.UpdateDomainMonitorActiveRequest{}),
 	}, updateDomainMonitorActive)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deleteDomainMonitor",
 		Description: "删除域名监控",
+		InputSchema: utils.AutoSchema(types.DeleteDomainMonitorRequest{}),
 	}, deleteDomainMonitor)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "checkDomainMonitor",
 		Description: "检查域名监控",
+		InputSchema: utils.AutoSchema(types.CheckDomainMonitorRequest{}),
 	}, checkDomainMonitor)
 }
 

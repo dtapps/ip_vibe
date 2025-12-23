@@ -36,20 +36,6 @@ func (_c *DomainMonitorHistoryCreate) SetNillableCreatedAt(v *time.Time) *Domain
 	return _c
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_c *DomainMonitorHistoryCreate) SetUpdatedAt(v time.Time) *DomainMonitorHistoryCreate {
-	_c.mutation.SetUpdatedAt(v)
-	return _c
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (_c *DomainMonitorHistoryCreate) SetNillableUpdatedAt(v *time.Time) *DomainMonitorHistoryCreate {
-	if v != nil {
-		_c.SetUpdatedAt(*v)
-	}
-	return _c
-}
-
 // SetMonitorID sets the "monitor_id" field.
 func (_c *DomainMonitorHistoryCreate) SetMonitorID(v int64) *DomainMonitorHistoryCreate {
 	_c.mutation.SetMonitorID(v)
@@ -259,19 +245,12 @@ func (_c *DomainMonitorHistoryCreate) defaults() {
 		v := domainmonitorhistory.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		v := domainmonitorhistory.DefaultUpdatedAt()
-		_c.mutation.SetUpdatedAt(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *DomainMonitorHistoryCreate) check() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent_log: missing required field "DomainMonitorHistory.created_at"`)}
-	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent_log: missing required field "DomainMonitorHistory.updated_at"`)}
 	}
 	if _, ok := _c.mutation.MonitorID(); !ok {
 		return &ValidationError{Name: "monitor_id", err: errors.New(`ent_log: missing required field "DomainMonitorHistory.monitor_id"`)}
@@ -281,6 +260,11 @@ func (_c *DomainMonitorHistoryCreate) check() error {
 	}
 	if _, ok := _c.mutation.IsSuccess(); !ok {
 		return &ValidationError{Name: "is_success", err: errors.New(`ent_log: missing required field "DomainMonitorHistory.is_success"`)}
+	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := domainmonitorhistory.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent_log: validator failed for field "DomainMonitorHistory.id": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -318,10 +302,6 @@ func (_c *DomainMonitorHistoryCreate) createSpec() (*DomainMonitorHistory, *sqlg
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(domainmonitorhistory.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
-	}
-	if value, ok := _c.mutation.UpdatedAt(); ok {
-		_spec.SetField(domainmonitorhistory.FieldUpdatedAt, field.TypeTime, value)
-		_node.UpdatedAt = value
 	}
 	if value, ok := _c.mutation.MonitorID(); ok {
 		_spec.SetField(domainmonitorhistory.FieldMonitorID, field.TypeInt64, value)
@@ -431,18 +411,6 @@ type (
 	}
 )
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DomainMonitorHistoryUpsert) SetUpdatedAt(v time.Time) *DomainMonitorHistoryUpsert {
-	u.Set(domainmonitorhistory.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsert) UpdateUpdatedAt() *DomainMonitorHistoryUpsert {
-	u.SetExcluded(domainmonitorhistory.FieldUpdatedAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -534,20 +502,6 @@ func (u *DomainMonitorHistoryUpsertOne) Update(set func(*DomainMonitorHistoryUps
 		set(&DomainMonitorHistoryUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DomainMonitorHistoryUpsertOne) SetUpdatedAt(v time.Time) *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertOne) UpdateUpdatedAt() *DomainMonitorHistoryUpsertOne {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // Exec executes the query.
@@ -807,20 +761,6 @@ func (u *DomainMonitorHistoryUpsertBulk) Update(set func(*DomainMonitorHistoryUp
 		set(&DomainMonitorHistoryUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DomainMonitorHistoryUpsertBulk) SetUpdatedAt(v time.Time) *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DomainMonitorHistoryUpsertBulk) UpdateUpdatedAt() *DomainMonitorHistoryUpsertBulk {
-	return u.Update(func(s *DomainMonitorHistoryUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // Exec executes the query.

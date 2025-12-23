@@ -20,6 +20,7 @@ import (
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
+	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
 
@@ -54,6 +55,8 @@ type Client struct {
 	IpGroupDevice *IpGroupDeviceClient
 	// PlatformConfig is the client for interacting with the PlatformConfig builders.
 	PlatformConfig *PlatformConfigClient
+	// SSLRecord is the client for interacting with the SSLRecord builders.
+	SSLRecord *SSLRecordClient
 	// Webhook is the client for interacting with the Webhook builders.
 	Webhook *WebhookClient
 	// WebhookSubscription is the client for interacting with the WebhookSubscription builders.
@@ -78,6 +81,7 @@ func (c *Client) init() {
 	c.IpGroup = NewIpGroupClient(c.config)
 	c.IpGroupDevice = NewIpGroupDeviceClient(c.config)
 	c.PlatformConfig = NewPlatformConfigClient(c.config)
+	c.SSLRecord = NewSSLRecordClient(c.config)
 	c.Webhook = NewWebhookClient(c.config)
 	c.WebhookSubscription = NewWebhookSubscriptionClient(c.config)
 }
@@ -181,6 +185,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		IpGroup:             NewIpGroupClient(cfg),
 		IpGroupDevice:       NewIpGroupDeviceClient(cfg),
 		PlatformConfig:      NewPlatformConfigClient(cfg),
+		SSLRecord:           NewSSLRecordClient(cfg),
 		Webhook:             NewWebhookClient(cfg),
 		WebhookSubscription: NewWebhookSubscriptionClient(cfg),
 	}, nil
@@ -211,6 +216,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		IpGroup:             NewIpGroupClient(cfg),
 		IpGroupDevice:       NewIpGroupDeviceClient(cfg),
 		PlatformConfig:      NewPlatformConfigClient(cfg),
+		SSLRecord:           NewSSLRecordClient(cfg),
 		Webhook:             NewWebhookClient(cfg),
 		WebhookSubscription: NewWebhookSubscriptionClient(cfg),
 	}, nil
@@ -243,8 +249,8 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.CDNRecord, c.DNSRecord, c.Device, c.DeviceIpReport, c.DevicePortForward,
-		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.Webhook,
-		c.WebhookSubscription,
+		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLRecord,
+		c.Webhook, c.WebhookSubscription,
 	} {
 		n.Use(hooks...)
 	}
@@ -255,8 +261,8 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.CDNRecord, c.DNSRecord, c.Device, c.DeviceIpReport, c.DevicePortForward,
-		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.Webhook,
-		c.WebhookSubscription,
+		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLRecord,
+		c.Webhook, c.WebhookSubscription,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -283,6 +289,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.IpGroupDevice.mutate(ctx, m)
 	case *PlatformConfigMutation:
 		return c.PlatformConfig.mutate(ctx, m)
+	case *SSLRecordMutation:
+		return c.SSLRecord.mutate(ctx, m)
 	case *WebhookMutation:
 		return c.Webhook.mutate(ctx, m)
 	case *WebhookSubscriptionMutation:
@@ -1735,6 +1743,22 @@ func (c *PlatformConfigClient) QueryCdnRecords(_m *PlatformConfig) *CDNRecordQue
 	return query
 }
 
+// QuerySslRecords queries the ssl_records edge of a PlatformConfig.
+func (c *PlatformConfigClient) QuerySslRecords(_m *PlatformConfig) *SSLRecordQuery {
+	query := (&SSLRecordClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, id),
+			sqlgraph.To(sslrecord.Table, sslrecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.SslRecordsTable, platformconfig.SslRecordsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PlatformConfigClient) Hooks() []Hook {
 	return c.hooks.PlatformConfig
@@ -1757,6 +1781,155 @@ func (c *PlatformConfigClient) mutate(ctx context.Context, m *PlatformConfigMuta
 		return (&PlatformConfigDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown PlatformConfig mutation op: %q", m.Op())
+	}
+}
+
+// SSLRecordClient is a client for the SSLRecord schema.
+type SSLRecordClient struct {
+	config
+}
+
+// NewSSLRecordClient returns a client for the SSLRecord from the given config.
+func NewSSLRecordClient(c config) *SSLRecordClient {
+	return &SSLRecordClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `sslrecord.Hooks(f(g(h())))`.
+func (c *SSLRecordClient) Use(hooks ...Hook) {
+	c.hooks.SSLRecord = append(c.hooks.SSLRecord, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `sslrecord.Intercept(f(g(h())))`.
+func (c *SSLRecordClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SSLRecord = append(c.inters.SSLRecord, interceptors...)
+}
+
+// Create returns a builder for creating a SSLRecord entity.
+func (c *SSLRecordClient) Create() *SSLRecordCreate {
+	mutation := newSSLRecordMutation(c.config, OpCreate)
+	return &SSLRecordCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SSLRecord entities.
+func (c *SSLRecordClient) CreateBulk(builders ...*SSLRecordCreate) *SSLRecordCreateBulk {
+	return &SSLRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SSLRecordClient) MapCreateBulk(slice any, setFunc func(*SSLRecordCreate, int)) *SSLRecordCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SSLRecordCreateBulk{err: fmt.Errorf("calling to SSLRecordClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SSLRecordCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SSLRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SSLRecord.
+func (c *SSLRecordClient) Update() *SSLRecordUpdate {
+	mutation := newSSLRecordMutation(c.config, OpUpdate)
+	return &SSLRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SSLRecordClient) UpdateOne(_m *SSLRecord) *SSLRecordUpdateOne {
+	mutation := newSSLRecordMutation(c.config, OpUpdateOne, withSSLRecord(_m))
+	return &SSLRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SSLRecordClient) UpdateOneID(id int64) *SSLRecordUpdateOne {
+	mutation := newSSLRecordMutation(c.config, OpUpdateOne, withSSLRecordID(id))
+	return &SSLRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SSLRecord.
+func (c *SSLRecordClient) Delete() *SSLRecordDelete {
+	mutation := newSSLRecordMutation(c.config, OpDelete)
+	return &SSLRecordDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SSLRecordClient) DeleteOne(_m *SSLRecord) *SSLRecordDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SSLRecordClient) DeleteOneID(id int64) *SSLRecordDeleteOne {
+	builder := c.Delete().Where(sslrecord.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SSLRecordDeleteOne{builder}
+}
+
+// Query returns a query builder for SSLRecord.
+func (c *SSLRecordClient) Query() *SSLRecordQuery {
+	return &SSLRecordQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSSLRecord},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SSLRecord entity by its id.
+func (c *SSLRecordClient) Get(ctx context.Context, id int64) (*SSLRecord, error) {
+	return c.Query().Where(sslrecord.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SSLRecordClient) GetX(ctx context.Context, id int64) *SSLRecord {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryConfig queries the config edge of a SSLRecord.
+func (c *SSLRecordClient) QueryConfig(_m *SSLRecord) *PlatformConfigQuery {
+	query := (&PlatformConfigClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sslrecord.Table, sslrecord.FieldID, id),
+			sqlgraph.To(platformconfig.Table, platformconfig.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, sslrecord.ConfigTable, sslrecord.ConfigColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SSLRecordClient) Hooks() []Hook {
+	return c.hooks.SSLRecord
+}
+
+// Interceptors returns the client interceptors.
+func (c *SSLRecordClient) Interceptors() []Interceptor {
+	return c.inters.SSLRecord
+}
+
+func (c *SSLRecordClient) mutate(ctx context.Context, m *SSLRecordMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SSLRecordCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SSLRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SSLRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SSLRecordDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SSLRecord mutation op: %q", m.Op())
 	}
 }
 
@@ -2062,11 +2235,12 @@ func (c *WebhookSubscriptionClient) mutate(ctx context.Context, m *WebhookSubscr
 type (
 	hooks struct {
 		CDNRecord, DNSRecord, Device, DeviceIpReport, DevicePortForward, DomainMonitor,
-		IpGroup, IpGroupDevice, PlatformConfig, Webhook, WebhookSubscription []ent.Hook
+		IpGroup, IpGroupDevice, PlatformConfig, SSLRecord, Webhook,
+		WebhookSubscription []ent.Hook
 	}
 	inters struct {
 		CDNRecord, DNSRecord, Device, DeviceIpReport, DevicePortForward, DomainMonitor,
-		IpGroup, IpGroupDevice, PlatformConfig, Webhook,
+		IpGroup, IpGroupDevice, PlatformConfig, SSLRecord, Webhook,
 		WebhookSubscription []ent.Interceptor
 	}
 )

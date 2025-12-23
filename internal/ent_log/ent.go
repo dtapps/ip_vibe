@@ -12,6 +12,7 @@ import (
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/restylog"
+	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/ent_log/webhookhistory"
 
 	"entgo.io/ent"
@@ -77,11 +78,12 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			domainmonitorhistory.Table: domainmonitorhistory.ValidColumn,
-			httplog.Table:              httplog.ValidColumn,
-			operationlog.Table:         operationlog.ValidColumn,
-			restylog.Table:             restylog.ValidColumn,
-			webhookhistory.Table:       webhookhistory.ValidColumn,
+			domainmonitorhistory.Table:  domainmonitorhistory.ValidColumn,
+			httplog.Table:               httplog.ValidColumn,
+			operationlog.Table:          operationlog.ValidColumn,
+			restylog.Table:              restylog.ValidColumn,
+			sslcertificatehistory.Table: sslcertificatehistory.ValidColumn,
+			webhookhistory.Table:        webhookhistory.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

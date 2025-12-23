@@ -109,8 +109,18 @@ func (_c *IpGroupDeviceCreate) check() error {
 	if _, ok := _c.mutation.DeviceID(); !ok {
 		return &ValidationError{Name: "device_id", err: errors.New(`ent: missing required field "IpGroupDevice.device_id"`)}
 	}
+	if v, ok := _c.mutation.DeviceID(); ok {
+		if err := ipgroupdevice.DeviceIDValidator(v); err != nil {
+			return &ValidationError{Name: "device_id", err: fmt.Errorf(`ent: validator failed for field "IpGroupDevice.device_id": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.IPGroupID(); !ok {
 		return &ValidationError{Name: "ip_group_id", err: errors.New(`ent: missing required field "IpGroupDevice.ip_group_id"`)}
+	}
+	if v, ok := _c.mutation.IPGroupID(); ok {
+		if err := ipgroupdevice.IPGroupIDValidator(v); err != nil {
+			return &ValidationError{Name: "ip_group_id", err: fmt.Errorf(`ent: validator failed for field "IpGroupDevice.ip_group_id": %w`, err)}
+		}
 	}
 	if len(_c.mutation.DeviceIDs()) == 0 {
 		return &ValidationError{Name: "device", err: errors.New(`ent: missing required edge "IpGroupDevice.device"`)}

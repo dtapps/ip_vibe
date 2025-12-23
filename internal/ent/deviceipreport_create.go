@@ -131,6 +131,16 @@ func (_c *DeviceIpReportCreate) check() error {
 	if _, ok := _c.mutation.DeviceID(); !ok {
 		return &ValidationError{Name: "device_id", err: errors.New(`ent: missing required field "DeviceIpReport.device_id"`)}
 	}
+	if v, ok := _c.mutation.DeviceID(); ok {
+		if err := deviceipreport.DeviceIDValidator(v); err != nil {
+			return &ValidationError{Name: "device_id", err: fmt.Errorf(`ent: validator failed for field "DeviceIpReport.device_id": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := deviceipreport.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "DeviceIpReport.id": %w`, err)}
+		}
+	}
 	if len(_c.mutation.DeviceIDs()) == 0 {
 		return &ValidationError{Name: "device", err: errors.New(`ent: missing required edge "DeviceIpReport.device"`)}
 	}

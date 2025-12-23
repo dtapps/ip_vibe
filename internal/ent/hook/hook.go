@@ -116,6 +116,18 @@ func (f PlatformConfigFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlatformConfigMutation", m)
 }
 
+// The SSLRecordFunc type is an adapter to allow the use of ordinary
+// function as SSLRecord mutator.
+type SSLRecordFunc func(context.Context, *ent.SSLRecordMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SSLRecordFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SSLRecordMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SSLRecordMutation", m)
+}
+
 // The WebhookFunc type is an adapter to allow the use of ordinary
 // function as Webhook mutator.
 type WebhookFunc func(context.Context, *ent.WebhookMutation) (ent.Value, error)

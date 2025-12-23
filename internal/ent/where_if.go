@@ -288,6 +288,37 @@ func (q *PlatformConfigQuery) WhereIfFunc(condition bool, predicateFunc func() p
 
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
+func (q *SSLRecordQuery) WhereIf(condition bool, p predicate.SSLRecord) *SSLRecordQuery {
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p)
+	}
+	return q
+}
+
+// WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *SSLRecordQuery) WhereIfs(condition bool, p ...predicate.SSLRecord) *SSLRecordQuery {
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p...)
+	}
+	return q
+}
+
+// WhereIfFunc 动态地添加一个 WHERE 子句到查询构建器。
+// conditionFunc 决定是否应用过滤。
+// predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
+func (q *SSLRecordQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.SSLRecord) *SSLRecordQuery {
+	q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
+	if condition {
+		q.Where(predicateFunc())
+	}
+	return q
+}
+
+// WhereIf 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
 func (q *WebhookQuery) WhereIf(condition bool, p predicate.Webhook) *WebhookQuery {
 	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {

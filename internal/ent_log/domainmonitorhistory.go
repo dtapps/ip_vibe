@@ -17,12 +17,10 @@ import (
 type DomainMonitorHistory struct {
 	config `json:"-"`
 	// ID of the ent.
-	// 监控历史记录序号
+	// 域名监控历史记录序号
 	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
-	// 更新时间
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// 关联的 DomainMonitor ID
 	MonitorID int64 `json:"monitor_id,omitempty"`
 	// 检查发生的时间
@@ -67,7 +65,7 @@ func (*DomainMonitorHistory) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case domainmonitorhistory.FieldStatusMessage, domainmonitorhistory.FieldErrorLog, domainmonitorhistory.FieldSslCommonName, domainmonitorhistory.FieldSslIssuerName, domainmonitorhistory.FieldSslSignatureAlg, domainmonitorhistory.FieldSslSanList, domainmonitorhistory.FieldSslCertificateChain:
 			values[i] = new(sql.NullString)
-		case domainmonitorhistory.FieldCreatedAt, domainmonitorhistory.FieldUpdatedAt, domainmonitorhistory.FieldCheckTime, domainmonitorhistory.FieldSslExpiryDate:
+		case domainmonitorhistory.FieldCreatedAt, domainmonitorhistory.FieldCheckTime, domainmonitorhistory.FieldSslExpiryDate:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -95,12 +93,6 @@ func (_m *DomainMonitorHistory) assignValues(columns []string, values []any) err
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				_m.CreatedAt = value.Time
-			}
-		case domainmonitorhistory.FieldUpdatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
-			} else if value.Valid {
-				_m.UpdatedAt = value.Time
 			}
 		case domainmonitorhistory.FieldMonitorID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -226,9 +218,6 @@ func (_m *DomainMonitorHistory) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("updated_at=")
-	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("monitor_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.MonitorID))

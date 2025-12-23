@@ -50,21 +50,6 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "cdnrecord_sub_domain",
-				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[4]},
-			},
-			{
-				Name:    "cdnrecord_type",
-				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[5]},
-			},
-			{
-				Name:    "cdnrecord_is_active",
-				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[10]},
-			},
-			{
 				Name:    "cdnrecord_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{CdnRecordColumns[1]},
@@ -78,9 +63,29 @@ var (
 				Columns: []*schema.Column{CdnRecordColumns[15]},
 			},
 			{
+				Name:    "cdnrecord_record_id",
+				Unique:  false,
+				Columns: []*schema.Column{CdnRecordColumns[3]},
+			},
+			{
+				Name:    "cdnrecord_sub_domain",
+				Unique:  false,
+				Columns: []*schema.Column{CdnRecordColumns[4]},
+			},
+			{
+				Name:    "cdnrecord_type",
+				Unique:  false,
+				Columns: []*schema.Column{CdnRecordColumns[5]},
+			},
+			{
 				Name:    "cdnrecord_ip_group_id",
 				Unique:  false,
 				Columns: []*schema.Column{CdnRecordColumns[14]},
+			},
+			{
+				Name:    "cdnrecord_is_active",
+				Unique:  false,
+				Columns: []*schema.Column{CdnRecordColumns[10]},
 			},
 		},
 	}
@@ -128,21 +133,6 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "dnsrecord_sub_domain",
-				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[4]},
-			},
-			{
-				Name:    "dnsrecord_type",
-				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[5]},
-			},
-			{
-				Name:    "dnsrecord_is_active",
-				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[6]},
-			},
-			{
 				Name:    "dnsrecord_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{DNSRecordColumns[1]},
@@ -156,6 +146,21 @@ var (
 				Columns: []*schema.Column{DNSRecordColumns[12]},
 			},
 			{
+				Name:    "dnsrecord_record_id",
+				Unique:  false,
+				Columns: []*schema.Column{DNSRecordColumns[3]},
+			},
+			{
+				Name:    "dnsrecord_sub_domain",
+				Unique:  false,
+				Columns: []*schema.Column{DNSRecordColumns[4]},
+			},
+			{
+				Name:    "dnsrecord_type",
+				Unique:  false,
+				Columns: []*schema.Column{DNSRecordColumns[5]},
+			},
+			{
 				Name:    "dnsrecord_ip_group_id",
 				Unique:  false,
 				Columns: []*schema.Column{DNSRecordColumns[11]},
@@ -164,6 +169,11 @@ var (
 				Name:    "dnsrecord_cdn_record_id",
 				Unique:  false,
 				Columns: []*schema.Column{DNSRecordColumns[10]},
+			},
+			{
+				Name:    "dnsrecord_is_active",
+				Unique:  false,
+				Columns: []*schema.Column{DNSRecordColumns[6]},
 			},
 		},
 	}
@@ -188,6 +198,14 @@ var (
 		PrimaryKey: []*schema.Column{DeviceColumns[0]},
 		Indexes: []*schema.Index{
 			{
+				Name:    "device_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeviceColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
 				Name:    "device_last_reported_at",
 				Unique:  false,
 				Columns: []*schema.Column{DeviceColumns[8]},
@@ -196,14 +214,6 @@ var (
 				Name:    "device_last_heartbeat_at",
 				Unique:  false,
 				Columns: []*schema.Column{DeviceColumns[9]},
-			},
-			{
-				Name:    "device_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{DeviceColumns[1]},
-				Annotation: &entsql.IndexAnnotation{
-					Desc: true,
-				},
 			},
 		},
 	}
@@ -276,17 +286,17 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "deviceportforward_is_active",
-				Unique:  false,
-				Columns: []*schema.Column{DevicePortForwardColumns[10]},
-			},
-			{
 				Name:    "deviceportforward_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{DevicePortForwardColumns[1]},
 				Annotation: &entsql.IndexAnnotation{
 					Desc: true,
 				},
+			},
+			{
+				Name:    "deviceportforward_is_active",
+				Unique:  false,
+				Columns: []*schema.Column{DevicePortForwardColumns[10]},
 			},
 		},
 	}
@@ -312,6 +322,14 @@ var (
 		Columns:    DomainMonitorColumns,
 		PrimaryKey: []*schema.Column{DomainMonitorColumns[0]},
 		Indexes: []*schema.Index{
+			{
+				Name:    "domainmonitor_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DomainMonitorColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
 			{
 				Name:    "domainmonitor_domain",
 				Unique:  false,
@@ -349,6 +367,11 @@ var (
 				Annotation: &entsql.IndexAnnotation{
 					Desc: true,
 				},
+			},
+			{
+				Name:    "ipgroup_record_id",
+				Unique:  false,
+				Columns: []*schema.Column{IPGroupColumns[3]},
 			},
 		},
 	}
@@ -418,6 +441,14 @@ var (
 		PrimaryKey: []*schema.Column{PlatformConfigColumns[0]},
 		Indexes: []*schema.Index{
 			{
+				Name:    "platformconfig_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PlatformConfigColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
 				Name:    "platformconfig_capability",
 				Unique:  false,
 				Columns: []*schema.Column{PlatformConfigColumns[3]},
@@ -427,13 +458,92 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{PlatformConfigColumns[6]},
 			},
+		},
+	}
+	// SslRecordColumns holds the columns for the "ssl_record" table.
+	SslRecordColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "SSL记录序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "domain", Type: field.TypeString, Comment: "域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名"},
+		{Name: "cert_domain", Type: field.TypeString, Nullable: true, Comment: "证书域名"},
+		{Name: "cert_url", Type: field.TypeString, Nullable: true, Comment: "证书URL"},
+		{Name: "cert_stable_url", Type: field.TypeString, Nullable: true, Comment: "稳定证书URL"},
+		{Name: "cert_private_key", Type: field.TypeString, Size: 2147483647, Comment: "私钥(PEM格式)"},
+		{Name: "cert_certificate", Type: field.TypeString, Size: 2147483647, Comment: "证书(PEM格式)"},
+		{Name: "cert_issuer_certificate", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "颁发者证书(PEM格式)"},
+		{Name: "cert_csr", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "证书签名请求(PEM格式)"},
+		{Name: "not_before", Type: field.TypeTime, Nullable: true, Comment: "证书生效时间"},
+		{Name: "not_after", Type: field.TypeTime, Nullable: true, Comment: "证书过期时间"},
+		{Name: "status", Type: field.TypeEnum, Comment: "证书状态", Enums: []string{"valid", "expired", "revoked", "pending"}, Default: "pending"},
+		{Name: "provider", Type: field.TypeEnum, Comment: "CA提供商", Enums: []string{"letsencrypt"}, Default: "letsencrypt"},
+		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
+		{Name: "is_auto_renewal", Type: field.TypeBool, Comment: "是否自动续期", Default: false},
+		{Name: "last_refresh_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次刷新成功时间"},
+		{Name: "last_api_response", Type: field.TypeString, Nullable: true, Comment: "最近一次接口的反馈"},
+		{Name: "last_api_response_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次接口的反馈时间"},
+		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
+	}
+	// SslRecordTable holds the schema information for the "ssl_record" table.
+	SslRecordTable = &schema.Table{
+		Name:       "ssl_record",
+		Comment:    "SSL记录",
+		Columns:    SslRecordColumns,
+		PrimaryKey: []*schema.Column{SslRecordColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
 			{
-				Name:    "platformconfig_created_at",
+				Symbol:     "ssl_record_platform_config_ssl_records",
+				Columns:    []*schema.Column{SslRecordColumns[20]},
+				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "sslrecord_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{PlatformConfigColumns[1]},
+				Columns: []*schema.Column{SslRecordColumns[1]},
 				Annotation: &entsql.IndexAnnotation{
 					Desc: true,
 				},
+			},
+			{
+				Name:    "sslrecord_domain",
+				Unique:  false,
+				Columns: []*schema.Column{SslRecordColumns[3]},
+			},
+			{
+				Name:    "sslrecord_not_before",
+				Unique:  false,
+				Columns: []*schema.Column{SslRecordColumns[11]},
+			},
+			{
+				Name:    "sslrecord_not_after",
+				Unique:  false,
+				Columns: []*schema.Column{SslRecordColumns[12]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "sslrecord_status",
+				Unique:  false,
+				Columns: []*schema.Column{SslRecordColumns[13]},
+			},
+			{
+				Name:    "sslrecord_provider",
+				Unique:  false,
+				Columns: []*schema.Column{SslRecordColumns[14]},
+			},
+			{
+				Name:    "sslrecord_is_active",
+				Unique:  false,
+				Columns: []*schema.Column{SslRecordColumns[15]},
+			},
+			{
+				Name:    "sslrecord_is_auto_renewal",
+				Unique:  false,
+				Columns: []*schema.Column{SslRecordColumns[16]},
 			},
 		},
 	}
@@ -459,6 +569,14 @@ var (
 		PrimaryKey: []*schema.Column{WebhookColumns[0]},
 		Indexes: []*schema.Index{
 			{
+				Name:    "webhook_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
 				Name:    "webhook_platform",
 				Unique:  false,
 				Columns: []*schema.Column{WebhookColumns[5]},
@@ -467,14 +585,6 @@ var (
 				Name:    "webhook_is_active",
 				Unique:  false,
 				Columns: []*schema.Column{WebhookColumns[10]},
-			},
-			{
-				Name:    "webhook_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{WebhookColumns[1]},
-				Annotation: &entsql.IndexAnnotation{
-					Desc: true,
-				},
 			},
 		},
 	}
@@ -512,17 +622,17 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "webhooksubscription_webhook_id_obj_type_obj_id",
-				Unique:  true,
-				Columns: []*schema.Column{WebhookSubscriptionColumns[8], WebhookSubscriptionColumns[4], WebhookSubscriptionColumns[5]},
-			},
-			{
 				Name:    "webhooksubscription_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{WebhookSubscriptionColumns[1]},
 				Annotation: &entsql.IndexAnnotation{
 					Desc: true,
 				},
+			},
+			{
+				Name:    "webhooksubscription_webhook_id_obj_type_obj_id",
+				Unique:  true,
+				Columns: []*schema.Column{WebhookSubscriptionColumns[8], WebhookSubscriptionColumns[4], WebhookSubscriptionColumns[5]},
 			},
 			{
 				Name:    "webhooksubscription_webhook_id",
@@ -542,6 +652,7 @@ var (
 		IPGroupTable,
 		IPGroupDeviceTable,
 		PlatformConfigTable,
+		SslRecordTable,
 		WebhookTable,
 		WebhookSubscriptionTable,
 	}
@@ -583,6 +694,10 @@ func init() {
 	}
 	PlatformConfigTable.Annotation = &entsql.Annotation{
 		Table: "platform_config",
+	}
+	SslRecordTable.ForeignKeys[0].RefTable = PlatformConfigTable
+	SslRecordTable.Annotation = &entsql.Annotation{
+		Table: "ssl_record",
 	}
 	WebhookTable.Annotation = &entsql.Annotation{
 		Table: "webhook",

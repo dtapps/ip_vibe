@@ -78,8 +78,14 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// WebhookIDValidator is a validator for the "webhook_id" field. It is called by the builders before save.
+	WebhookIDValidator func(int64) error
+	// ObjIDValidator is a validator for the "obj_id" field. It is called by the builders before save.
+	ObjIDValidator func(int64) error
 	// DefaultIsActive holds the default value on creation for the "is_active" field.
 	DefaultIsActive bool
+	// IDValidator is a validator for the "id" field. It is called by the builders before save.
+	IDValidator func(int64) error
 )
 
 // ObjType defines the type for the "obj_type" enum field.

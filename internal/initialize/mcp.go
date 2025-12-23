@@ -9,9 +9,14 @@ import (
 // 初始化 MCP
 func InitMCP() {
 	// 创建 Model Context Protocol 服务器
-	global.GvaMcpServer = mcp.NewServer(&mcp.Implementation{
+	impl := mcp.Implementation{
 		Name:    "IPVibe",
 		Title:   "IPVibe",
 		Version: global.GvaVersion,
-	}, nil)
+	}
+	options := mcp.ServerOptions{}
+	if global.GvaMcpSlog != nil {
+		options.Logger = global.GvaMcpSlog.WithLogger()
+	}
+	global.GvaMcpServer = mcp.NewServer(&impl, &options)
 }

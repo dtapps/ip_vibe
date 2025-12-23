@@ -241,6 +241,11 @@ func (_c *DevicePortForwardCreate) check() error {
 	if _, ok := _c.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "DevicePortForward.is_active"`)}
 	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := deviceportforward.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "DevicePortForward.id": %w`, err)}
+		}
+	}
 	if len(_c.mutation.DeviceIDs()) == 0 {
 		return &ValidationError{Name: "device", err: errors.New(`ent: missing required edge "DevicePortForward.device"`)}
 	}

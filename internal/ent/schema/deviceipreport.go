@@ -36,12 +36,14 @@ func (DeviceIpReport) Mixin() []ent.Mixin {
 func (DeviceIpReport) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").
-			StorageKey("id").
+			StorageKey("id"). // 用 id 覆盖 框架的 id
+			Positive().       // 正数
 			Immutable().
 			Comment("IP报告序号").
-			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
+			Annotations(entsql.WithComments(true)),
 
 		field.Int64("device_id").
+			Positive(). // 正数
 			Immutable().
 			Comment("设备序号").
 			Annotations(entsql.WithComments(true)),

@@ -64,6 +64,10 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// DeviceIDValidator is a validator for the "device_id" field. It is called by the builders before save.
+	DeviceIDValidator func(int64) error
+	// IPGroupIDValidator is a validator for the "ip_group_id" field. It is called by the builders before save.
+	IPGroupIDValidator func(int64) error
 )
 
 // OrderOption defines the ordering options for the IpGroupDevice queries.

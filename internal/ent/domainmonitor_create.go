@@ -251,6 +251,11 @@ func (_c *DomainMonitorCreate) check() error {
 			return &ValidationError{Name: "current_status", err: fmt.Errorf(`ent: validator failed for field "DomainMonitor.current_status": %w`, err)}
 		}
 	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := domainmonitor.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "DomainMonitor.id": %w`, err)}
+		}
+	}
 	return nil
 }
 

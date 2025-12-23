@@ -37,16 +37,19 @@ func (IpGroupDevice) Mixin() []ent.Mixin {
 func (IpGroupDevice) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").
-			StorageKey("id").
+			StorageKey("id"). // 用 id 覆盖 框架的 id
+			Positive().       // 正数
 			Immutable().
 			Comment("IP组设备序号").
-			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
+			Annotations(entsql.WithComments(true)),
 
 		field.Int64("device_id").
+			Positive(). // 正数
 			Comment("设备序号").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("ip_group_id").
+			Positive(). // 正数
 			Comment("IP组序号").
 			Annotations(entsql.WithComments(true)),
 	}

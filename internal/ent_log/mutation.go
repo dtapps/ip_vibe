@@ -14,6 +14,7 @@ import (
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/predicate"
 	"vibe_ip/internal/ent_log/restylog"
+	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/ent_log/webhookhistory"
 
 	"entgo.io/ent"
@@ -29,11 +30,12 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeDomainMonitorHistory = "DomainMonitorHistory"
-	TypeHttpLog              = "HttpLog"
-	TypeOperationLog         = "OperationLog"
-	TypeRestyLog             = "RestyLog"
-	TypeWebhookHistory       = "WebhookHistory"
+	TypeDomainMonitorHistory  = "DomainMonitorHistory"
+	TypeHttpLog               = "HttpLog"
+	TypeOperationLog          = "OperationLog"
+	TypeRestyLog              = "RestyLog"
+	TypeSSLCertificateHistory = "SSLCertificateHistory"
+	TypeWebhookHistory        = "WebhookHistory"
 )
 
 // DomainMonitorHistoryMutation represents an operation that mutates the DomainMonitorHistory nodes in the graph.
@@ -43,7 +45,6 @@ type DomainMonitorHistoryMutation struct {
 	typ                   string
 	id                    *int64
 	created_at            *time.Time
-	updated_at            *time.Time
 	monitor_id            *int64
 	addmonitor_id         *int64
 	check_time            *time.Time
@@ -206,42 +207,6 @@ func (m *DomainMonitorHistoryMutation) OldCreatedAt(ctx context.Context) (v time
 // ResetCreatedAt resets all changes to the "created_at" field.
 func (m *DomainMonitorHistoryMutation) ResetCreatedAt() {
 	m.created_at = nil
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (m *DomainMonitorHistoryMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
-}
-
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *DomainMonitorHistoryMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m.updated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedAt returns the old "updated_at" field's value of the DomainMonitorHistory entity.
-// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DomainMonitorHistoryMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
-	}
-	return oldValue.UpdatedAt, nil
-}
-
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *DomainMonitorHistoryMutation) ResetUpdatedAt() {
-	m.updated_at = nil
 }
 
 // SetMonitorID sets the "monitor_id" field.
@@ -1003,12 +968,9 @@ func (m *DomainMonitorHistoryMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DomainMonitorHistoryMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 15)
 	if m.created_at != nil {
 		fields = append(fields, domainmonitorhistory.FieldCreatedAt)
-	}
-	if m.updated_at != nil {
-		fields = append(fields, domainmonitorhistory.FieldUpdatedAt)
 	}
 	if m.monitor_id != nil {
 		fields = append(fields, domainmonitorhistory.FieldMonitorID)
@@ -1062,8 +1024,6 @@ func (m *DomainMonitorHistoryMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case domainmonitorhistory.FieldCreatedAt:
 		return m.CreatedAt()
-	case domainmonitorhistory.FieldUpdatedAt:
-		return m.UpdatedAt()
 	case domainmonitorhistory.FieldMonitorID:
 		return m.MonitorID()
 	case domainmonitorhistory.FieldCheckTime:
@@ -1103,8 +1063,6 @@ func (m *DomainMonitorHistoryMutation) OldField(ctx context.Context, name string
 	switch name {
 	case domainmonitorhistory.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
-	case domainmonitorhistory.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
 	case domainmonitorhistory.FieldMonitorID:
 		return m.OldMonitorID(ctx)
 	case domainmonitorhistory.FieldCheckTime:
@@ -1148,13 +1106,6 @@ func (m *DomainMonitorHistoryMutation) SetField(name string, value ent.Value) er
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
-		return nil
-	case domainmonitorhistory.FieldUpdatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedAt(v)
 		return nil
 	case domainmonitorhistory.FieldMonitorID:
 		v, ok := value.(int64)
@@ -1413,9 +1364,6 @@ func (m *DomainMonitorHistoryMutation) ResetField(name string) error {
 	switch name {
 	case domainmonitorhistory.FieldCreatedAt:
 		m.ResetCreatedAt()
-		return nil
-	case domainmonitorhistory.FieldUpdatedAt:
-		m.ResetUpdatedAt()
 		return nil
 	case domainmonitorhistory.FieldMonitorID:
 		m.ResetMonitorID()
@@ -4809,6 +4757,1104 @@ func (m *RestyLogMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown RestyLog edge %s", name)
 }
 
+// SSLCertificateHistoryMutation represents an operation that mutates the SSLCertificateHistory nodes in the graph.
+type SSLCertificateHistoryMutation struct {
+	config
+	op                      Op
+	typ                     string
+	id                      *int64
+	created_at              *time.Time
+	ssl_record_id           *int64
+	addssl_record_id        *int64
+	cert_domain             *string
+	cert_url                *string
+	cert_stable_url         *string
+	cert_private_key        *string
+	cert_certificate        *string
+	cert_issuer_certificate *string
+	cert_csr                *string
+	not_before              *time.Time
+	not_after               *time.Time
+	provider                *sslcertificatehistory.Provider
+	clearedFields           map[string]struct{}
+	done                    bool
+	oldValue                func(context.Context) (*SSLCertificateHistory, error)
+	predicates              []predicate.SSLCertificateHistory
+}
+
+var _ ent.Mutation = (*SSLCertificateHistoryMutation)(nil)
+
+// sslcertificatehistoryOption allows management of the mutation configuration using functional options.
+type sslcertificatehistoryOption func(*SSLCertificateHistoryMutation)
+
+// newSSLCertificateHistoryMutation creates new mutation for the SSLCertificateHistory entity.
+func newSSLCertificateHistoryMutation(c config, op Op, opts ...sslcertificatehistoryOption) *SSLCertificateHistoryMutation {
+	m := &SSLCertificateHistoryMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeSSLCertificateHistory,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withSSLCertificateHistoryID sets the ID field of the mutation.
+func withSSLCertificateHistoryID(id int64) sslcertificatehistoryOption {
+	return func(m *SSLCertificateHistoryMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *SSLCertificateHistory
+		)
+		m.oldValue = func(ctx context.Context) (*SSLCertificateHistory, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().SSLCertificateHistory.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withSSLCertificateHistory sets the old SSLCertificateHistory of the mutation.
+func withSSLCertificateHistory(node *SSLCertificateHistory) sslcertificatehistoryOption {
+	return func(m *SSLCertificateHistoryMutation) {
+		m.oldValue = func(context.Context) (*SSLCertificateHistory, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m SSLCertificateHistoryMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m SSLCertificateHistoryMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent_log: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of SSLCertificateHistory entities.
+func (m *SSLCertificateHistoryMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *SSLCertificateHistoryMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *SSLCertificateHistoryMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().SSLCertificateHistory.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *SSLCertificateHistoryMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *SSLCertificateHistoryMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the SSLCertificateHistory entity.
+// If the SSLCertificateHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLCertificateHistoryMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *SSLCertificateHistoryMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetSslRecordID sets the "ssl_record_id" field.
+func (m *SSLCertificateHistoryMutation) SetSslRecordID(i int64) {
+	m.ssl_record_id = &i
+	m.addssl_record_id = nil
+}
+
+// SslRecordID returns the value of the "ssl_record_id" field in the mutation.
+func (m *SSLCertificateHistoryMutation) SslRecordID() (r int64, exists bool) {
+	v := m.ssl_record_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSslRecordID returns the old "ssl_record_id" field's value of the SSLCertificateHistory entity.
+// If the SSLCertificateHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLCertificateHistoryMutation) OldSslRecordID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSslRecordID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSslRecordID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSslRecordID: %w", err)
+	}
+	return oldValue.SslRecordID, nil
+}
+
+// AddSslRecordID adds i to the "ssl_record_id" field.
+func (m *SSLCertificateHistoryMutation) AddSslRecordID(i int64) {
+	if m.addssl_record_id != nil {
+		*m.addssl_record_id += i
+	} else {
+		m.addssl_record_id = &i
+	}
+}
+
+// AddedSslRecordID returns the value that was added to the "ssl_record_id" field in this mutation.
+func (m *SSLCertificateHistoryMutation) AddedSslRecordID() (r int64, exists bool) {
+	v := m.addssl_record_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSslRecordID resets all changes to the "ssl_record_id" field.
+func (m *SSLCertificateHistoryMutation) ResetSslRecordID() {
+	m.ssl_record_id = nil
+	m.addssl_record_id = nil
+}
+
+// SetCertDomain sets the "cert_domain" field.
+func (m *SSLCertificateHistoryMutation) SetCertDomain(s string) {
+	m.cert_domain = &s
+}
+
+// CertDomain returns the value of the "cert_domain" field in the mutation.
+func (m *SSLCertificateHistoryMutation) CertDomain() (r string, exists bool) {
+	v := m.cert_domain
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCertDomain returns the old "cert_domain" field's value of the SSLCertificateHistory entity.
+// If the SSLCertificateHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLCertificateHistoryMutation) OldCertDomain(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCertDomain is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCertDomain requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCertDomain: %w", err)
+	}
+	return oldValue.CertDomain, nil
+}
+
+// ClearCertDomain clears the value of the "cert_domain" field.
+func (m *SSLCertificateHistoryMutation) ClearCertDomain() {
+	m.cert_domain = nil
+	m.clearedFields[sslcertificatehistory.FieldCertDomain] = struct{}{}
+}
+
+// CertDomainCleared returns if the "cert_domain" field was cleared in this mutation.
+func (m *SSLCertificateHistoryMutation) CertDomainCleared() bool {
+	_, ok := m.clearedFields[sslcertificatehistory.FieldCertDomain]
+	return ok
+}
+
+// ResetCertDomain resets all changes to the "cert_domain" field.
+func (m *SSLCertificateHistoryMutation) ResetCertDomain() {
+	m.cert_domain = nil
+	delete(m.clearedFields, sslcertificatehistory.FieldCertDomain)
+}
+
+// SetCertURL sets the "cert_url" field.
+func (m *SSLCertificateHistoryMutation) SetCertURL(s string) {
+	m.cert_url = &s
+}
+
+// CertURL returns the value of the "cert_url" field in the mutation.
+func (m *SSLCertificateHistoryMutation) CertURL() (r string, exists bool) {
+	v := m.cert_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCertURL returns the old "cert_url" field's value of the SSLCertificateHistory entity.
+// If the SSLCertificateHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLCertificateHistoryMutation) OldCertURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCertURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCertURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCertURL: %w", err)
+	}
+	return oldValue.CertURL, nil
+}
+
+// ClearCertURL clears the value of the "cert_url" field.
+func (m *SSLCertificateHistoryMutation) ClearCertURL() {
+	m.cert_url = nil
+	m.clearedFields[sslcertificatehistory.FieldCertURL] = struct{}{}
+}
+
+// CertURLCleared returns if the "cert_url" field was cleared in this mutation.
+func (m *SSLCertificateHistoryMutation) CertURLCleared() bool {
+	_, ok := m.clearedFields[sslcertificatehistory.FieldCertURL]
+	return ok
+}
+
+// ResetCertURL resets all changes to the "cert_url" field.
+func (m *SSLCertificateHistoryMutation) ResetCertURL() {
+	m.cert_url = nil
+	delete(m.clearedFields, sslcertificatehistory.FieldCertURL)
+}
+
+// SetCertStableURL sets the "cert_stable_url" field.
+func (m *SSLCertificateHistoryMutation) SetCertStableURL(s string) {
+	m.cert_stable_url = &s
+}
+
+// CertStableURL returns the value of the "cert_stable_url" field in the mutation.
+func (m *SSLCertificateHistoryMutation) CertStableURL() (r string, exists bool) {
+	v := m.cert_stable_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCertStableURL returns the old "cert_stable_url" field's value of the SSLCertificateHistory entity.
+// If the SSLCertificateHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLCertificateHistoryMutation) OldCertStableURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCertStableURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCertStableURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCertStableURL: %w", err)
+	}
+	return oldValue.CertStableURL, nil
+}
+
+// ClearCertStableURL clears the value of the "cert_stable_url" field.
+func (m *SSLCertificateHistoryMutation) ClearCertStableURL() {
+	m.cert_stable_url = nil
+	m.clearedFields[sslcertificatehistory.FieldCertStableURL] = struct{}{}
+}
+
+// CertStableURLCleared returns if the "cert_stable_url" field was cleared in this mutation.
+func (m *SSLCertificateHistoryMutation) CertStableURLCleared() bool {
+	_, ok := m.clearedFields[sslcertificatehistory.FieldCertStableURL]
+	return ok
+}
+
+// ResetCertStableURL resets all changes to the "cert_stable_url" field.
+func (m *SSLCertificateHistoryMutation) ResetCertStableURL() {
+	m.cert_stable_url = nil
+	delete(m.clearedFields, sslcertificatehistory.FieldCertStableURL)
+}
+
+// SetCertPrivateKey sets the "cert_private_key" field.
+func (m *SSLCertificateHistoryMutation) SetCertPrivateKey(s string) {
+	m.cert_private_key = &s
+}
+
+// CertPrivateKey returns the value of the "cert_private_key" field in the mutation.
+func (m *SSLCertificateHistoryMutation) CertPrivateKey() (r string, exists bool) {
+	v := m.cert_private_key
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCertPrivateKey returns the old "cert_private_key" field's value of the SSLCertificateHistory entity.
+// If the SSLCertificateHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLCertificateHistoryMutation) OldCertPrivateKey(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCertPrivateKey is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCertPrivateKey requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCertPrivateKey: %w", err)
+	}
+	return oldValue.CertPrivateKey, nil
+}
+
+// ResetCertPrivateKey resets all changes to the "cert_private_key" field.
+func (m *SSLCertificateHistoryMutation) ResetCertPrivateKey() {
+	m.cert_private_key = nil
+}
+
+// SetCertCertificate sets the "cert_certificate" field.
+func (m *SSLCertificateHistoryMutation) SetCertCertificate(s string) {
+	m.cert_certificate = &s
+}
+
+// CertCertificate returns the value of the "cert_certificate" field in the mutation.
+func (m *SSLCertificateHistoryMutation) CertCertificate() (r string, exists bool) {
+	v := m.cert_certificate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCertCertificate returns the old "cert_certificate" field's value of the SSLCertificateHistory entity.
+// If the SSLCertificateHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLCertificateHistoryMutation) OldCertCertificate(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCertCertificate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCertCertificate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCertCertificate: %w", err)
+	}
+	return oldValue.CertCertificate, nil
+}
+
+// ResetCertCertificate resets all changes to the "cert_certificate" field.
+func (m *SSLCertificateHistoryMutation) ResetCertCertificate() {
+	m.cert_certificate = nil
+}
+
+// SetCertIssuerCertificate sets the "cert_issuer_certificate" field.
+func (m *SSLCertificateHistoryMutation) SetCertIssuerCertificate(s string) {
+	m.cert_issuer_certificate = &s
+}
+
+// CertIssuerCertificate returns the value of the "cert_issuer_certificate" field in the mutation.
+func (m *SSLCertificateHistoryMutation) CertIssuerCertificate() (r string, exists bool) {
+	v := m.cert_issuer_certificate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCertIssuerCertificate returns the old "cert_issuer_certificate" field's value of the SSLCertificateHistory entity.
+// If the SSLCertificateHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLCertificateHistoryMutation) OldCertIssuerCertificate(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCertIssuerCertificate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCertIssuerCertificate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCertIssuerCertificate: %w", err)
+	}
+	return oldValue.CertIssuerCertificate, nil
+}
+
+// ClearCertIssuerCertificate clears the value of the "cert_issuer_certificate" field.
+func (m *SSLCertificateHistoryMutation) ClearCertIssuerCertificate() {
+	m.cert_issuer_certificate = nil
+	m.clearedFields[sslcertificatehistory.FieldCertIssuerCertificate] = struct{}{}
+}
+
+// CertIssuerCertificateCleared returns if the "cert_issuer_certificate" field was cleared in this mutation.
+func (m *SSLCertificateHistoryMutation) CertIssuerCertificateCleared() bool {
+	_, ok := m.clearedFields[sslcertificatehistory.FieldCertIssuerCertificate]
+	return ok
+}
+
+// ResetCertIssuerCertificate resets all changes to the "cert_issuer_certificate" field.
+func (m *SSLCertificateHistoryMutation) ResetCertIssuerCertificate() {
+	m.cert_issuer_certificate = nil
+	delete(m.clearedFields, sslcertificatehistory.FieldCertIssuerCertificate)
+}
+
+// SetCertCsr sets the "cert_csr" field.
+func (m *SSLCertificateHistoryMutation) SetCertCsr(s string) {
+	m.cert_csr = &s
+}
+
+// CertCsr returns the value of the "cert_csr" field in the mutation.
+func (m *SSLCertificateHistoryMutation) CertCsr() (r string, exists bool) {
+	v := m.cert_csr
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCertCsr returns the old "cert_csr" field's value of the SSLCertificateHistory entity.
+// If the SSLCertificateHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLCertificateHistoryMutation) OldCertCsr(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCertCsr is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCertCsr requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCertCsr: %w", err)
+	}
+	return oldValue.CertCsr, nil
+}
+
+// ClearCertCsr clears the value of the "cert_csr" field.
+func (m *SSLCertificateHistoryMutation) ClearCertCsr() {
+	m.cert_csr = nil
+	m.clearedFields[sslcertificatehistory.FieldCertCsr] = struct{}{}
+}
+
+// CertCsrCleared returns if the "cert_csr" field was cleared in this mutation.
+func (m *SSLCertificateHistoryMutation) CertCsrCleared() bool {
+	_, ok := m.clearedFields[sslcertificatehistory.FieldCertCsr]
+	return ok
+}
+
+// ResetCertCsr resets all changes to the "cert_csr" field.
+func (m *SSLCertificateHistoryMutation) ResetCertCsr() {
+	m.cert_csr = nil
+	delete(m.clearedFields, sslcertificatehistory.FieldCertCsr)
+}
+
+// SetNotBefore sets the "not_before" field.
+func (m *SSLCertificateHistoryMutation) SetNotBefore(t time.Time) {
+	m.not_before = &t
+}
+
+// NotBefore returns the value of the "not_before" field in the mutation.
+func (m *SSLCertificateHistoryMutation) NotBefore() (r time.Time, exists bool) {
+	v := m.not_before
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNotBefore returns the old "not_before" field's value of the SSLCertificateHistory entity.
+// If the SSLCertificateHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLCertificateHistoryMutation) OldNotBefore(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNotBefore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNotBefore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNotBefore: %w", err)
+	}
+	return oldValue.NotBefore, nil
+}
+
+// ClearNotBefore clears the value of the "not_before" field.
+func (m *SSLCertificateHistoryMutation) ClearNotBefore() {
+	m.not_before = nil
+	m.clearedFields[sslcertificatehistory.FieldNotBefore] = struct{}{}
+}
+
+// NotBeforeCleared returns if the "not_before" field was cleared in this mutation.
+func (m *SSLCertificateHistoryMutation) NotBeforeCleared() bool {
+	_, ok := m.clearedFields[sslcertificatehistory.FieldNotBefore]
+	return ok
+}
+
+// ResetNotBefore resets all changes to the "not_before" field.
+func (m *SSLCertificateHistoryMutation) ResetNotBefore() {
+	m.not_before = nil
+	delete(m.clearedFields, sslcertificatehistory.FieldNotBefore)
+}
+
+// SetNotAfter sets the "not_after" field.
+func (m *SSLCertificateHistoryMutation) SetNotAfter(t time.Time) {
+	m.not_after = &t
+}
+
+// NotAfter returns the value of the "not_after" field in the mutation.
+func (m *SSLCertificateHistoryMutation) NotAfter() (r time.Time, exists bool) {
+	v := m.not_after
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNotAfter returns the old "not_after" field's value of the SSLCertificateHistory entity.
+// If the SSLCertificateHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLCertificateHistoryMutation) OldNotAfter(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNotAfter is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNotAfter requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNotAfter: %w", err)
+	}
+	return oldValue.NotAfter, nil
+}
+
+// ClearNotAfter clears the value of the "not_after" field.
+func (m *SSLCertificateHistoryMutation) ClearNotAfter() {
+	m.not_after = nil
+	m.clearedFields[sslcertificatehistory.FieldNotAfter] = struct{}{}
+}
+
+// NotAfterCleared returns if the "not_after" field was cleared in this mutation.
+func (m *SSLCertificateHistoryMutation) NotAfterCleared() bool {
+	_, ok := m.clearedFields[sslcertificatehistory.FieldNotAfter]
+	return ok
+}
+
+// ResetNotAfter resets all changes to the "not_after" field.
+func (m *SSLCertificateHistoryMutation) ResetNotAfter() {
+	m.not_after = nil
+	delete(m.clearedFields, sslcertificatehistory.FieldNotAfter)
+}
+
+// SetProvider sets the "provider" field.
+func (m *SSLCertificateHistoryMutation) SetProvider(s sslcertificatehistory.Provider) {
+	m.provider = &s
+}
+
+// Provider returns the value of the "provider" field in the mutation.
+func (m *SSLCertificateHistoryMutation) Provider() (r sslcertificatehistory.Provider, exists bool) {
+	v := m.provider
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProvider returns the old "provider" field's value of the SSLCertificateHistory entity.
+// If the SSLCertificateHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLCertificateHistoryMutation) OldProvider(ctx context.Context) (v sslcertificatehistory.Provider, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProvider is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProvider requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProvider: %w", err)
+	}
+	return oldValue.Provider, nil
+}
+
+// ResetProvider resets all changes to the "provider" field.
+func (m *SSLCertificateHistoryMutation) ResetProvider() {
+	m.provider = nil
+}
+
+// Where appends a list predicates to the SSLCertificateHistoryMutation builder.
+func (m *SSLCertificateHistoryMutation) Where(ps ...predicate.SSLCertificateHistory) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the SSLCertificateHistoryMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *SSLCertificateHistoryMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.SSLCertificateHistory, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *SSLCertificateHistoryMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *SSLCertificateHistoryMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (SSLCertificateHistory).
+func (m *SSLCertificateHistoryMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *SSLCertificateHistoryMutation) Fields() []string {
+	fields := make([]string, 0, 12)
+	if m.created_at != nil {
+		fields = append(fields, sslcertificatehistory.FieldCreatedAt)
+	}
+	if m.ssl_record_id != nil {
+		fields = append(fields, sslcertificatehistory.FieldSslRecordID)
+	}
+	if m.cert_domain != nil {
+		fields = append(fields, sslcertificatehistory.FieldCertDomain)
+	}
+	if m.cert_url != nil {
+		fields = append(fields, sslcertificatehistory.FieldCertURL)
+	}
+	if m.cert_stable_url != nil {
+		fields = append(fields, sslcertificatehistory.FieldCertStableURL)
+	}
+	if m.cert_private_key != nil {
+		fields = append(fields, sslcertificatehistory.FieldCertPrivateKey)
+	}
+	if m.cert_certificate != nil {
+		fields = append(fields, sslcertificatehistory.FieldCertCertificate)
+	}
+	if m.cert_issuer_certificate != nil {
+		fields = append(fields, sslcertificatehistory.FieldCertIssuerCertificate)
+	}
+	if m.cert_csr != nil {
+		fields = append(fields, sslcertificatehistory.FieldCertCsr)
+	}
+	if m.not_before != nil {
+		fields = append(fields, sslcertificatehistory.FieldNotBefore)
+	}
+	if m.not_after != nil {
+		fields = append(fields, sslcertificatehistory.FieldNotAfter)
+	}
+	if m.provider != nil {
+		fields = append(fields, sslcertificatehistory.FieldProvider)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *SSLCertificateHistoryMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case sslcertificatehistory.FieldCreatedAt:
+		return m.CreatedAt()
+	case sslcertificatehistory.FieldSslRecordID:
+		return m.SslRecordID()
+	case sslcertificatehistory.FieldCertDomain:
+		return m.CertDomain()
+	case sslcertificatehistory.FieldCertURL:
+		return m.CertURL()
+	case sslcertificatehistory.FieldCertStableURL:
+		return m.CertStableURL()
+	case sslcertificatehistory.FieldCertPrivateKey:
+		return m.CertPrivateKey()
+	case sslcertificatehistory.FieldCertCertificate:
+		return m.CertCertificate()
+	case sslcertificatehistory.FieldCertIssuerCertificate:
+		return m.CertIssuerCertificate()
+	case sslcertificatehistory.FieldCertCsr:
+		return m.CertCsr()
+	case sslcertificatehistory.FieldNotBefore:
+		return m.NotBefore()
+	case sslcertificatehistory.FieldNotAfter:
+		return m.NotAfter()
+	case sslcertificatehistory.FieldProvider:
+		return m.Provider()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *SSLCertificateHistoryMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case sslcertificatehistory.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case sslcertificatehistory.FieldSslRecordID:
+		return m.OldSslRecordID(ctx)
+	case sslcertificatehistory.FieldCertDomain:
+		return m.OldCertDomain(ctx)
+	case sslcertificatehistory.FieldCertURL:
+		return m.OldCertURL(ctx)
+	case sslcertificatehistory.FieldCertStableURL:
+		return m.OldCertStableURL(ctx)
+	case sslcertificatehistory.FieldCertPrivateKey:
+		return m.OldCertPrivateKey(ctx)
+	case sslcertificatehistory.FieldCertCertificate:
+		return m.OldCertCertificate(ctx)
+	case sslcertificatehistory.FieldCertIssuerCertificate:
+		return m.OldCertIssuerCertificate(ctx)
+	case sslcertificatehistory.FieldCertCsr:
+		return m.OldCertCsr(ctx)
+	case sslcertificatehistory.FieldNotBefore:
+		return m.OldNotBefore(ctx)
+	case sslcertificatehistory.FieldNotAfter:
+		return m.OldNotAfter(ctx)
+	case sslcertificatehistory.FieldProvider:
+		return m.OldProvider(ctx)
+	}
+	return nil, fmt.Errorf("unknown SSLCertificateHistory field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SSLCertificateHistoryMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case sslcertificatehistory.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case sslcertificatehistory.FieldSslRecordID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSslRecordID(v)
+		return nil
+	case sslcertificatehistory.FieldCertDomain:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCertDomain(v)
+		return nil
+	case sslcertificatehistory.FieldCertURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCertURL(v)
+		return nil
+	case sslcertificatehistory.FieldCertStableURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCertStableURL(v)
+		return nil
+	case sslcertificatehistory.FieldCertPrivateKey:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCertPrivateKey(v)
+		return nil
+	case sslcertificatehistory.FieldCertCertificate:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCertCertificate(v)
+		return nil
+	case sslcertificatehistory.FieldCertIssuerCertificate:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCertIssuerCertificate(v)
+		return nil
+	case sslcertificatehistory.FieldCertCsr:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCertCsr(v)
+		return nil
+	case sslcertificatehistory.FieldNotBefore:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNotBefore(v)
+		return nil
+	case sslcertificatehistory.FieldNotAfter:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNotAfter(v)
+		return nil
+	case sslcertificatehistory.FieldProvider:
+		v, ok := value.(sslcertificatehistory.Provider)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProvider(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SSLCertificateHistory field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *SSLCertificateHistoryMutation) AddedFields() []string {
+	var fields []string
+	if m.addssl_record_id != nil {
+		fields = append(fields, sslcertificatehistory.FieldSslRecordID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *SSLCertificateHistoryMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case sslcertificatehistory.FieldSslRecordID:
+		return m.AddedSslRecordID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SSLCertificateHistoryMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case sslcertificatehistory.FieldSslRecordID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSslRecordID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SSLCertificateHistory numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *SSLCertificateHistoryMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(sslcertificatehistory.FieldCertDomain) {
+		fields = append(fields, sslcertificatehistory.FieldCertDomain)
+	}
+	if m.FieldCleared(sslcertificatehistory.FieldCertURL) {
+		fields = append(fields, sslcertificatehistory.FieldCertURL)
+	}
+	if m.FieldCleared(sslcertificatehistory.FieldCertStableURL) {
+		fields = append(fields, sslcertificatehistory.FieldCertStableURL)
+	}
+	if m.FieldCleared(sslcertificatehistory.FieldCertIssuerCertificate) {
+		fields = append(fields, sslcertificatehistory.FieldCertIssuerCertificate)
+	}
+	if m.FieldCleared(sslcertificatehistory.FieldCertCsr) {
+		fields = append(fields, sslcertificatehistory.FieldCertCsr)
+	}
+	if m.FieldCleared(sslcertificatehistory.FieldNotBefore) {
+		fields = append(fields, sslcertificatehistory.FieldNotBefore)
+	}
+	if m.FieldCleared(sslcertificatehistory.FieldNotAfter) {
+		fields = append(fields, sslcertificatehistory.FieldNotAfter)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *SSLCertificateHistoryMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *SSLCertificateHistoryMutation) ClearField(name string) error {
+	switch name {
+	case sslcertificatehistory.FieldCertDomain:
+		m.ClearCertDomain()
+		return nil
+	case sslcertificatehistory.FieldCertURL:
+		m.ClearCertURL()
+		return nil
+	case sslcertificatehistory.FieldCertStableURL:
+		m.ClearCertStableURL()
+		return nil
+	case sslcertificatehistory.FieldCertIssuerCertificate:
+		m.ClearCertIssuerCertificate()
+		return nil
+	case sslcertificatehistory.FieldCertCsr:
+		m.ClearCertCsr()
+		return nil
+	case sslcertificatehistory.FieldNotBefore:
+		m.ClearNotBefore()
+		return nil
+	case sslcertificatehistory.FieldNotAfter:
+		m.ClearNotAfter()
+		return nil
+	}
+	return fmt.Errorf("unknown SSLCertificateHistory nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *SSLCertificateHistoryMutation) ResetField(name string) error {
+	switch name {
+	case sslcertificatehistory.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case sslcertificatehistory.FieldSslRecordID:
+		m.ResetSslRecordID()
+		return nil
+	case sslcertificatehistory.FieldCertDomain:
+		m.ResetCertDomain()
+		return nil
+	case sslcertificatehistory.FieldCertURL:
+		m.ResetCertURL()
+		return nil
+	case sslcertificatehistory.FieldCertStableURL:
+		m.ResetCertStableURL()
+		return nil
+	case sslcertificatehistory.FieldCertPrivateKey:
+		m.ResetCertPrivateKey()
+		return nil
+	case sslcertificatehistory.FieldCertCertificate:
+		m.ResetCertCertificate()
+		return nil
+	case sslcertificatehistory.FieldCertIssuerCertificate:
+		m.ResetCertIssuerCertificate()
+		return nil
+	case sslcertificatehistory.FieldCertCsr:
+		m.ResetCertCsr()
+		return nil
+	case sslcertificatehistory.FieldNotBefore:
+		m.ResetNotBefore()
+		return nil
+	case sslcertificatehistory.FieldNotAfter:
+		m.ResetNotAfter()
+		return nil
+	case sslcertificatehistory.FieldProvider:
+		m.ResetProvider()
+		return nil
+	}
+	return fmt.Errorf("unknown SSLCertificateHistory field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *SSLCertificateHistoryMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *SSLCertificateHistoryMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *SSLCertificateHistoryMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *SSLCertificateHistoryMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *SSLCertificateHistoryMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *SSLCertificateHistoryMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *SSLCertificateHistoryMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown SSLCertificateHistory unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *SSLCertificateHistoryMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown SSLCertificateHistory edge %s", name)
+}
+
 // WebhookHistoryMutation represents an operation that mutates the WebhookHistory nodes in the graph.
 type WebhookHistoryMutation struct {
 	config
@@ -4816,7 +5862,6 @@ type WebhookHistoryMutation struct {
 	typ                string
 	id                 *int64
 	created_at         *time.Time
-	updated_at         *time.Time
 	webhook_id         *int64
 	addwebhook_id      *int64
 	subscription_id    *int64
@@ -4972,42 +6017,6 @@ func (m *WebhookHistoryMutation) OldCreatedAt(ctx context.Context) (v time.Time,
 // ResetCreatedAt resets all changes to the "created_at" field.
 func (m *WebhookHistoryMutation) ResetCreatedAt() {
 	m.created_at = nil
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (m *WebhookHistoryMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
-}
-
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *WebhookHistoryMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m.updated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedAt returns the old "updated_at" field's value of the WebhookHistory entity.
-// If the WebhookHistory object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WebhookHistoryMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
-	}
-	return oldValue.UpdatedAt, nil
-}
-
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *WebhookHistoryMutation) ResetUpdatedAt() {
-	m.updated_at = nil
 }
 
 // SetWebhookID sets the "webhook_id" field.
@@ -5454,12 +6463,9 @@ func (m *WebhookHistoryMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *WebhookHistoryMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, webhookhistory.FieldCreatedAt)
-	}
-	if m.updated_at != nil {
-		fields = append(fields, webhookhistory.FieldUpdatedAt)
 	}
 	if m.webhook_id != nil {
 		fields = append(fields, webhookhistory.FieldWebhookID)
@@ -5495,8 +6501,6 @@ func (m *WebhookHistoryMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case webhookhistory.FieldCreatedAt:
 		return m.CreatedAt()
-	case webhookhistory.FieldUpdatedAt:
-		return m.UpdatedAt()
 	case webhookhistory.FieldWebhookID:
 		return m.WebhookID()
 	case webhookhistory.FieldSubscriptionID:
@@ -5524,8 +6528,6 @@ func (m *WebhookHistoryMutation) OldField(ctx context.Context, name string) (ent
 	switch name {
 	case webhookhistory.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
-	case webhookhistory.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
 	case webhookhistory.FieldWebhookID:
 		return m.OldWebhookID(ctx)
 	case webhookhistory.FieldSubscriptionID:
@@ -5557,13 +6559,6 @@ func (m *WebhookHistoryMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
-		return nil
-	case webhookhistory.FieldUpdatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedAt(v)
 		return nil
 	case webhookhistory.FieldWebhookID:
 		v, ok := value.(int64)
@@ -5732,9 +6727,6 @@ func (m *WebhookHistoryMutation) ResetField(name string) error {
 	switch name {
 	case webhookhistory.FieldCreatedAt:
 		m.ResetCreatedAt()
-		return nil
-	case webhookhistory.FieldUpdatedAt:
-		m.ResetUpdatedAt()
 		return nil
 	case webhookhistory.FieldWebhookID:
 		m.ResetWebhookID()

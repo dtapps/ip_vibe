@@ -27,7 +27,7 @@ func (DomainMonitorHistory) Annotations() []schema.Annotation {
 // Mixin of the DomainMonitorHistory.
 func (DomainMonitorHistory) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		schemamixin.AtMixin{},
+		schemamixin.AtLogMixin{},
 	}
 }
 
@@ -35,9 +35,10 @@ func (DomainMonitorHistory) Mixin() []ent.Mixin {
 func (DomainMonitorHistory) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").
-			StorageKey("id").
+			StorageKey("id"). // 用 id 覆盖 框架的 id
+			Positive().       // 正数
 			Immutable().
-			Comment("监控历史记录序号").
+			Comment("域名监控历史记录序号").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("monitor_id").
@@ -125,12 +126,20 @@ func (DomainMonitorHistory) Fields() []ent.Field {
 
 // Edges of the DomainMonitorHistory.
 func (DomainMonitorHistory) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{}
 }
 
 // Indexes of the DomainMonitorHistory.
 func (DomainMonitorHistory) Indexes() []ent.Index {
 	return []ent.Index{
+		// 按创建时间排序
+		index.Fields("created_at").
+			Annotations(entsql.Desc(), entsql.WithComments(true)),
+
+		// 按关联的 DomainMonitor ID分组
+		index.Fields("monitor_id").
+			Annotations(entsql.WithComments(true)),
+
 		// 按检查发生的时间排序
 		index.Fields("check_time").
 			Annotations(entsql.Desc(), entsql.WithComments(true)),

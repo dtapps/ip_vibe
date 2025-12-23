@@ -32,7 +32,7 @@ func (HttpLog) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").
 			StorageKey("id").
-			Positive().
+			Positive(). // 正数
 			Immutable().
 			Comment("请求日志序号").
 			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
@@ -66,7 +66,7 @@ func (HttpLog) Fields() []ent.Field {
 
 		field.Int("status_code").
 			Comment("响应码").
-			Positive().
+			Positive(). // 正数
 			Immutable().
 			Annotations(entsql.WithComments(true)),
 
@@ -83,7 +83,7 @@ func (HttpLog) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("elapse_time").
-			Positive().
+			Positive(). // 正数
 			Immutable().
 			Comment("请求耗时, 单位:毫秒").
 			Annotations(entsql.WithComments(true)),

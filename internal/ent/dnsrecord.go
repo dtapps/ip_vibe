@@ -42,7 +42,7 @@ type DNSRecord struct {
 	// 最后一次刷新成功时间
 	LastRefreshAt time.Time `json:"last_refresh_at,omitempty"`
 	// 最近一次接口的反馈
-	LastAPIResponse string `json:"last_api_response,omitempty"`
+	LastAPIResponse string `json:"-"`
 	// 最近一次接口的反馈时间
 	LastAPIResponseAt time.Time `json:"last_api_response_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -284,8 +284,7 @@ func (_m *DNSRecord) String() string {
 	builder.WriteString("last_refresh_at=")
 	builder.WriteString(_m.LastRefreshAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("last_api_response=")
-	builder.WriteString(_m.LastAPIResponse)
+	builder.WriteString("last_api_response=<sensitive>")
 	builder.WriteString(", ")
 	builder.WriteString("last_api_response_at=")
 	builder.WriteString(_m.LastAPIResponseAt.Format(time.ANSIC))

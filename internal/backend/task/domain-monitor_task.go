@@ -91,6 +91,13 @@ func (s *DomainMonitorTask) CheckAndRunAllMonitors() {
 			nextRun = monitor.LastSuccessAt.Add(time.Duration(monitor.CheckInterval) * time.Second)
 		}
 
+		// 如果是失败状态就使用上次失败时间
+		if monitor.CurrentStatus == domainmonitor.CurrentStatusFailure {
+			if !monitor.LastFailureAt.IsZero() {
+				nextRun = monitor.LastFailureAt.Add(time.Duration(monitor.CheckInterval) * time.Second)
+			}
+		}
+
 		// 如果已超过或等于下次运行时间，则执行任务
 		if now.After(nextRun) || now.Equal(nextRun) {
 			newLog.InfoContext(ctx, "准备处理",

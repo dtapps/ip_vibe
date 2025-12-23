@@ -356,3 +356,40 @@ var GetDevicePortForwardProtocols = []string{
 	DevicePortForwardProtocolUDP4,
 	DevicePortForwardProtocolUDP6,
 }
+
+const (
+	SSLRecordStatusValid   string = "valid"   // 有效
+	SSLRecordStatusExpired string = "expired" // 过期
+	SSLRecordStatusRevoked string = "revoked" // 吊销
+	SSLRecordStatusPending string = "pending" // 待处理
+)
+
+// GetSSLRecordStatusDescriptions SSL记录状态说明映射
+var GetSSLRecordStatusDescriptions = map[string]string{
+	SSLRecordStatusValid:   "有效",
+	SSLRecordStatusExpired: "过期",
+	SSLRecordStatusRevoked: "吊销",
+	SSLRecordStatusPending: "待处理",
+}
+
+// GetSSLRecordStatuss 返回所有SSL记录状态
+var GetSSLRecordStatuss = []string{
+	SSLRecordStatusValid,
+	SSLRecordStatusExpired,
+	SSLRecordStatusRevoked,
+	SSLRecordStatusPending,
+}
+
+const (
+	SSLRecordProviderLetsencrypt string = "letsencrypt" // Letsencrypt 提供商
+)
+
+// GetSSLRecordProviderDescriptions SSL记录提供商说明映射
+var GetSSLRecordProviderDescriptions = map[string]string{
+	SSLRecordProviderLetsencrypt: "Letsencrypt提供商",
+}
+
+// GetSSLRecordProviders 返回所有SSL记录提供商
+var GetSSLRecordProviders = []string{
+	SSLRecordProviderLetsencrypt,
+}

@@ -1,7 +1,9 @@
 -- domain_monitor_history definition
 
-CREATE TABLE `domain_monitor_history` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `monitor_id` integer NOT NULL, `check_time` datetime NOT NULL, `is_success` bool NOT NULL, `check_duration` integer NULL, `status_message` text NULL, `http_status` integer NULL, `ip_resolved` json NULL, `error_log` text NULL, `ssl_expiry_date` datetime NULL, `ssl_common_name` text NULL, `ssl_issuer_name` text NULL, `ssl_signature_alg` text NULL, `ssl_san_list` text NULL, `ssl_certificate_chain` text NULL);
+CREATE TABLE `domain_monitor_history` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `monitor_id` integer NOT NULL, `check_time` datetime NOT NULL, `is_success` bool NOT NULL, `check_duration` integer NULL, `status_message` text NULL, `http_status` integer NULL, `ip_resolved` json NULL, `error_log` text NULL, `ssl_expiry_date` datetime NULL, `ssl_common_name` text NULL, `ssl_issuer_name` text NULL, `ssl_signature_alg` text NULL, `ssl_san_list` text NULL, `ssl_certificate_chain` text NULL);
 
+CREATE INDEX `domainmonitorhistory_created_at` ON `domain_monitor_history` (`created_at` DESC);
+CREATE INDEX `domainmonitorhistory_monitor_id` ON `domain_monitor_history` (`monitor_id`);
 CREATE INDEX `domainmonitorhistory_check_time` ON `domain_monitor_history` (`check_time` DESC);
 CREATE INDEX `domainmonitorhistory_monitor_id_check_time` ON `domain_monitor_history` (`monitor_id`, `check_time`);
 
@@ -38,13 +40,21 @@ CREATE INDEX `restylog_status_code` ON `resty_log` (`status_code`);
 CREATE INDEX `restylog_created_at` ON `resty_log` (`created_at` DESC);
 
 
+-- ssl_certificate_history definition
+
+CREATE TABLE `ssl_certificate_history` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `ssl_record_id` integer NOT NULL, `cert_domain` text NULL, `cert_url` text NULL, `cert_stable_url` text NULL, `cert_private_key` text NOT NULL, `cert_certificate` text NOT NULL, `cert_issuer_certificate` text NULL, `cert_csr` text NULL, `not_before` datetime NULL, `not_after` datetime NULL, `provider` text NOT NULL DEFAULT ('letsencrypt'));
+
+CREATE INDEX `sslcertificatehistory_created_at` ON `ssl_certificate_history` (`created_at` DESC);
+CREATE INDEX `sslcertificatehistory_ssl_record_id` ON `ssl_certificate_history` (`ssl_record_id`);
+
+
 -- webhook_history definition
 
-CREATE TABLE `webhook_history` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `webhook_id` integer NOT NULL, `subscription_id` integer NULL, `url` text NOT NULL, `title` text NULL, `content` text NULL, `status_code` integer NULL, `response` text NULL, `success` bool NOT NULL DEFAULT (false), `error_message` text NULL);
+CREATE TABLE `webhook_history` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `webhook_id` integer NOT NULL, `subscription_id` integer NULL, `url` text NOT NULL, `title` text NULL, `content` text NULL, `response` json NULL, `success` bool NOT NULL DEFAULT (false), `error_message` text NULL);
 
+CREATE INDEX `webhookhistory_created_at` ON `webhook_history` (`created_at` DESC);
 CREATE INDEX `webhookhistory_webhook_id` ON `webhook_history` (`webhook_id`);
 CREATE INDEX `webhookhistory_subscription_id` ON `webhook_history` (`subscription_id`);
 CREATE INDEX `webhookhistory_success` ON `webhook_history` (`success`);
-CREATE INDEX `webhookhistory_created_at` ON `webhook_history` (`created_at` DESC);
 CREATE INDEX `webhookhistory_webhook_id_created_at` ON `webhook_history` (`webhook_id`, `created_at`);
 CREATE INDEX `webhookhistory_success_created_at` ON `webhook_history` (`success`, `created_at`);

@@ -9,7 +9,7 @@ require (
 	github.com/alibabacloud-go/alidns-20150109/v5 v5.0.0
 	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.13
-	github.com/alibabacloud-go/esa-20240910/v2 v2.41.1
+	github.com/alibabacloud-go/esa-20240910/v2 v2.42.0
 	github.com/alibabacloud-go/tea v1.3.14
 	github.com/aliyun/credentials-go v1.4.10
 	github.com/baidubce/bce-sdk-go v0.9.256
@@ -27,17 +27,17 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.181
 	github.com/miekg/dns v1.1.69
-	github.com/modelcontextprotocol/go-sdk v1.1.0
+	github.com/modelcontextprotocol/go-sdk v1.2.0
 	github.com/qiniu/go-sdk/v7 v7.25.5
 	github.com/spf13/cast v1.10.0
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.1
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc4
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.11
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.16
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.17
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.17
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.16
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.13
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.17
 	go.dtapp.net/library/contrib/http_log v1.0.0
 	go.dtapp.net/library/contrib/resty_log v1.0.10
 	go.dtapp.net/library/service/bark v1.0.7
@@ -53,7 +53,7 @@ require (
 	go.dtapp.net/library/utils/gorequest v1.1.3
 	golang.org/x/net v0.48.0
 	golang.org/x/sync v0.19.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20251213004720-97cd9d5aeac2
+	google.golang.org/genproto/googleapis/api v0.0.0-20251222181119-0a764e51fe1b
 	google.golang.org/grpc v1.77.0
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
@@ -147,7 +147,7 @@ require (
 	golang.org/x/sys v0.39.0 // indirect
 	golang.org/x/text v0.32.0 // indirect
 	golang.org/x/tools v0.40.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20251213004720-97cd9d5aeac2 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251222181119-0a764e51fe1b // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/utils"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -14,6 +15,7 @@ func RegisterTimeTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getCurrentTime",
 		Description: "获取当前时间信息",
+		InputSchema: utils.AutoSchema(GetCurrentTimeParams{}),
 	}, getCurrentTime)
 }
 

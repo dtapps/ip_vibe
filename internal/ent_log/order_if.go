@@ -8,6 +8,7 @@ import (
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/restylog"
+	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/ent_log/webhookhistory"
 )
 
@@ -84,6 +85,26 @@ func (q *RestyLogQuery) OrderIf(condition bool, o restylog.OrderOption) *RestyLo
 // OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
 func (q *RestyLogQuery) OrderIfs(condition bool, o ...restylog.OrderOption) *RestyLogQuery {
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o...)
+	}
+	return q
+}
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *SSLCertificateHistoryQuery) OrderIf(condition bool, o sslcertificatehistory.OrderOption) *SSLCertificateHistoryQuery {
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o)
+	}
+	return q
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *SSLCertificateHistoryQuery) OrderIfs(condition bool, o ...sslcertificatehistory.OrderOption) *SSLCertificateHistoryQuery {
 	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
 	if condition {
 		q.Order(o...)

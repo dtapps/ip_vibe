@@ -37,20 +37,6 @@ func (_c *WebhookHistoryCreate) SetNillableCreatedAt(v *time.Time) *WebhookHisto
 	return _c
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_c *WebhookHistoryCreate) SetUpdatedAt(v time.Time) *WebhookHistoryCreate {
-	_c.mutation.SetUpdatedAt(v)
-	return _c
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (_c *WebhookHistoryCreate) SetNillableUpdatedAt(v *time.Time) *WebhookHistoryCreate {
-	if v != nil {
-		_c.SetUpdatedAt(*v)
-	}
-	return _c
-}
-
 // SetWebhookID sets the "webhook_id" field.
 func (_c *WebhookHistoryCreate) SetWebhookID(v int64) *WebhookHistoryCreate {
 	_c.mutation.SetWebhookID(v)
@@ -184,10 +170,6 @@ func (_c *WebhookHistoryCreate) defaults() {
 		v := webhookhistory.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		v := webhookhistory.DefaultUpdatedAt()
-		_c.mutation.SetUpdatedAt(v)
-	}
 	if _, ok := _c.mutation.Success(); !ok {
 		v := webhookhistory.DefaultSuccess
 		_c.mutation.SetSuccess(v)
@@ -199,9 +181,6 @@ func (_c *WebhookHistoryCreate) check() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent_log: missing required field "WebhookHistory.created_at"`)}
 	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent_log: missing required field "WebhookHistory.updated_at"`)}
-	}
 	if _, ok := _c.mutation.WebhookID(); !ok {
 		return &ValidationError{Name: "webhook_id", err: errors.New(`ent_log: missing required field "WebhookHistory.webhook_id"`)}
 	}
@@ -210,6 +189,11 @@ func (_c *WebhookHistoryCreate) check() error {
 	}
 	if _, ok := _c.mutation.Success(); !ok {
 		return &ValidationError{Name: "success", err: errors.New(`ent_log: missing required field "WebhookHistory.success"`)}
+	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := webhookhistory.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent_log: validator failed for field "WebhookHistory.id": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -247,10 +231,6 @@ func (_c *WebhookHistoryCreate) createSpec() (*WebhookHistory, *sqlgraph.CreateS
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(webhookhistory.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
-	}
-	if value, ok := _c.mutation.UpdatedAt(); ok {
-		_spec.SetField(webhookhistory.FieldUpdatedAt, field.TypeTime, value)
-		_node.UpdatedAt = value
 	}
 	if value, ok := _c.mutation.WebhookID(); ok {
 		_spec.SetField(webhookhistory.FieldWebhookID, field.TypeInt64, value)
@@ -336,18 +316,6 @@ type (
 	}
 )
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *WebhookHistoryUpsert) SetUpdatedAt(v time.Time) *WebhookHistoryUpsert {
-	u.Set(webhookhistory.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *WebhookHistoryUpsert) UpdateUpdatedAt() *WebhookHistoryUpsert {
-	u.SetExcluded(webhookhistory.FieldUpdatedAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -421,20 +389,6 @@ func (u *WebhookHistoryUpsertOne) Update(set func(*WebhookHistoryUpsert)) *Webho
 		set(&WebhookHistoryUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *WebhookHistoryUpsertOne) SetUpdatedAt(v time.Time) *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *WebhookHistoryUpsertOne) UpdateUpdatedAt() *WebhookHistoryUpsertOne {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // Exec executes the query.
@@ -676,20 +630,6 @@ func (u *WebhookHistoryUpsertBulk) Update(set func(*WebhookHistoryUpsert)) *Webh
 		set(&WebhookHistoryUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *WebhookHistoryUpsertBulk) SetUpdatedAt(v time.Time) *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *WebhookHistoryUpsertBulk) UpdateUpdatedAt() *WebhookHistoryUpsertBulk {
-	return u.Update(func(s *WebhookHistoryUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // Exec executes the query.

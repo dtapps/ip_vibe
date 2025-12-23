@@ -306,6 +306,11 @@ func (_c *CDNRecordCreate) check() error {
 	if _, ok := _c.mutation.ConfigID(); !ok {
 		return &ValidationError{Name: "config_id", err: errors.New(`ent: missing required field "CDNRecord.config_id"`)}
 	}
+	if v, ok := _c.mutation.ConfigID(); ok {
+		if err := cdnrecord.ConfigIDValidator(v); err != nil {
+			return &ValidationError{Name: "config_id", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.config_id": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.SubDomain(); !ok {
 		return &ValidationError{Name: "sub_domain", err: errors.New(`ent: missing required field "CDNRecord.sub_domain"`)}
 	}
@@ -336,6 +341,11 @@ func (_c *CDNRecordCreate) check() error {
 	}
 	if _, ok := _c.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "CDNRecord.is_active"`)}
+	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := cdnrecord.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.id": %w`, err)}
+		}
 	}
 	if len(_c.mutation.ConfigIDs()) == 0 {
 		return &ValidationError{Name: "config", err: errors.New(`ent: missing required edge "CDNRecord.config"`)}

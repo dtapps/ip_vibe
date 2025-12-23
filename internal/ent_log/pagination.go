@@ -184,6 +184,47 @@ func (q *RestyLogQuery) Paginate(ctx context.Context, page, size int) (*Paginati
 //   - size > 1000 时限制为 1000（防止数据库压力过大）
 //
 // 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
+func (q *SSLCertificateHistoryQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[SSLCertificateHistory], error) {
+	q.log("Paginate: page=", page, ", size=", size)
+	if page < 1 {
+		page = 1
+	}
+	if size < 1 {
+		size = 20
+	}
+	if size > 1000 {
+		size = 1000 // 安全上限，防止 OOM 或慢查询
+	}
+
+	offset := (page - 1) * size
+
+	// 先获取总数量
+	total, err := q.Clone().Count(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// 再获取当前页数据
+	items, err := q.Clone().Offset(offset).Limit(size).All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &PaginationResult[SSLCertificateHistory]{
+		Items: items,
+		Total: int64(total),
+		Page:  page,
+		Size:  size,
+	}, nil
+}
+
+// Paginate 对当前查询执行分页操作。
+// 参数 page 和 size 必须为正整数；若传入非法值，将自动修正：
+//   - page < 1 时默认为 1
+//   - size < 1 时默认为 20
+//   - size > 1000 时限制为 1000（防止数据库压力过大）
+//
+// 注意：Total 是通过额外执行 Count() 查询获得的，对大表可能有性能开销。
 func (q *WebhookHistoryQuery) Paginate(ctx context.Context, page, size int) (*PaginationResult[WebhookHistory], error) {
 	q.log("Paginate: page=", page, ", size=", size)
 	if page < 1 {

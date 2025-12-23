@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/types"
+	"vibe_ip/internal/utils"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -13,18 +14,22 @@ func RegisterTaskTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getTaskList",
 		Description: "获取全部任务",
+		InputSchema: utils.AutoSchema(types.GetTasksRequest{}),
 	}, getTaskList)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getTaskDetail",
 		Description: "获取任务",
+		InputSchema: utils.AutoSchema(types.GetTaskRequest{}),
 	}, getTaskDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "runTask",
 		Description: "运行任务",
+		InputSchema: utils.AutoSchema(types.RunTaskRequest{}),
 	}, runTask)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deleteTask",
 		Description: "删除任务",
+		InputSchema: utils.AutoSchema(types.DeleteTaskRequest{}),
 	}, deleteTask)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "cleanAllTask",

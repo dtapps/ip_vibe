@@ -31,7 +31,7 @@ type Webhook struct {
 	// Webhook URL
 	URL string `json:"url,omitempty"`
 	// Webhook 签名密钥或额外Token
-	Secret string `json:"secret,omitempty"`
+	Secret string `json:"-"`
 	// 通知标题 Go Template
 	TemplateTitle string `json:"template_title,omitempty"`
 	// 通知内容 Go Template
@@ -216,8 +216,7 @@ func (_m *Webhook) String() string {
 	builder.WriteString("url=")
 	builder.WriteString(_m.URL)
 	builder.WriteString(", ")
-	builder.WriteString("secret=")
-	builder.WriteString(_m.Secret)
+	builder.WriteString("secret=<sensitive>")
 	builder.WriteString(", ")
 	builder.WriteString("template_title=")
 	builder.WriteString(_m.TemplateTitle)

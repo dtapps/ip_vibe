@@ -96,6 +96,7 @@ func main() {
 	initialize.InitGinSLog("backend")    // 初始化 gin 日志
 	initialize.InitGrpcSLog("backend")   // 初始化 gRPC 日志
 	initialize.InitGocronSLog("backend") // 初始化 gocron 日志
+	initialize.InitMcpSLog("backend")    // 初始化 mcp 日志
 
 	initialize.InitEntDb(ctx)      // 初始化 业务数据库
 	initialize.InitEntLogDb(ctx)   // 初始化 日志数据库
@@ -713,9 +714,6 @@ func api_router(ctx context.Context, router *gin.Engine) {
 		webhookSubs := api.Group("/webhook-subs")
 		{
 			webhookSubs.GET("", handlers.GetWebhookSubs)                      // 获取全部通知订阅
-			webhookSubs.GET("/:id", handlers.GetWebhookSubDetail)             // 获取通知订阅详情
-			webhookSubs.POST("", handlers.CreateWebhookSub)                   // 创建通知订阅
-			webhookSubs.PATCH("/:id", handlers.UpdateWebhookSub)              // 更新通知订阅
 			webhookSubs.PATCH("/:id/active", handlers.UpdateWebhookSubActive) // 更新通知订阅启用状态
 			webhookSubs.DELETE("/:id", handlers.DeleteWebhookSub)             // 删除通知订阅
 		}
@@ -732,6 +730,7 @@ func api_router(ctx context.Context, router *gin.Engine) {
 			tasks.POST("/stop-scheduler", handlers.StopScheduler)   // 停止调度器
 		}
 
+		// 开放
 		opens := api.Group("/open")
 		{
 			opens.POST("/device/:device_code/ip-report", handlers.DeviceReportDeviceIp)  // 设备上报IP

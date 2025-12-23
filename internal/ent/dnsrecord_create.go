@@ -250,6 +250,11 @@ func (_c *DNSRecordCreate) check() error {
 	if _, ok := _c.mutation.ConfigID(); !ok {
 		return &ValidationError{Name: "config_id", err: errors.New(`ent: missing required field "DNSRecord.config_id"`)}
 	}
+	if v, ok := _c.mutation.ConfigID(); ok {
+		if err := dnsrecord.ConfigIDValidator(v); err != nil {
+			return &ValidationError{Name: "config_id", err: fmt.Errorf(`ent: validator failed for field "DNSRecord.config_id": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.SubDomain(); !ok {
 		return &ValidationError{Name: "sub_domain", err: errors.New(`ent: missing required field "DNSRecord.sub_domain"`)}
 	}
@@ -263,6 +268,11 @@ func (_c *DNSRecordCreate) check() error {
 	}
 	if _, ok := _c.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "DNSRecord.is_active"`)}
+	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := dnsrecord.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "DNSRecord.id": %w`, err)}
+		}
 	}
 	if len(_c.mutation.ConfigIDs()) == 0 {
 		return &ValidationError{Name: "config", err: errors.New(`ent: missing required edge "DNSRecord.config"`)}

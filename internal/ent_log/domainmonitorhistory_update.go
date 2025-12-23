@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 	"vibe_ip/internal/ent_log/domainmonitorhistory"
 	"vibe_ip/internal/ent_log/predicate"
 
@@ -29,12 +28,6 @@ func (_u *DomainMonitorHistoryUpdate) Where(ps ...predicate.DomainMonitorHistory
 	return _u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *DomainMonitorHistoryUpdate) SetUpdatedAt(v time.Time) *DomainMonitorHistoryUpdate {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
 // Mutation returns the DomainMonitorHistoryMutation object of the builder.
 func (_u *DomainMonitorHistoryUpdate) Mutation() *DomainMonitorHistoryMutation {
 	return _u.mutation
@@ -42,7 +35,6 @@ func (_u *DomainMonitorHistoryUpdate) Mutation() *DomainMonitorHistoryMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *DomainMonitorHistoryUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -68,14 +60,6 @@ func (_u *DomainMonitorHistoryUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (_u *DomainMonitorHistoryUpdate) defaults() {
-	if _, ok := _u.mutation.UpdatedAt(); !ok {
-		v := domainmonitorhistory.UpdateDefaultUpdatedAt()
-		_u.mutation.SetUpdatedAt(v)
-	}
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *DomainMonitorHistoryUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *DomainMonitorHistoryUpdate {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -90,9 +74,6 @@ func (_u *DomainMonitorHistoryUpdate) sqlSave(ctx context.Context) (_node int, e
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(domainmonitorhistory.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.CheckDurationCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldCheckDuration, field.TypeInt)
@@ -149,12 +130,6 @@ type DomainMonitorHistoryUpdateOne struct {
 	modifiers []func(*sql.UpdateBuilder)
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *DomainMonitorHistoryUpdateOne) SetUpdatedAt(v time.Time) *DomainMonitorHistoryUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
 // Mutation returns the DomainMonitorHistoryMutation object of the builder.
 func (_u *DomainMonitorHistoryUpdateOne) Mutation() *DomainMonitorHistoryMutation {
 	return _u.mutation
@@ -175,7 +150,6 @@ func (_u *DomainMonitorHistoryUpdateOne) Select(field string, fields ...string) 
 
 // Save executes the query and returns the updated DomainMonitorHistory entity.
 func (_u *DomainMonitorHistoryUpdateOne) Save(ctx context.Context) (*DomainMonitorHistory, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -198,14 +172,6 @@ func (_u *DomainMonitorHistoryUpdateOne) Exec(ctx context.Context) error {
 func (_u *DomainMonitorHistoryUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *DomainMonitorHistoryUpdateOne) defaults() {
-	if _, ok := _u.mutation.UpdatedAt(); !ok {
-		v := domainmonitorhistory.UpdateDefaultUpdatedAt()
-		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -240,9 +206,6 @@ func (_u *DomainMonitorHistoryUpdateOne) sqlSave(ctx context.Context) (_node *Do
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(domainmonitorhistory.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.CheckDurationCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldCheckDuration, field.TypeInt)

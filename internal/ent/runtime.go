@@ -14,6 +14,7 @@ import (
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/schema"
+	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
 )
@@ -37,6 +38,10 @@ func init() {
 	cdnrecord.DefaultUpdatedAt = cdnrecordDescUpdatedAt.Default.(func() time.Time)
 	// cdnrecord.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	cdnrecord.UpdateDefaultUpdatedAt = cdnrecordDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// cdnrecordDescConfigID is the schema descriptor for config_id field.
+	cdnrecordDescConfigID := cdnrecordFields[1].Descriptor()
+	// cdnrecord.ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
+	cdnrecord.ConfigIDValidator = cdnrecordDescConfigID.Validators[0].(func(int64) error)
 	// cdnrecordDescHTTPPort is the schema descriptor for http_port field.
 	cdnrecordDescHTTPPort := cdnrecordFields[6].Descriptor()
 	// cdnrecord.DefaultHTTPPort holds the default value on creation for the http_port field.
@@ -49,6 +54,10 @@ func init() {
 	cdnrecordDescIsActive := cdnrecordFields[10].Descriptor()
 	// cdnrecord.DefaultIsActive holds the default value on creation for the is_active field.
 	cdnrecord.DefaultIsActive = cdnrecordDescIsActive.Default.(bool)
+	// cdnrecordDescID is the schema descriptor for id field.
+	cdnrecordDescID := cdnrecordFields[0].Descriptor()
+	// cdnrecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	cdnrecord.IDValidator = cdnrecordDescID.Validators[0].(func(int64) error)
 	dnsrecordMixin := schema.DNSRecord{}.Mixin()
 	dnsrecordMixinFields0 := dnsrecordMixin[0].Fields()
 	_ = dnsrecordMixinFields0
@@ -64,10 +73,18 @@ func init() {
 	dnsrecord.DefaultUpdatedAt = dnsrecordDescUpdatedAt.Default.(func() time.Time)
 	// dnsrecord.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	dnsrecord.UpdateDefaultUpdatedAt = dnsrecordDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// dnsrecordDescConfigID is the schema descriptor for config_id field.
+	dnsrecordDescConfigID := dnsrecordFields[1].Descriptor()
+	// dnsrecord.ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
+	dnsrecord.ConfigIDValidator = dnsrecordDescConfigID.Validators[0].(func(int64) error)
 	// dnsrecordDescIsActive is the schema descriptor for is_active field.
 	dnsrecordDescIsActive := dnsrecordFields[7].Descriptor()
 	// dnsrecord.DefaultIsActive holds the default value on creation for the is_active field.
 	dnsrecord.DefaultIsActive = dnsrecordDescIsActive.Default.(bool)
+	// dnsrecordDescID is the schema descriptor for id field.
+	dnsrecordDescID := dnsrecordFields[0].Descriptor()
+	// dnsrecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	dnsrecord.IDValidator = dnsrecordDescID.Validators[0].(func(int64) error)
 	deviceMixin := schema.Device{}.Mixin()
 	deviceMixinFields0 := deviceMixin[0].Fields()
 	_ = deviceMixinFields0
@@ -83,6 +100,10 @@ func init() {
 	device.DefaultUpdatedAt = deviceDescUpdatedAt.Default.(func() time.Time)
 	// device.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	device.UpdateDefaultUpdatedAt = deviceDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// deviceDescID is the schema descriptor for id field.
+	deviceDescID := deviceFields[0].Descriptor()
+	// device.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	device.IDValidator = deviceDescID.Validators[0].(func(int64) error)
 	deviceipreportMixin := schema.DeviceIpReport{}.Mixin()
 	deviceipreportMixinFields0 := deviceipreportMixin[0].Fields()
 	_ = deviceipreportMixinFields0
@@ -92,6 +113,14 @@ func init() {
 	deviceipreportDescCreatedAt := deviceipreportMixinFields0[0].Descriptor()
 	// deviceipreport.DefaultCreatedAt holds the default value on creation for the created_at field.
 	deviceipreport.DefaultCreatedAt = deviceipreportDescCreatedAt.Default.(func() time.Time)
+	// deviceipreportDescDeviceID is the schema descriptor for device_id field.
+	deviceipreportDescDeviceID := deviceipreportFields[1].Descriptor()
+	// deviceipreport.DeviceIDValidator is a validator for the "device_id" field. It is called by the builders before save.
+	deviceipreport.DeviceIDValidator = deviceipreportDescDeviceID.Validators[0].(func(int64) error)
+	// deviceipreportDescID is the schema descriptor for id field.
+	deviceipreportDescID := deviceipreportFields[0].Descriptor()
+	// deviceipreport.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	deviceipreport.IDValidator = deviceipreportDescID.Validators[0].(func(int64) error)
 	deviceportforwardMixin := schema.DevicePortForward{}.Mixin()
 	deviceportforwardMixinFields0 := deviceportforwardMixin[0].Fields()
 	_ = deviceportforwardMixinFields0
@@ -131,6 +160,10 @@ func init() {
 	deviceportforwardDescIsActive := deviceportforwardFields[8].Descriptor()
 	// deviceportforward.DefaultIsActive holds the default value on creation for the is_active field.
 	deviceportforward.DefaultIsActive = deviceportforwardDescIsActive.Default.(bool)
+	// deviceportforwardDescID is the schema descriptor for id field.
+	deviceportforwardDescID := deviceportforwardFields[0].Descriptor()
+	// deviceportforward.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	deviceportforward.IDValidator = deviceportforwardDescID.Validators[0].(func(int64) error)
 	domainmonitorMixin := schema.DomainMonitor{}.Mixin()
 	domainmonitorMixinFields0 := domainmonitorMixin[0].Fields()
 	_ = domainmonitorMixinFields0
@@ -154,6 +187,10 @@ func init() {
 	domainmonitorDescIsActive := domainmonitorFields[6].Descriptor()
 	// domainmonitor.DefaultIsActive holds the default value on creation for the is_active field.
 	domainmonitor.DefaultIsActive = domainmonitorDescIsActive.Default.(bool)
+	// domainmonitorDescID is the schema descriptor for id field.
+	domainmonitorDescID := domainmonitorFields[0].Descriptor()
+	// domainmonitor.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	domainmonitor.IDValidator = domainmonitorDescID.Validators[0].(func(int64) error)
 	ipgroupMixin := schema.IpGroup{}.Mixin()
 	ipgroupMixinFields0 := ipgroupMixin[0].Fields()
 	_ = ipgroupMixinFields0
@@ -169,6 +206,10 @@ func init() {
 	ipgroup.DefaultUpdatedAt = ipgroupDescUpdatedAt.Default.(func() time.Time)
 	// ipgroup.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	ipgroup.UpdateDefaultUpdatedAt = ipgroupDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// ipgroupDescID is the schema descriptor for id field.
+	ipgroupDescID := ipgroupFields[0].Descriptor()
+	// ipgroup.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	ipgroup.IDValidator = ipgroupDescID.Validators[0].(func(int64) error)
 	ipgroupdeviceMixin := schema.IpGroupDevice{}.Mixin()
 	ipgroupdeviceMixinFields0 := ipgroupdeviceMixin[0].Fields()
 	_ = ipgroupdeviceMixinFields0
@@ -178,6 +219,14 @@ func init() {
 	ipgroupdeviceDescCreatedAt := ipgroupdeviceMixinFields0[0].Descriptor()
 	// ipgroupdevice.DefaultCreatedAt holds the default value on creation for the created_at field.
 	ipgroupdevice.DefaultCreatedAt = ipgroupdeviceDescCreatedAt.Default.(func() time.Time)
+	// ipgroupdeviceDescDeviceID is the schema descriptor for device_id field.
+	ipgroupdeviceDescDeviceID := ipgroupdeviceFields[1].Descriptor()
+	// ipgroupdevice.DeviceIDValidator is a validator for the "device_id" field. It is called by the builders before save.
+	ipgroupdevice.DeviceIDValidator = ipgroupdeviceDescDeviceID.Validators[0].(func(int64) error)
+	// ipgroupdeviceDescIPGroupID is the schema descriptor for ip_group_id field.
+	ipgroupdeviceDescIPGroupID := ipgroupdeviceFields[2].Descriptor()
+	// ipgroupdevice.IPGroupIDValidator is a validator for the "ip_group_id" field. It is called by the builders before save.
+	ipgroupdevice.IPGroupIDValidator = ipgroupdeviceDescIPGroupID.Validators[0].(func(int64) error)
 	platformconfigMixin := schema.PlatformConfig{}.Mixin()
 	platformconfigMixinFields0 := platformconfigMixin[0].Fields()
 	_ = platformconfigMixinFields0
@@ -193,6 +242,41 @@ func init() {
 	platformconfig.DefaultUpdatedAt = platformconfigDescUpdatedAt.Default.(func() time.Time)
 	// platformconfig.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	platformconfig.UpdateDefaultUpdatedAt = platformconfigDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// platformconfigDescID is the schema descriptor for id field.
+	platformconfigDescID := platformconfigFields[0].Descriptor()
+	// platformconfig.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	platformconfig.IDValidator = platformconfigDescID.Validators[0].(func(int64) error)
+	sslrecordMixin := schema.SSLRecord{}.Mixin()
+	sslrecordMixinFields0 := sslrecordMixin[0].Fields()
+	_ = sslrecordMixinFields0
+	sslrecordFields := schema.SSLRecord{}.Fields()
+	_ = sslrecordFields
+	// sslrecordDescCreatedAt is the schema descriptor for created_at field.
+	sslrecordDescCreatedAt := sslrecordMixinFields0[0].Descriptor()
+	// sslrecord.DefaultCreatedAt holds the default value on creation for the created_at field.
+	sslrecord.DefaultCreatedAt = sslrecordDescCreatedAt.Default.(func() time.Time)
+	// sslrecordDescUpdatedAt is the schema descriptor for updated_at field.
+	sslrecordDescUpdatedAt := sslrecordMixinFields0[1].Descriptor()
+	// sslrecord.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	sslrecord.DefaultUpdatedAt = sslrecordDescUpdatedAt.Default.(func() time.Time)
+	// sslrecord.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	sslrecord.UpdateDefaultUpdatedAt = sslrecordDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// sslrecordDescConfigID is the schema descriptor for config_id field.
+	sslrecordDescConfigID := sslrecordFields[1].Descriptor()
+	// sslrecord.ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
+	sslrecord.ConfigIDValidator = sslrecordDescConfigID.Validators[0].(func(int64) error)
+	// sslrecordDescIsActive is the schema descriptor for is_active field.
+	sslrecordDescIsActive := sslrecordFields[14].Descriptor()
+	// sslrecord.DefaultIsActive holds the default value on creation for the is_active field.
+	sslrecord.DefaultIsActive = sslrecordDescIsActive.Default.(bool)
+	// sslrecordDescIsAutoRenewal is the schema descriptor for is_auto_renewal field.
+	sslrecordDescIsAutoRenewal := sslrecordFields[15].Descriptor()
+	// sslrecord.DefaultIsAutoRenewal holds the default value on creation for the is_auto_renewal field.
+	sslrecord.DefaultIsAutoRenewal = sslrecordDescIsAutoRenewal.Default.(bool)
+	// sslrecordDescID is the schema descriptor for id field.
+	sslrecordDescID := sslrecordFields[0].Descriptor()
+	// sslrecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	sslrecord.IDValidator = sslrecordDescID.Validators[0].(func(int64) error)
 	webhookMixin := schema.Webhook{}.Mixin()
 	webhookMixinFields0 := webhookMixin[0].Fields()
 	_ = webhookMixinFields0
@@ -212,6 +296,10 @@ func init() {
 	webhookDescIsActive := webhookFields[8].Descriptor()
 	// webhook.DefaultIsActive holds the default value on creation for the is_active field.
 	webhook.DefaultIsActive = webhookDescIsActive.Default.(bool)
+	// webhookDescID is the schema descriptor for id field.
+	webhookDescID := webhookFields[0].Descriptor()
+	// webhook.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	webhook.IDValidator = webhookDescID.Validators[0].(func(int64) error)
 	webhooksubscriptionMixin := schema.WebhookSubscription{}.Mixin()
 	webhooksubscriptionMixinFields0 := webhooksubscriptionMixin[0].Fields()
 	_ = webhooksubscriptionMixinFields0
@@ -221,8 +309,20 @@ func init() {
 	webhooksubscriptionDescCreatedAt := webhooksubscriptionMixinFields0[0].Descriptor()
 	// webhooksubscription.DefaultCreatedAt holds the default value on creation for the created_at field.
 	webhooksubscription.DefaultCreatedAt = webhooksubscriptionDescCreatedAt.Default.(func() time.Time)
+	// webhooksubscriptionDescWebhookID is the schema descriptor for webhook_id field.
+	webhooksubscriptionDescWebhookID := webhooksubscriptionFields[3].Descriptor()
+	// webhooksubscription.WebhookIDValidator is a validator for the "webhook_id" field. It is called by the builders before save.
+	webhooksubscription.WebhookIDValidator = webhooksubscriptionDescWebhookID.Validators[0].(func(int64) error)
+	// webhooksubscriptionDescObjID is the schema descriptor for obj_id field.
+	webhooksubscriptionDescObjID := webhooksubscriptionFields[5].Descriptor()
+	// webhooksubscription.ObjIDValidator is a validator for the "obj_id" field. It is called by the builders before save.
+	webhooksubscription.ObjIDValidator = webhooksubscriptionDescObjID.Validators[0].(func(int64) error)
 	// webhooksubscriptionDescIsActive is the schema descriptor for is_active field.
 	webhooksubscriptionDescIsActive := webhooksubscriptionFields[6].Descriptor()
 	// webhooksubscription.DefaultIsActive holds the default value on creation for the is_active field.
 	webhooksubscription.DefaultIsActive = webhooksubscriptionDescIsActive.Default.(bool)
+	// webhooksubscriptionDescID is the schema descriptor for id field.
+	webhooksubscriptionDescID := webhooksubscriptionFields[0].Descriptor()
+	// webhooksubscription.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	webhooksubscription.IDValidator = webhooksubscriptionDescID.Validators[0].(func(int64) error)
 }

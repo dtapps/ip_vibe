@@ -64,7 +64,7 @@ func (s *IpUpdateService) StartDnsJob(ctx context.Context) (err error) {
 		gocron.NewTask(s.runDnsTask),                         // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
-		gocron.WithName("DNS刷新"),                             // 任务名称
+		gocron.WithName("DNS记录刷新"),                           // 任务名称
 		gocron.WithTags("dns_update"),                        // 任务标签
 	)
 	if err != nil {
@@ -87,7 +87,7 @@ func (s *IpUpdateService) StartCdnJob(ctx context.Context) (err error) {
 		gocron.NewTask(s.runCdnTask),                         // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
-		gocron.WithName("CDN刷新"),                             // 任务名称
+		gocron.WithName("CDN记录刷新"),                           // 任务名称
 		gocron.WithTags("cdn_update"),                        // 任务标签
 	)
 	if err != nil {

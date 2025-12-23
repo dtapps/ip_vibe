@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 	"vibe_ip/internal/ent_log/predicate"
 	"vibe_ip/internal/ent_log/webhookhistory"
 
@@ -29,12 +28,6 @@ func (_u *WebhookHistoryUpdate) Where(ps ...predicate.WebhookHistory) *WebhookHi
 	return _u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *WebhookHistoryUpdate) SetUpdatedAt(v time.Time) *WebhookHistoryUpdate {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
 // Mutation returns the WebhookHistoryMutation object of the builder.
 func (_u *WebhookHistoryUpdate) Mutation() *WebhookHistoryMutation {
 	return _u.mutation
@@ -42,7 +35,6 @@ func (_u *WebhookHistoryUpdate) Mutation() *WebhookHistoryMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *WebhookHistoryUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -68,14 +60,6 @@ func (_u *WebhookHistoryUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (_u *WebhookHistoryUpdate) defaults() {
-	if _, ok := _u.mutation.UpdatedAt(); !ok {
-		v := webhookhistory.UpdateDefaultUpdatedAt()
-		_u.mutation.SetUpdatedAt(v)
-	}
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *WebhookHistoryUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *WebhookHistoryUpdate {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -90,9 +74,6 @@ func (_u *WebhookHistoryUpdate) sqlSave(ctx context.Context) (_node int, err err
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(webhookhistory.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.SubscriptionIDCleared() {
 		_spec.ClearField(webhookhistory.FieldSubscriptionID, field.TypeInt64)
@@ -131,12 +112,6 @@ type WebhookHistoryUpdateOne struct {
 	modifiers []func(*sql.UpdateBuilder)
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *WebhookHistoryUpdateOne) SetUpdatedAt(v time.Time) *WebhookHistoryUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
 // Mutation returns the WebhookHistoryMutation object of the builder.
 func (_u *WebhookHistoryUpdateOne) Mutation() *WebhookHistoryMutation {
 	return _u.mutation
@@ -157,7 +132,6 @@ func (_u *WebhookHistoryUpdateOne) Select(field string, fields ...string) *Webho
 
 // Save executes the query and returns the updated WebhookHistory entity.
 func (_u *WebhookHistoryUpdateOne) Save(ctx context.Context) (*WebhookHistory, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -180,14 +154,6 @@ func (_u *WebhookHistoryUpdateOne) Exec(ctx context.Context) error {
 func (_u *WebhookHistoryUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *WebhookHistoryUpdateOne) defaults() {
-	if _, ok := _u.mutation.UpdatedAt(); !ok {
-		v := webhookhistory.UpdateDefaultUpdatedAt()
-		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -222,9 +188,6 @@ func (_u *WebhookHistoryUpdateOne) sqlSave(ctx context.Context) (_node *WebhookH
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(webhookhistory.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if _u.mutation.SubscriptionIDCleared() {
 		_spec.ClearField(webhookhistory.FieldSubscriptionID, field.TypeInt64)

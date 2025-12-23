@@ -56,6 +56,18 @@ func (f RestyLogFunc) Mutate(ctx context.Context, m ent_log.Mutation) (ent_log.V
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent_log.RestyLogMutation", m)
 }
 
+// The SSLCertificateHistoryFunc type is an adapter to allow the use of ordinary
+// function as SSLCertificateHistory mutator.
+type SSLCertificateHistoryFunc func(context.Context, *ent_log.SSLCertificateHistoryMutation) (ent_log.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SSLCertificateHistoryFunc) Mutate(ctx context.Context, m ent_log.Mutation) (ent_log.Value, error) {
+	if mv, ok := m.(*ent_log.SSLCertificateHistoryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent_log.SSLCertificateHistoryMutation", m)
+}
+
 // The WebhookHistoryFunc type is an adapter to allow the use of ordinary
 // function as WebhookHistory mutator.
 type WebhookHistoryFunc func(context.Context, *ent_log.WebhookHistoryMutation) (ent_log.Value, error)

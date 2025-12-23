@@ -6,17 +6,6 @@
     <h2 class="h2-icon">
       {{ template "icons" (dict "Name" "ip-subscribe") }} 通知订阅
     </h2>
-    <div>
-      <button class="btn btn-primary" onclick="openFormModal(0,'cdn_record')">
-        {{ template "icons" (dict "Name" "ip-plus") }} 添加 CDN订阅
-      </button>
-      <button class="btn btn-primary" onclick="openFormModal(0,'dns_record')">
-        {{ template "icons" (dict "Name" "ip-plus") }} 添加 DNS订阅
-      </button>
-      <button class="btn btn-primary" onclick="openFormModal(0,'device')">
-        {{ template "icons" (dict "Name" "ip-plus") }} 添加 设备订阅
-      </button>
-    </div>
   </div>
   <div class="card-body">
     <table>
@@ -41,6 +30,10 @@
           <td><span class="badge badge-success">DNS记录</span></td>
           {{else if eq .ObjType "device"}}
           <td><span class="badge badge-success">设备</span></td>
+          {{else if eq .ObjType "ip_group"}}
+          <td><span class="badge badge-success">IP组</span></td>
+          {{else if eq .ObjType "domain_monitor"}}
+          <td><span class="badge badge-success">域名监控</span></td>
           {{else}}
           <td><span class="badge badge-success">{{.ObjType}}</span></td>
           {{end}}
@@ -48,27 +41,21 @@
           <td>{{.ObjID}}:{{.ObjName}}</td>
           <td>
             {{ $activeUrlPath := join $urlPath "/active" }}
-            {{ template "switch" (dict 
-                "Checked" .IsActive
-                "URL" $activeUrlPath
-                "NoReload" true
+            {{ template "switch" (dict
+            "Checked" .IsActive
+            "URL" $activeUrlPath
+            "NoReload" true
             )}}
           </td>
           <td>
-            <button
-              class="btn btn-primary btn-sm"
-              onclick="openFormModal('{{.ID}}','{{.ObjType}}')"
-            >
-              {{ template "icons" (dict "Name" "ip-edit") }} 编辑
-            </button>
-            {{ template "button" (dict 
-                "Type" "danger" 
-                "IconName" "ip-delete" 
-                "Text" "删除" 
-                "URL" $urlPath
-                "Disabled" .IsActive 
-                "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
-                "NoReload" true
+            {{ template "button" (dict
+            "Type" "danger"
+            "IconName" "ip-delete"
+            "Text" "删除"
+            "URL" $urlPath
+            "Disabled" .IsActive
+            "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
+            "NoReload" true
             )}}
           </td>
         </tr>
@@ -79,9 +66,6 @@
     {{ template "pagination" . }}
   </div>
 </div>
-
-<!-- 表单 -->
-{{ template "pages/webhook-sub_form.html" . }}
 
 <script src="/static/js/webhook-sub.js"></script>
 {{ end }}

@@ -22,6 +22,8 @@ type Tx struct {
 	OperationLog *OperationLogClient
 	// RestyLog is the client for interacting with the RestyLog builders.
 	RestyLog *RestyLogClient
+	// SSLCertificateHistory is the client for interacting with the SSLCertificateHistory builders.
+	SSLCertificateHistory *SSLCertificateHistoryClient
 	// WebhookHistory is the client for interacting with the WebhookHistory builders.
 	WebhookHistory *WebhookHistoryClient
 
@@ -159,6 +161,7 @@ func (tx *Tx) init() {
 	tx.HttpLog = NewHttpLogClient(tx.config)
 	tx.OperationLog = NewOperationLogClient(tx.config)
 	tx.RestyLog = NewRestyLogClient(tx.config)
+	tx.SSLCertificateHistory = NewSSLCertificateHistoryClient(tx.config)
 	tx.WebhookHistory = NewWebhookHistoryClient(tx.config)
 }
 

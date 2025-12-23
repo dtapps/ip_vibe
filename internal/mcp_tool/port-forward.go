@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/types"
+	"vibe_ip/internal/utils"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -13,34 +14,42 @@ func RegisterPortForwardTools(server *mcp.Server) {
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getPortForwardList",
 		Description: "获取全部端口转发",
+		InputSchema: utils.AutoSchema(types.GetPortForwardsRequest{}),
 	}, getPortForwardList)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "getPortForwardDetail",
 		Description: "获取端口转发",
+		InputSchema: utils.AutoSchema(types.GetPortForwardRequest{}),
 	}, getPortForwardDetail)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "createPortForward",
 		Description: "创建端口转发",
+		InputSchema: utils.AutoSchema(types.CreatePortForwardRequest{}),
 	}, createPortForward)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updatePortForward",
 		Description: "更新端口转发",
+		InputSchema: utils.AutoSchema(types.UpdatePortForwardRequest{}),
 	}, updatePortForward)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updatePortForwardForward",
 		Description: "更新端口转发防火墙状态",
+		InputSchema: utils.AutoSchema(types.UpdatePortForwardForwardRequest{}),
 	}, updatePortForwardForward)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "updatePortForwardActive",
 		Description: "更新端口转发启用状态",
+		InputSchema: utils.AutoSchema(types.UpdatePortForwardActiveRequest{}),
 	}, updatePortForwardActive)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "deletePortForward",
 		Description: "删除端口转发",
+		InputSchema: utils.AutoSchema(types.DeletePortForwardRequest{}),
 	}, deletePortForward)
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "healthCheckPortForward",
 		Description: "检查端口转发是否健康",
+		InputSchema: utils.AutoSchema(types.HealthCheckPortForwardRequest{}),
 	}, healthCheckPortForward)
 }
 

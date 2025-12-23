@@ -11,6 +11,7 @@ import (
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/platformconfig"
+	"vibe_ip/internal/ent/sslrecord"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -135,6 +136,21 @@ func (_c *PlatformConfigCreate) AddCdnRecords(v ...*CDNRecord) *PlatformConfigCr
 	return _c.AddCdnRecordIDs(ids...)
 }
 
+// AddSslRecordIDs adds the "ssl_records" edge to the SSLRecord entity by IDs.
+func (_c *PlatformConfigCreate) AddSslRecordIDs(ids ...int64) *PlatformConfigCreate {
+	_c.mutation.AddSslRecordIDs(ids...)
+	return _c
+}
+
+// AddSslRecords adds the "ssl_records" edges to the SSLRecord entity.
+func (_c *PlatformConfigCreate) AddSslRecords(v ...*SSLRecord) *PlatformConfigCreate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSslRecordIDs(ids...)
+}
+
 // Mutation returns the PlatformConfigMutation object of the builder.
 func (_c *PlatformConfigCreate) Mutation() *PlatformConfigMutation {
 	return _c.mutation
@@ -209,6 +225,11 @@ func (_c *PlatformConfigCreate) check() error {
 	if v, ok := _c.mutation.Platform(); ok {
 		if err := platformconfig.PlatformValidator(v); err != nil {
 			return &ValidationError{Name: "platform", err: fmt.Errorf(`ent: validator failed for field "PlatformConfig.platform": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := platformconfig.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "PlatformConfig.id": %w`, err)}
 		}
 	}
 	return nil
@@ -297,6 +318,22 @@ func (_c *PlatformConfigCreate) createSpec() (*PlatformConfig, *sqlgraph.CreateS
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cdnrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.SslRecordsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.SslRecordsTable,
+			Columns: []string{platformconfig.SslRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sslrecord.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

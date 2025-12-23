@@ -102,6 +102,8 @@ var (
 	DefaultAutoForward bool
 	// DefaultIsActive holds the default value on creation for the "is_active" field.
 	DefaultIsActive bool
+	// IDValidator is a validator for the "id" field. It is called by the builders before save.
+	IDValidator func(int64) error
 )
 
 // OrderOption defines the ordering options for the DevicePortForward queries.

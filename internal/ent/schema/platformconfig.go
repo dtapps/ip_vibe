@@ -38,10 +38,11 @@ func (PlatformConfig) Mixin() []ent.Mixin {
 func (PlatformConfig) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").
-			StorageKey("id").
+			StorageKey("id"). // 用 id 覆盖 框架的 id
+			Positive().       // 正数
 			Immutable().
 			Comment("平台配置序号").
-			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
+			Annotations(entsql.WithComments(true)),
 
 		field.Enum("capability").
 			Default(schematype.ConfigCapabilityAll).
@@ -66,6 +67,7 @@ func (PlatformConfig) Fields() []ent.Field {
 
 		field.JSON("config_json", json.RawMessage{}).
 			Optional().
+			Sensitive(). // 敏感
 			Comment("平台密钥等敏感信息（JSON）").
 			Annotations(entsql.WithComments(true)),
 	}
@@ -89,12 +91,24 @@ func (PlatformConfig) Edges() []ent.Edge {
 				// 级联删除：删除 PlatformConfig 时，其所有 CDNRecord 记录也应删除
 				OnDelete: entsql.Cascade,
 			}, entsql.WithComments(true)),
+
+		// 一对多 PlatformConfig -> SSLRecord
+		edge.To("ssl_records", SSLRecord.Type).
+			Comment("关联的SSL记录").
+			Annotations(entsql.Annotation{
+				// 级联删除：删除 PlatformConfig 时，其所有 SSLRecord 记录也应删除
+				OnDelete: entsql.Cascade,
+			}, entsql.WithComments(true)),
 	}
 }
 
 // Indexes of the PlatformConfig.
 func (PlatformConfig) Indexes() []ent.Index {
 	return []ent.Index{
+		// 按创建时间排序
+		index.Fields("created_at").
+			Annotations(entsql.Desc(), entsql.WithComments(true)),
+
 		// 按平台支持的服务能力排序
 		index.Fields("capability").
 			Annotations(entsql.WithComments(true)),
@@ -102,9 +116,5 @@ func (PlatformConfig) Indexes() []ent.Index {
 		// 按平台类型排序
 		index.Fields("platform").
 			Annotations(entsql.WithComments(true)),
-
-		// 按创建时间排序
-		index.Fields("created_at").
-			Annotations(entsql.Desc(), entsql.WithComments(true)),
 	}
 }

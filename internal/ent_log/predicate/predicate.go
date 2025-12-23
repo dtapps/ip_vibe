@@ -18,5 +18,8 @@ type OperationLog func(*sql.Selector)
 // RestyLog is the predicate function for restylog builders.
 type RestyLog func(*sql.Selector)
 
+// SSLCertificateHistory is the predicate function for sslcertificatehistory builders.
+type SSLCertificateHistory func(*sql.Selector)
+
 // WebhookHistory is the predicate function for webhookhistory builders.
 type WebhookHistory func(*sql.Selector)

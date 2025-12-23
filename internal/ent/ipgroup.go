@@ -29,7 +29,7 @@ type IpGroup struct {
 	// IP组描述
 	Description string `json:"description,omitempty"`
 	// 最近一次接口的反馈
-	LastAPIResponse string `json:"last_api_response,omitempty"`
+	LastAPIResponse string `json:"-"`
 	// 最近一次接口的反馈时间
 	LastAPIResponseAt time.Time `json:"last_api_response_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -238,8 +238,7 @@ func (_m *IpGroup) String() string {
 	builder.WriteString("description=")
 	builder.WriteString(_m.Description)
 	builder.WriteString(", ")
-	builder.WriteString("last_api_response=")
-	builder.WriteString(_m.LastAPIResponse)
+	builder.WriteString("last_api_response=<sensitive>")
 	builder.WriteString(", ")
 	builder.WriteString("last_api_response_at=")
 	builder.WriteString(_m.LastAPIResponseAt.Format(time.ANSIC))

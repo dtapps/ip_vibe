@@ -36,10 +36,11 @@ func (IpGroup) Mixin() []ent.Mixin {
 func (IpGroup) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").
-			StorageKey("id").
+			StorageKey("id"). // 用 id 覆盖 框架的 id
+			Positive().       // 正数
 			Immutable().
 			Comment("IP组序号").
-			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
+			Annotations(entsql.WithComments(true)),
 
 		field.String("record_id").
 			Optional().
@@ -57,6 +58,7 @@ func (IpGroup) Fields() []ent.Field {
 
 		field.String("last_api_response").
 			Optional().
+			Sensitive(). // 敏感
 			Comment("最近一次接口的反馈").
 			Annotations(entsql.WithComments(true)),
 
@@ -95,5 +97,9 @@ func (IpGroup) Indexes() []ent.Index {
 		// 按创建时间排序
 		index.Fields("created_at").
 			Annotations(entsql.Desc(), entsql.WithComments(true)),
+
+		// 按平台侧记录ID排序
+		index.Fields("record_id").
+			Annotations(entsql.WithComments(true)),
 	}
 }

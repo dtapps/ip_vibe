@@ -37,12 +37,14 @@ func (DNSRecord) Mixin() []ent.Mixin {
 func (DNSRecord) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").
-			StorageKey("id").
+			StorageKey("id"). // 用 id 覆盖 框架的 id
+			Positive().       // 正数
 			Immutable().
 			Comment("DNS记录序号").
-			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
+			Annotations(entsql.WithComments(true)),
 
 		field.Int64("config_id").
+			Positive(). // 正数
 			Immutable().
 			Comment("平台配置序号").
 			Annotations(entsql.WithComments(true)),
@@ -51,11 +53,6 @@ func (DNSRecord) Fields() []ent.Field {
 			Optional().
 			Comment("平台侧记录ID").
 			Annotations(entsql.WithComments(true)),
-
-		// field.String("domain").
-		// 	Immutable().
-		// 	Comment("域名（如 www.example.com）").
-		// 	Annotations(entsql.WithComments(true)),
 
 		field.String("sub_domain").
 			Immutable().
@@ -90,6 +87,7 @@ func (DNSRecord) Fields() []ent.Field {
 
 		field.String("last_api_response").
 			Optional().
+			Sensitive(). // 敏感
 			Comment("最近一次接口的反馈").
 			Annotations(entsql.WithComments(true)),
 
@@ -134,23 +132,6 @@ func (DNSRecord) Edges() []ent.Edge {
 // Indexes of the DNSRecord.
 func (DNSRecord) Indexes() []ent.Index {
 	return []ent.Index{
-		// 按域名排序
-		index.Fields("sub_domain").
-			Annotations(entsql.WithComments(true)),
-
-		// 按记录类型排序
-		index.Fields("type").
-			Annotations(entsql.WithComments(true)),
-
-		// 按是否活跃排序
-		index.Fields("is_active").
-			Annotations(entsql.WithComments(true)),
-
-		// 确保一个域名存在多个相同类型的记录
-		// index.Fields("sub_domain", "type").
-		// 	Unique().
-		// 	Annotations(entsql.WithComments(true)),
-
 		// 按创建时间排序
 		index.Fields("created_at").
 			Annotations(entsql.Desc(), entsql.WithComments(true)),
@@ -159,12 +140,28 @@ func (DNSRecord) Indexes() []ent.Index {
 		index.Fields("config_id").
 			Annotations(entsql.WithComments(true)),
 
+		// 按平台侧记录ID排序
+		index.Fields("record_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 按域名排序
+		index.Fields("sub_domain").
+			Annotations(entsql.WithComments(true)),
+
+		// 按记录类型排序
+		index.Fields("type").
+			Annotations(entsql.WithComments(true)),
+
 		// 按IP组序号排序
 		index.Fields("ip_group_id").
 			Annotations(entsql.WithComments(true)),
 
 		// 按CDN记录序号排序
 		index.Fields("cdn_record_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 按是否活跃排序
+		index.Fields("is_active").
 			Annotations(entsql.WithComments(true)),
 	}
 }

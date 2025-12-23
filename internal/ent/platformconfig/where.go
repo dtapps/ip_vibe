@@ -391,6 +391,29 @@ func HasCdnRecordsWith(preds ...predicate.CDNRecord) predicate.PlatformConfig {
 	})
 }
 
+// HasSslRecords applies the HasEdge predicate on the "ssl_records" edge.
+func HasSslRecords() predicate.PlatformConfig {
+	return predicate.PlatformConfig(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SslRecordsTable, SslRecordsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSslRecordsWith applies the HasEdge predicate on the "ssl_records" edge with a given conditions (other predicates).
+func HasSslRecordsWith(preds ...predicate.SSLRecord) predicate.PlatformConfig {
+	return predicate.PlatformConfig(func(s *sql.Selector) {
+		step := newSslRecordsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.PlatformConfig) predicate.PlatformConfig {
 	return predicate.PlatformConfig(sql.AndPredicates(predicates...))

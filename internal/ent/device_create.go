@@ -245,6 +245,11 @@ func (_c *DeviceCreate) check() error {
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Device.name"`)}
 	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := device.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Device.id": %w`, err)}
+		}
+	}
 	return nil
 }
 

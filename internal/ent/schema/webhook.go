@@ -37,10 +37,11 @@ func (Webhook) Mixin() []ent.Mixin {
 func (Webhook) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").
-			StorageKey("id").
+			StorageKey("id"). // 用 id 覆盖 框架的 id
+			Positive().       // 正数
 			Immutable().
 			Comment("通知序号").
-			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
+			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
 			Comment("通知名称").
@@ -63,6 +64,7 @@ func (Webhook) Fields() []ent.Field {
 
 		field.String("secret").
 			Optional().
+			Sensitive(). // 敏感
 			Comment("Webhook 签名密钥或额外Token").
 			Annotations(entsql.WithComments(true)),
 
@@ -99,6 +101,10 @@ func (Webhook) Edges() []ent.Edge {
 // Indexes of the Webhook.
 func (Webhook) Indexes() []ent.Index {
 	return []ent.Index{
+		// 按创建时间排序
+		index.Fields("created_at").
+			Annotations(entsql.Desc(), entsql.WithComments(true)),
+
 		// 按通知平台类型排序
 		index.Fields("platform").
 			Annotations(entsql.WithComments(true)),
@@ -106,9 +112,5 @@ func (Webhook) Indexes() []ent.Index {
 		// 按是否活跃排序
 		index.Fields("is_active").
 			Annotations(entsql.WithComments(true)),
-
-		// 按创建时间排序
-		index.Fields("created_at").
-			Annotations(entsql.Desc(), entsql.WithComments(true)),
 	}
 }

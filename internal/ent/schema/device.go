@@ -36,10 +36,11 @@ func (Device) Mixin() []ent.Mixin {
 func (Device) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").
-			StorageKey("id").
+			StorageKey("id"). // 用 id 覆盖 框架的 id
+			Positive().       // 正数
 			Immutable().
 			Comment("设备序号").
-			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
+			Annotations(entsql.WithComments(true)),
 
 		field.String("code").
 			Unique().
@@ -107,6 +108,10 @@ func (Device) Edges() []ent.Edge {
 // Indexes of the Device.
 func (Device) Indexes() []ent.Index {
 	return []ent.Index{
+		// 按创建时间排序
+		index.Fields("created_at").
+			Annotations(entsql.Desc(), entsql.WithComments(true)),
+
 		// 按最后上报时间排序
 		index.Fields("last_reported_at").
 			Annotations(entsql.WithComments(true)),
@@ -114,9 +119,5 @@ func (Device) Indexes() []ent.Index {
 		// 按最后心跳时间排序
 		index.Fields("last_heartbeat_at").
 			Annotations(entsql.WithComments(true)),
-
-		// 按创建时间排序
-		index.Fields("created_at").
-			Annotations(entsql.Desc(), entsql.WithComments(true)),
 	}
 }
