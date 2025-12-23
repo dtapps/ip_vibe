@@ -11,6 +11,31 @@ import (
 	"vibe_ip/internal/ent_log/webhookhistory"
 )
 
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *DomainMonitorHistoryQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DomainMonitorHistory.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DomainMonitorHistoryQuery) OrderByIDDesc() *DomainMonitorHistoryQuery {
+	return q.Order(Desc(domainmonitorhistory.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *DomainMonitorHistoryQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DomainMonitorHistory.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *DomainMonitorHistoryQuery) OrderByIDAsc() *DomainMonitorHistoryQuery {
+	return q.Order(Asc(domainmonitorhistory.FieldID))
+}
+
 // OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *DomainMonitorHistoryQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
@@ -386,6 +411,31 @@ func (q *DomainMonitorHistoryQuery) OrderBySslCertificateChainAsc() *DomainMonit
 	return q.Order(Asc(domainmonitorhistory.FieldSslCertificateChain))
 }
 
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *HttpLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.HttpLog.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *HttpLogQuery) OrderByIDDesc() *HttpLogQuery {
+	return q.Order(Desc(httplog.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *HttpLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.HttpLog.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *HttpLogQuery) OrderByIDAsc() *HttpLogQuery {
+	return q.Order(Asc(httplog.FieldID))
+}
+
 // OrderByHostnameDesc 按字段 hostname 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *HttpLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
@@ -711,6 +761,31 @@ func (q *HttpLogQuery) OrderByPluginVersionAsc() *HttpLogQuery {
 	return q.Order(Asc(httplog.FieldPluginVersion))
 }
 
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *OperationLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.OperationLog.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *OperationLogQuery) OrderByIDDesc() *OperationLogQuery {
+	return q.Order(Desc(operationlog.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *OperationLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.OperationLog.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *OperationLogQuery) OrderByIDAsc() *OperationLogQuery {
+	return q.Order(Asc(operationlog.FieldID))
+}
+
 // OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *OperationLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
@@ -909,6 +984,31 @@ func (q *OperationLogQuery) OrderByMessageDesc() *OperationLogQuery {
 //	    All(ctx)
 func (q *OperationLogQuery) OrderByMessageAsc() *OperationLogQuery {
 	return q.Order(Asc(operationlog.FieldMessage))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *RestyLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.RestyLog.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *RestyLogQuery) OrderByIDDesc() *RestyLogQuery {
+	return q.Order(Desc(restylog.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *RestyLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.RestyLog.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *RestyLogQuery) OrderByIDAsc() *RestyLogQuery {
+	return q.Order(Asc(restylog.FieldID))
 }
 
 // OrderByHostnameDesc 按字段 hostname 降序排列查询结果。
@@ -1261,6 +1361,31 @@ func (q *RestyLogQuery) OrderByRestyVersionAsc() *RestyLogQuery {
 	return q.Order(Asc(restylog.FieldRestyVersion))
 }
 
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *SSLCertificateHistoryQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.SSLCertificateHistory.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *SSLCertificateHistoryQuery) OrderByIDDesc() *SSLCertificateHistoryQuery {
+	return q.Order(Desc(sslcertificatehistory.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *SSLCertificateHistoryQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.SSLCertificateHistory.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *SSLCertificateHistoryQuery) OrderByIDAsc() *SSLCertificateHistoryQuery {
+	return q.Order(Asc(sslcertificatehistory.FieldID))
+}
+
 // OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *SSLCertificateHistoryQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
@@ -1559,6 +1684,31 @@ func (q *SSLCertificateHistoryQuery) OrderByProviderDesc() *SSLCertificateHistor
 //	    All(ctx)
 func (q *SSLCertificateHistoryQuery) OrderByProviderAsc() *SSLCertificateHistoryQuery {
 	return q.Order(Asc(sslcertificatehistory.FieldProvider))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *WebhookHistoryQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.WebhookHistory.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *WebhookHistoryQuery) OrderByIDDesc() *WebhookHistoryQuery {
+	return q.Order(Desc(webhookhistory.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *WebhookHistoryQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.WebhookHistory.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *WebhookHistoryQuery) OrderByIDAsc() *WebhookHistoryQuery {
+	return q.Order(Asc(webhookhistory.FieldID))
 }
 
 // OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。

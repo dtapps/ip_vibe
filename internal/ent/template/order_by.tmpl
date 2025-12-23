@@ -128,18 +128,6 @@ func (q *{{ $t.Name }}Query) OrderByExpr(expr string) *{{ $t.Name }}Query {
 	return q
 }
 
-{{ if $t.ID }}
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *{{ $t.Name }}Query) OrderByID() *{{ $t.Name }}Query {
-	return q.Order({{ $t.Name | lower }}.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *{{ $t.Name }}Query) OrderByIDDesc() *{{ $t.Name }}Query {
-	return q.Order({{ $t.Name | lower }}.ByID(sql.OrderDesc()))
-}
-{{ end }}
-
 {{ end }}
 
 {{ end }}

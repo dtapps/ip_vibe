@@ -17,6 +17,31 @@ import (
 	"vibe_ip/internal/ent/webhooksubscription"
 )
 
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *CDNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CDNRecord.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CDNRecordQuery) OrderByIDDesc() *CDNRecordQuery {
+	return q.Order(Desc(cdnrecord.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *CDNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CDNRecord.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *CDNRecordQuery) OrderByIDAsc() *CDNRecordQuery {
+	return q.Order(Asc(cdnrecord.FieldID))
+}
+
 // OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *CDNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
@@ -342,6 +367,31 @@ func (q *CDNRecordQuery) OrderByLastAPIResponseAtAsc() *CDNRecordQuery {
 	return q.Order(Asc(cdnrecord.FieldLastAPIResponseAt))
 }
 
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *DNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DNSRecord.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DNSRecordQuery) OrderByIDDesc() *DNSRecordQuery {
+	return q.Order(Desc(dnsrecord.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *DNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DNSRecord.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *DNSRecordQuery) OrderByIDAsc() *DNSRecordQuery {
+	return q.Order(Asc(dnsrecord.FieldID))
+}
+
 // OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *DNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
@@ -565,6 +615,31 @@ func (q *DNSRecordQuery) OrderByLastAPIResponseAtDesc() *DNSRecordQuery {
 //	    All(ctx)
 func (q *DNSRecordQuery) OrderByLastAPIResponseAtAsc() *DNSRecordQuery {
 	return q.Order(Asc(dnsrecord.FieldLastAPIResponseAt))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *DeviceQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.Device.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DeviceQuery) OrderByIDDesc() *DeviceQuery {
+	return q.Order(Desc(device.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *DeviceQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.Device.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *DeviceQuery) OrderByIDAsc() *DeviceQuery {
+	return q.Order(Asc(device.FieldID))
 }
 
 // OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
@@ -792,6 +867,31 @@ func (q *DeviceQuery) OrderByLastHeartbeatAtAsc() *DeviceQuery {
 	return q.Order(Asc(device.FieldLastHeartbeatAt))
 }
 
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *DeviceIpReportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DeviceIpReport.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DeviceIpReportQuery) OrderByIDDesc() *DeviceIpReportQuery {
+	return q.Order(Desc(deviceipreport.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *DeviceIpReportQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DeviceIpReport.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *DeviceIpReportQuery) OrderByIDAsc() *DeviceIpReportQuery {
+	return q.Order(Asc(deviceipreport.FieldID))
+}
+
 // OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *DeviceIpReportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
@@ -865,6 +965,31 @@ func (q *DeviceIpReportQuery) OrderByIPV6Desc() *DeviceIpReportQuery {
 //	    All(ctx)
 func (q *DeviceIpReportQuery) OrderByIPV6Asc() *DeviceIpReportQuery {
 	return q.Order(Asc(deviceipreport.FieldIPV6))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *DevicePortForwardQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DevicePortForward.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DevicePortForwardQuery) OrderByIDDesc() *DevicePortForwardQuery {
+	return q.Order(Desc(deviceportforward.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *DevicePortForwardQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DevicePortForward.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *DevicePortForwardQuery) OrderByIDAsc() *DevicePortForwardQuery {
+	return q.Order(Asc(deviceportforward.FieldID))
 }
 
 // OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
@@ -1115,6 +1240,31 @@ func (q *DevicePortForwardQuery) OrderByIsActiveDesc() *DevicePortForwardQuery {
 //	    All(ctx)
 func (q *DevicePortForwardQuery) OrderByIsActiveAsc() *DevicePortForwardQuery {
 	return q.Order(Asc(deviceportforward.FieldIsActive))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *DomainMonitorQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DomainMonitor.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DomainMonitorQuery) OrderByIDDesc() *DomainMonitorQuery {
+	return q.Order(Desc(domainmonitor.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *DomainMonitorQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DomainMonitor.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *DomainMonitorQuery) OrderByIDAsc() *DomainMonitorQuery {
+	return q.Order(Asc(domainmonitor.FieldID))
 }
 
 // OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
@@ -1392,6 +1542,31 @@ func (q *DomainMonitorQuery) OrderByLastFailureAtAsc() *DomainMonitorQuery {
 	return q.Order(Asc(domainmonitor.FieldLastFailureAt))
 }
 
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *IpGroupQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.IpGroup.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *IpGroupQuery) OrderByIDDesc() *IpGroupQuery {
+	return q.Order(Desc(ipgroup.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *IpGroupQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.IpGroup.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *IpGroupQuery) OrderByIDAsc() *IpGroupQuery {
+	return q.Order(Asc(ipgroup.FieldID))
+}
+
 // OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *IpGroupQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
@@ -1592,6 +1767,31 @@ func (q *IpGroupDeviceQuery) OrderByCreatedAtAsc() *IpGroupDeviceQuery {
 	return q.Order(Asc(ipgroupdevice.FieldCreatedAt))
 }
 
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *PlatformConfigQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.PlatformConfig.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *PlatformConfigQuery) OrderByIDDesc() *PlatformConfigQuery {
+	return q.Order(Desc(platformconfig.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *PlatformConfigQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.PlatformConfig.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *PlatformConfigQuery) OrderByIDAsc() *PlatformConfigQuery {
+	return q.Order(Asc(platformconfig.FieldID))
+}
+
 // OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *PlatformConfigQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
@@ -1765,6 +1965,31 @@ func (q *PlatformConfigQuery) OrderByConfigJSONDesc() *PlatformConfigQuery {
 //	    All(ctx)
 func (q *PlatformConfigQuery) OrderByConfigJSONAsc() *PlatformConfigQuery {
 	return q.Order(Asc(platformconfig.FieldConfigJSON))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *SSLRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.SSLRecord.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *SSLRecordQuery) OrderByIDDesc() *SSLRecordQuery {
+	return q.Order(Desc(sslrecord.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *SSLRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.SSLRecord.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *SSLRecordQuery) OrderByIDAsc() *SSLRecordQuery {
+	return q.Order(Asc(sslrecord.FieldID))
 }
 
 // OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
@@ -2267,6 +2492,31 @@ func (q *SSLRecordQuery) OrderByLastAPIResponseAtAsc() *SSLRecordQuery {
 	return q.Order(Asc(sslrecord.FieldLastAPIResponseAt))
 }
 
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *WebhookQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.Webhook.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *WebhookQuery) OrderByIDDesc() *WebhookQuery {
+	return q.Order(Desc(webhook.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *WebhookQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.Webhook.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *WebhookQuery) OrderByIDAsc() *WebhookQuery {
+	return q.Order(Asc(webhook.FieldID))
+}
+
 // OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *WebhookQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
@@ -2515,6 +2765,31 @@ func (q *WebhookQuery) OrderByIsActiveDesc() *WebhookQuery {
 //	    All(ctx)
 func (q *WebhookQuery) OrderByIsActiveAsc() *WebhookQuery {
 	return q.Order(Asc(webhook.FieldIsActive))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *WebhookSubscriptionQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.WebhookSubscription.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *WebhookSubscriptionQuery) OrderByIDDesc() *WebhookSubscriptionQuery {
+	return q.Order(Desc(webhooksubscription.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *WebhookSubscriptionQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.WebhookSubscription.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *WebhookSubscriptionQuery) OrderByIDAsc() *WebhookSubscriptionQuery {
+	return q.Order(Asc(webhooksubscription.FieldID))
 }
 
 // OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。

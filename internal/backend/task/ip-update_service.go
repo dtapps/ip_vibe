@@ -128,7 +128,7 @@ func (s *IPUpdateTask) runDnsTask() {
 			withIPGroup.WithDevices(func(withDevices *ent.DeviceQuery) {
 				// 设备心跳时间在 12 分钟内
 				withDevices.Where(device.LastHeartbeatAtGTE(time.Now().Add(-12 * time.Minute)))
-				withDevices.Order(ent.Asc(device.FieldID))
+				withDevices.OrderByIDAsc()
 			})
 		}).
 		All(ctx)
@@ -313,7 +313,7 @@ func (s *IPUpdateTask) runCdnTask() {
 			withIPGroup.WithDevices(func(withDevices *ent.DeviceQuery) {
 				// 设备心跳时间在 12 分钟内
 				withDevices.Where(device.LastHeartbeatAtGTE(time.Now().Add(-12 * time.Minute)))
-				withDevices.Order(ent.Asc(device.FieldID))
+				withDevices.OrderByIDAsc()
 			})
 		}).
 		All(ctx)

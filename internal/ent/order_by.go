@@ -17,8 +17,6 @@ import (
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
-
-	"entgo.io/ent/dialect/sql"
 )
 
 const orderAsc = "ASC"
@@ -141,16 +139,6 @@ func (q *CDNRecordQuery) OrderByExpr(expr string) *CDNRecordQuery {
 	return q
 }
 
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *CDNRecordQuery) OrderByID() *CDNRecordQuery {
-	return q.Order(cdnrecord.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *CDNRecordQuery) OrderByIDDesc() *CDNRecordQuery {
-	return q.Order(cdnrecord.ByID(sql.OrderDesc()))
-}
-
 // OrderByExpr 根据给定的排序表达式对查询结果进行排序。
 // 表达式格式： "field1,field2 ASC; field3 DESC"
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
@@ -181,16 +169,6 @@ func (q *DNSRecordQuery) OrderByExpr(expr string) *DNSRecordQuery {
 		}
 	}
 	return q
-}
-
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *DNSRecordQuery) OrderByID() *DNSRecordQuery {
-	return q.Order(dnsrecord.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *DNSRecordQuery) OrderByIDDesc() *DNSRecordQuery {
-	return q.Order(dnsrecord.ByID(sql.OrderDesc()))
 }
 
 // OrderByExpr 根据给定的排序表达式对查询结果进行排序。
@@ -225,16 +203,6 @@ func (q *DeviceQuery) OrderByExpr(expr string) *DeviceQuery {
 	return q
 }
 
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *DeviceQuery) OrderByID() *DeviceQuery {
-	return q.Order(device.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *DeviceQuery) OrderByIDDesc() *DeviceQuery {
-	return q.Order(device.ByID(sql.OrderDesc()))
-}
-
 // OrderByExpr 根据给定的排序表达式对查询结果进行排序。
 // 表达式格式： "field1,field2 ASC; field3 DESC"
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
@@ -265,16 +233,6 @@ func (q *DeviceIpReportQuery) OrderByExpr(expr string) *DeviceIpReportQuery {
 		}
 	}
 	return q
-}
-
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *DeviceIpReportQuery) OrderByID() *DeviceIpReportQuery {
-	return q.Order(deviceipreport.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *DeviceIpReportQuery) OrderByIDDesc() *DeviceIpReportQuery {
-	return q.Order(deviceipreport.ByID(sql.OrderDesc()))
 }
 
 // OrderByExpr 根据给定的排序表达式对查询结果进行排序。
@@ -309,16 +267,6 @@ func (q *DevicePortForwardQuery) OrderByExpr(expr string) *DevicePortForwardQuer
 	return q
 }
 
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *DevicePortForwardQuery) OrderByID() *DevicePortForwardQuery {
-	return q.Order(deviceportforward.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *DevicePortForwardQuery) OrderByIDDesc() *DevicePortForwardQuery {
-	return q.Order(deviceportforward.ByID(sql.OrderDesc()))
-}
-
 // OrderByExpr 根据给定的排序表达式对查询结果进行排序。
 // 表达式格式： "field1,field2 ASC; field3 DESC"
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
@@ -351,16 +299,6 @@ func (q *DomainMonitorQuery) OrderByExpr(expr string) *DomainMonitorQuery {
 	return q
 }
 
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *DomainMonitorQuery) OrderByID() *DomainMonitorQuery {
-	return q.Order(domainmonitor.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *DomainMonitorQuery) OrderByIDDesc() *DomainMonitorQuery {
-	return q.Order(domainmonitor.ByID(sql.OrderDesc()))
-}
-
 // OrderByExpr 根据给定的排序表达式对查询结果进行排序。
 // 表达式格式： "field1,field2 ASC; field3 DESC"
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
@@ -391,16 +329,6 @@ func (q *IpGroupQuery) OrderByExpr(expr string) *IpGroupQuery {
 		}
 	}
 	return q
-}
-
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *IpGroupQuery) OrderByID() *IpGroupQuery {
-	return q.Order(ipgroup.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *IpGroupQuery) OrderByIDDesc() *IpGroupQuery {
-	return q.Order(ipgroup.ByID(sql.OrderDesc()))
 }
 
 // OrderByExpr 根据给定的排序表达式对查询结果进行排序。
@@ -467,16 +395,6 @@ func (q *PlatformConfigQuery) OrderByExpr(expr string) *PlatformConfigQuery {
 	return q
 }
 
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *PlatformConfigQuery) OrderByID() *PlatformConfigQuery {
-	return q.Order(platformconfig.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *PlatformConfigQuery) OrderByIDDesc() *PlatformConfigQuery {
-	return q.Order(platformconfig.ByID(sql.OrderDesc()))
-}
-
 // OrderByExpr 根据给定的排序表达式对查询结果进行排序。
 // 表达式格式： "field1,field2 ASC; field3 DESC"
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
@@ -507,16 +425,6 @@ func (q *SSLRecordQuery) OrderByExpr(expr string) *SSLRecordQuery {
 		}
 	}
 	return q
-}
-
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *SSLRecordQuery) OrderByID() *SSLRecordQuery {
-	return q.Order(sslrecord.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *SSLRecordQuery) OrderByIDDesc() *SSLRecordQuery {
-	return q.Order(sslrecord.ByID(sql.OrderDesc()))
 }
 
 // OrderByExpr 根据给定的排序表达式对查询结果进行排序。
@@ -551,16 +459,6 @@ func (q *WebhookQuery) OrderByExpr(expr string) *WebhookQuery {
 	return q
 }
 
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *WebhookQuery) OrderByID() *WebhookQuery {
-	return q.Order(webhook.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *WebhookQuery) OrderByIDDesc() *WebhookQuery {
-	return q.Order(webhook.ByID(sql.OrderDesc()))
-}
-
 // OrderByExpr 根据给定的排序表达式对查询结果进行排序。
 // 表达式格式： "field1,field2 ASC; field3 DESC"
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
@@ -591,14 +489,4 @@ func (q *WebhookSubscriptionQuery) OrderByExpr(expr string) *WebhookSubscription
 		}
 	}
 	return q
-}
-
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *WebhookSubscriptionQuery) OrderByID() *WebhookSubscriptionQuery {
-	return q.Order(webhooksubscription.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *WebhookSubscriptionQuery) OrderByIDDesc() *WebhookSubscriptionQuery {
-	return q.Order(webhooksubscription.ByID(sql.OrderDesc()))
 }

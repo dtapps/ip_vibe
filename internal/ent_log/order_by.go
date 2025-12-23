@@ -11,8 +11,6 @@ import (
 	"vibe_ip/internal/ent_log/restylog"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/ent_log/webhookhistory"
-
-	"entgo.io/ent/dialect/sql"
 )
 
 const orderAsc = "ASC"
@@ -135,16 +133,6 @@ func (q *DomainMonitorHistoryQuery) OrderByExpr(expr string) *DomainMonitorHisto
 	return q
 }
 
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *DomainMonitorHistoryQuery) OrderByID() *DomainMonitorHistoryQuery {
-	return q.Order(domainmonitorhistory.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *DomainMonitorHistoryQuery) OrderByIDDesc() *DomainMonitorHistoryQuery {
-	return q.Order(domainmonitorhistory.ByID(sql.OrderDesc()))
-}
-
 // OrderByExpr 根据给定的排序表达式对查询结果进行排序。
 // 表达式格式： "field1,field2 ASC; field3 DESC"
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
@@ -175,16 +163,6 @@ func (q *HttpLogQuery) OrderByExpr(expr string) *HttpLogQuery {
 		}
 	}
 	return q
-}
-
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *HttpLogQuery) OrderByID() *HttpLogQuery {
-	return q.Order(httplog.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *HttpLogQuery) OrderByIDDesc() *HttpLogQuery {
-	return q.Order(httplog.ByID(sql.OrderDesc()))
 }
 
 // OrderByExpr 根据给定的排序表达式对查询结果进行排序。
@@ -219,16 +197,6 @@ func (q *OperationLogQuery) OrderByExpr(expr string) *OperationLogQuery {
 	return q
 }
 
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *OperationLogQuery) OrderByID() *OperationLogQuery {
-	return q.Order(operationlog.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *OperationLogQuery) OrderByIDDesc() *OperationLogQuery {
-	return q.Order(operationlog.ByID(sql.OrderDesc()))
-}
-
 // OrderByExpr 根据给定的排序表达式对查询结果进行排序。
 // 表达式格式： "field1,field2 ASC; field3 DESC"
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
@@ -259,16 +227,6 @@ func (q *RestyLogQuery) OrderByExpr(expr string) *RestyLogQuery {
 		}
 	}
 	return q
-}
-
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *RestyLogQuery) OrderByID() *RestyLogQuery {
-	return q.Order(restylog.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *RestyLogQuery) OrderByIDDesc() *RestyLogQuery {
-	return q.Order(restylog.ByID(sql.OrderDesc()))
 }
 
 // OrderByExpr 根据给定的排序表达式对查询结果进行排序。
@@ -303,16 +261,6 @@ func (q *SSLCertificateHistoryQuery) OrderByExpr(expr string) *SSLCertificateHis
 	return q
 }
 
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *SSLCertificateHistoryQuery) OrderByID() *SSLCertificateHistoryQuery {
-	return q.Order(sslcertificatehistory.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *SSLCertificateHistoryQuery) OrderByIDDesc() *SSLCertificateHistoryQuery {
-	return q.Order(sslcertificatehistory.ByID(sql.OrderDesc()))
-}
-
 // OrderByExpr 根据给定的排序表达式对查询结果进行排序。
 // 表达式格式： "field1,field2 ASC; field3 DESC"
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
@@ -343,14 +291,4 @@ func (q *WebhookHistoryQuery) OrderByExpr(expr string) *WebhookHistoryQuery {
 		}
 	}
 	return q
-}
-
-// OrderByID 按主键 ID 升序排序（等价于 ORDER BY id ASC）。
-func (q *WebhookHistoryQuery) OrderByID() *WebhookHistoryQuery {
-	return q.Order(webhookhistory.ByID())
-}
-
-// OrderByIDDesc 按主键 ID 降序排序（等价于 ORDER BY id DESC）。
-func (q *WebhookHistoryQuery) OrderByIDDesc() *WebhookHistoryQuery {
-	return q.Order(webhookhistory.ByID(sql.OrderDesc()))
 }

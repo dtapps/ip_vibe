@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
-	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -41,7 +39,7 @@ func Dns(c *gin.Context) {
 		WithConfig().
 		WithIPGroup().
 		WithCdnRecord().
-		Order(ent.Desc(dnsrecord.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allDnsRecord.Items {

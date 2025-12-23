@@ -9,10 +9,41 @@
 
 {{ range $n := $.Nodes }}
 
+{{/* 首先处理 ID 字段 - ID 是特殊字段 */}}
+{{ $idField := $n.ID }}
+
+{{ if $idField }}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *{{ $n.Name }}Query，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//   records, err := client.{{ $n.Name }}.Query().
+//       OrderByIDDesc().
+//       Limit(10).
+//       All(ctx)
+func (q *{{ $n.Name }}Query) OrderByIDDesc() *{{ $n.Name }}Query {
+    return q.Order(Desc({{ $n.Package }}.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *{{ $n.Name }}Query，支持链式调用其他查询方法。
+// 示例：
+//   records, err := client.{{ $n.Name }}.Query().
+//       OrderByIDAsc().
+//       All(ctx)
+func (q *{{ $n.Name }}Query) OrderByIDAsc() *{{ $n.Name }}Query {
+    return q.Order(Asc({{ $n.Package }}.FieldID))
+}
+
+{{ end }}
+
+{{/* 然后处理普通字段 */}}
 {{ range $f := $n.Fields }}
 
-{{/* 跳过边字段，只对普通字段生成排序方法 */}}
-{{ if $f.IsEdgeField }}
+{{/* 跳过边字段和 ID 字段（ID 已经单独处理） */}}
+{{ if or $f.IsEdgeField (eq $f.Name "ID") }}
     {{ continue }}
 {{ end }}
 

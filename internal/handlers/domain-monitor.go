@@ -96,7 +96,7 @@ func DomainMonitorDetail(c *gin.Context) {
 	// 查询最新的监控记录
 	latestHistory, err := global.GvaEntLogDb.DomainMonitorHistory.Query().
 		Where(domainmonitorhistory.MonitorIDEQ(requestParams.ID)).
-		Order(ent_log.Desc(domainmonitorhistory.FieldCheckTime)).
+		OrderByCheckTimeDesc().
 		First(c)
 	if err == nil {
 		pageData.LatestHistory = *latestHistory
@@ -139,7 +139,7 @@ func DomainMonitorHistory(c *gin.Context) {
 	// 查询全部域名监控
 	allDomainMonitor, err := global.GvaEntLogDb.DomainMonitorHistory.Query().
 		Where(domainmonitorhistory.MonitorIDEQ(requestParams.ID)).
-		Order(ent_log.Desc(domainmonitorhistory.FieldCheckTime)).
+		OrderByCheckTimeDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allDomainMonitor.Items {
