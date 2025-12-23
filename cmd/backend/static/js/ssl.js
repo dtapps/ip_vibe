@@ -2,10 +2,6 @@
 function onConfigSelect(sel) {
   const opt = sel.options[sel.selectedIndex];
   console.log("onConfigSelect", opt);
-  if (opt.dataset.domain_name) {
-    document.getElementById("domain_name").innerHTML =
-      "." + opt.dataset.domain_name;
-  }
 }
 
 // 选择证书提供方 provider
@@ -32,10 +28,11 @@ async function openFormModal(id) {
       configs.forEach((d) => {
         if (d.capability === "ssl" || d.capability === "all") {
           const opt = document.createElement("option");
-          opt.value = d.id;
-          opt.text = `${d.name}`;
+          opt.dataset.capability = d.capability;
           opt.dataset.platform = d.platform;
-          opt.dataset.domain_name = d.config_json.domain_name || "";
+          opt.dataset.email = d.config_json_email || "";
+          opt.value = d.id;
+          opt.text = `${d.name}（${opt.dataset.email}）`;
           configSelect.appendChild(opt);
         }
       });

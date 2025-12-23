@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/platformconfig"
@@ -34,13 +35,20 @@ func NewPlatformConfigService(db *ent.Client, debug bool, logHelper *operation_l
 
 // BuildResponse 将实体转换为响应
 func (s *PlatformConfigServiceImpl) BuildResponse(ctx context.Context, item *ent.PlatformConfig) (*types.GetPlatformConfigResponse, error) {
+	var configJson struct {
+		DomainName string `json:"domain_name,omitempty"` // 域名
+		Email      string `json:"email,omitempty"`       // 邮箱
+	}
+	_ = json.Unmarshal(item.ConfigJSON, &configJson)
 	resp := &types.GetPlatformConfigResponse{
-		ID:          item.ID,
-		Capability:  item.Capability.String(),
-		Name:        item.Name,
-		Description: item.Description,
-		Platform:    item.Platform.String(),
-		ConfigJSON:  item.ConfigJSON,
+		ID:                   item.ID,
+		Capability:           item.Capability.String(),
+		Name:                 item.Name,
+		Description:          item.Description,
+		Platform:             item.Platform.String(),
+		ConfigJSON:           item.ConfigJSON,
+		ConfigJSONDomainName: configJson.DomainName,
+		ConfigJSONEmail:      configJson.Email,
 	}
 	return resp, nil
 }

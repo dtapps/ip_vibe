@@ -25,7 +25,17 @@
       <tbody id="table">
         {{range .List}} {{ $urlPath := printf "/api/platform-configs/%d" .ID }}
         <tr>
-          <td>{{.Name}}</td>
+          <td>
+            {{if eq .Capability "cdn"}}
+            <span>{{.Name}}（{{.ConfigJSONDomainName}}）</span>
+            {{else if eq .Capability "dns"}}
+            <span>{{.Name}}（{{.ConfigJSONDomainName}}）</span>
+            {{else if eq .Capability "ssl"}}
+            <span>{{.Name}}（{{.ConfigJSONEmail}}）</span>
+            {{else}}
+            <span>{{.Name}}</span>
+            {{end}}
+          </td>
           <td>
             {{template "PlatformBadge" (dict
             "Platform" .Platform

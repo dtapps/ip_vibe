@@ -53,10 +53,11 @@ async function openFormModal(id) {
       configs.forEach((d) => {
         if (d.capability === "dns" || d.capability === "all") {
           const opt = document.createElement("option");
-          opt.value = d.id;
-          opt.text = `${d.name}`;
+          opt.dataset.capability = d.capability;
           opt.dataset.platform = d.platform;
           opt.dataset.domain_name = d.config_json.domain_name || "";
+          opt.value = d.id;
+          opt.text = `${d.name}（${opt.dataset.domain_name}）`;
           configSelect.appendChild(opt);
         }
       });
