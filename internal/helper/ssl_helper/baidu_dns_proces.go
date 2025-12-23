@@ -95,10 +95,10 @@ func (d *SSLProcessBaiduDNSImpl) Configure(ctx context.Context, params *SSLProce
 func (d *SSLProcessBaiduDNSImpl) Apply(ctx context.Context, domains []string) (res *certificate.Resource, err error) {
 
 	// 设置 DNS-01 挑战提供者
-	cfProvider, err := baiducloud.NewDNSProviderConfig(&baiducloud.Config{
-		AccessKeyID:     d.platformConfig.AccessKeyID,
-		SecretAccessKey: d.platformConfig.SecretAccessKey,
-	})
+	dnsProviderConfig := baiducloud.NewDefaultConfig()
+	dnsProviderConfig.AccessKeyID = d.platformConfig.AccessKeyID
+	dnsProviderConfig.SecretAccessKey = d.platformConfig.SecretAccessKey
+	cfProvider, err := baiducloud.NewDNSProviderConfig(dnsProviderConfig)
 	if err != nil {
 		return nil, fmt.Errorf("无法创建 BaiduDNS DNS 提供者: %w", err)
 	}

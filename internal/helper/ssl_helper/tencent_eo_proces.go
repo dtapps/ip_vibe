@@ -95,10 +95,10 @@ func (d *SSLProcessTencentEOImpl) Configure(ctx context.Context, params *SSLProc
 func (d *SSLProcessTencentEOImpl) Apply(ctx context.Context, domains []string) (res *certificate.Resource, err error) {
 
 	// 设置 DNS-01 挑战提供者
-	cfProvider, err := edgeone.NewDNSProviderConfig(&edgeone.Config{
-		SecretID:  d.platformConfig.SecretID,
-		SecretKey: d.platformConfig.SecretKey,
-	})
+	dnsProviderConfig := edgeone.NewDefaultConfig()
+	dnsProviderConfig.SecretID = d.platformConfig.SecretID
+	dnsProviderConfig.SecretKey = d.platformConfig.SecretKey
+	cfProvider, err := edgeone.NewDNSProviderConfig(dnsProviderConfig)
 	if err != nil {
 		return nil, fmt.Errorf("无法创建 TencentEO DNS 提供者: %w", err)
 	}

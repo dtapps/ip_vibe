@@ -95,10 +95,10 @@ func (d *SSLProcessAliyunDNSImpl) Configure(ctx context.Context, params *SSLProc
 func (d *SSLProcessAliyunDNSImpl) Apply(ctx context.Context, domains []string) (res *certificate.Resource, err error) {
 
 	// 设置 DNS-01 挑战提供者
-	cfProvider, err := alidns.NewDNSProviderConfig(&alidns.Config{
-		APIKey:    d.platformConfig.AccessKeyID,
-		SecretKey: d.platformConfig.AccessKeySecret,
-	})
+	dnsProviderConfig := alidns.NewDefaultConfig()
+	dnsProviderConfig.APIKey = d.platformConfig.AccessKeyID
+	dnsProviderConfig.SecretKey = d.platformConfig.AccessKeySecret
+	cfProvider, err := alidns.NewDNSProviderConfig(dnsProviderConfig)
 	if err != nil {
 		return nil, fmt.Errorf("无法创建 AliyunDNS DNS 提供者: %w", err)
 	}

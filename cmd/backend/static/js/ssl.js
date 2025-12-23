@@ -167,11 +167,11 @@ document.getElementById("form").onsubmit = async (e) => {
   }
 };
 
-// 删除
+// 申请新的SSL证书
 async function applySSL(id) {
   if (confirm("确定申请新的SSL证书？")) {
     try {
-      await API.delete(`/api/ssl-records/${id}/apply`);
+      await API.post(`/api/ssl-records/${id}/apply`);
       // 刷新页面
       location.reload();
     } catch (error) {

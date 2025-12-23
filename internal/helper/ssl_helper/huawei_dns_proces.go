@@ -95,10 +95,10 @@ func (d *SSLProcessHuaweiDNSImpl) Configure(ctx context.Context, params *SSLProc
 func (d *SSLProcessHuaweiDNSImpl) Apply(ctx context.Context, domains []string) (res *certificate.Resource, err error) {
 
 	// 设置 DNS-01 挑战提供者
-	cfProvider, err := huaweicloud.NewDNSProviderConfig(&huaweicloud.Config{
-		AccessKeyID:     d.platformConfig.AccessKeyID,
-		SecretAccessKey: d.platformConfig.SecretAccessKey,
-	})
+	dnsProviderConfig := huaweicloud.NewDefaultConfig()
+	dnsProviderConfig.AccessKeyID = d.platformConfig.AccessKeyID
+	dnsProviderConfig.SecretAccessKey = d.platformConfig.SecretAccessKey
+	cfProvider, err := huaweicloud.NewDNSProviderConfig(dnsProviderConfig)
 	if err != nil {
 		return nil, fmt.Errorf("无法创建 HuaweiDNS DNS 提供者: %w", err)
 	}

@@ -94,9 +94,9 @@ func (d *SSLProcessCloudflareImpl) Configure(ctx context.Context, params *SSLPro
 func (d *SSLProcessCloudflareImpl) Apply(ctx context.Context, domains []string) (res *certificate.Resource, err error) {
 
 	// 设置 DNS-01 挑战提供者
-	cfProvider, err := cloudflare.NewDNSProviderConfig(&cloudflare.Config{
-		AuthToken: d.platformConfig.ApiKey,
-	})
+	dnsProviderConfig := cloudflare.NewDefaultConfig()
+	dnsProviderConfig.AuthToken = d.platformConfig.ApiKey
+	cfProvider, err := cloudflare.NewDNSProviderConfig(dnsProviderConfig)
 	if err != nil {
 		return nil, fmt.Errorf("无法创建 Cloudflare DNS 提供者: %w", err)
 	}

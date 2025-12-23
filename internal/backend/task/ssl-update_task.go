@@ -273,6 +273,10 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 		updateOne.SetLastAPIResponse(err.Error())
 		updateOne.SetLastAPIResponseAt(time.Now())
 		_ = updateOne.Exec(ctx)
+		logger.ErrorContext(ctx, "配置失败",
+			slog.Any("处理参数", pendingRecord.Params),
+			slog.Any("error", err),
+		)
 		return err
 	}
 
@@ -282,6 +286,10 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 		updateOne.SetLastAPIResponse(err.Error())
 		updateOne.SetLastAPIResponseAt(time.Now())
 		_ = updateOne.Exec(ctx)
+		logger.ErrorContext(ctx, "申请失败",
+			slog.Any("处理参数", pendingRecord.Params),
+			slog.Any("error", err),
+		)
 		return err
 	}
 
@@ -291,6 +299,10 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 		updateOne.SetLastAPIResponse(err.Error())
 		updateOne.SetLastAPIResponseAt(time.Now())
 		_ = updateOne.Exec(ctx)
+		logger.ErrorContext(ctx, "解析证书有效期失败",
+			slog.Any("处理参数", pendingRecord.Params),
+			slog.Any("error", err),
+		)
 		return err
 	}
 
@@ -304,6 +316,7 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 	updateOne.SetCertCsr(string(res.CSR))
 	updateOne.SetNotBefore(certValidity.NotBefore)
 	updateOne.SetNotAfter(certValidity.NotAfter)
+	updateOne.SetStatus(sslrecord.StatusValid)
 	updateOne.SetLastRefreshAt(time.Now())
 	updateOne.SetLastAPIResponse("ok")
 	updateOne.SetLastAPIResponseAt(time.Now())

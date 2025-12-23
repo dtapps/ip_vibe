@@ -309,6 +309,7 @@ func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) (*t
 	// 查询SSL记录
 	firstSSLRecord, err := s.db.SSLRecord.Query().
 		Where(sslrecord.IDEQ(id)).
+		WithConfig().
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {

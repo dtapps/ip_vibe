@@ -95,10 +95,10 @@ func (d *SSLProcessTencentDNSImpl) Configure(ctx context.Context, params *SSLPro
 func (d *SSLProcessTencentDNSImpl) Apply(ctx context.Context, domains []string) (res *certificate.Resource, err error) {
 
 	// 设置 DNS-01 挑战提供者
-	cfProvider, err := tencentcloud.NewDNSProviderConfig(&tencentcloud.Config{
-		SecretID:  d.platformConfig.SecretID,
-		SecretKey: d.platformConfig.SecretKey,
-	})
+	dnsProviderConfig := tencentcloud.NewDefaultConfig()
+	dnsProviderConfig.SecretID = d.platformConfig.SecretID
+	dnsProviderConfig.SecretKey = d.platformConfig.SecretKey
+	cfProvider, err := tencentcloud.NewDNSProviderConfig(dnsProviderConfig)
 	if err != nil {
 		return nil, fmt.Errorf("无法创建 TencentDNS DNS 提供者: %w", err)
 	}
