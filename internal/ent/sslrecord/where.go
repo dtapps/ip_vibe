@@ -590,6 +590,16 @@ func CertPrivateKeyHasSuffix(v string) predicate.SSLRecord {
 	return predicate.SSLRecord(sql.FieldHasSuffix(FieldCertPrivateKey, v))
 }
 
+// CertPrivateKeyIsNil applies the IsNil predicate on the "cert_private_key" field.
+func CertPrivateKeyIsNil() predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldIsNull(FieldCertPrivateKey))
+}
+
+// CertPrivateKeyNotNil applies the NotNil predicate on the "cert_private_key" field.
+func CertPrivateKeyNotNil() predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldNotNull(FieldCertPrivateKey))
+}
+
 // CertPrivateKeyEqualFold applies the EqualFold predicate on the "cert_private_key" field.
 func CertPrivateKeyEqualFold(v string) predicate.SSLRecord {
 	return predicate.SSLRecord(sql.FieldEqualFold(FieldCertPrivateKey, v))
@@ -653,6 +663,16 @@ func CertCertificateHasPrefix(v string) predicate.SSLRecord {
 // CertCertificateHasSuffix applies the HasSuffix predicate on the "cert_certificate" field.
 func CertCertificateHasSuffix(v string) predicate.SSLRecord {
 	return predicate.SSLRecord(sql.FieldHasSuffix(FieldCertCertificate, v))
+}
+
+// CertCertificateIsNil applies the IsNil predicate on the "cert_certificate" field.
+func CertCertificateIsNil() predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldIsNull(FieldCertCertificate))
+}
+
+// CertCertificateNotNil applies the NotNil predicate on the "cert_certificate" field.
+func CertCertificateNotNil() predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldNotNull(FieldCertCertificate))
 }
 
 // CertCertificateEqualFold applies the EqualFold predicate on the "cert_certificate" field.

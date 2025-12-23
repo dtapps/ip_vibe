@@ -25,7 +25,7 @@ type SSLRecord struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// 平台配置序号
 	ConfigID int64 `json:"config_id,omitempty"`
-	// 域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名
+	// 域名（支持通配符 *.example.com 或精确域名，多个域名之间用逗号分隔）
 	Domain string `json:"domain,omitempty"`
 	// 证书域名
 	CertDomain string `json:"cert_domain,omitempty"`

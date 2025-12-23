@@ -27,23 +27,9 @@
         <tr>
           <td>{{.Name}}</td>
           <td>
-            {{if eq .Platform "cloudflare"}}
-            <span class="badge badge-success">CloudFlare</span>
-            {{else if eq .Platform "tencent_dns"}}
-            <span class="badge badge-success">腾讯云 DNS</span>
-            {{else if eq .Platform "tencent_eo"}}
-            <span class="badge badge-success">腾讯云 EdgeOne</span>
-            {{else if eq .Platform "aliyun_dns"}}
-            <span class="badge badge-success">阿里云 DNS</span>
-            {{else if eq .Platform "aliyun_esa"}}
-            <span class="badge badge-success">阿里云 ESA</span>
-            {{else if eq .Platform "baidu_dns"}}
-            <span class="badge badge-success">百度云 DNS</span>
-            {{else if eq .Platform "huawei_dns"}}
-            <span class="badge badge-success">华为云 DNS</span>
-            {{else}}
-            <span class="badge badge-success">{{.Platform}}</span>
-            {{end}}
+            {{template "PlatformBadge" (dict
+            "Platform" .Platform
+            )}}
           </td>
           <td>
             {{if eq .Capability "all"}}
@@ -59,10 +45,7 @@
             {{end}}
           </td>
           <td>
-            <button
-              class="btn btn-primary btn-sm"
-              onclick="openFormModal('{{.ID}}')"
-            >
+            <button class="btn btn-primary btn-sm" onclick="openFormModal('{{.ID}}')">
               {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
             {{ template "button" (dict "Type" "danger" "IconName" "ip-delete"

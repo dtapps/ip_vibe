@@ -146,7 +146,7 @@ func (s *CDNRecordServiceImpl) CreateCdnRecord(ctx context.Context, request *typ
 		SetIPGroupID(request.IPGroupID).
 		Save(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段
+		if s.debug {
 			fmt.Printf("创建CDN记录: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("创建CDN记录失败: %w", err)
@@ -190,7 +190,7 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *typ
 		SetIPGroupID(request.IPGroupID).
 		Save(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段
+		if s.debug {
 			fmt.Printf("更新CDN记录: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("更新CDN记录失败: %w", err)
@@ -230,7 +230,7 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecordActive(ctx context.Context, reques
 		SetIsActive(request.IsActive).
 		Save(ctx)
 	if err != nil {
-		if s.debug { // 修正：使用 s.debug 字段
+		if s.debug {
 			fmt.Printf("更新CDN记录状态: %s\n", err.Error())
 		}
 		return nil, fmt.Errorf("更新CDN记录状态失败: %w", err)

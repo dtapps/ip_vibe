@@ -569,6 +569,9 @@ func web_router(ctx context.Context, router *gin.Engine) {
 	// 端口转发页面 - 提供HTML页面并渲染数据
 	router.GET("/port-forward", handlers.PortForward)
 
+	// SSL页面 - 提供HTML页面并渲染数据
+	router.GET("/ssl", handlers.Ssl)
+
 	// 域名监控页面 - 提供HTML页面并渲染数据
 	router.GET("/domain-monitor", handlers.DomainMonitor)
 	router.GET("/domain-monitor/:id/detail", handlers.DomainMonitorDetail)
@@ -684,6 +687,18 @@ func api_router(ctx context.Context, router *gin.Engine) {
 			portForwards.PATCH("/:id/active", handlers.UpdatePortForwardActive)    // 更新端口转发启用状态
 			portForwards.DELETE("/:id", handlers.DeletePortForward)                // 删除端口转发
 			portForwards.GET("/:id/health-check", handlers.HealthCheckPortForward) // 检查端口转发健康状态
+		}
+
+		// SSL记录管理相关API
+		sslRecords := api.Group("/ssl-records")
+		{
+			sslRecords.GET("", handlers.GetSSLRecords)                                 // 获取全部SSL记录
+			sslRecords.GET("/:id", handlers.GetSSLRecordDetail)                        // 获取SSL记录详情
+			sslRecords.POST("", handlers.CreateSSLRecord)                              // 创建SSL记录
+			sslRecords.PATCH("/:id", handlers.UpdateSSLRecord)                         // 更新SSL记录
+			sslRecords.PATCH("/:id/auto-renewal", handlers.UpdateSSLRecordAutoRenewal) // 更新SSL记录自动续费状态
+			sslRecords.PATCH("/:id/active", handlers.UpdateSSLRecordActive)            // 更新SSL记录启用状态
+			sslRecords.DELETE("/:id", handlers.DeleteSSLRecord)                        // 删除SSL记录
 		}
 
 		// 域名监控相关API

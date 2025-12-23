@@ -1,0 +1,272 @@
+package handlers
+
+import (
+	"net/http"
+	"vibe_ip/internal/backend/service"
+	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/types"
+
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
+)
+
+// 获取全部SSL记录
+//
+//	@Description	获取全部SSL记录
+//	@Summary		获取全部SSL记录
+//	@Tags			SSL记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.GetSSLRecordsRequest						false	"请求参数"
+//	@Success		200		{object}	APIResponse{data=[]types.GetSSLRecordResponse}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}									"参数错误"
+//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Router			/ssl-records [get]
+func GetSSLRecords(c *gin.Context) {
+	// 请求参数
+	var requestParams types.GetSSLRecordsRequest
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewSSLRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.GetSSLRecords(c, &requestParams)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, response)
+}
+
+// 获取SSL记录详情
+//
+//	@Description	获取SSL记录详情
+//	@Summary		获取SSL记录详情
+//	@Tags			SSL记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64											true	"SSL记录序号"
+//	@Success		200	{object}	APIResponse{data=types.GetSSLRecordResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}									"参数错误"
+//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Router			/ssl-records/{id} [get]
+func GetSSLRecordDetail(c *gin.Context) {
+	// 请求参数
+	var requestParams types.GetSSLRecordRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewSSLRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.GetSSLRecord(c, requestParams.ID)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, response)
+}
+
+// 创建SSL记录
+//
+//	@Description	创建SSL记录
+//	@Summary		创建SSL记录
+//	@Tags			SSL记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.CreateSSLRecordRequest				true	"请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetSSLRecordRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数错误"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Router			/ssl-records [post]
+func CreateSSLRecord(c *gin.Context) {
+	// 请求参数
+	var requestParams types.CreateSSLRecordRequest
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewSSLRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.CreateSSLRecord(c, &requestParams)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, response)
+}
+
+// 更新SSL记录
+//
+//	@Description	更新SSL记录
+//	@Summary		更新SSL记录
+//	@Tags			SSL记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64										true	"SSL记录序号"
+//	@Param			request	body		types.UpdateSSLRecordRequest				true	"请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetSSLRecordRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数错误"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Router			/ssl-records/{id} [patch]
+func UpdateSSLRecord(c *gin.Context) {
+	// 请求参数
+	var requestParams types.UpdateSSLRecordRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewSSLRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.UpdateSSLRecord(c, &requestParams)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, response)
+}
+
+// 更新SSL记录自动续费状态
+//
+//	@Description	更新SSL记录自动续费状态
+//	@Summary		更新SSL记录自动续费状态
+//	@Tags			SSL记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64										true	"SSL记录序号"
+//	@Param			request	body		types.UpdateSSLRecordAutoRenewalRequest			true	"请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetSSLRecordRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数错误"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Router			/ssl-records/{id}/auto-renewal [patch]
+func UpdateSSLRecordAutoRenewal(c *gin.Context) {
+	// 请求参数
+	var requestParams types.UpdateSSLRecordAutoRenewalRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewSSLRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.UpdateSSLRecordAutoRenewal(c, &requestParams)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, response)
+}
+
+// 更新SSL记录启用状态
+//
+//	@Description	更新SSL记录启用状态
+//	@Summary		更新SSL记录启用状态
+//	@Tags			SSL记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id		path		int64										true	"SSL记录序号"
+//	@Param			request	body		types.UpdateSSLRecordActiveRequest			true	"请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetSSLRecordRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数错误"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Router			/ssl-records/{id}/active [patch]
+func UpdateSSLRecordActive(c *gin.Context) {
+	// 请求参数
+	var requestParams types.UpdateSSLRecordActiveRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewSSLRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.UpdateSSLRecordActive(c, &requestParams)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, response)
+}
+
+// 删除SSL记录
+//
+//	@Description	删除SSL记录
+//	@Summary		删除SSL记录
+//	@Tags			SSL记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"SSL记录序号"
+//	@Success		200	{object}	APIResponse{data=types.GetSSLRecordRequest}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数错误"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Router			/ssl-records/{id} [delete]
+func DeleteSSLRecord(c *gin.Context) {
+	// 请求参数
+	var requestParams types.DeleteSSLRecordRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewSSLRecordService(
+		global.GvaEntDb,
+		global.GvaEnv.DEBUG,
+		global.GvaOperationLogHelper,
+	)
+
+	// 调用
+	response, err := service.DeleteSSLRecord(c, requestParams.ID)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, response)
+}

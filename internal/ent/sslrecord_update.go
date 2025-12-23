@@ -109,6 +109,12 @@ func (_u *SSLRecordUpdate) SetNillableCertPrivateKey(v *string) *SSLRecordUpdate
 	return _u
 }
 
+// ClearCertPrivateKey clears the value of the "cert_private_key" field.
+func (_u *SSLRecordUpdate) ClearCertPrivateKey() *SSLRecordUpdate {
+	_u.mutation.ClearCertPrivateKey()
+	return _u
+}
+
 // SetCertCertificate sets the "cert_certificate" field.
 func (_u *SSLRecordUpdate) SetCertCertificate(v string) *SSLRecordUpdate {
 	_u.mutation.SetCertCertificate(v)
@@ -120,6 +126,12 @@ func (_u *SSLRecordUpdate) SetNillableCertCertificate(v *string) *SSLRecordUpdat
 	if v != nil {
 		_u.SetCertCertificate(*v)
 	}
+	return _u
+}
+
+// ClearCertCertificate clears the value of the "cert_certificate" field.
+func (_u *SSLRecordUpdate) ClearCertCertificate() *SSLRecordUpdate {
+	_u.mutation.ClearCertCertificate()
 	return _u
 }
 
@@ -420,8 +432,14 @@ func (_u *SSLRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.CertPrivateKey(); ok {
 		_spec.SetField(sslrecord.FieldCertPrivateKey, field.TypeString, value)
 	}
+	if _u.mutation.CertPrivateKeyCleared() {
+		_spec.ClearField(sslrecord.FieldCertPrivateKey, field.TypeString)
+	}
 	if value, ok := _u.mutation.CertCertificate(); ok {
 		_spec.SetField(sslrecord.FieldCertCertificate, field.TypeString, value)
+	}
+	if _u.mutation.CertCertificateCleared() {
+		_spec.ClearField(sslrecord.FieldCertCertificate, field.TypeString)
 	}
 	if value, ok := _u.mutation.CertIssuerCertificate(); ok {
 		_spec.SetField(sslrecord.FieldCertIssuerCertificate, field.TypeString, value)
@@ -579,6 +597,12 @@ func (_u *SSLRecordUpdateOne) SetNillableCertPrivateKey(v *string) *SSLRecordUpd
 	return _u
 }
 
+// ClearCertPrivateKey clears the value of the "cert_private_key" field.
+func (_u *SSLRecordUpdateOne) ClearCertPrivateKey() *SSLRecordUpdateOne {
+	_u.mutation.ClearCertPrivateKey()
+	return _u
+}
+
 // SetCertCertificate sets the "cert_certificate" field.
 func (_u *SSLRecordUpdateOne) SetCertCertificate(v string) *SSLRecordUpdateOne {
 	_u.mutation.SetCertCertificate(v)
@@ -590,6 +614,12 @@ func (_u *SSLRecordUpdateOne) SetNillableCertCertificate(v *string) *SSLRecordUp
 	if v != nil {
 		_u.SetCertCertificate(*v)
 	}
+	return _u
+}
+
+// ClearCertCertificate clears the value of the "cert_certificate" field.
+func (_u *SSLRecordUpdateOne) ClearCertCertificate() *SSLRecordUpdateOne {
+	_u.mutation.ClearCertCertificate()
 	return _u
 }
 
@@ -920,8 +950,14 @@ func (_u *SSLRecordUpdateOne) sqlSave(ctx context.Context) (_node *SSLRecord, er
 	if value, ok := _u.mutation.CertPrivateKey(); ok {
 		_spec.SetField(sslrecord.FieldCertPrivateKey, field.TypeString, value)
 	}
+	if _u.mutation.CertPrivateKeyCleared() {
+		_spec.ClearField(sslrecord.FieldCertPrivateKey, field.TypeString)
+	}
 	if value, ok := _u.mutation.CertCertificate(); ok {
 		_spec.SetField(sslrecord.FieldCertCertificate, field.TypeString, value)
+	}
+	if _u.mutation.CertCertificateCleared() {
+		_spec.ClearField(sslrecord.FieldCertCertificate, field.TypeString)
 	}
 	if value, ok := _u.mutation.CertIssuerCertificate(); ok {
 		_spec.SetField(sslrecord.FieldCertIssuerCertificate, field.TypeString, value)

@@ -46,54 +46,44 @@
             {{end}}
           </td>
           <td>
-            <span class="badge badge-success">{{.Platform}}</span>
-          </td>
-          <td>
-            {{ $activeUrlPath := join $urlPath "/active" }}
-            {{ template "switch" (dict 
-                "Checked" .IsActive
-                "URL" $activeUrlPath
-                "NoReload" true
+            {{template "PlatformBadge" (dict
+            "Platform" .Platform
             )}}
           </td>
           <td>
-            <button
-              class="btn btn-sm btn-outline-info"
-              onclick="onHealthcheckPopup('{{.ID}}')"
-            >
+            {{ $activeUrlPath := join $urlPath "/active" }}
+            {{ template "switch" (dict
+            "Checked" .IsActive
+            "URL" $activeUrlPath
+            "NoReload" true
+            )}}
+          </td>
+          <td>
+            <button class="btn btn-sm btn-outline-info" onclick="onHealthcheckPopup('{{.ID}}')">
               {{ template "icons" (dict "Name" "ip-health-check") }} 检测
             </button>
             {{if ne .IPGroupID 0 }}
-            <button
-              class="btn btn-sm btn-outline-info"
-              onclick="onLiveIPPopup('{{.IPGroupID}}','{{.IPGroupName}}')"
-            >
+            <button class="btn btn-sm btn-outline-info" onclick="onLiveIPPopup('{{.IPGroupID}}','{{.IPGroupName}}')">
               {{ template "icons" (dict "Name" "ip-eyes") }} 实时IP
             </button>
             {{else}}
-            <span
-              class="btn-tooltip-wrapper"
-              title="未绑定IP组，不允许查看实时IP"
-            >
+            <span class="btn-tooltip-wrapper" title="未绑定IP组，不允许查看实时IP">
               <button class="btn btn-sm btn-outline-info" disabled>
                 {{ template "icons" (dict "Name" "ip-eyes") }} 实时IP
               </button>
             </span>
             {{end}}
-            <button
-              class="btn btn-primary btn-sm"
-              onclick="openFormModal('{{.ID}}')"
-            >
+            <button class="btn btn-primary btn-sm" onclick="openFormModal('{{.ID}}')">
               {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
-            {{ template "button" (dict 
-                "Type" "danger" 
-                "IconName" "ip-delete" 
-                "Text" "删除" 
-                "URL" $urlPath
-                "Disabled" .IsActive 
-                "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
-                "NoReload" true
+            {{ template "button" (dict
+            "Type" "danger"
+            "IconName" "ip-delete"
+            "Text" "删除"
+            "URL" $urlPath
+            "Disabled" .IsActive
+            "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
+            "NoReload" true
             )}}
           </td>
         </tr>

@@ -1,0 +1,102 @@
+{{ define "content" }}
+<h1>🌐 DDNS管理平台</h1>
+
+<div class="card">
+  <div class="card-header">
+    <h2 class="h2-icon">
+      {{ template "icons" (dict "Name" "ip-ssl") }} SSL 记录管理（平台维度）
+    </h2>
+    <div>
+      <button class="btn btn-primary" onclick="openFormModal()">
+        {{ template "icons" (dict "Name" "ip-plus") }} 添加记录
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <table>
+      <thead>
+        <tr>
+          <th>域名</th>
+          <th>证书域名</th>
+          <th>证书生效时间</th>
+          <th>证书过期时间</th>
+          <th>证书状态</th>
+          <th>平台</th>
+          <th>自动续期</th>
+          <th>启用</th>
+          <th style="width: 200px; text-align: center">操作</th>
+        </tr>
+      </thead>
+      <tbody id="table">
+        {{range .List}}
+        {{ $apiUrlPath := printf "/api/ssl-records/%d" .ID }}
+        <tr>
+          <td>{{.Domain}}</td>
+          <td>{{.CertDomain}}</td>
+          <td>{{formatTimeOrNil .NotBefore}}</td>
+          <td>{{formatTimeOrNil .NotAfter}}</td>
+          <td>
+            {{if eq .Status "valid"}}
+            <span>有效</span>
+            {{else if eq .Status "expired"}}
+            <span>过期</span>
+            {{else if eq .Status "revoked"}}
+            <span>已撤销</span>
+            {{else if eq .Status "pending"}}
+            <span>待处理</span>
+            {{else}}
+            <span>{{.Status}}</span>
+            {{end}}
+          </td>
+          <td>
+            {{template "PlatformBadge" (dict
+            "Platform" .Platform
+            )}}
+          </td>
+          <td>
+            {{ $autoRenewalUrlPath := join $apiUrlPath "/auto-renewal" }}
+            {{ template "switch" (dict
+            "Checked" .IsAutoRenewal
+            "URL" $autoRenewalUrlPath
+            "NoReload" true
+            )}}
+          </td>
+          <td>
+            {{ $activeUrlPath := join $apiUrlPath "/active" }}
+            {{ template "switch" (dict
+            "Checked" .IsActive
+            "URL" $activeUrlPath
+            "NoReload" true
+            )}}
+          </td>
+          <td>
+            <button class="btn btn-primary btn-sm" onclick="openFormModal('{{.ID}}')">
+              {{ template "icons" (dict "Name" "ip-edit") }} 编辑
+            </button>
+            {{ template "button" (dict
+            "Type" "danger"
+            "IconName" "ip-delete"
+            "Text" "删除"
+            "URL" $apiUrlPath
+            "Disabled" .IsActive
+            "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
+            "NoReload" true
+            )}}
+          </td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+    <!-- 分页 -->
+    {{ template "pagination" . }}
+  </div>
+</div>
+
+<!-- 表单 -->
+{{ template "pages/ssl_form.html" . }}
+
+<!-- 弹窗 -->
+{{ template "popup" . }}
+
+<script src="/static/js/ssl.js"></script>
+{{ end }}

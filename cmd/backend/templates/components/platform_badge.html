@@ -1,0 +1,23 @@
+{{define "PlatformBadge"}}
+{{$platform := .Platform}}
+{{$class := or .Class "badge badge-success"}}
+
+{{if eq $platform "cloudflare"}}
+<span class="{{$class}}">CloudFlare</span>
+{{else if eq $platform "tencent_dns"}}
+<span class="{{$class}}">腾讯云 DNS</span>
+{{else if eq $platform "tencent_eo"}}
+<span class="{{$class}}">腾讯云 EdgeOne</span>
+{{else if eq $platform "aliyun_dns"}}
+<span class="{{$class}}">阿里云 DNS</span>
+{{else if eq $platform "aliyun_esa"}}
+<span class="{{$class}}">阿里云 ESA</span>
+{{else if eq $platform "baidu_dns"}}
+<span class="{{$class}}">百度云 DNS</span>
+{{else if eq $platform "huawei_dns"}}
+<span class="{{$class}}">华为云 DNS</span>
+{{else}}
+<span class="{{$class}}">{{$platform}}</span>
+{{end}}
+
+{{end}}

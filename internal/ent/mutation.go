@@ -9198,9 +9198,22 @@ func (m *SSLRecordMutation) OldCertPrivateKey(ctx context.Context) (v string, er
 	return oldValue.CertPrivateKey, nil
 }
 
+// ClearCertPrivateKey clears the value of the "cert_private_key" field.
+func (m *SSLRecordMutation) ClearCertPrivateKey() {
+	m.cert_private_key = nil
+	m.clearedFields[sslrecord.FieldCertPrivateKey] = struct{}{}
+}
+
+// CertPrivateKeyCleared returns if the "cert_private_key" field was cleared in this mutation.
+func (m *SSLRecordMutation) CertPrivateKeyCleared() bool {
+	_, ok := m.clearedFields[sslrecord.FieldCertPrivateKey]
+	return ok
+}
+
 // ResetCertPrivateKey resets all changes to the "cert_private_key" field.
 func (m *SSLRecordMutation) ResetCertPrivateKey() {
 	m.cert_private_key = nil
+	delete(m.clearedFields, sslrecord.FieldCertPrivateKey)
 }
 
 // SetCertCertificate sets the "cert_certificate" field.
@@ -9234,9 +9247,22 @@ func (m *SSLRecordMutation) OldCertCertificate(ctx context.Context) (v string, e
 	return oldValue.CertCertificate, nil
 }
 
+// ClearCertCertificate clears the value of the "cert_certificate" field.
+func (m *SSLRecordMutation) ClearCertCertificate() {
+	m.cert_certificate = nil
+	m.clearedFields[sslrecord.FieldCertCertificate] = struct{}{}
+}
+
+// CertCertificateCleared returns if the "cert_certificate" field was cleared in this mutation.
+func (m *SSLRecordMutation) CertCertificateCleared() bool {
+	_, ok := m.clearedFields[sslrecord.FieldCertCertificate]
+	return ok
+}
+
 // ResetCertCertificate resets all changes to the "cert_certificate" field.
 func (m *SSLRecordMutation) ResetCertCertificate() {
 	m.cert_certificate = nil
+	delete(m.clearedFields, sslrecord.FieldCertCertificate)
 }
 
 // SetCertIssuerCertificate sets the "cert_issuer_certificate" field.
@@ -10136,6 +10162,12 @@ func (m *SSLRecordMutation) ClearedFields() []string {
 	if m.FieldCleared(sslrecord.FieldCertStableURL) {
 		fields = append(fields, sslrecord.FieldCertStableURL)
 	}
+	if m.FieldCleared(sslrecord.FieldCertPrivateKey) {
+		fields = append(fields, sslrecord.FieldCertPrivateKey)
+	}
+	if m.FieldCleared(sslrecord.FieldCertCertificate) {
+		fields = append(fields, sslrecord.FieldCertCertificate)
+	}
 	if m.FieldCleared(sslrecord.FieldCertIssuerCertificate) {
 		fields = append(fields, sslrecord.FieldCertIssuerCertificate)
 	}
@@ -10179,6 +10211,12 @@ func (m *SSLRecordMutation) ClearField(name string) error {
 		return nil
 	case sslrecord.FieldCertStableURL:
 		m.ClearCertStableURL()
+		return nil
+	case sslrecord.FieldCertPrivateKey:
+		m.ClearCertPrivateKey()
+		return nil
+	case sslrecord.FieldCertCertificate:
+		m.ClearCertCertificate()
 		return nil
 	case sslrecord.FieldCertIssuerCertificate:
 		m.ClearCertIssuerCertificate()

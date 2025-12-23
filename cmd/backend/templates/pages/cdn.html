@@ -56,43 +56,39 @@
             {{end}}
           </td>
           <td>
-            <span class="badge badge-success">{{.Platform}}</span>
+            {{template "PlatformBadge" (dict
+            "Platform" .Platform
+            )}}
           </td>
           <td>
             {{ $activeUrlPath := join $urlPath "/active" }}
-            {{ template "switch" (dict 
-                "Checked" .IsActive
-                "URL" $activeUrlPath
-                "NoReload" true
+            {{ template "switch" (dict
+            "Checked" .IsActive
+            "URL" $activeUrlPath
+            "NoReload" true
             )}}
           </td>
           <td>
-            {{ template "button" (dict 
-                "Type" "outline-info" 
-                "IconName" "ip-health-check" 
-                "Text" "检测" 
-                "OnClick" (printf "onHealthcheckPopup('%d')" .ID)
+            {{ template "button" (dict
+            "Type" "outline-info"
+            "IconName" "ip-health-check"
+            "Text" "检测"
+            "OnClick" (printf "onHealthcheckPopup('%d')" .ID)
             )}}
-            <button
-              class="btn btn-sm btn-outline-info"
-              onclick="onLiveIPPopup('{{.IPGroupID}}','{{.IPGroupName}}')"
-            >
+            <button class="btn btn-sm btn-outline-info" onclick="onLiveIPPopup('{{.IPGroupID}}','{{.IPGroupName}}')">
               {{ template "icons" (dict "Name" "ip-eyes") }} 实时IP
             </button>
-            <button
-              class="btn btn-primary btn-sm"
-              onclick="openFormModal('{{.ID}}')"
-            >
+            <button class="btn btn-primary btn-sm" onclick="openFormModal('{{.ID}}')">
               {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
-            {{ template "button" (dict 
-                "Type" "danger" 
-                "IconName" "ip-delete" 
-                "Text" "删除" 
-                "URL" $urlPath
-                "Disabled" .IsActive 
-                "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
-                "NoReload" true
+            {{ template "button" (dict
+            "Type" "danger"
+            "IconName" "ip-delete"
+            "Text" "删除"
+            "URL" $urlPath
+            "Disabled" .IsActive
+            "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
+            "NoReload" true
             )}}
           </td>
         </tr>

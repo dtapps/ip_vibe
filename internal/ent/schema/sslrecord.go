@@ -51,7 +51,7 @@ func (SSLRecord) Fields() []ent.Field {
 
 		field.String("domain").
 			Immutable().
-			Comment("域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名").
+			Comment("域名（支持通配符 *.example.com 或精确域名，多个域名之间用逗号分隔）").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("cert_domain").
@@ -70,11 +70,13 @@ func (SSLRecord) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Text("cert_private_key").
+			Optional().
 			Sensitive(). // 敏感
 			Comment("私钥(PEM格式)").
 			Annotations(entsql.WithComments(true)),
 
 		field.Text("cert_certificate").
+			Optional().
 			Comment("证书(PEM格式)").
 			Annotations(entsql.WithComments(true)),
 

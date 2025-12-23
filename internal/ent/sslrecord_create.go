@@ -111,9 +111,25 @@ func (_c *SSLRecordCreate) SetCertPrivateKey(v string) *SSLRecordCreate {
 	return _c
 }
 
+// SetNillableCertPrivateKey sets the "cert_private_key" field if the given value is not nil.
+func (_c *SSLRecordCreate) SetNillableCertPrivateKey(v *string) *SSLRecordCreate {
+	if v != nil {
+		_c.SetCertPrivateKey(*v)
+	}
+	return _c
+}
+
 // SetCertCertificate sets the "cert_certificate" field.
 func (_c *SSLRecordCreate) SetCertCertificate(v string) *SSLRecordCreate {
 	_c.mutation.SetCertCertificate(v)
+	return _c
+}
+
+// SetNillableCertCertificate sets the "cert_certificate" field if the given value is not nil.
+func (_c *SSLRecordCreate) SetNillableCertCertificate(v *string) *SSLRecordCreate {
+	if v != nil {
+		_c.SetCertCertificate(*v)
+	}
 	return _c
 }
 
@@ -361,12 +377,6 @@ func (_c *SSLRecordCreate) check() error {
 	}
 	if _, ok := _c.mutation.Domain(); !ok {
 		return &ValidationError{Name: "domain", err: errors.New(`ent: missing required field "SSLRecord.domain"`)}
-	}
-	if _, ok := _c.mutation.CertPrivateKey(); !ok {
-		return &ValidationError{Name: "cert_private_key", err: errors.New(`ent: missing required field "SSLRecord.cert_private_key"`)}
-	}
-	if _, ok := _c.mutation.CertCertificate(); !ok {
-		return &ValidationError{Name: "cert_certificate", err: errors.New(`ent: missing required field "SSLRecord.cert_certificate"`)}
 	}
 	if _, ok := _c.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "SSLRecord.status"`)}
@@ -654,6 +664,12 @@ func (u *SSLRecordUpsert) UpdateCertPrivateKey() *SSLRecordUpsert {
 	return u
 }
 
+// ClearCertPrivateKey clears the value of the "cert_private_key" field.
+func (u *SSLRecordUpsert) ClearCertPrivateKey() *SSLRecordUpsert {
+	u.SetNull(sslrecord.FieldCertPrivateKey)
+	return u
+}
+
 // SetCertCertificate sets the "cert_certificate" field.
 func (u *SSLRecordUpsert) SetCertCertificate(v string) *SSLRecordUpsert {
 	u.Set(sslrecord.FieldCertCertificate, v)
@@ -663,6 +679,12 @@ func (u *SSLRecordUpsert) SetCertCertificate(v string) *SSLRecordUpsert {
 // UpdateCertCertificate sets the "cert_certificate" field to the value that was provided on create.
 func (u *SSLRecordUpsert) UpdateCertCertificate() *SSLRecordUpsert {
 	u.SetExcluded(sslrecord.FieldCertCertificate)
+	return u
+}
+
+// ClearCertCertificate clears the value of the "cert_certificate" field.
+func (u *SSLRecordUpsert) ClearCertCertificate() *SSLRecordUpsert {
+	u.SetNull(sslrecord.FieldCertCertificate)
 	return u
 }
 
@@ -988,6 +1010,13 @@ func (u *SSLRecordUpsertOne) UpdateCertPrivateKey() *SSLRecordUpsertOne {
 	})
 }
 
+// ClearCertPrivateKey clears the value of the "cert_private_key" field.
+func (u *SSLRecordUpsertOne) ClearCertPrivateKey() *SSLRecordUpsertOne {
+	return u.Update(func(s *SSLRecordUpsert) {
+		s.ClearCertPrivateKey()
+	})
+}
+
 // SetCertCertificate sets the "cert_certificate" field.
 func (u *SSLRecordUpsertOne) SetCertCertificate(v string) *SSLRecordUpsertOne {
 	return u.Update(func(s *SSLRecordUpsert) {
@@ -999,6 +1028,13 @@ func (u *SSLRecordUpsertOne) SetCertCertificate(v string) *SSLRecordUpsertOne {
 func (u *SSLRecordUpsertOne) UpdateCertCertificate() *SSLRecordUpsertOne {
 	return u.Update(func(s *SSLRecordUpsert) {
 		s.UpdateCertCertificate()
+	})
+}
+
+// ClearCertCertificate clears the value of the "cert_certificate" field.
+func (u *SSLRecordUpsertOne) ClearCertCertificate() *SSLRecordUpsertOne {
+	return u.Update(func(s *SSLRecordUpsert) {
+		s.ClearCertCertificate()
 	})
 }
 
@@ -1519,6 +1555,13 @@ func (u *SSLRecordUpsertBulk) UpdateCertPrivateKey() *SSLRecordUpsertBulk {
 	})
 }
 
+// ClearCertPrivateKey clears the value of the "cert_private_key" field.
+func (u *SSLRecordUpsertBulk) ClearCertPrivateKey() *SSLRecordUpsertBulk {
+	return u.Update(func(s *SSLRecordUpsert) {
+		s.ClearCertPrivateKey()
+	})
+}
+
 // SetCertCertificate sets the "cert_certificate" field.
 func (u *SSLRecordUpsertBulk) SetCertCertificate(v string) *SSLRecordUpsertBulk {
 	return u.Update(func(s *SSLRecordUpsert) {
@@ -1530,6 +1573,13 @@ func (u *SSLRecordUpsertBulk) SetCertCertificate(v string) *SSLRecordUpsertBulk 
 func (u *SSLRecordUpsertBulk) UpdateCertCertificate() *SSLRecordUpsertBulk {
 	return u.Update(func(s *SSLRecordUpsert) {
 		s.UpdateCertCertificate()
+	})
+}
+
+// ClearCertCertificate clears the value of the "cert_certificate" field.
+func (u *SSLRecordUpsertBulk) ClearCertCertificate() *SSLRecordUpsertBulk {
+	return u.Update(func(s *SSLRecordUpsert) {
+		s.ClearCertCertificate()
 	})
 }
 

@@ -171,29 +171,32 @@ var GetWebhookPlatforms = []string{
 // --------
 
 const (
-	WebhookSubscriptionObjTypeCdnRecord     string = "cdn_record"     // CDN记录
-	WebhookSubscriptionObjTypeDnsRecord     string = "dns_record"     // DNS记录
+	WebhookSubscriptionObjTypeCDNRecord     string = "cdn_record"     // CDN记录
+	WebhookSubscriptionObjTypeDNSRecord     string = "dns_record"     // DNS记录
 	WebhookSubscriptionObjTypeDevice        string = "device"         // 设备
 	WebhookSubscriptionObjTypeIPGroup       string = "ip_group"       // IP组
 	WebhookSubscriptionObjTypeDomainMonitor string = "domain_monitor" // 域名监控
+	WebhookSubscriptionObjTypeSSLRecord     string = "ssl_record"     // SSL记录
 )
 
 // GetWebhookSubscriptionObjTypeDescriptions Webhook 订阅对象类型说明映射
 var GetWebhookSubscriptionObjTypeDescriptions = map[string]string{
-	WebhookSubscriptionObjTypeCdnRecord:     "CDN记录",
-	WebhookSubscriptionObjTypeDnsRecord:     "DNS记录",
+	WebhookSubscriptionObjTypeCDNRecord:     "CDN记录",
+	WebhookSubscriptionObjTypeDNSRecord:     "DNS记录",
 	WebhookSubscriptionObjTypeDevice:        "设备",
 	WebhookSubscriptionObjTypeIPGroup:       "IP组",
 	WebhookSubscriptionObjTypeDomainMonitor: "域名监控",
+	WebhookSubscriptionObjTypeSSLRecord:     "SSL记录",
 }
 
 // GetWebhookSubscriptionObjTypes 返回所有 Webhook 订阅对象类型
 var GetWebhookSubscriptionObjTypes = []string{
-	WebhookSubscriptionObjTypeCdnRecord,
-	WebhookSubscriptionObjTypeDnsRecord,
+	WebhookSubscriptionObjTypeCDNRecord,
+	WebhookSubscriptionObjTypeDNSRecord,
 	WebhookSubscriptionObjTypeDevice,
 	WebhookSubscriptionObjTypeIPGroup,
 	WebhookSubscriptionObjTypeDomainMonitor,
+	WebhookSubscriptionObjTypeSSLRecord,
 }
 
 // --------
@@ -228,8 +231,8 @@ var GetLogOpTypes = []string{
 
 const (
 	LogObjTypePlatformConfig       string = "platform_config"        // 平台配置
-	LogObjTypeCdnRecord            string = "cdn_record"             // CDN记录
-	LogObjTypeDnsRecord            string = "dns_record"             // DNS记录
+	LogObjTypeCDNRecord            string = "cdn_record"             // CDN记录
+	LogObjTypeDNSRecord            string = "dns_record"             // DNS记录
 	LogObjTypeDevice               string = "device"                 // 设备
 	LogObjTypeDeviceIPRecord       string = "device_ip_report"       // 设备IP记录
 	LogObjTypeIPGroup              string = "ip_group"               // IP组
@@ -239,13 +242,14 @@ const (
 	LogObjTypeDevicePortForward    string = "device_port_forward"    // 端口转发
 	LogObjTypeDomainMonitor        string = "domain_monitor"         // 域名监控
 	LogObjTypeDomainMonitorHistory string = "domain_monitor_history" // 域名监控历史记录
+	LogObjTypeSSLRecord            string = "ssl_record"             // SSL记录
 )
 
 // GetLogObjTypeDescriptions 对象类型说明映射
 var GetLogObjTypeDescriptions = map[string]string{
 	LogObjTypePlatformConfig:       "平台配置",
-	LogObjTypeCdnRecord:            "CDN记录",
-	LogObjTypeDnsRecord:            "DNS记录",
+	LogObjTypeCDNRecord:            "CDN记录",
+	LogObjTypeDNSRecord:            "DNS记录",
 	LogObjTypeDevice:               "设备",
 	LogObjTypeDeviceIPRecord:       "设备IP记录",
 	LogObjTypeIPGroup:              "IP组",
@@ -255,13 +259,14 @@ var GetLogObjTypeDescriptions = map[string]string{
 	LogObjTypeDevicePortForward:    "端口转发",
 	LogObjTypeDomainMonitor:        "域名监控",
 	LogObjTypeDomainMonitorHistory: "域名监控历史记录",
+	LogObjTypeSSLRecord:            "SSL记录",
 }
 
 // GetLogObjTypes 返回所有对象类型
 var GetLogObjTypes = []string{
 	LogObjTypePlatformConfig,
-	LogObjTypeCdnRecord,
-	LogObjTypeDnsRecord,
+	LogObjTypeCDNRecord,
+	LogObjTypeDNSRecord,
 	LogObjTypeDevice,
 	LogObjTypeDeviceIPRecord,
 	LogObjTypeIPGroup,
@@ -271,6 +276,7 @@ var GetLogObjTypes = []string{
 	LogObjTypeDevicePortForward,
 	LogObjTypeDomainMonitor,
 	LogObjTypeDomainMonitorHistory,
+	LogObjTypeSSLRecord,
 }
 
 // --------
