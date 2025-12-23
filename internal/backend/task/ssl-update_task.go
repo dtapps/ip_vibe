@@ -255,45 +255,45 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 	switch pendingRecord.Platform {
 	case platformconfig.PlatformCloudflare:
 		sslProcess = ssl_helper.NewSSLProcessCloudflare(
-			s.debug,
 			logger,
 			s.httpTransport,
+			s.debug,
 		)
 	case platformconfig.PlatformTencentDNS:
 		sslProcess = ssl_helper.NewSSLProcessTencentDNS(
-			s.debug,
 			logger,
 			s.httpTransport,
+			s.debug,
 		)
 	case platformconfig.PlatformTencentEo:
 		sslProcess = ssl_helper.NewSSLProcessTencentEO(
-			s.debug,
 			logger,
 			s.httpTransport,
+			s.debug,
 		)
 	case platformconfig.PlatformAliyunDNS:
 		sslProcess = ssl_helper.NewSSLProcessAliyunDNS(
-			s.debug,
 			logger,
 			s.httpTransport,
+			s.debug,
 		)
 	case platformconfig.PlatformAliyunEsa:
 		sslProcess = ssl_helper.NewSSLProcessAliyunEsa(
-			s.debug,
 			logger,
 			s.httpTransport,
+			s.debug,
 		)
 	case platformconfig.PlatformBaiduDNS:
 		sslProcess = ssl_helper.NewSSLProcessBaiduDNS(
-			s.debug,
 			logger,
 			s.httpTransport,
+			s.debug,
 		)
 	case platformconfig.PlatformHuaweiDNS:
 		sslProcess = ssl_helper.NewSSLProcessHuaweiDNS(
-			s.debug,
 			logger,
 			s.httpTransport,
+			s.debug,
 		)
 	default:
 		err = fmt.Errorf("暂不支持该平台: %s", pendingRecord.Platform.String())

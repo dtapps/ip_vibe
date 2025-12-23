@@ -26,9 +26,9 @@ type TencentDNSConfigure struct {
 
 // 实现 SSLProcess 接口
 type SSLProcessTencentDNSImpl struct {
-	debug         bool                       // 调试模式
 	logger        *slog.Logger               // 日志
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
+	debug         bool                       // 调试模式
 
 	platformConfig TencentDNSConfigure // 平台配置
 
@@ -37,11 +37,11 @@ type SSLProcessTencentDNSImpl struct {
 }
 
 // NewSSLProcessTencentDNS 创建实例
-func NewSSLProcessTencentDNS(debug bool, logger *slog.Logger, httpTransport *http_log.LoggingTransport) SSLProcess {
+func NewSSLProcessTencentDNS(logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) SSLProcess {
 	return &SSLProcessTencentDNSImpl{
-		debug:         debug,
 		logger:        logger,
 		httpTransport: httpTransport,
+		debug:         debug,
 	}
 }
 

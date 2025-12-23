@@ -26,9 +26,9 @@ type AliyunEsaConfigure struct {
 
 // 实现 SSLProcess 接口
 type SSLProcessAliyunEsaImpl struct {
-	debug         bool                       // 调试模式
 	logger        *slog.Logger               // 日志
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
+	debug         bool                       // 调试模式
 
 	platformConfig AliyunEsaConfigure // 平台配置
 
@@ -37,11 +37,11 @@ type SSLProcessAliyunEsaImpl struct {
 }
 
 // NewSSLProcessAliyunEsa 创建实例
-func NewSSLProcessAliyunEsa(debug bool, logger *slog.Logger, httpTransport *http_log.LoggingTransport) SSLProcess {
+func NewSSLProcessAliyunEsa(logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) SSLProcess {
 	return &SSLProcessAliyunEsaImpl{
-		debug:         debug,
 		logger:        logger,
 		httpTransport: httpTransport,
+		debug:         debug,
 	}
 }
 

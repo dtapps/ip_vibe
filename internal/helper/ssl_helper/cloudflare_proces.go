@@ -25,9 +25,9 @@ type CloudflareConfigure struct {
 
 // 实现 SSLProcess 接口
 type SSLProcessCloudflareImpl struct {
-	debug         bool                       // 调试模式
 	logger        *slog.Logger               // 日志
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
+	debug         bool                       // 调试模式
 
 	platformConfig CloudflareConfigure // 平台配置
 
@@ -36,11 +36,11 @@ type SSLProcessCloudflareImpl struct {
 }
 
 // NewSSLProcessCloudflare 创建实例
-func NewSSLProcessCloudflare(debug bool, logger *slog.Logger, httpTransport *http_log.LoggingTransport) SSLProcess {
+func NewSSLProcessCloudflare(logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) SSLProcess {
 	return &SSLProcessCloudflareImpl{
-		debug:         debug,
 		logger:        logger,
 		httpTransport: httpTransport,
+		debug:         debug,
 	}
 }
 
