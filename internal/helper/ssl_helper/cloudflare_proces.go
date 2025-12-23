@@ -96,6 +96,9 @@ func (d *SSLProcessCloudflareImpl) Apply(ctx context.Context, domains []string) 
 	// 设置 DNS-01 挑战提供者
 	dnsProviderConfig := cloudflare.NewDefaultConfig()
 	dnsProviderConfig.AuthToken = d.platformConfig.ApiKey
+	if d.httpTransport != nil {
+		dnsProviderConfig.HTTPClient.Transport = d.httpTransport
+	}
 	cfProvider, err := cloudflare.NewDNSProviderConfig(dnsProviderConfig)
 	if err != nil {
 		return nil, fmt.Errorf("无法创建 Cloudflare DNS 提供者: %w", err)
