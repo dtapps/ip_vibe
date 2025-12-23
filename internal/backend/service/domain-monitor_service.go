@@ -218,14 +218,6 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitorActive(ctx context.Context
 	// 记录操作日志
 	_ = s.logHelper.RecordDataUpdate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控启用状态")
 
-	// 删除通知订阅
-	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
-	if err != nil {
-		if s.debug {
-			fmt.Printf("删除通知订阅失败: %s\n", err.Error())
-		}
-	}
-
 	return &types.GetDomainMonitorRequest{
 		ID: saveDomainMonitor.ID,
 	}, nil
@@ -253,6 +245,14 @@ func (s *DomainMonitorServiceImpl) DeleteDomainMonitor(ctx context.Context, id i
 	}
 	// 记录操作日志
 	_ = s.logHelper.RecordDataDelete(ctx, firstDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "删除域名监控")
+
+	// 删除通知订阅
+	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDomainMonitor, firstDomainMonitor.ID)
+	if err != nil {
+		if s.debug {
+			fmt.Printf("删除通知订阅失败: %s\n", err.Error())
+		}
+	}
 
 	return &types.GetDomainMonitorRequest{
 		ID: firstDomainMonitor.ID,
