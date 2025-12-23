@@ -24,19 +24,11 @@
         {{ $urlPath := printf "/api/webhook-subs/%d" .ID }}
         <tr>
           <td>{{.Name}}</td>
-          {{if eq .ObjType "cdn_record"}}
-          <td><span class="badge badge-success">CDN记录</span></td>
-          {{else if eq .ObjType "dns_record"}}
-          <td><span class="badge badge-success">DNS记录</span></td>
-          {{else if eq .ObjType "device"}}
-          <td><span class="badge badge-success">设备</span></td>
-          {{else if eq .ObjType "ip_group"}}
-          <td><span class="badge badge-success">IP组</span></td>
-          {{else if eq .ObjType "domain_monitor"}}
-          <td><span class="badge badge-success">域名监控</span></td>
-          {{else}}
-          <td><span class="badge badge-success">{{.ObjType}}</span></td>
-          {{end}}
+          <td>
+            {{template "ObjTypeBadge" (dict
+            "ObjType" .ObjType
+            )}}
+          </td>
           <td>{{.WebhookID}}:{{.WebhookName}}</td>
           <td>{{.ObjID}}:{{.ObjName}}</td>
           <td>

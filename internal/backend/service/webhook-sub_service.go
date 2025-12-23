@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/schema/schematype"
+	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/helper/operation_logs_helper"
@@ -60,6 +61,9 @@ func (s *WebhookSubServiceImpl) BuildResponse(ctx context.Context, item *ent.Web
 		firstCDNRecord, err := s.db.CDNRecord.Query().
 			Where(cdnrecord.IDEQ(item.ObjID)).
 			WithConfig().
+			Select(
+				cdnrecord.FieldSubDomain,
+			).
 			First(ctx)
 		if err == nil {
 			configJSON, err := schematype.ParsePCJODomainName(firstCDNRecord.Edges.Config.ConfigJSON)
@@ -73,6 +77,9 @@ func (s *WebhookSubServiceImpl) BuildResponse(ctx context.Context, item *ent.Web
 		firstDNSRecord, err := s.db.DNSRecord.Query().
 			Where(dnsrecord.IDEQ(item.ObjID)).
 			WithConfig().
+			Select(
+				dnsrecord.FieldSubDomain,
+			).
 			First(ctx)
 		if err == nil {
 			configJSON, err := schematype.ParsePCJODomainName(firstDNSRecord.Edges.Config.ConfigJSON)
@@ -85,6 +92,9 @@ func (s *WebhookSubServiceImpl) BuildResponse(ctx context.Context, item *ent.Web
 	case webhooksubscription.ObjTypeDevice:
 		firstDevice, err := s.db.Device.Query().
 			Where(device.IDEQ(item.ObjID)).
+			Select(
+				device.FieldName,
+			).
 			First(ctx)
 		if err == nil {
 			resp.ObjName = firstDevice.Name
@@ -92,6 +102,9 @@ func (s *WebhookSubServiceImpl) BuildResponse(ctx context.Context, item *ent.Web
 	case webhooksubscription.ObjTypeIPGroup:
 		firstIPGroup, err := s.db.IpGroup.Query().
 			Where(ipgroup.IDEQ(item.ObjID)).
+			Select(
+				ipgroup.FieldName,
+			).
 			First(ctx)
 		if err == nil {
 			resp.ObjName = firstIPGroup.Name
@@ -99,9 +112,22 @@ func (s *WebhookSubServiceImpl) BuildResponse(ctx context.Context, item *ent.Web
 	case webhooksubscription.ObjTypeDomainMonitor:
 		firstDomainMonitor, err := s.db.DomainMonitor.Query().
 			Where(domainmonitor.IDEQ(item.ObjID)).
+			Select(
+				domainmonitor.FieldName,
+			).
 			First(ctx)
 		if err == nil {
 			resp.ObjName = firstDomainMonitor.Name
+		}
+	case webhooksubscription.ObjTypeSslRecord:
+		firstSSLRecord, err := s.db.SSLRecord.Query().
+			Where(sslrecord.IDEQ(item.ObjID)).
+			Select(
+				sslrecord.FieldDomain,
+			).
+			First(ctx)
+		if err == nil {
+			resp.ObjName = firstSSLRecord.Domain
 		}
 	}
 

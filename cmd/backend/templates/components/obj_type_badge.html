@@ -1,0 +1,21 @@
+{{define "ObjTypeBadge"}}
+{{$objType := .ObjType}}
+{{$class := or .Class "badge badge-success"}}
+
+{{if eq $objType "cdn_record"}}
+<span class="badge badge-success">CDN记录</span>
+{{else if eq $objType "dns_record"}}
+<span class="badge badge-success">DNS记录</span>
+{{else if eq $objType "device"}}
+<span class="badge badge-success">设备</span>
+{{else if eq $objType "ip_group"}}
+<span class="badge badge-success">IP组</span>
+{{else if eq $objType "domain_monitor"}}
+<span class="badge badge-success">域名监控</span>
+{{else if eq $objType "ssl_record"}}
+<span class="badge badge-success">SSL记录</span>
+{{else}}
+<span class="badge badge-success">{{$objType}}</span>
+{{end}}
+
+{{end}}
