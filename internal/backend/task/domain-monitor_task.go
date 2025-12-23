@@ -15,24 +15,29 @@ import (
 	"vibe_ip/internal/ent_log"
 
 	"github.com/go-co-op/gocron/v2"
+	"go.dtapp.net/library/contrib/http_log"
 )
 
 // 域名监控任务
 type DomainMonitorTask struct {
-	db     *ent.Client      // 业务数据库客户端
-	logDb  *ent_log.Client  // 日志数据库客户端
-	cron   gocron.Scheduler // 定时任务调度器
-	dmjob  gocron.Job       // 域名监控任务
-	logger *slog.Logger     // 日志记录器
+	db            *ent.Client                // 业务数据库客户端
+	logDb         *ent_log.Client            // 日志数据库客户端
+	cron          gocron.Scheduler           // 定时任务调度器
+	dmjob         gocron.Job                 // 域名监控任务
+	logger        *slog.Logger               // 日志记录器
+	httpTransport *http_log.LoggingTransport // HTTP日志记录器
+	debug         bool                       // 是否开启调试模式
 }
 
 // 创建实例
-func NewDomainMonitorTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger) *DomainMonitorTask {
+func NewDomainMonitorTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) *DomainMonitorTask {
 	return &DomainMonitorTask{
-		cron:   cron,
-		db:     db,
-		logDb:  logDb,
-		logger: logger,
+		cron:          cron,
+		db:            db,
+		logDb:         logDb,
+		logger:        logger,
+		httpTransport: httpTransport,
+		debug:         debug,
 	}
 }
 

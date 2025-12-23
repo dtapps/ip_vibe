@@ -16,6 +16,7 @@ import (
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
+	"go.dtapp.net/library/contrib/http_log"
 )
 
 // DomainMonitorService 域名监控服务接口
@@ -32,23 +33,24 @@ type DomainMonitorService interface {
 
 // DomainMonitorServiceImpl 域名监控服务实现
 type DomainMonitorServiceImpl struct {
-	db        *ent.Client
-	logDb     *ent_log.Client
-	debug     bool
-	logHelper *operation_logs_helper.OperationLogHelper
-	cron      gocron.Scheduler // 定时任务调度器
-	logger    *slog.Logger     // 日志记录器
+	db            *ent.Client                               // 数据库客户端
+	dbLog         *ent_log.Client                           // 日志数据库客户端
+	logHelper     *operation_logs_helper.OperationLogHelper // 操作日志助手
+	cron          gocron.Scheduler                          // 定时任务调度器
+	logger        *slog.Logger                              // 日志记录器
+	httpTransport *http_log.LoggingTransport                // HTTP日志记录器
+	debug         bool                                      // 调试模式
 }
 
 // NewDomainMonitorService 创建域名监控服务实例
-func NewDomainMonitorService(db *ent.Client, logDb *ent_log.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper, cron gocron.Scheduler, logger *slog.Logger) DomainMonitorService {
+func NewDomainMonitorService(db *ent.Client, dbLog *ent_log.Client, logHelper *operation_logs_helper.OperationLogHelper, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) DomainMonitorService {
 	return &DomainMonitorServiceImpl{
 		db:        db,
-		logDb:     logDb,
-		cron:      cron,
-		debug:     debug,
+		dbLog:     dbLog,
 		logHelper: logHelper,
+		cron:      cron,
 		logger:    logger,
+		debug:     debug,
 	}
 }
 
@@ -271,7 +273,14 @@ func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id in
 	}
 
 	// 域名监控任务 (保持 Handler 中创建依赖的原始逻辑，但使用 Service 内部的注入依赖)
-	domainMonitorService := task.NewDomainMonitorTask(s.db, s.logDb, s.cron, s.logger)
+	domainMonitorService := task.NewDomainMonitorTask(
+		s.db,
+		s.dbLog,
+		s.cron,
+		s.logger,
+		s.httpTransport,
+		s.debug,
+	)
 
 	// 执行单个监控任务
 	// 注意：这里需要传入 slog.Logger，Service 无法直接访问 gin.Context

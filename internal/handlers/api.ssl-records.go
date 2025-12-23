@@ -38,6 +38,8 @@ func GetSSLRecords(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -84,6 +86,8 @@ func GetSSLRecordDetail(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -129,6 +133,8 @@ func CreateSSLRecord(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -176,6 +182,8 @@ func UpdateSSLRecord(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -223,6 +231,8 @@ func UpdateSSLRecordAutoRenewal(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -270,6 +280,8 @@ func UpdateSSLRecordActive(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -316,6 +328,8 @@ func DeleteSSLRecord(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -362,6 +376,8 @@ func ApplySSLRecord(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 创建服务

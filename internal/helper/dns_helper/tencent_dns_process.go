@@ -15,19 +15,19 @@ import (
 
 // 实现 DNSProcess 接口
 type DNSProcessTencentDnsImpl struct {
-	debug         bool                       // 调试模式
-	logger        *slog.Logger               // 日志
 	db            *ent.Client                // 数据库
+	logger        *slog.Logger               // 日志
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
+	debug         bool                       // 调试模式
 }
 
-// NewDNSProcessTencentDns 创建实例
-func NewDNSProcessTencentDns(debug bool, logger *slog.Logger, db *ent.Client, httpTransport *http_log.LoggingTransport) DNSProcess {
+// 创建实例
+func NewDNSProcessTencentDns(db *ent.Client, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) DNSProcess {
 	return &DNSProcessTencentDnsImpl{
-		debug:         debug,
-		logger:        logger,
 		db:            db,
+		logger:        logger,
 		httpTransport: httpTransport,
+		debug:         debug,
 	}
 }
 

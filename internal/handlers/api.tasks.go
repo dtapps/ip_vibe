@@ -26,10 +26,11 @@ func GetTasks(c *gin.Context) {
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -66,10 +67,11 @@ func GetTaskDetail(c *gin.Context) {
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -106,10 +108,11 @@ func RunTask(c *gin.Context) {
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -146,10 +149,11 @@ func DeleteTask(c *gin.Context) {
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -177,10 +181,11 @@ func CleanAllTask(c *gin.Context) {
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -208,10 +213,11 @@ func StartScheduler(c *gin.Context) {
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -239,10 +245,11 @@ func StopScheduler(c *gin.Context) {
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用

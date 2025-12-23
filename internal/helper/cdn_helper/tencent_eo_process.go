@@ -18,19 +18,19 @@ import (
 
 // 实现 CDNProcess 接口
 type CDNProcessTencentEOImpl struct {
-	debug         bool                       // 调试模式
-	logger        *slog.Logger               // 日志
 	db            *ent.Client                // 数据库
+	logger        *slog.Logger               // 日志
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
+	debug         bool                       // 调试模式
 }
 
-// NewCDNProcessTencentEO 创建实例
-func NewCDNProcessTencentEO(debug bool, logger *slog.Logger, db *ent.Client, httpTransport *http_log.LoggingTransport) CDNProcess {
+// 创建实例
+func NewCDNProcessTencentEO(db *ent.Client, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) CDNProcess {
 	return &CDNProcessTencentEOImpl{
-		debug:         debug,
-		logger:        logger,
 		db:            db,
+		logger:        logger,
 		httpTransport: httpTransport,
+		debug:         debug,
 	}
 }
 

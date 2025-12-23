@@ -13,32 +13,36 @@ import (
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
-	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/ssl_helper"
 
 	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
+	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/utils/gostring"
 	"golang.org/x/sync/errgroup"
 )
 
 // SSL更新任务
 type SSLUpdateTask struct {
-	db     *ent.Client      // 数据库客户端
-	logDb  *ent_log.Client  // 日志数据库客户端
-	cron   gocron.Scheduler // 定时任务调度器
-	sslJob gocron.Job       // SSL刷新任务
-	logger *slog.Logger     // 日志记录器
+	db            *ent.Client                // 数据库客户端
+	logDb         *ent_log.Client            // 日志数据库客户端
+	cron          gocron.Scheduler           // 定时任务调度器
+	sslJob        gocron.Job                 // SSL刷新任务
+	logger        *slog.Logger               // 日志记录器
+	httpTransport *http_log.LoggingTransport // HTTP日志记录器
+	debug         bool                       // 是否开启调试模式
 }
 
 // 创建实例
-func NewSSLUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger) *SSLUpdateTask {
+func NewSSLUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) *SSLUpdateTask {
 	return &SSLUpdateTask{
-		db:     db,
-		logDb:  logDb,
-		cron:   cron,
-		logger: logger,
+		db:            db,
+		logDb:         logDb,
+		cron:          cron,
+		logger:        logger,
+		httpTransport: httpTransport,
+		debug:         debug,
 	}
 }
 
@@ -215,45 +219,45 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 	switch pendingRecord.Platform {
 	case platformconfig.PlatformCloudflare:
 		sslProcess = ssl_helper.NewSSLProcessCloudflare(
-			global.GvaEnv.DEBUG,
+			s.debug,
 			logger,
-			global.GvaHttpLog,
+			s.httpTransport,
 		)
 	case platformconfig.PlatformTencentDNS:
 		sslProcess = ssl_helper.NewSSLProcessTencentDNS(
-			global.GvaEnv.DEBUG,
+			s.debug,
 			logger,
-			global.GvaHttpLog,
+			s.httpTransport,
 		)
 	case platformconfig.PlatformTencentEo:
 		sslProcess = ssl_helper.NewSSLProcessTencentEO(
-			global.GvaEnv.DEBUG,
+			s.debug,
 			logger,
-			global.GvaHttpLog,
+			s.httpTransport,
 		)
 	case platformconfig.PlatformAliyunDNS:
 		sslProcess = ssl_helper.NewSSLProcessAliyunDNS(
-			global.GvaEnv.DEBUG,
+			s.debug,
 			logger,
-			global.GvaHttpLog,
+			s.httpTransport,
 		)
 	case platformconfig.PlatformAliyunEsa:
 		sslProcess = ssl_helper.NewSSLProcessAliyunEsa(
-			global.GvaEnv.DEBUG,
+			s.debug,
 			logger,
-			global.GvaHttpLog,
+			s.httpTransport,
 		)
 	case platformconfig.PlatformBaiduDNS:
 		sslProcess = ssl_helper.NewSSLProcessBaiduDNS(
-			global.GvaEnv.DEBUG,
+			s.debug,
 			logger,
-			global.GvaHttpLog,
+			s.httpTransport,
 		)
 	case platformconfig.PlatformHuaweiDNS:
 		sslProcess = ssl_helper.NewSSLProcessHuaweiDNS(
-			global.GvaEnv.DEBUG,
+			s.debug,
 			logger,
-			global.GvaHttpLog,
+			s.httpTransport,
 		)
 	default:
 		err = fmt.Errorf("暂不支持该平台: %s", pendingRecord.Platform.String())

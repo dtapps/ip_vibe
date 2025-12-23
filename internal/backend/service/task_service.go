@@ -13,6 +13,7 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/go-co-op/gocron/v2"
+	"go.dtapp.net/library/contrib/http_log"
 )
 
 // TaskService 任务调度服务接口
@@ -28,23 +29,25 @@ type TaskService interface {
 
 // TaskServiceImpl 任务调度服务实现
 type TaskServiceImpl struct {
-	db        *ent.Client     // 数据库客户端
-	dbLog     *ent_log.Client // 日志数据库客户端
-	debug     bool
-	logHelper *operation_logs_helper.OperationLogHelper
-	cron      gocron.Scheduler // 定时任务调度器
-	logger    *slog.Logger     // 日志记录器
+	db            *ent.Client                               // 数据库客户端
+	dbLog         *ent_log.Client                           // 日志数据库客户端
+	logHelper     *operation_logs_helper.OperationLogHelper // 操作日志助手
+	cron          gocron.Scheduler                          // 定时任务调度器
+	logger        *slog.Logger                              // 日志记录器
+	httpTransport *http_log.LoggingTransport                // HTTP日志记录器
+	debug         bool                                      // 调试模式
 }
 
 // NewTaskService 创建任务调度服务实例
-func NewTaskService(db *ent.Client, dbLog *ent_log.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper, cron gocron.Scheduler, logger *slog.Logger) TaskService {
+func NewTaskService(db *ent.Client, dbLog *ent_log.Client, logHelper *operation_logs_helper.OperationLogHelper, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) TaskService {
 	return &TaskServiceImpl{
-		db:        db,
-		dbLog:     dbLog,
-		debug:     debug,
-		logHelper: logHelper,
-		cron:      cron,
-		logger:    logger,
+		db:            db,
+		dbLog:         dbLog,
+		logHelper:     logHelper,
+		cron:          cron,
+		logger:        logger,
+		httpTransport: httpTransport,
+		debug:         debug,
 	}
 }
 
@@ -146,7 +149,14 @@ func (s *TaskServiceImpl) StartScheduler(ctx context.Context) error {
 
 	if len(jobs) == 0 {
 		// 启动CDN刷新任务
-		ipUpdate := task.NewIPUpdateTask(s.db, s.dbLog, s.cron, s.logger)
+		ipUpdate := task.NewIPUpdateTask(
+			s.db,
+			s.dbLog,
+			s.cron,
+			s.logger,
+			s.httpTransport,
+			s.debug,
+		)
 		if err := ipUpdate.StartCdnJob(ctx); err != nil {
 			if s.debug {
 				slog.ErrorContext(ctx, "启动CDN、DNS刷新任务失败",

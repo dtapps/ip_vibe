@@ -15,19 +15,19 @@ import (
 
 // 实现 DNSProcess 接口
 type DNSProcessHuaweiDnsImpl struct {
-	debug         bool                       // 调试模式
-	logger        *slog.Logger               // 日志
 	db            *ent.Client                // 数据库
+	logger        *slog.Logger               // 日志
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
+	debug         bool                       // 调试模式
 }
 
-// NewDNSProcessHuaweiDns 创建实例
-func NewDNSProcessHuaweiDns(debug bool, logger *slog.Logger, db *ent.Client, httpTransport *http_log.LoggingTransport) DNSProcess {
+// 创建实例
+func NewDNSProcessHuaweiDns(db *ent.Client, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) DNSProcess {
 	return &DNSProcessHuaweiDnsImpl{
-		debug:         debug,
-		logger:        logger,
 		db:            db,
+		logger:        logger,
 		httpTransport: httpTransport,
+		debug:         debug,
 	}
 }
 

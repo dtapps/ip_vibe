@@ -209,21 +209,42 @@ func main() {
 	initialize.StartGoCron()
 
 	// 启动 CDN、DNS 刷新任务
-	ipUpdate := task.NewIPUpdateTask(global.GvaEntDb, global.GvaEntLogDb, global.GvaGoCron, global.GvaGocronSlog.WithLogger())
+	ipUpdate := task.NewIPUpdateTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
+	)
 	if err := ipUpdate.StartCdnJob(ctx); err != nil {
 		slog.Error("启动CDN、DNS刷新任务失败", slog.String("error", err.Error()))
 		os.Exit(1)
 	}
 
 	// 启动 SSL 刷新任务
-	sslUpdate := task.NewSSLUpdateTask(global.GvaEntDb, global.GvaEntLogDb, global.GvaGoCron, global.GvaGocronSlog.WithLogger())
+	sslUpdate := task.NewSSLUpdateTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
+	)
 	if err := sslUpdate.StartSSLJob(ctx); err != nil {
 		slog.Error("启动SSL刷新任务失败", slog.String("error", err.Error()))
 		os.Exit(1)
 	}
 
 	// 启动域名监控任务
-	domainMonitor := task.NewDomainMonitorTask(global.GvaEntDb, global.GvaEntLogDb, global.GvaGoCron, global.GvaGocronSlog.WithLogger())
+	domainMonitor := task.NewDomainMonitorTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
+	)
 	if err := domainMonitor.StartDomainMonitorJob(ctx); err != nil {
 		slog.Error("启动域名监控任务失败", slog.String("error", err.Error()))
 		os.Exit(1)

@@ -52,10 +52,11 @@ func getTaskList(ctx context.Context, req *mcp.CallToolRequest, params *types.Ge
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -74,10 +75,11 @@ func getTaskDetail(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -96,10 +98,11 @@ func runTask(ctx context.Context, req *mcp.CallToolRequest, params *types.RunTas
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -118,10 +121,11 @@ func deleteTask(ctx context.Context, req *mcp.CallToolRequest, params *types.Del
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -140,10 +144,11 @@ func cleanAllTask(ctx context.Context, req *mcp.CallToolRequest, params *any) (*
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -162,10 +167,11 @@ func startScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) 
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -184,10 +190,11 @@ func stopScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) (
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
 		global.GvaOperationLogHelper,
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
+		global.GvaHttpLog,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用

@@ -12,12 +12,12 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent_log"
-	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/cdn_helper"
 	"vibe_ip/internal/helper/dns_helper"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
+	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/utils/goarray"
 	"go.dtapp.net/library/utils/gomd5"
 	"golang.org/x/sync/errgroup"
@@ -25,21 +25,25 @@ import (
 
 // IP更新任务
 type IPUpdateTask struct {
-	db     *ent.Client      // 数据库客户端
-	logDb  *ent_log.Client  // 日志数据库客户端
-	cron   gocron.Scheduler // 定时任务调度器
-	dnsJob gocron.Job       // DNS刷新任务
-	cdnJob gocron.Job       // CDN刷新任务
-	logger *slog.Logger     // 日志记录器
+	db            *ent.Client                // 数据库客户端
+	logDb         *ent_log.Client            // 日志数据库客户端
+	cron          gocron.Scheduler           // 定时任务调度器
+	dnsJob        gocron.Job                 // DNS刷新任务
+	cdnJob        gocron.Job                 // CDN刷新任务
+	logger        *slog.Logger               // 日志记录器
+	httpTransport *http_log.LoggingTransport // HTTP日志记录器
+	debug         bool                       // 是否开启调试模式
 }
 
 // 创建实例
-func NewIPUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger) *IPUpdateTask {
+func NewIPUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) *IPUpdateTask {
 	return &IPUpdateTask{
-		db:     db,
-		logDb:  logDb,
-		cron:   cron,
-		logger: logger,
+		db:            db,
+		logDb:         logDb,
+		cron:          cron,
+		logger:        logger,
+		httpTransport: httpTransport,
+		debug:         debug,
 	}
 }
 
@@ -112,7 +116,7 @@ func (s *IPUpdateTask) runDnsTask() {
 	var concurrentRecords, serialRecords []*PendingDnsRecord
 
 	// 查询全部DNS记录
-	allDnsRecord, err := global.GvaEntDb.DNSRecord.Query().
+	allDnsRecord, err := s.db.DNSRecord.Query().
 		Where(dnsrecord.IsActiveEQ(true)).
 		// 预加载 配置
 		WithConfig().
@@ -299,7 +303,7 @@ func (s *IPUpdateTask) runCdnTask() {
 	var concurrentRecords, serialRecords []*PendingCdnRecord
 
 	// 查询全部CDN记录
-	allCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
+	allCdnRecord, err := s.db.CDNRecord.Query().
 		Where(cdnrecord.IsActiveEQ(true)).
 		// 预加载 配置
 		WithConfig().
@@ -476,23 +480,19 @@ func (s *IPUpdateTask) CdnUpdate(ctx context.Context, logger *slog.Logger, pendi
 
 	switch pendingRecord.platform {
 	case platformconfig.PlatformTencentEo:
-
 		cdnProcess = cdn_helper.NewCDNProcessTencentEO(
-			global.GvaEnv.DEBUG,
+			s.db,
 			logger,
-			global.GvaEntDb,
-			global.GvaHttpLog,
+			s.httpTransport,
+			s.debug,
 		)
-
 	case platformconfig.PlatformAliyunEsa:
-
 		cdnProcess = cdn_helper.NewCDNProcessAliyunEsa(
-			global.GvaEnv.DEBUG,
+			s.db,
 			logger,
-			global.GvaEntDb,
-			global.GvaHttpLog,
+			s.httpTransport,
+			s.debug,
 		)
-
 	default:
 		err = fmt.Errorf("暂不支持该平台: %s", pendingRecord.platform.String())
 		_ = s.updateDbOfCdnResponse(ctx, pendingRecord.item.ID, err.Error())
@@ -523,50 +523,40 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, pendi
 
 	switch pendingRecord.platform {
 	case platformconfig.PlatformCloudflare:
-
 		dnsProcess = dns_helper.NewDNSProcessCloudflare(
-			global.GvaEnv.DEBUG,
+			s.db,
 			logger,
-			global.GvaEntDb,
-			global.GvaHttpLog,
+			s.httpTransport,
+			s.debug,
 		)
-
 	case platformconfig.PlatformTencentDNS:
-
 		dnsProcess = dns_helper.NewDNSProcessTencentDns(
-			global.GvaEnv.DEBUG,
+			s.db,
 			logger,
-			global.GvaEntDb,
-			global.GvaHttpLog,
+			s.httpTransport,
+			s.debug,
 		)
-
 	case platformconfig.PlatformAliyunDNS:
-
 		dnsProcess = dns_helper.NewDNSProcessAliyunDns(
-			global.GvaEnv.DEBUG,
+			s.db,
 			logger,
-			global.GvaEntDb,
-			global.GvaHttpLog,
+			s.httpTransport,
+			s.debug,
 		)
-
 	case platformconfig.PlatformBaiduDNS:
-
 		dnsProcess = dns_helper.NewDNSProcessBaiduDns(
-			global.GvaEnv.DEBUG,
+			s.db,
 			logger,
-			global.GvaEntDb,
-			global.GvaHttpLog,
+			s.httpTransport,
+			s.debug,
 		)
-
 	case platformconfig.PlatformHuaweiDNS:
-
 		dnsProcess = dns_helper.NewDNSProcessHuaweiDns(
-			global.GvaEnv.DEBUG,
+			s.db,
 			logger,
-			global.GvaEntDb,
-			global.GvaHttpLog,
+			s.httpTransport,
+			s.debug,
 		)
-
 	default:
 		err = fmt.Errorf("暂不支持该平台: %s", pendingRecord.platform.String())
 		_ = s.updateDbOfDnsResponse(ctx, pendingRecord.item.ID, err.Error())
