@@ -141,7 +141,7 @@ func (s *WebhookSubServiceImpl) GetWebhookSubs(ctx context.Context, request *typ
 	allWebhookSubscription, err := s.db.WebhookSubscription.Query().
 		WhereIf(request.IsActive != nil, webhooksubscription.IsActiveEQ(cast.ToBool(request.IsActive))).
 		WithWebhook().
-		Order(ent.Desc(webhooksubscription.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("查询通知订阅失败: %w", err)

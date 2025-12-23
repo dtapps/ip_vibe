@@ -94,7 +94,7 @@ func (s *CDNRecordServiceImpl) GetCdnRecords(ctx context.Context, request *types
 		WhereIf(request.IsActive != nil, cdnrecord.IsActiveEQ(cast.ToBool(request.IsActive))).
 		WithConfig().
 		WithIPGroup().
-		Order(ent.Desc(cdnrecord.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("查询记录失败: %w", err)

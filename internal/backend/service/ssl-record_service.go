@@ -96,7 +96,7 @@ func (s *SSLRecordServiceImpl) GetSSLRecords(ctx context.Context, request *types
 	allSSLRecord, err := s.db.SSLRecord.Query().
 		WhereIf(request.IsActive != nil, sslrecord.IsActiveEQ(cast.ToBool(request.IsActive))).
 		WithConfig().
-		Order(ent.Desc(sslrecord.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("查询SSL记录失败: %w", err)

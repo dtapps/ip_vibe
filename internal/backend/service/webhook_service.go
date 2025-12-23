@@ -67,7 +67,7 @@ func (s *WebhookServiceImpl) GetWebhooks(ctx context.Context, request *types.Get
 	// 查询全部通知
 	allWebhook, err := s.db.Webhook.Query().
 		WhereIf(request.IsActive != nil, webhook.IsActiveEQ(cast.ToBool(request.IsActive))).
-		Order(ent.Desc(webhook.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("查询通知失败: %w", err)

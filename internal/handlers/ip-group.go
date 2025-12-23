@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
-	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -39,7 +37,7 @@ func IPGroup(c *gin.Context) {
 	// 查询全部IP组
 	allIpGroup, err := global.GvaEntDb.IpGroup.Query().
 		WithDevices().
-		Order(ent.Desc(ipgroup.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allIpGroup.Items {

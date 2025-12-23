@@ -99,7 +99,7 @@ func (s *DNSRecordServiceImpl) GetDnsRecords(ctx context.Context, request *types
 		WithConfig().
 		WithIPGroup().
 		WithCdnRecord().
-		Order(ent.Desc(dnsrecord.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("查询DNS记录失败: %w", err)

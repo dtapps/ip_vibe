@@ -232,8 +232,8 @@ func (s *DeviceOpenServiceImpl) DevicePortForwards(ctx context.Context, deviceCo
 
 	// 查询端口转发
 	allPortForward, err := firstDevice.QueryPortForwards().
-		Where(deviceportforward.IsActiveEQ(true)). // 保持原始过滤条件
-		Order(ent.Desc(deviceportforward.FieldCreatedAt)).
+		Where(deviceportforward.IsActiveEQ(true)).
+		OrderByCreatedAtDesc().
 		All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("查询端口转发失败: %w", err)

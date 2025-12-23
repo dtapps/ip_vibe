@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
-	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -40,7 +38,7 @@ func Cdn(c *gin.Context) {
 	allCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
 		WithConfig().
 		WithIPGroup().
-		Order(ent.Desc(cdnrecord.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allCdnRecord.Items {

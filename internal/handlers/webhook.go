@@ -6,8 +6,6 @@ import (
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
 	webhookService "vibe_ip/internal/backend/webhook"
-	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -40,7 +38,7 @@ func Webhook(c *gin.Context) {
 
 	// 查询全部通知
 	allWebhook, err := global.GvaEntDb.Webhook.Query().
-		Order(ent.Desc(webhook.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allWebhook.Items {

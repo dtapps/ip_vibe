@@ -68,7 +68,7 @@ func (s *IPGroupServiceImpl) GetIPGroups(ctx context.Context) ([]*types.GetIPGro
 	lists := make([]*types.GetIPGroupResponse, 0)
 	// 查询全部IP组
 	allIpGroup, err := s.db.IpGroup.Query().
-		Order(ent.Desc(ipgroup.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		WithDevices().
 		All(ctx)
 	if err != nil {

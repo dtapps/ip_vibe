@@ -6,8 +6,6 @@ import (
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/backend/task"
-	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -51,7 +49,7 @@ func Ssl(c *gin.Context) {
 	// 查询全部SSL记录
 	allSSLRecord, err := global.GvaEntDb.SSLRecord.Query().
 		WithConfig().
-		Order(ent.Desc(sslrecord.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allSSLRecord.Items {

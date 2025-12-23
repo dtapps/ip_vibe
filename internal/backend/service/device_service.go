@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/device"
-	"vibe_ip/internal/ent/deviceipreport"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/helper/operation_logs_helper"
@@ -69,7 +68,7 @@ func (s *DeviceServiceImpl) GetDevices(ctx context.Context) ([]*types.GetDeviceR
 	lists := make([]*types.GetDeviceResponse, 0)
 	// 查询全部设备
 	allDevice, err := s.db.Device.Query().
-		Order(ent.Desc(device.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("查询设备失败: %w", err)
@@ -240,7 +239,7 @@ func (s *DeviceServiceImpl) GetDeviceIpHistory(ctx context.Context, id int64) ([
 	}
 	// 查询设备IP历史记录
 	firstDeviceReports, err := firstDevice.QueryIPReports().
-		Order(ent.Desc(deviceipreport.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("查询设备IP历史记录失败: %w", err)

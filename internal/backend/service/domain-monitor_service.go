@@ -86,7 +86,7 @@ func (s *DomainMonitorServiceImpl) GetDomainMonitors(ctx context.Context, reques
 	// 查询全部域名监控
 	allDomainMonitor, err := s.db.DomainMonitor.Query().
 		WhereIf(request.IsActive != nil, domainmonitor.IsActiveEQ(cast.ToBool(request.IsActive))).
-		Order(ent.Desc(domainmonitor.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("查询域名监控失败: %w", err)

@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
-	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/domainmonitorhistory"
@@ -45,7 +44,7 @@ func DomainMonitor(c *gin.Context) {
 
 	// 查询全部域名监控
 	allDomainMonitor, err := global.GvaEntDb.DomainMonitor.Query().
-		Order(ent.Desc(domainmonitor.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allDomainMonitor.Items {

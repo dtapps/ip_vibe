@@ -50,7 +50,7 @@ func (s *PlatformConfigServiceImpl) GetConfigs(ctx context.Context) ([]*types.Ge
 	lists := make([]*types.GetPlatformConfigResponse, 0)
 	// 查询全部配置
 	allConfig, err := s.db.PlatformConfig.Query().
-		Order(ent.Desc(platformconfig.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("查询配置失败: %w", err)

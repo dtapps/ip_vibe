@@ -68,7 +68,7 @@ func (s *PortForwardServiceImpl) GetPortForwards(ctx context.Context, request *t
 	allPortForward, err := s.db.DevicePortForward.Query().
 		WhereIf(request.IsActive != nil, deviceportforward.IsActiveEQ(cast.ToBool(request.IsActive))).
 		WithDevice().
-		Order(ent.Desc(deviceportforward.FieldCreatedAt)).
+		OrderByCreatedAtDesc().
 		All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("查询端口转发失败: %w", err)
