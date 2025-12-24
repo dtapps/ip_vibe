@@ -116,6 +116,20 @@ func (_c *DomainMonitorHistoryCreate) SetNillableErrorLog(v *string) *DomainMoni
 	return _c
 }
 
+// SetSslNotDate sets the "ssl_not_date" field.
+func (_c *DomainMonitorHistoryCreate) SetSslNotDate(v time.Time) *DomainMonitorHistoryCreate {
+	_c.mutation.SetSslNotDate(v)
+	return _c
+}
+
+// SetNillableSslNotDate sets the "ssl_not_date" field if the given value is not nil.
+func (_c *DomainMonitorHistoryCreate) SetNillableSslNotDate(v *time.Time) *DomainMonitorHistoryCreate {
+	if v != nil {
+		_c.SetSslNotDate(*v)
+	}
+	return _c
+}
+
 // SetSslExpiryDate sets the "ssl_expiry_date" field.
 func (_c *DomainMonitorHistoryCreate) SetSslExpiryDate(v time.Time) *DomainMonitorHistoryCreate {
 	_c.mutation.SetSslExpiryDate(v)
@@ -196,6 +210,34 @@ func (_c *DomainMonitorHistoryCreate) SetSslCertificateChain(v string) *DomainMo
 func (_c *DomainMonitorHistoryCreate) SetNillableSslCertificateChain(v *string) *DomainMonitorHistoryCreate {
 	if v != nil {
 		_c.SetSslCertificateChain(*v)
+	}
+	return _c
+}
+
+// SetSslSerialNumber sets the "ssl_serial_number" field.
+func (_c *DomainMonitorHistoryCreate) SetSslSerialNumber(v string) *DomainMonitorHistoryCreate {
+	_c.mutation.SetSslSerialNumber(v)
+	return _c
+}
+
+// SetNillableSslSerialNumber sets the "ssl_serial_number" field if the given value is not nil.
+func (_c *DomainMonitorHistoryCreate) SetNillableSslSerialNumber(v *string) *DomainMonitorHistoryCreate {
+	if v != nil {
+		_c.SetSslSerialNumber(*v)
+	}
+	return _c
+}
+
+// SetSslVersion sets the "ssl_version" field.
+func (_c *DomainMonitorHistoryCreate) SetSslVersion(v int) *DomainMonitorHistoryCreate {
+	_c.mutation.SetSslVersion(v)
+	return _c
+}
+
+// SetNillableSslVersion sets the "ssl_version" field if the given value is not nil.
+func (_c *DomainMonitorHistoryCreate) SetNillableSslVersion(v *int) *DomainMonitorHistoryCreate {
+	if v != nil {
+		_c.SetSslVersion(*v)
 	}
 	return _c
 }
@@ -335,6 +377,10 @@ func (_c *DomainMonitorHistoryCreate) createSpec() (*DomainMonitorHistory, *sqlg
 		_spec.SetField(domainmonitorhistory.FieldErrorLog, field.TypeString, value)
 		_node.ErrorLog = value
 	}
+	if value, ok := _c.mutation.SslNotDate(); ok {
+		_spec.SetField(domainmonitorhistory.FieldSslNotDate, field.TypeTime, value)
+		_node.SslNotDate = value
+	}
 	if value, ok := _c.mutation.SslExpiryDate(); ok {
 		_spec.SetField(domainmonitorhistory.FieldSslExpiryDate, field.TypeTime, value)
 		_node.SslExpiryDate = value
@@ -358,6 +404,14 @@ func (_c *DomainMonitorHistoryCreate) createSpec() (*DomainMonitorHistory, *sqlg
 	if value, ok := _c.mutation.SslCertificateChain(); ok {
 		_spec.SetField(domainmonitorhistory.FieldSslCertificateChain, field.TypeString, value)
 		_node.SslCertificateChain = value
+	}
+	if value, ok := _c.mutation.SslSerialNumber(); ok {
+		_spec.SetField(domainmonitorhistory.FieldSslSerialNumber, field.TypeString, value)
+		_node.SslSerialNumber = value
+	}
+	if value, ok := _c.mutation.SslVersion(); ok {
+		_spec.SetField(domainmonitorhistory.FieldSslVersion, field.TypeInt, value)
+		_node.SslVersion = value
 	}
 	return _node, _spec
 }
@@ -455,6 +509,9 @@ func (u *DomainMonitorHistoryUpsertOne) UpdateNewValues() *DomainMonitorHistoryU
 		if _, exists := u.create.mutation.ErrorLog(); exists {
 			s.SetIgnore(domainmonitorhistory.FieldErrorLog)
 		}
+		if _, exists := u.create.mutation.SslNotDate(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldSslNotDate)
+		}
 		if _, exists := u.create.mutation.SslExpiryDate(); exists {
 			s.SetIgnore(domainmonitorhistory.FieldSslExpiryDate)
 		}
@@ -472,6 +529,12 @@ func (u *DomainMonitorHistoryUpsertOne) UpdateNewValues() *DomainMonitorHistoryU
 		}
 		if _, exists := u.create.mutation.SslCertificateChain(); exists {
 			s.SetIgnore(domainmonitorhistory.FieldSslCertificateChain)
+		}
+		if _, exists := u.create.mutation.SslSerialNumber(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldSslSerialNumber)
+		}
+		if _, exists := u.create.mutation.SslVersion(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldSslVersion)
 		}
 	}))
 	return u
@@ -713,6 +776,9 @@ func (u *DomainMonitorHistoryUpsertBulk) UpdateNewValues() *DomainMonitorHistory
 			if _, exists := b.mutation.ErrorLog(); exists {
 				s.SetIgnore(domainmonitorhistory.FieldErrorLog)
 			}
+			if _, exists := b.mutation.SslNotDate(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldSslNotDate)
+			}
 			if _, exists := b.mutation.SslExpiryDate(); exists {
 				s.SetIgnore(domainmonitorhistory.FieldSslExpiryDate)
 			}
@@ -730,6 +796,12 @@ func (u *DomainMonitorHistoryUpsertBulk) UpdateNewValues() *DomainMonitorHistory
 			}
 			if _, exists := b.mutation.SslCertificateChain(); exists {
 				s.SetIgnore(domainmonitorhistory.FieldSslCertificateChain)
+			}
+			if _, exists := b.mutation.SslSerialNumber(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldSslSerialNumber)
+			}
+			if _, exists := b.mutation.SslVersion(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldSslVersion)
 			}
 		}
 	}))

@@ -57,12 +57,16 @@ type DomainMonitorHistoryMutation struct {
 	ip_resolved           *[]string
 	appendip_resolved     []string
 	error_log             *string
+	ssl_not_date          *time.Time
 	ssl_expiry_date       *time.Time
 	ssl_common_name       *string
 	ssl_issuer_name       *string
 	ssl_signature_alg     *string
 	ssl_san_list          *string
 	ssl_certificate_chain *string
+	ssl_serial_number     *string
+	ssl_version           *int
+	addssl_version        *int
 	clearedFields         map[string]struct{}
 	done                  bool
 	oldValue              func(context.Context) (*DomainMonitorHistory, error)
@@ -640,6 +644,55 @@ func (m *DomainMonitorHistoryMutation) ResetErrorLog() {
 	delete(m.clearedFields, domainmonitorhistory.FieldErrorLog)
 }
 
+// SetSslNotDate sets the "ssl_not_date" field.
+func (m *DomainMonitorHistoryMutation) SetSslNotDate(t time.Time) {
+	m.ssl_not_date = &t
+}
+
+// SslNotDate returns the value of the "ssl_not_date" field in the mutation.
+func (m *DomainMonitorHistoryMutation) SslNotDate() (r time.Time, exists bool) {
+	v := m.ssl_not_date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSslNotDate returns the old "ssl_not_date" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldSslNotDate(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSslNotDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSslNotDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSslNotDate: %w", err)
+	}
+	return oldValue.SslNotDate, nil
+}
+
+// ClearSslNotDate clears the value of the "ssl_not_date" field.
+func (m *DomainMonitorHistoryMutation) ClearSslNotDate() {
+	m.ssl_not_date = nil
+	m.clearedFields[domainmonitorhistory.FieldSslNotDate] = struct{}{}
+}
+
+// SslNotDateCleared returns if the "ssl_not_date" field was cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) SslNotDateCleared() bool {
+	_, ok := m.clearedFields[domainmonitorhistory.FieldSslNotDate]
+	return ok
+}
+
+// ResetSslNotDate resets all changes to the "ssl_not_date" field.
+func (m *DomainMonitorHistoryMutation) ResetSslNotDate() {
+	m.ssl_not_date = nil
+	delete(m.clearedFields, domainmonitorhistory.FieldSslNotDate)
+}
+
 // SetSslExpiryDate sets the "ssl_expiry_date" field.
 func (m *DomainMonitorHistoryMutation) SetSslExpiryDate(t time.Time) {
 	m.ssl_expiry_date = &t
@@ -934,6 +987,125 @@ func (m *DomainMonitorHistoryMutation) ResetSslCertificateChain() {
 	delete(m.clearedFields, domainmonitorhistory.FieldSslCertificateChain)
 }
 
+// SetSslSerialNumber sets the "ssl_serial_number" field.
+func (m *DomainMonitorHistoryMutation) SetSslSerialNumber(s string) {
+	m.ssl_serial_number = &s
+}
+
+// SslSerialNumber returns the value of the "ssl_serial_number" field in the mutation.
+func (m *DomainMonitorHistoryMutation) SslSerialNumber() (r string, exists bool) {
+	v := m.ssl_serial_number
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSslSerialNumber returns the old "ssl_serial_number" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldSslSerialNumber(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSslSerialNumber is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSslSerialNumber requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSslSerialNumber: %w", err)
+	}
+	return oldValue.SslSerialNumber, nil
+}
+
+// ClearSslSerialNumber clears the value of the "ssl_serial_number" field.
+func (m *DomainMonitorHistoryMutation) ClearSslSerialNumber() {
+	m.ssl_serial_number = nil
+	m.clearedFields[domainmonitorhistory.FieldSslSerialNumber] = struct{}{}
+}
+
+// SslSerialNumberCleared returns if the "ssl_serial_number" field was cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) SslSerialNumberCleared() bool {
+	_, ok := m.clearedFields[domainmonitorhistory.FieldSslSerialNumber]
+	return ok
+}
+
+// ResetSslSerialNumber resets all changes to the "ssl_serial_number" field.
+func (m *DomainMonitorHistoryMutation) ResetSslSerialNumber() {
+	m.ssl_serial_number = nil
+	delete(m.clearedFields, domainmonitorhistory.FieldSslSerialNumber)
+}
+
+// SetSslVersion sets the "ssl_version" field.
+func (m *DomainMonitorHistoryMutation) SetSslVersion(i int) {
+	m.ssl_version = &i
+	m.addssl_version = nil
+}
+
+// SslVersion returns the value of the "ssl_version" field in the mutation.
+func (m *DomainMonitorHistoryMutation) SslVersion() (r int, exists bool) {
+	v := m.ssl_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSslVersion returns the old "ssl_version" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldSslVersion(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSslVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSslVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSslVersion: %w", err)
+	}
+	return oldValue.SslVersion, nil
+}
+
+// AddSslVersion adds i to the "ssl_version" field.
+func (m *DomainMonitorHistoryMutation) AddSslVersion(i int) {
+	if m.addssl_version != nil {
+		*m.addssl_version += i
+	} else {
+		m.addssl_version = &i
+	}
+}
+
+// AddedSslVersion returns the value that was added to the "ssl_version" field in this mutation.
+func (m *DomainMonitorHistoryMutation) AddedSslVersion() (r int, exists bool) {
+	v := m.addssl_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearSslVersion clears the value of the "ssl_version" field.
+func (m *DomainMonitorHistoryMutation) ClearSslVersion() {
+	m.ssl_version = nil
+	m.addssl_version = nil
+	m.clearedFields[domainmonitorhistory.FieldSslVersion] = struct{}{}
+}
+
+// SslVersionCleared returns if the "ssl_version" field was cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) SslVersionCleared() bool {
+	_, ok := m.clearedFields[domainmonitorhistory.FieldSslVersion]
+	return ok
+}
+
+// ResetSslVersion resets all changes to the "ssl_version" field.
+func (m *DomainMonitorHistoryMutation) ResetSslVersion() {
+	m.ssl_version = nil
+	m.addssl_version = nil
+	delete(m.clearedFields, domainmonitorhistory.FieldSslVersion)
+}
+
 // Where appends a list predicates to the DomainMonitorHistoryMutation builder.
 func (m *DomainMonitorHistoryMutation) Where(ps ...predicate.DomainMonitorHistory) {
 	m.predicates = append(m.predicates, ps...)
@@ -968,7 +1140,7 @@ func (m *DomainMonitorHistoryMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DomainMonitorHistoryMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, domainmonitorhistory.FieldCreatedAt)
 	}
@@ -996,6 +1168,9 @@ func (m *DomainMonitorHistoryMutation) Fields() []string {
 	if m.error_log != nil {
 		fields = append(fields, domainmonitorhistory.FieldErrorLog)
 	}
+	if m.ssl_not_date != nil {
+		fields = append(fields, domainmonitorhistory.FieldSslNotDate)
+	}
 	if m.ssl_expiry_date != nil {
 		fields = append(fields, domainmonitorhistory.FieldSslExpiryDate)
 	}
@@ -1013,6 +1188,12 @@ func (m *DomainMonitorHistoryMutation) Fields() []string {
 	}
 	if m.ssl_certificate_chain != nil {
 		fields = append(fields, domainmonitorhistory.FieldSslCertificateChain)
+	}
+	if m.ssl_serial_number != nil {
+		fields = append(fields, domainmonitorhistory.FieldSslSerialNumber)
+	}
+	if m.ssl_version != nil {
+		fields = append(fields, domainmonitorhistory.FieldSslVersion)
 	}
 	return fields
 }
@@ -1040,6 +1221,8 @@ func (m *DomainMonitorHistoryMutation) Field(name string) (ent.Value, bool) {
 		return m.IPResolved()
 	case domainmonitorhistory.FieldErrorLog:
 		return m.ErrorLog()
+	case domainmonitorhistory.FieldSslNotDate:
+		return m.SslNotDate()
 	case domainmonitorhistory.FieldSslExpiryDate:
 		return m.SslExpiryDate()
 	case domainmonitorhistory.FieldSslCommonName:
@@ -1052,6 +1235,10 @@ func (m *DomainMonitorHistoryMutation) Field(name string) (ent.Value, bool) {
 		return m.SslSanList()
 	case domainmonitorhistory.FieldSslCertificateChain:
 		return m.SslCertificateChain()
+	case domainmonitorhistory.FieldSslSerialNumber:
+		return m.SslSerialNumber()
+	case domainmonitorhistory.FieldSslVersion:
+		return m.SslVersion()
 	}
 	return nil, false
 }
@@ -1079,6 +1266,8 @@ func (m *DomainMonitorHistoryMutation) OldField(ctx context.Context, name string
 		return m.OldIPResolved(ctx)
 	case domainmonitorhistory.FieldErrorLog:
 		return m.OldErrorLog(ctx)
+	case domainmonitorhistory.FieldSslNotDate:
+		return m.OldSslNotDate(ctx)
 	case domainmonitorhistory.FieldSslExpiryDate:
 		return m.OldSslExpiryDate(ctx)
 	case domainmonitorhistory.FieldSslCommonName:
@@ -1091,6 +1280,10 @@ func (m *DomainMonitorHistoryMutation) OldField(ctx context.Context, name string
 		return m.OldSslSanList(ctx)
 	case domainmonitorhistory.FieldSslCertificateChain:
 		return m.OldSslCertificateChain(ctx)
+	case domainmonitorhistory.FieldSslSerialNumber:
+		return m.OldSslSerialNumber(ctx)
+	case domainmonitorhistory.FieldSslVersion:
+		return m.OldSslVersion(ctx)
 	}
 	return nil, fmt.Errorf("unknown DomainMonitorHistory field %s", name)
 }
@@ -1163,6 +1356,13 @@ func (m *DomainMonitorHistoryMutation) SetField(name string, value ent.Value) er
 		}
 		m.SetErrorLog(v)
 		return nil
+	case domainmonitorhistory.FieldSslNotDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSslNotDate(v)
+		return nil
 	case domainmonitorhistory.FieldSslExpiryDate:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -1205,6 +1405,20 @@ func (m *DomainMonitorHistoryMutation) SetField(name string, value ent.Value) er
 		}
 		m.SetSslCertificateChain(v)
 		return nil
+	case domainmonitorhistory.FieldSslSerialNumber:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSslSerialNumber(v)
+		return nil
+	case domainmonitorhistory.FieldSslVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSslVersion(v)
+		return nil
 	}
 	return fmt.Errorf("unknown DomainMonitorHistory field %s", name)
 }
@@ -1222,6 +1436,9 @@ func (m *DomainMonitorHistoryMutation) AddedFields() []string {
 	if m.addhttp_status != nil {
 		fields = append(fields, domainmonitorhistory.FieldHTTPStatus)
 	}
+	if m.addssl_version != nil {
+		fields = append(fields, domainmonitorhistory.FieldSslVersion)
+	}
 	return fields
 }
 
@@ -1236,6 +1453,8 @@ func (m *DomainMonitorHistoryMutation) AddedField(name string) (ent.Value, bool)
 		return m.AddedCheckDuration()
 	case domainmonitorhistory.FieldHTTPStatus:
 		return m.AddedHTTPStatus()
+	case domainmonitorhistory.FieldSslVersion:
+		return m.AddedSslVersion()
 	}
 	return nil, false
 }
@@ -1266,6 +1485,13 @@ func (m *DomainMonitorHistoryMutation) AddField(name string, value ent.Value) er
 		}
 		m.AddHTTPStatus(v)
 		return nil
+	case domainmonitorhistory.FieldSslVersion:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSslVersion(v)
+		return nil
 	}
 	return fmt.Errorf("unknown DomainMonitorHistory numeric field %s", name)
 }
@@ -1289,6 +1515,9 @@ func (m *DomainMonitorHistoryMutation) ClearedFields() []string {
 	if m.FieldCleared(domainmonitorhistory.FieldErrorLog) {
 		fields = append(fields, domainmonitorhistory.FieldErrorLog)
 	}
+	if m.FieldCleared(domainmonitorhistory.FieldSslNotDate) {
+		fields = append(fields, domainmonitorhistory.FieldSslNotDate)
+	}
 	if m.FieldCleared(domainmonitorhistory.FieldSslExpiryDate) {
 		fields = append(fields, domainmonitorhistory.FieldSslExpiryDate)
 	}
@@ -1306,6 +1535,12 @@ func (m *DomainMonitorHistoryMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(domainmonitorhistory.FieldSslCertificateChain) {
 		fields = append(fields, domainmonitorhistory.FieldSslCertificateChain)
+	}
+	if m.FieldCleared(domainmonitorhistory.FieldSslSerialNumber) {
+		fields = append(fields, domainmonitorhistory.FieldSslSerialNumber)
+	}
+	if m.FieldCleared(domainmonitorhistory.FieldSslVersion) {
+		fields = append(fields, domainmonitorhistory.FieldSslVersion)
 	}
 	return fields
 }
@@ -1336,6 +1571,9 @@ func (m *DomainMonitorHistoryMutation) ClearField(name string) error {
 	case domainmonitorhistory.FieldErrorLog:
 		m.ClearErrorLog()
 		return nil
+	case domainmonitorhistory.FieldSslNotDate:
+		m.ClearSslNotDate()
+		return nil
 	case domainmonitorhistory.FieldSslExpiryDate:
 		m.ClearSslExpiryDate()
 		return nil
@@ -1353,6 +1591,12 @@ func (m *DomainMonitorHistoryMutation) ClearField(name string) error {
 		return nil
 	case domainmonitorhistory.FieldSslCertificateChain:
 		m.ClearSslCertificateChain()
+		return nil
+	case domainmonitorhistory.FieldSslSerialNumber:
+		m.ClearSslSerialNumber()
+		return nil
+	case domainmonitorhistory.FieldSslVersion:
+		m.ClearSslVersion()
 		return nil
 	}
 	return fmt.Errorf("unknown DomainMonitorHistory nullable field %s", name)
@@ -1389,6 +1633,9 @@ func (m *DomainMonitorHistoryMutation) ResetField(name string) error {
 	case domainmonitorhistory.FieldErrorLog:
 		m.ResetErrorLog()
 		return nil
+	case domainmonitorhistory.FieldSslNotDate:
+		m.ResetSslNotDate()
+		return nil
 	case domainmonitorhistory.FieldSslExpiryDate:
 		m.ResetSslExpiryDate()
 		return nil
@@ -1406,6 +1653,12 @@ func (m *DomainMonitorHistoryMutation) ResetField(name string) error {
 		return nil
 	case domainmonitorhistory.FieldSslCertificateChain:
 		m.ResetSslCertificateChain()
+		return nil
+	case domainmonitorhistory.FieldSslSerialNumber:
+		m.ResetSslSerialNumber()
+		return nil
+	case domainmonitorhistory.FieldSslVersion:
+		m.ResetSslVersion()
 		return nil
 	}
 	return fmt.Errorf("unknown DomainMonitorHistory field %s", name)

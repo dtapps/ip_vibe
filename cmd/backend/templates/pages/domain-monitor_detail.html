@@ -132,9 +132,14 @@
             {{ if eq $item.CheckProtocol "https" }}
             {{ if $hist.SslExpiryDate }}
             <div class="detail-item detail-item-full">
-                <strong>证书信息:</strong>
+                <strong>证书信息（{{ $hist.SslVersion }}）</strong>
                 <div class="ssl-expiry-info">
-                    <strong>过期日期:</strong>
+                    <strong>生效 / 过期日期:</strong>
+                    <span class="text-warning">
+                        {{ $hist.SslNotDate.Format "2006-01-02 15:04:05" }}
+                        <!-- <small class="text-secondary">(剩余天数需后端计算)</small> -->
+                    </span>
+                    <strong>/</strong>
                     <span class="text-warning">
                         {{ $hist.SslExpiryDate.Format "2006-01-02 15:04:05" }}
                         <!-- <small class="text-secondary">(剩余天数需后端计算)</small> -->
@@ -144,7 +149,13 @@
                     <strong>通用名 (CN):</strong> {{ $hist.SslCommonName }}
                 </div>
                 <div class="ssl-expiry-info">
+                    <strong>备用名 (SAN):</strong> {{ $hist.SslSanList }}
+                </div>
+                <div class="ssl-expiry-info">
                     <strong>颁发者:</strong> {{ $hist.SslIssuerName }}
+                </div>
+                <div class="ssl-expiry-info">
+                    <strong>序列号:</strong> {{ $hist.SslSerialNumber }}
                 </div>
             </div>
             {{ end }}

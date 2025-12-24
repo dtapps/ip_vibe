@@ -228,12 +228,15 @@ func (s *DomainMonitorTask) executeDomainMonitorCheck(ctx context.Context, logge
 
 	// 填充 SSL 字段
 	if domainMonitor.CheckProtocol == domainmonitor.CheckProtocolHTTPS {
+		historyCreator.SetSslNotDate(result.SSLNotDate)
 		historyCreator.SetSslExpiryDate(result.SSLExpiryDate)
 		historyCreator.SetSslCommonName(result.SSLCommonName)
 		historyCreator.SetSslIssuerName(result.SSLIssuerName)
 		historyCreator.SetSslSignatureAlg(result.SSLSignatureAlg)
-		historyCreator.SetSslSanList(result.SANList)
-		historyCreator.SetSslCertificateChain(result.CertificateChain)
+		historyCreator.SetSslSanList(result.SSLSANList)
+		historyCreator.SetSslCertificateChain(result.SSLCertificateChain)
+		historyCreator.SetSslSerialNumber(result.SSLSerialNumber)
+		historyCreator.SetSslVersion(result.SSLVersion)
 	}
 
 	_, err = historyCreator.Save(ctx)

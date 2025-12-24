@@ -94,6 +94,11 @@ func ErrorLog(v string) predicate.DomainMonitorHistory {
 	return predicate.DomainMonitorHistory(sql.FieldEQ(FieldErrorLog, v))
 }
 
+// SslNotDate applies equality check predicate on the "ssl_not_date" field. It's identical to SslNotDateEQ.
+func SslNotDate(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldEQ(FieldSslNotDate, v))
+}
+
 // SslExpiryDate applies equality check predicate on the "ssl_expiry_date" field. It's identical to SslExpiryDateEQ.
 func SslExpiryDate(v time.Time) predicate.DomainMonitorHistory {
 	return predicate.DomainMonitorHistory(sql.FieldEQ(FieldSslExpiryDate, v))
@@ -122,6 +127,16 @@ func SslSanList(v string) predicate.DomainMonitorHistory {
 // SslCertificateChain applies equality check predicate on the "ssl_certificate_chain" field. It's identical to SslCertificateChainEQ.
 func SslCertificateChain(v string) predicate.DomainMonitorHistory {
 	return predicate.DomainMonitorHistory(sql.FieldEQ(FieldSslCertificateChain, v))
+}
+
+// SslSerialNumber applies equality check predicate on the "ssl_serial_number" field. It's identical to SslSerialNumberEQ.
+func SslSerialNumber(v string) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldEQ(FieldSslSerialNumber, v))
+}
+
+// SslVersion applies equality check predicate on the "ssl_version" field. It's identical to SslVersionEQ.
+func SslVersion(v int) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldEQ(FieldSslVersion, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -512,6 +527,56 @@ func ErrorLogEqualFold(v string) predicate.DomainMonitorHistory {
 // ErrorLogContainsFold applies the ContainsFold predicate on the "error_log" field.
 func ErrorLogContainsFold(v string) predicate.DomainMonitorHistory {
 	return predicate.DomainMonitorHistory(sql.FieldContainsFold(FieldErrorLog, v))
+}
+
+// SslNotDateEQ applies the EQ predicate on the "ssl_not_date" field.
+func SslNotDateEQ(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldEQ(FieldSslNotDate, v))
+}
+
+// SslNotDateNEQ applies the NEQ predicate on the "ssl_not_date" field.
+func SslNotDateNEQ(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldNEQ(FieldSslNotDate, v))
+}
+
+// SslNotDateIn applies the In predicate on the "ssl_not_date" field.
+func SslNotDateIn(vs ...time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldIn(FieldSslNotDate, vs...))
+}
+
+// SslNotDateNotIn applies the NotIn predicate on the "ssl_not_date" field.
+func SslNotDateNotIn(vs ...time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldNotIn(FieldSslNotDate, vs...))
+}
+
+// SslNotDateGT applies the GT predicate on the "ssl_not_date" field.
+func SslNotDateGT(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldGT(FieldSslNotDate, v))
+}
+
+// SslNotDateGTE applies the GTE predicate on the "ssl_not_date" field.
+func SslNotDateGTE(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldGTE(FieldSslNotDate, v))
+}
+
+// SslNotDateLT applies the LT predicate on the "ssl_not_date" field.
+func SslNotDateLT(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldLT(FieldSslNotDate, v))
+}
+
+// SslNotDateLTE applies the LTE predicate on the "ssl_not_date" field.
+func SslNotDateLTE(v time.Time) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldLTE(FieldSslNotDate, v))
+}
+
+// SslNotDateIsNil applies the IsNil predicate on the "ssl_not_date" field.
+func SslNotDateIsNil() predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldIsNull(FieldSslNotDate))
+}
+
+// SslNotDateNotNil applies the NotNil predicate on the "ssl_not_date" field.
+func SslNotDateNotNil() predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldNotNull(FieldSslNotDate))
 }
 
 // SslExpiryDateEQ applies the EQ predicate on the "ssl_expiry_date" field.
@@ -937,6 +1002,131 @@ func SslCertificateChainEqualFold(v string) predicate.DomainMonitorHistory {
 // SslCertificateChainContainsFold applies the ContainsFold predicate on the "ssl_certificate_chain" field.
 func SslCertificateChainContainsFold(v string) predicate.DomainMonitorHistory {
 	return predicate.DomainMonitorHistory(sql.FieldContainsFold(FieldSslCertificateChain, v))
+}
+
+// SslSerialNumberEQ applies the EQ predicate on the "ssl_serial_number" field.
+func SslSerialNumberEQ(v string) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldEQ(FieldSslSerialNumber, v))
+}
+
+// SslSerialNumberNEQ applies the NEQ predicate on the "ssl_serial_number" field.
+func SslSerialNumberNEQ(v string) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldNEQ(FieldSslSerialNumber, v))
+}
+
+// SslSerialNumberIn applies the In predicate on the "ssl_serial_number" field.
+func SslSerialNumberIn(vs ...string) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldIn(FieldSslSerialNumber, vs...))
+}
+
+// SslSerialNumberNotIn applies the NotIn predicate on the "ssl_serial_number" field.
+func SslSerialNumberNotIn(vs ...string) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldNotIn(FieldSslSerialNumber, vs...))
+}
+
+// SslSerialNumberGT applies the GT predicate on the "ssl_serial_number" field.
+func SslSerialNumberGT(v string) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldGT(FieldSslSerialNumber, v))
+}
+
+// SslSerialNumberGTE applies the GTE predicate on the "ssl_serial_number" field.
+func SslSerialNumberGTE(v string) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldGTE(FieldSslSerialNumber, v))
+}
+
+// SslSerialNumberLT applies the LT predicate on the "ssl_serial_number" field.
+func SslSerialNumberLT(v string) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldLT(FieldSslSerialNumber, v))
+}
+
+// SslSerialNumberLTE applies the LTE predicate on the "ssl_serial_number" field.
+func SslSerialNumberLTE(v string) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldLTE(FieldSslSerialNumber, v))
+}
+
+// SslSerialNumberContains applies the Contains predicate on the "ssl_serial_number" field.
+func SslSerialNumberContains(v string) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldContains(FieldSslSerialNumber, v))
+}
+
+// SslSerialNumberHasPrefix applies the HasPrefix predicate on the "ssl_serial_number" field.
+func SslSerialNumberHasPrefix(v string) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldHasPrefix(FieldSslSerialNumber, v))
+}
+
+// SslSerialNumberHasSuffix applies the HasSuffix predicate on the "ssl_serial_number" field.
+func SslSerialNumberHasSuffix(v string) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldHasSuffix(FieldSslSerialNumber, v))
+}
+
+// SslSerialNumberIsNil applies the IsNil predicate on the "ssl_serial_number" field.
+func SslSerialNumberIsNil() predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldIsNull(FieldSslSerialNumber))
+}
+
+// SslSerialNumberNotNil applies the NotNil predicate on the "ssl_serial_number" field.
+func SslSerialNumberNotNil() predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldNotNull(FieldSslSerialNumber))
+}
+
+// SslSerialNumberEqualFold applies the EqualFold predicate on the "ssl_serial_number" field.
+func SslSerialNumberEqualFold(v string) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldEqualFold(FieldSslSerialNumber, v))
+}
+
+// SslSerialNumberContainsFold applies the ContainsFold predicate on the "ssl_serial_number" field.
+func SslSerialNumberContainsFold(v string) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldContainsFold(FieldSslSerialNumber, v))
+}
+
+// SslVersionEQ applies the EQ predicate on the "ssl_version" field.
+func SslVersionEQ(v int) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldEQ(FieldSslVersion, v))
+}
+
+// SslVersionNEQ applies the NEQ predicate on the "ssl_version" field.
+func SslVersionNEQ(v int) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldNEQ(FieldSslVersion, v))
+}
+
+// SslVersionIn applies the In predicate on the "ssl_version" field.
+func SslVersionIn(vs ...int) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldIn(FieldSslVersion, vs...))
+}
+
+// SslVersionNotIn applies the NotIn predicate on the "ssl_version" field.
+func SslVersionNotIn(vs ...int) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldNotIn(FieldSslVersion, vs...))
+}
+
+// SslVersionGT applies the GT predicate on the "ssl_version" field.
+func SslVersionGT(v int) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldGT(FieldSslVersion, v))
+}
+
+// SslVersionGTE applies the GTE predicate on the "ssl_version" field.
+func SslVersionGTE(v int) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldGTE(FieldSslVersion, v))
+}
+
+// SslVersionLT applies the LT predicate on the "ssl_version" field.
+func SslVersionLT(v int) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldLT(FieldSslVersion, v))
+}
+
+// SslVersionLTE applies the LTE predicate on the "ssl_version" field.
+func SslVersionLTE(v int) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldLTE(FieldSslVersion, v))
+}
+
+// SslVersionIsNil applies the IsNil predicate on the "ssl_version" field.
+func SslVersionIsNil() predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldIsNull(FieldSslVersion))
+}
+
+// SslVersionNotNil applies the NotNil predicate on the "ssl_version" field.
+func SslVersionNotNil() predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldNotNull(FieldSslVersion))
 }
 
 // And groups predicates with the AND operator between them.

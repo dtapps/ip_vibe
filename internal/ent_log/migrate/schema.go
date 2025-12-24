@@ -21,12 +21,15 @@ var (
 		{Name: "http_status", Type: field.TypeInt, Nullable: true, Comment: "HTTP/HTTPS 状态码"},
 		{Name: "ip_resolved", Type: field.TypeJSON, Nullable: true, Comment: "解析到的 IP 地址列表"},
 		{Name: "error_log", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "详细错误信息或异常堆栈"},
-		{Name: "ssl_expiry_date", Type: field.TypeTime, Nullable: true, Comment: "证书过期日期"},
-		{Name: "ssl_common_name", Type: field.TypeString, Nullable: true, Comment: "证书主体通用名 (Subject CN)"},
-		{Name: "ssl_issuer_name", Type: field.TypeString, Nullable: true, Comment: "证书颁发者通用名 (Issuer CN)"},
-		{Name: "ssl_signature_alg", Type: field.TypeString, Nullable: true, Comment: "证书签名算法"},
-		{Name: "ssl_san_list", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "证书主体别名列表 (SANs，用逗号分隔)"},
-		{Name: "ssl_certificate_chain", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "完整的 SSL 证书链信息 (PEM 格式文本)"},
+		{Name: "ssl_not_date", Type: field.TypeTime, Nullable: true, Comment: "证书生效日期（NotBefore）"},
+		{Name: "ssl_expiry_date", Type: field.TypeTime, Nullable: true, Comment: "证书过期日期（NotAfter）"},
+		{Name: "ssl_common_name", Type: field.TypeString, Nullable: true, Comment: "证书主体通用名 (Subject CommonName)"},
+		{Name: "ssl_issuer_name", Type: field.TypeString, Nullable: true, Comment: "证书颁发者通用名 (Issuer CommonName)"},
+		{Name: "ssl_signature_alg", Type: field.TypeString, Nullable: true, Comment: "证书签名算法 (SignatureAlgorithm)"},
+		{Name: "ssl_san_list", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "证书主体别名列表 (DNSNames，用逗号分隔)"},
+		{Name: "ssl_certificate_chain", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "完整的 SSL 证书链信息 (PEM格式)"},
+		{Name: "ssl_serial_number", Type: field.TypeString, Nullable: true, Comment: "序列号 (SerialNumber)"},
+		{Name: "ssl_version", Type: field.TypeInt, Nullable: true, Comment: "版本 (Version)"},
 	}
 	// DomainMonitorHistoryTable holds the schema information for the "domain_monitor_history" table.
 	DomainMonitorHistoryTable = &schema.Table{

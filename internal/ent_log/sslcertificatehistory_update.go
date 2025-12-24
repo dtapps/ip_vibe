@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 	"vibe_ip/internal/ent_log/predicate"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
 
@@ -26,188 +25,6 @@ type SSLCertificateHistoryUpdate struct {
 // Where appends a list predicates to the SSLCertificateHistoryUpdate builder.
 func (_u *SSLCertificateHistoryUpdate) Where(ps ...predicate.SSLCertificateHistory) *SSLCertificateHistoryUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetCertDomain sets the "cert_domain" field.
-func (_u *SSLCertificateHistoryUpdate) SetCertDomain(v string) *SSLCertificateHistoryUpdate {
-	_u.mutation.SetCertDomain(v)
-	return _u
-}
-
-// SetNillableCertDomain sets the "cert_domain" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdate) SetNillableCertDomain(v *string) *SSLCertificateHistoryUpdate {
-	if v != nil {
-		_u.SetCertDomain(*v)
-	}
-	return _u
-}
-
-// ClearCertDomain clears the value of the "cert_domain" field.
-func (_u *SSLCertificateHistoryUpdate) ClearCertDomain() *SSLCertificateHistoryUpdate {
-	_u.mutation.ClearCertDomain()
-	return _u
-}
-
-// SetCertURL sets the "cert_url" field.
-func (_u *SSLCertificateHistoryUpdate) SetCertURL(v string) *SSLCertificateHistoryUpdate {
-	_u.mutation.SetCertURL(v)
-	return _u
-}
-
-// SetNillableCertURL sets the "cert_url" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdate) SetNillableCertURL(v *string) *SSLCertificateHistoryUpdate {
-	if v != nil {
-		_u.SetCertURL(*v)
-	}
-	return _u
-}
-
-// ClearCertURL clears the value of the "cert_url" field.
-func (_u *SSLCertificateHistoryUpdate) ClearCertURL() *SSLCertificateHistoryUpdate {
-	_u.mutation.ClearCertURL()
-	return _u
-}
-
-// SetCertStableURL sets the "cert_stable_url" field.
-func (_u *SSLCertificateHistoryUpdate) SetCertStableURL(v string) *SSLCertificateHistoryUpdate {
-	_u.mutation.SetCertStableURL(v)
-	return _u
-}
-
-// SetNillableCertStableURL sets the "cert_stable_url" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdate) SetNillableCertStableURL(v *string) *SSLCertificateHistoryUpdate {
-	if v != nil {
-		_u.SetCertStableURL(*v)
-	}
-	return _u
-}
-
-// ClearCertStableURL clears the value of the "cert_stable_url" field.
-func (_u *SSLCertificateHistoryUpdate) ClearCertStableURL() *SSLCertificateHistoryUpdate {
-	_u.mutation.ClearCertStableURL()
-	return _u
-}
-
-// SetCertPrivateKey sets the "cert_private_key" field.
-func (_u *SSLCertificateHistoryUpdate) SetCertPrivateKey(v string) *SSLCertificateHistoryUpdate {
-	_u.mutation.SetCertPrivateKey(v)
-	return _u
-}
-
-// SetNillableCertPrivateKey sets the "cert_private_key" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdate) SetNillableCertPrivateKey(v *string) *SSLCertificateHistoryUpdate {
-	if v != nil {
-		_u.SetCertPrivateKey(*v)
-	}
-	return _u
-}
-
-// SetCertCertificate sets the "cert_certificate" field.
-func (_u *SSLCertificateHistoryUpdate) SetCertCertificate(v string) *SSLCertificateHistoryUpdate {
-	_u.mutation.SetCertCertificate(v)
-	return _u
-}
-
-// SetNillableCertCertificate sets the "cert_certificate" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdate) SetNillableCertCertificate(v *string) *SSLCertificateHistoryUpdate {
-	if v != nil {
-		_u.SetCertCertificate(*v)
-	}
-	return _u
-}
-
-// SetCertIssuerCertificate sets the "cert_issuer_certificate" field.
-func (_u *SSLCertificateHistoryUpdate) SetCertIssuerCertificate(v string) *SSLCertificateHistoryUpdate {
-	_u.mutation.SetCertIssuerCertificate(v)
-	return _u
-}
-
-// SetNillableCertIssuerCertificate sets the "cert_issuer_certificate" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdate) SetNillableCertIssuerCertificate(v *string) *SSLCertificateHistoryUpdate {
-	if v != nil {
-		_u.SetCertIssuerCertificate(*v)
-	}
-	return _u
-}
-
-// ClearCertIssuerCertificate clears the value of the "cert_issuer_certificate" field.
-func (_u *SSLCertificateHistoryUpdate) ClearCertIssuerCertificate() *SSLCertificateHistoryUpdate {
-	_u.mutation.ClearCertIssuerCertificate()
-	return _u
-}
-
-// SetCertCsr sets the "cert_csr" field.
-func (_u *SSLCertificateHistoryUpdate) SetCertCsr(v string) *SSLCertificateHistoryUpdate {
-	_u.mutation.SetCertCsr(v)
-	return _u
-}
-
-// SetNillableCertCsr sets the "cert_csr" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdate) SetNillableCertCsr(v *string) *SSLCertificateHistoryUpdate {
-	if v != nil {
-		_u.SetCertCsr(*v)
-	}
-	return _u
-}
-
-// ClearCertCsr clears the value of the "cert_csr" field.
-func (_u *SSLCertificateHistoryUpdate) ClearCertCsr() *SSLCertificateHistoryUpdate {
-	_u.mutation.ClearCertCsr()
-	return _u
-}
-
-// SetNotBefore sets the "not_before" field.
-func (_u *SSLCertificateHistoryUpdate) SetNotBefore(v time.Time) *SSLCertificateHistoryUpdate {
-	_u.mutation.SetNotBefore(v)
-	return _u
-}
-
-// SetNillableNotBefore sets the "not_before" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdate) SetNillableNotBefore(v *time.Time) *SSLCertificateHistoryUpdate {
-	if v != nil {
-		_u.SetNotBefore(*v)
-	}
-	return _u
-}
-
-// ClearNotBefore clears the value of the "not_before" field.
-func (_u *SSLCertificateHistoryUpdate) ClearNotBefore() *SSLCertificateHistoryUpdate {
-	_u.mutation.ClearNotBefore()
-	return _u
-}
-
-// SetNotAfter sets the "not_after" field.
-func (_u *SSLCertificateHistoryUpdate) SetNotAfter(v time.Time) *SSLCertificateHistoryUpdate {
-	_u.mutation.SetNotAfter(v)
-	return _u
-}
-
-// SetNillableNotAfter sets the "not_after" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdate) SetNillableNotAfter(v *time.Time) *SSLCertificateHistoryUpdate {
-	if v != nil {
-		_u.SetNotAfter(*v)
-	}
-	return _u
-}
-
-// ClearNotAfter clears the value of the "not_after" field.
-func (_u *SSLCertificateHistoryUpdate) ClearNotAfter() *SSLCertificateHistoryUpdate {
-	_u.mutation.ClearNotAfter()
-	return _u
-}
-
-// SetProvider sets the "provider" field.
-func (_u *SSLCertificateHistoryUpdate) SetProvider(v sslcertificatehistory.Provider) *SSLCertificateHistoryUpdate {
-	_u.mutation.SetProvider(v)
-	return _u
-}
-
-// SetNillableProvider sets the "provider" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdate) SetNillableProvider(v *sslcertificatehistory.Provider) *SSLCertificateHistoryUpdate {
-	if v != nil {
-		_u.SetProvider(*v)
-	}
 	return _u
 }
 
@@ -243,16 +60,6 @@ func (_u *SSLCertificateHistoryUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (_u *SSLCertificateHistoryUpdate) check() error {
-	if v, ok := _u.mutation.Provider(); ok {
-		if err := sslcertificatehistory.ProviderValidator(v); err != nil {
-			return &ValidationError{Name: "provider", err: fmt.Errorf(`ent_log: validator failed for field "SSLCertificateHistory.provider": %w`, err)}
-		}
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *SSLCertificateHistoryUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *SSLCertificateHistoryUpdate {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -260,9 +67,6 @@ func (_u *SSLCertificateHistoryUpdate) Modify(modifiers ...func(u *sql.UpdateBui
 }
 
 func (_u *SSLCertificateHistoryUpdate) sqlSave(ctx context.Context) (_node int, err error) {
-	if err := _u.check(); err != nil {
-		return _node, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(sslcertificatehistory.Table, sslcertificatehistory.Columns, sqlgraph.NewFieldSpec(sslcertificatehistory.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -271,56 +75,26 @@ func (_u *SSLCertificateHistoryUpdate) sqlSave(ctx context.Context) (_node int, 
 			}
 		}
 	}
-	if value, ok := _u.mutation.CertDomain(); ok {
-		_spec.SetField(sslcertificatehistory.FieldCertDomain, field.TypeString, value)
-	}
 	if _u.mutation.CertDomainCleared() {
 		_spec.ClearField(sslcertificatehistory.FieldCertDomain, field.TypeString)
-	}
-	if value, ok := _u.mutation.CertURL(); ok {
-		_spec.SetField(sslcertificatehistory.FieldCertURL, field.TypeString, value)
 	}
 	if _u.mutation.CertURLCleared() {
 		_spec.ClearField(sslcertificatehistory.FieldCertURL, field.TypeString)
 	}
-	if value, ok := _u.mutation.CertStableURL(); ok {
-		_spec.SetField(sslcertificatehistory.FieldCertStableURL, field.TypeString, value)
-	}
 	if _u.mutation.CertStableURLCleared() {
 		_spec.ClearField(sslcertificatehistory.FieldCertStableURL, field.TypeString)
-	}
-	if value, ok := _u.mutation.CertPrivateKey(); ok {
-		_spec.SetField(sslcertificatehistory.FieldCertPrivateKey, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.CertCertificate(); ok {
-		_spec.SetField(sslcertificatehistory.FieldCertCertificate, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.CertIssuerCertificate(); ok {
-		_spec.SetField(sslcertificatehistory.FieldCertIssuerCertificate, field.TypeString, value)
 	}
 	if _u.mutation.CertIssuerCertificateCleared() {
 		_spec.ClearField(sslcertificatehistory.FieldCertIssuerCertificate, field.TypeString)
 	}
-	if value, ok := _u.mutation.CertCsr(); ok {
-		_spec.SetField(sslcertificatehistory.FieldCertCsr, field.TypeString, value)
-	}
 	if _u.mutation.CertCsrCleared() {
 		_spec.ClearField(sslcertificatehistory.FieldCertCsr, field.TypeString)
-	}
-	if value, ok := _u.mutation.NotBefore(); ok {
-		_spec.SetField(sslcertificatehistory.FieldNotBefore, field.TypeTime, value)
 	}
 	if _u.mutation.NotBeforeCleared() {
 		_spec.ClearField(sslcertificatehistory.FieldNotBefore, field.TypeTime)
 	}
-	if value, ok := _u.mutation.NotAfter(); ok {
-		_spec.SetField(sslcertificatehistory.FieldNotAfter, field.TypeTime, value)
-	}
 	if _u.mutation.NotAfterCleared() {
 		_spec.ClearField(sslcertificatehistory.FieldNotAfter, field.TypeTime)
-	}
-	if value, ok := _u.mutation.Provider(); ok {
-		_spec.SetField(sslcertificatehistory.FieldProvider, field.TypeEnum, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -342,188 +116,6 @@ type SSLCertificateHistoryUpdateOne struct {
 	hooks     []Hook
 	mutation  *SSLCertificateHistoryMutation
 	modifiers []func(*sql.UpdateBuilder)
-}
-
-// SetCertDomain sets the "cert_domain" field.
-func (_u *SSLCertificateHistoryUpdateOne) SetCertDomain(v string) *SSLCertificateHistoryUpdateOne {
-	_u.mutation.SetCertDomain(v)
-	return _u
-}
-
-// SetNillableCertDomain sets the "cert_domain" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdateOne) SetNillableCertDomain(v *string) *SSLCertificateHistoryUpdateOne {
-	if v != nil {
-		_u.SetCertDomain(*v)
-	}
-	return _u
-}
-
-// ClearCertDomain clears the value of the "cert_domain" field.
-func (_u *SSLCertificateHistoryUpdateOne) ClearCertDomain() *SSLCertificateHistoryUpdateOne {
-	_u.mutation.ClearCertDomain()
-	return _u
-}
-
-// SetCertURL sets the "cert_url" field.
-func (_u *SSLCertificateHistoryUpdateOne) SetCertURL(v string) *SSLCertificateHistoryUpdateOne {
-	_u.mutation.SetCertURL(v)
-	return _u
-}
-
-// SetNillableCertURL sets the "cert_url" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdateOne) SetNillableCertURL(v *string) *SSLCertificateHistoryUpdateOne {
-	if v != nil {
-		_u.SetCertURL(*v)
-	}
-	return _u
-}
-
-// ClearCertURL clears the value of the "cert_url" field.
-func (_u *SSLCertificateHistoryUpdateOne) ClearCertURL() *SSLCertificateHistoryUpdateOne {
-	_u.mutation.ClearCertURL()
-	return _u
-}
-
-// SetCertStableURL sets the "cert_stable_url" field.
-func (_u *SSLCertificateHistoryUpdateOne) SetCertStableURL(v string) *SSLCertificateHistoryUpdateOne {
-	_u.mutation.SetCertStableURL(v)
-	return _u
-}
-
-// SetNillableCertStableURL sets the "cert_stable_url" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdateOne) SetNillableCertStableURL(v *string) *SSLCertificateHistoryUpdateOne {
-	if v != nil {
-		_u.SetCertStableURL(*v)
-	}
-	return _u
-}
-
-// ClearCertStableURL clears the value of the "cert_stable_url" field.
-func (_u *SSLCertificateHistoryUpdateOne) ClearCertStableURL() *SSLCertificateHistoryUpdateOne {
-	_u.mutation.ClearCertStableURL()
-	return _u
-}
-
-// SetCertPrivateKey sets the "cert_private_key" field.
-func (_u *SSLCertificateHistoryUpdateOne) SetCertPrivateKey(v string) *SSLCertificateHistoryUpdateOne {
-	_u.mutation.SetCertPrivateKey(v)
-	return _u
-}
-
-// SetNillableCertPrivateKey sets the "cert_private_key" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdateOne) SetNillableCertPrivateKey(v *string) *SSLCertificateHistoryUpdateOne {
-	if v != nil {
-		_u.SetCertPrivateKey(*v)
-	}
-	return _u
-}
-
-// SetCertCertificate sets the "cert_certificate" field.
-func (_u *SSLCertificateHistoryUpdateOne) SetCertCertificate(v string) *SSLCertificateHistoryUpdateOne {
-	_u.mutation.SetCertCertificate(v)
-	return _u
-}
-
-// SetNillableCertCertificate sets the "cert_certificate" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdateOne) SetNillableCertCertificate(v *string) *SSLCertificateHistoryUpdateOne {
-	if v != nil {
-		_u.SetCertCertificate(*v)
-	}
-	return _u
-}
-
-// SetCertIssuerCertificate sets the "cert_issuer_certificate" field.
-func (_u *SSLCertificateHistoryUpdateOne) SetCertIssuerCertificate(v string) *SSLCertificateHistoryUpdateOne {
-	_u.mutation.SetCertIssuerCertificate(v)
-	return _u
-}
-
-// SetNillableCertIssuerCertificate sets the "cert_issuer_certificate" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdateOne) SetNillableCertIssuerCertificate(v *string) *SSLCertificateHistoryUpdateOne {
-	if v != nil {
-		_u.SetCertIssuerCertificate(*v)
-	}
-	return _u
-}
-
-// ClearCertIssuerCertificate clears the value of the "cert_issuer_certificate" field.
-func (_u *SSLCertificateHistoryUpdateOne) ClearCertIssuerCertificate() *SSLCertificateHistoryUpdateOne {
-	_u.mutation.ClearCertIssuerCertificate()
-	return _u
-}
-
-// SetCertCsr sets the "cert_csr" field.
-func (_u *SSLCertificateHistoryUpdateOne) SetCertCsr(v string) *SSLCertificateHistoryUpdateOne {
-	_u.mutation.SetCertCsr(v)
-	return _u
-}
-
-// SetNillableCertCsr sets the "cert_csr" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdateOne) SetNillableCertCsr(v *string) *SSLCertificateHistoryUpdateOne {
-	if v != nil {
-		_u.SetCertCsr(*v)
-	}
-	return _u
-}
-
-// ClearCertCsr clears the value of the "cert_csr" field.
-func (_u *SSLCertificateHistoryUpdateOne) ClearCertCsr() *SSLCertificateHistoryUpdateOne {
-	_u.mutation.ClearCertCsr()
-	return _u
-}
-
-// SetNotBefore sets the "not_before" field.
-func (_u *SSLCertificateHistoryUpdateOne) SetNotBefore(v time.Time) *SSLCertificateHistoryUpdateOne {
-	_u.mutation.SetNotBefore(v)
-	return _u
-}
-
-// SetNillableNotBefore sets the "not_before" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdateOne) SetNillableNotBefore(v *time.Time) *SSLCertificateHistoryUpdateOne {
-	if v != nil {
-		_u.SetNotBefore(*v)
-	}
-	return _u
-}
-
-// ClearNotBefore clears the value of the "not_before" field.
-func (_u *SSLCertificateHistoryUpdateOne) ClearNotBefore() *SSLCertificateHistoryUpdateOne {
-	_u.mutation.ClearNotBefore()
-	return _u
-}
-
-// SetNotAfter sets the "not_after" field.
-func (_u *SSLCertificateHistoryUpdateOne) SetNotAfter(v time.Time) *SSLCertificateHistoryUpdateOne {
-	_u.mutation.SetNotAfter(v)
-	return _u
-}
-
-// SetNillableNotAfter sets the "not_after" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdateOne) SetNillableNotAfter(v *time.Time) *SSLCertificateHistoryUpdateOne {
-	if v != nil {
-		_u.SetNotAfter(*v)
-	}
-	return _u
-}
-
-// ClearNotAfter clears the value of the "not_after" field.
-func (_u *SSLCertificateHistoryUpdateOne) ClearNotAfter() *SSLCertificateHistoryUpdateOne {
-	_u.mutation.ClearNotAfter()
-	return _u
-}
-
-// SetProvider sets the "provider" field.
-func (_u *SSLCertificateHistoryUpdateOne) SetProvider(v sslcertificatehistory.Provider) *SSLCertificateHistoryUpdateOne {
-	_u.mutation.SetProvider(v)
-	return _u
-}
-
-// SetNillableProvider sets the "provider" field if the given value is not nil.
-func (_u *SSLCertificateHistoryUpdateOne) SetNillableProvider(v *sslcertificatehistory.Provider) *SSLCertificateHistoryUpdateOne {
-	if v != nil {
-		_u.SetProvider(*v)
-	}
-	return _u
 }
 
 // Mutation returns the SSLCertificateHistoryMutation object of the builder.
@@ -571,16 +163,6 @@ func (_u *SSLCertificateHistoryUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (_u *SSLCertificateHistoryUpdateOne) check() error {
-	if v, ok := _u.mutation.Provider(); ok {
-		if err := sslcertificatehistory.ProviderValidator(v); err != nil {
-			return &ValidationError{Name: "provider", err: fmt.Errorf(`ent_log: validator failed for field "SSLCertificateHistory.provider": %w`, err)}
-		}
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *SSLCertificateHistoryUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *SSLCertificateHistoryUpdateOne {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -588,9 +170,6 @@ func (_u *SSLCertificateHistoryUpdateOne) Modify(modifiers ...func(u *sql.Update
 }
 
 func (_u *SSLCertificateHistoryUpdateOne) sqlSave(ctx context.Context) (_node *SSLCertificateHistory, err error) {
-	if err := _u.check(); err != nil {
-		return _node, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(sslcertificatehistory.Table, sslcertificatehistory.Columns, sqlgraph.NewFieldSpec(sslcertificatehistory.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
@@ -616,56 +195,26 @@ func (_u *SSLCertificateHistoryUpdateOne) sqlSave(ctx context.Context) (_node *S
 			}
 		}
 	}
-	if value, ok := _u.mutation.CertDomain(); ok {
-		_spec.SetField(sslcertificatehistory.FieldCertDomain, field.TypeString, value)
-	}
 	if _u.mutation.CertDomainCleared() {
 		_spec.ClearField(sslcertificatehistory.FieldCertDomain, field.TypeString)
-	}
-	if value, ok := _u.mutation.CertURL(); ok {
-		_spec.SetField(sslcertificatehistory.FieldCertURL, field.TypeString, value)
 	}
 	if _u.mutation.CertURLCleared() {
 		_spec.ClearField(sslcertificatehistory.FieldCertURL, field.TypeString)
 	}
-	if value, ok := _u.mutation.CertStableURL(); ok {
-		_spec.SetField(sslcertificatehistory.FieldCertStableURL, field.TypeString, value)
-	}
 	if _u.mutation.CertStableURLCleared() {
 		_spec.ClearField(sslcertificatehistory.FieldCertStableURL, field.TypeString)
-	}
-	if value, ok := _u.mutation.CertPrivateKey(); ok {
-		_spec.SetField(sslcertificatehistory.FieldCertPrivateKey, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.CertCertificate(); ok {
-		_spec.SetField(sslcertificatehistory.FieldCertCertificate, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.CertIssuerCertificate(); ok {
-		_spec.SetField(sslcertificatehistory.FieldCertIssuerCertificate, field.TypeString, value)
 	}
 	if _u.mutation.CertIssuerCertificateCleared() {
 		_spec.ClearField(sslcertificatehistory.FieldCertIssuerCertificate, field.TypeString)
 	}
-	if value, ok := _u.mutation.CertCsr(); ok {
-		_spec.SetField(sslcertificatehistory.FieldCertCsr, field.TypeString, value)
-	}
 	if _u.mutation.CertCsrCleared() {
 		_spec.ClearField(sslcertificatehistory.FieldCertCsr, field.TypeString)
-	}
-	if value, ok := _u.mutation.NotBefore(); ok {
-		_spec.SetField(sslcertificatehistory.FieldNotBefore, field.TypeTime, value)
 	}
 	if _u.mutation.NotBeforeCleared() {
 		_spec.ClearField(sslcertificatehistory.FieldNotBefore, field.TypeTime)
 	}
-	if value, ok := _u.mutation.NotAfter(); ok {
-		_spec.SetField(sslcertificatehistory.FieldNotAfter, field.TypeTime, value)
-	}
 	if _u.mutation.NotAfterCleared() {
 		_spec.ClearField(sslcertificatehistory.FieldNotAfter, field.TypeTime)
-	}
-	if value, ok := _u.mutation.Provider(); ok {
-		_spec.SetField(sslcertificatehistory.FieldProvider, field.TypeEnum, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &SSLCertificateHistory{config: _u.config}

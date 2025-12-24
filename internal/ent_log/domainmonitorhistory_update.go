@@ -90,6 +90,9 @@ func (_u *DomainMonitorHistoryUpdate) sqlSave(ctx context.Context) (_node int, e
 	if _u.mutation.ErrorLogCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldErrorLog, field.TypeString)
 	}
+	if _u.mutation.SslNotDateCleared() {
+		_spec.ClearField(domainmonitorhistory.FieldSslNotDate, field.TypeTime)
+	}
 	if _u.mutation.SslExpiryDateCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldSslExpiryDate, field.TypeTime)
 	}
@@ -107,6 +110,12 @@ func (_u *DomainMonitorHistoryUpdate) sqlSave(ctx context.Context) (_node int, e
 	}
 	if _u.mutation.SslCertificateChainCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldSslCertificateChain, field.TypeString)
+	}
+	if _u.mutation.SslSerialNumberCleared() {
+		_spec.ClearField(domainmonitorhistory.FieldSslSerialNumber, field.TypeString)
+	}
+	if _u.mutation.SslVersionCleared() {
+		_spec.ClearField(domainmonitorhistory.FieldSslVersion, field.TypeInt)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -222,6 +231,9 @@ func (_u *DomainMonitorHistoryUpdateOne) sqlSave(ctx context.Context) (_node *Do
 	if _u.mutation.ErrorLogCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldErrorLog, field.TypeString)
 	}
+	if _u.mutation.SslNotDateCleared() {
+		_spec.ClearField(domainmonitorhistory.FieldSslNotDate, field.TypeTime)
+	}
 	if _u.mutation.SslExpiryDateCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldSslExpiryDate, field.TypeTime)
 	}
@@ -239,6 +251,12 @@ func (_u *DomainMonitorHistoryUpdateOne) sqlSave(ctx context.Context) (_node *Do
 	}
 	if _u.mutation.SslCertificateChainCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldSslCertificateChain, field.TypeString)
+	}
+	if _u.mutation.SslSerialNumberCleared() {
+		_spec.ClearField(domainmonitorhistory.FieldSslSerialNumber, field.TypeString)
+	}
+	if _u.mutation.SslVersionCleared() {
+		_spec.ClearField(domainmonitorhistory.FieldSslVersion, field.TypeInt)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &DomainMonitorHistory{config: _u.config}

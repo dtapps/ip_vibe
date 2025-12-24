@@ -261,6 +261,31 @@ func (q *DomainMonitorHistoryQuery) OrderByErrorLogAsc() *DomainMonitorHistoryQu
 	return q.Order(Asc(domainmonitorhistory.FieldErrorLog))
 }
 
+// OrderBySslNotDateDesc 按字段 ssl_not_date 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *DomainMonitorHistoryQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DomainMonitorHistory.Query().
+//	    OrderBySslNotDateDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DomainMonitorHistoryQuery) OrderBySslNotDateDesc() *DomainMonitorHistoryQuery {
+	return q.Order(Desc(domainmonitorhistory.FieldSslNotDate))
+}
+
+// OrderBySslNotDateAsc 按字段 ssl_not_date 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *DomainMonitorHistoryQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DomainMonitorHistory.Query().
+//	    OrderBySslNotDateAsc().
+//	    All(ctx)
+func (q *DomainMonitorHistoryQuery) OrderBySslNotDateAsc() *DomainMonitorHistoryQuery {
+	return q.Order(Asc(domainmonitorhistory.FieldSslNotDate))
+}
+
 // OrderBySslExpiryDateDesc 按字段 ssl_expiry_date 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *DomainMonitorHistoryQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
@@ -409,6 +434,56 @@ func (q *DomainMonitorHistoryQuery) OrderBySslCertificateChainDesc() *DomainMoni
 //	    All(ctx)
 func (q *DomainMonitorHistoryQuery) OrderBySslCertificateChainAsc() *DomainMonitorHistoryQuery {
 	return q.Order(Asc(domainmonitorhistory.FieldSslCertificateChain))
+}
+
+// OrderBySslSerialNumberDesc 按字段 ssl_serial_number 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *DomainMonitorHistoryQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DomainMonitorHistory.Query().
+//	    OrderBySslSerialNumberDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DomainMonitorHistoryQuery) OrderBySslSerialNumberDesc() *DomainMonitorHistoryQuery {
+	return q.Order(Desc(domainmonitorhistory.FieldSslSerialNumber))
+}
+
+// OrderBySslSerialNumberAsc 按字段 ssl_serial_number 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *DomainMonitorHistoryQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DomainMonitorHistory.Query().
+//	    OrderBySslSerialNumberAsc().
+//	    All(ctx)
+func (q *DomainMonitorHistoryQuery) OrderBySslSerialNumberAsc() *DomainMonitorHistoryQuery {
+	return q.Order(Asc(domainmonitorhistory.FieldSslSerialNumber))
+}
+
+// OrderBySslVersionDesc 按字段 ssl_version 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *DomainMonitorHistoryQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DomainMonitorHistory.Query().
+//	    OrderBySslVersionDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DomainMonitorHistoryQuery) OrderBySslVersionDesc() *DomainMonitorHistoryQuery {
+	return q.Order(Desc(domainmonitorhistory.FieldSslVersion))
+}
+
+// OrderBySslVersionAsc 按字段 ssl_version 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *DomainMonitorHistoryQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DomainMonitorHistory.Query().
+//	    OrderBySslVersionAsc().
+//	    All(ctx)
+func (q *DomainMonitorHistoryQuery) OrderBySslVersionAsc() *DomainMonitorHistoryQuery {
+	return q.Order(Asc(domainmonitorhistory.FieldSslVersion))
 }
 
 // OrderByIDDesc 按主键 ID 降序排列查询结果。

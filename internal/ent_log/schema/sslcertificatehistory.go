@@ -49,51 +49,61 @@ func (SSLCertificateHistory) Fields() []ent.Field {
 
 		field.String("cert_domain").
 			Optional().
+			Immutable().
 			Comment("证书域名").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("cert_url").
 			Optional().
+			Immutable().
 			Comment("证书URL").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("cert_stable_url").
 			Optional().
+			Immutable().
 			Comment("稳定证书URL").
 			Annotations(entsql.WithComments(true)),
 
 		field.Text("cert_private_key").
 			Sensitive(). // 敏感
+			Immutable().
 			Comment("私钥(PEM格式)").
 			Annotations(entsql.WithComments(true)),
 
 		field.Text("cert_certificate").
+			Immutable().
 			Comment("证书(PEM格式)").
 			Annotations(entsql.WithComments(true)),
 
 		field.Text("cert_issuer_certificate").
 			Optional().
+			Immutable().
 			Comment("颁发者证书(PEM格式)").
 			Annotations(entsql.WithComments(true)),
 
 		field.Text("cert_csr").
 			Optional().
+			Immutable().
 			Comment("证书签名请求(PEM格式)").
 			Annotations(entsql.WithComments(true)),
 
 		field.Time("not_before").
 			Optional().
+			Immutable().
 			Comment("证书生效时间").
 			Annotations(entsql.WithComments(true)),
 
 		field.Time("not_after").
 			Optional().
+			Immutable().
 			Comment("证书过期时间").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("provider").
 			Values(schematype.GetSSLRecordProviders...).
 			Default(schematype.SSLRecordProviderLetsencrypt).
+			Immutable().
 			Comment("CA提供商").
 			Annotations(entsql.WithComments(true)),
 	}

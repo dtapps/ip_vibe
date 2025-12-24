@@ -86,40 +86,58 @@ func (DomainMonitorHistory) Fields() []ent.Field {
 			Comment("详细错误信息或异常堆栈").
 			Annotations(entsql.WithComments(true)),
 
+		field.Time("ssl_not_date").
+			Optional().
+			Immutable().
+			Comment("证书生效日期（NotBefore）").
+			Annotations(entsql.WithComments(true)),
+
 		field.Time("ssl_expiry_date").
 			Optional().
 			Immutable().
-			Comment("证书过期日期").
+			Comment("证书过期日期（NotAfter）").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("ssl_common_name").
 			Optional().
 			Immutable().
-			Comment("证书主体通用名 (Subject CN)").
+			Comment("证书主体通用名 (Subject CommonName)").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("ssl_issuer_name").
 			Optional().
 			Immutable().
-			Comment("证书颁发者通用名 (Issuer CN)").
+			Comment("证书颁发者通用名 (Issuer CommonName)").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("ssl_signature_alg").
 			Optional().
 			Immutable().
-			Comment("证书签名算法").
+			Comment("证书签名算法 (SignatureAlgorithm)").
 			Annotations(entsql.WithComments(true)),
 
 		field.Text("ssl_san_list").
 			Optional().
 			Immutable().
-			Comment("证书主体别名列表 (SANs，用逗号分隔)").
+			Comment("证书主体别名列表 (DNSNames，用逗号分隔)").
 			Annotations(entsql.WithComments(true)),
 
 		field.Text("ssl_certificate_chain").
 			Optional().
 			Immutable().
-			Comment("完整的 SSL 证书链信息 (PEM 格式文本)").
+			Comment("完整的 SSL 证书链信息 (PEM格式)").
+			Annotations(entsql.WithComments(true)),
+
+		field.String("ssl_serial_number").
+			Optional().
+			Immutable().
+			Comment("序列号 (SerialNumber)").
+			Annotations(entsql.WithComments(true)),
+
+		field.Int("ssl_version").
+			Optional().
+			Immutable().
+			Comment("版本 (Version)").
 			Annotations(entsql.WithComments(true)),
 	}
 }

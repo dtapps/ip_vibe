@@ -33,12 +33,15 @@ type CheckResult struct {
 	IPResolved []string // 解析的IP地址
 
 	// SSL 证书信息 (HTTP 检查时为空)
-	SSLExpiryDate    time.Time // 证书过期日期
-	SSLCommonName    string    // 证书通用名
-	SSLIssuerName    string    // 证书颁发者
-	SSLSignatureAlg  string    // 签名算法
-	SANList          string    // SAN别名列表
-	CertificateChain string    // 证书链内容 (PEM格式)
+	SSLNotDate          time.Time // 生效日期
+	SSLExpiryDate       time.Time // 过期日期
+	SSLCommonName       string    // 通用名
+	SSLIssuerName       string    // 颁发者
+	SSLSignatureAlg     string    // 签名算法
+	SSLSANList          string    // 主体别名列表
+	SSLCertificateChain string    // 证书链内容 (PEM格式)
+	SSLSerialNumber     string    // 序列号
+	SSLVersion          int       // 版本
 }
 
 // Check 执行实际的网络检查并返回结果
@@ -125,11 +128,12 @@ func (s *DomainCheck) fetchSSLInfo(ctx context.Context, domain string, result *C
 	}
 
 	cert := state.PeerCertificates[0]
+	result.SSLNotDate = cert.NotBefore
 	result.SSLExpiryDate = cert.NotAfter
 	result.SSLCommonName = cert.Subject.CommonName
 	result.SSLIssuerName = cert.Issuer.CommonName
 	result.SSLSignatureAlg = cert.SignatureAlgorithm.String()
-	result.SANList = strings.Join(cert.DNSNames, ",")
+	result.SSLSANList = strings.Join(cert.DNSNames, ",")
 
 	var chain strings.Builder
 	for _, c := range state.PeerCertificates {
@@ -138,7 +142,10 @@ func (s *DomainCheck) fetchSSLInfo(ctx context.Context, domain string, result *C
 			Bytes: c.Raw,
 		}))
 	}
-	result.CertificateChain = chain.String()
+	result.SSLCertificateChain = chain.String()
+
+	result.SSLSerialNumber = cert.SerialNumber.String()
+	result.SSLVersion = cert.Version
 
 	return nil
 }

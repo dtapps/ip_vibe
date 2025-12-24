@@ -377,168 +377,6 @@ type (
 	}
 )
 
-// SetCertDomain sets the "cert_domain" field.
-func (u *SSLCertificateHistoryUpsert) SetCertDomain(v string) *SSLCertificateHistoryUpsert {
-	u.Set(sslcertificatehistory.FieldCertDomain, v)
-	return u
-}
-
-// UpdateCertDomain sets the "cert_domain" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsert) UpdateCertDomain() *SSLCertificateHistoryUpsert {
-	u.SetExcluded(sslcertificatehistory.FieldCertDomain)
-	return u
-}
-
-// ClearCertDomain clears the value of the "cert_domain" field.
-func (u *SSLCertificateHistoryUpsert) ClearCertDomain() *SSLCertificateHistoryUpsert {
-	u.SetNull(sslcertificatehistory.FieldCertDomain)
-	return u
-}
-
-// SetCertURL sets the "cert_url" field.
-func (u *SSLCertificateHistoryUpsert) SetCertURL(v string) *SSLCertificateHistoryUpsert {
-	u.Set(sslcertificatehistory.FieldCertURL, v)
-	return u
-}
-
-// UpdateCertURL sets the "cert_url" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsert) UpdateCertURL() *SSLCertificateHistoryUpsert {
-	u.SetExcluded(sslcertificatehistory.FieldCertURL)
-	return u
-}
-
-// ClearCertURL clears the value of the "cert_url" field.
-func (u *SSLCertificateHistoryUpsert) ClearCertURL() *SSLCertificateHistoryUpsert {
-	u.SetNull(sslcertificatehistory.FieldCertURL)
-	return u
-}
-
-// SetCertStableURL sets the "cert_stable_url" field.
-func (u *SSLCertificateHistoryUpsert) SetCertStableURL(v string) *SSLCertificateHistoryUpsert {
-	u.Set(sslcertificatehistory.FieldCertStableURL, v)
-	return u
-}
-
-// UpdateCertStableURL sets the "cert_stable_url" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsert) UpdateCertStableURL() *SSLCertificateHistoryUpsert {
-	u.SetExcluded(sslcertificatehistory.FieldCertStableURL)
-	return u
-}
-
-// ClearCertStableURL clears the value of the "cert_stable_url" field.
-func (u *SSLCertificateHistoryUpsert) ClearCertStableURL() *SSLCertificateHistoryUpsert {
-	u.SetNull(sslcertificatehistory.FieldCertStableURL)
-	return u
-}
-
-// SetCertPrivateKey sets the "cert_private_key" field.
-func (u *SSLCertificateHistoryUpsert) SetCertPrivateKey(v string) *SSLCertificateHistoryUpsert {
-	u.Set(sslcertificatehistory.FieldCertPrivateKey, v)
-	return u
-}
-
-// UpdateCertPrivateKey sets the "cert_private_key" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsert) UpdateCertPrivateKey() *SSLCertificateHistoryUpsert {
-	u.SetExcluded(sslcertificatehistory.FieldCertPrivateKey)
-	return u
-}
-
-// SetCertCertificate sets the "cert_certificate" field.
-func (u *SSLCertificateHistoryUpsert) SetCertCertificate(v string) *SSLCertificateHistoryUpsert {
-	u.Set(sslcertificatehistory.FieldCertCertificate, v)
-	return u
-}
-
-// UpdateCertCertificate sets the "cert_certificate" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsert) UpdateCertCertificate() *SSLCertificateHistoryUpsert {
-	u.SetExcluded(sslcertificatehistory.FieldCertCertificate)
-	return u
-}
-
-// SetCertIssuerCertificate sets the "cert_issuer_certificate" field.
-func (u *SSLCertificateHistoryUpsert) SetCertIssuerCertificate(v string) *SSLCertificateHistoryUpsert {
-	u.Set(sslcertificatehistory.FieldCertIssuerCertificate, v)
-	return u
-}
-
-// UpdateCertIssuerCertificate sets the "cert_issuer_certificate" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsert) UpdateCertIssuerCertificate() *SSLCertificateHistoryUpsert {
-	u.SetExcluded(sslcertificatehistory.FieldCertIssuerCertificate)
-	return u
-}
-
-// ClearCertIssuerCertificate clears the value of the "cert_issuer_certificate" field.
-func (u *SSLCertificateHistoryUpsert) ClearCertIssuerCertificate() *SSLCertificateHistoryUpsert {
-	u.SetNull(sslcertificatehistory.FieldCertIssuerCertificate)
-	return u
-}
-
-// SetCertCsr sets the "cert_csr" field.
-func (u *SSLCertificateHistoryUpsert) SetCertCsr(v string) *SSLCertificateHistoryUpsert {
-	u.Set(sslcertificatehistory.FieldCertCsr, v)
-	return u
-}
-
-// UpdateCertCsr sets the "cert_csr" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsert) UpdateCertCsr() *SSLCertificateHistoryUpsert {
-	u.SetExcluded(sslcertificatehistory.FieldCertCsr)
-	return u
-}
-
-// ClearCertCsr clears the value of the "cert_csr" field.
-func (u *SSLCertificateHistoryUpsert) ClearCertCsr() *SSLCertificateHistoryUpsert {
-	u.SetNull(sslcertificatehistory.FieldCertCsr)
-	return u
-}
-
-// SetNotBefore sets the "not_before" field.
-func (u *SSLCertificateHistoryUpsert) SetNotBefore(v time.Time) *SSLCertificateHistoryUpsert {
-	u.Set(sslcertificatehistory.FieldNotBefore, v)
-	return u
-}
-
-// UpdateNotBefore sets the "not_before" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsert) UpdateNotBefore() *SSLCertificateHistoryUpsert {
-	u.SetExcluded(sslcertificatehistory.FieldNotBefore)
-	return u
-}
-
-// ClearNotBefore clears the value of the "not_before" field.
-func (u *SSLCertificateHistoryUpsert) ClearNotBefore() *SSLCertificateHistoryUpsert {
-	u.SetNull(sslcertificatehistory.FieldNotBefore)
-	return u
-}
-
-// SetNotAfter sets the "not_after" field.
-func (u *SSLCertificateHistoryUpsert) SetNotAfter(v time.Time) *SSLCertificateHistoryUpsert {
-	u.Set(sslcertificatehistory.FieldNotAfter, v)
-	return u
-}
-
-// UpdateNotAfter sets the "not_after" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsert) UpdateNotAfter() *SSLCertificateHistoryUpsert {
-	u.SetExcluded(sslcertificatehistory.FieldNotAfter)
-	return u
-}
-
-// ClearNotAfter clears the value of the "not_after" field.
-func (u *SSLCertificateHistoryUpsert) ClearNotAfter() *SSLCertificateHistoryUpsert {
-	u.SetNull(sslcertificatehistory.FieldNotAfter)
-	return u
-}
-
-// SetProvider sets the "provider" field.
-func (u *SSLCertificateHistoryUpsert) SetProvider(v sslcertificatehistory.Provider) *SSLCertificateHistoryUpsert {
-	u.Set(sslcertificatehistory.FieldProvider, v)
-	return u
-}
-
-// UpdateProvider sets the "provider" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsert) UpdateProvider() *SSLCertificateHistoryUpsert {
-	u.SetExcluded(sslcertificatehistory.FieldProvider)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -561,6 +399,36 @@ func (u *SSLCertificateHistoryUpsertOne) UpdateNewValues() *SSLCertificateHistor
 		}
 		if _, exists := u.create.mutation.SslRecordID(); exists {
 			s.SetIgnore(sslcertificatehistory.FieldSslRecordID)
+		}
+		if _, exists := u.create.mutation.CertDomain(); exists {
+			s.SetIgnore(sslcertificatehistory.FieldCertDomain)
+		}
+		if _, exists := u.create.mutation.CertURL(); exists {
+			s.SetIgnore(sslcertificatehistory.FieldCertURL)
+		}
+		if _, exists := u.create.mutation.CertStableURL(); exists {
+			s.SetIgnore(sslcertificatehistory.FieldCertStableURL)
+		}
+		if _, exists := u.create.mutation.CertPrivateKey(); exists {
+			s.SetIgnore(sslcertificatehistory.FieldCertPrivateKey)
+		}
+		if _, exists := u.create.mutation.CertCertificate(); exists {
+			s.SetIgnore(sslcertificatehistory.FieldCertCertificate)
+		}
+		if _, exists := u.create.mutation.CertIssuerCertificate(); exists {
+			s.SetIgnore(sslcertificatehistory.FieldCertIssuerCertificate)
+		}
+		if _, exists := u.create.mutation.CertCsr(); exists {
+			s.SetIgnore(sslcertificatehistory.FieldCertCsr)
+		}
+		if _, exists := u.create.mutation.NotBefore(); exists {
+			s.SetIgnore(sslcertificatehistory.FieldNotBefore)
+		}
+		if _, exists := u.create.mutation.NotAfter(); exists {
+			s.SetIgnore(sslcertificatehistory.FieldNotAfter)
+		}
+		if _, exists := u.create.mutation.Provider(); exists {
+			s.SetIgnore(sslcertificatehistory.FieldProvider)
 		}
 	}))
 	return u
@@ -591,195 +459,6 @@ func (u *SSLCertificateHistoryUpsertOne) Update(set func(*SSLCertificateHistoryU
 		set(&SSLCertificateHistoryUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCertDomain sets the "cert_domain" field.
-func (u *SSLCertificateHistoryUpsertOne) SetCertDomain(v string) *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetCertDomain(v)
-	})
-}
-
-// UpdateCertDomain sets the "cert_domain" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertOne) UpdateCertDomain() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateCertDomain()
-	})
-}
-
-// ClearCertDomain clears the value of the "cert_domain" field.
-func (u *SSLCertificateHistoryUpsertOne) ClearCertDomain() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.ClearCertDomain()
-	})
-}
-
-// SetCertURL sets the "cert_url" field.
-func (u *SSLCertificateHistoryUpsertOne) SetCertURL(v string) *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetCertURL(v)
-	})
-}
-
-// UpdateCertURL sets the "cert_url" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertOne) UpdateCertURL() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateCertURL()
-	})
-}
-
-// ClearCertURL clears the value of the "cert_url" field.
-func (u *SSLCertificateHistoryUpsertOne) ClearCertURL() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.ClearCertURL()
-	})
-}
-
-// SetCertStableURL sets the "cert_stable_url" field.
-func (u *SSLCertificateHistoryUpsertOne) SetCertStableURL(v string) *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetCertStableURL(v)
-	})
-}
-
-// UpdateCertStableURL sets the "cert_stable_url" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertOne) UpdateCertStableURL() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateCertStableURL()
-	})
-}
-
-// ClearCertStableURL clears the value of the "cert_stable_url" field.
-func (u *SSLCertificateHistoryUpsertOne) ClearCertStableURL() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.ClearCertStableURL()
-	})
-}
-
-// SetCertPrivateKey sets the "cert_private_key" field.
-func (u *SSLCertificateHistoryUpsertOne) SetCertPrivateKey(v string) *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetCertPrivateKey(v)
-	})
-}
-
-// UpdateCertPrivateKey sets the "cert_private_key" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertOne) UpdateCertPrivateKey() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateCertPrivateKey()
-	})
-}
-
-// SetCertCertificate sets the "cert_certificate" field.
-func (u *SSLCertificateHistoryUpsertOne) SetCertCertificate(v string) *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetCertCertificate(v)
-	})
-}
-
-// UpdateCertCertificate sets the "cert_certificate" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertOne) UpdateCertCertificate() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateCertCertificate()
-	})
-}
-
-// SetCertIssuerCertificate sets the "cert_issuer_certificate" field.
-func (u *SSLCertificateHistoryUpsertOne) SetCertIssuerCertificate(v string) *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetCertIssuerCertificate(v)
-	})
-}
-
-// UpdateCertIssuerCertificate sets the "cert_issuer_certificate" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertOne) UpdateCertIssuerCertificate() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateCertIssuerCertificate()
-	})
-}
-
-// ClearCertIssuerCertificate clears the value of the "cert_issuer_certificate" field.
-func (u *SSLCertificateHistoryUpsertOne) ClearCertIssuerCertificate() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.ClearCertIssuerCertificate()
-	})
-}
-
-// SetCertCsr sets the "cert_csr" field.
-func (u *SSLCertificateHistoryUpsertOne) SetCertCsr(v string) *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetCertCsr(v)
-	})
-}
-
-// UpdateCertCsr sets the "cert_csr" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertOne) UpdateCertCsr() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateCertCsr()
-	})
-}
-
-// ClearCertCsr clears the value of the "cert_csr" field.
-func (u *SSLCertificateHistoryUpsertOne) ClearCertCsr() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.ClearCertCsr()
-	})
-}
-
-// SetNotBefore sets the "not_before" field.
-func (u *SSLCertificateHistoryUpsertOne) SetNotBefore(v time.Time) *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetNotBefore(v)
-	})
-}
-
-// UpdateNotBefore sets the "not_before" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertOne) UpdateNotBefore() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateNotBefore()
-	})
-}
-
-// ClearNotBefore clears the value of the "not_before" field.
-func (u *SSLCertificateHistoryUpsertOne) ClearNotBefore() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.ClearNotBefore()
-	})
-}
-
-// SetNotAfter sets the "not_after" field.
-func (u *SSLCertificateHistoryUpsertOne) SetNotAfter(v time.Time) *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetNotAfter(v)
-	})
-}
-
-// UpdateNotAfter sets the "not_after" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertOne) UpdateNotAfter() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateNotAfter()
-	})
-}
-
-// ClearNotAfter clears the value of the "not_after" field.
-func (u *SSLCertificateHistoryUpsertOne) ClearNotAfter() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.ClearNotAfter()
-	})
-}
-
-// SetProvider sets the "provider" field.
-func (u *SSLCertificateHistoryUpsertOne) SetProvider(v sslcertificatehistory.Provider) *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetProvider(v)
-	})
-}
-
-// UpdateProvider sets the "provider" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertOne) UpdateProvider() *SSLCertificateHistoryUpsertOne {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateProvider()
-	})
 }
 
 // Exec executes the query.
@@ -970,6 +649,36 @@ func (u *SSLCertificateHistoryUpsertBulk) UpdateNewValues() *SSLCertificateHisto
 			if _, exists := b.mutation.SslRecordID(); exists {
 				s.SetIgnore(sslcertificatehistory.FieldSslRecordID)
 			}
+			if _, exists := b.mutation.CertDomain(); exists {
+				s.SetIgnore(sslcertificatehistory.FieldCertDomain)
+			}
+			if _, exists := b.mutation.CertURL(); exists {
+				s.SetIgnore(sslcertificatehistory.FieldCertURL)
+			}
+			if _, exists := b.mutation.CertStableURL(); exists {
+				s.SetIgnore(sslcertificatehistory.FieldCertStableURL)
+			}
+			if _, exists := b.mutation.CertPrivateKey(); exists {
+				s.SetIgnore(sslcertificatehistory.FieldCertPrivateKey)
+			}
+			if _, exists := b.mutation.CertCertificate(); exists {
+				s.SetIgnore(sslcertificatehistory.FieldCertCertificate)
+			}
+			if _, exists := b.mutation.CertIssuerCertificate(); exists {
+				s.SetIgnore(sslcertificatehistory.FieldCertIssuerCertificate)
+			}
+			if _, exists := b.mutation.CertCsr(); exists {
+				s.SetIgnore(sslcertificatehistory.FieldCertCsr)
+			}
+			if _, exists := b.mutation.NotBefore(); exists {
+				s.SetIgnore(sslcertificatehistory.FieldNotBefore)
+			}
+			if _, exists := b.mutation.NotAfter(); exists {
+				s.SetIgnore(sslcertificatehistory.FieldNotAfter)
+			}
+			if _, exists := b.mutation.Provider(); exists {
+				s.SetIgnore(sslcertificatehistory.FieldProvider)
+			}
 		}
 	}))
 	return u
@@ -1000,195 +709,6 @@ func (u *SSLCertificateHistoryUpsertBulk) Update(set func(*SSLCertificateHistory
 		set(&SSLCertificateHistoryUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCertDomain sets the "cert_domain" field.
-func (u *SSLCertificateHistoryUpsertBulk) SetCertDomain(v string) *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetCertDomain(v)
-	})
-}
-
-// UpdateCertDomain sets the "cert_domain" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertBulk) UpdateCertDomain() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateCertDomain()
-	})
-}
-
-// ClearCertDomain clears the value of the "cert_domain" field.
-func (u *SSLCertificateHistoryUpsertBulk) ClearCertDomain() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.ClearCertDomain()
-	})
-}
-
-// SetCertURL sets the "cert_url" field.
-func (u *SSLCertificateHistoryUpsertBulk) SetCertURL(v string) *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetCertURL(v)
-	})
-}
-
-// UpdateCertURL sets the "cert_url" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertBulk) UpdateCertURL() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateCertURL()
-	})
-}
-
-// ClearCertURL clears the value of the "cert_url" field.
-func (u *SSLCertificateHistoryUpsertBulk) ClearCertURL() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.ClearCertURL()
-	})
-}
-
-// SetCertStableURL sets the "cert_stable_url" field.
-func (u *SSLCertificateHistoryUpsertBulk) SetCertStableURL(v string) *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetCertStableURL(v)
-	})
-}
-
-// UpdateCertStableURL sets the "cert_stable_url" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertBulk) UpdateCertStableURL() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateCertStableURL()
-	})
-}
-
-// ClearCertStableURL clears the value of the "cert_stable_url" field.
-func (u *SSLCertificateHistoryUpsertBulk) ClearCertStableURL() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.ClearCertStableURL()
-	})
-}
-
-// SetCertPrivateKey sets the "cert_private_key" field.
-func (u *SSLCertificateHistoryUpsertBulk) SetCertPrivateKey(v string) *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetCertPrivateKey(v)
-	})
-}
-
-// UpdateCertPrivateKey sets the "cert_private_key" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertBulk) UpdateCertPrivateKey() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateCertPrivateKey()
-	})
-}
-
-// SetCertCertificate sets the "cert_certificate" field.
-func (u *SSLCertificateHistoryUpsertBulk) SetCertCertificate(v string) *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetCertCertificate(v)
-	})
-}
-
-// UpdateCertCertificate sets the "cert_certificate" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertBulk) UpdateCertCertificate() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateCertCertificate()
-	})
-}
-
-// SetCertIssuerCertificate sets the "cert_issuer_certificate" field.
-func (u *SSLCertificateHistoryUpsertBulk) SetCertIssuerCertificate(v string) *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetCertIssuerCertificate(v)
-	})
-}
-
-// UpdateCertIssuerCertificate sets the "cert_issuer_certificate" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertBulk) UpdateCertIssuerCertificate() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateCertIssuerCertificate()
-	})
-}
-
-// ClearCertIssuerCertificate clears the value of the "cert_issuer_certificate" field.
-func (u *SSLCertificateHistoryUpsertBulk) ClearCertIssuerCertificate() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.ClearCertIssuerCertificate()
-	})
-}
-
-// SetCertCsr sets the "cert_csr" field.
-func (u *SSLCertificateHistoryUpsertBulk) SetCertCsr(v string) *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetCertCsr(v)
-	})
-}
-
-// UpdateCertCsr sets the "cert_csr" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertBulk) UpdateCertCsr() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateCertCsr()
-	})
-}
-
-// ClearCertCsr clears the value of the "cert_csr" field.
-func (u *SSLCertificateHistoryUpsertBulk) ClearCertCsr() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.ClearCertCsr()
-	})
-}
-
-// SetNotBefore sets the "not_before" field.
-func (u *SSLCertificateHistoryUpsertBulk) SetNotBefore(v time.Time) *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetNotBefore(v)
-	})
-}
-
-// UpdateNotBefore sets the "not_before" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertBulk) UpdateNotBefore() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateNotBefore()
-	})
-}
-
-// ClearNotBefore clears the value of the "not_before" field.
-func (u *SSLCertificateHistoryUpsertBulk) ClearNotBefore() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.ClearNotBefore()
-	})
-}
-
-// SetNotAfter sets the "not_after" field.
-func (u *SSLCertificateHistoryUpsertBulk) SetNotAfter(v time.Time) *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetNotAfter(v)
-	})
-}
-
-// UpdateNotAfter sets the "not_after" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertBulk) UpdateNotAfter() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateNotAfter()
-	})
-}
-
-// ClearNotAfter clears the value of the "not_after" field.
-func (u *SSLCertificateHistoryUpsertBulk) ClearNotAfter() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.ClearNotAfter()
-	})
-}
-
-// SetProvider sets the "provider" field.
-func (u *SSLCertificateHistoryUpsertBulk) SetProvider(v sslcertificatehistory.Provider) *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.SetProvider(v)
-	})
-}
-
-// UpdateProvider sets the "provider" field to the value that was provided on create.
-func (u *SSLCertificateHistoryUpsertBulk) UpdateProvider() *SSLCertificateHistoryUpsertBulk {
-	return u.Update(func(s *SSLCertificateHistoryUpsert) {
-		s.UpdateProvider()
-	})
 }
 
 // Exec executes the query.

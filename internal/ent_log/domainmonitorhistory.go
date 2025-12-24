@@ -37,19 +37,25 @@ type DomainMonitorHistory struct {
 	IPResolved []string `json:"ip_resolved,omitempty"`
 	// 详细错误信息或异常堆栈
 	ErrorLog string `json:"error_log,omitempty"`
-	// 证书过期日期
+	// 证书生效日期（NotBefore）
+	SslNotDate time.Time `json:"ssl_not_date,omitempty"`
+	// 证书过期日期（NotAfter）
 	SslExpiryDate time.Time `json:"ssl_expiry_date,omitempty"`
-	// 证书主体通用名 (Subject CN)
+	// 证书主体通用名 (Subject CommonName)
 	SslCommonName string `json:"ssl_common_name,omitempty"`
-	// 证书颁发者通用名 (Issuer CN)
+	// 证书颁发者通用名 (Issuer CommonName)
 	SslIssuerName string `json:"ssl_issuer_name,omitempty"`
-	// 证书签名算法
+	// 证书签名算法 (SignatureAlgorithm)
 	SslSignatureAlg string `json:"ssl_signature_alg,omitempty"`
-	// 证书主体别名列表 (SANs，用逗号分隔)
+	// 证书主体别名列表 (DNSNames，用逗号分隔)
 	SslSanList string `json:"ssl_san_list,omitempty"`
-	// 完整的 SSL 证书链信息 (PEM 格式文本)
+	// 完整的 SSL 证书链信息 (PEM格式)
 	SslCertificateChain string `json:"ssl_certificate_chain,omitempty"`
-	selectValues        sql.SelectValues
+	// 序列号 (SerialNumber)
+	SslSerialNumber string `json:"ssl_serial_number,omitempty"`
+	// 版本 (Version)
+	SslVersion   int `json:"ssl_version,omitempty"`
+	selectValues sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -61,11 +67,11 @@ func (*DomainMonitorHistory) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case domainmonitorhistory.FieldIsSuccess:
 			values[i] = new(sql.NullBool)
-		case domainmonitorhistory.FieldID, domainmonitorhistory.FieldMonitorID, domainmonitorhistory.FieldCheckDuration, domainmonitorhistory.FieldHTTPStatus:
+		case domainmonitorhistory.FieldID, domainmonitorhistory.FieldMonitorID, domainmonitorhistory.FieldCheckDuration, domainmonitorhistory.FieldHTTPStatus, domainmonitorhistory.FieldSslVersion:
 			values[i] = new(sql.NullInt64)
-		case domainmonitorhistory.FieldStatusMessage, domainmonitorhistory.FieldErrorLog, domainmonitorhistory.FieldSslCommonName, domainmonitorhistory.FieldSslIssuerName, domainmonitorhistory.FieldSslSignatureAlg, domainmonitorhistory.FieldSslSanList, domainmonitorhistory.FieldSslCertificateChain:
+		case domainmonitorhistory.FieldStatusMessage, domainmonitorhistory.FieldErrorLog, domainmonitorhistory.FieldSslCommonName, domainmonitorhistory.FieldSslIssuerName, domainmonitorhistory.FieldSslSignatureAlg, domainmonitorhistory.FieldSslSanList, domainmonitorhistory.FieldSslCertificateChain, domainmonitorhistory.FieldSslSerialNumber:
 			values[i] = new(sql.NullString)
-		case domainmonitorhistory.FieldCreatedAt, domainmonitorhistory.FieldCheckTime, domainmonitorhistory.FieldSslExpiryDate:
+		case domainmonitorhistory.FieldCreatedAt, domainmonitorhistory.FieldCheckTime, domainmonitorhistory.FieldSslNotDate, domainmonitorhistory.FieldSslExpiryDate:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -144,6 +150,12 @@ func (_m *DomainMonitorHistory) assignValues(columns []string, values []any) err
 			} else if value.Valid {
 				_m.ErrorLog = value.String
 			}
+		case domainmonitorhistory.FieldSslNotDate:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field ssl_not_date", values[i])
+			} else if value.Valid {
+				_m.SslNotDate = value.Time
+			}
 		case domainmonitorhistory.FieldSslExpiryDate:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field ssl_expiry_date", values[i])
@@ -179,6 +191,18 @@ func (_m *DomainMonitorHistory) assignValues(columns []string, values []any) err
 				return fmt.Errorf("unexpected type %T for field ssl_certificate_chain", values[i])
 			} else if value.Valid {
 				_m.SslCertificateChain = value.String
+			}
+		case domainmonitorhistory.FieldSslSerialNumber:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field ssl_serial_number", values[i])
+			} else if value.Valid {
+				_m.SslSerialNumber = value.String
+			}
+		case domainmonitorhistory.FieldSslVersion:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field ssl_version", values[i])
+			} else if value.Valid {
+				_m.SslVersion = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -243,6 +267,9 @@ func (_m *DomainMonitorHistory) String() string {
 	builder.WriteString("error_log=")
 	builder.WriteString(_m.ErrorLog)
 	builder.WriteString(", ")
+	builder.WriteString("ssl_not_date=")
+	builder.WriteString(_m.SslNotDate.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("ssl_expiry_date=")
 	builder.WriteString(_m.SslExpiryDate.Format(time.ANSIC))
 	builder.WriteString(", ")
@@ -260,6 +287,12 @@ func (_m *DomainMonitorHistory) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("ssl_certificate_chain=")
 	builder.WriteString(_m.SslCertificateChain)
+	builder.WriteString(", ")
+	builder.WriteString("ssl_serial_number=")
+	builder.WriteString(_m.SslSerialNumber)
+	builder.WriteString(", ")
+	builder.WriteString("ssl_version=")
+	builder.WriteString(fmt.Sprintf("%v", _m.SslVersion))
 	builder.WriteByte(')')
 	return builder.String()
 }

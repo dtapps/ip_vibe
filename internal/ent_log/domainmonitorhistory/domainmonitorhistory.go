@@ -31,6 +31,8 @@ const (
 	FieldIPResolved = "ip_resolved"
 	// FieldErrorLog holds the string denoting the error_log field in the database.
 	FieldErrorLog = "error_log"
+	// FieldSslNotDate holds the string denoting the ssl_not_date field in the database.
+	FieldSslNotDate = "ssl_not_date"
 	// FieldSslExpiryDate holds the string denoting the ssl_expiry_date field in the database.
 	FieldSslExpiryDate = "ssl_expiry_date"
 	// FieldSslCommonName holds the string denoting the ssl_common_name field in the database.
@@ -43,6 +45,10 @@ const (
 	FieldSslSanList = "ssl_san_list"
 	// FieldSslCertificateChain holds the string denoting the ssl_certificate_chain field in the database.
 	FieldSslCertificateChain = "ssl_certificate_chain"
+	// FieldSslSerialNumber holds the string denoting the ssl_serial_number field in the database.
+	FieldSslSerialNumber = "ssl_serial_number"
+	// FieldSslVersion holds the string denoting the ssl_version field in the database.
+	FieldSslVersion = "ssl_version"
 	// Table holds the table name of the domainmonitorhistory in the database.
 	Table = "domain_monitor_history"
 )
@@ -59,12 +65,15 @@ var Columns = []string{
 	FieldHTTPStatus,
 	FieldIPResolved,
 	FieldErrorLog,
+	FieldSslNotDate,
 	FieldSslExpiryDate,
 	FieldSslCommonName,
 	FieldSslIssuerName,
 	FieldSslSignatureAlg,
 	FieldSslSanList,
 	FieldSslCertificateChain,
+	FieldSslSerialNumber,
+	FieldSslVersion,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -132,6 +141,11 @@ func ByErrorLog(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldErrorLog, opts...).ToFunc()
 }
 
+// BySslNotDate orders the results by the ssl_not_date field.
+func BySslNotDate(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSslNotDate, opts...).ToFunc()
+}
+
 // BySslExpiryDate orders the results by the ssl_expiry_date field.
 func BySslExpiryDate(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSslExpiryDate, opts...).ToFunc()
@@ -160,4 +174,14 @@ func BySslSanList(opts ...sql.OrderTermOption) OrderOption {
 // BySslCertificateChain orders the results by the ssl_certificate_chain field.
 func BySslCertificateChain(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSslCertificateChain, opts...).ToFunc()
+}
+
+// BySslSerialNumber orders the results by the ssl_serial_number field.
+func BySslSerialNumber(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSslSerialNumber, opts...).ToFunc()
+}
+
+// BySslVersion orders the results by the ssl_version field.
+func BySslVersion(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSslVersion, opts...).ToFunc()
 }
