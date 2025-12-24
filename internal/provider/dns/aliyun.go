@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"vibe_ip/internal/helper/aliyun_helper"
+	"vibe_ip/internal/provider"
 
 	alidns20150109 "github.com/alibabacloud-go/alidns-20150109/v5/client"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
@@ -40,13 +41,17 @@ func NewDefaultAliyunDNSConfig() *AliyunDNSConfig {
 	}
 }
 
+// AliyunDNSProvider 阿里云DNS提供程序
 type AliyunDNSProvider struct {
 	config *AliyunDNSConfig
 	opts   *dnsOptions
 	client *alidns20150109.Client
 }
 
-func NewAliyunDNSProvider(ctx context.Context, cfg *AliyunDNSConfig, opts ...DnsOption) (p *AliyunDNSProvider, err error) {
+// NewAliyunDNSProvider 创建阿里云DNS提供程序
+func NewAliyunDNSProvider(ctx context.Context, cfg *AliyunDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+
+	var err error
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -57,7 +62,7 @@ func NewAliyunDNSProvider(ctx context.Context, cfg *AliyunDNSConfig, opts ...Dns
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
-	p = &AliyunDNSProvider{
+	p := &AliyunDNSProvider{
 		config: cfg,
 		opts:   &dnsOptions{},
 	}
@@ -99,7 +104,7 @@ func NewAliyunDNSProvider(ctx context.Context, cfg *AliyunDNSConfig, opts ...Dns
 }
 
 // Check 检查子域名是否存在
-func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (id string, ip string, err error) {
+func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
 
 	// 请求参数
 	request := &alidns20150109.DescribeDomainRecordsRequest{}
@@ -121,9 +126,9 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 			if recordType != "" && tea.StringValue(item.Type) != recordType {
 				continue
 			}
-			id = tea.StringValue(item.RecordId)
-			ip = tea.StringValue(item.Value)
-			return id, ip, nil
+			recordID = tea.StringValue(item.RecordId)
+			value = tea.StringValue(item.Value)
+			return recordID, value, nil
 		}
 	}
 
@@ -131,15 +136,15 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 }
 
 // Update 更新 DNS 记录
-func (p *AliyunDNSProvider) Update(ctx context.Context, id string, domain string, subdomain string, ip string, recordType string) (err error) {
+func (p *AliyunDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
 
-	if id == "" {
+	if recordID == "" {
 		// 请求参数
 		request := &alidns20150109.AddDomainRecordRequest{}
 		request.DomainName = tea.String(domain) // 域名名称
 		request.RR = tea.String(subdomain)      // 主机记录
 		request.Type = tea.String(recordType)   // 解析记录类型
-		request.Value = tea.String(ip)          // 记录值
+		request.Value = tea.String(value)       // 记录值
 		// 请求
 		response, err := p.client.AddDomainRecordWithContext(ctx, request, nil)
 		printJSON("创建域名记录", request, response)
@@ -148,13 +153,13 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, id string, domain string
 		}
 	}
 
-	if id != "" {
+	if recordID != "" {
 		// 请求参数
 		request := &alidns20150109.UpdateDomainRecordRequest{}
-		request.RecordId = tea.String(id)     // 解析记录的ID
-		request.RR = tea.String(subdomain)    // 主机记录
-		request.Type = tea.String(recordType) // 解析记录类型
-		request.Value = tea.String(ip)        // 记录值
+		request.RecordId = tea.String(recordID) // 解析记录的ID
+		request.RR = tea.String(subdomain)      // 主机记录
+		request.Type = tea.String(recordType)   // 解析记录类型
+		request.Value = tea.String(value)       // 记录值
 		// 请求
 		response, err := p.client.UpdateDomainRecordWithContext(ctx, request, nil)
 		printJSON("更新域名记录", request, response)
@@ -167,7 +172,7 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, id string, domain string
 }
 
 // Save 保存 DNS 记录
-func (p *AliyunDNSProvider) Save(ctx context.Context, id, domain, subdomain, ip, recordType string) (err error) {
+func (p *AliyunDNSProvider) Save(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
 	return nil
 }
 

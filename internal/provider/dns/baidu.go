@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"vibe_ip/internal/provider"
 
 	"github.com/baidubce/bce-sdk-go/services/dns"
 	"github.com/baidubce/bce-sdk-go/util"
@@ -38,13 +39,17 @@ func NewDefaultBaiduDNSConfig() *BaiduDNSConfig {
 	}
 }
 
+// BaiduDNSProvider 百度云DNS提供程序
 type BaiduDNSProvider struct {
 	config *BaiduDNSConfig
 	opts   *dnsOptions
 	client *dns.Client
 }
 
-func NewBaiduDNSProvider(ctx context.Context, cfg *BaiduDNSConfig, opts ...DnsOption) (p *BaiduDNSProvider, err error) {
+// NewBaiduDNSProvider 创建百度云DNS提供程序
+func NewBaiduDNSProvider(ctx context.Context, cfg *BaiduDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+
+	var err error
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -55,7 +60,7 @@ func NewBaiduDNSProvider(ctx context.Context, cfg *BaiduDNSConfig, opts ...DnsOp
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
-	p = &BaiduDNSProvider{
+	p := &BaiduDNSProvider{
 		config: cfg,
 		opts:   &dnsOptions{},
 	}
@@ -82,7 +87,7 @@ func NewBaiduDNSProvider(ctx context.Context, cfg *BaiduDNSConfig, opts ...DnsOp
 }
 
 // Check 检查子域名是否存在
-func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (id string, ip string, err error) {
+func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
 
 	// 请求参数
 	request := &dns.ListRecordRequest{}
@@ -100,9 +105,9 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 			if recordType != "" && item.Type != recordType {
 				continue
 			}
-			id = item.Id
-			ip = item.Value
-			return id, ip, nil
+			recordID = item.Id
+			value = item.Value
+			return recordID, value, nil
 		}
 	}
 
@@ -110,14 +115,14 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 }
 
 // Update 更新 DNS 记录
-func (p *BaiduDNSProvider) Update(ctx context.Context, id string, domain string, subdomain string, ip string, recordType string) (err error) {
+func (p *BaiduDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
 
-	if id == "" {
+	if recordID == "" {
 		// 请求参数
 		request := &dns.CreateRecordRequest{}
 		request.Rr = subdomain    // 主机记录
 		request.Type = recordType // 解析记录类型
-		request.Value = ip        // 记录值
+		request.Value = value     // 记录值
 		// 请求
 		err = p.client.CreateRecord(domain, request, util.NewUUID())
 		printJSON("创建域名记录", request, nil)
@@ -126,14 +131,14 @@ func (p *BaiduDNSProvider) Update(ctx context.Context, id string, domain string,
 		}
 	}
 
-	if id != "" {
+	if recordID != "" {
 		// 请求参数
 		request := &dns.UpdateRecordRequest{}
 		request.Rr = subdomain    // 主机记录
 		request.Type = recordType // 解析记录类型
-		request.Value = ip        // 记录值
+		request.Value = value     // 记录值
 		// 请求
-		err = p.client.UpdateRecord(domain, id, request, util.NewUUID())
+		err = p.client.UpdateRecord(domain, recordID, request, util.NewUUID())
 		printJSON("更新域名记录", request, nil)
 		if err != nil {
 			return err
@@ -144,11 +149,11 @@ func (p *BaiduDNSProvider) Update(ctx context.Context, id string, domain string,
 }
 
 // Save 保存 DNS 记录
-func (p *BaiduDNSProvider) Save(ctx context.Context, id, domain, subdomain, ip, recordType string) (err error) {
+func (p *BaiduDNSProvider) Save(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
 	return nil
 }
 
 // Name 返回 DNS 提供程序的名称
 func (p *BaiduDNSProvider) Name() string {
-	return "阿里云 DNS"
+	return "百度云 DNS"
 }

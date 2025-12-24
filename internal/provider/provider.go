@@ -10,11 +10,11 @@ import (
 // DNSProvider 定义了 DNS 操作的接口
 type DNSProvider interface {
 	// Check 检查 DNS 记录是否存在
-	Check(ctx context.Context, domain string, subdomain string, recordType string) (id string, ip string, err error)
+	Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error)
 	// Update 更新 DNS 记录
-	Update(ctx context.Context, id string, domain string, subdomain string, ip string, recordType string) (err error)
+	Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error)
 	// Save 保存 DNS 记录
-	Save(ctx context.Context, id string, domain string, subdomain string, ip string, recordType string) (err error)
+	Save(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error)
 	// Name 返回 DNS 提供程序的名称
 	Name() (name string)
 }
@@ -37,7 +37,7 @@ func NewDNSTask(logger *slog.Logger, provider DNSProvider, domain, subdomain str
 	}
 }
 
-func (t *DNSTask) Execute(ctx context.Context, recordType string, newIP string) error {
+func (t *DNSTask) Execute(ctx context.Context, recordType string, newValue string) error {
 	if t.provider == nil {
 		return nil
 	}
@@ -46,10 +46,10 @@ func (t *DNSTask) Execute(ctx context.Context, recordType string, newIP string) 
 		slog.String("domain", t.domain),
 		slog.String("subdomain", t.subdomain),
 		slog.String("recordType", recordType),
-		slog.String("newIP", newIP),
+		slog.String("newValue", newValue),
 	)
 
-	recordID, oldIP, err := t.provider.Check(ctx, t.domain, t.subdomain, recordType)
+	recordID, oldValue, err := t.provider.Check(ctx, t.domain, t.subdomain, recordType)
 	if err != nil {
 		t.logger.Error("【DNS】检查失败",
 			slog.String("recordID", recordID),
@@ -57,19 +57,19 @@ func (t *DNSTask) Execute(ctx context.Context, recordType string, newIP string) 
 		)
 		return err
 	}
-	if oldIP == newIP {
+	if oldValue == newValue {
 		t.logger.Info("【DNS】IP 未改变，无需更新")
 		return nil
 	}
 
-	if err := t.provider.Update(ctx, recordID, t.domain, t.subdomain, newIP, recordType); err != nil {
+	if err := t.provider.Update(ctx, recordID, t.domain, t.subdomain, newValue, recordType); err != nil {
 		t.logger.Error("【DNS】更新失败",
 			slog.Any("err", err),
 		)
 		return err
 	}
 
-	if err := t.provider.Save(ctx, recordID, t.domain, t.subdomain, newIP, recordType); err != nil {
+	if err := t.provider.Save(ctx, recordID, t.domain, t.subdomain, newValue, recordType); err != nil {
 		t.logger.Error("【DNS】保存失败",
 			slog.Any("err", err),
 		)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/basic"
@@ -46,13 +47,17 @@ func NewDefaultHuaweiDNSConfig() *HuaweiDNSConfig {
 	}
 }
 
+// HuaweiDNSProvider 华为云DNS提供程序
 type HuaweiDNSProvider struct {
 	config *HuaweiDNSConfig
 	opts   *dnsOptions
 	client *dns.DnsClient
 }
 
-func NewHuaweiDNSProvider(ctx context.Context, cfg *HuaweiDNSConfig, opts ...DnsOption) (p *HuaweiDNSProvider, err error) {
+// NewHuaweiDNSProvider 创建华为云DNS提供程序
+func NewHuaweiDNSProvider(ctx context.Context, cfg *HuaweiDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+
+	var err error
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -63,7 +68,7 @@ func NewHuaweiDNSProvider(ctx context.Context, cfg *HuaweiDNSConfig, opts ...Dns
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
-	p = &HuaweiDNSProvider{
+	p := &HuaweiDNSProvider{
 		config: cfg,
 		opts:   &dnsOptions{},
 	}
@@ -108,7 +113,7 @@ func NewHuaweiDNSProvider(ctx context.Context, cfg *HuaweiDNSConfig, opts ...Dns
 }
 
 // Check 检查子域名是否存在
-func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (id string, ip string, err error) {
+func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -135,9 +140,9 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 			if recordType != "" && utils.PtrToString(item.Type) != recordType {
 				continue
 			}
-			id = utils.PtrToString(item.Id)
-			ip = strings.Join(utils.PtrToStrings(item.Records), ",")
-			return id, ip, nil
+			recordID = utils.PtrToString(item.Id)
+			value = strings.Join(utils.PtrToStrings(item.Records), ",")
+			return recordID, value, nil
 		}
 	}
 
@@ -145,19 +150,19 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 }
 
 // Update 更新 DNS 记录
-func (p *HuaweiDNSProvider) Update(ctx context.Context, id string, domain string, subdomain string, ip string, recordType string) (err error) {
+func (p *HuaweiDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
-	if id == "" {
+	if recordID == "" {
 		// 请求参数
 		request := &model.CreateRecordSetWithLineRequest{}
 		request.ZoneId = p.config.ZoneID // 域名ID
 		request.Body = &model.CreateRecordSetWithLineRequestBody{
-			Records: utils.StringsToPtr([]string{ip}), // 解析记录的值
-			Type:    recordType,                       // 记录集的类型
-			Name:    fullDomain,                       // 域名
+			Records: utils.StringsToPtr([]string{value}), // 解析记录的值
+			Type:    recordType,                          // 记录集的类型
+			Name:    fullDomain,                          // 域名
 		}
 		// 请求
 		response, err := p.client.CreateRecordSetWithLine(request)
@@ -167,15 +172,15 @@ func (p *HuaweiDNSProvider) Update(ctx context.Context, id string, domain string
 		}
 	}
 
-	if id != "" {
+	if recordID != "" {
 		// 请求参数
 		request := &model.UpdateRecordSetsRequest{}
 		request.ZoneId = p.config.ZoneID // 域名ID
-		request.RecordsetId = id         // 记录集ID
+		request.RecordsetId = recordID   // 记录集ID
 		request.Body = &model.UpdateRecordSetsReq{
-			Records: utils.StringsToPtr([]string{ip}), // 解析记录的值
-			Type:    recordType,                       // 记录集的类型
-			Name:    fullDomain,                       // 域名
+			Records: utils.StringsToPtr([]string{value}), // 解析记录的值
+			Type:    recordType,                          // 记录集的类型
+			Name:    fullDomain,                          // 域名
 		}
 		// 请求
 		response, err := p.client.UpdateRecordSets(request)
@@ -189,11 +194,11 @@ func (p *HuaweiDNSProvider) Update(ctx context.Context, id string, domain string
 }
 
 // Save 保存 DNS 记录
-func (p *HuaweiDNSProvider) Save(ctx context.Context, id, domain, subdomain, ip, recordType string) (err error) {
+func (p *HuaweiDNSProvider) Save(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
 	return nil
 }
 
 // Name 返回 DNS 提供程序的名称
 func (p *HuaweiDNSProvider) Name() string {
-	return "阿里云 DNS"
+	return "华为云 DNS"
 }

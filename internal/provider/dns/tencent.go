@@ -3,6 +3,7 @@ package dns
 import (
 	"context"
 	"fmt"
+	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
 	"github.com/spf13/cast"
@@ -40,13 +41,17 @@ func NewDefaultTencentDNSConfig() *TencentDNSConfig {
 	}
 }
 
+// TencentDNSProvider 腾讯云DNS提供程序
 type TencentDNSProvider struct {
 	config *TencentDNSConfig
 	opts   *dnsOptions
 	client *dnspod.Client
 }
 
-func NewTencentDNSProvider(ctx context.Context, cfg *TencentDNSConfig, opts ...DnsOption) (p *TencentDNSProvider, err error) {
+// NewTencentDNSProvider 创建腾讯云DNS提供程序
+func NewTencentDNSProvider(ctx context.Context, cfg *TencentDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+
+	var err error
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -57,7 +62,7 @@ func NewTencentDNSProvider(ctx context.Context, cfg *TencentDNSConfig, opts ...D
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
-	p = &TencentDNSProvider{
+	p := &TencentDNSProvider{
 		config: cfg,
 		opts:   &dnsOptions{},
 	}
@@ -92,7 +97,7 @@ func NewTencentDNSProvider(ctx context.Context, cfg *TencentDNSConfig, opts ...D
 }
 
 // Check 检查子域名是否存在
-func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (id string, ip string, err error) {
+func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
 
 	// 请求参数
 	request := dnspod.NewDescribeRecordListRequest()
@@ -113,9 +118,9 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 			if recordType != "" && utils.PtrToString(item.Type) != recordType {
 				continue
 			}
-			id = cast.ToString(*item.RecordId)
-			ip = utils.PtrToString(item.Value)
-			return id, ip, nil
+			recordID = cast.ToString(*item.RecordId)
+			value = utils.PtrToString(item.Value)
+			return recordID, value, nil
 		}
 	}
 
@@ -123,15 +128,15 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 }
 
 // Update 更新 DNS 记录
-func (p *TencentDNSProvider) Update(ctx context.Context, id string, domain string, subdomain string, ip string, recordType string) (err error) {
+func (p *TencentDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
 
-	if id == "" {
+	if recordID == "" {
 		// 请求参数
 		request := dnspod.NewCreateRecordRequest()
 		request.Domain = common.StringPtr(domain)         // 域名
 		request.RecordType = common.StringPtr(recordType) // 记录类型
 		request.RecordLine = common.StringPtr("默认")       // 记录线路
-		request.Value = common.StringPtr(ip)              // 记录值
+		request.Value = common.StringPtr(value)           // 记录值
 		request.SubDomain = common.StringPtr(subdomain)   // 主机记录
 		// 请求
 		response, err := p.client.CreateRecordWithContext(ctx, request)
@@ -141,15 +146,15 @@ func (p *TencentDNSProvider) Update(ctx context.Context, id string, domain strin
 		}
 	}
 
-	if id != "" {
+	if recordID != "" {
 		// 请求参数
 		request := dnspod.NewModifyRecordRequest()
-		request.Domain = common.StringPtr(domain)              // 域名
-		request.RecordType = common.StringPtr(recordType)      // 记录类型
-		request.RecordLine = common.StringPtr("默认")            // 记录线路
-		request.Value = common.StringPtr(ip)                   // 记录值
-		request.RecordId = common.Uint64Ptr(cast.ToUint64(id)) // 记录 ID
-		request.SubDomain = common.StringPtr(subdomain)        // 主机记录
+		request.Domain = common.StringPtr(domain)                    // 域名
+		request.RecordType = common.StringPtr(recordType)            // 记录类型
+		request.RecordLine = common.StringPtr("默认")                  // 记录线路
+		request.Value = common.StringPtr(value)                      // 记录值
+		request.RecordId = common.Uint64Ptr(cast.ToUint64(recordID)) // 记录 ID
+		request.SubDomain = common.StringPtr(subdomain)              // 主机记录
 		// 请求
 		response, err := p.client.ModifyRecordWithContext(ctx, request)
 		printJSON("更新域名记录", request, response)
@@ -162,11 +167,11 @@ func (p *TencentDNSProvider) Update(ctx context.Context, id string, domain strin
 }
 
 // Save 保存 DNS 记录
-func (p *TencentDNSProvider) Save(ctx context.Context, id, domain, subdomain, ip, recordType string) (err error) {
+func (p *TencentDNSProvider) Save(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
 	return nil
 }
 
 // Name 返回 DNS 提供程序的名称
 func (p *TencentDNSProvider) Name() string {
-	return "阿里云 DNS"
+	return "腾讯云 DNS"
 }
