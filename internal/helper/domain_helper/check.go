@@ -43,110 +43,48 @@ type CheckResult struct {
 
 // Check 执行实际的网络检查并返回结果
 func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string) *CheckResult {
+	start := time.Now()
+
 	result := &CheckResult{
 		StatusMsg: "未执行",
 	}
 
-	url := protocol + "://" + domain
-	start := time.Now()
-
-	// 解析域名获取IP地址
-	ips, err := net.LookupIP(domain)
-	if err != nil {
-		result.ErrorLog = fmt.Sprintf("DNS解析失败: %v", err)
-		result.StatusMsg = "DNS解析失败"
-		result.Duration = time.Since(start)
+	// ---------- DNS 解析 ----------
+	if ips, err := net.LookupIP(domain); err == nil {
+		for _, ip := range ips {
+			result.IPResolved = append(result.IPResolved, ip.String())
+		}
 	} else {
-		ipStrs := make([]string, len(ips))
-		for i, ip := range ips {
-			ipStrs[i] = ip.String()
-		}
-		result.IPResolved = ipStrs
+		result.StatusMsg = "DNS解析失败"
+		result.ErrorLog = err.Error()
+		result.Duration = time.Since(start)
+		return result
 	}
 
-	// 确保域名包含端口
-	addr := domain
-	if !strings.Contains(addr, ":") {
-		if protocol == "https" {
-			addr += ":443"
-		} else {
-			addr += ":80"
+	// ---------- HTTPS：单独获取 SSL 信息 ----------
+	if protocol == "https" {
+		if err := s.fetchSSLInfo(ctx, domain, result); err != nil {
+			result.StatusMsg = "TLS 握手失败"
+			result.ErrorLog = err.Error()
+			result.Duration = time.Since(start)
+			return result
 		}
 	}
 
-	s.logger.InfoContext(ctx, "确保域名包含端口",
-		slog.String("地址", addr),
+	// ---------- HTTP / HTTPS 请求 ----------
+	url := protocol + "://" + domain
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	s.logger.InfoContext(ctx, "发送 HTTP / HTTPS 请求",
+		slog.String("地址", url),
 	)
 
-	// --- 统一的 Transport 来处理 HTTPS 证书获取和 HTTP 请求 ---
-	dialer := &net.Dialer{Timeout: 10 * time.Second}
-
-	client := http.Client{
-		Timeout: 10 * time.Second,
-		Transport: &http.Transport{
-			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-				// 如果是 HTTPS，我们需要包装连接来获取证书
-				if protocol == "https" {
-					// 建立 TCP 连接
-					tcpConn, err := dialer.DialContext(ctx, "tcp", addr)
-					if err != nil {
-						return nil, err
-					}
-
-					// 升级为 TLS 连接
-					tlsConn := tls.Client(tcpConn, &tls.Config{
-						ServerName:         domain,
-						InsecureSkipVerify: true, // 忽略证书验证以继续获取信息
-					})
-
-					// 执行 TLS 握手
-					if err := tlsConn.HandshakeContext(ctx); err != nil {
-						tcpConn.Close()
-						result.ErrorLog = fmt.Sprintf("TLS 握手失败: %v", err)
-						result.StatusMsg = "TLS 握手失败"
-						return nil, err
-					}
-
-					// 获取 SSL 证书信息（在 HTTP 请求之前）
-					state := tlsConn.ConnectionState()
-					if len(state.PeerCertificates) > 0 {
-						cert := state.PeerCertificates[0]
-						result.SSLExpiryDate = cert.NotAfter
-						result.SSLCommonName = cert.Subject.CommonName
-						result.SSLIssuerName = cert.Issuer.CommonName
-						result.SSLSignatureAlg = cert.SignatureAlgorithm.String()
-						result.SANList = strings.Join(cert.DNSNames, ",")
-
-						// 证书链
-						var chainBuilder strings.Builder
-						for _, c := range state.PeerCertificates {
-							pemBlock := &pem.Block{
-								Type:  "CERTIFICATE",
-								Bytes: c.Raw,
-							}
-							chainBuilder.WriteString(string(pem.EncodeToMemory(pemBlock)))
-						}
-						result.CertificateChain = chainBuilder.String()
-					}
-
-					result.StatusMsg = "TLS 握手成功"
-					return tlsConn, nil
-				}
-
-				// HTTP 协议，使用普通 TCP 连接
-				return dialer.DialContext(ctx, network, addr)
-			},
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true, // 对于 HTTPS，我们已经手动处理证书
-			},
-		},
-	}
-
-	// --- 执行HTTP/HTTPS请求 ---
-	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		result.ErrorLog = fmt.Sprintf("创建请求失败: %v", err)
 		result.StatusMsg = "请求创建失败"
+		result.ErrorLog = err.Error()
 		result.Duration = time.Since(start)
 		return result
 	}
@@ -155,28 +93,56 @@ func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string)
 	result.Duration = time.Since(start)
 
 	if err != nil {
-		if result.ErrorLog == "" {
-			result.ErrorLog = err.Error()
-		}
-		if result.StatusMsg == "未执行" {
-			result.StatusMsg = "HTTP/HTTPS 请求失败"
-		}
+		result.StatusMsg = "HTTP 请求失败"
+		result.ErrorLog = err.Error()
 		return result
 	}
 	defer resp.Body.Close()
 
-	// 处理 HTTP 状态
 	result.HTTPStatus = resp.StatusCode
+
 	if resp.StatusCode >= 200 && resp.StatusCode < 400 {
 		result.IsSuccess = true
-		if result.StatusMsg == "TLS 握手成功" {
-			result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK (TLS 成功)", resp.StatusCode)
-		} else {
-			result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
-		}
+		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
 	} else {
 		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
 	}
 
 	return result
+}
+
+func (s *DomainCheck) fetchSSLInfo(ctx context.Context, domain string, result *CheckResult) error {
+	dialer := &net.Dialer{Timeout: 10 * time.Second}
+
+	conn, err := tls.DialWithDialer(dialer, "tcp", domain+":443", &tls.Config{
+		ServerName:         domain,
+		InsecureSkipVerify: true, // 仅用于采集证书
+	})
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	state := conn.ConnectionState()
+	if len(state.PeerCertificates) == 0 {
+		return fmt.Errorf("未获取到证书")
+	}
+
+	cert := state.PeerCertificates[0]
+	result.SSLExpiryDate = cert.NotAfter
+	result.SSLCommonName = cert.Subject.CommonName
+	result.SSLIssuerName = cert.Issuer.CommonName
+	result.SSLSignatureAlg = cert.SignatureAlgorithm.String()
+	result.SANList = strings.Join(cert.DNSNames, ",")
+
+	var chain strings.Builder
+	for _, c := range state.PeerCertificates {
+		chain.Write(pem.EncodeToMemory(&pem.Block{
+			Type:  "CERTIFICATE",
+			Bytes: c.Raw,
+		}))
+	}
+	result.CertificateChain = chain.String()
+
+	return nil
 }
