@@ -4,9 +4,12 @@
 // 	protoc        v6.32.0
 // source: open.proto
 
+// 包名
+
 package grpc_generated
 
 import (
+	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -324,9 +327,9 @@ var File_open_proto protoreflect.FileDescriptor
 const file_open_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"open.proto\x12\x04open\x1a\x1cgoogle/api/annotations.proto\"\x93\x01\n" +
-	"\x15ReportDeviceIPRequest\x12\x1f\n" +
-	"\vdevice_code\x18\x01 \x01(\tR\n" +
+	"open.proto\x12\x04open\x1a\x1cgoogle/api/annotations.proto\x1a\x17validate/validate.proto\"\x9e\x01\n" +
+	"\x15ReportDeviceIPRequest\x12*\n" +
+	"\vdevice_code\x18\x01 \x01(\tB\t\xfaB\x06r\x04\x10\x01\x182R\n" +
 	"deviceCode\x12\x1f\n" +
 	"\vdevice_name\x18\x02 \x01(\tR\n" +
 	"deviceName\x12\x1b\n" +
@@ -335,9 +338,9 @@ const file_open_proto_rawDesc = "" +
 	"\x16ReportDeviceIPResponse\x12\x1f\n" +
 	"\vdevice_code\x18\x01 \x01(\tR\n" +
 	"deviceCode\x12\x10\n" +
-	"\x03msg\x18\x02 \x01(\tR\x03msg\"?\n" +
-	"\x1cGetDevicePortForwardsRequest\x12\x1f\n" +
-	"\vdevice_code\x18\x01 \x01(\tR\n" +
+	"\x03msg\x18\x02 \x01(\tR\x03msg\"J\n" +
+	"\x1cGetDevicePortForwardsRequest\x12*\n" +
+	"\vdevice_code\x18\x01 \x01(\tB\t\xfaB\x06r\x04\x10\x01\x182R\n" +
 	"deviceCode\"\xc3\x01\n" +
 	"\x0fPortForwardRule\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1d\n" +

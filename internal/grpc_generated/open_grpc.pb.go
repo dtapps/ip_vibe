@@ -4,6 +4,8 @@
 // - protoc             v6.32.0
 // source: open.proto
 
+// 包名
+
 package grpc_generated
 
 import (

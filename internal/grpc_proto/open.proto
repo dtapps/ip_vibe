@@ -1,12 +1,16 @@
 syntax = "proto3";
 
+// 包名
 package open;
 
-// 注意: ;前面是路径，后面是包名
+// Go 包路径：路径;包名（匹配输出目录，避免子包冲突）
 option go_package = ".;grpc_generated";
 
-// 引入 HTTP 注解定义
+// 引入 HTTP 注解定义（用于 gateway）
 import "google/api/annotations.proto";
+
+// 引入验证规则（用于 protoc-gen-validate）
+import "validate/validate.proto";
 
 service OpenService {
   // 设备上报IP
@@ -28,10 +32,10 @@ service OpenService {
 
 // 设备上报IP 请求参数
 message ReportDeviceIPRequest {
-  string device_code = 1;  // 设备编码
-  string device_name = 2;  // 设备名称
-  string ipv4_addr = 3;    // IP地址V4
-  string ipv6_addr = 4;    // IP地址V6
+  string device_code = 1 [(validate.rules).string.min_len = 1, (validate.rules).string.max_len = 50]; // 设备编码
+  string device_name = 2; // 设备名称
+  string ipv4_addr = 3;  // IP地址V4
+  string ipv6_addr = 4; // IP地址V6
 }
 
 // 设备上报IP 响应参数
@@ -42,7 +46,7 @@ message ReportDeviceIPResponse {
 
 // 获取设备端口转发 请求参数
 message GetDevicePortForwardsRequest {
-  string device_code = 1;  // 设备编码
+  string device_code = 1 [(validate.rules).string.min_len = 1, (validate.rules).string.max_len = 50]; // 设备编码
 }
 
 // 端口转发规则列表
