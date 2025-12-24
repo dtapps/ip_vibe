@@ -32,10 +32,40 @@ service OpenService {
 
 // 设备上报IP 请求参数
 message ReportDeviceIPRequest {
-  string device_code = 1 [(validate.rules).string.min_len = 1, (validate.rules).string.max_len = 50]; // 设备编码
-  string device_name = 2; // 设备名称
-  string ipv4_addr = 3;  // IP地址V4
-  string ipv6_addr = 4; // IP地址V6
+  // 设备编码
+  string device_code = 1 [
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 50,
+      pattern: "^[a-zA-Z0-9_-]+$"  // 只允许字母、数字、下划线、连字符
+    }
+  ]; 
+  
+   // 设备名称
+  string device_name = 2 [
+    (validate.rules).string = {
+      max_len: 100,
+      ignore_empty: true  // 允许为空
+    }
+  ];
+  
+  // IP地址V4
+  string ipv4_addr = 3 [
+    (validate.rules).string = {
+      max_len: 15,
+      ignore_empty: true,  // 允许为空
+      ip: true             // 验证是否为有效IPv4格式
+    }
+  ];  
+  
+  // IP地址V6
+  string ipv6_addr = 4 [
+    (validate.rules).string = {
+      max_len: 45,
+      ignore_empty: true,  // 允许为空
+      ipv6: true           // 验证是否为有效IPv6格式
+    }
+  ]; 
 }
 
 // 设备上报IP 响应参数
@@ -46,7 +76,14 @@ message ReportDeviceIPResponse {
 
 // 获取设备端口转发 请求参数
 message GetDevicePortForwardsRequest {
-  string device_code = 1 [(validate.rules).string.min_len = 1, (validate.rules).string.max_len = 50]; // 设备编码
+  // 设备编码
+  string device_code = 1 [
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 50,
+      pattern: "^[a-zA-Z0-9_-]+$"
+    }
+  ]; 
 }
 
 // 端口转发规则列表

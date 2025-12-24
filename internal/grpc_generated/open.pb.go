@@ -27,11 +27,15 @@ const (
 
 // 设备上报IP 请求参数
 type ReportDeviceIPRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	DeviceCode    string                 `protobuf:"bytes,1,opt,name=device_code,json=deviceCode,proto3" json:"device_code,omitempty"` // 设备编码
-	DeviceName    string                 `protobuf:"bytes,2,opt,name=device_name,json=deviceName,proto3" json:"device_name,omitempty"` // 设备名称
-	Ipv4Addr      string                 `protobuf:"bytes,3,opt,name=ipv4_addr,json=ipv4Addr,proto3" json:"ipv4_addr,omitempty"`       // IP地址V4
-	Ipv6Addr      string                 `protobuf:"bytes,4,opt,name=ipv6_addr,json=ipv6Addr,proto3" json:"ipv6_addr,omitempty"`       // IP地址V6
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 设备编码
+	DeviceCode string `protobuf:"bytes,1,opt,name=device_code,json=deviceCode,proto3" json:"device_code,omitempty"`
+	// 设备名称
+	DeviceName string `protobuf:"bytes,2,opt,name=device_name,json=deviceName,proto3" json:"device_name,omitempty"`
+	// IP地址V4
+	Ipv4Addr string `protobuf:"bytes,3,opt,name=ipv4_addr,json=ipv4Addr,proto3" json:"ipv4_addr,omitempty"`
+	// IP地址V6
+	Ipv6Addr      string `protobuf:"bytes,4,opt,name=ipv6_addr,json=ipv6Addr,proto3" json:"ipv6_addr,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -149,8 +153,9 @@ func (x *ReportDeviceIPResponse) GetMsg() string {
 
 // 获取设备端口转发 请求参数
 type GetDevicePortForwardsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	DeviceCode    string                 `protobuf:"bytes,1,opt,name=device_code,json=deviceCode,proto3" json:"device_code,omitempty"` // 设备编码
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 设备编码
+	DeviceCode    string `protobuf:"bytes,1,opt,name=device_code,json=deviceCode,proto3" json:"device_code,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -327,20 +332,22 @@ var File_open_proto protoreflect.FileDescriptor
 const file_open_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"open.proto\x12\x04open\x1a\x1cgoogle/api/annotations.proto\x1a\x17validate/validate.proto\"\x9e\x01\n" +
-	"\x15ReportDeviceIPRequest\x12*\n" +
-	"\vdevice_code\x18\x01 \x01(\tB\t\xfaB\x06r\x04\x10\x01\x182R\n" +
-	"deviceCode\x12\x1f\n" +
-	"\vdevice_name\x18\x02 \x01(\tR\n" +
-	"deviceName\x12\x1b\n" +
-	"\tipv4_addr\x18\x03 \x01(\tR\bipv4Addr\x12\x1b\n" +
-	"\tipv6_addr\x18\x04 \x01(\tR\bipv6Addr\"K\n" +
+	"open.proto\x12\x04open\x1a\x1cgoogle/api/annotations.proto\x1a\x17validate/validate.proto\"\xd9\x01\n" +
+	"\x15ReportDeviceIPRequest\x12<\n" +
+	"\vdevice_code\x18\x01 \x01(\tB\x1b\xfaB\x18r\x16\x10\x01\x1822\x10^[a-zA-Z0-9_-]+$R\n" +
+	"deviceCode\x12+\n" +
+	"\vdevice_name\x18\x02 \x01(\tB\n" +
+	"\xfaB\ar\x05\x18d\xd0\x01\x01R\n" +
+	"deviceName\x12)\n" +
+	"\tipv4_addr\x18\x03 \x01(\tB\f\xfaB\tr\a\x18\x0f\xd0\x01\x01p\x01R\bipv4Addr\x12*\n" +
+	"\tipv6_addr\x18\x04 \x01(\tB\r\xfaB\n" +
+	"r\b\x18-\xd0\x01\x01\x80\x01\x01R\bipv6Addr\"K\n" +
 	"\x16ReportDeviceIPResponse\x12\x1f\n" +
 	"\vdevice_code\x18\x01 \x01(\tR\n" +
 	"deviceCode\x12\x10\n" +
-	"\x03msg\x18\x02 \x01(\tR\x03msg\"J\n" +
-	"\x1cGetDevicePortForwardsRequest\x12*\n" +
-	"\vdevice_code\x18\x01 \x01(\tB\t\xfaB\x06r\x04\x10\x01\x182R\n" +
+	"\x03msg\x18\x02 \x01(\tR\x03msg\"\\\n" +
+	"\x1cGetDevicePortForwardsRequest\x12<\n" +
+	"\vdevice_code\x18\x01 \x01(\tB\x1b\xfaB\x18r\x16\x10\x01\x1822\x10^[a-zA-Z0-9_-]+$R\n" +
 	"deviceCode\"\xc3\x01\n" +
 	"\x0fPortForwardRule\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1d\n" +
