@@ -15,7 +15,7 @@
             {{ template "icons" (dict "Name" "ip-domain-monitor") }} 实时状态概览
         </h2>
         <div class="card-actions">
-            <button class="btn btn-sm btn-outline-warning" onclick="apiPost('{{$apiUrlPath}}/check', {},{
+            <button class="btn btn-outline-warning" onclick="apiPost('{{$apiUrlPath}}/check', {},{
                 reload: true
             })">
                 {{ template "icons" (dict "Name" "ip-refresh") }} 立即检查
