@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"log"
+	"time"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gocron_slog"
 
@@ -11,9 +12,14 @@ import (
 // InitGoCron 初始化 GoCron 调度器
 func InitGoCron() {
 	options := make([]gocron.SchedulerOption, 0)
+	// 日志
 	if global.GvaGocronSlog != nil {
 		options = append(options, gocron.WithLogger(gocron_slog.NewSlogLogger(global.GvaGocronSlog.WithLogger())))
 	}
+	// 设置时区
+	options = append(options, gocron.WithLocation(time.Local))
+	// 全局任务选项
+	options = append(options, gocron.WithGlobalJobOptions())
 	s, err := gocron.NewScheduler(options...)
 	if err != nil {
 		log.Fatalf("[初始化 GoCron] :%v", err)

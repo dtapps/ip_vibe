@@ -40,7 +40,7 @@ func Dashboard(c *gin.Context) {
 	pageData.Stats.WebhookCount, _ = global.GvaEntDb.Webhook.Query().Count(c)
 
 	// 运行任务
-	pageData.Stats.ActiveTaskCount = len(gocron_helper.NewJobHelper(global.GvaGoCron).GetJobsData(5))
+	pageData.Stats.ActiveTaskCount = len(gocron_helper.NewJobHelper(global.GvaGoCron, global.GvaGocronSlog.WithLogger()).GetJobsData(5))
 
 	// 最新操作日志
 	allOperationLog, err := global.GvaEntLogDb.OperationLog.Query().

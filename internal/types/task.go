@@ -21,3 +21,8 @@ type JobData struct {
 	Schedule       string   `json:"schedule"`        // 任务调度表达式
 	ScheduleDetail string   `json:"schedule_detail"` // 任务调度表达式详情
 }
+
+type JobInfo struct {
+	ID   string `json:"id"`   // 任务序号
+	Name string `json:"name"` // 任务名称
+}

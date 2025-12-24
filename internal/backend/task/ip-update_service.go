@@ -15,6 +15,7 @@ import (
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/cdn_helper"
 	"vibe_ip/internal/helper/dns_helper"
+	"vibe_ip/internal/helper/gocron_helper"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
@@ -32,6 +33,7 @@ type IPUpdateTask struct {
 	cron          gocron.Scheduler           // 定时任务调度器
 	dnsJob        gocron.Job                 // DNS刷新任务
 	cdnJob        gocron.Job                 // CDN刷新任务
+	jobHelper     *gocron_helper.JobHelper   // 任务助手
 	logger        *slog.Logger               // 日志记录器
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
 	debug         bool                       // 是否开启调试模式
@@ -44,9 +46,10 @@ func NewIPUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Schedule
 		logger = global.GvaGocronSlog.WithLogger()
 	}
 	return &IPUpdateTask{
-		db:    db,
-		logDb: logDb,
-		cron:  cron,
+		db:        db,
+		logDb:     logDb,
+		cron:      cron,
+		jobHelper: gocron_helper.NewJobHelper(cron, logger),
 		logger: logger.With(
 			slog.String("任务", "IP更新"),
 		),
@@ -86,7 +89,11 @@ func (s *IPUpdateTask) StartDnsJob(ctx context.Context) (err error) {
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName("DNS记录刷新"),                           // 任务名称
-		gocron.WithTags("dns_update"),                        // 任务标签
+		gocron.WithEventListeners(
+			s.jobHelper.PanicPeriodicListener(),
+			s.jobHelper.BeforePeriodicListener(),
+			s.jobHelper.AfterPeriodicListener(),
+		),
 	)
 	if err != nil {
 		return err
@@ -109,7 +116,11 @@ func (s *IPUpdateTask) StartCdnJob(ctx context.Context) (err error) {
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName("CDN记录刷新"),                           // 任务名称
-		gocron.WithTags("cdn_update"),                        // 任务标签
+		gocron.WithEventListeners(
+			s.jobHelper.PanicPeriodicListener(),
+			s.jobHelper.BeforePeriodicListener(),
+			s.jobHelper.AfterPeriodicListener(),
+		),
 	)
 	if err != nil {
 		return err
@@ -123,10 +134,9 @@ func (s *IPUpdateTask) RunDnsTask() {
 	ctx := context.Background()
 
 	// 日志
-	logger := s.logger.With(
-		slog.String("执行编号", s.dnsJob.ID().String()),
+	logger := s.jobHelper.SlogWith(s.logger.With(
 		slog.String("类型", "DNS"),
-	)
+	), s.dnsJob.ID().String(), s.dnsJob.Name())
 	logger.InfoContext(ctx, "开始执行")
 
 	// 分组记录
@@ -296,10 +306,9 @@ func (s *IPUpdateTask) RunCdnTask() {
 	ctx := context.Background()
 
 	// 日志
-	logger := s.logger.With(
-		slog.String("执行编号", s.cdnJob.ID().String()),
+	logger := s.jobHelper.SlogWith(s.logger.With(
 		slog.String("类型", "CDN"),
-	)
+	), s.cdnJob.ID().String(), s.cdnJob.Name())
 	logger.InfoContext(ctx, "开始执行")
 
 	// 分组记录

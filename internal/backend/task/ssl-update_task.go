@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log/slog"
 	"math/rand"
-	"strings"
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/platformconfig"
@@ -16,6 +15,7 @@ import (
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/helper/ssl_helper"
 
 	"github.com/go-acme/lego/v4/certificate"
@@ -33,9 +33,11 @@ type SSLUpdateTask struct {
 	logDb         *ent_log.Client            // 日志数据库客户端
 	cron          gocron.Scheduler           // 定时任务调度器
 	sslJob        gocron.Job                 // SSL刷新任务
+	jobHelper     *gocron_helper.JobHelper   // 任务助手
 	logger        *slog.Logger               // 日志记录器
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
 	debug         bool                       // 是否开启调试模式
+	taskName      string                     // 任务名称
 }
 
 // 创建实例
@@ -45,14 +47,14 @@ func NewSSLUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Schedul
 		logger = global.GvaGocronSlog.WithLogger()
 	}
 	return &SSLUpdateTask{
-		db:    db,
-		logDb: logDb,
-		cron:  cron,
-		logger: logger.With(
-			slog.String("任务", "SSL更新"),
-		),
+		db:            db,
+		logDb:         logDb,
+		cron:          cron,
+		jobHelper:     gocron_helper.NewJobHelper(cron, logger),
+		logger:        logger,
 		httpTransport: httpTransport,
 		debug:         debug,
+		taskName:      "SSL更新",
 	}
 }
 
@@ -64,30 +66,9 @@ func (s *SSLUpdateTask) Close() {
 }
 
 // 自定义 logger
-func (s *SSLUpdateTask) setLogger(logger *slog.Logger) *SSLUpdateTask {
+func (s *SSLUpdateTask) SetLogger(logger *slog.Logger) *SSLUpdateTask {
 	s.logger = logger
 	return s
-}
-
-// 启动SSL任务
-func (s *SSLUpdateTask) StartSSLJob(ctx context.Context) (err error) {
-	// 判断是否存在SSL任务
-	if s.sslJob != nil {
-		return nil
-	}
-	// 每10小时执行一次
-	s.sslJob, err = s.cron.NewJob(
-		gocron.DurationJob(10*time.Hour),                     // 每10小时执行一次
-		gocron.NewTask(s.RunSSLTask),                         // 执行任务
-		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
-		// gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
-		gocron.WithName("SSL证书刷新"),    // 任务名称
-		gocron.WithTags("ssl_update"), // 任务标签
-	)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 // 计算下次执行时间
@@ -118,15 +99,37 @@ func (s *SSLUpdateTask) CalculateNextRun(sslRecord *ent.SSLRecord, now time.Time
 	return nextRun
 }
 
-// 运行SSL任务
-func (s *SSLUpdateTask) RunSSLTask() {
+// 启动SSL周期任务
+func (s *SSLUpdateTask) StartSSLPeriodicTask(ctx context.Context) (err error) {
+	// 判断是否存在任务
+	if s.sslJob != nil {
+		return nil
+	}
+	// 每10小时执行一次
+	s.sslJob, err = s.cron.NewJob(
+		gocron.DurationJob(10*time.Hour),
+		gocron.NewTask(s.RunSSLPeriodicTask),
+		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
+		// gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
+		gocron.WithName(s.taskName), // 任务名称
+		gocron.WithEventListeners(
+			s.jobHelper.PanicPeriodicListener(),
+			s.jobHelper.BeforePeriodicListener(),
+			s.jobHelper.AfterPeriodicListener(),
+		),
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// 运行SSL周期任务
+func (s *SSLUpdateTask) RunSSLPeriodicTask() {
 
 	ctx := context.Background()
 
-	logger := s.logger.With(
-		slog.String("执行编号", s.sslJob.ID().String()),
-		slog.String("类型", "SSL"),
-	)
+	logger := s.jobHelper.SlogWith(s.logger, s.sslJob.ID().String(), s.sslJob.Name())
 	logger.InfoContext(ctx, "开始执行")
 
 	// 分组记录
@@ -185,7 +188,7 @@ func (s *SSLUpdateTask) RunSSLTask() {
 						slog.String("处理方式", "并发"),
 					)
 
-					if err = s.SSLUpdate(egCtx, logger, item); err != nil {
+					if err = s.executeSSLUpdate(egCtx, logger, item); err != nil {
 						logger.ErrorContext(egCtx, "处理失败",
 							slog.Any("error", err),
 						)
@@ -210,7 +213,7 @@ func (s *SSLUpdateTask) RunSSLTask() {
 				slog.String("处理方式", "串行"),
 			)
 
-			if err = s.SSLUpdate(ctx, logger, item); err != nil {
+			if err = s.executeSSLUpdate(ctx, logger, item); err != nil {
 				logger.ErrorContext(ctx, "处理失败",
 					slog.Any("error", err),
 				)
@@ -242,8 +245,8 @@ type PendingSSLRecord struct {
 	Params   *ssl_helper.SSLProcessParams // 处理参数
 }
 
-// 更新SSL记录
-func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingSSLRecord) (err error) {
+// 执行SSL更新
+func (s *SSLUpdateTask) executeSSLUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingSSLRecord) (err error) {
 
 	// 日志
 	logger = logger.With(
@@ -339,7 +342,7 @@ func (s *SSLUpdateTask) SSLUpdate(ctx context.Context, logger *slog.Logger, pend
 	}
 
 	// 解析证书有效期
-	certValidity, err := s.ParseCertificateValidity(res)
+	certValidity, err := s.parseCertificateValidity(res)
 	if err != nil {
 		updateOne.SetLastAPIResponse(err.Error())
 		updateOne.SetLastAPIResponseAt(time.Now())
@@ -390,7 +393,7 @@ type CertificateValidity struct {
 }
 
 // 从 lego Resource 解析证书有效期
-func (s *SSLUpdateTask) ParseCertificateValidity(res *certificate.Resource) (*CertificateValidity, error) {
+func (s *SSLUpdateTask) parseCertificateValidity(res *certificate.Resource) (*CertificateValidity, error) {
 	if res == nil || len(res.Certificate) == 0 {
 		return nil, errors.New("certificate data is empty")
 	}
@@ -413,46 +416,50 @@ func (s *SSLUpdateTask) ParseCertificateValidity(res *certificate.Resource) (*Ce
 	}, nil
 }
 
-// 手动添加SSL证书申请任务
-func (s *SSLUpdateTask) AddTask(ctx context.Context, pendingRecord *PendingSSLRecord) (err error) {
+// 添加SSL一次性任务
+func (s *SSLUpdateTask) AddSSLDisposableTask(ctx context.Context, pendingRecord *PendingSSLRecord) (err error) {
+
 	// 任务名称
-	taskName := fmt.Sprintf("SSL证书申请-%s", pendingRecord.Params.SSLRecordID)
-	// 获取所有现有任务
-	allJobs := s.cron.Jobs()
+	taskName := fmt.Sprintf("%s-%v", s.taskName, pendingRecord.Params.SSLRecordID)
+
 	// 检查是否已存在同名任务
-	for _, job := range allJobs {
-		if strings.EqualFold(job.Name(), taskName) {
-			return fmt.Errorf("任务 %s 已存在，无法重复添加", taskName)
-		}
+	isExist := s.jobHelper.IsJob("", taskName)
+	if isExist {
+		return fmt.Errorf("任务 %s 已存在，无法重复添加", taskName)
 	}
+
 	// 不存在同名任务，添加新任务
 	_, err = s.cron.NewJob(
 		gocron.OneTimeJob(
 			gocron.OneTimeJobStartDateTime(time.Now().Add(5*time.Second)), // 5秒后开始
 		),
 		gocron.NewTask(
-			s.executeSSLUpdate,
+			s.RunSSLDisposableTask,
 			ctx,
 			s.logger,
 			pendingRecord,
 		),
 		gocron.WithSingletonMode(gocron.LimitModeWait), // 单例模式
 		gocron.WithName(taskName),                      // 任务名称
+		gocron.WithEventListeners(
+			s.jobHelper.PanicDisposableListener(),
+			s.jobHelper.BeforeDisposableListener(),
+			s.jobHelper.AfterDisposableListener(),
+		),
 	)
 	return err
 }
 
-// 执行SSL证书申请任务
-func (s *SSLUpdateTask) executeSSLUpdate(taskCtx context.Context, taskLogger *slog.Logger, taskPendingRecord *PendingSSLRecord) {
+// 运行SSL一次性任务
+func (s *SSLUpdateTask) RunSSLDisposableTask(ctx context.Context, logger *slog.Logger, taskPendingRecord *PendingSSLRecord) {
 	// 日志
-	taskLogger = taskLogger.With(
+	logger = logger.With(
 		slog.String("处理方式", "手动"),
 	)
 	// 处理
-	err := s.SSLUpdate(taskCtx, taskLogger, taskPendingRecord)
+	err := s.executeSSLUpdate(ctx, logger, taskPendingRecord)
 	if err != nil {
-		taskLogger.ErrorContext(taskCtx, "处理失败",
-			slog.Any("处理参数", taskPendingRecord.Params),
+		logger.ErrorContext(ctx, "处理失败",
 			slog.Any("error", err),
 		)
 	}

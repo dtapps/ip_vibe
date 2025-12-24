@@ -53,7 +53,7 @@ func NewTaskService(db *ent.Client, dbLog *ent_log.Client, logHelper *operation_
 
 // getJobsHelper 辅助方法：创建 JobHelper 实例
 func (s *TaskServiceImpl) getJobsHelper() *gocron_helper.JobHelper {
-	return gocron_helper.NewJobHelper(s.cron)
+	return gocron_helper.NewJobHelper(s.cron, s.logger)
 }
 
 // GetTasks 获取全部任务

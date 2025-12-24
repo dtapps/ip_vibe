@@ -2,6 +2,7 @@ package gocron_helper
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 	"time"
 	"vibe_ip/internal/types"
@@ -13,13 +14,15 @@ import (
 
 // 任务助手
 type JobHelper struct {
-	Scheduler gocron.Scheduler
+	Scheduler gocron.Scheduler // 定时任务调度器
+	logger    *slog.Logger     // 日志记录器
 }
 
 // 新建任务助手
-func NewJobHelper(scheduler gocron.Scheduler) *JobHelper {
+func NewJobHelper(scheduler gocron.Scheduler, logger *slog.Logger) *JobHelper {
 	return &JobHelper{
 		Scheduler: scheduler,
+		logger:    logger,
 	}
 }
 
@@ -52,43 +55,75 @@ func (j *JobHelper) GetJobsData(nextRunsLimit int) (jobs []*types.JobData) {
 	return jobs
 }
 
-// 运行任务
-func (j *JobHelper) RunJob(jobID string) error {
+// 判断任务，传 id 或 name
+func (j *JobHelper) IsJob(jobID string, jobName string) bool {
 	if j.Scheduler == nil {
-		return fmt.Errorf("scheduler is nil")
-	}
-	id, err := uuid.Parse(jobID)
-	if err != nil {
-		return fmt.Errorf("invalid job ID: %w", err)
+		return false
 	}
 	jobs := j.Scheduler.Jobs()
 	for _, job := range jobs {
-		if job.ID() == id {
-			if err = job.RunNow(); err != nil {
-				return fmt.Errorf("job execution failed: %w", err)
+		if jobID != "" && job.ID().String() == jobID {
+			return true
+		}
+		if jobName != "" && job.Name() == jobName {
+			return true
+		}
+	}
+	return false
+}
+
+// 获取任务
+func (j *JobHelper) GetJob(jobID string) (job *types.JobInfo, err error) {
+	if j.Scheduler == nil {
+		return nil, fmt.Errorf("调度器未初始化")
+	}
+	jobs := j.Scheduler.Jobs()
+	for _, job := range jobs {
+		if job.ID().String() == jobID {
+			return &types.JobInfo{
+				ID:   job.ID().String(),
+				Name: job.Name(),
+			}, nil
+		}
+	}
+	return nil, fmt.Errorf("任务不存在: %w", err)
+}
+
+// 运行任务
+func (j *JobHelper) RunJob(jobID string) (err error) {
+	if j.Scheduler == nil {
+		return fmt.Errorf("调度器未初始化")
+	}
+	jobs := j.Scheduler.Jobs()
+	for _, job := range jobs {
+		if job.ID().String() == jobID {
+			err = job.RunNow()
+			if err != nil {
+				return fmt.Errorf("任务执行失败: %w", err)
 			}
 			return nil
 		}
 	}
 
-	return fmt.Errorf("job not found: %w", err)
+	return fmt.Errorf("任务不存在: %w", err)
 }
 
 // 删除任务
 func (j *JobHelper) DeleteJob(jobID string) error {
 	if j.Scheduler == nil {
-		return fmt.Errorf("scheduler is nil")
+		return fmt.Errorf("调度器未初始化")
 	}
 	id, err := uuid.Parse(jobID)
 	if err != nil {
-		return fmt.Errorf("invalid job ID: %w", err)
+		return fmt.Errorf("无效的任务ID: %w", err)
 	}
 	if err := j.Scheduler.RemoveJob(id); err != nil {
-		return fmt.Errorf("job not found: %w", err)
+		return fmt.Errorf("删除任务失败: %w", err)
 	}
 	return nil
 }
 
+// 推断任务调度信息
 func (j *JobHelper) inferSchedule(job gocron.Job, nextRuns []time.Time) (string, string) {
 	name := job.Name()
 
@@ -165,4 +200,69 @@ func (j *JobHelper) inferSchedule(job gocron.Job, nextRuns []time.Time) (string,
 	}
 
 	return "Scheduled", "Custom schedule"
+}
+
+func (j *JobHelper) SlogWith(logger *slog.Logger, jobID string, jobName string) *slog.Logger {
+	return logger.With(
+		slog.String("任务编号", jobID),
+		slog.String("任务名称", jobName),
+	)
+}
+
+// 任务开始前
+func (j *JobHelper) BeforePeriodicListener() gocron.EventListener {
+	return gocron.BeforeJobRuns(func(jobID uuid.UUID, jobName string) {
+		logger := j.SlogWith(j.logger, jobID.String(), jobName)
+		logger.Info("[周期性]开始执行")
+	})
+}
+func (j *JobHelper) BeforeDisposableListener() gocron.EventListener {
+	return gocron.BeforeJobRuns(func(jobID uuid.UUID, jobName string) {
+		logger := j.SlogWith(j.logger, jobID.String(), jobName)
+		logger.Info("[一次性]开始执行")
+	})
+}
+
+// 任务结束后
+func (j *JobHelper) AfterPeriodicListener() gocron.EventListener {
+	return gocron.AfterJobRuns(func(jobID uuid.UUID, jobName string) {
+		logger := j.SlogWith(j.logger, jobID.String(), jobName)
+		logger.Info("[周期性]执行结束")
+	})
+}
+func (j *JobHelper) AfterDisposableListener() gocron.EventListener {
+	return gocron.AfterJobRuns(func(jobID uuid.UUID, jobName string) {
+		logger := j.SlogWith(j.logger, jobID.String(), jobName)
+		logger.Info("[一次性]执行结束, 准备删除任务")
+		err := j.Scheduler.RemoveJob(jobID)
+		if err != nil {
+			logger.Error("[一次性]删除任务失败",
+				slog.Any("错误信息", err),
+			)
+		}
+	})
+}
+
+// 任务异常时
+func (j *JobHelper) PanicPeriodicListener() gocron.EventListener {
+	return gocron.AfterJobRunsWithPanic(func(jobID uuid.UUID, jobName string, recoverData any) {
+		logger := j.SlogWith(j.logger, jobID.String(), jobName)
+		logger.Error("[周期性]执行异常",
+			slog.Any("错误信息", recoverData),
+		)
+	})
+}
+func (j *JobHelper) PanicDisposableListener() gocron.EventListener {
+	return gocron.AfterJobRunsWithPanic(func(jobID uuid.UUID, jobName string, recoverData any) {
+		logger := j.SlogWith(j.logger, jobID.String(), jobName)
+		logger.Error("[一次性]执行异常, 准备删除任务",
+			slog.Any("错误信息", recoverData),
+		)
+		err := j.Scheduler.RemoveJob(jobID)
+		if err != nil {
+			logger.Error("[一次性]删除任务失败",
+				slog.Any("错误信息", err),
+			)
+		}
+	})
 }

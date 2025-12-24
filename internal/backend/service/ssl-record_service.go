@@ -321,8 +321,8 @@ func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) (*t
 		return nil, fmt.Errorf("查询SSL记录失败: %w", err)
 	}
 
-	// 申请新的SSL证书
-	err = s.sslUpdateTask.AddTask(
+	// 添加SSL一次性任务
+	err = s.sslUpdateTask.AddSSLDisposableTask(
 		ctx,
 		&task.PendingSSLRecord{
 			Item:     firstSSLRecord,
@@ -336,11 +336,8 @@ func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) (*t
 		},
 	)
 	if err != nil {
-		return nil, fmt.Errorf("申请新的SSL证书失败: %w", err)
+		return nil, fmt.Errorf("添加SSL一次性任务失败: %w", err)
 	}
-
-	// 记录操作日志
-	_ = s.logHelper.RecordDataUpdate(ctx, firstSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "申请新的SSL证书")
 
 	return &types.GetSSLRecordRequest{
 		ID: firstSSLRecord.ID,
