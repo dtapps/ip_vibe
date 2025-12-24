@@ -20,14 +20,14 @@ type AliyunDNSConfig struct {
 }
 
 // Validate 验证阿里云DNS配置
-func (config *AliyunDNSConfig) Validate() error {
-	if config.Endpoint == "" {
+func (cfg *AliyunDNSConfig) Validate() error {
+	if cfg.Endpoint == "" {
 		return fmt.Errorf("域名地址不能为空")
 	}
-	if config.AccessKeyID == "" {
+	if cfg.AccessKeyID == "" {
 		return fmt.Errorf("密钥ID不能为空")
 	}
-	if config.AccessKeySecret == "" {
+	if cfg.AccessKeySecret == "" {
 		return fmt.Errorf("密钥Key不能为空")
 	}
 	return nil
@@ -42,23 +42,23 @@ func NewDefaultAliyunDNSConfig() *AliyunDNSConfig {
 
 type AliyunDNSProvider struct {
 	config *AliyunDNSConfig
-	client *alidns20150109.Client
 	opts   *dnsOptions
+	client *alidns20150109.Client
 }
 
-func NewAliyunDNSProvider(ctx context.Context, config *AliyunDNSConfig, opts ...DnsOption) (p *AliyunDNSProvider, err error) {
+func NewAliyunDNSProvider(ctx context.Context, cfg *AliyunDNSConfig, opts ...DnsOption) (p *AliyunDNSProvider, err error) {
 
-	if config == nil {
+	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
 	}
 
 	// 验证配置
-	if err := config.Validate(); err != nil {
+	if err := cfg.Validate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
 	p = &AliyunDNSProvider{
-		config: config,
+		config: cfg,
 		opts:   &dnsOptions{},
 	}
 
@@ -149,12 +149,13 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, id string, domain string
 	}
 
 	if id != "" {
-		// 请求
+		// 请求参数
 		request := &alidns20150109.UpdateDomainRecordRequest{}
 		request.RecordId = tea.String(id)     // 解析记录的ID
 		request.RR = tea.String(subdomain)    // 主机记录
 		request.Type = tea.String(recordType) // 解析记录类型
 		request.Value = tea.String(ip)        // 记录值
+		// 请求
 		response, err := p.client.UpdateDomainRecordWithContext(ctx, request, nil)
 		printJSON("更新域名记录", request, response)
 		if err != nil {
