@@ -6,12 +6,13 @@
 package grpc_generatedconnect
 
 import (
-	__ "."
-	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
 	http "net/http"
 	strings "strings"
+	"vibe_ip/internal/grpc_generated"
+
+	connect "connectrpc.com/connect"
 )
 
 // This is a compile-time assertion to ensure that this generated file and the connect package are
@@ -45,9 +46,9 @@ const (
 // OpenServiceClient is a client for the open.OpenService service.
 type OpenServiceClient interface {
 	// 设备上报IP
-	ReportDeviceIP(context.Context, *connect.Request[__.ReportDeviceIPRequest]) (*connect.Response[__.ReportDeviceIPResponse], error)
+	ReportDeviceIP(context.Context, *connect.Request[grpc_generated.ReportDeviceIPRequest]) (*connect.Response[grpc_generated.ReportDeviceIPResponse], error)
 	// 获取设备端口转发
-	GetDevicePortForwards(context.Context, *connect.Request[__.GetDevicePortForwardsRequest]) (*connect.Response[__.GetDevicePortForwardsResponse], error)
+	GetDevicePortForwards(context.Context, *connect.Request[grpc_generated.GetDevicePortForwardsRequest]) (*connect.Response[grpc_generated.GetDevicePortForwardsResponse], error)
 }
 
 // NewOpenServiceClient constructs a client for the open.OpenService service. By default, it uses
@@ -59,15 +60,15 @@ type OpenServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewOpenServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) OpenServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	openServiceMethods := __.File_open_proto.Services().ByName("OpenService").Methods()
+	openServiceMethods := grpc_generated.File_open_proto.Services().ByName("OpenService").Methods()
 	return &openServiceClient{
-		reportDeviceIP: connect.NewClient[__.ReportDeviceIPRequest, __.ReportDeviceIPResponse](
+		reportDeviceIP: connect.NewClient[grpc_generated.ReportDeviceIPRequest, grpc_generated.ReportDeviceIPResponse](
 			httpClient,
 			baseURL+OpenServiceReportDeviceIPProcedure,
 			connect.WithSchema(openServiceMethods.ByName("ReportDeviceIP")),
 			connect.WithClientOptions(opts...),
 		),
-		getDevicePortForwards: connect.NewClient[__.GetDevicePortForwardsRequest, __.GetDevicePortForwardsResponse](
+		getDevicePortForwards: connect.NewClient[grpc_generated.GetDevicePortForwardsRequest, grpc_generated.GetDevicePortForwardsResponse](
 			httpClient,
 			baseURL+OpenServiceGetDevicePortForwardsProcedure,
 			connect.WithSchema(openServiceMethods.ByName("GetDevicePortForwards")),
@@ -78,26 +79,26 @@ func NewOpenServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // openServiceClient implements OpenServiceClient.
 type openServiceClient struct {
-	reportDeviceIP        *connect.Client[__.ReportDeviceIPRequest, __.ReportDeviceIPResponse]
-	getDevicePortForwards *connect.Client[__.GetDevicePortForwardsRequest, __.GetDevicePortForwardsResponse]
+	reportDeviceIP        *connect.Client[grpc_generated.ReportDeviceIPRequest, grpc_generated.ReportDeviceIPResponse]
+	getDevicePortForwards *connect.Client[grpc_generated.GetDevicePortForwardsRequest, grpc_generated.GetDevicePortForwardsResponse]
 }
 
 // ReportDeviceIP calls open.OpenService.ReportDeviceIP.
-func (c *openServiceClient) ReportDeviceIP(ctx context.Context, req *connect.Request[__.ReportDeviceIPRequest]) (*connect.Response[__.ReportDeviceIPResponse], error) {
+func (c *openServiceClient) ReportDeviceIP(ctx context.Context, req *connect.Request[grpc_generated.ReportDeviceIPRequest]) (*connect.Response[grpc_generated.ReportDeviceIPResponse], error) {
 	return c.reportDeviceIP.CallUnary(ctx, req)
 }
 
 // GetDevicePortForwards calls open.OpenService.GetDevicePortForwards.
-func (c *openServiceClient) GetDevicePortForwards(ctx context.Context, req *connect.Request[__.GetDevicePortForwardsRequest]) (*connect.Response[__.GetDevicePortForwardsResponse], error) {
+func (c *openServiceClient) GetDevicePortForwards(ctx context.Context, req *connect.Request[grpc_generated.GetDevicePortForwardsRequest]) (*connect.Response[grpc_generated.GetDevicePortForwardsResponse], error) {
 	return c.getDevicePortForwards.CallUnary(ctx, req)
 }
 
 // OpenServiceHandler is an implementation of the open.OpenService service.
 type OpenServiceHandler interface {
 	// 设备上报IP
-	ReportDeviceIP(context.Context, *connect.Request[__.ReportDeviceIPRequest]) (*connect.Response[__.ReportDeviceIPResponse], error)
+	ReportDeviceIP(context.Context, *connect.Request[grpc_generated.ReportDeviceIPRequest]) (*connect.Response[grpc_generated.ReportDeviceIPResponse], error)
 	// 获取设备端口转发
-	GetDevicePortForwards(context.Context, *connect.Request[__.GetDevicePortForwardsRequest]) (*connect.Response[__.GetDevicePortForwardsResponse], error)
+	GetDevicePortForwards(context.Context, *connect.Request[grpc_generated.GetDevicePortForwardsRequest]) (*connect.Response[grpc_generated.GetDevicePortForwardsResponse], error)
 }
 
 // NewOpenServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -106,7 +107,7 @@ type OpenServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewOpenServiceHandler(svc OpenServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	openServiceMethods := __.File_open_proto.Services().ByName("OpenService").Methods()
+	openServiceMethods := grpc_generated.File_open_proto.Services().ByName("OpenService").Methods()
 	openServiceReportDeviceIPHandler := connect.NewUnaryHandler(
 		OpenServiceReportDeviceIPProcedure,
 		svc.ReportDeviceIP,
@@ -134,10 +135,10 @@ func NewOpenServiceHandler(svc OpenServiceHandler, opts ...connect.HandlerOption
 // UnimplementedOpenServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedOpenServiceHandler struct{}
 
-func (UnimplementedOpenServiceHandler) ReportDeviceIP(context.Context, *connect.Request[__.ReportDeviceIPRequest]) (*connect.Response[__.ReportDeviceIPResponse], error) {
+func (UnimplementedOpenServiceHandler) ReportDeviceIP(context.Context, *connect.Request[grpc_generated.ReportDeviceIPRequest]) (*connect.Response[grpc_generated.ReportDeviceIPResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("open.OpenService.ReportDeviceIP is not implemented"))
 }
 
-func (UnimplementedOpenServiceHandler) GetDevicePortForwards(context.Context, *connect.Request[__.GetDevicePortForwardsRequest]) (*connect.Response[__.GetDevicePortForwardsResponse], error) {
+func (UnimplementedOpenServiceHandler) GetDevicePortForwards(context.Context, *connect.Request[grpc_generated.GetDevicePortForwardsRequest]) (*connect.Response[grpc_generated.GetDevicePortForwardsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("open.OpenService.GetDevicePortForwards is not implemented"))
 }

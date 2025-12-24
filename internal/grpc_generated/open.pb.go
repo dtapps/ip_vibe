@@ -356,7 +356,7 @@ const file_open_proto_rawDesc = "" +
 	"\x05rules\x18\x01 \x03(\v2\x15.open.PortForwardRuleR\x05rules2\x88\x02\n" +
 	"\vOpenService\x12i\n" +
 	"\x0eReportDeviceIP\x12\x1b.open.ReportDeviceIPRequest\x1a\x1c.open.ReportDeviceIPResponse\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/device/ip-report\x12\x8d\x01\n" +
-	"\x15GetDevicePortForwards\x12\".open.GetDevicePortForwardsRequest\x1a#.open.GetDevicePortForwardsResponse\"+\x82\xd3\xe4\x93\x02%\x12#/device/{device_code}/port-forwardsB\x12Z\x10.;grpc_generatedb\x06proto3"
+	"\x15GetDevicePortForwards\x12\".open.GetDevicePortForwardsRequest\x1a#.open.GetDevicePortForwardsResponse\"+\x82\xd3\xe4\x93\x02%\x12#/device/{device_code}/port-forwardsB Z\x1e/grpc_generated;grpc_generatedb\x06proto3"
 
 var (
 	file_open_proto_rawDescOnce sync.Once
