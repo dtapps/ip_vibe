@@ -201,4 +201,31 @@
     <path d="M18 22h12m-6-6v12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
   </symbol>
   
+  <!-- 域名监控 -->
+<symbol id="ip-domain-monitor" viewBox="0 0 48 48">
+  <path d="M8 12h32v24H8zM6 12l10-8 10 8m-20 0h20m-20 8h20m-20 8h20" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="36" cy="16" r="2" fill="currentColor"/>
+  <path d="M32 32l4 4 8-8" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</symbol>
+
+<!-- 域名解析监控 -->
+<symbol id="ip-domain-resolve" viewBox="0 0 48 48">
+  <path d="M8 12h32v24H8zM16 20h16M16 28h12" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="36" cy="16" r="2" fill="currentColor"/>
+  <path d="M24 36l4-4 4 4M20 32l4 4 4-4" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+</symbol>
+
+<!-- 域名状态检查 -->
+<symbol id="ip-domain-check" viewBox="0 0 48 48">
+  <path d="M8 12h32v24H8zM16 20h16M16 28h12" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="36" cy="16" r="2" fill="currentColor"/>
+  <path d="M20 36l4 4 8-8M24 32v8m-4-4h8" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</symbol>
+
+<!-- SSL证书监控 -->
+<symbol id="ip-ssl-monitor" viewBox="0 0 48 48">
+  <path d="M8 12h32v24H8zM16 20h16M16 28h12" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="36" cy="16" r="2" fill="currentColor"/>
+  <path d="M24 32l4 4 8-8M20 32h8v8h-8z" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</symbol>
 </svg>

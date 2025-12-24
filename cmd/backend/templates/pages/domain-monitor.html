@@ -4,7 +4,7 @@
 <div class="card">
   <div class="card-header">
     <h2 class="h2-icon">
-      {{ template "icons" (dict "Name" "ip-dns") }} 域名监控
+      {{ template "icons" (dict "Name" "ip-domain-monitor") }} 域名监控
     </h2>
     <div>
       <button class="btn btn-primary" onclick="openFormModal()">
@@ -49,34 +49,28 @@
           <td>{{formatTimeOrNil .LastFailureAt}}</td>
           <td>
             {{ $activeUrlPath := join $urlPath "/active" }}
-            {{ template "switch" (dict 
-                "Checked" .IsActive
-                "URL" $activeUrlPath
-                "NoReload" true
+            {{ template "switch" (dict
+            "Checked" .IsActive
+            "URL" $activeUrlPath
+            "NoReload" true
             )}}
           </td>
           <td>
             {{ $detailWebPath := join $webPath "/detail" }}
-            <button
-              class="btn btn-sm btn-outline-info"
-              onclick="location.href='{{$detailWebPath}}'"
-            >
+            <button class="btn btn-sm btn-outline-info" onclick="location.href='{{$detailWebPath}}'">
               {{ template "icons" (dict "Name" "ip-eyes") }} 详情
             </button>
-            <button
-              class="btn btn-primary btn-sm"
-              onclick="openFormModal('{{.ID}}')"
-            >
+            <button class="btn btn-primary btn-sm" onclick="openFormModal('{{.ID}}')">
               {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
-            {{ template "button" (dict 
-                "Type" "danger" 
-                "IconName" "ip-delete" 
-                "Text" "删除" 
-                "URL" $urlPath
-                "Disabled" .IsActive 
-                "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
-                "NoReload" true
+            {{ template "button" (dict
+            "Type" "danger"
+            "IconName" "ip-delete"
+            "Text" "删除"
+            "URL" $urlPath
+            "Disabled" .IsActive
+            "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
+            "NoReload" true
             )}}
           </td>
         </tr>

@@ -77,10 +77,6 @@ func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string)
 		Timeout: 10 * time.Second,
 	}
 
-	s.logger.InfoContext(ctx, "发送 HTTP / HTTPS 请求",
-		slog.String("地址", url),
-	)
-
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		result.StatusMsg = "请求创建失败"
