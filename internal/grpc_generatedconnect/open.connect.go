@@ -6,13 +6,12 @@
 package grpc_generatedconnect
 
 import (
+	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
 	http "net/http"
 	strings "strings"
-	"vibe_ip/internal/grpc_generated"
-
-	connect "connectrpc.com/connect"
+	grpc_generated "vibe_ip/internal/grpc_generated"
 )
 
 // This is a compile-time assertion to ensure that this generated file and the connect package are

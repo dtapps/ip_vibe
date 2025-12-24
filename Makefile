@@ -10,6 +10,7 @@ install-tools:
 	go install entgo.io/ent/cmd/ent@latest && \
 	go install github.com/swaggo/swag/cmd/swag@latest && mv $(shell go env GOPATH)/bin/swag $(shell go env GOPATH)/bin/swag_v1 && \
 	go install github.com/swaggo/swag/v2/cmd/swag@latest && mv $(shell go env GOPATH)/bin/swag $(shell go env GOPATH)/bin/swag_v2 && \
+	go install github.com/bufbuild/buf/cmd/buf@latest
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest && \
 	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest && \
@@ -25,6 +26,7 @@ verify-tools:
 	@test -f $(shell go env GOPATH)/bin/ent && echo "✅ ent found" || echo "❌ ent not found"
 	@test -f $(shell go env GOPATH)/bin/swag_v1 && echo "✅ swag_v1 found" || echo "❌ swag_v1 not found"
 	@test -f $(shell go env GOPATH)/bin/swag_v2 && echo "✅ swag_v2 found" || echo "❌ swag_v2 not found"
+	@test -f $(shell go env GOPATH)/bin/buf && echo "✅ buf found" || echo "❌ buf not found"
 	@test -f $(shell go env GOPATH)/bin/protoc-gen-go && echo "✅ protoc-gen-go found" || echo "❌ protoc-gen-go not found"
 	@test -f $(shell go env GOPATH)/bin/protoc-gen-go-grpc && echo "✅ protoc-gen-go-grpc found" || echo "❌ protoc-gen-go-grpc not found"
 	@test -f $(shell go env GOPATH)/bin/protoc-gen-grpc-gateway && echo "✅ protoc-gen-grpc-gateway found" || echo "❌ protoc-gen-grpc-gateway not found"
@@ -44,9 +46,9 @@ mod:
 	go mod vendor
 
 generate:
-	make swag_v1
-	make swag_v2
-	make grpc_generate
+	make swag_v1_all
+	make swag_v2_all
+	make grpc_generate_all
 
 generate_ent:
 # 	ent generate --feature schema/snapshot,privacy,entql,namedges,bidiedges,sql/schemaconfig,sql/lock,sql/modifier,sql/execquery,sql/upsert ./ent/schema
@@ -58,7 +60,7 @@ ent_new:
 ent_new_log:
 	ent new RestyLog --target ./internal/ent_log/schema
 
-swag_v1:
+swag_v1_all:
 	make swag_v1_version
 	make swag_v1_fmt
 	make swag_v1_init
@@ -72,7 +74,7 @@ swag_v1_init:
 swag_v1_fmt:
 	swag_v1 fmt -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go
 
-swag_v2:
+swag_v2_all:
 	make swag_v2_version
 	make swag_v2_fmt
 	make swag_v2_init
@@ -89,40 +91,60 @@ swag_v2_fmt:
 swag2op:
 	swag2op init -g cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal -o internal/docs_2 -openapiOutputDir internal/docs_3
 
-grpc_generate:
+grpc_generate_all:
 	make grpc_generate_pb
+	make grpc_generate_connect
 	make grpc_generate_gateway
 	make grpc_generate_openapi
 
-# -I 是 引入 googleapis 目录，用于引入 HTTP 注解定义
+# 生成 gRPC 核心代码（包括 protobuf、gRPC、Validate 和 Connect）
 grpc_generate_pb:
-	@echo "Generating gRPC code..."
-	protoc -I ./internal/grpc_proto \
-	       -I $$(go env GOPATH)/src/googleapis \
-		   --go_out=./internal/grpc_generated \
+	@echo "Generating gRPC core code..."
+	protoc --proto_path=./internal/grpc_proto \
+	       --proto_path=$$(go env GOPATH)/src/googleapis \
+		   --proto_path=$$(go env GOPATH)/src/protoc-gen-validate \
+	       --go_out=./internal/grpc_generated \
+	       --go_opt=paths=source_relative \
 	       --go-grpc_out=./internal/grpc_generated \
-	       --proto_path=./internal/grpc_proto \
+	       --go-grpc_opt=paths=source_relative \
+	       --validate_out="lang=go:./internal/grpc_generated" \
+	       --validate_opt=paths=source_relative \
 	       ./internal/grpc_proto/*.proto
-	echo "✅ gRPC code generated successfully!"
+	@echo "✅ gRPC core code (incl. Validate & Connect) generated successfully!"
 
+# 生成 Connect HTTP 处理函数
+grpc_generate_connect:
+	@echo "Generating Connect HTTP handlers..."
+	protoc --proto_path=./internal/grpc_proto \
+	       --proto_path=$$(go env GOPATH)/src/googleapis \
+		   --proto_path=$$(go env GOPATH)/src/protoc-gen-validate \
+	       --connect-go_out=./internal \
+	       --connect-go_opt=paths=source_relative \
+	       ./internal/grpc_proto/*.proto
+	@echo "✅ Connect handlers generated"
+
+# 生成 gRPC-Gateway 代码（RESTful HTTP/JSON）
 grpc_generate_gateway:
 	@echo "Generating gRPC-Gateway code..."
-	protoc -I ./internal/grpc_proto \
-	       -I $$(go env GOPATH)/src/googleapis \
+	protoc --proto_path=./internal/grpc_proto \
+	       --proto_path=$$(go env GOPATH)/src/googleapis \
+		   --proto_path=$$(go env GOPATH)/src/protoc-gen-validate \
 	       --grpc-gateway_out=./internal/grpc_generated \
 	       --grpc-gateway_opt=paths=source_relative \
 	       --grpc-gateway_opt=logtostderr=true \
 	       ./internal/grpc_proto/*.proto
-	echo "✅ gRPC and gRPC-Gateway code generated successfully!"
+	@echo "✅ gRPC-Gateway code generated successfully!"
 
+# 生成 OpenAPI v2 (Swagger) 规范
 grpc_generate_openapi:
 	@echo "Generating OpenAPI v2 (Swagger)..."
-	protoc -I ./internal/grpc_proto \
-	       -I $$(go env GOPATH)/src/googleapis \
+	protoc --proto_path=./internal/grpc_proto \
+	       --proto_path=$$(go env GOPATH)/src/googleapis \
+		   --proto_path=$$(go env GOPATH)/src/protoc-gen-validate \
 	       --openapiv2_out=./internal/grpc_openapi \
 	       --openapiv2_opt=logtostderr=true \
-	       ./internal/grpc_proto/*.proto 
-	echo "✅ OpenAPI v2 generated at ./internal/grpc_openapi"
+	       ./internal/grpc_proto/*.proto
+	@echo "✅ OpenAPI v2 generated at ./internal/grpc_openapi"
 
 # https://fuchsia.googlesource.com/third_party/googleapis/
 grpc_generate_old:

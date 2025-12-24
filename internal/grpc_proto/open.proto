@@ -3,8 +3,8 @@ syntax = "proto3";
 // 包名
 package open;
 
-// Go 包路径：路径;包名（匹配输出目录，避免子包冲突）
-option go_package = ".;grpc_generated";
+// Go 包路径：路径;包名（匹配输出目录，避免子包冲突）option go_package = ".;grpc_generated"
+option go_package = "vibe_ip/internal/grpc_generated";
 
 // 引入 HTTP 注解定义（用于 gateway）
 import "google/api/annotations.proto";
