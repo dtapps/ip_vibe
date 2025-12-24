@@ -2,20 +2,42 @@
 {{$objType := .ObjType}}
 {{$class := or .Class "badge badge-success"}}
 
-{{if eq $objType "cdn_record"}}
-<span class="badge badge-success">CDN记录</span>
+{{if eq $objType "platform_config"}}
+<span class="{{$class}}">平台配置</span>
+{{else if eq $objType "cdn_record"}}
+<span class="{{$class}}">CDN记录</span>
 {{else if eq $objType "dns_record"}}
-<span class="badge badge-success">DNS记录</span>
+<span class="{{$class}}">DNS记录</span>
 {{else if eq $objType "device"}}
-<span class="badge badge-success">设备</span>
+<span class="{{$class}}">设备</span>
+{{else if eq $objType "device_ip_report"}}
+<span class="{{$class}}">设备IP记录</span>
 {{else if eq $objType "ip_group"}}
-<span class="badge badge-success">IP组</span>
+<span class="{{$class}}">IP组</span>
+{{else if eq $objType "ip_group_device"}}
+<span class="{{$class}}">IP组设备</span>
+{{else if eq $objType "webhook"}}
+<span class="{{$class}}">通知</span>
+{{else if eq $objType "webhook_subscription"}}
+<span class="{{$class}}">通知订阅</span>
+{{else if eq $objType "device_port_forward"}}
+<span class="{{$class}}">端口转发</span>
 {{else if eq $objType "domain_monitor"}}
-<span class="badge badge-success">域名监控</span>
+<span class="{{$class}}">域名监控</span>
 {{else if eq $objType "ssl_record"}}
-<span class="badge badge-success">SSL记录</span>
+<span class="{{$class}}">SSL记录</span>
+{{else if eq $objType "domain_monitor_history"}}
+<span class="{{$class}}">域名监控历史记录</span>
+{{else if eq $objType "http_log"}}
+<span class="{{$class}}">http请求日志</span>
+{{else if eq $objType "operation_log"}}
+<span class="{{$class}}">操作日志</span>
+{{else if eq $objType "resty_log"}}
+<span class="{{$class}}">resty请求日志</span>
+{{else if eq $objType "webhook_history"}}
+<span class="{{$class}}">通知历史记录</span>
 {{else}}
-<span class="badge badge-success">{{$objType}}</span>
+<span class="{{$class}}">{{$objType}}</span>
 {{end}}
 
 {{end}}
