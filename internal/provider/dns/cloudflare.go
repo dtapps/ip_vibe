@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"vibe_ip/internal/provider"
 
 	"github.com/cloudflare/cloudflare-go/v6"
 	"github.com/cloudflare/cloudflare-go/v6/dns"
 	"github.com/cloudflare/cloudflare-go/v6/option"
+	"github.com/spf13/cast"
 )
 
 // CloudfareDNSConfig CloudfareDNS配置
@@ -101,8 +103,8 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 	}
 	// 响应参数
 	for _, item := range response.Result {
-		if item.Name == fullDomain {
-			if recordType != "" && item.Type != dns.RecordResponseType(recordType) {
+		if strings.EqualFold(item.Name, fullDomain) {
+			if recordType != "" && !strings.EqualFold(cast.ToString(item.Type), recordType) {
 				continue
 			}
 			recordID = item.ID

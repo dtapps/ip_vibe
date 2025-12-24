@@ -3,6 +3,7 @@ package dns
 import (
 	"context"
 	"fmt"
+	"strings"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
@@ -114,8 +115,8 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 	}
 	// 响应参数
 	for _, item := range response.Response.RecordList {
-		if utils.PtrToString(item.Name) == subdomain {
-			if recordType != "" && utils.PtrToString(item.Type) != recordType {
+		if strings.EqualFold(utils.PtrToString(item.Name), subdomain) {
+			if recordType != "" && !strings.EqualFold(utils.PtrToString(item.Type), recordType) {
 				continue
 			}
 			recordID = cast.ToString(*item.RecordId)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"vibe_ip/internal/provider"
 
 	"github.com/baidubce/bce-sdk-go/services/dns"
@@ -101,8 +102,8 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 	}
 	// 响应参数
 	for _, item := range response.Records {
-		if item.Rr == subdomain {
-			if recordType != "" && item.Type != recordType {
+		if strings.EqualFold(item.Rr, subdomain) {
+			if recordType != "" && !strings.EqualFold(item.Type, recordType) {
 				continue
 			}
 			recordID = item.Id

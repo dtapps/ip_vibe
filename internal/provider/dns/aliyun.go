@@ -3,6 +3,7 @@ package dns
 import (
 	"context"
 	"fmt"
+	"strings"
 	"vibe_ip/internal/helper/aliyun_helper"
 	"vibe_ip/internal/provider"
 
@@ -122,8 +123,8 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 	}
 	// 响应参数
 	for _, item := range response.Body.DomainRecords.Record {
-		if tea.StringValue(item.RR) == subdomain && tea.StringValue(item.DomainName) == domain {
-			if recordType != "" && tea.StringValue(item.Type) != recordType {
+		if strings.EqualFold(tea.StringValue(item.RR), subdomain) && strings.EqualFold(tea.StringValue(item.DomainName), domain) {
+			if recordType != "" && !strings.EqualFold(tea.StringValue(item.Type), recordType) {
 				continue
 			}
 			recordID = tea.StringValue(item.RecordId)
