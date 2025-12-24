@@ -11,8 +11,8 @@ import (
 	credential "github.com/aliyun/credentials-go/credentials"
 )
 
-// AliyunDnsConfig 阿里云DNS配置
-type AliyunDnsConfig struct {
+// AliyunDNSConfig 阿里云DNS配置
+type AliyunDNSConfig struct {
 	Endpoint        string `json:"endpoint,omitempty"` // 域名地址
 	AccessKeyID     string `json:"access_key_id"`      // 密钥ID
 	AccessKeySecret string `json:"access_key_secret"`  // 密钥Key
@@ -20,7 +20,7 @@ type AliyunDnsConfig struct {
 }
 
 // Validate 验证阿里云DNS配置
-func (config *AliyunDnsConfig) Validate() error {
+func (config *AliyunDNSConfig) Validate() error {
 	if config.Endpoint == "" {
 		return fmt.Errorf("域名地址不能为空")
 	}
@@ -33,20 +33,20 @@ func (config *AliyunDnsConfig) Validate() error {
 	return nil
 }
 
-// NewDefaultAliyunDnsConfig 创建默认的阿里云DNS配置
-func NewDefaultAliyunDnsConfig() *AliyunDnsConfig {
-	return &AliyunDnsConfig{
+// NewDefaultAliyunDNSConfig 创建默认的阿里云DNS配置
+func NewDefaultAliyunDNSConfig() *AliyunDNSConfig {
+	return &AliyunDNSConfig{
 		Endpoint: "alidns.aliyuncs.com",
 	}
 }
 
-type AliyunDnsProvider struct {
-	config *AliyunDnsConfig
+type AliyunDNSProvider struct {
+	config *AliyunDNSConfig
 	client *alidns20150109.Client
 	opts   *dnsOptions
 }
 
-func NewAliyunDnsProvider(ctx context.Context, config *AliyunDnsConfig, opts ...DnsOption) (p *AliyunDnsProvider, err error) {
+func NewAliyunDNSProvider(ctx context.Context, config *AliyunDNSConfig, opts ...DnsOption) (p *AliyunDNSProvider, err error) {
 
 	if config == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -57,7 +57,7 @@ func NewAliyunDnsProvider(ctx context.Context, config *AliyunDnsConfig, opts ...
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
-	p = &AliyunDnsProvider{
+	p = &AliyunDNSProvider{
 		config: config,
 		opts:   &dnsOptions{},
 	}
@@ -99,7 +99,7 @@ func NewAliyunDnsProvider(ctx context.Context, config *AliyunDnsConfig, opts ...
 }
 
 // Check 检查子域名是否存在
-func (p *AliyunDnsProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (id string, ip string, err error) {
+func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (id string, ip string, err error) {
 
 	// 请求参数
 	request := &alidns20150109.DescribeDomainRecordsRequest{}
@@ -131,7 +131,7 @@ func (p *AliyunDnsProvider) Check(ctx context.Context, domain string, subdomain 
 }
 
 // Update 更新 DNS 记录
-func (p *AliyunDnsProvider) Update(ctx context.Context, id string, domain string, subdomain string, ip string, recordType string) (err error) {
+func (p *AliyunDNSProvider) Update(ctx context.Context, id string, domain string, subdomain string, ip string, recordType string) (err error) {
 
 	if id == "" {
 		// 请求参数
@@ -166,11 +166,11 @@ func (p *AliyunDnsProvider) Update(ctx context.Context, id string, domain string
 }
 
 // Save 保存 DNS 记录
-func (p *AliyunDnsProvider) Save(ctx context.Context, id, domain, subdomain, ip, recordType string) (err error) {
+func (p *AliyunDNSProvider) Save(ctx context.Context, id, domain, subdomain, ip, recordType string) (err error) {
 	return nil
 }
 
 // Name 返回 DNS 提供程序的名称
-func (p *AliyunDnsProvider) Name() string {
+func (p *AliyunDNSProvider) Name() string {
 	return "阿里云 DNS"
 }
