@@ -9,7 +9,6 @@ import (
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	"github.com/alibabacloud-go/tea/tea"
 	credential "github.com/aliyun/credentials-go/credentials"
-	"go.dtapp.net/library/contrib/http_log"
 )
 
 // AliyunDnsConfig 阿里云DNS配置
@@ -41,29 +40,13 @@ func NewDefaultAliyunDnsConfig() *AliyunDnsConfig {
 	}
 }
 
-// AliyunDnsOption 定义阿里云DNS配置选项函数类型
-type AliyunDnsOption func(*aliyunDnsOptions)
-
-// aliyunDnsOptions 内部阿里云DNS配置选项
-type aliyunDnsOptions struct {
-	ctx           context.Context
-	httpTransport *http_log.LoggingTransport
-}
-
-// WithHttpTransport 设置HTTP日志传输器
-func WithHttpTransport(transport *http_log.LoggingTransport) AliyunDnsOption {
-	return func(o *aliyunDnsOptions) {
-		o.httpTransport = transport
-	}
-}
-
 type AliyunDnsProvider struct {
 	config *AliyunDnsConfig
 	client *alidns20150109.Client
-	opts   *aliyunDnsOptions
+	opts   *dnsOptions
 }
 
-func NewAliyunDnsProvider(ctx context.Context, config *AliyunDnsConfig, opts ...AliyunDnsOption) (p *AliyunDnsProvider, err error) {
+func NewAliyunDnsProvider(ctx context.Context, config *AliyunDnsConfig, opts ...DnsOption) (p *AliyunDnsProvider, err error) {
 
 	if config == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -76,7 +59,7 @@ func NewAliyunDnsProvider(ctx context.Context, config *AliyunDnsConfig, opts ...
 
 	p = &AliyunDnsProvider{
 		config: config,
-		opts:   &aliyunDnsOptions{},
+		opts:   &dnsOptions{},
 	}
 
 	// 应用选项
