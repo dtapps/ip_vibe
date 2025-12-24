@@ -190,7 +190,7 @@ func (s *SSLUpdateTask) RunSSLPeriodicTask() {
 
 					if err = s.executeSSLUpdate(egCtx, logger, item); err != nil {
 						logger.ErrorContext(egCtx, "处理失败",
-							slog.Any("error", err),
+							slog.Any("错误信息", err),
 						)
 					}
 
@@ -201,7 +201,7 @@ func (s *SSLUpdateTask) RunSSLPeriodicTask() {
 
 			if err = eg.Wait(); err != nil {
 				logger.ErrorContext(ctx, "并发处理错误",
-					slog.Any("error", err),
+					slog.Any("错误信息", err),
 				)
 			}
 
@@ -215,7 +215,7 @@ func (s *SSLUpdateTask) RunSSLPeriodicTask() {
 
 			if err = s.executeSSLUpdate(ctx, logger, item); err != nil {
 				logger.ErrorContext(ctx, "处理失败",
-					slog.Any("error", err),
+					slog.Any("错误信息", err),
 				)
 			}
 
@@ -323,8 +323,9 @@ func (s *SSLUpdateTask) executeSSLUpdate(ctx context.Context, logger *slog.Logge
 		updateOne.SetLastAPIResponse(err.Error())
 		updateOne.SetLastAPIResponseAt(time.Now())
 		_ = updateOne.Exec(ctx)
+
 		logger.ErrorContext(ctx, "配置失败",
-			slog.Any("error", err),
+			slog.Any("错误信息", err),
 		)
 		return err
 	}
@@ -335,8 +336,9 @@ func (s *SSLUpdateTask) executeSSLUpdate(ctx context.Context, logger *slog.Logge
 		updateOne.SetLastAPIResponse(err.Error())
 		updateOne.SetLastAPIResponseAt(time.Now())
 		_ = updateOne.Exec(ctx)
+
 		logger.ErrorContext(ctx, "申请失败",
-			slog.Any("error", err),
+			slog.Any("错误信息", err),
 		)
 		return err
 	}
@@ -347,8 +349,9 @@ func (s *SSLUpdateTask) executeSSLUpdate(ctx context.Context, logger *slog.Logge
 		updateOne.SetLastAPIResponse(err.Error())
 		updateOne.SetLastAPIResponseAt(time.Now())
 		_ = updateOne.Exec(ctx)
+
 		logger.ErrorContext(ctx, "解析证书有效期失败",
-			slog.Any("error", err),
+			slog.Any("错误信息", err),
 		)
 		return err
 	}
@@ -452,15 +455,10 @@ func (s *SSLUpdateTask) AddSSLDisposableTask(ctx context.Context, pendingRecord 
 
 // 运行SSL一次性任务
 func (s *SSLUpdateTask) RunSSLDisposableTask(ctx context.Context, logger *slog.Logger, taskPendingRecord *PendingSSLRecord) {
-	// 日志
-	logger = logger.With(
-		slog.String("处理方式", "手动"),
-	)
-	// 处理
 	err := s.executeSSLUpdate(ctx, logger, taskPendingRecord)
 	if err != nil {
 		logger.ErrorContext(ctx, "处理失败",
-			slog.Any("error", err),
+			slog.Any("错误信息", err),
 		)
 	}
 }

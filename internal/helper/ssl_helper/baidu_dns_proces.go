@@ -94,13 +94,15 @@ func (d *SSLProcessBaiduDNSImpl) Configure(ctx context.Context, params *SSLProce
 // domains 域名列表，可以同时申请主域名和通配符域名
 func (d *SSLProcessBaiduDNSImpl) Apply(ctx context.Context, domains []string) (res *certificate.Resource, err error) {
 
-	// 设置 DNS-01 挑战提供者
+	d.logger.InfoContext(ctx, "设置 DNS-01 提供者")
+
+	// 设置 DNS-01 提供者
 	dnsProviderConfig := baiducloud.NewDefaultConfig()
 	dnsProviderConfig.AccessKeyID = d.platformConfig.AccessKeyID
 	dnsProviderConfig.SecretAccessKey = d.platformConfig.SecretAccessKey
 	cfProvider, err := baiducloud.NewDNSProviderConfig(dnsProviderConfig)
 	if err != nil {
-		return nil, fmt.Errorf("无法创建 BaiduDNS DNS 提供者: %w", err)
+		return nil, fmt.Errorf("无法创建 DNS-01 提供者: %w", err)
 	}
 
 	// 将 DNS Provider 传递给 lego 客户端
@@ -108,6 +110,8 @@ func (d *SSLProcessBaiduDNSImpl) Apply(ctx context.Context, domains []string) (r
 	if err != nil {
 		return nil, fmt.Errorf("无法设置 DNS-01 提供者: %w", err)
 	}
+
+	d.logger.InfoContext(ctx, "向 CA 注册账户")
 
 	// 向 CA 注册账户
 	// TermsOfServiceAgreed: true 表示自动同意服务条款
@@ -117,14 +121,13 @@ func (d *SSLProcessBaiduDNSImpl) Apply(ctx context.Context, domains []string) (r
 	}
 	d.legoConfig.Registration = reg
 
-	// 请求证书
-	request := certificate.ObtainRequest{
+	d.logger.InfoContext(ctx, "获取 SSL 证书")
+
+	// 获取 SSL 证书
+	res, err = d.client.Certificate.Obtain(certificate.ObtainRequest{
 		Domains: domains,
 		Bundle:  true, // 是否将中间证书一起返回
-	}
-
-	// 获取证书
-	res, err = d.client.Certificate.Obtain(request)
+	})
 	if err != nil {
 		return nil, fmt.Errorf("无法获取证书: %w", err)
 	}

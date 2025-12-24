@@ -161,7 +161,7 @@ func (s *DomainMonitorTask) RunDomainMonitorPeriodicTask() {
 
 					if err = s.executeDomainMonitorCheck(egCtx, logger, item); err != nil {
 						logger.ErrorContext(egCtx, "处理失败",
-							slog.Any("error", err),
+							slog.Any("错误信息", err),
 						)
 					}
 
@@ -172,7 +172,7 @@ func (s *DomainMonitorTask) RunDomainMonitorPeriodicTask() {
 
 			if err = eg.Wait(); err != nil {
 				logger.ErrorContext(ctx, "并发处理错误",
-					slog.Any("error", err),
+					slog.Any("错误信息", err),
 				)
 			}
 
@@ -186,7 +186,7 @@ func (s *DomainMonitorTask) RunDomainMonitorPeriodicTask() {
 
 			if err = s.executeDomainMonitorCheck(ctx, logger, item); err != nil {
 				logger.ErrorContext(ctx, "处理失败",
-					slog.Any("error", err),
+					slog.Any("错误信息", err),
 				)
 			}
 
@@ -312,15 +312,10 @@ func (s *DomainMonitorTask) AddDomainMonitorDisposableTask(ctx context.Context, 
 
 // RunDomainMonitorDisposableTask 运行域名监控一次性任务
 func (s *DomainMonitorTask) RunDomainMonitorDisposableTask(ctx context.Context, logger *slog.Logger, domainMonitor *ent.DomainMonitor) {
-	// 日志
-	logger = logger.With(
-		slog.String("处理方式", "手动"),
-	)
-	// 处理
 	err := s.executeDomainMonitorCheck(ctx, logger, domainMonitor)
 	if err != nil {
 		logger.ErrorContext(ctx, "处理失败",
-			slog.Any("error", err),
+			slog.Any("错误信息", err),
 		)
 	}
 }
