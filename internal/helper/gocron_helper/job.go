@@ -233,7 +233,7 @@ func (j *JobHelper) AfterPeriodicListener() gocron.EventListener {
 func (j *JobHelper) AfterDisposableListener() gocron.EventListener {
 	return gocron.AfterJobRuns(func(jobID uuid.UUID, jobName string) {
 		logger := j.SlogWith(j.logger, jobID.String(), jobName)
-		logger.Info("[一次性]执行结束, 准备删除任务")
+		logger.Info("[一次性]执行结束")
 		err := j.Scheduler.RemoveJob(jobID)
 		if err != nil {
 			logger.Error("[一次性]删除任务失败",
@@ -255,7 +255,7 @@ func (j *JobHelper) PanicPeriodicListener() gocron.EventListener {
 func (j *JobHelper) PanicDisposableListener() gocron.EventListener {
 	return gocron.AfterJobRunsWithPanic(func(jobID uuid.UUID, jobName string, recoverData any) {
 		logger := j.SlogWith(j.logger, jobID.String(), jobName)
-		logger.Error("[一次性]执行异常, 准备删除任务",
+		logger.Error("[一次性]执行异常",
 			slog.Any("错误信息", recoverData),
 		)
 		err := j.Scheduler.RemoveJob(jobID)

@@ -17,8 +17,8 @@ import (
 	"vibe_ip/internal/helper/gocron_helper"
 
 	"github.com/go-co-op/gocron/v2"
+	"github.com/google/uuid"
 	"go.dtapp.net/library/contrib/http_log"
-	"go.dtapp.net/library/utils/gorandom"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -27,7 +27,7 @@ type DomainMonitorTask struct {
 	db            *ent.Client                // 业务数据库客户端
 	logDb         *ent_log.Client            // 日志数据库客户端
 	cron          gocron.Scheduler           // 定时任务调度器
-	dmjob         gocron.Job                 // 域名监控任务
+	dmJob         gocron.Job                 // 域名监控任务
 	jobHelper     *gocron_helper.JobHelper   // 任务助手
 	logger        *slog.Logger               // 日志记录器
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
@@ -55,8 +55,8 @@ func NewDomainMonitorTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Sch
 
 // Close 关闭服务，释放资源
 func (s *DomainMonitorTask) Close() {
-	if s.cron != nil && s.dmjob != nil {
-		_ = s.cron.RemoveJob(s.dmjob.ID())
+	if s.cron != nil && s.dmJob != nil {
+		_ = s.cron.RemoveJob(s.dmJob.ID())
 	}
 }
 
@@ -92,11 +92,11 @@ func (m *DomainMonitorTask) CalculateNextRun(domainMonitor *ent.DomainMonitor, n
 // 启动域名监控周期任务
 func (s *DomainMonitorTask) StartDomainMonitorPeriodicTask(ctx context.Context) (err error) {
 	// 判断是否存在任务
-	if s.dmjob != nil {
+	if s.dmJob != nil {
 		return nil
 	}
 	// 每30秒到60秒执行一次
-	s.dmjob, err = s.cron.NewJob(
+	s.dmJob, err = s.cron.NewJob(
 		gocron.DurationRandomJob(
 			30*time.Second, // 最小间隔
 			60*time.Second, // 最大间隔
@@ -122,8 +122,8 @@ func (s *DomainMonitorTask) RunDomainMonitorPeriodicTask() {
 
 	ctx := context.Background()
 
-	logger := s.jobHelper.SlogWith(s.logger, s.dmjob.ID().String(), s.dmjob.Name())
-	logger.InfoContext(ctx, "开始执行")
+	// 日志
+	logger := s.jobHelper.SlogWith(s.logger, s.dmJob.ID().String(), s.dmJob.Name())
 
 	// 分组记录
 	var concurrentRecords, serialRecords []*ent.DomainMonitor
@@ -155,17 +155,14 @@ func (s *DomainMonitorTask) RunDomainMonitorPeriodicTask() {
 				item := item // 创建副本以避免闭包问题
 				eg.Go(func() error {
 
-					logger = logger.With(
+					if err = s.executeDomainMonitorCheck(egCtx, logger.With(
 						slog.String("处理方式", "并发"),
-					)
-
-					if err = s.executeDomainMonitorCheck(egCtx, logger, item); err != nil {
+					), item); err != nil {
 						logger.ErrorContext(egCtx, "处理失败",
 							slog.Any("错误信息", err),
 						)
 					}
 
-					// 返回nil而不是错误，这样单个DNS记录更新失败不会导致整个errgroup取消上下文
 					return nil
 				})
 			}
@@ -180,11 +177,9 @@ func (s *DomainMonitorTask) RunDomainMonitorPeriodicTask() {
 		// 2. 串行处理不支持并发的记录
 		for _, item := range serialRecords {
 
-			logger = logger.With(
+			if err = s.executeDomainMonitorCheck(ctx, logger.With(
 				slog.String("处理方式", "串行"),
-			)
-
-			if err = s.executeDomainMonitorCheck(ctx, logger, item); err != nil {
+			), item); err != nil {
 				logger.ErrorContext(ctx, "处理失败",
 					slog.Any("错误信息", err),
 				)
@@ -193,15 +188,17 @@ func (s *DomainMonitorTask) RunDomainMonitorPeriodicTask() {
 		}
 	}
 
-	nextRun, err := s.dmjob.NextRun()
+	nextRun, err := s.dmJob.NextRun()
 	if err == nil {
-		logger.InfoContext(ctx, "执行完成",
+		logger.InfoContext(ctx, "运行完成",
 			slog.Int("并发记录数", len(concurrentRecords)),
+			slog.Int("串行记录数", len(serialRecords)),
 			slog.String("下次运行时间", nextRun.Format(time.DateTime)),
 		)
 	} else {
-		logger.InfoContext(ctx, "执行完成",
+		logger.InfoContext(ctx, "运行完成",
 			slog.Int("并发记录数", len(concurrentRecords)),
+			slog.Int("串行记录数", len(serialRecords)),
 		)
 	}
 }
@@ -211,7 +208,6 @@ func (s *DomainMonitorTask) executeDomainMonitorCheck(ctx context.Context, logge
 
 	// 日志
 	logger = logger.With(
-		slog.String("处理编号", gorandom.Alphanumeric(10)),
 		slog.Int64("记录", domainMonitor.ID),
 		slog.String("域名", domainMonitor.Domain),
 		slog.String("协议", domainMonitor.CheckProtocol.String()),
@@ -278,13 +274,16 @@ func (s *DomainMonitorTask) executeDomainMonitorCheck(ctx context.Context, logge
 // 添加域名监控一次性任务
 func (s *DomainMonitorTask) AddDomainMonitorDisposableTask(ctx context.Context, domainMonitor *ent.DomainMonitor) (err error) {
 
+	// 任务编号
+	jobID := uuid.New()
+
 	// 任务名称
-	taskName := fmt.Sprintf("%s-%v", s.taskName, domainMonitor.ID)
+	jobName := fmt.Sprintf("%s-%v", s.taskName, domainMonitor.ID)
 
 	// 检查是否已存在同名任务
-	isExist := s.jobHelper.IsJob("", taskName)
+	isExist := s.jobHelper.IsJob("", jobName)
 	if isExist {
-		return fmt.Errorf("任务 %s 已存在，无法重复添加", taskName)
+		return fmt.Errorf("任务 %s 已存在，无法重复添加", jobName)
 	}
 
 	// 不存在同名任务，添加新任务
@@ -295,11 +294,12 @@ func (s *DomainMonitorTask) AddDomainMonitorDisposableTask(ctx context.Context, 
 		gocron.NewTask(
 			s.RunDomainMonitorDisposableTask,
 			ctx,
-			s.logger,
+			s.jobHelper.SlogWith(s.logger, jobID.String(), jobName),
 			domainMonitor,
 		),
 		gocron.WithSingletonMode(gocron.LimitModeWait), // 单例模式
-		gocron.WithName(taskName),                      // 任务名称
+		gocron.WithName(jobName),                       // 任务名称
+		gocron.WithIdentifier(jobID),                   // 任务编号
 		gocron.WithEventListeners(
 			s.jobHelper.PanicDisposableListener(),
 			s.jobHelper.BeforeDisposableListener(),

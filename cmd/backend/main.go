@@ -308,7 +308,7 @@ func gracefulShutdown() {
 		close(shutdownChan)
 
 		// 4. 等待一段时间让 goroutine 完成
-		time.Sleep(2 * time.Second)
+		// time.Sleep(2 * time.Second)
 
 		// 5. 关闭数据库连接和其他资源（现有的 defer 逻辑）
 		slog.Info("开始关闭数据库连接...")

@@ -20,9 +20,9 @@ import (
 
 	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-co-op/gocron/v2"
+	"github.com/google/uuid"
 	"github.com/spf13/cast"
 	"go.dtapp.net/library/contrib/http_log"
-	"go.dtapp.net/library/utils/gorandom"
 	"go.dtapp.net/library/utils/gostring"
 	"golang.org/x/sync/errgroup"
 )
@@ -129,8 +129,8 @@ func (s *SSLUpdateTask) RunSSLPeriodicTask() {
 
 	ctx := context.Background()
 
+	// 日志
 	logger := s.jobHelper.SlogWith(s.logger, s.sslJob.ID().String(), s.sslJob.Name())
-	logger.InfoContext(ctx, "开始执行")
 
 	// 分组记录
 	var concurrentRecords, serialRecords []*PendingSSLRecord
@@ -184,17 +184,14 @@ func (s *SSLUpdateTask) RunSSLPeriodicTask() {
 				item := item // 创建副本以避免闭包问题
 				eg.Go(func() error {
 
-					logger = logger.With(
+					if err = s.executeSSLUpdate(egCtx, logger.With(
 						slog.String("处理方式", "并发"),
-					)
-
-					if err = s.executeSSLUpdate(egCtx, logger, item); err != nil {
+					), item); err != nil {
 						logger.ErrorContext(egCtx, "处理失败",
 							slog.Any("错误信息", err),
 						)
 					}
 
-					// 返回nil而不是错误，这样单个DNS记录更新失败不会导致整个errgroup取消上下文
 					return nil
 				})
 			}
@@ -209,11 +206,9 @@ func (s *SSLUpdateTask) RunSSLPeriodicTask() {
 		// 2. 串行处理不支持并发的记录
 		for _, item := range serialRecords {
 
-			logger = logger.With(
+			if err = s.executeSSLUpdate(ctx, logger.With(
 				slog.String("处理方式", "串行"),
-			)
-
-			if err = s.executeSSLUpdate(ctx, logger, item); err != nil {
+			), item); err != nil {
 				logger.ErrorContext(ctx, "处理失败",
 					slog.Any("错误信息", err),
 				)
@@ -225,13 +220,13 @@ func (s *SSLUpdateTask) RunSSLPeriodicTask() {
 
 	nextRun, err := s.sslJob.NextRun()
 	if err == nil {
-		logger.InfoContext(ctx, "执行完成",
+		logger.InfoContext(ctx, "运行完成",
 			slog.Int("并发记录数", len(concurrentRecords)),
 			slog.Int("串行记录数", len(serialRecords)),
 			slog.String("下次运行时间", nextRun.Format(time.DateTime)),
 		)
 	} else {
-		logger.InfoContext(ctx, "执行完成",
+		logger.InfoContext(ctx, "运行完成",
 			slog.Int("并发记录数", len(concurrentRecords)),
 			slog.Int("串行记录数", len(serialRecords)),
 		)
@@ -250,7 +245,6 @@ func (s *SSLUpdateTask) executeSSLUpdate(ctx context.Context, logger *slog.Logge
 
 	// 日志
 	logger = logger.With(
-		slog.String("处理编号", gorandom.Alphanumeric(10)),
 		slog.String("记录", pendingRecord.Params.SSLRecordID),
 		slog.String("提供商", pendingRecord.Item.Provider.String()),
 		slog.String("平台", pendingRecord.Platform.String()),
@@ -422,13 +416,16 @@ func (s *SSLUpdateTask) parseCertificateValidity(res *certificate.Resource) (*Ce
 // 添加SSL一次性任务
 func (s *SSLUpdateTask) AddSSLDisposableTask(ctx context.Context, pendingRecord *PendingSSLRecord) (err error) {
 
+	// 任务编号
+	jobID := uuid.New()
+
 	// 任务名称
-	taskName := fmt.Sprintf("%s-%v", s.taskName, pendingRecord.Params.SSLRecordID)
+	jobName := fmt.Sprintf("%s-%v", s.taskName, pendingRecord.Params.SSLRecordID)
 
 	// 检查是否已存在同名任务
-	isExist := s.jobHelper.IsJob("", taskName)
+	isExist := s.jobHelper.IsJob("", jobName)
 	if isExist {
-		return fmt.Errorf("任务 %s 已存在，无法重复添加", taskName)
+		return fmt.Errorf("任务 %s 已存在，无法重复添加", jobName)
 	}
 
 	// 不存在同名任务，添加新任务
@@ -439,17 +436,19 @@ func (s *SSLUpdateTask) AddSSLDisposableTask(ctx context.Context, pendingRecord 
 		gocron.NewTask(
 			s.RunSSLDisposableTask,
 			ctx,
-			s.logger,
+			s.jobHelper.SlogWith(s.logger, jobID.String(), jobName),
 			pendingRecord,
 		),
 		gocron.WithSingletonMode(gocron.LimitModeWait), // 单例模式
-		gocron.WithName(taskName),                      // 任务名称
+		gocron.WithName(jobName),                       // 任务名称
+		gocron.WithIdentifier(jobID),                   // 任务编号
 		gocron.WithEventListeners(
 			s.jobHelper.PanicDisposableListener(),
 			s.jobHelper.BeforeDisposableListener(),
 			s.jobHelper.AfterDisposableListener(),
 		),
 	)
+
 	return err
 }
 
