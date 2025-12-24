@@ -2,18 +2,14 @@ package task
 
 import (
 	"context"
-	"crypto/tls"
-	"encoding/pem"
 	"fmt"
 	"log/slog"
-	"net"
-	"net/http"
-	"strings"
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/domain_helper"
 	"vibe_ip/internal/helper/gocron_helper"
 
 	"github.com/go-co-op/gocron/v2"
@@ -216,26 +212,28 @@ func (s *DomainMonitorTask) executeDomainMonitorCheck(ctx context.Context, logge
 	defer logger.InfoContext(ctx, "处理完成")
 
 	// 执行检查
-	result := s.runDomainCheck(ctx, domainMonitor.Domain, domainMonitor.CheckProtocol.String())
+	domainCheck := domain_helper.NewDomainCheck(logger)
+	result := domainCheck.Check(ctx, domainMonitor.Domain, domainMonitor.CheckProtocol.String())
 
 	// 历史记录创建
-	historyCreator := s.logDb.DomainMonitorHistory.Create().
-		SetMonitorID(domainMonitor.ID).
-		SetCheckTime(time.Now()).
-		SetIsSuccess(result.IsSuccess).
-		SetCheckDuration(int(result.Duration.Milliseconds())).
-		SetHTTPStatus(result.HTTPStatus).
-		SetStatusMessage(result.StatusMsg).
-		SetErrorLog(result.ErrorLog)
+	historyCreator := s.logDb.DomainMonitorHistory.Create()
+	historyCreator.SetMonitorID(domainMonitor.ID)
+	historyCreator.SetCheckTime(time.Now())
+	historyCreator.SetIsSuccess(result.IsSuccess)
+	historyCreator.SetCheckDuration(int(result.Duration.Milliseconds()))
+	historyCreator.SetStatusMessage(result.StatusMsg)
+	historyCreator.SetHTTPStatus(result.HTTPStatus)
+	historyCreator.SetIPResolved(result.IPResolved)
+	historyCreator.SetErrorLog(result.ErrorLog)
 
 	// 填充 SSL 字段
-	if domainMonitor.CheckProtocol == domainmonitor.CheckProtocolHTTPS && result.SSLExpiryDate.After(time.Time{}) {
-		historyCreator.SetSslExpiryDate(result.SSLExpiryDate).
-			SetSslCommonName(result.SSLCommonName).
-			SetSslIssuerName(result.SSLIssuerName).
-			SetSslSignatureAlg(result.SSLSignatureAlg).
-			SetSslSanList(result.SANList).
-			SetSslCertificateChain(result.CertificateChain)
+	if domainMonitor.CheckProtocol == domainmonitor.CheckProtocolHTTPS {
+		historyCreator.SetSslExpiryDate(result.SSLExpiryDate)
+		historyCreator.SetSslCommonName(result.SSLCommonName)
+		historyCreator.SetSslIssuerName(result.SSLIssuerName)
+		historyCreator.SetSslSignatureAlg(result.SSLSignatureAlg)
+		historyCreator.SetSslSanList(result.SANList)
+		historyCreator.SetSslCertificateChain(result.CertificateChain)
 	}
 
 	_, err = historyCreator.Save(ctx)
@@ -246,24 +244,19 @@ func (s *DomainMonitorTask) executeDomainMonitorCheck(ctx context.Context, logge
 		return err
 	}
 
-	// 更新状态
+	// 更新域名监控状态
 	updaterOne := s.db.DomainMonitor.UpdateOne(domainMonitor)
 	if result.IsSuccess {
+		updaterOne.SetLastSuccessAt(time.Now())
 		updaterOne.SetCurrentStatus(domainmonitor.CurrentStatusSuccess)
 	} else {
+		updaterOne.SetLastFailureAt(time.Now())
 		updaterOne.SetCurrentStatus(domainmonitor.CurrentStatusFailure)
 	}
-
-	if result.IsSuccess {
-		updaterOne.SetLastSuccessAt(time.Now())
-	} else {
-		updaterOne.SetLastFailureAt(time.Now())
-	}
-
 	err = updaterOne.Exec(ctx)
 	if err != nil {
-		logger.ErrorContext(ctx, "更新状态失败",
-			slog.Any("err", err),
+		logger.ErrorContext(ctx, "更新域名监控状态失败",
+			slog.Any("错误信息", err),
 		)
 		return err
 	}
@@ -318,146 +311,4 @@ func (s *DomainMonitorTask) RunDomainMonitorDisposableTask(ctx context.Context, 
 			slog.Any("错误信息", err),
 		)
 	}
-}
-
-// CheckResult 包含本次检查的所有结果
-type CheckResult struct {
-	IsSuccess  bool          // 是否成功
-	Duration   time.Duration // 检查耗时
-	StatusMsg  string        // 状态信息
-	HTTPStatus int           // HTTP状态码
-	ErrorLog   string        // 错误日志
-
-	// SSL 证书信息 (HTTP 检查时为空)
-	SSLExpiryDate    time.Time // 证书过期日期
-	SSLCommonName    string    // 证书通用名
-	SSLIssuerName    string    // 证书颁发者
-	SSLSignatureAlg  string    // 签名算法
-	SANList          string    // SAN别名列表
-	CertificateChain string    // 证书链内容 (PEM格式)
-}
-
-// RunDomainCheck 执行实际的网络检查并返回结果
-func (s *DomainMonitorTask) runDomainCheck(ctx context.Context, domain string, protocol string) *CheckResult {
-	result := &CheckResult{
-		StatusMsg: "未执行",
-	}
-
-	url := protocol + "://" + domain
-	start := time.Now()
-
-	// 确保域名包含端口 (默认 80/443)
-	addr := domain
-	if !strings.Contains(addr, ":") {
-		if protocol == "https" {
-			addr += ":443"
-		} else {
-			addr += ":80"
-		}
-	}
-
-	// --- 自定义 Transport/Dialer 以获取 SSL 信息 ---
-	// 必须使用 net.Dialer + tls.Client 来手动控制连接和获取证书
-
-	dialer := &net.Dialer{Timeout: 10 * time.Second}
-
-	if protocol == "https" {
-		conn, err := tls.DialWithDialer(dialer, "tcp", addr, &tls.Config{
-			ServerName: domain, // 确保 SNI (Server Name Indication) 正确
-			// 允许非验证连接以获取证书信息，否则如果证书无效，Go 会直接返回错误
-			InsecureSkipVerify: true,
-		})
-
-		result.Duration = time.Since(start)
-
-		if err != nil {
-			result.ErrorLog = fmt.Sprintf("TLS 握手失败: %v", err)
-			result.StatusMsg = "连接或 TLS 握手失败"
-			return result
-		}
-		defer conn.Close()
-
-		// 1. 获取 SSL 证书信息
-		state := conn.ConnectionState()
-		if len(state.PeerCertificates) > 0 {
-			cert := state.PeerCertificates[0] // 始终取第一个证书 (叶证书)
-
-			result.SSLExpiryDate = cert.NotAfter
-			result.SSLCommonName = cert.Subject.CommonName
-			result.SSLIssuerName = cert.Issuer.CommonName
-			result.SSLSignatureAlg = cert.SignatureAlgorithm.String()
-
-			// SANs 列表平铺为逗号分隔字符串
-			result.SANList = strings.Join(cert.DNSNames, ",")
-
-			// 证书链信息 (PEM 格式文本)
-			var chainBuilder strings.Builder
-			for _, c := range state.PeerCertificates {
-				pemBlock := &pem.Block{
-					Type:  "CERTIFICATE",
-					Bytes: c.Raw,
-				}
-				chainBuilder.WriteString(string(pem.EncodeToMemory(pemBlock)))
-			}
-			result.CertificateChain = chainBuilder.String()
-		}
-
-		// 2. 尝试执行 HTTP 请求 (如果需要检查内容)
-		// 简化：这里只检查了 SSL 握手成功和证书获取，实际可能还需要再发一个 HTTP GET
-
-		// 假设 SSL 握手成功且证书信息获取，则继续尝试 GET
-		result.StatusMsg = "TLS 握手成功"
-	}
-
-	// --- 执行 HTTP/HTTPS GET 请求 ---
-	// 为了获取 HTTP 状态码和 IP 地址，无论是否是 HTTPS，都需要执行一次请求
-
-	client := http.Client{
-		// 再次设置 10 秒超时
-		Timeout: 10 * time.Second,
-		// 如果是 HTTPS 且证书已获取，需要确保 http.Client 也能处理
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true, // 忽略 Go 自己的证书校验，我们已经手动获取
-			},
-			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-				// 获取 IP 解析列表 (如果您需要保存 ip_resolved 字段)
-				// ips, _ := net.LookupIP(domain)
-				// result.IPResolved = ...
-
-				// 使用默认 Dialer
-				return (&net.Dialer{
-					Timeout:   10 * time.Second,
-					KeepAlive: 10 * time.Second,
-				}).DialContext(ctx, network, addr)
-			},
-		},
-	}
-
-	req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
-	resp, err := client.Do(req)
-	result.Duration = time.Since(start) // 重新计算总耗时
-
-	if err != nil {
-		// 如果在 TLS 阶段已经失败，则这个 error 会是连接或超时错误
-		if result.ErrorLog == "" { // 如果之前没有记录错误
-			result.ErrorLog = err.Error()
-		}
-		if result.StatusMsg == "未执行" {
-			result.StatusMsg = "HTTP/HTTPS 请求失败"
-		}
-		return result
-	}
-	defer resp.Body.Close()
-
-	// 3. 处理 HTTP 状态
-	result.HTTPStatus = resp.StatusCode
-	if resp.StatusCode >= 200 && resp.StatusCode < 400 {
-		result.IsSuccess = true
-		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
-	} else {
-		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
-	}
-
-	return result
 }
