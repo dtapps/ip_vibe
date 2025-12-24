@@ -77,7 +77,7 @@ func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string)
 	// ---------- HTTP / HTTPS 请求 ----------
 	url := protocol + "://" + domain
 	client := &http.Client{
-		Timeout: 10 * time.Second,
+		Timeout: 60 * time.Second,
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -111,7 +111,7 @@ func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string)
 }
 
 func (s *DomainCheck) fetchSSLInfo(ctx context.Context, domain string, result *CheckResult) error {
-	dialer := &net.Dialer{Timeout: 10 * time.Second}
+	dialer := &net.Dialer{Timeout: 60 * time.Second}
 
 	conn, err := tls.DialWithDialer(dialer, "tcp", domain+":443", &tls.Config{
 		ServerName:         domain,

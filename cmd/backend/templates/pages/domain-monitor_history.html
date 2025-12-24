@@ -24,11 +24,14 @@
           <th>是否成功</th>
           <th>耗时</th>
           <th>状态</th>
-          <th>证书过期日期</th>
-          <th>证书主体通用名</th>
-          <th>证书颁发者通用名</th>
-          <th>证书签名算法</th>
-          <th>时间</th>
+          <!-- <th>序列号</th> -->
+          <!-- <th>生效日期</th> -->
+          <th>过期日期</th>
+          <th>通用名</th>
+          <!-- <th>备用名</th> -->
+          <th>颁发者</th>
+          <th>签名算法</th>
+          <th>检查时间</th>
         </tr>
       </thead>
       <tbody id="table">
@@ -38,8 +41,11 @@
           <td>{{.IsSuccess}}</td>
           <td>{{.CheckDuration}} ms</td>
           <td>{{.StatusMessage}}</td>
+          <!-- <td>{{.SslSerialNumber}}</td> -->
+          <!-- <td>{{ formatTimeOrNil .SslNotDate }}</td> -->
           <td>{{ formatTimeOrNil .SslExpiryDate }}</td>
           <td>{{.SslCommonName}}</td>
+          <!-- <td>{{.SslSanList}}</td> -->
           <td>{{.SslIssuerName}}</td>
           <td>{{.SslSignatureAlg}}</td>
           <td>{{ formatTimeOrNil .CheckTime }}</td>
