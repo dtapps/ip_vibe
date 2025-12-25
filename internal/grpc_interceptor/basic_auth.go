@@ -12,11 +12,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// BasicAuthFunc 定义用户名/密码校验函数
-type BasicAuthFunc func(user, pass string) bool
-
 // BasicAuth 返回一个 gRPC 拦截器：仅允许通过 Basic 认证的用户访问
-func BasicAuth(logger *slog.Logger, auth BasicAuthFunc, skipPaths ...string) grpc.UnaryServerInterceptor {
+func BasicAuth(logger *slog.Logger, username string, password string, skipPaths ...string) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		// 按前缀跳过鉴权（例如 /grpc、/health）
 		for _, prefix := range skipPaths {
@@ -57,7 +54,7 @@ func BasicAuth(logger *slog.Logger, auth BasicAuthFunc, skipPaths ...string) grp
 		user, pass := pair[0], pair[1]
 
 		// 校验
-		if !auth(user, pass) {
+		if user != username || pass != password {
 			logger.Warn("invalid username or password", slog.String("user", user), slog.String("method", info.FullMethod))
 			return nil, status.Error(codes.Unauthenticated, "invalid username or password")
 		}

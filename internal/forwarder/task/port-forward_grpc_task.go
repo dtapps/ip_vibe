@@ -37,7 +37,6 @@ type PortForwardGRPCTask struct {
 
 // NewPortForwardGRPCTask 创建一个新的服务实例
 func NewPortForwardGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.PortForwardServer, forwardAgent *forward.Agent) *PortForwardGRPCTask {
-
 	return &PortForwardGRPCTask{
 		cron:         cron,
 		logger:       logger.With("component", "port-forward-grpc"),
@@ -85,10 +84,11 @@ func (s *PortForwardGRPCTask) SetBasicAuth(username, password string) *PortForwa
 	if username != "" && password != "" {
 		s.clientOpts = append(
 			s.clientOpts,
-			grpc.WithPerRPCCredentials(&grpc_credential.BasicAuth{
-				Username: username,
-				Password: password,
-			}),
+			grpc.WithPerRPCCredentials(grpc_credential.NewBasicAuth(
+				s.logger,
+				username,
+				password,
+			)),
 		)
 	}
 	return s

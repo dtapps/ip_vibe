@@ -3,15 +3,25 @@ package grpc_credential
 import (
 	"context"
 	"encoding/base64"
+	"log/slog"
 )
 
 type BasicAuth struct {
-	Username string
-	Password string
+	logger   *slog.Logger
+	username string
+	password string
+}
+
+func NewBasicAuth(logger *slog.Logger, username, password string) *BasicAuth {
+	return &BasicAuth{
+		logger:   logger,
+		username: username,
+		password: password,
+	}
 }
 
 func (b *BasicAuth) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
-	cred := "Basic " + base64.StdEncoding.EncodeToString([]byte(b.Username+":"+b.Password))
+	cred := "Basic " + base64.StdEncoding.EncodeToString([]byte(b.username+":"+b.password))
 	return map[string]string{"authorization": cred}, nil
 }
 

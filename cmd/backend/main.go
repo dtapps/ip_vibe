@@ -139,13 +139,19 @@ func main() {
 	}
 
 	// 配置 请求ID 中间件
-	router.Use(gin_middleware.RequestID(global.GvaGinSlog.WithLogger()))
+	router.Use(gin_middleware.RequestID(
+		global.GvaGinSlog.WithLogger(),
+	))
 
 	// 配置 Gzip 压缩 中间件
-	router.Use(gin_middleware.Gzip(global.GvaGinSlog.WithLogger()))
+	router.Use(gin_middleware.Gzip(
+		global.GvaGinSlog.WithLogger(),
+	))
 
 	// 配置 CORS 中间件
-	router.Use(gin_middleware.CORS(global.GvaGinSlog.WithLogger()))
+	router.Use(gin_middleware.CORS(
+		global.GvaGinSlog.WithLogger(),
+	))
 
 	// health check
 	router.GET("/health", func(c *gin.Context) {
@@ -154,21 +160,15 @@ func main() {
 		})
 	})
 
-	// 创建一个受保护的路由组
-	var ginAccounts gin.Accounts
-	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
-		ginAccounts = gin.Accounts{
-			global.GvaEnv.BASIC_AUTH_USERNAME: global.GvaEnv.BASIC_AUTH_PASSWORD,
-		}
-	}
-
 	// Web 资源
 	web_resource(ctx, router)
 
-	// 配置BasicAuth中间件
-	if len(ginAccounts) > 0 {
-		router.Use(gin.BasicAuth(ginAccounts))
-	}
+	// 配置 BasicAuth 中间件
+	router.Use(gin_middleware.BasicAuth(
+		global.GvaGinSlog.WithLogger(),
+		global.GvaEnv.BASIC_AUTH_USERNAME,
+		global.GvaEnv.BASIC_AUTH_PASSWORD,
+	))
 
 	// Web 路由
 	web_router(ctx, router)
@@ -898,14 +898,17 @@ func grpc_run(ctx context.Context) {
 	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
 		usis = append(
 			usis,
-			grpc_interceptor.BasicAuth(global.GvaGrpcSlog.WithLogger(), func(user, pass string) bool {
-				return user == global.GvaEnv.BASIC_AUTH_USERNAME && pass == global.GvaEnv.BASIC_AUTH_PASSWORD
-			}),
+			grpc_interceptor.BasicAuth(
+				global.GvaGrpcSlog.WithLogger(),
+				global.GvaEnv.BASIC_AUTH_USERNAME,
+				global.GvaEnv.BASIC_AUTH_PASSWORD,
+			),
 		)
 	}
 	// 日志拦截器
 	usis = append(
-		usis, grpc_interceptor.UnaryLogger(global.GvaGrpcSlog.WithLogger()),
+		usis,
+		grpc_interceptor.UnaryLogger(global.GvaGrpcSlog.WithLogger()),
 	)
 	opts = append(
 		opts,
@@ -976,10 +979,11 @@ func grpc_gw_run(ctx context.Context, router *gin.Engine) {
 	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
 		opts = append(
 			opts,
-			grpc.WithPerRPCCredentials(&grpc_credential.BasicAuth{
-				Username: global.GvaEnv.BASIC_AUTH_USERNAME,
-				Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
-			}),
+			grpc.WithPerRPCCredentials(grpc_credential.NewBasicAuth(
+				global.GvaGrpcSlog.WithLogger(),
+				global.GvaEnv.BASIC_AUTH_USERNAME,
+				global.GvaEnv.BASIC_AUTH_PASSWORD,
+			)),
 		)
 	}
 	grpcConnInstance, err = grpc.NewClient(global.GvaEnv.GRPC_ADDR, opts...)

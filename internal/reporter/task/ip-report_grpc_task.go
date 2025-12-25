@@ -79,10 +79,11 @@ func (s *IPReportGRPCTask) SetBasicAuth(username, password string) *IPReportGRPC
 	if username != "" && password != "" {
 		s.clientOpts = append(
 			s.clientOpts,
-			grpc.WithPerRPCCredentials(&grpc_credential.BasicAuth{
-				Username: username,
-				Password: password,
-			}),
+			grpc.WithPerRPCCredentials(grpc_credential.NewBasicAuth(
+				s.logger,
+				username,
+				password,
+			)),
 		)
 	}
 	return s
