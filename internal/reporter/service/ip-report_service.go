@@ -4,7 +4,6 @@ import (
 	"context"
 	"log/slog"
 	"vibe_ip/internal/helper/ip_helper"
-	"vibe_ip/internal/types"
 
 	"github.com/denisbrodbeck/machineid"
 )
@@ -21,14 +20,20 @@ func NewIPReportService(logger *slog.Logger) *IPReportService {
 	}
 }
 
+// 获取设备数据 响应参数
+type GetDeviceDataResult struct {
+	DeviceCode string // 设备编码
+	DeviceName string // 设备名称
+	IPV4Addr   string // IP地址V4
+	IPV6Addr   string // IP地址V6
+}
+
 // GetDeviceData 获取设备数据
-func (s *IPReportService) GetDeviceData(ctx context.Context, deviceCode, deviceName string) (resp *types.DeviceReportDeviceIpRequest, err error) {
+func (s *IPReportService) GetDeviceData(ctx context.Context, deviceCode, deviceName string) (resp *GetDeviceDataResult, err error) {
 
 	// 请求参数
-	resp = &types.DeviceReportDeviceIpRequest{
-		DevicePortForwardsRequest: types.DevicePortForwardsRequest{
-			DeviceCode: deviceCode,
-		},
+	resp = &GetDeviceDataResult{
+		DeviceCode: deviceCode,
 		DeviceName: deviceName,
 	}
 

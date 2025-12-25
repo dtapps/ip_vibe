@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"time"
 	"vibe_ip/internal/reporter/service"
-	"vibe_ip/internal/types"
 
 	"github.com/go-co-op/gocron/v2"
 	"resty.dev/v3"
@@ -138,10 +137,10 @@ func (s *IPReportRestyTask) RunPeriodicTask() {
 		slog.String("ipv6_addr", deviceData.IPV6Addr),
 	)
 
-	// 请求
-	err = s.request(ctx, logger, deviceData)
+	// 上传数据
+	err = s.postApi(ctx, logger, deviceData)
 	if err != nil {
-		logger.ErrorContext(ctx, "IP上报失败",
+		logger.ErrorContext(ctx, "上传数据失败",
 			slog.Any("err", err),
 		)
 		return
@@ -157,8 +156,8 @@ func (s *IPReportRestyTask) RunPeriodicTask() {
 	}
 }
 
-// request 请求
-func (s *IPReportRestyTask) request(ctx context.Context, logger *slog.Logger, params *types.DeviceReportDeviceIpRequest) (err error) {
+// postApi 请求
+func (s *IPReportRestyTask) postApi(ctx context.Context, logger *slog.Logger, params *service.GetDeviceDataResult) (err error) {
 
 	// 使用 Resty 发送请求
 	resp, err := s.client.R().

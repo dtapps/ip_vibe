@@ -134,11 +134,16 @@ func (s *PortForwardRestyTask) RunPeriodicTask() {
 		return
 	}
 
-	// 请求
-	list, err := s.request(ctx, s.logger, deviceData.DeviceCode)
+	// 日志记录器
+	logger := s.logger.With(
+		slog.String("device_code", deviceData.DeviceCode),
+		slog.String("device_name", deviceData.DeviceName),
+	)
+
+	// 获取数据
+	list, err := s.getApi(ctx, logger, deviceData)
 	if err != nil {
-		s.logger.ErrorContext(ctx, "获取端口转发规则失败",
-			slog.String("device_code", deviceData.DeviceCode),
+		logger.ErrorContext(ctx, "获取数据失败",
 			slog.Any("err", err),
 		)
 		return
@@ -152,7 +157,7 @@ func (s *PortForwardRestyTask) RunPeriodicTask() {
 		}
 
 		// 构建监听地址
-		listenAddr := ":" + string(rune(item.LocalPort)) // 这里需要根据实际情况构建
+		listenAddr := ":" + string(rune(item.LocalPort))
 
 		// 更准确的构建方式：
 		listenAddr = net.JoinHostPort("", fmt.Sprintf("%d", item.LocalPort))
@@ -162,8 +167,8 @@ func (s *PortForwardRestyTask) RunPeriodicTask() {
 
 		rule := forward.Rule{
 			ID:         fmt.Sprintf("%d", item.ID), // 将 int64 转为 string
-			ListenAddr: listenAddr,
-			TargetAddr: targetAddr,
+			ListenAddr: listenAddr,                 // 本地监听地址
+			TargetAddr: targetAddr,                 // 目标地址
 			Protocols:  item.Protocols,
 		}
 		forwardRules = append(forwardRules, rule)
@@ -171,17 +176,17 @@ func (s *PortForwardRestyTask) RunPeriodicTask() {
 
 	// 调用 forward.Agent 的热更新
 	if s.forwardAgent != nil {
-		s.forwardAgent.Sync(ctx, forwardRules)
 
-		s.logger.InfoContext(ctx, "端口转发规则同步完成",
-			slog.String("device_code", deviceData.DeviceCode),
+		// 同步端口转发规则
+		s.forwardAgent.Sync(ctx, forwardRules)
+		logger.InfoContext(ctx, "同步端口转发规则完成",
 			slog.Int("rule_count", len(forwardRules)),
 		)
 
-		// 记录统计信息
+		// 同步端口转发规则统计信息
 		stats := s.forwardAgent.Stats()
 		for ruleID, stat := range stats {
-			s.logger.InfoContext(ctx, "转发规则统计",
+			logger.InfoContext(ctx, "同步端口转发规则统计信息",
 				slog.String("rule_id", ruleID),
 				slog.Int64("active_conn", stat.ActiveConn),
 				slog.Int64("total_conn", stat.TotalConn),
@@ -191,21 +196,21 @@ func (s *PortForwardRestyTask) RunPeriodicTask() {
 			)
 		}
 	} else {
-		s.logger.ErrorContext(ctx, "forwardAgent 未初始化")
+		logger.ErrorContext(ctx, "forwardAgent 未初始化")
 	}
 
 	nextRun, err := s.job.NextRun()
 	if err == nil {
-		s.logger.InfoContext(ctx, "端口转发同步完成",
+		logger.InfoContext(ctx, "端口转发同步完成",
 			slog.String("next_run_time", nextRun.Format(time.DateTime)),
 		)
 	} else {
-		s.logger.InfoContext(ctx, "端口转发同步完成")
+		logger.InfoContext(ctx, "端口转发同步完成")
 	}
 }
 
-// request 请求
-func (s *PortForwardRestyTask) request(ctx context.Context, logger *slog.Logger, deviceCode string) (list []types.GetPortForwardResponse, err error) {
+// getApi 请求
+func (s *PortForwardRestyTask) getApi(ctx context.Context, logger *slog.Logger, deviceData *service.GetDeviceDataResult) (list []types.GetPortForwardResponse, err error) {
 
 	var response struct {
 		Status int                            `json:"status"`
@@ -217,7 +222,7 @@ func (s *PortForwardRestyTask) request(ctx context.Context, logger *slog.Logger,
 		SetContext(ctx).
 		SetContentType("application/json").
 		SetPathParams(map[string]string{
-			"device_code": deviceCode,
+			"device_code": deviceData.DeviceCode,
 		}).
 		SetResult(&response).
 		Get("api/open/device/{device_code}/port-forwards")

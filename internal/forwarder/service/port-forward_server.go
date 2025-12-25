@@ -3,8 +3,6 @@ package service
 import (
 	"context"
 	"log/slog"
-	"vibe_ip/internal/helper/ip_helper"
-	"vibe_ip/internal/types"
 
 	"github.com/denisbrodbeck/machineid"
 )
@@ -21,14 +19,18 @@ func NewPortForwardServer(logger *slog.Logger) *PortForwardServer {
 	}
 }
 
+// 获取设备数据 响应参数
+type GetDeviceDataResult struct {
+	DeviceCode string // 设备编码
+	DeviceName string // 设备名称
+}
+
 // GetDeviceData 获取设备数据
-func (s *PortForwardServer) GetDeviceData(ctx context.Context, deviceCode, deviceName string) (resp *types.DeviceReportDeviceIpRequest, err error) {
+func (s *PortForwardServer) GetDeviceData(ctx context.Context, deviceCode, deviceName string) (resp *GetDeviceDataResult, err error) {
 
 	// 请求参数
-	resp = &types.DeviceReportDeviceIpRequest{
-		DevicePortForwardsRequest: types.DevicePortForwardsRequest{
-			DeviceCode: deviceCode,
-		},
+	resp = &GetDeviceDataResult{
+		DeviceCode: deviceCode,
 		DeviceName: deviceName,
 	}
 
@@ -42,17 +44,6 @@ func (s *PortForwardServer) GetDeviceData(ctx context.Context, deviceCode, devic
 			)
 			return
 		}
-	}
-
-	// 获取设备IP
-	iPHelper := ip_helper.NewIPHelper()
-	ipv4, err := iPHelper.GetIP(ctx, ip_helper.IPTypeV4)
-	if err == nil {
-		resp.IPV4Addr = ipv4.IP
-	}
-	ipv6, err := iPHelper.GetIP(ctx, ip_helper.IPTypeV6)
-	if err == nil {
-		resp.IPV6Addr = ipv6.IP
 	}
 
 	return resp, nil
