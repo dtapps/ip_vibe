@@ -3,30 +3,32 @@ package task
 import (
 	"context"
 	"fmt"
-	"io"
-	"log"
 	"log/slog"
 	"net"
-	"sync"
 	"time"
-	"vibe_ip/internal/global"
+	"vibe_ip/internal/forwarder/forward"
+	"vibe_ip/internal/forwarder/service"
 	"vibe_ip/internal/types"
 
-	"github.com/denisbrodbeck/machineid"
 	"github.com/go-co-op/gocron/v2"
 	"resty.dev/v3"
 )
 
 // PortForwardRestyTask 端口转发任务
 type PortForwardRestyTask struct {
-	cron   gocron.Scheduler // 定时任务调度器
-	job    gocron.Job       // IP上报任务
-	client *resty.Client    // Resty HTTP 客户端
-	logger *slog.Logger     // 日志记录器
+	cron   gocron.Scheduler       // 定时任务调度器
+	job    gocron.Job             // 端口转发任务
+	logger *slog.Logger           // 日志记录器
+	config *PortForwardTaskConfig // 配置
+
+	service      *service.PortForwardServer // 端口转发服务
+	forwardAgent *forward.Agent             // 端口转发器
+
+	client *resty.Client // Resty HTTP 客户端
 }
 
 // NewPortForwardRestyTask 创建一个新的服务实例
-func NewPortForwardRestyTask(cron gocron.Scheduler) *PortForwardRestyTask {
+func NewPortForwardRestyTask(cron gocron.Scheduler, logger *slog.Logger, service *service.PortForwardServer, forwardAgent *forward.Agent) *PortForwardRestyTask {
 
 	// 创建一个新的 Resty 客户端
 	client := resty.New()
@@ -37,23 +39,17 @@ func NewPortForwardRestyTask(cron gocron.Scheduler) *PortForwardRestyTask {
 	// 设置默认超时
 	client.SetTimeout(1 * time.Minute)
 
-	// 设置请求头
-	client.SetHeader("X-Version", global.GvaVersion)
-	client.SetHeader("X-Git-Commit", global.GvaGitCommit)
-	client.SetHeader("X-Build-Time", global.GvaBuildTime)
-	client.SetHeader("X-Go-Version", global.GvaGoVersion)
-	client.SetHeader("X-OS", global.GvaOS)
-	client.SetHeader("X-Arch", global.GvaArch)
-
 	// 重试机制
 	client.SetRetryCount(3)
 	client.SetRetryWaitTime(2 * time.Second)
 	client.SetRetryMaxWaitTime(5 * time.Second)
 
 	return &PortForwardRestyTask{
-		cron:   cron,
-		client: client,
-		logger: slog.With("component", "port-forwards"),
+		cron:         cron,
+		logger:       logger.With("component", "port-forward-resty"),
+		service:      service,
+		forwardAgent: forwardAgent,
+		client:       client,
 	}
 }
 
@@ -73,6 +69,19 @@ func (s *PortForwardRestyTask) SetDebug(debug bool) *PortForwardRestyTask {
 	return s
 }
 
+// SetConfig 设置任务配置
+func (s *PortForwardRestyTask) SetConfig(config *PortForwardTaskConfig) *PortForwardRestyTask {
+	s.config = config
+	// 设置请求头
+	s.client.SetHeader("X-Version", config.Version)
+	s.client.SetHeader("X-Git-Commit", config.GitCommit)
+	s.client.SetHeader("X-Build-Time", config.BuildTime)
+	s.client.SetHeader("X-Go-Version", config.GoVersion)
+	s.client.SetHeader("X-OS", config.OS)
+	s.client.SetHeader("X-Arch", config.Arch)
+	return s
+}
+
 // SetBaseURL 设置基础URL
 func (s *PortForwardRestyTask) SetBaseURL(url string) *PortForwardRestyTask {
 	s.client.SetBaseURL(url)
@@ -89,88 +98,119 @@ func (s *PortForwardRestyTask) SetBasicAuth(username, password string) *PortForw
 
 // StartPeriodicTask 启动任务
 func (s *PortForwardRestyTask) StartPeriodicTask(ctx context.Context) (err error) {
-	// 请求参数
-	deviceCode := global.GvaEnv.DEVICE_CODE
-	// 检查设备代码是否为空
-	if deviceCode == "" {
-		// 获取设备ID
-		deviceCode, err = machineid.ID()
-		if err != nil {
-			s.logger.ErrorContext(ctx, "获取设备ID失败",
-				slog.Any("err", err),
-			)
-			return
-		}
-	}
-	s.logger.InfoContext(ctx, "端口转发获取开始",
-		slog.String("device_code", deviceCode),
+	// 每30分钟执行一次
+	s.job, err = s.cron.NewJob(
+		gocron.DurationJob(30*time.Minute),
+		gocron.NewTask(s.RunPeriodicTask),                    // 执行任务
+		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
+		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
+		gocron.WithName("Resty 端口转发"),                        // 任务名称
 	)
-	response, err := s.httpApi(ctx, deviceCode)
 	if err != nil {
-		s.logger.ErrorContext(ctx, "端口转发获取失败",
-			slog.String("device_code", deviceCode),
-			slog.Any("err", err),
-		)
-		return
+		return fmt.Errorf("创建定时任务失败: %w", err)
 	}
-	if len(response.Data) == 0 {
-		s.logger.InfoContext(ctx, "端口转发获取成功, 但无数据",
-			slog.String("device_code", deviceCode),
-		)
-		return
-	}
-	startForwarding(response.Data)
-	s.logger.InfoContext(ctx, "端口转发获取成功",
-		slog.String("device_code", deviceCode),
+
+	s.logger.InfoContext(ctx, "Resty 端口转发任务已启动",
+		slog.String("interval", "30分钟"),
 	)
-	return
+	return nil
 }
 
 // RunPeriodicTask 运行任务
-func (s *PortForwardRestyTask) RunPeriodicTask(ctx context.Context) (err error) {
-	// 请求参数
-	deviceCode := global.GvaEnv.DEVICE_CODE
-	// 检查设备代码是否为空
-	if deviceCode == "" {
-		// 获取设备ID
-		deviceCode, err = machineid.ID()
-		if err != nil {
-			s.logger.ErrorContext(ctx, "获取设备ID失败",
-				slog.Any("err", err),
-			)
-			return
-		}
-	}
-	s.logger.InfoContext(ctx, "端口转发获取开始",
-		slog.String("device_code", deviceCode),
-	)
-	response, err := s.httpApi(ctx, deviceCode)
+func (s *PortForwardRestyTask) RunPeriodicTask() {
+
+	// 创建上下文
+	ctx := context.Background()
+
+	s.logger.InfoContext(ctx, "端口转发开始")
+
+	// 获取设备数据
+	deviceData, err := s.service.GetDeviceData(ctx, s.config.DeviceCode, s.config.DeviceName)
 	if err != nil {
-		s.logger.ErrorContext(ctx, "端口转发获取失败",
-			slog.String("device_code", deviceCode),
+		s.logger.ErrorContext(ctx, "获取设备数据失败",
+			slog.String("device_code", s.config.DeviceCode),
 			slog.Any("err", err),
 		)
 		return
 	}
-	if len(response.Data) == 0 {
-		s.logger.InfoContext(ctx, "端口转发获取成功, 但无数据",
-			slog.String("device_code", deviceCode),
+
+	// 请求
+	list, err := s.request(ctx, s.logger, deviceData.DeviceCode)
+	if err != nil {
+		s.logger.ErrorContext(ctx, "获取端口转发规则失败",
+			slog.String("device_code", deviceData.DeviceCode),
+			slog.Any("err", err),
 		)
 		return
 	}
-	startForwarding(response.Data)
-	s.logger.InfoContext(ctx, "端口转发获取成功",
-		slog.String("device_code", deviceCode),
-	)
-	return
+
+	// 转换类型：types.GetPortForwardResponse -> forward.Rule
+	var forwardRules []forward.Rule
+	for _, item := range list {
+		if !item.IsActive {
+			continue
+		}
+
+		// 构建监听地址
+		listenAddr := ":" + string(rune(item.LocalPort)) // 这里需要根据实际情况构建
+
+		// 更准确的构建方式：
+		listenAddr = net.JoinHostPort("", fmt.Sprintf("%d", item.LocalPort))
+
+		// 构建目标地址
+		targetAddr := net.JoinHostPort(item.RemoteHost, fmt.Sprintf("%d", item.RemotePort))
+
+		rule := forward.Rule{
+			ID:         fmt.Sprintf("%d", item.ID), // 将 int64 转为 string
+			ListenAddr: listenAddr,
+			TargetAddr: targetAddr,
+			Protocols:  item.Protocols,
+		}
+		forwardRules = append(forwardRules, rule)
+	}
+
+	// 调用 forward.Agent 的热更新
+	if s.forwardAgent != nil {
+		s.forwardAgent.Sync(ctx, forwardRules)
+
+		s.logger.InfoContext(ctx, "端口转发规则同步完成",
+			slog.String("device_code", deviceData.DeviceCode),
+			slog.Int("rule_count", len(forwardRules)),
+		)
+
+		// 记录统计信息
+		stats := s.forwardAgent.Stats()
+		for ruleID, stat := range stats {
+			s.logger.InfoContext(ctx, "转发规则统计",
+				slog.String("rule_id", ruleID),
+				slog.Int64("active_conn", stat.ActiveConn),
+				slog.Int64("total_conn", stat.TotalConn),
+				slog.Int64("bytes_in", stat.BytesIn),
+				slog.Int64("bytes_out", stat.BytesOut),
+				slog.Int64("errors", stat.Errors),
+			)
+		}
+	} else {
+		s.logger.ErrorContext(ctx, "forwardAgent 未初始化")
+	}
+
+	nextRun, err := s.job.NextRun()
+	if err == nil {
+		s.logger.InfoContext(ctx, "端口转发同步完成",
+			slog.String("next_run_time", nextRun.Format(time.DateTime)),
+		)
+	} else {
+		s.logger.InfoContext(ctx, "端口转发同步完成")
+	}
 }
 
-type HttpApiResponse struct {
-	Status int                            `json:"status"`
-	Data   []types.GetPortForwardResponse `json:"data"`
-}
+// request 请求
+func (s *PortForwardRestyTask) request(ctx context.Context, logger *slog.Logger, deviceCode string) (list []types.GetPortForwardResponse, err error) {
 
-func (s *PortForwardRestyTask) httpApi(ctx context.Context, deviceCode string) (response HttpApiResponse, err error) {
+	var response struct {
+		Status int                            `json:"status"`
+		Data   []types.GetPortForwardResponse `json:"data"`
+	}
 
 	// 使用 Resty 发送请求
 	resp, err := s.client.R().
@@ -182,143 +222,16 @@ func (s *PortForwardRestyTask) httpApi(ctx context.Context, deviceCode string) (
 		SetResult(&response).
 		Get("api/open/device/{device_code}/port-forwards")
 	if err != nil {
-		return HttpApiResponse{}, err
+		return nil, err
+	}
+	if len(response.Data) > 0 {
+		list = response.Data
 	}
 
-	// 打印响应状态和内容
-	s.logger.InfoContext(ctx, "响应状态码和内容",
-		slog.Int("status_code", resp.StatusCode()),
+	// 记录响应
+	logger.InfoContext(ctx, "Resty 端口转发响应",
 		slog.Any("response", resp.String()),
 	)
 
-	if resp.IsError() {
-		return HttpApiResponse{}, fmt.Errorf("响应状态码错误: %d", resp.StatusCode())
-	}
-
-	return response, nil
-}
-
-var activeForwarders = make(map[int64]*ForwarderGroup)
-var mu sync.Mutex
-
-type ForwarderGroup struct {
-	rule   types.GetPortForwardResponse
-	closer []io.Closer
-}
-
-func (fg *ForwarderGroup) Close() {
-	for _, c := range fg.closer {
-		c.Close()
-	}
-}
-
-// 启动所有转发
-func startForwarding(rules []types.GetPortForwardResponse) {
-	mu.Lock()
-	defer mu.Unlock()
-
-	// 先停止所有旧转发（满足“全局只能一个任务”）
-	for _, fg := range activeForwarders {
-		fg.Close()
-	}
-	activeForwarders = make(map[int64]*ForwarderGroup)
-
-	for _, rule := range rules {
-		if !rule.IsActive {
-			continue
-		}
-
-		fg := &ForwarderGroup{rule: rule}
-		for _, proto := range rule.Protocols {
-			var err error
-			switch proto {
-			case "tcp4":
-				err = startTCPForward("tcp4", rule.LocalPort, rule.RemoteHost, rule.RemotePort, fg)
-			case "tcp6":
-				err = startTCPForward("tcp6", rule.LocalPort, rule.RemoteHost, rule.RemotePort, fg)
-			case "udp4":
-				err = startUDPForward("udp4", rule.LocalPort, rule.RemoteHost, rule.RemotePort, fg)
-			case "udp6":
-				err = startUDPForward("udp6", rule.LocalPort, rule.RemoteHost, rule.RemotePort, fg)
-			default:
-				log.Printf("Unknown protocol: %s", proto)
-			}
-			if err != nil {
-				log.Printf("Failed to start %s forward for rule %d: %v", proto, rule.ID, err)
-			}
-		}
-		activeForwarders[rule.ID] = fg
-	}
-}
-
-func startTCPForward(network string, localPort int, remoteHost string, remotePort int, fg *ForwarderGroup) error {
-	localAddr := fmt.Sprintf(":%d", localPort)
-	listener, err := net.Listen(network, localAddr)
-	if err != nil {
-		return err
-	}
-	fg.closer = append(fg.closer, listener)
-
-	go func() {
-		defer listener.Close()
-		for {
-			conn, err := listener.Accept()
-			if err != nil {
-				return // listener closed
-			}
-			go handleTCP(conn, remoteHost, remotePort)
-		}
-	}()
-	log.Printf("Started %s forward: %s -> %s:%d", network, localAddr, remoteHost, remotePort)
-	return nil
-}
-
-func handleTCP(localConn net.Conn, remoteHost string, remotePort int) {
-	defer localConn.Close()
-	remoteConn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", remoteHost, remotePort))
-	if err != nil {
-		log.Printf("Dial remote error: %v", err)
-		return
-	}
-	defer remoteConn.Close()
-
-	go io.Copy(remoteConn, localConn)
-	io.Copy(localConn, remoteConn)
-}
-
-func startUDPForward(network string, localPort int, remoteHost string, remotePort int, fg *ForwarderGroup) error {
-	localAddr := fmt.Sprintf(":%d", localPort)
-	conn, err := net.ListenPacket(network, localAddr)
-	if err != nil {
-		return err
-	}
-	fg.closer = append(fg.closer, conn)
-
-	go handleUDP(conn, remoteHost, remotePort)
-	log.Printf("Started %s forward: %s -> %s:%d", network, localAddr, remoteHost, remotePort)
-	return nil
-}
-
-func handleUDP(localConn net.PacketConn, remoteHost string, remotePort int) {
-	defer localConn.Close()
-	remoteAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", remoteHost, remotePort))
-	if err != nil {
-		log.Printf("Resolve UDP addr error: %v", err)
-		return
-	}
-
-	buf := make([]byte, 65536)
-	for {
-		n, _, err := localConn.ReadFrom(buf)
-		if err != nil {
-			return
-		}
-		// 异步转发（注意：UDP 是无连接的，通常需记录 clientAddr 用于回包，但这里为简单转发）
-		go func() {
-			_, err := localConn.WriteTo(buf[:n], remoteAddr)
-			if err != nil {
-				log.Printf("UDP write error: %v", err)
-			}
-		}()
-	}
+	return list, nil
 }

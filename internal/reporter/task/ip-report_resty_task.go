@@ -119,8 +119,10 @@ func (s *IPReportRestyTask) RunPeriodicTask() {
 	// 创建上下文
 	ctx := context.Background()
 
-	// 请求参数
-	params, err := s.service.GetDeviceData(ctx, s.config.DeviceCode, s.config.DeviceName)
+	s.logger.InfoContext(ctx, "IP上报开始")
+
+	// 获取设备数据
+	deviceData, err := s.service.GetDeviceData(ctx, s.config.DeviceCode, s.config.DeviceName)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "获取设备数据失败",
 			slog.Any("err", err),
@@ -130,14 +132,14 @@ func (s *IPReportRestyTask) RunPeriodicTask() {
 
 	// 日志记录器
 	logger := s.logger.With(
-		slog.String("device_code", params.DeviceCode),
-		slog.String("device_name", params.DeviceName),
-		slog.String("ipv4_addr", params.IPV4Addr),
-		slog.String("ipv6_addr", params.IPV6Addr),
+		slog.String("device_code", deviceData.DeviceCode),
+		slog.String("device_name", deviceData.DeviceName),
+		slog.String("ipv4_addr", deviceData.IPV4Addr),
+		slog.String("ipv6_addr", deviceData.IPV6Addr),
 	)
 
-	logger.InfoContext(ctx, "IP上报开始")
-	err = s.reportIP(ctx, logger, params.DeviceCode, params)
+	// 请求
+	err = s.request(ctx, logger, deviceData)
 	if err != nil {
 		logger.ErrorContext(ctx, "IP上报失败",
 			slog.Any("err", err),
@@ -155,8 +157,8 @@ func (s *IPReportRestyTask) RunPeriodicTask() {
 	}
 }
 
-// reportIP 发送IP上报请求
-func (s *IPReportRestyTask) reportIP(ctx context.Context, logger *slog.Logger, deviceCode string, params *types.DeviceReportDeviceIpRequest) (err error) {
+// request 请求
+func (s *IPReportRestyTask) request(ctx context.Context, logger *slog.Logger, params *types.DeviceReportDeviceIpRequest) (err error) {
 
 	// 使用 Resty 发送请求
 	resp, err := s.client.R().
@@ -164,7 +166,7 @@ func (s *IPReportRestyTask) reportIP(ctx context.Context, logger *slog.Logger, d
 		SetContentType("application/json").
 		SetBody(params).
 		SetPathParams(map[string]string{
-			"device_code": deviceCode,
+			"device_code": params.DeviceCode,
 		}).
 		Post("api/open/device/{device_code}/ip-report")
 	if err != nil {
