@@ -191,6 +191,7 @@ func (s *PortForwardGRPCTask) RunPeriodicTask() {
 		stats := s.forwardAgent.Stats()
 		for ruleID, stat := range stats {
 			logger.InfoContext(ctx, "同步端口转发规则统计信息",
+				slog.Time("启动时间", stat.StartTime),
 				slog.String("规则ID", ruleID),
 				slog.Int64("活跃连接数", stat.ActiveConn),
 				slog.Int64("累计连接数", stat.TotalConn),
