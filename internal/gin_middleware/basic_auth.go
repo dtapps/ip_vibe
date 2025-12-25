@@ -9,9 +9,11 @@ import (
 
 func BasicAuth(logger *slog.Logger, username string, password string) gin.HandlerFunc {
 
-	// 不启用 BasicAuth 时，直接返回空的 HandlerFunc
+	// 如果用户名或密码为空，直接返回空的 HandlerFunc
 	if username == "" || password == "" {
-		return func(c *gin.Context) { c.Next() }
+		return func(c *gin.Context) {
+			c.Next()
+		}
 	}
 
 	// 创建 BasicAuth 中间件
