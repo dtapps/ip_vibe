@@ -12,3 +12,11 @@ type PortForwardTaskConfig struct {
 	OS        string `json:"os"`
 	Arch      string `json:"arch"`
 }
+
+type PortForwardTaskApiList struct {
+	ID         string   // 设备端口转发序号
+	LocalPort  int      // 本地监听端口
+	RemoteHost string   // 远程目标地址
+	RemotePort int      // 远程目标端口
+	Protocols  []string // 协议列表，支持 tcp4, tcp6, udp4, udp6
+}

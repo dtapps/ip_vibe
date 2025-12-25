@@ -10,9 +10,9 @@ import (
 	"vibe_ip/internal/forwarder/service"
 	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/grpc_generated"
-	"vibe_ip/internal/types"
 
 	"github.com/go-co-op/gocron/v2"
+	"github.com/spf13/cast"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
@@ -159,9 +159,6 @@ func (s *PortForwardGRPCTask) RunPeriodicTask() {
 	// 转换类型：types.GetPortForwardResponse -> forward.Rule
 	var forwardRules []forward.Rule
 	for _, item := range list {
-		if !item.IsActive {
-			continue
-		}
 
 		// 构建监听地址
 		listenAddr := ":" + string(rune(item.LocalPort))
@@ -173,9 +170,9 @@ func (s *PortForwardGRPCTask) RunPeriodicTask() {
 		targetAddr := net.JoinHostPort(item.RemoteHost, fmt.Sprintf("%d", item.RemotePort))
 
 		rule := forward.Rule{
-			ID:         fmt.Sprintf("%d", item.ID), // 将 int64 转为 string
-			ListenAddr: listenAddr,                 // 本地监听地址
-			TargetAddr: targetAddr,                 // 目标地址
+			ID:         item.ID,    // 唯一标识
+			ListenAddr: listenAddr, // 本地监听地址
+			TargetAddr: targetAddr, // 目标地址
 			Protocols:  item.Protocols,
 		}
 		forwardRules = append(forwardRules, rule)
@@ -217,7 +214,7 @@ func (s *PortForwardGRPCTask) RunPeriodicTask() {
 }
 
 // getApi 请求
-func (s *PortForwardGRPCTask) getApi(ctx context.Context, logger *slog.Logger, deviceData *service.GetDeviceDataResult) (list []types.GetPortForwardResponse, err error) {
+func (s *PortForwardGRPCTask) getApi(ctx context.Context, logger *slog.Logger, deviceData *service.GetDeviceDataResult) (list []*PortForwardTaskApiList, err error) {
 
 	// 构建gRPC请求
 	req := &grpc_generated.GetDevicePortForwardsRequest{
@@ -232,11 +229,11 @@ func (s *PortForwardGRPCTask) getApi(ctx context.Context, logger *slog.Logger, d
 
 	// 转换响应
 	for _, rule := range resp.Rules {
-		list = append(list, types.GetPortForwardResponse{
-			ID:         int64(rule.Id),
-			LocalPort:  int(rule.LocalPort),
+		list = append(list, &PortForwardTaskApiList{
+			ID:         cast.ToString(rule.Id),
+			LocalPort:  cast.ToInt(rule.LocalPort),
 			RemoteHost: rule.RemoteHost,
-			RemotePort: int(rule.RemotePort),
+			RemotePort: cast.ToInt(rule.RemotePort),
 			Protocols:  rule.Protocols,
 		})
 	}

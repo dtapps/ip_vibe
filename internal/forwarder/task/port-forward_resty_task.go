@@ -11,6 +11,7 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/go-co-op/gocron/v2"
+	"github.com/spf13/cast"
 	"resty.dev/v3"
 )
 
@@ -152,9 +153,6 @@ func (s *PortForwardRestyTask) RunPeriodicTask() {
 	// 转换类型：types.GetPortForwardResponse -> forward.Rule
 	var forwardRules []forward.Rule
 	for _, item := range list {
-		if !item.IsActive {
-			continue
-		}
 
 		// 构建监听地址
 		listenAddr := ":" + string(rune(item.LocalPort))
@@ -166,9 +164,9 @@ func (s *PortForwardRestyTask) RunPeriodicTask() {
 		targetAddr := net.JoinHostPort(item.RemoteHost, fmt.Sprintf("%d", item.RemotePort))
 
 		rule := forward.Rule{
-			ID:         fmt.Sprintf("%d", item.ID), // 将 int64 转为 string
-			ListenAddr: listenAddr,                 // 本地监听地址
-			TargetAddr: targetAddr,                 // 目标地址
+			ID:         item.ID,    // 唯一标识
+			ListenAddr: listenAddr, // 本地监听地址
+			TargetAddr: targetAddr, // 目标地址
 			Protocols:  item.Protocols,
 		}
 		forwardRules = append(forwardRules, rule)
@@ -210,7 +208,7 @@ func (s *PortForwardRestyTask) RunPeriodicTask() {
 }
 
 // getApi 请求
-func (s *PortForwardRestyTask) getApi(ctx context.Context, logger *slog.Logger, deviceData *service.GetDeviceDataResult) (list []types.GetPortForwardResponse, err error) {
+func (s *PortForwardRestyTask) getApi(ctx context.Context, logger *slog.Logger, deviceData *service.GetDeviceDataResult) (list []*PortForwardTaskApiList, err error) {
 
 	var response struct {
 		Status int                            `json:"status"`
@@ -232,8 +230,8 @@ func (s *PortForwardRestyTask) getApi(ctx context.Context, logger *slog.Logger, 
 
 	// 转换响应
 	for _, rule := range response.Data {
-		list = append(list, types.GetPortForwardResponse{
-			ID:         rule.ID,
+		list = append(list, &PortForwardTaskApiList{
+			ID:         cast.ToString(rule.ID),
 			LocalPort:  rule.LocalPort,
 			RemoteHost: rule.RemoteHost,
 			RemotePort: rule.RemotePort,
