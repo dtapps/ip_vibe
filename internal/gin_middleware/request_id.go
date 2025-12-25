@@ -29,7 +29,6 @@ func RequestID(logger *slog.Logger) gin.HandlerFunc {
 				slog.Duration("duration", duration),
 				slog.String("method", c.Request.Method),
 				slog.String("path", c.Request.URL.Path),
-				slog.Int("status", c.Writer.Status()),
 			)
 		}
 	}

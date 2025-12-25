@@ -57,7 +57,6 @@ func CORS(logger *slog.Logger) gin.HandlerFunc {
 				slog.String("origin", c.GetHeader("Origin")),
 				slog.String("method", c.Request.Method),
 				slog.String("path", c.Request.URL.Path),
-				slog.Int("status", c.Writer.Status()),
 			)
 		}
 	}

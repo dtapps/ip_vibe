@@ -51,7 +51,7 @@ func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 		if i := tx.ProcessRequestHeaders(); i != nil {
 			duration := time.Since(start)
 			if logger != nil {
-				logger.Warn("Coraza 请求头阶段阻塞",
+				logger.Warn("[Coraza] 请求头阶段阻塞",
 					slog.Duration("duration", duration),
 					slog.String("method", c.Request.Method),
 					slog.String("path", c.Request.URL.Path),
@@ -102,7 +102,7 @@ func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 			if interruption != nil {
 				duration := time.Since(start)
 				if logger != nil {
-					logger.Warn("Coraza 写入请求体阶段阻塞",
+					logger.Warn("[Coraza] 写入请求体阶段阻塞",
 						slog.Duration("duration", duration),
 						slog.String("method", c.Request.Method),
 						slog.String("path", c.Request.URL.Path),
@@ -126,7 +126,7 @@ func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 			bodyInterruption, perr := tx.ProcessRequestBody()
 			if perr != nil {
 				if logger != nil {
-					logger.Error("Coraza 请求体处理失败", slog.String("error", perr.Error()))
+					logger.Error("[Coraza] 请求体处理失败", slog.String("error", perr.Error()))
 				}
 				c.AbortWithStatusJSON(http.StatusInternalServerError, handlers.APIResponse{
 					Code:    http.StatusInternalServerError,
@@ -137,7 +137,7 @@ func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 			if bodyInterruption != nil {
 				duration := time.Since(start)
 				if logger != nil {
-					logger.Warn("Coraza 请求体阶段阻塞",
+					logger.Warn("[Coraza] 请求体阶段阻塞",
 						slog.Duration("duration", duration),
 						slog.String("method", c.Request.Method),
 						slog.String("path", c.Request.URL.Path),
@@ -170,7 +170,7 @@ func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 		proto := c.Request.Proto // 如 "HTTP/1.1"
 		if i := tx.ProcessResponseHeaders(rw.Status(), proto); i != nil {
 			if logger != nil {
-				logger.Warn("Coraza 响应头阶段检测到问题",
+				logger.Warn("[Coraza] 响应头阶段检测到问题",
 					slog.Int("ruleID", i.RuleID),
 					slog.String("action", i.Action),
 					slog.String("data", i.Data),
@@ -188,7 +188,6 @@ func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 				slog.Duration("duration", duration),
 				slog.String("method", c.Request.Method),
 				slog.String("path", c.Request.URL.Path),
-				slog.Int("status", c.Writer.Status()),
 				slog.Bool("blocked", blocked),
 			)
 		}

@@ -37,7 +37,6 @@ func BasicAuth(logger *slog.Logger, username string, password string) gin.Handle
 				slog.Duration("duration", duration),
 				slog.String("method", c.Request.Method),
 				slog.String("path", c.Request.URL.Path),
-				slog.Int("status", c.Writer.Status()),
 			)
 		}
 	}
