@@ -59,5 +59,8 @@ func CORS(logger *slog.Logger) gin.HandlerFunc {
 				slog.String("path", c.Request.URL.Path),
 			)
 		}
+
+		// 无阻塞：继续 Gin 链
+		c.Next()
 	}
 }

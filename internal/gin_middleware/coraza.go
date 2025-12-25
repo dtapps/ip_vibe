@@ -159,7 +159,7 @@ func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 			}
 		}
 
-		// 无阻塞：继续 Gin 链（应用处理程序）
+		// 无阻塞：继续 Gin 链
 		c.Next()
 
 		// 响应后：处理响应阶段（可选，用于日志/响应检查）

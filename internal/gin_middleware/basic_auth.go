@@ -39,5 +39,8 @@ func BasicAuth(logger *slog.Logger, username string, password string) gin.Handle
 				slog.String("path", c.Request.URL.Path),
 			)
 		}
+
+		// 无阻塞：继续 Gin 链
+		c.Next()
 	}
 }
