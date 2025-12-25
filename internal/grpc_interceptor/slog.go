@@ -1,4 +1,4 @@
-package grpc_middleware
+package grpc_interceptor
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 )
 
 // UnaryLogger 返回一个 unary 拦截器：记录开始、结束、耗时与状态码
-func UnaryLogger(l *slog.Logger) grpc.UnaryServerInterceptor {
+func UnaryLogger(logger *slog.Logger) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		start := time.Now()
 		resp, err := handler(ctx, req)
@@ -42,7 +42,7 @@ func UnaryLogger(l *slog.Logger) grpc.UnaryServerInterceptor {
 			attrs = append(attrs, slog.String("error", err.Error()))
 		}
 
-		l.LogAttrs(ctx, slog.LevelInfo, "finished unary call", attrs...)
+		logger.LogAttrs(ctx, slog.LevelInfo, "finished unary call", attrs...)
 		return resp, err
 	}
 }

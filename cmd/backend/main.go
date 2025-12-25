@@ -24,7 +24,7 @@ import (
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/grpc_generated"
-	"vibe_ip/internal/grpc_middleware"
+	"vibe_ip/internal/grpc_interceptor"
 	"vibe_ip/internal/grpc_server"
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/helper/gin_slog"
@@ -922,14 +922,14 @@ func grpc_run(ctx context.Context) {
 	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
 		usis = append(
 			usis,
-			grpc_middleware.BasicAuth(global.GvaGrpcSlog.WithLogger(), func(user, pass string) bool {
+			grpc_interceptor.BasicAuth(global.GvaGrpcSlog.WithLogger(), func(user, pass string) bool {
 				return user == global.GvaEnv.BASIC_AUTH_USERNAME && pass == global.GvaEnv.BASIC_AUTH_PASSWORD
 			}),
 		)
 	}
 	// 日志拦截器
 	usis = append(
-		usis, grpc_middleware.UnaryLogger(global.GvaGrpcSlog.WithLogger()),
+		usis, grpc_interceptor.UnaryLogger(global.GvaGrpcSlog.WithLogger()),
 	)
 	opts = append(
 		opts,
