@@ -115,7 +115,7 @@ func (s *IPReportGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
 	}
 
 	s.logger.InfoContext(ctx, "IP上报gRPC任务已启动",
-		slog.String("interval", "8-12分钟随机"),
+		slog.String("执行间隔", "8-12分钟随机"),
 	)
 	return nil
 }
@@ -139,10 +139,10 @@ func (s *IPReportGRPCTask) RunPeriodicTask() {
 
 	// 日志记录器
 	logger := s.logger.With(
-		slog.String("device_code", deviceData.DeviceCode),
-		slog.String("device_name", deviceData.DeviceName),
-		slog.String("ipv4_addr", deviceData.IPV4Addr),
-		slog.String("ipv6_addr", deviceData.IPV6Addr),
+		slog.String("设备编号", deviceData.DeviceCode),
+		slog.String("设备名称", deviceData.DeviceName),
+		slog.String("IPv4地址", deviceData.IPV4Addr),
+		slog.String("IPv6地址", deviceData.IPV6Addr),
 	)
 
 	// 上传数据
@@ -157,7 +157,7 @@ func (s *IPReportGRPCTask) RunPeriodicTask() {
 	nextRun, err := s.job.NextRun()
 	if err == nil {
 		logger.InfoContext(ctx, "IP上报成功",
-			slog.String("next_run_time", nextRun.Format(time.DateTime)),
+			slog.String("下一次运行时间", nextRun.Format(time.DateTime)),
 		)
 	} else {
 		logger.InfoContext(ctx, "IP上报成功")
@@ -183,7 +183,7 @@ func (s *IPReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, dev
 
 	// 记录响应
 	logger.InfoContext(ctx, "gRPC IP上报响应",
-		slog.Any("response", resp.String()),
+		slog.Any("响应", resp.String()),
 	)
 
 	return nil

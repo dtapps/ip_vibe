@@ -118,7 +118,7 @@ func (s *PortForwardGRPCTask) StartPeriodicTask(ctx context.Context) (err error)
 	}
 
 	s.logger.InfoContext(ctx, "gRPC 端口转发任务已启动",
-		slog.String("interval", "30分钟"),
+		slog.String("执行间隔", "30分钟"),
 	)
 	return nil
 }
@@ -135,7 +135,7 @@ func (s *PortForwardGRPCTask) RunPeriodicTask() {
 	deviceData, err := s.service.GetDeviceData(ctx, s.config.DeviceCode, s.config.DeviceName)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "获取设备数据失败",
-			slog.String("device_code", s.config.DeviceCode),
+			slog.String("设备编号", s.config.DeviceCode),
 			slog.Any("err", err),
 		)
 		return
@@ -143,8 +143,8 @@ func (s *PortForwardGRPCTask) RunPeriodicTask() {
 
 	// 日志记录器
 	logger := s.logger.With(
-		slog.String("device_code", deviceData.DeviceCode),
-		slog.String("device_name", deviceData.DeviceName),
+		slog.String("设备编号", deviceData.DeviceCode),
+		slog.String("设备名称", deviceData.DeviceName),
 	)
 
 	// 获取数据
@@ -184,19 +184,19 @@ func (s *PortForwardGRPCTask) RunPeriodicTask() {
 		// 同步端口转发规则
 		s.forwardAgent.Sync(ctx, forwardRules)
 		logger.InfoContext(ctx, "同步端口转发规则完成",
-			slog.Int("rule_count", len(forwardRules)),
+			slog.Int("规则数量", len(forwardRules)),
 		)
 
 		// 同步端口转发规则统计信息
 		stats := s.forwardAgent.Stats()
 		for ruleID, stat := range stats {
 			logger.InfoContext(ctx, "同步端口转发规则统计信息",
-				slog.String("rule_id", ruleID),
-				slog.Int64("active_conn", stat.ActiveConn),
-				slog.Int64("total_conn", stat.TotalConn),
-				slog.Int64("bytes_in", stat.BytesIn),
-				slog.Int64("bytes_out", stat.BytesOut),
-				slog.Int64("errors", stat.Errors),
+				slog.String("规则ID", ruleID),
+				slog.Int64("活跃连接数", stat.ActiveConn),
+				slog.Int64("累计连接数", stat.TotalConn),
+				slog.Int64("接收字节数", stat.BytesIn),
+				slog.Int64("发送字节数", stat.BytesOut),
+				slog.Int64("错误次数", stat.Errors),
 			)
 		}
 	} else {
@@ -206,7 +206,7 @@ func (s *PortForwardGRPCTask) RunPeriodicTask() {
 	nextRun, err := s.job.NextRun()
 	if err == nil {
 		logger.InfoContext(ctx, "端口转发同步完成",
-			slog.String("next_run_time", nextRun.Format(time.DateTime)),
+			slog.String("下一次运行时间", nextRun.Format(time.DateTime)),
 		)
 	} else {
 		logger.InfoContext(ctx, "端口转发同步完成")
@@ -240,7 +240,7 @@ func (s *PortForwardGRPCTask) getApi(ctx context.Context, logger *slog.Logger, d
 
 	// 记录响应
 	logger.InfoContext(ctx, "gRPC 端口转发响应",
-		slog.Any("response", resp.String()),
+		slog.Any("响应", resp.String()),
 	)
 
 	return list, nil
