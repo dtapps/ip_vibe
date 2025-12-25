@@ -45,7 +45,6 @@ type Agent struct {
 	logger   *slog.Logger
 }
 
-// 构造函数
 func NewAgent(logger *slog.Logger) *Agent {
 	return &Agent{
 		forwards: make(map[string][]*ForwardInstance),
@@ -58,7 +57,6 @@ func (a *Agent) Sync(ctx context.Context, rules []Rule) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
-	// 构建新规则 map
 	newMap := make(map[string]Rule)
 	for _, r := range rules {
 		newMap[r.ID] = r
@@ -86,24 +84,21 @@ func (a *Agent) Sync(ctx context.Context, rules []Rule) {
 func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 	ctxCancel, cancel := context.WithCancel(ctx)
 	stats := &Stats{}
-
-	var protoSet = make(map[string]bool)
-	for _, p := range rule.Protocols {
-		protoSet[p] = true
-	}
-
 	var instances []*ForwardInstance
 
-	// 自动双栈逻辑：同时需要 4/6 就只开 6
-	autoTCPProto := "tcp"
-	autoUDPProto := "udp"
-	if protoSet["tcp4"] && protoSet["tcp6"] {
-		a.logger.Info("检测到 TCP4/TCP6 同时开启，使用自动双栈监听 TCP", slog.String("规则ID", rule.ID))
-		autoTCPProto = "tcp6"
-	}
-	if protoSet["udp4"] && protoSet["udp6"] {
-		a.logger.Info("检测到 UDP4/UDP6 同时开启，使用自动双栈监听 UDP", slog.String("规则ID", rule.ID))
-		autoUDPProto = "udp6"
+	hasTCP4, hasTCP6 := false, false
+	hasUDP4, hasUDP6 := false, false
+	for _, proto := range rule.Protocols {
+		switch proto {
+		case "tcp4":
+			hasTCP4 = true
+		case "tcp6":
+			hasTCP6 = true
+		case "udp4":
+			hasUDP4 = true
+		case "udp6":
+			hasUDP6 = true
+		}
 	}
 
 	for _, proto := range rule.Protocols {
@@ -126,12 +121,23 @@ func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 		laddr := rule.ListenAddr
 		raddr := rule.TargetAddr
 
+		// 自动双栈逻辑
+		switch proto {
+		case "tcp4", "tcp6":
+			if hasTCP4 && hasTCP6 {
+				a.logger.Info("检测到 TCP4/TCP6 同时开启，使用自动双栈监听 TCP", slog.String("规则ID", rule.ID))
+				proto = "tcp"
+			}
+		case "udp4", "udp6":
+			if hasUDP4 && hasUDP6 {
+				a.logger.Info("检测到 UDP4/UDP6 同时开启，使用自动双栈监听 UDP", slog.String("规则ID", rule.ID))
+				proto = "udp"
+			}
+		}
+
 		switch proto {
 		case "tcp", "tcp4", "tcp6":
-			if protoSet["tcp4"] && protoSet["tcp6"] {
-				proto = autoTCPProto
-			}
-			ln, err := startTCP(proto, laddr, raddr, stats, ctxCancel)
+			ln, err := startTCP(proto, laddr, raddr, stats, ctxCancel, a.logger, rule.ID)
 			if err != nil {
 				atomic.AddInt64(&stats.Errors, 1)
 				a.logger.Warn("TCP 监听启动失败",
@@ -143,12 +149,8 @@ func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 				continue
 			}
 			fi.listener = ln
-
 		case "udp", "udp4", "udp6":
-			if protoSet["udp4"] && protoSet["udp6"] {
-				proto = autoUDPProto
-			}
-			c, err := startUDP(proto, laddr, raddr, stats, ctxCancel)
+			c, err := startUDP(proto, laddr, raddr, stats, ctxCancel, a.logger, rule.ID)
 			if err != nil {
 				atomic.AddInt64(&stats.Errors, 1)
 				a.logger.Warn("UDP 监听启动失败",
@@ -186,7 +188,7 @@ func (a *Agent) Stats() map[string]*Stats {
 	return result
 }
 
-// 协议/IP匹配
+// 判断协议是否与目标 IP 类型匹配
 func isProtoMatchIP(proto, addr string) bool {
 	ip := net.ParseIP(strings.Split(addr, ":")[0])
 	if ip == nil {

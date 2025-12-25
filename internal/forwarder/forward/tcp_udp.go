@@ -2,17 +2,14 @@ package forward
 
 import (
 	"context"
+	"io"
+	"log/slog"
 	"net"
-	"strings"
 	"sync/atomic"
 )
 
 // TCP 转发
-func startTCP(proto, laddr, raddr string, stats *Stats, ctx context.Context) (net.Listener, error) {
-	if proto == "tcp6" && strings.HasPrefix(laddr, ":") {
-		laddr = "[::]" + laddr
-	}
-
+func startTCP(proto, laddr, raddr string, stats *Stats, ctx context.Context, logger *slog.Logger, ruleID string) (net.Listener, error) {
 	ln, err := net.Listen(proto, laddr)
 	if err != nil {
 		return nil, err
@@ -35,12 +32,18 @@ func startTCP(proto, laddr, raddr string, stats *Stats, ctx context.Context) (ne
 				rc, err := net.Dial(proto, raddr)
 				if err != nil {
 					atomic.AddInt64(&stats.Errors, 1)
+					logger.Warn("TCP 连接目标失败",
+						slog.String("规则ID", ruleID),
+						slog.String("协议", proto),
+						slog.String("目标", raddr),
+						slog.Any("错误", err),
+					)
 					return
 				}
 				defer rc.Close()
 
-				go proxyTCP(c, rc, &stats.BytesIn)
-				proxyTCP(rc, c, &stats.BytesOut)
+				go proxyTCP(c, rc, &stats.BytesIn, logger, ruleID, proto)
+				proxyTCP(rc, c, &stats.BytesOut, logger, ruleID, proto)
 			}(conn)
 		}
 	}()
@@ -53,26 +56,35 @@ func startTCP(proto, laddr, raddr string, stats *Stats, ctx context.Context) (ne
 	return ln, nil
 }
 
-func proxyTCP(src, dst net.Conn, counter *int64) {
+func proxyTCP(src, dst net.Conn, counter *int64, logger *slog.Logger, ruleID, proto string) {
 	buf := make([]byte, 32*1024)
 	for {
 		n, err := src.Read(buf)
 		if n > 0 {
-			dst.Write(buf[:n])
+			_, _ = dst.Write(buf[:n])
 			atomic.AddInt64(counter, int64(n))
+			logger.Debug("TCP 转发数据",
+				slog.String("规则ID", ruleID),
+				slog.String("协议", proto),
+				slog.Int("字节数", n),
+			)
 		}
 		if err != nil {
+			if err != io.EOF {
+				logger.Warn("TCP 转发错误",
+					slog.String("规则ID", ruleID),
+					slog.String("协议", proto),
+					slog.Any("错误", err),
+				)
+			}
 			return
 		}
 	}
 }
 
-// UDP 转发
-func startUDP(proto, laddr, raddr string, stats *Stats, ctx context.Context) (*net.UDPConn, error) {
-	if proto == "udp6" && strings.HasPrefix(laddr, ":") {
-		laddr = "[::]" + laddr
-	}
+// ---------------- UDP ----------------
 
+func startUDP(proto, laddr, raddr string, stats *Stats, ctx context.Context, logger *slog.Logger, ruleID string) (*net.UDPConn, error) {
 	la, err := net.ResolveUDPAddr(proto, laddr)
 	if err != nil {
 		return nil, err
@@ -87,27 +99,51 @@ func startUDP(proto, laddr, raddr string, stats *Stats, ctx context.Context) (*n
 		return nil, err
 	}
 
-	go func() {
-		buf := make([]byte, 65535)
-		for {
-			n, _, err := conn.ReadFromUDP(buf)
-			if err != nil {
-				return
-			}
+	go handleUDPWithLog(conn, ra, stats, logger, ruleID, proto, ctx)
 
-			atomic.AddInt64(&stats.UDPPacketsIn, 1)
-			atomic.AddInt64(&stats.BytesIn, int64(n))
+	return conn, nil
+}
 
-			_, _ = conn.WriteToUDP(buf[:n], ra)
+func handleUDPWithLog(conn *net.UDPConn, raddr *net.UDPAddr, stats *Stats, logger *slog.Logger, ruleID, proto string, ctx context.Context) {
+	buf := make([]byte, 65535)
+	for {
+		select {
+		case <-ctx.Done():
+			conn.Close()
+			return
+		default:
+		}
+
+		n, src, err := conn.ReadFromUDP(buf)
+		if err != nil {
+			logger.Warn("UDP 读取错误",
+				slog.String("规则ID", ruleID),
+				slog.String("协议", proto),
+				slog.Any("错误", err),
+			)
+			return
+		}
+
+		atomic.AddInt64(&stats.UDPPacketsIn, 1)
+		atomic.AddInt64(&stats.BytesIn, int64(n))
+
+		_, err = conn.WriteToUDP(buf[:n], raddr)
+		if err != nil {
+			logger.Warn("UDP 写入错误",
+				slog.String("规则ID", ruleID),
+				slog.String("协议", proto),
+				slog.Any("错误", err),
+			)
+		} else {
 			atomic.AddInt64(&stats.UDPPacketsOut, 1)
 			atomic.AddInt64(&stats.BytesOut, int64(n))
 		}
-	}()
 
-	go func() {
-		<-ctx.Done()
-		conn.Close()
-	}()
-
-	return conn, nil
+		logger.Debug("UDP 转发数据",
+			slog.String("规则ID", ruleID),
+			slog.String("协议", proto),
+			slog.Int("字节数", n),
+			slog.String("来源", src.String()),
+		)
+	}
 }
