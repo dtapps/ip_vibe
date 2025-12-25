@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+	"time"
 )
 
 // Rule 定义转发规则
@@ -19,13 +20,14 @@ type Rule struct {
 
 // Stats 统计信息
 type Stats struct {
-	ActiveConn    int64 // TCP 活跃连接 / UDP session
-	TotalConn     int64 // TCP 累计连接
-	BytesIn       int64
-	BytesOut      int64
-	UDPPacketsIn  int64
-	UDPPacketsOut int64
-	Errors        int64
+	StartTime     time.Time `json:"start_time"`      // 转发实例启动时间 (UTC)
+	ActiveConn    int64     `json:"active_conn"`     // TCP 活跃连接 / UDP session
+	TotalConn     int64     `json:"total_conn"`      // TCP 累计连接
+	BytesIn       int64     `json:"bytes_in"`        // 入站流量
+	BytesOut      int64     `json:"bytes_out"`       // 出站流量
+	UDPPacketsIn  int64     `json:"udp_packets_in"`  // 入站 UDP 包数
+	UDPPacketsOut int64     `json:"udp_packets_out"` // 出站 UDP 包数
+	Errors        int64     `json:"errors"`          // 错误数
 }
 
 // ForwardInstance 单协议实例
@@ -82,8 +84,11 @@ func (a *Agent) Sync(ctx context.Context, rules []Rule) {
 
 // 添加单条规则
 func (a *Agent) addRule(ctx context.Context, rule *Rule) {
+	startTime := time.Now().UTC()
 	ctxCancel, cancel := context.WithCancel(ctx)
-	stats := &Stats{}
+	stats := &Stats{
+		StartTime: startTime,
+	}
 	var instances []*ForwardInstance
 
 	hasTCP4, hasTCP6 := false, false

@@ -43,7 +43,7 @@ func (DomainMonitorHistory) Fields() []ent.Field {
 
 		field.Int64("monitor_id").
 			Immutable().
-			Comment("关联的 DomainMonitor ID").
+			Comment("关联 DomainMonitor 序号").
 			Annotations(entsql.WithComments(true)),
 
 		field.Time("check_time").
@@ -154,7 +154,7 @@ func (DomainMonitorHistory) Indexes() []ent.Index {
 		index.Fields("created_at").
 			Annotations(entsql.Desc(), entsql.WithComments(true)),
 
-		// 按关联的 DomainMonitor ID分组
+		// 按关联 DomainMonitor 序号分组
 		index.Fields("monitor_id").
 			Annotations(entsql.WithComments(true)),
 
