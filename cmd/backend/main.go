@@ -96,6 +96,8 @@ func main() {
 	initialize.InitGocronSLog("backend") // 初始化 gocron 日志
 	initialize.InitMcpSLog("backend")    // 初始化 mcp 日志
 
+	initialize.InitCoraza() // 初始化 Coraza 防火墙
+
 	initialize.InitEntDb(ctx)      // 初始化 业务数据库
 	initialize.InitEntLogDb(ctx)   // 初始化 日志数据库
 	initialize.InitGoCron()        // 初始化 GoCron 调度器

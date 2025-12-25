@@ -33,7 +33,6 @@ func BasicAuth(logger *slog.Logger, username string, password string) gin.Handle
 		if logger != nil {
 			logger.Debug("BasicAuth middleware processing time",
 				slog.Duration("duration", duration),
-				slog.String("origin", c.GetHeader("Origin")),
 				slog.String("method", c.Request.Method),
 				slog.String("path", c.Request.URL.Path),
 				slog.Int("status", c.Writer.Status()),

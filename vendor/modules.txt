@@ -284,6 +284,41 @@ github.com/cloudwego/base64x/internal/native
 github.com/cloudwego/base64x/internal/native/avx2
 github.com/cloudwego/base64x/internal/native/sse
 github.com/cloudwego/base64x/internal/rt
+# github.com/corazawaf/coraza-coreruleset v0.0.0-20240226094324-415b1017abdc
+## explicit; go 1.18
+github.com/corazawaf/coraza-coreruleset
+# github.com/corazawaf/coraza/v3 v3.3.3
+## explicit; go 1.23.0
+github.com/corazawaf/coraza/v3
+github.com/corazawaf/coraza/v3/collection
+github.com/corazawaf/coraza/v3/debuglog
+github.com/corazawaf/coraza/v3/experimental
+github.com/corazawaf/coraza/v3/experimental/plugins/macro
+github.com/corazawaf/coraza/v3/experimental/plugins/plugintypes
+github.com/corazawaf/coraza/v3/http
+github.com/corazawaf/coraza/v3/internal/actions
+github.com/corazawaf/coraza/v3/internal/auditlog
+github.com/corazawaf/coraza/v3/internal/bodyprocessors
+github.com/corazawaf/coraza/v3/internal/collections
+github.com/corazawaf/coraza/v3/internal/cookies
+github.com/corazawaf/coraza/v3/internal/corazarules
+github.com/corazawaf/coraza/v3/internal/corazatypes
+github.com/corazawaf/coraza/v3/internal/corazawaf
+github.com/corazawaf/coraza/v3/internal/environment
+github.com/corazawaf/coraza/v3/internal/io
+github.com/corazawaf/coraza/v3/internal/memoize
+github.com/corazawaf/coraza/v3/internal/operators
+github.com/corazawaf/coraza/v3/internal/seclang
+github.com/corazawaf/coraza/v3/internal/strings
+github.com/corazawaf/coraza/v3/internal/sync
+github.com/corazawaf/coraza/v3/internal/transformations
+github.com/corazawaf/coraza/v3/internal/url
+github.com/corazawaf/coraza/v3/internal/variables
+github.com/corazawaf/coraza/v3/types
+github.com/corazawaf/coraza/v3/types/variables
+# github.com/corazawaf/libinjection-go v0.2.3
+## explicit; go 1.24.6
+github.com/corazawaf/libinjection-go
 # github.com/denisbrodbeck/machineid v1.0.1
 ## explicit
 github.com/denisbrodbeck/machineid
@@ -524,6 +559,10 @@ github.com/klauspost/cpuid/v2
 ## explicit; go 1.18
 github.com/leodido/go-urn
 github.com/leodido/go-urn/scim/schema
+# github.com/magefile/mage v1.15.1-0.20241126214340-bdc92f694516
+## explicit; go 1.12
+github.com/magefile/mage/mg
+github.com/magefile/mage/sh
 # github.com/mattn/go-isatty v0.0.20
 ## explicit; go 1.15
 github.com/mattn/go-isatty
@@ -558,6 +597,9 @@ github.com/pelletier/go-toml/v2/internal/characters
 github.com/pelletier/go-toml/v2/internal/danger
 github.com/pelletier/go-toml/v2/internal/tracker
 github.com/pelletier/go-toml/v2/unstable
+# github.com/petar-dambovaliev/aho-corasick v0.0.0-20250424160509-463d218d4745
+## explicit; go 1.15
+github.com/petar-dambovaliev/aho-corasick
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
@@ -674,6 +716,12 @@ github.com/twitchyliquid64/golang-asm/unsafeheader
 # github.com/ugorji/go/codec v1.3.1
 ## explicit; go 1.21
 github.com/ugorji/go/codec
+# github.com/valllabh/ocsf-schema-golang v1.0.3
+## explicit; go 1.22
+github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/events/application
+github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/events/application/enums
+github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects
+github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects/enums
 # github.com/yosida95/uritemplate/v3 v3.0.2
 ## explicit; go 1.14
 github.com/yosida95/uritemplate/v3
@@ -835,6 +883,7 @@ golang.org/x/oauth2/internal
 # golang.org/x/sync v0.19.0
 ## explicit; go 1.24.0
 golang.org/x/sync/errgroup
+golang.org/x/sync/singleflight
 # golang.org/x/sys v0.39.0
 ## explicit; go 1.24.0
 golang.org/x/sys/cpu
@@ -1058,3 +1107,7 @@ modernc.org/sqlite/vtab
 # resty.dev/v3 v3.0.0-beta.5
 ## explicit; go 1.23.0
 resty.dev/v3
+# rsc.io/binaryregexp v0.2.0
+## explicit; go 1.12
+rsc.io/binaryregexp
+rsc.io/binaryregexp/syntax

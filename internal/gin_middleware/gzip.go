@@ -27,7 +27,6 @@ func Gzip(logger *slog.Logger) gin.HandlerFunc {
 		if logger != nil {
 			logger.Debug("Gzip middleware processing time",
 				slog.Duration("duration", duration),
-				slog.String("origin", c.GetHeader("Origin")),
 				slog.String("method", c.Request.Method),
 				slog.String("path", c.Request.URL.Path),
 				slog.Int("status", c.Writer.Status()),

@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/helper/operation_logs_helper"
 
+	"github.com/corazawaf/coraza/v3"
 	"github.com/go-co-op/gocron/v2"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"go.dtapp.net/library/contrib/http_log"
@@ -50,6 +51,8 @@ var (
 	GvaGrpcSlog   *golog.SLog // gRPC 日志
 	GvaGocronSlog *golog.SLog // gocron 日志
 	GvaMcpSlog    *golog.SLog // mcp 日志
+
+	GvaCoraza coraza.WAF // Coraza 防火墙
 
 	GvaEntDb    *ent.Client     // 业务数据库
 	GvaEntLogDb *ent_log.Client // 日志数据库
