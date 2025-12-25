@@ -21,6 +21,7 @@ import (
 	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/docs_2"
 	"vibe_ip/internal/docs_3"
+	"vibe_ip/internal/gin_middleware"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/grpc_generated"
@@ -35,10 +36,7 @@ import (
 
 	"gitee.com/xiaowan1997/qingfeng"
 	"github.com/denisbrodbeck/machineid"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/multitemplate"
-	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	grpcGatewayRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -140,36 +138,14 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	// 配置请求ID中间件
-	router.Use(requestid.New())
+	// 配置 请求ID 中间件
+	router.Use(gin_middleware.RequestID(global.GvaGinSlog.WithLogger()))
 
-	// 配置 Gzip 压缩，但排除 SVG 文件
-	router.Use(gzip.Gzip(gzip.DefaultCompression, gzip.WithExcludedExtensions([]string{".svg"})))
+	// 配置 Gzip 压缩 中间件
+	router.Use(gin_middleware.Gzip(global.GvaGinSlog.WithLogger()))
 
-	// 配置CORS中间件
-	router.Use(cors.New(cors.Config{
-		// 动态允许所有来源
-		AllowOriginFunc: func(origin string) bool {
-			// 调试日志
-			slog.Info("CORS Request from origin",
-				slog.String("origin", origin),
-			)
-			return true // 允许所有来源
-		},
-		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}, // 支持所有 HTTP 方法
-		AllowHeaders: []string{
-			"Content-Type",         // 支持 Content-Type 头部
-			"Authorization",        // 支持 Authorization 头部
-			"Cookie",               // 支持 Cookie
-			"mcp-protocol-version", // 支持 MCP 协议版本头
-		},
-		ExposeHeaders: []string{
-			"X-Auth-Method",  // 暴露给客户端的头部
-			"X-RBAC-Checked", // 暴露给客户端的头部
-			"X-Request-ID",   // 暴露给客户端的头部
-		},
-		AllowCredentials: true, // 允许发送凭据（如 Cookie 和 Authorization）
-	}))
+	// 配置 CORS 中间件
+	router.Use(gin_middleware.CORS(global.GvaGinSlog.WithLogger()))
 
 	// health check
 	router.GET("/health", func(c *gin.Context) {
