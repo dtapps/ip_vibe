@@ -18,8 +18,8 @@ type Rule struct {
 
 // Stats 统计信息
 type Stats struct {
-	ActiveConn    int64 // TCP 活跃连接 / UDP session
-	TotalConn     int64 // TCP 累计连接
+	ActiveConn    int64
+	TotalConn     int64
 	BytesIn       int64
 	BytesOut      int64
 	UDPPacketsIn  int64
@@ -41,11 +41,13 @@ type ForwardInstance struct {
 type Agent struct {
 	mu       sync.Mutex
 	forwards map[string][]*ForwardInstance
+	logger   *slog.Logger
 }
 
 func NewAgent(logger *slog.Logger) *Agent {
 	return &Agent{
 		forwards: make(map[string][]*ForwardInstance),
+		logger:   logger,
 	}
 }
 
@@ -54,7 +56,6 @@ func (a *Agent) Sync(ctx context.Context, rules []Rule) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
-	// 构建新规则 map
 	newMap := make(map[string]Rule)
 	for _, r := range rules {
 		newMap[r.ID] = r
@@ -70,7 +71,7 @@ func (a *Agent) Sync(ctx context.Context, rules []Rule) {
 		}
 	}
 
-	// 添加 / 更新新规则
+	// 添加新规则
 	for _, r := range rules {
 		if _, ok := a.forwards[r.ID]; !ok {
 			a.addRule(ctx, &r)
@@ -78,13 +79,13 @@ func (a *Agent) Sync(ctx context.Context, rules []Rule) {
 	}
 }
 
-// Add 单条规则
+// 添加规则
 func (a *Agent) addRule(ctx context.Context, rule *Rule) {
-	ctxCancel, cancel := context.WithCancel(ctx)
-	stats := &Stats{}
 	var instances []*ForwardInstance
-
 	for _, proto := range rule.Protocols {
+		ctxCancel, cancel := context.WithCancel(ctx)
+		stats := &Stats{}
+
 		fi := &ForwardInstance{
 			rule:   rule,
 			proto:  proto,
@@ -96,21 +97,26 @@ func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 		raddr := rule.TargetAddr
 
 		switch proto {
-		case "tcp", "tcp4", "tcp6":
-			ln, err := startTCP(proto, laddr, raddr, stats, ctxCancel)
+		case "tcp4", "tcp6":
+			ln, err := net.Listen(proto, laddr)
 			if err != nil {
+				a.logger.Warn("TCP listen failed", slog.String("proto", proto), slog.String("addr", laddr), slog.Any("err", err))
 				atomic.AddInt64(&stats.Errors, 1)
 				continue
 			}
 			fi.listener = ln
-		case "udp", "udp4", "udp6":
-			c, err := startUDP(proto, laddr, raddr, stats, ctxCancel)
+			go startTCPForward(ln, raddr, stats, ctxCancel, a.logger, rule.ID, proto)
+		case "udp4", "udp6":
+			udpConn, err := net.ListenUDP(proto, resolveUDPAddr(laddr, proto))
 			if err != nil {
+				a.logger.Warn("UDP listen failed", slog.String("proto", proto), slog.String("addr", laddr), slog.Any("err", err))
 				atomic.AddInt64(&stats.Errors, 1)
 				continue
 			}
-			fi.udpConn = c
+			fi.udpConn = udpConn
+			go startUDPForward(udpConn, raddr, stats, ctxCancel, a.logger, rule.ID, proto)
 		default:
+			a.logger.Warn("Unknown protocol", slog.String("proto", proto))
 			continue
 		}
 
@@ -122,7 +128,7 @@ func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 	}
 }
 
-// Stats 返回所有规则统计
+// 获取统计信息
 func (a *Agent) Stats() map[string]*Stats {
 	a.mu.Lock()
 	defer a.mu.Unlock()
