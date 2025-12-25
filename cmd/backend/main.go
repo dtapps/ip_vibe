@@ -771,8 +771,9 @@ func api_router(ctx context.Context, router *gin.Engine) {
 		// 开放
 		opens := api.Group("/open")
 		{
-			opens.POST("/device/:device_code/ip-report", handlers.DeviceReportDeviceIp)  // 设备上报IP
-			opens.GET("/device/:device_code/port-forwards", handlers.DevicePortForwards) //获取设备端口转发
+			opens.POST("/device/:device_code/ip-report", handlers.DeviceReportDeviceIp)                              // 设备上报IP
+			opens.GET("/device/:device_code/port-forwards", handlers.DevicePortForwards)                             // 获取设备端口转发
+			opens.POST("/device/:device_code/port-forwards-stats/:port_forward_id", handlers.CreatePortForwardStats) // 创建端口转发统计
 		}
 
 		// 分组内兜底：未匹配路径返回 JSON 404（不会与 /api/d 冲突）

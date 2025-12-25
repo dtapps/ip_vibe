@@ -15,8 +15,10 @@ const (
 	FieldID = "id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
-	// FieldDevicePortForwardID holds the string denoting the device_port_forward_id field in the database.
-	FieldDevicePortForwardID = "device_port_forward_id"
+	// FieldDeviceID holds the string denoting the device_id field in the database.
+	FieldDeviceID = "device_id"
+	// FieldPortForwardID holds the string denoting the port_forward_id field in the database.
+	FieldPortForwardID = "port_forward_id"
 	// FieldStartTime holds the string denoting the start_time field in the database.
 	FieldStartTime = "start_time"
 	// FieldActiveConn holds the string denoting the active_conn field in the database.
@@ -41,7 +43,8 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
-	FieldDevicePortForwardID,
+	FieldDeviceID,
+	FieldPortForwardID,
 	FieldStartTime,
 	FieldActiveConn,
 	FieldTotalConn,
@@ -65,8 +68,10 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
-	// DevicePortForwardIDValidator is a validator for the "device_port_forward_id" field. It is called by the builders before save.
-	DevicePortForwardIDValidator func(int64) error
+	// DeviceIDValidator is a validator for the "device_id" field. It is called by the builders before save.
+	DeviceIDValidator func(int64) error
+	// PortForwardIDValidator is a validator for the "port_forward_id" field. It is called by the builders before save.
+	PortForwardIDValidator func(int64) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(int64) error
 )
@@ -84,9 +89,14 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
 }
 
-// ByDevicePortForwardID orders the results by the device_port_forward_id field.
-func ByDevicePortForwardID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDevicePortForwardID, opts...).ToFunc()
+// ByDeviceID orders the results by the device_id field.
+func ByDeviceID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDeviceID, opts...).ToFunc()
+}
+
+// ByPortForwardID orders the results by the port_forward_id field.
+func ByPortForwardID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPortForwardID, opts...).ToFunc()
 }
 
 // ByStartTime orders the results by the start_time field.

@@ -22,6 +22,8 @@ type DeviceOpenService interface {
 	DeviceReportDeviceIp(ctx context.Context, request *types.DeviceReportDeviceIpRequest) (*types.DeviceReportDeviceIpResponse, error)
 	// DevicePortForwards 查询设备的端口转发配置
 	DevicePortForwards(ctx context.Context, deviceCode string) ([]types.GetPortForwardResponse, error)
+	// CreatePortForwardStats 创建设备端口转发统计信息
+	CreatePortForwardStats(ctx context.Context, deviceCode string, portForwardID int64, req *types.CreatePortForwardStatsRequest) error
 }
 
 // DeviceOpenServiceImpl 设备服务实现
@@ -258,4 +260,48 @@ func (s *DeviceOpenServiceImpl) DevicePortForwards(ctx context.Context, deviceCo
 	}
 
 	return portForwards, nil
+}
+
+// CreatePortForwardStats 创建设备端口转发统计信息
+func (s *DeviceOpenServiceImpl) CreatePortForwardStats(ctx context.Context, deviceCode string, portForwardID int64, request *types.CreatePortForwardStatsRequest) error {
+	// 查询设备
+	firstDevice, err := s.db.Device.Query().
+		Where(device.CodeEQ(deviceCode)).
+		First(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return fmt.Errorf("查询设备失败: 记录不存在或 %w", err)
+		}
+		return fmt.Errorf("查询设备失败: %w", err)
+	}
+
+	// 查询端口转发
+	firstPortForward, err := firstDevice.QueryPortForwards().
+		Where(deviceportforward.IDEQ(portForwardID)).
+		First(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return fmt.Errorf("查询端口转发失败: 记录不存在或 %w", err)
+		}
+		return fmt.Errorf("查询端口转发失败: %w", err)
+	}
+
+	// 创建端口转发统计信息
+	err = s.dbLog.PortForwardStats.Create().
+		SetDeviceID(firstDevice.ID).
+		SetPortForwardID(firstPortForward.ID).
+		SetStartTime(request.StartTime).
+		SetActiveConn(request.ActiveConn).
+		SetTotalConn(request.TotalConn).
+		SetBytesIn(request.BytesIn).
+		SetBytesOut(request.BytesOut).
+		SetUDPPacketsIn(request.UDPPacketsIn).
+		SetUDPPacketsOut(request.UDPPacketsOut).
+		SetErrors(request.Errors).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("创建设备端口转发统计信息失败: %w", err)
+	}
+
+	return nil
 }

@@ -113,10 +113,14 @@ func init() {
 	portforwardstatsDescCreatedAt := portforwardstatsMixinFields0[0].Descriptor()
 	// portforwardstats.DefaultCreatedAt holds the default value on creation for the created_at field.
 	portforwardstats.DefaultCreatedAt = portforwardstatsDescCreatedAt.Default.(func() time.Time)
-	// portforwardstatsDescDevicePortForwardID is the schema descriptor for device_port_forward_id field.
-	portforwardstatsDescDevicePortForwardID := portforwardstatsFields[1].Descriptor()
-	// portforwardstats.DevicePortForwardIDValidator is a validator for the "device_port_forward_id" field. It is called by the builders before save.
-	portforwardstats.DevicePortForwardIDValidator = portforwardstatsDescDevicePortForwardID.Validators[0].(func(int64) error)
+	// portforwardstatsDescDeviceID is the schema descriptor for device_id field.
+	portforwardstatsDescDeviceID := portforwardstatsFields[1].Descriptor()
+	// portforwardstats.DeviceIDValidator is a validator for the "device_id" field. It is called by the builders before save.
+	portforwardstats.DeviceIDValidator = portforwardstatsDescDeviceID.Validators[0].(func(int64) error)
+	// portforwardstatsDescPortForwardID is the schema descriptor for port_forward_id field.
+	portforwardstatsDescPortForwardID := portforwardstatsFields[2].Descriptor()
+	// portforwardstats.PortForwardIDValidator is a validator for the "port_forward_id" field. It is called by the builders before save.
+	portforwardstats.PortForwardIDValidator = portforwardstatsDescPortForwardID.Validators[0].(func(int64) error)
 	// portforwardstatsDescID is the schema descriptor for id field.
 	portforwardstatsDescID := portforwardstatsFields[0].Descriptor()
 	// portforwardstats.IDValidator is a validator for the "id" field. It is called by the builders before save.

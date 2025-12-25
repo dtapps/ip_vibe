@@ -36,9 +36,15 @@ func (_c *PortForwardStatsCreate) SetNillableCreatedAt(v *time.Time) *PortForwar
 	return _c
 }
 
-// SetDevicePortForwardID sets the "device_port_forward_id" field.
-func (_c *PortForwardStatsCreate) SetDevicePortForwardID(v int64) *PortForwardStatsCreate {
-	_c.mutation.SetDevicePortForwardID(v)
+// SetDeviceID sets the "device_id" field.
+func (_c *PortForwardStatsCreate) SetDeviceID(v int64) *PortForwardStatsCreate {
+	_c.mutation.SetDeviceID(v)
+	return _c
+}
+
+// SetPortForwardID sets the "port_forward_id" field.
+func (_c *PortForwardStatsCreate) SetPortForwardID(v int64) *PortForwardStatsCreate {
+	_c.mutation.SetPortForwardID(v)
 	return _c
 }
 
@@ -198,12 +204,20 @@ func (_c *PortForwardStatsCreate) check() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent_log: missing required field "PortForwardStats.created_at"`)}
 	}
-	if _, ok := _c.mutation.DevicePortForwardID(); !ok {
-		return &ValidationError{Name: "device_port_forward_id", err: errors.New(`ent_log: missing required field "PortForwardStats.device_port_forward_id"`)}
+	if _, ok := _c.mutation.DeviceID(); !ok {
+		return &ValidationError{Name: "device_id", err: errors.New(`ent_log: missing required field "PortForwardStats.device_id"`)}
 	}
-	if v, ok := _c.mutation.DevicePortForwardID(); ok {
-		if err := portforwardstats.DevicePortForwardIDValidator(v); err != nil {
-			return &ValidationError{Name: "device_port_forward_id", err: fmt.Errorf(`ent_log: validator failed for field "PortForwardStats.device_port_forward_id": %w`, err)}
+	if v, ok := _c.mutation.DeviceID(); ok {
+		if err := portforwardstats.DeviceIDValidator(v); err != nil {
+			return &ValidationError{Name: "device_id", err: fmt.Errorf(`ent_log: validator failed for field "PortForwardStats.device_id": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.PortForwardID(); !ok {
+		return &ValidationError{Name: "port_forward_id", err: errors.New(`ent_log: missing required field "PortForwardStats.port_forward_id"`)}
+	}
+	if v, ok := _c.mutation.PortForwardID(); ok {
+		if err := portforwardstats.PortForwardIDValidator(v); err != nil {
+			return &ValidationError{Name: "port_forward_id", err: fmt.Errorf(`ent_log: validator failed for field "PortForwardStats.port_forward_id": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.StartTime(); !ok {
@@ -251,9 +265,13 @@ func (_c *PortForwardStatsCreate) createSpec() (*PortForwardStats, *sqlgraph.Cre
 		_spec.SetField(portforwardstats.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := _c.mutation.DevicePortForwardID(); ok {
-		_spec.SetField(portforwardstats.FieldDevicePortForwardID, field.TypeInt64, value)
-		_node.DevicePortForwardID = value
+	if value, ok := _c.mutation.DeviceID(); ok {
+		_spec.SetField(portforwardstats.FieldDeviceID, field.TypeInt64, value)
+		_node.DeviceID = value
+	}
+	if value, ok := _c.mutation.PortForwardID(); ok {
+		_spec.SetField(portforwardstats.FieldPortForwardID, field.TypeInt64, value)
+		_node.PortForwardID = value
 	}
 	if value, ok := _c.mutation.StartTime(); ok {
 		_spec.SetField(portforwardstats.FieldStartTime, field.TypeTime, value)
@@ -359,8 +377,11 @@ func (u *PortForwardStatsUpsertOne) UpdateNewValues() *PortForwardStatsUpsertOne
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(portforwardstats.FieldCreatedAt)
 		}
-		if _, exists := u.create.mutation.DevicePortForwardID(); exists {
-			s.SetIgnore(portforwardstats.FieldDevicePortForwardID)
+		if _, exists := u.create.mutation.DeviceID(); exists {
+			s.SetIgnore(portforwardstats.FieldDeviceID)
+		}
+		if _, exists := u.create.mutation.PortForwardID(); exists {
+			s.SetIgnore(portforwardstats.FieldPortForwardID)
 		}
 		if _, exists := u.create.mutation.StartTime(); exists {
 			s.SetIgnore(portforwardstats.FieldStartTime)
@@ -602,8 +623,11 @@ func (u *PortForwardStatsUpsertBulk) UpdateNewValues() *PortForwardStatsUpsertBu
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(portforwardstats.FieldCreatedAt)
 			}
-			if _, exists := b.mutation.DevicePortForwardID(); exists {
-				s.SetIgnore(portforwardstats.FieldDevicePortForwardID)
+			if _, exists := b.mutation.DeviceID(); exists {
+				s.SetIgnore(portforwardstats.FieldDeviceID)
+			}
+			if _, exists := b.mutation.PortForwardID(); exists {
+				s.SetIgnore(portforwardstats.FieldPortForwardID)
 			}
 			if _, exists := b.mutation.StartTime(); exists {
 				s.SetIgnore(portforwardstats.FieldStartTime)

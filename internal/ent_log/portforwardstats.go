@@ -20,8 +20,10 @@ type PortForwardStats struct {
 	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
+	// 关联 Device 序号
+	DeviceID int64 `json:"device_id,omitempty"`
 	// 关联 DevicePortForward 序号
-	DevicePortForwardID int64 `json:"device_port_forward_id,omitempty"`
+	PortForwardID int64 `json:"port_forward_id,omitempty"`
 	// 转发启动时间 (UTC)
 	StartTime time.Time `json:"start_time,omitempty"`
 	// 瞬时活跃连接数
@@ -46,7 +48,7 @@ func (*PortForwardStats) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case portforwardstats.FieldID, portforwardstats.FieldDevicePortForwardID, portforwardstats.FieldActiveConn, portforwardstats.FieldTotalConn, portforwardstats.FieldBytesIn, portforwardstats.FieldBytesOut, portforwardstats.FieldUDPPacketsIn, portforwardstats.FieldUDPPacketsOut, portforwardstats.FieldErrors:
+		case portforwardstats.FieldID, portforwardstats.FieldDeviceID, portforwardstats.FieldPortForwardID, portforwardstats.FieldActiveConn, portforwardstats.FieldTotalConn, portforwardstats.FieldBytesIn, portforwardstats.FieldBytesOut, portforwardstats.FieldUDPPacketsIn, portforwardstats.FieldUDPPacketsOut, portforwardstats.FieldErrors:
 			values[i] = new(sql.NullInt64)
 		case portforwardstats.FieldCreatedAt, portforwardstats.FieldStartTime:
 			values[i] = new(sql.NullTime)
@@ -77,11 +79,17 @@ func (_m *PortForwardStats) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.CreatedAt = value.Time
 			}
-		case portforwardstats.FieldDevicePortForwardID:
+		case portforwardstats.FieldDeviceID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field device_port_forward_id", values[i])
+				return fmt.Errorf("unexpected type %T for field device_id", values[i])
 			} else if value.Valid {
-				_m.DevicePortForwardID = value.Int64
+				_m.DeviceID = value.Int64
+			}
+		case portforwardstats.FieldPortForwardID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field port_forward_id", values[i])
+			} else if value.Valid {
+				_m.PortForwardID = value.Int64
 			}
 		case portforwardstats.FieldStartTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -170,8 +178,11 @@ func (_m *PortForwardStats) String() string {
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("device_port_forward_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.DevicePortForwardID))
+	builder.WriteString("device_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.DeviceID))
+	builder.WriteString(", ")
+	builder.WriteString("port_forward_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.PortForwardID))
 	builder.WriteString(", ")
 	builder.WriteString("start_time=")
 	builder.WriteString(_m.StartTime.Format(time.ANSIC))

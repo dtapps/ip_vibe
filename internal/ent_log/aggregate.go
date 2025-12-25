@@ -921,16 +921,16 @@ func (q *OperationLogQuery) CountOrZero(ctx context.Context) (int64, error) {
 	return int64(count), nil
 }
 
-// SumDevicePortForwardIDOrZero 计算字段 device_port_forward_id 的总和。
+// SumDeviceIDOrZero 计算字段 device_id 的总和。
 // 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
 // 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
-func (q *PortForwardStatsQuery) SumDevicePortForwardIDOrZero(ctx context.Context) (int64, error) {
+func (q *PortForwardStatsQuery) SumDeviceIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
 	}
 	err := q.Aggregate(
 		func(s *sql.Selector) string {
-			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(portforwardstats.FieldDevicePortForwardID))
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(portforwardstats.FieldDeviceID))
 		},
 	).Scan(ctx, &results)
 	if err != nil {
@@ -942,17 +942,17 @@ func (q *PortForwardStatsQuery) SumDevicePortForwardIDOrZero(ctx context.Context
 	return results[0].Val.Int64, nil
 }
 
-// MaxDevicePortForwardIDOrZero 获取字段 device_port_forward_id 的最大值。
+// MaxDeviceIDOrZero 获取字段 device_id 的最大值。
 // 如果结果为 NULL（例如表为空），则返回 0。
 // 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
 // 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
-func (q *PortForwardStatsQuery) MaxDevicePortForwardIDOrZero(ctx context.Context) (int64, error) {
+func (q *PortForwardStatsQuery) MaxDeviceIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
 	}
 	err := q.Aggregate(
 		func(s *sql.Selector) string {
-			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(portforwardstats.FieldDevicePortForwardID))
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(portforwardstats.FieldDeviceID))
 		},
 	).Scan(ctx, &results)
 	if err != nil {
@@ -964,17 +964,17 @@ func (q *PortForwardStatsQuery) MaxDevicePortForwardIDOrZero(ctx context.Context
 	return results[0].Val.Int64, nil
 }
 
-// MinDevicePortForwardIDOrZero 获取字段 device_port_forward_id 的最小值。
+// MinDeviceIDOrZero 获取字段 device_id 的最小值。
 // 如果结果为 NULL（例如表为空），则返回 0。
 // 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
 // 适用于默认值可安全设为 0 的场景。
-func (q *PortForwardStatsQuery) MinDevicePortForwardIDOrZero(ctx context.Context) (int64, error) {
+func (q *PortForwardStatsQuery) MinDeviceIDOrZero(ctx context.Context) (int64, error) {
 	var results []struct {
 		Val sql.NullInt64 `json:"val"`
 	}
 	err := q.Aggregate(
 		func(s *sql.Selector) string {
-			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(portforwardstats.FieldDevicePortForwardID))
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(portforwardstats.FieldDeviceID))
 		},
 	).Scan(ctx, &results)
 	if err != nil {
@@ -986,16 +986,16 @@ func (q *PortForwardStatsQuery) MinDevicePortForwardIDOrZero(ctx context.Context
 	return results[0].Val.Int64, nil
 }
 
-// AvgDevicePortForwardIDOrZero 计算字段 device_port_forward_id 的平均值。
+// AvgDeviceIDOrZero 计算字段 device_id 的平均值。
 // 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
 // 返回类型固定为 float64，即使字段是整数类型。
-func (q *PortForwardStatsQuery) AvgDevicePortForwardIDOrZero(ctx context.Context) (float64, error) {
+func (q *PortForwardStatsQuery) AvgDeviceIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
 	}
 	err := q.Aggregate(
 		func(s *sql.Selector) string {
-			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(portforwardstats.FieldDevicePortForwardID))
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(portforwardstats.FieldDeviceID))
 		},
 	).Scan(ctx, &results)
 	if err != nil {
@@ -1007,16 +1007,123 @@ func (q *PortForwardStatsQuery) AvgDevicePortForwardIDOrZero(ctx context.Context
 	return results[0].Val.Float64, nil
 }
 
-// StddevDevicePortForwardIDOrZero 计算字段 device_port_forward_id 的样本标准差（STDDEV）。
+// StddevDeviceIDOrZero 计算字段 device_id 的样本标准差（STDDEV）。
 // 如果结果为 NULL（例如数据不足或表为空），则返回 0。
 // ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
-func (q *PortForwardStatsQuery) StddevDevicePortForwardIDOrZero(ctx context.Context) (float64, error) {
+func (q *PortForwardStatsQuery) StddevDeviceIDOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
 		Val sql.NullFloat64 `json:"val"`
 	}
 	err := q.Aggregate(
 		func(s *sql.Selector) string {
-			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(portforwardstats.FieldDevicePortForwardID))
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(portforwardstats.FieldDeviceID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumPortForwardIDOrZero 计算字段 port_forward_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *PortForwardStatsQuery) SumPortForwardIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(portforwardstats.FieldPortForwardID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxPortForwardIDOrZero 获取字段 port_forward_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *PortForwardStatsQuery) MaxPortForwardIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(portforwardstats.FieldPortForwardID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinPortForwardIDOrZero 获取字段 port_forward_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *PortForwardStatsQuery) MinPortForwardIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(portforwardstats.FieldPortForwardID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgPortForwardIDOrZero 计算字段 port_forward_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *PortForwardStatsQuery) AvgPortForwardIDOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(portforwardstats.FieldPortForwardID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevPortForwardIDOrZero 计算字段 port_forward_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *PortForwardStatsQuery) StddevPortForwardIDOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(portforwardstats.FieldPortForwardID))
 		},
 	).Scan(ctx, &results)
 	if err != nil {

@@ -59,9 +59,14 @@ func CreatedAt(v time.Time) predicate.PortForwardStats {
 	return predicate.PortForwardStats(sql.FieldEQ(FieldCreatedAt, v))
 }
 
-// DevicePortForwardID applies equality check predicate on the "device_port_forward_id" field. It's identical to DevicePortForwardIDEQ.
-func DevicePortForwardID(v int64) predicate.PortForwardStats {
-	return predicate.PortForwardStats(sql.FieldEQ(FieldDevicePortForwardID, v))
+// DeviceID applies equality check predicate on the "device_id" field. It's identical to DeviceIDEQ.
+func DeviceID(v int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldEQ(FieldDeviceID, v))
+}
+
+// PortForwardID applies equality check predicate on the "port_forward_id" field. It's identical to PortForwardIDEQ.
+func PortForwardID(v int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldEQ(FieldPortForwardID, v))
 }
 
 // StartTime applies equality check predicate on the "start_time" field. It's identical to StartTimeEQ.
@@ -144,44 +149,84 @@ func CreatedAtLTE(v time.Time) predicate.PortForwardStats {
 	return predicate.PortForwardStats(sql.FieldLTE(FieldCreatedAt, v))
 }
 
-// DevicePortForwardIDEQ applies the EQ predicate on the "device_port_forward_id" field.
-func DevicePortForwardIDEQ(v int64) predicate.PortForwardStats {
-	return predicate.PortForwardStats(sql.FieldEQ(FieldDevicePortForwardID, v))
+// DeviceIDEQ applies the EQ predicate on the "device_id" field.
+func DeviceIDEQ(v int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldEQ(FieldDeviceID, v))
 }
 
-// DevicePortForwardIDNEQ applies the NEQ predicate on the "device_port_forward_id" field.
-func DevicePortForwardIDNEQ(v int64) predicate.PortForwardStats {
-	return predicate.PortForwardStats(sql.FieldNEQ(FieldDevicePortForwardID, v))
+// DeviceIDNEQ applies the NEQ predicate on the "device_id" field.
+func DeviceIDNEQ(v int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldNEQ(FieldDeviceID, v))
 }
 
-// DevicePortForwardIDIn applies the In predicate on the "device_port_forward_id" field.
-func DevicePortForwardIDIn(vs ...int64) predicate.PortForwardStats {
-	return predicate.PortForwardStats(sql.FieldIn(FieldDevicePortForwardID, vs...))
+// DeviceIDIn applies the In predicate on the "device_id" field.
+func DeviceIDIn(vs ...int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldIn(FieldDeviceID, vs...))
 }
 
-// DevicePortForwardIDNotIn applies the NotIn predicate on the "device_port_forward_id" field.
-func DevicePortForwardIDNotIn(vs ...int64) predicate.PortForwardStats {
-	return predicate.PortForwardStats(sql.FieldNotIn(FieldDevicePortForwardID, vs...))
+// DeviceIDNotIn applies the NotIn predicate on the "device_id" field.
+func DeviceIDNotIn(vs ...int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldNotIn(FieldDeviceID, vs...))
 }
 
-// DevicePortForwardIDGT applies the GT predicate on the "device_port_forward_id" field.
-func DevicePortForwardIDGT(v int64) predicate.PortForwardStats {
-	return predicate.PortForwardStats(sql.FieldGT(FieldDevicePortForwardID, v))
+// DeviceIDGT applies the GT predicate on the "device_id" field.
+func DeviceIDGT(v int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldGT(FieldDeviceID, v))
 }
 
-// DevicePortForwardIDGTE applies the GTE predicate on the "device_port_forward_id" field.
-func DevicePortForwardIDGTE(v int64) predicate.PortForwardStats {
-	return predicate.PortForwardStats(sql.FieldGTE(FieldDevicePortForwardID, v))
+// DeviceIDGTE applies the GTE predicate on the "device_id" field.
+func DeviceIDGTE(v int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldGTE(FieldDeviceID, v))
 }
 
-// DevicePortForwardIDLT applies the LT predicate on the "device_port_forward_id" field.
-func DevicePortForwardIDLT(v int64) predicate.PortForwardStats {
-	return predicate.PortForwardStats(sql.FieldLT(FieldDevicePortForwardID, v))
+// DeviceIDLT applies the LT predicate on the "device_id" field.
+func DeviceIDLT(v int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldLT(FieldDeviceID, v))
 }
 
-// DevicePortForwardIDLTE applies the LTE predicate on the "device_port_forward_id" field.
-func DevicePortForwardIDLTE(v int64) predicate.PortForwardStats {
-	return predicate.PortForwardStats(sql.FieldLTE(FieldDevicePortForwardID, v))
+// DeviceIDLTE applies the LTE predicate on the "device_id" field.
+func DeviceIDLTE(v int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldLTE(FieldDeviceID, v))
+}
+
+// PortForwardIDEQ applies the EQ predicate on the "port_forward_id" field.
+func PortForwardIDEQ(v int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldEQ(FieldPortForwardID, v))
+}
+
+// PortForwardIDNEQ applies the NEQ predicate on the "port_forward_id" field.
+func PortForwardIDNEQ(v int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldNEQ(FieldPortForwardID, v))
+}
+
+// PortForwardIDIn applies the In predicate on the "port_forward_id" field.
+func PortForwardIDIn(vs ...int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldIn(FieldPortForwardID, vs...))
+}
+
+// PortForwardIDNotIn applies the NotIn predicate on the "port_forward_id" field.
+func PortForwardIDNotIn(vs ...int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldNotIn(FieldPortForwardID, vs...))
+}
+
+// PortForwardIDGT applies the GT predicate on the "port_forward_id" field.
+func PortForwardIDGT(v int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldGT(FieldPortForwardID, v))
+}
+
+// PortForwardIDGTE applies the GTE predicate on the "port_forward_id" field.
+func PortForwardIDGTE(v int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldGTE(FieldPortForwardID, v))
+}
+
+// PortForwardIDLT applies the LT predicate on the "port_forward_id" field.
+func PortForwardIDLT(v int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldLT(FieldPortForwardID, v))
+}
+
+// PortForwardIDLTE applies the LTE predicate on the "port_forward_id" field.
+func PortForwardIDLTE(v int64) predicate.PortForwardStats {
+	return predicate.PortForwardStats(sql.FieldLTE(FieldPortForwardID, v))
 }
 
 // StartTimeEQ applies the EQ predicate on the "start_time" field.

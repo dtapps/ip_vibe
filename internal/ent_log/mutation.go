@@ -4296,31 +4296,33 @@ func (m *OperationLogMutation) ResetEdge(name string) error {
 // PortForwardStatsMutation represents an operation that mutates the PortForwardStats nodes in the graph.
 type PortForwardStatsMutation struct {
 	config
-	op                        Op
-	typ                       string
-	id                        *int64
-	created_at                *time.Time
-	device_port_forward_id    *int64
-	adddevice_port_forward_id *int64
-	start_time                *time.Time
-	active_conn               *int64
-	addactive_conn            *int64
-	total_conn                *int64
-	addtotal_conn             *int64
-	bytes_in                  *int64
-	addbytes_in               *int64
-	bytes_out                 *int64
-	addbytes_out              *int64
-	udp_packets_in            *int64
-	addudp_packets_in         *int64
-	udp_packets_out           *int64
-	addudp_packets_out        *int64
-	errors                    *int64
-	adderrors                 *int64
-	clearedFields             map[string]struct{}
-	done                      bool
-	oldValue                  func(context.Context) (*PortForwardStats, error)
-	predicates                []predicate.PortForwardStats
+	op                 Op
+	typ                string
+	id                 *int64
+	created_at         *time.Time
+	device_id          *int64
+	adddevice_id       *int64
+	port_forward_id    *int64
+	addport_forward_id *int64
+	start_time         *time.Time
+	active_conn        *int64
+	addactive_conn     *int64
+	total_conn         *int64
+	addtotal_conn      *int64
+	bytes_in           *int64
+	addbytes_in        *int64
+	bytes_out          *int64
+	addbytes_out       *int64
+	udp_packets_in     *int64
+	addudp_packets_in  *int64
+	udp_packets_out    *int64
+	addudp_packets_out *int64
+	errors             *int64
+	adderrors          *int64
+	clearedFields      map[string]struct{}
+	done               bool
+	oldValue           func(context.Context) (*PortForwardStats, error)
+	predicates         []predicate.PortForwardStats
 }
 
 var _ ent.Mutation = (*PortForwardStatsMutation)(nil)
@@ -4463,60 +4465,116 @@ func (m *PortForwardStatsMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
-// SetDevicePortForwardID sets the "device_port_forward_id" field.
-func (m *PortForwardStatsMutation) SetDevicePortForwardID(i int64) {
-	m.device_port_forward_id = &i
-	m.adddevice_port_forward_id = nil
+// SetDeviceID sets the "device_id" field.
+func (m *PortForwardStatsMutation) SetDeviceID(i int64) {
+	m.device_id = &i
+	m.adddevice_id = nil
 }
 
-// DevicePortForwardID returns the value of the "device_port_forward_id" field in the mutation.
-func (m *PortForwardStatsMutation) DevicePortForwardID() (r int64, exists bool) {
-	v := m.device_port_forward_id
+// DeviceID returns the value of the "device_id" field in the mutation.
+func (m *PortForwardStatsMutation) DeviceID() (r int64, exists bool) {
+	v := m.device_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldDevicePortForwardID returns the old "device_port_forward_id" field's value of the PortForwardStats entity.
+// OldDeviceID returns the old "device_id" field's value of the PortForwardStats entity.
 // If the PortForwardStats object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PortForwardStatsMutation) OldDevicePortForwardID(ctx context.Context) (v int64, err error) {
+func (m *PortForwardStatsMutation) OldDeviceID(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDevicePortForwardID is only allowed on UpdateOne operations")
+		return v, errors.New("OldDeviceID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDevicePortForwardID requires an ID field in the mutation")
+		return v, errors.New("OldDeviceID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDevicePortForwardID: %w", err)
+		return v, fmt.Errorf("querying old value for OldDeviceID: %w", err)
 	}
-	return oldValue.DevicePortForwardID, nil
+	return oldValue.DeviceID, nil
 }
 
-// AddDevicePortForwardID adds i to the "device_port_forward_id" field.
-func (m *PortForwardStatsMutation) AddDevicePortForwardID(i int64) {
-	if m.adddevice_port_forward_id != nil {
-		*m.adddevice_port_forward_id += i
+// AddDeviceID adds i to the "device_id" field.
+func (m *PortForwardStatsMutation) AddDeviceID(i int64) {
+	if m.adddevice_id != nil {
+		*m.adddevice_id += i
 	} else {
-		m.adddevice_port_forward_id = &i
+		m.adddevice_id = &i
 	}
 }
 
-// AddedDevicePortForwardID returns the value that was added to the "device_port_forward_id" field in this mutation.
-func (m *PortForwardStatsMutation) AddedDevicePortForwardID() (r int64, exists bool) {
-	v := m.adddevice_port_forward_id
+// AddedDeviceID returns the value that was added to the "device_id" field in this mutation.
+func (m *PortForwardStatsMutation) AddedDeviceID() (r int64, exists bool) {
+	v := m.adddevice_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetDevicePortForwardID resets all changes to the "device_port_forward_id" field.
-func (m *PortForwardStatsMutation) ResetDevicePortForwardID() {
-	m.device_port_forward_id = nil
-	m.adddevice_port_forward_id = nil
+// ResetDeviceID resets all changes to the "device_id" field.
+func (m *PortForwardStatsMutation) ResetDeviceID() {
+	m.device_id = nil
+	m.adddevice_id = nil
+}
+
+// SetPortForwardID sets the "port_forward_id" field.
+func (m *PortForwardStatsMutation) SetPortForwardID(i int64) {
+	m.port_forward_id = &i
+	m.addport_forward_id = nil
+}
+
+// PortForwardID returns the value of the "port_forward_id" field in the mutation.
+func (m *PortForwardStatsMutation) PortForwardID() (r int64, exists bool) {
+	v := m.port_forward_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPortForwardID returns the old "port_forward_id" field's value of the PortForwardStats entity.
+// If the PortForwardStats object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortForwardStatsMutation) OldPortForwardID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPortForwardID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPortForwardID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPortForwardID: %w", err)
+	}
+	return oldValue.PortForwardID, nil
+}
+
+// AddPortForwardID adds i to the "port_forward_id" field.
+func (m *PortForwardStatsMutation) AddPortForwardID(i int64) {
+	if m.addport_forward_id != nil {
+		*m.addport_forward_id += i
+	} else {
+		m.addport_forward_id = &i
+	}
+}
+
+// AddedPortForwardID returns the value that was added to the "port_forward_id" field in this mutation.
+func (m *PortForwardStatsMutation) AddedPortForwardID() (r int64, exists bool) {
+	v := m.addport_forward_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPortForwardID resets all changes to the "port_forward_id" field.
+func (m *PortForwardStatsMutation) ResetPortForwardID() {
+	m.port_forward_id = nil
+	m.addport_forward_id = nil
 }
 
 // SetStartTime sets the "start_time" field.
@@ -5079,12 +5137,15 @@ func (m *PortForwardStatsMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PortForwardStatsMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, portforwardstats.FieldCreatedAt)
 	}
-	if m.device_port_forward_id != nil {
-		fields = append(fields, portforwardstats.FieldDevicePortForwardID)
+	if m.device_id != nil {
+		fields = append(fields, portforwardstats.FieldDeviceID)
+	}
+	if m.port_forward_id != nil {
+		fields = append(fields, portforwardstats.FieldPortForwardID)
 	}
 	if m.start_time != nil {
 		fields = append(fields, portforwardstats.FieldStartTime)
@@ -5120,8 +5181,10 @@ func (m *PortForwardStatsMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case portforwardstats.FieldCreatedAt:
 		return m.CreatedAt()
-	case portforwardstats.FieldDevicePortForwardID:
-		return m.DevicePortForwardID()
+	case portforwardstats.FieldDeviceID:
+		return m.DeviceID()
+	case portforwardstats.FieldPortForwardID:
+		return m.PortForwardID()
 	case portforwardstats.FieldStartTime:
 		return m.StartTime()
 	case portforwardstats.FieldActiveConn:
@@ -5149,8 +5212,10 @@ func (m *PortForwardStatsMutation) OldField(ctx context.Context, name string) (e
 	switch name {
 	case portforwardstats.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
-	case portforwardstats.FieldDevicePortForwardID:
-		return m.OldDevicePortForwardID(ctx)
+	case portforwardstats.FieldDeviceID:
+		return m.OldDeviceID(ctx)
+	case portforwardstats.FieldPortForwardID:
+		return m.OldPortForwardID(ctx)
 	case portforwardstats.FieldStartTime:
 		return m.OldStartTime(ctx)
 	case portforwardstats.FieldActiveConn:
@@ -5183,12 +5248,19 @@ func (m *PortForwardStatsMutation) SetField(name string, value ent.Value) error 
 		}
 		m.SetCreatedAt(v)
 		return nil
-	case portforwardstats.FieldDevicePortForwardID:
+	case portforwardstats.FieldDeviceID:
 		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetDevicePortForwardID(v)
+		m.SetDeviceID(v)
+		return nil
+	case portforwardstats.FieldPortForwardID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPortForwardID(v)
 		return nil
 	case portforwardstats.FieldStartTime:
 		v, ok := value.(time.Time)
@@ -5254,8 +5326,11 @@ func (m *PortForwardStatsMutation) SetField(name string, value ent.Value) error 
 // this mutation.
 func (m *PortForwardStatsMutation) AddedFields() []string {
 	var fields []string
-	if m.adddevice_port_forward_id != nil {
-		fields = append(fields, portforwardstats.FieldDevicePortForwardID)
+	if m.adddevice_id != nil {
+		fields = append(fields, portforwardstats.FieldDeviceID)
+	}
+	if m.addport_forward_id != nil {
+		fields = append(fields, portforwardstats.FieldPortForwardID)
 	}
 	if m.addactive_conn != nil {
 		fields = append(fields, portforwardstats.FieldActiveConn)
@@ -5286,8 +5361,10 @@ func (m *PortForwardStatsMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *PortForwardStatsMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case portforwardstats.FieldDevicePortForwardID:
-		return m.AddedDevicePortForwardID()
+	case portforwardstats.FieldDeviceID:
+		return m.AddedDeviceID()
+	case portforwardstats.FieldPortForwardID:
+		return m.AddedPortForwardID()
 	case portforwardstats.FieldActiveConn:
 		return m.AddedActiveConn()
 	case portforwardstats.FieldTotalConn:
@@ -5311,12 +5388,19 @@ func (m *PortForwardStatsMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *PortForwardStatsMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case portforwardstats.FieldDevicePortForwardID:
+	case portforwardstats.FieldDeviceID:
 		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddDevicePortForwardID(v)
+		m.AddDeviceID(v)
+		return nil
+	case portforwardstats.FieldPortForwardID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPortForwardID(v)
 		return nil
 	case portforwardstats.FieldActiveConn:
 		v, ok := value.(int64)
@@ -5442,8 +5526,11 @@ func (m *PortForwardStatsMutation) ResetField(name string) error {
 	case portforwardstats.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
-	case portforwardstats.FieldDevicePortForwardID:
-		m.ResetDevicePortForwardID()
+	case portforwardstats.FieldDeviceID:
+		m.ResetDeviceID()
+		return nil
+	case portforwardstats.FieldPortForwardID:
+		m.ResetPortForwardID()
 		return nil
 	case portforwardstats.FieldStartTime:
 		m.ResetStartTime()

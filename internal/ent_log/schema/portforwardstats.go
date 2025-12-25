@@ -41,7 +41,13 @@ func (PortForwardStats) Fields() []ent.Field {
 			Comment("端口转发统计记录序号").
 			Annotations(entsql.WithComments(true)),
 
-		field.Int64("device_port_forward_id").
+		field.Int64("device_id").
+			Positive(). // 正数
+			Immutable().
+			Comment("关联 Device 序号").
+			Annotations(entsql.WithComments(true)),
+
+		field.Int64("port_forward_id").
 			Positive(). // 正数
 			Immutable().
 			Comment("关联 DevicePortForward 序号").
@@ -108,12 +114,24 @@ func (PortForwardStats) Indexes() []ent.Index {
 		index.Fields("created_at").
 			Annotations(entsql.Desc(), entsql.WithComments(true)),
 
+		// 按关联 Device 序号排序，便于过滤记录
+		index.Fields("device_id").
+			Annotations(entsql.WithComments(true)),
+
 		// 按关联 DevicePortForward 序号排序，便于过滤记录
-		index.Fields("device_port_forward_id").
+		index.Fields("port_forward_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 复合索引：关联 Device 序号 + 创建时间，用于高效时间范围查询
+		index.Fields("device_id", "created_at").
 			Annotations(entsql.WithComments(true)),
 
 		// 复合索引：关联 DevicePortForward 序号 + 创建时间，用于高效时间范围查询
-		index.Fields("device_port_forward_id", "created_at").
+		index.Fields("port_forward_id", "created_at").
+			Annotations(entsql.WithComments(true)),
+
+		// 复合索引：关联 Device 序号 + 关联 DevicePortForward 序号 + 创建时间，用于高效查询
+		index.Fields("device_id", "port_forward_id", "created_at").
 			Annotations(entsql.WithComments(true)),
 	}
 }

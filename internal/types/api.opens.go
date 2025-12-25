@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 // 设备上报IP 请求结构
 type DeviceReportDeviceIpRequest struct {
 	DevicePortForwardsRequest
@@ -19,12 +21,16 @@ type DevicePortForwardsRequest struct {
 	DeviceCode string `uri:"device_code" json:"-" binding:"required"` // 设备编码
 }
 
-// 获取设备端口转发 响应结构
-type DevicePortForwardsResponse struct {
-	ID          int64    `json:"id"`           // 设备端口转发序号
-	LocalPort   int      `json:"local_port"`   // 本地监听端口
-	RemoteHost  string   `json:"remote_host"`  // 远程目标地址
-	RemotePort  int      `json:"remote_port"`  // 远程目标端口
-	Protocols   []string `json:"protocols"`    // 协议列表，支持 tcp4, tcp6, udp4, udp6
-	AutoForward bool     `json:"auto_forward"` // 防火墙自动放行
+// 创建端口转发统计 请求结构
+type CreatePortForwardStatsRequest struct {
+	DevicePortForwardsRequest
+	PortForwardID int64     `uri:"port_forward_id" json:"-" binding:"required"` // 端口转发序号
+	StartTime     time.Time `json:"start_time"`                                 // 转发实例启动时间 (UTC)
+	ActiveConn    int64     `json:"active_conn"`                                // TCP 活跃连接 / UDP session
+	TotalConn     int64     `json:"total_conn"`                                 // TCP 累计连接
+	BytesIn       int64     `json:"bytes_in"`                                   // 入站流量
+	BytesOut      int64     `json:"bytes_out"`                                  // 出站流量
+	UDPPacketsIn  int64     `json:"udp_packets_in"`                             // 入站 UDP 包数
+	UDPPacketsOut int64     `json:"udp_packets_out"`                            // 出站 UDP 包数
+	Errors        int64     `json:"errors"`                                     // 错误数
 }

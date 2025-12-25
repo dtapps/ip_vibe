@@ -206,7 +206,8 @@ var (
 	PortForwardStatsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "端口转发统计记录序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
-		{Name: "device_port_forward_id", Type: field.TypeInt64, Comment: "关联 DevicePortForward 序号"},
+		{Name: "device_id", Type: field.TypeInt64, Comment: "关联 Device 序号"},
+		{Name: "port_forward_id", Type: field.TypeInt64, Comment: "关联 DevicePortForward 序号"},
 		{Name: "start_time", Type: field.TypeTime, Comment: "转发启动时间 (UTC)"},
 		{Name: "active_conn", Type: field.TypeInt64, Nullable: true, Comment: "瞬时活跃连接数"},
 		{Name: "total_conn", Type: field.TypeInt64, Nullable: true, Comment: "累计连接数"},
@@ -232,14 +233,29 @@ var (
 				},
 			},
 			{
-				Name:    "portforwardstats_device_port_forward_id",
+				Name:    "portforwardstats_device_id",
 				Unique:  false,
 				Columns: []*schema.Column{PortForwardStatsColumns[2]},
 			},
 			{
-				Name:    "portforwardstats_device_port_forward_id_created_at",
+				Name:    "portforwardstats_port_forward_id",
+				Unique:  false,
+				Columns: []*schema.Column{PortForwardStatsColumns[3]},
+			},
+			{
+				Name:    "portforwardstats_device_id_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{PortForwardStatsColumns[2], PortForwardStatsColumns[1]},
+			},
+			{
+				Name:    "portforwardstats_port_forward_id_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PortForwardStatsColumns[3], PortForwardStatsColumns[1]},
+			},
+			{
+				Name:    "portforwardstats_device_id_port_forward_id_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PortForwardStatsColumns[2], PortForwardStatsColumns[3], PortForwardStatsColumns[1]},
 			},
 		},
 	}

@@ -1238,29 +1238,54 @@ func (q *PortForwardStatsQuery) OrderByCreatedAtAsc() *PortForwardStatsQuery {
 	return q.Order(Asc(portforwardstats.FieldCreatedAt))
 }
 
-// OrderByDevicePortForwardIDDesc 按字段 device_port_forward_id 降序排列查询结果。
+// OrderByDeviceIDDesc 按字段 device_id 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *PortForwardStatsQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
 // 示例：
 //
 //	records, err := client.PortForwardStats.Query().
-//	    OrderByDevicePortForwardIDDesc().
+//	    OrderByDeviceIDDesc().
 //	    Limit(10).
 //	    All(ctx)
-func (q *PortForwardStatsQuery) OrderByDevicePortForwardIDDesc() *PortForwardStatsQuery {
-	return q.Order(Desc(portforwardstats.FieldDevicePortForwardID))
+func (q *PortForwardStatsQuery) OrderByDeviceIDDesc() *PortForwardStatsQuery {
+	return q.Order(Desc(portforwardstats.FieldDeviceID))
 }
 
-// OrderByDevicePortForwardIDAsc 按字段 device_port_forward_id 升序排列查询结果。
+// OrderByDeviceIDAsc 按字段 device_id 升序排列查询结果。
 // 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
 // 返回值类型为 *PortForwardStatsQuery，支持链式调用其他查询方法。
 // 示例：
 //
 //	records, err := client.PortForwardStats.Query().
-//	    OrderByDevicePortForwardIDAsc().
+//	    OrderByDeviceIDAsc().
 //	    All(ctx)
-func (q *PortForwardStatsQuery) OrderByDevicePortForwardIDAsc() *PortForwardStatsQuery {
-	return q.Order(Asc(portforwardstats.FieldDevicePortForwardID))
+func (q *PortForwardStatsQuery) OrderByDeviceIDAsc() *PortForwardStatsQuery {
+	return q.Order(Asc(portforwardstats.FieldDeviceID))
+}
+
+// OrderByPortForwardIDDesc 按字段 port_forward_id 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *PortForwardStatsQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.PortForwardStats.Query().
+//	    OrderByPortForwardIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *PortForwardStatsQuery) OrderByPortForwardIDDesc() *PortForwardStatsQuery {
+	return q.Order(Desc(portforwardstats.FieldPortForwardID))
+}
+
+// OrderByPortForwardIDAsc 按字段 port_forward_id 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *PortForwardStatsQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.PortForwardStats.Query().
+//	    OrderByPortForwardIDAsc().
+//	    All(ctx)
+func (q *PortForwardStatsQuery) OrderByPortForwardIDAsc() *PortForwardStatsQuery {
+	return q.Order(Asc(portforwardstats.FieldPortForwardID))
 }
 
 // OrderByStartTimeDesc 按字段 start_time 降序排列查询结果。
