@@ -4631,6 +4631,9 @@
         },
         "vibe_ip_internal_types.CreatePortForwardStatsRequest": {
             "type": "object",
+            "required": [
+                "start_time"
+            ],
             "properties": {
                 "active_conn": {
                     "description": "TCP 活跃连接 / UDP session",
@@ -4650,7 +4653,7 @@
                 },
                 "start_time": {
                     "description": "转发实例启动时间 (UTC)",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "total_conn": {
                     "description": "TCP 累计连接",

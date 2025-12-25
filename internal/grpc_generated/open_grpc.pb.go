@@ -21,8 +21,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	OpenService_ReportDeviceIP_FullMethodName        = "/open.OpenService/ReportDeviceIP"
-	OpenService_GetDevicePortForwards_FullMethodName = "/open.OpenService/GetDevicePortForwards"
+	OpenService_ReportDeviceIP_FullMethodName         = "/open.OpenService/ReportDeviceIP"
+	OpenService_GetDevicePortForwards_FullMethodName  = "/open.OpenService/GetDevicePortForwards"
+	OpenService_CreatePortForwardStats_FullMethodName = "/open.OpenService/CreatePortForwardStats"
 )
 
 // OpenServiceClient is the client API for OpenService service.
@@ -33,6 +34,8 @@ type OpenServiceClient interface {
 	ReportDeviceIP(ctx context.Context, in *ReportDeviceIPRequest, opts ...grpc.CallOption) (*ReportDeviceIPResponse, error)
 	// 获取设备端口转发
 	GetDevicePortForwards(ctx context.Context, in *GetDevicePortForwardsRequest, opts ...grpc.CallOption) (*GetDevicePortForwardsResponse, error)
+	// 创建端口转发统计信息
+	CreatePortForwardStats(ctx context.Context, in *CreatePortForwardStatsRequest, opts ...grpc.CallOption) (*CreatePortForwardStatsResponse, error)
 }
 
 type openServiceClient struct {
@@ -63,6 +66,16 @@ func (c *openServiceClient) GetDevicePortForwards(ctx context.Context, in *GetDe
 	return out, nil
 }
 
+func (c *openServiceClient) CreatePortForwardStats(ctx context.Context, in *CreatePortForwardStatsRequest, opts ...grpc.CallOption) (*CreatePortForwardStatsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreatePortForwardStatsResponse)
+	err := c.cc.Invoke(ctx, OpenService_CreatePortForwardStats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OpenServiceServer is the server API for OpenService service.
 // All implementations must embed UnimplementedOpenServiceServer
 // for forward compatibility.
@@ -71,6 +84,8 @@ type OpenServiceServer interface {
 	ReportDeviceIP(context.Context, *ReportDeviceIPRequest) (*ReportDeviceIPResponse, error)
 	// 获取设备端口转发
 	GetDevicePortForwards(context.Context, *GetDevicePortForwardsRequest) (*GetDevicePortForwardsResponse, error)
+	// 创建端口转发统计信息
+	CreatePortForwardStats(context.Context, *CreatePortForwardStatsRequest) (*CreatePortForwardStatsResponse, error)
 	mustEmbedUnimplementedOpenServiceServer()
 }
 
@@ -86,6 +101,9 @@ func (UnimplementedOpenServiceServer) ReportDeviceIP(context.Context, *ReportDev
 }
 func (UnimplementedOpenServiceServer) GetDevicePortForwards(context.Context, *GetDevicePortForwardsRequest) (*GetDevicePortForwardsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetDevicePortForwards not implemented")
+}
+func (UnimplementedOpenServiceServer) CreatePortForwardStats(context.Context, *CreatePortForwardStatsRequest) (*CreatePortForwardStatsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreatePortForwardStats not implemented")
 }
 func (UnimplementedOpenServiceServer) mustEmbedUnimplementedOpenServiceServer() {}
 func (UnimplementedOpenServiceServer) testEmbeddedByValue()                     {}
@@ -144,6 +162,24 @@ func _OpenService_GetDevicePortForwards_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OpenService_CreatePortForwardStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreatePortForwardStatsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OpenServiceServer).CreatePortForwardStats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OpenService_CreatePortForwardStats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OpenServiceServer).CreatePortForwardStats(ctx, req.(*CreatePortForwardStatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // OpenService_ServiceDesc is the grpc.ServiceDesc for OpenService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -158,6 +194,10 @@ var OpenService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetDevicePortForwards",
 			Handler:    _OpenService_GetDevicePortForwards_Handler,
+		},
+		{
+			MethodName: "CreatePortForwardStats",
+			Handler:    _OpenService_CreatePortForwardStats_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

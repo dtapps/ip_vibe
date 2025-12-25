@@ -290,7 +290,7 @@ func (s *DeviceOpenServiceImpl) CreatePortForwardStats(ctx context.Context, devi
 	err = s.dbLog.PortForwardStats.Create().
 		SetDeviceID(firstDevice.ID).
 		SetPortForwardID(firstPortForward.ID).
-		SetStartTime(request.StartTime).
+		SetStartTime(time.Unix(request.StartTime, 0)).
 		SetActiveConn(request.ActiveConn).
 		SetTotalConn(request.TotalConn).
 		SetBytesIn(request.BytesIn).

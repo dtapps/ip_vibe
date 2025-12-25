@@ -327,6 +327,170 @@ func (x *GetDevicePortForwardsResponse) GetRules() []*PortForwardRule {
 	return nil
 }
 
+// 创建端口转发统计信息 请求参数
+type CreatePortForwardStatsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 设备编码
+	DeviceCode string `protobuf:"bytes,1,opt,name=device_code,json=deviceCode,proto3" json:"device_code,omitempty"`
+	// 端口转发ID
+	PortForwardId int64 `protobuf:"varint,2,opt,name=port_forward_id,json=portForwardId,proto3" json:"port_forward_id,omitempty"`
+	// 转发实例启动时间 (UTC)
+	StartTime int64 `protobuf:"varint,3,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	// TCP 活跃连接 / UDP session
+	ActiveConn int64 `protobuf:"varint,4,opt,name=active_conn,json=activeConn,proto3" json:"active_conn,omitempty"`
+	// TCP 累计连接
+	TotalConn int64 `protobuf:"varint,5,opt,name=total_conn,json=totalConn,proto3" json:"total_conn,omitempty"`
+	// 入站流量
+	BytesIn int64 `protobuf:"varint,6,opt,name=bytes_in,json=bytesIn,proto3" json:"bytes_in,omitempty"`
+	// 出站流量
+	BytesOut int64 `protobuf:"varint,7,opt,name=bytes_out,json=bytesOut,proto3" json:"bytes_out,omitempty"`
+	// 入站 UDP 包数
+	UdpPacketsIn int64 `protobuf:"varint,8,opt,name=udp_packets_in,json=udpPacketsIn,proto3" json:"udp_packets_in,omitempty"`
+	// 出站 UDP 包数
+	UdpPacketsOut int64 `protobuf:"varint,9,opt,name=udp_packets_out,json=udpPacketsOut,proto3" json:"udp_packets_out,omitempty"`
+	// 错误数
+	Errors        int64 `protobuf:"varint,10,opt,name=errors,proto3" json:"errors,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreatePortForwardStatsRequest) Reset() {
+	*x = CreatePortForwardStatsRequest{}
+	mi := &file_open_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreatePortForwardStatsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreatePortForwardStatsRequest) ProtoMessage() {}
+
+func (x *CreatePortForwardStatsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_open_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreatePortForwardStatsRequest.ProtoReflect.Descriptor instead.
+func (*CreatePortForwardStatsRequest) Descriptor() ([]byte, []int) {
+	return file_open_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *CreatePortForwardStatsRequest) GetDeviceCode() string {
+	if x != nil {
+		return x.DeviceCode
+	}
+	return ""
+}
+
+func (x *CreatePortForwardStatsRequest) GetPortForwardId() int64 {
+	if x != nil {
+		return x.PortForwardId
+	}
+	return 0
+}
+
+func (x *CreatePortForwardStatsRequest) GetStartTime() int64 {
+	if x != nil {
+		return x.StartTime
+	}
+	return 0
+}
+
+func (x *CreatePortForwardStatsRequest) GetActiveConn() int64 {
+	if x != nil {
+		return x.ActiveConn
+	}
+	return 0
+}
+
+func (x *CreatePortForwardStatsRequest) GetTotalConn() int64 {
+	if x != nil {
+		return x.TotalConn
+	}
+	return 0
+}
+
+func (x *CreatePortForwardStatsRequest) GetBytesIn() int64 {
+	if x != nil {
+		return x.BytesIn
+	}
+	return 0
+}
+
+func (x *CreatePortForwardStatsRequest) GetBytesOut() int64 {
+	if x != nil {
+		return x.BytesOut
+	}
+	return 0
+}
+
+func (x *CreatePortForwardStatsRequest) GetUdpPacketsIn() int64 {
+	if x != nil {
+		return x.UdpPacketsIn
+	}
+	return 0
+}
+
+func (x *CreatePortForwardStatsRequest) GetUdpPacketsOut() int64 {
+	if x != nil {
+		return x.UdpPacketsOut
+	}
+	return 0
+}
+
+func (x *CreatePortForwardStatsRequest) GetErrors() int64 {
+	if x != nil {
+		return x.Errors
+	}
+	return 0
+}
+
+// 创建端口转发统计信息 响应参数
+type CreatePortForwardStatsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreatePortForwardStatsResponse) Reset() {
+	*x = CreatePortForwardStatsResponse{}
+	mi := &file_open_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreatePortForwardStatsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreatePortForwardStatsResponse) ProtoMessage() {}
+
+func (x *CreatePortForwardStatsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_open_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreatePortForwardStatsResponse.ProtoReflect.Descriptor instead.
+func (*CreatePortForwardStatsResponse) Descriptor() ([]byte, []int) {
+	return file_open_proto_rawDescGZIP(), []int{6}
+}
+
 var File_open_proto protoreflect.FileDescriptor
 
 const file_open_proto_rawDesc = "" +
@@ -360,10 +524,28 @@ const file_open_proto_rawDesc = "" +
 	"\tprotocols\x18\x05 \x03(\tR\tprotocols\x12!\n" +
 	"\fauto_forward\x18\x06 \x01(\bR\vautoForward\"L\n" +
 	"\x1dGetDevicePortForwardsResponse\x12+\n" +
-	"\x05rules\x18\x01 \x03(\v2\x15.open.PortForwardRuleR\x05rules2\x88\x02\n" +
+	"\x05rules\x18\x01 \x03(\v2\x15.open.PortForwardRuleR\x05rules\"\x94\x03\n" +
+	"\x1dCreatePortForwardStatsRequest\x12<\n" +
+	"\vdevice_code\x18\x01 \x01(\tB\x1b\xfaB\x18r\x16\x10\x01\x1822\x10^[a-zA-Z0-9_-]+$R\n" +
+	"deviceCode\x12/\n" +
+	"\x0fport_forward_id\x18\x02 \x01(\x03B\a\xfaB\x04\"\x02 \x00R\rportForwardId\x12&\n" +
+	"\n" +
+	"start_time\x18\x03 \x01(\x03B\a\xfaB\x04\"\x02 \x00R\tstartTime\x12\x1f\n" +
+	"\vactive_conn\x18\x04 \x01(\x03R\n" +
+	"activeConn\x12\x1d\n" +
+	"\n" +
+	"total_conn\x18\x05 \x01(\x03R\ttotalConn\x12\x19\n" +
+	"\bbytes_in\x18\x06 \x01(\x03R\abytesIn\x12\x1b\n" +
+	"\tbytes_out\x18\a \x01(\x03R\bbytesOut\x12$\n" +
+	"\x0eudp_packets_in\x18\b \x01(\x03R\fudpPacketsIn\x12&\n" +
+	"\x0fudp_packets_out\x18\t \x01(\x03R\rudpPacketsOut\x12\x16\n" +
+	"\x06errors\x18\n" +
+	" \x01(\x03R\x06errors\" \n" +
+	"\x1eCreatePortForwardStatsResponse2\xb6\x03\n" +
 	"\vOpenService\x12i\n" +
 	"\x0eReportDeviceIP\x12\x1b.open.ReportDeviceIPRequest\x1a\x1c.open.ReportDeviceIPResponse\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/device/ip-report\x12\x8d\x01\n" +
-	"\x15GetDevicePortForwards\x12\".open.GetDevicePortForwardsRequest\x1a#.open.GetDevicePortForwardsResponse\"+\x82\xd3\xe4\x93\x02%\x12#/device/{device_code}/port-forwardsB!Z\x1fvibe_ip/internal/grpc_generatedb\x06proto3"
+	"\x15GetDevicePortForwards\x12\".open.GetDevicePortForwardsRequest\x1a#.open.GetDevicePortForwardsResponse\"+\x82\xd3\xe4\x93\x02%\x12#/device/{device_code}/port-forwards\x12\xab\x01\n" +
+	"\x16CreatePortForwardStats\x12#.open.CreatePortForwardStatsRequest\x1a$.open.CreatePortForwardStatsResponse\"F\x82\xd3\xe4\x93\x02@:\x01*\";/device/{device_code}/port-forwards/{port_forward_id}/statsB!Z\x1fvibe_ip/internal/grpc_generatedb\x06proto3"
 
 var (
 	file_open_proto_rawDescOnce sync.Once
@@ -377,22 +559,26 @@ func file_open_proto_rawDescGZIP() []byte {
 	return file_open_proto_rawDescData
 }
 
-var file_open_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_open_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_open_proto_goTypes = []any{
-	(*ReportDeviceIPRequest)(nil),         // 0: open.ReportDeviceIPRequest
-	(*ReportDeviceIPResponse)(nil),        // 1: open.ReportDeviceIPResponse
-	(*GetDevicePortForwardsRequest)(nil),  // 2: open.GetDevicePortForwardsRequest
-	(*PortForwardRule)(nil),               // 3: open.PortForwardRule
-	(*GetDevicePortForwardsResponse)(nil), // 4: open.GetDevicePortForwardsResponse
+	(*ReportDeviceIPRequest)(nil),          // 0: open.ReportDeviceIPRequest
+	(*ReportDeviceIPResponse)(nil),         // 1: open.ReportDeviceIPResponse
+	(*GetDevicePortForwardsRequest)(nil),   // 2: open.GetDevicePortForwardsRequest
+	(*PortForwardRule)(nil),                // 3: open.PortForwardRule
+	(*GetDevicePortForwardsResponse)(nil),  // 4: open.GetDevicePortForwardsResponse
+	(*CreatePortForwardStatsRequest)(nil),  // 5: open.CreatePortForwardStatsRequest
+	(*CreatePortForwardStatsResponse)(nil), // 6: open.CreatePortForwardStatsResponse
 }
 var file_open_proto_depIdxs = []int32{
 	3, // 0: open.GetDevicePortForwardsResponse.rules:type_name -> open.PortForwardRule
 	0, // 1: open.OpenService.ReportDeviceIP:input_type -> open.ReportDeviceIPRequest
 	2, // 2: open.OpenService.GetDevicePortForwards:input_type -> open.GetDevicePortForwardsRequest
-	1, // 3: open.OpenService.ReportDeviceIP:output_type -> open.ReportDeviceIPResponse
-	4, // 4: open.OpenService.GetDevicePortForwards:output_type -> open.GetDevicePortForwardsResponse
-	3, // [3:5] is the sub-list for method output_type
-	1, // [1:3] is the sub-list for method input_type
+	5, // 3: open.OpenService.CreatePortForwardStats:input_type -> open.CreatePortForwardStatsRequest
+	1, // 4: open.OpenService.ReportDeviceIP:output_type -> open.ReportDeviceIPResponse
+	4, // 5: open.OpenService.GetDevicePortForwards:output_type -> open.GetDevicePortForwardsResponse
+	6, // 6: open.OpenService.CreatePortForwardStats:output_type -> open.CreatePortForwardStatsResponse
+	4, // [4:7] is the sub-list for method output_type
+	1, // [1:4] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
@@ -409,7 +595,7 @@ func file_open_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_open_proto_rawDesc), len(file_open_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

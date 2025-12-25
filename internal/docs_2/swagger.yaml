@@ -218,7 +218,7 @@ definitions:
         type: integer
       start_time:
         description: 转发实例启动时间 (UTC)
-        type: string
+        type: integer
       total_conn:
         description: TCP 累计连接
         type: integer
@@ -228,6 +228,8 @@ definitions:
       udp_packets_out:
         description: 出站 UDP 包数
         type: integer
+    required:
+    - start_time
     type: object
   vibe_ip_internal_types.CreateSSLRecordRequest:
     properties:

@@ -28,6 +28,14 @@ service OpenService {
       get: "/device/{device_code}/port-forwards"
     };
   }
+
+  // 创建端口转发统计信息
+  rpc CreatePortForwardStats(CreatePortForwardStatsRequest) returns (CreatePortForwardStatsResponse) {
+    option (google.api.http) = {
+      post: "/device/{device_code}/port-forwards/{port_forward_id}/stats"
+      body: "*"
+    };
+  }
 }
 
 // 设备上报IP 请求参数
@@ -99,4 +107,56 @@ message PortForwardRule {
 // 获取设备端口转发 响应参数
 message GetDevicePortForwardsResponse {
   repeated PortForwardRule rules = 1;  // 端口转发规则列表
+}
+
+
+// 创建端口转发统计信息 请求参数
+message CreatePortForwardStatsRequest {
+  // 设备编码
+  string device_code = 1 [
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 50,
+      pattern: "^[a-zA-Z0-9_-]+$"
+    }
+  ]; 
+  
+  // 端口转发ID
+  int64 port_forward_id = 2 [
+    (validate.rules).int64 = {
+      gt: 0
+    }
+  ];
+  
+  // 转发实例启动时间 (UTC)
+  int64 start_time = 3 [
+    (validate.rules).int64 = {
+      gt: 0
+    }
+  ];
+  
+  // TCP 活跃连接 / UDP session
+  int64 active_conn = 4 ;
+
+  // TCP 累计连接
+  int64 total_conn = 5 ;
+
+  // 入站流量
+  int64 bytes_in = 6 ;
+  
+  // 出站流量
+  int64 bytes_out = 7 ;
+  
+  // 入站 UDP 包数
+  int64 udp_packets_in = 8 ;
+  
+  // 出站 UDP 包数
+  int64 udp_packets_out = 9 ;
+  
+  // 错误数
+  int64 errors = 10 ;
+}
+
+// 创建端口转发统计信息 响应参数
+message CreatePortForwardStatsResponse {
 }

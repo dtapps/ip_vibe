@@ -40,6 +40,9 @@ const (
 	// OpenServiceGetDevicePortForwardsProcedure is the fully-qualified name of the OpenService's
 	// GetDevicePortForwards RPC.
 	OpenServiceGetDevicePortForwardsProcedure = "/open.OpenService/GetDevicePortForwards"
+	// OpenServiceCreatePortForwardStatsProcedure is the fully-qualified name of the OpenService's
+	// CreatePortForwardStats RPC.
+	OpenServiceCreatePortForwardStatsProcedure = "/open.OpenService/CreatePortForwardStats"
 )
 
 // OpenServiceClient is a client for the open.OpenService service.
@@ -48,6 +51,8 @@ type OpenServiceClient interface {
 	ReportDeviceIP(context.Context, *connect.Request[grpc_generated.ReportDeviceIPRequest]) (*connect.Response[grpc_generated.ReportDeviceIPResponse], error)
 	// 获取设备端口转发
 	GetDevicePortForwards(context.Context, *connect.Request[grpc_generated.GetDevicePortForwardsRequest]) (*connect.Response[grpc_generated.GetDevicePortForwardsResponse], error)
+	// 创建端口转发统计信息
+	CreatePortForwardStats(context.Context, *connect.Request[grpc_generated.CreatePortForwardStatsRequest]) (*connect.Response[grpc_generated.CreatePortForwardStatsResponse], error)
 }
 
 // NewOpenServiceClient constructs a client for the open.OpenService service. By default, it uses
@@ -73,13 +78,20 @@ func NewOpenServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(openServiceMethods.ByName("GetDevicePortForwards")),
 			connect.WithClientOptions(opts...),
 		),
+		createPortForwardStats: connect.NewClient[grpc_generated.CreatePortForwardStatsRequest, grpc_generated.CreatePortForwardStatsResponse](
+			httpClient,
+			baseURL+OpenServiceCreatePortForwardStatsProcedure,
+			connect.WithSchema(openServiceMethods.ByName("CreatePortForwardStats")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // openServiceClient implements OpenServiceClient.
 type openServiceClient struct {
-	reportDeviceIP        *connect.Client[grpc_generated.ReportDeviceIPRequest, grpc_generated.ReportDeviceIPResponse]
-	getDevicePortForwards *connect.Client[grpc_generated.GetDevicePortForwardsRequest, grpc_generated.GetDevicePortForwardsResponse]
+	reportDeviceIP         *connect.Client[grpc_generated.ReportDeviceIPRequest, grpc_generated.ReportDeviceIPResponse]
+	getDevicePortForwards  *connect.Client[grpc_generated.GetDevicePortForwardsRequest, grpc_generated.GetDevicePortForwardsResponse]
+	createPortForwardStats *connect.Client[grpc_generated.CreatePortForwardStatsRequest, grpc_generated.CreatePortForwardStatsResponse]
 }
 
 // ReportDeviceIP calls open.OpenService.ReportDeviceIP.
@@ -92,12 +104,19 @@ func (c *openServiceClient) GetDevicePortForwards(ctx context.Context, req *conn
 	return c.getDevicePortForwards.CallUnary(ctx, req)
 }
 
+// CreatePortForwardStats calls open.OpenService.CreatePortForwardStats.
+func (c *openServiceClient) CreatePortForwardStats(ctx context.Context, req *connect.Request[grpc_generated.CreatePortForwardStatsRequest]) (*connect.Response[grpc_generated.CreatePortForwardStatsResponse], error) {
+	return c.createPortForwardStats.CallUnary(ctx, req)
+}
+
 // OpenServiceHandler is an implementation of the open.OpenService service.
 type OpenServiceHandler interface {
 	// 设备上报IP
 	ReportDeviceIP(context.Context, *connect.Request[grpc_generated.ReportDeviceIPRequest]) (*connect.Response[grpc_generated.ReportDeviceIPResponse], error)
 	// 获取设备端口转发
 	GetDevicePortForwards(context.Context, *connect.Request[grpc_generated.GetDevicePortForwardsRequest]) (*connect.Response[grpc_generated.GetDevicePortForwardsResponse], error)
+	// 创建端口转发统计信息
+	CreatePortForwardStats(context.Context, *connect.Request[grpc_generated.CreatePortForwardStatsRequest]) (*connect.Response[grpc_generated.CreatePortForwardStatsResponse], error)
 }
 
 // NewOpenServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -119,12 +138,20 @@ func NewOpenServiceHandler(svc OpenServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(openServiceMethods.ByName("GetDevicePortForwards")),
 		connect.WithHandlerOptions(opts...),
 	)
+	openServiceCreatePortForwardStatsHandler := connect.NewUnaryHandler(
+		OpenServiceCreatePortForwardStatsProcedure,
+		svc.CreatePortForwardStats,
+		connect.WithSchema(openServiceMethods.ByName("CreatePortForwardStats")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/open.OpenService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case OpenServiceReportDeviceIPProcedure:
 			openServiceReportDeviceIPHandler.ServeHTTP(w, r)
 		case OpenServiceGetDevicePortForwardsProcedure:
 			openServiceGetDevicePortForwardsHandler.ServeHTTP(w, r)
+		case OpenServiceCreatePortForwardStatsProcedure:
+			openServiceCreatePortForwardStatsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -140,4 +167,8 @@ func (UnimplementedOpenServiceHandler) ReportDeviceIP(context.Context, *connect.
 
 func (UnimplementedOpenServiceHandler) GetDevicePortForwards(context.Context, *connect.Request[grpc_generated.GetDevicePortForwardsRequest]) (*connect.Response[grpc_generated.GetDevicePortForwardsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("open.OpenService.GetDevicePortForwards is not implemented"))
+}
+
+func (UnimplementedOpenServiceHandler) CreatePortForwardStats(context.Context, *connect.Request[grpc_generated.CreatePortForwardStatsRequest]) (*connect.Response[grpc_generated.CreatePortForwardStatsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("open.OpenService.CreatePortForwardStats is not implemented"))
 }

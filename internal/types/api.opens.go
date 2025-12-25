@@ -1,7 +1,5 @@
 package types
 
-import "time"
-
 // 设备上报IP 请求结构
 type DeviceReportDeviceIpRequest struct {
 	DevicePortForwardsRequest
@@ -24,13 +22,13 @@ type DevicePortForwardsRequest struct {
 // 创建端口转发统计 请求结构
 type CreatePortForwardStatsRequest struct {
 	DevicePortForwardsRequest
-	PortForwardID int64     `uri:"port_forward_id" json:"-" binding:"required"` // 端口转发序号
-	StartTime     time.Time `json:"start_time"`                                 // 转发实例启动时间 (UTC)
-	ActiveConn    int64     `json:"active_conn"`                                // TCP 活跃连接 / UDP session
-	TotalConn     int64     `json:"total_conn"`                                 // TCP 累计连接
-	BytesIn       int64     `json:"bytes_in"`                                   // 入站流量
-	BytesOut      int64     `json:"bytes_out"`                                  // 出站流量
-	UDPPacketsIn  int64     `json:"udp_packets_in"`                             // 入站 UDP 包数
-	UDPPacketsOut int64     `json:"udp_packets_out"`                            // 出站 UDP 包数
-	Errors        int64     `json:"errors"`                                     // 错误数
+	PortForwardID int64 `uri:"port_forward_id" json:"-" binding:"required"` // 端口转发序号
+	StartTime     int64 `json:"start_time" binding:"required"`              // 转发实例启动时间 (UTC)
+	ActiveConn    int64 `json:"active_conn"`                                // TCP 活跃连接 / UDP session
+	TotalConn     int64 `json:"total_conn"`                                 // TCP 累计连接
+	BytesIn       int64 `json:"bytes_in"`                                   // 入站流量
+	BytesOut      int64 `json:"bytes_out"`                                  // 出站流量
+	UDPPacketsIn  int64 `json:"udp_packets_in"`                             // 入站 UDP 包数
+	UDPPacketsOut int64 `json:"udp_packets_out"`                            // 出站 UDP 包数
+	Errors        int64 `json:"errors"`                                     // 错误数
 }

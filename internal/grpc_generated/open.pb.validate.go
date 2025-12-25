@@ -707,3 +707,269 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetDevicePortForwardsResponseValidationError{}
+
+// Validate checks the field values on CreatePortForwardStatsRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CreatePortForwardStatsRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreatePortForwardStatsRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// CreatePortForwardStatsRequestMultiError, or nil if none found.
+func (m *CreatePortForwardStatsRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreatePortForwardStatsRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if l := utf8.RuneCountInString(m.GetDeviceCode()); l < 1 || l > 50 {
+		err := CreatePortForwardStatsRequestValidationError{
+			field:  "DeviceCode",
+			reason: "value length must be between 1 and 50 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if !_CreatePortForwardStatsRequest_DeviceCode_Pattern.MatchString(m.GetDeviceCode()) {
+		err := CreatePortForwardStatsRequestValidationError{
+			field:  "DeviceCode",
+			reason: "value does not match regex pattern \"^[a-zA-Z0-9_-]+$\"",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.GetPortForwardId() <= 0 {
+		err := CreatePortForwardStatsRequestValidationError{
+			field:  "PortForwardId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.GetStartTime() <= 0 {
+		err := CreatePortForwardStatsRequestValidationError{
+			field:  "StartTime",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	// no validation rules for ActiveConn
+
+	// no validation rules for TotalConn
+
+	// no validation rules for BytesIn
+
+	// no validation rules for BytesOut
+
+	// no validation rules for UdpPacketsIn
+
+	// no validation rules for UdpPacketsOut
+
+	// no validation rules for Errors
+
+	if len(errors) > 0 {
+		return CreatePortForwardStatsRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// CreatePortForwardStatsRequestMultiError is an error wrapping multiple
+// validation errors returned by CreatePortForwardStatsRequest.ValidateAll()
+// if the designated constraints aren't met.
+type CreatePortForwardStatsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreatePortForwardStatsRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreatePortForwardStatsRequestMultiError) AllErrors() []error { return m }
+
+// CreatePortForwardStatsRequestValidationError is the validation error
+// returned by CreatePortForwardStatsRequest.Validate if the designated
+// constraints aren't met.
+type CreatePortForwardStatsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreatePortForwardStatsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreatePortForwardStatsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreatePortForwardStatsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreatePortForwardStatsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreatePortForwardStatsRequestValidationError) ErrorName() string {
+	return "CreatePortForwardStatsRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreatePortForwardStatsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreatePortForwardStatsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreatePortForwardStatsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreatePortForwardStatsRequestValidationError{}
+
+var _CreatePortForwardStatsRequest_DeviceCode_Pattern = regexp.MustCompile("^[a-zA-Z0-9_-]+$")
+
+// Validate checks the field values on CreatePortForwardStatsResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CreatePortForwardStatsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreatePortForwardStatsResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// CreatePortForwardStatsResponseMultiError, or nil if none found.
+func (m *CreatePortForwardStatsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreatePortForwardStatsResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return CreatePortForwardStatsResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// CreatePortForwardStatsResponseMultiError is an error wrapping multiple
+// validation errors returned by CreatePortForwardStatsResponse.ValidateAll()
+// if the designated constraints aren't met.
+type CreatePortForwardStatsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreatePortForwardStatsResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreatePortForwardStatsResponseMultiError) AllErrors() []error { return m }
+
+// CreatePortForwardStatsResponseValidationError is the validation error
+// returned by CreatePortForwardStatsResponse.Validate if the designated
+// constraints aren't met.
+type CreatePortForwardStatsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreatePortForwardStatsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreatePortForwardStatsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreatePortForwardStatsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreatePortForwardStatsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreatePortForwardStatsResponseValidationError) ErrorName() string {
+	return "CreatePortForwardStatsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreatePortForwardStatsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreatePortForwardStatsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreatePortForwardStatsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreatePortForwardStatsResponseValidationError{}
