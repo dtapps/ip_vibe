@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 	"time"
-	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/helper/ip_helper"
@@ -15,16 +14,19 @@ import (
 	"github.com/go-co-op/gocron/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 )
 
 // IPReportGRPCTask IP上报任务
 type IPReportGRPCTask struct {
-	cron   gocron.Scheduler // 定时任务调度器
-	job    gocron.Job       // IP上报任务
-	logger *slog.Logger     // 日志记录器
+	cron   gocron.Scheduler    // 定时任务调度器
+	job    gocron.Job          // IP上报任务
+	logger *slog.Logger        // 日志记录器
+	config *IPReportTaskConfig // 配置
 
 	clientTarget   string                           // gRPC 客户端目标地址
 	clientOpts     []grpc.DialOption                // gRPC 客户端连接选项
+	clientBaseMD   metadata.MD                      // gRPC 客户端基础 metadata
 	client         *grpc.ClientConn                 // gRPC 客户端连接
 	ipReportClient grpc_generated.OpenServiceClient // gRPC 业务服务客户端
 }
@@ -48,6 +50,21 @@ func (s *IPReportGRPCTask) Close() {
 	if s.cron != nil && s.job != nil {
 		_ = s.cron.RemoveJob(s.job.ID())
 	}
+}
+
+// SetConfig 设置任务配置
+func (s *IPReportGRPCTask) SetConfig(config *IPReportTaskConfig) *IPReportGRPCTask {
+	s.config = config
+	// 设置基础 metadata（相当于HTTP headers）
+	s.clientBaseMD = metadata.Pairs(
+		"x-version", config.Version,
+		"x-git-commit", config.GitCommit,
+		"x-build-time", config.BuildTime,
+		"x-go-version", config.GoVersion,
+		"x-os", config.OS,
+		"x-arch", config.Arch,
+	)
+	return s
 }
 
 // SetBaseURL 设置基础URL
@@ -109,9 +126,9 @@ func (s *IPReportGRPCTask) RunPeriodicTask() {
 	ctx := context.Background()
 
 	// 请求参数
-	deviceCode := global.GvaEnv.DEVICE_CODE
+	deviceCode := s.config.DeviceCode
 	params := types.DeviceReportDeviceIpRequest{
-		DeviceName: global.GvaEnv.DEVICE_NAME,
+		DeviceName: s.config.DeviceName,
 	}
 	// 检查设备代码是否为空
 	if deviceCode == "" {
@@ -184,7 +201,7 @@ func (s *IPReportGRPCTask) reportIP(ctx context.Context, deviceCode string, para
 	}
 
 	// 调用gRPC服务
-	resp, err := s.ipReportClient.ReportDeviceIP(ctx, req)
+	resp, err := s.ipReportClient.ReportDeviceIP(metadata.NewOutgoingContext(ctx, s.clientBaseMD), req)
 	if err != nil {
 		return fmt.Errorf("gRPC调用失败: %w", err)
 	}

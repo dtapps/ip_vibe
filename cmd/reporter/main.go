@@ -50,11 +50,24 @@ func main() {
 		slog.String("arch", global.GvaArch),
 	)
 
+	// 配置
+	config := &task.IPReportTaskConfig{
+		DeviceCode: global.GvaEnv.DEVICE_CODE,
+		DeviceName: global.GvaEnv.DEVICE_NAME,
+		Version:    global.GvaVersion,
+		GitCommit:  global.GvaGitCommit,
+		BuildTime:  global.GvaBuildTime,
+		GoVersion:  global.GvaGoVersion,
+		OS:         global.GvaOS,
+		Arch:       global.GvaArch,
+	}
+
 	if global.GvaEnv.GRPC_URL != "" {
 		// 创建服务
 		service := task.NewIPReportGRPCTask(global.GvaGoCron)
-		service.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+		service.SetConfig(config)
 		service.SetBaseURL(global.GvaEnv.GRPC_URL)
+		service.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
 		// 启动任务
 		err := service.StartPeriodicTask(ctx)
 		if err != nil {
@@ -67,8 +80,9 @@ func main() {
 		// 创建服务
 		service := task.NewIPReportRestyTask(global.GvaGoCron)
 		service.SetDebug(global.GvaEnv.DEBUG)
-		service.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+		service.SetConfig(config)
 		service.SetBaseURL(global.GvaEnv.HTTP_URL)
+		service.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
 		// 启动任务
 		err := service.StartPeriodicTask(ctx)
 		if err != nil {

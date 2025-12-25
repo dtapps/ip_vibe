@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 	"time"
-	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/ip_helper"
 	"vibe_ip/internal/types"
 
@@ -16,9 +15,10 @@ import (
 
 // IPReportRestyTask IP上报任务
 type IPReportRestyTask struct {
-	cron   gocron.Scheduler // 定时任务调度器
-	job    gocron.Job       // IP上报任务
-	logger *slog.Logger     // 日志记录器
+	cron   gocron.Scheduler    // 定时任务调度器
+	job    gocron.Job          // IP上报任务
+	logger *slog.Logger        // 日志记录器
+	config *IPReportTaskConfig // 配置
 
 	client *resty.Client // Resty HTTP 客户端
 }
@@ -34,14 +34,6 @@ func NewIPReportRestyTask(cron gocron.Scheduler) *IPReportRestyTask {
 
 	// 设置默认超时
 	client.SetTimeout(1 * time.Minute)
-
-	// 设置请求头
-	client.SetHeader("X-Version", global.GvaVersion)
-	client.SetHeader("X-Git-Commit", global.GvaGitCommit)
-	client.SetHeader("X-Build-Time", global.GvaBuildTime)
-	client.SetHeader("X-Go-Version", global.GvaGoVersion)
-	client.SetHeader("X-OS", global.GvaOS)
-	client.SetHeader("X-Arch", global.GvaArch)
 
 	// 重试机制
 	client.SetRetryCount(3)
@@ -68,6 +60,19 @@ func (s *IPReportRestyTask) Close() {
 // SetDebug 设置调试模式
 func (s *IPReportRestyTask) SetDebug(debug bool) *IPReportRestyTask {
 	s.client.SetDebug(debug)
+	return s
+}
+
+// SetConfig 设置任务配置
+func (s *IPReportRestyTask) SetConfig(config *IPReportTaskConfig) *IPReportRestyTask {
+	s.config = config
+	// 设置请求头
+	s.client.SetHeader("X-Version", config.Version)
+	s.client.SetHeader("X-Git-Commit", config.GitCommit)
+	s.client.SetHeader("X-Build-Time", config.BuildTime)
+	s.client.SetHeader("X-Go-Version", config.GoVersion)
+	s.client.SetHeader("X-OS", config.OS)
+	s.client.SetHeader("X-Arch", config.Arch)
 	return s
 }
 
@@ -113,9 +118,9 @@ func (s *IPReportRestyTask) RunPeriodicTask() {
 	ctx := context.Background()
 
 	// 请求参数
-	deviceCode := global.GvaEnv.DEVICE_CODE
+	deviceCode := s.config.DeviceCode
 	params := types.DeviceReportDeviceIpRequest{
-		DeviceName: global.GvaEnv.DEVICE_NAME,
+		DeviceName: s.config.DeviceName,
 	}
 	// 检查设备代码是否为空
 	if deviceCode == "" {
