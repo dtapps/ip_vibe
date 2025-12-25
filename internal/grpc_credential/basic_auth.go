@@ -21,6 +21,12 @@ func NewBasicAuth(logger *slog.Logger, username, password string) *BasicAuth {
 }
 
 func (b *BasicAuth) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+
+	// 如果用户名或密码为空就不校验
+	if b.username == "" || b.password == "" {
+		return nil, nil
+	}
+
 	cred := "Basic " + base64.StdEncoding.EncodeToString([]byte(b.username+":"+b.password))
 	return map[string]string{"authorization": cred}, nil
 }
