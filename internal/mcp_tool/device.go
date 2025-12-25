@@ -54,8 +54,9 @@ func getDeviceList(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	// 创建服务
 	service := service.NewDeviceService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -73,8 +74,9 @@ func getDeviceDetail(ctx context.Context, req *mcp.CallToolRequest, params *type
 	// 创建服务
 	service := service.NewDeviceService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -92,8 +94,9 @@ func createDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.C
 	// 创建服务
 	service := service.NewDeviceService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -111,8 +114,9 @@ func updateDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.U
 	// 创建服务
 	service := service.NewDeviceService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -130,8 +134,9 @@ func deleteDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.D
 	// 创建服务
 	service := service.NewDeviceService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -149,8 +154,9 @@ func getDeviceIpHistory(ctx context.Context, req *mcp.CallToolRequest, params *t
 	// 创建服务
 	service := service.NewDeviceService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -168,8 +174,9 @@ func healthCheckDevice(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	// 创建服务
 	service := service.NewDeviceService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
