@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"embed"
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"html/template"
@@ -23,6 +22,7 @@ import (
 	"vibe_ip/internal/docs_2"
 	"vibe_ip/internal/docs_3"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/grpc_middleware"
 	"vibe_ip/internal/grpc_server"
@@ -980,16 +980,6 @@ func grpc_run(ctx context.Context) {
 	slog.InfoContext(ctx, "gRPC 服务器已优雅关闭")
 }
 
-type basicCreds struct {
-	username, password string
-}
-
-func (b *basicCreds) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
-	cred := "Basic " + base64.StdEncoding.EncodeToString([]byte(b.username+":"+b.password))
-	return map[string]string{"authorization": cred}, nil
-}
-func (b *basicCreds) RequireTransportSecurity() bool { return false } // 若启用 TLS，建议返回 true
-
 // gRPC-Gateway 启动
 func grpc_gw_run(ctx context.Context, router *gin.Engine) {
 	// 判断是否开启 gRPC-Gateway 功能
@@ -1010,9 +1000,9 @@ func grpc_gw_run(ctx context.Context, router *gin.Engine) {
 	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
 		opts = append(
 			opts,
-			grpc.WithPerRPCCredentials(&basicCreds{
-				username: global.GvaEnv.BASIC_AUTH_USERNAME,
-				password: global.GvaEnv.BASIC_AUTH_PASSWORD,
+			grpc.WithPerRPCCredentials(&grpc_credential.BasicAuth{
+				Username: global.GvaEnv.BASIC_AUTH_USERNAME,
+				Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
 			}),
 		)
 	}
@@ -1050,7 +1040,7 @@ func grpc_gw_run(ctx context.Context, router *gin.Engine) {
 		}),
 	)
 
-	// 注册你的服务
+	// 注册服务
 	if err := grpc_generated.RegisterOpenServiceHandler(ctx, gwMux, grpcConnInstance); err != nil {
 		slog.Error("注册 OpenService 网关路由失败", slog.String("error", err.Error()))
 		return

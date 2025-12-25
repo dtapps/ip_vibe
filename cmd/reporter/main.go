@@ -51,7 +51,18 @@ func main() {
 	)
 
 	if global.GvaEnv.GRPC_URL != "" {
-
+		// 创建服务
+		service := task.NewIPReportGRPCTask(global.GvaGoCron)
+		service.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+		service.SetBaseURL(global.GvaEnv.GRPC_URL)
+		// 启动任务
+		err := service.StartPeriodicTask(ctx)
+		if err != nil {
+			fmt.Printf("启动任务失败: %v\n", err)
+			os.Exit(1)
+		}
+		// 关闭服务
+		defer service.Close()
 	} else if global.GvaEnv.HTTP_URL != "" {
 		// 创建服务
 		service := task.NewIPReportRestyTask(global.GvaGoCron)

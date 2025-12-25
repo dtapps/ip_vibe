@@ -18,8 +18,9 @@ import (
 type IPReportRestyTask struct {
 	cron   gocron.Scheduler // 定时任务调度器
 	job    gocron.Job       // IP上报任务
-	client *resty.Client    // Resty HTTP 客户端
 	logger *slog.Logger     // 日志记录器
+
+	client *resty.Client // Resty HTTP 客户端
 }
 
 // NewIPReportRestyTask 创建一个新的服务实例
@@ -49,8 +50,8 @@ func NewIPReportRestyTask(cron gocron.Scheduler) *IPReportRestyTask {
 
 	return &IPReportRestyTask{
 		cron:   cron,
-		client: client,
 		logger: slog.With("component", "ip-report"),
+		client: client,
 	}
 }
 
@@ -94,41 +95,15 @@ func (s *IPReportRestyTask) StartPeriodicTask(ctx context.Context) (err error) {
 		gocron.NewTask(s.RunPeriodicTask),                    // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
-		gocron.WithName("IP上报"),                              // 任务名称
-		gocron.WithTags("ip-report"),                         // 任务标签
+		gocron.WithName("Resty IP上报"),                        // 任务名称
 	)
 	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// httpApi 发送IP上报请求
-func (s *IPReportRestyTask) httpApi(ctx context.Context, deviceCode string, params types.DeviceReportDeviceIpRequest) (err error) {
-
-	// 使用 Resty 发送请求
-	resp, err := s.client.R().
-		SetContext(ctx).
-		SetContentType("application/json").
-		SetBody(params).
-		SetPathParams(map[string]string{
-			"device_code": deviceCode,
-		}).
-		Post("api/open/device/{device_code}/ip-report")
-	if err != nil {
-		return err
+		return fmt.Errorf("创建定时任务失败: %w", err)
 	}
 
-	// 打印响应状态和内容
-	s.logger.InfoContext(ctx, "响应状态码和内容",
-		slog.Int("status_code", resp.StatusCode()),
-		slog.Any("response", resp.String()),
+	s.logger.InfoContext(ctx, "Resty IP上报任务已启动",
+		slog.String("interval", "8-12分钟随机"),
 	)
-
-	if resp.IsError() {
-		return fmt.Errorf("响应状态码错误: %d", resp.StatusCode())
-	}
-
 	return nil
 }
 
@@ -170,7 +145,7 @@ func (s *IPReportRestyTask) RunPeriodicTask() {
 		slog.String("ipv4_addr", params.IPV4Addr),
 		slog.String("ipv6_addr", params.IPV6Addr),
 	)
-	err = s.httpApi(ctx, deviceCode, params)
+	err = s.reportIP(ctx, deviceCode, params)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "IP上报失败",
 			slog.String("device_code", deviceCode),
@@ -199,5 +174,28 @@ func (s *IPReportRestyTask) RunPeriodicTask() {
 			slog.String("ipv6_addr", params.IPV6Addr),
 		)
 	}
+}
 
+// reportIP 发送IP上报请求
+func (s *IPReportRestyTask) reportIP(ctx context.Context, deviceCode string, params types.DeviceReportDeviceIpRequest) (err error) {
+
+	// 使用 Resty 发送请求
+	resp, err := s.client.R().
+		SetContext(ctx).
+		SetContentType("application/json").
+		SetBody(params).
+		SetPathParams(map[string]string{
+			"device_code": deviceCode,
+		}).
+		Post("api/open/device/{device_code}/ip-report")
+	if err != nil {
+		return fmt.Errorf("Resty请求失败: %w", err)
+	}
+
+	// 记录响应
+	s.logger.InfoContext(ctx, "Resty IP上报响应",
+		slog.Any("response", resp.String()),
+	)
+
+	return nil
 }
