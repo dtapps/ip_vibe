@@ -35,8 +35,8 @@ require (
 	github.com/swaggo/gin-swagger v1.6.1
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc4
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.17
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.18
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.20
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.20
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.16
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.18
 	go.dtapp.net/library/contrib/http_log v1.0.0
@@ -65,7 +65,7 @@ require (
 )
 
 require (
-	ariga.io/atlas v0.38.0 // indirect
+	ariga.io/atlas v1.0.0 // indirect
 	github.com/BurntSushi/toml v1.6.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/MercuryEngineering/CookieMonster v0.0.0-20180304172713-1584578b3403 // indirect
@@ -96,7 +96,7 @@ require (
 	github.com/go-openapi/inflect v0.21.5 // indirect
 	github.com/go-openapi/jsonpointer v0.22.4 // indirect
 	github.com/go-openapi/jsonreference v0.21.4 // indirect
-	github.com/go-openapi/spec v0.22.2 // indirect
+	github.com/go-openapi/spec v0.22.3 // indirect
 	github.com/go-openapi/swag/conv v0.25.4 // indirect
 	github.com/go-openapi/swag/jsonname v0.25.4 // indirect
 	github.com/go-openapi/swag/jsonutils v0.25.4 // indirect
@@ -106,7 +106,7 @@ require (
 	github.com/go-openapi/swag/yamlutils v0.25.4 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.30.0 // indirect
+	github.com/go-playground/validator/v10 v10.30.1 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/goccy/go-yaml v1.19.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect

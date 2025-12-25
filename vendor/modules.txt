@@ -1,5 +1,5 @@
-# ariga.io/atlas v0.38.0
-## explicit; go 1.24.6
+# ariga.io/atlas v1.0.0
+## explicit; go 1.24.11
 ariga.io/atlas/schemahcl
 ariga.io/atlas/sql/internal/specutil
 ariga.io/atlas/sql/internal/sqlx
@@ -391,7 +391,7 @@ github.com/go-openapi/jsonpointer
 ## explicit; go 1.24.0
 github.com/go-openapi/jsonreference
 github.com/go-openapi/jsonreference/internal
-# github.com/go-openapi/spec v0.22.2
+# github.com/go-openapi/spec v0.22.3
 ## explicit; go 1.24.0
 github.com/go-openapi/spec
 # github.com/go-openapi/swag/conv v0.25.4
@@ -425,7 +425,7 @@ github.com/go-playground/locales/currency
 # github.com/go-playground/universal-translator v0.18.1
 ## explicit; go 1.18
 github.com/go-playground/universal-translator
-# github.com/go-playground/validator/v10 v10.30.0
+# github.com/go-playground/validator/v10 v10.30.1
 ## explicit; go 1.24.0
 github.com/go-playground/validator/v10
 # github.com/goccy/go-json v0.10.5
@@ -616,10 +616,10 @@ github.com/swaggo/swag
 # github.com/swaggo/swag/v2 v2.0.0-rc4
 ## explicit; go 1.18
 github.com/swaggo/swag/v2
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.17
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.20
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.18
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.20
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors
