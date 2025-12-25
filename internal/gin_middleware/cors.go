@@ -15,7 +15,7 @@ func CORS(logger *slog.Logger) gin.HandlerFunc {
 		AllowOriginFunc: func(origin string) bool {
 			// 调试日志
 			if logger != nil {
-				logger.Info("CORS Request from origin",
+				logger.Info("[CORS] Request from origin",
 					slog.String("origin", origin),
 				)
 			}
@@ -52,7 +52,7 @@ func CORS(logger *slog.Logger) gin.HandlerFunc {
 
 		// 记录消耗时间日志
 		if logger != nil {
-			logger.Debug("CORS middleware processing time",
+			logger.Debug("[CORS] 中间件处理时间",
 				slog.Duration("duration", duration),
 				slog.String("origin", c.GetHeader("Origin")),
 				slog.String("method", c.Request.Method),

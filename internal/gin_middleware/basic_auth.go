@@ -9,15 +9,15 @@ import (
 
 func BasicAuth(logger *slog.Logger, username string, password string) gin.HandlerFunc {
 
+	// 不启用 BasicAuth 时，直接返回空的 HandlerFunc
+	if username == "" || password == "" {
+		return func(c *gin.Context) { c.Next() }
+	}
+
 	// 创建 BasicAuth 中间件
 	originalMiddleware := gin.BasicAuth(gin.Accounts{
 		username: password,
 	})
-
-	// 不启用 BasicAuth 时，直接返回空的 HandlerFunc
-	if username == "" || password == "" {
-		return func(c *gin.Context) {}
-	}
 
 	// 返回包装后的中间件，添加时间统计
 	return func(c *gin.Context) {
@@ -31,7 +31,7 @@ func BasicAuth(logger *slog.Logger, username string, password string) gin.Handle
 
 		// 记录消耗时间日志
 		if logger != nil {
-			logger.Debug("BasicAuth middleware processing time",
+			logger.Debug("[BasicAuth] 中间件处理时间",
 				slog.Duration("duration", duration),
 				slog.String("method", c.Request.Method),
 				slog.String("path", c.Request.URL.Path),

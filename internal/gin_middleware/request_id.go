@@ -25,7 +25,7 @@ func RequestID(logger *slog.Logger) gin.HandlerFunc {
 
 		// 记录消耗时间日志
 		if logger != nil {
-			logger.Debug("RequestID middleware processing time",
+			logger.Debug("[RequestID] 中间件处理时间",
 				slog.Duration("duration", duration),
 				slog.String("method", c.Request.Method),
 				slog.String("path", c.Request.URL.Path),

@@ -145,6 +145,12 @@ func main() {
 		global.GvaGinSlog.WithLogger(),
 	))
 
+	// 配置 Coraza 中间件
+	router.Use(gin_middleware.Coraza(
+		global.GvaCoraza,
+		global.GvaGinSlog.WithLogger(),
+	))
+
 	// 配置 Gzip 压缩 中间件
 	router.Use(gin_middleware.Gzip(
 		global.GvaGinSlog.WithLogger(),
@@ -156,9 +162,10 @@ func main() {
 	))
 
 	// health check
-	router.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status": "ok",
+	router.Any("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, handlers.APIResponse{
+			Code:    http.StatusOK,
+			Message: "ok",
 		})
 	})
 
