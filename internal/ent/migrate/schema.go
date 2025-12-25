@@ -631,6 +631,11 @@ var (
 				},
 			},
 			{
+				Name:    "webhooksubscription_obj_type_obj_id",
+				Unique:  false,
+				Columns: []*schema.Column{WebhookSubscriptionColumns[4], WebhookSubscriptionColumns[5]},
+			},
+			{
 				Name:    "webhooksubscription_webhook_id_obj_type_obj_id",
 				Unique:  true,
 				Columns: []*schema.Column{WebhookSubscriptionColumns[8], WebhookSubscriptionColumns[4], WebhookSubscriptionColumns[5]},

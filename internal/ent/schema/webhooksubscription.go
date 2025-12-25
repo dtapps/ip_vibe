@@ -97,6 +97,10 @@ func (WebhookSubscription) Indexes() []ent.Index {
 		index.Fields("created_at").
 			Annotations(entsql.Desc(), entsql.WithComments(true)),
 
+		// 按订阅对象类型和ID排序
+		index.Fields("obj_type", "obj_id").
+			Annotations(entsql.WithComments(true)),
+
 		// 确保一个通知不能对同一个对象（类型+ID）重复订阅
 		index.Fields("webhook_id", "obj_type", "obj_id").
 			Unique().
