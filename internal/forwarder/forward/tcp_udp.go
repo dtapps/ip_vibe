@@ -3,11 +3,16 @@ package forward
 import (
 	"context"
 	"net"
+	"strings"
 	"sync/atomic"
 )
 
 // TCP 转发
 func startTCP(proto, laddr, raddr string, stats *Stats, ctx context.Context) (net.Listener, error) {
+	if proto == "tcp6" && strings.HasPrefix(laddr, ":") {
+		laddr = "[::]" + laddr
+	}
+
 	ln, err := net.Listen(proto, laddr)
 	if err != nil {
 		return nil, err
@@ -64,6 +69,10 @@ func proxyTCP(src, dst net.Conn, counter *int64) {
 
 // UDP 转发
 func startUDP(proto, laddr, raddr string, stats *Stats, ctx context.Context) (*net.UDPConn, error) {
+	if proto == "udp6" && strings.HasPrefix(laddr, ":") {
+		laddr = "[::]" + laddr
+	}
+
 	la, err := net.ResolveUDPAddr(proto, laddr)
 	if err != nil {
 		return nil, err
@@ -81,7 +90,7 @@ func startUDP(proto, laddr, raddr string, stats *Stats, ctx context.Context) (*n
 	go func() {
 		buf := make([]byte, 65535)
 		for {
-			n, src, err := conn.ReadFromUDP(buf)
+			n, _, err := conn.ReadFromUDP(buf)
 			if err != nil {
 				return
 			}
@@ -89,11 +98,9 @@ func startUDP(proto, laddr, raddr string, stats *Stats, ctx context.Context) (*n
 			atomic.AddInt64(&stats.UDPPacketsIn, 1)
 			atomic.AddInt64(&stats.BytesIn, int64(n))
 
-			conn.WriteToUDP(buf[:n], ra)
+			_, _ = conn.WriteToUDP(buf[:n], ra)
 			atomic.AddInt64(&stats.UDPPacketsOut, 1)
 			atomic.AddInt64(&stats.BytesOut, int64(n))
-
-			_ = src
 		}
 	}()
 
