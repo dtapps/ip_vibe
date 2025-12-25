@@ -80,7 +80,7 @@ func (a *Agent) Sync(ctx context.Context, rules []Rule) {
 
 // Add 单条规则
 func (a *Agent) addRule(ctx context.Context, rule *Rule) {
-	ctx, cancel := context.WithCancel(ctx)
+	ctxCancel, cancel := context.WithCancel(ctx)
 	stats := &Stats{}
 	var instances []*ForwardInstance
 
@@ -97,14 +97,14 @@ func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 
 		switch proto {
 		case "tcp", "tcp4", "tcp6":
-			ln, err := startTCP(proto, laddr, raddr, stats, ctx)
+			ln, err := startTCP(proto, laddr, raddr, stats, ctxCancel)
 			if err != nil {
 				atomic.AddInt64(&stats.Errors, 1)
 				continue
 			}
 			fi.listener = ln
 		case "udp", "udp4", "udp6":
-			c, err := startUDP(proto, laddr, raddr, stats, ctx)
+			c, err := startUDP(proto, laddr, raddr, stats, ctxCancel)
 			if err != nil {
 				atomic.AddInt64(&stats.Errors, 1)
 				continue

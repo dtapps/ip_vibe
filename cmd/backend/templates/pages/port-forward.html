@@ -35,39 +35,33 @@
           <td>{{.RemoteHost}}:{{.RemotePort}}</td>
           <td>
             {{ $autoForwardUrlPath := join $urlPath "/auto-forward" }}
-            {{ template "switch" (dict 
-                "Checked" .IsActive
-                "URL" $autoForwardUrlPath
-                "NoReload" true
+            {{ template "switch" (dict
+            "Checked" .AutoForward
+            "URL" $autoForwardUrlPath
+            "NoReload" true
             )}}
           </td>
           <td>
             {{ $activeUrlPath := join $urlPath "/active" }}
-            {{ template "switch" (dict 
-                "Checked" .IsActive
-                "URL" $activeUrlPath
-                "NoReload" true
+            {{ template "switch" (dict
+            "Checked" .IsActive
+            "URL" $activeUrlPath
+            "NoReload" true
             )}}
           </td>
           <td>
-            <button
-              class="btn btn-sm btn-outline-info"
-              onclick="onHealthcheckPopup('{{.ID}}')"
-            >
+            <button class="btn btn-sm btn-outline-info" onclick="onHealthcheckPopup('{{.ID}}')">
               {{ template "icons" (dict "Name" "ip-health-check") }} 检测
             </button>
-            <button
-              class="btn btn-primary btn-sm"
-              onclick="openFormModal('{{.ID}}')"
-            >
+            <button class="btn btn-primary btn-sm" onclick="openFormModal('{{.ID}}')">
               {{ template "icons" (dict "Name" "ip-edit") }} 编辑
             </button>
-            {{ template "button" (dict 
-                "Type" "danger" 
-                "IconName" "ip-delete" 
-                "Text" "删除" 
-                "URL" $urlPath
-                "NoReload" true
+            {{ template "button" (dict
+            "Type" "danger"
+            "IconName" "ip-delete"
+            "Text" "删除"
+            "URL" $urlPath
+            "NoReload" true
             )}}
           </td>
         </tr>
