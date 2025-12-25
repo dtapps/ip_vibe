@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// BasicAuth 返回一个 gRPC 拦截器：仅允许通过 Basic 认证的用户访问
+// BasicAuth 返回一个 gRPC 拦截器：仅允许通过 Basic 认证的用户访问指定路径
 func BasicAuth(logger *slog.Logger, username string, password string, skipPaths ...string) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		// 按前缀跳过鉴权（例如 /grpc、/health）
@@ -20,6 +20,11 @@ func BasicAuth(logger *slog.Logger, username string, password string, skipPaths 
 			if strings.HasPrefix(info.FullMethod, prefix) {
 				return handler(ctx, req)
 			}
+		}
+
+		// 如果用户名或密码为空就不校验
+		if username == "" || password == "" {
+			return handler(ctx, req)
 		}
 
 		// 读取 Authorization 头

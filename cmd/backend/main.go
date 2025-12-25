@@ -895,16 +895,14 @@ func grpc_run(ctx context.Context) {
 	opts := make([]grpc.ServerOption, 0)
 	usis := make([]grpc.UnaryServerInterceptor, 0)
 	// 鉴权拦截器
-	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
-		usis = append(
-			usis,
-			grpc_interceptor.BasicAuth(
-				global.GvaGrpcSlog.WithLogger(),
-				global.GvaEnv.BASIC_AUTH_USERNAME,
-				global.GvaEnv.BASIC_AUTH_PASSWORD,
-			),
-		)
-	}
+	usis = append(
+		usis,
+		grpc_interceptor.BasicAuth(
+			global.GvaGrpcSlog.WithLogger(),
+			global.GvaEnv.BASIC_AUTH_USERNAME,
+			global.GvaEnv.BASIC_AUTH_PASSWORD,
+		),
+	)
 	// 日志拦截器
 	usis = append(
 		usis,
