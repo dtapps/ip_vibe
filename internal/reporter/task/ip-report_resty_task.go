@@ -157,15 +157,15 @@ func (s *IPReportRestyTask) RunPeriodicTask() {
 }
 
 // postApi 请求
-func (s *IPReportRestyTask) postApi(ctx context.Context, logger *slog.Logger, params *service.GetDeviceDataResult) (err error) {
+func (s *IPReportRestyTask) postApi(ctx context.Context, logger *slog.Logger, deviceData *service.GetDeviceDataResult) (err error) {
 
 	// 使用 Resty 发送请求
 	resp, err := s.client.R().
 		SetContext(ctx).
 		SetContentType("application/json").
-		SetBody(params).
+		SetBody(deviceData).
 		SetPathParams(map[string]string{
-			"device_code": params.DeviceCode,
+			"device_code": deviceData.DeviceCode,
 		}).
 		Post("api/open/device/{device_code}/ip-report")
 	if err != nil {

@@ -22,10 +22,10 @@ func NewIPReportService(logger *slog.Logger) *IPReportService {
 
 // 获取设备数据 响应参数
 type GetDeviceDataResult struct {
-	DeviceCode string // 设备编码
-	DeviceName string // 设备名称
-	IPV4Addr   string // IP地址V4
-	IPV6Addr   string // IP地址V6
+	DeviceCode string `json:"-"`           // 设备编码
+	DeviceName string `json:"device_name"` // 设备名称
+	IPV4Addr   string `json:"ipv4_addr"`   // IP地址V4
+	IPV6Addr   string `json:"ipv6_addr"`   // IP地址V6
 }
 
 // GetDeviceData 获取设备数据

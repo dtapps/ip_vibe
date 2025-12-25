@@ -6,6 +6,8 @@ import (
 	"log/slog"
 	"os"
 	"runtime"
+	"vibe_ip/internal/forwarder/forward"
+	"vibe_ip/internal/forwarder/service"
 	"vibe_ip/internal/forwarder/task"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/initialize"
@@ -34,6 +36,11 @@ func main() {
 	initialize.InitSLog("forwarder")     // 初始化 日志
 	initialize.InitGocronSLog("backend") // 初始化 gocron 日志
 
+	initialize.InitGoCron() // 初始化 GoCron 调度器
+	defer func() {
+		initialize.CloseGoCron() // 关闭 GoCron 调度器
+	}()
+
 	// 打印
 	slog.Info("服务启动",
 		slog.Bool("debug", global.GvaEnv.DEBUG),
@@ -45,25 +52,70 @@ func main() {
 		slog.String("arch", global.GvaArch),
 	)
 
+	// 配置
+	config := &task.PortForwardTaskConfig{
+		DeviceCode: global.GvaEnv.DEVICE_CODE,
+		DeviceName: global.GvaEnv.DEVICE_NAME,
+		Version:    global.GvaVersion,
+		GitCommit:  global.GvaGitCommit,
+		BuildTime:  global.GvaBuildTime,
+		GoVersion:  global.GvaGoVersion,
+		OS:         global.GvaOS,
+		Arch:       global.GvaArch,
+	}
+
+	// 创建端口转发服务
+	portForwardServer := service.NewPortForwardServer(global.GvaGocronSlog.WithLogger())
+
+	// 创建端口转发器
+	forwardAgent := forward.NewAgent(global.GvaGocronSlog.WithLogger())
+
 	if global.GvaEnv.GRPC_URL != "" {
-	} else if global.GvaEnv.HTTP_URL != "" {
 		// 创建服务
-		service := task.NewPortForwardRestyTask(global.GvaGoCron)
-		service.SetDebug(global.GvaEnv.DEBUG)
-		service.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
-		service.SetBaseURL(global.GvaEnv.HTTP_URL)
+		grpcTask := task.NewPortForwardGRPCTask(
+			global.GvaGoCron,
+			global.GvaGocronSlog.WithLogger(),
+			portForwardServer,
+			forwardAgent,
+		)
+		grpcTask.SetConfig(config)
+		grpcTask.SetBaseURL(global.GvaEnv.GRPC_URL)
+		grpcTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
 		// 启动任务
-		err := service.StartPeriodicTask(ctx)
+		err := grpcTask.StartPeriodicTask(ctx)
 		if err != nil {
 			fmt.Printf("启动任务失败: %v\n", err)
 			os.Exit(1)
 		}
 		// 关闭服务
-		defer service.Close()
+		defer grpcTask.Close()
+	} else if global.GvaEnv.HTTP_URL != "" {
+		// 创建服务
+		restyTask := task.NewPortForwardRestyTask(
+			global.GvaGoCron,
+			global.GvaGocronSlog.WithLogger(),
+			portForwardServer,
+			forwardAgent,
+		)
+		restyTask.SetDebug(global.GvaEnv.DEBUG)
+		restyTask.SetConfig(config)
+		restyTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+		restyTask.SetBaseURL(global.GvaEnv.HTTP_URL)
+		// 启动任务
+		err := restyTask.StartPeriodicTask(ctx)
+		if err != nil {
+			fmt.Printf("启动任务失败: %v\n", err)
+			os.Exit(1)
+		}
+		// 关闭服务
+		defer restyTask.Close()
 	} else {
 		fmt.Printf("服务启动失败: GRPC_URL / HTTP_URL未配置\n")
 		os.Exit(1)
 	}
+
+	// 启动 GoCron 调度器
+	initialize.StartGoCron()
 
 	// 阻止主线程退出
 	select {}

@@ -2,6 +2,7 @@ package forward
 
 import (
 	"context"
+	"log/slog"
 	"net"
 	"sync"
 	"sync/atomic"
@@ -42,7 +43,7 @@ type Agent struct {
 	forwards map[string][]*ForwardInstance
 }
 
-func NewAgent() *Agent {
+func NewAgent(logger *slog.Logger) *Agent {
 	return &Agent{
 		forwards: make(map[string][]*ForwardInstance),
 	}

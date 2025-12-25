@@ -165,14 +165,14 @@ func (s *IPReportGRPCTask) RunPeriodicTask() {
 }
 
 // postApi 请求
-func (s *IPReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, params *service.GetDeviceDataResult) (err error) {
+func (s *IPReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, deviceData *service.GetDeviceDataResult) (err error) {
 
 	// 构建gRPC请求
 	req := &grpc_generated.ReportDeviceIPRequest{
-		DeviceCode: params.DeviceCode,
-		DeviceName: params.DeviceName,
-		Ipv4Addr:   params.IPV4Addr,
-		Ipv6Addr:   params.IPV6Addr,
+		DeviceCode: deviceData.DeviceCode,
+		DeviceName: deviceData.DeviceName,
+		Ipv4Addr:   deviceData.IPV4Addr,
+		Ipv6Addr:   deviceData.IPV6Addr,
 	}
 
 	// 调用gRPC服务

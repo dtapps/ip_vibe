@@ -229,8 +229,16 @@ func (s *PortForwardRestyTask) getApi(ctx context.Context, logger *slog.Logger, 
 	if err != nil {
 		return nil, err
 	}
-	if len(response.Data) > 0 {
-		list = response.Data
+
+	// 转换响应
+	for _, rule := range response.Data {
+		list = append(list, types.GetPortForwardResponse{
+			ID:         rule.ID,
+			LocalPort:  rule.LocalPort,
+			RemoteHost: rule.RemoteHost,
+			RemotePort: rule.RemotePort,
+			Protocols:  rule.Protocols,
+		})
 	}
 
 	// 记录响应
