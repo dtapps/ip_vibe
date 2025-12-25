@@ -1,4 +1,4 @@
-package service
+package task
 
 import (
 	"context"
@@ -17,15 +17,16 @@ import (
 	"resty.dev/v3"
 )
 
-type PortForwardService struct {
+// PortForwardRestyTask 端口转发任务
+type PortForwardRestyTask struct {
 	cron   gocron.Scheduler // 定时任务调度器
 	job    gocron.Job       // IP上报任务
 	client *resty.Client    // Resty HTTP 客户端
 	logger *slog.Logger     // 日志记录器
 }
 
-// NewPortForwardService 创建一个新的服务实例
-func NewPortForwardService(cron gocron.Scheduler) *PortForwardService {
+// NewPortForwardRestyTask 创建一个新的服务实例
+func NewPortForwardRestyTask(cron gocron.Scheduler) *PortForwardRestyTask {
 
 	// 创建一个新的 Resty 客户端
 	client := resty.New()
@@ -34,7 +35,7 @@ func NewPortForwardService(cron gocron.Scheduler) *PortForwardService {
 	client.EnableTrace()
 
 	// 设置默认超时
-	client.SetTimeout(30 * time.Second)
+	client.SetTimeout(1 * time.Minute)
 
 	// 设置请求头
 	client.SetHeader("X-Version", global.GvaVersion)
@@ -49,7 +50,7 @@ func NewPortForwardService(cron gocron.Scheduler) *PortForwardService {
 	client.SetRetryWaitTime(2 * time.Second)
 	client.SetRetryMaxWaitTime(5 * time.Second)
 
-	return &PortForwardService{
+	return &PortForwardRestyTask{
 		cron:   cron,
 		client: client,
 		logger: slog.With("component", "port-forwards"),
@@ -57,7 +58,7 @@ func NewPortForwardService(cron gocron.Scheduler) *PortForwardService {
 }
 
 // Close 关闭服务，释放资源
-func (s *PortForwardService) Close() {
+func (s *PortForwardRestyTask) Close() {
 	if s.client != nil {
 		s.client.Close()
 	}
@@ -67,26 +68,66 @@ func (s *PortForwardService) Close() {
 }
 
 // SetDebug 设置调试模式
-func (s *PortForwardService) SetDebug(debug bool) *PortForwardService {
+func (s *PortForwardRestyTask) SetDebug(debug bool) *PortForwardRestyTask {
 	s.client.SetDebug(debug)
 	return s
 }
 
 // SetBaseURL 设置基础URL
-func (s *PortForwardService) SetBaseURL(url string) *PortForwardService {
+func (s *PortForwardRestyTask) SetBaseURL(url string) *PortForwardRestyTask {
 	s.client.SetBaseURL(url)
 	return s
 }
 
 // 设置基本认证
-func (s *PortForwardService) SetBasicAuth(username, password string) *PortForwardService {
+func (s *PortForwardRestyTask) SetBasicAuth(username, password string) *PortForwardRestyTask {
 	if username != "" && password != "" {
 		s.client.SetBasicAuth(username, password)
 	}
 	return s
 }
 
-func (s *PortForwardService) StartJob(ctx context.Context) (err error) {
+// StartPeriodicTask 启动任务
+func (s *PortForwardRestyTask) StartPeriodicTask(ctx context.Context) (err error) {
+	// 请求参数
+	deviceCode := global.GvaEnv.DEVICE_CODE
+	// 检查设备代码是否为空
+	if deviceCode == "" {
+		// 获取设备ID
+		deviceCode, err = machineid.ID()
+		if err != nil {
+			s.logger.ErrorContext(ctx, "获取设备ID失败",
+				slog.Any("err", err),
+			)
+			return
+		}
+	}
+	s.logger.InfoContext(ctx, "端口转发获取开始",
+		slog.String("device_code", deviceCode),
+	)
+	response, err := s.httpApi(ctx, deviceCode)
+	if err != nil {
+		s.logger.ErrorContext(ctx, "端口转发获取失败",
+			slog.String("device_code", deviceCode),
+			slog.Any("err", err),
+		)
+		return
+	}
+	if len(response.Data) == 0 {
+		s.logger.InfoContext(ctx, "端口转发获取成功, 但无数据",
+			slog.String("device_code", deviceCode),
+		)
+		return
+	}
+	startForwarding(response.Data)
+	s.logger.InfoContext(ctx, "端口转发获取成功",
+		slog.String("device_code", deviceCode),
+	)
+	return
+}
+
+// RunPeriodicTask 运行任务
+func (s *PortForwardRestyTask) RunPeriodicTask(ctx context.Context) (err error) {
 	// 请求参数
 	deviceCode := global.GvaEnv.DEVICE_CODE
 	// 检查设备代码是否为空
@@ -129,7 +170,7 @@ type HttpApiResponse struct {
 	Data   []types.GetPortForwardResponse `json:"data"`
 }
 
-func (s *PortForwardService) httpApi(ctx context.Context, deviceCode string) (response HttpApiResponse, err error) {
+func (s *PortForwardRestyTask) httpApi(ctx context.Context, deviceCode string) (response HttpApiResponse, err error) {
 
 	// 使用 Resty 发送请求
 	resp, err := s.client.R().

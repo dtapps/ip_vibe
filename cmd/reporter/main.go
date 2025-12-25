@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/initialize"
-	"vibe_ip/internal/reporter/service"
+	"vibe_ip/internal/reporter/task"
 )
 
 var (
@@ -50,26 +50,26 @@ func main() {
 		slog.String("arch", global.GvaArch),
 	)
 
-	if global.GvaEnv.HTTP_URL == "" {
-		fmt.Printf("服务启动失败: HTTP_URL未配置\n")
+	if global.GvaEnv.GRPC_URL != "" {
+
+	} else if global.GvaEnv.HTTP_URL != "" {
+		// 创建服务
+		service := task.NewIPReportRestyTask(global.GvaGoCron)
+		service.SetDebug(global.GvaEnv.DEBUG)
+		service.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+		service.SetBaseURL(global.GvaEnv.HTTP_URL)
+		// 启动任务
+		err := service.StartPeriodicTask(ctx)
+		if err != nil {
+			fmt.Printf("启动任务失败: %v\n", err)
+			os.Exit(1)
+		}
+		// 关闭服务
+		defer service.Close()
+	} else {
+		fmt.Printf("服务启动失败: GRPC_URL / HTTP_URL未配置\n")
 		os.Exit(1)
 	}
-
-	// 创建服务
-	service := service.NewIpReportService(global.GvaGoCron)
-	service.SetDebug(global.GvaEnv.DEBUG)
-	service.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
-	service.SetBaseURL(global.GvaEnv.HTTP_URL)
-
-	// 启动任务
-	err := service.StartJob(ctx)
-	if err != nil {
-		fmt.Printf("启动任务失败: %v\n", err)
-		os.Exit(1)
-	}
-
-	// 关闭服务，释放资源
-	defer service.Close()
 
 	// 启动 GoCron 调度器
 	initialize.StartGoCron()

@@ -1,4 +1,4 @@
-package service
+package task
 
 import (
 	"context"
@@ -14,15 +14,16 @@ import (
 	"resty.dev/v3"
 )
 
-type IpReportService struct {
+// IPReportRestyTask IP上报任务
+type IPReportRestyTask struct {
 	cron   gocron.Scheduler // 定时任务调度器
 	job    gocron.Job       // IP上报任务
 	client *resty.Client    // Resty HTTP 客户端
 	logger *slog.Logger     // 日志记录器
 }
 
-// NewIpReportService 创建一个新的服务实例
-func NewIpReportService(cron gocron.Scheduler) *IpReportService {
+// NewIPReportRestyTask 创建一个新的服务实例
+func NewIPReportRestyTask(cron gocron.Scheduler) *IPReportRestyTask {
 
 	// 创建一个新的 Resty 客户端
 	client := resty.New()
@@ -31,7 +32,7 @@ func NewIpReportService(cron gocron.Scheduler) *IpReportService {
 	client.EnableTrace()
 
 	// 设置默认超时
-	client.SetTimeout(30 * time.Second)
+	client.SetTimeout(1 * time.Minute)
 
 	// 设置请求头
 	client.SetHeader("X-Version", global.GvaVersion)
@@ -46,7 +47,7 @@ func NewIpReportService(cron gocron.Scheduler) *IpReportService {
 	client.SetRetryWaitTime(2 * time.Second)
 	client.SetRetryMaxWaitTime(5 * time.Second)
 
-	return &IpReportService{
+	return &IPReportRestyTask{
 		cron:   cron,
 		client: client,
 		logger: slog.With("component", "ip-report"),
@@ -54,7 +55,7 @@ func NewIpReportService(cron gocron.Scheduler) *IpReportService {
 }
 
 // Close 关闭服务，释放资源
-func (s *IpReportService) Close() {
+func (s *IPReportRestyTask) Close() {
 	if s.client != nil {
 		s.client.Close()
 	}
@@ -64,33 +65,33 @@ func (s *IpReportService) Close() {
 }
 
 // SetDebug 设置调试模式
-func (s *IpReportService) SetDebug(debug bool) *IpReportService {
+func (s *IPReportRestyTask) SetDebug(debug bool) *IPReportRestyTask {
 	s.client.SetDebug(debug)
 	return s
 }
 
 // SetBaseURL 设置基础URL
-func (s *IpReportService) SetBaseURL(url string) *IpReportService {
+func (s *IPReportRestyTask) SetBaseURL(url string) *IPReportRestyTask {
 	s.client.SetBaseURL(url)
 	return s
 }
 
 // 设置基本认证
-func (s *IpReportService) SetBasicAuth(username, password string) *IpReportService {
+func (s *IPReportRestyTask) SetBasicAuth(username, password string) *IPReportRestyTask {
 	if username != "" && password != "" {
 		s.client.SetBasicAuth(username, password)
 	}
 	return s
 }
 
-func (s *IpReportService) StartJob(ctx context.Context) (err error) {
+func (s *IPReportRestyTask) StartPeriodicTask(ctx context.Context) (err error) {
 	// 每8到12分钟执行一次
 	s.job, err = s.cron.NewJob(
 		gocron.DurationRandomJob(
 			8*time.Minute,  // 最小间隔
 			12*time.Minute, // 最大间隔
 		),
-		gocron.NewTask(s.runTask),                            // 执行任务
+		gocron.NewTask(s.RunPeriodicTask),                    // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName("IP上报"),                              // 任务名称
@@ -103,7 +104,7 @@ func (s *IpReportService) StartJob(ctx context.Context) (err error) {
 }
 
 // httpApi 发送IP上报请求
-func (s *IpReportService) httpApi(ctx context.Context, deviceCode string, params types.DeviceReportDeviceIpRequest) (err error) {
+func (s *IPReportRestyTask) httpApi(ctx context.Context, deviceCode string, params types.DeviceReportDeviceIpRequest) (err error) {
 
 	// 使用 Resty 发送请求
 	resp, err := s.client.R().
@@ -131,7 +132,7 @@ func (s *IpReportService) httpApi(ctx context.Context, deviceCode string, params
 	return nil
 }
 
-func (s *IpReportService) runTask() {
+func (s *IPReportRestyTask) RunPeriodicTask() {
 
 	var err error
 	ctx := context.Background()
