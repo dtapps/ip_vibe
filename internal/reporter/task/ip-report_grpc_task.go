@@ -8,7 +8,6 @@ import (
 	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/reporter/service"
-	"vibe_ip/internal/types"
 
 	"github.com/go-co-op/gocron/v2"
 	"google.golang.org/grpc"
@@ -127,8 +126,10 @@ func (s *IPReportGRPCTask) RunPeriodicTask() {
 	// 创建上下文
 	ctx := context.Background()
 
-	// 请求参数
-	params, err := s.service.GetDeviceData(ctx, s.config.DeviceCode, s.config.DeviceName)
+	s.logger.InfoContext(ctx, "IP上报开始")
+
+	// 获取设备数据
+	deviceData, err := s.service.GetDeviceData(ctx, s.config.DeviceCode, s.config.DeviceName)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "获取设备数据失败",
 			slog.Any("err", err),
@@ -138,16 +139,16 @@ func (s *IPReportGRPCTask) RunPeriodicTask() {
 
 	// 日志记录器
 	logger := s.logger.With(
-		slog.String("device_code", params.DeviceCode),
-		slog.String("device_name", params.DeviceName),
-		slog.String("ipv4_addr", params.IPV4Addr),
-		slog.String("ipv6_addr", params.IPV6Addr),
+		slog.String("device_code", deviceData.DeviceCode),
+		slog.String("device_name", deviceData.DeviceName),
+		slog.String("ipv4_addr", deviceData.IPV4Addr),
+		slog.String("ipv6_addr", deviceData.IPV6Addr),
 	)
 
-	logger.InfoContext(ctx, "IP上报开始")
-	err = s.reportIP(ctx, logger, params.DeviceCode, params)
+	// 上传数据
+	err = s.postApi(ctx, logger, deviceData)
 	if err != nil {
-		logger.ErrorContext(ctx, "IP上报失败",
+		logger.ErrorContext(ctx, "上传数据失败",
 			slog.Any("err", err),
 		)
 		return
@@ -163,12 +164,12 @@ func (s *IPReportGRPCTask) RunPeriodicTask() {
 	}
 }
 
-// reportIP 发送IP上报请求
-func (s *IPReportGRPCTask) reportIP(ctx context.Context, logger *slog.Logger, deviceCode string, params *types.DeviceReportDeviceIpRequest) (err error) {
+// postApi 请求
+func (s *IPReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, params *service.GetDeviceDataResult) (err error) {
 
 	// 构建gRPC请求
 	req := &grpc_generated.ReportDeviceIPRequest{
-		DeviceCode: deviceCode,
+		DeviceCode: params.DeviceCode,
 		DeviceName: params.DeviceName,
 		Ipv4Addr:   params.IPV4Addr,
 		Ipv6Addr:   params.IPV6Addr,
