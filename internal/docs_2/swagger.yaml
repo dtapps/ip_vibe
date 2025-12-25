@@ -362,12 +362,6 @@ definitions:
           type: integer
         type: array
     type: object
-  vibe_ip_internal_types.GetCdnRecordsRequest:
-    properties:
-      is_active:
-        description: 是否活跃
-        type: boolean
-    type: object
   vibe_ip_internal_types.GetDeviceIpHistoryResponse:
     properties:
       created_at:
@@ -477,12 +471,6 @@ definitions:
           type: integer
         type: array
     type: object
-  vibe_ip_internal_types.GetDnsRecordsRequest:
-    properties:
-      is_active:
-        description: 是否活跃
-        type: boolean
-    type: object
   vibe_ip_internal_types.GetDomainMonitorRequest:
     properties:
       id:
@@ -525,12 +513,6 @@ definitions:
         items:
           type: integer
         type: array
-    type: object
-  vibe_ip_internal_types.GetDomainMonitorsRequest:
-    properties:
-      is_active:
-        description: 是否活跃
-        type: boolean
     type: object
   vibe_ip_internal_types.GetIPGroupRequest:
     properties:
@@ -583,6 +565,12 @@ definitions:
         items:
           type: integer
         type: array
+      config_json_domain_name:
+        description: 配置平台域名
+        type: string
+      config_json_email:
+        description: 配置平台邮箱
+        type: string
       description:
         description: 配置描述
         type: string
@@ -641,12 +629,6 @@ definitions:
       remote_port:
         description: 远程目标端口
         type: integer
-    type: object
-  vibe_ip_internal_types.GetPortForwardsRequest:
-    properties:
-      is_active:
-        description: 是否活跃
-        type: boolean
     type: object
   vibe_ip_internal_types.GetSSLRecordRequest:
     properties:
@@ -724,12 +706,6 @@ definitions:
           type: integer
         type: array
     type: object
-  vibe_ip_internal_types.GetSSLRecordsRequest:
-    properties:
-      is_active:
-        description: 是否活跃
-        type: boolean
-    type: object
   vibe_ip_internal_types.GetWebhookRequest:
     properties:
       id:
@@ -806,18 +782,6 @@ definitions:
         description: 通知渠道名称
         type: string
     type: object
-  vibe_ip_internal_types.GetWebhookSubsRequest:
-    properties:
-      is_active:
-        description: 是否活跃
-        type: boolean
-    type: object
-  vibe_ip_internal_types.GetWebhooksRequest:
-    properties:
-      is_active:
-        description: 是否活跃
-        type: boolean
-    type: object
   vibe_ip_internal_types.JobData:
     properties:
       id:
@@ -843,11 +807,6 @@ definitions:
       schedule_detail:
         description: 任务调度表达式详情
         type: string
-      tags:
-        description: 任务标签
-        items:
-          type: string
-        type: array
     type: object
   vibe_ip_internal_types.UpdateCdnRecordActiveRequest:
     properties:
@@ -1197,11 +1156,10 @@ paths:
       - application/json
       description: 获取全部CDN记录
       parameters:
-      - description: 请求参数
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/vibe_ip_internal_types.GetCdnRecordsRequest'
+      - description: 是否活跃
+        in: query
+        name: is_active
+        type: boolean
       produces:
       - application/json
       responses:
@@ -1268,6 +1226,7 @@ paths:
       description: 删除CDN记录
       parameters:
       - description: CDN记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1301,6 +1260,7 @@ paths:
       description: 获取CDN记录详情
       parameters:
       - description: CDN记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1334,6 +1294,7 @@ paths:
       description: 更新CDN记录
       parameters:
       - description: CDN记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1374,6 +1335,7 @@ paths:
       description: 更新CDN记录启用状态
       parameters:
       - description: CDN记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1414,6 +1376,7 @@ paths:
       description: 检查CDN记录健康状态
       parameters:
       - description: CDN记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1512,6 +1475,7 @@ paths:
       description: 删除设备
       parameters:
       - description: 设备序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1545,6 +1509,7 @@ paths:
       description: 获取设备详情
       parameters:
       - description: 设备序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1578,6 +1543,7 @@ paths:
       description: 更新设备
       parameters:
       - description: 设备序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1618,6 +1584,7 @@ paths:
       description: 检查设备健康状态
       parameters:
       - description: 设备序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1656,6 +1623,7 @@ paths:
       description: 获取设备IP历史记录
       parameters:
       - description: 设备序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1691,11 +1659,10 @@ paths:
       - application/json
       description: 获取全部DNS记录
       parameters:
-      - description: 请求参数
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/vibe_ip_internal_types.GetDnsRecordsRequest'
+      - description: 是否活跃
+        in: query
+        name: is_active
+        type: boolean
       produces:
       - application/json
       responses:
@@ -1762,6 +1729,7 @@ paths:
       description: 删除DNS记录
       parameters:
       - description: DNS记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1795,6 +1763,7 @@ paths:
       description: 获取DNS记录详情
       parameters:
       - description: DNS记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1828,6 +1797,7 @@ paths:
       description: 更新DNS记录
       parameters:
       - description: DNS记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1868,6 +1838,7 @@ paths:
       description: 更新DNS记录启用状态
       parameters:
       - description: DNS记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1908,6 +1879,7 @@ paths:
       description: 检查DNS记录健康状态
       parameters:
       - description: DNS记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1945,11 +1917,10 @@ paths:
       - application/json
       description: 获取全部域名监控
       parameters:
-      - description: 请求参数
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/vibe_ip_internal_types.GetDomainMonitorsRequest'
+      - description: 是否活跃
+        in: query
+        name: is_active
+        type: boolean
       produces:
       - application/json
       responses:
@@ -2016,6 +1987,7 @@ paths:
       description: 删除域名监控
       parameters:
       - description: 域名监控序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2049,6 +2021,7 @@ paths:
       description: 获取域名监控详情
       parameters:
       - description: 域名监控记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2082,6 +2055,7 @@ paths:
       description: 更新域名监控
       parameters:
       - description: 域名监控序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2122,6 +2096,7 @@ paths:
       description: 更新域名监控启用状态
       parameters:
       - description: 域名监控序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2162,6 +2137,7 @@ paths:
       description: 检查域名监控健康状态
       parameters:
       - description: 域名监控序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2256,6 +2232,7 @@ paths:
       description: 删除IP组
       parameters:
       - description: IP组序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2289,6 +2266,7 @@ paths:
       description: 获取IP组详情
       parameters:
       - description: IP组序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2323,6 +2301,7 @@ paths:
       description: 更新IP组
       parameters:
       - description: IP组序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2363,6 +2342,7 @@ paths:
       description: 获取IP组设备
       parameters:
       - description: IP组序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2399,6 +2379,7 @@ paths:
       description: 检查IP组健康状态
       parameters:
       - description: IP组序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2573,6 +2554,7 @@ paths:
       description: 删除平台配置
       parameters:
       - description: 配置序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2606,6 +2588,7 @@ paths:
       description: 获取平台配置详情
       parameters:
       - description: 配置序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2639,6 +2622,7 @@ paths:
       description: 更新平台配置
       parameters:
       - description: 配置序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2678,11 +2662,10 @@ paths:
       - application/json
       description: 获取全部端口转发
       parameters:
-      - description: 请求参数
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/vibe_ip_internal_types.GetPortForwardsRequest'
+      - description: 是否活跃
+        in: query
+        name: is_active
+        type: boolean
       produces:
       - application/json
       responses:
@@ -2749,6 +2732,7 @@ paths:
       description: 删除端口转发
       parameters:
       - description: 端口转发序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2782,6 +2766,7 @@ paths:
       description: 获取端口转发详情
       parameters:
       - description: 设备端口转发序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2815,6 +2800,7 @@ paths:
       description: 更新端口转发
       parameters:
       - description: 端口转发序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2855,6 +2841,7 @@ paths:
       description: 更新端口转发启用状态
       parameters:
       - description: 端口转发序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2895,6 +2882,7 @@ paths:
       description: 更新端口转发防火墙状态
       parameters:
       - description: 端口转发序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2935,6 +2923,7 @@ paths:
       description: 检查端口转发健康状态
       parameters:
       - description: 端口转发序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2972,11 +2961,10 @@ paths:
       - application/json
       description: 获取全部SSL记录
       parameters:
-      - description: 请求参数
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordsRequest'
+      - description: 是否活跃
+        in: query
+        name: is_active
+        type: boolean
       produces:
       - application/json
       responses:
@@ -3043,6 +3031,7 @@ paths:
       description: 删除SSL记录
       parameters:
       - description: SSL记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3076,6 +3065,7 @@ paths:
       description: 获取SSL记录详情
       parameters:
       - description: SSL记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3109,6 +3099,7 @@ paths:
       description: 更新SSL记录
       parameters:
       - description: SSL记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3149,6 +3140,7 @@ paths:
       description: 更新SSL记录启用状态
       parameters:
       - description: SSL记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3189,6 +3181,7 @@ paths:
       description: 申请新的SSL证书
       parameters:
       - description: SSL记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3223,6 +3216,7 @@ paths:
       description: 更新SSL记录自动续费状态
       parameters:
       - description: SSL记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3435,11 +3429,10 @@ paths:
       - application/json
       description: 获取全部通知订阅
       parameters:
-      - description: 请求参数
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/vibe_ip_internal_types.GetWebhookSubsRequest'
+      - description: 是否活跃
+        in: query
+        name: is_active
+        type: boolean
       produces:
       - application/json
       responses:
@@ -3472,6 +3465,7 @@ paths:
       description: 删除通知订阅
       parameters:
       - description: 通知订阅序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3506,6 +3500,7 @@ paths:
       description: 更新通知订阅启用状态
       parameters:
       - description: 通知订阅序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3545,11 +3540,10 @@ paths:
       - application/json
       description: 获取全部通知
       parameters:
-      - description: 请求参数
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/vibe_ip_internal_types.GetWebhooksRequest'
+      - description: 是否活跃
+        in: query
+        name: is_active
+        type: boolean
       produces:
       - application/json
       responses:
@@ -3616,6 +3610,7 @@ paths:
       description: 删除通知
       parameters:
       - description: 通知序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3649,6 +3644,7 @@ paths:
       description: 获取通知详情
       parameters:
       - description: 通知序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3682,6 +3678,7 @@ paths:
       description: 更新通知
       parameters:
       - description: 通知序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3722,6 +3719,7 @@ paths:
       description: 更新通知启用状态
       parameters:
       - description: 通知序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3762,6 +3760,7 @@ paths:
       description: 测试通知
       parameters:
       - description: 通知序号
+        format: int64
         in: path
         name: id
         required: true

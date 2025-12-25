@@ -44,7 +44,6 @@ func (j *JobHelper) GetJobsData(nextRunsLimit int) (jobs []*types.JobData) {
 		jobs = append(jobs, &types.JobData{
 			ID:             job.ID().String(),
 			Name:           job.Name(),
-			Tags:           job.Tags(),
 			LastRun:        utils.FormatTime(lastRun),
 			NextRun:        utils.FormatTime(nextRun),
 			NextRuns:       utils.FormatTimes(nextRuns),

@@ -379,13 +379,6 @@ components:
           type: array
           uniqueItems: false
       type: object
-    vibe_ip_internal_types.GetCdnRecordsRequest:
-      properties:
-        is_active:
-          description: 是否活跃
-          form: is_active
-          type: boolean
-      type: object
     vibe_ip_internal_types.GetDeviceIpHistoryResponse:
       properties:
         created_at:
@@ -497,13 +490,6 @@ components:
           type: array
           uniqueItems: false
       type: object
-    vibe_ip_internal_types.GetDnsRecordsRequest:
-      properties:
-        is_active:
-          description: 是否活跃
-          form: is_active
-          type: boolean
-      type: object
     vibe_ip_internal_types.GetDomainMonitorRequest:
       properties:
         id:
@@ -547,13 +533,6 @@ components:
             type: integer
           type: array
           uniqueItems: false
-      type: object
-    vibe_ip_internal_types.GetDomainMonitorsRequest:
-      properties:
-        is_active:
-          description: 是否活跃
-          form: is_active
-          type: boolean
       type: object
     vibe_ip_internal_types.GetIPGroupRequest:
       properties:
@@ -609,6 +588,12 @@ components:
             type: integer
           type: array
           uniqueItems: false
+        config_json_domain_name:
+          description: 配置平台域名
+          type: string
+        config_json_email:
+          description: 配置平台邮箱
+          type: string
         description:
           description: 配置描述
           type: string
@@ -668,13 +653,6 @@ components:
         remote_port:
           description: 远程目标端口
           type: integer
-      type: object
-    vibe_ip_internal_types.GetPortForwardsRequest:
-      properties:
-        is_active:
-          description: 是否活跃
-          form: is_active
-          type: boolean
       type: object
     vibe_ip_internal_types.GetSSLRecordRequest:
       properties:
@@ -753,13 +731,6 @@ components:
           type: array
           uniqueItems: false
       type: object
-    vibe_ip_internal_types.GetSSLRecordsRequest:
-      properties:
-        is_active:
-          description: 是否活跃
-          form: is_active
-          type: boolean
-      type: object
     vibe_ip_internal_types.GetWebhookRequest:
       properties:
         id:
@@ -836,20 +807,6 @@ components:
           description: 通知渠道名称
           type: string
       type: object
-    vibe_ip_internal_types.GetWebhookSubsRequest:
-      properties:
-        is_active:
-          description: 是否活跃
-          form: is_active
-          type: boolean
-      type: object
-    vibe_ip_internal_types.GetWebhooksRequest:
-      properties:
-        is_active:
-          description: 是否活跃
-          form: is_active
-          type: boolean
-      type: object
     vibe_ip_internal_types.JobData:
       properties:
         id:
@@ -876,12 +833,6 @@ components:
         schedule_detail:
           description: 任务调度表达式详情
           type: string
-        tags:
-          description: 任务标签
-          items:
-            type: string
-          type: array
-          uniqueItems: false
       type: object
     vibe_ip_internal_types.UpdateCdnRecordActiveRequest:
       properties:
@@ -1238,12 +1189,19 @@ paths:
   /cdn-records:
     get:
       description: 获取全部CDN记录
+      parameters:
+      - description: 是否活跃
+        in: query
+        name: is_active
+        schema:
+          description: 是否活跃
+          form: is_active
+          type: boolean
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.GetCdnRecordsRequest'
-        description: 请求参数
+              type: object
       responses:
         "200":
           content:
@@ -1839,12 +1797,19 @@ paths:
   /dns-records:
     get:
       description: 获取全部DNS记录
+      parameters:
+      - description: 是否活跃
+        in: query
+        name: is_active
+        schema:
+          description: 是否活跃
+          form: is_active
+          type: boolean
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.GetDnsRecordsRequest'
-        description: 请求参数
+              type: object
       responses:
         "200":
           content:
@@ -2144,12 +2109,19 @@ paths:
   /domain-monitors:
     get:
       description: 获取全部域名监控
+      parameters:
+      - description: 是否活跃
+        in: query
+        name: is_active
+        schema:
+          description: 是否活跃
+          form: is_active
+          type: boolean
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.GetDomainMonitorsRequest'
-        description: 请求参数
+              type: object
       responses:
         "200":
           content:
@@ -3044,12 +3016,19 @@ paths:
   /port-forwards:
     get:
       description: 获取全部端口转发
+      parameters:
+      - description: 是否活跃
+        in: query
+        name: is_active
+        schema:
+          description: 是否活跃
+          form: is_active
+          type: boolean
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.GetPortForwardsRequest'
-        description: 请求参数
+              type: object
       responses:
         "200":
           content:
@@ -3396,12 +3375,19 @@ paths:
   /ssl-records:
     get:
       description: 获取全部SSL记录
+      parameters:
+      - description: 是否活跃
+        in: query
+        name: is_active
+        schema:
+          description: 是否活跃
+          form: is_active
+          type: boolean
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.GetSSLRecordsRequest'
-        description: 请求参数
+              type: object
       responses:
         "200":
           content:
@@ -3969,12 +3955,19 @@ paths:
   /webhook-subs:
     get:
       description: 获取全部通知订阅
+      parameters:
+      - description: 是否活跃
+        in: query
+        name: is_active
+        schema:
+          description: 是否活跃
+          form: is_active
+          type: boolean
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.GetWebhookSubsRequest'
-        description: 请求参数
+              type: object
       responses:
         "200":
           content:
@@ -4100,12 +4093,19 @@ paths:
   /webhooks:
     get:
       description: 获取全部通知
+      parameters:
+      - description: 是否活跃
+        in: query
+        name: is_active
+        schema:
+          description: 是否活跃
+          form: is_active
+          type: boolean
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.GetWebhooksRequest'
-        description: 请求参数
+              type: object
       responses:
         "200":
           content:

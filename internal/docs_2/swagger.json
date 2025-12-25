@@ -24,12 +24,10 @@
                 "summary": "获取全部CDN记录",
                 "parameters": [
                     {
-                        "description": "请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/vibe_ip_internal_types.GetCdnRecordsRequest"
-                        }
+                        "type": "boolean",
+                        "description": "是否活跃",
+                        "name": "is_active",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -141,6 +139,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "CDN记录序号",
                         "name": "id",
                         "in": "path",
@@ -195,6 +194,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "CDN记录序号",
                         "name": "id",
                         "in": "path",
@@ -249,6 +249,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "CDN记录序号",
                         "name": "id",
                         "in": "path",
@@ -314,6 +315,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "CDN记录序号",
                         "name": "id",
                         "in": "path",
@@ -379,6 +381,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "CDN记录序号",
                         "name": "id",
                         "in": "path",
@@ -541,6 +544,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "设备序号",
                         "name": "id",
                         "in": "path",
@@ -595,6 +599,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "设备序号",
                         "name": "id",
                         "in": "path",
@@ -649,6 +654,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "设备序号",
                         "name": "id",
                         "in": "path",
@@ -714,6 +720,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "设备序号",
                         "name": "id",
                         "in": "path",
@@ -776,6 +783,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "设备序号",
                         "name": "id",
                         "in": "path",
@@ -834,12 +842,10 @@
                 "summary": "获取全部DNS记录",
                 "parameters": [
                     {
-                        "description": "请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/vibe_ip_internal_types.GetDnsRecordsRequest"
-                        }
+                        "type": "boolean",
+                        "description": "是否活跃",
+                        "name": "is_active",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -951,6 +957,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "DNS记录序号",
                         "name": "id",
                         "in": "path",
@@ -1005,6 +1012,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "DNS记录序号",
                         "name": "id",
                         "in": "path",
@@ -1059,6 +1067,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "DNS记录序号",
                         "name": "id",
                         "in": "path",
@@ -1124,6 +1133,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "DNS记录序号",
                         "name": "id",
                         "in": "path",
@@ -1189,6 +1199,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "DNS记录序号",
                         "name": "id",
                         "in": "path",
@@ -1250,12 +1261,10 @@
                 "summary": "获取全部域名监控",
                 "parameters": [
                     {
-                        "description": "请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/vibe_ip_internal_types.GetDomainMonitorsRequest"
-                        }
+                        "type": "boolean",
+                        "description": "是否活跃",
+                        "name": "is_active",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1367,6 +1376,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "域名监控记录序号",
                         "name": "id",
                         "in": "path",
@@ -1421,6 +1431,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "域名监控序号",
                         "name": "id",
                         "in": "path",
@@ -1475,6 +1486,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "域名监控序号",
                         "name": "id",
                         "in": "path",
@@ -1540,6 +1552,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "域名监控序号",
                         "name": "id",
                         "in": "path",
@@ -1605,6 +1618,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "域名监控序号",
                         "name": "id",
                         "in": "path",
@@ -1761,6 +1775,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "IP组序号",
                         "name": "id",
                         "in": "path",
@@ -1815,6 +1830,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "IP组序号",
                         "name": "id",
                         "in": "path",
@@ -1871,6 +1887,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "IP组序号",
                         "name": "id",
                         "in": "path",
@@ -1936,6 +1953,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "IP组序号",
                         "name": "id",
                         "in": "path",
@@ -1995,6 +2013,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "IP组序号",
                         "name": "id",
                         "in": "path",
@@ -2281,6 +2300,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "配置序号",
                         "name": "id",
                         "in": "path",
@@ -2335,6 +2355,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "配置序号",
                         "name": "id",
                         "in": "path",
@@ -2389,6 +2410,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "配置序号",
                         "name": "id",
                         "in": "path",
@@ -2453,12 +2475,10 @@
                 "summary": "获取全部端口转发",
                 "parameters": [
                     {
-                        "description": "请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/vibe_ip_internal_types.GetPortForwardsRequest"
-                        }
+                        "type": "boolean",
+                        "description": "是否活跃",
+                        "name": "is_active",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2570,6 +2590,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "设备端口转发序号",
                         "name": "id",
                         "in": "path",
@@ -2624,6 +2645,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "端口转发序号",
                         "name": "id",
                         "in": "path",
@@ -2678,6 +2700,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "端口转发序号",
                         "name": "id",
                         "in": "path",
@@ -2743,6 +2766,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "端口转发序号",
                         "name": "id",
                         "in": "path",
@@ -2808,6 +2832,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "端口转发序号",
                         "name": "id",
                         "in": "path",
@@ -2873,6 +2898,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "端口转发序号",
                         "name": "id",
                         "in": "path",
@@ -2934,12 +2960,10 @@
                 "summary": "获取全部SSL记录",
                 "parameters": [
                     {
-                        "description": "请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/vibe_ip_internal_types.GetSSLRecordsRequest"
-                        }
+                        "type": "boolean",
+                        "description": "是否活跃",
+                        "name": "is_active",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3051,6 +3075,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "SSL记录序号",
                         "name": "id",
                         "in": "path",
@@ -3105,6 +3130,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "SSL记录序号",
                         "name": "id",
                         "in": "path",
@@ -3159,6 +3185,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "SSL记录序号",
                         "name": "id",
                         "in": "path",
@@ -3224,6 +3251,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "SSL记录序号",
                         "name": "id",
                         "in": "path",
@@ -3289,6 +3317,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "SSL记录序号",
                         "name": "id",
                         "in": "path",
@@ -3345,6 +3374,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "SSL记录序号",
                         "name": "id",
                         "in": "path",
@@ -3680,12 +3710,10 @@
                 "summary": "获取全部通知订阅",
                 "parameters": [
                     {
-                        "description": "请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/vibe_ip_internal_types.GetWebhookSubsRequest"
-                        }
+                        "type": "boolean",
+                        "description": "是否活跃",
+                        "name": "is_active",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3741,6 +3769,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "通知订阅序号",
                         "name": "id",
                         "in": "path",
@@ -3797,6 +3826,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "通知订阅序号",
                         "name": "id",
                         "in": "path",
@@ -3861,12 +3891,10 @@
                 "summary": "获取全部通知",
                 "parameters": [
                     {
-                        "description": "请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/vibe_ip_internal_types.GetWebhooksRequest"
-                        }
+                        "type": "boolean",
+                        "description": "是否活跃",
+                        "name": "is_active",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3978,6 +4006,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "通知序号",
                         "name": "id",
                         "in": "path",
@@ -4032,6 +4061,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "通知序号",
                         "name": "id",
                         "in": "path",
@@ -4086,6 +4116,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "通知序号",
                         "name": "id",
                         "in": "path",
@@ -4151,6 +4182,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "通知序号",
                         "name": "id",
                         "in": "path",
@@ -4216,6 +4248,7 @@
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "通知序号",
                         "name": "id",
                         "in": "path",
@@ -4756,15 +4789,6 @@
                 }
             }
         },
-        "vibe_ip_internal_types.GetCdnRecordsRequest": {
-            "type": "object",
-            "properties": {
-                "is_active": {
-                    "description": "是否活跃",
-                    "type": "boolean"
-                }
-            }
-        },
         "vibe_ip_internal_types.GetDeviceIpHistoryResponse": {
             "type": "object",
             "properties": {
@@ -4917,15 +4941,6 @@
                 }
             }
         },
-        "vibe_ip_internal_types.GetDnsRecordsRequest": {
-            "type": "object",
-            "properties": {
-                "is_active": {
-                    "description": "是否活跃",
-                    "type": "boolean"
-                }
-            }
-        },
         "vibe_ip_internal_types.GetDomainMonitorRequest": {
             "type": "object",
             "required": [
@@ -4983,15 +4998,6 @@
                     "items": {
                         "type": "integer"
                     }
-                }
-            }
-        },
-        "vibe_ip_internal_types.GetDomainMonitorsRequest": {
-            "type": "object",
-            "properties": {
-                "is_active": {
-                    "description": "是否活跃",
-                    "type": "boolean"
                 }
             }
         },
@@ -5067,6 +5073,14 @@
                     "items": {
                         "type": "integer"
                     }
+                },
+                "config_json_domain_name": {
+                    "description": "配置平台域名",
+                    "type": "string"
+                },
+                "config_json_email": {
+                    "description": "配置平台邮箱",
+                    "type": "string"
                 },
                 "description": {
                     "description": "配置描述",
@@ -5147,15 +5161,6 @@
                 "remote_port": {
                     "description": "远程目标端口",
                     "type": "integer"
-                }
-            }
-        },
-        "vibe_ip_internal_types.GetPortForwardsRequest": {
-            "type": "object",
-            "properties": {
-                "is_active": {
-                    "description": "是否活跃",
-                    "type": "boolean"
                 }
             }
         },
@@ -5260,15 +5265,6 @@
                     "items": {
                         "type": "integer"
                     }
-                }
-            }
-        },
-        "vibe_ip_internal_types.GetSSLRecordsRequest": {
-            "type": "object",
-            "properties": {
-                "is_active": {
-                    "description": "是否活跃",
-                    "type": "boolean"
                 }
             }
         },
@@ -5378,24 +5374,6 @@
                 }
             }
         },
-        "vibe_ip_internal_types.GetWebhookSubsRequest": {
-            "type": "object",
-            "properties": {
-                "is_active": {
-                    "description": "是否活跃",
-                    "type": "boolean"
-                }
-            }
-        },
-        "vibe_ip_internal_types.GetWebhooksRequest": {
-            "type": "object",
-            "properties": {
-                "is_active": {
-                    "description": "是否活跃",
-                    "type": "boolean"
-                }
-            }
-        },
         "vibe_ip_internal_types.JobData": {
             "type": "object",
             "properties": {
@@ -5429,13 +5407,6 @@
                 "schedule_detail": {
                     "description": "任务调度表达式详情",
                     "type": "string"
-                },
-                "tags": {
-                    "description": "任务标签",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 }
             }
         },

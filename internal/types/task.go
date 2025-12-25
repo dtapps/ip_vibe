@@ -14,7 +14,6 @@ type TaskResponse struct {
 type JobData struct {
 	ID             string   `json:"id"`              // 任务序号
 	Name           string   `json:"name"`            // 任务名称
-	Tags           []string `json:"tags"`            // 任务标签
 	LastRun        string   `json:"last_run"`        // 上次运行时间
 	NextRun        string   `json:"next_run"`        // 下次运行时间
 	NextRuns       []string `json:"next_runs"`       // 下次运行时间列表
