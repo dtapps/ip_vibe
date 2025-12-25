@@ -59,10 +59,10 @@ func DeviceReportDeviceIp(c *gin.Context) {
 //	@Tags			开放
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			device_code	path		string													true	"设备编码"
+//	@Param			device_code	path		string												true	"设备编码"
 //	@Success		200			{object}	APIResponse{data=[]types.GetPortForwardResponse}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}											"参数错误"
-//	@Failure		404			{object}	APIResponse{}											"错误响应"
+//	@Failure		400			{object}	APIResponse{}										"参数错误"
+//	@Failure		404			{object}	APIResponse{}										"错误响应"
 //	@Router			/open/device/{device_code}/port-forwards [get]
 func DevicePortForwards(c *gin.Context) {
 	// 请求参数
@@ -98,12 +98,12 @@ func DevicePortForwards(c *gin.Context) {
 //	@Tags			开放
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			device_code	path		string													true	"设备编码"
-//	@Param			port_forward_id	path		int64													true	"端口转发序号"
-//	@Param			request		body		types.CreatePortForwardStatsRequest						true	"请求参数"
-//	@Success		200			{object}	APIResponse{data=types.CreatePortForwardStatsResponse}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}											"参数错误"
-//	@Failure		404			{object}	APIResponse{}											"错误响应"
+//	@Param			device_code		path		string								true	"设备编码"
+//	@Param			port_forward_id	path		int64								true	"端口转发序号"
+//	@Param			request			body		types.CreatePortForwardStatsRequest	true	"请求参数"
+//	@Success		200				{object}	APIResponse{}						"成功响应"
+//	@Failure		400				{object}	APIResponse{}						"参数错误"
+//	@Failure		404				{object}	APIResponse{}						"错误响应"
 //	@Router			/open/device/{device_code}/port-forwards-stats/{port_forward_id} [post]
 func CreatePortForwardStats(c *gin.Context) {
 	// 请求参数
