@@ -115,6 +115,8 @@ func main() {
 		slog.String("git_commit", global.GvaGitCommit),
 		slog.String("build_time", global.GvaBuildTime),
 		slog.String("go_version", global.GvaGoVersion),
+		slog.String("os", global.GvaOS),
+		slog.String("arch", global.GvaArch),
 	)
 
 	if global.GvaGinSlog != nil {
@@ -316,7 +318,7 @@ func gracefulShutdown() {
 		close(shutdownChan)
 
 		// 4. 等待一段时间让 goroutine 完成
-		// time.Sleep(2 * time.Second)
+		time.Sleep(1 * time.Second)
 
 		// 5. 关闭数据库连接和其他资源（现有的 defer 逻辑）
 		slog.Info("开始关闭数据库连接...")
@@ -327,10 +329,13 @@ func gracefulShutdown() {
 		// 7. 关闭 GoCron 调度器
 		initialize.CloseGoCron()
 
-		// 8. 关闭 业务数据库
+		// 8. 等待一段时间让 goroutine 完成
+		time.Sleep(1 * time.Second)
+
+		// 9. 关闭 业务数据库
 		initialize.CloseEntDb()
 
-		// 9. 关闭 日志数据库
+		// 10. 关闭 日志数据库
 		initialize.CloseEntLogDb()
 
 		slog.Info("所有资源已优雅关闭")

@@ -41,6 +41,8 @@ func NewPortForwardService(cron gocron.Scheduler) *PortForwardService {
 	client.SetHeader("X-Git-Commit", global.GvaGitCommit)
 	client.SetHeader("X-Build-Time", global.GvaBuildTime)
 	client.SetHeader("X-Go-Version", global.GvaGoVersion)
+	client.SetHeader("X-OS", global.GvaOS)
+	client.SetHeader("X-Arch", global.GvaArch)
 
 	// 重试机制
 	client.SetRetryCount(3)
