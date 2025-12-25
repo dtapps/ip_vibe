@@ -27,7 +27,7 @@ require (
 	github.com/go-co-op/gocron/v2 v2.19.0
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
-	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.181
+	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.182
 	github.com/miekg/dns v1.1.69
 	github.com/modelcontextprotocol/go-sdk v1.2.0
 	github.com/qiniu/go-sdk/v7 v7.25.5
