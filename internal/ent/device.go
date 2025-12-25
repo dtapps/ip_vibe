@@ -44,8 +44,6 @@ type Device struct {
 
 // DeviceEdges holds the relations/edges for other nodes in the graph.
 type DeviceEdges struct {
-	// 关联的设备IP报告
-	IPReports []*DeviceIpReport `json:"ip_reports,omitempty"`
 	// 关联的IP组
 	IPGroups []*IpGroup `json:"ip_groups,omitempty"`
 	// 设备的端口转发规则
@@ -54,26 +52,16 @@ type DeviceEdges struct {
 	IPGroupDevice []*IpGroupDevice `json:"ip_group_device,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes        [4]bool
-	namedIPReports     map[string][]*DeviceIpReport
+	loadedTypes        [3]bool
 	namedIPGroups      map[string][]*IpGroup
 	namedPortForwards  map[string][]*DevicePortForward
 	namedIPGroupDevice map[string][]*IpGroupDevice
 }
 
-// IPReportsOrErr returns the IPReports value or an error if the edge
-// was not loaded in eager-loading.
-func (e DeviceEdges) IPReportsOrErr() ([]*DeviceIpReport, error) {
-	if e.loadedTypes[0] {
-		return e.IPReports, nil
-	}
-	return nil, &NotLoadedError{edge: "ip_reports"}
-}
-
 // IPGroupsOrErr returns the IPGroups value or an error if the edge
 // was not loaded in eager-loading.
 func (e DeviceEdges) IPGroupsOrErr() ([]*IpGroup, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[0] {
 		return e.IPGroups, nil
 	}
 	return nil, &NotLoadedError{edge: "ip_groups"}
@@ -82,7 +70,7 @@ func (e DeviceEdges) IPGroupsOrErr() ([]*IpGroup, error) {
 // PortForwardsOrErr returns the PortForwards value or an error if the edge
 // was not loaded in eager-loading.
 func (e DeviceEdges) PortForwardsOrErr() ([]*DevicePortForward, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[1] {
 		return e.PortForwards, nil
 	}
 	return nil, &NotLoadedError{edge: "port_forwards"}
@@ -91,7 +79,7 @@ func (e DeviceEdges) PortForwardsOrErr() ([]*DevicePortForward, error) {
 // IPGroupDeviceOrErr returns the IPGroupDevice value or an error if the edge
 // was not loaded in eager-loading.
 func (e DeviceEdges) IPGroupDeviceOrErr() ([]*IpGroupDevice, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		return e.IPGroupDevice, nil
 	}
 	return nil, &NotLoadedError{edge: "ip_group_device"}
@@ -196,11 +184,6 @@ func (_m *Device) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
-// QueryIPReports queries the "ip_reports" edge of the Device entity.
-func (_m *Device) QueryIPReports() *DeviceIpReportQuery {
-	return NewDeviceClient(_m.config).QueryIPReports(_m)
-}
-
 // QueryIPGroups queries the "ip_groups" edge of the Device entity.
 func (_m *Device) QueryIPGroups() *IpGroupQuery {
 	return NewDeviceClient(_m.config).QueryIPGroups(_m)
@@ -267,30 +250,6 @@ func (_m *Device) String() string {
 	builder.WriteString(_m.LastHeartbeatAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
-}
-
-// NamedIPReports returns the IPReports named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (_m *Device) NamedIPReports(name string) ([]*DeviceIpReport, error) {
-	if _m.Edges.namedIPReports == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := _m.Edges.namedIPReports[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (_m *Device) appendNamedIPReports(name string, edges ...*DeviceIpReport) {
-	if _m.Edges.namedIPReports == nil {
-		_m.Edges.namedIPReports = make(map[string][]*DeviceIpReport)
-	}
-	if len(edges) == 0 {
-		_m.Edges.namedIPReports[name] = []*DeviceIpReport{}
-	} else {
-		_m.Edges.namedIPReports[name] = append(_m.Edges.namedIPReports[name], edges...)
-	}
 }
 
 // NamedIPGroups returns the IPGroups named value or an error if the edge was not

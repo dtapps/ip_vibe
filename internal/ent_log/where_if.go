@@ -9,6 +9,37 @@ import (
 
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
+func (q *DeviceIpReportQuery) WhereIf(condition bool, p predicate.DeviceIpReport) *DeviceIpReportQuery {
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p)
+	}
+	return q
+}
+
+// WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *DeviceIpReportQuery) WhereIfs(condition bool, p ...predicate.DeviceIpReport) *DeviceIpReportQuery {
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p...)
+	}
+	return q
+}
+
+// WhereIfFunc 动态地添加一个 WHERE 子句到查询构建器。
+// conditionFunc 决定是否应用过滤。
+// predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
+func (q *DeviceIpReportQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.DeviceIpReport) *DeviceIpReportQuery {
+	q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
+	if condition {
+		q.Where(predicateFunc())
+	}
+	return q
+}
+
+// WhereIf 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
 func (q *DomainMonitorHistoryQuery) WhereIf(condition bool, p predicate.DomainMonitorHistory) *DomainMonitorHistoryQuery {
 	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
@@ -93,6 +124,37 @@ func (q *OperationLogQuery) WhereIfs(condition bool, p ...predicate.OperationLog
 // conditionFunc 决定是否应用过滤。
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *OperationLogQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.OperationLog) *OperationLogQuery {
+	q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
+	if condition {
+		q.Where(predicateFunc())
+	}
+	return q
+}
+
+// WhereIf 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *PortForwardStatsQuery) WhereIf(condition bool, p predicate.PortForwardStats) *PortForwardStatsQuery {
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p)
+	}
+	return q
+}
+
+// WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *PortForwardStatsQuery) WhereIfs(condition bool, p ...predicate.PortForwardStats) *PortForwardStatsQuery {
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p...)
+	}
+	return q
+}
+
+// WhereIfFunc 动态地添加一个 WHERE 子句到查询构建器。
+// conditionFunc 决定是否应用过滤。
+// predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
+func (q *PortForwardStatsQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.PortForwardStats) *PortForwardStatsQuery {
 	q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
 	if condition {
 		q.Where(predicateFunc())

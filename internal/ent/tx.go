@@ -20,8 +20,6 @@ type Tx struct {
 	DNSRecord *DNSRecordClient
 	// Device is the client for interacting with the Device builders.
 	Device *DeviceClient
-	// DeviceIpReport is the client for interacting with the DeviceIpReport builders.
-	DeviceIpReport *DeviceIpReportClient
 	// DevicePortForward is the client for interacting with the DevicePortForward builders.
 	DevicePortForward *DevicePortForwardClient
 	// DomainMonitor is the client for interacting with the DomainMonitor builders.
@@ -172,7 +170,6 @@ func (tx *Tx) init() {
 	tx.CDNRecord = NewCDNRecordClient(tx.config)
 	tx.DNSRecord = NewDNSRecordClient(tx.config)
 	tx.Device = NewDeviceClient(tx.config)
-	tx.DeviceIpReport = NewDeviceIpReportClient(tx.config)
 	tx.DevicePortForward = NewDevicePortForwardClient(tx.config)
 	tx.DomainMonitor = NewDomainMonitorClient(tx.config)
 	tx.IpGroup = NewIpGroupClient(tx.config)

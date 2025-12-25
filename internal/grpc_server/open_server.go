@@ -22,9 +22,10 @@ func NewOpenServer() *OpenServer {
 	// 使用与你的 HTTP 处理器相同的服务实例
 	deviceService := service.NewDeviceOpenService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEnv.DEBUG,
 	)
 
 	return &OpenServer{

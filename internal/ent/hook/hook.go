@@ -44,18 +44,6 @@ func (f DeviceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DeviceMutation", m)
 }
 
-// The DeviceIpReportFunc type is an adapter to allow the use of ordinary
-// function as DeviceIpReport mutator.
-type DeviceIpReportFunc func(context.Context, *ent.DeviceIpReportMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f DeviceIpReportFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.DeviceIpReportMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DeviceIpReportMutation", m)
-}
-
 // The DevicePortForwardFunc type is an adapter to allow the use of ordinary
 // function as DevicePortForward mutator.
 type DevicePortForwardFunc func(context.Context, *ent.DevicePortForwardMutation) (ent.Value, error)

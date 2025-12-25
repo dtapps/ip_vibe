@@ -217,44 +217,6 @@ var (
 			},
 		},
 	}
-	// DeviceIPReportColumns holds the columns for the "device_ip_report" table.
-	DeviceIPReportColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "IP报告序号"},
-		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
-		{Name: "ip_v4", Type: field.TypeString, Nullable: true, Comment: "IP地址V4"},
-		{Name: "ip_v6", Type: field.TypeString, Nullable: true, Comment: "IP地址V6"},
-		{Name: "device_id", Type: field.TypeInt64, Comment: "设备序号"},
-	}
-	// DeviceIPReportTable holds the schema information for the "device_ip_report" table.
-	DeviceIPReportTable = &schema.Table{
-		Name:       "device_ip_report",
-		Comment:    "设备IP报告",
-		Columns:    DeviceIPReportColumns,
-		PrimaryKey: []*schema.Column{DeviceIPReportColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "device_ip_report_device_ip_reports",
-				Columns:    []*schema.Column{DeviceIPReportColumns[4]},
-				RefColumns: []*schema.Column{DeviceColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "deviceipreport_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{DeviceIPReportColumns[1]},
-				Annotation: &entsql.IndexAnnotation{
-					Desc: true,
-				},
-			},
-			{
-				Name:    "deviceipreport_device_id",
-				Unique:  false,
-				Columns: []*schema.Column{DeviceIPReportColumns[4]},
-			},
-		},
-	}
 	// DevicePortForwardColumns holds the columns for the "device_port_forward" table.
 	DevicePortForwardColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "设备端口转发序号"},
@@ -652,7 +614,6 @@ var (
 		CdnRecordTable,
 		DNSRecordTable,
 		DeviceTable,
-		DeviceIPReportTable,
 		DevicePortForwardTable,
 		DomainMonitorTable,
 		IPGroupTable,
@@ -678,10 +639,6 @@ func init() {
 	}
 	DeviceTable.Annotation = &entsql.Annotation{
 		Table: "device",
-	}
-	DeviceIPReportTable.ForeignKeys[0].RefTable = DeviceTable
-	DeviceIPReportTable.Annotation = &entsql.Annotation{
-		Table: "device_ip_report",
 	}
 	DevicePortForwardTable.ForeignKeys[0].RefTable = DeviceTable
 	DevicePortForwardTable.Annotation = &entsql.Annotation{

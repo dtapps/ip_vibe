@@ -21,7 +21,7 @@ type DomainMonitorHistory struct {
 	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
-	// 关联的 DomainMonitor ID
+	// 关联 DomainMonitor 序号
 	MonitorID int64 `json:"monitor_id,omitempty"`
 	// 检查发生的时间
 	CheckTime time.Time `json:"check_time,omitempty"`

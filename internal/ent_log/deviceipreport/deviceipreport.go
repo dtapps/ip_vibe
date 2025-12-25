@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -22,17 +21,8 @@ const (
 	FieldIPV4 = "ip_v4"
 	// FieldIPV6 holds the string denoting the ip_v6 field in the database.
 	FieldIPV6 = "ip_v6"
-	// EdgeDevice holds the string denoting the device edge name in mutations.
-	EdgeDevice = "device"
 	// Table holds the table name of the deviceipreport in the database.
 	Table = "device_ip_report"
-	// DeviceTable is the table that holds the device relation/edge.
-	DeviceTable = "device_ip_report"
-	// DeviceInverseTable is the table name for the Device entity.
-	// It exists in this package in order to avoid circular dependency with the "device" package.
-	DeviceInverseTable = "device"
-	// DeviceColumn is the table column denoting the device relation/edge.
-	DeviceColumn = "device_id"
 )
 
 // Columns holds all SQL columns for deviceipreport fields.
@@ -59,6 +49,10 @@ var (
 	DefaultCreatedAt func() time.Time
 	// DeviceIDValidator is a validator for the "device_id" field. It is called by the builders before save.
 	DeviceIDValidator func(int64) error
+	// IPV4Validator is a validator for the "ip_v4" field. It is called by the builders before save.
+	IPV4Validator func(string) error
+	// IPV6Validator is a validator for the "ip_v6" field. It is called by the builders before save.
+	IPV6Validator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(int64) error
 )
@@ -89,18 +83,4 @@ func ByIPV4(opts ...sql.OrderTermOption) OrderOption {
 // ByIPV6 orders the results by the ip_v6 field.
 func ByIPV6(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIPV6, opts...).ToFunc()
-}
-
-// ByDeviceField orders the results by device field.
-func ByDeviceField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newDeviceStep(), sql.OrderByField(field, opts...))
-	}
-}
-func newDeviceStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(DeviceInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, DeviceTable, DeviceColumn),
-	)
 }

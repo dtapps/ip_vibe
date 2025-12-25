@@ -8,9 +8,11 @@ import (
 	"fmt"
 	"reflect"
 	"sync"
+	"vibe_ip/internal/ent_log/deviceipreport"
 	"vibe_ip/internal/ent_log/domainmonitorhistory"
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
+	"vibe_ip/internal/ent_log/portforwardstats"
 	"vibe_ip/internal/ent_log/restylog"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/ent_log/webhookhistory"
@@ -78,9 +80,11 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
+			deviceipreport.Table:        deviceipreport.ValidColumn,
 			domainmonitorhistory.Table:  domainmonitorhistory.ValidColumn,
 			httplog.Table:               httplog.ValidColumn,
 			operationlog.Table:          operationlog.ValidColumn,
+			portforwardstats.Table:      portforwardstats.ValidColumn,
 			restylog.Table:              restylog.ValidColumn,
 			sslcertificatehistory.Table: sslcertificatehistory.ValidColumn,
 			webhookhistory.Table:        webhookhistory.ValidColumn,

@@ -5,7 +5,6 @@ package ent
 import (
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
-	"vibe_ip/internal/ent/deviceipreport"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
@@ -865,106 +864,6 @@ func (q *DeviceQuery) OrderByLastHeartbeatAtDesc() *DeviceQuery {
 //	    All(ctx)
 func (q *DeviceQuery) OrderByLastHeartbeatAtAsc() *DeviceQuery {
 	return q.Order(Asc(device.FieldLastHeartbeatAt))
-}
-
-// OrderByIDDesc 按主键 ID 降序排列查询结果。
-// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
-// 返回值类型为 *DeviceIpReportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
-// 示例：
-//
-//	records, err := client.DeviceIpReport.Query().
-//	    OrderByIDDesc().
-//	    Limit(10).
-//	    All(ctx)
-func (q *DeviceIpReportQuery) OrderByIDDesc() *DeviceIpReportQuery {
-	return q.Order(Desc(deviceipreport.FieldID))
-}
-
-// OrderByIDAsc 按主键 ID 升序排列查询结果。
-// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
-// 返回值类型为 *DeviceIpReportQuery，支持链式调用其他查询方法。
-// 示例：
-//
-//	records, err := client.DeviceIpReport.Query().
-//	    OrderByIDAsc().
-//	    All(ctx)
-func (q *DeviceIpReportQuery) OrderByIDAsc() *DeviceIpReportQuery {
-	return q.Order(Asc(deviceipreport.FieldID))
-}
-
-// OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
-// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
-// 返回值类型为 *DeviceIpReportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
-// 示例：
-//
-//	records, err := client.DeviceIpReport.Query().
-//	    OrderByCreatedAtDesc().
-//	    Limit(10).
-//	    All(ctx)
-func (q *DeviceIpReportQuery) OrderByCreatedAtDesc() *DeviceIpReportQuery {
-	return q.Order(Desc(deviceipreport.FieldCreatedAt))
-}
-
-// OrderByCreatedAtAsc 按字段 created_at 升序排列查询结果。
-// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
-// 返回值类型为 *DeviceIpReportQuery，支持链式调用其他查询方法。
-// 示例：
-//
-//	records, err := client.DeviceIpReport.Query().
-//	    OrderByCreatedAtAsc().
-//	    All(ctx)
-func (q *DeviceIpReportQuery) OrderByCreatedAtAsc() *DeviceIpReportQuery {
-	return q.Order(Asc(deviceipreport.FieldCreatedAt))
-}
-
-// OrderByIPV4Desc 按字段 ip_v4 降序排列查询结果。
-// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
-// 返回值类型为 *DeviceIpReportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
-// 示例：
-//
-//	records, err := client.DeviceIpReport.Query().
-//	    OrderByIPV4Desc().
-//	    Limit(10).
-//	    All(ctx)
-func (q *DeviceIpReportQuery) OrderByIPV4Desc() *DeviceIpReportQuery {
-	return q.Order(Desc(deviceipreport.FieldIPV4))
-}
-
-// OrderByIPV4Asc 按字段 ip_v4 升序排列查询结果。
-// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
-// 返回值类型为 *DeviceIpReportQuery，支持链式调用其他查询方法。
-// 示例：
-//
-//	records, err := client.DeviceIpReport.Query().
-//	    OrderByIPV4Asc().
-//	    All(ctx)
-func (q *DeviceIpReportQuery) OrderByIPV4Asc() *DeviceIpReportQuery {
-	return q.Order(Asc(deviceipreport.FieldIPV4))
-}
-
-// OrderByIPV6Desc 按字段 ip_v6 降序排列查询结果。
-// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
-// 返回值类型为 *DeviceIpReportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
-// 示例：
-//
-//	records, err := client.DeviceIpReport.Query().
-//	    OrderByIPV6Desc().
-//	    Limit(10).
-//	    All(ctx)
-func (q *DeviceIpReportQuery) OrderByIPV6Desc() *DeviceIpReportQuery {
-	return q.Order(Desc(deviceipreport.FieldIPV6))
-}
-
-// OrderByIPV6Asc 按字段 ip_v6 升序排列查询结果。
-// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
-// 返回值类型为 *DeviceIpReportQuery，支持链式调用其他查询方法。
-// 示例：
-//
-//	records, err := client.DeviceIpReport.Query().
-//	    OrderByIPV6Asc().
-//	    All(ctx)
-func (q *DeviceIpReportQuery) OrderByIPV6Asc() *DeviceIpReportQuery {
-	return q.Order(Asc(deviceipreport.FieldIPV6))
 }
 
 // OrderByIDDesc 按主键 ID 降序排列查询结果。

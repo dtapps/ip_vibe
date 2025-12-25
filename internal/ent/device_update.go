@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/internal/ent/device"
-	"vibe_ip/internal/ent/deviceipreport"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/predicate"
@@ -152,21 +151,6 @@ func (_u *DeviceUpdate) ClearLastHeartbeatAt() *DeviceUpdate {
 	return _u
 }
 
-// AddIPReportIDs adds the "ip_reports" edge to the DeviceIpReport entity by IDs.
-func (_u *DeviceUpdate) AddIPReportIDs(ids ...int64) *DeviceUpdate {
-	_u.mutation.AddIPReportIDs(ids...)
-	return _u
-}
-
-// AddIPReports adds the "ip_reports" edges to the DeviceIpReport entity.
-func (_u *DeviceUpdate) AddIPReports(v ...*DeviceIpReport) *DeviceUpdate {
-	ids := make([]int64, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddIPReportIDs(ids...)
-}
-
 // AddIPGroupIDs adds the "ip_groups" edge to the IpGroup entity by IDs.
 func (_u *DeviceUpdate) AddIPGroupIDs(ids ...int64) *DeviceUpdate {
 	_u.mutation.AddIPGroupIDs(ids...)
@@ -200,27 +184,6 @@ func (_u *DeviceUpdate) AddPortForwards(v ...*DevicePortForward) *DeviceUpdate {
 // Mutation returns the DeviceMutation object of the builder.
 func (_u *DeviceUpdate) Mutation() *DeviceMutation {
 	return _u.mutation
-}
-
-// ClearIPReports clears all "ip_reports" edges to the DeviceIpReport entity.
-func (_u *DeviceUpdate) ClearIPReports() *DeviceUpdate {
-	_u.mutation.ClearIPReports()
-	return _u
-}
-
-// RemoveIPReportIDs removes the "ip_reports" edge to DeviceIpReport entities by IDs.
-func (_u *DeviceUpdate) RemoveIPReportIDs(ids ...int64) *DeviceUpdate {
-	_u.mutation.RemoveIPReportIDs(ids...)
-	return _u
-}
-
-// RemoveIPReports removes "ip_reports" edges to DeviceIpReport entities.
-func (_u *DeviceUpdate) RemoveIPReports(v ...*DeviceIpReport) *DeviceUpdate {
-	ids := make([]int64, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveIPReportIDs(ids...)
 }
 
 // ClearIPGroups clears all "ip_groups" edges to the IpGroup entity.
@@ -301,6 +264,21 @@ func (_u *DeviceUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *DeviceUpdate) check() error {
+	if v, ok := _u.mutation.IPV4(); ok {
+		if err := device.IPV4Validator(v); err != nil {
+			return &ValidationError{Name: "ip_v4", err: fmt.Errorf(`ent: validator failed for field "Device.ip_v4": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.IPV6(); ok {
+		if err := device.IPV6Validator(v); err != nil {
+			return &ValidationError{Name: "ip_v6", err: fmt.Errorf(`ent: validator failed for field "Device.ip_v6": %w`, err)}
+		}
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *DeviceUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *DeviceUpdate {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -308,6 +286,9 @@ func (_u *DeviceUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *DeviceU
 }
 
 func (_u *DeviceUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(device.Table, device.Columns, sqlgraph.NewFieldSpec(device.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -351,51 +332,6 @@ func (_u *DeviceUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.LastHeartbeatAtCleared() {
 		_spec.ClearField(device.FieldLastHeartbeatAt, field.TypeTime)
-	}
-	if _u.mutation.IPReportsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   device.IPReportsTable,
-			Columns: []string{device.IPReportsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(deviceipreport.FieldID, field.TypeInt64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedIPReportsIDs(); len(nodes) > 0 && !_u.mutation.IPReportsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   device.IPReportsTable,
-			Columns: []string{device.IPReportsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(deviceipreport.FieldID, field.TypeInt64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.IPReportsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   device.IPReportsTable,
-			Columns: []string{device.IPReportsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(deviceipreport.FieldID, field.TypeInt64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.IPGroupsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -641,21 +577,6 @@ func (_u *DeviceUpdateOne) ClearLastHeartbeatAt() *DeviceUpdateOne {
 	return _u
 }
 
-// AddIPReportIDs adds the "ip_reports" edge to the DeviceIpReport entity by IDs.
-func (_u *DeviceUpdateOne) AddIPReportIDs(ids ...int64) *DeviceUpdateOne {
-	_u.mutation.AddIPReportIDs(ids...)
-	return _u
-}
-
-// AddIPReports adds the "ip_reports" edges to the DeviceIpReport entity.
-func (_u *DeviceUpdateOne) AddIPReports(v ...*DeviceIpReport) *DeviceUpdateOne {
-	ids := make([]int64, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddIPReportIDs(ids...)
-}
-
 // AddIPGroupIDs adds the "ip_groups" edge to the IpGroup entity by IDs.
 func (_u *DeviceUpdateOne) AddIPGroupIDs(ids ...int64) *DeviceUpdateOne {
 	_u.mutation.AddIPGroupIDs(ids...)
@@ -689,27 +610,6 @@ func (_u *DeviceUpdateOne) AddPortForwards(v ...*DevicePortForward) *DeviceUpdat
 // Mutation returns the DeviceMutation object of the builder.
 func (_u *DeviceUpdateOne) Mutation() *DeviceMutation {
 	return _u.mutation
-}
-
-// ClearIPReports clears all "ip_reports" edges to the DeviceIpReport entity.
-func (_u *DeviceUpdateOne) ClearIPReports() *DeviceUpdateOne {
-	_u.mutation.ClearIPReports()
-	return _u
-}
-
-// RemoveIPReportIDs removes the "ip_reports" edge to DeviceIpReport entities by IDs.
-func (_u *DeviceUpdateOne) RemoveIPReportIDs(ids ...int64) *DeviceUpdateOne {
-	_u.mutation.RemoveIPReportIDs(ids...)
-	return _u
-}
-
-// RemoveIPReports removes "ip_reports" edges to DeviceIpReport entities.
-func (_u *DeviceUpdateOne) RemoveIPReports(v ...*DeviceIpReport) *DeviceUpdateOne {
-	ids := make([]int64, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveIPReportIDs(ids...)
 }
 
 // ClearIPGroups clears all "ip_groups" edges to the IpGroup entity.
@@ -803,6 +703,21 @@ func (_u *DeviceUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *DeviceUpdateOne) check() error {
+	if v, ok := _u.mutation.IPV4(); ok {
+		if err := device.IPV4Validator(v); err != nil {
+			return &ValidationError{Name: "ip_v4", err: fmt.Errorf(`ent: validator failed for field "Device.ip_v4": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.IPV6(); ok {
+		if err := device.IPV6Validator(v); err != nil {
+			return &ValidationError{Name: "ip_v6", err: fmt.Errorf(`ent: validator failed for field "Device.ip_v6": %w`, err)}
+		}
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *DeviceUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *DeviceUpdateOne {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -810,6 +725,9 @@ func (_u *DeviceUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Devi
 }
 
 func (_u *DeviceUpdateOne) sqlSave(ctx context.Context) (_node *Device, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(device.Table, device.Columns, sqlgraph.NewFieldSpec(device.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
@@ -870,51 +788,6 @@ func (_u *DeviceUpdateOne) sqlSave(ctx context.Context) (_node *Device, err erro
 	}
 	if _u.mutation.LastHeartbeatAtCleared() {
 		_spec.ClearField(device.FieldLastHeartbeatAt, field.TypeTime)
-	}
-	if _u.mutation.IPReportsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   device.IPReportsTable,
-			Columns: []string{device.IPReportsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(deviceipreport.FieldID, field.TypeInt64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedIPReportsIDs(); len(nodes) > 0 && !_u.mutation.IPReportsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   device.IPReportsTable,
-			Columns: []string{device.IPReportsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(deviceipreport.FieldID, field.TypeInt64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.IPReportsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   device.IPReportsTable,
-			Columns: []string{device.IPReportsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(deviceipreport.FieldID, field.TypeInt64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.IPGroupsCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -11,7 +11,6 @@ import (
 	"time"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
-	"vibe_ip/internal/ent/deviceipreport"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
@@ -39,7 +38,6 @@ const (
 	TypeCDNRecord           = "CDNRecord"
 	TypeDNSRecord           = "DNSRecord"
 	TypeDevice              = "Device"
-	TypeDeviceIpReport      = "DeviceIpReport"
 	TypeDevicePortForward   = "DevicePortForward"
 	TypeDomainMonitor       = "DomainMonitor"
 	TypeIpGroup             = "IpGroup"
@@ -2698,9 +2696,6 @@ type DeviceMutation struct {
 	last_reported_at     *time.Time
 	last_heartbeat_at    *time.Time
 	clearedFields        map[string]struct{}
-	ip_reports           map[int64]struct{}
-	removedip_reports    map[int64]struct{}
-	clearedip_reports    bool
 	ip_groups            map[int64]struct{}
 	removedip_groups     map[int64]struct{}
 	clearedip_groups     bool
@@ -3205,60 +3200,6 @@ func (m *DeviceMutation) ResetLastHeartbeatAt() {
 	delete(m.clearedFields, device.FieldLastHeartbeatAt)
 }
 
-// AddIPReportIDs adds the "ip_reports" edge to the DeviceIpReport entity by ids.
-func (m *DeviceMutation) AddIPReportIDs(ids ...int64) {
-	if m.ip_reports == nil {
-		m.ip_reports = make(map[int64]struct{})
-	}
-	for i := range ids {
-		m.ip_reports[ids[i]] = struct{}{}
-	}
-}
-
-// ClearIPReports clears the "ip_reports" edge to the DeviceIpReport entity.
-func (m *DeviceMutation) ClearIPReports() {
-	m.clearedip_reports = true
-}
-
-// IPReportsCleared reports if the "ip_reports" edge to the DeviceIpReport entity was cleared.
-func (m *DeviceMutation) IPReportsCleared() bool {
-	return m.clearedip_reports
-}
-
-// RemoveIPReportIDs removes the "ip_reports" edge to the DeviceIpReport entity by IDs.
-func (m *DeviceMutation) RemoveIPReportIDs(ids ...int64) {
-	if m.removedip_reports == nil {
-		m.removedip_reports = make(map[int64]struct{})
-	}
-	for i := range ids {
-		delete(m.ip_reports, ids[i])
-		m.removedip_reports[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedIPReports returns the removed IDs of the "ip_reports" edge to the DeviceIpReport entity.
-func (m *DeviceMutation) RemovedIPReportsIDs() (ids []int64) {
-	for id := range m.removedip_reports {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// IPReportsIDs returns the "ip_reports" edge IDs in the mutation.
-func (m *DeviceMutation) IPReportsIDs() (ids []int64) {
-	for id := range m.ip_reports {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetIPReports resets all changes to the "ip_reports" edge.
-func (m *DeviceMutation) ResetIPReports() {
-	m.ip_reports = nil
-	m.clearedip_reports = false
-	m.removedip_reports = nil
-}
-
 // AddIPGroupIDs adds the "ip_groups" edge to the IpGroup entity by ids.
 func (m *DeviceMutation) AddIPGroupIDs(ids ...int64) {
 	if m.ip_groups == nil {
@@ -3669,10 +3610,7 @@ func (m *DeviceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *DeviceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
-	if m.ip_reports != nil {
-		edges = append(edges, device.EdgeIPReports)
-	}
+	edges := make([]string, 0, 2)
 	if m.ip_groups != nil {
 		edges = append(edges, device.EdgeIPGroups)
 	}
@@ -3686,12 +3624,6 @@ func (m *DeviceMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *DeviceMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case device.EdgeIPReports:
-		ids := make([]ent.Value, 0, len(m.ip_reports))
-		for id := range m.ip_reports {
-			ids = append(ids, id)
-		}
-		return ids
 	case device.EdgeIPGroups:
 		ids := make([]ent.Value, 0, len(m.ip_groups))
 		for id := range m.ip_groups {
@@ -3710,10 +3642,7 @@ func (m *DeviceMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *DeviceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
-	if m.removedip_reports != nil {
-		edges = append(edges, device.EdgeIPReports)
-	}
+	edges := make([]string, 0, 2)
 	if m.removedip_groups != nil {
 		edges = append(edges, device.EdgeIPGroups)
 	}
@@ -3727,12 +3656,6 @@ func (m *DeviceMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *DeviceMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case device.EdgeIPReports:
-		ids := make([]ent.Value, 0, len(m.removedip_reports))
-		for id := range m.removedip_reports {
-			ids = append(ids, id)
-		}
-		return ids
 	case device.EdgeIPGroups:
 		ids := make([]ent.Value, 0, len(m.removedip_groups))
 		for id := range m.removedip_groups {
@@ -3751,10 +3674,7 @@ func (m *DeviceMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *DeviceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
-	if m.clearedip_reports {
-		edges = append(edges, device.EdgeIPReports)
-	}
+	edges := make([]string, 0, 2)
 	if m.clearedip_groups {
 		edges = append(edges, device.EdgeIPGroups)
 	}
@@ -3768,8 +3688,6 @@ func (m *DeviceMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *DeviceMutation) EdgeCleared(name string) bool {
 	switch name {
-	case device.EdgeIPReports:
-		return m.clearedip_reports
 	case device.EdgeIPGroups:
 		return m.clearedip_groups
 	case device.EdgePortForwards:
@@ -3790,9 +3708,6 @@ func (m *DeviceMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *DeviceMutation) ResetEdge(name string) error {
 	switch name {
-	case device.EdgeIPReports:
-		m.ResetIPReports()
-		return nil
 	case device.EdgeIPGroups:
 		m.ResetIPGroups()
 		return nil
@@ -3801,598 +3716,6 @@ func (m *DeviceMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Device edge %s", name)
-}
-
-// DeviceIpReportMutation represents an operation that mutates the DeviceIpReport nodes in the graph.
-type DeviceIpReportMutation struct {
-	config
-	op            Op
-	typ           string
-	id            *int64
-	created_at    *time.Time
-	ip_v4         *string
-	ip_v6         *string
-	clearedFields map[string]struct{}
-	device        *int64
-	cleareddevice bool
-	done          bool
-	oldValue      func(context.Context) (*DeviceIpReport, error)
-	predicates    []predicate.DeviceIpReport
-}
-
-var _ ent.Mutation = (*DeviceIpReportMutation)(nil)
-
-// deviceipreportOption allows management of the mutation configuration using functional options.
-type deviceipreportOption func(*DeviceIpReportMutation)
-
-// newDeviceIpReportMutation creates new mutation for the DeviceIpReport entity.
-func newDeviceIpReportMutation(c config, op Op, opts ...deviceipreportOption) *DeviceIpReportMutation {
-	m := &DeviceIpReportMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeDeviceIpReport,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withDeviceIpReportID sets the ID field of the mutation.
-func withDeviceIpReportID(id int64) deviceipreportOption {
-	return func(m *DeviceIpReportMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *DeviceIpReport
-		)
-		m.oldValue = func(ctx context.Context) (*DeviceIpReport, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().DeviceIpReport.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withDeviceIpReport sets the old DeviceIpReport of the mutation.
-func withDeviceIpReport(node *DeviceIpReport) deviceipreportOption {
-	return func(m *DeviceIpReportMutation) {
-		m.oldValue = func(context.Context) (*DeviceIpReport, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m DeviceIpReportMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m DeviceIpReportMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of DeviceIpReport entities.
-func (m *DeviceIpReportMutation) SetID(id int64) {
-	m.id = &id
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *DeviceIpReportMutation) ID() (id int64, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *DeviceIpReportMutation) IDs(ctx context.Context) ([]int64, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []int64{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().DeviceIpReport.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (m *DeviceIpReportMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
-}
-
-// CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *DeviceIpReportMutation) CreatedAt() (r time.Time, exists bool) {
-	v := m.created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedAt returns the old "created_at" field's value of the DeviceIpReport entity.
-// If the DeviceIpReport object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeviceIpReportMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
-	}
-	return oldValue.CreatedAt, nil
-}
-
-// ResetCreatedAt resets all changes to the "created_at" field.
-func (m *DeviceIpReportMutation) ResetCreatedAt() {
-	m.created_at = nil
-}
-
-// SetDeviceID sets the "device_id" field.
-func (m *DeviceIpReportMutation) SetDeviceID(i int64) {
-	m.device = &i
-}
-
-// DeviceID returns the value of the "device_id" field in the mutation.
-func (m *DeviceIpReportMutation) DeviceID() (r int64, exists bool) {
-	v := m.device
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeviceID returns the old "device_id" field's value of the DeviceIpReport entity.
-// If the DeviceIpReport object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeviceIpReportMutation) OldDeviceID(ctx context.Context) (v int64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeviceID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeviceID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeviceID: %w", err)
-	}
-	return oldValue.DeviceID, nil
-}
-
-// ResetDeviceID resets all changes to the "device_id" field.
-func (m *DeviceIpReportMutation) ResetDeviceID() {
-	m.device = nil
-}
-
-// SetIPV4 sets the "ip_v4" field.
-func (m *DeviceIpReportMutation) SetIPV4(s string) {
-	m.ip_v4 = &s
-}
-
-// IPV4 returns the value of the "ip_v4" field in the mutation.
-func (m *DeviceIpReportMutation) IPV4() (r string, exists bool) {
-	v := m.ip_v4
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldIPV4 returns the old "ip_v4" field's value of the DeviceIpReport entity.
-// If the DeviceIpReport object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeviceIpReportMutation) OldIPV4(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIPV4 is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIPV4 requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIPV4: %w", err)
-	}
-	return oldValue.IPV4, nil
-}
-
-// ClearIPV4 clears the value of the "ip_v4" field.
-func (m *DeviceIpReportMutation) ClearIPV4() {
-	m.ip_v4 = nil
-	m.clearedFields[deviceipreport.FieldIPV4] = struct{}{}
-}
-
-// IPV4Cleared returns if the "ip_v4" field was cleared in this mutation.
-func (m *DeviceIpReportMutation) IPV4Cleared() bool {
-	_, ok := m.clearedFields[deviceipreport.FieldIPV4]
-	return ok
-}
-
-// ResetIPV4 resets all changes to the "ip_v4" field.
-func (m *DeviceIpReportMutation) ResetIPV4() {
-	m.ip_v4 = nil
-	delete(m.clearedFields, deviceipreport.FieldIPV4)
-}
-
-// SetIPV6 sets the "ip_v6" field.
-func (m *DeviceIpReportMutation) SetIPV6(s string) {
-	m.ip_v6 = &s
-}
-
-// IPV6 returns the value of the "ip_v6" field in the mutation.
-func (m *DeviceIpReportMutation) IPV6() (r string, exists bool) {
-	v := m.ip_v6
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldIPV6 returns the old "ip_v6" field's value of the DeviceIpReport entity.
-// If the DeviceIpReport object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeviceIpReportMutation) OldIPV6(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIPV6 is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIPV6 requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIPV6: %w", err)
-	}
-	return oldValue.IPV6, nil
-}
-
-// ClearIPV6 clears the value of the "ip_v6" field.
-func (m *DeviceIpReportMutation) ClearIPV6() {
-	m.ip_v6 = nil
-	m.clearedFields[deviceipreport.FieldIPV6] = struct{}{}
-}
-
-// IPV6Cleared returns if the "ip_v6" field was cleared in this mutation.
-func (m *DeviceIpReportMutation) IPV6Cleared() bool {
-	_, ok := m.clearedFields[deviceipreport.FieldIPV6]
-	return ok
-}
-
-// ResetIPV6 resets all changes to the "ip_v6" field.
-func (m *DeviceIpReportMutation) ResetIPV6() {
-	m.ip_v6 = nil
-	delete(m.clearedFields, deviceipreport.FieldIPV6)
-}
-
-// ClearDevice clears the "device" edge to the Device entity.
-func (m *DeviceIpReportMutation) ClearDevice() {
-	m.cleareddevice = true
-	m.clearedFields[deviceipreport.FieldDeviceID] = struct{}{}
-}
-
-// DeviceCleared reports if the "device" edge to the Device entity was cleared.
-func (m *DeviceIpReportMutation) DeviceCleared() bool {
-	return m.cleareddevice
-}
-
-// DeviceIDs returns the "device" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// DeviceID instead. It exists only for internal usage by the builders.
-func (m *DeviceIpReportMutation) DeviceIDs() (ids []int64) {
-	if id := m.device; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetDevice resets all changes to the "device" edge.
-func (m *DeviceIpReportMutation) ResetDevice() {
-	m.device = nil
-	m.cleareddevice = false
-}
-
-// Where appends a list predicates to the DeviceIpReportMutation builder.
-func (m *DeviceIpReportMutation) Where(ps ...predicate.DeviceIpReport) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// WhereP appends storage-level predicates to the DeviceIpReportMutation builder. Using this method,
-// users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *DeviceIpReportMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.DeviceIpReport, len(ps))
-	for i := range ps {
-		p[i] = ps[i]
-	}
-	m.Where(p...)
-}
-
-// Op returns the operation name.
-func (m *DeviceIpReportMutation) Op() Op {
-	return m.op
-}
-
-// SetOp allows setting the mutation operation.
-func (m *DeviceIpReportMutation) SetOp(op Op) {
-	m.op = op
-}
-
-// Type returns the node type of this mutation (DeviceIpReport).
-func (m *DeviceIpReportMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *DeviceIpReportMutation) Fields() []string {
-	fields := make([]string, 0, 4)
-	if m.created_at != nil {
-		fields = append(fields, deviceipreport.FieldCreatedAt)
-	}
-	if m.device != nil {
-		fields = append(fields, deviceipreport.FieldDeviceID)
-	}
-	if m.ip_v4 != nil {
-		fields = append(fields, deviceipreport.FieldIPV4)
-	}
-	if m.ip_v6 != nil {
-		fields = append(fields, deviceipreport.FieldIPV6)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *DeviceIpReportMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case deviceipreport.FieldCreatedAt:
-		return m.CreatedAt()
-	case deviceipreport.FieldDeviceID:
-		return m.DeviceID()
-	case deviceipreport.FieldIPV4:
-		return m.IPV4()
-	case deviceipreport.FieldIPV6:
-		return m.IPV6()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *DeviceIpReportMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case deviceipreport.FieldCreatedAt:
-		return m.OldCreatedAt(ctx)
-	case deviceipreport.FieldDeviceID:
-		return m.OldDeviceID(ctx)
-	case deviceipreport.FieldIPV4:
-		return m.OldIPV4(ctx)
-	case deviceipreport.FieldIPV6:
-		return m.OldIPV6(ctx)
-	}
-	return nil, fmt.Errorf("unknown DeviceIpReport field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *DeviceIpReportMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case deviceipreport.FieldCreatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedAt(v)
-		return nil
-	case deviceipreport.FieldDeviceID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeviceID(v)
-		return nil
-	case deviceipreport.FieldIPV4:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetIPV4(v)
-		return nil
-	case deviceipreport.FieldIPV6:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetIPV6(v)
-		return nil
-	}
-	return fmt.Errorf("unknown DeviceIpReport field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *DeviceIpReportMutation) AddedFields() []string {
-	var fields []string
-	return fields
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *DeviceIpReportMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	}
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *DeviceIpReportMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	}
-	return fmt.Errorf("unknown DeviceIpReport numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *DeviceIpReportMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(deviceipreport.FieldIPV4) {
-		fields = append(fields, deviceipreport.FieldIPV4)
-	}
-	if m.FieldCleared(deviceipreport.FieldIPV6) {
-		fields = append(fields, deviceipreport.FieldIPV6)
-	}
-	return fields
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *DeviceIpReportMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *DeviceIpReportMutation) ClearField(name string) error {
-	switch name {
-	case deviceipreport.FieldIPV4:
-		m.ClearIPV4()
-		return nil
-	case deviceipreport.FieldIPV6:
-		m.ClearIPV6()
-		return nil
-	}
-	return fmt.Errorf("unknown DeviceIpReport nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *DeviceIpReportMutation) ResetField(name string) error {
-	switch name {
-	case deviceipreport.FieldCreatedAt:
-		m.ResetCreatedAt()
-		return nil
-	case deviceipreport.FieldDeviceID:
-		m.ResetDeviceID()
-		return nil
-	case deviceipreport.FieldIPV4:
-		m.ResetIPV4()
-		return nil
-	case deviceipreport.FieldIPV6:
-		m.ResetIPV6()
-		return nil
-	}
-	return fmt.Errorf("unknown DeviceIpReport field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *DeviceIpReportMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.device != nil {
-		edges = append(edges, deviceipreport.EdgeDevice)
-	}
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *DeviceIpReportMutation) AddedIDs(name string) []ent.Value {
-	switch name {
-	case deviceipreport.EdgeDevice:
-		if id := m.device; id != nil {
-			return []ent.Value{*id}
-		}
-	}
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *DeviceIpReportMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *DeviceIpReportMutation) RemovedIDs(name string) []ent.Value {
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *DeviceIpReportMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.cleareddevice {
-		edges = append(edges, deviceipreport.EdgeDevice)
-	}
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *DeviceIpReportMutation) EdgeCleared(name string) bool {
-	switch name {
-	case deviceipreport.EdgeDevice:
-		return m.cleareddevice
-	}
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *DeviceIpReportMutation) ClearEdge(name string) error {
-	switch name {
-	case deviceipreport.EdgeDevice:
-		m.ClearDevice()
-		return nil
-	}
-	return fmt.Errorf("unknown DeviceIpReport unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *DeviceIpReportMutation) ResetEdge(name string) error {
-	switch name {
-	case deviceipreport.EdgeDevice:
-		m.ResetDevice()
-		return nil
-	}
-	return fmt.Errorf("unknown DeviceIpReport edge %s", name)
 }
 
 // DevicePortForwardMutation represents an operation that mutates the DevicePortForward nodes in the graph.

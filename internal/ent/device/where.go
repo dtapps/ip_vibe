@@ -635,29 +635,6 @@ func LastHeartbeatAtNotNil() predicate.Device {
 	return predicate.Device(sql.FieldNotNull(FieldLastHeartbeatAt))
 }
 
-// HasIPReports applies the HasEdge predicate on the "ip_reports" edge.
-func HasIPReports() predicate.Device {
-	return predicate.Device(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, IPReportsTable, IPReportsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasIPReportsWith applies the HasEdge predicate on the "ip_reports" edge with a given conditions (other predicates).
-func HasIPReportsWith(preds ...predicate.DeviceIpReport) predicate.Device {
-	return predicate.Device(func(s *sql.Selector) {
-		step := newIPReportsStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasIPGroups applies the HasEdge predicate on the "ip_groups" edge.
 func HasIPGroups() predicate.Device {
 	return predicate.Device(func(s *sql.Selector) {

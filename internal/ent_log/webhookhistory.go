@@ -21,9 +21,9 @@ type WebhookHistory struct {
 	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
-	// 关联 Webhook ID
+	// 关联 Webhook 序号
 	WebhookID int64 `json:"webhook_id,omitempty"`
-	// 关联 WebhookSubscription ID
+	// 关联 WebhookSubscription 序号
 	SubscriptionID int64 `json:"subscription_id,omitempty"`
 	// 发送的URL
 	URL string `json:"url,omitempty"`

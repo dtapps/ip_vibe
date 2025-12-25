@@ -44,13 +44,13 @@ func (WebhookHistory) Fields() []ent.Field {
 
 		field.Int64("webhook_id").
 			Immutable().
-			Comment("关联 Webhook ID").
+			Comment("关联 Webhook 序号").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("subscription_id").
 			Optional().
 			Immutable().
-			Comment("关联 WebhookSubscription ID").
+			Comment("关联 WebhookSubscription 序号").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("url").

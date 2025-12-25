@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// DeviceIpReport is the predicate function for deviceipreport builders.
+type DeviceIpReport func(*sql.Selector)
+
 // DomainMonitorHistory is the predicate function for domainmonitorhistory builders.
 type DomainMonitorHistory func(*sql.Selector)
 
@@ -14,6 +17,9 @@ type HttpLog func(*sql.Selector)
 
 // OperationLog is the predicate function for operationlog builders.
 type OperationLog func(*sql.Selector)
+
+// PortForwardStats is the predicate function for portforwardstats builders.
+type PortForwardStats func(*sql.Selector)
 
 // RestyLog is the predicate function for restylog builders.
 type RestyLog func(*sql.Selector)

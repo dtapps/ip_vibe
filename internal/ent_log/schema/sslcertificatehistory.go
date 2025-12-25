@@ -44,7 +44,7 @@ func (SSLCertificateHistory) Fields() []ent.Field {
 
 		field.Int64("ssl_record_id").
 			Immutable().
-			Comment("关联 SSLRecord ID").
+			Comment("关联 SSLRecord 序号").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("cert_domain").

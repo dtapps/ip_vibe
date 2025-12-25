@@ -4,9 +4,11 @@ package ent_log
 
 import (
 	"time"
+	"vibe_ip/internal/ent_log/deviceipreport"
 	"vibe_ip/internal/ent_log/domainmonitorhistory"
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
+	"vibe_ip/internal/ent_log/portforwardstats"
 	"vibe_ip/internal/ent_log/restylog"
 	"vibe_ip/internal/ent_log/schema"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
@@ -17,6 +19,31 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	deviceipreportMixin := schema.DeviceIpReport{}.Mixin()
+	deviceipreportMixinFields0 := deviceipreportMixin[0].Fields()
+	_ = deviceipreportMixinFields0
+	deviceipreportFields := schema.DeviceIpReport{}.Fields()
+	_ = deviceipreportFields
+	// deviceipreportDescCreatedAt is the schema descriptor for created_at field.
+	deviceipreportDescCreatedAt := deviceipreportMixinFields0[0].Descriptor()
+	// deviceipreport.DefaultCreatedAt holds the default value on creation for the created_at field.
+	deviceipreport.DefaultCreatedAt = deviceipreportDescCreatedAt.Default.(func() time.Time)
+	// deviceipreportDescDeviceID is the schema descriptor for device_id field.
+	deviceipreportDescDeviceID := deviceipreportFields[1].Descriptor()
+	// deviceipreport.DeviceIDValidator is a validator for the "device_id" field. It is called by the builders before save.
+	deviceipreport.DeviceIDValidator = deviceipreportDescDeviceID.Validators[0].(func(int64) error)
+	// deviceipreportDescIPV4 is the schema descriptor for ip_v4 field.
+	deviceipreportDescIPV4 := deviceipreportFields[2].Descriptor()
+	// deviceipreport.IPV4Validator is a validator for the "ip_v4" field. It is called by the builders before save.
+	deviceipreport.IPV4Validator = deviceipreportDescIPV4.Validators[0].(func(string) error)
+	// deviceipreportDescIPV6 is the schema descriptor for ip_v6 field.
+	deviceipreportDescIPV6 := deviceipreportFields[3].Descriptor()
+	// deviceipreport.IPV6Validator is a validator for the "ip_v6" field. It is called by the builders before save.
+	deviceipreport.IPV6Validator = deviceipreportDescIPV6.Validators[0].(func(string) error)
+	// deviceipreportDescID is the schema descriptor for id field.
+	deviceipreportDescID := deviceipreportFields[0].Descriptor()
+	// deviceipreport.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	deviceipreport.IDValidator = deviceipreportDescID.Validators[0].(func(int64) error)
 	domainmonitorhistoryMixin := schema.DomainMonitorHistory{}.Mixin()
 	domainmonitorhistoryMixinFields0 := domainmonitorhistoryMixin[0].Fields()
 	_ = domainmonitorhistoryMixinFields0
@@ -77,6 +104,23 @@ func init() {
 	operationlogDescID := operationlogFields[0].Descriptor()
 	// operationlog.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	operationlog.IDValidator = operationlogDescID.Validators[0].(func(int64) error)
+	portforwardstatsMixin := schema.PortForwardStats{}.Mixin()
+	portforwardstatsMixinFields0 := portforwardstatsMixin[0].Fields()
+	_ = portforwardstatsMixinFields0
+	portforwardstatsFields := schema.PortForwardStats{}.Fields()
+	_ = portforwardstatsFields
+	// portforwardstatsDescCreatedAt is the schema descriptor for created_at field.
+	portforwardstatsDescCreatedAt := portforwardstatsMixinFields0[0].Descriptor()
+	// portforwardstats.DefaultCreatedAt holds the default value on creation for the created_at field.
+	portforwardstats.DefaultCreatedAt = portforwardstatsDescCreatedAt.Default.(func() time.Time)
+	// portforwardstatsDescDevicePortForwardID is the schema descriptor for device_port_forward_id field.
+	portforwardstatsDescDevicePortForwardID := portforwardstatsFields[1].Descriptor()
+	// portforwardstats.DevicePortForwardIDValidator is a validator for the "device_port_forward_id" field. It is called by the builders before save.
+	portforwardstats.DevicePortForwardIDValidator = portforwardstatsDescDevicePortForwardID.Validators[0].(func(int64) error)
+	// portforwardstatsDescID is the schema descriptor for id field.
+	portforwardstatsDescID := portforwardstatsFields[0].Descriptor()
+	// portforwardstats.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	portforwardstats.IDValidator = portforwardstatsDescID.Validators[0].(func(int64) error)
 	restylogFields := schema.RestyLog{}.Fields()
 	_ = restylogFields
 	// restylogDescStatusCode is the schema descriptor for status_code field.

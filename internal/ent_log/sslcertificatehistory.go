@@ -20,7 +20,7 @@ type SSLCertificateHistory struct {
 	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
-	// 关联 SSLRecord ID
+	// 关联 SSLRecord 序号
 	SslRecordID int64 `json:"ssl_record_id,omitempty"`
 	// 证书域名
 	CertDomain string `json:"cert_domain,omitempty"`

@@ -6,7 +6,6 @@ import (
 	"time"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
-	"vibe_ip/internal/ent/deviceipreport"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
@@ -100,27 +99,18 @@ func init() {
 	device.DefaultUpdatedAt = deviceDescUpdatedAt.Default.(func() time.Time)
 	// device.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	device.UpdateDefaultUpdatedAt = deviceDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// deviceDescIPV4 is the schema descriptor for ip_v4 field.
+	deviceDescIPV4 := deviceFields[4].Descriptor()
+	// device.IPV4Validator is a validator for the "ip_v4" field. It is called by the builders before save.
+	device.IPV4Validator = deviceDescIPV4.Validators[0].(func(string) error)
+	// deviceDescIPV6 is the schema descriptor for ip_v6 field.
+	deviceDescIPV6 := deviceFields[5].Descriptor()
+	// device.IPV6Validator is a validator for the "ip_v6" field. It is called by the builders before save.
+	device.IPV6Validator = deviceDescIPV6.Validators[0].(func(string) error)
 	// deviceDescID is the schema descriptor for id field.
 	deviceDescID := deviceFields[0].Descriptor()
 	// device.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	device.IDValidator = deviceDescID.Validators[0].(func(int64) error)
-	deviceipreportMixin := schema.DeviceIpReport{}.Mixin()
-	deviceipreportMixinFields0 := deviceipreportMixin[0].Fields()
-	_ = deviceipreportMixinFields0
-	deviceipreportFields := schema.DeviceIpReport{}.Fields()
-	_ = deviceipreportFields
-	// deviceipreportDescCreatedAt is the schema descriptor for created_at field.
-	deviceipreportDescCreatedAt := deviceipreportMixinFields0[0].Descriptor()
-	// deviceipreport.DefaultCreatedAt holds the default value on creation for the created_at field.
-	deviceipreport.DefaultCreatedAt = deviceipreportDescCreatedAt.Default.(func() time.Time)
-	// deviceipreportDescDeviceID is the schema descriptor for device_id field.
-	deviceipreportDescDeviceID := deviceipreportFields[1].Descriptor()
-	// deviceipreport.DeviceIDValidator is a validator for the "device_id" field. It is called by the builders before save.
-	deviceipreport.DeviceIDValidator = deviceipreportDescDeviceID.Validators[0].(func(int64) error)
-	// deviceipreportDescID is the schema descriptor for id field.
-	deviceipreportDescID := deviceipreportFields[0].Descriptor()
-	// deviceipreport.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	deviceipreport.IDValidator = deviceipreportDescID.Validators[0].(func(int64) error)
 	deviceportforwardMixin := schema.DevicePortForward{}.Mixin()
 	deviceportforwardMixinFields0 := deviceportforwardMixin[0].Fields()
 	_ = deviceportforwardMixinFields0

@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/internal/ent/device"
-	"vibe_ip/internal/ent/deviceipreport"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/ipgroup"
 
@@ -141,21 +140,6 @@ func (_c *DeviceCreate) SetID(v int64) *DeviceCreate {
 	return _c
 }
 
-// AddIPReportIDs adds the "ip_reports" edge to the DeviceIpReport entity by IDs.
-func (_c *DeviceCreate) AddIPReportIDs(ids ...int64) *DeviceCreate {
-	_c.mutation.AddIPReportIDs(ids...)
-	return _c
-}
-
-// AddIPReports adds the "ip_reports" edges to the DeviceIpReport entity.
-func (_c *DeviceCreate) AddIPReports(v ...*DeviceIpReport) *DeviceCreate {
-	ids := make([]int64, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _c.AddIPReportIDs(ids...)
-}
-
 // AddIPGroupIDs adds the "ip_groups" edge to the IpGroup entity by IDs.
 func (_c *DeviceCreate) AddIPGroupIDs(ids ...int64) *DeviceCreate {
 	_c.mutation.AddIPGroupIDs(ids...)
@@ -245,6 +229,16 @@ func (_c *DeviceCreate) check() error {
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Device.name"`)}
 	}
+	if v, ok := _c.mutation.IPV4(); ok {
+		if err := device.IPV4Validator(v); err != nil {
+			return &ValidationError{Name: "ip_v4", err: fmt.Errorf(`ent: validator failed for field "Device.ip_v4": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.IPV6(); ok {
+		if err := device.IPV6Validator(v); err != nil {
+			return &ValidationError{Name: "ip_v6", err: fmt.Errorf(`ent: validator failed for field "Device.ip_v6": %w`, err)}
+		}
+	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := device.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Device.id": %w`, err)}
@@ -318,22 +312,6 @@ func (_c *DeviceCreate) createSpec() (*Device, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.LastHeartbeatAt(); ok {
 		_spec.SetField(device.FieldLastHeartbeatAt, field.TypeTime, value)
 		_node.LastHeartbeatAt = value
-	}
-	if nodes := _c.mutation.IPReportsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   device.IPReportsTable,
-			Columns: []string{device.IPReportsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(deviceipreport.FieldID, field.TypeInt64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.IPGroupsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

@@ -36,9 +36,10 @@ func DeviceReportDeviceIp(c *gin.Context) {
 	// 创建服务
 	service := service.NewDeviceOpenService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -74,9 +75,10 @@ func DevicePortForwards(c *gin.Context) {
 	// 创建服务
 	service := service.NewDeviceOpenService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用

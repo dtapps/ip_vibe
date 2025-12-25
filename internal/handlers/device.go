@@ -30,8 +30,9 @@ func Device(c *gin.Context) {
 	// 创建服务
 	service := service.NewDeviceService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 查询全部设备

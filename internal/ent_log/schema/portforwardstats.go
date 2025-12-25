@@ -42,46 +42,55 @@ func (PortForwardStats) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("device_port_forward_id").
-			Positive().
+			Positive(). // 正数
+			Immutable().
 			Comment("关联 DevicePortForward 序号").
 			Annotations(entsql.WithComments(true)),
 
 		field.Time("start_time").
+			Immutable().
 			Comment("转发启动时间 (UTC)").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("active_conn").
 			Optional().
+			Immutable().
 			Comment("瞬时活跃连接数").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("total_conn").
 			Optional().
+			Immutable().
 			Comment("累计连接数").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("bytes_in").
 			Optional().
+			Immutable().
 			Comment("累计入站流量 (bytes)").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("bytes_out").
 			Optional().
+			Immutable().
 			Comment("累计出站流量 (bytes)").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("udp_packets_in").
 			Optional().
+			Immutable().
 			Comment("累计入站 UDP 包数").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("udp_packets_out").
 			Optional().
+			Immutable().
 			Comment("累计出站 UDP 包数").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("errors").
 			Optional().
+			Immutable().
 			Comment("累计错误数").
 			Annotations(entsql.WithComments(true)),
 	}
@@ -95,16 +104,16 @@ func (PortForwardStats) Edges() []ent.Edge {
 // Indexes of the PortForwardStats.
 func (PortForwardStats) Indexes() []ent.Index {
 	return []ent.Index{
-		// 按上报时间降序，便于查询最新统计
+		// 按创建时间降序排序，便于查询最新记录
 		index.Fields("created_at").
 			Annotations(entsql.Desc(), entsql.WithComments(true)),
 
-		// 按设备 ID 索引，便于按设备过滤统计
-		index.Fields("device_id").
+		// 按关联 DevicePortForward 序号排序，便于过滤记录
+		index.Fields("device_port_forward_id").
 			Annotations(entsql.WithComments(true)),
 
-		// 复合索引：设备 ID + 上报时间，用于高效时间范围查询
-		index.Fields("device_id", "created_at").
+		// 复合索引：关联 DevicePortForward 序号 + 创建时间，用于高效时间范围查询
+		index.Fields("device_port_forward_id", "created_at").
 			Annotations(entsql.WithComments(true)),
 	}
 }

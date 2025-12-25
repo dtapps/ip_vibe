@@ -26,8 +26,9 @@ func GetDevices(c *gin.Context) {
 	// 创建服务
 	service := service.NewDeviceService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -63,8 +64,9 @@ func GetDeviceDetail(c *gin.Context) {
 	// 创建服务
 	service := service.NewDeviceService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -99,8 +101,9 @@ func CreateDevice(c *gin.Context) {
 	// 创建服务
 	service := service.NewDeviceService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -137,8 +140,9 @@ func UpdateDevice(c *gin.Context) {
 	// 创建服务
 	service := service.NewDeviceService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -174,8 +178,9 @@ func DeleteDevice(c *gin.Context) {
 	// 创建服务
 	service := service.NewDeviceService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -211,8 +216,9 @@ func GetDeviceIpHistory(c *gin.Context) {
 	// 创建服务
 	service := service.NewDeviceService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -248,8 +254,9 @@ func HealthCheckDevice(c *gin.Context) {
 	// 创建服务
 	service := service.NewDeviceService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用

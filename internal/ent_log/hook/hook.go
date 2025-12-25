@@ -8,6 +8,18 @@ import (
 	"vibe_ip/internal/ent_log"
 )
 
+// The DeviceIpReportFunc type is an adapter to allow the use of ordinary
+// function as DeviceIpReport mutator.
+type DeviceIpReportFunc func(context.Context, *ent_log.DeviceIpReportMutation) (ent_log.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f DeviceIpReportFunc) Mutate(ctx context.Context, m ent_log.Mutation) (ent_log.Value, error) {
+	if mv, ok := m.(*ent_log.DeviceIpReportMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent_log.DeviceIpReportMutation", m)
+}
+
 // The DomainMonitorHistoryFunc type is an adapter to allow the use of ordinary
 // function as DomainMonitorHistory mutator.
 type DomainMonitorHistoryFunc func(context.Context, *ent_log.DomainMonitorHistoryMutation) (ent_log.Value, error)
@@ -42,6 +54,18 @@ func (f OperationLogFunc) Mutate(ctx context.Context, m ent_log.Mutation) (ent_l
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent_log.OperationLogMutation", m)
+}
+
+// The PortForwardStatsFunc type is an adapter to allow the use of ordinary
+// function as PortForwardStats mutator.
+type PortForwardStatsFunc func(context.Context, *ent_log.PortForwardStatsMutation) (ent_log.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PortForwardStatsFunc) Mutate(ctx context.Context, m ent_log.Mutation) (ent_log.Value, error) {
+	if mv, ok := m.(*ent_log.PortForwardStatsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent_log.PortForwardStatsMutation", m)
 }
 
 // The RestyLogFunc type is an adapter to allow the use of ordinary

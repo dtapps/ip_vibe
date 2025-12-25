@@ -9,9 +9,11 @@ import (
 	"fmt"
 	"sync"
 	"time"
+	"vibe_ip/internal/ent_log/deviceipreport"
 	"vibe_ip/internal/ent_log/domainmonitorhistory"
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
+	"vibe_ip/internal/ent_log/portforwardstats"
 	"vibe_ip/internal/ent_log/predicate"
 	"vibe_ip/internal/ent_log/restylog"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
@@ -30,13 +32,586 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
+	TypeDeviceIpReport        = "DeviceIpReport"
 	TypeDomainMonitorHistory  = "DomainMonitorHistory"
 	TypeHttpLog               = "HttpLog"
 	TypeOperationLog          = "OperationLog"
+	TypePortForwardStats      = "PortForwardStats"
 	TypeRestyLog              = "RestyLog"
 	TypeSSLCertificateHistory = "SSLCertificateHistory"
 	TypeWebhookHistory        = "WebhookHistory"
 )
+
+// DeviceIpReportMutation represents an operation that mutates the DeviceIpReport nodes in the graph.
+type DeviceIpReportMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int64
+	created_at    *time.Time
+	device_id     *int64
+	adddevice_id  *int64
+	ip_v4         *string
+	ip_v6         *string
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*DeviceIpReport, error)
+	predicates    []predicate.DeviceIpReport
+}
+
+var _ ent.Mutation = (*DeviceIpReportMutation)(nil)
+
+// deviceipreportOption allows management of the mutation configuration using functional options.
+type deviceipreportOption func(*DeviceIpReportMutation)
+
+// newDeviceIpReportMutation creates new mutation for the DeviceIpReport entity.
+func newDeviceIpReportMutation(c config, op Op, opts ...deviceipreportOption) *DeviceIpReportMutation {
+	m := &DeviceIpReportMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeDeviceIpReport,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withDeviceIpReportID sets the ID field of the mutation.
+func withDeviceIpReportID(id int64) deviceipreportOption {
+	return func(m *DeviceIpReportMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *DeviceIpReport
+		)
+		m.oldValue = func(ctx context.Context) (*DeviceIpReport, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().DeviceIpReport.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withDeviceIpReport sets the old DeviceIpReport of the mutation.
+func withDeviceIpReport(node *DeviceIpReport) deviceipreportOption {
+	return func(m *DeviceIpReportMutation) {
+		m.oldValue = func(context.Context) (*DeviceIpReport, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m DeviceIpReportMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m DeviceIpReportMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent_log: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of DeviceIpReport entities.
+func (m *DeviceIpReportMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *DeviceIpReportMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *DeviceIpReportMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().DeviceIpReport.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *DeviceIpReportMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *DeviceIpReportMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the DeviceIpReport entity.
+// If the DeviceIpReport object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeviceIpReportMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *DeviceIpReportMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetDeviceID sets the "device_id" field.
+func (m *DeviceIpReportMutation) SetDeviceID(i int64) {
+	m.device_id = &i
+	m.adddevice_id = nil
+}
+
+// DeviceID returns the value of the "device_id" field in the mutation.
+func (m *DeviceIpReportMutation) DeviceID() (r int64, exists bool) {
+	v := m.device_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeviceID returns the old "device_id" field's value of the DeviceIpReport entity.
+// If the DeviceIpReport object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeviceIpReportMutation) OldDeviceID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeviceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeviceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeviceID: %w", err)
+	}
+	return oldValue.DeviceID, nil
+}
+
+// AddDeviceID adds i to the "device_id" field.
+func (m *DeviceIpReportMutation) AddDeviceID(i int64) {
+	if m.adddevice_id != nil {
+		*m.adddevice_id += i
+	} else {
+		m.adddevice_id = &i
+	}
+}
+
+// AddedDeviceID returns the value that was added to the "device_id" field in this mutation.
+func (m *DeviceIpReportMutation) AddedDeviceID() (r int64, exists bool) {
+	v := m.adddevice_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDeviceID resets all changes to the "device_id" field.
+func (m *DeviceIpReportMutation) ResetDeviceID() {
+	m.device_id = nil
+	m.adddevice_id = nil
+}
+
+// SetIPV4 sets the "ip_v4" field.
+func (m *DeviceIpReportMutation) SetIPV4(s string) {
+	m.ip_v4 = &s
+}
+
+// IPV4 returns the value of the "ip_v4" field in the mutation.
+func (m *DeviceIpReportMutation) IPV4() (r string, exists bool) {
+	v := m.ip_v4
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIPV4 returns the old "ip_v4" field's value of the DeviceIpReport entity.
+// If the DeviceIpReport object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeviceIpReportMutation) OldIPV4(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIPV4 is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIPV4 requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIPV4: %w", err)
+	}
+	return oldValue.IPV4, nil
+}
+
+// ClearIPV4 clears the value of the "ip_v4" field.
+func (m *DeviceIpReportMutation) ClearIPV4() {
+	m.ip_v4 = nil
+	m.clearedFields[deviceipreport.FieldIPV4] = struct{}{}
+}
+
+// IPV4Cleared returns if the "ip_v4" field was cleared in this mutation.
+func (m *DeviceIpReportMutation) IPV4Cleared() bool {
+	_, ok := m.clearedFields[deviceipreport.FieldIPV4]
+	return ok
+}
+
+// ResetIPV4 resets all changes to the "ip_v4" field.
+func (m *DeviceIpReportMutation) ResetIPV4() {
+	m.ip_v4 = nil
+	delete(m.clearedFields, deviceipreport.FieldIPV4)
+}
+
+// SetIPV6 sets the "ip_v6" field.
+func (m *DeviceIpReportMutation) SetIPV6(s string) {
+	m.ip_v6 = &s
+}
+
+// IPV6 returns the value of the "ip_v6" field in the mutation.
+func (m *DeviceIpReportMutation) IPV6() (r string, exists bool) {
+	v := m.ip_v6
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIPV6 returns the old "ip_v6" field's value of the DeviceIpReport entity.
+// If the DeviceIpReport object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeviceIpReportMutation) OldIPV6(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIPV6 is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIPV6 requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIPV6: %w", err)
+	}
+	return oldValue.IPV6, nil
+}
+
+// ClearIPV6 clears the value of the "ip_v6" field.
+func (m *DeviceIpReportMutation) ClearIPV6() {
+	m.ip_v6 = nil
+	m.clearedFields[deviceipreport.FieldIPV6] = struct{}{}
+}
+
+// IPV6Cleared returns if the "ip_v6" field was cleared in this mutation.
+func (m *DeviceIpReportMutation) IPV6Cleared() bool {
+	_, ok := m.clearedFields[deviceipreport.FieldIPV6]
+	return ok
+}
+
+// ResetIPV6 resets all changes to the "ip_v6" field.
+func (m *DeviceIpReportMutation) ResetIPV6() {
+	m.ip_v6 = nil
+	delete(m.clearedFields, deviceipreport.FieldIPV6)
+}
+
+// Where appends a list predicates to the DeviceIpReportMutation builder.
+func (m *DeviceIpReportMutation) Where(ps ...predicate.DeviceIpReport) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the DeviceIpReportMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *DeviceIpReportMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.DeviceIpReport, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *DeviceIpReportMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *DeviceIpReportMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (DeviceIpReport).
+func (m *DeviceIpReportMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *DeviceIpReportMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.created_at != nil {
+		fields = append(fields, deviceipreport.FieldCreatedAt)
+	}
+	if m.device_id != nil {
+		fields = append(fields, deviceipreport.FieldDeviceID)
+	}
+	if m.ip_v4 != nil {
+		fields = append(fields, deviceipreport.FieldIPV4)
+	}
+	if m.ip_v6 != nil {
+		fields = append(fields, deviceipreport.FieldIPV6)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *DeviceIpReportMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case deviceipreport.FieldCreatedAt:
+		return m.CreatedAt()
+	case deviceipreport.FieldDeviceID:
+		return m.DeviceID()
+	case deviceipreport.FieldIPV4:
+		return m.IPV4()
+	case deviceipreport.FieldIPV6:
+		return m.IPV6()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *DeviceIpReportMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case deviceipreport.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case deviceipreport.FieldDeviceID:
+		return m.OldDeviceID(ctx)
+	case deviceipreport.FieldIPV4:
+		return m.OldIPV4(ctx)
+	case deviceipreport.FieldIPV6:
+		return m.OldIPV6(ctx)
+	}
+	return nil, fmt.Errorf("unknown DeviceIpReport field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DeviceIpReportMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case deviceipreport.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case deviceipreport.FieldDeviceID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeviceID(v)
+		return nil
+	case deviceipreport.FieldIPV4:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIPV4(v)
+		return nil
+	case deviceipreport.FieldIPV6:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIPV6(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DeviceIpReport field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *DeviceIpReportMutation) AddedFields() []string {
+	var fields []string
+	if m.adddevice_id != nil {
+		fields = append(fields, deviceipreport.FieldDeviceID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *DeviceIpReportMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case deviceipreport.FieldDeviceID:
+		return m.AddedDeviceID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DeviceIpReportMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case deviceipreport.FieldDeviceID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeviceID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DeviceIpReport numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *DeviceIpReportMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(deviceipreport.FieldIPV4) {
+		fields = append(fields, deviceipreport.FieldIPV4)
+	}
+	if m.FieldCleared(deviceipreport.FieldIPV6) {
+		fields = append(fields, deviceipreport.FieldIPV6)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *DeviceIpReportMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *DeviceIpReportMutation) ClearField(name string) error {
+	switch name {
+	case deviceipreport.FieldIPV4:
+		m.ClearIPV4()
+		return nil
+	case deviceipreport.FieldIPV6:
+		m.ClearIPV6()
+		return nil
+	}
+	return fmt.Errorf("unknown DeviceIpReport nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *DeviceIpReportMutation) ResetField(name string) error {
+	switch name {
+	case deviceipreport.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case deviceipreport.FieldDeviceID:
+		m.ResetDeviceID()
+		return nil
+	case deviceipreport.FieldIPV4:
+		m.ResetIPV4()
+		return nil
+	case deviceipreport.FieldIPV6:
+		m.ResetIPV6()
+		return nil
+	}
+	return fmt.Errorf("unknown DeviceIpReport field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *DeviceIpReportMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *DeviceIpReportMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *DeviceIpReportMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *DeviceIpReportMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *DeviceIpReportMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *DeviceIpReportMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *DeviceIpReportMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown DeviceIpReport unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *DeviceIpReportMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown DeviceIpReport edge %s", name)
+}
 
 // DomainMonitorHistoryMutation represents an operation that mutates the DomainMonitorHistory nodes in the graph.
 type DomainMonitorHistoryMutation struct {
@@ -3716,6 +4291,1234 @@ func (m *OperationLogMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *OperationLogMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown OperationLog edge %s", name)
+}
+
+// PortForwardStatsMutation represents an operation that mutates the PortForwardStats nodes in the graph.
+type PortForwardStatsMutation struct {
+	config
+	op                        Op
+	typ                       string
+	id                        *int64
+	created_at                *time.Time
+	device_port_forward_id    *int64
+	adddevice_port_forward_id *int64
+	start_time                *time.Time
+	active_conn               *int64
+	addactive_conn            *int64
+	total_conn                *int64
+	addtotal_conn             *int64
+	bytes_in                  *int64
+	addbytes_in               *int64
+	bytes_out                 *int64
+	addbytes_out              *int64
+	udp_packets_in            *int64
+	addudp_packets_in         *int64
+	udp_packets_out           *int64
+	addudp_packets_out        *int64
+	errors                    *int64
+	adderrors                 *int64
+	clearedFields             map[string]struct{}
+	done                      bool
+	oldValue                  func(context.Context) (*PortForwardStats, error)
+	predicates                []predicate.PortForwardStats
+}
+
+var _ ent.Mutation = (*PortForwardStatsMutation)(nil)
+
+// portforwardstatsOption allows management of the mutation configuration using functional options.
+type portforwardstatsOption func(*PortForwardStatsMutation)
+
+// newPortForwardStatsMutation creates new mutation for the PortForwardStats entity.
+func newPortForwardStatsMutation(c config, op Op, opts ...portforwardstatsOption) *PortForwardStatsMutation {
+	m := &PortForwardStatsMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePortForwardStats,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPortForwardStatsID sets the ID field of the mutation.
+func withPortForwardStatsID(id int64) portforwardstatsOption {
+	return func(m *PortForwardStatsMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *PortForwardStats
+		)
+		m.oldValue = func(ctx context.Context) (*PortForwardStats, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().PortForwardStats.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPortForwardStats sets the old PortForwardStats of the mutation.
+func withPortForwardStats(node *PortForwardStats) portforwardstatsOption {
+	return func(m *PortForwardStatsMutation) {
+		m.oldValue = func(context.Context) (*PortForwardStats, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PortForwardStatsMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PortForwardStatsMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent_log: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of PortForwardStats entities.
+func (m *PortForwardStatsMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PortForwardStatsMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *PortForwardStatsMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().PortForwardStats.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *PortForwardStatsMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *PortForwardStatsMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the PortForwardStats entity.
+// If the PortForwardStats object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortForwardStatsMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *PortForwardStatsMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetDevicePortForwardID sets the "device_port_forward_id" field.
+func (m *PortForwardStatsMutation) SetDevicePortForwardID(i int64) {
+	m.device_port_forward_id = &i
+	m.adddevice_port_forward_id = nil
+}
+
+// DevicePortForwardID returns the value of the "device_port_forward_id" field in the mutation.
+func (m *PortForwardStatsMutation) DevicePortForwardID() (r int64, exists bool) {
+	v := m.device_port_forward_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDevicePortForwardID returns the old "device_port_forward_id" field's value of the PortForwardStats entity.
+// If the PortForwardStats object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortForwardStatsMutation) OldDevicePortForwardID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDevicePortForwardID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDevicePortForwardID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDevicePortForwardID: %w", err)
+	}
+	return oldValue.DevicePortForwardID, nil
+}
+
+// AddDevicePortForwardID adds i to the "device_port_forward_id" field.
+func (m *PortForwardStatsMutation) AddDevicePortForwardID(i int64) {
+	if m.adddevice_port_forward_id != nil {
+		*m.adddevice_port_forward_id += i
+	} else {
+		m.adddevice_port_forward_id = &i
+	}
+}
+
+// AddedDevicePortForwardID returns the value that was added to the "device_port_forward_id" field in this mutation.
+func (m *PortForwardStatsMutation) AddedDevicePortForwardID() (r int64, exists bool) {
+	v := m.adddevice_port_forward_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDevicePortForwardID resets all changes to the "device_port_forward_id" field.
+func (m *PortForwardStatsMutation) ResetDevicePortForwardID() {
+	m.device_port_forward_id = nil
+	m.adddevice_port_forward_id = nil
+}
+
+// SetStartTime sets the "start_time" field.
+func (m *PortForwardStatsMutation) SetStartTime(t time.Time) {
+	m.start_time = &t
+}
+
+// StartTime returns the value of the "start_time" field in the mutation.
+func (m *PortForwardStatsMutation) StartTime() (r time.Time, exists bool) {
+	v := m.start_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStartTime returns the old "start_time" field's value of the PortForwardStats entity.
+// If the PortForwardStats object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortForwardStatsMutation) OldStartTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStartTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStartTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStartTime: %w", err)
+	}
+	return oldValue.StartTime, nil
+}
+
+// ResetStartTime resets all changes to the "start_time" field.
+func (m *PortForwardStatsMutation) ResetStartTime() {
+	m.start_time = nil
+}
+
+// SetActiveConn sets the "active_conn" field.
+func (m *PortForwardStatsMutation) SetActiveConn(i int64) {
+	m.active_conn = &i
+	m.addactive_conn = nil
+}
+
+// ActiveConn returns the value of the "active_conn" field in the mutation.
+func (m *PortForwardStatsMutation) ActiveConn() (r int64, exists bool) {
+	v := m.active_conn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActiveConn returns the old "active_conn" field's value of the PortForwardStats entity.
+// If the PortForwardStats object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortForwardStatsMutation) OldActiveConn(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActiveConn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActiveConn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActiveConn: %w", err)
+	}
+	return oldValue.ActiveConn, nil
+}
+
+// AddActiveConn adds i to the "active_conn" field.
+func (m *PortForwardStatsMutation) AddActiveConn(i int64) {
+	if m.addactive_conn != nil {
+		*m.addactive_conn += i
+	} else {
+		m.addactive_conn = &i
+	}
+}
+
+// AddedActiveConn returns the value that was added to the "active_conn" field in this mutation.
+func (m *PortForwardStatsMutation) AddedActiveConn() (r int64, exists bool) {
+	v := m.addactive_conn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearActiveConn clears the value of the "active_conn" field.
+func (m *PortForwardStatsMutation) ClearActiveConn() {
+	m.active_conn = nil
+	m.addactive_conn = nil
+	m.clearedFields[portforwardstats.FieldActiveConn] = struct{}{}
+}
+
+// ActiveConnCleared returns if the "active_conn" field was cleared in this mutation.
+func (m *PortForwardStatsMutation) ActiveConnCleared() bool {
+	_, ok := m.clearedFields[portforwardstats.FieldActiveConn]
+	return ok
+}
+
+// ResetActiveConn resets all changes to the "active_conn" field.
+func (m *PortForwardStatsMutation) ResetActiveConn() {
+	m.active_conn = nil
+	m.addactive_conn = nil
+	delete(m.clearedFields, portforwardstats.FieldActiveConn)
+}
+
+// SetTotalConn sets the "total_conn" field.
+func (m *PortForwardStatsMutation) SetTotalConn(i int64) {
+	m.total_conn = &i
+	m.addtotal_conn = nil
+}
+
+// TotalConn returns the value of the "total_conn" field in the mutation.
+func (m *PortForwardStatsMutation) TotalConn() (r int64, exists bool) {
+	v := m.total_conn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotalConn returns the old "total_conn" field's value of the PortForwardStats entity.
+// If the PortForwardStats object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortForwardStatsMutation) OldTotalConn(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotalConn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotalConn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotalConn: %w", err)
+	}
+	return oldValue.TotalConn, nil
+}
+
+// AddTotalConn adds i to the "total_conn" field.
+func (m *PortForwardStatsMutation) AddTotalConn(i int64) {
+	if m.addtotal_conn != nil {
+		*m.addtotal_conn += i
+	} else {
+		m.addtotal_conn = &i
+	}
+}
+
+// AddedTotalConn returns the value that was added to the "total_conn" field in this mutation.
+func (m *PortForwardStatsMutation) AddedTotalConn() (r int64, exists bool) {
+	v := m.addtotal_conn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTotalConn clears the value of the "total_conn" field.
+func (m *PortForwardStatsMutation) ClearTotalConn() {
+	m.total_conn = nil
+	m.addtotal_conn = nil
+	m.clearedFields[portforwardstats.FieldTotalConn] = struct{}{}
+}
+
+// TotalConnCleared returns if the "total_conn" field was cleared in this mutation.
+func (m *PortForwardStatsMutation) TotalConnCleared() bool {
+	_, ok := m.clearedFields[portforwardstats.FieldTotalConn]
+	return ok
+}
+
+// ResetTotalConn resets all changes to the "total_conn" field.
+func (m *PortForwardStatsMutation) ResetTotalConn() {
+	m.total_conn = nil
+	m.addtotal_conn = nil
+	delete(m.clearedFields, portforwardstats.FieldTotalConn)
+}
+
+// SetBytesIn sets the "bytes_in" field.
+func (m *PortForwardStatsMutation) SetBytesIn(i int64) {
+	m.bytes_in = &i
+	m.addbytes_in = nil
+}
+
+// BytesIn returns the value of the "bytes_in" field in the mutation.
+func (m *PortForwardStatsMutation) BytesIn() (r int64, exists bool) {
+	v := m.bytes_in
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBytesIn returns the old "bytes_in" field's value of the PortForwardStats entity.
+// If the PortForwardStats object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortForwardStatsMutation) OldBytesIn(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBytesIn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBytesIn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBytesIn: %w", err)
+	}
+	return oldValue.BytesIn, nil
+}
+
+// AddBytesIn adds i to the "bytes_in" field.
+func (m *PortForwardStatsMutation) AddBytesIn(i int64) {
+	if m.addbytes_in != nil {
+		*m.addbytes_in += i
+	} else {
+		m.addbytes_in = &i
+	}
+}
+
+// AddedBytesIn returns the value that was added to the "bytes_in" field in this mutation.
+func (m *PortForwardStatsMutation) AddedBytesIn() (r int64, exists bool) {
+	v := m.addbytes_in
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearBytesIn clears the value of the "bytes_in" field.
+func (m *PortForwardStatsMutation) ClearBytesIn() {
+	m.bytes_in = nil
+	m.addbytes_in = nil
+	m.clearedFields[portforwardstats.FieldBytesIn] = struct{}{}
+}
+
+// BytesInCleared returns if the "bytes_in" field was cleared in this mutation.
+func (m *PortForwardStatsMutation) BytesInCleared() bool {
+	_, ok := m.clearedFields[portforwardstats.FieldBytesIn]
+	return ok
+}
+
+// ResetBytesIn resets all changes to the "bytes_in" field.
+func (m *PortForwardStatsMutation) ResetBytesIn() {
+	m.bytes_in = nil
+	m.addbytes_in = nil
+	delete(m.clearedFields, portforwardstats.FieldBytesIn)
+}
+
+// SetBytesOut sets the "bytes_out" field.
+func (m *PortForwardStatsMutation) SetBytesOut(i int64) {
+	m.bytes_out = &i
+	m.addbytes_out = nil
+}
+
+// BytesOut returns the value of the "bytes_out" field in the mutation.
+func (m *PortForwardStatsMutation) BytesOut() (r int64, exists bool) {
+	v := m.bytes_out
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBytesOut returns the old "bytes_out" field's value of the PortForwardStats entity.
+// If the PortForwardStats object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortForwardStatsMutation) OldBytesOut(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBytesOut is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBytesOut requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBytesOut: %w", err)
+	}
+	return oldValue.BytesOut, nil
+}
+
+// AddBytesOut adds i to the "bytes_out" field.
+func (m *PortForwardStatsMutation) AddBytesOut(i int64) {
+	if m.addbytes_out != nil {
+		*m.addbytes_out += i
+	} else {
+		m.addbytes_out = &i
+	}
+}
+
+// AddedBytesOut returns the value that was added to the "bytes_out" field in this mutation.
+func (m *PortForwardStatsMutation) AddedBytesOut() (r int64, exists bool) {
+	v := m.addbytes_out
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearBytesOut clears the value of the "bytes_out" field.
+func (m *PortForwardStatsMutation) ClearBytesOut() {
+	m.bytes_out = nil
+	m.addbytes_out = nil
+	m.clearedFields[portforwardstats.FieldBytesOut] = struct{}{}
+}
+
+// BytesOutCleared returns if the "bytes_out" field was cleared in this mutation.
+func (m *PortForwardStatsMutation) BytesOutCleared() bool {
+	_, ok := m.clearedFields[portforwardstats.FieldBytesOut]
+	return ok
+}
+
+// ResetBytesOut resets all changes to the "bytes_out" field.
+func (m *PortForwardStatsMutation) ResetBytesOut() {
+	m.bytes_out = nil
+	m.addbytes_out = nil
+	delete(m.clearedFields, portforwardstats.FieldBytesOut)
+}
+
+// SetUDPPacketsIn sets the "udp_packets_in" field.
+func (m *PortForwardStatsMutation) SetUDPPacketsIn(i int64) {
+	m.udp_packets_in = &i
+	m.addudp_packets_in = nil
+}
+
+// UDPPacketsIn returns the value of the "udp_packets_in" field in the mutation.
+func (m *PortForwardStatsMutation) UDPPacketsIn() (r int64, exists bool) {
+	v := m.udp_packets_in
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUDPPacketsIn returns the old "udp_packets_in" field's value of the PortForwardStats entity.
+// If the PortForwardStats object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortForwardStatsMutation) OldUDPPacketsIn(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUDPPacketsIn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUDPPacketsIn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUDPPacketsIn: %w", err)
+	}
+	return oldValue.UDPPacketsIn, nil
+}
+
+// AddUDPPacketsIn adds i to the "udp_packets_in" field.
+func (m *PortForwardStatsMutation) AddUDPPacketsIn(i int64) {
+	if m.addudp_packets_in != nil {
+		*m.addudp_packets_in += i
+	} else {
+		m.addudp_packets_in = &i
+	}
+}
+
+// AddedUDPPacketsIn returns the value that was added to the "udp_packets_in" field in this mutation.
+func (m *PortForwardStatsMutation) AddedUDPPacketsIn() (r int64, exists bool) {
+	v := m.addudp_packets_in
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearUDPPacketsIn clears the value of the "udp_packets_in" field.
+func (m *PortForwardStatsMutation) ClearUDPPacketsIn() {
+	m.udp_packets_in = nil
+	m.addudp_packets_in = nil
+	m.clearedFields[portforwardstats.FieldUDPPacketsIn] = struct{}{}
+}
+
+// UDPPacketsInCleared returns if the "udp_packets_in" field was cleared in this mutation.
+func (m *PortForwardStatsMutation) UDPPacketsInCleared() bool {
+	_, ok := m.clearedFields[portforwardstats.FieldUDPPacketsIn]
+	return ok
+}
+
+// ResetUDPPacketsIn resets all changes to the "udp_packets_in" field.
+func (m *PortForwardStatsMutation) ResetUDPPacketsIn() {
+	m.udp_packets_in = nil
+	m.addudp_packets_in = nil
+	delete(m.clearedFields, portforwardstats.FieldUDPPacketsIn)
+}
+
+// SetUDPPacketsOut sets the "udp_packets_out" field.
+func (m *PortForwardStatsMutation) SetUDPPacketsOut(i int64) {
+	m.udp_packets_out = &i
+	m.addudp_packets_out = nil
+}
+
+// UDPPacketsOut returns the value of the "udp_packets_out" field in the mutation.
+func (m *PortForwardStatsMutation) UDPPacketsOut() (r int64, exists bool) {
+	v := m.udp_packets_out
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUDPPacketsOut returns the old "udp_packets_out" field's value of the PortForwardStats entity.
+// If the PortForwardStats object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortForwardStatsMutation) OldUDPPacketsOut(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUDPPacketsOut is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUDPPacketsOut requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUDPPacketsOut: %w", err)
+	}
+	return oldValue.UDPPacketsOut, nil
+}
+
+// AddUDPPacketsOut adds i to the "udp_packets_out" field.
+func (m *PortForwardStatsMutation) AddUDPPacketsOut(i int64) {
+	if m.addudp_packets_out != nil {
+		*m.addudp_packets_out += i
+	} else {
+		m.addudp_packets_out = &i
+	}
+}
+
+// AddedUDPPacketsOut returns the value that was added to the "udp_packets_out" field in this mutation.
+func (m *PortForwardStatsMutation) AddedUDPPacketsOut() (r int64, exists bool) {
+	v := m.addudp_packets_out
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearUDPPacketsOut clears the value of the "udp_packets_out" field.
+func (m *PortForwardStatsMutation) ClearUDPPacketsOut() {
+	m.udp_packets_out = nil
+	m.addudp_packets_out = nil
+	m.clearedFields[portforwardstats.FieldUDPPacketsOut] = struct{}{}
+}
+
+// UDPPacketsOutCleared returns if the "udp_packets_out" field was cleared in this mutation.
+func (m *PortForwardStatsMutation) UDPPacketsOutCleared() bool {
+	_, ok := m.clearedFields[portforwardstats.FieldUDPPacketsOut]
+	return ok
+}
+
+// ResetUDPPacketsOut resets all changes to the "udp_packets_out" field.
+func (m *PortForwardStatsMutation) ResetUDPPacketsOut() {
+	m.udp_packets_out = nil
+	m.addudp_packets_out = nil
+	delete(m.clearedFields, portforwardstats.FieldUDPPacketsOut)
+}
+
+// SetErrors sets the "errors" field.
+func (m *PortForwardStatsMutation) SetErrors(i int64) {
+	m.errors = &i
+	m.adderrors = nil
+}
+
+// Errors returns the value of the "errors" field in the mutation.
+func (m *PortForwardStatsMutation) Errors() (r int64, exists bool) {
+	v := m.errors
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldErrors returns the old "errors" field's value of the PortForwardStats entity.
+// If the PortForwardStats object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PortForwardStatsMutation) OldErrors(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldErrors is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldErrors requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldErrors: %w", err)
+	}
+	return oldValue.Errors, nil
+}
+
+// AddErrors adds i to the "errors" field.
+func (m *PortForwardStatsMutation) AddErrors(i int64) {
+	if m.adderrors != nil {
+		*m.adderrors += i
+	} else {
+		m.adderrors = &i
+	}
+}
+
+// AddedErrors returns the value that was added to the "errors" field in this mutation.
+func (m *PortForwardStatsMutation) AddedErrors() (r int64, exists bool) {
+	v := m.adderrors
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearErrors clears the value of the "errors" field.
+func (m *PortForwardStatsMutation) ClearErrors() {
+	m.errors = nil
+	m.adderrors = nil
+	m.clearedFields[portforwardstats.FieldErrors] = struct{}{}
+}
+
+// ErrorsCleared returns if the "errors" field was cleared in this mutation.
+func (m *PortForwardStatsMutation) ErrorsCleared() bool {
+	_, ok := m.clearedFields[portforwardstats.FieldErrors]
+	return ok
+}
+
+// ResetErrors resets all changes to the "errors" field.
+func (m *PortForwardStatsMutation) ResetErrors() {
+	m.errors = nil
+	m.adderrors = nil
+	delete(m.clearedFields, portforwardstats.FieldErrors)
+}
+
+// Where appends a list predicates to the PortForwardStatsMutation builder.
+func (m *PortForwardStatsMutation) Where(ps ...predicate.PortForwardStats) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the PortForwardStatsMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *PortForwardStatsMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.PortForwardStats, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *PortForwardStatsMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *PortForwardStatsMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (PortForwardStats).
+func (m *PortForwardStatsMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PortForwardStatsMutation) Fields() []string {
+	fields := make([]string, 0, 10)
+	if m.created_at != nil {
+		fields = append(fields, portforwardstats.FieldCreatedAt)
+	}
+	if m.device_port_forward_id != nil {
+		fields = append(fields, portforwardstats.FieldDevicePortForwardID)
+	}
+	if m.start_time != nil {
+		fields = append(fields, portforwardstats.FieldStartTime)
+	}
+	if m.active_conn != nil {
+		fields = append(fields, portforwardstats.FieldActiveConn)
+	}
+	if m.total_conn != nil {
+		fields = append(fields, portforwardstats.FieldTotalConn)
+	}
+	if m.bytes_in != nil {
+		fields = append(fields, portforwardstats.FieldBytesIn)
+	}
+	if m.bytes_out != nil {
+		fields = append(fields, portforwardstats.FieldBytesOut)
+	}
+	if m.udp_packets_in != nil {
+		fields = append(fields, portforwardstats.FieldUDPPacketsIn)
+	}
+	if m.udp_packets_out != nil {
+		fields = append(fields, portforwardstats.FieldUDPPacketsOut)
+	}
+	if m.errors != nil {
+		fields = append(fields, portforwardstats.FieldErrors)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PortForwardStatsMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case portforwardstats.FieldCreatedAt:
+		return m.CreatedAt()
+	case portforwardstats.FieldDevicePortForwardID:
+		return m.DevicePortForwardID()
+	case portforwardstats.FieldStartTime:
+		return m.StartTime()
+	case portforwardstats.FieldActiveConn:
+		return m.ActiveConn()
+	case portforwardstats.FieldTotalConn:
+		return m.TotalConn()
+	case portforwardstats.FieldBytesIn:
+		return m.BytesIn()
+	case portforwardstats.FieldBytesOut:
+		return m.BytesOut()
+	case portforwardstats.FieldUDPPacketsIn:
+		return m.UDPPacketsIn()
+	case portforwardstats.FieldUDPPacketsOut:
+		return m.UDPPacketsOut()
+	case portforwardstats.FieldErrors:
+		return m.Errors()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PortForwardStatsMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case portforwardstats.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case portforwardstats.FieldDevicePortForwardID:
+		return m.OldDevicePortForwardID(ctx)
+	case portforwardstats.FieldStartTime:
+		return m.OldStartTime(ctx)
+	case portforwardstats.FieldActiveConn:
+		return m.OldActiveConn(ctx)
+	case portforwardstats.FieldTotalConn:
+		return m.OldTotalConn(ctx)
+	case portforwardstats.FieldBytesIn:
+		return m.OldBytesIn(ctx)
+	case portforwardstats.FieldBytesOut:
+		return m.OldBytesOut(ctx)
+	case portforwardstats.FieldUDPPacketsIn:
+		return m.OldUDPPacketsIn(ctx)
+	case portforwardstats.FieldUDPPacketsOut:
+		return m.OldUDPPacketsOut(ctx)
+	case portforwardstats.FieldErrors:
+		return m.OldErrors(ctx)
+	}
+	return nil, fmt.Errorf("unknown PortForwardStats field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PortForwardStatsMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case portforwardstats.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case portforwardstats.FieldDevicePortForwardID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDevicePortForwardID(v)
+		return nil
+	case portforwardstats.FieldStartTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStartTime(v)
+		return nil
+	case portforwardstats.FieldActiveConn:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActiveConn(v)
+		return nil
+	case portforwardstats.FieldTotalConn:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotalConn(v)
+		return nil
+	case portforwardstats.FieldBytesIn:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBytesIn(v)
+		return nil
+	case portforwardstats.FieldBytesOut:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBytesOut(v)
+		return nil
+	case portforwardstats.FieldUDPPacketsIn:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUDPPacketsIn(v)
+		return nil
+	case portforwardstats.FieldUDPPacketsOut:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUDPPacketsOut(v)
+		return nil
+	case portforwardstats.FieldErrors:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetErrors(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PortForwardStats field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PortForwardStatsMutation) AddedFields() []string {
+	var fields []string
+	if m.adddevice_port_forward_id != nil {
+		fields = append(fields, portforwardstats.FieldDevicePortForwardID)
+	}
+	if m.addactive_conn != nil {
+		fields = append(fields, portforwardstats.FieldActiveConn)
+	}
+	if m.addtotal_conn != nil {
+		fields = append(fields, portforwardstats.FieldTotalConn)
+	}
+	if m.addbytes_in != nil {
+		fields = append(fields, portforwardstats.FieldBytesIn)
+	}
+	if m.addbytes_out != nil {
+		fields = append(fields, portforwardstats.FieldBytesOut)
+	}
+	if m.addudp_packets_in != nil {
+		fields = append(fields, portforwardstats.FieldUDPPacketsIn)
+	}
+	if m.addudp_packets_out != nil {
+		fields = append(fields, portforwardstats.FieldUDPPacketsOut)
+	}
+	if m.adderrors != nil {
+		fields = append(fields, portforwardstats.FieldErrors)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PortForwardStatsMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case portforwardstats.FieldDevicePortForwardID:
+		return m.AddedDevicePortForwardID()
+	case portforwardstats.FieldActiveConn:
+		return m.AddedActiveConn()
+	case portforwardstats.FieldTotalConn:
+		return m.AddedTotalConn()
+	case portforwardstats.FieldBytesIn:
+		return m.AddedBytesIn()
+	case portforwardstats.FieldBytesOut:
+		return m.AddedBytesOut()
+	case portforwardstats.FieldUDPPacketsIn:
+		return m.AddedUDPPacketsIn()
+	case portforwardstats.FieldUDPPacketsOut:
+		return m.AddedUDPPacketsOut()
+	case portforwardstats.FieldErrors:
+		return m.AddedErrors()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PortForwardStatsMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case portforwardstats.FieldDevicePortForwardID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDevicePortForwardID(v)
+		return nil
+	case portforwardstats.FieldActiveConn:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddActiveConn(v)
+		return nil
+	case portforwardstats.FieldTotalConn:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTotalConn(v)
+		return nil
+	case portforwardstats.FieldBytesIn:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBytesIn(v)
+		return nil
+	case portforwardstats.FieldBytesOut:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBytesOut(v)
+		return nil
+	case portforwardstats.FieldUDPPacketsIn:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUDPPacketsIn(v)
+		return nil
+	case portforwardstats.FieldUDPPacketsOut:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUDPPacketsOut(v)
+		return nil
+	case portforwardstats.FieldErrors:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddErrors(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PortForwardStats numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PortForwardStatsMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(portforwardstats.FieldActiveConn) {
+		fields = append(fields, portforwardstats.FieldActiveConn)
+	}
+	if m.FieldCleared(portforwardstats.FieldTotalConn) {
+		fields = append(fields, portforwardstats.FieldTotalConn)
+	}
+	if m.FieldCleared(portforwardstats.FieldBytesIn) {
+		fields = append(fields, portforwardstats.FieldBytesIn)
+	}
+	if m.FieldCleared(portforwardstats.FieldBytesOut) {
+		fields = append(fields, portforwardstats.FieldBytesOut)
+	}
+	if m.FieldCleared(portforwardstats.FieldUDPPacketsIn) {
+		fields = append(fields, portforwardstats.FieldUDPPacketsIn)
+	}
+	if m.FieldCleared(portforwardstats.FieldUDPPacketsOut) {
+		fields = append(fields, portforwardstats.FieldUDPPacketsOut)
+	}
+	if m.FieldCleared(portforwardstats.FieldErrors) {
+		fields = append(fields, portforwardstats.FieldErrors)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PortForwardStatsMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PortForwardStatsMutation) ClearField(name string) error {
+	switch name {
+	case portforwardstats.FieldActiveConn:
+		m.ClearActiveConn()
+		return nil
+	case portforwardstats.FieldTotalConn:
+		m.ClearTotalConn()
+		return nil
+	case portforwardstats.FieldBytesIn:
+		m.ClearBytesIn()
+		return nil
+	case portforwardstats.FieldBytesOut:
+		m.ClearBytesOut()
+		return nil
+	case portforwardstats.FieldUDPPacketsIn:
+		m.ClearUDPPacketsIn()
+		return nil
+	case portforwardstats.FieldUDPPacketsOut:
+		m.ClearUDPPacketsOut()
+		return nil
+	case portforwardstats.FieldErrors:
+		m.ClearErrors()
+		return nil
+	}
+	return fmt.Errorf("unknown PortForwardStats nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PortForwardStatsMutation) ResetField(name string) error {
+	switch name {
+	case portforwardstats.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case portforwardstats.FieldDevicePortForwardID:
+		m.ResetDevicePortForwardID()
+		return nil
+	case portforwardstats.FieldStartTime:
+		m.ResetStartTime()
+		return nil
+	case portforwardstats.FieldActiveConn:
+		m.ResetActiveConn()
+		return nil
+	case portforwardstats.FieldTotalConn:
+		m.ResetTotalConn()
+		return nil
+	case portforwardstats.FieldBytesIn:
+		m.ResetBytesIn()
+		return nil
+	case portforwardstats.FieldBytesOut:
+		m.ResetBytesOut()
+		return nil
+	case portforwardstats.FieldUDPPacketsIn:
+		m.ResetUDPPacketsIn()
+		return nil
+	case portforwardstats.FieldUDPPacketsOut:
+		m.ResetUDPPacketsOut()
+		return nil
+	case portforwardstats.FieldErrors:
+		m.ResetErrors()
+		return nil
+	}
+	return fmt.Errorf("unknown PortForwardStats field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PortForwardStatsMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PortForwardStatsMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PortForwardStatsMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PortForwardStatsMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PortForwardStatsMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PortForwardStatsMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PortForwardStatsMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown PortForwardStats unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PortForwardStatsMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown PortForwardStats edge %s", name)
 }
 
 // RestyLogMutation represents an operation that mutates the RestyLog nodes in the graph.

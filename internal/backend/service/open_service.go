@@ -9,6 +9,7 @@ import (
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/webhooksubscription"
+	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
@@ -25,19 +26,21 @@ type DeviceOpenService interface {
 
 // DeviceOpenServiceImpl 设备服务实现
 type DeviceOpenServiceImpl struct {
-	db             *ent.Client // 数据库客户端
-	debug          bool
-	logHelper      *operation_logs_helper.OperationLogHelper
-	webhookService *webhook.Send
+	db             *ent.Client                               // 数据库客户端
+	dbLog          *ent_log.Client                           // 日志数据库客户端
+	logHelper      *operation_logs_helper.OperationLogHelper // 操作日志助手
+	webhookService *webhook.Send                             // Webhook服务
+	debug          bool                                      // 调试模式
 }
 
 // NewDeviceOpenService 创建设备服务实例
-func NewDeviceOpenService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper, webhookService *webhook.Send) DeviceOpenService {
+func NewDeviceOpenService(db *ent.Client, dbLog *ent_log.Client, logHelper *operation_logs_helper.OperationLogHelper, webhookService *webhook.Send, debug bool) DeviceOpenService {
 	return &DeviceOpenServiceImpl{
 		db:             db,
-		debug:          debug,
+		dbLog:          dbLog,
 		logHelper:      logHelper,
 		webhookService: webhookService,
+		debug:          debug,
 	}
 }
 
@@ -191,7 +194,7 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 		// 记录 IP 报告并发送通知 (保持原始逻辑)
 		if isNotify {
 			// 创建设备IP报告
-			saveDeviceIPReport, err := s.db.DeviceIpReport.Create().
+			saveDeviceIPReport, err := s.dbLog.DeviceIpReport.Create().
 				SetDeviceID(deviceID).
 				SetIPV4(request.IPV4Addr).
 				SetIPV6(request.IPV6Addr).

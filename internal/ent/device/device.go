@@ -32,8 +32,6 @@ const (
 	FieldLastReportedAt = "last_reported_at"
 	// FieldLastHeartbeatAt holds the string denoting the last_heartbeat_at field in the database.
 	FieldLastHeartbeatAt = "last_heartbeat_at"
-	// EdgeIPReports holds the string denoting the ip_reports edge name in mutations.
-	EdgeIPReports = "ip_reports"
 	// EdgeIPGroups holds the string denoting the ip_groups edge name in mutations.
 	EdgeIPGroups = "ip_groups"
 	// EdgePortForwards holds the string denoting the port_forwards edge name in mutations.
@@ -42,13 +40,6 @@ const (
 	EdgeIPGroupDevice = "ip_group_device"
 	// Table holds the table name of the device in the database.
 	Table = "device"
-	// IPReportsTable is the table that holds the ip_reports relation/edge.
-	IPReportsTable = "device_ip_report"
-	// IPReportsInverseTable is the table name for the DeviceIpReport entity.
-	// It exists in this package in order to avoid circular dependency with the "deviceipreport" package.
-	IPReportsInverseTable = "device_ip_report"
-	// IPReportsColumn is the table column denoting the ip_reports relation/edge.
-	IPReportsColumn = "device_id"
 	// IPGroupsTable is the table that holds the ip_groups relation/edge. The primary key declared below.
 	IPGroupsTable = "ip_group_device"
 	// IPGroupsInverseTable is the table name for the IpGroup entity.
@@ -107,6 +98,10 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// IPV4Validator is a validator for the "ip_v4" field. It is called by the builders before save.
+	IPV4Validator func(string) error
+	// IPV6Validator is a validator for the "ip_v6" field. It is called by the builders before save.
+	IPV6Validator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(int64) error
 )
@@ -164,20 +159,6 @@ func ByLastHeartbeatAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastHeartbeatAt, opts...).ToFunc()
 }
 
-// ByIPReportsCount orders the results by ip_reports count.
-func ByIPReportsCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newIPReportsStep(), opts...)
-	}
-}
-
-// ByIPReports orders the results by ip_reports terms.
-func ByIPReports(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newIPReportsStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
 // ByIPGroupsCount orders the results by ip_groups count.
 func ByIPGroupsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -218,13 +199,6 @@ func ByIPGroupDevice(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newIPGroupDeviceStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
-}
-func newIPReportsStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(IPReportsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, IPReportsTable, IPReportsColumn),
-	)
 }
 func newIPGroupsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(

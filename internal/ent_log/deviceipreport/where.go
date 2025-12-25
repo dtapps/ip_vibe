@@ -4,10 +4,9 @@ package deviceipreport
 
 import (
 	"time"
-	"vibe_ip/internal/ent/predicate"
+	"vibe_ip/internal/ent_log/predicate"
 
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // ID filters vertices based on their ID field.
@@ -133,6 +132,26 @@ func DeviceIDIn(vs ...int64) predicate.DeviceIpReport {
 // DeviceIDNotIn applies the NotIn predicate on the "device_id" field.
 func DeviceIDNotIn(vs ...int64) predicate.DeviceIpReport {
 	return predicate.DeviceIpReport(sql.FieldNotIn(FieldDeviceID, vs...))
+}
+
+// DeviceIDGT applies the GT predicate on the "device_id" field.
+func DeviceIDGT(v int64) predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldGT(FieldDeviceID, v))
+}
+
+// DeviceIDGTE applies the GTE predicate on the "device_id" field.
+func DeviceIDGTE(v int64) predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldGTE(FieldDeviceID, v))
+}
+
+// DeviceIDLT applies the LT predicate on the "device_id" field.
+func DeviceIDLT(v int64) predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldLT(FieldDeviceID, v))
+}
+
+// DeviceIDLTE applies the LTE predicate on the "device_id" field.
+func DeviceIDLTE(v int64) predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldLTE(FieldDeviceID, v))
 }
 
 // IPV4EQ applies the EQ predicate on the "ip_v4" field.
@@ -283,29 +302,6 @@ func IPV6EqualFold(v string) predicate.DeviceIpReport {
 // IPV6ContainsFold applies the ContainsFold predicate on the "ip_v6" field.
 func IPV6ContainsFold(v string) predicate.DeviceIpReport {
 	return predicate.DeviceIpReport(sql.FieldContainsFold(FieldIPV6, v))
-}
-
-// HasDevice applies the HasEdge predicate on the "device" edge.
-func HasDevice() predicate.DeviceIpReport {
-	return predicate.DeviceIpReport(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, DeviceTable, DeviceColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasDeviceWith applies the HasEdge predicate on the "device" edge with a given conditions (other predicates).
-func HasDeviceWith(preds ...predicate.Device) predicate.DeviceIpReport {
-	return predicate.DeviceIpReport(func(s *sql.Selector) {
-		step := newDeviceStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
 }
 
 // And groups predicates with the AND operator between them.

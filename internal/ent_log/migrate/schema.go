@@ -9,11 +9,46 @@ import (
 )
 
 var (
+	// DeviceIPReportColumns holds the columns for the "device_ip_report" table.
+	DeviceIPReportColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "IP报告序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "device_id", Type: field.TypeInt64, Comment: "关联 Device 序号"},
+		{Name: "ip_v4", Type: field.TypeString, Nullable: true, Comment: "IP地址V4"},
+		{Name: "ip_v6", Type: field.TypeString, Nullable: true, Comment: "IP地址V6"},
+	}
+	// DeviceIPReportTable holds the schema information for the "device_ip_report" table.
+	DeviceIPReportTable = &schema.Table{
+		Name:       "device_ip_report",
+		Comment:    "设备IP报告",
+		Columns:    DeviceIPReportColumns,
+		PrimaryKey: []*schema.Column{DeviceIPReportColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "deviceipreport_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeviceIPReportColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "deviceipreport_device_id",
+				Unique:  false,
+				Columns: []*schema.Column{DeviceIPReportColumns[2]},
+			},
+			{
+				Name:    "deviceipreport_device_id_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeviceIPReportColumns[2], DeviceIPReportColumns[1]},
+			},
+		},
+	}
 	// DomainMonitorHistoryColumns holds the columns for the "domain_monitor_history" table.
 	DomainMonitorHistoryColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "域名监控历史记录序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
-		{Name: "monitor_id", Type: field.TypeInt64, Comment: "关联的 DomainMonitor ID"},
+		{Name: "monitor_id", Type: field.TypeInt64, Comment: "关联 DomainMonitor 序号"},
 		{Name: "check_time", Type: field.TypeTime, Comment: "检查发生的时间"},
 		{Name: "is_success", Type: field.TypeBool, Comment: "本次检查是否成功"},
 		{Name: "check_duration", Type: field.TypeInt, Nullable: true, Comment: "检查耗时（毫秒）"},
@@ -167,6 +202,47 @@ var (
 			},
 		},
 	}
+	// PortForwardStatsColumns holds the columns for the "port_forward_stats" table.
+	PortForwardStatsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "端口转发统计记录序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "device_port_forward_id", Type: field.TypeInt64, Comment: "关联 DevicePortForward 序号"},
+		{Name: "start_time", Type: field.TypeTime, Comment: "转发启动时间 (UTC)"},
+		{Name: "active_conn", Type: field.TypeInt64, Nullable: true, Comment: "瞬时活跃连接数"},
+		{Name: "total_conn", Type: field.TypeInt64, Nullable: true, Comment: "累计连接数"},
+		{Name: "bytes_in", Type: field.TypeInt64, Nullable: true, Comment: "累计入站流量 (bytes)"},
+		{Name: "bytes_out", Type: field.TypeInt64, Nullable: true, Comment: "累计出站流量 (bytes)"},
+		{Name: "udp_packets_in", Type: field.TypeInt64, Nullable: true, Comment: "累计入站 UDP 包数"},
+		{Name: "udp_packets_out", Type: field.TypeInt64, Nullable: true, Comment: "累计出站 UDP 包数"},
+		{Name: "errors", Type: field.TypeInt64, Nullable: true, Comment: "累计错误数"},
+	}
+	// PortForwardStatsTable holds the schema information for the "port_forward_stats" table.
+	PortForwardStatsTable = &schema.Table{
+		Name:       "port_forward_stats",
+		Comment:    "端口转发统计快照记录",
+		Columns:    PortForwardStatsColumns,
+		PrimaryKey: []*schema.Column{PortForwardStatsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "portforwardstats_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PortForwardStatsColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "portforwardstats_device_port_forward_id",
+				Unique:  false,
+				Columns: []*schema.Column{PortForwardStatsColumns[2]},
+			},
+			{
+				Name:    "portforwardstats_device_port_forward_id_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PortForwardStatsColumns[2], PortForwardStatsColumns[1]},
+			},
+		},
+	}
 	// RestyLogColumns holds the columns for the "resty_log" table.
 	RestyLogColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "请求日志序号"},
@@ -226,7 +302,7 @@ var (
 	SslCertificateHistoryColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "SSL证书申请历史记录序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
-		{Name: "ssl_record_id", Type: field.TypeInt64, Comment: "关联 SSLRecord ID"},
+		{Name: "ssl_record_id", Type: field.TypeInt64, Comment: "关联 SSLRecord 序号"},
 		{Name: "cert_domain", Type: field.TypeString, Nullable: true, Comment: "证书域名"},
 		{Name: "cert_url", Type: field.TypeString, Nullable: true, Comment: "证书URL"},
 		{Name: "cert_stable_url", Type: field.TypeString, Nullable: true, Comment: "稳定证书URL"},
@@ -264,8 +340,8 @@ var (
 	WebhookHistoryColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "通知历史记录序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
-		{Name: "webhook_id", Type: field.TypeInt64, Comment: "关联 Webhook ID"},
-		{Name: "subscription_id", Type: field.TypeInt64, Nullable: true, Comment: "关联 WebhookSubscription ID"},
+		{Name: "webhook_id", Type: field.TypeInt64, Comment: "关联 Webhook 序号"},
+		{Name: "subscription_id", Type: field.TypeInt64, Nullable: true, Comment: "关联 WebhookSubscription 序号"},
 		{Name: "url", Type: field.TypeString, Comment: "发送的URL"},
 		{Name: "title", Type: field.TypeString, Nullable: true, Comment: "发送的标题"},
 		{Name: "content", Type: field.TypeString, Nullable: true, Comment: "发送的内容"},
@@ -323,9 +399,11 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		DeviceIPReportTable,
 		DomainMonitorHistoryTable,
 		HTTPLogTable,
 		OperationLogTable,
+		PortForwardStatsTable,
 		RestyLogTable,
 		SslCertificateHistoryTable,
 		WebhookHistoryTable,
@@ -333,6 +411,9 @@ var (
 )
 
 func init() {
+	DeviceIPReportTable.Annotation = &entsql.Annotation{
+		Table: "device_ip_report",
+	}
 	DomainMonitorHistoryTable.Annotation = &entsql.Annotation{
 		Table: "domain_monitor_history",
 	}
@@ -341,6 +422,9 @@ func init() {
 	}
 	OperationLogTable.Annotation = &entsql.Annotation{
 		Table: "operation_log",
+	}
+	PortForwardStatsTable.Annotation = &entsql.Annotation{
+		Table: "port_forward_stats",
 	}
 	RestyLogTable.Annotation = &entsql.Annotation{
 		Table: "resty_log",

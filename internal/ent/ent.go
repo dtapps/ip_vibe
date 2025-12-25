@@ -10,7 +10,6 @@ import (
 	"sync"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
-	"vibe_ip/internal/ent/deviceipreport"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
@@ -87,7 +86,6 @@ func checkColumn(t, c string) error {
 			cdnrecord.Table:           cdnrecord.ValidColumn,
 			dnsrecord.Table:           dnsrecord.ValidColumn,
 			device.Table:              device.ValidColumn,
-			deviceipreport.Table:      deviceipreport.ValidColumn,
 			deviceportforward.Table:   deviceportforward.ValidColumn,
 			domainmonitor.Table:       domainmonitor.ValidColumn,
 			ipgroup.Table:             ipgroup.ValidColumn,

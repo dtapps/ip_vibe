@@ -13,7 +13,6 @@ import (
 
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
-	"vibe_ip/internal/ent/deviceipreport"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
@@ -43,8 +42,6 @@ type Client struct {
 	DNSRecord *DNSRecordClient
 	// Device is the client for interacting with the Device builders.
 	Device *DeviceClient
-	// DeviceIpReport is the client for interacting with the DeviceIpReport builders.
-	DeviceIpReport *DeviceIpReportClient
 	// DevicePortForward is the client for interacting with the DevicePortForward builders.
 	DevicePortForward *DevicePortForwardClient
 	// DomainMonitor is the client for interacting with the DomainMonitor builders.
@@ -75,7 +72,6 @@ func (c *Client) init() {
 	c.CDNRecord = NewCDNRecordClient(c.config)
 	c.DNSRecord = NewDNSRecordClient(c.config)
 	c.Device = NewDeviceClient(c.config)
-	c.DeviceIpReport = NewDeviceIpReportClient(c.config)
 	c.DevicePortForward = NewDevicePortForwardClient(c.config)
 	c.DomainMonitor = NewDomainMonitorClient(c.config)
 	c.IpGroup = NewIpGroupClient(c.config)
@@ -179,7 +175,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		CDNRecord:           NewCDNRecordClient(cfg),
 		DNSRecord:           NewDNSRecordClient(cfg),
 		Device:              NewDeviceClient(cfg),
-		DeviceIpReport:      NewDeviceIpReportClient(cfg),
 		DevicePortForward:   NewDevicePortForwardClient(cfg),
 		DomainMonitor:       NewDomainMonitorClient(cfg),
 		IpGroup:             NewIpGroupClient(cfg),
@@ -210,7 +205,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		CDNRecord:           NewCDNRecordClient(cfg),
 		DNSRecord:           NewDNSRecordClient(cfg),
 		Device:              NewDeviceClient(cfg),
-		DeviceIpReport:      NewDeviceIpReportClient(cfg),
 		DevicePortForward:   NewDevicePortForwardClient(cfg),
 		DomainMonitor:       NewDomainMonitorClient(cfg),
 		IpGroup:             NewIpGroupClient(cfg),
@@ -248,9 +242,9 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.CDNRecord, c.DNSRecord, c.Device, c.DeviceIpReport, c.DevicePortForward,
-		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLRecord,
-		c.Webhook, c.WebhookSubscription,
+		c.CDNRecord, c.DNSRecord, c.Device, c.DevicePortForward, c.DomainMonitor,
+		c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLRecord, c.Webhook,
+		c.WebhookSubscription,
 	} {
 		n.Use(hooks...)
 	}
@@ -260,9 +254,9 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.CDNRecord, c.DNSRecord, c.Device, c.DeviceIpReport, c.DevicePortForward,
-		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLRecord,
-		c.Webhook, c.WebhookSubscription,
+		c.CDNRecord, c.DNSRecord, c.Device, c.DevicePortForward, c.DomainMonitor,
+		c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLRecord, c.Webhook,
+		c.WebhookSubscription,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -277,8 +271,6 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.DNSRecord.mutate(ctx, m)
 	case *DeviceMutation:
 		return c.Device.mutate(ctx, m)
-	case *DeviceIpReportMutation:
-		return c.DeviceIpReport.mutate(ctx, m)
 	case *DevicePortForwardMutation:
 		return c.DevicePortForward.mutate(ctx, m)
 	case *DomainMonitorMutation:
@@ -770,22 +762,6 @@ func (c *DeviceClient) GetX(ctx context.Context, id int64) *Device {
 	return obj
 }
 
-// QueryIPReports queries the ip_reports edge of a Device.
-func (c *DeviceClient) QueryIPReports(_m *Device) *DeviceIpReportQuery {
-	query := (&DeviceIpReportClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(device.Table, device.FieldID, id),
-			sqlgraph.To(deviceipreport.Table, deviceipreport.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, device.IPReportsTable, device.IPReportsColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryIPGroups queries the ip_groups edge of a Device.
 func (c *DeviceClient) QueryIPGroups(_m *Device) *IpGroupQuery {
 	query := (&IpGroupClient{config: c.config}).Query()
@@ -856,155 +832,6 @@ func (c *DeviceClient) mutate(ctx context.Context, m *DeviceMutation) (Value, er
 		return (&DeviceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Device mutation op: %q", m.Op())
-	}
-}
-
-// DeviceIpReportClient is a client for the DeviceIpReport schema.
-type DeviceIpReportClient struct {
-	config
-}
-
-// NewDeviceIpReportClient returns a client for the DeviceIpReport from the given config.
-func NewDeviceIpReportClient(c config) *DeviceIpReportClient {
-	return &DeviceIpReportClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `deviceipreport.Hooks(f(g(h())))`.
-func (c *DeviceIpReportClient) Use(hooks ...Hook) {
-	c.hooks.DeviceIpReport = append(c.hooks.DeviceIpReport, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `deviceipreport.Intercept(f(g(h())))`.
-func (c *DeviceIpReportClient) Intercept(interceptors ...Interceptor) {
-	c.inters.DeviceIpReport = append(c.inters.DeviceIpReport, interceptors...)
-}
-
-// Create returns a builder for creating a DeviceIpReport entity.
-func (c *DeviceIpReportClient) Create() *DeviceIpReportCreate {
-	mutation := newDeviceIpReportMutation(c.config, OpCreate)
-	return &DeviceIpReportCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of DeviceIpReport entities.
-func (c *DeviceIpReportClient) CreateBulk(builders ...*DeviceIpReportCreate) *DeviceIpReportCreateBulk {
-	return &DeviceIpReportCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *DeviceIpReportClient) MapCreateBulk(slice any, setFunc func(*DeviceIpReportCreate, int)) *DeviceIpReportCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &DeviceIpReportCreateBulk{err: fmt.Errorf("calling to DeviceIpReportClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*DeviceIpReportCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &DeviceIpReportCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for DeviceIpReport.
-func (c *DeviceIpReportClient) Update() *DeviceIpReportUpdate {
-	mutation := newDeviceIpReportMutation(c.config, OpUpdate)
-	return &DeviceIpReportUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *DeviceIpReportClient) UpdateOne(_m *DeviceIpReport) *DeviceIpReportUpdateOne {
-	mutation := newDeviceIpReportMutation(c.config, OpUpdateOne, withDeviceIpReport(_m))
-	return &DeviceIpReportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *DeviceIpReportClient) UpdateOneID(id int64) *DeviceIpReportUpdateOne {
-	mutation := newDeviceIpReportMutation(c.config, OpUpdateOne, withDeviceIpReportID(id))
-	return &DeviceIpReportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for DeviceIpReport.
-func (c *DeviceIpReportClient) Delete() *DeviceIpReportDelete {
-	mutation := newDeviceIpReportMutation(c.config, OpDelete)
-	return &DeviceIpReportDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *DeviceIpReportClient) DeleteOne(_m *DeviceIpReport) *DeviceIpReportDeleteOne {
-	return c.DeleteOneID(_m.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *DeviceIpReportClient) DeleteOneID(id int64) *DeviceIpReportDeleteOne {
-	builder := c.Delete().Where(deviceipreport.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &DeviceIpReportDeleteOne{builder}
-}
-
-// Query returns a query builder for DeviceIpReport.
-func (c *DeviceIpReportClient) Query() *DeviceIpReportQuery {
-	return &DeviceIpReportQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeDeviceIpReport},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a DeviceIpReport entity by its id.
-func (c *DeviceIpReportClient) Get(ctx context.Context, id int64) (*DeviceIpReport, error) {
-	return c.Query().Where(deviceipreport.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *DeviceIpReportClient) GetX(ctx context.Context, id int64) *DeviceIpReport {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryDevice queries the device edge of a DeviceIpReport.
-func (c *DeviceIpReportClient) QueryDevice(_m *DeviceIpReport) *DeviceQuery {
-	query := (&DeviceClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(deviceipreport.Table, deviceipreport.FieldID, id),
-			sqlgraph.To(device.Table, device.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, deviceipreport.DeviceTable, deviceipreport.DeviceColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *DeviceIpReportClient) Hooks() []Hook {
-	return c.hooks.DeviceIpReport
-}
-
-// Interceptors returns the client interceptors.
-func (c *DeviceIpReportClient) Interceptors() []Interceptor {
-	return c.inters.DeviceIpReport
-}
-
-func (c *DeviceIpReportClient) mutate(ctx context.Context, m *DeviceIpReportMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&DeviceIpReportCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&DeviceIpReportUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&DeviceIpReportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&DeviceIpReportDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown DeviceIpReport mutation op: %q", m.Op())
 	}
 }
 
@@ -2234,13 +2061,13 @@ func (c *WebhookSubscriptionClient) mutate(ctx context.Context, m *WebhookSubscr
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		CDNRecord, DNSRecord, Device, DeviceIpReport, DevicePortForward, DomainMonitor,
-		IpGroup, IpGroupDevice, PlatformConfig, SSLRecord, Webhook,
+		CDNRecord, DNSRecord, Device, DevicePortForward, DomainMonitor, IpGroup,
+		IpGroupDevice, PlatformConfig, SSLRecord, Webhook,
 		WebhookSubscription []ent.Hook
 	}
 	inters struct {
-		CDNRecord, DNSRecord, Device, DeviceIpReport, DevicePortForward, DomainMonitor,
-		IpGroup, IpGroupDevice, PlatformConfig, SSLRecord, Webhook,
+		CDNRecord, DNSRecord, Device, DevicePortForward, DomainMonitor, IpGroup,
+		IpGroupDevice, PlatformConfig, SSLRecord, Webhook,
 		WebhookSubscription []ent.Interceptor
 	}
 )

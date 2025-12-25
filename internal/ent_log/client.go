@@ -11,9 +11,11 @@ import (
 
 	"vibe_ip/internal/ent_log/migrate"
 
+	"vibe_ip/internal/ent_log/deviceipreport"
 	"vibe_ip/internal/ent_log/domainmonitorhistory"
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
+	"vibe_ip/internal/ent_log/portforwardstats"
 	"vibe_ip/internal/ent_log/restylog"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/ent_log/webhookhistory"
@@ -30,12 +32,16 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// DeviceIpReport is the client for interacting with the DeviceIpReport builders.
+	DeviceIpReport *DeviceIpReportClient
 	// DomainMonitorHistory is the client for interacting with the DomainMonitorHistory builders.
 	DomainMonitorHistory *DomainMonitorHistoryClient
 	// HttpLog is the client for interacting with the HttpLog builders.
 	HttpLog *HttpLogClient
 	// OperationLog is the client for interacting with the OperationLog builders.
 	OperationLog *OperationLogClient
+	// PortForwardStats is the client for interacting with the PortForwardStats builders.
+	PortForwardStats *PortForwardStatsClient
 	// RestyLog is the client for interacting with the RestyLog builders.
 	RestyLog *RestyLogClient
 	// SSLCertificateHistory is the client for interacting with the SSLCertificateHistory builders.
@@ -53,9 +59,11 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.DeviceIpReport = NewDeviceIpReportClient(c.config)
 	c.DomainMonitorHistory = NewDomainMonitorHistoryClient(c.config)
 	c.HttpLog = NewHttpLogClient(c.config)
 	c.OperationLog = NewOperationLogClient(c.config)
+	c.PortForwardStats = NewPortForwardStatsClient(c.config)
 	c.RestyLog = NewRestyLogClient(c.config)
 	c.SSLCertificateHistory = NewSSLCertificateHistoryClient(c.config)
 	c.WebhookHistory = NewWebhookHistoryClient(c.config)
@@ -151,9 +159,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:                   ctx,
 		config:                cfg,
+		DeviceIpReport:        NewDeviceIpReportClient(cfg),
 		DomainMonitorHistory:  NewDomainMonitorHistoryClient(cfg),
 		HttpLog:               NewHttpLogClient(cfg),
 		OperationLog:          NewOperationLogClient(cfg),
+		PortForwardStats:      NewPortForwardStatsClient(cfg),
 		RestyLog:              NewRestyLogClient(cfg),
 		SSLCertificateHistory: NewSSLCertificateHistoryClient(cfg),
 		WebhookHistory:        NewWebhookHistoryClient(cfg),
@@ -176,9 +186,11 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:                   ctx,
 		config:                cfg,
+		DeviceIpReport:        NewDeviceIpReportClient(cfg),
 		DomainMonitorHistory:  NewDomainMonitorHistoryClient(cfg),
 		HttpLog:               NewHttpLogClient(cfg),
 		OperationLog:          NewOperationLogClient(cfg),
+		PortForwardStats:      NewPortForwardStatsClient(cfg),
 		RestyLog:              NewRestyLogClient(cfg),
 		SSLCertificateHistory: NewSSLCertificateHistoryClient(cfg),
 		WebhookHistory:        NewWebhookHistoryClient(cfg),
@@ -188,7 +200,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		DomainMonitorHistory.
+//		DeviceIpReport.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -211,8 +223,8 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.DomainMonitorHistory, c.HttpLog, c.OperationLog, c.RestyLog,
-		c.SSLCertificateHistory, c.WebhookHistory,
+		c.DeviceIpReport, c.DomainMonitorHistory, c.HttpLog, c.OperationLog,
+		c.PortForwardStats, c.RestyLog, c.SSLCertificateHistory, c.WebhookHistory,
 	} {
 		n.Use(hooks...)
 	}
@@ -222,8 +234,8 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.DomainMonitorHistory, c.HttpLog, c.OperationLog, c.RestyLog,
-		c.SSLCertificateHistory, c.WebhookHistory,
+		c.DeviceIpReport, c.DomainMonitorHistory, c.HttpLog, c.OperationLog,
+		c.PortForwardStats, c.RestyLog, c.SSLCertificateHistory, c.WebhookHistory,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -232,12 +244,16 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *DeviceIpReportMutation:
+		return c.DeviceIpReport.mutate(ctx, m)
 	case *DomainMonitorHistoryMutation:
 		return c.DomainMonitorHistory.mutate(ctx, m)
 	case *HttpLogMutation:
 		return c.HttpLog.mutate(ctx, m)
 	case *OperationLogMutation:
 		return c.OperationLog.mutate(ctx, m)
+	case *PortForwardStatsMutation:
+		return c.PortForwardStats.mutate(ctx, m)
 	case *RestyLogMutation:
 		return c.RestyLog.mutate(ctx, m)
 	case *SSLCertificateHistoryMutation:
@@ -246,6 +262,139 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.WebhookHistory.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent_log: unknown mutation type %T", m)
+	}
+}
+
+// DeviceIpReportClient is a client for the DeviceIpReport schema.
+type DeviceIpReportClient struct {
+	config
+}
+
+// NewDeviceIpReportClient returns a client for the DeviceIpReport from the given config.
+func NewDeviceIpReportClient(c config) *DeviceIpReportClient {
+	return &DeviceIpReportClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `deviceipreport.Hooks(f(g(h())))`.
+func (c *DeviceIpReportClient) Use(hooks ...Hook) {
+	c.hooks.DeviceIpReport = append(c.hooks.DeviceIpReport, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `deviceipreport.Intercept(f(g(h())))`.
+func (c *DeviceIpReportClient) Intercept(interceptors ...Interceptor) {
+	c.inters.DeviceIpReport = append(c.inters.DeviceIpReport, interceptors...)
+}
+
+// Create returns a builder for creating a DeviceIpReport entity.
+func (c *DeviceIpReportClient) Create() *DeviceIpReportCreate {
+	mutation := newDeviceIpReportMutation(c.config, OpCreate)
+	return &DeviceIpReportCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of DeviceIpReport entities.
+func (c *DeviceIpReportClient) CreateBulk(builders ...*DeviceIpReportCreate) *DeviceIpReportCreateBulk {
+	return &DeviceIpReportCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DeviceIpReportClient) MapCreateBulk(slice any, setFunc func(*DeviceIpReportCreate, int)) *DeviceIpReportCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DeviceIpReportCreateBulk{err: fmt.Errorf("calling to DeviceIpReportClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DeviceIpReportCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &DeviceIpReportCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for DeviceIpReport.
+func (c *DeviceIpReportClient) Update() *DeviceIpReportUpdate {
+	mutation := newDeviceIpReportMutation(c.config, OpUpdate)
+	return &DeviceIpReportUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DeviceIpReportClient) UpdateOne(_m *DeviceIpReport) *DeviceIpReportUpdateOne {
+	mutation := newDeviceIpReportMutation(c.config, OpUpdateOne, withDeviceIpReport(_m))
+	return &DeviceIpReportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DeviceIpReportClient) UpdateOneID(id int64) *DeviceIpReportUpdateOne {
+	mutation := newDeviceIpReportMutation(c.config, OpUpdateOne, withDeviceIpReportID(id))
+	return &DeviceIpReportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for DeviceIpReport.
+func (c *DeviceIpReportClient) Delete() *DeviceIpReportDelete {
+	mutation := newDeviceIpReportMutation(c.config, OpDelete)
+	return &DeviceIpReportDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *DeviceIpReportClient) DeleteOne(_m *DeviceIpReport) *DeviceIpReportDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *DeviceIpReportClient) DeleteOneID(id int64) *DeviceIpReportDeleteOne {
+	builder := c.Delete().Where(deviceipreport.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DeviceIpReportDeleteOne{builder}
+}
+
+// Query returns a query builder for DeviceIpReport.
+func (c *DeviceIpReportClient) Query() *DeviceIpReportQuery {
+	return &DeviceIpReportQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeDeviceIpReport},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a DeviceIpReport entity by its id.
+func (c *DeviceIpReportClient) Get(ctx context.Context, id int64) (*DeviceIpReport, error) {
+	return c.Query().Where(deviceipreport.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DeviceIpReportClient) GetX(ctx context.Context, id int64) *DeviceIpReport {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *DeviceIpReportClient) Hooks() []Hook {
+	return c.hooks.DeviceIpReport
+}
+
+// Interceptors returns the client interceptors.
+func (c *DeviceIpReportClient) Interceptors() []Interceptor {
+	return c.inters.DeviceIpReport
+}
+
+func (c *DeviceIpReportClient) mutate(ctx context.Context, m *DeviceIpReportMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&DeviceIpReportCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&DeviceIpReportUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&DeviceIpReportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&DeviceIpReportDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent_log: unknown DeviceIpReport mutation op: %q", m.Op())
 	}
 }
 
@@ -645,6 +794,139 @@ func (c *OperationLogClient) mutate(ctx context.Context, m *OperationLogMutation
 		return (&OperationLogDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent_log: unknown OperationLog mutation op: %q", m.Op())
+	}
+}
+
+// PortForwardStatsClient is a client for the PortForwardStats schema.
+type PortForwardStatsClient struct {
+	config
+}
+
+// NewPortForwardStatsClient returns a client for the PortForwardStats from the given config.
+func NewPortForwardStatsClient(c config) *PortForwardStatsClient {
+	return &PortForwardStatsClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `portforwardstats.Hooks(f(g(h())))`.
+func (c *PortForwardStatsClient) Use(hooks ...Hook) {
+	c.hooks.PortForwardStats = append(c.hooks.PortForwardStats, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `portforwardstats.Intercept(f(g(h())))`.
+func (c *PortForwardStatsClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PortForwardStats = append(c.inters.PortForwardStats, interceptors...)
+}
+
+// Create returns a builder for creating a PortForwardStats entity.
+func (c *PortForwardStatsClient) Create() *PortForwardStatsCreate {
+	mutation := newPortForwardStatsMutation(c.config, OpCreate)
+	return &PortForwardStatsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PortForwardStats entities.
+func (c *PortForwardStatsClient) CreateBulk(builders ...*PortForwardStatsCreate) *PortForwardStatsCreateBulk {
+	return &PortForwardStatsCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PortForwardStatsClient) MapCreateBulk(slice any, setFunc func(*PortForwardStatsCreate, int)) *PortForwardStatsCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PortForwardStatsCreateBulk{err: fmt.Errorf("calling to PortForwardStatsClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PortForwardStatsCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PortForwardStatsCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PortForwardStats.
+func (c *PortForwardStatsClient) Update() *PortForwardStatsUpdate {
+	mutation := newPortForwardStatsMutation(c.config, OpUpdate)
+	return &PortForwardStatsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PortForwardStatsClient) UpdateOne(_m *PortForwardStats) *PortForwardStatsUpdateOne {
+	mutation := newPortForwardStatsMutation(c.config, OpUpdateOne, withPortForwardStats(_m))
+	return &PortForwardStatsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PortForwardStatsClient) UpdateOneID(id int64) *PortForwardStatsUpdateOne {
+	mutation := newPortForwardStatsMutation(c.config, OpUpdateOne, withPortForwardStatsID(id))
+	return &PortForwardStatsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PortForwardStats.
+func (c *PortForwardStatsClient) Delete() *PortForwardStatsDelete {
+	mutation := newPortForwardStatsMutation(c.config, OpDelete)
+	return &PortForwardStatsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PortForwardStatsClient) DeleteOne(_m *PortForwardStats) *PortForwardStatsDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PortForwardStatsClient) DeleteOneID(id int64) *PortForwardStatsDeleteOne {
+	builder := c.Delete().Where(portforwardstats.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PortForwardStatsDeleteOne{builder}
+}
+
+// Query returns a query builder for PortForwardStats.
+func (c *PortForwardStatsClient) Query() *PortForwardStatsQuery {
+	return &PortForwardStatsQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePortForwardStats},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PortForwardStats entity by its id.
+func (c *PortForwardStatsClient) Get(ctx context.Context, id int64) (*PortForwardStats, error) {
+	return c.Query().Where(portforwardstats.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PortForwardStatsClient) GetX(ctx context.Context, id int64) *PortForwardStats {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *PortForwardStatsClient) Hooks() []Hook {
+	return c.hooks.PortForwardStats
+}
+
+// Interceptors returns the client interceptors.
+func (c *PortForwardStatsClient) Interceptors() []Interceptor {
+	return c.inters.PortForwardStats
+}
+
+func (c *PortForwardStatsClient) mutate(ctx context.Context, m *PortForwardStatsMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PortForwardStatsCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PortForwardStatsUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PortForwardStatsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PortForwardStatsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent_log: unknown PortForwardStats mutation op: %q", m.Op())
 	}
 }
 
@@ -1050,12 +1332,12 @@ func (c *WebhookHistoryClient) mutate(ctx context.Context, m *WebhookHistoryMuta
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		DomainMonitorHistory, HttpLog, OperationLog, RestyLog, SSLCertificateHistory,
-		WebhookHistory []ent.Hook
+		DeviceIpReport, DomainMonitorHistory, HttpLog, OperationLog, PortForwardStats,
+		RestyLog, SSLCertificateHistory, WebhookHistory []ent.Hook
 	}
 	inters struct {
-		DomainMonitorHistory, HttpLog, OperationLog, RestyLog, SSLCertificateHistory,
-		WebhookHistory []ent.Interceptor
+		DeviceIpReport, DomainMonitorHistory, HttpLog, OperationLog, PortForwardStats,
+		RestyLog, SSLCertificateHistory, WebhookHistory []ent.Interceptor
 	}
 )
 

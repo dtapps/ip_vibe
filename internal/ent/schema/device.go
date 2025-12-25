@@ -2,6 +2,7 @@ package schema
 
 import (
 	"vibe_ip/internal/ent/schema/schemamixin"
+	"vibe_ip/internal/ent/schema/schemavalidate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -58,11 +59,13 @@ func (Device) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("ip_v4").
+			Validate(schemavalidate.ValidateIPV4).
 			Optional().
 			Comment("IP地址V4").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("ip_v6").
+			Validate(schemavalidate.ValidateIPV6).
 			Optional().
 			Comment("IP地址V6").
 			Annotations(entsql.WithComments(true)),
@@ -82,20 +85,13 @@ func (Device) Fields() []ent.Field {
 // Edges of the Device.
 func (Device) Edges() []ent.Edge {
 	return []ent.Edge{
-		// 一对多 Device -> DeviceIpReport
-		edge.To("ip_reports", DeviceIpReport.Type).
-			Comment("关联的设备IP报告").
-			Annotations(entsql.Annotation{
-				// 级联删除：删除 Device 时，其所有 DeviceIpReport 记录也应删除
-				OnDelete: entsql.Cascade,
-			}, entsql.WithComments(true)),
-
 		// 多对多：Device <-> IPGroup
 		edge.To("ip_groups", IpGroup.Type).
 			Through("ip_group_device", IpGroupDevice.Type).
 			Comment("关联的IP组").
 			Annotations(entsql.WithComments(true)),
 
+		// 一对多 Device -> DevicePortForward
 		edge.To("port_forwards", DevicePortForward.Type).
 			Comment("设备的端口转发规则").
 			Annotations(entsql.Annotation{
