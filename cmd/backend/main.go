@@ -33,6 +33,7 @@ import (
 	"vibe_ip/internal/mcp_resource"
 	"vibe_ip/internal/mcp_tool"
 
+	"gitee.com/xiaowan1997/qingfeng"
 	"github.com/denisbrodbeck/machineid"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
@@ -147,6 +148,10 @@ func main() {
 	router.Use(cors.New(cors.Config{
 		// 动态允许所有来源
 		AllowOriginFunc: func(origin string) bool {
+			// 调试日志
+			slog.Info("CORS Request from origin",
+				slog.String("origin", origin),
+			)
 			return true // 允许所有来源
 		},
 		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}, // 支持所有 HTTP 方法
@@ -195,6 +200,9 @@ func main() {
 
 	// Swagger 路由
 	swagger_router(ctx, router)
+
+	// 新 Swagger 路由
+	qingfeng_router(ctx, router)
 
 	// MCP 启动
 	mcp_run(ctx, router)
@@ -793,26 +801,48 @@ func api_router(ctx context.Context, router *gin.Engine) {
 func swagger_router(ctx context.Context, router *gin.Engine) {
 	swaggerGroup := router.Group("/swagger")
 	{
-		swaggerGroup.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
-			ginSwagger.URL("/docs_2/doc.json"),
-		))
-	}
-	// doc.json 路由
-	docsGroup := router.Group("")
-	{
 		// 配置 Swagger 信息
 		docs_2.SwaggerInfo.Version = global.GvaVersion
 		docs_2.SwaggerInfo.Host = ""
 		docs_3.SwaggerInfo.Version = global.GvaVersion
 		docs_3.SwaggerInfo.Host = ""
-		docsGroup.GET("/docs_2/doc.json", func(ctx *gin.Context) {
+		swaggerGroup.GET("/docs_2/doc.json", func(ctx *gin.Context) {
 			ctx.Header("Content-Type", "application/json")
 			ctx.String(200, docs_2.SwaggerInfo.ReadDoc())
 		})
-		docsGroup.GET("/docs_3/doc.json", func(ctx *gin.Context) {
+		swaggerGroup.GET("/docs_3/doc.json", func(ctx *gin.Context) {
 			ctx.Header("Content-Type", "application/json")
 			ctx.String(200, docs_3.SwaggerInfo.ReadDoc())
 		})
+		// 配置 Swagger 页面
+		swaggerGroup.GET("/:any", ginSwagger.WrapHandler(swaggerFiles.Handler,
+			ginSwagger.URL("/swagger/docs_2/doc.json"),
+		))
+	}
+}
+
+// 新 Swagger 路由
+// https://gitee.com/xiaowan1997/qingfeng
+func qingfeng_router(ctx context.Context, router *gin.Engine) {
+	qingfengGroup := router.Group("/qingfeng")
+	{
+		// 配置 Swagger 页面
+		qingfengGroup.GET("/*any", qingfeng.Handler(qingfeng.Config{
+			Title:       docs_2.SwaggerInfo.Title, // 文档标题
+			Description: docs_2.SwaggerInfo.Description,
+			Version:     docs_2.SwaggerInfo.Version, // API 版本号
+			BasePath:    "/qingfeng",                // 文档路由前缀
+			DocJSON:     docs_2.GetSwaggerBytes(),   // 直接传入 swagger JSON 内容
+			EnableDebug: true,                       // 是否启用在线调试
+			DarkMode:    true,                       // 是否默认深色模式
+			UITheme:     qingfeng.ThemeDefault,      // UI 主题风格: ThemeDefault(默认) / ThemeMinimal(简约) / ThemeModern(现代)
+			Environments: []qingfeng.Environment{
+				{
+					Name:    "本地开发",
+					BaseURL: "/api",
+				},
+			}, // 多环境配置
+		}))
 	}
 }
 

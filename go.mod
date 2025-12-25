@@ -7,6 +7,7 @@ ignore ./frontend
 require (
 	connectrpc.com/connect v1.19.1
 	entgo.io/ent v0.14.5
+	gitee.com/xiaowan1997/qingfeng v1.4.2
 	github.com/alibabacloud-go/alidns-20150109/v5 v5.0.0
 	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.13
