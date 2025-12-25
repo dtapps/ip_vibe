@@ -2,52 +2,53 @@ package forward
 
 import (
 	"context"
-	"log/slog"
 	"net"
-	"sync"
 	"sync/atomic"
 )
 
 // TCP 转发
-func startTCPForward(ln net.Listener, targetAddr string, stats *Stats, ctx context.Context, logger *slog.Logger, ruleID, proto string) {
-	for {
-		conn, err := ln.Accept()
-		if err != nil {
-			select {
-			case <-ctx.Done():
-				return
-			default:
-				atomic.AddInt64(&stats.Errors, 1)
-				logger.Warn("TCP accept error", slog.String("rule_id", ruleID), slog.String("proto", proto), slog.Any("err", err))
-				continue
-			}
-		}
-
-		atomic.AddInt64(&stats.ActiveConn, 1)
-		atomic.AddInt64(&stats.TotalConn, 1)
-
-		go func(c net.Conn) {
-			defer c.Close()
-			defer atomic.AddInt64(&stats.ActiveConn, -1)
-
-			remote, err := net.Dial(proto, targetAddr)
-			if err != nil {
-				atomic.AddInt64(&stats.Errors, 1)
-				logger.Warn("TCP dial target failed", slog.String("rule_id", ruleID), slog.String("proto", proto), slog.String("target", targetAddr), slog.Any("err", err))
-				return
-			}
-			defer remote.Close()
-
-			done := make(chan struct{}, 2)
-			go proxyTCP(c, remote, &stats.BytesOut, done)
-			go proxyTCP(remote, c, &stats.BytesIn, done)
-			<-done
-			<-done
-		}(conn)
+func startTCP(proto, laddr, raddr string, stats *Stats, ctx context.Context) (net.Listener, error) {
+	ln, err := net.Listen(proto, laddr)
+	if err != nil {
+		return nil, err
 	}
+
+	go func() {
+		for {
+			conn, err := ln.Accept()
+			if err != nil {
+				return
+			}
+
+			atomic.AddInt64(&stats.ActiveConn, 1)
+			atomic.AddInt64(&stats.TotalConn, 1)
+
+			go func(c net.Conn) {
+				defer c.Close()
+				defer atomic.AddInt64(&stats.ActiveConn, -1)
+
+				rc, err := net.Dial(proto, raddr)
+				if err != nil {
+					atomic.AddInt64(&stats.Errors, 1)
+					return
+				}
+				defer rc.Close()
+
+				go proxyTCP(c, rc, &stats.BytesIn)
+				proxyTCP(rc, c, &stats.BytesOut)
+			}(conn)
+		}
+	}()
+
+	go func() {
+		<-ctx.Done()
+		ln.Close()
+	}()
+
+	return ln, nil
 }
 
-func proxyTCP(src, dst net.Conn, counter *int64, done chan struct{}) {
+func proxyTCP(src, dst net.Conn, counter *int64) {
 	buf := make([]byte, 32*1024)
 	for {
 		n, err := src.Read(buf)
@@ -56,59 +57,50 @@ func proxyTCP(src, dst net.Conn, counter *int64, done chan struct{}) {
 			atomic.AddInt64(counter, int64(n))
 		}
 		if err != nil {
-			done <- struct{}{}
 			return
 		}
 	}
 }
 
 // UDP 转发
-func startUDPForward(conn *net.UDPConn, targetAddr string, stats *Stats, ctx context.Context, logger *slog.Logger, ruleID, proto string) {
-	clientMap := sync.Map{} // key: clientAddr string, value: *net.UDPAddr
+func startUDP(proto, laddr, raddr string, stats *Stats, ctx context.Context) (*net.UDPConn, error) {
+	la, err := net.ResolveUDPAddr(proto, laddr)
+	if err != nil {
+		return nil, err
+	}
+	ra, err := net.ResolveUDPAddr(proto, raddr)
+	if err != nil {
+		return nil, err
+	}
 
-	targetUDP := resolveUDPAddr(targetAddr, proto)
+	conn, err := net.ListenUDP(proto, la)
+	if err != nil {
+		return nil, err
+	}
 
-	buf := make([]byte, 65535)
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		default:
-			n, clientAddr, err := conn.ReadFromUDP(buf)
+	go func() {
+		buf := make([]byte, 65535)
+		for {
+			n, src, err := conn.ReadFromUDP(buf)
 			if err != nil {
-				atomic.AddInt64(&stats.Errors, 1)
-				logger.Warn("UDP read error", slog.String("rule_id", ruleID), slog.String("proto", proto), slog.Any("err", err))
-				continue
+				return
 			}
 
 			atomic.AddInt64(&stats.UDPPacketsIn, 1)
 			atomic.AddInt64(&stats.BytesIn, int64(n))
 
-			// 保存客户端地址
-			clientMap.Store(clientAddr.String(), clientAddr)
-
-			// 发给目标
-			_, err = conn.WriteToUDP(buf[:n], targetUDP)
-			if err != nil {
-				atomic.AddInt64(&stats.Errors, 1)
-				continue
-			}
+			conn.WriteToUDP(buf[:n], ra)
 			atomic.AddInt64(&stats.UDPPacketsOut, 1)
 			atomic.AddInt64(&stats.BytesOut, int64(n))
 
-			// 异步回包处理
-			go func(data []byte) {
-				n2, err := conn.WriteToUDP(data[:n], clientAddr)
-				if err == nil {
-					atomic.AddInt64(&stats.UDPPacketsOut, 1)
-					atomic.AddInt64(&stats.BytesOut, int64(n2))
-				}
-			}(append([]byte(nil), buf[:n]...))
+			_ = src
 		}
-	}
-}
+	}()
 
-func resolveUDPAddr(addr, proto string) *net.UDPAddr {
-	udpAddr, _ := net.ResolveUDPAddr(proto, addr)
-	return udpAddr
+	go func() {
+		<-ctx.Done()
+		conn.Close()
+	}()
+
+	return conn, nil
 }
