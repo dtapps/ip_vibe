@@ -7,10 +7,9 @@ import (
 	"time"
 	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/grpc_generated"
-	"vibe_ip/internal/helper/ip_helper"
+	"vibe_ip/internal/reporter/service"
 	"vibe_ip/internal/types"
 
-	"github.com/denisbrodbeck/machineid"
 	"github.com/go-co-op/gocron/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -24,6 +23,8 @@ type IPReportGRPCTask struct {
 	logger *slog.Logger        // 日志记录器
 	config *IPReportTaskConfig // 配置
 
+	service *service.IPReportService // IP报告服务
+
 	clientTarget   string                           // gRPC 客户端目标地址
 	clientOpts     []grpc.DialOption                // gRPC 客户端连接选项
 	clientBaseMD   metadata.MD                      // gRPC 客户端基础 metadata
@@ -32,10 +33,11 @@ type IPReportGRPCTask struct {
 }
 
 // NewIPReportGRPCTask 创建一个新的服务实例
-func NewIPReportGRPCTask(cron gocron.Scheduler) *IPReportGRPCTask {
+func NewIPReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.IPReportService) *IPReportGRPCTask {
 	return &IPReportGRPCTask{
-		cron:   cron,
-		logger: slog.With("component", "ip-report"),
+		cron:    cron,
+		logger:  logger.With("component", "ip-report-grpc"),
+		service: service,
 		clientOpts: []grpc.DialOption{
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 		},
@@ -122,49 +124,30 @@ func (s *IPReportGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
 // RunPeriodicTask 运行任务
 func (s *IPReportGRPCTask) RunPeriodicTask() {
 
-	var err error
+	// 创建上下文
 	ctx := context.Background()
 
 	// 请求参数
-	deviceCode := s.config.DeviceCode
-	params := types.DeviceReportDeviceIpRequest{
-		DeviceName: s.config.DeviceName,
-	}
-	// 检查设备代码是否为空
-	if deviceCode == "" {
-		// 获取设备ID
-		deviceCode, err = machineid.ID()
-		if err != nil {
-			s.logger.ErrorContext(ctx, "获取设备ID失败",
-				slog.Any("err", err),
-			)
-			return
-		}
+	params, err := s.service.GetDeviceData(ctx, s.config.DeviceCode, s.config.DeviceName)
+	if err != nil {
+		s.logger.ErrorContext(ctx, "获取设备数据失败",
+			slog.Any("err", err),
+		)
+		return
 	}
 
-	// 获取设备IP
-	iPHelper := ip_helper.NewIPHelper()
-	ipv4, err := iPHelper.GetIP(ctx, ip_helper.IPTypeV4)
-	if err == nil {
-		params.IPV4Addr = ipv4.IP
-	}
-	ipv6, err := iPHelper.GetIP(ctx, ip_helper.IPTypeV6)
-	if err == nil {
-		params.IPV6Addr = ipv6.IP
-	}
-	s.logger.InfoContext(ctx, "IP上报开始",
-		slog.String("device_code", deviceCode),
+	// 日志记录器
+	logger := s.logger.With(
+		slog.String("device_code", params.DeviceCode),
 		slog.String("device_name", params.DeviceName),
 		slog.String("ipv4_addr", params.IPV4Addr),
 		slog.String("ipv6_addr", params.IPV6Addr),
 	)
-	err = s.reportIP(ctx, deviceCode, params)
+
+	logger.InfoContext(ctx, "IP上报开始")
+	err = s.reportIP(ctx, logger, params.DeviceCode, params)
 	if err != nil {
-		s.logger.ErrorContext(ctx, "IP上报失败",
-			slog.String("device_code", deviceCode),
-			slog.String("device_name", params.DeviceName),
-			slog.String("ipv4_addr", params.IPV4Addr),
-			slog.String("ipv6_addr", params.IPV6Addr),
+		logger.ErrorContext(ctx, "IP上报失败",
 			slog.Any("err", err),
 		)
 		return
@@ -172,25 +155,16 @@ func (s *IPReportGRPCTask) RunPeriodicTask() {
 
 	nextRun, err := s.job.NextRun()
 	if err == nil {
-		s.logger.InfoContext(ctx, "IP上报成功",
-			slog.String("device_code", deviceCode),
-			slog.String("device_name", params.DeviceName),
-			slog.String("ipv4_addr", params.IPV4Addr),
-			slog.String("ipv6_addr", params.IPV6Addr),
+		logger.InfoContext(ctx, "IP上报成功",
 			slog.String("next_run_time", nextRun.Format(time.DateTime)),
 		)
 	} else {
-		s.logger.InfoContext(ctx, "IP上报成功",
-			slog.String("device_code", deviceCode),
-			slog.String("device_name", params.DeviceName),
-			slog.String("ipv4_addr", params.IPV4Addr),
-			slog.String("ipv6_addr", params.IPV6Addr),
-		)
+		logger.InfoContext(ctx, "IP上报成功")
 	}
 }
 
 // reportIP 发送IP上报请求
-func (s *IPReportGRPCTask) reportIP(ctx context.Context, deviceCode string, params types.DeviceReportDeviceIpRequest) (err error) {
+func (s *IPReportGRPCTask) reportIP(ctx context.Context, logger *slog.Logger, deviceCode string, params *types.DeviceReportDeviceIpRequest) (err error) {
 
 	// 构建gRPC请求
 	req := &grpc_generated.ReportDeviceIPRequest{
@@ -207,7 +181,7 @@ func (s *IPReportGRPCTask) reportIP(ctx context.Context, deviceCode string, para
 	}
 
 	// 记录响应
-	s.logger.InfoContext(ctx, "gRPC IP上报响应",
+	logger.InfoContext(ctx, "gRPC IP上报响应",
 		slog.Any("response", resp.String()),
 	)
 

@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/initialize"
+	"vibe_ip/internal/reporter/service"
 	"vibe_ip/internal/reporter/task"
 )
 
@@ -62,35 +63,46 @@ func main() {
 		Arch:       global.GvaArch,
 	}
 
+	// 创建 IP 报告服务
+	ipReportService := service.NewIPReportService(global.GvaGocronSlog.WithLogger())
+
 	if global.GvaEnv.GRPC_URL != "" {
 		// 创建服务
-		service := task.NewIPReportGRPCTask(global.GvaGoCron)
-		service.SetConfig(config)
-		service.SetBaseURL(global.GvaEnv.GRPC_URL)
-		service.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+		grpcTask := task.NewIPReportGRPCTask(
+			global.GvaGoCron,
+			global.GvaGocronSlog.WithLogger(),
+			ipReportService,
+		)
+		grpcTask.SetConfig(config)
+		grpcTask.SetBaseURL(global.GvaEnv.GRPC_URL)
+		grpcTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
 		// 启动任务
-		err := service.StartPeriodicTask(ctx)
+		err := grpcTask.StartPeriodicTask(ctx)
 		if err != nil {
 			fmt.Printf("启动任务失败: %v\n", err)
 			os.Exit(1)
 		}
 		// 关闭服务
-		defer service.Close()
+		defer grpcTask.Close()
 	} else if global.GvaEnv.HTTP_URL != "" {
 		// 创建服务
-		service := task.NewIPReportRestyTask(global.GvaGoCron)
-		service.SetDebug(global.GvaEnv.DEBUG)
-		service.SetConfig(config)
-		service.SetBaseURL(global.GvaEnv.HTTP_URL)
-		service.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+		restyTask := task.NewIPReportRestyTask(
+			global.GvaGoCron,
+			global.GvaGocronSlog.WithLogger(),
+			ipReportService,
+		)
+		restyTask.SetDebug(global.GvaEnv.DEBUG)
+		restyTask.SetConfig(config)
+		restyTask.SetBaseURL(global.GvaEnv.HTTP_URL)
+		restyTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
 		// 启动任务
-		err := service.StartPeriodicTask(ctx)
+		err := restyTask.StartPeriodicTask(ctx)
 		if err != nil {
 			fmt.Printf("启动任务失败: %v\n", err)
 			os.Exit(1)
 		}
 		// 关闭服务
-		defer service.Close()
+		defer restyTask.Close()
 	} else {
 		fmt.Printf("服务启动失败: GRPC_URL / HTTP_URL未配置\n")
 		os.Exit(1)
