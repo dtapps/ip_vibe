@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
 "scripts": {
-    "dev": "pnpm tailwindcss -i ./static/css/input.css -o ./static/css/style.css --watch --content './templates/**/*.html'",
-    "build": "pnpm tailwindcss -i ./static/css/input.css -o ./static/css/style.css --minify --content './templates/**/*.html'"
-  },
+  "dev": "cp -r node_modules/jquery/dist/ ./static/libs/jquery/ && cp -r node_modules/select2/dist/ ./static/libs/select2/ && pnpm tailwindcss -i ./static/css/input.css -o ./static/css/style.css --watch --content './templates/**/*.html'",
+  "build": "cp -r node_modules/jquery/dist/ ./static/libs/jquery/ && cp -r node_modules/select2/dist/ ./static/libs/select2/ && pnpm tailwindcss -i ./static/css/input.css -o ./static/css/style.css --minify --content './templates/**/*.html'"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -14,6 +14,8 @@
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.18",
     "daisyui": "^5.5.14",
+    "jquery": "^3.7.1",
+    "select2": "4.1.0-rc.0",
     "tailwindcss": "^4.1.18"
   }
 }
