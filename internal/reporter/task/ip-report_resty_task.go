@@ -173,11 +173,11 @@ func (s *IPReportRestyTask) postApi(ctx context.Context, logger *slog.Logger, de
 		}).
 		Post("api/open/device/{device_code}/ip-report")
 	if err != nil {
-		return fmt.Errorf("Resty请求失败: %w", err)
+		return fmt.Errorf(s.taskName+" 调用失败: %w", err)
 	}
 
 	// 记录响应
-	logger.InfoContext(ctx, "Resty IP上报响应",
+	logger.InfoContext(ctx, s.taskName+" 响应",
 		slog.Any("响应", resp.String()),
 	)
 

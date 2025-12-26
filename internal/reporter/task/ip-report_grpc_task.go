@@ -143,11 +143,11 @@ func (s *IPReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, dev
 	// 调用gRPC服务
 	resp, err := s.openServiceClient.ReportDeviceIP(metadata.NewOutgoingContext(ctx, s.clientBaseMD), req)
 	if err != nil {
-		return fmt.Errorf("gRPC调用失败: %w", err)
+		return fmt.Errorf(s.taskName+" 调用失败: %w", err)
 	}
 
 	// 记录响应
-	logger.InfoContext(ctx, "gRPC IP上报响应",
+	logger.InfoContext(ctx, s.taskName+" 响应",
 		slog.Any("响应", resp.String()),
 	)
 

@@ -214,7 +214,7 @@ func (s *PortForwardRestyTask) getApi(ctx context.Context, logger *slog.Logger, 
 		SetResult(&response).
 		Get("api/open/device/{device_code}/port-forwards")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf(s.taskName+" 调用失败: %w", err)
 	}
 
 	// 转换响应
@@ -229,7 +229,7 @@ func (s *PortForwardRestyTask) getApi(ctx context.Context, logger *slog.Logger, 
 	}
 
 	// 记录响应
-	logger.InfoContext(ctx, "Resty 端口转发响应",
+	logger.InfoContext(ctx, s.taskName+" 响应",
 		slog.Any("响应", resp.String()),
 	)
 

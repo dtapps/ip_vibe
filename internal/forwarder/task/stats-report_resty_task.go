@@ -203,7 +203,7 @@ func (s *StatsReportRestyTask) postApi(ctx context.Context, logger *slog.Logger,
 	}
 
 	// 记录响应
-	logger.InfoContext(ctx, "Resty 端口转发响应",
+	logger.InfoContext(ctx, s.taskName+" 响应",
 		slog.Any("响应", resp.String()),
 	)
 

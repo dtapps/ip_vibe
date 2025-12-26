@@ -175,7 +175,7 @@ func (s *PortForwardGRPCTask) getApi(ctx context.Context, logger *slog.Logger, d
 	// 调用gRPC服务
 	resp, err := s.openServiceClient.GetDevicePortForwards(metadata.NewOutgoingContext(ctx, s.clientBaseMD), req)
 	if err != nil {
-		return nil, fmt.Errorf("gRPC调用失败: %w", err)
+		return nil, fmt.Errorf(s.taskName+" 调用失败: %w", err)
 	}
 
 	// 转换响应
@@ -190,7 +190,7 @@ func (s *PortForwardGRPCTask) getApi(ctx context.Context, logger *slog.Logger, d
 	}
 
 	// 记录响应
-	logger.InfoContext(ctx, "gRPC 端口转发响应",
+	logger.InfoContext(ctx, s.taskName+" 响应",
 		slog.Any("响应", resp.String()),
 	)
 
