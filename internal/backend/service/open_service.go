@@ -217,8 +217,7 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 	}(context.Background(), s)
 
 	return &types.DeviceReportDeviceIpResponse{
-		DeviceCode: request.DeviceCode,
-		Msg:        msg,
+		Msg: msg,
 	}, nil
 }
 

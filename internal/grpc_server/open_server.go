@@ -58,8 +58,7 @@ func (s *OpenServer) ReportDeviceIP(ctx context.Context, req *grpc_generated.Rep
 
 	// 将业务响应转换为 gRPC 响应
 	return &grpc_generated.ReportDeviceIPResponse{
-		DeviceCode: response.DeviceCode,
-		Msg:        response.Msg,
+		Msg: response.Msg,
 	}, nil
 }
 

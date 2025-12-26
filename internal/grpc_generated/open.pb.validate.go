@@ -250,8 +250,6 @@ func (m *ReportDeviceIPResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for DeviceCode
-
 	// no validation rules for Msg
 
 	if len(errors) > 0 {

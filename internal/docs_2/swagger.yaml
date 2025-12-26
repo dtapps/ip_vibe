@@ -298,9 +298,6 @@ definitions:
     type: object
   vibe_ip_internal_types.DeviceReportDeviceIpResponse:
     properties:
-      device_code:
-        description: 设备编码
-        type: string
       msg:
         description: 消息
         type: string

@@ -256,10 +256,6 @@
     "openReportDeviceIPResponse": {
       "type": "object",
       "properties": {
-        "deviceCode": {
-          "type": "string",
-          "title": "设备编码"
-        },
         "msg": {
           "type": "string",
           "title": "消息"

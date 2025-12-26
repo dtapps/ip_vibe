@@ -101,8 +101,7 @@ func (x *ReportDeviceIPRequest) GetIpv6Addr() string {
 // 设备上报IP 响应参数
 type ReportDeviceIPResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	DeviceCode    string                 `protobuf:"bytes,1,opt,name=device_code,json=deviceCode,proto3" json:"device_code,omitempty"` // 设备编码
-	Msg           string                 `protobuf:"bytes,2,opt,name=msg,proto3" json:"msg,omitempty"`                                 // 消息
+	Msg           string                 `protobuf:"bytes,1,opt,name=msg,proto3" json:"msg,omitempty"` // 消息
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -135,13 +134,6 @@ func (x *ReportDeviceIPResponse) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ReportDeviceIPResponse.ProtoReflect.Descriptor instead.
 func (*ReportDeviceIPResponse) Descriptor() ([]byte, []int) {
 	return file_open_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *ReportDeviceIPResponse) GetDeviceCode() string {
-	if x != nil {
-		return x.DeviceCode
-	}
-	return ""
 }
 
 func (x *ReportDeviceIPResponse) GetMsg() string {
@@ -505,11 +497,9 @@ const file_open_proto_rawDesc = "" +
 	"deviceName\x12)\n" +
 	"\tipv4_addr\x18\x03 \x01(\tB\f\xfaB\tr\a\x18\x0f\xd0\x01\x01p\x01R\bipv4Addr\x12*\n" +
 	"\tipv6_addr\x18\x04 \x01(\tB\r\xfaB\n" +
-	"r\b\x18-\xd0\x01\x01\x80\x01\x01R\bipv6Addr\"K\n" +
-	"\x16ReportDeviceIPResponse\x12\x1f\n" +
-	"\vdevice_code\x18\x01 \x01(\tR\n" +
-	"deviceCode\x12\x10\n" +
-	"\x03msg\x18\x02 \x01(\tR\x03msg\"\\\n" +
+	"r\b\x18-\xd0\x01\x01\x80\x01\x01R\bipv6Addr\"*\n" +
+	"\x16ReportDeviceIPResponse\x12\x10\n" +
+	"\x03msg\x18\x01 \x01(\tR\x03msg\"\\\n" +
 	"\x1cGetDevicePortForwardsRequest\x12<\n" +
 	"\vdevice_code\x18\x01 \x01(\tB\x1b\xfaB\x18r\x16\x10\x01\x1822\x10^[a-zA-Z0-9_-]+$R\n" +
 	"deviceCode\"\xc3\x01\n" +

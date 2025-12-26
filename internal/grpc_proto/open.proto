@@ -78,8 +78,7 @@ message ReportDeviceIPRequest {
 
 // 设备上报IP 响应参数
 message ReportDeviceIPResponse {
-  string device_code = 1;  // 设备编码
-  string msg = 2;          // 消息
+  string msg = 1;          // 消息
 }
 
 // 获取设备端口转发 请求参数

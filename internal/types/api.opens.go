@@ -10,8 +10,7 @@ type DeviceReportDeviceIpRequest struct {
 
 // 设备上报IP 响应结构
 type DeviceReportDeviceIpResponse struct {
-	DeviceCode string `json:"device_code,omitempty"` // 设备编码
-	Msg        string `json:"msg,omitempty"`         // 消息
+	Msg string `json:"msg,omitempty"` // 消息
 }
 
 // 获取设备端口转发 请求结构
