@@ -91,11 +91,11 @@ func (s *DomainMonitorTask) StartPeriodicTask(ctx context.Context) (err error) {
 	if s.job != nil {
 		return nil
 	}
-	// 每30秒到60秒执行一次
+	// 创建周期任务
 	s.job, err = s.cron.NewJob(
 		gocron.DurationRandomJob(
-			30*time.Second, // 最小间隔
-			60*time.Second, // 最大间隔
+			30*time.Second, // 最小间隔 30 秒
+			60*time.Second, // 最大间隔 60 秒
 		),
 		gocron.NewTask(s.RunPeriodicTask),
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
@@ -279,7 +279,7 @@ func (s *DomainMonitorTask) AddDisposableTask(ctx context.Context, domainMonitor
 		return fmt.Errorf("任务 %s 已存在，无法重复添加", jobName)
 	}
 
-	// 不存在同名任务，添加新任务
+	// 不存在同名任务，添加一次任务
 	_, err = s.cron.NewJob(
 		gocron.OneTimeJob(
 			gocron.OneTimeJobStartDateTime(time.Now().Add(5*time.Second)), // 5秒后开始

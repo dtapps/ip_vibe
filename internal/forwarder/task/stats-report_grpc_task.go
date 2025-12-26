@@ -76,16 +76,16 @@ func (s *StatsReportGRPCTask) SetConfig(config *PortForwardTaskConfig) *StatsRep
 func (s *StatsReportGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
 	// 确保只创建一次任务
 	s.jobOne.Do(func() {
-		// 每8到12分钟执行一次
+		// 创建周期任务
 		s.job, err = s.cron.NewJob(
 			gocron.DurationRandomJob(
-				8*time.Minute,  // 最小间隔
-				12*time.Minute, // 最大间隔
+				8*time.Minute,  // 最小间隔 8 分钟
+				12*time.Minute, // 最大间隔 12 分钟
 			),
-			gocron.NewTask(s.RunPeriodicTask),                    // 执行任务
-			gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
-			gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
-			gocron.WithName(s.taskName),                          // 任务名称
+			gocron.NewTask(s.RunPeriodicTask),                                           // 执行任务
+			gocron.WithSingletonMode(gocron.LimitModeReschedule),                        // 单例模式
+			gocron.WithStartAt(gocron.WithStartDateTime(time.Now().Add(1*time.Minute))), // 首次延迟1分钟
+			gocron.WithName(s.taskName),                                                 // 任务名称
 			gocron.WithEventListeners(
 				s.jobHelper.PanicPeriodicListener(),
 				s.jobHelper.BeforePeriodicListener(),

@@ -76,9 +76,11 @@ func (s *PortForwardGRPCTask) SetConfig(config *PortForwardTaskConfig) *PortForw
 func (s *PortForwardGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
 	// 确保只创建一次任务
 	s.jobOne.Do(func() {
-		// 每30分钟执行一次
+		// 创建周期任务
 		s.job, err = s.cron.NewJob(
-			gocron.DurationJob(30*time.Minute),
+			gocron.DurationJob(
+				30*time.Minute, // 每30分钟执行一次
+			),
 			gocron.NewTask(s.RunPeriodicTask),                    // 执行任务
 			gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 			gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始

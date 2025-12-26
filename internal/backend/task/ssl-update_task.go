@@ -105,13 +105,14 @@ func (s *SSLUpdateTask) StartPeriodicTask(ctx context.Context) (err error) {
 	if s.job != nil {
 		return nil
 	}
-	// 每10小时执行一次
+	// 创建周期任务
 	s.job, err = s.cron.NewJob(
-		gocron.DurationJob(10*time.Hour),
+		gocron.DurationJob(
+			10*time.Hour, // 每10小时执行一次
+		),
 		gocron.NewTask(s.RunPeriodicTask),
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
-		// gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
-		gocron.WithName(s.taskName), // 任务名称
+		gocron.WithName(s.taskName),                          // 任务名称
 		gocron.WithEventListeners(
 			s.jobHelper.PanicPeriodicListener(),
 			s.jobHelper.BeforePeriodicListener(),
@@ -425,7 +426,7 @@ func (s *SSLUpdateTask) AddDisposableTask(ctx context.Context, pendingRecord *Pe
 		return fmt.Errorf("任务 %s 已存在，无法重复添加", jobName)
 	}
 
-	// 不存在同名任务，添加新任务
+	// 不存在同名任务，添加一次任务
 	_, err = s.cron.NewJob(
 		gocron.OneTimeJob(
 			gocron.OneTimeJobStartDateTime(time.Now().Add(5*time.Second)), // 5秒后开始

@@ -102,11 +102,11 @@ func (s *IPReportRestyTask) SetBasicAuth(username, password string) *IPReportRes
 func (s *IPReportRestyTask) StartPeriodicTask(ctx context.Context) (err error) {
 	// 确保只创建一次任务
 	s.jobOne.Do(func() {
-		// 每8到12分钟执行一次
+		// 创建周期任务
 		s.job, err = s.cron.NewJob(
 			gocron.DurationRandomJob(
-				8*time.Minute,  // 最小间隔
-				12*time.Minute, // 最大间隔
+				8*time.Minute,  // 最小间隔 8 分钟
+				12*time.Minute, // 最大间隔 12 分钟
 			),
 			gocron.NewTask(s.RunPeriodicTask),                    // 执行任务
 			gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
