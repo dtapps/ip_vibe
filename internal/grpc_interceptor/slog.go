@@ -14,6 +14,9 @@ import (
 
 // UnaryLogger 返回一个 unary 拦截器：记录开始、结束、耗时与状态码
 func UnaryLogger(logger *slog.Logger) grpc.UnaryServerInterceptor {
+	if logger == nil {
+		logger = slog.Default()
+	}
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		start := time.Now()
 		resp, err := handler(ctx, req)

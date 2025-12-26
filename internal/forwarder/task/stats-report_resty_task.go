@@ -154,10 +154,10 @@ func (s *StatsReportRestyTask) RunPeriodicTask() {
 
 	// 调用 forward.Agent 的统计
 	if s.forwardAgent != nil {
-		// 同步端口转发规则统计信息
+		// 端口转发规则统计信息
 		stats := s.forwardAgent.Stats()
 		for ruleID, stat := range stats {
-			logger.InfoContext(ctx, "同步端口转发规则统计信息",
+			logger.InfoContext(ctx, "端口转发规则统计信息",
 				slog.Time("启动时间", stat.StartTime),
 				slog.String("规则ID", ruleID),
 				slog.Int64("活跃连接数", stat.ActiveConn),

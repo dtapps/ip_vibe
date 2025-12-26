@@ -184,26 +184,11 @@ func (s *PortForwardRestyTask) RunPeriodicTask() {
 
 	// 调用 forward.Agent 的热更新
 	if s.forwardAgent != nil {
-
 		// 同步端口转发规则
 		s.forwardAgent.Sync(ctx, forwardRules)
 		logger.InfoContext(ctx, "同步端口转发规则完成",
 			slog.Int("规则数量", len(forwardRules)),
 		)
-
-		// 同步端口转发规则统计信息
-		stats := s.forwardAgent.Stats()
-		for ruleID, stat := range stats {
-			logger.InfoContext(ctx, "同步端口转发规则统计信息",
-				slog.Time("启动时间", stat.StartTime),
-				slog.String("规则ID", ruleID),
-				slog.Int64("活跃连接数", stat.ActiveConn),
-				slog.Int64("累计连接数", stat.TotalConn),
-				slog.Int64("接收字节数", stat.BytesIn),
-				slog.Int64("发送字节数", stat.BytesOut),
-				slog.Int64("错误次数", stat.Errors),
-			)
-		}
 	} else {
 		logger.ErrorContext(ctx, "forwardAgent 未初始化")
 	}

@@ -9,6 +9,9 @@ import (
 )
 
 func CORS(logger *slog.Logger) gin.HandlerFunc {
+	if logger == nil {
+		logger = slog.Default()
+	}
 
 	// 配置 CORS 中间件
 	corsConfig := cors.Config{

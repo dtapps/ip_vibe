@@ -9,6 +9,9 @@ import (
 )
 
 func RequestID(logger *slog.Logger) gin.HandlerFunc {
+	if logger == nil {
+		logger = slog.Default()
+	}
 
 	// 创建 RequestID 中间件
 	originalMiddleware := requestid.New()

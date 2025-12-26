@@ -8,6 +8,9 @@ import (
 )
 
 func BasicAuth(logger *slog.Logger, username string, password string) gin.HandlerFunc {
+	if logger == nil {
+		logger = slog.Default()
+	}
 
 	// 如果用户名或密码为空，直接返回空的 HandlerFunc
 	if username == "" || password == "" {

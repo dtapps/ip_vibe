@@ -13,6 +13,9 @@ type BasicAuth struct {
 }
 
 func NewBasicAuth(logger *slog.Logger, username, password string) *BasicAuth {
+	if logger == nil {
+		logger = slog.Default()
+	}
 	return &BasicAuth{
 		logger:   logger,
 		username: username,
