@@ -164,6 +164,9 @@ func (s *StatsReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, 
 	// 调用gRPC服务
 	resp, err := s.openServiceClient.CreatePortForwardStats(metadata.NewOutgoingContext(ctx, s.clientBaseMD), req)
 	if err != nil {
+		logger.ErrorContext(ctx, s.taskName+" 调用失败",
+			slog.Any("err", err),
+		)
 		return fmt.Errorf(s.taskName+" 调用失败: %w", err)
 	}
 

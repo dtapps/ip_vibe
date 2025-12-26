@@ -151,13 +151,7 @@ func (s *IPReportRestyTask) RunPeriodicTask() {
 	)
 
 	// 上传数据
-	err = s.postApi(ctx, logger, deviceData)
-	if err != nil {
-		logger.ErrorContext(ctx, "上传数据失败",
-			slog.Any("err", err),
-		)
-		return
-	}
+	_ = s.postApi(ctx, logger, deviceData)
 }
 
 // postApi 请求
@@ -173,6 +167,9 @@ func (s *IPReportRestyTask) postApi(ctx context.Context, logger *slog.Logger, de
 		}).
 		Post("api/open/device/{device_code}/ip-report")
 	if err != nil {
+		logger.ErrorContext(ctx, s.taskName+" 调用失败",
+			slog.Any("err", err),
+		)
 		return fmt.Errorf(s.taskName+" 调用失败: %w", err)
 	}
 

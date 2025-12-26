@@ -84,7 +84,36 @@ func (s *OpenServer) GetDevicePortForwards(ctx context.Context, req *grpc_genera
 		})
 	}
 
+	// 将业务响应转换为 gRPC 响应
 	return &grpc_generated.GetDevicePortForwardsResponse{
 		Rules: rules,
 	}, nil
+}
+
+// CreatePortForwardStats 实现创建端口转发统计的 gRPC 方法
+func (s *OpenServer) CreatePortForwardStats(ctx context.Context, req *grpc_generated.CreatePortForwardStatsRequest) (*grpc_generated.CreatePortForwardStatsResponse, error) {
+	// 将 gRPC 请求转换为你的 types 结构
+	request := &types.CreatePortForwardStatsRequest{
+		DevicePortForwardsRequest: types.DevicePortForwardsRequest{
+			DeviceCode: req.DeviceCode,
+		},
+		PortForwardID: req.PortForwardId,
+		StartTime:     req.StartTime,
+		ActiveConn:    req.ActiveConn,
+		TotalConn:     req.TotalConn,
+		BytesIn:       req.BytesIn,
+		BytesOut:      req.BytesOut,
+		UDPPacketsIn:  req.UdpPacketsIn,
+		UDPPacketsOut: req.UdpPacketsOut,
+		Errors:        req.Errors,
+	}
+
+	// 调用你现有的业务逻辑（与 HTTP 处理器使用相同的代码）
+	err := s.deviceService.CreatePortForwardStats(ctx, req.DeviceCode, req.PortForwardId, request)
+	if err != nil {
+		return nil, err
+	}
+
+	// 将业务响应转换为 gRPC 响应
+	return &grpc_generated.CreatePortForwardStatsResponse{}, nil
 }

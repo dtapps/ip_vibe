@@ -129,9 +129,6 @@ func (s *PortForwardGRPCTask) RunPeriodicTask() {
 	// 获取数据
 	list, err := s.getApi(ctx, logger, deviceData)
 	if err != nil {
-		logger.ErrorContext(ctx, "获取数据失败",
-			slog.Any("err", err),
-		)
 		return
 	}
 
@@ -175,6 +172,9 @@ func (s *PortForwardGRPCTask) getApi(ctx context.Context, logger *slog.Logger, d
 	// 调用gRPC服务
 	resp, err := s.openServiceClient.GetDevicePortForwards(metadata.NewOutgoingContext(ctx, s.clientBaseMD), req)
 	if err != nil {
+		logger.ErrorContext(ctx, s.taskName+" 调用失败",
+			slog.Any("err", err),
+		)
 		return nil, fmt.Errorf(s.taskName+" 调用失败: %w", err)
 	}
 

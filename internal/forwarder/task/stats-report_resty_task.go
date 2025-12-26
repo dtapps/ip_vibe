@@ -199,7 +199,10 @@ func (s *StatsReportRestyTask) postApi(ctx context.Context, logger *slog.Logger,
 		}).
 		Post("api/open/device/{device_code}/port-forwards-stats/{port_forward_id}")
 	if err != nil {
-		return err
+		logger.ErrorContext(ctx, s.taskName+" 调用失败",
+			slog.Any("err", err),
+		)
+		return fmt.Errorf(s.taskName+" 调用失败: %w", err)
 	}
 
 	// 记录响应
