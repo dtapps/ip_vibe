@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"sync"
 	"time"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/helper/gocron_helper"
@@ -20,6 +21,7 @@ type IPReportGRPCTask struct {
 	job       gocron.Job               // IP上报任务
 	taskName  string                   // 任务名称
 	jobHelper *gocron_helper.JobHelper // 任务助手
+	jobOne    sync.Once                // 确保只创建一次任务
 	logger    *slog.Logger             // 日志记录器
 	config    *IPReportTaskConfig      // 配置
 
@@ -67,23 +69,29 @@ func (s *IPReportGRPCTask) SetConfig(config *IPReportTaskConfig) *IPReportGRPCTa
 
 // StartPeriodicTask 启动周期任务
 func (s *IPReportGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
-	// 每8到12分钟执行一次
-	s.job, err = s.cron.NewJob(
-		gocron.DurationRandomJob(
-			8*time.Minute,  // 最小间隔
-			12*time.Minute, // 最大间隔
-		),
-		gocron.NewTask(s.RunPeriodicTask),                    // 执行任务
-		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
-		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
-		gocron.WithName(s.taskName),                          // 任务名称
-		gocron.WithEventListeners(
-			s.jobHelper.PanicPeriodicListener(),
-			s.jobHelper.BeforePeriodicListener(),
-			s.jobHelper.AfterPeriodicListener(),
-		), // 事件监听
-	)
+	// 确保只创建一次任务
+	s.jobOne.Do(func() {
+		// 每8到12分钟执行一次
+		s.job, err = s.cron.NewJob(
+			gocron.DurationRandomJob(
+				8*time.Minute,  // 最小间隔
+				12*time.Minute, // 最大间隔
+			),
+			gocron.NewTask(s.RunPeriodicTask),                    // 执行任务
+			gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
+			gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
+			gocron.WithName(s.taskName),                          // 任务名称
+			gocron.WithEventListeners(
+				s.jobHelper.PanicPeriodicListener(),
+				s.jobHelper.BeforePeriodicListener(),
+				s.jobHelper.AfterPeriodicListener(),
+			), // 事件监听
+		)
+	})
 	if err != nil {
+		s.logger.ErrorContext(ctx, "创建定时任务失败",
+			slog.Any("err", err),
+		)
 		return fmt.Errorf("创建定时任务失败: %w", err)
 	}
 
