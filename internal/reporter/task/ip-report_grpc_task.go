@@ -7,6 +7,7 @@ import (
 	"time"
 	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/grpc_generated"
+	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/reporter/service"
 
 	"github.com/go-co-op/gocron/v2"
@@ -17,10 +18,12 @@ import (
 
 // IPReportGRPCTask IP上报任务
 type IPReportGRPCTask struct {
-	cron   gocron.Scheduler    // 定时任务调度器
-	job    gocron.Job          // IP上报任务
-	logger *slog.Logger        // 日志记录器
-	config *IPReportTaskConfig // 配置
+	cron      gocron.Scheduler         // 定时任务调度器
+	job       gocron.Job               // IP上报任务
+	taskName  string                   // 任务名称
+	jobHelper *gocron_helper.JobHelper // 任务助手
+	logger    *slog.Logger             // 日志记录器
+	config    *IPReportTaskConfig      // 配置
 
 	service *service.IPReportService // IP报告服务
 
@@ -34,9 +37,11 @@ type IPReportGRPCTask struct {
 // NewIPReportGRPCTask 创建一个新的服务实例
 func NewIPReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.IPReportService) *IPReportGRPCTask {
 	return &IPReportGRPCTask{
-		cron:    cron,
-		logger:  logger.With("component", "ip-report-grpc"),
-		service: service,
+		cron:      cron,
+		taskName:  "gRPC IP上报",
+		jobHelper: gocron_helper.NewJobHelper(cron, logger),
+		logger:    logger.With("component", "ip-report-grpc"),
+		service:   service,
 		clientOpts: []grpc.DialOption{
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 		},
@@ -89,7 +94,7 @@ func (s *IPReportGRPCTask) SetBasicAuth(username, password string) *IPReportGRPC
 	return s
 }
 
-// StartPeriodicTask 启动任务
+// StartPeriodicTask 启动周期任务
 func (s *IPReportGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
 	// 连接gRPC服务器
 	s.client, err = grpc.NewClient(s.clientTarget, s.clientOpts...)
@@ -109,13 +114,18 @@ func (s *IPReportGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
 		gocron.NewTask(s.RunPeriodicTask),                    // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
-		gocron.WithName("gRPC IP上报"),                         // 任务名称
+		gocron.WithName(s.taskName),                          // 任务名称
+		gocron.WithEventListeners(
+			s.jobHelper.PanicPeriodicListener(),
+			s.jobHelper.BeforePeriodicListener(),
+			s.jobHelper.AfterPeriodicListener(),
+		), // 事件监听
 	)
 	if err != nil {
 		return fmt.Errorf("创建定时任务失败: %w", err)
 	}
 
-	s.logger.InfoContext(ctx, "IP上报gRPC任务已启动",
+	s.logger.InfoContext(ctx, s.taskName+"任务已启动",
 		slog.String("执行间隔", "8-12分钟随机"),
 	)
 	return nil

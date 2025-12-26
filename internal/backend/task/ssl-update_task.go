@@ -32,12 +32,12 @@ type SSLUpdateTask struct {
 	db            *ent.Client                // 数据库客户端
 	logDb         *ent_log.Client            // 日志数据库客户端
 	cron          gocron.Scheduler           // 定时任务调度器
-	sslJob        gocron.Job                 // SSL刷新任务
+	job           gocron.Job                 // SSL刷新任务
+	taskName      string                     // 任务名称
 	jobHelper     *gocron_helper.JobHelper   // 任务助手
 	logger        *slog.Logger               // 日志记录器
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
 	debug         bool                       // 是否开启调试模式
-	taskName      string                     // 任务名称
 }
 
 // 创建实例
@@ -50,18 +50,18 @@ func NewSSLUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Schedul
 		db:            db,
 		logDb:         logDb,
 		cron:          cron,
+		taskName:      "SSL更新",
 		jobHelper:     gocron_helper.NewJobHelper(cron, logger),
 		logger:        logger,
 		httpTransport: httpTransport,
 		debug:         debug,
-		taskName:      "SSL更新",
 	}
 }
 
 // Close 关闭服务，释放资源
 func (s *SSLUpdateTask) Close() {
-	if s.cron != nil && s.sslJob != nil {
-		_ = s.cron.RemoveJob(s.sslJob.ID())
+	if s.cron != nil && s.job != nil {
+		_ = s.cron.RemoveJob(s.job.ID())
 	}
 }
 
@@ -99,16 +99,16 @@ func (s *SSLUpdateTask) CalculateNextRun(sslRecord *ent.SSLRecord, now time.Time
 	return nextRun
 }
 
-// 启动SSL周期任务
-func (s *SSLUpdateTask) StartSSLPeriodicTask(ctx context.Context) (err error) {
+// StartPeriodicTask 启动周期任务
+func (s *SSLUpdateTask) StartPeriodicTask(ctx context.Context) (err error) {
 	// 判断是否存在任务
-	if s.sslJob != nil {
+	if s.job != nil {
 		return nil
 	}
 	// 每10小时执行一次
-	s.sslJob, err = s.cron.NewJob(
+	s.job, err = s.cron.NewJob(
 		gocron.DurationJob(10*time.Hour),
-		gocron.NewTask(s.RunSSLPeriodicTask),
+		gocron.NewTask(s.RunPeriodicTask),
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		// gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName(s.taskName), // 任务名称
@@ -116,21 +116,25 @@ func (s *SSLUpdateTask) StartSSLPeriodicTask(ctx context.Context) (err error) {
 			s.jobHelper.PanicPeriodicListener(),
 			s.jobHelper.BeforePeriodicListener(),
 			s.jobHelper.AfterPeriodicListener(),
-		),
+		), // 事件监听
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("创建定时任务失败: %w", err)
 	}
+
+	s.logger.InfoContext(ctx, s.taskName+"任务已启动",
+		slog.String("执行间隔", "10小时"),
+	)
 	return nil
 }
 
-// 运行SSL周期任务
-func (s *SSLUpdateTask) RunSSLPeriodicTask() {
+// RunPeriodicTask 运行任务
+func (s *SSLUpdateTask) RunPeriodicTask() {
 
 	ctx := context.Background()
 
 	// 日志
-	logger := s.jobHelper.SlogWith(s.logger, s.sslJob.ID().String(), s.sslJob.Name())
+	logger := s.jobHelper.SlogWith(s.logger, s.job.ID().String(), s.job.Name())
 
 	// 分组记录
 	var concurrentRecords, serialRecords []*PendingSSLRecord
@@ -218,7 +222,7 @@ func (s *SSLUpdateTask) RunSSLPeriodicTask() {
 
 	}
 
-	nextRun, err := s.sslJob.NextRun()
+	nextRun, err := s.job.NextRun()
 	if err == nil {
 		logger.InfoContext(ctx, "运行完成",
 			slog.Int("并发记录数", len(concurrentRecords)),
@@ -413,8 +417,8 @@ func (s *SSLUpdateTask) parseCertificateValidity(res *certificate.Resource) (*Ce
 	}, nil
 }
 
-// 添加SSL一次性任务
-func (s *SSLUpdateTask) AddSSLDisposableTask(ctx context.Context, pendingRecord *PendingSSLRecord) (err error) {
+// AddDisposableTask 添加一次性任务
+func (s *SSLUpdateTask) AddDisposableTask(ctx context.Context, pendingRecord *PendingSSLRecord) (err error) {
 
 	// 任务编号
 	jobID := uuid.New()
@@ -434,7 +438,7 @@ func (s *SSLUpdateTask) AddSSLDisposableTask(ctx context.Context, pendingRecord 
 			gocron.OneTimeJobStartDateTime(time.Now().Add(5*time.Second)), // 5秒后开始
 		),
 		gocron.NewTask(
-			s.RunSSLDisposableTask,
+			s.RunDisposableTask,
 			ctx,
 			s.jobHelper.SlogWith(s.logger, jobID.String(), jobName),
 			pendingRecord,
@@ -446,14 +450,14 @@ func (s *SSLUpdateTask) AddSSLDisposableTask(ctx context.Context, pendingRecord 
 			s.jobHelper.PanicDisposableListener(),
 			s.jobHelper.BeforeDisposableListener(),
 			s.jobHelper.AfterDisposableListener(),
-		),
+		), // 事件监听
 	)
 
 	return err
 }
 
-// 运行SSL一次性任务
-func (s *SSLUpdateTask) RunSSLDisposableTask(ctx context.Context, logger *slog.Logger, taskPendingRecord *PendingSSLRecord) {
+// RunDisposableTask 运行一次性任务
+func (s *SSLUpdateTask) RunDisposableTask(ctx context.Context, logger *slog.Logger, taskPendingRecord *PendingSSLRecord) {
 	err := s.executeSSLUpdate(ctx, logger, taskPendingRecord)
 	if err != nil {
 		logger.ErrorContext(ctx, "处理失败",

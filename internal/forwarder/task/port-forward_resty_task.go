@@ -8,6 +8,7 @@ import (
 	"time"
 	"vibe_ip/internal/forwarder/forward"
 	"vibe_ip/internal/forwarder/service"
+	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/go-co-op/gocron/v2"
@@ -17,10 +18,12 @@ import (
 
 // PortForwardRestyTask 端口转发任务
 type PortForwardRestyTask struct {
-	cron   gocron.Scheduler       // 定时任务调度器
-	job    gocron.Job             // 端口转发任务
-	logger *slog.Logger           // 日志记录器
-	config *PortForwardTaskConfig // 配置
+	cron      gocron.Scheduler         // 定时任务调度器
+	job       gocron.Job               // 端口转发任务
+	taskName  string                   // 任务名称
+	jobHelper *gocron_helper.JobHelper // 任务助手
+	logger    *slog.Logger             // 日志记录器
+	config    *PortForwardTaskConfig   // 配置
 
 	service      *service.PortForwardServer // 端口转发服务
 	forwardAgent *forward.Agent             // 端口转发器
@@ -47,6 +50,8 @@ func NewPortForwardRestyTask(cron gocron.Scheduler, logger *slog.Logger, service
 
 	return &PortForwardRestyTask{
 		cron:         cron,
+		taskName:     "Resty 端口转发",
+		jobHelper:    gocron_helper.NewJobHelper(cron, logger),
 		logger:       logger.With("component", "port-forward-resty"),
 		service:      service,
 		forwardAgent: forwardAgent,
@@ -97,7 +102,7 @@ func (s *PortForwardRestyTask) SetBasicAuth(username, password string) *PortForw
 	return s
 }
 
-// StartPeriodicTask 启动任务
+// StartPeriodicTask 启动周期任务
 func (s *PortForwardRestyTask) StartPeriodicTask(ctx context.Context) (err error) {
 	// 每30分钟执行一次
 	s.job, err = s.cron.NewJob(
@@ -105,13 +110,18 @@ func (s *PortForwardRestyTask) StartPeriodicTask(ctx context.Context) (err error
 		gocron.NewTask(s.RunPeriodicTask),                    // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
-		gocron.WithName("Resty 端口转发"),                        // 任务名称
+		gocron.WithName(s.taskName),                          // 任务名称
+		gocron.WithEventListeners(
+			s.jobHelper.PanicPeriodicListener(),
+			s.jobHelper.BeforePeriodicListener(),
+			s.jobHelper.AfterPeriodicListener(),
+		), // 事件监听
 	)
 	if err != nil {
 		return fmt.Errorf("创建定时任务失败: %w", err)
 	}
 
-	s.logger.InfoContext(ctx, "Resty 端口转发任务已启动",
+	s.logger.InfoContext(ctx, s.taskName+"任务已启动",
 		slog.String("interval", "30分钟"),
 	)
 	return nil

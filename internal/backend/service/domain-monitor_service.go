@@ -282,7 +282,7 @@ func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id in
 	)
 
 	// 添加域名监控一次性任务
-	err = domainMonitorService.AddDomainMonitorDisposableTask(ctx, firstDomainMonitor)
+	err = domainMonitorService.AddDisposableTask(ctx, firstDomainMonitor)
 	if err != nil {
 		return nil, fmt.Errorf("添加域名监控一次性任务失败: %w", err)
 	}

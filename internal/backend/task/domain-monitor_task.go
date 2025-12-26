@@ -23,12 +23,12 @@ type DomainMonitorTask struct {
 	db            *ent.Client                // 业务数据库客户端
 	logDb         *ent_log.Client            // 日志数据库客户端
 	cron          gocron.Scheduler           // 定时任务调度器
-	dmJob         gocron.Job                 // 域名监控任务
+	job           gocron.Job                 // 域名监控任务
+	taskName      string                     // 任务名称
 	jobHelper     *gocron_helper.JobHelper   // 任务助手
 	logger        *slog.Logger               // 日志记录器
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
 	debug         bool                       // 是否开启调试模式
-	taskName      string                     // 任务名称
 }
 
 // 创建实例
@@ -41,18 +41,18 @@ func NewDomainMonitorTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Sch
 		db:            db,
 		logDb:         logDb,
 		cron:          cron,
+		taskName:      "域名监控",
 		jobHelper:     gocron_helper.NewJobHelper(cron, logger),
 		logger:        logger,
 		httpTransport: httpTransport,
 		debug:         debug,
-		taskName:      "域名监控",
 	}
 }
 
 // Close 关闭服务，释放资源
 func (s *DomainMonitorTask) Close() {
-	if s.cron != nil && s.dmJob != nil {
-		_ = s.cron.RemoveJob(s.dmJob.ID())
+	if s.cron != nil && s.job != nil {
+		_ = s.cron.RemoveJob(s.job.ID())
 	}
 }
 
@@ -85,19 +85,19 @@ func (m *DomainMonitorTask) CalculateNextRun(domainMonitor *ent.DomainMonitor, n
 	return nextRun
 }
 
-// 启动域名监控周期任务
-func (s *DomainMonitorTask) StartDomainMonitorPeriodicTask(ctx context.Context) (err error) {
+// StartPeriodicTask 启动周期任务
+func (s *DomainMonitorTask) StartPeriodicTask(ctx context.Context) (err error) {
 	// 判断是否存在任务
-	if s.dmJob != nil {
+	if s.job != nil {
 		return nil
 	}
 	// 每30秒到60秒执行一次
-	s.dmJob, err = s.cron.NewJob(
+	s.job, err = s.cron.NewJob(
 		gocron.DurationRandomJob(
 			30*time.Second, // 最小间隔
 			60*time.Second, // 最大间隔
 		),
-		gocron.NewTask(s.RunDomainMonitorPeriodicTask),
+		gocron.NewTask(s.RunPeriodicTask),
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName(s.taskName),                          // 任务名称
@@ -105,21 +105,25 @@ func (s *DomainMonitorTask) StartDomainMonitorPeriodicTask(ctx context.Context) 
 			s.jobHelper.PanicPeriodicListener(),
 			s.jobHelper.BeforePeriodicListener(),
 			s.jobHelper.AfterPeriodicListener(),
-		),
+		), // 事件监听
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("创建定时任务失败: %w", err)
 	}
+
+	s.logger.InfoContext(ctx, s.taskName+"任务已启动",
+		slog.String("执行间隔", "30-60秒随机"),
+	)
 	return nil
 }
 
-// 运行域名监控周期任务
-func (s *DomainMonitorTask) RunDomainMonitorPeriodicTask() {
+// RunPeriodicTask 运行任务
+func (s *DomainMonitorTask) RunPeriodicTask() {
 
 	ctx := context.Background()
 
 	// 日志
-	logger := s.jobHelper.SlogWith(s.logger, s.dmJob.ID().String(), s.dmJob.Name())
+	logger := s.jobHelper.SlogWith(s.logger, s.job.ID().String(), s.job.Name())
 
 	// 分组记录
 	var concurrentRecords, serialRecords []*ent.DomainMonitor
@@ -184,7 +188,7 @@ func (s *DomainMonitorTask) RunDomainMonitorPeriodicTask() {
 		}
 	}
 
-	nextRun, err := s.dmJob.NextRun()
+	nextRun, err := s.job.NextRun()
 	if err == nil {
 		logger.InfoContext(ctx, "运行完成",
 			slog.Int("并发记录数", len(concurrentRecords)),
@@ -267,8 +271,8 @@ func (s *DomainMonitorTask) executeDomainMonitorCheck(ctx context.Context, logge
 	return nil
 }
 
-// 添加域名监控一次性任务
-func (s *DomainMonitorTask) AddDomainMonitorDisposableTask(ctx context.Context, domainMonitor *ent.DomainMonitor) (err error) {
+// AddDisposableTask 添加一次性任务
+func (s *DomainMonitorTask) AddDisposableTask(ctx context.Context, domainMonitor *ent.DomainMonitor) (err error) {
 
 	// 任务编号
 	jobID := uuid.New()
@@ -288,7 +292,7 @@ func (s *DomainMonitorTask) AddDomainMonitorDisposableTask(ctx context.Context, 
 			gocron.OneTimeJobStartDateTime(time.Now().Add(5*time.Second)), // 5秒后开始
 		),
 		gocron.NewTask(
-			s.RunDomainMonitorDisposableTask,
+			s.RunDisposableTask,
 			ctx,
 			s.jobHelper.SlogWith(s.logger, jobID.String(), jobName),
 			domainMonitor,
@@ -300,14 +304,14 @@ func (s *DomainMonitorTask) AddDomainMonitorDisposableTask(ctx context.Context, 
 			s.jobHelper.PanicDisposableListener(),
 			s.jobHelper.BeforeDisposableListener(),
 			s.jobHelper.AfterDisposableListener(),
-		),
+		), // 事件监听
 	)
 
 	return err
 }
 
-// RunDomainMonitorDisposableTask 运行域名监控一次性任务
-func (s *DomainMonitorTask) RunDomainMonitorDisposableTask(ctx context.Context, logger *slog.Logger, domainMonitor *ent.DomainMonitor) {
+// RunDisposableTask 运行一次性任务
+func (s *DomainMonitorTask) RunDisposableTask(ctx context.Context, logger *slog.Logger, domainMonitor *ent.DomainMonitor) {
 	err := s.executeDomainMonitorCheck(ctx, logger, domainMonitor)
 	if err != nil {
 		logger.ErrorContext(ctx, "处理失败",

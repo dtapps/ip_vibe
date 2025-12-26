@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"time"
+	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/reporter/service"
 
 	"github.com/go-co-op/gocron/v2"
@@ -13,10 +14,12 @@ import (
 
 // IPReportRestyTask IP上报任务
 type IPReportRestyTask struct {
-	cron   gocron.Scheduler    // 定时任务调度器
-	job    gocron.Job          // IP上报任务
-	logger *slog.Logger        // 日志记录器
-	config *IPReportTaskConfig // 配置
+	cron      gocron.Scheduler         // 定时任务调度器
+	job       gocron.Job               // IP上报任务
+	taskName  string                   // 任务名称
+	jobHelper *gocron_helper.JobHelper // 任务助手
+	logger    *slog.Logger             // 日志记录器
+	config    *IPReportTaskConfig      // 配置
 
 	service *service.IPReportService // IP报告服务
 
@@ -41,10 +44,12 @@ func NewIPReportRestyTask(cron gocron.Scheduler, logger *slog.Logger, service *s
 	client.SetRetryMaxWaitTime(5 * time.Second)
 
 	return &IPReportRestyTask{
-		cron:    cron,
-		logger:  logger.With("component", "ip-report-resty"),
-		service: service,
-		client:  client,
+		cron:      cron,
+		taskName:  "Resty IP上报",
+		jobHelper: gocron_helper.NewJobHelper(cron, logger),
+		logger:    logger.With("component", "ip-report-resty"),
+		service:   service,
+		client:    client,
 	}
 }
 
@@ -91,6 +96,7 @@ func (s *IPReportRestyTask) SetBasicAuth(username, password string) *IPReportRes
 	return s
 }
 
+// StartPeriodicTask 启动周期任务
 func (s *IPReportRestyTask) StartPeriodicTask(ctx context.Context) (err error) {
 	// 每8到12分钟执行一次
 	s.job, err = s.cron.NewJob(
@@ -101,18 +107,24 @@ func (s *IPReportRestyTask) StartPeriodicTask(ctx context.Context) (err error) {
 		gocron.NewTask(s.RunPeriodicTask),                    // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
-		gocron.WithName("Resty IP上报"),                        // 任务名称
+		gocron.WithName(s.taskName),                          // 任务名称
+		gocron.WithEventListeners(
+			s.jobHelper.PanicPeriodicListener(),
+			s.jobHelper.BeforePeriodicListener(),
+			s.jobHelper.AfterPeriodicListener(),
+		), // 事件监听
 	)
 	if err != nil {
 		return fmt.Errorf("创建定时任务失败: %w", err)
 	}
 
-	s.logger.InfoContext(ctx, "Resty IP上报任务已启动",
+	s.logger.InfoContext(ctx, s.taskName+"任务已启动",
 		slog.String("执行间隔", "8-12分钟随机"),
 	)
 	return nil
 }
 
+// RunPeriodicTask 运行任务
 func (s *IPReportRestyTask) RunPeriodicTask() {
 
 	// 创建上下文

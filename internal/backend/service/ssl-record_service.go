@@ -322,19 +322,16 @@ func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) (*t
 	}
 
 	// 添加SSL一次性任务
-	err = s.sslUpdateTask.AddSSLDisposableTask(
-		ctx,
-		&task.PendingSSLRecord{
-			Item:     firstSSLRecord,
-			Platform: firstSSLRecord.Edges.Config.Platform,
-			Params: &ssl_helper.SSLProcessParams{
-				SSLRecordID: cast.ToString(firstSSLRecord.ID),
+	err = s.sslUpdateTask.AddDisposableTask(ctx, &task.PendingSSLRecord{
+		Item:     firstSSLRecord,
+		Platform: firstSSLRecord.Edges.Config.Platform,
+		Params: &ssl_helper.SSLProcessParams{
+			SSLRecordID: cast.ToString(firstSSLRecord.ID),
 
-				ConfigJSON: firstSSLRecord.Edges.Config.ConfigJSON,
-				Domains:    gostring.Split(firstSSLRecord.Domain, ","),
-			},
+			ConfigJSON: firstSSLRecord.Edges.Config.ConfigJSON,
+			Domains:    gostring.Split(firstSSLRecord.Domain, ","),
 		},
-	)
+	})
 	if err != nil {
 		return nil, fmt.Errorf("添加SSL一次性任务失败: %w", err)
 	}
