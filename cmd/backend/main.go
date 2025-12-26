@@ -23,6 +23,7 @@ import (
 	"vibe_ip/internal/docs_3"
 	"vibe_ip/internal/gin_middleware"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/grpc_client"
 	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/grpc_interceptor"
@@ -975,30 +976,29 @@ func grpc_gw_run(ctx context.Context, router *gin.Engine) {
 		return
 	}
 
-	// 连接上游 gRPC - 提升到全局，不再 defer close
-	var err error
-
-	opts := make([]grpc.DialOption, 0)
-	opts = append(
-		opts,
+	// 创建 gRPC 客户端
+	grpc_client := grpc_client.NewGRPCClient()
+	// 添加 gRPC 连接选项
+	grpc_client.AddDialOption(
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
-	// 鉴权
-	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
-		opts = append(
-			opts,
-			grpc.WithPerRPCCredentials(grpc_credential.NewBasicAuth(
-				global.GvaGrpcSlog.WithLogger(),
-				global.GvaEnv.BASIC_AUTH_USERNAME,
-				global.GvaEnv.BASIC_AUTH_PASSWORD,
-			)),
-		)
-	}
-	grpcConnInstance, err = grpc.NewClient(global.GvaEnv.GRPC_ADDR, opts...)
+	// 添加 gRPC 连接选项
+	grpc_client.AddDialOption(
+		// 鉴权
+		grpc.WithPerRPCCredentials(grpc_credential.NewBasicAuth(
+			global.GvaGrpcSlog.WithLogger(),
+			global.GvaEnv.BASIC_AUTH_USERNAME,
+			global.GvaEnv.BASIC_AUTH_PASSWORD,
+		)),
+	)
+	// 连接 gRPC 服务器
+	err := grpc_client.Dial(global.GvaEnv.GRPC_ADDR)
 	if err != nil {
 		slog.Error("gRPC-Gateway 连接上游失败（忽略路由注册）", slog.String("error", err.Error()))
 		return
 	}
+	// 获取 gRPC 客户端
+	grpcConnInstance = grpc_client.GetClient()
 
 	gwMux := grpcGatewayRuntime.NewServeMux(
 		grpcGatewayRuntime.WithErrorHandler(func(
