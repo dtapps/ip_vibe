@@ -37,9 +37,6 @@ entgo.io/ent/schema/edge
 entgo.io/ent/schema/field
 entgo.io/ent/schema/index
 entgo.io/ent/schema/mixin
-# gitee.com/xiaowan1997/qingfeng v1.4.2
-## explicit; go 1.20
-gitee.com/xiaowan1997/qingfeng
 # github.com/BurntSushi/toml v1.6.0
 ## explicit; go 1.18
 github.com/BurntSushi/toml
@@ -70,7 +67,7 @@ github.com/alibabacloud-go/darabonba-openapi/v2/utils
 # github.com/alibabacloud-go/debug v1.0.1
 ## explicit; go 1.18
 github.com/alibabacloud-go/debug/debug
-# github.com/alibabacloud-go/esa-20240910/v2 v2.42.0
+# github.com/alibabacloud-go/esa-20240910/v2 v2.43.0
 ## explicit; go 1.14
 github.com/alibabacloud-go/esa-20240910/v2/client
 # github.com/alibabacloud-go/tea v1.3.14
@@ -295,7 +292,6 @@ github.com/corazawaf/coraza/v3/debuglog
 github.com/corazawaf/coraza/v3/experimental
 github.com/corazawaf/coraza/v3/experimental/plugins/macro
 github.com/corazawaf/coraza/v3/experimental/plugins/plugintypes
-github.com/corazawaf/coraza/v3/http
 github.com/corazawaf/coraza/v3/internal/actions
 github.com/corazawaf/coraza/v3/internal/auditlog
 github.com/corazawaf/coraza/v3/internal/bodyprocessors
@@ -363,7 +359,7 @@ github.com/gin-gonic/gin/render
 # github.com/go-acme/alidns-20150109/v4 v4.7.0
 ## explicit; go 1.14
 github.com/go-acme/alidns-20150109/v4/client
-# github.com/go-acme/esa-20240910/v2 v2.42.0
+# github.com/go-acme/esa-20240910/v2 v2.43.0
 ## explicit; go 1.14
 github.com/go-acme/esa-20240910/v2/client
 # github.com/go-acme/lego/v4 v4.30.1
@@ -661,10 +657,10 @@ github.com/swaggo/swag
 # github.com/swaggo/swag/v2 v2.0.0-rc4
 ## explicit; go 1.18
 github.com/swaggo/swag/v2
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.20
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.21
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.20
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.21
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors
@@ -675,7 +671,7 @@ github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/regions
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.16
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.18
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.21
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901
 # github.com/tidwall/gjson v1.18.0
@@ -722,6 +718,9 @@ github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/events/application
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/events/application/enums
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects/enums
+# github.com/wdcbot/qingfeng v1.4.4
+## explicit; go 1.20
+github.com/wdcbot/qingfeng
 # github.com/yosida95/uritemplate/v3 v3.0.2
 ## explicit; go 1.14
 github.com/yosida95/uritemplate/v3

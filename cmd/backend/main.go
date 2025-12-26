@@ -34,7 +34,6 @@ import (
 	"vibe_ip/internal/mcp_resource"
 	"vibe_ip/internal/mcp_tool"
 
-	"gitee.com/xiaowan1997/qingfeng"
 	"github.com/denisbrodbeck/machineid"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
@@ -42,6 +41,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/wdcbot/qingfeng"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
