@@ -88,4 +88,63 @@
   .ui-icon {
     @apply w-4 h-4 fill-current inline-block align-middle;
   }
+
+  /* --- Modal 基础容器 --- */
+  .modal {
+    @apply fixed inset-0 flex items-center justify-center z-[100] invisible opacity-0 transition-all duration-300;
+    background-color: rgba(0, 0, 0, 0.5); /* 遮罩层背景 */
+    backdrop-filter: blur(4px); /* 毛玻璃效果 */
+  }
+
+  /* 激活状态：当 HTML 元素有 .modal-open 时显示 */
+  .modal-open.modal,
+  .modal:target,
+  .modal[open] {
+    @apply visible opacity-100 pointer-events-auto;
+  }
+
+  /* --- 弹窗内容卡片 --- */
+  .ui-modal-box {
+    /* 核心修复：添加 min-width */
+    @apply relative w-full max-w-2xl p-0 shadow-2xl scale-95 transition-transform duration-300 mx-4;
+
+    /* 强制最小宽度 (在移动端会自动被 mx-4 和 w-full 覆盖，不会溢出屏幕) */
+    min-width: 650px;
+
+    /* 继承自 ui-panel 的视觉样式 */
+    @apply bg-base-100 rounded-[2.5rem] border border-base-300/50 overflow-hidden;
+  }
+
+  /* 针对小屏幕（手机）的适配：取消最小宽度限制，改回占满 */
+  @media (max-width: 640px) {
+    .ui-modal-box {
+      min-width: unset;
+      @apply mx-2;
+    }
+  }
+
+  /* 动画：打开时内容放大回弹 */
+  .modal-open .ui-modal-box {
+    @apply scale-100;
+  }
+
+  /* 表单 */
+  .ui-form-control {
+    @apply flex flex-col gap-2 w-full;
+  }
+  .ui-label-text {
+    @apply text-sm font-bold opacity-80 px-1;
+  }
+  .ui-input {
+    @apply input w-full focus:outline-primary border-base-300;
+  }
+  .ui-select {
+    @apply select w-full focus:outline-primary border-base-300;
+  }
+  .ui-textarea {
+    @apply textarea w-full focus:outline-primary border-base-300 font-mono;
+  }
+  .ui-hint {
+    @apply opacity-50 text-[10px] mt-1 px-1 leading-normal;
+  }
 }
