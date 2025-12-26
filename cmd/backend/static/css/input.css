@@ -59,4 +59,33 @@
   .btn-ui-primary {
     @apply btn btn-primary btn-sm rounded-xl font-bold border-none shadow-md px-6;
   }
+
+  /* --- 统一开关样式 --- */
+  .ui-switch {
+    @apply toggle toggle-primary transition-all duration-300 active:scale-95;
+    --tglbg: oklch(var(--b1)); /* 强制滑块颜色跟随当前主题背景色 */
+  }
+  .ui-switch:disabled {
+    @apply opacity-20 cursor-not-allowed;
+  }
+
+  /* 分页容器：增加阴影和圆角，使其浮动感更强 */
+  .ui-pagination {
+    @apply join shadow-sm bg-base-100 rounded-xl border border-base-200 p-0.5;
+  }
+
+  /* 分页按钮：使用 ghost 风格，悬停时才有背景 */
+  .ui-page-btn {
+    @apply join-item btn btn-sm btn-ghost hover:bg-primary hover:text-primary-content border-none rounded-lg;
+  }
+
+  /* 分页信息：去掉按钮样式，改为纯文本展示，增加左右间距 */
+  .ui-page-info {
+    @apply join-item flex items-center px-4 text-xs font-medium opacity-60 pointer-events-none;
+  }
+
+  /* 统一图标类名 */
+  .ui-icon {
+    @apply w-4 h-4 fill-current inline-block align-middle;
+  }
 }
