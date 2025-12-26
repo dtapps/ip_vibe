@@ -90,9 +90,9 @@ func (s *IPUpdateTask) StartDnsJob(ctx context.Context) (err error) {
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName("DNS记录刷新"),                           // 任务名称
 		gocron.WithEventListeners(
-			s.jobHelper.PanicPeriodicListener("DNS记录刷新"),
-			s.jobHelper.BeforePeriodicListener("DNS记录刷新"),
-			s.jobHelper.AfterPeriodicListener("DNS记录刷新"),
+			s.jobHelper.PanicPeriodicListener(),
+			s.jobHelper.BeforePeriodicListener(),
+			s.jobHelper.AfterPeriodicListener(),
 		),
 	)
 	if err != nil {
@@ -117,9 +117,9 @@ func (s *IPUpdateTask) StartCdnJob(ctx context.Context) (err error) {
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName("CDN记录刷新"),                           // 任务名称
 		gocron.WithEventListeners(
-			s.jobHelper.PanicPeriodicListener("CDN记录刷新"),
-			s.jobHelper.BeforePeriodicListener("CDN记录刷新"),
-			s.jobHelper.AfterPeriodicListener("CDN记录刷新"),
+			s.jobHelper.PanicPeriodicListener(),
+			s.jobHelper.BeforePeriodicListener(),
+			s.jobHelper.AfterPeriodicListener(),
 		),
 	)
 	if err != nil {

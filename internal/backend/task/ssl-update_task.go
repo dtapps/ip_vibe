@@ -113,9 +113,9 @@ func (s *SSLUpdateTask) StartPeriodicTask(ctx context.Context) (err error) {
 		// gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName(s.taskName), // 任务名称
 		gocron.WithEventListeners(
-			s.jobHelper.PanicPeriodicListener(s.taskName),
-			s.jobHelper.BeforePeriodicListener(s.taskName),
-			s.jobHelper.AfterPeriodicListener(s.taskName),
+			s.jobHelper.PanicPeriodicListener(),
+			s.jobHelper.BeforePeriodicListener(),
+			s.jobHelper.AfterPeriodicListener(),
 		), // 事件监听
 	)
 	if err != nil {
@@ -440,9 +440,9 @@ func (s *SSLUpdateTask) AddDisposableTask(ctx context.Context, pendingRecord *Pe
 		gocron.WithName(jobName),                       // 任务名称
 		gocron.WithIdentifier(jobID),                   // 任务编号
 		gocron.WithEventListeners(
-			s.jobHelper.PanicDisposableListener(jobName),
-			s.jobHelper.BeforeDisposableListener(jobName),
-			s.jobHelper.AfterDisposableListener(jobName),
+			s.jobHelper.PanicDisposableListener(),
+			s.jobHelper.BeforeDisposableListener(),
+			s.jobHelper.AfterDisposableListener(),
 		), // 事件监听
 	)
 

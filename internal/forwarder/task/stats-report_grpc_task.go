@@ -82,9 +82,9 @@ func (s *StatsReportGRPCTask) StartPeriodicTask(ctx context.Context) (err error)
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName(s.taskName),                          // 任务名称
 		gocron.WithEventListeners(
-			s.jobHelper.PanicPeriodicListener(s.taskName),
-			s.jobHelper.BeforePeriodicListener(s.taskName),
-			s.jobHelper.AfterPeriodicListener(s.taskName),
+			s.jobHelper.PanicPeriodicListener(),
+			s.jobHelper.BeforePeriodicListener(),
+			s.jobHelper.AfterPeriodicListener(),
 		), // 事件监听
 	)
 	if err != nil {

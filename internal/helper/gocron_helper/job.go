@@ -214,16 +214,16 @@ func (j *JobHelper) SlogWith(logger *slog.Logger, jobID string, jobName string) 
 }
 
 // [周期性]任务开始前
-func (j *JobHelper) BeforePeriodicListener(taskName string) gocron.EventListener {
+func (j *JobHelper) BeforePeriodicListener() gocron.EventListener {
 	return gocron.BeforeJobRuns(func(jobID uuid.UUID, jobName string) {
 		// 日志
 		logger := j.SlogWith(j.logger, jobID.String(), jobName)
 		// 获取任务
 		jobInfo, err := j.GetJob(jobID.String())
 		if err != nil {
-			logger.Info(fmt.Sprintf("[周期性]%s 开始执行", taskName))
+			logger.Info("[周期性] 开始执行")
 		} else {
-			logger.Info(fmt.Sprintf("[周期性]%s 开始执行", taskName),
+			logger.Info("[周期性] 开始执行",
 				slog.String("上次运行时间", jobInfo.LastRun),
 				slog.String("下次运行时间", jobInfo.NextRun),
 			)
@@ -232,16 +232,16 @@ func (j *JobHelper) BeforePeriodicListener(taskName string) gocron.EventListener
 }
 
 // [周期性]任务结束后
-func (j *JobHelper) AfterPeriodicListener(taskName string) gocron.EventListener {
+func (j *JobHelper) AfterPeriodicListener() gocron.EventListener {
 	return gocron.AfterJobRuns(func(jobID uuid.UUID, jobName string) {
 		// 日志
 		logger := j.SlogWith(j.logger, jobID.String(), jobName)
 		// 获取任务
 		jobInfo, err := j.GetJob(jobID.String())
 		if err != nil {
-			logger.Info(fmt.Sprintf("[周期性]%s 执行结束", taskName))
+			logger.Info("[周期性] 执行结束")
 		} else {
-			logger.Info(fmt.Sprintf("[周期性]%s 执行结束", taskName),
+			logger.Info("[周期性] 执行结束",
 				slog.String("上次运行时间", jobInfo.LastRun),
 				slog.String("下次运行时间", jobInfo.NextRun),
 			)
@@ -250,19 +250,19 @@ func (j *JobHelper) AfterPeriodicListener(taskName string) gocron.EventListener 
 }
 
 // [周期性]任务异常时
-func (j *JobHelper) PanicPeriodicListener(taskName string) gocron.EventListener {
+func (j *JobHelper) PanicPeriodicListener() gocron.EventListener {
 	return gocron.AfterJobRunsWithPanic(func(jobID uuid.UUID, jobName string, recoverData any) {
 		// 日志
 		logger := j.SlogWith(j.logger, jobID.String(), jobName)
 		// 获取任务
 		jobInfo, err := j.GetJob(jobID.String())
 		if err != nil {
-			logger.Error(fmt.Sprintf("[周期性]%s 执行异常", taskName),
+			logger.Error("[周期性] 执行异常",
 				slog.Any("err", err),
 			)
 		}
 		if jobInfo != nil {
-			logger.Error(fmt.Sprintf("[周期性]%s 执行异常", taskName),
+			logger.Error("[周期性] 执行异常",
 				slog.String("上次运行时间", jobInfo.LastRun),
 				slog.String("下次运行时间", jobInfo.NextRun),
 				slog.Any("err", recoverData),
@@ -272,24 +272,24 @@ func (j *JobHelper) PanicPeriodicListener(taskName string) gocron.EventListener 
 }
 
 // [一次性]任务开始前
-func (j *JobHelper) BeforeDisposableListener(taskName string) gocron.EventListener {
+func (j *JobHelper) BeforeDisposableListener() gocron.EventListener {
 	return gocron.BeforeJobRuns(func(jobID uuid.UUID, jobName string) {
 		// 日志
 		logger := j.SlogWith(j.logger, jobID.String(), jobName)
-		logger.Info(fmt.Sprintf("[一次性]%s 开始执行", taskName))
+		logger.Info("[一次性] 开始执行")
 	})
 }
 
 // [一次性]任务结束后
-func (j *JobHelper) AfterDisposableListener(taskName string) gocron.EventListener {
+func (j *JobHelper) AfterDisposableListener() gocron.EventListener {
 	return gocron.AfterJobRuns(func(jobID uuid.UUID, jobName string) {
 		// 日志
 		logger := j.SlogWith(j.logger, jobID.String(), jobName)
-		logger.Info(fmt.Sprintf("[一次性]%s 执行结束", taskName))
+		logger.Info("[一次性] 执行结束")
 		// 删除任务
 		err := j.DeleteJob(jobID.String())
 		if err != nil {
-			logger.Error(fmt.Sprintf("[一次性]%s 删除任务失败", taskName),
+			logger.Error("[一次性] 删除任务失败",
 				slog.Any("err", err),
 			)
 		}
@@ -297,17 +297,17 @@ func (j *JobHelper) AfterDisposableListener(taskName string) gocron.EventListene
 }
 
 // [一次性]任务异常时
-func (j *JobHelper) PanicDisposableListener(taskName string) gocron.EventListener {
+func (j *JobHelper) PanicDisposableListener() gocron.EventListener {
 	return gocron.AfterJobRunsWithPanic(func(jobID uuid.UUID, jobName string, recoverData any) {
 		// 日志
 		logger := j.SlogWith(j.logger, jobID.String(), jobName)
-		logger.Error(fmt.Sprintf("[一次性]%s 执行异常", taskName),
+		logger.Error("[一次性] 执行异常",
 			slog.Any("err", recoverData),
 		)
 		// 删除任务
 		err := j.DeleteJob(jobID.String())
 		if err != nil {
-			logger.Error(fmt.Sprintf("[一次性]%s 删除任务失败", taskName),
+			logger.Error("[一次性] 删除任务失败",
 				slog.Any("err", err),
 			)
 		}
