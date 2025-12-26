@@ -45,8 +45,8 @@ func NewIPReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *se
 
 // Close 关闭IP上报实例，释放资源
 func (s *IPReportGRPCTask) Close() {
-	if s.cron != nil && s.job != nil {
-		_ = s.cron.RemoveJob(s.job.ID())
+	if s.cron != nil && s.job != nil && s.jobHelper != nil {
+		_ = s.jobHelper.DeleteJob(s.job.ID().String())
 	}
 }
 
@@ -78,9 +78,9 @@ func (s *IPReportGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName(s.taskName),                          // 任务名称
 		gocron.WithEventListeners(
-			s.jobHelper.PanicPeriodicListener(),
-			s.jobHelper.BeforePeriodicListener(),
-			s.jobHelper.AfterPeriodicListener(),
+			s.jobHelper.PanicPeriodicListener(s.taskName),
+			s.jobHelper.BeforePeriodicListener(s.taskName),
+			s.jobHelper.AfterPeriodicListener(s.taskName),
 		), // 事件监听
 	)
 	if err != nil {
@@ -99,19 +99,20 @@ func (s *IPReportGRPCTask) RunPeriodicTask() {
 	// 创建上下文
 	ctx := context.Background()
 
-	s.logger.InfoContext(ctx, "IP上报开始")
+	// 日志
+	logger := s.jobHelper.SlogWith(s.logger, s.job.ID().String(), s.job.Name())
 
 	// 获取设备数据
 	deviceData, err := s.service.GetDeviceData(ctx, s.config.DeviceCode, s.config.DeviceName)
 	if err != nil {
-		s.logger.ErrorContext(ctx, "获取设备数据失败",
+		logger.ErrorContext(ctx, "获取设备数据失败",
 			slog.Any("err", err),
 		)
 		return
 	}
 
 	// 日志记录器
-	logger := s.logger.With(
+	logger = logger.With(
 		slog.String("设备编号", deviceData.DeviceCode),
 		slog.String("设备名称", deviceData.DeviceName),
 		slog.String("IPv4地址", deviceData.IPV4Addr),
@@ -125,15 +126,6 @@ func (s *IPReportGRPCTask) RunPeriodicTask() {
 			slog.Any("err", err),
 		)
 		return
-	}
-
-	nextRun, err := s.job.NextRun()
-	if err == nil {
-		logger.InfoContext(ctx, "IP上报成功",
-			slog.String("下一次运行时间", nextRun.Format(time.DateTime)),
-		)
-	} else {
-		logger.InfoContext(ctx, "IP上报成功")
 	}
 }
 

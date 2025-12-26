@@ -49,8 +49,8 @@ func NewStatsReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service 
 
 // Close 关闭统计上报实例，释放资源
 func (s *StatsReportGRPCTask) Close() {
-	if s.cron != nil && s.job != nil {
-		_ = s.cron.RemoveJob(s.job.ID())
+	if s.cron != nil && s.job != nil && s.jobHelper != nil {
+		_ = s.jobHelper.DeleteJob(s.job.ID().String())
 	}
 }
 
@@ -82,9 +82,9 @@ func (s *StatsReportGRPCTask) StartPeriodicTask(ctx context.Context) (err error)
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName(s.taskName),                          // 任务名称
 		gocron.WithEventListeners(
-			s.jobHelper.PanicPeriodicListener(),
-			s.jobHelper.BeforePeriodicListener(),
-			s.jobHelper.AfterPeriodicListener(),
+			s.jobHelper.PanicPeriodicListener(s.taskName),
+			s.jobHelper.BeforePeriodicListener(s.taskName),
+			s.jobHelper.AfterPeriodicListener(s.taskName),
 		), // 事件监听
 	)
 	if err != nil {
@@ -103,12 +103,19 @@ func (s *StatsReportGRPCTask) RunPeriodicTask() {
 	// 创建上下文
 	ctx := context.Background()
 
-	s.logger.InfoContext(ctx, "统计上报开始")
+	// 日志
+	logger := s.jobHelper.SlogWith(s.logger, s.job.ID().String(), s.job.Name())
+
+	// 检查 forwardAgent 是否初始化
+	if s.forwardAgent == nil {
+		logger.ErrorContext(ctx, "forwardAgent 未初始化")
+		return
+	}
 
 	// 获取设备数据
 	deviceData, err := s.service.GetDeviceData(ctx, s.config.DeviceCode, s.config.DeviceName)
 	if err != nil {
-		s.logger.ErrorContext(ctx, "获取设备数据失败",
+		logger.ErrorContext(ctx, "获取设备数据失败",
 			slog.String("设备编号", s.config.DeviceCode),
 			slog.Any("err", err),
 		)
@@ -116,39 +123,25 @@ func (s *StatsReportGRPCTask) RunPeriodicTask() {
 	}
 
 	// 日志记录器
-	logger := s.logger.With(
+	logger = logger.With(
 		slog.String("设备编号", deviceData.DeviceCode),
 		slog.String("设备名称", deviceData.DeviceName),
 	)
 
-	// 调用 forward.Agent 的统计
-	if s.forwardAgent != nil {
-		// 端口转发规则统计信息
-		stats := s.forwardAgent.Stats()
-		for ruleID, stat := range stats {
-			logger.InfoContext(ctx, "端口转发规则统计信息",
-				slog.Time("启动时间", stat.StartTime),
-				slog.String("规则ID", ruleID),
-				slog.Int64("活跃连接数", stat.ActiveConn),
-				slog.Int64("累计连接数", stat.TotalConn),
-				slog.Int64("接收字节数", stat.BytesIn),
-				slog.Int64("发送字节数", stat.BytesOut),
-				slog.Int64("错误次数", stat.Errors),
-			)
-			// 请求
-			_ = s.postApi(ctx, logger, deviceData.DeviceCode, ruleID, stat)
-		}
-	} else {
-		logger.ErrorContext(ctx, "forwardAgent 未初始化")
-	}
-
-	nextRun, err := s.job.NextRun()
-	if err == nil {
-		logger.InfoContext(ctx, "统计上报同步完成",
-			slog.String("下一次运行时间", nextRun.Format(time.DateTime)),
+	// 端口转发规则统计信息
+	stats := s.forwardAgent.Stats()
+	for ruleID, stat := range stats {
+		logger.InfoContext(ctx, "端口转发规则统计信息",
+			slog.Time("启动时间", stat.StartTime),
+			slog.String("规则ID", ruleID),
+			slog.Int64("活跃连接数", stat.ActiveConn),
+			slog.Int64("累计连接数", stat.TotalConn),
+			slog.Int64("接收字节数", stat.BytesIn),
+			slog.Int64("发送字节数", stat.BytesOut),
+			slog.Int64("错误次数", stat.Errors),
 		)
-	} else {
-		logger.InfoContext(ctx, "统计上报同步完成")
+		// 请求
+		_ = s.postApi(ctx, logger, deviceData.DeviceCode, ruleID, stat)
 	}
 }
 

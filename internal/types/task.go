@@ -22,6 +22,8 @@ type JobData struct {
 }
 
 type JobInfo struct {
-	ID   string `json:"id"`   // 任务序号
-	Name string `json:"name"` // 任务名称
+	ID      string `json:"id"`       // 任务序号
+	Name    string `json:"name"`     // 任务名称
+	LastRun string `json:"last_run"` // 上次运行时间
+	NextRun string `json:"next_run"` // 下次运行时间
 }

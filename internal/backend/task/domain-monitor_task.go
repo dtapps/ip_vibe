@@ -51,8 +51,8 @@ func NewDomainMonitorTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Sch
 
 // Close 关闭服务，释放资源
 func (s *DomainMonitorTask) Close() {
-	if s.cron != nil && s.job != nil {
-		_ = s.cron.RemoveJob(s.job.ID())
+	if s.cron != nil && s.job != nil && s.jobHelper != nil {
+		_ = s.jobHelper.DeleteJob(s.job.ID().String())
 	}
 }
 
@@ -102,9 +102,9 @@ func (s *DomainMonitorTask) StartPeriodicTask(ctx context.Context) (err error) {
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName(s.taskName),                          // 任务名称
 		gocron.WithEventListeners(
-			s.jobHelper.PanicPeriodicListener(),
-			s.jobHelper.BeforePeriodicListener(),
-			s.jobHelper.AfterPeriodicListener(),
+			s.jobHelper.PanicPeriodicListener(s.taskName),
+			s.jobHelper.BeforePeriodicListener(s.taskName),
+			s.jobHelper.AfterPeriodicListener(s.taskName),
 		), // 事件监听
 	)
 	if err != nil {
@@ -120,6 +120,7 @@ func (s *DomainMonitorTask) StartPeriodicTask(ctx context.Context) (err error) {
 // RunPeriodicTask 运行任务
 func (s *DomainMonitorTask) RunPeriodicTask() {
 
+	// 创建上下文
 	ctx := context.Background()
 
 	// 日志
@@ -144,6 +145,11 @@ func (s *DomainMonitorTask) RunPeriodicTask() {
 				concurrentRecords = append(concurrentRecords, domainMonitor)
 			}
 		}
+
+		logger.InfoContext(ctx, "准备处理",
+			slog.Int("并发记录数", len(concurrentRecords)),
+			slog.Int("串行记录数", len(serialRecords)),
+		)
 
 		// 1. 并发处理支持并发的记录
 		if len(concurrentRecords) > 0 {
@@ -188,19 +194,6 @@ func (s *DomainMonitorTask) RunPeriodicTask() {
 		}
 	}
 
-	nextRun, err := s.job.NextRun()
-	if err == nil {
-		logger.InfoContext(ctx, "运行完成",
-			slog.Int("并发记录数", len(concurrentRecords)),
-			slog.Int("串行记录数", len(serialRecords)),
-			slog.String("下次运行时间", nextRun.Format(time.DateTime)),
-		)
-	} else {
-		logger.InfoContext(ctx, "运行完成",
-			slog.Int("并发记录数", len(concurrentRecords)),
-			slog.Int("串行记录数", len(serialRecords)),
-		)
-	}
 }
 
 // 执行域名监控检查
@@ -301,9 +294,9 @@ func (s *DomainMonitorTask) AddDisposableTask(ctx context.Context, domainMonitor
 		gocron.WithName(jobName),                       // 任务名称
 		gocron.WithIdentifier(jobID),                   // 任务编号
 		gocron.WithEventListeners(
-			s.jobHelper.PanicDisposableListener(),
-			s.jobHelper.BeforeDisposableListener(),
-			s.jobHelper.AfterDisposableListener(),
+			s.jobHelper.PanicDisposableListener(jobName),
+			s.jobHelper.BeforeDisposableListener(jobName),
+			s.jobHelper.AfterDisposableListener(jobName),
 		), // 事件监听
 	)
 

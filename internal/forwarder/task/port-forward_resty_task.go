@@ -64,8 +64,8 @@ func (s *PortForwardRestyTask) Close() {
 	if s.client != nil {
 		s.client.Close()
 	}
-	if s.cron != nil && s.job != nil {
-		_ = s.cron.RemoveJob(s.job.ID())
+	if s.cron != nil && s.job != nil && s.jobHelper != nil {
+		_ = s.jobHelper.DeleteJob(s.job.ID().String())
 	}
 }
 
@@ -112,9 +112,9 @@ func (s *PortForwardRestyTask) StartPeriodicTask(ctx context.Context) (err error
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName(s.taskName),                          // 任务名称
 		gocron.WithEventListeners(
-			s.jobHelper.PanicPeriodicListener(),
-			s.jobHelper.BeforePeriodicListener(),
-			s.jobHelper.AfterPeriodicListener(),
+			s.jobHelper.PanicPeriodicListener(s.taskName),
+			s.jobHelper.BeforePeriodicListener(s.taskName),
+			s.jobHelper.AfterPeriodicListener(s.taskName),
 		), // 事件监听
 	)
 	if err != nil {
@@ -133,12 +133,19 @@ func (s *PortForwardRestyTask) RunPeriodicTask() {
 	// 创建上下文
 	ctx := context.Background()
 
-	s.logger.InfoContext(ctx, "端口转发开始")
+	// 日志
+	logger := s.jobHelper.SlogWith(s.logger, s.job.ID().String(), s.job.Name())
+
+	// 检查 forwardAgent 是否初始化
+	if s.forwardAgent == nil {
+		logger.ErrorContext(ctx, "forwardAgent 未初始化")
+		return
+	}
 
 	// 获取设备数据
 	deviceData, err := s.service.GetDeviceData(ctx, s.config.DeviceCode, s.config.DeviceName)
 	if err != nil {
-		s.logger.ErrorContext(ctx, "获取设备数据失败",
+		logger.ErrorContext(ctx, "获取设备数据失败",
 			slog.String("设备编号", s.config.DeviceCode),
 			slog.Any("err", err),
 		)
@@ -146,7 +153,7 @@ func (s *PortForwardRestyTask) RunPeriodicTask() {
 	}
 
 	// 日志记录器
-	logger := s.logger.With(
+	logger = logger.With(
 		slog.String("设备编号", deviceData.DeviceCode),
 		slog.String("设备名称", deviceData.DeviceName),
 	)
@@ -182,25 +189,11 @@ func (s *PortForwardRestyTask) RunPeriodicTask() {
 		forwardRules = append(forwardRules, rule)
 	}
 
-	// 调用 forward.Agent 的热更新
-	if s.forwardAgent != nil {
-		// 同步端口转发规则
-		s.forwardAgent.Sync(ctx, forwardRules)
-		logger.InfoContext(ctx, "同步端口转发规则完成",
-			slog.Int("规则数量", len(forwardRules)),
-		)
-	} else {
-		logger.ErrorContext(ctx, "forwardAgent 未初始化")
-	}
-
-	nextRun, err := s.job.NextRun()
-	if err == nil {
-		logger.InfoContext(ctx, "端口转发同步完成",
-			slog.String("下一次运行时间", nextRun.Format(time.DateTime)),
-		)
-	} else {
-		logger.InfoContext(ctx, "端口转发同步完成")
-	}
+	// 同步端口转发规则，热更新
+	s.forwardAgent.Sync(ctx, forwardRules)
+	logger.InfoContext(ctx, "同步端口转发规则，热更新",
+		slog.Int("规则数量", len(forwardRules)),
+	)
 }
 
 // getApi 请求
