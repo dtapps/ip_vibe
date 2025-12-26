@@ -14,6 +14,8 @@ import (
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
+
+	"go.dtapp.net/library/utils/gotime"
 )
 
 // DeviceOpenService 设备服务接口
@@ -290,7 +292,7 @@ func (s *DeviceOpenServiceImpl) CreatePortForwardStats(ctx context.Context, devi
 	err = s.dbLog.PortForwardStats.Create().
 		SetDeviceID(firstDevice.ID).
 		SetPortForwardID(firstPortForward.ID).
-		SetStartTime(time.Unix(request.StartTime, 0)).
+		SetStartTime(gotime.SetCurrentUnix(request.StartTime).Time).
 		SetActiveConn(request.ActiveConn).
 		SetTotalConn(request.TotalConn).
 		SetBytesIn(request.BytesIn).

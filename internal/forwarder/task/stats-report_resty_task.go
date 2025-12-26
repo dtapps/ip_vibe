@@ -8,9 +8,11 @@ import (
 	"vibe_ip/internal/forwarder/forward"
 	"vibe_ip/internal/forwarder/service"
 	"vibe_ip/internal/helper/gocron_helper"
+	"vibe_ip/internal/types"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
+	"go.dtapp.net/library/utils/gotime"
 	"resty.dev/v3"
 )
 
@@ -177,7 +179,7 @@ func (s *StatsReportRestyTask) RunPeriodicTask() {
 }
 
 // postApi 请求
-func (s *StatsReportRestyTask) postApi(ctx context.Context, logger *slog.Logger, deviceCode string, port_forward_id string, stats *forward.Stats) (err error) {
+func (s *StatsReportRestyTask) postApi(ctx context.Context, logger *slog.Logger, deviceCode string, portForwardID string, stats *forward.Stats) (err error) {
 
 	// 使用 Resty 发送请求
 	resp, err := s.client.R().
@@ -185,17 +187,21 @@ func (s *StatsReportRestyTask) postApi(ctx context.Context, logger *slog.Logger,
 		SetContentType("application/json").
 		SetPathParams(map[string]string{
 			"device_code":     deviceCode,
-			"port_forward_id": cast.ToString(port_forward_id),
+			"port_forward_id": portForwardID,
 		}).
-		SetBody(map[string]any{
-			"start_time":      stats.StartTime.Unix(),
-			"active_conn":     stats.ActiveConn,
-			"total_conn":      stats.TotalConn,
-			"bytes_in":        stats.BytesIn,
-			"bytes_out":       stats.BytesOut,
-			"udp_packets_in":  stats.UDPPacketsIn,
-			"udp_packets_out": stats.UDPPacketsOut,
-			"errors":          stats.Errors,
+		SetBody(types.CreatePortForwardStatsRequest{
+			DevicePortForwardsRequest: types.DevicePortForwardsRequest{
+				DeviceCode: deviceCode,
+			},
+			PortForwardID: cast.ToInt64(portForwardID),
+			StartTime:     gotime.SetCurrent(stats.StartTime).Timestamp(),
+			ActiveConn:    stats.ActiveConn,
+			TotalConn:     stats.TotalConn,
+			BytesIn:       stats.BytesIn,
+			BytesOut:      stats.BytesOut,
+			UDPPacketsIn:  stats.UDPPacketsIn,
+			UDPPacketsOut: stats.UDPPacketsOut,
+			Errors:        stats.Errors,
 		}).
 		Post("api/open/device/{device_code}/port-forwards-stats/{port_forward_id}")
 	if err != nil {

@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
+	"go.dtapp.net/library/utils/gotime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -152,6 +153,7 @@ func (s *StatsReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, 
 	req := &grpc_generated.CreatePortForwardStatsRequest{
 		DeviceCode:    deviceCode,
 		PortForwardId: cast.ToInt64(port_forward_id),
+		StartTime:     gotime.SetCurrent(stats.StartTime).Timestamp(),
 		ActiveConn:    stats.ActiveConn,
 		TotalConn:     stats.TotalConn,
 		BytesIn:       stats.BytesIn,
