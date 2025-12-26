@@ -10,7 +10,12 @@ import (
 	"vibe_ip/internal/forwarder/service"
 	"vibe_ip/internal/forwarder/task"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/grpc_client"
+	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/initialize"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 var (
@@ -71,18 +76,25 @@ func main() {
 	forwardAgent := forward.NewAgent(global.GvaGocronSlog.WithLogger())
 
 	if global.GvaEnv.GRPC_URL != "" {
+		// 获取 gRPC 客户端
+		grpcClient, err := get_grpc_client()
+		if err != nil {
+			fmt.Printf("获取 gRPC 客户端失败: %v\n", err)
+			os.Exit(1)
+		}
+		defer grpcClient.Close()
+
 		// 创建端口转发实例
 		portForwardTask := task.NewPortForwardGRPCTask(
 			global.GvaGoCron,
 			global.GvaGocronSlog.WithLogger(),
 			portForwardServer,
 			forwardAgent,
+			grpcClient,
 		)
 		portForwardTask.SetConfig(config)
-		portForwardTask.SetBaseURL(global.GvaEnv.GRPC_URL)
-		portForwardTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
 		// 启动端口转发任务
-		err := portForwardTask.StartPeriodicTask(ctx)
+		err = portForwardTask.StartPeriodicTask(ctx)
 		if err != nil {
 			fmt.Printf("启动端口转发任务失败: %v\n", err)
 			os.Exit(1)
@@ -96,10 +108,9 @@ func main() {
 			global.GvaGocronSlog.WithLogger(),
 			portForwardServer,
 			forwardAgent,
+			grpcClient,
 		)
 		statsReportTask.SetConfig(config)
-		statsReportTask.SetBaseURL(global.GvaEnv.GRPC_URL)
-		statsReportTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
 		// 启动统计上报任务
 		err = statsReportTask.StartPeriodicTask(ctx)
 		if err != nil {
@@ -157,4 +168,30 @@ func main() {
 
 	// 阻止主线程退出
 	select {}
+}
+
+// get_grpc_client 获取 gRPC 客户端
+func get_grpc_client() (*grpc.ClientConn, error) {
+	// 创建 gRPC 客户端
+	grpc_client := grpc_client.NewGRPCClient()
+	// 添加 gRPC 连接选项
+	grpc_client.AddDialOption(
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	// 添加 gRPC 连接选项
+	grpc_client.AddDialOption(
+		// 鉴权
+		grpc.WithPerRPCCredentials(grpc_credential.NewBasicAuth(
+			global.GvaGrpcSlog.WithLogger(),
+			global.GvaEnv.BASIC_AUTH_USERNAME,
+			global.GvaEnv.BASIC_AUTH_PASSWORD,
+		)),
+	)
+	// 连接 gRPC 服务器
+	err := grpc_client.Dial(global.GvaEnv.GRPC_URL)
+	if err != nil {
+		return nil, fmt.Errorf("连接gRPC服务器失败: %w", err)
+	}
+	// 获取 gRPC 客户端
+	return grpc_client.GetClient(), nil
 }

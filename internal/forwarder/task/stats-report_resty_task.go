@@ -8,7 +8,6 @@ import (
 	"vibe_ip/internal/forwarder/forward"
 	"vibe_ip/internal/forwarder/service"
 	"vibe_ip/internal/helper/gocron_helper"
-	"vibe_ip/internal/types"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
@@ -167,6 +166,8 @@ func (s *StatsReportRestyTask) RunPeriodicTask() {
 				slog.Int64("发送字节数", stat.BytesOut),
 				slog.Int64("错误次数", stat.Errors),
 			)
+			// 请求
+			_ = s.postApi(ctx, logger, deviceData.DeviceCode, ruleID, stat)
 		}
 	} else {
 		logger.ErrorContext(ctx, "forwardAgent 未初始化")
@@ -183,35 +184,29 @@ func (s *StatsReportRestyTask) RunPeriodicTask() {
 }
 
 // postApi 请求
-func (s *StatsReportRestyTask) postApi(ctx context.Context, logger *slog.Logger, deviceData *service.GetDeviceDataResult) (list []*PortForwardTaskApiList, err error) {
-
-	var response struct {
-		Status int                            `json:"status"`
-		Data   []types.GetPortForwardResponse `json:"data"`
-	}
+func (s *StatsReportRestyTask) postApi(ctx context.Context, logger *slog.Logger, deviceCode string, port_forward_id string, stats *forward.Stats) (err error) {
 
 	// 使用 Resty 发送请求
 	resp, err := s.client.R().
 		SetContext(ctx).
 		SetContentType("application/json").
 		SetPathParams(map[string]string{
-			"device_code": deviceData.DeviceCode,
+			"device_code":     deviceCode,
+			"port_forward_id": cast.ToString(port_forward_id),
 		}).
-		SetResult(&response).
-		Get("api/open/device/{device_code}/port-forwards")
+		SetBody(map[string]any{
+			"start_time":      stats.StartTime.Unix(),
+			"active_conn":     stats.ActiveConn,
+			"total_conn":      stats.TotalConn,
+			"bytes_in":        stats.BytesIn,
+			"bytes_out":       stats.BytesOut,
+			"udp_packets_in":  stats.UDPPacketsIn,
+			"udp_packets_out": stats.UDPPacketsOut,
+			"errors":          stats.Errors,
+		}).
+		Post("api/open/device/{device_code}/port-forwards-stats/{port_forward_id}")
 	if err != nil {
-		return nil, err
-	}
-
-	// 转换响应
-	for _, rule := range response.Data {
-		list = append(list, &PortForwardTaskApiList{
-			ID:         cast.ToString(rule.ID),
-			LocalPort:  rule.LocalPort,
-			RemoteHost: rule.RemoteHost,
-			RemotePort: rule.RemotePort,
-			Protocols:  rule.Protocols,
-		})
+		return err
 	}
 
 	// 记录响应
@@ -219,5 +214,5 @@ func (s *StatsReportRestyTask) postApi(ctx context.Context, logger *slog.Logger,
 		slog.Any("响应", resp.String()),
 	)
 
-	return list, nil
+	return nil
 }

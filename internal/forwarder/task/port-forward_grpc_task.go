@@ -8,14 +8,12 @@ import (
 	"time"
 	"vibe_ip/internal/forwarder/forward"
 	"vibe_ip/internal/forwarder/service"
-	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/helper/gocron_helper"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -31,33 +29,27 @@ type PortForwardGRPCTask struct {
 	service      *service.PortForwardServer // 端口转发服务
 	forwardAgent *forward.Agent             // 端口转发器
 
-	clientTarget      string                           // gRPC 客户端目标地址
-	clientOpts        []grpc.DialOption                // gRPC 客户端连接选项
 	clientBaseMD      metadata.MD                      // gRPC 客户端基础 metadata
-	client            *grpc.ClientConn                 // gRPC 客户端连接
-	portForwardClient grpc_generated.OpenServiceClient // gRPC 业务服务客户端
+	grpcClient        *grpc.ClientConn                 // gRPC 客户端
+	portForwardClient grpc_generated.OpenServiceClient // gRPC 业务服务
 }
 
 // NewPortForwardGRPCTask 创建端口转发实例
-func NewPortForwardGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.PortForwardServer, forwardAgent *forward.Agent) *PortForwardGRPCTask {
+func NewPortForwardGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.PortForwardServer, forwardAgent *forward.Agent, grpcClient *grpc.ClientConn) *PortForwardGRPCTask {
 	return &PortForwardGRPCTask{
-		cron:         cron,
-		taskName:     "gRPC 端口转发",
-		jobHelper:    gocron_helper.NewJobHelper(cron, logger),
-		logger:       logger.With("component", "port-forward-grpc"),
-		service:      service,
-		forwardAgent: forwardAgent,
-		clientOpts: []grpc.DialOption{
-			grpc.WithTransportCredentials(insecure.NewCredentials()),
-		},
+		cron:              cron,
+		taskName:          "gRPC 端口转发",
+		jobHelper:         gocron_helper.NewJobHelper(cron, logger),
+		logger:            logger.With("component", "port-forward-grpc"),
+		service:           service,
+		forwardAgent:      forwardAgent,
+		grpcClient:        grpcClient,
+		portForwardClient: grpc_generated.NewOpenServiceClient(grpcClient),
 	}
 }
 
 // Close 关闭端口转发实例，释放资源
 func (s *PortForwardGRPCTask) Close() {
-	if s.client != nil {
-		s.client.Close()
-	}
 	if s.cron != nil && s.job != nil {
 		_ = s.cron.RemoveJob(s.job.ID())
 	}
@@ -78,38 +70,8 @@ func (s *PortForwardGRPCTask) SetConfig(config *PortForwardTaskConfig) *PortForw
 	return s
 }
 
-// SetBaseURL 设置基础URL
-func (s *PortForwardGRPCTask) SetBaseURL(url string) *PortForwardGRPCTask {
-	s.clientTarget = url
-	return s
-}
-
-// 设置基本认证
-func (s *PortForwardGRPCTask) SetBasicAuth(username, password string) *PortForwardGRPCTask {
-	if username != "" && password != "" {
-		s.clientOpts = append(
-			s.clientOpts,
-			grpc.WithPerRPCCredentials(grpc_credential.NewBasicAuth(
-				s.logger,
-				username,
-				password,
-			)),
-		)
-	}
-	return s
-}
-
 // StartPeriodicTask 启动周期任务
 func (s *PortForwardGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
-	// 连接gRPC服务器
-	s.client, err = grpc.NewClient(s.clientTarget, s.clientOpts...)
-	if err != nil {
-		return fmt.Errorf("连接gRPC服务器失败: %w", err)
-	}
-
-	// 注册业务服务
-	s.portForwardClient = grpc_generated.NewOpenServiceClient(s.client)
-
 	// 每30分钟执行一次
 	s.job, err = s.cron.NewJob(
 		gocron.DurationJob(30*time.Minute),

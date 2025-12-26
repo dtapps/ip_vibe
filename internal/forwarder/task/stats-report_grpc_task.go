@@ -7,14 +7,12 @@ import (
 	"time"
 	"vibe_ip/internal/forwarder/forward"
 	"vibe_ip/internal/forwarder/service"
-	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/helper/gocron_helper"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -30,33 +28,27 @@ type StatsReportGRPCTask struct {
 	service      *service.PortForwardServer // 端口转发服务
 	forwardAgent *forward.Agent             // 端口转发器
 
-	clientTarget      string                           // gRPC 客户端目标地址
-	clientOpts        []grpc.DialOption                // gRPC 客户端连接选项
 	clientBaseMD      metadata.MD                      // gRPC 客户端基础 metadata
-	client            *grpc.ClientConn                 // gRPC 客户端连接
-	portForwardClient grpc_generated.OpenServiceClient // gRPC 业务服务客户端
+	grpcClient        *grpc.ClientConn                 // gRPC 客户端
+	portForwardClient grpc_generated.OpenServiceClient // gRPC 业务服务
 }
 
 // NewStatsReportGRPCTask 创建一个新的服务实例
-func NewStatsReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.PortForwardServer, forwardAgent *forward.Agent) *StatsReportGRPCTask {
+func NewStatsReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.PortForwardServer, forwardAgent *forward.Agent, grpcClient *grpc.ClientConn) *StatsReportGRPCTask {
 	return &StatsReportGRPCTask{
-		cron:         cron,
-		taskName:     "gRPC 统计上报",
-		jobHelper:    gocron_helper.NewJobHelper(cron, logger),
-		logger:       logger.With("component", "stats-report-grpc"),
-		service:      service,
-		forwardAgent: forwardAgent,
-		clientOpts: []grpc.DialOption{
-			grpc.WithTransportCredentials(insecure.NewCredentials()),
-		},
+		cron:              cron,
+		taskName:          "gRPC 统计上报",
+		jobHelper:         gocron_helper.NewJobHelper(cron, logger),
+		logger:            logger.With("component", "stats-report-grpc"),
+		service:           service,
+		forwardAgent:      forwardAgent,
+		grpcClient:        grpcClient,
+		portForwardClient: grpc_generated.NewOpenServiceClient(grpcClient),
 	}
 }
 
 // Close 关闭服务，释放资源
 func (s *StatsReportGRPCTask) Close() {
-	if s.client != nil {
-		s.client.Close()
-	}
 	if s.cron != nil && s.job != nil {
 		_ = s.cron.RemoveJob(s.job.ID())
 	}
@@ -77,38 +69,8 @@ func (s *StatsReportGRPCTask) SetConfig(config *PortForwardTaskConfig) *StatsRep
 	return s
 }
 
-// SetBaseURL 设置基础URL
-func (s *StatsReportGRPCTask) SetBaseURL(url string) *StatsReportGRPCTask {
-	s.clientTarget = url
-	return s
-}
-
-// 设置基本认证
-func (s *StatsReportGRPCTask) SetBasicAuth(username, password string) *StatsReportGRPCTask {
-	if username != "" && password != "" {
-		s.clientOpts = append(
-			s.clientOpts,
-			grpc.WithPerRPCCredentials(grpc_credential.NewBasicAuth(
-				s.logger,
-				username,
-				password,
-			)),
-		)
-	}
-	return s
-}
-
 // StartPeriodicTask 启动周期任务
 func (s *StatsReportGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
-	// 连接gRPC服务器
-	s.client, err = grpc.NewClient(s.clientTarget, s.clientOpts...)
-	if err != nil {
-		return fmt.Errorf("连接gRPC服务器失败: %w", err)
-	}
-
-	// 注册业务服务
-	s.portForwardClient = grpc_generated.NewOpenServiceClient(s.client)
-
 	// 每8到12分钟执行一次
 	s.job, err = s.cron.NewJob(
 		gocron.DurationRandomJob(
@@ -173,6 +135,8 @@ func (s *StatsReportGRPCTask) RunPeriodicTask() {
 				slog.Int64("发送字节数", stat.BytesOut),
 				slog.Int64("错误次数", stat.Errors),
 			)
+			// 请求
+			_ = s.postApi(ctx, logger, deviceData.DeviceCode, ruleID, stat)
 		}
 	} else {
 		logger.ErrorContext(ctx, "forwardAgent 未初始化")
@@ -189,28 +153,25 @@ func (s *StatsReportGRPCTask) RunPeriodicTask() {
 }
 
 // postApi 请求
-func (s *StatsReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, deviceData *service.GetDeviceDataResult) (list []*PortForwardTaskApiList, err error) {
+func (s *StatsReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, deviceCode string, port_forward_id string, stats *forward.Stats) (err error) {
 
 	// 构建gRPC请求
-	req := &grpc_generated.GetDevicePortForwardsRequest{
-		DeviceCode: deviceData.DeviceCode,
+	req := &grpc_generated.CreatePortForwardStatsRequest{
+		DeviceCode:    deviceCode,
+		PortForwardId: cast.ToInt64(port_forward_id),
+		ActiveConn:    stats.ActiveConn,
+		TotalConn:     stats.TotalConn,
+		BytesIn:       stats.BytesIn,
+		BytesOut:      stats.BytesOut,
+		UdpPacketsIn:  stats.UDPPacketsIn,
+		UdpPacketsOut: stats.UDPPacketsOut,
+		Errors:        stats.Errors,
 	}
 
 	// 调用gRPC服务
-	resp, err := s.portForwardClient.GetDevicePortForwards(metadata.NewOutgoingContext(ctx, s.clientBaseMD), req)
+	resp, err := s.portForwardClient.CreatePortForwardStats(metadata.NewOutgoingContext(ctx, s.clientBaseMD), req)
 	if err != nil {
-		return nil, fmt.Errorf("gRPC调用失败: %w", err)
-	}
-
-	// 转换响应
-	for _, rule := range resp.Rules {
-		list = append(list, &PortForwardTaskApiList{
-			ID:         cast.ToString(rule.Id),
-			LocalPort:  cast.ToInt(rule.LocalPort),
-			RemoteHost: rule.RemoteHost,
-			RemotePort: cast.ToInt(rule.RemotePort),
-			Protocols:  rule.Protocols,
-		})
+		return fmt.Errorf("gRPC调用失败: %w", err)
 	}
 
 	// 记录响应
@@ -218,5 +179,5 @@ func (s *StatsReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, 
 		slog.Any("响应", resp.String()),
 	)
 
-	return list, nil
+	return nil
 }
