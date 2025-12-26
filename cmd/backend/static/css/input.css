@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@layer components {
+  /* 你的那些短类名全写在这里 */
+  .app-layout {
+    @apply min-h-screen bg-[#f8faff] p-8 flex justify-center gap-8;
+  }
+  .nav-side-card {
+    @apply card bg-white shadow-sm border border-slate-100 p-2 flex flex-col gap-1 sticky top-8 w-32 flex-none h-fit;
+  }
+  .nav-link {
+    @apply btn btn-ghost btn-sm justify-start font-normal hover:text-primary transition-colors;
+  }
+  /* ... 其他 ... */
+}

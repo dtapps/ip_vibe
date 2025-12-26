@@ -1,0 +1,19 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+"scripts": {
+    "dev": "pnpm tailwindcss -i ./static/css/input.css -o ./static/css/style.css --watch --content './templates/**/*.html'",
+    "build": "pnpm tailwindcss -i ./static/css/input.css -o ./static/css/style.css --minify --content './templates/**/*.html'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.24.0",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.18",
+    "daisyui": "^5.5.14",
+    "tailwindcss": "^4.1.18"
+  }
+}
