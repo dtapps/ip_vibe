@@ -1,3 +1,8 @@
+/* 使用 tailwindcss 插件，版本为 4.1.18 */
+/* 使用 daisyui 插件，版本为 5.5.14 */
+/* 使用 select2 插件，版本为 4.0.13 */
+/* 使用 jquery 插件，版本为 3.7.1 */
+
 @import "tailwindcss";
 @plugin "daisyui";
 
