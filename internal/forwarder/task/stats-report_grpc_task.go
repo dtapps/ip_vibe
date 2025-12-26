@@ -30,10 +30,10 @@ type StatsReportGRPCTask struct {
 
 	clientBaseMD      metadata.MD                      // gRPC 客户端基础 metadata
 	grpcClient        *grpc.ClientConn                 // gRPC 客户端
-	portForwardClient grpc_generated.OpenServiceClient // gRPC 业务服务
+	openServiceClient grpc_generated.OpenServiceClient // gRPC 业务服务
 }
 
-// NewStatsReportGRPCTask 创建一个新的服务实例
+// NewStatsReportGRPCTask 创建统计上报实例
 func NewStatsReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.PortForwardServer, forwardAgent *forward.Agent, grpcClient *grpc.ClientConn) *StatsReportGRPCTask {
 	return &StatsReportGRPCTask{
 		cron:              cron,
@@ -43,11 +43,11 @@ func NewStatsReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service 
 		service:           service,
 		forwardAgent:      forwardAgent,
 		grpcClient:        grpcClient,
-		portForwardClient: grpc_generated.NewOpenServiceClient(grpcClient),
+		openServiceClient: grpc_generated.NewOpenServiceClient(grpcClient),
 	}
 }
 
-// Close 关闭服务，释放资源
+// Close 关闭统计上报实例，释放资源
 func (s *StatsReportGRPCTask) Close() {
 	if s.cron != nil && s.job != nil {
 		_ = s.cron.RemoveJob(s.job.ID())
@@ -169,7 +169,7 @@ func (s *StatsReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, 
 	}
 
 	// 调用gRPC服务
-	resp, err := s.portForwardClient.CreatePortForwardStats(metadata.NewOutgoingContext(ctx, s.clientBaseMD), req)
+	resp, err := s.openServiceClient.CreatePortForwardStats(metadata.NewOutgoingContext(ctx, s.clientBaseMD), req)
 	if err != nil {
 		return fmt.Errorf("gRPC调用失败: %w", err)
 	}

@@ -5,14 +5,12 @@ import (
 	"fmt"
 	"log/slog"
 	"time"
-	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/reporter/service"
 
 	"github.com/go-co-op/gocron/v2"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -27,32 +25,26 @@ type IPReportGRPCTask struct {
 
 	service *service.IPReportService // IP报告服务
 
-	clientTarget   string                           // gRPC 客户端目标地址
-	clientOpts     []grpc.DialOption                // gRPC 客户端连接选项
-	clientBaseMD   metadata.MD                      // gRPC 客户端基础 metadata
-	client         *grpc.ClientConn                 // gRPC 客户端连接
-	ipReportClient grpc_generated.OpenServiceClient // gRPC 业务服务客户端
+	clientBaseMD      metadata.MD                      // gRPC 客户端基础 metadata
+	grpcClient        *grpc.ClientConn                 // gRPC 客户端
+	openServiceClient grpc_generated.OpenServiceClient // gRPC 业务服务
 }
 
-// NewIPReportGRPCTask 创建一个新的服务实例
-func NewIPReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.IPReportService) *IPReportGRPCTask {
+// NewIPReportGRPCTask 创建IP上报实例
+func NewIPReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.IPReportService, grpcClient *grpc.ClientConn) *IPReportGRPCTask {
 	return &IPReportGRPCTask{
-		cron:      cron,
-		taskName:  "gRPC IP上报",
-		jobHelper: gocron_helper.NewJobHelper(cron, logger),
-		logger:    logger.With("component", "ip-report-grpc"),
-		service:   service,
-		clientOpts: []grpc.DialOption{
-			grpc.WithTransportCredentials(insecure.NewCredentials()),
-		},
+		cron:              cron,
+		taskName:          "gRPC IP上报",
+		jobHelper:         gocron_helper.NewJobHelper(cron, logger),
+		logger:            logger.With("component", "ip-report-grpc"),
+		service:           service,
+		grpcClient:        grpcClient,
+		openServiceClient: grpc_generated.NewOpenServiceClient(grpcClient),
 	}
 }
 
-// Close 关闭服务，释放资源
+// Close 关闭IP上报实例，释放资源
 func (s *IPReportGRPCTask) Close() {
-	if s.client != nil {
-		s.client.Close()
-	}
 	if s.cron != nil && s.job != nil {
 		_ = s.cron.RemoveJob(s.job.ID())
 	}
@@ -73,38 +65,8 @@ func (s *IPReportGRPCTask) SetConfig(config *IPReportTaskConfig) *IPReportGRPCTa
 	return s
 }
 
-// SetBaseURL 设置基础URL
-func (s *IPReportGRPCTask) SetBaseURL(url string) *IPReportGRPCTask {
-	s.clientTarget = url
-	return s
-}
-
-// 设置基本认证
-func (s *IPReportGRPCTask) SetBasicAuth(username, password string) *IPReportGRPCTask {
-	if username != "" && password != "" {
-		s.clientOpts = append(
-			s.clientOpts,
-			grpc.WithPerRPCCredentials(grpc_credential.NewBasicAuth(
-				s.logger,
-				username,
-				password,
-			)),
-		)
-	}
-	return s
-}
-
 // StartPeriodicTask 启动周期任务
 func (s *IPReportGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
-	// 连接gRPC服务器
-	s.client, err = grpc.NewClient(s.clientTarget, s.clientOpts...)
-	if err != nil {
-		return fmt.Errorf("连接gRPC服务器失败: %w", err)
-	}
-
-	// 注册业务服务
-	s.ipReportClient = grpc_generated.NewOpenServiceClient(s.client)
-
 	// 每8到12分钟执行一次
 	s.job, err = s.cron.NewJob(
 		gocron.DurationRandomJob(
@@ -187,7 +149,7 @@ func (s *IPReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, dev
 	}
 
 	// 调用gRPC服务
-	resp, err := s.ipReportClient.ReportDeviceIP(metadata.NewOutgoingContext(ctx, s.clientBaseMD), req)
+	resp, err := s.openServiceClient.ReportDeviceIP(metadata.NewOutgoingContext(ctx, s.clientBaseMD), req)
 	if err != nil {
 		return fmt.Errorf("gRPC调用失败: %w", err)
 	}

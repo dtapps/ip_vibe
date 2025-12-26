@@ -7,9 +7,14 @@ import (
 	"os"
 	"runtime"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/grpc_client"
+	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/reporter/service"
 	"vibe_ip/internal/reporter/task"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 var (
@@ -33,6 +38,7 @@ func main() {
 	ctx := context.Background()
 
 	initialize.InitSLog("reporter")       // 初始化 日志
+	initialize.InitGrpcSLog("reporter")   // 初始化 gRPC 日志
 	initialize.InitGocronSLog("reporter") // 初始化 gocron 日志
 
 	initialize.InitGoCron() // 初始化 GoCron 调度器
@@ -67,42 +73,49 @@ func main() {
 	ipReportService := service.NewIPReportService(global.GvaGocronSlog.WithLogger())
 
 	if global.GvaEnv.GRPC_URL != "" {
-		// 创建服务
-		grpcTask := task.NewIPReportGRPCTask(
+		// 获取 gRPC 客户端
+		grpcClient, err := get_grpc_client()
+		if err != nil {
+			fmt.Printf("获取 gRPC 客户端失败: %v\n", err)
+			os.Exit(1)
+		}
+		defer grpcClient.Close()
+
+		// 创建IP上报实例
+		ipReportTask := task.NewIPReportGRPCTask(
 			global.GvaGoCron,
 			global.GvaGocronSlog.WithLogger(),
 			ipReportService,
+			grpcClient,
 		)
-		grpcTask.SetConfig(config)
-		grpcTask.SetBaseURL(global.GvaEnv.GRPC_URL)
-		grpcTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
-		// 启动任务
-		err := grpcTask.StartPeriodicTask(ctx)
+		ipReportTask.SetConfig(config)
+		// 启动IP上报任务
+		err = ipReportTask.StartPeriodicTask(ctx)
 		if err != nil {
 			fmt.Printf("启动任务失败: %v\n", err)
 			os.Exit(1)
 		}
-		// 关闭服务
-		defer grpcTask.Close()
+		// 关闭IP上报实例
+		defer ipReportTask.Close()
 	} else if global.GvaEnv.HTTP_URL != "" {
-		// 创建服务
-		restyTask := task.NewIPReportRestyTask(
+		// 创建IP上报实例
+		ipReportTask := task.NewIPReportRestyTask(
 			global.GvaGoCron,
 			global.GvaGocronSlog.WithLogger(),
 			ipReportService,
 		)
-		restyTask.SetDebug(global.GvaEnv.DEBUG)
-		restyTask.SetConfig(config)
-		restyTask.SetBaseURL(global.GvaEnv.HTTP_URL)
-		restyTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
-		// 启动任务
-		err := restyTask.StartPeriodicTask(ctx)
+		ipReportTask.SetDebug(global.GvaEnv.DEBUG)
+		ipReportTask.SetConfig(config)
+		ipReportTask.SetBaseURL(global.GvaEnv.HTTP_URL)
+		ipReportTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+		// 启动IP上报任务
+		err := ipReportTask.StartPeriodicTask(ctx)
 		if err != nil {
 			fmt.Printf("启动任务失败: %v\n", err)
 			os.Exit(1)
 		}
-		// 关闭服务
-		defer restyTask.Close()
+		// 关闭IP上报实例
+		defer ipReportTask.Close()
 	} else {
 		fmt.Printf("服务启动失败: GRPC_URL / HTTP_URL未配置\n")
 		os.Exit(1)
@@ -113,4 +126,30 @@ func main() {
 
 	// 阻止主线程退出
 	select {}
+}
+
+// get_grpc_client 获取 gRPC 客户端
+func get_grpc_client() (*grpc.ClientConn, error) {
+	// 创建 gRPC 客户端
+	grpc_client := grpc_client.NewGRPCClient()
+	// 添加 gRPC 连接选项
+	grpc_client.AddDialOption(
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	// 添加 gRPC 连接选项
+	grpc_client.AddDialOption(
+		// 鉴权
+		grpc.WithPerRPCCredentials(grpc_credential.NewBasicAuth(
+			global.GvaGrpcSlog.WithLogger(),
+			global.GvaEnv.BASIC_AUTH_USERNAME,
+			global.GvaEnv.BASIC_AUTH_PASSWORD,
+		)),
+	)
+	// 连接 gRPC 服务器
+	err := grpc_client.Dial(global.GvaEnv.GRPC_URL)
+	if err != nil {
+		return nil, fmt.Errorf("连接gRPC服务器失败: %w", err)
+	}
+	// 获取 gRPC 客户端
+	return grpc_client.GetClient(), nil
 }

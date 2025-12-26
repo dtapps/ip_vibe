@@ -31,7 +31,7 @@ type PortForwardGRPCTask struct {
 
 	clientBaseMD      metadata.MD                      // gRPC 客户端基础 metadata
 	grpcClient        *grpc.ClientConn                 // gRPC 客户端
-	portForwardClient grpc_generated.OpenServiceClient // gRPC 业务服务
+	openServiceClient grpc_generated.OpenServiceClient // gRPC 业务服务
 }
 
 // NewPortForwardGRPCTask 创建端口转发实例
@@ -44,7 +44,7 @@ func NewPortForwardGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service 
 		service:           service,
 		forwardAgent:      forwardAgent,
 		grpcClient:        grpcClient,
-		portForwardClient: grpc_generated.NewOpenServiceClient(grpcClient),
+		openServiceClient: grpc_generated.NewOpenServiceClient(grpcClient),
 	}
 }
 
@@ -195,7 +195,7 @@ func (s *PortForwardGRPCTask) getApi(ctx context.Context, logger *slog.Logger, d
 	}
 
 	// 调用gRPC服务
-	resp, err := s.portForwardClient.GetDevicePortForwards(metadata.NewOutgoingContext(ctx, s.clientBaseMD), req)
+	resp, err := s.openServiceClient.GetDevicePortForwards(metadata.NewOutgoingContext(ctx, s.clientBaseMD), req)
 	if err != nil {
 		return nil, fmt.Errorf("gRPC调用失败: %w", err)
 	}
