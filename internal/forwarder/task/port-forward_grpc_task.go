@@ -38,7 +38,7 @@ type PortForwardGRPCTask struct {
 	portForwardClient grpc_generated.OpenServiceClient // gRPC 业务服务客户端
 }
 
-// NewPortForwardGRPCTask 创建一个新的服务实例
+// NewPortForwardGRPCTask 创建端口转发实例
 func NewPortForwardGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.PortForwardServer, forwardAgent *forward.Agent) *PortForwardGRPCTask {
 	return &PortForwardGRPCTask{
 		cron:         cron,
@@ -53,7 +53,7 @@ func NewPortForwardGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service 
 	}
 }
 
-// Close 关闭服务，释放资源
+// Close 关闭端口转发实例，释放资源
 func (s *PortForwardGRPCTask) Close() {
 	if s.client != nil {
 		s.client.Close()

@@ -71,44 +71,82 @@ func main() {
 	forwardAgent := forward.NewAgent(global.GvaGocronSlog.WithLogger())
 
 	if global.GvaEnv.GRPC_URL != "" {
-		// 创建服务
-		grpcTask := task.NewPortForwardGRPCTask(
+		// 创建端口转发实例
+		portForwardTask := task.NewPortForwardGRPCTask(
 			global.GvaGoCron,
 			global.GvaGocronSlog.WithLogger(),
 			portForwardServer,
 			forwardAgent,
 		)
-		grpcTask.SetConfig(config)
-		grpcTask.SetBaseURL(global.GvaEnv.GRPC_URL)
-		grpcTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
-		// 启动任务
-		err := grpcTask.StartPeriodicTask(ctx)
+		portForwardTask.SetConfig(config)
+		portForwardTask.SetBaseURL(global.GvaEnv.GRPC_URL)
+		portForwardTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+		// 启动端口转发任务
+		err := portForwardTask.StartPeriodicTask(ctx)
 		if err != nil {
-			fmt.Printf("启动任务失败: %v\n", err)
+			fmt.Printf("启动端口转发任务失败: %v\n", err)
 			os.Exit(1)
 		}
-		// 关闭服务
-		defer grpcTask.Close()
+		// 关闭端口转发实例
+		defer portForwardTask.Close()
+
+		// 创建统计上报实例
+		statsReportTask := task.NewStatsReportGRPCTask(
+			global.GvaGoCron,
+			global.GvaGocronSlog.WithLogger(),
+			portForwardServer,
+			forwardAgent,
+		)
+		statsReportTask.SetConfig(config)
+		statsReportTask.SetBaseURL(global.GvaEnv.GRPC_URL)
+		statsReportTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+		// 启动统计上报任务
+		err = statsReportTask.StartPeriodicTask(ctx)
+		if err != nil {
+			fmt.Printf("启动统计上报任务失败: %v\n", err)
+			os.Exit(1)
+		}
+		// 关闭统计上报实例
+		defer statsReportTask.Close()
 	} else if global.GvaEnv.HTTP_URL != "" {
-		// 创建服务
-		restyTask := task.NewPortForwardRestyTask(
+		// 创建端口转发实例
+		portForwardTask := task.NewPortForwardRestyTask(
 			global.GvaGoCron,
 			global.GvaGocronSlog.WithLogger(),
 			portForwardServer,
 			forwardAgent,
 		)
-		restyTask.SetDebug(global.GvaEnv.DEBUG)
-		restyTask.SetConfig(config)
-		restyTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
-		restyTask.SetBaseURL(global.GvaEnv.HTTP_URL)
-		// 启动任务
-		err := restyTask.StartPeriodicTask(ctx)
+		portForwardTask.SetDebug(global.GvaEnv.DEBUG)
+		portForwardTask.SetConfig(config)
+		portForwardTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+		portForwardTask.SetBaseURL(global.GvaEnv.HTTP_URL)
+		// 启动端口转发任务
+		err := portForwardTask.StartPeriodicTask(ctx)
 		if err != nil {
-			fmt.Printf("启动任务失败: %v\n", err)
+			fmt.Printf("启动端口转发任务失败: %v\n", err)
 			os.Exit(1)
 		}
-		// 关闭服务
-		defer restyTask.Close()
+		// 关闭端口转发实例
+		defer portForwardTask.Close()
+
+		// 创建统计上报实例
+		statsReportTask := task.NewStatsReportRestyTask(
+			global.GvaGoCron,
+			global.GvaGocronSlog.WithLogger(),
+			portForwardServer,
+			forwardAgent,
+		)
+		statsReportTask.SetConfig(config)
+		statsReportTask.SetBaseURL(global.GvaEnv.HTTP_URL)
+		statsReportTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+		// 启动统计上报任务
+		err = statsReportTask.StartPeriodicTask(ctx)
+		if err != nil {
+			fmt.Printf("启动统计上报任务失败: %v\n", err)
+			os.Exit(1)
+		}
+		// 关闭统计上报实例
+		defer statsReportTask.Close()
 	} else {
 		fmt.Printf("服务启动失败: GRPC_URL / HTTP_URL未配置\n")
 		os.Exit(1)

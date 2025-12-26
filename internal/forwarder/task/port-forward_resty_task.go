@@ -31,7 +31,7 @@ type PortForwardRestyTask struct {
 	client *resty.Client // Resty HTTP 客户端
 }
 
-// NewPortForwardRestyTask 创建一个新的服务实例
+// NewPortForwardRestyTask 创建端口转发实例
 func NewPortForwardRestyTask(cron gocron.Scheduler, logger *slog.Logger, service *service.PortForwardServer, forwardAgent *forward.Agent) *PortForwardRestyTask {
 
 	// 创建一个新的 Resty 客户端
@@ -59,7 +59,7 @@ func NewPortForwardRestyTask(cron gocron.Scheduler, logger *slog.Logger, service
 	}
 }
 
-// Close 关闭服务，释放资源
+// Close 关闭端口转发实例，释放资源
 func (s *PortForwardRestyTask) Close() {
 	if s.client != nil {
 		s.client.Close()
