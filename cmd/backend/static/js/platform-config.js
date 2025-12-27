@@ -332,7 +332,7 @@ async function openFormModal(id) {
       config.config_json.email || ""
     );
 
-    showModal("modal", "modalTitle", "编辑 平台配置");
+    showModal("formModal", "modalTitle", "编辑 平台配置");
   }
 
   // 创建
@@ -357,7 +357,7 @@ async function openFormModal(id) {
       emailLabel.classList.add("hidden");
     });
 
-    showModal("modal", "modalTitle", "添加 平台配置");
+    showModal("formModal", "modalTitle", "添加 平台配置");
   }
 }
 

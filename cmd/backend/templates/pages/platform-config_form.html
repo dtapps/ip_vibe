@@ -1,8 +1,13 @@
 {{ define "pages/platform-config_form.html" }}
-<div class="modal" id="modal">
+<div id="formModal" class="modal">
   <div class="ui-modal-box">
     <div class="ui-header">
-      <h3 class="text-xl font-bold" id="modalTitle">添加平台配置</h3>
+      <h3 class="text-xl font-bold">
+        {{ template "icons" (dict "Name" "ip-server") }} <span id="modalTitle">添加 / 编辑 平台配置</span>
+      </h3>
+      <button class="btn btn-sm btn-circle btn-ghost" onclick="closeModal('formModal')">
+        {{ template "icons" (dict "Name" "ip-close") }}
+      </button>
     </div>
 
     <form id="form" class="p-8 space-y-5 max-h-[75vh] overflow-y-auto">
@@ -267,7 +272,7 @@
       <input type="hidden" name="config" id="config_json" />
 
       <div class="modal-action gap-3">
-        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('modal')">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('formModal')">
           {{ template "icons" (dict "Name" "ip-close") }} 取消
         </button>
         <button type="submit" class="btn-ui-primary">

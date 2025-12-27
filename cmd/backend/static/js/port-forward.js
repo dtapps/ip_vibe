@@ -68,7 +68,7 @@ async function openFormModal(id) {
         );
       }
 
-      showModal("modal", "modalTitle", "编辑 端口转发");
+      showModal("formModal", "modalTitle", "编辑 端口转发");
     }
 
     // 创建
@@ -76,7 +76,7 @@ async function openFormModal(id) {
       document.getElementById("id").value = "";
       document.getElementById("id").disabled = true;
 
-      showModal("modal", "modalTitle", "添加 端口转发");
+      showModal("formModal", "modalTitle", "添加 端口转发");
     }
   } catch (error) {
     alert(`加载数据失败: ${error.message}`);

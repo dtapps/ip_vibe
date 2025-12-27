@@ -1,8 +1,13 @@
 {{ define "pages/ssl_form.html" }}
-<div class="modal" id="modal">
+<div id="formModal" class="modal">
   <div class="ui-modal-box">
     <div class="ui-header">
-      <h3 class="text-xl font-bold" id="modalTitle">添加 SSL 记录</h3>
+      <h3 class="text-xl font-bold">
+        {{ template "icons" (dict "Name" "ip-ssl") }} <span id="modalTitle">添加 SSL 记录</span>
+      </h3>
+      <button class="btn btn-sm btn-circle btn-ghost" onclick="closeModal('formModal')">
+        {{ template "icons" (dict "Name" "ip-close") }}
+      </button>
     </div>
 
     <form id="form" class="p-8 space-y-5">
@@ -38,7 +43,7 @@
       <input type="hidden" name="id" id="id" />
 
       <div class="modal-action gap-3">
-        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('modal')">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('formModal')">
           {{ template "icons" (dict "Name" "ip-close") }} 取消
         </button>
         <button type="submit" class="btn-ui-primary">

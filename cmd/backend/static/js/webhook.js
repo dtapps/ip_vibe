@@ -226,7 +226,7 @@ async function openFormModal(id) {
 
       changePlatform(webhook.platform);
 
-      showModal("modal", "modalTitle", "编辑 通知");
+      showModal("formModal", "modalTitle", "编辑 通知");
     }
 
     // 创建
@@ -234,7 +234,7 @@ async function openFormModal(id) {
       document.getElementById("id").value = "";
       document.getElementById("id").disabled = true;
 
-      showModal("modal", "modalTitle", "添加 通知");
+      showModal("formModal", "modalTitle", "添加 通知");
     }
   } catch (error) {
     alert(`加载数据失败: ${error.message}`);

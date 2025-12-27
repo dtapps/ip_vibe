@@ -71,7 +71,7 @@ async function openFormModal(id) {
         selectId2.val(null).trigger("change");
       }
 
-      showModal("modal", "modalTitle", "编辑 设备");
+      showModal("formModal", "modalTitle", "编辑 设备");
     }
 
     // 创建
@@ -91,7 +91,7 @@ async function openFormModal(id) {
       console.log("select2 清空已选");
       selectId2.val(null).trigger("change");
 
-      showModal("modal", "modalTitle", "添加 设备");
+      showModal("formModal", "modalTitle", "添加 设备");
     }
   } catch (error) {
     alert(`加载数据失败: ${error.message}`);
