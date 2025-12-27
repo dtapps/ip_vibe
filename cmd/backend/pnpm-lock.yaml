@@ -11,6 +11,9 @@ importers:
       '@tailwindcss/cli':
         specifier: ^4.1.18
         version: 4.1.18
+      clipboard:
+        specifier: ^2.0.11
+        version: 2.0.11
       daisyui:
         specifier: ^5.5.14
         version: 5.5.14
@@ -220,8 +223,14 @@ packages:
     resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
     engines: {node: '>=8'}
 
+  clipboard@2.0.11:
+    resolution: {integrity: sha512-C+0bbOqkezLIsmWSvlsXS0Q0bmkugu7jcfMIACB+RDEntIzQIkdr148we28AfSloQLRdZlYL/QYyrq05j/3Faw==}
+
   daisyui@5.5.14:
     resolution: {integrity: sha512-L47rvw7I7hK68TA97VB8Ee0woHew+/ohR6Lx6Ah/krfISOqcG4My7poNpX5Mo5/ytMxiR40fEaz6njzDi7cuSg==}
+
+  delegate@3.2.0:
+    resolution: {integrity: sha512-IofjkYBZaZivn0V8nnsMJGBr4jVLxHDheKSW88PyxS5QC4Vo9ZbZVvhzlSxY87fVq3STR6r+4cGepyHkcWOQSw==}
 
   detect-libc@1.0.3:
     resolution: {integrity: sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==}
@@ -239,6 +248,9 @@ packages:
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
+
+  good-listener@1.2.2:
+    resolution: {integrity: sha512-goW1b+d9q/HIwbVYZzZ6SsTr4IgE+WA44A0GmPIQstuOrgsFcT7VEJ48nmr9GaRtNu0XTKacFLGnBPAM6Afouw==}
 
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
@@ -359,6 +371,9 @@ packages:
   select2@4.1.0-rc.0:
     resolution: {integrity: sha512-Hr9TdhyHCZUtwznEH2CBf7967mEM0idtJ5nMtjvk3Up5tPukOLXbHUNmh10oRfeNIhj+3GD3niu+g6sVK+gK0A==}
 
+  select@1.1.2:
+    resolution: {integrity: sha512-OwpTSOfy6xSs1+pwcNrv0RBMOzI39Lp3qQKUTPVVPRjCdNa5JH/oPRiqsesIskK8TVgmRiHwO4KXlV2Li9dANA==}
+
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
@@ -369,6 +384,9 @@ packages:
   tapable@2.3.0:
     resolution: {integrity: sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==}
     engines: {node: '>=6'}
+
+  tiny-emitter@2.1.0:
+    resolution: {integrity: sha512-NB6Dk1A9xgQPMoGqC5CVXn123gWyte215ONT5Pp5a0yt4nlEoO1ZWeCwpncaekPHXO60i47ihFnZPiRPjRMq4Q==}
 
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
@@ -530,7 +548,15 @@ snapshots:
     dependencies:
       fill-range: 7.1.1
 
+  clipboard@2.0.11:
+    dependencies:
+      good-listener: 1.2.2
+      select: 1.1.2
+      tiny-emitter: 2.1.0
+
   daisyui@5.5.14: {}
+
+  delegate@3.2.0: {}
 
   detect-libc@1.0.3: {}
 
@@ -544,6 +570,10 @@ snapshots:
   fill-range@7.1.1:
     dependencies:
       to-regex-range: 5.0.1
+
+  good-listener@1.2.2:
+    dependencies:
+      delegate: 3.2.0
 
   graceful-fs@4.2.11: {}
 
@@ -629,11 +659,15 @@ snapshots:
 
   select2@4.1.0-rc.0: {}
 
+  select@1.1.2: {}
+
   source-map-js@1.2.1: {}
 
   tailwindcss@4.1.18: {}
 
   tapable@2.3.0: {}
+
+  tiny-emitter@2.1.0: {}
 
   to-regex-range@5.0.1:
     dependencies:

@@ -5,6 +5,9 @@
   <meta charset="UTF-8" />
   <title>{{ block "title" . }}DDNS管理平台{{ end }}</title>
 
+  <link rel="preload" href="/static/libs/jquery/jquery.min.js" as="script" />
+  <link rel="preload" href="/static/libs/select2/js/select2.min.js" as="script" />
+  <link rel="preload" href="/static/libs/clipboard/clipboard.min.js" as="script" />
   <link rel="preload" href="/static/js/uuid.js" as="script" />
   <link rel="preload" href="/static/js/index.js" as="script" />
   <link rel="preload" href="/static/img/icons.svg" as="image" type="image/svg+xml" crossorigin="anonymous" />
@@ -60,6 +63,7 @@
   </script>
   <script src="/static/libs/jquery/jquery.min.js"></script>
   <script src="/static/libs/select2/js/select2.min.js"></script>
+  <script src="/static/libs/clipboard/clipboard.min.js"></script>
   <script src="/static/js/uuid.js"></script>
   <script src="/static/js/index.js"></script>
   {{ end }}
