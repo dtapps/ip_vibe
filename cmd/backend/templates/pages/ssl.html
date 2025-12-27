@@ -93,6 +93,10 @@
                 {{ template "icons" (dict "Name" "ip-ssl-apply") }} 申请
               </button>
 
+              <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openViewModal('{{.ID}}')">
+                {{ template "icons" (dict "Name" "ip-eye") }} 查看
+              </button>
+
               <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}')">
                 {{ template "icons" (dict "Name" "ip-edit") }} 编辑
               </button>
@@ -122,6 +126,9 @@
 
 <!-- 表单 -->
 {{ template "pages/ssl_form.html" . }}
+
+<!-- 查看 -->
+{{ template "pages/ssl_view.html" . }}
 
 <!-- 弹窗 -->
 {{ template "popup" . }}

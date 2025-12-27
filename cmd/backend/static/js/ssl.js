@@ -171,6 +171,30 @@ document.getElementById("form").onsubmit = async (e) => {
   }
 };
 
+// 打开 查看 弹窗
+async function openViewModal(id) {
+  try {
+    const { data: sslRecord } = await API.get(`/api/ssl-records/${id}`);
+    console.log("sslRecord", sslRecord);
+    if (!sslRecord) {
+      alert("SSL记录数据异常");
+      return;
+    }
+
+    const crtEl = document.getElementById("sslCrt");
+    const keyEl = document.getElementById("sslKey");
+
+    if (crtEl) crtEl.value = sslRecord.cert_certificate || "暂无证书内容";
+    if (keyEl) keyEl.value = sslRecord.cert_private_key || "暂无私钥内容";
+
+    showModal("viewModal", "", "查看 SSL记录");
+  } catch (error) {
+    alert(`加载数据失败: ${error.message}`);
+    console.error("打开SSL证书详情模态框失败", error);
+    return;
+  }
+}
+
 // 申请新的SSL证书
 async function applySSL(id) {
   if (confirm("确定申请新的SSL证书？")) {
@@ -183,4 +207,51 @@ async function applySSL(id) {
       console.error("申请新的SSL证书失败", error);
     }
   }
+}
+/**
+ * 复制指定 ID 文本框的内容
+ * @param {string} id - 元素 ID
+ * @param {HTMLElement} btn - 点击的按钮对象，用于显示反馈
+ */
+function copyTextarea(id, btn) {
+  const el = document.getElementById(id);
+  if (!el || !el.value.trim()) return;
+
+  // 1. 现代浏览器 API
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(el.value).then(() => {
+      showBtnFeedback(btn);
+    });
+  } else {
+    // 2. 兼容性方案
+    el.select();
+    try {
+      document.execCommand("copy");
+      showBtnFeedback(btn);
+    } catch (err) {
+      console.error("复制失败", err);
+    }
+  }
+}
+
+/**
+ * 按钮点击后的反馈效果
+ */
+function showBtnFeedback(btn) {
+  if (!btn) return;
+  const oldText = btn.innerText;
+  btn.innerText = "✅ 已复制";
+  btn.classList.add("text-success");
+
+  setTimeout(() => {
+    btn.innerText = oldText;
+    btn.classList.remove("text-success");
+  }, 1500);
+}
+
+/**
+ * 自动全选（提升体验：点击文本框即选中全部）
+ */
+function autoSelect(el) {
+  el.select();
 }

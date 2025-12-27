@@ -387,6 +387,9 @@ func loadTemplates(templatePath string, funcMap template.FuncMap) multitemplate.
 		if popupFile := baseName + "_popup.html"; fileExists(popupFile) {
 			extras = append(extras, popupFile)
 		}
+		if popupFile := baseName + "_view.html"; fileExists(popupFile) {
+			extras = append(extras, popupFile)
+		}
 
 		// 页面模板 = base + index + components + extras + page
 		files := []string{layout, index}
@@ -465,6 +468,9 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 			extras = append(extras, formFile)
 		}
 		if popupFile := baseName + "_popup.html"; fileExists(popupFile) {
+			extras = append(extras, popupFile)
+		}
+		if popupFile := baseName + "_view.html"; fileExists(popupFile) {
 			extras = append(extras, popupFile)
 		}
 
