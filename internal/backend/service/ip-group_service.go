@@ -152,7 +152,7 @@ func (s *IPGroupServiceImpl) UpdateIPGroup(ctx context.Context, request *types.U
 	saveIpGroup, err := s.db.IpGroup.UpdateOne(firstIpGroup).
 		SetName(request.Name).
 		SetDescription(request.Description).
-		ClearDevices(). // 保持 Handler 逻辑：先清空再添加
+		ClearDevices().
 		AddDeviceIDs(request.Devices...).
 		Save(ctx)
 	if err != nil {

@@ -37,11 +37,14 @@ async function openFormModal(id) {
       // 初始化 Select2 控件
       console.log("select2 初始化", selectId2, select2Data);
       selectId2.select2({
+        theme: "tailwindcss-4", // 主题
         width: "100%",
         placeholder: "请选择通知 Webhook",
         allowClear: true,
         multiple: true,
-        data: select2Data,
+        data: select2Data, // 数据
+        closeOnSelect: false, // 多选时防止关闭下拉列表
+        dropdownParent: document.querySelector("#modal .ui-modal-box"), // 绑定 modal 容器，防 z-index/定位错
       });
     }
 
@@ -59,6 +62,8 @@ async function openFormModal(id) {
       document.getElementById("id").value = domainMonitor.id;
       document.getElementById("id").disabled = true;
       document.getElementById("name").value = domainMonitor.name;
+      document.getElementById("description").value =
+        domainMonitor.description ?? "";
       document.getElementById("domain").value = domainMonitor.domain;
       document.getElementById("domain").disabled = true;
       document.getElementById("check_interval").value =
@@ -111,6 +116,7 @@ document.getElementById("form").onsubmit = async (e) => {
   const form_id = Number(document.getElementById("id").value.trim());
   const form_data = {
     name: document.getElementById("name").value.trim(),
+    description: document.getElementById("description").value.trim(),
     domain: document.getElementById("domain").value.trim(),
     check_interval: Number(
       document.getElementById("check_interval").value.trim()

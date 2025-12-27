@@ -1,26 +1,38 @@
-{{ define "pagination" }} {{ $page := .Page }} {{ $size := .PageSize }} {{
-$total := toInt .Total }} {{ if gt $total 0 }}
-<div class="pagination">
+{{ define "pagination" }}
+{{/* 支持的参数：
+.Page: 当前页码（默认: 1）
+.PageSize: 分页大小（默认: 10）
+.Total: 总记录数（默认: 1）
+*/}}
 
+{{ $page := .Page }}
+{{ if not $page }}
+{{ $page = 1 }}
+{{ end }}
+{{ $size := .PageSize }}
+{{ if not $size }}
+{{ $size = 10 }}
+{{ end }}
+{{ $total := toInt .Total }}
+{{ if not $total }}
+{{ $total = 1 }}
+{{ end }}
+
+{{ if gt $total 0 }}
+<div class="ui-pagination">
   {{ $totalPages := div (add $total (sub $size 1)) $size }} {{ if gt $page 1 }}
-  <a class="page-btn" onclick="changePage(`{{ sub $page 1 }}`)">上一页</a>
+  <a class="ui-page-btn" onclick="window.components.pagination.changePage(`{{ sub $page 1 }}`, `{{ $size }}`)">上一页</a>
   {{ end }}
 
-  <span class="page-info">
+  <span class="ui-page-info">
     第 {{ $page }} / {{ $totalPages }} 页（共 {{ $total }} 条）
   </span>
 
   {{ if lt $page $totalPages }}
-  <a class="page-btn" onclick="changePage(`{{ add $page 1 }}`)">下一页</a>
+  <a class="ui-page-btn" onclick="window.components.pagination.changePage(`{{ add $page 1 }}`, `{{ $size }}`)">下一页</a>
   {{ end }}
 </div>
+{{ end }}
 
-<script>
-  function changePage(p) {
-    const url = new URL(location.href);
-    url.searchParams.set("page", p);
-    url.searchParams.set("page_size", `{{ $size }}`);
-    location.href = url.toString();
-  }
-</script>
-{{ end }} {{ end }}
+<script src="/static/js/components/pagination.js"></script>
+{{ end }}

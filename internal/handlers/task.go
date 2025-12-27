@@ -22,6 +22,9 @@ func Task(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.TaskResponse{
+		CommonResponseWithRequest: types.CommonResponseWithRequest{
+			Request: c.Request,
+		},
 		CommonPageResponse: types.CommonPageResponse[types.JobData]{
 			List: []types.JobData{},
 		},

@@ -7,5 +7,6 @@ type SSLRequest struct {
 
 // SSL页面 响应结构
 type SSLResponse struct {
+	CommonResponseWithRequest                // 请求对象
 	CommonPageResponse[GetSSLRecordResponse] // SSL记录列表
 }

@@ -1,69 +1,93 @@
 {{ define "content" }}
-<h1>🌐 DDNS管理平台</h1>
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content transition-colors">🌐 DDNS管理平台</h1>
 
-<div class="card">
-  <div class="card-header">
-    <h2 class="h2-icon">
-      {{ template "icons" (dict "Name" "ip-devices") }} 设备实时上报
+<div class="ui-panel">
+  <div class="ui-header">
+    <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
+      <!-- {{ template "icons" (dict "Name" "ip-devices") }} 设备实时上报 -->
+      {{ template "icons" (dict "Name" "ip-mobile") }} 设备（实时上报）
     </h2>
     <div>
-      <button class="btn btn-primary" onclick="openFormModal()">
-        {{ template "icons" (dict "Name" "ip-mobile") }} 管理设备
+      <button class="btn-ui-primary" onclick="openFormModal()">
+        <!-- {{ template "icons" (dict "Name" "ip-mobile") }} 管理设备 -->
+        {{ template "icons" (dict "Name" "ip-plus") }} 添加设备
       </button>
     </div>
   </div>
-  <div class="card-body">
-    <table>
+
+  <div class="ui-table-container">
+    <table class="ui-table">
       <thead>
         <tr>
-          <th>编号</th>
-          <th>名称</th>
-          <th>最新 IPv4</th>
-          <th>最新 IPv6</th>
-          <th>上报时间</th>
-          <th style="width: 300px; text-align: center">操作</th>
+          <th class="ui-th">编号</th>
+          <th class="ui-th">名称</th>
+          <th class="ui-th">最新 IPv4</th>
+          <th class="ui-th">最新 IPv6</th>
+          <th class="ui-th">上次上报时间</th>
+          <th style="width: 320px" class="ui-th">操作</th>
         </tr>
       </thead>
       <tbody id="table">
         {{ range .List }}
-        {{ $urlPath := printf "/api/device-monitors/%d" .ID }}
-        <tr class="device-row" data-last-heartbeat="{{.LastHeartbeatAt.Unix}}">
-          <td>{{.Code}}</td>
-          <td>{{.Name}}</td>
-          <td class="text-monospace">{{.IPV4}}</td>
-          <td class="text-monospace">{{.IPV6}}</td>
-          <td>{{formatTimeOrNil .LastReportedAt}}</td>
-          <td>
-            <button
-              class="btn btn-sm btn-outline-info"
-              onclick="onHealthcheckPopup('{{.ID}}')"
-            >
-              {{ template "icons" (dict "Name" "ip-health-check") }} 检测
-            </button>
-            <button
-              class="btn btn-sm btn-outline-info"
-              onclick="onHistoryIPPopup('{{.ID}}','{{.Name}}')"
-            >
-              {{ template "icons" (dict "Name" "ip-eyes") }} 历史IP
-            </button>
-            <button
-              class="btn btn-primary btn-sm"
-              onclick="openFormModal('{{.ID}}')"
-            >
-              {{ template "icons" (dict "Name" "ip-edit") }} 编辑
-            </button>
-            {{ template "button" (dict 
-                "Type" "danger" 
-                "IconName" "ip-delete" 
-                "Text" "删除" 
-                "URL" $urlPath
-                "NoReload" true
-            )}}
+        {{ $apiUrlPath := printf "/api/devices/%d" .ID }}
+        {{ $webUrlPath := printf "/device/%d" .ID }}
+        <tr class="device-row hover:bg-base-200/50 transition-colors" data-last-heartbeat="{{.LastHeartbeatAt.Unix}}">
+          <td class="ui-td font-mono text-xs">
+            {{.Code}}
+          </td>
+
+          <td class="ui-td font-bold text-base-content">
+            {{.Name}}
+            <div class="text-xs opacity-60 font-mono">
+              {{.Description}}
+            </div>
+          </td>
+
+          <td class="ui-td font-mono text-sm text-primary/80">
+            {{.IPV4}}
+          </td>
+
+          <td class="ui-td font-mono text-sm text-primary/80">
+            {{.IPV6}}
+          </td>
+
+          <td class="ui-td text-xs">
+            <span class="opacity-60">
+              {{formatTimeOrNil .LastReportedAt}}
+            </span>
+          </td>
+
+          <td class="ui-td">
+            <div class="flex justify-center gap-1">
+              <button class="btn btn-sm btn-outline btn-info rounded-lg px-3" onclick="onHealthcheckPopup('{{.ID}}')">
+                {{ template "icons" (dict "Name" "ip-health-check") }} 检测
+              </button>
+
+              <button class="btn btn-sm btn-outline btn-info rounded-lg px-3"
+                onclick="onHistoryIPPopup('{{.ID}}','{{.Name}}')">
+                {{ template "icons" (dict "Name" "ip-eyes") }} 历史IP
+              </button>
+
+              <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}')">
+                {{ template "icons" (dict "Name" "ip-edit") }} 编辑
+              </button>
+
+              {{ template "button" (dict
+              "Type" "danger"
+              "IconName" "ip-delete"
+              "Text" "删除"
+              "URL" $apiUrlPath
+              "NoReload" true
+              )}}
+            </div>
           </td>
         </tr>
         {{ end }}
       </tbody>
     </table>
+  </div>
+
+  <div class="p-8 border-t border-base-200 bg-base-100/30">
     <!-- 分页 -->
     {{ template "pagination" . }}
   </div>

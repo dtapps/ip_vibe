@@ -53,7 +53,8 @@ async function openFormModal(id) {
       document.getElementById("id").value = portForward.id;
       document.getElementById("id").disabled = true;
       document.getElementById("name").value = portForward.name;
-      // document.getElementById('description').value = portForward.description || '';
+      document.getElementById("description").value =
+        portForward.description ?? "";
       document.getElementById("local_port").value = portForward.local_port;
       document.getElementById("remote_host").value = portForward.remote_host;
       document.getElementById("remote_port").value = portForward.remote_port;
@@ -91,7 +92,7 @@ document.getElementById("form").onsubmit = async (e) => {
   const form_id = Number(document.getElementById("id").value.trim());
   const form_data = {
     name: document.getElementById("name").value.trim(),
-    // description: document.getElementById('description').value.trim(),
+    description: document.getElementById("description").value.trim(),
     local_port: Number(document.getElementById("local_port").value.trim()),
     remote_host: document.getElementById("remote_host").value.trim(),
     remote_port: Number(document.getElementById("remote_port").value.trim()),

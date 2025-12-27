@@ -31,11 +31,14 @@ async function openFormModal(id) {
       // 初始化 Select2 控件
       console.log("select2 初始化", selectId2, select2Data);
       selectId2.select2({
+        theme: "tailwindcss-4", // 主题
         width: "100%",
         placeholder: "请选择通知 Webhook",
         allowClear: true,
         multiple: true,
-        data: select2Data,
+        data: select2Data, // 数据
+        closeOnSelect: false, // 多选时防止关闭下拉列表
+        dropdownParent: document.querySelector("#modal .ui-modal-box"), // 绑定 modal 容器，防 z-index/定位错
       });
     }
 
@@ -54,8 +57,9 @@ async function openFormModal(id) {
       document.getElementById("code").value = device.code;
       document.getElementById("code").disabled = true;
       document.getElementById("name").value = device.name;
-      document.getElementById("ip_v4").value = device.ip_v4 || "";
-      document.getElementById("ip_v6").value = device.ip_v6 || "";
+      document.getElementById("description").value = device.description ?? "";
+      document.getElementById("ip_v4").value = device.ip_v4 ?? "";
+      document.getElementById("ip_v6").value = device.ip_v6 ?? "";
 
       if (device.webhooks && device.webhooks.length > 0) {
         // 高亮已选
@@ -106,6 +110,7 @@ document.getElementById("form").onsubmit = async (e) => {
   const form_data = {
     code: document.getElementById("code").value.trim(),
     name: document.getElementById("name").value.trim(),
+    description: document.getElementById("description").value.trim(),
     ip_v4: document.getElementById("ip_v4").value.trim(),
     ip_v6: document.getElementById("ip_v6").value.trim(),
     webhook_ids: selectedWebhookIDs.map(Number),
@@ -228,14 +233,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 如果是零值（从未心跳），heartbeatAt <= 0
     if (heartbeatAt <= 0) {
-      row.classList.add("never-heartbeat");
+      row.classList.add("status-heartbeat-never");
       return;
     }
 
     if (now - heartbeatAt > tenMinutes) {
-      row.classList.add("offline");
+      row.classList.add("status-heartbeat-offline");
     } else {
-      row.classList.remove("offline");
+      row.classList.remove("status-heartbeat-offline");
     }
   });
 });

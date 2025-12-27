@@ -2,7 +2,8 @@ package types
 
 // 仪表盘 响应结构
 type DashboardResponse struct {
-	Stats struct {
+	CommonResponseWithRequest // 请求对象
+	Stats                     struct {
 		DeviceCount       int
 		OnlineDeviceCount int
 		DnsRecordCount    int

@@ -1,82 +1,116 @@
 {{ define "content" }}
-<h1>🌐 DDNS管理平台</h1>
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content transition-colors">🌐 DDNS管理平台</h1>
 
-<div class="card">
-  <div class="card-header">
-    <h2 class="h2-icon">
+<div class="ui-panel">
+  <div class="ui-header">
+    <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
       {{ template "icons" (dict "Name" "ip-domain-monitor") }} 域名监控
     </h2>
     <div>
-      <button class="btn btn-primary" onclick="openFormModal()">
+      <button class="btn-ui-primary" onclick="openFormModal()">
         {{ template "icons" (dict "Name" "ip-plus") }} 添加记录
       </button>
     </div>
   </div>
-  <div class="card-body">
-    <table>
+
+  <div class="ui-table-container">
+    <table class="ui-table">
       <thead>
         <tr>
-          <th>名称</th>
-          <th>域名</th>
-          <th>检查间隔</th>
-          <th>检查类型</th>
-          <th>当前运行状态</th>
-          <th>上次成功时间</th>
-          <th>上次失败时间</th>
-          <th>启用</th>
-          <th style="width: 200px; text-align: center">操作</th>
+          <th class="ui-th">名称</th>
+          <th class="ui-th">域名</th>
+          <th class="ui-th">检查间隔</th>
+          <th class="ui-th">检查类型</th>
+          <th class="ui-th">当前运行状态</th>
+          <th class="ui-th">上次成功时间</th>
+          <th class="ui-th">上次失败时间</th>
+          <th class="ui-th">启用</th>
+          <th style="width: 250px" class="ui-th text-center">操作</th>
         </tr>
       </thead>
       <tbody id="table">
         {{ range .List }}
-        {{ $urlPath := printf "/api/domain-monitors/%d" .ID }}
-        {{ $webPath := printf "/domain-monitor/%d" .ID }}
-        <tr>
-          <td>{{.Name}}</td>
-          <td>{{.Domain}}</td>
-          <td>{{.CheckInterval}}</td>
-          <td>{{.CheckProtocol}}</td>
-          <td>
+        {{ $apiUrlPath := printf "/api/domain-monitors/%d" .ID }}
+        {{ $webUrlPath := printf "/domain-monitor/%d" .ID }}
+        <tr class="hover:bg-base-200/50 transition-colors">
+          <td class="ui-td font-bold text-base-content">
+            {{.Name}}
+            <div class="text-xs opacity-60 font-mono">
+              {{.Description}}
+            </div>
+          </td>
+
+          <td class="ui-td font-mono text-sm opacity-80">
+            {{.Domain}}
+          </td>
+
+          <td class="ui-td">
+            <span class="badge badge-ghost">
+              {{.CheckInterval}}
+            </span>
+          </td>
+
+          <td class="ui-td font-bold text-primary">
+            {{.CheckProtocol}}
+          </td>
+
+          <td class="ui-td">
             {{if eq .CurrentStatus "success"}}
-            <span class="badge badge-success">成功运行</span>
+            <span class="badge badge-success font-bold px-4 py-3">成功运行</span>
             {{else if eq .CurrentStatus "failure"}}
-            <span class="badge badge-warning">检查失败</span>
+            <span class="badge badge-warning font-bold px-4 py-3 text-warning-content">检查失败</span>
             {{else}}
-            <span class="badge">状态未知</span>
+            <span class="badge badge-ghost font-bold px-4 py-3">状态未知</span>
             {{end}}
           </td>
-          <td>{{formatTimeOrNil .LastSuccessAt}}</td>
-          <td>{{formatTimeOrNil .LastFailureAt}}</td>
-          <td>
-            {{ $activeUrlPath := join $urlPath "/active" }}
+
+          <td class="ui-td text-xs opacity-60">
+            {{formatTimeOrNil .LastSuccessAt}}
+          </td>
+
+          <td class="ui-td text-xs opacity-60">
+            {{formatTimeOrNil .LastFailureAt}}
+          </td>
+
+          <td class="ui-td">
+            {{ $activeApiUrlPath := join $apiUrlPath "/active" }}
             {{ template "switch" (dict
             "Checked" .IsActive
-            "URL" $activeUrlPath
+            "URL" $activeApiUrlPath
             "NoReload" true
-            )}}
+            ) }}
           </td>
-          <td>
-            {{ $detailWebPath := join $webPath "/detail" }}
-            <button class="btn btn-sm btn-outline-info" onclick="location.href='{{$detailWebPath}}'">
-              {{ template "icons" (dict "Name" "ip-eyes") }} 详情
-            </button>
-            <button class="btn btn-primary btn-sm" onclick="openFormModal('{{.ID}}')">
-              {{ template "icons" (dict "Name" "ip-edit") }} 编辑
-            </button>
-            {{ template "button" (dict
-            "Type" "danger"
-            "IconName" "ip-delete"
-            "Text" "删除"
-            "URL" $urlPath
-            "Disabled" .IsActive
-            "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
-            "NoReload" true
-            )}}
+
+          <td class="ui-td">
+            <div class="flex justify-center gap-1">
+              {{ $detailWebUrlPath := join $webUrlPath "/detail" }}
+              <button class="btn btn-sm btn-outline btn-info rounded-lg px-3"
+                onclick="location.href='{{$detailWebUrlPath}}'">
+                {{ template "icons" (dict "Name" "ip-eyes") }} 详情
+              </button>
+
+              <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}')">
+                {{ template "icons" (dict "Name" "ip-edit") }} 编辑
+              </button>
+
+              {{ template "button" (dict
+              "Type" "danger"
+              "IconName" "ip-delete"
+              "Text" "删除"
+              "URL" $apiUrlPath
+              "Disabled" .IsActive
+              "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
+              "NoReload" true
+              )}}
+            </div>
           </td>
         </tr>
         {{ end }}
       </tbody>
     </table>
+  </div>
+
+  <div class="p-8 border-t border-base-200 bg-base-100/30">
     <!-- 分页 -->
     {{ template "pagination" . }}
   </div>

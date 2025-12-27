@@ -1,27 +1,24 @@
 {{ define "pages/webhook_form.html" }}
 <div class="modal" id="modal">
-  <div class="modal-content">
-    <h3 id="modalTitle">添加 / 编辑 通知</h3>
-    <form id="form">
-      <div class="form-group">
-        <label>名称 <span style="color: red">*</span></label>
-        <input
-          type="text"
-          name="name"
-          id="name"
-          required
-          placeholder="如：告警-IP"
-        />
+  <div class="ui-modal-box">
+    <div class="ui-header">
+      <h3 class="text-xl font-bold" id="modalTitle">添加 / 编辑 通知</h3>
+    </div>
+
+    <form id="form" class="p-8 space-y-5">
+      <div class="ui-form-control">
+        <label class="ui-label-text">名称 <span class="text-error">*</span></label>
+        <input type="text" name="name" id="name" class="ui-input" required placeholder="如：告警-IP" />
       </div>
 
-      <div class="form-group">
-        <label>平台类型 <span style="color: red">*</span></label>
-        <select
-          name="platform"
-          id="platform"
-          required
-          onchange="onPlatformSelect(this)"
-        >
+      <div class="ui-form-control">
+        <label class="ui-label-text">描述</label>
+        <textarea name="description" id="description" class="ui-textarea" placeholder="可选"></textarea>
+      </div>
+
+      <div class="ui-form-control">
+        <label class="ui-label-text">平台类型 <span class="text-error">*</span></label>
+        <select name="platform" id="platform" class="ui-select" required onchange="onPlatformSelect(this)">
           <option value="" disabled selected>请选择平台类型</option>
           <option value="wechat_work">企业微信</option>
           <option value="dingtalk">钉钉</option>
@@ -33,57 +30,37 @@
         </select>
       </div>
 
-      <div class="form-group" id="url_group" style="display: none">
-        <label>自定义 URL</label>
-        <input
-          type="text"
-          name="url"
-          id="url"
-          placeholder="如：https://webhook.example.com/notify"
-        />
+      <div class="ui-form-control platform-fields" id="url_group" style="display: none">
+        <label class="ui-label-text">自定义 URL</label>
+        <input type="text" name="url" id="url" class="ui-input" placeholder="如：https://webhook.example.com/notify" />
       </div>
 
-      <div class="form-group" id="secret_group" style="display: none">
-        <label>签名密钥或Token</label>
-        <input type="text" name="secret" id="secret" placeholder="如：123456" />
+      <div class="ui-form-control platform-fields" id="secret_group" style="display: none">
+        <label class="ui-label-text">签名密钥或Token</label>
+        <input type="text" name="secret" id="secret" class="ui-input" placeholder="如：123456" />
       </div>
 
-      <div class="form-group">
-        <label for="templateTitle"
-          >通知标题模板 (Go Template) <span style="color: red">*</span></label
-        >
-        <input type="text" name="template_title" id="template_title" required />
-        <small class="text-secondary"
-          >可用变量: [[.EventTime]] [[.EventBody]] [[.DeviceCode]]
-          [[.DeviceName]] [[.IPv4Addr]] [[.IPv6Addr]] [[.RecordDomain]]
-          [[.RecordType]] [[.PlatformName]] [[.PlatformType]]</small
-        >
+      <div class="ui-form-control">
+        <label class="ui-label-text" for="template_title">通知标题模板 (Go Template) <span class="text-error">*</span></label>
+        <input type="text" name="template_title" id="template_title" class="ui-input" required />
+        <div class="ui-hint">可用变量: [[.EventTime]] [[.EventBody]] [[.DeviceCode]] [[.DeviceName]] [[.IPv4Addr]]
+          [[.IPv6Addr]] [[.RecordDomain]] [[.RecordType]] [[.PlatformName]] [[.PlatformType]]</div>
       </div>
 
-      <div class="form-group">
-        <label for="templateContent"
-          >通知内容模板 (支持 Markdown/Text)
-          <span style="color: red">*</span></label
-        >
-        <textarea
-          name="template_content"
-          id="template_content"
-          required
-          rows="5"
-        ></textarea>
-        <small class="text-secondary"
-          >注意：不同平台 (如飞书、钉钉) 的 Markdown 格式略有不同。</small
-        >
+      <div class="ui-form-control">
+        <label class="ui-label-text" for="template_content">通知内容模板 (支持 Markdown/Text) <span
+            class="text-error">*</span></label>
+        <textarea name="template_content" id="template_content" class="ui-textarea" required rows="5"></textarea>
+        <div class="ui-hint">注意：不同平台 (如飞书、钉钉) 的 Markdown 格式略有不同。</div>
       </div>
 
-      <!-- 隐藏字段 -->
       <input type="hidden" name="id" id="id" />
 
-      <div class="form-group mt-3" style="text-align: right">
-        <button type="button" class="btn" onclick="closeModal('modal')">
+      <div class="modal-action gap-3">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('modal')">
           {{ template "icons" (dict "Name" "ip-close") }} 取消
         </button>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn-ui-primary">
           {{ template "icons" (dict "Name" "ip-save") }} 保存
         </button>
       </div>

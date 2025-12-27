@@ -84,8 +84,9 @@ func (s *IPUpdateTask) StartDnsJob(ctx context.Context) (err error) {
 	time.Sleep(1 * time.Minute)
 	// 创建周期任务
 	s.dnsJob, err = s.cron.NewJob(
-		gocron.DurationJob(
-			10*time.Minute, // 每10分钟执行一次
+		gocron.DurationRandomJob(
+			10*time.Minute, // 最小间隔 10 分钟
+			12*time.Minute, // 最大间隔 12 分钟
 		),
 		gocron.NewTask(s.RunDnsTask),                         // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
@@ -113,8 +114,9 @@ func (s *IPUpdateTask) StartCdnJob(ctx context.Context) (err error) {
 	// time.Sleep(1 * time.Minute)
 	// 创建周期任务
 	s.cdnJob, err = s.cron.NewJob(
-		gocron.DurationJob(
-			10*time.Minute, // 每10分钟执行一次
+		gocron.DurationRandomJob(
+			10*time.Minute, // 最小间隔 10 分钟
+			12*time.Minute, // 最大间隔 12 分钟
 		),
 		gocron.NewTask(s.RunCdnTask),                         // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式

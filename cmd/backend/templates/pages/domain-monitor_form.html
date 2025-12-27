@@ -1,68 +1,57 @@
 {{ define "pages/domain-monitor_form.html" }}
 <div class="modal" id="modal">
-  <div class="modal-content">
-    <h3 id="modalTitle">添加域名监控</h3>
-    <form id="form">
+  <div class="ui-modal-box">
+    <div class="ui-header">
+      <h3 class="text-xl font-bold" id="modalTitle">添加域名监控</h3>
+    </div>
 
-      <div class="form-group">
-        <label>名称 <span style="color: red">*</span></label>
-        <input
-          type="text"
-          name="name"
-          id="name"
-          required
-          placeholder="如 example"
-        />
+    <form id="form" class="p-8 space-y-5">
+      <div class="ui-form-control">
+        <label class="ui-label-text">名称 <span class="text-error">*</span></label>
+        <input type="text" name="name" id="name" class="ui-input" required placeholder="如 example" />
       </div>
 
-      <div class="form-group">
-        <label>域名 <span style="color: red">*</span></label>
-        <input
-          type="text"
-          name="domain"
-          id="domain"
-          required
-          placeholder="如 www.example.com"
-        />
+      <div class="ui-form-control">
+        <label class="ui-label-text">描述</label>
+        <textarea name="description" id="description" class="ui-textarea" placeholder="可选"></textarea>
       </div>
 
-      <div class="form-group">
-        <label>检查间隔（秒） <span style="color: red">*</span></label>
-        <input
-          type="number"
-          name="check_interval"
-          id="check_interval"
-          value="60"
-          required
-          placeholder="如 60"
-        />
+      <div class="ui-form-control">
+        <label class="ui-label-text">域名 <span class="text-error">*</span></label>
+        <input type="text" name="domain" id="domain" class="ui-input" required placeholder="如 www.example.com" />
       </div>
 
-      <div class="form-group">
-        <label>检查类型 <span style="color: red">*</span></label>
-        <select name="check_protocol" id="check_protocol" required onchange="onCheckProtocolSelect(this)">
-          <option value="" disabled selected>请选择检查类型</option>
-          <option value="http">HTTP</option>
-          <option value="https">HTTPS</option>
-        </select>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="ui-form-control">
+          <label class="ui-label-text">检查间隔（秒） <span class="text-error">*</span></label>
+          <input type="number" name="check_interval" id="check_interval" class="ui-input" value="60" required
+            placeholder="如 60" />
+        </div>
+
+        <div class="ui-form-control">
+          <label class="ui-label-text">检查类型 <span class="text-error">*</span></label>
+          <select name="check_protocol" id="check_protocol" class="ui-select" required
+            onchange="onCheckProtocolSelect(this)">
+            <option value="" disabled selected>请选择检查类型</option>
+            <option value="http">HTTP</option>
+            <option value="https">HTTPS</option>
+          </select>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label>通知 (多选)</label>
-        <select name="webhook_ids" id="webhook_ids" multiple></select>
-        <small class="text-secondary"
-          >选择需要接收此记录变动通知的 Webhook</small
-        >
+      <div class="ui-form-control">
+        <label class="ui-label-text">通知 (多选)</label>
+        <select name="webhook_ids" id="webhook_ids" class="ui-select" multiple></select>
+        <div class="ui-hint">选择需要接收此记录变动通知的 Webhook</div>
       </div>
 
-      <!-- 隐藏字段 -->
       <input type="hidden" name="id" id="id" />
 
-      <div class="form-group mt-3" style="text-align: right">
-        <button type="button" class="btn" onclick="closeModal('modal')">
+      <div class="modal-action gap-3">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('modal')">
           {{ template "icons" (dict "Name" "ip-close") }} 取消
         </button>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn-ui-primary">
           {{ template "icons" (dict "Name" "ip-save") }} 保存
         </button>
       </div>

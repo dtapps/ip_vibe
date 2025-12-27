@@ -1,10 +1,3 @@
-// 滚动超过 300 px 出现
-window.addEventListener("scroll", () => {
-  document
-    .querySelector(".back-top")
-    .classList.toggle("visible", window.scrollY > 300);
-});
-
 // API请求封装 - 带错误处理
 const API = {
   async get(url, data) {
@@ -138,7 +131,7 @@ function showModal(id, titleID, titleName) {
   }
 
   // 显示弹窗
-  modal.classList.add("show");
+  modal.classList.add("modal-open");
 
   // 在 DOM 元素上挂状态
   modal.dataset.manuallyClosed = "false";
@@ -152,7 +145,7 @@ function closeModal(id) {
   }
 
   // 隐藏弹窗
-  modal.classList.remove("show");
+  modal.classList.remove("modal-open");
 
   // 在 DOM 元素上挂状态
   modal.dataset.manuallyClosed = "true";
@@ -228,8 +221,7 @@ function showCopySuccess(idEl = "popup") {
   }
   const old = btn.innerHTML;
   btn.innerHTML =
-    '<svg class="ip-i"><use href="/static/img/icons.svg#ip-check"/></use></svg> 已复制';
-  btn.style.color = "var(--success)";
+    '<svg class="ui-icon"><use href="/static/img/icons.svg#ip-check"/></use></svg> 已复制';
   setTimeout(() => {
     btn.innerHTML = old;
     btn.style.color = "";
@@ -258,7 +250,8 @@ function showLoadingPopup(idEl = "popup") {
   }
   if (preEl) {
     preEl.textContent = "正在检测中，请稍候...（预计 5~15 秒）";
-    preEl.style.color = "var(--text-secondary)";
+    preEl.style.color = ""; // 清除之前可能存在的颜色
+    preEl.classList.add("opacity-50");
   }
   if (countEl) {
     countEl.textContent = "...";
@@ -298,7 +291,8 @@ function showPopupContent(
   }
   if (preEl) {
     preEl.textContent = content;
-    preEl.style.color = "#f8f8f2";
+    preEl.style.color = ""; // 清除之前可能存在的颜色
+    preEl.classList.remove("opacity-50");
   }
   if (countEl) {
     countEl.textContent = count;

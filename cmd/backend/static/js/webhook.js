@@ -215,6 +215,7 @@ async function openFormModal(id) {
       document.getElementById("id").value = webhook.id;
       document.getElementById("id").disabled = true;
       document.getElementById("name").value = webhook.name;
+      document.getElementById("description").value = webhook.description ?? "";
       document.getElementById("platform").value = webhook.platform;
       document.getElementById("platform").disabled = true;
       document.getElementById("url").value = webhook.url;
@@ -249,6 +250,7 @@ document.getElementById("form").onsubmit = async (e) => {
   const form_id = Number(document.getElementById("id").value.trim());
   const form_data = {
     name: document.getElementById("name").value.trim(),
+    description: document.getElementById("description").value.trim(),
     platform: document.getElementById("platform").value.trim(),
     url: document.getElementById("url").value.trim(),
     secret: document.getElementById("secret").value.trim(),

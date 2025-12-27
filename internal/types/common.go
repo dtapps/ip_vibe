@@ -1,5 +1,7 @@
 package types
 
+import "net/http"
+
 // 公共 页面分页 请求结构
 type CommonPageRequest struct {
 	Page     int `form:"page" default:"1"`       // 当前页码
@@ -12,4 +14,8 @@ type CommonPageResponse[T any] struct {
 	Page     int   `json:"page"`      // 当前页码
 	PageSize int   `json:"page_size"` // 每页数量
 	Total    int64 `json:"total"`     // 总数量
+}
+
+type CommonResponseWithRequest struct {
+	Request *http.Request `json:"-"` // 请求对象
 }

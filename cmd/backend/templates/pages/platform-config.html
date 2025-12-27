@@ -1,72 +1,89 @@
 {{ define "content" }}
-<h1>🌐 DDNS管理平台</h1>
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content transition-colors">🌐 DDNS管理平台</h1>
 
-<div class="card">
-  <div class="card-header">
-    <h2 class="h2-icon">
+<div class="ui-panel">
+  <div class="ui-header">
+    <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
       {{ template "icons" (dict "Name" "ip-server") }} 平台配置
     </h2>
     <div>
-      <button class="btn btn-primary" onclick="openFormModal()">
+      <button class="btn-ui-primary" onclick="openFormModal()">
         {{ template "icons" (dict "Name" "ip-plus") }} 添加配置
       </button>
     </div>
   </div>
-  <div class="card-body">
-    <table>
+
+  <div class="ui-table-container">
+    <table class="ui-table">
       <thead>
         <tr>
-          <th>配置名称</th>
-          <th>平台</th>
-          <th>支持服务</th>
-          <th style="width: 200px; text-align: center">操作</th>
+          <th class="ui-th">配置名称</th>
+          <th class="ui-th">平台</th>
+          <th class="ui-th">支持服务</th>
+          <th style="width: 200px" class="ui-th text-center">操作</th>
         </tr>
       </thead>
       <tbody id="table">
-        {{range .List}} {{ $urlPath := printf "/api/platform-configs/%d" .ID }}
-        <tr>
-          <td>
+        {{range .List}}
+        {{ $apiUrlPath := printf "/api/platform-configs/%d" .ID }}
+        {{ $webUrlPath := printf "/platform-config/%d" .ID }}
+        <tr class="hover:bg-base-200/50 transition-colors">
+          <td class="ui-td">
+            <div class="flex flex-col items-start gap-1">
+              <span class="font-bold text-base-content">
+                {{.Name}}
+              </span>
+              <div class="text-xs opacity-60 font-mono">
+                {{if eq .Capability "all"}}
+                <span class="tooltip tooltip-primary" data-tip="域名和邮箱">{{.ConfigJSONDomainName}} ·
+                  {{.ConfigJSONEmail}}</span>
+                {{else if eq .Capability "cdn"}}
+                <span class="tooltip tooltip-primary" data-tip="域名">{{.ConfigJSONDomainName}}</span>
+                {{else if eq .Capability "dns"}}
+                <span class="tooltip tooltip-primary" data-tip="域名">{{.ConfigJSONDomainName}}</span>
+                {{else if eq .Capability "ssl"}}
+                <span class="tooltip tooltip-primary" data-tip="邮箱">{{.ConfigJSONEmail}}</span>
+                {{else}}
+                <span class="italic text-error/70">未配置详细信息</span>
+                {{end}}
+              </div>
+            </div>
+          </td>
+
+          <td class="ui-td">
+            {{template "PlatformBadge" (dict "Platform" .Platform )}}
+          </td>
+
+          <td class="ui-td font-bold">
             {{if eq .Capability "all"}}
-            <span>{{.Name}}（{{.ConfigJSONDomainName}}）（{{.ConfigJSONEmail}}）</span>
+            <span class="text-primary">全部</span>
             {{else if eq .Capability "cdn"}}
-            <span>{{.Name}}（{{.ConfigJSONDomainName}}）</span>
+            <span class="text-success">仅 CDN</span>
             {{else if eq .Capability "dns"}}
-            <span>{{.Name}}（{{.ConfigJSONDomainName}}）</span>
+            <span class="text-success">仅 DNS</span>
             {{else if eq .Capability "ssl"}}
-            <span>{{.Name}}（{{.ConfigJSONEmail}}）</span>
+            <span class="text-success">仅 SSL</span>
             {{else}}
-            <span>{{.Name}}</span>
+            <span class="text-warning">{{.Capability}}</span>
             {{end}}
           </td>
-          <td>
-            {{template "PlatformBadge" (dict
-            "Platform" .Platform
-            )}}
-          </td>
-          <td>
-            {{if eq .Capability "all"}}
-            <span style="color: var(--primary)">全部</span>
-            {{else if eq .Capability "cdn"}}
-            <span style="color: var(--success)">仅 CDN</span>
-            {{else if eq .Capability "dns"}}
-            <span style="color: var(--success)">仅 DNS</span>
-            {{else if eq .Capability "ssl"}}
-            <span style="color: var(--success)">仅 SSL</span>
-            {{else}}
-            <span style="color: var(--warning)">{{.Capability}}</span>
-            {{end}}
-          </td>
-          <td>
-            <button class="btn btn-primary btn-sm" onclick="openFormModal('{{.ID}}')">
-              {{ template "icons" (dict "Name" "ip-edit") }} 编辑
-            </button>
-            {{ template "button" (dict "Type" "danger" "IconName" "ip-delete"
-            "Text" "删除" "URL" $urlPath "NoReload" true )}}
+
+          <td class="ui-td">
+            <div class="flex justify-center gap-2">
+              <button class="btn btn-primary btn-sm rounded-lg px-4" onclick="openFormModal('{{.ID}}')">
+                {{ template "icons" (dict "Name" "ip-edit") }} 编辑
+              </button>
+              {{ template "button" (dict "Type" "danger" "IconName" "ip-delete" "Text" "删除" "URL" $apiUrlPath "NoReload"
+              true )}}
+            </div>
           </td>
         </tr>
         {{end}}
       </tbody>
     </table>
+  </div>
+
+  <div class="p-8 border-t border-base-200 bg-base-100/30">
     <!-- 分页 -->
     {{ template "pagination" . }}
   </div>

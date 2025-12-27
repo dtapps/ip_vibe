@@ -1,23 +1,33 @@
 {{define "PlatformBadge"}}
+{{/* 支持的参数：
+.Platform: 平台名称
+.Tips: 可选，鼠标悬停提示（留空就不显示）
+*/}}
+
 {{$platform := .Platform}}
-{{$class := or .Class "badge badge-success"}}
+{{$tips := .Tips}}
+{{$class := or .Class "badge badge-primary badge-outline"}}
+{{if $tips}}
+{{$class = join $class " tooltip" }}
+{{end}}
+
 
 {{if eq $platform "cloudflare"}}
-<span class="{{$class}}">CloudFlare</span>
+<span class="{{$class}}" data-tip="{{$tips}}">CloudFlare</span>
 {{else if eq $platform "tencent_dns"}}
-<span class="{{$class}}">腾讯云 DNS</span>
+<span class="{{$class}}" data-tip="{{$tips}}">腾讯云 DNS</span>
 {{else if eq $platform "tencent_eo"}}
-<span class="{{$class}}">腾讯云 EdgeOne</span>
+<span class="{{$class}}" data-tip="{{$tips}}">腾讯云 EdgeOne</span>
 {{else if eq $platform "aliyun_dns"}}
-<span class="{{$class}}">阿里云 DNS</span>
+<span class="{{$class}}" data-tip="{{$tips}}">阿里云 DNS</span>
 {{else if eq $platform "aliyun_esa"}}
-<span class="{{$class}}">阿里云 ESA</span>
+<span class="{{$class}}" data-tip="{{$tips}}">阿里云 ESA</span>
 {{else if eq $platform "baidu_dns"}}
-<span class="{{$class}}">百度云 DNS</span>
+<span class="{{$class}}" data-tip="{{$tips}}">百度云 DNS</span>
 {{else if eq $platform "huawei_dns"}}
-<span class="{{$class}}">华为云 DNS</span>
+<span class="{{$class}}" data-tip="{{$tips}}">华为云 DNS</span>
 {{else}}
-<span class="{{$class}}">{{$platform}}</span>
+<span class="{{$class}}" data-tip="{{$tips}}">{{$platform}}</span>
 {{end}}
 
 {{end}}

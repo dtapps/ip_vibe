@@ -2,19 +2,17 @@
 {{/* 支持的参数：
 .Checked: 布尔值，是否默认选中
 .URL: 可选，API 接口地址（用于抽象化 PATCH 操作）
-.ApiDataKey: 可选，API 数据键名（默认: is_active）
-.OnClick: 可选，自定义的 JavaScript onclick 字符串 (例如: onPatch('123'))
+.DataKey: 可选，API 数据键名（默认: is_active）
 .Disabled: 可选，布尔值，是否禁用
 .NoReload: 可选，布尔值。如果为 true，则 API 删除成功后不自动刷新页面
 */}}
 
 {{ $checked := .Checked }}
 {{ $url := .URL }}
-{{ $apiDataKey := .ApiDataKey }}
-{{ if not $apiDataKey }}
-{{ $apiDataKey = "is_active" }}
+{{ $dataKey := .DataKey }}
+{{ if not $dataKey }}
+{{ $dataKey = "is_active" }}
 {{ end }}
-{{ $onClick := .OnClick }}
 {{ $disabled := .Disabled }}
 
 {{ $noReload := .NoReload }}
@@ -22,46 +20,28 @@
 {{ $noReload = false }}
 {{ end }}
 
-<label class="switch">
+<!-- switch flex items-center：用于水平居中对齐开关 -->
+<label class="switch items-center">
   {{if $checked}}
+
   {{if $disabled}}
-  <input type="checkbox" checked disabled />
+  <input type="checkbox" class="toggle toggle-primary" checked disabled />
   {{else}}
-  <input type="checkbox" checked
-    onchange="changeSwitchStatus('{{$url}}', '{{$apiDataKey}}', '{{ $noReload }}', this)" />
+  <input type="checkbox" class="toggle toggle-primary" checked
+    onchange="window.components.switch.changeStatus('{{$url}}', '{{$dataKey}}', '{{ $noReload }}', this)" />
   {{end}}
+
   {{else}}
+
   {{if $disabled}}
-  <input type="checkbox" disabled />
+  <input type="checkbox" class="toggle toggle-primary" disabled />
   {{else}}
-  <input type="checkbox" onchange="changeSwitchStatus('{{$url}}', '{{$apiDataKey}}', '{{ $noReload }}', this)" />
+  <input type="checkbox" class="toggle toggle-primary"
+    onchange="window.components.switch.changeStatus('{{$url}}', '{{$dataKey}}', '{{ $noReload }}', this)" />
   {{end}}
+
   {{end}}
-  <span class="slider"></span>
 </label>
 
-<script>
-  // 避免重复定义 changeSwitchStatus 函数
-  // if (typeof changeSwitchStatus === 'undefined') {
-  // 通用 API PATCH 动作
-  async function changeSwitchStatus(url, apiDataKey, isNoReload, checkbox) {
-    try {
-      if (typeof API !== 'undefined' && typeof API.patch === 'function') {
-        await API.patch(url, { [apiDataKey]: checkbox.checked });
-        // 根据 isNoReload 决定是否刷新，转换为布尔值
-        if (isNoReload != 'false') {
-          location.reload();
-        }
-      } else {
-        alert("API.patch 函数未定义，请确保引入了必要的 JS 库");
-      }
-    } catch (error) {
-      alert(`状态更新失败: ${error.message}`);
-      console.error("API失败", error);
-      // 恢复 checkbox 状态
-      checkbox.checked = !checkbox.checked;
-    }
-  }
-  // }
-</script>
+<script src="/static/js/components/switch.js"></script>
 {{ end }}

@@ -122,6 +122,9 @@ components:
         check_protocol:
           description: 检查类型（HTTP/HTTPS）
           type: string
+        description:
+          description: 描述
+          type: string
         domain:
           description: 域名
           type: string
@@ -510,6 +513,9 @@ components:
           type: string
         current_status:
           description: 当前运行状态
+          type: string
+        description:
+          description: 描述
           type: string
         domain:
           description: 域名
@@ -959,6 +965,9 @@ components:
         check_interval:
           description: 检查间隔（秒）
           type: integer
+        description:
+          description: 描述
+          type: string
         id:
           description: 域名监控记录序号
           type: integer

@@ -21,6 +21,9 @@ func Log(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.LogResponse{
+		CommonResponseWithRequest: types.CommonResponseWithRequest{
+			Request: c.Request,
+		},
 		CommonPageResponse: types.CommonPageResponse[types.GetLogResponse]{
 			List: []types.GetLogResponse{},
 		},

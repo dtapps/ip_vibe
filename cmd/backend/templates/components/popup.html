@@ -1,40 +1,30 @@
 {{ define "popup" }}
 <div id="popup" class="modal">
-  <div class="modal-content ip-popup">
-    <!-- 头部 -->
-    <div class="ip-popup-header">
-      <h4 id="popupTitle" class="ip-popup-title">
-        {{ template "icons" (dict "Name" "ip-eyes") }} 弹窗
-      </h4>
-      <button
-        id="popupCloseIcon"
-        class="ip-popup-close"
-        onclick="closeModal('popup')"
-        aria-label="关闭"
-      >
+  <div class="ui-modal-box">
+    <div class="ui-header">
+      <h3 id="popupTitle" class="text-xl font-bold flex items-center gap-2">
+        {{ template "icons" (dict "Name" "ip-eyes") }} 查看详情
+      </h3>
+      <button class="btn btn-sm btn-circle btn-ghost" onclick="closeModal('popup')">
         {{ template "icons" (dict "Name" "ip-close") }}
       </button>
     </div>
 
-    <!-- 工具栏 -->
-    <div class="ip-popup-toolbar">
-      <span class="ip-popup-count">共 <b id="popupCount">0</b> 条</span>
-      <button
-        id="popupCopyBtn"
-        class="ip-popup-copy"
-        onclick="copyData()"
-      >
+    <div class="px-8 py-3 bg-base-200/50 border-b border-base-300/50 flex justify-between items-center">
+      <span class="text-xs opacity-50 font-medium">结果统计：<b id="popupCount" class="text-primary">0</b> 条数据</span>
+      <button id="popupCopyBtn" class="btn btn-xs btn-primary rounded-lg gap-1" onclick="copyData()">
         {{ template "icons" (dict "Name" "ip-copy") }} 一键复制
       </button>
     </div>
 
-    <!-- 代码块区域 -->
-    <pre id="popupPre" class="ip-popup-pre">代码块区域</pre>
+    <div class="p-6">
+      <pre id="popupPre"
+        class="bg-base-300/30 p-4 rounded-2xl font-mono text-sm overflow-x-auto max-h-[50vh] leading-relaxed border border-base-300/20">代码块区域</pre>
+    </div>
 
-    <!-- 底部按钮 -->
-    <div class="ip-popup-footer">
-      <button id="popupCloseBtn" class="btn" onclick="closeModal('popup')">
-        {{ template "icons" (dict "Name" "ip-close") }}关闭
+    <div class="modal-action p-6 pt-0">
+      <button class="btn btn-sm btn-ghost rounded-xl" onclick="closeModal('popup')">
+        {{ template "icons" (dict "Name" "ip-close") }} 关闭
       </button>
     </div>
   </div>

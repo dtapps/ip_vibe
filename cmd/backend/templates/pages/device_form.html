@@ -1,63 +1,50 @@
 {{ define "pages/device_form.html" }}
 <div class="modal" id="modal">
-  <div class="modal-content">
-    <h3 id="modalTitle">添加设备</h3>
-    <form id="form">
-      <div class="form-group">
-        <label>编号 <span style="color: red">*</span></label>
-        <input
-          type="text"
-          name="code"
-          id="code"
-          required
-          placeholder="如: xxxx-x-x-x-xxxx"
-        />
-      </div>
-      <div class="form-group">
-        <label>名称 <span style="color: red">*</span></label>
-        <input
-          type="text"
-          name="name"
-          id="name"
-          required
-          placeholder="如: 我的"
-        />
-      </div>
-      <div class="form-group">
-        <label>IP地址V4</label>
-        <input
-          type="text"
-          name="ip_v4"
-          id="ip_v4"
-          placeholder="如: 192.168.1.1"
-        />
-      </div>
-      <div class="form-group">
-        <label>IP地址V6</label>
-        <input
-          type="text"
-          name="ip_v6"
-          id="ip_v6"
-          placeholder="如: 2001:0db8:85a3:0000:0000:8a2e:0370:7334"
-        />
+  <div class="ui-modal-box">
+    <div class="ui-header">
+      <h3 class="text-xl font-bold" id="modalTitle">添加设备</h3>
+    </div>
+
+    <form id="form" class="p-8 space-y-5">
+      <div class="ui-form-control">
+        <label class="ui-label-text">编号 <span class="text-error">*</span></label>
+        <input type="text" name="code" id="code" class="ui-input" required placeholder="如: xxxx-x-x-x-xxxx" />
       </div>
 
-      <div class="form-group">
-        <label>通知 (多选)</label>
-        <select name="webhook_ids" id="webhook_ids" multiple></select>
-        <small class="text-secondary"
-          >选择需要接收此设备变动通知的 Webhook</small
-        >
+      <div class="ui-form-control">
+        <label class="ui-label-text">名称 <span class="text-error">*</span></label>
+        <input type="text" name="name" id="name" class="ui-input" required placeholder="如: 我的" />
       </div>
 
-      <!-- 隐藏字段 -->
+      <div class="ui-form-control">
+        <label class="ui-label-text">描述</label>
+        <textarea name="description" id="description" class="ui-textarea" placeholder="可选"></textarea>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="ui-form-control">
+          <label class="ui-label-text">IP地址V4</label>
+          <input type="text" name="ip_v4" id="ip_v4" class="ui-input" placeholder="如: 192.168.1.1" />
+        </div>
+        <div class="ui-form-control">
+          <label class="ui-label-text">IP地址V6</label>
+          <input type="text" name="ip_v6" id="ip_v6" class="ui-input" placeholder="如: 2001:db8::1" />
+        </div>
+      </div>
+
+      <div class="ui-form-control">
+        <label class="ui-label-text">通知 (多选)</label>
+        <select name="webhook_ids" id="webhook_ids" class="ui-select" multiple></select>
+        <div class="ui-hint">选择需要接收此设备变动通知的 Webhook</div>
+      </div>
+
       <input type="hidden" name="id" id="id" />
 
-      <div class="form-group mt-3" style="text-align: right">
-        <button type="button" class="btn" onclick="closeModal('modal')">
+      <div class="modal-action gap-3">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('modal')">
           {{ template "icons" (dict "Name" "ip-close") }} 取消
         </button>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn-ui-primary">
           {{ template "icons" (dict "Name" "ip-save") }} 保存
         </button>
       </div>

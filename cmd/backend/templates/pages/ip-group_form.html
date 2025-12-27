@@ -1,42 +1,33 @@
 {{ define "pages/ip-group_form.html" }}
 <div class="modal" id="modal">
-  <div class="modal-content">
-    <h3 id="modalTitle">添加 / 编辑 IP 组</h3>
-    <form id="form">
-      <div class="form-group">
-        <label>组名 <span style="color: red">*</span></label>
-        <input
-          type="text"
-          name="name"
-          id="name"
-          required
-          placeholder="如：CDN-边缘"
-        />
+  <div class="ui-modal-box">
+    <div class="ui-header">
+      <h3 class="text-xl font-bold" id="modalTitle">添加 / 编辑 IP 组</h3>
+    </div>
+
+    <form id="form" class="p-8 space-y-5">
+      <div class="ui-form-control">
+        <label class="ui-label-text">组名 <span class="text-error">*</span></label>
+        <input type="text" name="name" id="name" class="ui-input" required placeholder="如：CDN-边缘" />
       </div>
 
-      <div class="form-group">
-        <label>描述</label>
-        <input
-          type="text"
-          name="description"
-          id="description"
-          placeholder="可选"
-        />
+      <div class="ui-form-control">
+        <label class="ui-label-text">描述</label>
+        <textarea name="description" id="description" class="ui-textarea" placeholder="可选"></textarea>
       </div>
 
-      <div class="form-group">
-        <label>选择设备（多选）<span style="color: red">*</span></label>
-        <select name="devices" id="devices" multiple></select>
+      <div class="ui-form-control">
+        <label class="ui-label-text">选择设备（多选） <span class="text-error">*</span></label>
+        <select name="devices" id="devices" class="ui-select" multiple></select>
       </div>
 
-      <!-- 隐藏字段 -->
       <input type="hidden" name="id" id="id" />
 
-      <div class="form-group mt-3" style="text-align: right">
-        <button type="button" class="btn" onclick="closeModal('modal')">
+      <div class="modal-action gap-3">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('modal')">
           {{ template "icons" (dict "Name" "ip-close") }} 取消
         </button>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn-ui-primary">
           {{ template "icons" (dict "Name" "ip-save") }} 保存
         </button>
       </div>

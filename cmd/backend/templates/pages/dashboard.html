@@ -1,164 +1,160 @@
 {{ define "content" }}
-<h1>🌐 DDNS管理平台</h1>
-
-<link rel="stylesheet" href="/static/css/dashboard.css" />
-<link rel="stylesheet" href="/static/css/dashboard.dark.css" />
-
-<!-- 数据概览卡片 -->
-<div class="card">
-  <div class="card-header">
-    <h2 class="h2-icon">
-      {{ template "icons" (dict "Name" "ip-dashboard") }} 系统概览
-    </h2>
+<!-- <div class="main-container"> -->
+<div class="flex items-center justify-between mb-10">
+  <div>
+    <h1 class="text-4xl font-bold tracking-tight">🌐 概览中心</h1>
+    <p class="opacity-50 mt-2 text-lg">DDNS 管理平台 · 实时监控中</p>
   </div>
-  <div class="card-body">
-    <div class="overview-grid">
-      <div class="overview-item">
-        <div class="overview-title">设备总数</div>
-        <div class="overview-value">{{ .Stats.DeviceCount }}</div>
-      </div>
-      <div class="overview-item">
-        <div class="overview-title">在线设备</div>
-        <div class="overview-value">{{ .Stats.OnlineDeviceCount }}</div>
-      </div>
-      <div class="overview-item">
-        <div class="overview-title">DNS 记录</div>
-        <div class="overview-value">{{ .Stats.DnsRecordCount }}</div>
-      </div>
-      <div class="overview-item">
-        <div class="overview-title">CDN 记录</div>
-        <div class="overview-value">{{ .Stats.CdnRecordCount }}</div>
-      </div>
-      <div class="overview-item">
-        <div class="overview-title">通知渠道</div>
-        <div class="overview-value">{{ .Stats.WebhookCount }}</div>
-      </div>
-      <div class="overview-item">
-        <div class="overview-title">运行任务</div>
-        <div class="overview-value">{{ .Stats.ActiveTaskCount }}</div>
-      </div>
-    </div>
+  <div class="flex flex-col items-end">
+    <span class="badge badge-primary py-4 px-6 rounded-2xl font-bold">
+      {{ .SystemOS }} / {{ .SystemArch }}
+    </span>
+    <span class="text-[10px] opacity-30 mt-2 font-mono">Build: {{ .SystemGitCommit }}</span>
   </div>
 </div>
 
-<!-- 快速入口导航 -->
-<div class="card">
-  <div class="card-header">
-    <h2 class="h2-icon">
-      {{ template "icons" (dict "Name" "ip-menu") }} 功能导航
-    </h2>
-  </div>
-  <div class="card-body">
-    <div class="quick-links">
-      <a href="/cdn" class="quick-link">
-        {{ template "icons" (dict "Name" "ip-dns") }}
-        <span>CDN 管理</span>
-      </a>
-      <a href="/dns" class="quick-link">
-        {{ template "icons" (dict "Name" "ip-dns") }}
-        <span>DNS 记录</span>
-      </a>
-      <a href="/device" class="quick-link">
-        {{ template "icons" (dict "Name" "ip-devices") }}
-        <span>设备管理</span>
-      </a>
-      <a href="/ip-group" class="quick-link">
-        {{ template "icons" (dict "Name" "ip-layer") }}
-        <span>IP 组</span>
-      </a>
-      <a href="/port-forward" class="quick-link">
-        {{ template "icons" (dict "Name" "ip-forward") }}
-        <span>端口转发</span>
-      </a>
-      <a href="/webhook" class="quick-link">
-        {{ template "icons" (dict "Name" "ip-bell") }}
-        <span>通知管理</span>
-      </a>
-      <a href="/webhook-sub" class="quick-link">
-        {{ template "icons" (dict "Name" "ip-subscribe") }}
-        <span>通知订阅</span>
-      </a>
-      <a href="/task" class="quick-link">
-        {{ template "icons" (dict "Name" "ip-task") }}
-        <span>任务管理</span>
-      </a>
-      <a href="/log" class="quick-link">
-        {{ template "icons" (dict "Name" "ip-log") }}
-        <span>操作日志</span>
-      </a>
-      <a href="/config" class="quick-link">
-        {{ template "icons" (dict "Name" "ip-server") }}
-        <span>平台配置</span>
-      </a>
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+  <div class="lg:col-span-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+    <div class="ui-panel p-6 flex flex-col items-center justify-center">
+      <span class="text-sm opacity-50 font-medium mb-1">设备总数</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">{{ .Stats.DeviceCount }}</span>
+    </div>
+    <div class="ui-panel p-6 flex flex-col items-center justify-center">
+      <span class="text-sm opacity-50 font-medium mb-1">在线设备</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">{{ .Stats.OnlineDeviceCount }}</span>
+    </div>
+    <div class="ui-panel p-6 flex flex-col items-center justify-center">
+      <span class="text-sm opacity-50 font-medium mb-1">DNS 记录</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">{{ .Stats.DnsRecordCount }}</span>
+    </div>
+    <div class="ui-panel p-6 flex flex-col items-center justify-center">
+      <span class="text-sm opacity-50 font-medium mb-1">CDN 记录</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">{{ .Stats.CdnRecordCount }}</span>
+    </div>
+    <div class="ui-panel p-6 flex flex-col items-center justify-center">
+      <span class="text-sm opacity-50 font-medium mb-1">通知渠道</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">{{ .Stats.WebhookCount }}</span>
+    </div>
+    <div class="ui-panel p-6 flex flex-col items-center justify-center">
+      <span class="text-sm opacity-50 font-medium mb-1">运行任务</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">{{ .Stats.ActiveTaskCount }}</span>
     </div>
   </div>
-</div>
 
-<!-- 最新操作日志（简化版） -->
-<div class="card">
-  <div class="card-header">
-    <h2 class="h2-icon">
-      {{ template "icons" (dict "Name" "ip-log") }} 最新操作（最近 {{
-      .Stats.LogLimit }} 条）
-    </h2>
+  <div class="lg:col-span-3 space-y-8">
+    <div class="ui-panel">
+      <div class="ui-header">
+        <h2 class="text-xl font-bold flex items-center gap-2">
+          {{ template "icons" (dict "Name" "ip-menu") }} 快速入口
+        </h2>
+      </div>
+      <div class="p-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        <a href="/cdn"
+          class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
+          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-dns") }}</div>
+          <span class="text-xs font-bold">CDN 管理</span>
+        </a>
+        <a href="/dns"
+          class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
+          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-dns") }}</div>
+          <span class="text-xs font-bold">DNS 记录</span>
+        </a>
+        <a href="/device"
+          class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
+          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-devices") }}</div>
+          <span class="text-xs font-bold">设备管理</span>
+        </a>
+        <a href="/ip-group"
+          class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
+          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-layer") }}</div>
+          <span class="text-xs font-bold">IP 组</span>
+        </a>
+        <a href="/port-forward"
+          class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
+          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-forward") }}</div>
+          <span class="text-xs font-bold">端口转发</span>
+        </a>
+        <a href="/webhook"
+          class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
+          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-bell") }}</div>
+          <span class="text-xs font-bold">通知管理</span>
+        </a>
+        <a href="/task"
+          class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
+          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-task") }}</div>
+          <span class="text-xs font-bold">任务管理</span>
+        </a>
+        <a href="/log"
+          class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
+          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-log") }}</div>
+          <span class="text-xs font-bold">操作日志</span>
+        </a>
+        <a href="/config"
+          class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
+          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-server") }}</div>
+          <span class="text-xs font-bold">平台配置</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="ui-panel">
+      <div class="ui-header">
+        <h2 class="text-xl font-bold flex items-center gap-2">
+          {{ template "icons" (dict "Name" "ip-log") }} 最近动态
+        </h2>
+      </div>
+      <div class="p-0">
+        {{ range .RecentLogs }}
+        <div class="p-6 border-b border-base-200 last:border-0 flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-bold">{{ .ObjType }}</span>
+              <span class="text-xs opacity-50">ID: {{ .ObjID }}</span>
+            </div>
+            <p class="text-sm opacity-80 mt-1">{{ .Message }}</p>
+          </div>
+          <div class="text-right">
+            <div class="text-[10px] opacity-40 mb-1">{{ formatTimeOrNil .CreatedAt }}</div>
+            {{ if eq .Status "success" }}
+            <span class="badge badge-success badge-xs py-2 px-3 text-white">成功</span>
+            {{ else }}
+            <span class="badge badge-error badge-xs py-2 px-3 text-white">失败</span>
+            {{ end }}
+          </div>
+        </div>
+        {{ end }}
+      </div>
+    </div>
   </div>
-  <div class="card-body">
-    <div class="timeline" id="timeline">
-      {{ range .RecentLogs }}
-      <div class="timeline-item">
-        <div class="timeline-time">{{ formatTimeOrNil .CreatedAt }}</div>
-        <div>
-          <strong>{{ .ID }}</strong>:
-          <span class="text-muted">{{ .ObjType }}</span> →
-          <span class="text-success">{{ .ObjID }}</span>
-          {{ if eq .Status "success" }}
-          <span class="badge badge-success">{{ .Message }}</span>
-          {{ else }}
-          <span class="badge badge-danger">{{ .Message }}</span>
-          {{ end }}
+
+  <div class="lg:col-span-1">
+    <div class="ui-panel">
+      <div class="ui-header">
+        <h2 class="text-xl font-bold">系统信息</h2>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="flex flex-col">
+          <span class="text-[10px] opacity-40 font-bold">GO 版本</span>
+          <span class="text-sm truncate">{{ .SystemGoVersion }}</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-[10px] opacity-40 font-bold">启动时间</span>
+          <span class="text-sm truncate">{{ .SystemMemoryInfo.RuntimeStartTime }}</span>
+        </div>
+        <div class="grid grid-cols-2 gap-4 pt-4">
+          <div class="bg-base-200/50 p-3 rounded-2xl">
+            <span class="text-[10px] block opacity-50">Goroutines</span>
+            <span class="font-bold">{{ .SystemMemoryInfo.NumGoroutine }}</span>
+          </div>
+          <div class="bg-base-200/50 p-3 rounded-2xl">
+            <span class="text-[10px] block opacity-50">GC 次数</span>
+            <span class="font-bold">{{ .SystemMemoryInfo.NumGC }}</span>
+          </div>
         </div>
       </div>
-      {{ end }}
     </div>
   </div>
 </div>
-
-<!-- 系统信息 -->
-<div class="card">
-  <div class="card-header">
-    <h2 class="h2-icon">
-      {{ template "icons" (dict "Name" "ip-server") }} 系统信息
-    </h2>
-  </div>
-  <div class="card-body">
-    <div class="system-info-grid">
-      <div><strong>Go 版本：</strong>{{ .SystemGoVersion }}</div>
-      <div><strong>打包时间：</strong>{{ .SystemBuildTime }}</div>
-      <div><strong>Git 提交：</strong>{{ .SystemGitCommit }}</div>
-      <div>
-        <strong>启动时间：</strong>{{ .SystemMemoryInfo.RuntimeStartTime }}
-      </div>
-      <div><strong>GC 总次数：</strong>{{ .SystemMemoryInfo.NumGC }}</div>
-      <div>
-        <strong>Goroutine 数：</strong>{{ .SystemMemoryInfo.NumGoroutine }}
-      </div>
-      <div>
-        <strong>活跃堆对象：</strong>{{ .SystemMemoryInfo.HeapObjects }}
-      </div>
-      <div>
-        <strong>下次 GC（MB）：</strong>{{ .SystemMemoryInfo.NextGCMB }}
-      </div>
-      <div><strong>系统版本：</strong>{{ .SystemVersion }}</div>
-      <div><strong>操作系统：</strong>{{ .SystemOS }}</div>
-      <div><strong>CPU 架构：</strong>{{ .SystemArch }}</div>
-    </div>
-    <div
-      style="margin-top: 16px; font-size: 13px; color: var(--text-secondary)"
-    >
-      © 2025 DDNS 管理平台
-    </div>
-  </div>
-</div>
-
-<script src="/static/js/dashboard.js"></script>
+<!-- </div> -->
 {{ end }}

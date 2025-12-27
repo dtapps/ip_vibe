@@ -1,73 +1,109 @@
 {{ define "content" }}
-<h1>🌐 DDNS管理平台</h1>
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content transition-colors">🌐 DDNS管理平台</h1>
 
-<div class="card">
-  <div class="card-header">
-    <h2 class="h2-icon">
+<div class="ui-panel">
+  <div class="ui-header">
+    <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
       {{ template "icons" (dict "Name" "ip-forward") }} 端口转发（设备维度）
     </h2>
     <div>
-      <button class="btn btn-primary" onclick="openFormModal()">
+      <button class="btn-ui-primary" onclick="openFormModal()">
         {{ template "icons" (dict "Name" "ip-plus") }} 添加端口转发
       </button>
     </div>
   </div>
-  <div class="card-body">
-    <table>
+
+  <div class="ui-table-container">
+    <table class="ui-table">
       <thead>
         <tr>
-          <th>名称</th>
-          <th>设备</th>
-          <th>本地监听</th>
-          <th>远程目标</th>
-          <th>防火墙</th>
-          <th>启用</th>
-          <th style="width: 300px; text-align: center">操作</th>
+          <th class="ui-th">名称</th>
+          <th class="ui-th">设备</th>
+          <th class="ui-th">本地监听</th>
+          <th class="ui-th">远程目标</th>
+          <th class="ui-th text-center">防火墙</th>
+          <th class="ui-th text-center">启用</th>
+          <th style="width: 250px" class="ui-th text-center">操作</th>
         </tr>
       </thead>
       <tbody id="table">
         {{ range .List }}
-        {{ $urlPath := printf "/api/port-forwards/%d" .ID }}
-        <tr>
-          <td>{{.Name}}</td>
-          <td>{{.DeviceID}}:{{.DeviceName}}</td>
-          <td>{{.LocalPort}}</td>
-          <td>{{.RemoteHost}}:{{.RemotePort}}</td>
-          <td>
-            {{ $autoForwardUrlPath := join $urlPath "/auto-forward" }}
+        {{ $apiUrlPath := printf "/api/port-forwards/%d" .ID }}
+        {{ $webUrlPath := printf "/port-forward/%d" .ID }}
+        <tr class="hover:bg-base-200/50 transition-colors">
+          <td class="ui-td font-bold text-base-content">
+            {{.Name}}
+            <div class="text-xs opacity-60 font-mono">
+              {{.Description}}
+            </div>
+          </td>
+
+          <td class="ui-td text-sm">
+            <span class="badge badge-ghost font-mono text-xs">
+              {{.DeviceID}}
+            </span>
+            <span class="font-medium">
+              {{.DeviceName}}
+            </span>
+          </td>
+
+          <td class="ui-td font-mono text-primary font-bold">
+            {{.LocalPort}}
+          </td>
+
+          <td class="ui-td">
+            <div class="items-center gap-0.5">
+              <span class="text-xs opacity-60 font-mono">
+                {{.RemoteHost}}:{{.RemotePort}}
+              </span>
+            </div>
+          </td>
+
+          <td class="ui-td text-center">
+            {{ $forwardApiUrlPath := join $apiUrlPath "/forward" }}
             {{ template "switch" (dict
             "Checked" .AutoForward
-            "URL" $autoForwardUrlPath
+            "URL" $forwardApiUrlPath
+            "DataKey" "auto_forward"
             "NoReload" true
-            )}}
+            ) }}
           </td>
-          <td>
-            {{ $activeUrlPath := join $urlPath "/active" }}
+
+          <td class="ui-td text-center">
+            {{ $activeApiUrlPath := join $apiUrlPath "/active" }}
             {{ template "switch" (dict
             "Checked" .IsActive
-            "URL" $activeUrlPath
+            "URL" $activeApiUrlPath
             "NoReload" true
-            )}}
+            ) }}
           </td>
-          <td>
-            <button class="btn btn-sm btn-outline-info" onclick="onHealthcheckPopup('{{.ID}}')">
-              {{ template "icons" (dict "Name" "ip-health-check") }} 检测
-            </button>
-            <button class="btn btn-primary btn-sm" onclick="openFormModal('{{.ID}}')">
-              {{ template "icons" (dict "Name" "ip-edit") }} 编辑
-            </button>
-            {{ template "button" (dict
-            "Type" "danger"
-            "IconName" "ip-delete"
-            "Text" "删除"
-            "URL" $urlPath
-            "NoReload" true
-            )}}
+
+          <td class="ui-td">
+            <div class="flex justify-center gap-1">
+              <button class="btn btn-sm btn-outline btn-info rounded-lg px-3" onclick="onHealthcheckPopup('{{.ID}}')">
+                {{ template "icons" (dict "Name" "ip-health-check") }} 检测
+              </button>
+
+              <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}')">
+                {{ template "icons" (dict "Name" "ip-edit") }} 编辑
+              </button>
+
+              {{ template "button" (dict
+              "Type" "danger"
+              "IconName" "ip-delete"
+              "Text" "删除"
+              "URL" $apiUrlPath
+              "NoReload" true
+              )}}
+            </div>
           </td>
         </tr>
         {{ end }}
       </tbody>
     </table>
+  </div>
+
+  <div class="p-8 border-t border-base-200 bg-base-100/30">
     <!-- 分页 -->
     {{ template "pagination" . }}
   </div>

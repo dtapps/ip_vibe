@@ -18,6 +18,9 @@ import (
 func Dashboard(c *gin.Context) {
 	// 准备页面数据
 	pageData := types.DashboardResponse{
+		CommonResponseWithRequest: types.CommonResponseWithRequest{
+			Request: c.Request,
+		},
 		RecentLogs: []types.GetLogResponse{},
 	}
 	pageData.Stats.LogLimit = 15

@@ -1,11 +1,11 @@
 {{ define "icons" }}
-  {{/* 支持的参数：
-    .Name:  图标名称
-  */}}
+{{/* 支持的参数：
+.Name: 图标名称
+*/}}
 
-  {{ $name := .Name }}
+{{ $name := .Name }}
 
-<svg class="ip-i">
+<svg class="ui-icon">
   <use href="/static/img/icons.svg#{{$name}}"></use>
 </svg>
 {{ end }}

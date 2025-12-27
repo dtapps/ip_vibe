@@ -153,4 +153,19 @@
   .ui-hint {
     @apply opacity-50 text-[10px] mt-1 px-1 leading-normal;
   }
+
+  /* 心跳状态-未知/从未 */
+  .status-heartbeat-never {
+    @apply bg-gray-100 dark:bg-gray-700 border-l-4 border-gray-400 text-gray-600 dark:text-gray-300;
+  }
+
+  /* 心跳状态-离线 */
+  .status-heartbeat-offline {
+    @apply bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300;
+  }
+
+  /* 心跳状态-在线 */
+  .status-heartbeat-online {
+    @apply bg-green-100 dark:bg-green-900/30 border-l-4 border-green-500 text-green-700 dark:text-green-300;
+  }
 }

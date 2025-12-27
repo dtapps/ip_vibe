@@ -1,87 +1,56 @@
 {{ define "pages/port-forward_form.html" }}
 <div class="modal" id="modal">
-  <div class="modal-content">
-    <h3 id="modalTitle">添加 / 编辑 端口转发</h3>
-    <form id="form">
-      <div class="form-group">
-        <label>名称 <span style="color: red">*</span></label>
-        <input
-          type="text"
-          name="name"
-          id="name"
-          required
-          placeholder="如: 我的端口转发"
-        />
+  <div class="ui-modal-box">
+    <div class="ui-header">
+      <h3 class="text-xl font-bold" id="modalTitle">添加 / 编辑 端口转发</h3>
+    </div>
+
+    <form id="form" class="p-8 space-y-5">
+      <div class="ui-form-control">
+        <label class="ui-label-text">名称 <span class="text-error">*</span></label>
+        <input type="text" name="name" id="name" class="ui-input" required placeholder="如: 我的端口转发" />
       </div>
 
-      <!-- <div class="form-group" style="display: none;">
-            <label>描述 <span style="color:red">*</span></label>
-            <input type="text" name="description" id="description" required placeholder="如: 我的端口转发">
-          </div> -->
-
-      <div class="form-group">
-        <label>本地监听端口 <span style="color: red">*</span></label>
-        <input
-          type="number"
-          name="local_port"
-          id="local_port"
-          required
-          placeholder="如：8080"
-        />
+      <div class="ui-form-control">
+        <label class="ui-label-text">描述</label>
+        <textarea name="description" id="description" class="ui-textarea" placeholder="可选"></textarea>
       </div>
 
-      <div class="form-group">
-        <label>远程目标主机 <span style="color: red">*</span></label>
-        <input
-          type="text"
-          name="remote_host"
-          id="remote_host"
-          required
-          placeholder="如：192.168.1.100"
-        />
+      <div class="grid grid-cols-2 gap-4">
+        <div class="ui-form-control">
+          <label class="ui-label-text">本地监听端口 <span class="text-error">*</span></label>
+          <input type="number" name="local_port" id="local_port" class="ui-input" required placeholder="如：8080" />
+        </div>
+        <div class="ui-form-control">
+          <label class="ui-label-text">远程目标端口 <span class="text-error">*</span></label>
+          <input type="number" name="remote_port" id="remote_port" class="ui-input" required placeholder="如：80" />
+        </div>
       </div>
 
-      <div class="form-group">
-        <label>远程目标端口 <span style="color: red">*</span></label>
-        <input
-          type="number"
-          name="remote_port"
-          id="remote_port"
-          required
-          placeholder="如：80"
-        />
+      <div class="ui-form-control">
+        <label class="ui-label-text">远程目标主机 <span class="text-error">*</span></label>
+        <input type="text" name="remote_host" id="remote_host" class="ui-input" required
+          placeholder="如：192.168.1.100" />
       </div>
 
-      <div class="form-group">
-        <label>选择协议（Ctrl/⌘ 多选） <span style="color: red">*</span></label>
-        <select
-          name="protocols"
-          id="protocols"
-          required
-          multiple
-          onchange="onProtocolsSelect(this)"
-          class="form-multiselect"
-        ></select>
+      <div class="ui-form-control">
+        <label class="ui-label-text">选择协议（Ctrl/⌘ 多选） <span class="text-error">*</span></label>
+        <select name="protocols" id="protocols" class="ui-select" required multiple
+          onchange="onProtocolsSelect(this)"></select>
       </div>
 
-      <div class="form-group">
-        <label>选择设备<span style="color: red">*</span></label>
-        <select
-          name="device_id"
-          id="device_id"
-          required
-          onchange="onDeviceIdSelect(this)"
-        ></select>
+      <div class="ui-form-control">
+        <label class="ui-label-text">选择设备 <span class="text-error">*</span></label>
+        <select name="device_id" id="device_id" class="ui-select" required onchange="onDeviceIdSelect(this)"></select>
       </div>
 
-      <!-- 隐藏字段 -->
       <input type="hidden" name="id" id="id" />
 
-      <div class="form-group mt-3" style="text-align: right">
-        <button type="button" class="btn" onclick="closeModal('modal')">
+      <div class="modal-action gap-3">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('modal')">
           {{ template "icons" (dict "Name" "ip-close") }} 取消
         </button>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn-ui-primary">
           {{ template "icons" (dict "Name" "ip-save") }} 保存
         </button>
       </div>

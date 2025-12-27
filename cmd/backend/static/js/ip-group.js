@@ -35,11 +35,14 @@ async function openFormModal(id) {
       // 初始化 Select2 控件
       console.log("select2 初始化", selectId2, select2Data);
       selectId2.select2({
+        theme: "tailwindcss-4", // 主题
         width: "100%",
         placeholder: "请选择设备",
         allowClear: true,
         multiple: true,
-        data: select2Data,
+        data: select2Data, // 数据
+        closeOnSelect: false, // 多选时防止关闭下拉列表
+        dropdownParent: document.querySelector("#modal .ui-modal-box"), // 绑定 modal 容器，防 z-index/定位错
       });
     }
 
@@ -55,7 +58,7 @@ async function openFormModal(id) {
       document.getElementById("id").value = ipGroup.id;
       document.getElementById("id").disabled = true;
       document.getElementById("name").value = ipGroup.name;
-      document.getElementById("description").value = ipGroup.description || "";
+      document.getElementById("description").value = ipGroup.description ?? "";
 
       if (ipGroup.devices && ipGroup.devices.length > 0) {
         // 高亮已选

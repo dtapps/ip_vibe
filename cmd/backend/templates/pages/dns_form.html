@@ -1,37 +1,28 @@
 {{ define "pages/dns_form.html" }}
 <div class="modal" id="modal">
-  <div class="modal-content">
-    <h3 id="modalTitle">添加 DNS 记录</h3>
-    <form id="form">
-      <div class="form-group">
-        <label>选择配置 <span style="color: red">*</span></label>
-        <select
-          name="config_id"
-          id="config_id"
-          required
-          onchange="onConfigSelect(this)"
-        ></select>
+  <div class="ui-modal-box">
+    <div class="ui-header">
+      <h3 class="text-xl font-bold" id="modalTitle">添加 DNS 记录</h3>
+    </div>
+
+    <form id="form" class="p-8 space-y-5">
+      <div class="ui-form-control">
+        <label class="ui-label-text">选择配置 <span class="text-error">*</span></label>
+        <select name="config_id" id="config_id" class="ui-select" required onchange="onConfigSelect(this)"></select>
       </div>
 
-      <div class="form-group">
-        <label>子域名部分 <span style="color: red">*</span></label>
-        <div class="domain-input-group">
-          <input
-            type="text"
-            name="sub_domain"
-            id="sub_domain"
-            required
-            placeholder="例如 www, blog, api"
-          />
-          <span id="domain_name" class="domain-suffix-text"
-            ></span
-          >
+      <div class="ui-form-control">
+        <label class="ui-label-text">子域名部分 <span class="text-error">*</span></label>
+        <div class="flex items-center gap-2">
+          <input type="text" name="sub_domain" id="sub_domain" class="ui-input" required
+            placeholder="例如 www, blog, api" />
+          <span id="domain_name" class="text-sm font-mono opacity-60"></span>
         </div>
       </div>
 
-      <div class="form-group">
-        <label>记录类型 <span style="color: red">*</span></label>
-        <select name="type" id="type" required onchange="onTypeSelect(this)">
+      <div class="ui-form-control">
+        <label class="ui-label-text">记录类型 <span class="text-error">*</span></label>
+        <select name="type" id="type" class="ui-select" required onchange="onTypeSelect(this)">
           <option value="" disabled selected>请选择记录类型</option>
           <option value="A">A</option>
           <option value="AAAA">AAAA</option>
@@ -39,46 +30,33 @@
         </select>
       </div>
 
-      <div class="form-group">
-        <label
-          >IP 组 <span style="color: green">（和 CDN 记录 二选一）</span></label
-        >
-        <select
-          name="ip_group_id"
-          id="ip_group_id"
-          disabled
-          onchange="onIpGroupSelect(this)"
-        ></select>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="ui-form-control">
+          <label class="ui-label-text">IP 组 <span class="text-success">（二选一）</span></label>
+          <select name="ip_group_id" id="ip_group_id" class="ui-select" disabled
+            onchange="onIpGroupSelect(this)"></select>
+        </div>
+
+        <div class="ui-form-control">
+          <label class="ui-label-text">CDN 记录 <span class="text-success">（二选一）</span></label>
+          <select name="cdn_record_id" id="cdn_record_id" class="ui-select" disabled
+            onchange="onCdnRecordSelect(this)"></select>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label
-          >CDN 记录 <span style="color: green">（和 IP 组 二选一）</span></label
-        >
-        <select
-          name="cdn_record_id"
-          id="cdn_record_id"
-          disabled
-          onchange="onCdnRecordSelect(this)"
-        ></select>
+      <div class="ui-form-control">
+        <label class="ui-label-text">通知 (多选)</label>
+        <select name="webhook_ids" id="webhook_ids" class="ui-select" multiple></select>
+        <div class="ui-hint">选择需要接收此记录变动通知的 Webhook</div>
       </div>
 
-      <div class="form-group">
-        <label>通知 (多选)</label>
-        <select name="webhook_ids" id="webhook_ids" multiple></select>
-        <small class="text-secondary"
-          >选择需要接收此记录变动通知的 Webhook</small
-        >
-      </div>
-
-      <!-- 隐藏字段 -->
       <input type="hidden" name="id" id="id" />
 
-      <div class="form-group mt-3" style="text-align: right">
-        <button type="button" class="btn" onclick="closeModal('modal')">
+      <div class="modal-action gap-3">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('modal')">
           {{ template "icons" (dict "Name" "ip-close") }} 取消
         </button>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn-ui-primary">
           {{ template "icons" (dict "Name" "ip-save") }} 保存
         </button>
       </div>

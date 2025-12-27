@@ -1,45 +1,47 @@
 {{ define "pages/ssl_form.html" }}
 <div class="modal" id="modal">
-  <div class="modal-content">
-    <h3 id="modalTitle">添加 SSL 记录</h3>
-    <form id="form">
-      <div class="form-group">
-        <label>选择配置 <span style="color: red">*</span></label>
-        <select name="config_id" id="config_id" required onchange="onConfigSelect(this)"></select>
+  <div class="ui-modal-box">
+    <div class="ui-header">
+      <h3 class="text-xl font-bold" id="modalTitle">添加 SSL 记录</h3>
+    </div>
+
+    <form id="form" class="p-8 space-y-5">
+      <div class="ui-form-control">
+        <label class="ui-label-text">选择配置 <span class="text-error">*</span></label>
+        <select name="config_id" id="config_id" class="ui-select" required onchange="onConfigSelect(this)"></select>
       </div>
 
-      <div class="form-group">
-        <label>域名 <span style="color: red">*</span></label>
-        <input type="text" name="domain" id="domain" required
-          placeholder="如 example.com, *.example.com 多个域名之间用逗号分隔（多个域名只能是同一个）" />
+      <div class="ui-form-control">
+        <label class="ui-label-text">域名 <span class="text-error">*</span></label>
+        <input type="text" name="domain" id="domain" class="ui-input" required
+          placeholder="如 example.com, *.example.com 多个域名用逗号分隔" />
       </div>
 
-      <div class="form-group">
-        <label>证书提供方 <span style="color: red">*</span></label>
-        <select name="provider" id="provider" required onchange="onProviderSelect(this)">
+      <div class="ui-form-control">
+        <label class="ui-label-text">证书提供方 <span class="text-error">*</span></label>
+        <select name="provider" id="provider" class="ui-select" required onchange="onProviderSelect(this)">
           <option value="letsencrypt">Let's Encrypt</option>
         </select>
       </div>
 
-      <div class="form-group">
-        <label>过期前多少天开始续期</label>
-        <input type="number" name="renewal_days" id="renewal_days" placeholder="默认 30 天" />
+      <div class="ui-form-control">
+        <label class="ui-label-text">过期前多少天开始续期</label>
+        <input type="number" name="renewal_days" id="renewal_days" class="ui-input" placeholder="默认 30 天" />
       </div>
 
-      <div class="form-group">
-        <label>通知 (多选)</label>
-        <select name="webhook_ids" id="webhook_ids" multiple></select>
-        <small class="text-secondary">选择需要接收此记录变动通知的 Webhook</small>
+      <div class="ui-form-control">
+        <label class="ui-label-text">通知 (多选)</label>
+        <select name="webhook_ids" id="webhook_ids" class="ui-select" multiple></select>
+        <div class="ui-hint">选择需要接收此记录变动通知的 Webhook</div>
       </div>
 
-      <!-- 隐藏字段 -->
       <input type="hidden" name="id" id="id" />
 
-      <div class="form-group mt-3" style="text-align: right">
-        <button type="button" class="btn" onclick="closeModal('modal')">
+      <div class="modal-action gap-3">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('modal')">
           {{ template "icons" (dict "Name" "ip-close") }} 取消
         </button>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn-ui-primary">
           {{ template "icons" (dict "Name" "ip-save") }} 保存
         </button>
       </div>

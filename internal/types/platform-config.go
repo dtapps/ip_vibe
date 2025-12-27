@@ -7,5 +7,6 @@ type PlatformConfigRequest struct {
 
 // 平台配置页面 响应结构
 type PlatformConfigResponse struct {
+	CommonResponseWithRequest                     // 请求对象
 	CommonPageResponse[GetPlatformConfigResponse] // 配置列表
 }

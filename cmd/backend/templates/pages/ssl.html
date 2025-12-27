@@ -1,97 +1,120 @@
 {{ define "content" }}
-<h1>🌐 DDNS管理平台</h1>
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content transition-colors">🌐 DDNS管理平台</h1>
 
-<div class="card">
-  <div class="card-header">
-    <h2 class="h2-icon">
+<div class="ui-panel">
+  <div class="ui-header">
+    <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
       {{ template "icons" (dict "Name" "ip-ssl") }} SSL 记录管理（平台维度）
     </h2>
     <div>
-      <button class="btn btn-primary" onclick="openFormModal()">
+      <button class="btn-ui-primary" onclick="openFormModal()">
         {{ template "icons" (dict "Name" "ip-plus") }} 添加记录
       </button>
     </div>
   </div>
-  <div class="card-body">
-    <table>
+
+  <div class="ui-table-container">
+    <table class="ui-table">
       <thead>
         <tr>
-          <th>域名</th>
-          <th>证书域名</th>
-          <th>证书生效时间</th>
-          <th>证书过期时间</th>
-          <th>证书状态</th>
-          <th>平台</th>
-          <th>自动续期</th>
-          <th>启用</th>
-          <th style="width: 200px; text-align: center">操作</th>
+          <th class="ui-th">域名</th>
+          <th class="ui-th">证书域名</th>
+          <th class="ui-th">生效时间</th>
+          <th class="ui-th">过期时间</th>
+          <th class="ui-th">状态</th>
+          <th class="ui-th text-center">平台</th>
+          <th class="ui-th text-center">自动续期</th>
+          <th class="ui-th text-center">启用</th>
+          <th style="width: 250px" class="ui-th text-center">操作</th>
         </tr>
       </thead>
       <tbody id="table">
         {{range .List}}
         {{ $apiUrlPath := printf "/api/ssl-records/%d" .ID }}
-        <tr>
-          <td>{{.Domain}}</td>
-          <td>{{.CertDomain}}</td>
-          <td>{{formatTimeOrNil .NotBefore}}</td>
-          <td>{{formatTimeOrNil .NotAfter}}</td>
-          <td>
+        {{ $webUrlPath := printf "/ssl-record/%d" .ID }}
+        <tr class="hover:bg-base-200/50 transition-colors">
+          <td class="ui-td font-bold text-base-content">
+            {{.Domain}}
+          </td>
+
+          <td class="ui-td text-xs font-mono opacity-80">
+            {{.CertDomain}}
+          </td>
+
+          <td class="ui-td text-xs opacity-60">
+            {{formatTimeOrNil .NotBefore}}
+          </td>
+
+          <td class="ui-td text-xs opacity-60">
+            {{formatTimeOrNil .NotAfter}}
+          </td>
+
+          <td class="ui-td">
             {{if eq .Status "valid"}}
-            <span>有效</span>
+            <span class="badge badge-success font-bold px-3 py-2">有效</span>
             {{else if eq .Status "expired"}}
-            <span>过期</span>
+            <span class="badge badge-error font-bold px-3 py-2 text-white">过期</span>
             {{else if eq .Status "revoked"}}
-            <span>已撤销</span>
+            <span class="badge badge-warning font-bold px-3 py-2 text-warning-content">已撤销</span>
             {{else if eq .Status "pending"}}
-            <span>待处理</span>
+            <span class="badge badge-ghost font-bold px-3 py-2">待处理</span>
             {{else}}
-            <span>{{.Status}}</span>
+            <span class="badge badge-ghost font-bold px-3 py-2">{{.Status}}</span>
             {{end}}
           </td>
-          <td class="simple-tooltip" data-tooltip="{{.ConfigName}}">
-            {{template "PlatformBadge" (dict
-            "Platform" .Platform
-            )}}
+
+          <td class="ui-td text-center">
+            {{template "PlatformBadge" (dict "Platform" .Platform "Tips" .ConfigName )}}
           </td>
-          <td>
-            {{ $autoRenewalUrlPath := join $apiUrlPath "/auto-renewal" }}
+
+          <td class="ui-td text-center">
+            {{ $autoRenewalApiUrlPath := join $apiUrlPath "/auto-renewal" }}
             {{ template "switch" (dict
             "Checked" .IsAutoRenewal
-            "URL" $autoRenewalUrlPath
-            "ApiDataKey" "is_auto_renewal"
+            "URL" $autoRenewalApiUrlPath
+            "DataKey" "is_auto_renewal"
             "NoReload" true
             )}}
           </td>
-          <td>
-            {{ $activeUrlPath := join $apiUrlPath "/active" }}
+
+          <td class="ui-td text-center">
+            {{ $activeApiUrlPath := join $apiUrlPath "/active" }}
             {{ template "switch" (dict
             "Checked" .IsActive
-            "URL" $activeUrlPath
-            "ApiDataKey" "is_active"
+            "URL" $activeApiUrlPath
+            "DataKey" "is_active"
             "NoReload" true
             )}}
           </td>
-          <td>
-            <button class="btn btn-secondary btn-sm" onclick="applySSL('{{.ID}}')">
-              {{ template "icons" (dict "Name" "ip-ssl-apply") }} 申请
-            </button>
-            <button class="btn btn-primary btn-sm" onclick="openFormModal('{{.ID}}')">
-              {{ template "icons" (dict "Name" "ip-edit") }} 编辑
-            </button>
-            {{ template "button" (dict
-            "Type" "danger"
-            "IconName" "ip-delete"
-            "Text" "删除"
-            "URL" $apiUrlPath
-            "Disabled" .IsActive
-            "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
-            "NoReload" true
-            )}}
+
+          <td class="ui-td">
+            <div class="flex justify-center gap-1">
+              <button class="btn btn-secondary btn-sm rounded-lg px-3" onclick="applySSL('{{.ID}}')">
+                {{ template "icons" (dict "Name" "ip-ssl-apply") }} 申请
+              </button>
+
+              <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}')">
+                {{ template "icons" (dict "Name" "ip-edit") }} 编辑
+              </button>
+
+              {{ template "button" (dict
+              "Type" "danger"
+              "IconName" "ip-delete"
+              "Text" "删除"
+              "URL" $apiUrlPath
+              "Disabled" .IsActive
+              "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
+              "NoReload" true
+              )}}
+            </div>
           </td>
         </tr>
         {{end}}
       </tbody>
     </table>
+  </div>
+
+  <div class="p-8 border-t border-base-200 bg-base-100/30">
     <!-- 分页 -->
     {{ template "pagination" . }}
   </div>

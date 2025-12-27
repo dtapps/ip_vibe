@@ -22,6 +22,9 @@ func Device(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.DeviceResponse{
+		CommonResponseWithRequest: types.CommonResponseWithRequest{
+			Request: c.Request,
+		},
 		CommonPageResponse: types.CommonPageResponse[types.GetDeviceResponse]{
 			List: []types.GetDeviceResponse{},
 		},

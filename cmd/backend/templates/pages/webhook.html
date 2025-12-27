@@ -1,78 +1,95 @@
 {{ define "content" }}
-<h1>🌐 DDNS管理平台</h1>
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content transition-colors">🌐 DDNS管理平台</h1>
 
-<div class="card">
-  <div class="card-header">
-    <h2 class="h2-icon">
+<div class="ui-panel">
+  <div class="ui-header">
+    <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
       {{ template "icons" (dict "Name" "ip-bell") }} 通知（WebHook）
     </h2>
     <div>
-      <button class="btn btn-primary" onclick="openFormModal()">
+      <button class="btn-ui-primary" onclick="openFormModal()">
         {{ template "icons" (dict "Name" "ip-plus") }} 添加通知
       </button>
     </div>
   </div>
-  <div class="card-body">
-    <table>
+
+  <div class="ui-table-container">
+    <table class="ui-table">
       <thead>
         <tr>
-          <th>名称</th>
-          <th>类型</th>
-          <th>启用</th>
-          <th style="width: 300px; text-align: center">操作</th>
+          <th class="ui-th">名称</th>
+          <th class="ui-th">类型</th>
+          <th class="ui-th">启用</th>
+          <th style="width: 250px" class="ui-th text-center">操作</th>
         </tr>
       </thead>
       <tbody id="table">
         {{ range .List }}
-        {{ $urlPath := printf "/api/webhooks/%d" .ID }}
-        <tr>
-          <td>{{.Name}}</td>
-          {{if eq .Platform "wechat_work"}}
-          <td><span class="badge badge-success">企业微信</span></td>
-          {{else if eq .Platform "dingtalk"}}
-          <td><span class="badge badge-success">钉钉</span></td>
-          {{else if eq .Platform "feishu"}}
-          <td><span class="badge badge-success">飞书</span></td>
-          {{else if eq .Platform "bark"}}
-          <td><span class="badge badge-success">Bark</span></td>
-          {{else if eq .Platform "ft07"}}
-          <td><span class="badge badge-success">Server酱</span></td>
-          {{else if eq .Platform "push_deer"}}
-          <td><span class="badge badge-success">PushDeer</span></td>
-          {{else if eq .Platform "PushDeer"}}
-          <td><span class="badge badge-success">自定义</span></td>
-          {{else}}
-          <td><span class="badge badge-success">{{.Platform}}</span></td>
-          {{end}}
-          <td>
-            {{ $activeUrlPath := join $urlPath "/active" }}
+        {{ $apiUrlPath := printf "/api/webhooks/%d" .ID }}
+        {{ $webUrlPath := printf "//%d" .ID }}
+        <tr class="hover:bg-base-200/50 transition-colors">
+          <td class="ui-td font-bold text-base-content">
+            {{.Name}}
+            <div class="text-xs opacity-60 font-mono">
+              {{.Description}}
+            </div>
+          </td>
+
+          <td class="ui-td">
+            {{if eq .Platform "wechat_work"}}
+            <span class="badge badge-success badge-outline font-bold">企业微信</span>
+            {{else if eq .Platform "dingtalk"}}
+            <span class="badge badge-info badge-outline font-bold">钉钉</span>
+            {{else if eq .Platform "feishu"}}
+            <span class="badge badge-primary badge-outline font-bold">飞书</span>
+            {{else if eq .Platform "bark"}}
+            <span class="badge badge-secondary badge-outline font-bold">Bark</span>
+            {{else if eq .Platform "ft07"}}
+            <span class="badge badge-warning badge-outline font-bold">Server酱</span>
+            {{else if eq .Platform "push_deer" "PushDeer"}}
+            <span class="badge badge-accent badge-outline font-bold">PushDeer</span>
+            {{else}}
+            <span class="badge badge-ghost font-bold">{{.Platform}}</span>
+            {{end}}
+          </td>
+
+          <td class="ui-td">
+            {{ $activeApiUrlPath := join $apiUrlPath "/active" }}
             {{ template "switch" (dict
             "Checked" .IsActive
-            "URL" $activeUrlPath
+            "URL" $activeApiUrlPath
             "NoReload" true
-            )}}
+            ) }}
           </td>
-          <td>
-            <button class="btn btn-sm" onclick="onTest('{{.ID}}')">
-              {{ template "icons" (dict "Name" "ip-add-test") }} 测试
-            </button>
-            <button class="btn btn-primary btn-sm" onclick="openFormModal('{{.ID}}')">
-              {{ template "icons" (dict "Name" "ip-edit") }} 编辑
-            </button>
-            {{ template "button" (dict
-            "Type" "danger"
-            "IconName" "ip-delete"
-            "Text" "删除"
-            "URL" $urlPath
-            "Disabled" .IsActive
-            "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
-            "NoReload" true
-            )}}
+
+          <td class="ui-td">
+            <div class="flex justify-center gap-1">
+              <button class="btn btn-sm btn-outline btn-ghost rounded-lg px-3" onclick="onTest('{{.ID}}')">
+                {{ template "icons" (dict "Name" "ip-add-test") }} 测试
+              </button>
+
+              <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}')">
+                {{ template "icons" (dict "Name" "ip-edit") }} 编辑
+              </button>
+
+              {{ template "button" (dict
+              "Type" "danger"
+              "IconName" "ip-delete"
+              "Text" "删除"
+              "URL" $apiUrlPath
+              "Disabled" .IsActive
+              "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
+              "NoReload" true
+              )}}
+            </div>
           </td>
         </tr>
         {{ end }}
       </tbody>
     </table>
+  </div>
+
+  <div class="p-8 border-t border-base-200 bg-base-100/30">
     <!-- 分页 -->
     {{ template "pagination" . }}
   </div>

@@ -1,43 +1,52 @@
 {{define "ObjTypeBadge"}}
+{{/* 支持的参数：
+.Platform: 平台名称
+.Tips: 可选，鼠标悬停提示（留空就不显示）
+*/}}
+
 {{$objType := .ObjType}}
-{{$class := or .Class "badge badge-success"}}
+{{$tips := .Tips}}
+{{$class := or .Class "badge badge-primary badge-outline"}}
+{{if $tips}}
+{{$class = join $class " tooltip" }}
+{{end}}
 
 {{if eq $objType "platform_config"}}
-<span class="{{$class}}">平台配置</span>
+<span class="{{$class}}" data-tip="{{$tips}}">平台配置</span>
 {{else if eq $objType "cdn_record"}}
-<span class="{{$class}}">CDN记录</span>
+<span class="{{$class}}" data-tip="{{$tips}}">CDN记录</span>
 {{else if eq $objType "dns_record"}}
-<span class="{{$class}}">DNS记录</span>
+<span class="{{$class}}" data-tip="{{$tips}}">DNS记录</span>
 {{else if eq $objType "device"}}
-<span class="{{$class}}">设备</span>
+<span class="{{$class}}" data-tip="{{$tips}}">设备</span>
 {{else if eq $objType "device_ip_report"}}
-<span class="{{$class}}">设备IP记录</span>
+<span class="{{$class}}" data-tip="{{$tips}}">设备IP记录</span>
 {{else if eq $objType "ip_group"}}
-<span class="{{$class}}">IP组</span>
+<span class="{{$class}}" data-tip="{{$tips}}">IP组</span>
 {{else if eq $objType "ip_group_device"}}
-<span class="{{$class}}">IP组设备</span>
+<span class="{{$class}}" data-tip="{{$tips}}">IP组设备</span>
 {{else if eq $objType "webhook"}}
-<span class="{{$class}}">通知</span>
+<span class="{{$class}}" data-tip="{{$tips}}">通知</span>
 {{else if eq $objType "webhook_subscription"}}
-<span class="{{$class}}">通知订阅</span>
+<span class="{{$class}}" data-tip="{{$tips}}">通知订阅</span>
 {{else if eq $objType "device_port_forward"}}
-<span class="{{$class}}">端口转发</span>
+<span class="{{$class}}" data-tip="{{$tips}}">端口转发</span>
 {{else if eq $objType "domain_monitor"}}
-<span class="{{$class}}">域名监控</span>
+<span class="{{$class}}" data-tip="{{$tips}}">域名监控</span>
 {{else if eq $objType "ssl_record"}}
-<span class="{{$class}}">SSL记录</span>
+<span class="{{$class}}" data-tip="{{$tips}}">SSL记录</span>
 {{else if eq $objType "domain_monitor_history"}}
-<span class="{{$class}}">域名监控历史记录</span>
+<span class="{{$class}}" data-tip="{{$tips}}">域名监控历史记录</span>
 {{else if eq $objType "http_log"}}
-<span class="{{$class}}">http请求日志</span>
+<span class="{{$class}}" data-tip="{{$tips}}">http请求日志</span>
 {{else if eq $objType "operation_log"}}
-<span class="{{$class}}">操作日志</span>
+<span class="{{$class}}" data-tip="{{$tips}}">操作日志</span>
 {{else if eq $objType "resty_log"}}
-<span class="{{$class}}">resty请求日志</span>
+<span class="{{$class}}" data-tip="{{$tips}}">resty请求日志</span>
 {{else if eq $objType "webhook_history"}}
-<span class="{{$class}}">通知历史记录</span>
+<span class="{{$class}}" data-tip="{{$tips}}">通知历史记录</span>
 {{else}}
-<span class="{{$class}}">{{$objType}}</span>
+<span class="{{$class}}" data-tip="{{$tips}}">{{$objType}}</span>
 {{end}}
 
 {{end}}

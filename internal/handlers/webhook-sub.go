@@ -22,6 +22,9 @@ func WebhookSub(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.WebhookSubResponse{
+		CommonResponseWithRequest: types.CommonResponseWithRequest{
+			Request: c.Request,
+		},
 		CommonPageResponse: types.CommonPageResponse[types.GetWebhookSubResponse]{
 			List: []types.GetWebhookSubResponse{},
 		},

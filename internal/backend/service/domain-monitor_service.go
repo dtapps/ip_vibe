@@ -59,6 +59,7 @@ func (s *DomainMonitorServiceImpl) BuildResponse(ctx context.Context, item *ent.
 	resp := &types.GetDomainMonitorResponse{
 		ID:            item.ID,
 		Name:          item.Name,
+		Description:   item.Description,
 		Domain:        item.Domain,
 		CheckInterval: item.CheckInterval,
 		CheckProtocol: item.CheckProtocol.String(),
@@ -128,6 +129,7 @@ func (s *DomainMonitorServiceImpl) CreateDomainMonitor(ctx context.Context, requ
 	// 创建域名监控
 	saveDomainMonitor, err := s.db.DomainMonitor.Create().
 		SetName(request.Name).
+		SetDescription(request.Description).
 		SetDomain(request.Domain).
 		SetCheckInterval(request.CheckInterval).
 		SetCheckProtocol(domainmonitor.CheckProtocol(request.CheckProtocol)).
@@ -169,6 +171,7 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitor(ctx context.Context, requ
 	// 更新域名监控
 	saveDomainMonitor, err := s.db.DomainMonitor.UpdateOne(firstDomainMonitor).
 		SetName(request.Name).
+		SetDescription(request.Description).
 		SetCheckInterval(request.CheckInterval).
 		Save(ctx)
 	if err != nil {

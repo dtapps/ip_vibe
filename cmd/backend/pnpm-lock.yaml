@@ -20,6 +20,9 @@ importers:
       select2:
         specifier: 4.1.0-rc.0
         version: 4.1.0-rc.0
+      select2-tailwindcss-v4-theme:
+        specifier: ^1.1.0
+        version: 1.1.0
       tailwindcss:
         specifier: ^4.1.18
         version: 4.1.18
@@ -350,6 +353,9 @@ packages:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
 
+  select2-tailwindcss-v4-theme@1.1.0:
+    resolution: {integrity: sha512-olGebyZQzQNj+qcH303DjQg/evI9Bzs2GQE2VrFZC6bL7SZzt+YS6N5ZtzExkJyM5jpRUTj4KH1JUMrBqj92Xg==}
+
   select2@4.1.0-rc.0:
     resolution: {integrity: sha512-Hr9TdhyHCZUtwznEH2CBf7967mEM0idtJ5nMtjvk3Up5tPukOLXbHUNmh10oRfeNIhj+3GD3niu+g6sVK+gK0A==}
 
@@ -618,6 +624,8 @@ snapshots:
   picocolors@1.1.1: {}
 
   picomatch@2.3.1: {}
+
+  select2-tailwindcss-v4-theme@1.1.0: {}
 
   select2@4.1.0-rc.0: {}
 

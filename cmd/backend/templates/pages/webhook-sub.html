@@ -1,59 +1,89 @@
 {{ define "content" }}
-<h1>🌐 DDNS管理平台</h1>
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content transition-colors">🌐 DDNS管理平台</h1>
 
-<div class="card">
-  <div class="card-header">
-    <h2 class="h2-icon">
+<div class="ui-panel">
+  <div class="ui-header">
+    <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
       {{ template "icons" (dict "Name" "ip-subscribe") }} 通知订阅
     </h2>
   </div>
-  <div class="card-body">
-    <table>
+
+  <div class="ui-table-container">
+    <table class="ui-table">
       <thead>
         <tr>
-          <th>名称</th>
-          <th>类型</th>
-          <th>通知</th>
-          <th>对象</th>
-          <th>启用</th>
-          <th style="width: 300px; text-align: center">操作</th>
+          <th class="ui-th">名称</th>
+          <th class="ui-th">类型</th>
+          <th class="ui-th">关联通知 (Webhook)</th>
+          <th class="ui-th">订阅对象</th>
+          <th class="ui-th">启用</th>
+          <th style="width: 150px" class="ui-th text-center">操作</th>
         </tr>
       </thead>
       <tbody id="table">
         {{range .List}}
-        {{ $urlPath := printf "/api/webhook-subs/%d" .ID }}
-        <tr>
-          <td>{{.Name}}</td>
-          <td>
-            {{template "ObjTypeBadge" (dict
-            "ObjType" .ObjType
-            )}}
+        {{ $apiUrlPath := printf "/api/webhook-subs/%d" .ID }}
+        {{ $webUrlPath := printf "/webhook-sub/%d" .ID }}
+        <tr class="hover:bg-base-200/50 transition-colors">
+          <td class="ui-td font-bold text-base-content">
+            {{.Name}}
           </td>
-          <td>{{.WebhookID}}:{{.WebhookName}}</td>
-          <td>{{.ObjID}}:{{.ObjName}}</td>
-          <td>
-            {{ $activeUrlPath := join $urlPath "/active" }}
+
+          <td class="ui-td">
+            {{template "ObjTypeBadge" (dict "ObjType" .ObjType)}}
+          </td>
+
+          <td class="ui-td">
+            <div class="flex items-center justify-center gap-2">
+              <span class="badge badge-ghost font-mono text-xs">
+                {{.WebhookID}}
+              </span>
+              <span class="text-sm font-medium">
+                {{.WebhookName}}
+              </span>
+            </div>
+          </td>
+
+          <td class="ui-td">
+            <div class="flex items-center justify-center gap-2">
+              <span class="badge badge-ghost font-mono text-xs">
+                {{.ObjID}}
+              </span>
+              <span class="text-sm font-medium">
+                {{.ObjName}}
+              </span>
+            </div>
+          </td>
+
+          <td class="ui-td">
+            {{ $activeApiUrlPath := join $apiUrlPath "/active" }}
             {{ template "switch" (dict
             "Checked" .IsActive
-            "URL" $activeUrlPath
+            "URL" $activeApiUrlPath
             "NoReload" true
-            )}}
+            ) }}
           </td>
-          <td>
-            {{ template "button" (dict
-            "Type" "danger"
-            "IconName" "ip-delete"
-            "Text" "删除"
-            "URL" $urlPath
-            "Disabled" .IsActive
-            "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
-            "NoReload" true
-            )}}
+
+          <td class="ui-td">
+            <div class="flex justify-center">
+              {{ template "button" (dict
+              "Type" "danger"
+              "IconName" "ip-delete"
+              "Text" "删除"
+              "URL" $apiUrlPath
+              "Disabled" .IsActive
+              "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
+              "NoReload" true
+              )}}
+            </div>
           </td>
         </tr>
         {{end}}
       </tbody>
     </table>
+  </div>
+
+  <div class="p-8 border-t border-base-200 bg-base-100/30">
     <!-- 分页 -->
     {{ template "pagination" . }}
   </div>

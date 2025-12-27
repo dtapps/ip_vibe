@@ -13,6 +13,7 @@ type GetDomainMonitorsRequest struct {
 type GetDomainMonitorResponse struct {
 	ID            int64     `json:"id" jsonschema:"域名监控记录的唯一标识符"`                 // 域名监控记录序号
 	Name          string    `json:"name" jsonschema:"域名监控的名称"`                    // 名称
+	Description   string    `json:"description,omitempty" jsonschema:"域名监控的描述"`   // 描述
 	Domain        string    `json:"domain" jsonschema:"要监控的域名"`                   // 域名
 	CheckInterval int       `json:"check_interval" jsonschema:"检查间隔（秒）"`          // 检查间隔（秒）
 	CheckProtocol string    `json:"check_protocol" jsonschema:"检查类型（HTTP/HTTPS）"` // 检查类型（HTTP/HTTPS）
@@ -32,6 +33,7 @@ type GetDomainMonitorRequest struct {
 // 创建域名监控 请求结构
 type CreateDomainMonitorRequest struct {
 	Name          string `json:"name" jsonschema:"域名监控的名称"`                    // 名称
+	Description   string `json:"description,omitempty" jsonschema:"域名监控的描述"`   // 描述
 	Domain        string `json:"domain" jsonschema:"要监控的域名"`                   // 域名
 	CheckInterval int    `json:"check_interval" jsonschema:"检查间隔（秒）"`          // 检查间隔（秒）
 	CheckProtocol string `json:"check_protocol" jsonschema:"检查类型（HTTP/HTTPS）"` // 检查类型（HTTP/HTTPS）
@@ -42,8 +44,9 @@ type CreateDomainMonitorRequest struct {
 // 更新域名监控 请求结构
 type UpdateDomainMonitorRequest struct {
 	GetDomainMonitorRequest
-	Name          string `json:"name" jsonschema:"域名监控的名称"`           // 名称
-	CheckInterval int    `json:"check_interval" jsonschema:"检查间隔（秒）"` // 检查间隔（秒）
+	Name          string `json:"name" jsonschema:"域名监控的名称"`                  // 名称
+	Description   string `json:"description,omitempty" jsonschema:"域名监控的描述"` // 描述
+	CheckInterval int    `json:"check_interval" jsonschema:"检查间隔（秒）"`        // 检查间隔（秒）
 
 	WebhookIDs []int64 `json:"webhook_ids,omitempty" jsonschema:"关联的Webhook ID列表"` // 关联的 Webhook 列表
 }

@@ -107,8 +107,9 @@ func (s *SSLUpdateTask) StartPeriodicTask(ctx context.Context) (err error) {
 	}
 	// 创建周期任务
 	s.job, err = s.cron.NewJob(
-		gocron.DurationJob(
-			10*time.Hour, // 每10小时执行一次
+		gocron.DurationRandomJob(
+			8*time.Hour,  // 最小间隔 8 小时
+			10*time.Hour, // 最大间隔 10 小时
 		),
 		gocron.NewTask(s.RunPeriodicTask),
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
@@ -124,7 +125,7 @@ func (s *SSLUpdateTask) StartPeriodicTask(ctx context.Context) (err error) {
 	}
 
 	s.logger.InfoContext(ctx, s.taskName+"任务已启动",
-		slog.String("执行间隔", "10小时"),
+		slog.String("执行间隔", "8-10小时"),
 	)
 	return nil
 }

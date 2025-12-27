@@ -1,32 +1,41 @@
 {{ define "content" }}
-<h1>🌐 DDNS管理平台</h1>
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content transition-colors">🌐 DDNS管理平台</h1>
 
-<div class="card" id="sectionLog">
-  <div class="card-header">
-    <h2 class="h2-icon">
-      <svg class="ip-i">
-        <use href="/static/img/icons.svg#ip-log"></use>
-      </svg>
-      操作日志
+<div class="ui-panel" id="sectionLog">
+  <div class="ui-header">
+    <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
+      {{ template "icons" (dict "Name" "ip-log") }} 操作日志
     </h2>
   </div>
-  <div class="card-body">
-    <table>
+
+  <div class="ui-table-container">
+    <table class="ui-table">
       <thead>
         <tr>
-          <th>序号</th>
-          <th>操作类型</th>
-          <th>对象类型</th>
-          <th>对象ID</th>
-          <th>详情</th>
-          <th>时间</th>
+          <th class="ui-th">序号</th>
+          <th class="ui-th">对象类型</th>
+          <th class="ui-th">操作类型</th>
+          <th class="ui-th text-center">详情描述</th>
+          <th class="ui-th">操作时间</th>
         </tr>
       </thead>
       <tbody id="table">
         {{ range .List }}
-        <tr>
-          <td>{{.ID}}</td>
-          <td>
+        {{ $apiUrlPath := printf "/api/logs/%d" .ID }}
+        {{ $webUrlPath := printf "/logs/%d" .ID }}
+        <tr class="hover:bg-base-200/50 transition-colors">
+          <td class="ui-td font-mono text-xs opacity-40">
+            {{.ID}}
+          </td>
+
+          <td class="ui-td">
+            <span class="badge badge-ghost font-mono text-xs">
+              {{.ObjID}}
+            </span>
+            {{template "ObjTypeBadge" (dict "ObjType" .ObjType)}}
+          </td>
+
+          <td class="ui-td font-bold">
             {{if eq .OpType "data_create"}}
             数据创建
             {{else if eq .OpType "data_update"}}
@@ -35,24 +44,27 @@
             数据删除
             {{else if eq .OpType "device_report"}}
             设备上报
-            {{else if eq .OpType "data_update"}}
+            {{else if eq .OpType "ip_refresh"}}
             IP刷新
             {{else}}
             {{.OpType}}
             {{end}}
           </td>
-          <td>
-            {{template "ObjTypeBadge" (dict
-            "ObjType" .ObjType
-            )}}
+
+          <td class="ui-td text-center text-sm max-w-md break-all">
+            {{.Message}}
           </td>
-          <td>{{.ObjID}}</td>
-          <td>{{.Message}}</td>
-          <td>{{ formatTimeOrNil .CreatedAt }}</td>
+
+          <td class="ui-td text-xs opacity-50 whitespace-nowrap">
+            {{formatTimeOrNil .CreatedAt}}
+          </td>
         </tr>
         {{ end }}
       </tbody>
     </table>
+  </div>
+
+  <div class="p-8 border-t border-base-200 bg-base-100/30">
     <!-- 分页 -->
     {{ template "pagination" . }}
   </div>

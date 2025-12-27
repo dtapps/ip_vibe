@@ -26,6 +26,9 @@ func DomainMonitor(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.DomainMonitorResponse{
+		CommonResponseWithRequest: types.CommonResponseWithRequest{
+			Request: c.Request,
+		},
 		CommonPageResponse: types.CommonPageResponse[types.GetDomainMonitorResponse]{
 			List: []types.GetDomainMonitorResponse{},
 		},
@@ -81,7 +84,11 @@ func DomainMonitorDetail(c *gin.Context) {
 		return
 	}
 
-	pageData := types.DomainMonitorDetailResponse{}
+	pageData := types.DomainMonitorDetailResponse{
+		CommonResponseWithRequest: types.CommonResponseWithRequest{
+			Request: c.Request,
+		},
+	}
 
 	// 查询域名监控
 	firstDomainMonitor, err := global.GvaEntDb.DomainMonitor.Query().
@@ -121,6 +128,9 @@ func DomainMonitorHistory(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.DomainMonitorHistoryResponse{
+		CommonResponseWithRequest: types.CommonResponseWithRequest{
+			Request: c.Request,
+		},
 		CommonPageResponse: types.CommonPageResponse[ent_log.DomainMonitorHistory]{
 			List: []ent_log.DomainMonitorHistory{},
 		},

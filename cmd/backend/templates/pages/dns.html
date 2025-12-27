@@ -1,95 +1,131 @@
 {{ define "content" }}
-<h1>🌐 DDNS管理平台</h1>
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content transition-colors">🌐 DDNS管理平台</h1>
 
-<div class="card">
-  <div class="card-header">
-    <h2 class="h2-icon">
+<div class="ui-panel">
+  <div class="ui-header">
+    <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
       {{ template "icons" (dict "Name" "ip-dns") }} DNS 记录管理（平台维度）
     </h2>
     <div>
-      <button class="btn btn-primary" onclick="openFormModal()">
+      <button class="btn-ui-primary" onclick="openFormModal()">
         {{ template "icons" (dict "Name" "ip-plus") }} 添加记录
       </button>
     </div>
   </div>
-  <div class="card-body">
-    <table>
+
+  <div class="ui-table-container">
+    <table class="ui-table">
       <thead>
         <tr>
-          <th>域名</th>
-          <th>类型</th>
-          <th>IP组</th>
-          <th>CDN</th>
-          <th>平台</th>
-          <th>启用</th>
-          <th style="width: 200px; text-align: center">操作</th>
+          <th class="ui-th">域名</th>
+          <th class="ui-th">类型</th>
+          <th class="ui-th">IP组</th>
+          <th class="ui-th">CDN</th>
+          <th class="ui-th text-center">平台</th>
+          <th class="ui-th text-center">启用</th>
+          <th style="width: 250px" class="ui-th">操作</th>
         </tr>
       </thead>
       <tbody id="table">
         {{ range .List }}
-        {{ $urlPath := printf "/api/dns-records/%d" .ID }}
-        <tr>
-          <td>{{.SubDomain}}.{{.DomainName}}</td>
-          <td>{{.Type}}</td>
-          <td class="text-monospace">
+        {{ $apiUrlPath := printf "/api/dns-records/%d" .ID }}
+        {{ $webUrlPath := printf "/dns-record/%d" .ID }}
+        <tr class="hover:bg-base-200/50 transition-colors">
+          <td class="ui-td font-bold text-base-content">
+            {{.SubDomain}}.{{.DomainName}}
+          </td>
+
+          <td class="ui-td">
+            <span class="badge badge-ghost font-mono text-xs uppercase">
+              {{.Type}}
+
+            </span>
+          </td>
+
+          <td class="ui-td font-mono text-xs">
             {{if gt .IPGroupID 0}}
-            <span>{{.IPGroupID}}:{{.IPGroupName}}</span>
+            <div class="flex items-center justify-center gap-2">
+              <span class="badge badge-ghost font-mono text-xs">
+                {{.IPGroupID}}
+              </span>
+              <span class="text-sm font-medium">
+                {{.IPGroupName}}
+              </span>
+            </div>
             {{else}}
-            <span>-</span>
+            <span class="opacity-30">-</span>
             {{end}}
           </td>
-          <td class="text-monospace">
+
+          <td class="ui-td font-mono text-xs">
             {{if gt .CdnRecordID 0}}
-            <span>{{.CdnRecordID}}:{{.CdnRecordCdnDomain}}</span>
+            <div class="flex items-center justify-center gap-2">
+              <span class="badge badge-ghost font-mono text-xs">
+                {{.CdnRecordID}}
+              </span>
+              <span class="text-sm font-medium">
+                {{.CdnRecordCdnDomain}}
+              </span>
+            </div>
             {{else}}
-            <span>-</span>
+            <span class="opacity-30">-</span>
             {{end}}
           </td>
-          <td class="simple-tooltip" data-tooltip="{{.ConfigName}}">
-            {{template "PlatformBadge" (dict
-            "Platform" .Platform
-            )}}
+
+          <td class="ui-td text-center">
+            {{template "PlatformBadge" (dict "Platform" .Platform "Tips" .ConfigName )}}
           </td>
-          <td>
-            {{ $activeUrlPath := join $urlPath "/active" }}
+
+          <td class="ui-td text-center">
+            {{ $activeApiUrlPath := join $apiUrlPath "/active" }}
             {{ template "switch" (dict
             "Checked" .IsActive
-            "URL" $activeUrlPath
+            "URL" $activeApiUrlPath
             "NoReload" true
             )}}
           </td>
-          <td>
-            <button class="btn btn-sm btn-outline-info" onclick="onHealthcheckPopup('{{.ID}}')">
-              {{ template "icons" (dict "Name" "ip-health-check") }} 检测
-            </button>
-            {{if ne .IPGroupID 0 }}
-            <button class="btn btn-sm btn-outline-info" onclick="onLiveIPPopup('{{.IPGroupID}}','{{.IPGroupName}}')">
-              {{ template "icons" (dict "Name" "ip-eyes") }} 实时IP
-            </button>
-            {{else}}
-            <span class="btn-tooltip-wrapper" title="未绑定IP组，不允许查看实时IP">
-              <button class="btn btn-sm btn-outline-info" disabled>
+
+          <td class="ui-td">
+            <div class="flex justify-center gap-1">
+              <button class="btn btn-sm btn-outline btn-info rounded-lg" onclick="onHealthcheckPopup('{{.ID}}')">
+                {{ template "icons" (dict "Name" "ip-health-check") }} 检测
+              </button>
+
+              {{if ne .IPGroupID 0 }}
+              <button class="btn btn-sm btn-outline btn-info rounded-lg"
+                onclick="onLiveIPPopup('{{.IPGroupID}}','{{.IPGroupName}}')">
                 {{ template "icons" (dict "Name" "ip-eyes") }} 实时IP
               </button>
-            </span>
-            {{end}}
-            <button class="btn btn-primary btn-sm" onclick="openFormModal('{{.ID}}')">
-              {{ template "icons" (dict "Name" "ip-edit") }} 编辑
-            </button>
-            {{ template "button" (dict
-            "Type" "danger"
-            "IconName" "ip-delete"
-            "Text" "删除"
-            "URL" $urlPath
-            "Disabled" .IsActive
-            "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
-            "NoReload" true
-            )}}
+              {{else}}
+              <span class="btn-tooltip-wrapper inline-block cursor-not-allowed" data-tips="未绑定IP组，不允许查看实时IP">
+                <button class="btn btn-sm btn-outline btn-info rounded-lg" disabled>
+                  {{ template "icons" (dict "Name" "ip-eyes") }} 实时IP
+                </button>
+              </span>
+              {{end}}
+
+              <button class="btn btn-primary btn-sm rounded-lg" onclick="openFormModal('{{.ID}}')">
+                {{ template "icons" (dict "Name" "ip-edit") }} 编辑
+              </button>
+
+              {{ template "button" (dict
+              "Type" "danger"
+              "IconName" "ip-delete"
+              "Text" "删除"
+              "URL" $apiUrlPath
+              "Disabled" .IsActive
+              "Tooltip" "启用状态时不允许删除，请先禁止后操作再删除！"
+              "NoReload" true
+              )}}
+            </div>
           </td>
         </tr>
         {{ end }}
       </tbody>
     </table>
+  </div>
+
+  <div class="p-8 border-t border-base-200 bg-base-100/30">
     <!-- 分页 -->
     {{ template "pagination" . }}
   </div>

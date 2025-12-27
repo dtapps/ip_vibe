@@ -22,6 +22,9 @@ func Dns(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.DnsResponse{
+		CommonResponseWithRequest: types.CommonResponseWithRequest{
+			Request: c.Request,
+		},
 		CommonPageResponse: types.CommonPageResponse[types.GetDnsRecordResponse]{
 			List: []types.GetDnsRecordResponse{},
 		},

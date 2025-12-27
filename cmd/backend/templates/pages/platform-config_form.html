@@ -1,47 +1,14 @@
 {{ define "pages/platform-config_form.html" }}
-<style>
-  .hidden {
-    display: none !important;
-  }
-
-  .field-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-  }
-
-  .input-group {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  .toggle-password {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    margin-left: 8px;
-    color: #666;
-  }
-
-  .toggle-password:hover {
-    color: #333;
-  }
-</style>
-
 <div class="modal" id="modal">
-  <div class="modal-content">
-    <h3 id="modalTitle">添加平台配置</h3>
-    <form id="form">
-      <div class="form-group">
-        <label>服务能力 <span style="color: red">*</span></label>
-        <select
-          name="capability"
-          id="capability"
-          required
-          onchange="changeCapability(this)"
-        >
+  <div class="ui-modal-box">
+    <div class="ui-header">
+      <h3 class="text-xl font-bold" id="modalTitle">添加平台配置</h3>
+    </div>
+
+    <form id="form" class="p-8 space-y-5 max-h-[75vh] overflow-y-auto">
+      <div class="ui-form-control">
+        <label class="ui-label-text">服务能力 <span class="text-error">*</span></label>
+        <select name="capability" id="capability" class="ui-select" required onchange="changeCapability(this)">
           <option value="all" selected>全部</option>
           <option value="cdn">仅 CDN</option>
           <option value="dns">仅 DNS</option>
@@ -49,25 +16,14 @@
         </select>
       </div>
 
-      <div class="form-group">
-        <label>配置名称 <span style="color: red">*</span></label>
-        <input
-          type="text"
-          name="name"
-          id="name"
-          required
-          placeholder="如: 我的EdgeOne"
-        />
+      <div class="ui-form-control">
+        <label class="ui-label-text">配置名称 <span class="text-error">*</span></label>
+        <input type="text" name="name" id="name" class="ui-input" required placeholder="如: 我的配置" />
       </div>
 
-      <div class="form-group">
-        <label>平台类型 <span style="color: red">*</span></label>
-        <select
-          name="platform"
-          id="platform"
-          required
-          onchange="changePlatform(this.value)"
-        >
+      <div class="ui-form-control">
+        <label class="ui-label-text">平台类型 <span class="text-error">*</span></label>
+        <select name="platform" id="platform" class="ui-select" required onchange="changePlatform(this.value)">
           <option value="" disabled selected>请选择平台</option>
           <option value="cloudflare">CloudFlare</option>
           <option value="tencent_dns">腾讯云 DNS</option>
@@ -79,435 +35,242 @@
         </select>
       </div>
 
-      <!-- CloudFlare 字段 -->
-      <div id="cloudflare_fields" class="platform-fields hidden">
-        <h4 style="margin-bottom: 16px">CloudFlare 配置</h4>
-        <div class="form-group">
-          <label>API Token <span style="color: red">*</span></label>
-          <div class="input-group">
-            <input
-              type="password"
-              id="cloudflare_api_key"
-              placeholder="your-api-token"
-              autocomplete="new-password"
-            />
-            <button
-              type="button"
-              class="toggle-password"
-              onclick="togglePasswordVisibility('cloudflare_api_key', this)"
-              title="显示/隐藏 API Token"
-            >
+      <div id="cloudflare_fields" class="platform-fields hidden space-y-4">
+        <div class="divider text-xs opacity-40">CloudFlare 配置</div>
+        <div class="ui-form-control">
+          <label class="ui-label-text">API Token <span class="text-error">*</span></label>
+          <div class="flex items-center gap-2">
+            <input type="password" id="cloudflare_api_key" class="ui-input" placeholder="your-api-token"
+              autocomplete="new-password" />
+            <button type="button" class="btn btn-square btn-ghost btn-sm"
+              onclick="togglePasswordVisibility('cloudflare_api_key', this)">
               {{ template "icons" (dict "Name" "ip-eyes") }}
             </button>
           </div>
         </div>
-        <div class="form-group">
-          <label>Zone ID <span style="color: red">*</span></label>
-          <input
-            type="text"
-            id="cloudflare_zone_id"
-            placeholder="your-zone-id"
-          />
+        <div class="ui-form-control">
+          <label class="ui-label-text">Zone ID <span class="text-error">*</span></label>
+          <input type="text" id="cloudflare_zone_id" class="ui-input" placeholder="your-zone-id" />
         </div>
-        <div
-          class="form-group domain-or-email-group"
-          data-platform="cloudflare"
-        >
-          <label class="field-label" data-type="domain"
-            >Domain Name <span style="color: red">*</span></label
-          >
-          <input
-            type="text"
-            id="cloudflare_domain_name"
-            class="field-input domain-field"
-            placeholder="your-domain.com"
-            data-type="domain"
-          />
-          <label class="field-label hidden" data-type="email"
-            >Email <span style="color: red">*</span></label
-          >
-          <input
-            type="email"
-            id="cloudflare_email"
-            class="field-input email-field hidden"
-            placeholder="your-email@example.com"
-            data-type="email"
-          />
+        <div class="form-group domain-or-email-group" data-platform="cloudflare">
+          <div class="ui-form-control" data-type="domain">
+            <label class="ui-label-text">Domain Name <span class="text-error">*</span></label>
+            <input type="text" id="cloudflare_domain_name" class="ui-input domain-field"
+              placeholder="your-domain.com" />
+          </div>
+          <div class="ui-form-control hidden" data-type="email">
+            <label class="ui-label-text">Email <span class="text-error">*</span></label>
+            <input type="email" id="cloudflare_email" class="ui-input email-field"
+              placeholder="your-email@example.com" />
+          </div>
         </div>
       </div>
 
-      <!-- 腾讯云 DNS 字段 -->
-      <div id="tencent_dns_fields" class="platform-fields hidden">
-        <h4 style="margin-bottom: 16px">腾讯云 DNS 配置</h4>
-        <div class="form-group">
-          <label>Secret ID <span style="color: red">*</span></label>
-          <input
-            type="text"
-            id="tencent_dns_secret_id"
-            placeholder="AKIDxxxxxxxxxxxxxxxxxxxxxxxxx"
-          />
+      <div id="tencent_dns_fields" class="platform-fields hidden space-y-4">
+        <div class="divider text-xs opacity-40">腾讯云 DNS 配置</div>
+        <div class="ui-form-control">
+          <label class="ui-label-text">Secret ID <span class="text-error">*</span></label>
+          <input type="text" id="tencent_dns_secret_id" class="ui-input" placeholder="AKID..." />
         </div>
-        <div class="form-group">
-          <label>Secret Key <span style="color: red">*</span></label>
-          <div class="input-group">
-            <input
-              type="password"
-              id="tencent_dns_secret_key"
-              placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-              autocomplete="new-password"
-            />
-            <button
-              type="button"
-              class="toggle-password"
-              onclick="togglePasswordVisibility('tencent_dns_secret_key', this)"
-              title="显示/隐藏 Secret Key"
-            >
+        <div class="ui-form-control">
+          <label class="ui-label-text">Secret Key <span class="text-error">*</span></label>
+          <div class="flex items-center gap-2">
+            <input type="password" id="tencent_dns_secret_key" class="ui-input" placeholder="Secret Key..."
+              autocomplete="new-password" />
+            <button type="button" class="btn btn-square btn-ghost btn-sm"
+              onclick="togglePasswordVisibility('tencent_dns_secret_key', this)">
               {{ template "icons" (dict "Name" "ip-eyes") }}
             </button>
           </div>
         </div>
-        <div
-          class="form-group domain-or-email-group"
-          data-platform="tencent_dns"
-        >
-          <label class="field-label" data-type="domain"
-            >Domain Name <span style="color: red">*</span></label
-          >
-          <input
-            type="text"
-            id="tencent_dns_domain_name"
-            class="field-input domain-field"
-            placeholder="your-domain.com"
-            data-type="domain"
-          />
-          <label class="field-label hidden" data-type="email"
-            >Email <span style="color: red">*</span></label
-          >
-          <input
-            type="email"
-            id="tencent_dns_email"
-            class="field-input email-field hidden"
-            placeholder="your-email@example.com"
-            data-type="email"
-          />
+        <div class="form-group domain-or-email-group" data-platform="tencent_dns">
+          <div class="ui-form-control" data-type="domain">
+            <label class="ui-label-text">Domain Name <span class="text-error">*</span></label>
+            <input type="text" id="tencent_dns_domain_name" class="ui-input domain-field"
+              placeholder="your-domain.com" />
+          </div>
+          <div class="ui-form-control hidden" data-type="email">
+            <label class="ui-label-text">Email <span class="text-error">*</span></label>
+            <input type="email" id="tencent_dns_email" class="ui-input email-field"
+              placeholder="your-email@example.com" />
+          </div>
         </div>
       </div>
 
-      <!-- 腾讯云 EdgeOne 字段 -->
-      <div id="tencent_eo_fields" class="platform-fields hidden">
-        <h4 style="margin-bottom: 16px">腾讯云 EdgeOne 配置</h4>
-        <div class="form-group">
-          <label>Secret ID <span style="color: red">*</span></label>
-          <input
-            type="text"
-            id="tencent_eo_secret_id"
-            placeholder="AKIDxxxxxxxxxxxxxxxxxxxxxxxxx"
-          />
+      <div id="tencent_eo_fields" class="platform-fields hidden space-y-4">
+        <div class="divider text-xs opacity-40">腾讯云 EdgeOne 配置</div>
+        <div class="ui-form-control">
+          <label class="ui-label-text">Secret ID <span class="text-error">*</span></label>
+          <input type="text" id="tencent_eo_secret_id" class="ui-input" placeholder="AKID..." />
         </div>
-        <div class="form-group">
-          <label>Secret Key <span style="color: red">*</span></label>
-          <div class="input-group">
-            <input
-              type="password"
-              id="tencent_eo_secret_key"
-              placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-              autocomplete="new-password"
-            />
-            <button
-              type="button"
-              class="toggle-password"
-              onclick="togglePasswordVisibility('tencent_eo_secret_key', this)"
-              title="显示/隐藏 Secret Key"
-            >
+        <div class="ui-form-control">
+          <label class="ui-label-text">Secret Key <span class="text-error">*</span></label>
+          <div class="flex items-center gap-2">
+            <input type="password" id="tencent_eo_secret_key" class="ui-input" placeholder="Secret Key..."
+              autocomplete="new-password" />
+            <button type="button" class="btn btn-square btn-ghost btn-sm"
+              onclick="togglePasswordVisibility('tencent_eo_secret_key', this)">
               {{ template "icons" (dict "Name" "ip-eyes") }}
             </button>
           </div>
         </div>
-        <div class="form-group">
-          <label>Zone ID <span style="color: red">*</span></label>
-          <input
-            type="text"
-            id="tencent_eo_zone_id"
-            placeholder="zone-xxxxxxxx"
-          />
+        <div class="ui-form-control">
+          <label class="ui-label-text">Zone ID <span class="text-error">*</span></label>
+          <input type="text" id="tencent_eo_zone_id" class="ui-input" placeholder="zone-..." />
         </div>
-        <div
-          class="form-group domain-or-email-group"
-          data-platform="tencent_eo"
-        >
-          <label class="field-label" data-type="domain"
-            >Domain Name <span style="color: red">*</span></label
-          >
-          <input
-            type="text"
-            id="tencent_eo_domain_name"
-            class="field-input domain-field"
-            placeholder="your-domain.com"
-            data-type="domain"
-          />
-          <label class="field-label hidden" data-type="email"
-            >Email <span style="color: red">*</span></label
-          >
-          <input
-            type="email"
-            id="tencent_eo_email"
-            class="field-input email-field hidden"
-            placeholder="your-email@example.com"
-            data-type="email"
-          />
+        <div class="form-group domain-or-email-group" data-platform="tencent_eo">
+          <div class="ui-form-control" data-type="domain">
+            <label class="ui-label-text">Domain Name <span class="text-error">*</span></label>
+            <input type="text" id="tencent_eo_domain_name" class="ui-input domain-field"
+              placeholder="your-domain.com" />
+          </div>
+          <div class="ui-form-control hidden" data-type="email">
+            <label class="ui-label-text">Email <span class="text-error">*</span></label>
+            <input type="email" id="tencent_eo_email" class="ui-input email-field"
+              placeholder="your-email@example.com" />
+          </div>
         </div>
       </div>
 
-      <!-- 阿里云 DNS 字段 -->
-      <div id="aliyun_dns_fields" class="platform-fields hidden">
-        <h4 style="margin-bottom: 16px">阿里云 DNS 配置</h4>
-        <div class="form-group">
-          <label>Access Key ID <span style="color: red">*</span></label>
-          <input
-            type="text"
-            id="aliyun_dns_access_key_id"
-            placeholder="AKIDxxxxxxxxxxxxxxxxxxxxxxxxx"
-          />
+      <div id="aliyun_dns_fields" class="platform-fields hidden space-y-4">
+        <div class="divider text-xs opacity-40">阿里云 DNS 配置</div>
+        <div class="ui-form-control">
+          <label class="ui-label-text">Access Key ID <span class="text-error">*</span></label>
+          <input type="text" id="aliyun_dns_access_key_id" class="ui-input" placeholder="AKID..." />
         </div>
-        <div class="form-group">
-          <label>Access Key Secret <span style="color: red">*</span></label>
-          <div class="input-group">
-            <input
-              type="password"
-              id="aliyun_dns_access_key_secret"
-              placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-              autocomplete="new-password"
-            />
-            <button
-              type="button"
-              class="toggle-password"
-              onclick="togglePasswordVisibility('aliyun_dns_access_key_secret', this)"
-              title="显示/隐藏 Secret Key"
-            >
+        <div class="ui-form-control">
+          <label class="ui-label-text">Access Key Secret <span class="text-error">*</span></label>
+          <div class="flex items-center gap-2">
+            <input type="password" id="aliyun_dns_access_key_secret" class="ui-input" placeholder="Secret..."
+              autocomplete="new-password" />
+            <button type="button" class="btn btn-square btn-ghost btn-sm"
+              onclick="togglePasswordVisibility('aliyun_dns_access_key_secret', this)">
               {{ template "icons" (dict "Name" "ip-eyes") }}
             </button>
           </div>
         </div>
-        <div
-          class="form-group domain-or-email-group"
-          data-platform="aliyun_dns"
-        >
-          <label class="field-label" data-type="domain"
-            >Domain Name <span style="color: red">*</span></label
-          >
-          <input
-            type="text"
-            id="aliyun_dns_domain_name"
-            class="field-input domain-field"
-            placeholder="your-domain.com"
-            data-type="domain"
-          />
-          <label class="field-label hidden" data-type="email"
-            >Email <span style="color: red">*</span></label
-          >
-          <input
-            type="email"
-            id="aliyun_dns_email"
-            class="field-input email-field hidden"
-            placeholder="your-email@example.com"
-            data-type="email"
-          />
+        <div class="form-group domain-or-email-group" data-platform="aliyun_dns">
+          <div class="ui-form-control" data-type="domain">
+            <label class="ui-label-text">Domain Name <span class="text-error">*</span></label>
+            <input type="text" id="aliyun_dns_domain_name" class="ui-input domain-field"
+              placeholder="your-domain.com" />
+          </div>
+          <div class="ui-form-control hidden" data-type="email">
+            <label class="ui-label-text">Email <span class="text-error">*</span></label>
+            <input type="email" id="aliyun_dns_email" class="ui-input email-field"
+              placeholder="your-email@example.com" />
+          </div>
         </div>
       </div>
 
-      <!-- 阿里云 Esa 字段 -->
-      <div id="aliyun_esa_fields" class="platform-fields hidden">
-        <h4 style="margin-bottom: 16px">阿里云 Esa 配置</h4>
-        <div class="form-group">
-          <label>Access Key ID <span style="color: red">*</span></label>
-          <input
-            type="text"
-            id="aliyun_esa_access_key_id"
-            placeholder="AKIDxxxxxxxxxxxxxxxxxxxxxxxxx"
-          />
+      <div id="aliyun_esa_fields" class="platform-fields hidden space-y-4">
+        <div class="divider text-xs opacity-40">阿里云 ESA 配置</div>
+        <div class="ui-form-control">
+          <label class="ui-label-text">Access Key ID <span class="text-error">*</span></label>
+          <input type="text" id="aliyun_esa_access_key_id" class="ui-input" placeholder="AKID..." />
         </div>
-        <div class="form-group">
-          <label>Access Key Secret <span style="color: red">*</span></label>
-          <div class="input-group">
-            <input
-              type="password"
-              id="aliyun_esa_access_key_secret"
-              placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-              autocomplete="new-password"
-            />
-            <button
-              type="button"
-              class="toggle-password"
-              onclick="togglePasswordVisibility('aliyun_esa_access_key_secret', this)"
-              title="显示/隐藏 Secret Key"
-            >
+        <div class="ui-form-control">
+          <label class="ui-label-text">Access Key Secret <span class="text-error">*</span></label>
+          <div class="flex items-center gap-2">
+            <input type="password" id="aliyun_esa_access_key_secret" class="ui-input" placeholder="Secret..."
+              autocomplete="new-password" />
+            <button type="button" class="btn btn-square btn-ghost btn-sm"
+              onclick="togglePasswordVisibility('aliyun_esa_access_key_secret', this)">
               {{ template "icons" (dict "Name" "ip-eyes") }}
             </button>
           </div>
         </div>
-        <div class="form-group">
-          <label>Site ID <span style="color: red">*</span></label>
-          <input
-            type="number"
-            id="aliyun_esa_site_id"
-            placeholder="zone-xxxxxxxx"
-          />
+        <div class="ui-form-control">
+          <label class="ui-label-text">Site ID <span class="text-error">*</span></label>
+          <input type="number" id="aliyun_esa_site_id" class="ui-input" placeholder="Site ID" />
         </div>
-        <div
-          class="form-group domain-or-email-group"
-          data-platform="aliyun_esa"
-        >
-          <label class="field-label" data-type="domain"
-            >Domain Name <span style="color: red">*</span></label
-          >
-          <input
-            type="text"
-            id="aliyun_esa_domain_name"
-            class="field-input domain-field"
-            placeholder="your-domain.com"
-            data-type="domain"
-          />
-          <label class="field-label hidden" data-type="email"
-            >Email <span style="color: red">*</span></label
-          >
-          <input
-            type="email"
-            id="aliyun_esa_email"
-            class="field-input email-field hidden"
-            placeholder="your-email@example.com"
-            data-type="email"
-          />
+        <div class="form-group domain-or-email-group" data-platform="aliyun_esa">
+          <div class="ui-form-control" data-type="domain">
+            <label class="ui-label-text">Domain Name <span class="text-error">*</span></label>
+            <input type="text" id="aliyun_esa_domain_name" class="ui-input domain-field"
+              placeholder="your-domain.com" />
+          </div>
+          <div class="ui-form-control hidden" data-type="email">
+            <label class="ui-label-text">Email <span class="text-error">*</span></label>
+            <input type="email" id="aliyun_esa_email" class="ui-input email-field"
+              placeholder="your-email@example.com" />
+          </div>
         </div>
       </div>
 
-      <!-- 百度云 DNS 字段 -->
-      <div id="baidu_dns_fields" class="platform-fields hidden">
-        <h4 style="margin-bottom: 16px">百度云 DNS 配置</h4>
-        <div class="form-group">
-          <label>Access Key ID <span style="color: red">*</span></label>
-          <input
-            type="text"
-            id="baidu_dns_access_key_id"
-            placeholder="AKIDxxxxxxxxxxxxxxxxxxxxxxxxx"
-          />
+      <div id="baidu_dns_fields" class="platform-fields hidden space-y-4">
+        <div class="divider text-xs opacity-40">百度云 DNS 配置</div>
+        <div class="ui-form-control">
+          <label class="ui-label-text">Access Key ID <span class="text-error">*</span></label>
+          <input type="text" id="baidu_dns_access_key_id" class="ui-input" placeholder="AKID..." />
         </div>
-        <div class="form-group">
-          <label>Secret Access Key <span style="color: red">*</span></label>
-          <div class="input-group">
-            <input
-              type="password"
-              id="baidu_dns_secret_access_key"
-              placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-              autocomplete="new-password"
-            />
-            <button
-              type="button"
-              class="toggle-password"
-              onclick="togglePasswordVisibility('baidu_dns_secret_access_key', this)"
-              title="显示/隐藏 Secret Key"
-            >
+        <div class="ui-form-control">
+          <label class="ui-label-text">Secret Access Key <span class="text-error">*</span></label>
+          <div class="flex items-center gap-2">
+            <input type="password" id="baidu_dns_secret_access_key" class="ui-input" placeholder="Secret..."
+              autocomplete="new-password" />
+            <button type="button" class="btn btn-square btn-ghost btn-sm"
+              onclick="togglePasswordVisibility('baidu_dns_secret_access_key', this)">
               {{ template "icons" (dict "Name" "ip-eyes") }}
             </button>
           </div>
         </div>
         <div class="form-group domain-or-email-group" data-platform="baidu_dns">
-          <label class="field-label" data-type="domain"
-            >Domain Name <span style="color: red">*</span></label
-          >
-          <input
-            type="text"
-            id="baidu_dns_domain_name"
-            class="field-input domain-field"
-            placeholder="your-domain.com"
-            data-type="domain"
-          />
-          <label class="field-label hidden" data-type="email"
-            >Email <span style="color: red">*</span></label
-          >
-          <input
-            type="email"
-            id="baidu_dns_email"
-            class="field-input email-field hidden"
-            placeholder="your-email@example.com"
-            data-type="email"
-          />
+          <div class="ui-form-control" data-type="domain">
+            <label class="ui-label-text">Domain Name <span class="text-error">*</span></label>
+            <input type="text" id="baidu_dns_domain_name" class="ui-input domain-field" placeholder="your-domain.com" />
+          </div>
+          <div class="ui-form-control hidden" data-type="email">
+            <label class="ui-label-text">Email <span class="text-error">*</span></label>
+            <input type="email" id="baidu_dns_email" class="ui-input email-field"
+              placeholder="your-email@example.com" />
+          </div>
         </div>
       </div>
 
-      <!-- 华为云 DNS 字段 -->
-      <div id="huawei_dns_fields" class="platform-fields hidden">
-        <h4 style="margin-bottom: 16px">华为云 DNS 配置</h4>
-        <div class="form-group">
-          <label>Access Key ID <span style="color: red">*</span></label>
-          <input
-            type="text"
-            id="huawei_dns_access_key_id"
-            placeholder="AKIDxxxxxxxxxxxxxxxxxxxxxxxxx"
-          />
+      <div id="huawei_dns_fields" class="platform-fields hidden space-y-4">
+        <div class="divider text-xs opacity-40">华为云 DNS 配置</div>
+        <div class="ui-form-control">
+          <label class="ui-label-text">Access Key ID <span class="text-error">*</span></label>
+          <input type="text" id="huawei_dns_access_key_id" class="ui-input" placeholder="AKID..." />
         </div>
-        <div class="form-group">
-          <label>Secret Access Key <span style="color: red">*</span></label>
-          <div class="input-group">
-            <input
-              type="password"
-              id="huawei_dns_secret_access_key"
-              placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-              autocomplete="new-password"
-            />
-            <button
-              type="button"
-              class="toggle-password"
-              onclick="togglePasswordVisibility('huawei_dns_secret_access_key', this)"
-              title="显示/隐藏 Secret Key"
-            >
+        <div class="ui-form-control">
+          <label class="ui-label-text">Secret Access Key <span class="text-error">*</span></label>
+          <div class="flex items-center gap-2">
+            <input type="password" id="huawei_dns_secret_access_key" class="ui-input" placeholder="Secret..."
+              autocomplete="new-password" />
+            <button type="button" class="btn btn-square btn-ghost btn-sm"
+              onclick="togglePasswordVisibility('huawei_dns_secret_access_key', this)">
               {{ template "icons" (dict "Name" "ip-eyes") }}
             </button>
           </div>
         </div>
-        <div class="form-group">
-          <label>Zone ID <span style="color: red">*</span></label>
-          <input
-            type="text"
-            id="huawei_dns_zone_id"
-            placeholder="zone-xxxxxxxx"
-          />
+        <div class="ui-form-control">
+          <label class="ui-label-text">Zone ID <span class="text-error">*</span></label>
+          <input type="text" id="huawei_dns_zone_id" class="ui-input" placeholder="zone-..." />
         </div>
-        <div
-          class="form-group domain-or-email-group"
-          data-platform="huawei_dns"
-        >
-          <label class="field-label" data-type="domain"
-            >Domain Name <span style="color: red">*</span></label
-          >
-          <input
-            type="text"
-            id="huawei_dns_domain_name"
-            class="field-input domain-field"
-            placeholder="your-domain.com"
-            data-type="domain"
-          />
-          <label class="field-label hidden" data-type="email"
-            >Email <span style="color: red">*</span></label
-          >
-          <input
-            type="email"
-            id="huawei_dns_email"
-            class="field-input email-field hidden"
-            placeholder="your-email@example.com"
-            data-type="email"
-          />
+        <div class="form-group domain-or-email-group" data-platform="huawei_dns">
+          <div class="ui-form-control" data-type="domain">
+            <label class="ui-label-text">Domain Name <span class="text-error">*</span></label>
+            <input type="text" id="huawei_dns_domain_name" class="ui-input domain-field"
+              placeholder="your-domain.com" />
+          </div>
+          <div class="ui-form-control hidden" data-type="email">
+            <label class="ui-label-text">Email <span class="text-error">*</span></label>
+            <input type="email" id="huawei_dns_email" class="ui-input email-field"
+              placeholder="your-email@example.com" />
+          </div>
         </div>
       </div>
 
-      <!-- 隐藏字段 -->
       <input type="hidden" name="id" id="id" />
       <input type="hidden" name="config" id="config_json" />
 
-      <div class="form-group mt-3" style="text-align: right">
-        <button type="button" class="btn" onclick="closeModal('modal')">
+      <div class="modal-action gap-3">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('modal')">
           {{ template "icons" (dict "Name" "ip-close") }} 取消
         </button>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn-ui-primary">
           {{ template "icons" (dict "Name" "ip-save") }} 保存
         </button>
       </div>
@@ -516,26 +279,15 @@
 </div>
 
 <script>
-  /**
-   * 切换密码输入框的可见性
-   * @param {string} inputId - 输入框的 ID
-   * @param {HTMLElement} buttonElement - 触发此函数的按钮元素 (this)
-   */
   function togglePasswordVisibility(inputId, buttonElement) {
     const input = document.getElementById(inputId);
     if (!input) return;
-
-    // 1. 检查当前状态并切换输入框类型
     if (input.type === "password") {
       input.type = "text";
-      // 2. 切换图标到 '隐藏' 状态 (ip-close)
       buttonElement.innerHTML = `{{ template "icons" (dict "Name" "ip-close") }}`;
-      buttonElement.title = "隐藏 Secret";
     } else {
       input.type = "password";
-      // 3. 切换图标到 '显示' 状态 (ip-eyes)
       buttonElement.innerHTML = `{{ template "icons" (dict "Name" "ip-eyes") }}`;
-      buttonElement.title = "显示 Secret";
     }
   }
 </script>

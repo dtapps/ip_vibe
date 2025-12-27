@@ -1,68 +1,88 @@
 {{ define "content" }}
-<h1>🌐 DDNS管理平台</h1>
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content transition-colors">🌐 DDNS管理平台</h1>
 
-<div class="card">
-  <div class="card-header">
-    <h2 class="h2-icon">
+<div class="ui-panel">
+  <div class="ui-header">
+    <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
       {{ template "icons" (dict "Name" "ip-task") }} 任务管理
     </h2>
-    <div>
+    <div class="flex gap-2">
       {{if eq .Status "running"}}
-      <button class="btn btn-warning" disabled>
-        {{ template "icons" (dict "Name" "ip-play") }} 启动
+      <button class="btn btn-warning btn-sm rounded-xl opacity-50 cursor-not-allowed" disabled>
+        {{ template "icons" (dict "Name" "ip-play") }} 启动调度
       </button>
-      <button class="btn btn-danger" onclick="stopTaskScheduler()">
-        {{ template "icons" (dict "Name" "ip-stop") }} 停止
+      <button class="btn btn-error btn-sm rounded-xl text-white shadow-md" onclick="stopTaskScheduler()">
+        {{ template "icons" (dict "Name" "ip-stop") }} 停止调度
       </button>
-      <button class="btn btn-warning" disabled>
-        {{ template "icons" (dict "Name" "ip-close") }} 清理
+      <button class="btn btn-warning btn-sm rounded-xl opacity-50 cursor-not-allowed" disabled>
+        {{ template "icons" (dict "Name" "ip-close") }} 清理任务
       </button>
       {{else}}
-      <button class="btn btn-warning" onclick="startTaskScheduler()">
-        {{ template "icons" (dict "Name" "ip-play") }} 启动
+      <button class="btn btn-warning btn-sm rounded-xl text-warning-content shadow-md" onclick="startTaskScheduler()">
+        {{ template "icons" (dict "Name" "ip-play") }} 启动调度
       </button>
-      <button class="btn btn-danger" disabled>
-        {{ template "icons" (dict "Name" "ip-stop") }} 停止
+      <button class="btn btn-error btn-sm rounded-xl opacity-50 cursor-not-allowed" disabled>
+        {{ template "icons" (dict "Name" "ip-stop") }} 停止调度
       </button>
-      <button class="btn btn-warning" onclick="cleanTask()">
-        {{ template "icons" (dict "Name" "ip-close") }} 清理
+      <button class="btn btn-warning btn-sm rounded-xl text-warning-content shadow-md" onclick="cleanTask()">
+        {{ template "icons" (dict "Name" "ip-close") }} 清理任务
       </button>
       {{end}}
     </div>
   </div>
-  <div class="card-body">
-    <table>
+
+  <div class="ui-table-container">
+    <table class="ui-table">
       <thead>
         <tr>
-          <th>编号</th>
-          <th>名称</th>
-          <th>调度表达式</th>
-          <th>执行时间</th>
-          <th style="width: 300px; text-align: center">操作</th>
+          <th class="ui-th text-left">编号</th>
+          <th class="ui-th">任务名称</th>
+          <th class="ui-th">调度表达式 (Cron)</th>
+          <th class="ui-th">上次执行时间</th>
+          <th style="width: 280px" class="ui-th text-center">操作</th>
         </tr>
       </thead>
       <tbody id="table">
         {{range .List}}
-        <tr>
-          <td>{{.ID}}</td>
-          <td>{{.Name}}</td>
-          <td>{{.ScheduleDetail}}</td>
-          <td>{{.LastRun}}</td>
-          <td>
-            <button
-              class="btn btn-sm btn-outline-info"
-              onclick="onNextRunPopup('{{.ID}}','{{.Name}}')"
-            >
-              {{ template "icons" (dict "Name" "ip-eyes") }} 下次执行时间
-            </button>
-            <button class="btn btn-success btn-sm" onclick="runTask('{{.ID}}')">
-              {{ template "icons" (dict "Name" "ip-running") }} 运行
-            </button>
+        {{ $apiUrlPath := printf "/api/tasks/%d" .ID }}
+        {{ $webUrlPath := printf "/task/%d" .ID }}
+        <tr class="hover:bg-base-200/50 transition-colors">
+          <td class="ui-td text-left font-mono text-xs opacity-50">
+            {{.ID}}
+          </td>
+
+          <td class="ui-td font-bold text-base-content">
+            {{.Name}}
+          </td>
+
+          <td class="ui-td font-mono text-sm">
+            <span class="badge badge-ghost font-mono text-primary">
+              {{.ScheduleDetail}}
+            </span>
+          </td>
+
+          <td class="ui-td text-xs opacity-60">
+            {{.LastRun}}
+          </td>
+
+          <td class="ui-td">
+            <div class="flex justify-center gap-2">
+              <button class="btn btn-sm btn-outline btn-info rounded-lg px-3"
+                onclick="onNextRunPopup('{{.ID}}','{{.Name}}')">
+                {{ template "icons" (dict "Name" "ip-eyes") }} 下次时间
+              </button>
+              <button class="btn btn-success btn-sm rounded-lg px-3 text-white" onclick="runTask('{{.ID}}')">
+                {{ template "icons" (dict "Name" "ip-running") }} 立即运行
+              </button>
+            </div>
           </td>
         </tr>
         {{end}}
       </tbody>
     </table>
+  </div>
+
+  <div class="p-8 border-t border-base-200 bg-base-100/30">
     <!-- 分页 -->
     {{ template "pagination" . }}
   </div>
