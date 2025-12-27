@@ -58,11 +58,11 @@
             {{if eq .Capability "all"}}
             <span class="text-primary">全部</span>
             {{else if eq .Capability "cdn"}}
-            <span class="text-success">仅 CDN</span>
+            <span class="text-secondary">仅 CDN</span>
             {{else if eq .Capability "dns"}}
-            <span class="text-success">仅 DNS</span>
+            <span class="text-accent">仅 DNS</span>
             {{else if eq .Capability "ssl"}}
-            <span class="text-success">仅 SSL</span>
+            <span class="text-info">仅 SSL</span>
             {{else}}
             <span class="text-warning">{{.Capability}}</span>
             {{end}}
