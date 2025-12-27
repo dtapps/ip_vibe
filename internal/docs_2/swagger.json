@@ -139,7 +139,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "CDN记录序号",
                         "name": "id",
                         "in": "path",
@@ -194,7 +193,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "CDN记录序号",
                         "name": "id",
                         "in": "path",
@@ -249,7 +247,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "CDN记录序号",
                         "name": "id",
                         "in": "path",
@@ -315,7 +312,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "CDN记录序号",
                         "name": "id",
                         "in": "path",
@@ -381,7 +377,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "CDN记录序号",
                         "name": "id",
                         "in": "path",
@@ -544,7 +539,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "设备序号",
                         "name": "id",
                         "in": "path",
@@ -599,7 +593,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "设备序号",
                         "name": "id",
                         "in": "path",
@@ -654,7 +647,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "设备序号",
                         "name": "id",
                         "in": "path",
@@ -720,7 +712,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "设备序号",
                         "name": "id",
                         "in": "path",
@@ -783,7 +774,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "设备序号",
                         "name": "id",
                         "in": "path",
@@ -957,7 +947,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "DNS记录序号",
                         "name": "id",
                         "in": "path",
@@ -1012,7 +1001,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "DNS记录序号",
                         "name": "id",
                         "in": "path",
@@ -1067,7 +1055,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "DNS记录序号",
                         "name": "id",
                         "in": "path",
@@ -1133,7 +1120,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "DNS记录序号",
                         "name": "id",
                         "in": "path",
@@ -1199,7 +1185,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "DNS记录序号",
                         "name": "id",
                         "in": "path",
@@ -1376,7 +1361,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "域名监控记录序号",
                         "name": "id",
                         "in": "path",
@@ -1431,7 +1415,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "域名监控序号",
                         "name": "id",
                         "in": "path",
@@ -1486,7 +1469,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "域名监控序号",
                         "name": "id",
                         "in": "path",
@@ -1552,7 +1534,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "域名监控序号",
                         "name": "id",
                         "in": "path",
@@ -1618,7 +1599,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "域名监控序号",
                         "name": "id",
                         "in": "path",
@@ -1775,7 +1755,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "IP组序号",
                         "name": "id",
                         "in": "path",
@@ -1830,7 +1809,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "IP组序号",
                         "name": "id",
                         "in": "path",
@@ -1887,7 +1865,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "IP组序号",
                         "name": "id",
                         "in": "path",
@@ -1953,7 +1930,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "IP组序号",
                         "name": "id",
                         "in": "path",
@@ -2013,7 +1989,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "IP组序号",
                         "name": "id",
                         "in": "path",
@@ -2207,7 +2182,6 @@
                     },
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "端口转发序号",
                         "name": "port_forward_id",
                         "in": "path",
@@ -2361,7 +2335,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "配置序号",
                         "name": "id",
                         "in": "path",
@@ -2416,7 +2389,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "配置序号",
                         "name": "id",
                         "in": "path",
@@ -2471,7 +2443,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "配置序号",
                         "name": "id",
                         "in": "path",
@@ -2651,7 +2622,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "设备端口转发序号",
                         "name": "id",
                         "in": "path",
@@ -2706,7 +2676,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "端口转发序号",
                         "name": "id",
                         "in": "path",
@@ -2761,7 +2730,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "端口转发序号",
                         "name": "id",
                         "in": "path",
@@ -2827,7 +2795,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "端口转发序号",
                         "name": "id",
                         "in": "path",
@@ -2893,7 +2860,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "端口转发序号",
                         "name": "id",
                         "in": "path",
@@ -2959,7 +2925,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "端口转发序号",
                         "name": "id",
                         "in": "path",
@@ -3136,7 +3101,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "SSL记录序号",
                         "name": "id",
                         "in": "path",
@@ -3191,7 +3155,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "SSL记录序号",
                         "name": "id",
                         "in": "path",
@@ -3246,7 +3209,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "SSL记录序号",
                         "name": "id",
                         "in": "path",
@@ -3312,7 +3274,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "SSL记录序号",
                         "name": "id",
                         "in": "path",
@@ -3378,7 +3339,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "SSL记录序号",
                         "name": "id",
                         "in": "path",
@@ -3435,7 +3395,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "SSL记录序号",
                         "name": "id",
                         "in": "path",
@@ -3830,7 +3789,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "通知订阅序号",
                         "name": "id",
                         "in": "path",
@@ -3887,7 +3845,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "通知订阅序号",
                         "name": "id",
                         "in": "path",
@@ -4067,7 +4024,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "通知序号",
                         "name": "id",
                         "in": "path",
@@ -4122,7 +4078,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "通知序号",
                         "name": "id",
                         "in": "path",
@@ -4177,7 +4132,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "通知序号",
                         "name": "id",
                         "in": "path",
@@ -4243,7 +4197,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "通知序号",
                         "name": "id",
                         "in": "path",
@@ -4309,7 +4262,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "format": "int64",
                         "description": "通知序号",
                         "name": "id",
                         "in": "path",
