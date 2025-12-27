@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2024-12-26
+
+### Added
+- 📦 **离线模式** - Tailwind CSS 和 Font Awesome 打包到二进制，完全离线可用
+- 🔒 **内网友好** - 不再依赖任何 CDN，适合内网/私有化部署
+
+### Changed
+- 静态资源从 CDN 改为本地嵌入
+- 二进制体积增加约 3MB
+
 ## [1.4.3] - 2024-12-26
 
 ### Added

@@ -4,13 +4,19 @@ go 1.25.5
 
 ignore ./frontend
 
+ignore ./cmd/backend/node_modules
+
+ignore ./cmd/backend/static
+
+ignore ./cmd/backend/templates
+
 require (
 	connectrpc.com/connect v1.19.1
 	entgo.io/ent v0.14.5
 	github.com/alibabacloud-go/alidns-20150109/v5 v5.0.0
 	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.13
-	github.com/alibabacloud-go/esa-20240910/v2 v2.43.0
+	github.com/alibabacloud-go/esa-20240910/v2 v2.44.0
 	github.com/alibabacloud-go/tea v1.3.14
 	github.com/aliyun/credentials-go v1.4.10
 	github.com/baidubce/bce-sdk-go v0.9.256
@@ -27,7 +33,7 @@ require (
 	github.com/go-acme/lego/v4 v4.30.1
 	github.com/go-co-op/gocron/v2 v2.19.0
 	github.com/google/uuid v1.6.0
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.4
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.182
 	github.com/miekg/dns v1.1.69
 	github.com/modelcontextprotocol/go-sdk v1.2.0
@@ -41,7 +47,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.21
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.16
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.21
-	github.com/wdcbot/qingfeng v1.4.4
+	github.com/wdcbot/qingfeng v1.5.1
 	go.dtapp.net/library/contrib/http_log v1.0.0
 	go.dtapp.net/library/contrib/resty_log v1.0.10
 	go.dtapp.net/library/service/bark v1.0.7
@@ -92,7 +98,7 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.12 // indirect
 	github.com/gin-contrib/sse v1.1.0 // indirect
 	github.com/go-acme/alidns-20150109/v4 v4.7.0 // indirect
-	github.com/go-acme/esa-20240910/v2 v2.43.0 // indirect
+	github.com/go-acme/esa-20240910/v2 v2.44.0 // indirect
 	github.com/go-acme/tencentclouddnspod v1.1.25 // indirect
 	github.com/go-acme/tencentedgdeone v1.1.48 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.3 // indirect

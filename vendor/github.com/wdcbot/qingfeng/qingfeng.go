@@ -16,9 +16,9 @@ import (
 )
 
 // Version is the current version of QingFeng
-const Version = "1.4.3"
+const Version = "1.5.0"
 
-//go:embed ui/default/* ui/minimal/* ui/modern/*
+//go:embed ui/default/* ui/minimal/* ui/modern/* ui/assets/css/* ui/assets/webfonts/*
 var uiFS embed.FS
 
 // UITheme represents available UI themes
@@ -126,12 +126,14 @@ func Handler(cfg Config) gin.HandlerFunc {
 	defaultFS, _ := fs.Sub(uiFS, "ui/default")
 	minimalFS, _ := fs.Sub(uiFS, "ui/minimal")
 	modernFS, _ := fs.Sub(uiFS, "ui/modern")
+	assetsFS, _ := fs.Sub(uiFS, "ui/assets")
 
 	fileServers := map[string]http.Handler{
 		"default": http.FileServer(http.FS(defaultFS)),
 		"minimal": http.FileServer(http.FS(minimalFS)),
 		"modern":  http.FileServer(http.FS(modernFS)),
 	}
+	assetsServer := http.FileServer(http.FS(assetsFS))
 
 	// Default theme from config
 	defaultTheme := string(cfg.UITheme)
@@ -191,6 +193,14 @@ func Handler(cfg Config) gin.HandlerFunc {
 		// Serve config
 		if path == "/config.json" {
 			c.Data(http.StatusOK, "application/json", configJSON)
+			return
+		}
+
+		// Serve assets (CSS, fonts)
+		if strings.HasPrefix(path, "/assets/") {
+			assetPath := strings.TrimPrefix(path, "/assets/")
+			c.Request.URL.Path = "/" + assetPath
+			assetsServer.ServeHTTP(c.Writer, c.Request)
 			return
 		}
 

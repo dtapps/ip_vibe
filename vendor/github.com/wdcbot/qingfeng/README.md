@@ -282,6 +282,50 @@ func main() {
 | LogoLink | string | "" | Logo 点击跳转链接 |
 | Environments | []Environment | nil | 多环境配置 |
 
+## 🐳 Docker 部署（推荐）
+
+使用 `go:embed` 将 swagger.json 嵌入二进制文件，无需单独 COPY docs 目录：
+
+```go
+package main
+
+import (
+    "embed"
+    "github.com/gin-gonic/gin"
+    qingfeng "github.com/wdcbot/qingfeng"
+)
+
+//go:embed docs/swagger.json
+var swaggerJSON []byte
+
+func main() {
+    r := gin.Default()
+    
+    r.GET("/doc/*any", qingfeng.Handler(qingfeng.Config{
+        Title:    "我的 API",
+        BasePath: "/doc",
+        DocJSON:  swaggerJSON,  // 直接嵌入，无需 DocPath
+    }))
+    
+    r.Run(":8080")
+}
+```
+
+这样 Dockerfile 只需要：
+```dockerfile
+FROM golang:1.20-alpine AS builder
+WORKDIR /app
+COPY . .
+RUN go build -o main .
+
+FROM alpine:latest
+WORKDIR /app
+COPY --from=builder /app/main .
+# 不需要 COPY docs 目录！
+EXPOSE 8080
+CMD ["./main"]
+```
+
 ## 🌍 多环境配置
 
 支持配置多个环境，方便在开发、测试、生产环境间切换：

@@ -46,7 +46,8 @@
     @apply font-bold py-6 px-4 bg-base-200/50 text-base-content/50 border-none text-center first:text-left;
   }
   .ui-td {
-    @apply py-8 px-4 border-none align-middle text-sm text-base-content/80 text-center first:text-left;
+    /* py-8 修改高度 */
+    @apply px-4 border-none align-middle text-sm text-base-content/80 text-center first:text-left;
   }
 
   /* --- 浮动工具按钮 (Layout) --- */

@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := setup
 
 # 一键设置项目（默认执行）
-setup: install-tools verify-tools mod
+setup: install-tools verify-tools mod pnpm_update
 	@echo "🎉 Project setup completed!"
 
 # 安装
@@ -10,7 +10,8 @@ install-tools:
 	go install entgo.io/ent/cmd/ent@latest && \
 	go install github.com/swaggo/swag/cmd/swag@latest && mv $(shell go env GOPATH)/bin/swag $(shell go env GOPATH)/bin/swag_v1 && \
 	go install github.com/swaggo/swag/v2/cmd/swag@latest && mv $(shell go env GOPATH)/bin/swag $(shell go env GOPATH)/bin/swag_v2 && \
-	go install github.com/bufbuild/buf/cmd/buf@latest
+	go install github.com/zxmfke/swagger2openapi3/cmd/swag2op@latest && \
+	go install github.com/bufbuild/buf/cmd/buf@latest && \
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest && \
 	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest && \
@@ -26,6 +27,7 @@ verify-tools:
 	@test -f $(shell go env GOPATH)/bin/ent && echo "✅ ent found" || echo "❌ ent not found"
 	@test -f $(shell go env GOPATH)/bin/swag_v1 && echo "✅ swag_v1 found" || echo "❌ swag_v1 not found"
 	@test -f $(shell go env GOPATH)/bin/swag_v2 && echo "✅ swag_v2 found" || echo "❌ swag_v2 not found"
+	@test -f $(shell go env GOPATH)/bin/swag2op && echo "✅ swag2op found" || echo "❌ swag2op not found"
 	@test -f $(shell go env GOPATH)/bin/buf && echo "✅ buf found" || echo "❌ buf not found"
 	@test -f $(shell go env GOPATH)/bin/protoc-gen-go && echo "✅ protoc-gen-go found" || echo "❌ protoc-gen-go not found"
 	@test -f $(shell go env GOPATH)/bin/protoc-gen-go-grpc && echo "✅ protoc-gen-go-grpc found" || echo "❌ protoc-gen-go-grpc not found"
@@ -90,6 +92,10 @@ swag_v2_fmt:
 
 swag2op:
 	swag2op init -g cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal -o internal/docs_2 -openapiOutputDir internal/docs_3
+
+pnpm_update:
+	cd cmd/$(BINARY_NAME_BACKEND) && \
+	pnpm update
 
 grpc_generate_all:
 	make grpc_generate_pb
@@ -173,7 +179,7 @@ ENV_HTTP_ADDR=0.0.0.0:9999
 ENV_GRPC_ADDR=0.0.0.0:9998
 
 ENV_HTTP_URL=http://localhost:9999
-ENV_GRPC_URL=http://localhost:9998
+ENV_GRPC_URL=localhost:9998
 
 ENV_BASIC_AUTH_USERNAME=admin
 ENV_BASIC_AUTH_PASSWORD=123456
@@ -182,12 +188,21 @@ ENV_BASIC_AUTH_PASSWORD=123456
 # 	export DEBUG=$(ENV_DEBUG) && \
 # 	go run cmd/$(BINARY_NAME_CLI)/main.go
 
+# pnpm add -D tailwindcss @tailwindcss/cli daisyui@latest
+# pnpm add -D select2 jquery
+# 启动前端服务（css 热更新）
+dev_frontend:
+	cd cmd/$(BINARY_NAME_BACKEND) && \
+	pnpm dev
+
+# 启动后端服务
 dev_backend:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_ADDR=$(ENV_HTTP_ADDR) && \
 	export GRPC_ADDR=$(ENV_GRPC_ADDR) && \
 	go run cmd/$(BINARY_NAME_BACKEND)/main.go
 
+# 启动后端服务（启用 Basic Auth）
 dev_backend_basic_auth:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_ADDR=$(ENV_HTTP_ADDR) && \
@@ -196,12 +211,14 @@ dev_backend_basic_auth:
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_BACKEND)/main.go
 
+# 启动IP上报服务
 dev_reporter:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_URL=$(ENV_HTTP_URL) && \
 	export GRPC_URL=$(ENV_GRPC_URL) && \
 	go run cmd/$(BINARY_NAME_REPORTER)/main.go
 
+# 启动IP上报服务（启用 Basic Auth）
 dev_reporter_basic_auth:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_URL=$(ENV_HTTP_URL) && \
@@ -210,12 +227,14 @@ dev_reporter_basic_auth:
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_REPORTER)/main.go
 
+# 启动端口转发服务
 dev_forwarder:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_URL=$(ENV_HTTP_URL) && \
 	export GRPC_URL=$(ENV_GRPC_URL) && \
 	go run cmd/$(BINARY_NAME_FORWARDER)/main.go
 
+# 启动端口转发服务（启用 Basic Auth）
 dev_forwarder_basic_auth:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_URL=$(ENV_HTTP_URL) && \
