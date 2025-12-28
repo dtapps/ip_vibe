@@ -7,7 +7,9 @@ import (
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
+	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/operationlog"
+	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/helper/ssl_helper"
 	"vibe_ip/internal/helper/webhook_sub_helper"
@@ -28,23 +30,26 @@ type SSLRecordService interface {
 	UpdateSSLRecordActive(ctx context.Context, request *types.UpdateSSLRecordActiveRequest) (*types.GetSSLRecordRequest, error)
 	DeleteSSLRecord(ctx context.Context, id int64) (*types.GetSSLRecordRequest, error)
 	ApplySSLRecord(ctx context.Context, id int64) (*types.GetSSLRecordRequest, error)
+	GetSSLRecordHistoryDetail(ctx context.Context, id int64, historyID int64) (*types.GetSSLRecordHistoryDetailResponse, error)
 }
 
 // SSLRecordServiceImpl SSL 记录服务实现
 type SSLRecordServiceImpl struct {
-	db            *ent.Client // 数据库客户端
-	debug         bool
-	logHelper     *operation_logs_helper.OperationLogHelper
-	sslUpdateTask *task.SSLUpdateTask // SSL刷新任务
+	db            *ent.Client                               // 数据库客户端
+	dbLog         *ent_log.Client                           // 日志数据库客户端
+	logHelper     *operation_logs_helper.OperationLogHelper // 操作日志助手
+	sslUpdateTask *task.SSLUpdateTask                       // SSL刷新任务
+	debug         bool                                      // 调试模式
 }
 
 // NewSSLRecordService 创建 SSL 记录服务实例
-func NewSSLRecordService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper, sslUpdateTask *task.SSLUpdateTask) SSLRecordService {
+func NewSSLRecordService(db *ent.Client, dbLog *ent_log.Client, logHelper *operation_logs_helper.OperationLogHelper, sslUpdateTask *task.SSLUpdateTask, debug bool) SSLRecordService {
 	return &SSLRecordServiceImpl{
 		db:            db,
-		debug:         debug,
+		dbLog:         dbLog,
 		logHelper:     logHelper,
 		sslUpdateTask: sslUpdateTask,
+		debug:         debug,
 	}
 }
 
@@ -338,5 +343,48 @@ func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) (*t
 
 	return &types.GetSSLRecordRequest{
 		ID: firstSSLRecord.ID,
+	}, nil
+}
+
+// GetSSLRecordHistoryDetail 获取SSL记录历史详情
+func (s *SSLRecordServiceImpl) GetSSLRecordHistoryDetail(ctx context.Context, id int64, historyID int64) (*types.GetSSLRecordHistoryDetailResponse, error) {
+	// 查询SSL记录
+	firstSSLRecord, err := s.db.SSLRecord.Query().
+		Where(sslrecord.IDEQ(id)).
+		WithConfig().
+		First(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("查询SSL记录失败: 记录不存在或 %w", err)
+		}
+		return nil, fmt.Errorf("查询SSL记录失败: %w", err)
+	}
+
+	// 查询SSL记录历史
+	firstSSLRecordHistory, err := s.dbLog.SSLCertificateHistory.Query().
+		Where(sslcertificatehistory.SslRecordIDEQ(firstSSLRecord.ID)).
+		Where(sslcertificatehistory.IDEQ(historyID)).
+		First(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("查询SSL记录历史失败: 记录不存在或 %w", err)
+		}
+		return nil, fmt.Errorf("查询SSL记录历史失败: %w", err)
+	}
+
+	return &types.GetSSLRecordHistoryDetailResponse{
+		ID:                    firstSSLRecordHistory.ID,
+		CreatedAt:             firstSSLRecordHistory.CreatedAt,
+		SslRecordID:           firstSSLRecordHistory.SslRecordID,
+		CertDomain:            firstSSLRecordHistory.CertDomain,
+		CertURL:               firstSSLRecordHistory.CertURL,
+		CertStableURL:         firstSSLRecordHistory.CertStableURL,
+		CertPrivateKey:        firstSSLRecordHistory.CertPrivateKey,
+		CertCertificate:       firstSSLRecordHistory.CertCertificate,
+		CertIssuerCertificate: firstSSLRecordHistory.CertIssuerCertificate,
+		CertCsr:               firstSSLRecordHistory.CertCsr,
+		NotBefore:             firstSSLRecordHistory.NotBefore,
+		NotAfter:              firstSSLRecordHistory.NotAfter,
+		Provider:              firstSSLRecordHistory.Provider.String(),
 	}, nil
 }

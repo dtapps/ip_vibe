@@ -1,0 +1,82 @@
+{{ define "content" }}
+
+{{ $item := .Item }}
+{{ $apiUrlPath := printf "/api/ssl-records/%d" $item.ID }}
+{{ $webUrlPath := printf "/ssl/%d" $item.ID }}
+
+<!-- <div class="main-container"> -->
+<div class="flex justify-between items-center mb-8">
+    <div class="flex items-center gap-4">
+        <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+            {{ template "icons" (dict "Name" "ip-log") }}
+        </div>
+        <div>
+            <h1 class="text-3xl font-bold text-base-content">申请历史回溯</h1>
+            <p class="opacity-50 text-sm mt-1">域名: <span class="font-mono font-bold">{{ $item.Domain }}</span></p>
+        </div>
+    </div>
+    {{ $detailWebUrlPath := join $webUrlPath "/detail" }}
+    <a href="{{ $detailWebUrlPath }}" class="btn btn-sm btn-ghost rounded-xl">
+        {{ template "icons" (dict "Name" "ip-back") }} 返回详情
+    </a>
+</div>
+
+<div class="ui-panel">
+    <div class="ui-header flex justify-between items-center">
+        <h2 class="text-xl font-bold flex items-center gap-2">
+            {{ template "icons" (dict "Name" "ip-history") }} 全量申请日志
+        </h2>
+        <div class="badge badge-outline opacity-50">共 {{ .Total }} 条记录</div>
+    </div>
+
+    <div class="ui-table-container">
+        <table class="ui-table">
+            <thead>
+                <tr>
+                    <th class="ui-th">序号</th>
+                    <th class="ui-th">CA 提供商</th>
+                    <th class="ui-th">生效时间</th>
+                    <th class="ui-th">到期时间</th>
+                    <th class="ui-th">申请时间</th>
+                    <th class="ui-th">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range .List }}
+                <tr class="hover:bg-base-200/30 transition-colors group">
+                    <td class="ui-td font-mono text-xs opacity-40">{{ .ID }}</td>
+                    <td class="ui-td">
+                        <span class="badge badge-secondary badge-outline badge-sm font-bold">{{ .Provider }}</span>
+                    </td>
+                    <td class="ui-td text-xs">{{ formatTimeOrNil .NotBefore }}</td>
+                    <td class="ui-td">
+                        <span class="text-xs {{ if .NotAfter }}text-warning font-medium{{ else }}opacity-30{{ end }}">
+                            {{ formatTimeOrNil .NotAfter }}
+                        </span>
+                    </td>
+                    <td class="ui-td text-xs font-medium opacity-70">
+                        {{ formatTimeOrNil .CreatedAt }}
+                    </td>
+                    <td class="ui-td">
+                        <button class="btn btn-primary btn-xs rounded-lg shadow-sm opacity-80 group-hover:opacity-100"
+                            onclick="openHistoryViewModal(`{{$item.ID}}`, `{{.ID}}`)">
+                            {{ template "icons" (dict "Name" "ip-eyes") }} 查看证书
+                        </button>
+                    </td>
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="p-8 border-t border-base-200 flex justify-center">
+        {{ template "pagination" . }}
+    </div>
+</div>
+<!-- </div> -->
+
+<!-- 查看 -->
+{{ template "pages/ssl_view.html" . }}
+
+<script src="/static/js/ssl.js"></script>
+{{ end }}

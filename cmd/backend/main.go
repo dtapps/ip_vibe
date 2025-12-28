@@ -375,6 +375,9 @@ func loadTemplates(templatePath string, funcMap template.FuncMap) multitemplate.
 		if strings.HasSuffix(p, "_detail.html") {
 			// 特殊情况：如 p = "index_detail.html" → baseName = "index"
 			baseName = strings.TrimSuffix(p, "_detail.html")
+		} else if strings.HasSuffix(p, "_history.html") {
+			// 普通情况，如 p = "index_history.html" → baseName = "index"
+			baseName = strings.TrimSuffix(p, "_history.html")
 		} else {
 			// 普通情况，如 p = "index.html" → baseName = "index"
 			baseName = strings.TrimSuffix(p, ".html")
@@ -458,6 +461,9 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 		if strings.HasSuffix(p, "_detail.html") {
 			// 特殊情况：如 p = "index_detail.html" → baseName = "index"
 			baseName = strings.TrimSuffix(p, "_detail.html")
+		} else if strings.HasSuffix(p, "_history.html") {
+			// 普通情况，如 p = "index_history.html" → baseName = "index"
+			baseName = strings.TrimSuffix(p, "_history.html")
 		} else {
 			// 普通情况，如 p = "index.html" → baseName = "index"
 			baseName = strings.TrimSuffix(p, ".html")
@@ -732,14 +738,15 @@ func api_router(ctx context.Context, router *gin.Engine) {
 		// SSL记录管理相关API
 		sslRecords := api.Group("/ssl-records")
 		{
-			sslRecords.GET("", handlers.GetSSLRecords)                                 // 获取全部SSL记录
-			sslRecords.GET("/:id", handlers.GetSSLRecordDetail)                        // 获取SSL记录详情
-			sslRecords.POST("", handlers.CreateSSLRecord)                              // 创建SSL记录
-			sslRecords.PATCH("/:id", handlers.UpdateSSLRecord)                         // 更新SSL记录
-			sslRecords.PATCH("/:id/auto-renewal", handlers.UpdateSSLRecordAutoRenewal) // 更新SSL记录自动续费状态
-			sslRecords.PATCH("/:id/active", handlers.UpdateSSLRecordActive)            // 更新SSL记录启用状态
-			sslRecords.DELETE("/:id", handlers.DeleteSSLRecord)                        // 删除SSL记录
-			sslRecords.POST("/:id/apply", handlers.ApplySSLRecord)                     // 申请新的SSL证书
+			sslRecords.GET("", handlers.GetSSLRecords)                                     // 获取全部SSL记录
+			sslRecords.GET("/:id", handlers.GetSSLRecordDetail)                            // 获取SSL记录详情
+			sslRecords.POST("", handlers.CreateSSLRecord)                                  // 创建SSL记录
+			sslRecords.PATCH("/:id", handlers.UpdateSSLRecord)                             // 更新SSL记录
+			sslRecords.PATCH("/:id/auto-renewal", handlers.UpdateSSLRecordAutoRenewal)     // 更新SSL记录自动续费状态
+			sslRecords.PATCH("/:id/active", handlers.UpdateSSLRecordActive)                // 更新SSL记录启用状态
+			sslRecords.DELETE("/:id", handlers.DeleteSSLRecord)                            // 删除SSL记录
+			sslRecords.POST("/:id/apply", handlers.ApplySSLRecord)                         // 申请新的SSL证书
+			sslRecords.GET("/:id/history/:history_id", handlers.GetSSLRecordHistoryDetail) // 获取SSL记录历史详情
 		}
 
 		// 域名监控相关API

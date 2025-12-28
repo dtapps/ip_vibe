@@ -138,7 +138,7 @@
                                 .NotAfter }}</td>
                             <td class="ui-td">
                                 <button class="btn btn-ghost btn-xs text-primary"
-                                    onclick="showSslContent('{{.CertCertificate}}', '{{.CertPrivateKey}}')">
+                                    onclick="openHistoryViewModal(`{{$item.ID}}`, `{{.ID}}`)">
                                     查看证书
                                 </button>
                             </td>

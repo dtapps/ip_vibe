@@ -80,3 +80,26 @@ type DeleteSSLRecordRequest struct {
 type ApplySSLRecordRequest struct {
 	GetSSLRecordRequest
 }
+
+// 获取SSL记录历史详情 请求结构
+type GetSSLRecordHistoryDetailRequest struct {
+	GetSSLRecordRequest
+	HistoryID int64 `uri:"history_id" json:"history_id" binding:"required" jsonschema:"SSL记录历史序号"` // SSL记录历史序号
+}
+
+// 获取SSL记录历史详情 响应结构
+type GetSSLRecordHistoryDetailResponse struct {
+	ID                    int64     `json:"id"`                      // SSL证书申请历史记录序号
+	CreatedAt             time.Time `json:"created_at"`              // 创建时间
+	SslRecordID           int64     `json:"ssl_record_id"`           // 关联 SSLRecord 序号
+	CertDomain            string    `json:"cert_domain"`             // 证书域名
+	CertURL               string    `json:"cert_url"`                // 证书URL
+	CertStableURL         string    `json:"cert_stable_url"`         // 稳定证书URL
+	CertPrivateKey        string    `json:"cert_private_key"`        // 私钥(PEM格式)
+	CertCertificate       string    `json:"cert_certificate"`        // 证书(PEM格式)
+	CertIssuerCertificate string    `json:"cert_issuer_certificate"` // 颁发者证书(PEM格式)
+	CertCsr               string    `json:"cert_csr"`                // 证书签名请求(PEM格式)
+	NotBefore             time.Time `json:"not_before"`              // 证书生效时间
+	NotAfter              time.Time `json:"not_after"`               // 证书过期时间
+	Provider              string    `json:"provider"`                // CA提供商
+}

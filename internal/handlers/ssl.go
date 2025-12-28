@@ -48,9 +48,10 @@ func Ssl(c *gin.Context) {
 	// 创建服务
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
 		sslUpdateTask,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 查询全部SSL记录
