@@ -8,7 +8,7 @@
 <div class="flex justify-between items-center mb-8">
     <div class="flex items-center gap-4">
         <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
-            {{ template "icons" (dict "Name" "ip-log") }}
+            {{ template "icons" (dict "Name" "i-lucide-history" "Class" "w-8 h-8") }}
         </div>
         <div>
             <h1 class="text-3xl font-bold text-base-content">申请历史回溯</h1>
@@ -17,14 +17,14 @@
     </div>
     {{ $detailWebUrlPath := join $webUrlPath "/detail" }}
     <a href="{{ $detailWebUrlPath }}" class="btn btn-sm btn-ghost rounded-xl">
-        {{ template "icons" (dict "Name" "ip-back") }} 返回详情
+        {{ template "icons" (dict "Name" "i-lucide-arrow-left") }} 返回详情
     </a>
 </div>
 
 <div class="ui-panel">
     <div class="ui-header flex justify-between items-center">
         <h2 class="text-xl font-bold flex items-center gap-2">
-            {{ template "icons" (dict "Name" "ip-history") }} 全量申请日志
+            {{ template "icons" (dict "Name" "i-lucide-scroll-text") }} 全量申请日志
         </h2>
         <div class="badge badge-outline opacity-50">共 {{ .Total }} 条记录</div>
     </div>
@@ -60,7 +60,7 @@
                     <td class="ui-td">
                         <button class="btn btn-primary btn-xs rounded-lg shadow-sm opacity-80 group-hover:opacity-100"
                             onclick="openHistoryViewModal(`{{$item.ID}}`, `{{.ID}}`)">
-                            {{ template "icons" (dict "Name" "ip-eyes") }} 查看证书
+                            {{ template "icons" (dict "Name" "i-lucide-eye") }} 查看证书
                         </button>
                     </td>
                 </tr>

@@ -37,9 +37,6 @@ func pusher(c *gin.Context) {
 	if pusher := c.Writer.Pusher(); pusher != nil {
 		// 推送 CSS 和 JS 文件
 		resources := []string{
-			"/static/img/icons.svg",
-
-			"/static/css/icons.css",
 			"/static/css/style.css",
 			"/static/libs/select2/css/select2.min.css",
 			"/static/libs/select2-tailwindcss-v4-theme/select2-tailwindcss-theme.min.css",

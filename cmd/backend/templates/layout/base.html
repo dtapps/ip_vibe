@@ -10,9 +10,6 @@
   <link rel="preload" href="/static/libs/clipboard/clipboard.min.js" as="script" />
   <link rel="preload" href="/static/js/uuid.js" as="script" />
   <link rel="preload" href="/static/js/index.js" as="script" />
-  <link rel="preload" href="/static/img/icons.svg" as="image" type="image/svg+xml" crossorigin="anonymous" />
-
-  <link rel="stylesheet" href="/static/css/icons.css" />
 
   <link rel="stylesheet" href="/static/css/style.css">
 
@@ -26,14 +23,10 @@
 
   <!-- 右边工具栏 -->
   <a href="javascript:location.reload()" class="float-btn btn-refresh" aria-label="刷新页面">
-    <svg class="w-6 h-6 fill-current">
-      <use href="/static/img/icons.svg#ip-refresh" />
-    </svg>
+    {{ template "icons" (dict "Name" "i-lucide-refresh-cw" "Class" "w-6 h-6") }}
   </a>
   <a href="#" class="float-btn btn-top" aria-label="回到顶部">
-    <svg class="w-6 h-6 fill-current">
-      <use href="/static/img/icons.svg#ip-top" />
-    </svg>
+    {{ template "icons" (dict "Name" "i-lucide-arrow-up-to-line" "Class" "w-6 h-6") }}
   </a>
 
   {{ block "scripts" . }}

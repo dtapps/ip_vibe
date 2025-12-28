@@ -4,11 +4,11 @@
 <div class="ui-panel">
   <div class="ui-header">
     <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
-      {{ template "icons" (dict "Name" "ip-server") }} 平台配置
+      {{ template "icons" (dict "Name" "i-lucide-server-cog") }} 平台配置
     </h2>
     <div>
       <button class="btn-ui-primary" onclick="openFormModal()">
-        {{ template "icons" (dict "Name" "ip-plus") }} 添加配置
+        {{ template "icons" (dict "Name" "i-lucide-plus") }} 添加配置
       </button>
     </div>
   </div>
@@ -71,10 +71,15 @@
           <td class="ui-td">
             <div class="flex justify-center gap-2">
               <button class="btn btn-primary btn-sm rounded-lg px-4" onclick="openFormModal('{{.ID}}')">
-                {{ template "icons" (dict "Name" "ip-edit") }} 编辑
+                {{ template "icons" (dict "Name" "i-lucide-pencil") }} 编辑
               </button>
-              {{ template "button" (dict "Type" "danger" "IconName" "ip-delete" "Text" "删除" "URL" $apiUrlPath "NoReload"
-              true )}}
+              {{ template "button" (dict
+              "Type" "danger"
+              "IconName" "i-lucide-trash-2"
+              "Text" "删除"
+              "URL" $apiUrlPath
+              "NoReload" true
+              )}}
             </div>
           </td>
         </tr>

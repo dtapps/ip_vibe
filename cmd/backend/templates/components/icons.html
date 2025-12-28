@@ -1,11 +1,14 @@
 {{ define "icons" }}
 {{/* 支持的参数：
 .Name: 图标名称
+.Class: 图标类名，可选，默认值为 w-4 h-4 mr-2（不需要 mr-2 了）
 */}}
 
 {{ $name := .Name }}
+{{ $class := .Class }}
+{{ if not $class }}
+{{ $class = "w-4 h-4" }}
+{{ end }}
 
-<svg class="ui-icon">
-  <use href="/static/img/icons.svg#{{$name}}"></use>
-</svg>
+<span class="{{$name}} {{$class}}"></span>
 {{ end }}

@@ -8,7 +8,7 @@
 <div class="flex justify-between items-center mb-8">
   <div class="flex items-center gap-4">
     <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
-      {{ template "icons" (dict "Name" "ip-history") }}
+      {{ template "icons" (dict "Name" "i-lucide-search-code" "Class" "w-8 h-8") }}
     </div>
     <div>
       <h1 class="text-3xl font-bold">域名监控历史</h1>
@@ -18,14 +18,14 @@
   </div>
   {{ $detailWebUrlPath := join $webUrlPath "/detail" }}
   <a href="{{ $detailWebUrlPath }}" class="btn btn-sm btn-ghost rounded-xl">
-    {{ template "icons" (dict "Name" "ip-back") }} 返回详情
+    {{ template "icons" (dict "Name" "i-lucide-arrow-left") }} 返回详情
   </a>
 </div>
 
 <div class="ui-panel">
   <div class="ui-header">
     <h2 class="text-xl font-bold flex items-center gap-2">
-      {{ template "icons" (dict "Name" "ip-log") }} 全部日志记录
+      {{ template "icons" (dict "Name" "i-lucide-scroll-text") }} 全部日志记录
     </h2>
     <div class="badge badge-outline opacity-50">共 {{ .Total }} 条记录</div>
   </div>

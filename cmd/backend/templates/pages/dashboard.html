@@ -46,53 +46,68 @@
     <div class="ui-panel">
       <div class="ui-header">
         <h2 class="text-xl font-bold flex items-center gap-2">
-          {{ template "icons" (dict "Name" "ip-menu") }} 快速入口
+          {{ template "icons" (dict "Name" "i-lucide-layout-grid") }} 快速入口
         </h2>
       </div>
       <div class="p-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
         <a href="/cdn"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-dns") }}</div>
+          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-layers") }}
+          </div>
           <span class="text-xs font-bold">CDN 管理</span>
         </a>
         <a href="/dns"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-dns") }}</div>
+          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-database-zap")
+            }}</div>
           <span class="text-xs font-bold">DNS 记录</span>
+        </a>
+        <a href="/ssl"
+          class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
+          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-shield-check")
+            }}</div>
+          <span class="text-xs font-bold">SSL 记录</span>
         </a>
         <a href="/device"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-devices") }}</div>
+          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-smartphone")
+            }}</div>
           <span class="text-xs font-bold">设备管理</span>
         </a>
         <a href="/ip-group"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-layer") }}</div>
+          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-folder-plus")
+            }}</div>
           <span class="text-xs font-bold">IP 组</span>
         </a>
         <a href="/port-forward"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-forward") }}</div>
+          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-route") }}
+          </div>
           <span class="text-xs font-bold">端口转发</span>
         </a>
         <a href="/webhook"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-bell") }}</div>
+          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-bell") }}
+          </div>
           <span class="text-xs font-bold">通知管理</span>
         </a>
         <a href="/task"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-task") }}</div>
+          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-list-todo") }}
+          </div>
           <span class="text-xs font-bold">任务管理</span>
         </a>
         <a href="/log"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-log") }}</div>
+          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-scroll-text")
+            }}</div>
           <span class="text-xs font-bold">操作日志</span>
         </a>
         <a href="/config"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70">{{ template "icons" (dict "Name" "ip-server") }}</div>
+          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-server-cog")
+            }}</div>
           <span class="text-xs font-bold">平台配置</span>
         </a>
       </div>
@@ -101,7 +116,7 @@
     <div class="ui-panel">
       <div class="ui-header">
         <h2 class="text-xl font-bold flex items-center gap-2">
-          {{ template "icons" (dict "Name" "ip-log") }} 最近动态
+          {{ template "icons" (dict "Name" "i-lucide-scroll-text") }} 最近动态
         </h2>
       </div>
       <div class="p-0">

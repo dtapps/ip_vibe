@@ -4,13 +4,11 @@
 <div class="ui-panel">
   <div class="ui-header">
     <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
-      <!-- {{ template "icons" (dict "Name" "ip-devices") }} 设备实时上报 -->
-      {{ template "icons" (dict "Name" "ip-mobile") }} 设备（实时上报）
+      {{ template "icons" (dict "Name" "i-lucide-smartphone") }} 设备（实时上报）
     </h2>
     <div>
       <button class="btn-ui-primary" onclick="openFormModal()">
-        <!-- {{ template "icons" (dict "Name" "ip-mobile") }} 管理设备 -->
-        {{ template "icons" (dict "Name" "ip-plus") }} 添加设备
+        {{ template "icons" (dict "Name" "i-lucide-plus") }} 添加设备
       </button>
     </div>
   </div>
@@ -59,22 +57,22 @@
 
           <td class="ui-td">
             <div class="flex justify-center gap-1">
-              <button class="btn btn-sm btn-outline btn-info rounded-lg px-3" onclick="onHealthcheckPopup('{{.ID}}')">
-                {{ template "icons" (dict "Name" "ip-health-check") }} 检测
+              <button class="btn btn-sm" onclick="onHealthcheckPopup('{{.ID}}')">
+                {{ template "icons" (dict "Name" "i-lucide-heart-pulse") }} 检测
               </button>
 
               <button class="btn btn-sm btn-outline btn-info rounded-lg px-3"
                 onclick="onHistoryIPPopup('{{.ID}}','{{.Name}}')">
-                {{ template "icons" (dict "Name" "ip-eyes") }} 历史IP
+                {{ template "icons" (dict "Name" "i-lucide-eye") }} 历史IP
               </button>
 
               <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}')">
-                {{ template "icons" (dict "Name" "ip-edit") }} 编辑
+                {{ template "icons" (dict "Name" "i-lucide-pencil") }} 编辑
               </button>
 
               {{ template "button" (dict
               "Type" "danger"
-              "IconName" "ip-delete"
+              "IconName" "i-lucide-trash-2"
               "Text" "删除"
               "URL" $apiUrlPath
               "NoReload" true

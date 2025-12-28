@@ -4,7 +4,7 @@
 <div class="ui-panel">
   <div class="ui-header">
     <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
-      {{ template "icons" (dict "Name" "ip-subscribe") }} 通知订阅
+      {{ template "icons" (dict "Name" "i-lucide-bell-plus") }} 通知订阅
     </h2>
   </div>
 
@@ -68,7 +68,7 @@
             <div class="flex justify-center">
               {{ template "button" (dict
               "Type" "danger"
-              "IconName" "ip-delete"
+              "IconName" "i-lucide-trash-2"
               "Text" "删除"
               "URL" $apiUrlPath
               "Disabled" .IsActive

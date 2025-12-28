@@ -2,9 +2,12 @@
 /* 使用 daisyui 插件，版本为 5.5.14 */
 /* 使用 select2 插件，版本为 4.0.13 */
 /* 使用 jquery 插件，版本为 3.7.1 */
+/* 使用 tailwindcss-icons 插件，版本为 1.9.0*/
+/* 使用 lucide 插件，版本为 1.2.82 */
 
 @import "tailwindcss";
 @plugin "daisyui";
+@plugin '@egoist/tailwindcss-icons';
 
 @layer components {
   /* --- 页面整体布局 --- */

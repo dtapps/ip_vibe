@@ -3,10 +3,10 @@
   <div class="ui-modal-box">
     <div class="ui-header">
       <h3 class="text-xl font-bold">
-        {{ template "icons" (dict "Name" "ip-server") }} <span id="modalTitle">添加 / 编辑 平台配置</span>
+        {{ template "icons" (dict "Name" "i-lucide-server-cog") }} <span id="modalTitle">添加 / 编辑 平台配置</span>
       </h3>
       <button class="btn btn-sm btn-circle btn-ghost" onclick="closeModal('formModal')">
-        {{ template "icons" (dict "Name" "ip-close") }}
+        {{ template "icons" (dict "Name" "i-lucide-x") }}
       </button>
     </div>
 
@@ -49,7 +49,7 @@
               autocomplete="new-password" />
             <button type="button" class="btn btn-square btn-ghost btn-sm"
               onclick="togglePasswordVisibility('cloudflare_api_key', this)">
-              {{ template "icons" (dict "Name" "ip-eyes") }}
+              {{ template "icons" (dict "Name" "i-lucide-eye") }}
             </button>
           </div>
         </div>
@@ -84,7 +84,7 @@
               autocomplete="new-password" />
             <button type="button" class="btn btn-square btn-ghost btn-sm"
               onclick="togglePasswordVisibility('tencent_dns_secret_key', this)">
-              {{ template "icons" (dict "Name" "ip-eyes") }}
+              {{ template "icons" (dict "Name" "i-lucide-eye") }}
             </button>
           </div>
         </div>
@@ -115,7 +115,7 @@
               autocomplete="new-password" />
             <button type="button" class="btn btn-square btn-ghost btn-sm"
               onclick="togglePasswordVisibility('tencent_eo_secret_key', this)">
-              {{ template "icons" (dict "Name" "ip-eyes") }}
+              {{ template "icons" (dict "Name" "i-lucide-eye") }}
             </button>
           </div>
         </div>
@@ -150,7 +150,7 @@
               autocomplete="new-password" />
             <button type="button" class="btn btn-square btn-ghost btn-sm"
               onclick="togglePasswordVisibility('aliyun_dns_access_key_secret', this)">
-              {{ template "icons" (dict "Name" "ip-eyes") }}
+              {{ template "icons" (dict "Name" "i-lucide-eye") }}
             </button>
           </div>
         </div>
@@ -181,7 +181,7 @@
               autocomplete="new-password" />
             <button type="button" class="btn btn-square btn-ghost btn-sm"
               onclick="togglePasswordVisibility('aliyun_esa_access_key_secret', this)">
-              {{ template "icons" (dict "Name" "ip-eyes") }}
+              {{ template "icons" (dict "Name" "i-lucide-eye") }}
             </button>
           </div>
         </div>
@@ -216,7 +216,7 @@
               autocomplete="new-password" />
             <button type="button" class="btn btn-square btn-ghost btn-sm"
               onclick="togglePasswordVisibility('baidu_dns_secret_access_key', this)">
-              {{ template "icons" (dict "Name" "ip-eyes") }}
+              {{ template "icons" (dict "Name" "i-lucide-eye") }}
             </button>
           </div>
         </div>
@@ -246,7 +246,7 @@
               autocomplete="new-password" />
             <button type="button" class="btn btn-square btn-ghost btn-sm"
               onclick="togglePasswordVisibility('huawei_dns_secret_access_key', this)">
-              {{ template "icons" (dict "Name" "ip-eyes") }}
+              {{ template "icons" (dict "Name" "i-lucide-eye") }}
             </button>
           </div>
         </div>
@@ -273,10 +273,10 @@
 
       <div class="modal-action gap-3">
         <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('formModal')">
-          {{ template "icons" (dict "Name" "ip-close") }} 取消
+          {{ template "icons" (dict "Name" "i-lucide-x") }} 取消
         </button>
         <button type="submit" class="btn-ui-primary">
-          {{ template "icons" (dict "Name" "ip-save") }} 保存
+          {{ template "icons" (dict "Name" "i-lucide-save") }} 保存
         </button>
       </div>
     </form>
@@ -289,10 +289,10 @@
     if (!input) return;
     if (input.type === "password") {
       input.type = "text";
-      buttonElement.innerHTML = `{{ template "icons" (dict "Name" "ip-close") }}`;
+      buttonElement.innerHTML = `{{ template "icons" (dict "Name" "i-lucide-x") }}`;
     } else {
       input.type = "password";
-      buttonElement.innerHTML = `{{ template "icons" (dict "Name" "ip-eyes") }}`;
+      buttonElement.innerHTML = `{{ template "icons" (dict "Name" "i-lucide-eye") }}`;
     }
   }
 </script>

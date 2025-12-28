@@ -10,11 +10,11 @@
     <div class="flex items-center gap-4">
         <div class="relative">
             <div class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
-                {{ template "icons" (dict "Name" "ip-ssl") }}
+                {{ template "icons" (dict "Name" "i-lucide-shield-check" "Class" "w-8 h-8") }}
             </div>
             {{ if $cert.IsECC }}
             <div class="absolute -top-1 -right-1 badge badge-success badge-xs !p-1 shadow-sm" title="现代 ECC 加密">
-                {{ template "icons" (dict "Name" "ip-bolt") }}
+                {{ template "icons" (dict "Name" "i-lucide-zap" "Class" "w-3 h-3") }}
             </div>
             {{ end }}
         </div>
@@ -35,8 +35,12 @@
         </div>
     </div>
     <div class="flex gap-2">
-        <button class="btn btn-primary btn-sm rounded-xl px-6" onclick="triggerRenewal('{{$item.ID}}')">立即续期</button>
-        <a href="/ssl" class="btn btn-ghost btn-sm rounded-xl">返回列表</a>
+        <button class="btn btn-primary btn-sm rounded-xl px-6" onclick="triggerRenewal('{{$item.ID}}')">
+            {{ template "icons" (dict "Name" "i-lucide-refresh-cw") }} 立即续期
+        </button>
+        <a href="/ssl" class="btn btn-ghost btn-sm rounded-xl">
+            {{ template "icons" (dict "Name" "i-lucide-arrow-left") }} 返回列表
+        </a>
     </div>
 </div>
 
@@ -157,7 +161,7 @@
         <div class="ui-panel overflow-hidden">
             <div class="bg-primary/5 px-6 py-4 flex justify-between items-center border-b border-primary/10">
                 <h3 class="font-bold text-primary flex items-center gap-2 text-sm">
-                    {{ template "icons" (dict "Name" "ip-check") }} 当前部署内容
+                    {{ template "icons" (dict "Name" "i-lucide-check-circle") }} 当前部署内容
                 </h3>
                 <span class="text-[10px] opacity-40 font-mono italic">Refreshed: {{ formatTimeOrNil
                     $item.LastRefreshAt }}</span>
@@ -168,13 +172,13 @@
                         class="btn btn-outline btn-md flex-1 rounded-2xl shadow-sm hover:bg-primary hover:border-primary transition-all group"
                         onclick="openViewModal('{{$item.ID}}')">
                         <span class="group-hover:text-white flex items-center gap-2">
-                            {{ template "icons" (dict "Name" "ip-eyes") }} 查看 PEM 证书与私钥
+                            {{ template "icons" (dict "Name" "i-lucide-eye") }} 查看 PEM 证书与私钥
                         </span>
                     </button>
                     {{ if $item.CertStableURL }}
                     <a href="{{ $item.CertStableURL }}" target="_blank"
                         class="btn btn-ghost btn-md rounded-2xl border border-base-300">
-                        {{ template "icons" (dict "Name" "ip-download") }} 下载
+                        {{ template "icons" (dict "Name" "i-lucide-download") }} 下载
                     </a>
                     {{ end }}
                 </div>
@@ -199,7 +203,7 @@
         <div class="ui-panel">
             <div class="ui-header flex justify-between items-center">
                 <h3 class="font-bold flex items-center gap-2">
-                    {{ template "icons" (dict "Name" "ip-log") }} 申请历史 (Top 5)
+                    {{ template "icons" (dict "Name" "i-lucide-history") }} 申请历史 (Top 5)
                 </h3>
                 {{ $historyWebUrlPath := join $webUrlPath "/history" }}
                 <a href="{{ $historyWebUrlPath }}"

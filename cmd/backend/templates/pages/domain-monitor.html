@@ -4,11 +4,11 @@
 <div class="ui-panel">
   <div class="ui-header">
     <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
-      {{ template "icons" (dict "Name" "ip-domain-monitor") }} 域名监控
+      {{ template "icons" (dict "Name" "i-lucide-search-code") }} 域名监控
     </h2>
     <div>
       <button class="btn-ui-primary" onclick="openFormModal()">
-        {{ template "icons" (dict "Name" "ip-plus") }} 添加记录
+        {{ template "icons" (dict "Name" "i-lucide-plus") }} 添加记录
       </button>
     </div>
   </div>
@@ -86,16 +86,16 @@
               {{ $detailWebUrlPath := join $webUrlPath "/detail" }}
               <button class="btn btn-sm btn-outline btn-info rounded-lg px-3"
                 onclick="location.href='{{$detailWebUrlPath}}'">
-                {{ template "icons" (dict "Name" "ip-eyes") }} 详情
+                {{ template "icons" (dict "Name" "i-lucide-eye") }} 详情
               </button>
 
               <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}')">
-                {{ template "icons" (dict "Name" "ip-edit") }} 编辑
+                {{ template "icons" (dict "Name" "i-lucide-pencil") }} 编辑
               </button>
 
               {{ template "button" (dict
               "Type" "danger"
-              "IconName" "ip-delete"
+              "IconName" "i-lucide-trash-2"
               "Text" "删除"
               "URL" $apiUrlPath
               "Disabled" .IsActive

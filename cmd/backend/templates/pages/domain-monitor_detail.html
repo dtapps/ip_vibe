@@ -6,7 +6,7 @@
 <!-- <div class="main-container"> -->
 <div class="flex items-center gap-4 mb-8">
     <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
-        {{ template "icons" (dict "Name" "ip-domain-monitor") }}
+        {{ template "icons" (dict "Name" "i-lucide-search-code" "Class" "w-8 h-8") }}
     </div>
     <div>
         <h1 class="text-3xl font-bold">域名监控详情</h1>
@@ -19,16 +19,16 @@
         <div class="ui-panel">
             <div class="ui-header">
                 <h2 class="text-xl font-bold flex items-center gap-2">
-                    {{ template "icons" (dict "Name" "ip-eyes") }} 实时状态
+                    {{ template "icons" (dict "Name" "i-lucide-activity") }} 实时状态
                 </h2>
                 <div class="flex gap-2">
                     {{ $checkApiUrlPath := join $apiUrlPath "/check" }}
                     <button class="btn btn-sm btn-outline btn-warning rounded-xl"
                         onclick="apiPost('{{$checkApiUrlPath}}', {},{reload: true})">
-                        {{ template "icons" (dict "Name" "ip-refresh") }} 立即检查
+                        {{ template "icons" (dict "Name" "i-lucide-refresh-ccw") }} 立即检查
                     </button>
                     <button class="btn-ui-primary" onclick="openFormModal('{{$item.ID}}')">
-                        {{ template "icons" (dict "Name" "ip-edit") }} 编辑
+                        {{ template "icons" (dict "Name" "i-lucide-pencil") }} 编辑
                     </button>
                 </div>
             </div>
@@ -69,11 +69,13 @@
         <div class="ui-panel">
             <div class="ui-header">
                 <h2 class="text-xl font-bold flex items-center gap-2">
-                    {{ template "icons" (dict "Name" "ip-history") }} 最近结果 ({{ $hist.CheckTime.Format "15:04:05" }})
+                    {{ template "icons" (dict "Name" "i-lucide-history") }}
+                    最近结果
+                    ({{ $hist.CheckTime.Format "15:04:05" }})
                 </h2>
                 {{ $historyWebUrlPath := join $webUrlPath "/history" }}
                 <a class="btn btn-sm btn-ghost rounded-xl" href='{{ $historyWebUrlPath }}'>
-                    {{ template "icons" (dict "Name" "ip-open-in-new") }} 全部历史
+                    {{ template "icons" (dict "Name" "i-lucide-external-link") }} 全部历史
                 </a>
             </div>
             <div class="p-8 space-y-8">
@@ -151,7 +153,9 @@
         </div>
         {{ else }}
         <div class="ui-panel p-12 text-center">
-            <div class="opacity-30 mb-4">{{ template "icons" (dict "Name" "ip-history") }}</div>
+            <div class="opacity-30 mb-4">
+                {{ template "icons" (dict "Name" "i-lucide-history") }}
+            </div>
             <p class="text-base-content/50">暂无检查记录，请点击上方“立即检查”按钮</p>
         </div>
         {{ end }}

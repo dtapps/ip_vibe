@@ -3,17 +3,17 @@
   <div class="ui-modal-box">
     <div class="ui-header">
       <h3 id="popupTitle" class="text-xl font-bold flex items-center gap-2">
-        {{ template "icons" (dict "Name" "ip-eyes") }} 查看详情
+        {{ template "icons" (dict "Name" "i-lucide-eye") }} 查看详情
       </h3>
       <button class="btn btn-sm btn-circle btn-ghost" onclick="closeModal('popup')">
-        {{ template "icons" (dict "Name" "ip-close") }}
+        {{ template "icons" (dict "Name" "i-lucide-x") }}
       </button>
     </div>
 
     <div class="px-8 py-3 bg-base-200/50 border-b border-base-300/50 flex justify-between items-center">
       <span class="text-xs opacity-50 font-medium">结果统计：<b id="popupCount" class="text-primary">0</b> 条数据</span>
       <button id="popupCopyBtn" class="btn btn-xs btn-primary rounded-lg gap-1" onclick="copyData()">
-        {{ template "icons" (dict "Name" "ip-copy") }} 一键复制
+        {{ template "icons" (dict "Name" "i-lucide-copy") }} 一键复制
       </button>
     </div>
 
@@ -24,7 +24,7 @@
 
     <div class="modal-action p-6 pt-0">
       <button class="btn btn-sm btn-ghost rounded-xl" onclick="closeModal('popup')">
-        {{ template "icons" (dict "Name" "ip-close") }} 关闭
+        {{ template "icons" (dict "Name" "i-lucide-x") }} 关闭
       </button>
     </div>
   </div>
