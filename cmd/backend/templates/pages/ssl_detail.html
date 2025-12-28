@@ -1,16 +1,30 @@
 {{ define "content" }}
+
 {{ $item := .Item }}
+{{ $cert := .CertDetail }}
 {{ $apiUrlPath := printf "/api/ssl-records/%d" $item.ID }}
 {{ $webUrlPath := printf "/ssl/%d" $item.ID }}
 
 <!-- <div class="main-container"> -->
 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
     <div class="flex items-center gap-4">
-        <div class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
-            {{ template "icons" (dict "Name" "ip-ssl") }}
+        <div class="relative">
+            <div class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
+                {{ template "icons" (dict "Name" "ip-ssl") }}
+            </div>
+            {{ if $cert.IsECC }}
+            <div class="absolute -top-1 -right-1 badge badge-success badge-xs !p-1 shadow-sm" title="现代 ECC 加密">
+                {{ template "icons" (dict "Name" "ip-bolt") }}
+            </div>
+            {{ end }}
         </div>
         <div>
-            <h1 class="text-3xl font-bold tracking-tight">{{ $item.Domain }}</h1>
+            <div class="flex items-center gap-3">
+                <h1 class="text-3xl font-bold tracking-tight">{{ $item.Domain }}</h1>
+                {{ if $cert.IsWildcard }}
+                <span class="badge badge-secondary badge-sm font-bold uppercase tracking-wider">Wildcard</span>
+                {{ end }}
+            </div>
             <div class="flex items-center gap-2 mt-1">
                 <span
                     class="badge {{ if $item.IsActive }}badge-success{{ else }}badge-ghost{{ end }} badge-sm text-white">
@@ -21,123 +35,199 @@
         </div>
     </div>
     <div class="flex gap-2">
-        <button class="btn btn-primary btn-sm rounded-xl" onclick="triggerRenewal('{{$item.ID}}')">立即续期</button>
+        <button class="btn btn-primary btn-sm rounded-xl px-6" onclick="triggerRenewal('{{$item.ID}}')">立即续期</button>
         <a href="/ssl" class="btn btn-ghost btn-sm rounded-xl">返回列表</a>
     </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
     <div class="lg:col-span-1 space-y-6">
         <div class="ui-panel p-6 text-center">
-            <div class="text-sm opacity-50 mb-2">证书到期剩余</div>
-            <div class="text-5xl font-black text-primary tracking-tighter mb-4">
-                {{ .ExpiryDays }} <span class="text-xl">天</span>
+            <div class="text-sm opacity-50 mb-2 font-medium">证书有效期剩余</div>
+
+            <div
+                class="text-6xl font-black {{ if lt $cert.ExpiryDays 15 }}text-error{{ else }}text-primary{{ end }} tracking-tighter mb-4">
+                {{ $cert.ExpiryDays }} <span class="text-xl">天</span>
             </div>
-            <div class="space-y-2 text-sm text-left bg-base-200/50 p-4 rounded-2xl">
-                <div class="flex justify-between">
-                    <span class="opacity-50">生效时间</span>
-                    <span class="font-medium">{{ formatTimeOrNil $item.NotBefore }}</span>
+
+            <div class="px-2 mb-6">
+                <div class="flex justify-between text-[10px] opacity-40 mb-1 font-mono uppercase tracking-widest">
+                    <span>Issued</span>
+                    <span>Usage: {{ $cert.ExpiryPercent }}%</span>
+                    <span>Expiry</span>
                 </div>
-                <div class="flex justify-between">
+                <progress
+                    class="progress {{ if lt $cert.ExpiryDays 15 }}progress-error{{ else }}progress-primary{{ end }} w-full h-3 rounded-full"
+                    value="{{ $cert.ExpiryPercent }}" max="100"></progress>
+            </div>
+
+            <div class="space-y-3 text-xs text-left bg-base-200/40 p-4 rounded-2xl border border-base-300/10">
+                <div class="flex justify-between items-center">
+                    <span class="opacity-50">生效时间</span>
+                    <span class="font-mono font-medium">{{ formatTimeOrNil $cert.NotBefore }}</span>
+                </div>
+                <div class="flex justify-between items-center">
                     <span class="opacity-50">到期时间</span>
-                    <span class="font-medium text-error">{{ formatTimeOrNil $item.NotAfter }}</span>
+                    <span class="font-mono font-medium {{ if $cert.IsExpired }}text-error{{ end }}">{{
+                        formatTimeOrNil $cert.NotAfter }}</span>
                 </div>
             </div>
         </div>
 
         <div class="ui-panel">
             <div class="ui-header !py-4">
-                <h3 class="font-bold">续期策略</h3>
+                <h3 class="font-bold">策略中心</h3>
             </div>
             <div class="p-6 space-y-4">
                 <div class="flex justify-between items-center">
-                    <span class="text-sm opacity-70">自动续期</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm opacity-70">自动续期任务</span>
+                        {{ if $item.IsAutoRenewal }}
+                        <div class="w-2 h-2 rounded-full bg-success animate-pulse"></div>
+                        {{ end }}
+                    </div>
                     <input type="checkbox" class="toggle toggle-primary toggle-sm" {{ if $item.IsAutoRenewal }}checked{{
                         end }} disabled />
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-sm opacity-70">续期阈值</span>
-                    <span class="badge badge-ghost font-mono">提前 {{ $item.RenewalDays }} 天</span>
+                    <span class="badge badge-ghost font-mono text-[11px] px-3">提前 {{ $item.RenewalDays }} 天</span>
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-sm opacity-70">CA 提供商</span>
-                    <span class="text-sm font-bold">{{ $item.Provider }}</span>
+                    <span class="text-sm font-bold text-secondary">{{ $item.Provider }}</span>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="lg:col-span-2 space-y-8">
+
         <div class="ui-panel">
-            <div class="ui-header">
-                <h3 class="font-bold">当前部署证书</h3>
+            <div class="ui-header flex justify-between items-center border-b-0">
+                <h3 class="font-bold text-lg">证书深度解析</h3>
+                <div class="flex gap-2">
+                    <span class="badge badge-outline badge-xs opacity-40 font-mono">v{{ $cert.Version }}</span>
+                </div>
             </div>
-            <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div class="ui-form-control">
-                        <label class="label"><span class="label-text opacity-50 text-xs">绑定证书域名</span></label>
-                        <div class="p-3 bg-base-200/50 rounded-xl font-medium">{{ $item.CertDomain }}</div>
-                    </div>
-                    <div class="ui-form-control">
-                        <label class="label"><span class="label-text opacity-50 text-xs">最后刷新成功</span></label>
-                        <div class="p-3 bg-base-200/50 rounded-xl font-medium">{{ formatTimeOrNil
-                            $item.LastRefreshAt }}</div>
+            <div class="px-6 pb-6 space-y-6">
+                <div class="space-y-3">
+                    <label class="text-[10px] uppercase font-bold opacity-30 tracking-widest">受保护域名 (Subject
+                        Alternative Names)</label>
+                    <div
+                        class="flex flex-wrap gap-2 p-4 bg-base-300/20 rounded-2xl border border-base-300/10 min-h-[60px]">
+                        {{ range $cert.DNSNames }}
+                        <span
+                            class="badge badge-md bg-base-100 border-base-300/50 font-mono text-[11px] py-3 shadow-sm hover:border-primary transition-all cursor-default">
+                            {{ . }}
+                        </span>
+                        {{ else }}
+                        <span class="text-sm italic opacity-30">仅包含主域名</span>
+                        {{ end }}
                     </div>
                 </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-base-200/50">
+                    <div>
+                        <span class="text-[10px] opacity-40 block mb-1 uppercase tracking-tighter">签名算法</span>
+                        <span class="text-[13px] font-mono font-medium">{{ $cert.SignatureAlgorithm }}</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] opacity-40 block mb-1 uppercase tracking-tighter">加密方式</span>
+                        <span class="text-[13px] font-mono font-medium {{ if $cert.IsECC }}text-success{{ end }}">
+                            {{ $cert.PublicKeyAlgorithm }} ({{ $cert.KeyLength }} bit)
+                        </span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] opacity-40 block mb-1 uppercase tracking-tighter">颁发者</span>
+                        <span class="text-[13px] font-semibold text-primary">{{ $cert.Issuer }}</span>
+                    </div>
+                </div>
+
+                <div class="pt-4 pb-4 border-t border-base-200/50">
+                    <span class="text-[10px] opacity-40 block mb-1 uppercase tracking-tighter">序列号 (Serial
+                        Number)</span>
+                    <span class="text-[10px] font-mono opacity-50 break-all select-all">{{ $cert.SerialNumber
+                        }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-panel overflow-hidden">
+            <div class="bg-primary/5 px-6 py-4 flex justify-between items-center border-b border-primary/10">
+                <h3 class="font-bold text-primary flex items-center gap-2 text-sm">
+                    {{ template "icons" (dict "Name" "ip-check") }} 当前部署内容
+                </h3>
+                <span class="text-[10px] opacity-40 font-mono italic">Refreshed: {{ formatTimeOrNil
+                    $item.LastRefreshAt }}</span>
+            </div>
+            <div class="p-6">
                 <div class="flex gap-4">
-                    <button class="btn btn-outline btn-sm flex-1 rounded-xl" onclick="openViewModal('{{$item.ID}}')">
-                        {{ template "icons" (dict "Name" "ip-eyes") }} 查看证书/私钥
+                    <button
+                        class="btn btn-outline btn-md flex-1 rounded-2xl shadow-sm hover:bg-primary hover:border-primary transition-all group"
+                        onclick="openViewModal('{{$item.ID}}')">
+                        <span class="group-hover:text-white flex items-center gap-2">
+                            {{ template "icons" (dict "Name" "ip-eyes") }} 查看 PEM 证书与私钥
+                        </span>
                     </button>
                     {{ if $item.CertStableURL }}
-                    <a href="{{ $item.CertStableURL }}" target="_blank" class="btn btn-ghost btn-sm rounded-xl">下载证书</a>
+                    <a href="{{ $item.CertStableURL }}" target="_blank"
+                        class="btn btn-ghost btn-md rounded-2xl border border-base-300">
+                        {{ template "icons" (dict "Name" "ip-download") }} 下载
+                    </a>
                     {{ end }}
                 </div>
             </div>
         </div>
+    </div>
 
+    <div class="lg:col-span-3">
         <div class="ui-panel">
-            <div class="ui-header flex justify-between">
-                <h3 class="font-bold">最后一次接口反馈</h3>
+            <div class="ui-header flex justify-between items-center">
+                <h3 class="font-bold">最后一次接口反馈 (Lego Output)</h3>
                 <span class="text-[10px] opacity-40 font-mono">{{ formatTimeOrNil $item.LastAPIResponseAt }}</span>
             </div>
             <div class="p-6">
                 <pre
-                    class="text-xs bg-base-300/30 p-4 rounded-2xl overflow-x-auto border border-base-300/10 text-base-content/70">{{ $item.LastAPIResponse }}</pre>
+                    class="text-xs bg-base-300/30 p-5 rounded-2xl overflow-x-auto border border-base-300/10 text-base-content/70 font-mono leading-relaxed">{{ $item.LastAPIResponse }}</pre>
             </div>
         </div>
     </div>
 
-    {{ $hists := .Historys }}
     <div class="lg:col-span-3">
         <div class="ui-panel">
             <div class="ui-header flex justify-between items-center">
                 <h3 class="font-bold flex items-center gap-2">
-                    {{ template "icons" (dict "Name" "ip-log") }} 申请历史 (最近5次)
+                    {{ template "icons" (dict "Name" "ip-log") }} 申请历史 (Top 5)
                 </h3>
                 {{ $historyWebUrlPath := join $webUrlPath "/history" }}
-                <a href="{{ $historyWebUrlPath }}" class="text-xs text-primary hover:underline">查看全部</a>
+                <a href="{{ $historyWebUrlPath }}"
+                    class="text-xs text-primary font-bold hover:underline tracking-tight">查看全量历史记录 →</a>
             </div>
             <div class="ui-table-container">
                 <table class="ui-table">
                     <thead>
                         <tr>
-                            <th class="ui-th">申请时间</th>
+                            <th class="ui-th">申请成功时间</th>
                             <th class="ui-th">CA 提供商</th>
-                            <th class="ui-th">生效日期</th>
-                            <th class="ui-th">失效日期</th>
+                            <th class="ui-th">有效期 (Start)</th>
+                            <th class="ui-th">有效期 (End)</th>
                             <th class="ui-th">操作</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {{ range $hists }}
-                        <tr class="hover:bg-base-200/30 transition-colors">
-                            <td class="ui-td text-xs">{{ formatTimeOrNil .CreatedAt }}</td>
-                            <td class="ui-td"><span class="badge badge-ghost badge-sm">{{ .Provider }}</span></td>
-                            <td class="ui-td text-xs opacity-70">{{ formatTimeOrNil .NotBefore }}</td>
-                            <td class="ui-td text-xs {{ if .NotAfter }}text-warning{{ end }}">{{ formatTimeOrNil
-                                .NotAfter }}</td>
+                        {{ range .Historys }}
+                        <tr class="hover:bg-base-200/40 transition-colors group">
+                            <td class="ui-td text-xs font-medium">{{ formatTimeOrNil .CreatedAt }}</td>
+                            <td class="ui-td"><span class="badge badge-ghost badge-sm font-bold opacity-70">{{
+                                    .Provider }}</span></td>
+                            <td class="ui-td text-xs font-mono opacity-60">{{ formatTimeOrNil .NotBefore }}</td>
+                            <td class="ui-td text-xs font-mono {{ if .NotAfter }}text-warning font-bold{{ end }}">{{
+                                formatTimeOrNil .NotAfter }}</td>
                             <td class="ui-td">
-                                <button class="btn btn-ghost btn-xs text-primary"
+                                <button
+                                    class="btn btn-ghost btn-xs text-primary font-bold group-hover:scale-105 transition-transform"
                                     onclick="openHistoryViewModal(`{{$item.ID}}`, `{{.ID}}`)">
                                     查看证书
                                 </button>
@@ -152,7 +242,6 @@
 </div>
 <!-- </div> -->
 
-<!-- 查看 -->
 {{ template "pages/ssl_view.html" . }}
 
 <script src="/static/js/ssl.js"></script>
