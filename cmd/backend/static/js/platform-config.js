@@ -362,48 +362,53 @@ async function openFormModal(id) {
 }
 
 // 表单提交
-document.getElementById("form").onsubmit = async (e) => {
-  e.preventDefault();
+const form = document.getElementById("form");
+if (form) {
+  form.onsubmit = async (e) => {
+    e.preventDefault();
 
-  // 组装JSON
-  buildConfigPlatform();
+    // 组装JSON
+    buildConfigPlatform();
 
-  // 表单数据
-  const form_id = Number(document.getElementById("id").value.trim());
-  const form_data = {
-    capability: document.getElementById("capability").value.trim(),
-    name: document.getElementById("name").value.trim(),
-    platform: document.getElementById("platform").value.trim(),
-    config_json: document.getElementById("config_json").value.trim(),
-  };
-  console.log("form_id, form_data", form_id, form_data);
+    // 表单数据
+    const form_id = Number(document.getElementById("id").value.trim());
+    const form_data = {
+      capability: document.getElementById("capability").value.trim(),
+      name: document.getElementById("name").value.trim(),
+      platform: document.getElementById("platform").value.trim(),
+      config_json: document.getElementById("config_json").value.trim(),
+    };
+    console.log("form_id, form_data", form_id, form_data);
 
-  // 校验
-  if (!form_data.capability) {
-    return alert("请选择服务能力");
-  }
-  if (!form_data.name) {
-    return alert("请输入组名");
-  }
-  if (!form_data.platform) {
-    return alert("请选择平台");
-  }
-
-  try {
-    // 提交
-    if (isNaN(form_id) || form_id <= 0) {
-      await API.post("/api/platform-configs", form_data);
-    } else {
-      await API.patch(`/api/platform-configs/${form_id}`, form_data);
+    // 校验
+    if (!form_data.capability) {
+      return alert("请选择服务能力");
+    }
+    if (!form_data.name) {
+      return alert("请输入组名");
+    }
+    if (!form_data.platform) {
+      return alert("请选择平台");
     }
 
-    // 刷新页面
-    location.reload();
-  } catch (error) {
-    alert(`操作失败: ${error.message}`);
-    console.error("配置操作失败", error);
-  }
-};
+    try {
+      // 提交
+      if (isNaN(form_id) || form_id <= 0) {
+        await API.post("/api/platform-configs", form_data);
+      } else {
+        await API.patch(`/api/platform-configs/${form_id}`, form_data);
+      }
+
+      // 刷新页面
+      location.reload();
+    } catch (error) {
+      alert(`操作失败: ${error.message}`);
+      console.error("配置操作失败", error);
+    }
+  };
+} else {
+  console.warn("未找到表单，跳过 onsubmit 绑定");
+}
 
 // 删除
 async function onDelete(id) {

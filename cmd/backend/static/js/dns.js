@@ -195,60 +195,65 @@ async function openFormModal(id) {
 }
 
 // 表单提交
-document.getElementById("form").onsubmit = async (e) => {
-  e.preventDefault();
+const form = document.getElementById("form");
+if (form) {
+  form.onsubmit = async (e) => {
+    e.preventDefault();
 
-  const selectedWebhookIDs = $("#webhook_ids").val() || [];
+    const selectedWebhookIDs = $("#webhook_ids").val() || [];
 
-  // 表单数据
-  const form_id = Number(document.getElementById("id").value.trim());
-  const form_data = {
-    config_id: Number(document.getElementById("config_id").value.trim()),
-    sub_domain: document.getElementById("sub_domain").value.trim(),
-    type: document.getElementById("type").value.trim(),
-    ip_group_id: Number(document.getElementById("ip_group_id").value.trim()),
-    cdn_record_id: Number(
-      document.getElementById("cdn_record_id").value.trim()
-    ),
-    webhook_ids: selectedWebhookIDs.map(Number),
-  };
-  console.log("form_id, form_data", form_id, form_data);
+    // 表单数据
+    const form_id = Number(document.getElementById("id").value.trim());
+    const form_data = {
+      config_id: Number(document.getElementById("config_id").value.trim()),
+      sub_domain: document.getElementById("sub_domain").value.trim(),
+      type: document.getElementById("type").value.trim(),
+      ip_group_id: Number(document.getElementById("ip_group_id").value.trim()),
+      cdn_record_id: Number(
+        document.getElementById("cdn_record_id").value.trim()
+      ),
+      webhook_ids: selectedWebhookIDs.map(Number),
+    };
+    console.log("form_id, form_data", form_id, form_data);
 
-  // 校验
-  if (isNaN(form_data.config_id) || form_data.config_id <= 0) {
-    return alert("请选择配置");
-  }
-  if (!form_data.sub_domain) {
-    return alert("请输入子域名");
-  }
-  if (!form_data.type) {
-    return alert("请选择记录类型");
-  }
-  if (form_data.type === "CNAME") {
-    if (isNaN(form_data.cdn_record_id) || form_data.cdn_record_id <= 0) {
-      return alert("请选择CDN记录");
+    // 校验
+    if (isNaN(form_data.config_id) || form_data.config_id <= 0) {
+      return alert("请选择配置");
     }
-  } else {
-    if (isNaN(form_data.ip_group_id) || form_data.ip_group_id <= 0) {
-      return alert("请选择IP组");
+    if (!form_data.sub_domain) {
+      return alert("请输入子域名");
     }
-  }
-
-  try {
-    // 提交
-    if (isNaN(form_id) || form_id <= 0) {
-      await API.post("/api/dns-records", form_data);
+    if (!form_data.type) {
+      return alert("请选择记录类型");
+    }
+    if (form_data.type === "CNAME") {
+      if (isNaN(form_data.cdn_record_id) || form_data.cdn_record_id <= 0) {
+        return alert("请选择CDN记录");
+      }
     } else {
-      await API.patch(`/api/dns-records/${form_id}`, form_data);
+      if (isNaN(form_data.ip_group_id) || form_data.ip_group_id <= 0) {
+        return alert("请选择IP组");
+      }
     }
 
-    // 刷新页面
-    location.reload();
-  } catch (error) {
-    alert(`操作失败: ${error.message}`);
-    console.error("DNS记录操作失败", error);
-  }
-};
+    try {
+      // 提交
+      if (isNaN(form_id) || form_id <= 0) {
+        await API.post("/api/dns-records", form_data);
+      } else {
+        await API.patch(`/api/dns-records/${form_id}`, form_data);
+      }
+
+      // 刷新页面
+      location.reload();
+    } catch (error) {
+      alert(`操作失败: ${error.message}`);
+      console.error("DNS记录操作失败", error);
+    }
+  };
+} else {
+  console.warn("未找到表单，跳过 onsubmit 绑定");
+}
 
 // 删除
 async function onDelete(id) {

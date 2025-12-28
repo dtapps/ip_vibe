@@ -100,46 +100,51 @@ async function openFormModal(id) {
 }
 
 // 表单提交
-document.getElementById("form").onsubmit = async (e) => {
-  e.preventDefault();
+const form = document.getElementById("form");
+if (form) {
+  form.onsubmit = async (e) => {
+    e.preventDefault();
 
-  const selectedWebhookIDs = $("#webhook_ids").val() || [];
+    const selectedWebhookIDs = $("#webhook_ids").val() || [];
 
-  // 表单数据
-  const form_id = Number(document.getElementById("id").value.trim());
-  const form_data = {
-    code: document.getElementById("code").value.trim(),
-    name: document.getElementById("name").value.trim(),
-    description: document.getElementById("description").value.trim(),
-    ip_v4: document.getElementById("ip_v4").value.trim(),
-    ip_v6: document.getElementById("ip_v6").value.trim(),
-    webhook_ids: selectedWebhookIDs.map(Number),
-  };
-  console.log("form_id, form_data", form_id, form_data);
+    // 表单数据
+    const form_id = Number(document.getElementById("id").value.trim());
+    const form_data = {
+      code: document.getElementById("code").value.trim(),
+      name: document.getElementById("name").value.trim(),
+      description: document.getElementById("description").value.trim(),
+      ip_v4: document.getElementById("ip_v4").value.trim(),
+      ip_v6: document.getElementById("ip_v6").value.trim(),
+      webhook_ids: selectedWebhookIDs.map(Number),
+    };
+    console.log("form_id, form_data", form_id, form_data);
 
-  // 校验
-  if (!form_data.code) {
-    return alert("请输入设备编码");
-  }
-  if (!form_data.name) {
-    return alert("请输入设备名称");
-  }
-
-  try {
-    // 提交
-    if (isNaN(form_id) || form_id <= 0) {
-      await API.post("/api/devices", form_data);
-    } else {
-      await API.patch(`/api/devices/${form_id}`, form_data);
+    // 校验
+    if (!form_data.code) {
+      return alert("请输入设备编码");
+    }
+    if (!form_data.name) {
+      return alert("请输入设备名称");
     }
 
-    // 刷新页面
-    location.reload();
-  } catch (error) {
-    alert(`操作失败: ${error.message}`);
-    console.error("设备操作失败", error);
-  }
-};
+    try {
+      // 提交
+      if (isNaN(form_id) || form_id <= 0) {
+        await API.post("/api/devices", form_data);
+      } else {
+        await API.patch(`/api/devices/${form_id}`, form_data);
+      }
+
+      // 刷新页面
+      location.reload();
+    } catch (error) {
+      alert(`操作失败: ${error.message}`);
+      console.error("设备操作失败", error);
+    }
+  };
+} else {
+  console.warn("未找到表单，跳过 onsubmit 绑定");
+}
 
 // 删除
 async function onDelete(id) {

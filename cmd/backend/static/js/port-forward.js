@@ -85,59 +85,64 @@ async function openFormModal(id) {
 }
 
 // 表单提交
-document.getElementById("form").onsubmit = async (e) => {
-  e.preventDefault();
+const form = document.getElementById("form");
+if (form) {
+  form.onsubmit = async (e) => {
+    e.preventDefault();
 
-  // 表单数据
-  const form_id = Number(document.getElementById("id").value.trim());
-  const form_data = {
-    name: document.getElementById("name").value.trim(),
-    description: document.getElementById("description").value.trim(),
-    local_port: Number(document.getElementById("local_port").value.trim()),
-    remote_host: document.getElementById("remote_host").value.trim(),
-    remote_port: Number(document.getElementById("remote_port").value.trim()),
-    protocols: Array.from(
-      document.getElementById("protocols").selectedOptions
-    ).map((opt) => opt.value.trim()),
-    device_id: Number(document.getElementById("device_id").value.trim()),
-  };
-  console.log("form_id, form_data", form_id, form_data);
+    // 表单数据
+    const form_id = Number(document.getElementById("id").value.trim());
+    const form_data = {
+      name: document.getElementById("name").value.trim(),
+      description: document.getElementById("description").value.trim(),
+      local_port: Number(document.getElementById("local_port").value.trim()),
+      remote_host: document.getElementById("remote_host").value.trim(),
+      remote_port: Number(document.getElementById("remote_port").value.trim()),
+      protocols: Array.from(
+        document.getElementById("protocols").selectedOptions
+      ).map((opt) => opt.value.trim()),
+      device_id: Number(document.getElementById("device_id").value.trim()),
+    };
+    console.log("form_id, form_data", form_id, form_data);
 
-  // 校验
-  if (!form_data.name) {
-    return alert("请输入端口转发名");
-  }
-  if (!form_data.local_port) {
-    return alert("请输入本地端口");
-  }
-  if (!form_data.remote_host) {
-    return alert("请输入远程主机");
-  }
-  if (!form_data.remote_port) {
-    return alert("请输入远程端口");
-  }
-  if (form_data.protocols.length === 0) {
-    return alert("请选择协议");
-  }
-  if (!form_data.device_id) {
-    return alert("请选择设备");
-  }
-
-  try {
-    // 提交
-    if (isNaN(form_id) || form_id <= 0) {
-      await API.post("/api/port-forwards", form_data);
-    } else {
-      await API.patch(`/api/port-forwards/${form_id}`, form_data);
+    // 校验
+    if (!form_data.name) {
+      return alert("请输入端口转发名");
+    }
+    if (!form_data.local_port) {
+      return alert("请输入本地端口");
+    }
+    if (!form_data.remote_host) {
+      return alert("请输入远程主机");
+    }
+    if (!form_data.remote_port) {
+      return alert("请输入远程端口");
+    }
+    if (form_data.protocols.length === 0) {
+      return alert("请选择协议");
+    }
+    if (!form_data.device_id) {
+      return alert("请选择设备");
     }
 
-    // 刷新页面
-    location.reload();
-  } catch (error) {
-    alert(`操作失败: ${error.message}`);
-    console.error("端口转发操作失败", error);
-  }
-};
+    try {
+      // 提交
+      if (isNaN(form_id) || form_id <= 0) {
+        await API.post("/api/port-forwards", form_data);
+      } else {
+        await API.patch(`/api/port-forwards/${form_id}`, form_data);
+      }
+
+      // 刷新页面
+      location.reload();
+    } catch (error) {
+      alert(`操作失败: ${error.message}`);
+      console.error("端口转发操作失败", error);
+    }
+  };
+} else {
+  console.warn("未找到表单，跳过 onsubmit 绑定");
+}
 
 // 删除
 async function onDelete(id) {

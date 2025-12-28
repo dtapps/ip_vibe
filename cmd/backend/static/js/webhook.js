@@ -243,51 +243,58 @@ async function openFormModal(id) {
 }
 
 // 表单提交
-document.getElementById("form").onsubmit = async (e) => {
-  e.preventDefault();
+const form = document.getElementById("form");
+if (form) {
+  form.onsubmit = async (e) => {
+    e.preventDefault();
 
-  // 表单数据
-  const form_id = Number(document.getElementById("id").value.trim());
-  const form_data = {
-    name: document.getElementById("name").value.trim(),
-    description: document.getElementById("description").value.trim(),
-    platform: document.getElementById("platform").value.trim(),
-    url: document.getElementById("url").value.trim(),
-    secret: document.getElementById("secret").value.trim(),
-    template_title: document.getElementById("template_title").value.trim(),
-    template_content: document.getElementById("template_content").value.trim(),
-  };
-  console.log("form_id, form_data", form_id, form_data);
+    // 表单数据
+    const form_id = Number(document.getElementById("id").value.trim());
+    const form_data = {
+      name: document.getElementById("name").value.trim(),
+      description: document.getElementById("description").value.trim(),
+      platform: document.getElementById("platform").value.trim(),
+      url: document.getElementById("url").value.trim(),
+      secret: document.getElementById("secret").value.trim(),
+      template_title: document.getElementById("template_title").value.trim(),
+      template_content: document
+        .getElementById("template_content")
+        .value.trim(),
+    };
+    console.log("form_id, form_data", form_id, form_data);
 
-  // 校验
-  if (!form_data.name) {
-    return alert("请输入组名");
-  }
-  if (!form_data.platform) {
-    return alert("请选择平台类型");
-  }
-  if (!form_data.template_title) {
-    return alert("请输入通知标题模板");
-  }
-  if (!form_data.template_content) {
-    return alert("请输入通知内容模板");
-  }
-
-  try {
-    // 提交
-    if (isNaN(form_id) || form_id <= 0) {
-      await API.post("/api/webhooks", form_data);
-    } else {
-      await API.patch(`/api/webhooks/${form_id}`, form_data);
+    // 校验
+    if (!form_data.name) {
+      return alert("请输入组名");
+    }
+    if (!form_data.platform) {
+      return alert("请选择平台类型");
+    }
+    if (!form_data.template_title) {
+      return alert("请输入通知标题模板");
+    }
+    if (!form_data.template_content) {
+      return alert("请输入通知内容模板");
     }
 
-    // 刷新页面
-    location.reload();
-  } catch (error) {
-    alert(`操作失败: ${error.message}`);
-    console.error("通知操作失败", error);
-  }
-};
+    try {
+      // 提交
+      if (isNaN(form_id) || form_id <= 0) {
+        await API.post("/api/webhooks", form_data);
+      } else {
+        await API.patch(`/api/webhooks/${form_id}`, form_data);
+      }
+
+      // 刷新页面
+      location.reload();
+    } catch (error) {
+      alert(`操作失败: ${error.message}`);
+      console.error("通知操作失败", error);
+    }
+  };
+} else {
+  console.warn("未找到表单，跳过 onsubmit 绑定");
+}
 
 // 测试
 async function onTest(id) {

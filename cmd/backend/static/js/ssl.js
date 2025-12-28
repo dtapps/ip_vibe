@@ -128,48 +128,55 @@ async function openFormModal(id) {
 }
 
 // 表单提交
-document.getElementById("form").onsubmit = async (e) => {
-  e.preventDefault();
+const form = document.getElementById("form");
+if (form) {
+  form.onsubmit = async (e) => {
+    e.preventDefault();
 
-  const selectedWebhookIDs = $("#webhook_ids").val() || [];
+    const selectedWebhookIDs = $("#webhook_ids").val() || [];
 
-  // 表单数据
-  const form_id = Number(document.getElementById("id").value.trim());
-  const form_data = {
-    config_id: Number(document.getElementById("config_id").value.trim()),
-    domain: document.getElementById("domain").value.trim(),
-    provider: document.getElementById("provider").value.trim(),
-    renewal_days: Number(document.getElementById("renewal_days").value.trim()),
-    webhook_ids: selectedWebhookIDs.map(Number),
-  };
-  console.log("form_id, form_data", form_id, form_data);
+    // 表单数据
+    const form_id = Number(document.getElementById("id").value.trim());
+    const form_data = {
+      config_id: Number(document.getElementById("config_id").value.trim()),
+      domain: document.getElementById("domain").value.trim(),
+      provider: document.getElementById("provider").value.trim(),
+      renewal_days: Number(
+        document.getElementById("renewal_days").value.trim()
+      ),
+      webhook_ids: selectedWebhookIDs.map(Number),
+    };
+    console.log("form_id, form_data", form_id, form_data);
 
-  // 校验
-  if (isNaN(form_data.config_id) || form_data.config_id <= 0) {
-    return alert("请选择配置");
-  }
-  if (!form_data.domain) {
-    return alert("请输入域名");
-  }
-  if (!form_data.provider) {
-    return alert("请选择提供方");
-  }
-
-  try {
-    // 提交
-    if (isNaN(form_id) || form_id <= 0) {
-      await API.post("/api/ssl-records", form_data);
-    } else {
-      await API.patch(`/api/ssl-records/${form_id}`, form_data);
+    // 校验
+    if (isNaN(form_data.config_id) || form_data.config_id <= 0) {
+      return alert("请选择配置");
+    }
+    if (!form_data.domain) {
+      return alert("请输入域名");
+    }
+    if (!form_data.provider) {
+      return alert("请选择提供方");
     }
 
-    // 刷新页面
-    location.reload();
-  } catch (error) {
-    alert(`操作失败: ${error.message}`);
-    console.error("SSL记录操作失败", error);
-  }
-};
+    try {
+      // 提交
+      if (isNaN(form_id) || form_id <= 0) {
+        await API.post("/api/ssl-records", form_data);
+      } else {
+        await API.patch(`/api/ssl-records/${form_id}`, form_data);
+      }
+
+      // 刷新页面
+      location.reload();
+    } catch (error) {
+      alert(`操作失败: ${error.message}`);
+      console.error("SSL记录操作失败", error);
+    }
+  };
+} else {
+  console.warn("未找到表单，跳过 onsubmit 绑定");
+}
 
 // 打开 查看 弹窗
 async function openViewModal(id) {
@@ -187,7 +194,33 @@ async function openViewModal(id) {
     if (crtEl) crtEl.value = sslRecord.cert_certificate || "暂无证书内容";
     if (keyEl) keyEl.value = sslRecord.cert_private_key || "暂无私钥内容";
 
-    showModal("viewModal", "", "查看 SSL记录");
+    showModal("viewModal", "modalTitle", "证书内容详情");
+  } catch (error) {
+    alert(`加载数据失败: ${error.message}`);
+    console.error("打开SSL证书详情模态框失败", error);
+    return;
+  }
+}
+
+// 打开 查看 弹窗
+async function openHistoryViewModal(id, historyId) {
+  try {
+    const { data: sslRecord } = await API.get(
+      `/api/ssl-records/${id}/history/${historyId}`
+    );
+    console.log("sslRecord", sslRecord);
+    if (!sslRecord) {
+      alert("SSL记录数据异常");
+      return;
+    }
+
+    const crtEl = document.getElementById("sslCrt");
+    const keyEl = document.getElementById("sslKey");
+
+    if (crtEl) crtEl.value = sslRecord.cert_certificate || "暂无证书内容";
+    if (keyEl) keyEl.value = sslRecord.cert_private_key || "暂无私钥内容";
+
+    showModal("viewModal", "modalTitle", "证书内容详情");
   } catch (error) {
     alert(`加载数据失败: ${error.message}`);
     console.error("打开SSL证书详情模态框失败", error);
