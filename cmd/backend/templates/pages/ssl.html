@@ -31,7 +31,7 @@
       <tbody id="table">
         {{range .List}}
         {{ $apiUrlPath := printf "/api/ssl-records/%d" .ID }}
-        {{ $webUrlPath := printf "/ssl-record/%d" .ID }}
+        {{ $webUrlPath := printf "/ssl/%d" .ID }}
         <tr class="hover:bg-base-200/50 transition-colors">
           <td class="ui-td font-bold text-base-content">
             {{.Domain}}
@@ -93,8 +93,14 @@
                 {{ template "icons" (dict "Name" "ip-ssl-apply") }} 申请
               </button>
 
-              <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openViewModal('{{.ID}}')">
+              <button class="btn btn-sm rounded-lg px-3" onclick="openViewModal('{{.ID}}')">
                 {{ template "icons" (dict "Name" "ip-eye") }} 查看
+              </button>
+
+              {{ $detailWebUrlPath := join $webUrlPath "/detail" }}
+              <button class="btn btn-sm btn-outline btn-info rounded-lg px-3"
+                onclick="location.href='{{$detailWebUrlPath}}'">
+                {{ template "icons" (dict "Name" "ip-eyes") }} 详情
               </button>
 
               <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}')">
@@ -129,9 +135,6 @@
 
 <!-- 查看 -->
 {{ template "pages/ssl_view.html" . }}
-
-<!-- 弹窗 -->
-{{ template "popup" . }}
 
 <script src="/static/js/ssl.js"></script>
 {{ end }}

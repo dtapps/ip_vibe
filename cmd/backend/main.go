@@ -609,6 +609,8 @@ func web_router(ctx context.Context, router *gin.Engine) {
 
 	// SSL页面 - 提供HTML页面并渲染数据
 	router.GET("/ssl", handlers.Ssl)
+	router.GET("/ssl/:id/detail", handlers.SslDetail)
+	router.GET("/ssl/:id/history", handlers.SslHistory)
 
 	// 域名监控页面 - 提供HTML页面并渲染数据
 	router.GET("/domain-monitor", handlers.DomainMonitor)

@@ -30,7 +30,7 @@
       <tbody>
         {{range .List}}
         {{ $apiUrlPath := printf "/api/cdn-records/%d" .ID }}
-        {{ $webUrlPath := printf "/cdn-record/%d" .ID }}
+        {{ $webUrlPath := printf "/cdn/%d" .ID }}
         <tr class="hover:bg-base-200/50 transition-colors">
           <td class="ui-td font-bold text-base-content">
             {{.SubDomain}}.{{.DomainName}}

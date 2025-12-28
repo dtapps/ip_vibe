@@ -24,6 +24,7 @@ require (
 	github.com/corazawaf/coraza-coreruleset v0.0.0-20240226094324-415b1017abdc
 	github.com/corazawaf/coraza/v3 v3.3.3
 	github.com/denisbrodbeck/machineid v1.0.1
+	github.com/dromara/carbon/v2 v2.6.15
 	github.com/envoyproxy/protoc-gen-validate v1.3.0
 	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-contrib/gzip v1.2.5

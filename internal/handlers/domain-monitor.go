@@ -84,6 +84,7 @@ func DomainMonitorDetail(c *gin.Context) {
 		return
 	}
 
+	// 准备页面数据
 	pageData := types.DomainMonitorDetailResponse{
 		CommonResponseWithRequest: types.CommonResponseWithRequest{
 			Request: c.Request,
@@ -108,6 +109,9 @@ func DomainMonitorDetail(c *gin.Context) {
 	if err == nil {
 		pageData.LatestHistory = *latestHistory
 	}
+
+	// HTTP2 server 推送
+	pusher(c)
 
 	if global.GvaEnv.DEBUG {
 		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
