@@ -48,10 +48,12 @@ type SSLDetailCertDetail struct {
 
 // SSL详情页面 响应结构
 type SSLDetailResponse struct {
-	ExpiryDays int64               // 证书过期天数
-	CertDetail SSLDetailCertDetail // 证书详情
-	Item       ent.SSLRecord
-	Historys   []ent_log.SSLCertificateHistory
+	ExpiryDays    int64                           // 证书过期天数
+	CertDetail    SSLDetailCertDetail             // 证书详情
+	Item          ent.SSLRecord                   // SSL记录
+	Historys      []ent_log.SSLCertificateHistory // 证书申请历史记录
+	WebhookSubs   []ent.WebhookSubscription       // 通知订阅
+	OperationLogs []ent_log.OperationLog          // 操作日志
 }
 
 // SSL证书申请历史记录 请求结构

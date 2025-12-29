@@ -4,6 +4,8 @@
 {{ $item := .Data.Item }}
 {{ $cert := .Data.CertDetail }}
 {{ $historys := .Data.Historys }}
+{{ $webhookSubs := .Data.WebhookSubs }}
+{{ $operationLogs := .Data.OperationLogs }}
 {{ $baseWebUrlPath := "/ssl" }}
 {{ $apiUrlPath := printf "/api/ssl-records/%d" $item.ID }}
 {{ $webUrlPath := printf "/ssl/%d" $item.ID }}

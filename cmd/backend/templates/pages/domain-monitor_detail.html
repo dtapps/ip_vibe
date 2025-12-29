@@ -2,7 +2,9 @@
 
 {{/* 初始化局部变量 */}}
 {{ $item := .Data.Item }}
-{{ $hist := .Data.LatestHistory }}
+{{ $latestHistory := .Data.LatestHistory }}
+{{ $webhookSubs := .Data.WebhookSubs }}
+{{ $operationLogs := .Data.OperationLogs }}
 {{ $baseWebUrlPath := "/domain-monitor" }}
 {{ $apiUrlPath := printf "/api/domain-monitors/%d" $item.ID }}
 {{ $webUrlPath := printf "/domain-monitor/%d" $item.ID }}
@@ -73,13 +75,13 @@
             </div>
         </div>
 
-        {{ if $hist.ID }}
+        {{ if $latestHistory.ID }}
         <div class="ui-panel">
             <div class="ui-header">
                 <h2 class="text-xl font-bold flex items-center gap-2">
                     {{ template "icons" (dict "Name" "i-lucide-history") }}
                     最近结果
-                    ({{ $hist.CheckTime.Format "15:04:05" }})
+                    ({{ $latestHistory.CheckTime.Format "15:04:05" }})
                 </h2>
                 {{ $historyWebUrlPath := join $webUrlPath "/history" }}
                 <a class="btn btn-sm btn-ghost rounded-xl" href='{{ $historyWebUrlPath }}'>
@@ -90,17 +92,19 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-base-200/50 p-4 rounded-2xl">
                         <label class="ui-label-text block mb-1">响应耗时</label>
-                        <span class="text-xl font-bold text-primary">{{$hist.CheckDuration}} <small
-                                class="text-xs">ms</small></span>
+                        <span class="text-xl font-bold text-primary">
+                            {{$latestHistory.CheckDuration}}
+                            <small class="text-xs">ms</small></span>
                     </div>
                     <div class="bg-base-200/50 p-4 rounded-2xl">
                         <label class="ui-label-text block mb-1">HTTP 状态码</label>
-                        <span class="text-xl font-bold">{{ if $hist.HTTPStatus }}{{$hist.HTTPStatus}}{{ else }}-{{
-                            end }}</span>
+                        <span class="text-xl font-bold">
+                            {{ if $latestHistory.HTTPStatus }}{{$latestHistory.HTTPStatus}}{{ else }}-{{ end }}
+                        </span>
                     </div>
                     <div class="bg-base-200/50 p-4 rounded-2xl">
                         <label class="ui-label-text block mb-1">检查结果</label>
-                        {{ if $hist.IsSuccess }}
+                        {{ if $latestHistory.IsSuccess }}
                         <span class="text-success font-bold text-lg">SUCCESS</span>
                         {{ else }}
                         <span class="text-error font-bold text-lg">FAILED</span>
@@ -111,48 +115,53 @@
                 <div class="space-y-4">
                     <div class="ui-form-control">
                         <label class="ui-label-text">解析 IP</label>
-                        <code class="bg-base-300/30 p-3 rounded-xl font-mono text-sm">{{$hist.IPResolved}}</code>
+                        <code class="bg-base-300/30 p-3 rounded-xl font-mono text-sm">
+                            {{$latestHistory.IPResolved}}
+                        </code>
                     </div>
                     <div class="ui-form-control">
                         <label class="ui-label-text">状态简述</label>
-                        <p class="text-base-content/70 italic text-sm">{{$hist.StatusMessage}}</p>
+                        <p class="text-base-content/70 italic text-sm">
+                            {{$latestHistory.StatusMessage}}
+                        </p>
                     </div>
                 </div>
 
                 {{ if eq $item.CheckProtocol "https" }}
-                {{ if $hist.SslExpiryDate }}
+                {{ if $latestHistory.SslExpiryDate }}
                 <div class="divider">SSL 证书信息</div>
                 <div class="grid grid-cols-1 gap-4 text-sm">
                     <div class="flex justify-between p-3 bg-warning/5 rounded-xl border border-warning/10">
                         <span class="opacity-60">证书有效期</span>
                         <span class="font-medium">
-                            {{ $hist.SslNotDate.Format "2006-01-02" }} 至 {{ $hist.SslExpiryDate.Format "2006-01-02"
-                            }}
+                            {{ $latestHistory.SslNotDate.Format "2006-01-02" }}
+                            至
+                            {{ $latestHistory.SslExpiryDate.Format "2006-01-02" }}
                         </span>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="ui-form-control p-3 bg-base-200/30 rounded-xl">
                             <label class="ui-label-text !text-[10px]">颁发者</label>
-                            <span class="truncate">{{ $hist.SslIssuerName }}</span>
+                            <span class="truncate">{{ $latestHistory.SslIssuerName }}</span>
                         </div>
                         <div class="ui-form-control p-3 bg-base-200/30 rounded-xl">
                             <label class="ui-label-text !text-[10px]">加密版本</label>
-                            <span>{{ $hist.SslVersion }}</span>
+                            <span>{{ $latestHistory.SslVersion }}</span>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="ui-form-control p-3 bg-base-200/30 rounded-xl">
                             <label class="ui-label-text !text-[10px]">通用名 (CN)</label>
-                            <span class="font-mono text-xs">{{ $hist.SslCommonName }}</span>
+                            <span class="font-mono text-xs">{{ $latestHistory.SslCommonName }}</span>
                         </div>
                         <div class="ui-form-control p-3 bg-base-200/30 rounded-xl">
                             <label class="ui-label-text !text-[10px]">备用名 (SAN)</label>
-                            <span class="font-mono text-xs">{{ $hist.SslSanList }}</span>
+                            <span class="font-mono text-xs">{{ $latestHistory.SslSanList }}</span>
                         </div>
                     </div>
                     <div class="ui-form-control p-3 bg-base-200/30 rounded-xl">
                         <label class="ui-label-text !text-[10px]">序列号</label>
-                        <span>{{ $hist.SslSerialNumber }}</span>
+                        <span>{{ $latestHistory.SslSerialNumber }}</span>
                     </div>
                 </div>
                 {{ end }}

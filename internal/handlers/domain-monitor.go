@@ -5,8 +5,10 @@ import (
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/ent/domainmonitor"
+	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/domainmonitorhistory"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -96,11 +98,35 @@ func DomainMonitorDetail(c *gin.Context) {
 
 	// 查询最新的监控记录
 	latestHistory, err := global.GvaEntLogDb.DomainMonitorHistory.Query().
-		Where(domainmonitorhistory.MonitorIDEQ(requestParams.ID)).
+		Where(domainmonitorhistory.MonitorIDEQ(firstDomainMonitor.ID)).
 		OrderByCheckTimeDesc().
 		First(c)
 	if err == nil {
 		pageData.LatestHistory = *latestHistory
+	}
+
+	// 查询通知订阅
+	allWebhookSubscriptions, err := global.GvaEntDb.WebhookSubscription.Query().
+		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeDomainMonitor)).
+		Where(webhooksubscription.ObjIDEQ(firstDomainMonitor.ID)).
+		All(c)
+	if err == nil {
+		for _, item := range allWebhookSubscriptions {
+			pageData.WebhookSubs = append(pageData.WebhookSubs, *item)
+		}
+	}
+
+	// 最近操作日志
+	allOperationLogs, err := global.GvaEntLogDb.OperationLog.Query().
+		Where(operationlog.ObjTypeEQ(operationlog.ObjTypeDomainMonitor)).
+		Where(operationlog.ObjIDEQ(firstDomainMonitor.ID)).
+		OrderByCreatedAtDesc().
+		Limit(5).
+		All(c)
+	if err == nil {
+		for _, item := range allOperationLogs {
+			pageData.OperationLogs = append(pageData.OperationLogs, *item)
+		}
 	}
 
 	// 渲染模板
