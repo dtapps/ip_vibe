@@ -1,20 +1,31 @@
 /* 使用 tailwindcss 插件，版本为 4.1.18 */
 /* 使用 daisyui 插件，版本为 5.5.14 */
 /* 使用 select2 插件，版本为 4.0.13 */
+/* 使用 select2-tailwindcss-v4-theme 插件，版本为 1.2.1 */
 /* 使用 jquery 插件，版本为 3.7.1 */
 /* 使用 tailwindcss-icons 插件，版本为 1.9.0*/
 /* 使用 lucide 插件，版本为 1.2.82 */
 
 @import "tailwindcss";
 
-/* 扫描 backend/templates/ 下的所有 HTML 文件 */
+/* 扫描 backend/templates/ 下的所有 HTML / JS 文件 */
 @source "../../backend/templates/**/*.html";
 @source "../../backend/js/components/*.js";
 @source "../../backend/js/*.js";
 
-/* 插件导入：DaisyUI 和 Tailwind CSS Icons */
-@plugin "daisyui";
-@plugin '@egoist/tailwindcss-icons';
+/* 扫描 Select2 主题 CSS 中的 Tailwind 类（purge 优化，确保 dark:bg-gray-900 等生成） */
+@source "../node_modules/select2-tailwindcss-v4-theme/dist/select2-tailwindcss-theme.css";
+
+/* 导入 Select2 主题 CSS（捆绑完整规则到 style.css） */
+@import "../node_modules/select2-tailwindcss-v4-theme/dist/select2-tailwindcss-theme.css";
+
+/* 插件导入：DaisyUI（v5 配置直接附在 @plugin 上，支持 dark 主题） */
+@plugin "daisyui" {
+  darktheme: "auto";
+}
+
+/* Tailwind CSS Icons 插件（无额外配置） */
+@plugin "@egoist/tailwindcss-icons";
 
 @layer components {
   /* --- 页面整体布局 --- */
