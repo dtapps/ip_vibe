@@ -3,12 +3,10 @@
 {{/* 初始化局部变量 */}}
 {{ $item := .Data.Item }}
 {{ $device := .Data.Device }}
-{{ $stats := .Data.LatestStats }}
 {{ $baseWebUrlPath := "/port-forward" }}
 {{ $apiUrlPath := printf "/api/port-forwards/%d" $item.ID }}
 {{ $webUrlPath := printf "/port-forward/%d" $item.ID }}
 
-<!-- <div class="p-6 max-w-7xl mx-auto"> -->
 <div class="flex justify-between items-center mb-8">
     <div class="flex items-center gap-4">
         <div class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
@@ -27,9 +25,9 @@
     </div>
 
     <div class="flex items-center gap-3">
-        <div class="bg-white p-1 rounded-xl shadow-sm border border-gray-100 flex items-center">
+        <div class="bg-base-100 p-1 rounded-xl shadow-sm border border-base-300 flex items-center">
             <select id="timeRange" onchange="loadStats()"
-                class="select select-sm border-none focus:ring-0 text-sm font-medium bg-transparent cursor-pointer">
+                class="select select-sm border-none focus:ring-0 font-medium bg-transparent cursor-pointer">
                 <option value="1h">最近 1 小时</option>
                 <option value="6h" selected>最近 6 小时</option>
                 <option value="24h">最近 24 小时</option>
@@ -37,102 +35,84 @@
             </select>
         </div>
         <a href="{{ $baseWebUrlPath }}"
-            class="btn btn-sm btn-ghost hover:bg-white hover:shadow-sm rounded-xl px-4 flex items-center gap-2 transition-all">
+            class="btn btn-sm btn-ghost hover:bg-base-100 rounded-xl px-4 flex items-center gap-2 transition-all">
             {{ template "icons" (dict "Name" "i-lucide-arrow-left" "Class" "w-4 h-4") }} 返回列表
         </a>
     </div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm transition-all hover:shadow-md">
+    <div class="ui-stat-card">
         <div class="flex items-center justify-between mb-4">
-            <span class="text-gray-400 text-sm font-medium">当前活跃连接</span>
-            <div class="p-2 bg-orange-50 rounded-xl text-orange-500">
+            <span class="ui-stat-label">当前活跃连接</span>
+            <div class="ui-stat-icon bg-orange-500/10 text-orange-500">
                 {{ template "icons" (dict "Name" "i-lucide-activity" "Class" "w-5 h-5") }}
             </div>
         </div>
         <div class="flex items-baseline gap-2">
-            <span class="text-4xl font-bold font-mono tracking-tighter" id="stat-conn">
-                {{ if $stats }}{{ $stats.ActiveConn }}{{ else }}0{{ end }}
-            </span>
-            <span class="text-gray-400 text-xs font-medium uppercase tracking-widest">Conn</span>
+            <span class="ui-stat-value" id="stat-conn">0 </span>
+            <span class="ui-stat-label uppercase text-[10px]">Conn</span>
         </div>
     </div>
 
-    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm transition-all hover:shadow-md">
+    <div class="ui-stat-card">
         <div class="flex items-center justify-between mb-4">
-            <span class="text-gray-400 text-sm font-medium">累计入站流量</span>
-            <div class="p-2 bg-green-50 rounded-xl text-green-500">
+            <span class="ui-stat-label">累计入站流量</span>
+            <div class="ui-stat-icon bg-green-500/10 text-green-500">
                 {{ template "icons" (dict "Name" "i-lucide-arrow-down-to-line" "Class" "w-5 h-5") }}
             </div>
         </div>
         <div class="flex items-baseline gap-2">
-            <span class="text-3xl font-bold font-mono tracking-tighter" id="stat-bytes-in">
-                {{ if $stats }}{{ $stats.BytesIn }}{{ else }}0{{ end }}
-            </span>
-            <span class="text-gray-400 text-xs font-medium">Bytes</span>
+            <span class="ui-stat-value !text-2xl" id="stat-bytes-in">0</span>
+            <span class="ui-stat-label uppercase text-[10px]">Bytes</span>
         </div>
     </div>
 
-    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm transition-all hover:shadow-md">
+    <div class="ui-stat-card">
         <div class="flex items-center justify-between mb-4">
-            <span class="text-gray-400 text-sm font-medium">累计出站流量</span>
-            <div class="p-2 bg-blue-50 rounded-xl text-blue-500">
+            <span class="ui-stat-label">累计出站流量</span>
+            <div class="ui-stat-icon bg-blue-500/10 text-blue-500">
                 {{ template "icons" (dict "Name" "i-lucide-arrow-up-from-line" "Class" "w-5 h-5") }}
             </div>
         </div>
         <div class="flex items-baseline gap-2">
-            <span class="text-3xl font-bold font-mono tracking-tighter" id="stat-bytes-out">
-                {{ if $stats }}{{ $stats.BytesOut }}{{ else }}0{{ end }}
-            </span>
-            <span class="text-gray-400 text-xs font-medium">Bytes</span>
+            <span class="ui-stat-value !text-2xl" id="stat-bytes-out">0</span>
+            <span class="ui-stat-label uppercase text-[10px]">Bytes</span>
         </div>
     </div>
 
-    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm transition-all hover:shadow-md">
+    <div class="ui-stat-card">
         <div class="flex items-center justify-between mb-4">
-            <span class="text-gray-400 text-sm font-medium">异常错误数</span>
-            <div class="p-2 bg-red-50 rounded-xl text-red-500">
+            <span class="ui-stat-label">异常错误数</span>
+            <div class="ui-stat-icon bg-red-500/10 text-red-500">
                 {{ template "icons" (dict "Name" "i-lucide-alert-triangle" "Class" "w-5 h-5") }}
             </div>
         </div>
         <div class="flex items-baseline gap-2">
-            <span class="text-4xl font-bold font-mono tracking-tighter" id="stat-errors">
-                {{ if $stats }}{{ $stats.Errors }}{{ else }}0{{ end }}
-            </span>
-            <span class="text-gray-400 text-xs font-medium uppercase tracking-widest">Err</span>
+            <span class="ui-stat-value" id="stat-errors">0</span>
+            <span class="ui-stat-label uppercase text-[10px]">Err</span>
         </div>
     </div>
 </div>
 
-<div class="space-y-6">
-    <div id="stats-container" data-rule-id="{{ $item.ID }}"
-        class="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-sm">
-        <div class="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-sm">
-            <div class="flex items-center gap-3 mb-8">
-                <div class="w-2 h-6 bg-primary rounded-full"></div>
-                <h3 class="text-xl font-bold tracking-tight">流量速率趋势 (KB/s)</h3>
-            </div>
-            <div id="trafficChart" class="w-full h-[400px]"></div>
+<div id="stats-container" data-rule-id="{{ $item.ID }}" class="space-y-6">
+    <div class="ui-chart-panel">
+        <div class="ui-chart-header">
+            <div class="ui-chart-decorator bg-primary"></div>
+            <h3 class="text-xl font-bold tracking-tight">流量速率趋势 (KB/s)</h3>
         </div>
+        <div id="trafficChart" class="w-full h-[400px]"></div>
     </div>
 
-    <div class="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-sm">
-        <div class="flex items-center gap-3 mb-8">
-            <div class="w-2 h-6 bg-orange-400 rounded-full"></div>
+    <div class="ui-chart-panel">
+        <div class="ui-chart-header">
+            <div class="ui-chart-decorator bg-orange-400"></div>
             <h3 class="text-xl font-bold tracking-tight">连接并发状态</h3>
         </div>
         <div id="connChart" class="w-full h-[300px]"></div>
     </div>
 </div>
-<!-- </div> -->
 
 <script src="/static/libs/echarts/echarts.min.js"></script>
 <script src="/static/js/port-forward_stats.js"></script>
-
-<style>
-    .font-mono {
-        font-family: 'JetBrains Mono', monospace;
-    }
-</style>
 {{ end }}

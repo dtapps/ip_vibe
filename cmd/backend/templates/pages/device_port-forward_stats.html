@@ -8,7 +8,8 @@
 
 <div class="flex justify-between items-center mb-8">
     <div class="flex items-center gap-4">
-        <div class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 shadow-inner">
+        <div
+            class="w-14 h-14 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-600 shadow-inner">
             {{ template "icons" (dict "Name" "i-lucide-monitor" "Class" "w-8 h-8") }}
         </div>
         <div>
@@ -22,7 +23,7 @@
     </div>
 
     <div class="flex items-center gap-3">
-        <div class="bg-white p-1 rounded-xl shadow-sm border border-gray-100 flex items-center">
+        <div class="bg-base-100 p-1 rounded-xl shadow-sm border border-base-300 flex items-center">
             <select id="timeRange" onchange="loadStats()"
                 class="select select-sm border-none focus:ring-0 text-sm font-medium bg-transparent cursor-pointer">
                 <option value="1h">最近 1 小时</option>
@@ -32,76 +33,75 @@
             </select>
         </div>
         <a href="{{ $baseWebUrlPath }}"
-            class="btn btn-sm btn-ghost hover:bg-white hover:shadow-sm rounded-xl px-4 flex items-center gap-2 transition-all">
-            {{ template "icons" (dict "Name" "i-lucide-arrow-left" "Class" "w-4 h-4") }} 返回设备列表
+            class="btn btn-sm btn-ghost hover:bg-base-100 rounded-xl px-4 flex items-center gap-2 transition-all">
+            {{ template "icons" (dict "Name" "i-lucide-arrow-left" "Class" "w-4 h-4") }} 返回列表
         </a>
     </div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+    <div class="ui-stat-card">
         <div class="flex items-center justify-between mb-4">
-            <span class="text-gray-400 text-sm font-medium">总活跃连接</span>
-            <div class="p-2 bg-orange-50 rounded-xl text-orange-500">
+            <span class="ui-stat-label">总活跃连接</span>
+            <div class="ui-stat-icon bg-orange-500/10 text-orange-500">
                 {{ template "icons" (dict "Name" "i-lucide-activity" "Class" "w-5 h-5") }}
             </div>
         </div>
         <div class="flex items-baseline gap-2">
-            <span class="text-4xl font-bold font-mono tracking-tighter" id="stat-conn">0</span>
-            <span class="text-gray-400 text-xs font-medium uppercase tracking-widest">Conn</span>
+            <span class="ui-stat-value" id="stat-conn">0</span>
+            <span class="ui-stat-label uppercase text-[10px]">Conn</span>
         </div>
     </div>
 
-    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+    <div class="ui-stat-card">
         <div class="flex items-center justify-between mb-4">
-            <span class="text-gray-400 text-sm font-medium">总入站流量</span>
-            <div class="p-2 bg-green-50 rounded-xl text-green-500">
+            <span class="ui-stat-label">总入站流量</span>
+            <div class="ui-stat-icon bg-green-500/10 text-green-500">
                 {{ template "icons" (dict "Name" "i-lucide-arrow-down" "Class" "w-5 h-5") }}
             </div>
         </div>
         <div class="flex items-baseline gap-2">
-            <span class="text-3xl font-bold font-mono tracking-tighter" id="stat-bytes-in">0 B</span>
+            <span class="ui-stat-value !text-2xl" id="stat-bytes-in">0 B</span>
         </div>
     </div>
 
-    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+    <div class="ui-stat-card">
         <div class="flex items-center justify-between mb-4">
-            <span class="text-gray-400 text-sm font-medium">总出站流量</span>
-            <div class="p-2 bg-blue-50 rounded-xl text-blue-500">
+            <span class="ui-stat-label">总出站流量</span>
+            <div class="ui-stat-icon bg-blue-500/10 text-blue-500">
                 {{ template "icons" (dict "Name" "i-lucide-arrow-up" "Class" "w-5 h-5") }}
             </div>
         </div>
         <div class="flex items-baseline gap-2">
-            <span class="text-3xl font-bold font-mono tracking-tighter" id="stat-bytes-out">0 B</span>
+            <span class="ui-stat-value !text-2xl" id="stat-bytes-out">0 B</span>
         </div>
     </div>
 
-    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+    <div class="ui-stat-card">
         <div class="flex items-center justify-between mb-4">
-            <span class="text-gray-400 text-sm font-medium">总错误数</span>
-            <div class="p-2 bg-red-50 rounded-xl text-red-500">
+            <span class="ui-stat-label">总错误数</span>
+            <div class="ui-stat-icon bg-red-500/10 text-red-500">
                 {{ template "icons" (dict "Name" "i-lucide-alert-circle" "Class" "w-5 h-5") }}
             </div>
         </div>
         <div class="flex items-baseline gap-2">
-            <span class="text-4xl font-bold font-mono tracking-tighter" id="stat-errors">0</span>
+            <span class="ui-stat-value" id="stat-errors">0</span>
         </div>
     </div>
 </div>
 
-<div class="space-y-6">
-    <div id="stats-container" data-device-id="{{ $item.ID }}"
-        class="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-sm">
-        <div class="flex items-center gap-3 mb-8">
-            <div class="w-2 h-6 bg-primary rounded-full"></div>
+<div id="stats-container" data-device-id="{{ $item.ID }}" class="space-y-6">
+    <div class="ui-chart-panel">
+        <div class="ui-chart-header">
+            <div class="ui-chart-decorator bg-primary"></div>
             <h3 class="text-xl font-bold tracking-tight">设备总带宽 (KB/s)</h3>
         </div>
         <div id="trafficChart" class="w-full h-[400px]"></div>
     </div>
 
-    <div class="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-sm">
-        <div class="flex items-center gap-3 mb-8">
-            <div class="w-2 h-6 bg-orange-400 rounded-full"></div>
+    <div class="ui-chart-panel">
+        <div class="ui-chart-header">
+            <div class="ui-chart-decorator bg-orange-400"></div>
             <h3 class="text-xl font-bold tracking-tight">全规则并发连接汇总</h3>
         </div>
         <div id="connChart" class="w-full h-[300px]"></div>

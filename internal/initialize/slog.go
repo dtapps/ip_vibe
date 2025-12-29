@@ -19,8 +19,8 @@ func InitSLog(name string) {
 			LocalTime:  true,                                       // 使用本地时间创建时间戳
 			Compress:   true,                                       // 是否压缩/归档旧文件
 		}),
-		golog.WithSLogSetDefault(),
-		golog.WithSLogSetDefaultCtx(),
+		golog.WithSLogSetDefault(true),
+		golog.WithSLogSetDefaultCtx(true),
 	)
 }
 

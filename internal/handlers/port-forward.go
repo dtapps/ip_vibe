@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/ent/deviceportforward"
-	"vibe_ip/internal/ent_log/portforwardstats"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -92,16 +91,6 @@ func PortForwardStats(c *gin.Context) {
 	}
 	pageData.Item = *firstRule
 	pageData.Device = *firstRule.Edges.Device
-
-	// 查询最新统计数据
-	latestStats, err := global.GvaEntLogDb.PortForwardStats.Query().
-		Where(portforwardstats.DeviceIDEQ(firstRule.Edges.Device.ID)).
-		Where(portforwardstats.PortForwardIDEQ(firstRule.ID)).
-		OrderByCreatedAtDesc().
-		First(c)
-	if err == nil {
-		pageData.LatestStats = *latestStats
-	}
 
 	// 渲染模板
 	renderHTMLWithMenu(

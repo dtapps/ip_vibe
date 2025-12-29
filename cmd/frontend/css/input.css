@@ -190,4 +190,29 @@
   .status-heartbeat-online {
     @apply bg-green-100 dark:bg-green-900/30 border-l-4 border-green-500 text-green-700 dark:text-green-300;
   }
+
+  /* --- 统计卡片 (Stats Card) --- */
+  .ui-stat-card {
+    @apply bg-base-100 rounded-3xl p-6 border border-base-300/50 shadow-sm transition-all hover:shadow-md;
+  }
+  .ui-stat-label {
+    @apply text-base-content/50 text-sm font-medium;
+  }
+  .ui-stat-value {
+    @apply text-3xl font-bold font-mono tracking-tighter text-base-content;
+  }
+  .ui-stat-icon {
+    @apply p-2 rounded-xl flex items-center justify-center;
+  }
+
+  /* --- 图表面板 (Chart Panel) --- */
+  .ui-chart-panel {
+    @apply bg-base-100 rounded-[2.5rem] p-8 border border-base-300/50 shadow-2xl;
+  }
+  .ui-chart-header {
+    @apply flex items-center gap-3 mb-8;
+  }
+  .ui-chart-decorator {
+    @apply w-2 h-6 rounded-full;
+  }
 }

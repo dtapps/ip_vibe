@@ -1,6 +1,7 @@
 {{ define "content" }}
 
 {{/* 初始化局部变量 */}}
+{{ $status := .Data.Status }}
 {{ $list := .Data.List }}
 {{ $page := .Data.Page }}
 {{ $total := .Data.Total }}
@@ -14,7 +15,7 @@
       {{ template "icons" (dict "Name" "i-lucide-list-todo") }} 任务管理
     </h2>
     <div class="flex gap-2">
-      {{if eq .Status "running"}}
+      {{if eq $status "running"}}
       <button class="btn btn-warning btn-sm rounded-xl opacity-50 cursor-not-allowed" disabled>
         {{ template "icons" (dict "Name" "i-lucide-play") }} 启动调度
       </button>
