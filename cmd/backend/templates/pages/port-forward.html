@@ -91,6 +91,12 @@
                 {{ template "icons" (dict "Name" "i-lucide-heart-pulse") }} 检测
               </button>
 
+              {{ $statsWebUrlPath := join $webUrlPath "/stats" }}
+              <button class="btn btn-sm btn-outline btn-info rounded-lg px-3"
+                onclick="location.href='{{$statsWebUrlPath}}'">
+                {{ template "icons" (dict "Name" "i-lucide-chart-line") }} 统计
+              </button>
+
               <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}')">
                 {{ template "icons" (dict "Name" "i-lucide-pencil") }} 编辑
               </button>

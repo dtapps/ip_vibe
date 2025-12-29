@@ -267,3 +267,41 @@ func HealthCheckDevice(c *gin.Context) {
 	}
 	successResponse(c, response)
 }
+
+// 获取设备端口转发统计数据
+//
+//	@Description	获取设备端口转发统计数据
+//	@Summary		获取设备端口转发统计数据
+//	@Tags			设备
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"设备序号"
+//	@Success		200	{object}	APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数错误"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Router			/devices/{id}/port-forward-stats [get]
+func GetDevicePortForwardStats(c *gin.Context) {
+	// 请求参数
+	var requestParams types.GetDevicePortForwardStatsRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewDeviceService(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
+	)
+
+	// 调用
+	response, err := service.GetDevicePortForwardStats(c, requestParams.ID, &requestParams)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, response)
+}

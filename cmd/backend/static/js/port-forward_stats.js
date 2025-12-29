@@ -39,7 +39,7 @@ async function loadStats() {
     const { data: stats } = await API.get(`/api/port-forwards/${pfId}/stats`, {
       range: range,
     });
-    render(stats);
+    render(stats || []);
   } catch (err) {
     console.error("Fetch stats error:", err);
   }

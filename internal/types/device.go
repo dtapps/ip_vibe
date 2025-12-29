@@ -2,7 +2,6 @@ package types
 
 import (
 	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent_log"
 )
 
 // 设备页面 请求结构
@@ -22,7 +21,5 @@ type DevicePortForwardStatsRequest struct {
 
 // 设备端口转发统计 响应结构
 type DevicePortForwardStatsResponse struct {
-	Device ent.Device               // 关联设备信息
-	Rule   ent.DevicePortForward    // 转发规则详情
-	Latest ent_log.PortForwardStats // 最后一跳的快照数据
+	Item ent.Device // 设备信息
 }

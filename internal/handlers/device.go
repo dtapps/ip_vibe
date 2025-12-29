@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
+	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -77,6 +78,16 @@ func DevicePortForwardStats(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.DevicePortForwardStatsResponse{}
+
+	// 查询规则和关联设备
+	firstRule, err := global.GvaEntDb.Device.Query().
+		Where(device.IDEQ(requestParams.ID)).
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	pageData.Item = *firstRule
 
 	// 渲染模板
 	renderHTMLWithMenu(

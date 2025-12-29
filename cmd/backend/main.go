@@ -694,13 +694,14 @@ func api_router(ctx context.Context, router *gin.Engine) {
 		// 设备相关API
 		devices := api.Group("/devices")
 		{
-			devices.GET("", handlers.GetDevices)                         // 获取全部设备
-			devices.GET("/:id", handlers.GetDeviceDetail)                // 获取设备详情
-			devices.POST("", handlers.CreateDevice)                      // 创建设备
-			devices.PATCH("/:id", handlers.UpdateDevice)                 // 更新设备
-			devices.DELETE("/:id", handlers.DeleteDevice)                // 删除设备
-			devices.GET("/:id/ip-history", handlers.GetDeviceIpHistory)  // 获取设备IP历史记录
-			devices.GET("/:id/health-check", handlers.HealthCheckDevice) // 检查设备健康状态
+			devices.GET("", handlers.GetDevices)                                       // 获取全部设备
+			devices.GET("/:id", handlers.GetDeviceDetail)                              // 获取设备详情
+			devices.POST("", handlers.CreateDevice)                                    // 创建设备
+			devices.PATCH("/:id", handlers.UpdateDevice)                               // 更新设备
+			devices.DELETE("/:id", handlers.DeleteDevice)                              // 删除设备
+			devices.GET("/:id/ip-history", handlers.GetDeviceIpHistory)                // 获取设备IP历史记录
+			devices.GET("/:id/health-check", handlers.HealthCheckDevice)               // 检查设备健康状态
+			devices.GET("/:id/port-forward/stats", handlers.GetDevicePortForwardStats) // 获取设备端口转发统计数据
 		}
 
 		// IP组相关API
