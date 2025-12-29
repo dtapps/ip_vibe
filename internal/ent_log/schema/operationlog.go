@@ -48,16 +48,16 @@ func (OperationLog) Fields() []ent.Field {
 			Comment("操作类型").
 			Annotations(entsql.WithComments(true)),
 
-		field.Int64("obj_id").
-			Positive(). // 正数
-			Immutable().
-			Comment("对象主键").
-			Annotations(entsql.WithComments(true)),
-
 		field.Enum("obj_type").
 			Values(schematype.GetLogObjTypes...).
 			Immutable().
 			Comment("对象类型").
+			Annotations(entsql.WithComments(true)),
+
+		field.Int64("obj_id").
+			Positive(). // 正数
+			Immutable().
+			Comment("对象主键").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("old_value").
@@ -93,20 +93,28 @@ func (OperationLog) Edges() []ent.Edge {
 // Indexes of the OperationLog.
 func (OperationLog) Indexes() []ent.Index {
 	return []ent.Index{
+		// 按创建时间排序
+		index.Fields("created_at").
+			Annotations(entsql.Desc(), entsql.WithComments(true)),
+
 		// 按操作类型排序
 		index.Fields("op_type").
-			Annotations(entsql.WithComments(true)),
-
-		// 按对象主键排序
-		index.Fields("obj_id").
 			Annotations(entsql.WithComments(true)),
 
 		// 按对象类型排序
 		index.Fields("obj_type").
 			Annotations(entsql.WithComments(true)),
 
-		// 按创建时间排序
-		index.Fields("created_at").
+		// 按对象主键排序
+		index.Fields("obj_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 按对象类型和对象主键排序
+		index.Fields("obj_type", "obj_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 按对象类型和对象主键和创建时间排序
+		index.Fields("obj_type", "obj_id", "created_at").
 			Annotations(entsql.Desc(), entsql.WithComments(true)),
 	}
 }

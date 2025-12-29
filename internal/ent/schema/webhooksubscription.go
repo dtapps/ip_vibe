@@ -61,13 +61,13 @@ func (WebhookSubscription) Fields() []ent.Field {
 		field.Enum("obj_type").
 			Values(schematype.GetWebhookSubscriptionObjTypes...).
 			Immutable().
-			Comment("订阅对象类型").
+			Comment("对象类型").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("obj_id").
 			Positive(). // 正数
 			Immutable().
-			Comment("订阅对象主键").
+			Comment("对象主键").
 			Annotations(entsql.WithComments(true)),
 
 		field.Bool("is_active").
@@ -97,17 +97,33 @@ func (WebhookSubscription) Indexes() []ent.Index {
 		index.Fields("created_at").
 			Annotations(entsql.Desc(), entsql.WithComments(true)),
 
-		// 按订阅对象类型和ID排序
+		// 按通知序号排序
+		index.Fields("webhook_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 按对象类型排序
+		index.Fields("obj_type").
+			Annotations(entsql.WithComments(true)),
+
+		// 按对象主键排序
+		index.Fields("obj_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 按是否活跃排序
+		index.Fields("is_active").
+			Annotations(entsql.WithComments(true)),
+
+		// 按对象类型和对象主键排序
 		index.Fields("obj_type", "obj_id").
 			Annotations(entsql.WithComments(true)),
+
+		// 按对象类型和对象主键和创建时间排序
+		index.Fields("obj_type", "obj_id", "created_at").
+			Annotations(entsql.Desc(), entsql.WithComments(true)),
 
 		// 确保一个通知不能对同一个对象（类型+ID）重复订阅
 		index.Fields("webhook_id", "obj_type", "obj_id").
 			Unique().
-			Annotations(entsql.WithComments(true)),
-
-		// 按通知序号排序
-		index.Fields("webhook_id").
 			Annotations(entsql.WithComments(true)),
 	}
 }
