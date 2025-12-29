@@ -106,12 +106,13 @@
 </div>
 
 <div class="space-y-6">
-    <div class="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-sm">
-        <div class="flex items-center gap-3 mb-8">
-            <div class="w-2 h-6 bg-primary rounded-full"></div>
-            <h3 class="text-xl font-bold tracking-tight">流量速率趋势 (KB/s)</h3>
-        </div>
-        <div id="stats-container" data-rule-id="{{ $item.ID }}" class="p-6 max-w-7xl mx-auto">
+    <div id="stats-container" data-rule-id="{{ $item.ID }}"
+        class="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-sm">
+        <div class="bg-white rounded-[2rem] p-8 border border-gray-100 shadow-sm">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-2 h-6 bg-primary rounded-full"></div>
+                <h3 class="text-xl font-bold tracking-tight">流量速率趋势 (KB/s)</h3>
+            </div>
             <div id="trafficChart" class="w-full h-[400px]"></div>
         </div>
     </div>

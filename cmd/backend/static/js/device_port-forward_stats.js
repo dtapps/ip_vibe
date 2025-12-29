@@ -1,16 +1,33 @@
+// 定义全局变量，但不立即初始化
 let tChart = null;
 let cChart = null;
 
+// 初始化图表实例
 function initCharts() {
   const tDom = document.getElementById("trafficChart");
   const cDom = document.getElementById("connChart");
-  if (tDom) tChart = echarts.init(tDom);
-  if (cDom) cChart = echarts.init(cDom);
+  if (tDom && !tChart) {
+    tChart = echarts.init(tDom);
+  }
+  if (cDom && !cChart) {
+    cChart = echarts.init(cDom);
+  }
 }
+
+window.addEventListener("resize", () => {
+  if (tChart) {
+    tChart.resize();
+  }
+  if (cChart) {
+    cChart.resize();
+  }
+});
 
 async function loadStats() {
   const container = document.getElementById("stats-container");
-  if (!container) return;
+  if (!container) {
+    return;
+  }
 
   const deviceId = container.dataset.deviceId;
   const range = document.getElementById("timeRange").value;
@@ -29,7 +46,10 @@ async function loadStats() {
 }
 
 function render(rawData) {
-  if (!rawData || rawData.length === 0) return;
+  if (!rawData || rawData.length === 0) {
+    console.warn("数据量不足，无法计算速率");
+    return;
+  }
 
   // 1. 数据聚合：按 created_at 分组累加所有规则的数据
   const grouped = {};
@@ -136,6 +156,7 @@ function render(rawData) {
   });
 }
 
+// 辅助函数
 function formatBytes(b) {
   if (b === 0) return "0 B";
   const i = Math.floor(Math.log(b) / Math.log(1024));
@@ -144,13 +165,15 @@ function formatBytes(b) {
   );
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+// 确保 DOM 加载后运行
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
+    initCharts();
+    loadStats();
+  });
+} else {
   initCharts();
   loadStats();
-  setInterval(loadStats, 30000);
-});
+}
 
-window.addEventListener("resize", () => {
-  tChart && tChart.resize();
-  cChart && cChart.resize();
-});
+setInterval(loadStats, 30000); // 30s 自动刷新

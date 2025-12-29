@@ -6,8 +6,6 @@ let cChart = null;
 function initCharts() {
   const tDom = document.getElementById("trafficChart");
   const cDom = document.getElementById("connChart");
-
-  // 增加判断：如果已经初始化过了就不要重复初始化
   if (tDom && !tChart) {
     tChart = echarts.init(tDom);
   }
@@ -17,7 +15,6 @@ function initCharts() {
 }
 
 window.addEventListener("resize", () => {
-  // 增加判断：如果图表实例不存在，就不调用resize方法
   if (tChart) {
     tChart.resize();
   }
@@ -32,13 +29,16 @@ async function loadStats() {
     return;
   }
 
-  const pfId = container.dataset.ruleId;
+  const portForwardId = container.dataset.ruleId;
   const range = document.getElementById("timeRange").value;
 
   try {
-    const { data: stats } = await API.get(`/api/port-forwards/${pfId}/stats`, {
-      range: range,
-    });
+    const { data: stats } = await API.get(
+      `/api/port-forwards/${portForwardId}/stats`,
+      {
+        range: range,
+      }
+    );
     render(stats || []);
   } catch (err) {
     console.error("Fetch stats error:", err);
@@ -51,7 +51,7 @@ function render(data) {
     return;
   }
 
-  // 【关键修复 1】确保数据按时间正序排列（从旧到新）
+  // 确保数据按时间正序排列（从旧到新）
   // 你的 API 返回的是最新的在前面，我们需要反转它
   const sortedData = [...data].sort(
     (a, b) => new Date(a.created_at) - new Date(b.created_at)
