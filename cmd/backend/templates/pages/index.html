@@ -1,28 +1,27 @@
 {{ define "body" }}
 
-{{ $request := .Request }}
-{{ $currentPath :=getCurrentPath $request }}
+{{/* 初始化局部变量 */}}
+{{ $activeMenu := .ActiveMenu }}
 
-<!-- 如果 $currentPath 为空，设置为 "dashboard" 也就是仪表盘 -->
-{{ if not $currentPath }}
-{{ $currentPath = "dashboard" }}
+{{/* 最终兜底 */}}
+{{ if not $activeMenu }}
+{{ $activeMenu = "dashboard" }}
 {{ end }}
 
 <div class="nav-sidebar">
-  <a href="/" class='nav-item {{ if eq $currentPath "dashboard" }}nav-item-active{{ end }}'>仪表盘</a>
-  <a href="/platform-config"
-    class='nav-item {{ if eq $currentPath "platform-config" }}nav-item-active{{ end }}'>平台配置</a>
-  <a href="/cdn" class='nav-item {{ if eq $currentPath "cdn" }}nav-item-active{{ end }}'>CDN 记录</a>
-  <a href="/dns" class='nav-item {{ if eq $currentPath "dns" }}nav-item-active{{ end }}'>DNS 记录</a>
-  <a href="/ssl" class='nav-item {{ if eq $currentPath "ssl" }}nav-item-active{{ end }}'>SSL 记录</a>
-  <a href="/domain-monitor" class='nav-item {{ if eq $currentPath "domain-monitor" }}nav-item-active{{ end }}'>域名监控</a>
-  <a href="/device" class='nav-item {{ if eq $currentPath "device" }}nav-item-active{{ end }}'>设备管理</a>
-  <a href="/ip-group" class='nav-item {{ if eq $currentPath "ip-group" }}nav-item-active{{ end }}'>IP 组</a>
-  <a href="/port-forward" class='nav-item {{ if eq $currentPath "port-forward" }}nav-item-active{{ end }}'>端口转发</a>
-  <a href="/webhook" class='nav-item {{ if eq $currentPath "webhook" }}nav-item-active{{ end }}'>通知管理</a>
-  <a href="/webhook-sub" class='nav-item {{ if eq $currentPath "webhook-sub" }}nav-item-active{{ end }}'>通知订阅</a>
-  <a href="/task" class='nav-item {{ if eq $currentPath "task" }}nav-item-active{{ end }}'>任务管理</a>
-  <a href="/log" class='nav-item {{ if eq $currentPath "log" }}nav-item-active{{ end }}'>操作日志</a>
+  <a href="/" class='nav-item {{ if eq $activeMenu "dashboard" }}nav-item-active{{ end }}'>仪表盘</a>
+  <a href="/platform-config" class='nav-item {{ if eq $activeMenu "platform-config" }}nav-item-active{{ end }}'>平台配置</a>
+  <a href="/cdn" class='nav-item {{ if eq $activeMenu "cdn" }}nav-item-active{{ end }}'>CDN 记录</a>
+  <a href="/dns" class='nav-item {{ if eq $activeMenu "dns" }}nav-item-active{{ end }}'>DNS 记录</a>
+  <a href="/ssl" class='nav-item {{ if eq $activeMenu "ssl" }}nav-item-active{{ end }}'>SSL 记录</a>
+  <a href="/domain-monitor" class='nav-item {{ if eq $activeMenu "domain-monitor" }}nav-item-active{{ end }}'>域名监控</a>
+  <a href="/device" class='nav-item {{ if eq $activeMenu "device" }}nav-item-active{{ end }}'>设备管理</a>
+  <a href="/ip-group" class='nav-item {{ if eq $activeMenu "ip-group" }}nav-item-active{{ end }}'>IP 组</a>
+  <a href="/port-forward" class='nav-item {{ if eq $activeMenu "port-forward" }}nav-item-active{{ end }}'>端口转发</a>
+  <a href="/webhook" class='nav-item {{ if eq $activeMenu "webhook" }}nav-item-active{{ end }}'>通知管理</a>
+  <a href="/webhook-sub" class='nav-item {{ if eq $activeMenu "webhook-sub" }}nav-item-active{{ end }}'>通知订阅</a>
+  <a href="/task" class='nav-item {{ if eq $activeMenu "task" }}nav-item-active{{ end }}'>任务管理</a>
+  <a href="/log" class='nav-item {{ if eq $activeMenu "log" }}nav-item-active{{ end }}'>操作日志</a>
 </div>
 
 <div class="main-container">

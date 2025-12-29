@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
@@ -22,9 +21,6 @@ func WebhookSub(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.WebhookSubResponse{
-		CommonResponseWithRequest: types.CommonResponseWithRequest{
-			Request: c.Request,
-		},
 		CommonPageResponse: types.CommonPageResponse[types.GetWebhookSubResponse]{
 			List: []types.GetWebhookSubResponse{},
 		},
@@ -57,13 +53,14 @@ func WebhookSub(c *gin.Context) {
 	pageData.PageSize = allWebhookSubscription.Size
 	pageData.Total = allWebhookSubscription.Total
 
-	// HTTP2 server 推送
-	pusher(c)
-
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
-	}
-
 	// 渲染模板
-	c.HTML(http.StatusOK, filepath.Join("pages", "webhook-sub.html"), pageData)
+	renderHTML(
+		c,
+		filepath.Join("pages", "webhook-sub.html"),
+		types.BasePageData[types.WebhookSubResponse]{
+			Debug: global.GvaEnv.DEBUG,
+			Title: "Webhook订阅记录",
+			Data:  pageData,
+		},
+	)
 }

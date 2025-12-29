@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/global"
@@ -22,9 +21,6 @@ func Task(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.TaskResponse{
-		CommonResponseWithRequest: types.CommonResponseWithRequest{
-			Request: c.Request,
-		},
 		CommonPageResponse: types.CommonPageResponse[types.JobData]{
 			List: []types.JobData{},
 		},
@@ -50,13 +46,14 @@ func Task(c *gin.Context) {
 		pageData.Status = "running"
 	}
 
-	// HTTP2 server 推送
-	pusher(c)
-
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
-	}
-
 	// 渲染模板
-	c.HTML(http.StatusOK, filepath.Join("pages", "task.html"), pageData)
+	renderHTML(
+		c,
+		filepath.Join("pages", "task.html"),
+		types.BasePageData[types.TaskResponse]{
+			Debug: global.GvaEnv.DEBUG,
+			Title: "任务记录",
+			Data:  pageData,
+		},
+	)
 }

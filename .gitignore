@@ -6,7 +6,7 @@
 .log
 *_test.go
 /bin
-/cmd/backend/node_modules
+/cmd/frontend/node_modules
 /data
 /logs
 # docker-compose-*.sh

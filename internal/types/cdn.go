@@ -7,6 +7,5 @@ type CdnRequest struct {
 
 // CDN页面 响应结构
 type CdnResponse struct {
-	CommonResponseWithRequest                // 请求对象
 	CommonPageResponse[GetCdnRecordResponse] // CDN记录列表
 }

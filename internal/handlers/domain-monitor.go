@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
@@ -26,9 +25,6 @@ func DomainMonitor(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.DomainMonitorResponse{
-		CommonResponseWithRequest: types.CommonResponseWithRequest{
-			Request: c.Request,
-		},
 		CommonPageResponse: types.CommonPageResponse[types.GetDomainMonitorResponse]{
 			List: []types.GetDomainMonitorResponse{},
 		},
@@ -64,15 +60,16 @@ func DomainMonitor(c *gin.Context) {
 	pageData.PageSize = allDomainMonitor.Size
 	pageData.Total = allDomainMonitor.Total
 
-	// HTTP2 server 推送
-	pusher(c)
-
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
-	}
-
 	// 渲染模板
-	c.HTML(http.StatusOK, filepath.Join("pages", "domain-monitor.html"), pageData)
+	renderHTML(
+		c,
+		filepath.Join("pages", "domain-monitor.html"),
+		types.BasePageData[types.DomainMonitorResponse]{
+			Debug: global.GvaEnv.DEBUG,
+			Title: "域名监控记录",
+			Data:  pageData,
+		},
+	)
 }
 
 func DomainMonitorDetail(c *gin.Context) {
@@ -85,11 +82,7 @@ func DomainMonitorDetail(c *gin.Context) {
 	}
 
 	// 准备页面数据
-	pageData := types.DomainMonitorDetailResponse{
-		CommonResponseWithRequest: types.CommonResponseWithRequest{
-			Request: c.Request,
-		},
-	}
+	pageData := types.DomainMonitorDetailResponse{}
 
 	// 查询域名监控
 	firstDomainMonitor, err := global.GvaEntDb.DomainMonitor.Query().
@@ -110,15 +103,17 @@ func DomainMonitorDetail(c *gin.Context) {
 		pageData.LatestHistory = *latestHistory
 	}
 
-	// HTTP2 server 推送
-	pusher(c)
-
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
-	}
-
 	// 渲染模板
-	c.HTML(http.StatusOK, filepath.Join("pages", "domain-monitor_detail.html"), pageData)
+	renderHTMLWithMenu(
+		c,
+		filepath.Join("pages", "domain-monitor_detail.html"),
+		types.BasePageData[types.DomainMonitorDetailResponse]{
+			Debug: global.GvaEnv.DEBUG,
+			Title: "域名监控详情",
+			Data:  pageData,
+		},
+		"domain-monitor",
+	)
 }
 
 func DomainMonitorHistory(c *gin.Context) {
@@ -132,9 +127,6 @@ func DomainMonitorHistory(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.DomainMonitorHistoryResponse{
-		CommonResponseWithRequest: types.CommonResponseWithRequest{
-			Request: c.Request,
-		},
 		CommonPageResponse: types.CommonPageResponse[ent_log.DomainMonitorHistory]{
 			List: []ent_log.DomainMonitorHistory{},
 		},
@@ -165,13 +157,15 @@ func DomainMonitorHistory(c *gin.Context) {
 	pageData.PageSize = allDomainMonitor.Size
 	pageData.Total = allDomainMonitor.Total
 
-	// HTTP2 server 推送
-	pusher(c)
-
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
-	}
-
 	// 渲染模板
-	c.HTML(http.StatusOK, filepath.Join("pages", "domain-monitor_history.html"), pageData)
+	renderHTMLWithMenu(
+		c,
+		filepath.Join("pages", "domain-monitor_history.html"),
+		types.BasePageData[types.DomainMonitorHistoryResponse]{
+			Debug: global.GvaEnv.DEBUG,
+			Title: "域名监控记录",
+			Data:  pageData,
+		},
+		"domain-monitor",
+	)
 }

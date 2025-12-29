@@ -30,8 +30,8 @@ importers:
         specifier: 4.1.0-rc.0
         version: 4.1.0-rc.0
       select2-tailwindcss-v4-theme:
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: ^1.2.1
+        version: 1.2.1
       tailwindcss:
         specifier: ^4.1.18
         version: 4.1.18
@@ -446,8 +446,8 @@ packages:
   quansync@0.2.11:
     resolution: {integrity: sha512-AifT7QEbW9Nri4tAwR5M/uzpBuqfZf+zwaEM/QkzEjj7NBuFD2rBuy0K3dE+8wltbezDV7JMA0WfnCPYRSYbXA==}
 
-  select2-tailwindcss-v4-theme@1.1.0:
-    resolution: {integrity: sha512-olGebyZQzQNj+qcH303DjQg/evI9Bzs2GQE2VrFZC6bL7SZzt+YS6N5ZtzExkJyM5jpRUTj4KH1JUMrBqj92Xg==}
+  select2-tailwindcss-v4-theme@1.2.1:
+    resolution: {integrity: sha512-QppCZcBJwtpbKohbEqZCANnf6CQJi1mFb4DUboybNBgLt7GOC38I4vo/ZOwUqsMaMGpRdkrEWWMjJZu48AmLIA==}
 
   select2@4.1.0-rc.0:
     resolution: {integrity: sha512-Hr9TdhyHCZUtwznEH2CBf7967mEM0idtJ5nMtjvk3Up5tPukOLXbHUNmh10oRfeNIhj+3GD3niu+g6sVK+gK0A==}
@@ -825,7 +825,7 @@ snapshots:
 
   quansync@0.2.11: {}
 
-  select2-tailwindcss-v4-theme@1.1.0: {}
+  select2-tailwindcss-v4-theme@1.2.1: {}
 
   select2@4.1.0-rc.0: {}
 

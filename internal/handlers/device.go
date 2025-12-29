@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
@@ -10,6 +9,7 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 )
 
 func Device(c *gin.Context) {
@@ -22,9 +22,6 @@ func Device(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.DeviceResponse{
-		CommonResponseWithRequest: types.CommonResponseWithRequest{
-			Request: c.Request,
-		},
 		CommonPageResponse: types.CommonPageResponse[types.GetDeviceResponse]{
 			List: []types.GetDeviceResponse{},
 		},
@@ -57,13 +54,36 @@ func Device(c *gin.Context) {
 	pageData.PageSize = allDevice.Size
 	pageData.Total = allDevice.Total
 
-	// HTTP2 server 推送
-	pusher(c)
+	// 渲染模板
+	renderHTML(
+		c,
+		filepath.Join("pages", "device.html"),
+		types.BasePageData[types.DeviceResponse]{
+			Debug: global.GvaEnv.DEBUG,
+			Title: "设备列表",
+			Data:  pageData,
+		},
+	)
+}
 
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
+func DevicePortForwardStats(c *gin.Context) {
+	// 请求参数
+	var requestParams types.DevicePortForwardStatsRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
 	}
 
 	// 渲染模板
-	c.HTML(http.StatusOK, filepath.Join("pages", "device.html"), pageData)
+	renderHTMLWithMenu(
+		c,
+		filepath.Join("pages", "device_port-forward_stats.html"),
+		types.BasePageData[any]{
+			Debug: global.GvaEnv.DEBUG,
+			Title: "设备端口转发统计",
+			Data:  nil,
+		},
+		"device",
+	)
 }

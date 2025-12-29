@@ -47,10 +47,7 @@ mod:
 	go mod tidy
 	go mod vendor
 
-generate:
-	make swag_v1_all
-	make swag_v2_all
-	make grpc_generate_all
+generate: swag_v1_all swag_v2_all swag2op_all grpc_generate_all
 
 generate_ent:
 # 	ent generate --feature schema/snapshot,privacy,entql,namedges,bidiedges,sql/schemaconfig,sql/lock,sql/modifier,sql/execquery,sql/upsert ./ent/schema
@@ -62,10 +59,7 @@ ent_new:
 ent_new_log:
 	ent new RestyLog --target ./internal/ent_log/schema
 
-swag_v1_all:
-	make swag_v1_version
-	make swag_v1_fmt
-	make swag_v1_init
+swag_v1_all: swag_v1_version swag_v1_fmt swag_v1_init
 
 swag_v1_version:
 	swag_v1 -version
@@ -76,10 +70,7 @@ swag_v1_init:
 swag_v1_fmt:
 	swag_v1 fmt -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go
 
-swag_v2_all:
-	make swag_v2_version
-	make swag_v2_fmt
-	make swag_v2_init
+swag_v2_all: swag_v2_version swag_v2_fmt swag_v2_init
 
 swag_v2_version:
 	swag_v2 -version
@@ -90,11 +81,16 @@ swag_v2_init:
 swag_v2_fmt:
 	swag_v2 fmt -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go
 
-swag2op:
-	swag2op init -g cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal -o internal/docs_2 -openapiOutputDir internal/docs_3
+swag2op_all: swag2op_version swag2op_init
+
+swag2op_version:
+	swag2op -version
+
+swag2op_init:
+	swag2op init -g cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal -o internal/docs_2 -openapiOutputDir internal/docs_2_to_3
 
 pnpm_update:
-	cd cmd/$(BINARY_NAME_BACKEND) && \
+	cd cmd/$(BINARY_NAME_FRONTEND) && \
 	pnpm update
 
 grpc_generate_all:
@@ -165,6 +161,7 @@ grpc_generate_old:
 # 二进制文件名
 BINARY_NAME=ip_vibe
 # BINARY_NAME_CLI=cli
+BINARY_NAME_FRONTEND=frontend
 BINARY_NAME_BACKEND=backend
 BINARY_NAME_REPORTER=reporter
 BINARY_NAME_FORWARDER=forwarder
@@ -192,7 +189,7 @@ ENV_BASIC_AUTH_PASSWORD=123456
 # pnpm add -D select2 jquery
 # 启动前端服务（css 热更新）
 dev_frontend:
-	cd cmd/$(BINARY_NAME_BACKEND) && \
+	cd cmd/$(BINARY_NAME_FRONTEND) && \
 	pnpm dev
 
 # 启动后端服务

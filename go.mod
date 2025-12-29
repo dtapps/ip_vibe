@@ -2,13 +2,11 @@ module vibe_ip
 
 go 1.25.5
 
-ignore ./frontend
-
-ignore ./cmd/backend/node_modules
-
 ignore ./cmd/backend/static
 
 ignore ./cmd/backend/templates
+
+ignore ./cmd/frontend/node_modules
 
 require (
 	connectrpc.com/connect v1.19.1
@@ -44,8 +42,8 @@ require (
 	github.com/swaggo/gin-swagger v1.6.1
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc4
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.21
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.21
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.22
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.22
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.16
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.21
 	github.com/wdcbot/qingfeng v1.5.1
@@ -71,7 +69,7 @@ require (
 	google.golang.org/grpc v1.78.0
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
-	modernc.org/sqlite v1.41.0
+	modernc.org/sqlite v1.42.2
 	resty.dev/v3 v3.0.0-beta.5
 )
 

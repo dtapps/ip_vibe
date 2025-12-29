@@ -7,6 +7,5 @@ type DnsRequest struct {
 
 // DNS页面 响应结构
 type DnsResponse struct {
-	CommonResponseWithRequest                // 请求对象
 	CommonPageResponse[GetDnsRecordResponse] // DNS记录列表
 }

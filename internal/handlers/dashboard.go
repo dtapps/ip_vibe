@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"fmt"
-	"net/http"
 	"path/filepath"
 	"time"
 	"vibe_ip/internal/ent/device"
@@ -18,9 +16,6 @@ import (
 func Dashboard(c *gin.Context) {
 	// 准备页面数据
 	pageData := types.DashboardResponse{
-		CommonResponseWithRequest: types.CommonResponseWithRequest{
-			Request: c.Request,
-		},
 		RecentLogs: []types.GetLogResponse{},
 	}
 	pageData.Stats.LogLimit = 15
@@ -81,13 +76,14 @@ func Dashboard(c *gin.Context) {
 	// 获取系统内存信息
 	pageData.SystemMemoryInfo = systemHelper.GetMemoryInfo()
 
-	// HTTP2 server 推送
-	pusher(c)
-
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
-	}
-
 	// 渲染模板
-	c.HTML(http.StatusOK, filepath.Join("pages", "dashboard.html"), pageData)
+	renderHTML(
+		c,
+		filepath.Join("pages", "dashboard.html"),
+		types.BasePageData[types.DashboardResponse]{
+			Debug: global.GvaEnv.DEBUG,
+			Title: "仪表盘",
+			Data:  pageData,
+		},
+	)
 }

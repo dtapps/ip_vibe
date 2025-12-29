@@ -7,6 +7,10 @@ type PortForwardRequest struct {
 
 // 端口转发页面 响应结构
 type PortForwardResponse struct {
-	CommonResponseWithRequest                  // 请求对象
 	CommonPageResponse[GetPortForwardResponse] // 端口转发列表
+}
+
+// 端口转发统计页面 请求结构
+type PortForwardStatsRequest struct {
+	ID int64 `json:"id" form:"id" validate:"required" comment:"端口转发序号"`
 }

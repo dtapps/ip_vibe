@@ -665,10 +665,10 @@ github.com/swaggo/swag
 # github.com/swaggo/swag/v2 v2.0.0-rc4
 ## explicit; go 1.18
 github.com/swaggo/swag/v2
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.21
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.22
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.21
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.22
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors
@@ -1106,7 +1106,7 @@ modernc.org/mathutil
 # modernc.org/memory v1.11.0
 ## explicit; go 1.23.0
 modernc.org/memory
-# modernc.org/sqlite v1.41.0
+# modernc.org/sqlite v1.42.2
 ## explicit; go 1.24.0
 modernc.org/sqlite
 modernc.org/sqlite/lib

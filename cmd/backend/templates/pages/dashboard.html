@@ -1,5 +1,8 @@
 {{ define "content" }}
-<!-- <div class="main-container"> -->
+
+{{/* 初始化局部变量 */}}
+{{ $data := .Data }}
+
 <div class="flex items-center justify-between mb-10">
   <div>
     <h1 class="text-4xl font-bold tracking-tight">🌐 概览中心</h1>
@@ -7,9 +10,9 @@
   </div>
   <div class="flex flex-col items-end">
     <span class="badge badge-primary py-4 px-6 rounded-2xl font-bold">
-      {{ .SystemOS }} / {{ .SystemArch }}
+      {{ $data.SystemOS }} / {{ $data.SystemArch }}
     </span>
-    <span class="text-[10px] opacity-30 mt-2 font-mono">Build: {{ .SystemGitCommit }}</span>
+    <span class="text-[10px] opacity-30 mt-2 font-mono">Build: {{ $data.SystemGitCommit }}</span>
   </div>
 </div>
 
@@ -18,27 +21,27 @@
   <div class="lg:col-span-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
     <div class="ui-panel p-6 flex flex-col items-center justify-center">
       <span class="text-sm opacity-50 font-medium mb-1">设备总数</span>
-      <span class="text-3xl font-bold text-primary tracking-tighter">{{ .Stats.DeviceCount }}</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">{{ $data.Stats.DeviceCount }}</span>
     </div>
     <div class="ui-panel p-6 flex flex-col items-center justify-center">
       <span class="text-sm opacity-50 font-medium mb-1">在线设备</span>
-      <span class="text-3xl font-bold text-primary tracking-tighter">{{ .Stats.OnlineDeviceCount }}</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">{{ $data.Stats.OnlineDeviceCount }}</span>
     </div>
     <div class="ui-panel p-6 flex flex-col items-center justify-center">
       <span class="text-sm opacity-50 font-medium mb-1">DNS 记录</span>
-      <span class="text-3xl font-bold text-primary tracking-tighter">{{ .Stats.DnsRecordCount }}</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">{{ $data.Stats.DnsRecordCount }}</span>
     </div>
     <div class="ui-panel p-6 flex flex-col items-center justify-center">
       <span class="text-sm opacity-50 font-medium mb-1">CDN 记录</span>
-      <span class="text-3xl font-bold text-primary tracking-tighter">{{ .Stats.CdnRecordCount }}</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">{{ $data.Stats.CdnRecordCount }}</span>
     </div>
     <div class="ui-panel p-6 flex flex-col items-center justify-center">
       <span class="text-sm opacity-50 font-medium mb-1">通知渠道</span>
-      <span class="text-3xl font-bold text-primary tracking-tighter">{{ .Stats.WebhookCount }}</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">{{ $data.Stats.WebhookCount }}</span>
     </div>
     <div class="ui-panel p-6 flex flex-col items-center justify-center">
       <span class="text-sm opacity-50 font-medium mb-1">运行任务</span>
-      <span class="text-3xl font-bold text-primary tracking-tighter">{{ .Stats.ActiveTaskCount }}</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">{{ $data.Stats.ActiveTaskCount }}</span>
     </div>
   </div>
 
@@ -106,8 +109,9 @@
         </a>
         <a href="/config"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-server-cog")
-            }}</div>
+          <div class="mb-2 opacity-70 group-hover:opacity-100">
+            {{ template "icons" (dict "Name" "i-lucide-server-cog") }}
+          </div>
           <span class="text-xs font-bold">平台配置</span>
         </a>
       </div>
@@ -120,7 +124,8 @@
         </h2>
       </div>
       <div class="p-0">
-        {{ range .RecentLogs }}
+        {{ $recentLogs := .Data.RecentLogs }}
+        {{ range $recentLogs }}
         <div class="p-6 border-b border-base-200 last:border-0 flex items-center justify-between">
           <div>
             <div class="flex items-center gap-2">
@@ -151,25 +156,25 @@
       <div class="p-6 space-y-4">
         <div class="flex flex-col">
           <span class="text-[10px] opacity-40 font-bold">GO 版本</span>
-          <span class="text-sm truncate">{{ .SystemGoVersion }}</span>
+          <span class="text-sm truncate">{{ $data.SystemGoVersion }}</span>
         </div>
         <div class="flex flex-col">
           <span class="text-[10px] opacity-40 font-bold">启动时间</span>
-          <span class="text-sm truncate">{{ .SystemMemoryInfo.RuntimeStartTime }}</span>
+          <span class="text-sm truncate">{{ $data.SystemMemoryInfo.RuntimeStartTime }}</span>
         </div>
         <div class="grid grid-cols-2 gap-4 pt-4">
           <div class="bg-base-200/50 p-3 rounded-2xl">
             <span class="text-[10px] block opacity-50">Goroutines</span>
-            <span class="font-bold">{{ .SystemMemoryInfo.NumGoroutine }}</span>
+            <span class="font-bold">{{ $data.SystemMemoryInfo.NumGoroutine }}</span>
           </div>
           <div class="bg-base-200/50 p-3 rounded-2xl">
             <span class="text-[10px] block opacity-50">GC 次数</span>
-            <span class="font-bold">{{ .SystemMemoryInfo.NumGC }}</span>
+            <span class="font-bold">{{ $data.SystemMemoryInfo.NumGC }}</span>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-<!-- </div> -->
+
 {{ end }}

@@ -1,5 +1,8 @@
 {{ define "content" }}
-{{ $item := .Item }}
+
+{{/* 初始化局部变量 */}}
+{{ $item := .Data.Item }}
+{{ $hist := .Data.LatestHistory }}
 {{ $apiUrlPath := printf "/api/domain-monitors/%d" $item.ID }}
 {{ $webUrlPath := printf "/domain-monitor/%d" $item.ID }}
 
@@ -64,7 +67,6 @@
             </div>
         </div>
 
-        {{ $hist := .LatestHistory }}
         {{ if $hist.ID }}
         <div class="ui-panel">
             <div class="ui-header">

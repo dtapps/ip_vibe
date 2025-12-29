@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
@@ -22,9 +21,6 @@ func PlatformConfig(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.PlatformConfigResponse{
-		CommonResponseWithRequest: types.CommonResponseWithRequest{
-			Request: c.Request,
-		},
 		CommonPageResponse: types.CommonPageResponse[types.GetPlatformConfigResponse]{
 			List: []types.GetPlatformConfigResponse{},
 		},
@@ -56,13 +52,14 @@ func PlatformConfig(c *gin.Context) {
 	pageData.PageSize = allConfig.Size
 	pageData.Total = allConfig.Total
 
-	// HTTP2 server 推送
-	pusher(c)
-
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
-	}
-
 	// 渲染模板
-	c.HTML(http.StatusOK, filepath.Join("pages", "platform-config.html"), pageData)
+	renderHTML(
+		c,
+		filepath.Join("pages", "platform-config.html"),
+		types.BasePageData[types.PlatformConfigResponse]{
+			Debug: global.GvaEnv.DEBUG,
+			Title: "平台配置",
+			Data:  pageData,
+		},
+	)
 }

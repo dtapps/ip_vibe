@@ -1,6 +1,11 @@
 {{ define "content" }}
 
-{{ $item := .Item }}
+{{/* 初始化局部变量 */}}
+{{ $item := .Data.Item }}
+{{ $list := .Data.List }}
+{{ $page := .Data.Page }}
+{{ $total := .Data.Total }}
+{{ $pageSize := .Data.PageSize }}
 {{ $apiUrlPath := printf "/api/domain-monitors/%d" $item.ID }}
 {{ $webUrlPath := printf "/domain-monitor/%d" $item.ID }}
 
@@ -27,7 +32,7 @@
     <h2 class="text-xl font-bold flex items-center gap-2">
       {{ template "icons" (dict "Name" "i-lucide-scroll-text") }} 全部日志记录
     </h2>
-    <div class="badge badge-outline opacity-50">共 {{ .Total }} 条记录</div>
+    <div class="badge badge-outline opacity-50">共 {{ $total }} 条记录</div>
   </div>
 
   <div class="ui-table-container">
@@ -46,7 +51,7 @@
         </tr>
       </thead>
       <tbody id="table">
-        {{ range .List }}
+        {{ range $list }}
         <tr class="hover:bg-base-200/30 transition-colors">
           <td class="ui-td font-mono text-xs opacity-50">{{.ID}}</td>
           <td class="ui-td">
@@ -78,7 +83,7 @@
   </div>
 
   <div class="p-8 border-t border-base-200 flex justify-center">
-    {{ template "pagination" . }}
+    {{ template "pagination" (dict "Page" $page "Total" $total "PageSize" $pageSize) }}
   </div>
 </div>
 <!-- </div> -->

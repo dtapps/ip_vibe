@@ -13,7 +13,6 @@ type SSLRequest struct {
 
 // SSL页面 响应结构
 type SSLResponse struct {
-	CommonResponseWithRequest                // 请求对象
 	CommonPageResponse[GetSSLRecordResponse] // SSL记录列表
 }
 
@@ -49,11 +48,10 @@ type SSLDetailCertDetail struct {
 
 // SSL详情页面 响应结构
 type SSLDetailResponse struct {
-	CommonResponseWithRequest                     // 请求对象
-	ExpiryDays                int64               // 证书过期天数
-	CertDetail                SSLDetailCertDetail // 证书详情
-	Item                      ent.SSLRecord
-	Historys                  []ent_log.SSLCertificateHistory
+	ExpiryDays int64               // 证书过期天数
+	CertDetail SSLDetailCertDetail // 证书详情
+	Item       ent.SSLRecord
+	Historys   []ent_log.SSLCertificateHistory
 }
 
 // SSL证书申请历史记录 请求结构
@@ -64,7 +62,6 @@ type SSLHistoryRequest struct {
 
 // SSL证书申请历史记录 响应结构
 type SSLHistoryResponse struct {
-	CommonResponseWithRequest // 请求对象
 	CommonPageResponse[ent_log.SSLCertificateHistory]
 	Item ent.SSLRecord
 }

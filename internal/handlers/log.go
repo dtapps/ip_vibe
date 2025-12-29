@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/global"
@@ -21,9 +20,6 @@ func Log(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.LogResponse{
-		CommonResponseWithRequest: types.CommonResponseWithRequest{
-			Request: c.Request,
-		},
 		CommonPageResponse: types.CommonPageResponse[types.GetLogResponse]{
 			List: []types.GetLogResponse{},
 		},
@@ -53,13 +49,14 @@ func Log(c *gin.Context) {
 	pageData.PageSize = allOperationLog.Size
 	pageData.Total = allOperationLog.Total
 
-	// HTTP2 server 推送
-	pusher(c)
-
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
-	}
-
 	// 渲染模板
-	c.HTML(http.StatusOK, filepath.Join("pages", "log.html"), pageData)
+	renderHTML(
+		c,
+		filepath.Join("pages", "log.html"),
+		types.BasePageData[types.LogResponse]{
+			Debug: global.GvaEnv.DEBUG,
+			Title: "操作日志",
+			Data:  pageData,
+		},
+	)
 }

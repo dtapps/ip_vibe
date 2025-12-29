@@ -5,7 +5,6 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -33,9 +32,6 @@ func Ssl(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.SSLResponse{
-		CommonResponseWithRequest: types.CommonResponseWithRequest{
-			Request: c.Request,
-		},
 		CommonPageResponse: types.CommonPageResponse[types.GetSSLRecordResponse]{
 			List: []types.GetSSLRecordResponse{},
 		},
@@ -79,15 +75,16 @@ func Ssl(c *gin.Context) {
 	pageData.PageSize = allSSLRecord.Size
 	pageData.Total = allSSLRecord.Total
 
-	// HTTP2 server 推送
-	pusher(c)
-
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
-	}
-
 	// 渲染模板
-	c.HTML(http.StatusOK, filepath.Join("pages", "ssl.html"), pageData)
+	renderHTML(
+		c,
+		filepath.Join("pages", "ssl.html"),
+		types.BasePageData[types.SSLResponse]{
+			Debug: global.GvaEnv.DEBUG,
+			Title: "SSL记录",
+			Data:  pageData,
+		},
+	)
 }
 
 func SslDetail(c *gin.Context) {
@@ -100,11 +97,7 @@ func SslDetail(c *gin.Context) {
 	}
 
 	// 准备页面数据
-	pageData := types.SSLDetailResponse{
-		CommonResponseWithRequest: types.CommonResponseWithRequest{
-			Request: c.Request,
-		},
-	}
+	pageData := types.SSLDetailResponse{}
 
 	// 查询 SSL 记录
 	firstSSLRecord, err := global.GvaEntDb.SSLRecord.Query().
@@ -130,15 +123,17 @@ func SslDetail(c *gin.Context) {
 		}
 	}
 
-	// HTTP2 server 推送
-	pusher(c)
-
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
-	}
-
 	// 渲染模板
-	c.HTML(http.StatusOK, filepath.Join("pages", "ssl_detail.html"), pageData)
+	renderHTMLWithMenu(
+		c,
+		filepath.Join("pages", "ssl_detail.html"),
+		types.BasePageData[types.SSLDetailResponse]{
+			Debug: global.GvaEnv.DEBUG,
+			Title: "SSL详情",
+			Data:  pageData,
+		},
+		"ssl",
+	)
 }
 
 func SslHistory(c *gin.Context) {
@@ -152,9 +147,6 @@ func SslHistory(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.SSLHistoryResponse{
-		CommonResponseWithRequest: types.CommonResponseWithRequest{
-			Request: c.Request,
-		},
 		CommonPageResponse: types.CommonPageResponse[ent_log.SSLCertificateHistory]{
 			List: []ent_log.SSLCertificateHistory{},
 		},
@@ -185,15 +177,17 @@ func SslHistory(c *gin.Context) {
 	pageData.PageSize = allSSLCertificateHistory.Size
 	pageData.Total = allSSLCertificateHistory.Total
 
-	// HTTP2 server 推送
-	pusher(c)
-
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
-	}
-
 	// 渲染模板
-	c.HTML(http.StatusOK, filepath.Join("pages", "ssl_history.html"), pageData)
+	renderHTMLWithMenu(
+		c,
+		filepath.Join("pages", "ssl_history.html"),
+		types.BasePageData[types.SSLHistoryResponse]{
+			Debug: global.GvaEnv.DEBUG,
+			Title: "SSL证书申请历史记录",
+			Data:  pageData,
+		},
+		"ssl",
+	)
 }
 
 func ParseSSLCertificate(certPEM string) *types.SSLDetailCertDetail {

@@ -6,6 +6,13 @@
 /* 使用 lucide 插件，版本为 1.2.82 */
 
 @import "tailwindcss";
+
+/* 扫描 backend/templates/ 下的所有 HTML 文件 */
+@source "../../backend/templates/**/*.html";
+@source "../../backend/js/components/*.js";
+@source "../../backend/js/*.js";
+
+/* 插件导入：DaisyUI 和 Tailwind CSS Icons */
 @plugin "daisyui";
 @plugin '@egoist/tailwindcss-icons';
 

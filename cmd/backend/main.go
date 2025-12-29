@@ -543,15 +543,6 @@ func web_resource(ctx context.Context, router *gin.Engine) {
 		"join": func(strs ...string) string {
 			return strings.Join(strs, "")
 		},
-		// 获取当前路径（去掉开头的斜杠）
-		"getCurrentPath": func(r *http.Request) string {
-			// 去掉开头的斜杠，用于匹配
-			path := strings.TrimPrefix(r.URL.Path, "/")
-			if path == "" {
-				return ""
-			}
-			return path
-		},
 	}
 
 	// 判断是否为开发模式：version == "dev"
@@ -606,12 +597,14 @@ func web_router(ctx context.Context, router *gin.Engine) {
 
 	// 设备页面 - 提供HTML页面并渲染数据
 	router.GET("/device", handlers.Device)
+	router.GET("/device/:id/port-forward/stats", handlers.DevicePortForwardStats)
 
 	// IP组页面 - 提供HTML页面并渲染数据
 	router.GET("/ip-group", handlers.IPGroup)
 
 	// 端口转发页面 - 提供HTML页面并渲染数据
 	router.GET("/port-forward", handlers.PortForward)
+	router.GET("/port-forward/:id/stats", handlers.PortForwardStats)
 
 	// SSL页面 - 提供HTML页面并渲染数据
 	router.GET("/ssl", handlers.Ssl)

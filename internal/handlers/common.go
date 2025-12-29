@@ -3,7 +3,9 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
 )
@@ -58,4 +60,68 @@ func pusher(c *gin.Context) {
 		}
 	}
 
+}
+
+// 通用渲染HTML函数
+func renderHTML[T any](c *gin.Context, templateName string, data types.BasePageData[T]) {
+	// 获取基础数据
+	baseData := getBaseData[T](c)
+	baseData.SetDebug(data.Debug)
+	baseData.SetTitle(data.Title)
+	baseData.SetData(data.Data)
+	// 打印调试信息
+	if baseData.Debug {
+		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, baseData)
+	}
+	// 推送
+	pusher(c)
+	// 渲染HTML
+	c.HTML(http.StatusOK, templateName, baseData)
+}
+
+// 指定菜单渲染HTML函数
+func renderHTMLWithMenu[T any](c *gin.Context, template string, data types.BasePageData[T], activeMenu string) {
+	// 获取基础数据
+	baseData := getBaseData[T](c)
+	baseData.SetDebug(data.Debug)
+	baseData.SetActiveMenu(activeMenu)
+	baseData.SetTitle(data.Title)
+	baseData.SetData(data.Data)
+	// 打印调试信息
+	if baseData.Debug {
+		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, baseData)
+	}
+	// 推送
+	pusher(c)
+	// 渲染HTML
+	c.HTML(http.StatusOK, template, baseData)
+}
+
+// 获取基础数据
+func getBaseData[T any](c *gin.Context) types.BasePageData[T] {
+	return types.BasePageData[T]{
+		ActiveMenu: getActiveMenu(c),
+	}
+}
+
+// 获取激活菜单
+func getActiveMenu(c *gin.Context) string {
+	// 先看是否手动设置了
+	if menu, exists := c.Get("activeMenu"); exists {
+		return menu.(string)
+	}
+	// 根据路径自动判断
+	return getMenuByPath(c.Request.URL.Path)
+}
+
+// 根据路径获取菜单
+func getMenuByPath(path string) string {
+	if path == "/" || path == "/dashboard" {
+		return "dashboard"
+	}
+	// 去掉开头的斜杠，用于匹配路由
+	if newPath := strings.TrimPrefix(path, "/"); newPath != "" {
+		return newPath
+	}
+	return ""
 }

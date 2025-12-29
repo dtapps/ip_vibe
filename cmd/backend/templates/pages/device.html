@@ -1,4 +1,11 @@
 {{ define "content" }}
+
+{{/* 初始化局部变量 */}}
+{{ $list := .Data.List }}
+{{ $page := .Data.Page }}
+{{ $total := .Data.Total }}
+{{ $pageSize := .Data.PageSize }}
+
 <h1 class="text-3xl font-black mb-10 pl-4 text-base-content transition-colors">🌐 DDNS管理平台</h1>
 
 <div class="ui-panel">
@@ -26,7 +33,7 @@
         </tr>
       </thead>
       <tbody id="table">
-        {{ range .List }}
+        {{ range $list }}
         {{ $apiUrlPath := printf "/api/devices/%d" .ID }}
         {{ $webUrlPath := printf "/device/%d" .ID }}
         <tr class="device-row hover:bg-base-200/50 transition-colors" data-last-heartbeat="{{.LastHeartbeatAt.Unix}}">
@@ -87,7 +94,7 @@
 
   <div class="p-8 border-t border-base-200 bg-base-100/30">
     <!-- 分页 -->
-    {{ template "pagination" . }}
+    {{ template "pagination" (dict "Page" $page "Total" $total "PageSize" $pageSize) }}
   </div>
 </div>
 

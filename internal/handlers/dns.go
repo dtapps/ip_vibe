@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
@@ -22,9 +21,6 @@ func Dns(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.DnsResponse{
-		CommonResponseWithRequest: types.CommonResponseWithRequest{
-			Request: c.Request,
-		},
 		CommonPageResponse: types.CommonPageResponse[types.GetDnsRecordResponse]{
 			List: []types.GetDnsRecordResponse{},
 		},
@@ -59,13 +55,14 @@ func Dns(c *gin.Context) {
 	pageData.PageSize = allDnsRecord.Size
 	pageData.Total = allDnsRecord.Total
 
-	// HTTP2 server 推送
-	pusher(c)
-
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
-	}
-
 	// 渲染模板
-	c.HTML(http.StatusOK, filepath.Join("pages", "dns.html"), pageData)
+	renderHTML(
+		c,
+		filepath.Join("pages", "dns.html"),
+		types.BasePageData[types.DnsResponse]{
+			Debug: global.GvaEnv.DEBUG,
+			Title: "DNS记录",
+			Data:  pageData,
+		},
+	)
 }

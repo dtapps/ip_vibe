@@ -7,6 +7,10 @@ type DeviceRequest struct {
 
 // 设备页面 响应结构
 type DeviceResponse struct {
-	CommonResponseWithRequest             // 请求对象
 	CommonPageResponse[GetDeviceResponse] // 设备列表
+}
+
+// 设备端口转发统计 请求结构
+type DevicePortForwardStatsRequest struct {
+	ID int64 `json:"id" form:"id" validate:"required" comment:"设备序号"`
 }

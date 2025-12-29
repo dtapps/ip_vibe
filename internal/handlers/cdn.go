@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
@@ -22,9 +21,6 @@ func Cdn(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.CdnResponse{
-		CommonResponseWithRequest: types.CommonResponseWithRequest{
-			Request: c.Request,
-		},
 		CommonPageResponse: types.CommonPageResponse[types.GetCdnRecordResponse]{
 			List: []types.GetCdnRecordResponse{},
 		},
@@ -58,13 +54,14 @@ func Cdn(c *gin.Context) {
 	pageData.PageSize = allCdnRecord.Size
 	pageData.Total = allCdnRecord.Total
 
-	// HTTP2 server 推送
-	pusher(c)
-
-	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, pageData)
-	}
-
 	// 渲染模板
-	c.HTML(http.StatusOK, filepath.Join("pages", "cdn.html"), pageData)
+	renderHTML(
+		c,
+		filepath.Join("pages", "cdn.html"),
+		types.BasePageData[types.CdnResponse]{
+			Debug: global.GvaEnv.DEBUG,
+			Title: "CDN记录",
+			Data:  pageData,
+		},
+	)
 }
