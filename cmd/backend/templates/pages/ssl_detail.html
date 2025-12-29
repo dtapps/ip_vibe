@@ -109,6 +109,62 @@
                 </div>
             </div>
         </div>
+
+        <div class="ui-panel">
+            <div class="ui-header !py-4">
+                <h3 class="font-bold flex items-center gap-2">
+                    {{ template "icons" (dict "Name" "i-lucide-bell" "Class" "w-4 h-4 text-orange-500") }} 告警通知
+                </h3>
+            </div>
+            <div class="p-6 space-y-3">
+                {{ if $webhookSubs }}
+                {{ range $webhookSubs }}
+                <div class="flex items-center justify-between p-3 bg-base-200/50 rounded-xl border border-base-300/10">
+                    <span class="text-xs font-bold">{{ .Name }}</span>
+                    {{ template "switch" (dict
+                    "Checked" .IsActive
+                    "URL" (printf "/api/subscriptions/%d/active" .ID)
+                    "NoReload" true
+                    ) }}
+                </div>
+                {{ end }}
+                {{ else }}
+                <p class="text-center text-[10px] opacity-30 py-4 border-2 border-dashed border-base-300 rounded-xl">
+                    暂无订阅通道</p>
+                {{ end }}
+            </div>
+        </div>
+
+        <div class="ui-panel overflow-hidden">
+            <div class="ui-header !py-4">
+                <h3 class="font-bold flex items-center gap-2">
+                    {{ template "icons" (dict "Name" "i-lucide-scroll-text" "Class" "w-4 h-4 text-blue-500") }} 操作日志
+                </h3>
+            </div>
+            <div class="px-6 pb-6">
+                <div class="space-y-6 mt-2">
+                    {{ if $operationLogs }}
+                    {{ range $operationLogs }}
+                    <div class="relative pl-6 pb-6 border-l border-base-300 last:pb-0 last:border-none">
+                        <div
+                            class='absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full {{ if eq .Status "success" }}bg-green-500{{ else }}bg-red-500{{ end }} border-2 border-base-100'>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono opacity-40 leading-none mb-1">
+                                {{ .CreatedAt.Format "01-02 15:04" }}</span>
+                            <span class="text-xs font-medium text-base-content/80 leading-tight">{{ .Message }}</span>
+                        </div>
+                    </div>
+                    {{ end }}
+                    {{ else }}
+                    <p class="text-center text-xs opacity-30 py-4">暂无记录</p>
+                    {{ end }}
+                </div>
+                <a href="/logs?obj_id={{ $item.ID }}&obj_type=ssl_record"
+                    class="btn btn-xs btn-ghost w-full mt-4 text-[9px] opacity-30 uppercase">查看完整日志</a>
+            </div>
+        </div>
+
     </div>
 
     <div class="lg:col-span-2 space-y-8">

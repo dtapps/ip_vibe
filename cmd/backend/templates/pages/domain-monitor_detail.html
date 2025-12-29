@@ -216,6 +216,76 @@
         </div>
 
         <div class="ui-panel">
+            <div class="ui-header !p-6">
+                <h2 class="text-lg font-bold flex items-center gap-2">
+                    {{ template "icons" (dict "Name" "i-lucide-bell" "Class" "w-4 h-4 text-orange-500") }} 通知订阅
+                </h2>
+                <button class="btn btn-xs btn-ghost text-primary" onclick="openSubscriptionModal()">配置</button>
+            </div>
+            <div class="p-6 pt-0 space-y-4">
+                {{ if $webhookSubs }}
+                {{ range $webhookSubs }}
+                <div class="flex items-center justify-between p-3 bg-base-200/50 rounded-xl border border-base-300/30">
+                    <div class="flex flex-col">
+                        <span class="text-xs font-bold">{{ .Name }}</span>
+                        <span class="text-[10px] opacity-50">{{ .Description }}</span>
+                    </div>
+                    {{ template "switch" (dict
+                    "Checked" .IsActive
+                    "URL" (printf "/api/subscriptions/%d/active" .ID)
+                    "NoReload" true
+                    ) }}
+                </div>
+                {{ end }}
+                {{ else }}
+                <div class="text-center py-6 border-2 border-dashed border-base-300 rounded-2xl opacity-40">
+                    <p class="text-[10px]">未绑定任何通知通道</p>
+                </div>
+                {{ end }}
+            </div>
+        </div>
+
+        <div class="ui-panel overflow-hidden">
+            <div class="ui-header !p-6">
+                <h2 class="text-lg font-bold flex items-center gap-2">
+                    {{ template "icons" (dict "Name" "i-lucide-scroll-text" "Class" "w-4 h-4 text-blue-500") }} 操作日志
+                </h2>
+            </div>
+            <div class="p-6 pt-0">
+                <div class="space-y-6">
+                    {{ if $operationLogs }}
+                    {{ range $operationLogs }}
+                    <div class="relative pl-6 pb-6 border-l border-base-300 last:pb-0 last:border-none">
+                        <div
+                            class='absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full {{ if eq .Status "success"}}bg-green-500{{ else }}bg-red-500{{ end }} border-2 border-base-100 shadow-sm'>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[10px] font-mono opacity-40 leading-none">{{ .CreatedAt.Format
+                                    "2006-01-02 15:04" }}</span>
+                                <span
+                                    class='badge badge-xs {{ if eq .Status "success" }}badge-ghost opacity-50{{ else }}badge-error{{ end }} font-mono'>
+                                    {{ .OpType }}</span>
+                            </div>
+                            <span class="text-xs font-medium text-base-content/80">{{ .Message }}</span>
+                            {{ if .NewValue }}
+                            <div class="text-[9px] bg-base-200/80 px-2 py-1 rounded mt-1 font-mono truncate opacity-60">
+                                Value: {{ .NewValue }}
+                            </div>
+                            {{ end }}
+                        </div>
+                    </div>
+                    {{ end }}
+                    <a href="/logs?obj_id={{ $item.ID }}&obj_type=domain_monitor"
+                        class="btn btn-xs btn-ghost w-full mt-4 text-[10px] opacity-40 uppercase tracking-widest">查看全部日志</a>
+                    {{ else }}
+                    <p class="text-center text-xs opacity-30 py-4">暂无修改记录</p>
+                    {{ end }}
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-panel">
             <div class="ui-header">
                 <h2 class="text-xl font-bold">描述备注</h2>
             </div>
