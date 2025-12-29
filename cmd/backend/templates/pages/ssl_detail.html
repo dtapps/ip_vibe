@@ -4,6 +4,7 @@
 {{ $item := .Data.Item }}
 {{ $cert := .Data.CertDetail }}
 {{ $historys := .Data.Historys }}
+{{ $baseWebUrlPath := "/ssl" }}
 {{ $apiUrlPath := printf "/api/ssl-records/%d" $item.ID }}
 {{ $webUrlPath := printf "/ssl/%d" $item.ID }}
 
@@ -40,7 +41,7 @@
         <button class="btn btn-primary btn-sm rounded-xl px-6" onclick="triggerRenewal('{{$item.ID}}')">
             {{ template "icons" (dict "Name" "i-lucide-refresh-cw") }} 立即续期
         </button>
-        <a href="/ssl" class="btn btn-ghost btn-sm rounded-xl">
+        <a href="{{$baseWebUrlPath}}" class="btn btn-ghost btn-sm rounded-xl">
             {{ template "icons" (dict "Name" "i-lucide-arrow-left") }} 返回列表
         </a>
     </div>

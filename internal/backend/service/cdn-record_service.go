@@ -51,6 +51,7 @@ func (s *CDNRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.CDNR
 		OriginProtocol: item.OriginProtocol.String(),
 		HTTPPort:       item.HTTPPort,
 		HTTPSPort:      item.HTTPSPort,
+		CdnDomain:      item.CdnDomain,
 		IsActive:       item.IsActive,
 		LastRefreshAt:  item.LastRefreshAt,
 	}

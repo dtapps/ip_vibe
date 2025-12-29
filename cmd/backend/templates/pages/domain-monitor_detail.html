@@ -3,18 +3,24 @@
 {{/* 初始化局部变量 */}}
 {{ $item := .Data.Item }}
 {{ $hist := .Data.LatestHistory }}
+{{ $baseWebUrlPath := "/domain-monitor" }}
 {{ $apiUrlPath := printf "/api/domain-monitors/%d" $item.ID }}
 {{ $webUrlPath := printf "/domain-monitor/%d" $item.ID }}
 
 <!-- <div class="main-container"> -->
-<div class="flex items-center gap-4 mb-8">
-    <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
-        {{ template "icons" (dict "Name" "i-lucide-search-code" "Class" "w-8 h-8") }}
+<div class="flex justify-between items-center mb-8">
+    <div class="flex items-center gap-4">
+        <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+            {{ template "icons" (dict "Name" "i-lucide-search-code" "Class" "w-8 h-8") }}
+        </div>
+        <div>
+            <h1 class="text-3xl font-bold">域名监控详情</h1>
+            <p class="opacity-50 text-sm mt-1">监控对象: {{ $item.Name }} ({{$item.Domain}})</p>
+        </div>
     </div>
-    <div>
-        <h1 class="text-3xl font-bold">域名监控详情</h1>
-        <p class="opacity-50 text-sm mt-1">监控对象: {{ $item.Name }} ({{$item.Domain}})</p>
-    </div>
+    <a href="{{$baseWebUrlPath}}" class="btn btn-sm btn-ghost rounded-xl">
+        {{ template "icons" (dict "Name" "i-lucide-arrow-left") }} 返回列表
+    </a>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

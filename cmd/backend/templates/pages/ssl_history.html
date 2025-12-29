@@ -6,6 +6,7 @@
 {{ $page := .Data.Page }}
 {{ $total := .Data.Total }}
 {{ $pageSize := .Data.PageSize }}
+{{ $baseWebUrlPath := "/ssl" }}
 {{ $apiUrlPath := printf "/api/ssl-records/%d" $item.ID }}
 {{ $webUrlPath := printf "/ssl/%d" $item.ID }}
 

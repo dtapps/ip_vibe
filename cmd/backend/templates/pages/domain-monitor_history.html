@@ -6,6 +6,7 @@
 {{ $page := .Data.Page }}
 {{ $total := .Data.Total }}
 {{ $pageSize := .Data.PageSize }}
+{{ $baseWebUrlPath := "/domain-monitor" }}
 {{ $apiUrlPath := printf "/api/domain-monitors/%d" $item.ID }}
 {{ $webUrlPath := printf "/domain-monitor/%d" $item.ID }}
 
