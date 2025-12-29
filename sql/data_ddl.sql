@@ -14,6 +14,7 @@ CREATE TABLE "domain_monitor" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
 
 CREATE INDEX `domainmonitor_domain` ON `domain_monitor` (`domain`);
 CREATE UNIQUE INDEX `domainmonitor_domain_check_protocol` ON `domain_monitor` (`domain`, `check_protocol`);
+CREATE INDEX `domainmonitor_created_at` ON `domain_monitor` (`created_at` DESC);
 
 
 -- ip_group definition
@@ -21,6 +22,7 @@ CREATE UNIQUE INDEX `domainmonitor_domain_check_protocol` ON `domain_monitor` (`
 CREATE TABLE "ip_group" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `record_id` text NULL, `name` text NOT NULL, `description` text NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL);
 
 CREATE INDEX `ipgroup_created_at` ON `ip_group` (`created_at` DESC);
+CREATE INDEX `ipgroup_record_id` ON `ip_group` (`record_id`);
 
 
 -- platform_config definition
@@ -51,14 +53,7 @@ CREATE INDEX `cdnrecord_is_active` ON `cdn_record` (`is_active`);
 CREATE INDEX `cdnrecord_created_at` ON `cdn_record` (`created_at` DESC);
 CREATE INDEX `cdnrecord_config_id` ON `cdn_record` (`config_id`);
 CREATE INDEX `cdnrecord_ip_group_id` ON `cdn_record` (`ip_group_id`);
-
-
--- device_ip_report definition
-
-CREATE TABLE "device_ip_report" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `ip_v4` text NULL, `ip_v6` text NULL, `device_id` integer NOT NULL, CONSTRAINT `device_ip_report_device_ip_reports` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`) ON DELETE CASCADE);
-
-CREATE INDEX `deviceipreport_created_at` ON `device_ip_report` (`created_at` DESC);
-CREATE INDEX `deviceipreport_device_id` ON `device_ip_report` (`device_id`);
+CREATE INDEX `cdnrecord_record_id` ON `cdn_record` (`record_id`);
 
 
 -- device_port_forward definition
@@ -80,6 +75,7 @@ CREATE INDEX `dnsrecord_created_at` ON `dns_record` (`created_at` DESC);
 CREATE INDEX `dnsrecord_config_id` ON `dns_record` (`config_id`);
 CREATE INDEX `dnsrecord_ip_group_id` ON `dns_record` (`ip_group_id`);
 CREATE INDEX `dnsrecord_cdn_record_id` ON `dns_record` (`cdn_record_id`);
+CREATE INDEX `dnsrecord_record_id` ON `dns_record` (`record_id`);
 
 
 -- ip_group_device definition
@@ -91,6 +87,20 @@ CREATE INDEX `ipgroupdevice_device_id` ON `ip_group_device` (`device_id`);
 CREATE INDEX `ipgroupdevice_ip_group_id` ON `ip_group_device` (`ip_group_id`);
 
 
+-- ssl_record definition
+
+CREATE TABLE "ssl_record" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `domain` text NOT NULL, `cert_domain` text NULL, `cert_url` text NULL, `cert_stable_url` text NULL, `cert_private_key` text NULL, `cert_certificate` text NULL, `cert_issuer_certificate` text NULL, `cert_csr` text NULL, `not_before` datetime NULL, `not_after` datetime NULL, `status` text NOT NULL DEFAULT ('pending'), `provider` text NOT NULL DEFAULT ('letsencrypt'), `is_active` bool NOT NULL DEFAULT (false), `renewal_days` integer NOT NULL DEFAULT (30), `is_auto_renewal` bool NOT NULL DEFAULT (false), `last_refresh_at` datetime NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL, `config_id` integer NOT NULL, CONSTRAINT `ssl_record_platform_config_ssl_records` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
+
+CREATE INDEX `sslrecord_created_at` ON `ssl_record` (`created_at` DESC);
+CREATE INDEX `sslrecord_domain` ON `ssl_record` (`domain`);
+CREATE INDEX `sslrecord_not_before` ON `ssl_record` (`not_before`);
+CREATE INDEX `sslrecord_not_after` ON `ssl_record` (`not_after` DESC);
+CREATE INDEX `sslrecord_status` ON `ssl_record` (`status`);
+CREATE INDEX `sslrecord_provider` ON `ssl_record` (`provider`);
+CREATE INDEX `sslrecord_is_active` ON `ssl_record` (`is_active`);
+CREATE INDEX `sslrecord_is_auto_renewal` ON `ssl_record` (`is_auto_renewal`);
+
+
 -- webhook_subscription definition
 
 CREATE TABLE "webhook_subscription" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `name` text NOT NULL, `description` text NULL, `obj_type` text NOT NULL, `obj_id` integer NOT NULL, `is_active` bool NOT NULL DEFAULT (false), `webhook_subscriptions` integer NULL, `webhook_id` integer NOT NULL, CONSTRAINT `webhook_subscription_webhook_subscriptions` FOREIGN KEY (`webhook_subscriptions`) REFERENCES `webhook` (`id`) ON DELETE CASCADE, CONSTRAINT `webhook_subscription_webhook_webhook` FOREIGN KEY (`webhook_id`) REFERENCES `webhook` (`id`) ON DELETE NO ACTION);
@@ -98,3 +108,8 @@ CREATE TABLE "webhook_subscription" (`id` integer NOT NULL PRIMARY KEY AUTOINCRE
 CREATE UNIQUE INDEX `webhooksubscription_webhook_id_obj_type_obj_id` ON `webhook_subscription` (`webhook_id`, `obj_type`, `obj_id`);
 CREATE INDEX `webhooksubscription_created_at` ON `webhook_subscription` (`created_at` DESC);
 CREATE INDEX `webhooksubscription_webhook_id` ON `webhook_subscription` (`webhook_id`);
+CREATE INDEX `webhooksubscription_obj_type_obj_id` ON `webhook_subscription` (`obj_type`, `obj_id`);
+CREATE INDEX `webhooksubscription_obj_type` ON `webhook_subscription` (`obj_type`);
+CREATE INDEX `webhooksubscription_obj_id` ON `webhook_subscription` (`obj_id`);
+CREATE INDEX `webhooksubscription_is_active` ON `webhook_subscription` (`is_active`);
+CREATE INDEX `webhooksubscription_obj_type_obj_id_created_at` ON `webhook_subscription` (`obj_type`, `obj_id`, `created_at`);
