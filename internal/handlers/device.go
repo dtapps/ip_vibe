@@ -75,14 +75,17 @@ func DevicePortForwardStats(c *gin.Context) {
 		return
 	}
 
+	// 准备页面数据
+	pageData := types.DevicePortForwardStatsResponse{}
+
 	// 渲染模板
 	renderHTMLWithMenu(
 		c,
 		filepath.Join("pages", "device_port-forward_stats.html"),
-		types.BasePageData[any]{
+		types.BasePageData[types.DevicePortForwardStatsResponse]{
 			Debug: global.GvaEnv.DEBUG,
 			Title: "设备端口转发统计",
-			Data:  nil,
+			Data:  pageData,
 		},
 		"device",
 	)

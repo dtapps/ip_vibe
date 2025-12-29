@@ -46,7 +46,7 @@ func pusher(c *gin.Context) {
 			"/static/libs/jquery/jquery.min.js",
 			"/static/libs/select2/js/select2.min.js",
 			"/static/libs/clipboard/clipboard.min.js",
-			"/static/js/uuid.js",
+			"/static/js/api.js",
 			"/static/js/index.js",
 		}
 		for _, res := range resources {

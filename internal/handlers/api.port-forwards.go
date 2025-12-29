@@ -34,8 +34,9 @@ func GetPortForwards(c *gin.Context) {
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -71,8 +72,9 @@ func GetPortForwardDetail(c *gin.Context) {
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -107,8 +109,9 @@ func CreatePortForward(c *gin.Context) {
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -145,8 +148,9 @@ func UpdatePortForward(c *gin.Context) {
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -183,8 +187,9 @@ func UpdatePortForwardForward(c *gin.Context) {
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -221,8 +226,9 @@ func UpdatePortForwardActive(c *gin.Context) {
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -258,8 +264,9 @@ func DeletePortForward(c *gin.Context) {
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -295,12 +302,51 @@ func HealthCheckPortForward(c *gin.Context) {
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
 	response, err := service.HealthcheckPortForward(c, requestParams.ID)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, response)
+}
+
+// 获取端口转发统计数据
+//
+//	@Description	获取端口转发统计数据
+//	@Summary		获取端口转发统计数据
+//	@Tags			端口转发
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"端口转发序号"
+//	@Success		200	{object}	APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数错误"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Router			/port-forwards/{id}/stats [get]
+func GetPortForwardStats(c *gin.Context) {
+	// 请求参数
+	var requestParams types.GetPortForwardStatsRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewPortForwardService(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
+	)
+
+	// 调用
+	response, err := service.GetPortForwardStats(c, requestParams.ID, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

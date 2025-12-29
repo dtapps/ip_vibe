@@ -59,8 +59,9 @@ func getPortForwardList(ctx context.Context, req *mcp.CallToolRequest, params *t
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -78,8 +79,9 @@ func getPortForwardDetail(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -97,8 +99,9 @@ func createPortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -116,8 +119,9 @@ func updatePortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -135,8 +139,9 @@ func updatePortForwardForward(ctx context.Context, req *mcp.CallToolRequest, par
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -154,8 +159,9 @@ func updatePortForwardActive(ctx context.Context, req *mcp.CallToolRequest, para
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -173,8 +179,9 @@ func deletePortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -192,8 +199,9 @@ func healthCheckPortForward(ctx context.Context, req *mcp.CallToolRequest, param
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用

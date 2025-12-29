@@ -1,7 +1,7 @@
 package gin_helper
 
 import (
-	"fmt"
+	"log/slog"
 	"reflect"
 	"strconv"
 	"strings"
@@ -77,69 +77,171 @@ func setDefaultsRecursive(v reflect.Value) {
 
 // 通用绑定器（推荐方式）
 func BindWithDefaults(c *gin.Context, obj any, b binding.Binding) (err error) {
+	// 日志
+	logger := slog.Default()
+	if global.GvaGinSlog != nil {
+		logger = global.GvaGinSlog.WithLogger()
+	}
+
 	setDefaults(obj)             // ← 先设默认值
 	err = b.Bind(c.Request, obj) // ← 再绑定，覆盖传了的字段
 
+	var (
+		method        = c.Request.Method
+		path          = c.Request.URL.Path
+		contentLength = c.Request.ContentLength
+		contentType   = c.GetHeader("Content-Type")
+	)
+
 	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s %s BindWithDefaults: %+v ;Type: %v  ;Err: %v \n", c.Request.Method, c.Request.URL.Path, b.Name(), obj, err)
+		logger.DebugContext(c, "BindWithDefaults",
+			slog.String("method", method),
+			slog.String("path", path),
+			slog.Int64("contentLength", contentLength),
+			slog.String("contentType", contentType),
+			slog.Any("obj", obj),
+			slog.Any("err", err),
+		)
 	}
 	return err
 }
 
 // 快捷方法
 func BindQueryWithDefaults(c *gin.Context, obj any) (err error) {
+	// 日志
+	logger := slog.Default()
+	if global.GvaGinSlog != nil {
+		logger = global.GvaGinSlog.WithLogger()
+	}
+
 	// 先设默认值
 	setDefaults(obj)
+
+	var (
+		method        = c.Request.Method
+		path          = c.Request.URL.Path
+		contentLength = c.Request.ContentLength
+		contentType   = c.GetHeader("Content-Type")
+	)
 
 	// 再绑定，覆盖传了的字段
 	err = c.ShouldBindQuery(obj)
 	if err != nil {
 		if global.GvaEnv.DEBUG {
-			fmt.Printf("%s %s ShouldBindQuery: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
+			logger.ErrorContext(c, "ShouldBindQuery",
+				slog.String("method", method),
+				slog.String("path", path),
+				slog.Int64("contentLength", contentLength),
+				slog.String("contentType", contentType),
+				slog.Any("obj", obj),
+				slog.Any("err", err),
+			)
 		}
 		return err
 	}
 
 	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s %s BindQueryWithDefaults: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
+		logger.DebugContext(c, "BindQueryWithDefaults",
+			slog.String("method", method),
+			slog.String("path", path),
+			slog.Int64("contentLength", contentLength),
+			slog.String("contentType", contentType),
+			slog.Any("obj", obj),
+			slog.Any("err", err),
+		)
 	}
 	return nil
 }
 
 func BindJSONWithDefaults(c *gin.Context, obj any) (err error) {
+	// 日志
+	logger := slog.Default()
+	if global.GvaGinSlog != nil {
+		logger = global.GvaGinSlog.WithLogger()
+	}
+
 	// 先设默认值
 	setDefaults(obj)
 
+	var (
+		method        = c.Request.Method
+		path          = c.Request.URL.Path
+		contentLength = c.Request.ContentLength
+		contentType   = c.GetHeader("Content-Type")
+	)
+
 	// 仅当有 JSON body 时才绑定
-	if c.Request.ContentLength > 0 && strings.Contains(c.GetHeader("Content-Type"), "application/json") {
+	if contentLength > 0 && strings.Contains(contentType, "application/json") {
 		// 再绑定，覆盖传了的字段
 		err = c.ShouldBindJSON(obj)
 		if err != nil {
 			if global.GvaEnv.DEBUG {
-				fmt.Printf("%s %s ShouldBindJSON: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
+				logger.ErrorContext(c, "ShouldBindJSON",
+					slog.String("method", method),
+					slog.String("path", path),
+					slog.Int64("contentLength", contentLength),
+					slog.String("contentType", contentType),
+					slog.Any("obj", obj),
+					slog.Any("err", err),
+				)
 			}
 			return err
 		}
 	}
 
 	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s %s BindJSONWithDefaults: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
+		logger.DebugContext(c, "BindJSONWithDefaults",
+			slog.String("method", method),
+			slog.String("path", path),
+			slog.Int64("contentLength", contentLength),
+			slog.String("contentType", contentType),
+			slog.Any("obj", obj),
+			slog.Any("err", err),
+		)
 	}
 	return nil
 }
 
 func BindUriWithDefaults(c *gin.Context, obj any) (err error) {
+	// 日志
+	logger := slog.Default()
+	if global.GvaGinSlog != nil {
+		logger = global.GvaGinSlog.WithLogger()
+	}
+
 	setDefaults(obj)           // ← 先设默认值
 	err = c.ShouldBindUri(obj) // ← 再绑定，覆盖传了的字段
+
+	var (
+		method        = c.Request.Method
+		path          = c.Request.URL.Path
+		contentLength = c.Request.ContentLength
+		contentType   = c.GetHeader("Content-Type")
+	)
+
 	if err != nil {
 		if global.GvaEnv.DEBUG {
-			fmt.Printf("%s %s ShouldBindUri: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
+			logger.ErrorContext(c, "BindUriWithDefaults",
+				slog.String("method", method),
+				slog.String("path", path),
+				slog.Int64("contentLength", contentLength),
+				slog.String("contentType", contentType),
+				slog.Any("obj", obj),
+				slog.Any("err", err),
+			)
 		}
 		return err
 	}
 
 	if global.GvaEnv.DEBUG {
-		fmt.Printf("%s %s BindUriWithDefaults: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
+		logger.DebugContext(c, "BindUriWithDefaults",
+			slog.String("method", method),
+			slog.String("path", path),
+			slog.Int64("contentLength", contentLength),
+			slog.String("contentType", contentType),
+			slog.Any("obj", obj),
+			slog.Any("err", err),
+		)
 	}
 	return nil
 }

@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
+	"vibe_ip/internal/ent/deviceportforward"
+	"vibe_ip/internal/ent_log/portforwardstats"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -30,8 +32,9 @@ func PortForward(c *gin.Context) {
 	// 创建服务
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		global.GvaEntLogDb,
 		global.GvaOperationLogHelper,
+		global.GvaEnv.DEBUG,
 	)
 
 	// 查询全部端口转发
@@ -75,14 +78,39 @@ func PortForwardStats(c *gin.Context) {
 		return
 	}
 
+	// 准备页面数据
+	pageData := types.PortForwardStatsResponse{}
+
+	// 查询规则和关联设备
+	firstRule, err := global.GvaEntDb.DevicePortForward.Query().
+		Where(deviceportforward.IDEQ(requestParams.ID)).
+		WithDevice().
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	pageData.Item = *firstRule
+	pageData.Device = *firstRule.Edges.Device
+
+	// 查询最新统计数据
+	latestStats, err := global.GvaEntLogDb.PortForwardStats.Query().
+		Where(portforwardstats.DeviceIDEQ(firstRule.Edges.Device.ID)).
+		Where(portforwardstats.PortForwardIDEQ(firstRule.ID)).
+		OrderByCreatedAtDesc().
+		First(c)
+	if err == nil {
+		pageData.LatestStats = *latestStats
+	}
+
 	// 渲染模板
 	renderHTMLWithMenu(
 		c,
 		filepath.Join("pages", "port-forward_stats.html"),
-		types.BasePageData[any]{
+		types.BasePageData[types.PortForwardStatsResponse]{
 			Debug: global.GvaEnv.DEBUG,
 			Title: "端口转发统计",
-			Data:  nil,
+			Data:  pageData,
 		},
 		"port-forward",
 	)

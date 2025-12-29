@@ -3,9 +3,12 @@ package service
 import (
 	"context"
 	"fmt"
+	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/deviceportforward"
+	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/operationlog"
+	"vibe_ip/internal/ent_log/portforwardstats"
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
 
@@ -24,18 +27,25 @@ type PortForwardService interface {
 	UpdatePortForwardActive(ctx context.Context, request *types.UpdatePortForwardActiveRequest) (*types.GetPortForwardRequest, error)
 	DeletePortForward(ctx context.Context, id int64) (*types.GetPortForwardRequest, error)
 	HealthcheckPortForward(ctx context.Context, id int64) ([][]ToPairsStruct, error)
+	GetPortForwardStats(ctx context.Context, id int64, request *types.GetPortForwardStatsRequest) ([]*types.GetPortForwardStatsResponse, error)
 }
 
 // PortForwardServiceImpl 端口转发服务实现
 type PortForwardServiceImpl struct {
-	db        *ent.Client // 数据库客户端
-	debug     bool
-	logHelper *operation_logs_helper.OperationLogHelper
+	db        *ent.Client                               // 数据库客户端
+	dbLog     *ent_log.Client                           // 日志数据库客户端
+	logHelper *operation_logs_helper.OperationLogHelper // 操作日志助手
+	debug     bool                                      // 调试模式
 }
 
 // NewPortForwardService 创建端口转发服务实例
-func NewPortForwardService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper) PortForwardService {
-	return &PortForwardServiceImpl{db: db, debug: debug, logHelper: logHelper}
+func NewPortForwardService(db *ent.Client, dbLog *ent_log.Client, logHelper *operation_logs_helper.OperationLogHelper, debug bool) PortForwardService {
+	return &PortForwardServiceImpl{
+		db:        db,
+		dbLog:     dbLog,
+		logHelper: logHelper,
+		debug:     debug,
+	}
 }
 
 // BuildResponse 将实体转换为响应
@@ -305,4 +315,66 @@ func (s *PortForwardServiceImpl) HealthcheckPortForward(ctx context.Context, id 
 	}
 
 	return results, nil
+}
+
+// GetPortForwardStats 获取端口转发统计数据
+func (s *PortForwardServiceImpl) GetPortForwardStats(ctx context.Context, id int64, request *types.GetPortForwardStatsRequest) ([]*types.GetPortForwardStatsResponse, error) {
+	// 查询端口转发
+	firstPortForward, err := s.db.DevicePortForward.Query().
+		Where(deviceportforward.IDEQ(id)).
+		WithDevice().
+		First(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("查询端口转发失败: 记录不存在或 %w", err)
+		}
+		return nil, fmt.Errorf("查询端口转发失败: %w", err)
+	}
+
+	// 根据时间范围计算起始时间
+	startTime := time.Now().Add(-6 * time.Hour) // 默认 6 小时
+	if request.Range == "1h" {
+		startTime = time.Now().Add(-1 * time.Hour)
+	} else if request.Range == "6h" {
+		startTime = time.Now().Add(-6 * time.Hour)
+	} else if request.Range == "24h" {
+		startTime = time.Now().Add(-24 * time.Hour)
+	} else if request.Range == "7d" {
+		startTime = time.Now().AddDate(0, 0, -7)
+	}
+
+	if s.debug {
+		fmt.Printf("查询端口转发统计数据: ID=%d, Range=%s, StartTime=%s\n", id, request.Range, startTime.Format(time.DateTime))
+	}
+
+	// 查询端口转发统计记录
+	allStats, err := s.dbLog.PortForwardStats.Query().
+		Where(portforwardstats.DeviceIDEQ(firstPortForward.Edges.Device.ID)).
+		Where(portforwardstats.PortForwardIDEQ(firstPortForward.ID)).
+		Where(portforwardstats.CreatedAtGTE(startTime)).
+		OrderByCreatedAtDesc().
+		All(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("查询统计记录失败: %w", err)
+	}
+
+	lists := make([]*types.GetPortForwardStatsResponse, 0)
+	for _, stat := range allStats {
+		lists = append(lists, &types.GetPortForwardStatsResponse{
+			ID:            stat.ID,
+			CreatedAt:     stat.CreatedAt,
+			DeviceID:      stat.DeviceID,
+			PortForwardID: stat.PortForwardID,
+			StartTime:     stat.StartTime,
+			ActiveConn:    stat.ActiveConn,
+			TotalConn:     stat.TotalConn,
+			BytesIn:       stat.BytesIn,
+			BytesOut:      stat.BytesOut,
+			UDPPacketsIn:  stat.UDPPacketsIn,
+			UDPPacketsOut: stat.UDPPacketsOut,
+			Errors:        stat.Errors,
+		})
+	}
+	return lists, nil
 }

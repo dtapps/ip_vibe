@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 // 获取全部端口转发 请求结构
 type GetPortForwardsRequest struct {
 	IsActive *bool `json:"is_active,omitempty" form:"is_active,omitempty" jsonschema:"指定是否只返回活跃的端口转发记录"` // 是否活跃
@@ -69,4 +71,26 @@ type DeletePortForwardRequest struct {
 // 检查端口转发健康状态 请求结构
 type HealthCheckPortForwardRequest struct {
 	GetPortForwardRequest
+}
+
+// 获取端口转发统计数据 请求结构
+type GetPortForwardStatsRequest struct {
+	GetPortForwardRequest
+	Range string `json:"range" form:"range" binding:"required" jsonschema:"查询时间范围，支持 1h, 6h, 24h, 7d"` // 查询时间范围，支持 1h, 6h, 24h, 7d
+}
+
+// 获取端口转发统计数据 响应结构
+type GetPortForwardStatsResponse struct {
+	ID            int64     `json:"id"`              // 端口转发统计记录序号
+	CreatedAt     time.Time `json:"created_at"`      // 创建时间
+	DeviceID      int64     `json:"device_id"`       // 关联 Device 序号
+	PortForwardID int64     `json:"port_forward_id"` // 关联 DevicePortForward 序号
+	StartTime     time.Time `json:"start_time"`      // 转发启动时间 (UTC)
+	ActiveConn    int64     `json:"active_conn"`     // 瞬时活跃连接数
+	TotalConn     int64     `json:"total_conn"`      // 累计连接数
+	BytesIn       int64     `json:"bytes_in"`        // 累计入站流量 (bytes)
+	BytesOut      int64     `json:"bytes_out"`       // 累计出站流量 (bytes)
+	UDPPacketsIn  int64     `json:"udp_packets_in"`  // 累计入站 UDP 包数
+	UDPPacketsOut int64     `json:"udp_packets_out"` // 累计出站 UDP 包数
+	Errors        int64     `json:"errors"`          // 累计错误数
 }

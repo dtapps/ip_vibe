@@ -726,6 +726,7 @@ func api_router(ctx context.Context, router *gin.Engine) {
 			portForwards.PATCH("/:id/active", handlers.UpdatePortForwardActive)    // 更新端口转发启用状态
 			portForwards.DELETE("/:id", handlers.DeletePortForward)                // 删除端口转发
 			portForwards.GET("/:id/health-check", handlers.HealthCheckPortForward) // 检查端口转发健康状态
+			portForwards.GET("/:id/stats", handlers.GetPortForwardStats)           // 获取端口转发统计数据
 		}
 
 		// SSL记录管理相关API
