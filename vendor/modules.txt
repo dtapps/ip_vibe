@@ -553,6 +553,9 @@ github.com/klauspost/cpuid/v2
 ## explicit; go 1.18
 github.com/leodido/go-urn
 github.com/leodido/go-urn/scim/schema
+# github.com/lib4u/fake-useragent v1.0.6
+## explicit; go 1.23.4
+github.com/lib4u/fake-useragent
 # github.com/magefile/mage v1.15.1-0.20241126214340-bdc92f694516
 ## explicit; go 1.12
 github.com/magefile/mage/mg
@@ -815,6 +818,7 @@ golang.org/x/crypto/sha3
 # golang.org/x/exp v0.0.0-20251219203646-944ab1f22d93
 ## explicit; go 1.24.0
 golang.org/x/exp/constraints
+golang.org/x/exp/rand
 # golang.org/x/mod v0.31.0
 ## explicit; go 1.24.0
 golang.org/x/mod/internal/lazyregexp

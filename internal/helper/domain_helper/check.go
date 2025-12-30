@@ -10,15 +10,24 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	fakeUserAgent "github.com/lib4u/fake-useragent"
 )
 
 type DomainCheck struct {
-	logger *slog.Logger // 日志记录器
+	useragent string       // 浏览器标识
+	logger    *slog.Logger // 日志记录器
 }
 
 func NewDomainCheck(logger *slog.Logger) *DomainCheck {
+	var useragent string
+	ua, err := fakeUserAgent.New()
+	if err == nil {
+		useragent = ua.GetRandom()
+	}
 	return &DomainCheck{
-		logger: logger,
+		useragent: useragent,
+		logger:    logger,
 	}
 }
 
@@ -87,6 +96,12 @@ func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string)
 		result.Duration = time.Since(start)
 		return result
 	}
+
+	// 添加浏览器标识
+	req.Header.Set("User-Agent", s.useragent)
+	s.logger.Debug("请求浏览器标识",
+		slog.String("useragent", s.useragent),
+	)
 
 	resp, err := client.Do(req)
 	result.Duration = time.Since(start)

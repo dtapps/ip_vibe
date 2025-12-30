@@ -18,6 +18,7 @@ require (
 	github.com/alibabacloud-go/tea v1.3.14
 	github.com/aliyun/credentials-go v1.4.10
 	github.com/baidubce/bce-sdk-go v0.9.256
+	github.com/basgys/goxml2json v1.1.0
 	github.com/cloudflare/cloudflare-go/v6 v6.5.0
 	github.com/corazawaf/coraza-coreruleset v0.0.0-20240226094324-415b1017abdc
 	github.com/corazawaf/coraza/v3 v3.3.3
@@ -34,6 +35,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.4
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.182
+	github.com/lib4u/fake-useragent v1.0.6
 	github.com/miekg/dns v1.1.69
 	github.com/modelcontextprotocol/go-sdk v1.2.0
 	github.com/qiniu/go-sdk/v7 v7.25.5
@@ -83,7 +85,6 @@ require (
 	github.com/alibabacloud-go/debug v1.0.1 // indirect
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.9 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
-	github.com/basgys/goxml2json v1.1.0 // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
 	github.com/bytedance/gopkg v0.1.3 // indirect
 	github.com/bytedance/sonic v1.14.2 // indirect
