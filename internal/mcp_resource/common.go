@@ -144,13 +144,17 @@ func compileURITemplate(templ string) (*regexp.Regexp, []string, error) {
 // -----------------------------------------------------------------------
 func ExtractURIParams(tpl *mcp.ResourceTemplate, uri string) (map[string]string, error) {
 
-	// 调试输出
-	if global.GvaEnv.DEBUG {
-		slog.Debug("ExtractURIParams",
-			slog.String("tpl.URITemplate", tpl.URITemplate),
-			slog.String("uri", uri),
-		)
+	// 日志
+	logger := slog.Default()
+	if global.GvaMcpSlog != nil {
+		logger = global.GvaMcpSlog.WithLogger()
 	}
+
+	// 打印
+	logger.Debug("ExtractURIParams",
+		slog.String("tpl.URITemplate", tpl.URITemplate),
+		slog.String("uri", uri),
+	)
 
 	// 编译模板为可解析参数的正则表达式
 	re, _, err := compileURITemplate(tpl.URITemplate)
@@ -165,11 +169,9 @@ func ExtractURIParams(tpl *mcp.ResourceTemplate, uri string) (map[string]string,
 	}
 
 	// 调试输出匹配结果
-	if global.GvaEnv.DEBUG {
-		slog.Debug("ExtractURIParams",
-			slog.Any("match", match),
-		)
-	}
+	logger.Debug("ExtractURIParams",
+		slog.Any("match", match),
+	)
 
 	// 从命名捕获组中提取参数
 	out := map[string]string{}

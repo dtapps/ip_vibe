@@ -593,6 +593,9 @@ func web_resource(ctx context.Context, logger *slog.Logger, router *gin.Engine) 
 		},
 		// 格式化时间为 "X 前" 格式，如 "2 小时前"
 		"diffForHumans": func(t time.Time) string {
+			if t.IsZero() {
+				return "—"
+			}
 			return carbon.NewCarbon(t).DiffForHumans()
 		},
 		// 获取当前设备 Code

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 	"vibe_ip/internal/global"
@@ -35,7 +35,12 @@ func errorResponse(c *gin.Context, statusCode int, message string) {
 
 // HTTP2 server 推送
 // https://gin-gonic.com/zh-cn/docs/examples/http2-server-push/
-func pusher(c *gin.Context) {
+func pusher(c *gin.Context, logger *slog.Logger) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
 	if pusher := c.Writer.Pusher(); pusher != nil {
 		// 推送 CSS 和 JS 文件
 		resources := []string{
@@ -51,50 +56,67 @@ func pusher(c *gin.Context) {
 		}
 		for _, res := range resources {
 			if err := pusher.Push(res, nil); err != nil {
-				fmt.Printf("推送失败 %s: %v \n", res, err)
+				logger.ErrorContext(c, "推送失败",
+					slog.String("resource", res),
+					slog.Any("err", err),
+				)
 			}
 		}
 	} else {
-		if global.GvaEnv.DEBUG {
-			fmt.Printf("推送器为空，跳过推送资源 \n")
-		}
+		logger.DebugContext(c, "推送器为空，跳过推送资源")
 	}
-
 }
 
-// 通用渲染HTML函数
+// 通用渲染HTML
 func renderHTML[T any](c *gin.Context, templateName string, data types.BasePageData[T]) {
+	// 日志
+	logger := slog.Default()
+	if global.GvaGinSlog != nil {
+		logger = global.GvaGinSlog.WithLogger()
+	}
+
 	// 获取基础数据
 	baseData := getBaseData[T](c)
 	baseData.SetDebug(data.Debug)
 	baseData.SetTitle(data.Title)
 	baseData.SetData(data.Data)
-	// 打印调试信息
-	if baseData.Debug {
-		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, baseData)
-	}
+	// 打印
+	logger.DebugContext(c, "通用渲染HTML",
+		slog.String("path", c.Request.URL.Path),
+		slog.String("template", templateName),
+		slog.Any("data", baseData),
+	)
 	// 推送
-	pusher(c)
+	pusher(c, logger)
 	// 渲染HTML
 	c.HTML(http.StatusOK, templateName, baseData)
 }
 
-// 指定菜单渲染HTML函数
-func renderHTMLWithMenu[T any](c *gin.Context, template string, data types.BasePageData[T], activeMenu string) {
+// 指定菜单渲染HTML
+func renderHTMLWithMenu[T any](c *gin.Context, templateName string, data types.BasePageData[T], activeMenu string) {
+	// 日志
+	logger := slog.Default()
+	if global.GvaGinSlog != nil {
+		logger = global.GvaGinSlog.WithLogger()
+	}
+
 	// 获取基础数据
 	baseData := getBaseData[T](c)
 	baseData.SetDebug(data.Debug)
 	baseData.SetActiveMenu(activeMenu)
 	baseData.SetTitle(data.Title)
 	baseData.SetData(data.Data)
-	// 打印调试信息
-	if baseData.Debug {
-		fmt.Printf("%s pageData: %+v \n", c.Request.URL.Path, baseData)
-	}
+	// 打印
+	logger.DebugContext(c, "指定菜单渲染HTML",
+		slog.String("path", c.Request.URL.Path),
+		slog.String("activeMenu", activeMenu),
+		slog.String("template", templateName),
+		slog.Any("data", baseData),
+	)
 	// 推送
-	pusher(c)
+	pusher(c, logger)
 	// 渲染HTML
-	c.HTML(http.StatusOK, template, baseData)
+	c.HTML(http.StatusOK, templateName, baseData)
 }
 
 // 获取基础数据

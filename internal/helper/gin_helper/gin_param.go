@@ -93,16 +93,14 @@ func BindWithDefaults(c *gin.Context, obj any, b binding.Binding) (err error) {
 		contentType   = c.GetHeader("Content-Type")
 	)
 
-	if global.GvaEnv.DEBUG {
-		logger.DebugContext(c, "BindWithDefaults",
-			slog.String("method", method),
-			slog.String("path", path),
-			slog.Int64("contentLength", contentLength),
-			slog.String("contentType", contentType),
-			slog.Any("obj", obj),
-			slog.Any("err", err),
-		)
-	}
+	logger.DebugContext(c, "BindWithDefaults",
+		slog.String("method", method),
+		slog.String("path", path),
+		slog.Int64("contentLength", contentLength),
+		slog.String("contentType", contentType),
+		slog.Any("obj", obj),
+		slog.Any("err", err),
+	)
 	return err
 }
 
@@ -127,21 +125,7 @@ func BindQueryWithDefaults(c *gin.Context, obj any) (err error) {
 	// 再绑定，覆盖传了的字段
 	err = c.ShouldBindQuery(obj)
 	if err != nil {
-		if global.GvaEnv.DEBUG {
-			logger.ErrorContext(c, "ShouldBindQuery",
-				slog.String("method", method),
-				slog.String("path", path),
-				slog.Int64("contentLength", contentLength),
-				slog.String("contentType", contentType),
-				slog.Any("obj", obj),
-				slog.Any("err", err),
-			)
-		}
-		return err
-	}
-
-	if global.GvaEnv.DEBUG {
-		logger.DebugContext(c, "BindQueryWithDefaults",
+		logger.ErrorContext(c, "ShouldBindQuery",
 			slog.String("method", method),
 			slog.String("path", path),
 			slog.Int64("contentLength", contentLength),
@@ -149,7 +133,17 @@ func BindQueryWithDefaults(c *gin.Context, obj any) (err error) {
 			slog.Any("obj", obj),
 			slog.Any("err", err),
 		)
+		return err
 	}
+
+	logger.DebugContext(c, "BindQueryWithDefaults",
+		slog.String("method", method),
+		slog.String("path", path),
+		slog.Int64("contentLength", contentLength),
+		slog.String("contentType", contentType),
+		slog.Any("obj", obj),
+		slog.Any("err", err),
+	)
 	return nil
 }
 
@@ -175,30 +169,26 @@ func BindJSONWithDefaults(c *gin.Context, obj any) (err error) {
 		// 再绑定，覆盖传了的字段
 		err = c.ShouldBindJSON(obj)
 		if err != nil {
-			if global.GvaEnv.DEBUG {
-				logger.ErrorContext(c, "ShouldBindJSON",
-					slog.String("method", method),
-					slog.String("path", path),
-					slog.Int64("contentLength", contentLength),
-					slog.String("contentType", contentType),
-					slog.Any("obj", obj),
-					slog.Any("err", err),
-				)
-			}
+			logger.ErrorContext(c, "ShouldBindJSON",
+				slog.String("method", method),
+				slog.String("path", path),
+				slog.Int64("contentLength", contentLength),
+				slog.String("contentType", contentType),
+				slog.Any("obj", obj),
+				slog.Any("err", err),
+			)
 			return err
 		}
 	}
 
-	if global.GvaEnv.DEBUG {
-		logger.DebugContext(c, "BindJSONWithDefaults",
-			slog.String("method", method),
-			slog.String("path", path),
-			slog.Int64("contentLength", contentLength),
-			slog.String("contentType", contentType),
-			slog.Any("obj", obj),
-			slog.Any("err", err),
-		)
-	}
+	logger.DebugContext(c, "BindJSONWithDefaults",
+		slog.String("method", method),
+		slog.String("path", path),
+		slog.Int64("contentLength", contentLength),
+		slog.String("contentType", contentType),
+		slog.Any("obj", obj),
+		slog.Any("err", err),
+	)
 	return nil
 }
 
@@ -220,21 +210,7 @@ func BindUriWithDefaults(c *gin.Context, obj any) (err error) {
 	)
 
 	if err != nil {
-		if global.GvaEnv.DEBUG {
-			logger.ErrorContext(c, "BindUriWithDefaults",
-				slog.String("method", method),
-				slog.String("path", path),
-				slog.Int64("contentLength", contentLength),
-				slog.String("contentType", contentType),
-				slog.Any("obj", obj),
-				slog.Any("err", err),
-			)
-		}
-		return err
-	}
-
-	if global.GvaEnv.DEBUG {
-		logger.DebugContext(c, "BindUriWithDefaults",
+		logger.ErrorContext(c, "BindUriWithDefaults",
 			slog.String("method", method),
 			slog.String("path", path),
 			slog.Int64("contentLength", contentLength),
@@ -242,33 +218,16 @@ func BindUriWithDefaults(c *gin.Context, obj any) (err error) {
 			slog.Any("obj", obj),
 			slog.Any("err", err),
 		)
+		return err
 	}
+
+	logger.DebugContext(c, "BindUriWithDefaults",
+		slog.String("method", method),
+		slog.String("path", path),
+		slog.Int64("contentLength", contentLength),
+		slog.String("contentType", contentType),
+		slog.Any("obj", obj),
+		slog.Any("err", err),
+	)
 	return nil
 }
-
-// func BindUriAndJSONWithDefaults(c *gin.Context, obj any) (err error) {
-// 	setDefaults(obj)           // ← 先设默认值
-// 	err = c.ShouldBindUri(obj) // ← 再绑定，覆盖传了的字段
-// 	if err != nil {
-// 		if global.GvaEnv.DEBUG {
-// 			fmt.Printf("%s %s ShouldBindUri: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
-// 		}
-// 		return err
-// 	}
-//
-// 	// 仅当有 JSON body 时才绑定
-// 	if c.Request.ContentLength > 0 && strings.Contains(c.GetHeader("Content-Type"), "application/json") {
-// 		err = c.ShouldBindJSON(obj) // ← 再绑定，覆盖传了的字段
-// 		if err != nil {
-// 			if global.GvaEnv.DEBUG {
-// 				fmt.Printf("%s %s ShouldBindJSON: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
-// 			}
-// 			return err
-// 		}
-// 	}
-
-// 	if global.GvaEnv.DEBUG {
-// 		fmt.Printf("%s %s BindUriAndJSONWithDefaults: %+v ;Err: %v \n", c.Request.Method, c.Request.URL.Path, obj, err)
-// 	}
-// 	return nil
-// }
