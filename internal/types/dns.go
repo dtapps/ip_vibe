@@ -7,5 +7,5 @@ type DnsRequest struct {
 
 // DNS页面 响应结构
 type DnsResponse struct {
-	CommonPageResponse[GetDnsRecordResponse] // DNS记录列表
+	CommonPageResponse[GetDnsRecordResponse, DnsRequest] // DNS记录列表
 }

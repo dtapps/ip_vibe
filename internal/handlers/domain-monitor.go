@@ -27,8 +27,9 @@ func DomainMonitor(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.DomainMonitorResponse{
-		CommonPageResponse: types.CommonPageResponse[types.GetDomainMonitorResponse]{
-			List: []types.GetDomainMonitorResponse{},
+		CommonPageResponse: types.CommonPageResponse[types.GetDomainMonitorResponse, types.DomainMonitorRequest]{
+			Filter: requestParams,
+			List:   []types.GetDomainMonitorResponse{},
 		},
 	}
 
@@ -153,8 +154,9 @@ func DomainMonitorHistory(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.DomainMonitorHistoryResponse{
-		CommonPageResponse: types.CommonPageResponse[ent_log.DomainMonitorHistory]{
-			List: []ent_log.DomainMonitorHistory{},
+		CommonPageResponse: types.CommonPageResponse[ent_log.DomainMonitorHistory, types.DomainMonitorHistoryRequest]{
+			Filter: requestParams,
+			List:   []ent_log.DomainMonitorHistory{},
 		},
 	}
 

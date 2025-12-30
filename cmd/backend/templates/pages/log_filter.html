@@ -1,0 +1,102 @@
+{{ define "pages/log_filter.html" }}
+
+{{/* 初始化局部变量 */}}
+{{ $action := .Action }}
+{{ $filter := .Filter }}
+
+<div class="px-6 py-2 border-b border-base-200 bg-base-100/50">
+    <form method="GET" action="{{ $action }}" class="flex items-center gap-5">
+
+        <div class="flex items-center gap-2">
+            <span class="text-[11px] font-bold opacity-40 whitespace-nowrap">ID：</span>
+            <input type="number" name="id" value="{{ if $filter.ID }}{{ $filter.ID }}{{ end }}" placeholder="ID"
+                class="h-7 w-16 px-2 text-[11px] border border-base-300 rounded-md bg-base-200/20 outline-none focus:border-primary/40 focus:bg-base-100 transition-all font-mono">
+        </div>
+
+        <div class="flex items-center gap-2">
+            <span class="text-[11px] font-bold opacity-40 whitespace-nowrap">对象ID：</span>
+            <input type="number" name="obj_id" value="{{ if $filter.ObjID }}{{ $filter.ObjID }}{{ end }}"
+                placeholder="对象ID"
+                class="h-7 w-16 px-2 text-[11px] border border-base-300 rounded-md bg-base-200/20 outline-none focus:border-primary/40 focus:bg-base-100 transition-all font-mono">
+        </div>
+
+        <div class="flex items-center gap-2">
+            <span class="text-[11px] font-bold opacity-40 whitespace-nowrap">类型：</span>
+            <select name="obj_type"
+                class="h-7 px-1 text-[11px] border border-base-300 rounded-md bg-base-200/20 outline-none cursor-pointer focus:border-primary/40">
+                <option value="">所有类型</option>
+                <option value="platform_config" {{ if eq $filter.ObjType "platform_config" }}selected{{ end }}>
+                    平台配置
+                </option>
+                <option value="cdn_record" {{ if eq $filter.ObjType "cdn_record" }}selected{{ end }}>
+                    CDN记录
+                </option>
+                <option value="dns_record" {{ if eq $filter.ObjType "dns_record" }}selected{{ end }}>
+                    DNS记录
+                </option>
+                <option value="device" {{ if eq $filter.ObjType "device" }}selected{{ end }}>
+                    设备
+                </option>
+                <option value="device_ip_report" {{ if eq $filter.ObjType "device_ip_report" }}selected{{ end }}>
+                    设备IP记录
+                </option>
+                <option value="ip_group" {{ if eq $filter.ObjType "ip_group" }}selected{{ end }}>
+                    IP组
+                </option>
+                <option value="ip_group_device" {{ if eq $filter.ObjType "ip_group_device" }}selected{{ end }}>
+                    IP组设备
+                </option>
+                <option value="webhook" {{ if eq $filter.ObjType "webhook" }}selected{{ end }}>
+                    通知
+                </option>
+                <option value="webhook_subscription" {{ if eq $filter.ObjType "webhook_subscription" }}selected{{ end
+                    }}>
+                    通知订阅
+                </option>
+                <option value="device_port_forward" {{ if eq $filter.ObjType "device_port_forward" }}selected{{ end }}>
+                    端口转发
+                </option>
+                <option value="domain_monitor" {{ if eq $filter.ObjType "domain_monitor" }}selected{{ end }}>
+                    域名监控
+                </option>
+                <option value="ssl_record" {{ if eq $filter.ObjType "ssl_record" }}selected{{ end }}>
+                    SSL记录
+                </option>
+                <option value="domain_monitor_history" {{ if eq $filter.ObjType "domain_monitor_history" }}selected{{
+                    end }}>
+                    域名监控历史记录
+                </option>
+                <option value="http_log" {{ if eq $filter.ObjType "http_log" }}selected{{ end }}>
+                    http请求日志
+                </option>
+                <option value="operation_log" {{ if eq $filter.ObjType "operation_log" }}selected{{ end }}>
+                    操作日志
+                </option>
+                <option value="resty_log" {{ if eq $filter.ObjType "resty_log" }}selected{{ end }}>
+                    resty请求日志
+                </option>
+                <option value="webhook_history" {{ if eq $filter.ObjType "webhook_history" }}selected{{ end }}>
+                    通知历史记录
+                </option>
+            </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <span class="text-[11px] font-bold opacity-40 whitespace-nowrap">关键词：</span>
+            <input type="text" name="message" value="{{ $filter.Message }}" placeholder="按描述搜索关键词..."
+                class="h-7 w-48 px-2 text-[11px] border border-base-300 rounded-md bg-base-200/20 outline-none focus:border-primary/40 focus:bg-base-100 transition-all">
+        </div>
+
+        <div class="flex items-center gap-2 ml-auto">
+            <button type="submit" class="btn btn-xs btn-primary h-7 px-4 rounded-md font-bold text-[10px] border-none">
+                {{ template "icons" (dict "Name" "i-lucide-filter" "Class" "w-3.5 h-3.5") }} 筛选
+            </button>
+            <a href="{{ $action }}"
+                class="h-7 flex items-center justify-center text-base-content/20 hover:text-base-content/60 hover:bg-base-200 rounded-md transition-all"
+                title="重置">
+                {{ template "icons" (dict "Name" "i-lucide-rotate-ccw" "Class" "w-3.5 h-3.5") }} 重置
+            </a>
+        </div>
+    </form>
+</div>
+{{ end }}

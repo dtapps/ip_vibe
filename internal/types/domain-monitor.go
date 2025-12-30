@@ -12,7 +12,7 @@ type DomainMonitorRequest struct {
 
 // 域名监控页面 响应结构
 type DomainMonitorResponse struct {
-	CommonPageResponse[GetDomainMonitorResponse] // 域名监控列表
+	CommonPageResponse[GetDomainMonitorResponse, DomainMonitorRequest] // 域名监控列表
 }
 
 // 域名监控详情页面 请求结构
@@ -36,6 +36,6 @@ type DomainMonitorHistoryRequest struct {
 
 // 域名监控页面 响应结构
 type DomainMonitorHistoryResponse struct {
-	CommonPageResponse[ent_log.DomainMonitorHistory]
-	Item ent.DomainMonitor
+	CommonPageResponse[ent_log.DomainMonitorHistory, DomainMonitorHistoryRequest] // 域名监控记录列表
+	Item                                                                          ent.DomainMonitor
 }

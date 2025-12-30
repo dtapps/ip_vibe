@@ -21,8 +21,9 @@ func Cdn(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.CdnResponse{
-		CommonPageResponse: types.CommonPageResponse[types.GetCdnRecordResponse]{
-			List: []types.GetCdnRecordResponse{},
+		CommonPageResponse: types.CommonPageResponse[types.GetCdnRecordResponse, types.CdnRequest]{
+			Filter: requestParams,
+			List:   []types.GetCdnRecordResponse{},
 		},
 	}
 

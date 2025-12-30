@@ -13,7 +13,7 @@ type SSLRequest struct {
 
 // SSL页面 响应结构
 type SSLResponse struct {
-	CommonPageResponse[GetSSLRecordResponse] // SSL记录列表
+	CommonPageResponse[GetSSLRecordResponse, SSLRequest] // SSL记录列表
 }
 
 // SSL详情页面 请求结构
@@ -64,6 +64,6 @@ type SSLHistoryRequest struct {
 
 // SSL证书申请历史记录 响应结构
 type SSLHistoryResponse struct {
-	CommonPageResponse[ent_log.SSLCertificateHistory]
-	Item ent.SSLRecord
+	CommonPageResponse[ent_log.SSLCertificateHistory, SSLHistoryRequest] // SSL证书申请历史记录列表
+	Item                                                                 ent.SSLRecord
 }

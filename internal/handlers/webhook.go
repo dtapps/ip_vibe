@@ -22,8 +22,9 @@ func Webhook(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.WebhookResponse{
-		CommonPageResponse: types.CommonPageResponse[types.GetWebhookResponse]{
-			List: []types.GetWebhookResponse{},
+		CommonPageResponse: types.CommonPageResponse[types.GetWebhookResponse, types.WebhookRequest]{
+			Filter: requestParams,
+			List:   []types.GetWebhookResponse{},
 		},
 	}
 

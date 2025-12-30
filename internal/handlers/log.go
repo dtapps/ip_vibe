@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"path/filepath"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -20,13 +21,20 @@ func Log(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.LogResponse{
-		CommonPageResponse: types.CommonPageResponse[types.GetLogResponse]{
-			List: []types.GetLogResponse{},
+		CommonPageResponse: types.CommonPageResponse[types.GetLogResponse, types.LogRequest]{
+			Filter: requestParams,
+			List:   []types.GetLogResponse{},
 		},
 	}
 
 	// 查询全部操作日志
 	allOperationLog, err := global.GvaEntLogDb.OperationLog.Query().
+		WhereIf(requestParams.ID > 0, operationlog.IDEQ(requestParams.ID)).
+		WhereIf(requestParams.OpType != "", operationlog.OpTypeEQ(operationlog.OpType(requestParams.OpType))).
+		WhereIf(requestParams.ObjID > 0, operationlog.ObjIDEQ(requestParams.ObjID)).
+		WhereIf(requestParams.ObjType != "", operationlog.ObjTypeEQ(operationlog.ObjType(requestParams.ObjType))).
+		WhereIf(requestParams.Status != "", operationlog.StatusEQ(operationlog.Status(requestParams.Status))).
+		WhereIf(requestParams.Message != "", operationlog.MessageContains(requestParams.Message)).
 		OrderByCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {

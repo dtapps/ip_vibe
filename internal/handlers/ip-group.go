@@ -21,8 +21,9 @@ func IPGroup(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.IPGroupResponse{
-		CommonPageResponse: types.CommonPageResponse[types.GetIPGroupResponse]{
-			List: []types.GetIPGroupResponse{},
+		CommonPageResponse: types.CommonPageResponse[types.GetIPGroupResponse, types.IPGroupRequest]{
+			Filter: requestParams,
+			List:   []types.GetIPGroupResponse{},
 		},
 	}
 

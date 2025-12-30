@@ -11,7 +11,7 @@ type DeviceRequest struct {
 
 // 设备页面 响应结构
 type DeviceResponse struct {
-	CommonPageResponse[GetDeviceResponse] // 设备列表
+	CommonPageResponse[GetDeviceResponse, DeviceRequest] // 设备列表
 }
 
 // 设备端口转发统计 请求结构

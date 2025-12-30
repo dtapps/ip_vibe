@@ -7,8 +7,8 @@ type TaskRequest struct {
 
 // 任务页面 响应结构
 type TaskResponse struct {
-	CommonPageResponse[JobData]        // 任务列表
-	Status                      string `json:"status"` // 任务运行状态
+	CommonPageResponse[JobData, TaskRequest]        // 任务列表
+	Status                                   string `json:"status"` // 任务运行状态
 }
 
 type JobData struct {

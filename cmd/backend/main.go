@@ -398,11 +398,11 @@ func loadTemplates(logger *slog.Logger, templatePath string, funcMap template.Fu
 	// 检查文件是否存在
 	var fileExists func(string) bool = func(path string) bool {
 		_, err := os.Stat(path)
-		if err != nil {
-			logger.Error("开发环境",
-				slog.Any("err", err),
-			)
-		}
+		// if err != nil {
+		// 	logger.Error("开发环境",
+		// 		slog.Any("err", err),
+		// 	)
+		// }
 		return err == nil
 	}
 
@@ -428,7 +428,7 @@ func loadTemplates(logger *slog.Logger, templatePath string, funcMap template.Fu
 			baseName = strings.TrimSuffix(p, ".html")
 		}
 
-		// 检查对应的 _form.html 和 _popup.html
+		// 检查对应的 _form.html 和 _popup.html 和 _view.html 和 _filter.html
 		if formFile := baseName + "_form.html"; fileExists(formFile) {
 			extras = append(extras, formFile)
 		}
@@ -436,6 +436,9 @@ func loadTemplates(logger *slog.Logger, templatePath string, funcMap template.Fu
 			extras = append(extras, popupFile)
 		}
 		if popupFile := baseName + "_view.html"; fileExists(popupFile) {
+			extras = append(extras, popupFile)
+		}
+		if popupFile := baseName + "_filter.html"; fileExists(popupFile) {
 			extras = append(extras, popupFile)
 		}
 
@@ -508,11 +511,11 @@ func loadTemplatesFS(logger *slog.Logger, efs embed.FS, funcMap template.FuncMap
 	// 检查文件是否存在
 	var fileExists func(string) bool = func(path string) bool {
 		_, err := embeddedFiles.Open(path)
-		if err != nil {
-			logger.Error("生产环境",
-				slog.Any("err", err),
-			)
-		}
+		// if err != nil {
+		// 	logger.Error("生产环境",
+		// 		slog.Any("err", err),
+		// 	)
+		// }
 		return err == nil
 	}
 
@@ -538,7 +541,7 @@ func loadTemplatesFS(logger *slog.Logger, efs embed.FS, funcMap template.FuncMap
 			baseName = strings.TrimSuffix(p, ".html")
 		}
 
-		// 检查对应的 _form.html 和 _popup.html
+		// 检查对应的 _form.html 和 _popup.html 和 _view.html 和 _filter.html
 		if formFile := baseName + "_form.html"; fileExists(formFile) {
 			extras = append(extras, formFile)
 		}
@@ -546,6 +549,9 @@ func loadTemplatesFS(logger *slog.Logger, efs embed.FS, funcMap template.FuncMap
 			extras = append(extras, popupFile)
 		}
 		if popupFile := baseName + "_view.html"; fileExists(popupFile) {
+			extras = append(extras, popupFile)
+		}
+		if popupFile := baseName + "_filter.html"; fileExists(popupFile) {
 			extras = append(extras, popupFile)
 		}
 

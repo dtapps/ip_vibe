@@ -23,8 +23,9 @@ func PortForward(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.PortForwardResponse{
-		CommonPageResponse: types.CommonPageResponse[types.GetPortForwardResponse]{
-			List: []types.GetPortForwardResponse{},
+		CommonPageResponse: types.CommonPageResponse[types.GetPortForwardResponse, types.PortForwardRequest]{
+			Filter: requestParams,
+			List:   []types.GetPortForwardResponse{},
 		},
 	}
 

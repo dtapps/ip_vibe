@@ -7,5 +7,5 @@ type IPGroupRequest struct {
 
 // IP组页面 响应结构
 type IPGroupResponse struct {
-	CommonPageResponse[GetIPGroupResponse] // IP组列表
+	CommonPageResponse[GetIPGroupResponse, IPGroupRequest] // IP组列表
 }

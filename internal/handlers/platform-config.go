@@ -21,8 +21,9 @@ func PlatformConfig(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.PlatformConfigResponse{
-		CommonPageResponse: types.CommonPageResponse[types.GetPlatformConfigResponse]{
-			List: []types.GetPlatformConfigResponse{},
+		CommonPageResponse: types.CommonPageResponse[types.GetPlatformConfigResponse, types.PlatformConfigRequest]{
+			Filter: requestParams,
+			List:   []types.GetPlatformConfigResponse{},
 		},
 	}
 

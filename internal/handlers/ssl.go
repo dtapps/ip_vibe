@@ -34,8 +34,9 @@ func Ssl(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.SSLResponse{
-		CommonPageResponse: types.CommonPageResponse[types.GetSSLRecordResponse]{
-			List: []types.GetSSLRecordResponse{},
+		CommonPageResponse: types.CommonPageResponse[types.GetSSLRecordResponse, types.SSLRequest]{
+			Filter: requestParams,
+			List:   []types.GetSSLRecordResponse{},
 		},
 	}
 
@@ -173,8 +174,9 @@ func SslHistory(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.SSLHistoryResponse{
-		CommonPageResponse: types.CommonPageResponse[ent_log.SSLCertificateHistory]{
-			List: []ent_log.SSLCertificateHistory{},
+		CommonPageResponse: types.CommonPageResponse[ent_log.SSLCertificateHistory, types.SSLHistoryRequest]{
+			Filter: requestParams,
+			List:   []ent_log.SSLCertificateHistory{},
 		},
 	}
 

@@ -7,5 +7,5 @@ type WebhookSubRequest struct {
 
 // 通知订阅页面 响应结构
 type WebhookSubResponse struct {
-	CommonPageResponse[GetWebhookSubResponse] // 通知订阅列表
+	CommonPageResponse[GetWebhookSubResponse, WebhookSubRequest] // 通知订阅列表
 }
