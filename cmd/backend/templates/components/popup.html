@@ -12,7 +12,8 @@
 
     <div class="px-8 py-3 bg-base-200/50 border-b border-base-300/50 flex justify-between items-center">
       <span class="text-xs opacity-50 font-medium">结果统计：<b id="popupCount" class="text-primary">0</b> 条数据</span>
-      <button id="popupCopyBtn" class="btn btn-xs btn-primary rounded-lg gap-1" onclick="copyData()">
+      <button id="popupCopyBtn" class="btn btn-xs btn-primary rounded-lg gap-1 copy-btn"
+        data-clipboard-target="#popupPre">
         {{ template "icons" (dict "Name" "i-lucide-copy") }} 一键复制
       </button>
     </div>
@@ -29,4 +30,42 @@
     </div>
   </div>
 </div>
+
+<script>
+  // 使用监听器确保 ClipboardJS 已经加载
+  (function initClipboard() {
+    if (typeof ClipboardJS === 'undefined') {
+      // 如果还没加载完，等 200ms 再试
+      setTimeout(initClipboard, 200);
+      return;
+    }
+
+    const clipboard = new ClipboardJS('.copy-btn',);
+
+    clipboard.on('success', function (e) {
+      const btn = e.trigger;
+      const oldText = btn.innerText;
+      const icon = btn.querySelector('span');
+
+      btn.innerText = "";
+      btn.appendChild(document.createTextNode(' ✅ 已复制'));
+      btn.classList.add("text-success");
+
+      setTimeout(() => {
+        btn.innerText = "";
+        if (icon) {
+          btn.appendChild(icon)
+        };
+        btn.appendChild(document.createTextNode(oldText));
+        btn.classList.remove("text-success");
+      }, 1500);
+      e.clearSelection();
+    });
+
+    clipboard.on('error', function (e) {
+      console.error('popup clipboard error', e);
+      alert('复制失败，请手动选择复制');
+    });
+  })();
+</script>
 {{ end }}

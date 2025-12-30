@@ -72,63 +72,6 @@ function closeModal(id) {
   }
 }
 
-// 一键复制
-function copyData(idEl = "popup") {
-  // const modal = document.getElementById(idEl);
-  const preEl = document.getElementById(`${idEl}Pre`);
-  if (!preEl || !preEl.textContent?.trim()) {
-    console.log("无可复制内容");
-    return;
-  }
-  const text = preEl.textContent;
-
-  if (navigator.clipboard) {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => showCopySuccess(idEl))
-      .catch(() => fallbackToExecCommand(text, idEl));
-  } else {
-    fallbackToExecCommand(text, idEl);
-  }
-}
-
-// 执行命令复制
-function fallbackToExecCommand(text, idEl) {
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.style.cssText =
-    "position:fixed; top:0; left:0; opacity:0; pointer-events:none;";
-  document.body.appendChild(textarea);
-  textarea.select();
-  try {
-    const success = document.execCommand("copy");
-    if (success) {
-      showCopySuccess(idEl);
-    } else {
-      console.log("复制失败，请手动选择文本复制");
-    }
-  } catch (err) {
-    console.log("浏览器限制，请手动复制");
-  } finally {
-    document.body.removeChild(textarea);
-  }
-}
-
-// 显示复制成功
-function showCopySuccess(idEl = "popup") {
-  const btn = document.getElementById(`${idEl}CopyBtn`);
-  if (!btn) {
-    return;
-  }
-  const old = btn.innerHTML;
-  btn.innerHTML =
-    '<svg class="ui-icon"><use href="/static/img/icons.svg#ip-check"/></use></svg> 已复制';
-  setTimeout(() => {
-    btn.innerHTML = old;
-    btn.style.color = "";
-  }, 1500);
-}
-
 // 格式化健康检查结果
 function formatHealthCheckResult(healthData) {
   return healthData

@@ -37,6 +37,7 @@
         </div>
     </div>
 </div>
+
 <script>
     // 使用监听器确保 ClipboardJS 已经加载
     (function initClipboard() {
@@ -46,21 +47,30 @@
             return;
         }
 
-        const clipboard = new ClipboardJS('.copy-btn');
+        const clipboard = new ClipboardJS('.copy-btn',);
 
         clipboard.on('success', function (e) {
             const btn = e.trigger;
             const oldText = btn.innerText;
-            btn.innerText = "✅ 已复制";
+            const icon = btn.querySelector('span');
+
+            btn.innerText = "";
+            btn.appendChild(document.createTextNode(' ✅ 已复制'));
             btn.classList.add("text-success");
+
             setTimeout(() => {
-                btn.innerText = oldText;
+                btn.innerText = "";
+                if (icon) {
+                    btn.appendChild(icon)
+                };
+                btn.appendChild(document.createTextNode(oldText));
                 btn.classList.remove("text-success");
             }, 1500);
             e.clearSelection();
         });
 
         clipboard.on('error', function (e) {
+            console.error('ssl_view clipboard error', e);
             alert('复制失败，请手动选择复制');
         });
     })();
