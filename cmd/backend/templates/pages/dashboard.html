@@ -154,11 +154,10 @@
           <div>
             <div class="flex items-center gap-2">
               <span class="text-sm font-bold">
-                {{ .ObjType }}
+                {{template "logObjType" (dict "ObjType" .ObjType)}}
               </span>
               <span class="text-xs opacity-50">
                 ID: {{ .ObjID }}
-
               </span>
             </div>
             <p class="text-sm opacity-80 mt-1">
@@ -167,7 +166,7 @@
           </div>
           <div class="text-right">
             <div class="text-[10px] opacity-40 mb-1">
-              {{ formatTimeOrNil .CreatedAt }}
+              {{ diffForHumans .CreatedAt }}
             </div>
             {{ if eq .Status "success" }}
             <span class="badge badge-success badge-xs py-2 px-3 text-white">成功</span>

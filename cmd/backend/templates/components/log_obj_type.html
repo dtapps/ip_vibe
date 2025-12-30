@@ -1,0 +1,46 @@
+{{define "logObjType"}}
+{{/* 支持的参数：
+.ObjType: 对象类型
+*/}}
+
+{{$objType := .ObjType}}
+
+{{if eq $objType "platform_config"}}
+平台配置
+{{else if eq $objType "cdn_record"}}
+CDN记录
+{{else if eq $objType "dns_record"}}
+DNS记录
+{{else if eq $objType "device"}}
+设备
+{{else if eq $objType "device_ip_report"}}
+设备IP记录
+{{else if eq $objType "ip_group"}}
+IP组
+{{else if eq $objType "ip_group_device"}}
+IP组设备
+{{else if eq $objType "webhook"}}
+通知
+{{else if eq $objType "webhook_subscription"}}
+通知订阅
+{{else if eq $objType "device_port_forward"}}
+端口转发
+{{else if eq $objType "domain_monitor"}}
+域名监控
+{{else if eq $objType "ssl_record"}}
+SSL记录
+{{else if eq $objType "domain_monitor_history"}}
+域名监控历史记录
+{{else if eq $objType "http_log"}}
+http请求日志
+{{else if eq $objType "operation_log"}}
+操作日志
+{{else if eq $objType "resty_log"}}
+resty请求日志
+{{else if eq $objType "webhook_history"}}
+通知历史记录
+{{else}}
+{{$objType}}
+{{end}}
+
+{{end}}

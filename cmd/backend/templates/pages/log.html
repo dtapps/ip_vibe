@@ -43,19 +43,7 @@
           </td>
 
           <td class="ui-td font-bold">
-            {{if eq .OpType "data_create"}}
-            数据创建
-            {{else if eq .OpType "data_update"}}
-            数据更新
-            {{else if eq .OpType "data_delete"}}
-            数据删除
-            {{else if eq .OpType "device_report"}}
-            设备上报
-            {{else if eq .OpType "ip_refresh"}}
-            IP刷新
-            {{else}}
-            {{.OpType}}
-            {{end}}
+            {{template "logOpType" (dict "OpType" .OpType)}}
           </td>
 
           <td class="ui-td text-center text-sm max-w-md break-all">

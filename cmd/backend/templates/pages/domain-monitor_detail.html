@@ -304,11 +304,11 @@
                         <div class="flex flex-col gap-1">
                             <div class="flex justify-between items-center">
                                 <span class="text-[10px] font-mono opacity-40 leading-none">
-                                    {{ .CreatedAt.Format "2006-01-02 15:04" }}
+                                    {{ diffForHumans .CreatedAt }}
                                 </span>
                                 <span
                                     class='badge badge-xs {{ if eq .Status "success" }}badge-ghost opacity-50{{ else }}badge-error{{ end }} font-mono'>
-                                    {{ .OpType }}
+                                    {{template "logOpType" (dict "OpType" .OpType)}}
                                 </span>
                             </div>
                             <span class="text-xs font-medium text-base-content/80">
