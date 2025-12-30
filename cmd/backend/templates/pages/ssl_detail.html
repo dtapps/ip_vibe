@@ -35,7 +35,9 @@
                     class="badge {{ if $item.IsActive }}badge-success{{ else }}badge-ghost{{ end }} badge-sm text-white">
                     {{ if $item.IsActive }}活跃中{{ else }}已禁用{{ end }}
                 </span>
-                <span class="text-xs opacity-50 font-mono">ID: {{ $item.ID }}</span>
+                <span class="text-xs opacity-50 font-mono">
+                    ID: {{ $item.ID }}
+                </span>
             </div>
         </div>
     </div>
@@ -74,12 +76,15 @@
             <div class="space-y-3 text-xs text-left bg-base-200/40 p-4 rounded-2xl border border-base-300/10">
                 <div class="flex justify-between items-center">
                     <span class="opacity-50">生效时间</span>
-                    <span class="font-mono font-medium">{{ formatTimeOrNil $cert.NotBefore }}</span>
+                    <span class="font-mono font-medium">
+                        {{ formatTimeOrNil $cert.NotBefore }}
+                    </span>
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="opacity-50">到期时间</span>
-                    <span class="font-mono font-medium {{ if $cert.IsExpired }}text-error{{ end }}">{{
-                        formatTimeOrNil $cert.NotAfter }}</span>
+                    <span class="font-mono font-medium {{ if $cert.IsExpired }}text-error{{ end }}">
+                        {{ formatTimeOrNil $cert.NotAfter }}
+                    </span>
                 </div>
             </div>
         </div>
@@ -96,8 +101,11 @@
                         <div class="w-2 h-2 rounded-full bg-success animate-pulse"></div>
                         {{ end }}
                     </div>
-                    <input type="checkbox" class="toggle toggle-primary toggle-sm" {{ if $item.IsAutoRenewal }}checked{{
-                        end }} disabled />
+                    {{ if $item.IsAutoRenewal }}
+                    <input type="checkbox" class="toggle toggle-primary toggle-sm" checked disabled />
+                    {{ else }}
+                    <input type="checkbox" class="toggle toggle-primary toggle-sm" disabled />
+                    {{ end }}
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-sm opacity-70">续期阈值</span>
@@ -119,18 +127,24 @@
             <div class="p-6 space-y-3">
                 {{ if $webhookSubs }}
                 {{ range $webhookSubs }}
+                {{ $webhookSubsApiUrlPath := printf "/api/webhook-subs/%d" .ID }}
+                {{ $webhookSubsWebUrlPath := printf "/webhook-sub/%d" .ID }}
                 <div class="flex items-center justify-between p-3 bg-base-200/50 rounded-xl border border-base-300/10">
-                    <span class="text-xs font-bold">{{ .Name }}</span>
+                    <span class="text-xs font-bold">
+                        {{ .Name }}
+                    </span>
+                    {{ $activeApiUrlPath := join $webhookSubsApiUrlPath "/active" }}
                     {{ template "switch" (dict
                     "Checked" .IsActive
-                    "URL" (printf "/api/subscriptions/%d/active" .ID)
+                    "URL" $activeApiUrlPath
                     "NoReload" true
                     ) }}
                 </div>
                 {{ end }}
                 {{ else }}
                 <p class="text-center text-[10px] opacity-30 py-4 border-2 border-dashed border-base-300 rounded-xl">
-                    暂无订阅通道</p>
+                    暂无订阅通道
+                </p>
                 {{ end }}
             </div>
         </div>
@@ -151,8 +165,11 @@
                         </div>
                         <div class="flex flex-col">
                             <span class="text-[10px] font-mono opacity-40 leading-none mb-1">
-                                {{ .CreatedAt.Format "01-02 15:04" }}</span>
-                            <span class="text-xs font-medium text-base-content/80 leading-tight">{{ .Message }}</span>
+                                {{ .CreatedAt.Format "01-02 15:04" }}
+                            </span>
+                            <span class="text-xs font-medium text-base-content/80 leading-tight">
+                                {{ .Message }}
+                            </span>
                         </div>
                     </div>
                     {{ end }}
@@ -178,8 +195,9 @@
             </div>
             <div class="px-6 pb-6 space-y-6">
                 <div class="space-y-3">
-                    <label class="text-[10px] uppercase font-bold opacity-30 tracking-widest">受保护域名 (Subject
-                        Alternative Names)</label>
+                    <label class="text-[10px] uppercase font-bold opacity-30 tracking-widest">
+                        受保护域名 (Subject Alternative Names)
+                    </label>
                     <div
                         class="flex flex-wrap gap-2 p-4 bg-base-300/20 rounded-2xl border border-base-300/10 min-h-[60px]">
                         {{ range $cert.DNSNames }}
@@ -195,26 +213,38 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-base-200/50">
                     <div>
-                        <span class="text-[10px] opacity-40 block mb-1 uppercase tracking-tighter">签名算法</span>
-                        <span class="text-[13px] font-mono font-medium">{{ $cert.SignatureAlgorithm }}</span>
+                        <span class="text-[10px] opacity-40 block mb-1 uppercase tracking-tighter">
+                            签名算法
+                        </span>
+                        <span class="text-[13px] font-mono font-medium">
+                            {{ $cert.SignatureAlgorithm }}
+                        </span>
                     </div>
                     <div>
-                        <span class="text-[10px] opacity-40 block mb-1 uppercase tracking-tighter">加密方式</span>
+                        <span class="text-[10px] opacity-40 block mb-1 uppercase tracking-tighter">
+                            加密方式
+                        </span>
                         <span class="text-[13px] font-mono font-medium {{ if $cert.IsECC }}text-success{{ end }}">
                             {{ $cert.PublicKeyAlgorithm }} ({{ $cert.KeyLength }} bit)
                         </span>
                     </div>
                     <div>
-                        <span class="text-[10px] opacity-40 block mb-1 uppercase tracking-tighter">颁发者</span>
-                        <span class="text-[13px] font-semibold text-primary">{{ $cert.Issuer }}</span>
+                        <span class="text-[10px] opacity-40 block mb-1 uppercase tracking-tighter">
+                            颁发者
+                        </span>
+                        <span class="text-[13px] font-semibold text-primary">
+                            {{ $cert.Issuer }}
+                        </span>
                     </div>
                 </div>
 
                 <div class="pt-4 pb-4 border-t border-base-200/50">
-                    <span class="text-[10px] opacity-40 block mb-1 uppercase tracking-tighter">序列号 (Serial
-                        Number)</span>
-                    <span class="text-[10px] font-mono opacity-50 break-all select-all">{{ $cert.SerialNumber
-                        }}</span>
+                    <span class="text-[10px] opacity-40 block mb-1 uppercase tracking-tighter">
+                        序列号 (Serial Number)
+                    </span>
+                    <span class="text-[10px] font-mono opacity-50 break-all select-all">
+                        {{ $cert.SerialNumber }}
+                    </span>
                 </div>
             </div>
         </div>
@@ -224,8 +254,9 @@
                 <h3 class="font-bold text-primary flex items-center gap-2 text-sm">
                     {{ template "icons" (dict "Name" "i-lucide-check-circle") }} 当前部署内容
                 </h3>
-                <span class="text-[10px] opacity-40 font-mono italic">Refreshed: {{ formatTimeOrNil
-                    $item.LastRefreshAt }}</span>
+                <span class="text-[10px] opacity-40 font-mono italic">
+                    Refreshed: {{ formatTimeOrNil $item.LastRefreshAt }}
+                </span>
             </div>
             <div class="p-6">
                 <div class="flex gap-4">
@@ -251,11 +282,15 @@
         <div class="ui-panel">
             <div class="ui-header flex justify-between items-center">
                 <h3 class="font-bold">最后一次接口反馈 (Lego Output)</h3>
-                <span class="text-[10px] opacity-40 font-mono">{{ formatTimeOrNil $item.LastAPIResponseAt }}</span>
+                <span class="text-[10px] opacity-40 font-mono">
+                    {{ formatTimeOrNil $item.LastAPIResponseAt }}
+                </span>
             </div>
             <div class="p-6">
                 <pre
-                    class="text-xs bg-base-300/30 p-5 rounded-2xl overflow-x-auto border border-base-300/10 text-base-content/70 font-mono leading-relaxed">{{ $item.LastAPIResponse }}</pre>
+                    class="text-xs bg-base-300/30 p-5 rounded-2xl overflow-x-auto border border-base-300/10 text-base-content/70 font-mono leading-relaxed">
+                    {{ $item.LastAPIResponse }}
+                </pre>
             </div>
         </div>
     </div>
@@ -284,12 +319,20 @@
                     <tbody>
                         {{ range $historys }}
                         <tr class="hover:bg-base-200/40 transition-colors group">
-                            <td class="ui-td text-xs font-medium">{{ formatTimeOrNil .CreatedAt }}</td>
-                            <td class="ui-td"><span class="badge badge-ghost badge-sm font-bold opacity-70">{{
-                                    .Provider }}</span></td>
-                            <td class="ui-td text-xs font-mono opacity-60">{{ formatTimeOrNil .NotBefore }}</td>
-                            <td class="ui-td text-xs font-mono {{ if .NotAfter }}text-warning font-bold{{ end }}">{{
-                                formatTimeOrNil .NotAfter }}</td>
+                            <td class="ui-td text-xs font-medium">
+                                {{ formatTimeOrNil .CreatedAt }}
+                            </td>
+                            <td class="ui-td">
+                                <span class="badge badge-ghost badge-sm font-bold opacity-70">
+                                    {{ .Provider }}
+                                </span>
+                            </td>
+                            <td class="ui-td text-xs font-mono opacity-60">
+                                {{ formatTimeOrNil .NotBefore }}
+                            </td>
+                            <td class="ui-td text-xs font-mono {{ if .NotAfter }}text-warning font-bold{{ end }}">
+                                {{ formatTimeOrNil .NotAfter }}
+                            </td>
                             <td class="ui-td">
                                 <button
                                     class="btn btn-ghost btn-xs text-primary font-bold group-hover:scale-105 transition-transform"
@@ -307,6 +350,10 @@
 </div>
 <!-- </div> -->
 
+<!-- 表单 -->
+{{ template "pages/ssl_form.html" . }}
+
+<!-- 查看 -->
 {{ template "pages/ssl_view.html" . }}
 
 <script src="/static/js/ssl.js"></script>

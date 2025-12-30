@@ -18,7 +18,11 @@
         </div>
         <div>
             <h1 class="text-3xl font-bold text-base-content">申请历史回溯</h1>
-            <p class="opacity-50 text-sm mt-1">域名: <span class="font-mono font-bold">{{ $item.Domain }}</span></p>
+            <p class="opacity-50 text-sm mt-1"> 域名:
+                <span class="font-mono font-bold">
+                    {{ $item.Domain }}
+                </span>
+            </p>
         </div>
     </div>
     {{ $detailWebUrlPath := join $webUrlPath "/detail" }}
@@ -50,11 +54,17 @@
             <tbody>
                 {{ range $list }}
                 <tr class="hover:bg-base-200/30 transition-colors group">
-                    <td class="ui-td font-mono text-xs opacity-40">{{ .ID }}</td>
-                    <td class="ui-td">
-                        <span class="badge badge-secondary badge-outline badge-sm font-bold">{{ .Provider }}</span>
+                    <td class="ui-td font-mono text-xs opacity-40">
+                        {{ .ID }}
                     </td>
-                    <td class="ui-td text-xs">{{ formatTimeOrNil .NotBefore }}</td>
+                    <td class="ui-td">
+                        <span class="badge badge-secondary badge-outline badge-sm font-bold">
+                            {{ .Provider }}
+                        </span>
+                    </td>
+                    <td class="ui-td text-xs">
+                        {{ formatTimeOrNil .NotBefore }}
+                    </td>
                     <td class="ui-td">
                         <span class="text-xs {{ if .NotAfter }}text-warning font-medium{{ else }}opacity-30{{ end }}">
                             {{ formatTimeOrNil .NotAfter }}

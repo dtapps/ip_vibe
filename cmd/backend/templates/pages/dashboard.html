@@ -13,7 +13,9 @@
     <span class="badge badge-primary py-4 px-6 rounded-2xl font-bold">
       {{ $data.SystemOS }} / {{ $data.SystemArch }}
     </span>
-    <span class="text-[10px] opacity-30 mt-2 font-mono">Build: {{ $data.SystemGitCommit }}</span>
+    <span class="text-[10px] opacity-30 mt-2 font-mono">
+      Build: {{ $data.SystemGitCommit }}
+    </span>
   </div>
 </div>
 
@@ -22,27 +24,39 @@
   <div class="lg:col-span-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
     <div class="ui-panel p-6 flex flex-col items-center justify-center">
       <span class="text-sm opacity-50 font-medium mb-1">设备总数</span>
-      <span class="text-3xl font-bold text-primary tracking-tighter">{{ $data.Stats.DeviceCount }}</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">
+        {{ $data.Stats.DeviceCount }}
+      </span>
     </div>
     <div class="ui-panel p-6 flex flex-col items-center justify-center">
       <span class="text-sm opacity-50 font-medium mb-1">在线设备</span>
-      <span class="text-3xl font-bold text-primary tracking-tighter">{{ $data.Stats.OnlineDeviceCount }}</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">
+        {{ $data.Stats.OnlineDeviceCount }}
+      </span>
     </div>
     <div class="ui-panel p-6 flex flex-col items-center justify-center">
       <span class="text-sm opacity-50 font-medium mb-1">DNS 记录</span>
-      <span class="text-3xl font-bold text-primary tracking-tighter">{{ $data.Stats.DnsRecordCount }}</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">
+        {{ $data.Stats.DnsRecordCount }}
+      </span>
     </div>
     <div class="ui-panel p-6 flex flex-col items-center justify-center">
       <span class="text-sm opacity-50 font-medium mb-1">CDN 记录</span>
-      <span class="text-3xl font-bold text-primary tracking-tighter">{{ $data.Stats.CdnRecordCount }}</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">
+        {{ $data.Stats.CdnRecordCount }}
+      </span>
     </div>
     <div class="ui-panel p-6 flex flex-col items-center justify-center">
       <span class="text-sm opacity-50 font-medium mb-1">通知渠道</span>
-      <span class="text-3xl font-bold text-primary tracking-tighter">{{ $data.Stats.WebhookCount }}</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">
+        {{ $data.Stats.WebhookCount }}
+      </span>
     </div>
     <div class="ui-panel p-6 flex flex-col items-center justify-center">
       <span class="text-sm opacity-50 font-medium mb-1">运行任务</span>
-      <span class="text-3xl font-bold text-primary tracking-tighter">{{ $data.Stats.ActiveTaskCount }}</span>
+      <span class="text-3xl font-bold text-primary tracking-tighter">
+        {{ $data.Stats.ActiveTaskCount }}
+      </span>
     </div>
   </div>
 
@@ -56,56 +70,65 @@
       <div class="p-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
         <a href="/cdn"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-layers") }}
+          <div class="mb-2 opacity-70 group-hover:opacity-100">
+            {{ template "icons" (dict "Name" "i-lucide-layers") }}
           </div>
           <span class="text-xs font-bold">CDN 管理</span>
         </a>
         <a href="/dns"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-database-zap")
-            }}</div>
+          <div class="mb-2 opacity-70 group-hover:opacity-100">
+            {{ template "icons" (dict "Name" "i-lucide-database-zap") }}
+          </div>
           <span class="text-xs font-bold">DNS 记录</span>
         </a>
         <a href="/ssl"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-shield-check")
-            }}</div>
+          <div class="mb-2 opacity-70 group-hover:opacity-100">
+            {{ template "icons" (dict "Name" "i-lucide-shield-check") }}
+          </div>
           <span class="text-xs font-bold">SSL 记录</span>
         </a>
         <a href="/device"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-smartphone")
-            }}</div>
+          <div class="mb-2 opacity-70 group-hover:opacity-100">
+            {{ template "icons" (dict "Name" "i-lucide-smartphone") }}
+          </div>
           <span class="text-xs font-bold">设备管理</span>
         </a>
         <a href="/ip-group"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-folder-plus")
-            }}</div>
+          <div class="mb-2 opacity-70 group-hover:opacity-100">
+            {{ template "icons" (dict "Name" "i-lucide-folder-plus") }}
+          </div>
           <span class="text-xs font-bold">IP 组</span>
         </a>
         <a href="/port-forward"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-route") }}
+          <div class="mb-2 opacity-70 group-hover:opacity-100">
+            {{ template "icons" (dict "Name" "i-lucide-route") }}
           </div>
           <span class="text-xs font-bold">端口转发</span>
         </a>
         <a href="/webhook"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-bell") }}
+          <div class="mb-2 opacity-70 group-hover:opacity-100">
+            {{ template "icons" (dict "Name" "i-lucide-bell") }}
           </div>
           <span class="text-xs font-bold">通知管理</span>
         </a>
         <a href="/task"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-list-todo") }}
+          <div class="mb-2 opacity-70 group-hover:opacity-100">
+            {{ template "icons" (dict "Name" "i-lucide-list-todo") }}
           </div>
           <span class="text-xs font-bold">任务管理</span>
         </a>
         <a href="/log"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70 group-hover:opacity-100">{{ template "icons" (dict "Name" "i-lucide-scroll-text")
-            }}</div>
+          <div class="mb-2 opacity-70 group-hover:opacity-100">
+            {{ template "icons" (dict "Name" "i-lucide-scroll-text") }}
+          </div>
           <span class="text-xs font-bold">操作日志</span>
         </a>
         <a href="/config"
@@ -130,13 +153,22 @@
         <div class="p-6 border-b border-base-200 last:border-0 flex items-center justify-between">
           <div>
             <div class="flex items-center gap-2">
-              <span class="text-sm font-bold">{{ .ObjType }}</span>
-              <span class="text-xs opacity-50">ID: {{ .ObjID }}</span>
+              <span class="text-sm font-bold">
+                {{ .ObjType }}
+              </span>
+              <span class="text-xs opacity-50">
+                ID: {{ .ObjID }}
+
+              </span>
             </div>
-            <p class="text-sm opacity-80 mt-1">{{ .Message }}</p>
+            <p class="text-sm opacity-80 mt-1">
+              {{ .Message }}
+            </p>
           </div>
           <div class="text-right">
-            <div class="text-[10px] opacity-40 mb-1">{{ formatTimeOrNil .CreatedAt }}</div>
+            <div class="text-[10px] opacity-40 mb-1">
+              {{ formatTimeOrNil .CreatedAt }}
+            </div>
             {{ if eq .Status "success" }}
             <span class="badge badge-success badge-xs py-2 px-3 text-white">成功</span>
             {{ else }}
@@ -157,20 +189,28 @@
       <div class="p-6 space-y-4">
         <div class="flex flex-col">
           <span class="text-[10px] opacity-40 font-bold">GO 版本</span>
-          <span class="text-sm truncate">{{ $data.SystemGoVersion }}</span>
+          <span class="text-sm truncate">
+            {{ $data.SystemGoVersion }}
+          </span>
         </div>
         <div class="flex flex-col">
           <span class="text-[10px] opacity-40 font-bold">启动时间</span>
-          <span class="text-sm truncate">{{ $data.SystemMemoryInfo.RuntimeStartTime }}</span>
+          <span class="text-sm truncate">
+            {{ $data.SystemMemoryInfo.RuntimeStartTime }}
+          </span>
         </div>
         <div class="grid grid-cols-2 gap-4 pt-4">
           <div class="bg-base-200/50 p-3 rounded-2xl">
             <span class="text-[10px] block opacity-50">Goroutines</span>
-            <span class="font-bold">{{ $data.SystemMemoryInfo.NumGoroutine }}</span>
+            <span class="font-bold">
+              {{ $data.SystemMemoryInfo.NumGoroutine }}
+            </span>
           </div>
           <div class="bg-base-200/50 p-3 rounded-2xl">
             <span class="text-[10px] block opacity-50">GC 次数</span>
-            <span class="font-bold">{{ $data.SystemMemoryInfo.NumGC }}</span>
+            <span class="font-bold">
+              {{ $data.SystemMemoryInfo.NumGC }}
+            </span>
           </div>
         </div>
       </div>

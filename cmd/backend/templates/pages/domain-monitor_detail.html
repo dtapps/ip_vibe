@@ -17,7 +17,9 @@
         </div>
         <div>
             <h1 class="text-3xl font-bold">域名监控详情</h1>
-            <p class="opacity-50 text-sm mt-1">监控对象: {{ $item.Name }} ({{$item.Domain}})</p>
+            <p class="opacity-50 text-sm mt-1">
+                监控对象: {{ $item.Name }} ({{$item.Domain}})
+            </p>
         </div>
     </div>
     <a href="{{$baseWebUrlPath}}" class="btn btn-sm btn-ghost rounded-xl">
@@ -59,17 +61,29 @@
                     </div>
                     <div class="ui-form-control">
                         <label class="ui-label-text">检查间隔</label>
-                        <span class="font-mono font-bold">{{$item.CheckInterval}} 秒</span>
+                        <span class="font-mono font-bold">
+                            {{$item.CheckInterval}} 秒
+                        </span>
                     </div>
                     <div class="ui-form-control">
                         <label class="ui-label-text">最后成功时间</label>
-                        <span class="text-success font-medium">{{ if $item.LastSuccessAt }}{{ formatTimeOrNil
-                            $item.LastSuccessAt }}{{ else }}N/A{{ end }}</span>
+                        <span class="text-success font-medium">
+                            {{ if $item.LastSuccessAt }}
+                            {{ formatTimeOrNil $item.LastSuccessAt }}
+                            {{ else }}
+                            N/A
+                            {{ end }}
+                        </span>
                     </div>
                     <div class="ui-form-control">
                         <label class="ui-label-text">最后失败时间</label>
-                        <span class="text-error font-medium">{{ if $item.LastFailureAt }}{{ formatTimeOrNil
-                            $item.LastFailureAt }}{{ else }}N/A{{ end }}</span>
+                        <span class="text-error font-medium">
+                            {{ if $item.LastFailureAt }}
+                            {{ formatTimeOrNil $item.LastFailureAt }}
+                            {{ else }}
+                            N/A
+                            {{ end }}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -99,7 +113,11 @@
                     <div class="bg-base-200/50 p-4 rounded-2xl">
                         <label class="ui-label-text block mb-1">HTTP 状态码</label>
                         <span class="text-xl font-bold">
-                            {{ if $latestHistory.HTTPStatus }}{{$latestHistory.HTTPStatus}}{{ else }}-{{ end }}
+                            {{ if $latestHistory.HTTPStatus }}
+                            {{$latestHistory.HTTPStatus}}
+                            {{ else }}
+                            -
+                            {{ end }}
                         </span>
                     </div>
                     <div class="bg-base-200/50 p-4 rounded-2xl">
@@ -142,26 +160,36 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="ui-form-control p-3 bg-base-200/30 rounded-xl">
                             <label class="ui-label-text !text-[10px]">颁发者</label>
-                            <span class="truncate">{{ $latestHistory.SslIssuerName }}</span>
+                            <span class="truncate">
+                                {{ $latestHistory.SslIssuerName }}
+                            </span>
                         </div>
                         <div class="ui-form-control p-3 bg-base-200/30 rounded-xl">
                             <label class="ui-label-text !text-[10px]">加密版本</label>
-                            <span>{{ $latestHistory.SslVersion }}</span>
+                            <span>
+                                {{ $latestHistory.SslVersion }}
+                            </span>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="ui-form-control p-3 bg-base-200/30 rounded-xl">
                             <label class="ui-label-text !text-[10px]">通用名 (CN)</label>
-                            <span class="font-mono text-xs">{{ $latestHistory.SslCommonName }}</span>
+                            <span class="font-mono text-xs">
+                                {{ $latestHistory.SslCommonName }}
+                            </span>
                         </div>
                         <div class="ui-form-control p-3 bg-base-200/30 rounded-xl">
                             <label class="ui-label-text !text-[10px]">备用名 (SAN)</label>
-                            <span class="font-mono text-xs">{{ $latestHistory.SslSanList }}</span>
+                            <span class="font-mono text-xs">
+                                {{ $latestHistory.SslSanList }}
+                            </span>
                         </div>
                     </div>
                     <div class="ui-form-control p-3 bg-base-200/30 rounded-xl">
                         <label class="ui-label-text !text-[10px]">序列号</label>
-                        <span>{{ $latestHistory.SslSerialNumber }}</span>
+                        <span>
+                            {{ $latestHistory.SslSerialNumber }}
+                        </span>
                     </div>
                 </div>
                 {{ end }}
@@ -192,25 +220,32 @@
                     </a>
                 </div>
                 <div class="ui-form-control">
+                    {{ $activeApiUrlPath := join $apiUrlPath "/active" }}
                     <label class="ui-label-text">监控开关</label>
                     {{ template "switch" (dict
                     "Checked" $item.IsActive
-                    "URL" (join $apiUrlPath "/active")
+                    "URL" $activeApiUrlPath
                     "NoReload" true
                     ) }}
                 </div>
                 <div class="divider opacity-30"></div>
                 <div class="ui-form-control">
                     <label class="ui-label-text">创建时间</label>
-                    <span class="text-sm opacity-70">{{formatTimeOrNil $item.CreatedAt}}</span>
+                    <span class="text-sm opacity-70">
+                        {{formatTimeOrNil $item.CreatedAt}}
+                    </span>
                 </div>
                 <div class="ui-form-control">
                     <label class="ui-label-text">更新时间</label>
-                    <span class="text-sm opacity-70">{{formatTimeOrNil $item.UpdatedAt}}</span>
+                    <span class="text-sm opacity-70">
+                        {{formatTimeOrNil $item.UpdatedAt}}
+                    </span>
                 </div>
                 <div class="ui-form-control">
                     <label class="ui-label-text">监控 ID</label>
-                    <span class="badge badge-ghost font-mono">#{{$item.ID}}</span>
+                    <span class="badge badge-ghost font-mono">
+                        #{{$item.ID}}
+                    </span>
                 </div>
             </div>
         </div>
@@ -220,19 +255,26 @@
                 <h2 class="text-lg font-bold flex items-center gap-2">
                     {{ template "icons" (dict "Name" "i-lucide-bell" "Class" "w-4 h-4 text-orange-500") }} 通知订阅
                 </h2>
-                <button class="btn btn-xs btn-ghost text-primary" onclick="openSubscriptionModal()">配置</button>
+                <button class="btn btn-xs btn-ghost text-primary" onclick="openFormModal('{{$item.ID}}')">配置</button>
             </div>
             <div class="p-6 pt-0 space-y-4">
                 {{ if $webhookSubs }}
                 {{ range $webhookSubs }}
+                {{ $webhookSubsApiUrlPath := printf "/api/webhook-subs/%d" .ID }}
+                {{ $webhookSubsWebUrlPath := printf "/webhook-sub/%d" .ID }}
                 <div class="flex items-center justify-between p-3 bg-base-200/50 rounded-xl border border-base-300/30">
                     <div class="flex flex-col">
-                        <span class="text-xs font-bold">{{ .Name }}</span>
-                        <span class="text-[10px] opacity-50">{{ .Description }}</span>
+                        <span class="text-xs font-bold">
+                            {{ .Name }}
+                        </span>
+                        <span class="text-[10px] opacity-50">
+                            {{ .Description }}
+                        </span>
                     </div>
+                    {{ $activeApiUrlPath := join $webhookSubsApiUrlPath "/active" }}
                     {{ template "switch" (dict
                     "Checked" .IsActive
-                    "URL" (printf "/api/subscriptions/%d/active" .ID)
+                    "URL" $activeApiUrlPath
                     "NoReload" true
                     ) }}
                 </div>
@@ -261,13 +303,17 @@
                         </div>
                         <div class="flex flex-col gap-1">
                             <div class="flex justify-between items-center">
-                                <span class="text-[10px] font-mono opacity-40 leading-none">{{ .CreatedAt.Format
-                                    "2006-01-02 15:04" }}</span>
+                                <span class="text-[10px] font-mono opacity-40 leading-none">
+                                    {{ .CreatedAt.Format "2006-01-02 15:04" }}
+                                </span>
                                 <span
                                     class='badge badge-xs {{ if eq .Status "success" }}badge-ghost opacity-50{{ else }}badge-error{{ end }} font-mono'>
-                                    {{ .OpType }}</span>
+                                    {{ .OpType }}
+                                </span>
                             </div>
-                            <span class="text-xs font-medium text-base-content/80">{{ .Message }}</span>
+                            <span class="text-xs font-medium text-base-content/80">
+                                {{ .Message }}
+                            </span>
                             {{ if .NewValue }}
                             <div class="text-[9px] bg-base-200/80 px-2 py-1 rounded mt-1 font-mono truncate opacity-60">
                                 Value: {{ .NewValue }}
@@ -291,7 +337,11 @@
             </div>
             <div class="p-8">
                 <p class="text-sm text-base-content/60 leading-relaxed">
-                    {{ if $item.Description }}{{ $item.Description }}{{ else }}暂无备注信息。{{ end }}
+                    {{ if $item.Description }}
+                    {{ $item.Description }}
+                    {{ else }}
+                    暂无备注信息。
+                    {{ end }}
                 </p>
             </div>
         </div>

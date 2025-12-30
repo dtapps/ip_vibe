@@ -372,8 +372,9 @@ github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.1.25/go.mod h
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.1.48/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.16/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.21/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
-github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.22 h1:IhtZGlFb+w3Gb9oTXrxuvWT1ytZoR/X9hYddWEOzKcU=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.22/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
+github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.23 h1:b6v4NVZvf+7kE0uovFte+C5hbJdkiS+fJhyDSP6RUNI=
+github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.23/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.16 h1:KEurgSMpfFK1859h3DLYNxDnfyPXNh7UUgXypZkD7gs=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.16/go.mod h1:+kcn9OabSCH892599SVdgPkpkNQt88AjXXalCqnWh+U=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.21 h1:N5Ssdyy1TubNHYBDbK/KuS7tQXgEOwQkimejo+ebDN4=
@@ -398,8 +399,8 @@ github.com/ugorji/go/codec v1.3.1 h1:waO7eEiFDwidsBN6agj1vJQ4AG7lh2yqXyOXqhgQuyY
 github.com/ugorji/go/codec v1.3.1/go.mod h1:pRBVtBSKl77K30Bv8R2P+cLSGaTtex6fsA2Wjqmfxj4=
 github.com/valllabh/ocsf-schema-golang v1.0.3 h1:eR8k/3jP/OOqB8LRCtdJ4U+vlgd/gk5y3KMXoodrsrw=
 github.com/valllabh/ocsf-schema-golang v1.0.3/go.mod h1:sZ3as9xqm1SSK5feFWIR2CuGeGRhsM7TR1MbpBctzPk=
-github.com/wdcbot/qingfeng v1.5.1 h1:yMwOOxn3GZUCl1mMdZoJuYPL9IjU/MkCHhwhEzqUkmg=
-github.com/wdcbot/qingfeng v1.5.1/go.mod h1:b9HvfdNb6k8MDbN+fy2DGcYWGcQG2dyqo+WEelsEde4=
+github.com/wdcbot/qingfeng v1.5.6 h1:8cOCVZIG/VGQEKShIjzj1dSKcmRAEpyBR6RpkOHSKfY=
+github.com/wdcbot/qingfeng v1.5.6/go.mod h1:KMSPnNS5ij5UQ5wLgZSibUYReZAkLvbS6s5hqpiUJEQ=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.2/go.mod h1:RT/sEzTbU5y00aCK8UOx6R7YryM0iF1N2MOmC3kKLN4=
 github.com/xdg-go/stringprep v1.0.4/go.mod h1:mPGuuIYwz7CmR2bT9j4GbQqutWS1zV24gijq1dTyGkM=
