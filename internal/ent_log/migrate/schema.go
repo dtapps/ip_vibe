@@ -119,7 +119,7 @@ var (
 		{Name: "is_error", Type: field.TypeBool, Nullable: true, Comment: "是否为错误请求（如 5xx、4xx）", Default: false},
 		{Name: "created_at", Type: field.TypeTime, Comment: "请求时间"},
 		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "go 版本", Default: "go1.26rc1"},
-		{Name: "plugin_version", Type: field.TypeString, Nullable: true, Comment: "plugin 版本", Default: "1.0.0"},
+		{Name: "plugin_version", Type: field.TypeString, Nullable: true, Comment: "plugin 版本", Default: "1.0.1"},
 	}
 	// HTTPLogTable holds the schema information for the "http_log" table.
 	HTTPLogTable = &schema.Table{

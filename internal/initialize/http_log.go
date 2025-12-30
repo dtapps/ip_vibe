@@ -2,12 +2,15 @@ package initialize
 
 import (
 	"context"
+	"encoding/json"
 	"log/slog"
 	"net/http"
+	"strings"
 	"sync"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/global"
 
+	xml2json "github.com/basgys/goxml2json"
 	"go.dtapp.net/library/contrib/http_log"
 )
 
@@ -39,20 +42,22 @@ func (s *EntHttpLogSaver) HandleLog(ctx context.Context, data *http_log.LogData)
 
 	go func(asyncCtx context.Context, asyncDb *ent_log.Client) {
 		var (
-			requestBody  = []byte{}
-			responseBody = []byte{}
+			requestBody  json.RawMessage = nil
+			responseBody json.RawMessage = nil
 		)
 		if len(data.RequestBodyJSON) > 0 {
-			requestBody = data.RequestBodyJSON
+			requestBody = json.RawMessage(data.RequestBodyJSON)
 		}
 		if len(data.RequestBodyXML) > 0 {
-			requestBody = data.RequestBodyXML
+			xj, _ := xml2json.Convert(strings.NewReader(string(data.RequestBodyXML)))
+			requestBody = json.RawMessage(xj.Bytes())
 		}
 		if len(data.ResponseBodyJSON) > 0 {
-			responseBody = data.ResponseBodyJSON
+			responseBody = json.RawMessage(data.ResponseBodyJSON)
 		}
 		if len(data.ResponseBodyXML) > 0 {
-			responseBody = data.ResponseBodyXML
+			xj, _ := xml2json.Convert(strings.NewReader(string(data.ResponseBodyXML)))
+			responseBody = json.RawMessage(xj.Bytes())
 		}
 		err := asyncDb.HttpLog.Create().
 			SetHostname(data.Hostname).
@@ -108,20 +113,22 @@ func InitEntHttpLog(logger *slog.Logger) {
 
 			go func(asyncCtx context.Context, asyncDb *ent_log.Client) {
 				var (
-					requestBody  = []byte{}
-					responseBody = []byte{}
+					requestBody  json.RawMessage = nil
+					responseBody json.RawMessage = nil
 				)
 				if len(data.RequestBodyJSON) > 0 {
-					requestBody = data.RequestBodyJSON
+					requestBody = json.RawMessage(data.RequestBodyJSON)
 				}
 				if len(data.RequestBodyXML) > 0 {
-					requestBody = data.RequestBodyXML
+					xj, _ := xml2json.Convert(strings.NewReader(string(data.RequestBodyXML)))
+					requestBody = json.RawMessage(xj.Bytes())
 				}
 				if len(data.ResponseBodyJSON) > 0 {
-					responseBody = data.ResponseBodyJSON
+					responseBody = json.RawMessage(data.ResponseBodyJSON)
 				}
 				if len(data.ResponseBodyXML) > 0 {
-					responseBody = data.ResponseBodyXML
+					xj, _ := xml2json.Convert(strings.NewReader(string(data.ResponseBodyXML)))
+					responseBody = json.RawMessage(xj.Bytes())
 				}
 				err := asyncDb.HttpLog.Create().
 					SetHostname(data.Hostname).
