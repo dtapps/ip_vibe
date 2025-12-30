@@ -216,24 +216,26 @@
     @apply w-2 h-6 rounded-full;
   }
 
-  /* 搜索栏：标准的横向容器 */
-  .ui-filter-inline {
-    @apply flex items-center flex-wrap gap-x-6 gap-y-4 px-6 py-4 bg-base-100 border-b border-base-200;
+  /* 搜索栏：作为面板内部的一个逻辑分区 */
+  .ui-filter-container {
+    @apply px-8 py-4 bg-base-200/20 flex items-center gap-6 transition-all border-b border-base-200/50;
   }
 
-  /* 单个搜索项 */
-  .ui-filter-item {
-    @apply flex items-center gap-2;
-  }
-
-  /* 标签样式 */
+  /* 标签：与你的表格标题风格对齐 */
   .ui-filter-label {
-    @apply text-xs font-bold opacity-50 whitespace-nowrap;
+    @apply text-[11px] font-black uppercase tracking-wider opacity-30 whitespace-nowrap;
   }
 
-  /* 自定义输入框样式 (替代 input-bordered) */
-  .ui-filter-input {
-    @apply h-9 px-3 text-xs rounded-lg border border-base-300 bg-base-200/30 
-           outline-none transition-all focus:border-primary/50 focus:ring-1 focus:ring-primary/20;
+  /* 输入框：去掉沉重的背景，使用更轻量的嵌入感 */
+  .ui-filter-input-compact {
+    @apply h-8 px-3 text-xs rounded-xl border border-base-300/60 bg-base-100 
+           outline-none transition-all shadow-sm
+           focus:border-primary/40 focus:ring-4 focus:ring-primary/5 placeholder:opacity-20;
+  }
+
+  /* 下拉框样式统一 */
+  .ui-filter-select {
+    @apply h-8 pl-2 pr-6 text-xs rounded-xl border border-base-300/60 bg-base-100 
+           cursor-pointer outline-none shadow-sm focus:border-primary/40;
   }
 }
