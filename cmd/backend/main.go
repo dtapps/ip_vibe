@@ -21,6 +21,7 @@ import (
 	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/docs_2"
 	"vibe_ip/internal/docs_3"
+	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/gin_middleware"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_client"
@@ -584,6 +585,12 @@ func web_resource(ctx context.Context, logger *slog.Logger, router *gin.Engine) 
 		logger = slog.Default()
 	}
 
+	// EnumItem 表示单个枚举项
+	type EnumItem struct {
+		Label string `json:"label"`
+		Value string `json:"value"`
+	}
+
 	// 创建带 FuncMap 的 template
 	funcMap := template.FuncMap{
 		// 判断是否为调试模式
@@ -646,6 +653,132 @@ func web_resource(ctx context.Context, logger *slog.Logger, router *gin.Engine) 
 		// 字符串拼接
 		"join": func(strs ...string) string {
 			return strings.Join(strs, "")
+		},
+		// 获取字段的枚举项
+		"fieldEnumMap": func(fieldType string) (enumItems []EnumItem) {
+			switch fieldType {
+			case "cdn_type":
+				// CDN记录 记录类型
+				for _, value := range schematype.GetCDNRecordTypes {
+					enumItems = append(enumItems, EnumItem{
+						Label: schematype.GetCDNRecordTypeDescriptions[value],
+						Value: value,
+					})
+				}
+			case "cdn_origin_protocol":
+				// CDN记录 回源协议
+				for _, value := range schematype.GetOriginProtocols {
+					enumItems = append(enumItems, EnumItem{
+						Label: schematype.GetOriginProtocolDescriptions[value],
+						Value: value,
+					})
+				}
+			case "dns_type":
+				// DNS记录 记录类型
+				for _, value := range schematype.GetDNSRecordTypes {
+					enumItems = append(enumItems, EnumItem{
+						Label: schematype.GetDNSRecordTypeDescriptions[value],
+						Value: value,
+					})
+				}
+			case "domain_monitor_check_protocol":
+				// 域名监控 检查类型
+				for _, value := range schematype.GetDomainMonitorCheckProtocols {
+					enumItems = append(enumItems, EnumItem{
+						Label: schematype.GetDomainMonitorCheckProtocolDescriptions[value],
+						Value: value,
+					})
+				}
+			case "domain_monitor_current_status":
+				// 域名监控 当前运行状态
+				for _, value := range schematype.GetDomainMonitorStatuss {
+					enumItems = append(enumItems, EnumItem{
+						Label: schematype.GetDomainMonitorStatusDescriptions[value],
+						Value: value,
+					})
+				}
+			case "platform_config_capability":
+				// 平台配置 平台支持的服务能力
+				for _, value := range schematype.GetConfigCapabilitys {
+					enumItems = append(enumItems, EnumItem{
+						Label: schematype.GetConfigCapabilityDescriptions[value],
+						Value: value,
+					})
+				}
+			case "platform_config_platform":
+				// 平台配置 平台类型
+				for _, value := range schematype.GetConfigPlatforms {
+					enumItems = append(enumItems, EnumItem{
+						Label: schematype.GetConfigPlatformDescriptions[value],
+						Value: value,
+					})
+				}
+			case "ssl_record_status":
+				// SSL记录 证书状态
+				for _, value := range schematype.GetSSLRecordStatuss {
+					enumItems = append(enumItems, EnumItem{
+						Label: schematype.GetSSLRecordStatusDescriptions[value],
+						Value: value,
+					})
+				}
+			case "ssl_record_provider":
+				// SSL记录 CA提供商
+				for _, value := range schematype.GetSSLRecordProviders {
+					enumItems = append(enumItems, EnumItem{
+						Label: schematype.GetSSLRecordProviderDescriptions[value],
+						Value: value,
+					})
+				}
+			case "webhook_platform":
+				// 通知 通知平台类型
+				for _, value := range schematype.GetWebhookPlatforms {
+					enumItems = append(enumItems, EnumItem{
+						Label: schematype.GetWebhookPlatformDescriptions[value],
+						Value: value,
+					})
+				}
+			case "webhook_subscription_obj_type":
+				// 通知订阅 对象类型
+				for _, value := range schematype.GetWebhookSubscriptionObjTypes {
+					enumItems = append(enumItems, EnumItem{
+						Label: schematype.GetWebhookSubscriptionObjTypeDescriptions[value],
+						Value: value,
+					})
+				}
+			case "operation_log_op_type":
+				// 操作日志 操作类型
+				for _, value := range schematype.GetLogOpTypes {
+					enumItems = append(enumItems, EnumItem{
+						Label: schematype.GetLogOpTypeDescriptions[value],
+						Value: value,
+					})
+				}
+			case "operation_log_obj_type":
+				// 操作日志 对象类型
+				for _, value := range schematype.GetLogObjTypes {
+					enumItems = append(enumItems, EnumItem{
+						Label: schematype.GetLogObjTypeDescriptions[value],
+						Value: value,
+					})
+				}
+			case "operation_log_status":
+				// 操作日志 状态
+				for _, value := range schematype.GetLogStatuss {
+					enumItems = append(enumItems, EnumItem{
+						Label: schematype.GetLogStatusDescriptions[value],
+						Value: value,
+					})
+				}
+			case "ssl_certificate_history_provider":
+				// SSL证书申请历史记录 CA提供商
+				for _, value := range schematype.GetSSLRecordProviders {
+					enumItems = append(enumItems, EnumItem{
+						Label: schematype.GetSSLRecordProviderDescriptions[value],
+						Value: value,
+					})
+				}
+			}
+			return enumItems
 		},
 	}
 
