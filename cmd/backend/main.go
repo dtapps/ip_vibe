@@ -587,8 +587,8 @@ func web_resource(ctx context.Context, logger *slog.Logger, router *gin.Engine) 
 
 	// EnumItem 表示单个枚举项
 	type EnumItem struct {
-		Label string `json:"label"`
-		Value string `json:"value"`
+		Label string
+		Value string
 	}
 
 	// 创建带 FuncMap 的 template

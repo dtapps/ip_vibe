@@ -23,59 +23,41 @@
             <span class="ui-filter-label">对象类型</span>
             <select name="obj_type" class="ui-filter-select w-36">
                 <option value="">所有类型</option>
-                <option value="platform_config" {{ if eq $filter.ObjType "platform_config" }}selected{{ end }}>
-                    平台配置
-                </option>
-                <option value="cdn_record" {{ if eq $filter.ObjType "cdn_record" }}selected{{ end }}>
-                    CDN记录
-                </option>
-                <option value="dns_record" {{ if eq $filter.ObjType "dns_record" }}selected{{ end }}>
-                    DNS记录
-                </option>
-                <option value="device" {{ if eq $filter.ObjType "device" }}selected{{ end }}>
-                    设备
-                </option>
-                <option value="device_ip_report" {{ if eq $filter.ObjType "device_ip_report" }}selected{{ end }}>
-                    设备IP记录
-                </option>
-                <option value="ip_group" {{ if eq $filter.ObjType "ip_group" }}selected{{ end }}>
-                    IP组
-                </option>
-                <option value="ip_group_device" {{ if eq $filter.ObjType "ip_group_device" }}selected{{ end }}>
-                    IP组设备
-                </option>
-                <option value="webhook" {{ if eq $filter.ObjType "webhook" }}selected{{ end }}>
-                    通知
-                </option>
-                <option value="webhook_subscription" {{ if eq $filter.ObjType "webhook_subscription" }}selected{{ end
-                    }}>
-                    通知订阅
-                </option>
-                <option value="device_port_forward" {{ if eq $filter.ObjType "device_port_forward" }}selected{{ end }}>
-                    端口转发
-                </option>
-                <option value="domain_monitor" {{ if eq $filter.ObjType "domain_monitor" }}selected{{ end }}>
-                    域名监控
-                </option>
-                <option value="ssl_record" {{ if eq $filter.ObjType "ssl_record" }}selected{{ end }}>
-                    SSL记录
-                </option>
-                <option value="domain_monitor_history" {{ if eq $filter.ObjType "domain_monitor_history" }}selected{{
-                    end }}>
-                    域名监控历史记录
-                </option>
-                <option value="http_log" {{ if eq $filter.ObjType "http_log" }}selected{{ end }}>
-                    http请求日志
-                </option>
-                <option value="operation_log" {{ if eq $filter.ObjType "operation_log" }}selected{{ end }}>
-                    操作日志
-                </option>
-                <option value="resty_log" {{ if eq $filter.ObjType "resty_log" }}selected{{ end }}>
-                    resty请求日志
-                </option>
-                <option value="webhook_history" {{ if eq $filter.ObjType "webhook_history" }}selected{{ end }}>
-                    通知历史记录
-                </option>
+                {{ range $opt := (fieldEnumMap "operation_log_obj_type") }}
+                {{ if eq $opt.Value $filter.ObjType }}
+                <option value="{{ $opt.Value }}" selected>{{ $opt.Label }}</option>
+                {{ else }}
+                <option value="{{ $opt.Value }}">{{ $opt.Label }}</option>
+                {{ end }}
+                {{ end }}
+            </select>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span class="ui-filter-label">操作类型</span>
+            <select name="op_type" class="ui-filter-select w-36">
+                <option value="">所有类型</option>
+                {{ range $opt := (fieldEnumMap "operation_log_op_type") }}
+                {{ if eq $opt.Value $filter.OpType }}
+                <option value="{{ $opt.Value }}" selected>{{ $opt.Label }}</option>
+                {{ else }}
+                <option value="{{ $opt.Value }}">{{ $opt.Label }}</option>
+                {{ end }}
+                {{ end }}
+            </select>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span class="ui-filter-label">状态</span>
+            <select name="status" class="ui-filter-select w-36">
+                <option value="">所有状态</option>
+                {{ range $opt := (fieldEnumMap "operation_log_status") }}
+                {{ if eq $opt.Value $filter.Status }}
+                <option value="{{ $opt.Value }}" selected>{{ $opt.Label }}</option>
+                {{ else }}
+                <option value="{{ $opt.Value }}">{{ $opt.Label }}</option>
+                {{ end }}
+                {{ end }}
             </select>
         </div>
 
