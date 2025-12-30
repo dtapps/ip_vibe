@@ -718,7 +718,7 @@ github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/events/application
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/events/application/enums
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects/enums
-# github.com/wdcbot/qingfeng v1.5.6
+# github.com/wdcbot/qingfeng v1.5.7
 ## explicit; go 1.20
 github.com/wdcbot/qingfeng
 # github.com/yosida95/uritemplate/v3 v3.0.2
@@ -738,7 +738,7 @@ github.com/zclconf/go-cty/cty/set
 # github.com/zclconf/go-cty-yaml v1.2.0
 ## explicit; go 1.17
 github.com/zclconf/go-cty-yaml
-# go.dtapp.net/library/contrib/http_log v1.0.0
+# go.dtapp.net/library/contrib/http_log v1.0.1
 ## explicit; go 1.25.1
 go.dtapp.net/library/contrib/http_log
 # go.dtapp.net/library/contrib/resty_log v1.0.10

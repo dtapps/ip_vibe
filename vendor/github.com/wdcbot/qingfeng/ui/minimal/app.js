@@ -92,17 +92,33 @@ function setupCustomLogo(logo, link) {
     if (!titleEl) return;
     
     const parent = titleEl.parentElement;
+    
+    // 如果logo为空，保留默认状态，只更新标题文本
+    if (!logo) {
+        titleEl.textContent = config.title || 'API Docs';
+        return;
+    }
+    
+    // 处理base64格式的logo
+    let logoSrc = logo;
+    if (!logo.startsWith('http') && !logo.startsWith('data:')) {
+        // 检查是否为base64字符串
+        if (/^[A-Za-z0-9+/=]+$/.test(logo)) {
+            // 默认使用png格式，用户可以自行添加完整的data URI
+            logoSrc = `data:image/png;base64,${logo}`;
+        }
+    }
+    
     const logoHtml = `
         <${link ? `a href="${link}" target="_blank"` : 'span'} class="flex items-center gap-2">
-            <img src="${logo}" alt="Logo" class="h-8 w-8 object-contain rounded">
+            <img src="${logoSrc}" alt="Logo" class="h-8 w-8 object-contain rounded border-none">
             <span id="doc-title">${config.title || 'API Docs'}</span>
         </${link ? 'a' : 'span'}>
     `;
     
-    // 替换原有的标题
-    const icon = parent.querySelector('i');
-    if (icon) icon.remove();
-    titleEl.outerHTML = logoHtml;
+    // 完全替换父元素的内容，移除所有原有元素
+    parent.innerHTML = '';
+    parent.innerHTML = logoHtml;
 }
 
 // 设置环境选择器

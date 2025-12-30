@@ -399,8 +399,8 @@ github.com/ugorji/go/codec v1.3.1 h1:waO7eEiFDwidsBN6agj1vJQ4AG7lh2yqXyOXqhgQuyY
 github.com/ugorji/go/codec v1.3.1/go.mod h1:pRBVtBSKl77K30Bv8R2P+cLSGaTtex6fsA2Wjqmfxj4=
 github.com/valllabh/ocsf-schema-golang v1.0.3 h1:eR8k/3jP/OOqB8LRCtdJ4U+vlgd/gk5y3KMXoodrsrw=
 github.com/valllabh/ocsf-schema-golang v1.0.3/go.mod h1:sZ3as9xqm1SSK5feFWIR2CuGeGRhsM7TR1MbpBctzPk=
-github.com/wdcbot/qingfeng v1.5.6 h1:8cOCVZIG/VGQEKShIjzj1dSKcmRAEpyBR6RpkOHSKfY=
-github.com/wdcbot/qingfeng v1.5.6/go.mod h1:KMSPnNS5ij5UQ5wLgZSibUYReZAkLvbS6s5hqpiUJEQ=
+github.com/wdcbot/qingfeng v1.5.7 h1:GF0Vh3RagvFYab4gcYih+8DVegXYDUFA+uaNd07rSfw=
+github.com/wdcbot/qingfeng v1.5.7/go.mod h1:KMSPnNS5ij5UQ5wLgZSibUYReZAkLvbS6s5hqpiUJEQ=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.2/go.mod h1:RT/sEzTbU5y00aCK8UOx6R7YryM0iF1N2MOmC3kKLN4=
 github.com/xdg-go/stringprep v1.0.4/go.mod h1:mPGuuIYwz7CmR2bT9j4GbQqutWS1zV24gijq1dTyGkM=
@@ -416,8 +416,8 @@ github.com/zclconf/go-cty-debug v0.0.0-20240509010212-0d6042c53940 h1:4r45xpDWB6
 github.com/zclconf/go-cty-debug v0.0.0-20240509010212-0d6042c53940/go.mod h1:CmBdvvj3nqzfzJ6nTCIwDTPZ56aVGvDrmztiO5g3qrM=
 github.com/zclconf/go-cty-yaml v1.2.0 h1:GDyL4+e/Qe/S0B7YaecMLbVvAR/Mp21CXMOSiCTOi1M=
 github.com/zclconf/go-cty-yaml v1.2.0/go.mod h1:9YLUH4g7lOhVWqUbctnVlZ5KLpg7JAprQNgxSZ1Gyxs=
-go.dtapp.net/library/contrib/http_log v1.0.0 h1:90VC+IgoCWALFUbpEe6eBYYPhFLNsl5TLuBl4QYIXJM=
-go.dtapp.net/library/contrib/http_log v1.0.0/go.mod h1:D8vsozqA3ODPWGtFmoZbKzf/1OZbD7NioTJP5TmIW6c=
+go.dtapp.net/library/contrib/http_log v1.0.1 h1:yfnJTr2f9DloEYNwoGInqnytvRjeu4ag5g5Zgmpb5Do=
+go.dtapp.net/library/contrib/http_log v1.0.1/go.mod h1:D8vsozqA3ODPWGtFmoZbKzf/1OZbD7NioTJP5TmIW6c=
 go.dtapp.net/library/contrib/resty_log v1.0.10 h1:AfVHSJskChTyXRythDHxgg9ycoKA+OW+9f8/uFeI1fw=
 go.dtapp.net/library/contrib/resty_log v1.0.10/go.mod h1:KBIRpQ/pDjoeIKdhIN+dJxgB3E+aTSLKB2zFgu1Yv3U=
 go.dtapp.net/library/service/bark v1.0.7 h1:Zz02Rh/N/DGCc5C9P5odxoMIbPBVlDq5LEP6yGhbmMM=

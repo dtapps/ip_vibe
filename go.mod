@@ -46,8 +46,8 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.23
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.16
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.21
-	github.com/wdcbot/qingfeng v1.5.6
-	go.dtapp.net/library/contrib/http_log v1.0.0
+	github.com/wdcbot/qingfeng v1.5.7
+	go.dtapp.net/library/contrib/http_log v1.0.1
 	go.dtapp.net/library/contrib/resty_log v1.0.10
 	go.dtapp.net/library/service/bark v1.0.7
 	go.dtapp.net/library/service/dingtalk v1.0.39

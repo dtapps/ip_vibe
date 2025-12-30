@@ -38,15 +38,31 @@ func (s *EntHttpLogSaver) HandleLog(ctx context.Context, data *http_log.LogData)
 	)
 
 	go func(asyncCtx context.Context, asyncDb *ent_log.Client) {
+		var (
+			requestBody  = []byte{}
+			responseBody = []byte{}
+		)
+		if len(data.RequestBodyJSON) > 0 {
+			requestBody = data.RequestBodyJSON
+		}
+		if len(data.RequestBodyXML) > 0 {
+			requestBody = data.RequestBodyXML
+		}
+		if len(data.ResponseBodyJSON) > 0 {
+			responseBody = data.ResponseBodyJSON
+		}
+		if len(data.ResponseBodyXML) > 0 {
+			responseBody = data.ResponseBodyXML
+		}
 		err := asyncDb.HttpLog.Create().
 			SetHostname(data.Hostname).
 			SetMethod(data.Method).
 			SetURL(data.URL).
 			SetRequestHeaders(data.RequestHeaders).
-			SetRequestBody(data.RequestBody).
+			SetRequestBody(requestBody).
 			SetStatusCode(data.StatusCode).
 			SetResponseHeaders(data.ResponseHeaders).
-			SetResponseBody(data.ResponseBody).
+			SetResponseBody(responseBody).
 			SetElapseTime(data.ElapseTime).
 			SetIsError(data.IsError).
 			SetGoVersion(data.GoVersion).
@@ -91,15 +107,31 @@ func InitEntHttpLog(logger *slog.Logger) {
 			)
 
 			go func(asyncCtx context.Context, asyncDb *ent_log.Client) {
+				var (
+					requestBody  = []byte{}
+					responseBody = []byte{}
+				)
+				if len(data.RequestBodyJSON) > 0 {
+					requestBody = data.RequestBodyJSON
+				}
+				if len(data.RequestBodyXML) > 0 {
+					requestBody = data.RequestBodyXML
+				}
+				if len(data.ResponseBodyJSON) > 0 {
+					responseBody = data.ResponseBodyJSON
+				}
+				if len(data.ResponseBodyXML) > 0 {
+					responseBody = data.ResponseBodyXML
+				}
 				err := asyncDb.HttpLog.Create().
 					SetHostname(data.Hostname).
 					SetMethod(data.Method).
 					SetURL(data.URL).
 					SetRequestHeaders(data.RequestHeaders).
-					SetRequestBody(data.RequestBody).
+					SetRequestBody(requestBody).
 					SetStatusCode(data.StatusCode).
 					SetResponseHeaders(data.ResponseHeaders).
-					SetResponseBody(data.ResponseBody).
+					SetResponseBody(responseBody).
 					SetElapseTime(data.ElapseTime).
 					SetIsError(data.IsError).
 					SetGoVersion(data.GoVersion).
