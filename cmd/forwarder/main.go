@@ -42,7 +42,7 @@ func main() {
 	initialize.InitGrpcSLog("forwarder")   // 初始化 gRPC 日志
 	initialize.InitGocronSLog("forwarder") // 初始化 gocron 日志
 
-	initialize.InitGoCron() // 初始化 GoCron 调度器
+	initialize.InitGoCron(ctx, global.GvaGocronSlog.WithLogger()) // 初始化 GoCron 调度器
 	defer func() {
 		initialize.CloseGoCron() // 关闭 GoCron 调度器
 	}()

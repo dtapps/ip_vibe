@@ -36,6 +36,7 @@ import (
 	"vibe_ip/internal/mcp_tool"
 
 	"github.com/denisbrodbeck/machineid"
+	"github.com/dromara/carbon/v2"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 	grpcGatewayRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -99,13 +100,13 @@ func main() {
 
 	initialize.InitCoraza() // 初始化 Coraza 防火墙
 
-	initialize.InitEntDb(ctx)      // 初始化 业务数据库
-	initialize.InitEntLogDb(ctx)   // 初始化 日志数据库
-	initialize.InitGoCron()        // 初始化 GoCron 调度器
-	initialize.InitMCP()           // 初始化 MCP
-	initialize.InitEntRestyLog()   // 初始化 Resty 日志
-	initialize.InitEntHttpLog()    // 初始化 HTTP 日志
-	initialize.InitThirdParty(ctx) // 初始化 第三方
+	initialize.InitEntDb(ctx, global.GvaEntSlog.WithLogger())     // 初始化 业务数据库
+	initialize.InitEntLogDb(ctx, global.GvaEntSlog.WithLogger())  // 初始化 日志数据库
+	initialize.InitGoCron(ctx, global.GvaGocronSlog.WithLogger()) // 初始化 GoCron 调度器
+	initialize.InitMCP(ctx, global.GvaMcpSlog.WithLogger())       // 初始化 MCP
+	initialize.InitEntRestyLog()                                  // 初始化 Resty 日志
+	initialize.InitEntHttpLog()                                   // 初始化 HTTP 日志
+	initialize.InitThirdParty(ctx)                                // 初始化 第三方
 
 	initialize.InitOperationLogHelper() // 初始化操作日志助手
 
@@ -171,7 +172,7 @@ func main() {
 	})
 
 	// Web 资源
-	web_resource(ctx, router)
+	web_resource(ctx, global.GvaGinSlog.WithLogger(), router)
 
 	// 配置 BasicAuth 中间件
 	router.Use(gin_middleware.BasicAuth(
@@ -181,25 +182,25 @@ func main() {
 	))
 
 	// Web 路由
-	web_router(ctx, router)
+	web_router(ctx, global.GvaGinSlog.WithLogger(), router)
 
 	// API 路由
-	api_router(ctx, router)
+	api_router(ctx, global.GvaGinSlog.WithLogger(), router)
 
 	// Swagger 路由
-	swagger_router(ctx, router)
+	swagger_router(ctx, global.GvaGinSlog.WithLogger(), router)
 
 	// 新 Swagger 路由
-	qingfeng_router(ctx, router)
+	qingfeng_router(ctx, global.GvaGinSlog.WithLogger(), router)
 
 	// MCP 启动
-	mcp_run(ctx, router)
+	mcp_run(ctx, global.GvaMcpSlog.WithLogger(), router)
 
 	// gRPC 启动
-	go grpc_run(ctx)
+	go grpc_run(ctx, global.GvaGrpcSlog.WithLogger())
 
 	// gRPC-Gateway 启动
-	go grpc_gw_run(ctx, router)
+	go grpc_gw_run(ctx, global.GvaGrpcSlog.WithLogger(), router)
 
 	// 启动 GoCron 调度器
 	initialize.StartGoCron()
@@ -213,7 +214,9 @@ func main() {
 		global.GvaEnv.DEBUG,
 	)
 	if err := ipUpdate.StartCdnJob(ctx); err != nil {
-		slog.Error("启动CDN、DNS刷新任务失败", slog.String("error", err.Error()))
+		slog.Error("启动CDN、DNS刷新任务失败",
+			slog.Any("err", err),
+		)
 		os.Exit(1)
 	}
 
@@ -226,7 +229,9 @@ func main() {
 		global.GvaEnv.DEBUG,
 	)
 	if err := sslUpdate.StartPeriodicTask(ctx); err != nil {
-		slog.Error("启动SSL刷新任务失败", slog.String("error", err.Error()))
+		slog.Error("启动SSL刷新任务失败",
+			slog.Any("err", err),
+		)
 		os.Exit(1)
 	}
 
@@ -239,7 +244,9 @@ func main() {
 		global.GvaEnv.DEBUG,
 	)
 	if err := domainMonitor.StartPeriodicTask(ctx); err != nil {
-		slog.Error("启动域名监控任务失败", slog.String("error", err.Error()))
+		slog.Error("启动域名监控任务失败",
+			slog.Any("err", err),
+		)
 		os.Exit(1)
 	}
 
@@ -255,7 +262,9 @@ func main() {
 	// 使用 ListenAndServe 在 goroutine 中运行，以便能够捕获关闭信号
 	go func() {
 		if err := httpServerInstance.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			slog.Error("Gin 服务器启动失败", slog.String("error", err.Error()))
+			slog.Error("Gin 服务器启动失败",
+				slog.Any("err", err),
+			)
 			os.Exit(1)
 		}
 	}()
@@ -263,41 +272,53 @@ func main() {
 	slog.Info("Gin 服务器启动成功", slog.String("port", global.GvaEnv.HTTP_ADDR))
 
 	// 等待中断信号进行优雅关闭
-	waitForShutdown()
+	waitForShutdown(slog.Default())
 }
 
 // 优雅关闭函数
-func waitForShutdown() {
+func waitForShutdown(logger *slog.Logger) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	slog.Info("收到退出信号，开始优雅关闭...")
+	logger.Info("收到退出信号，开始优雅关闭...")
 
 	// 执行关闭流程
-	gracefulShutdown()
+	gracefulShutdown(logger)
 }
 
 // 优雅关闭实现
-func gracefulShutdown() {
+func gracefulShutdown(logger *slog.Logger) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
 	shutdownOnce.Do(func() {
 		// 1. 首先关闭 HTTP 服务器（停止接收新请求）
-		slog.Info("开始关闭 HTTP 服务器...")
+		logger.Info("开始关闭 HTTP 服务器...")
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 
 		if httpServerInstance != nil {
 			if err := httpServerInstance.Shutdown(ctx); err != nil {
-				slog.Error("HTTP 服务器关闭失败", slog.String("error", err.Error()))
+				logger.Error("HTTP 服务器关闭失败",
+					slog.Any("err", err),
+				)
 			} else {
-				slog.Info("HTTP 服务器已关闭")
+				logger.Info("HTTP 服务器已关闭")
 			}
 		}
 
 		// 2. 关闭 gRPC-Gateway 到上游的连接
-		slog.Info("开始关闭 gRPC-Gateway 连接...")
+		logger.Info("开始关闭 gRPC-Gateway 连接...")
 		if grpcConnInstance != nil {
 			grpcConnInstance.Close()
-			slog.Info("gRPC-Gateway 连接已关闭")
+			logger.Info("gRPC-Gateway 连接已关闭")
 		}
 
 		// 3. 通知 gRPC 服务器开始优雅关闭
@@ -307,7 +328,7 @@ func gracefulShutdown() {
 		time.Sleep(1 * time.Second)
 
 		// 5. 关闭数据库连接和其他资源（现有的 defer 逻辑）
-		slog.Info("开始关闭数据库连接...")
+		logger.Info("开始关闭数据库连接...")
 
 		// 6. 关闭 第三方服务
 		// initialize.CloseThirdParty()
@@ -324,19 +345,26 @@ func gracefulShutdown() {
 		// 10. 关闭 日志数据库
 		initialize.CloseEntLogDb()
 
-		slog.Info("所有资源已优雅关闭")
+		logger.Info("所有资源已优雅关闭")
 	})
 }
 
 // 开发环境
-func loadTemplates(templatePath string, funcMap template.FuncMap) multitemplate.Renderer {
+func loadTemplates(logger *slog.Logger, templatePath string, funcMap template.FuncMap) multitemplate.Renderer {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
 	r := multitemplate.NewRenderer()
 
 	layout := filepath.Join(templatePath, "layout", "base.html")
 	index := filepath.Join(templatePath, "pages", "index.html")
 	if global.GvaEnv.DEBUG {
-		fmt.Printf("开发环境 布局: %s\n", layout)
-		fmt.Printf("开发环境 首页: %s\n", index)
+		logger.Debug("开发环境",
+			slog.String("layout", layout),
+			slog.String("index", index),
+		)
 	}
 
 	// 所有业务页面
@@ -353,7 +381,9 @@ func loadTemplates(templatePath string, funcMap template.FuncMap) multitemplate.
 	for _, c := range components {
 		name := filepath.Join("components", filepath.Base(c))
 		if global.GvaEnv.DEBUG {
-			fmt.Printf("开发环境 组件: %s\n", name)
+			logger.Debug("开发环境",
+				slog.String("components", name),
+			)
 		}
 	}
 
@@ -366,7 +396,9 @@ func loadTemplates(templatePath string, funcMap template.FuncMap) multitemplate.
 	for _, p := range pages {
 		name := filepath.Join("pages", filepath.Base(p))
 		if global.GvaEnv.DEBUG {
-			fmt.Printf("开发环境 业务页面: %s\n", name)
+			logger.Debug("开发环境",
+				slog.String("pages", name),
+			)
 		}
 
 		var extras []string
@@ -400,7 +432,9 @@ func loadTemplates(templatePath string, funcMap template.FuncMap) multitemplate.
 		files = append(files, extras...)     // 注入额外文件
 		files = append(files, p)             // 当前页面
 		if global.GvaEnv.DEBUG {
-			fmt.Printf("开发环境 业务页面合并: %s\n", strings.Join(files, " -> "))
+			logger.Debug("开发环境",
+				slog.String("page", strings.Join(files, " -> ")),
+			)
 		}
 		r.AddFromFilesFuncs(
 			name,
@@ -413,7 +447,12 @@ func loadTemplates(templatePath string, funcMap template.FuncMap) multitemplate.
 }
 
 // 生产环境
-func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Renderer {
+func loadTemplatesFS(logger *slog.Logger, efs embed.FS, funcMap template.FuncMap) multitemplate.Renderer {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
 	r := multitemplate.NewRenderer()
 
 	templatePath := "templates"
@@ -421,8 +460,10 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 	layout := filepath.Join(templatePath, "layout", "base.html")
 	index := filepath.Join(templatePath, "pages", "index.html")
 	if global.GvaEnv.DEBUG {
-		fmt.Printf("生产环境 布局: %s\n", layout)
-		fmt.Printf("生产环境 首页: %s\n", index)
+		logger.Debug("生产环境",
+			slog.String("layout", layout),
+			slog.String("index", index),
+		)
 	}
 
 	// 所有业务页面
@@ -439,7 +480,9 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 	for _, c := range components {
 		name := filepath.Join("components", filepath.Base(c))
 		if global.GvaEnv.DEBUG {
-			fmt.Printf("生产环境 组件: %s\n", name)
+			logger.Debug("生产环境",
+				slog.String("components", name),
+			)
 		}
 	}
 
@@ -452,7 +495,9 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 	for _, p := range pages {
 		name := filepath.Join("pages", filepath.Base(p))
 		if global.GvaEnv.DEBUG {
-			fmt.Printf("生产环境 业务页面: %s\n", name)
+			logger.Debug("生产环境",
+				slog.String("pages", name),
+			)
 		}
 
 		var extras []string
@@ -487,7 +532,9 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 
 		files = append(files, p) // 当前页面
 		if global.GvaEnv.DEBUG {
-			fmt.Printf("生产环境 业务页面合并: %s\n", strings.Join(files, " -> "))
+			logger.Debug("生产环境",
+				slog.String("page", strings.Join(files, " -> ")),
+			)
 		}
 		r.AddFromFSFuncs(
 			name,
@@ -501,9 +548,15 @@ func loadTemplatesFS(efs embed.FS, funcMap template.FuncMap) multitemplate.Rende
 }
 
 // Web 资源
-func web_resource(ctx context.Context, router *gin.Engine) {
+func web_resource(ctx context.Context, logger *slog.Logger, router *gin.Engine) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
 	// 创建带 FuncMap 的 template
 	funcMap := template.FuncMap{
+		// 判断是否为调试模式
 		"isDebug": func() bool {
 			return global.GvaEnv.DEBUG
 		},
@@ -512,11 +565,21 @@ func web_resource(ctx context.Context, router *gin.Engine) {
 			if t.IsZero() {
 				return "—"
 			}
-			return t.Format("2006-01-02 15:04:05")
+			return t.Format(time.DateTime)
 		},
-		// 获取当前设备的 Code
+		// 格式化时间为 "X 前" 格式，如 "2 小时前"
+		"diffForHumans": func(t time.Time) string {
+			return carbon.NewCarbon(t).DiffForHumans()
+		},
+		// 获取当前设备 Code
 		"selfDeviceCode": func() string {
-			code, _ := machineid.ID()
+			code, err := machineid.ID()
+			if err != nil {
+				logger.Error("获取当前设备 Code 失败",
+					slog.Any("err", err),
+				)
+				return "—"
+			}
 			return code
 		},
 		// pagination 组件
@@ -527,13 +590,21 @@ func web_resource(ctx context.Context, router *gin.Engine) {
 		// switch / icons / button 组件
 		"dict": func(values ...any) (map[string]any, error) {
 			if len(values)%2 != 0 {
-				return nil, fmt.Errorf("dict expects even number of arguments")
+				err := fmt.Errorf("期望有偶数个参数")
+				logger.Error("dict 函数参数错误",
+					slog.Any("err", err),
+				)
+				return nil, err
 			}
 			m := make(map[string]any, len(values)/2)
 			for i := 0; i < len(values); i += 2 {
 				key, ok := values[i].(string)
 				if !ok {
-					return nil, fmt.Errorf("dict keys must be strings")
+					err := fmt.Errorf("键必须是字符串")
+					logger.Error("dict 函数参数错误",
+						slog.Any("err", err),
+					)
+					return nil, err
 				}
 				m[key] = values[i+1]
 			}
@@ -558,7 +629,7 @@ func web_resource(ctx context.Context, router *gin.Engine) {
 		// router.LoadHTMLGlob("cmd/backend/templates/**/*")
 
 		// 开发环境
-		router.HTMLRender = loadTemplates("cmd/backend/templates", funcMap)
+		router.HTMLRender = loadTemplates(logger, "cmd/backend/templates", funcMap)
 
 		// 静态文件服务 - 开发：直接读本地 static
 		router.StaticFS("/static", http.Dir("cmd/backend/static"))
@@ -572,7 +643,7 @@ func web_resource(ctx context.Context, router *gin.Engine) {
 		// router.SetHTMLTemplate(templ)
 
 		// 生产环境
-		router.HTMLRender = loadTemplatesFS(embeddedFiles, funcMap)
+		router.HTMLRender = loadTemplatesFS(logger, embeddedFiles, funcMap)
 
 		// 静态文件服务 - 使用嵌入的文件系统
 		staticFS, _ := fs.Sub(embeddedFiles, "static")
@@ -581,7 +652,12 @@ func web_resource(ctx context.Context, router *gin.Engine) {
 }
 
 // Web 路由
-func web_router(ctx context.Context, router *gin.Engine) {
+func web_router(ctx context.Context, logger *slog.Logger, router *gin.Engine) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
 	// 根路径 - 提供HTML页面并渲染数据
 	router.GET("/", handlers.Dashboard)
 	router.GET("/dashboard", handlers.Dashboard)
@@ -646,7 +722,12 @@ func web_router(ctx context.Context, router *gin.Engine) {
 }
 
 // API 路由
-func api_router(ctx context.Context, router *gin.Engine) {
+func api_router(ctx context.Context, logger *slog.Logger, router *gin.Engine) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
 	// API路由组
 	api := router.Group("/api")
 	{
@@ -809,7 +890,12 @@ func api_router(ctx context.Context, router *gin.Engine) {
 // Swagger 路由
 // https://github.com/swaggo/swag/blob/v2/README.md
 // https://github.com/swaggo/swag/issues/1588#issuecomment-3360487197
-func swagger_router(ctx context.Context, router *gin.Engine) {
+func swagger_router(ctx context.Context, logger *slog.Logger, router *gin.Engine) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
 	swaggerGroup := router.Group("/swagger")
 	{
 		// 配置 Swagger 信息
@@ -834,7 +920,12 @@ func swagger_router(ctx context.Context, router *gin.Engine) {
 
 // 新 Swagger 路由
 // https://gitee.com/xiaowan1997/qingfeng
-func qingfeng_router(ctx context.Context, router *gin.Engine) {
+func qingfeng_router(ctx context.Context, logger *slog.Logger, router *gin.Engine) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
 	qingfengGroup := router.Group("/qingfeng")
 	{
 		// 配置 Swagger 页面
@@ -858,7 +949,11 @@ func qingfeng_router(ctx context.Context, router *gin.Engine) {
 }
 
 // MCP 启动
-func mcp_run(ctx context.Context, router *gin.Engine) {
+func mcp_run(ctx context.Context, logger *slog.Logger, router *gin.Engine) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
 
 	// 判断是否开启 MCP 功能
 	if global.GvaMcpServer == nil {
@@ -914,10 +1009,15 @@ func mcp_run(ctx context.Context, router *gin.Engine) {
 }
 
 // gRPC 启动
-func grpc_run(ctx context.Context) {
+func grpc_run(ctx context.Context, logger *slog.Logger) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
 	// 判断是否开启 gRPC 功能
 	if global.GvaEnv.GRPC_ADDR == "" {
-		slog.InfoContext(ctx, "gRPC 服务器不启动，因为没有配置端口！")
+		logger.InfoContext(ctx, "gRPC 服务器不启动，因为没有配置端口")
 		return
 	}
 
@@ -954,7 +1054,7 @@ func grpc_run(ctx context.Context) {
 
 	// 注册健康检查服务
 	healthServer := health.NewServer()
-	healthServer.SetServingStatus("grpc.health.v1.Health", healthpb.HealthCheckResponse_SERVING) // 整体
+	healthServer.SetServingStatus("grpc.health.v1.Health", healthpb.HealthCheckResponse_SERVING)
 	healthpb.RegisterHealthServer(grpcServerInstance, healthServer)
 
 	// 注册业务服务
@@ -965,18 +1065,24 @@ func grpc_run(ctx context.Context) {
 	var err error
 	grpcListenerInstance, err = net.Listen("tcp", global.GvaEnv.GRPC_ADDR)
 	if err != nil {
-		slog.ErrorContext(ctx, "gRPC 服务器启动失败", slog.String("error", err.Error()))
+		logger.ErrorContext(ctx, "gRPC 服务器启动失败",
+			slog.Any("error", err),
+		)
 		os.Exit(1)
 	}
 
-	slog.InfoContext(ctx, "gRPC 服务器正在启动", slog.String("port", global.GvaEnv.GRPC_ADDR))
+	logger.InfoContext(ctx, "gRPC 服务器正在启动",
+		slog.String("port", global.GvaEnv.GRPC_ADDR),
+	)
 
 	// 使用 Serve 但不阻塞，通过 channel 监听关闭信号
 	go func() {
 		if err := grpcServerInstance.Serve(grpcListenerInstance); err != nil {
-			slog.ErrorContext(ctx, "gRPC 服务器异常退出", slog.String("error", err.Error()))
+			logger.ErrorContext(ctx, "gRPC 服务器异常退出",
+				slog.Any("error", err),
+			)
 		}
-		slog.InfoContext(ctx, "gRPC 服务器已停止")
+		logger.InfoContext(ctx, "gRPC 服务器已停止")
 	}()
 
 	<-shutdownChan // 等待关闭信号
@@ -984,14 +1090,19 @@ func grpc_run(ctx context.Context) {
 	if grpcListenerInstance != nil {
 		grpcListenerInstance.Close()
 	}
-	slog.InfoContext(ctx, "gRPC 服务器已优雅关闭")
+	logger.InfoContext(ctx, "gRPC 服务器已优雅关闭")
 }
 
 // gRPC-Gateway 启动
-func grpc_gw_run(ctx context.Context, router *gin.Engine) {
+func grpc_gw_run(ctx context.Context, logger *slog.Logger, router *gin.Engine) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
 	// 判断是否开启 gRPC-Gateway 功能
 	if global.GvaEnv.GRPC_ADDR == "" {
-		slog.Info("gRPC-Gateway 不启动，因为没有配置端口！")
+		logger.InfoContext(ctx, "gRPC-Gateway 不启动，因为没有配置端口")
 		return
 	}
 
@@ -1013,7 +1124,9 @@ func grpc_gw_run(ctx context.Context, router *gin.Engine) {
 	// 连接 gRPC 服务器
 	err := grpc_client.Dial(global.GvaEnv.GRPC_ADDR)
 	if err != nil {
-		slog.Error("gRPC-Gateway 连接上游失败（忽略路由注册）", slog.String("error", err.Error()))
+		logger.ErrorContext(ctx, "gRPC-Gateway 连接上游失败（忽略路由注册）",
+			slog.Any("error", err),
+		)
 		return
 	}
 	// 获取 gRPC 客户端
@@ -1049,11 +1162,16 @@ func grpc_gw_run(ctx context.Context, router *gin.Engine) {
 
 	// 注册服务
 	if err := grpc_generated.RegisterOpenServiceHandler(ctx, gwMux, grpcConnInstance); err != nil {
-		slog.Error("注册 OpenService 网关路由失败", slog.String("error", err.Error()))
+		logger.ErrorContext(ctx, "注册 OpenService 网关路由失败",
+			slog.Any("error", err),
+		)
 		return
 	}
 
 	// 关键：把网关挂到 Gin 的 /grpc 前缀
 	router.Group("/grpc").Any("/*any", gin.WrapH(http.StripPrefix("/grpc", gwMux)))
-	slog.Info("gRPC-Gateway 已挂载到 Gin", slog.String("prefix", "/grpc"), slog.String("upstream", global.GvaEnv.GRPC_ADDR))
+	logger.InfoContext(ctx, "gRPC-Gateway 已挂载到 Gin",
+		slog.String("prefix", "/grpc"),
+		slog.String("upstream", global.GvaEnv.GRPC_ADDR),
+	)
 }

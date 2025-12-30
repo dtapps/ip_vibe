@@ -3,7 +3,8 @@ package initialize
 import (
 	"context"
 	"database/sql"
-	"log"
+	"log/slog"
+	"os"
 	"vibe_ip/internal/ent"
 	_ "vibe_ip/internal/ent/runtime"
 	"vibe_ip/internal/ent_log"
@@ -21,7 +22,12 @@ func init() {
 }
 
 // InitEntDb 初始化 业务数据库
-func InitEntDb(ctx context.Context) {
+func InitEntDb(ctx context.Context, logger *slog.Logger) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
 	var err error
 
 	// SQLite DSN，启用 WAL + 外键 + 超时
@@ -30,7 +36,10 @@ func InitEntDb(ctx context.Context) {
 	// 1. 先打开原生 *sql.DB
 	sqlDB, err := sql.Open("sqlite", dsn)
 	if err != nil {
-		log.Fatalf("[初始化 业务数据库] 打开数据库失败:%v", err)
+		slog.ErrorContext(ctx, "[初始化 业务数据库] 打开数据库失败",
+			slog.Any("err", err),
+		)
+		os.Exit(1)
 	}
 
 	// 2. 设置连接池（防止并发写冲突）
@@ -46,12 +55,10 @@ func InitEntDb(ctx context.Context) {
 		opts,
 		ent.Driver(driver),
 	)
-	if global.GvaEntSlog != nil {
-		opts = append(
-			opts,
-			ent.Log(ent_slog.NewSlogLogger(global.GvaEntSlog.WithLogger(), "ent").Log),
-		)
-	}
+	opts = append(
+		opts,
+		ent.Log(ent_slog.NewSlogLogger(logger, "ent").Log),
+	)
 	if global.GvaEnv.DEBUG {
 		opts = append(
 			opts,
@@ -62,7 +69,10 @@ func InitEntDb(ctx context.Context) {
 
 	// 4. 自动迁移
 	if err := global.GvaEntDb.Schema.Create(ctx); err != nil {
-		log.Fatalf("[初始化 业务数据库] 自动迁移失败:%v", err)
+		slog.ErrorContext(ctx, "[初始化 业务数据库] 自动迁移失败",
+			slog.Any("err", err),
+		)
+		os.Exit(1)
 	}
 }
 
@@ -70,13 +80,21 @@ func InitEntDb(ctx context.Context) {
 func CloseEntDb() {
 	if global.GvaEntDb != nil {
 		if err := global.GvaEntDb.Close(); err != nil {
-			log.Fatalf("[关闭 业务数据库] :%v", err)
+			slog.Error("[关闭 业务数据库] 关闭错误",
+				slog.Any("err", err),
+			)
+			os.Exit(1)
 		}
 	}
 }
 
 // InitEntLogDb 初始化 日志数据库
-func InitEntLogDb(ctx context.Context) {
+func InitEntLogDb(ctx context.Context, logger *slog.Logger) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
 	var err error
 
 	// SQLite DSN，启用 WAL + 外键 + 超时
@@ -85,7 +103,10 @@ func InitEntLogDb(ctx context.Context) {
 	// 1. 先打开原生 *sql.DB
 	sqlDB, err := sql.Open("sqlite", dsn)
 	if err != nil {
-		log.Fatalf("[初始化 日志数据库] 打开数据库失败:%v", err)
+		slog.ErrorContext(ctx, "[初始化 日志数据库] 打开数据库失败",
+			slog.Any("err", err),
+		)
+		os.Exit(1)
 	}
 
 	// 2. 设置连接池（防止并发写冲突）
@@ -101,12 +122,10 @@ func InitEntLogDb(ctx context.Context) {
 		opts,
 		ent_log.Driver(driver),
 	)
-	if global.GvaEntSlog != nil {
-		opts = append(
-			opts,
-			ent_log.Log(ent_slog.NewSlogLogger(global.GvaEntSlog.WithLogger(), "ent_log").Log),
-		)
-	}
+	opts = append(
+		opts,
+		ent_log.Log(ent_slog.NewSlogLogger(logger, "ent_log").Log),
+	)
 	if global.GvaEnv.DEBUG {
 		opts = append(
 			opts,
@@ -117,7 +136,10 @@ func InitEntLogDb(ctx context.Context) {
 
 	// 4. 自动迁移
 	if err := global.GvaEntLogDb.Schema.Create(ctx); err != nil {
-		log.Fatalf("[初始化 日志数据库] 自动迁移失败:%v", err)
+		slog.ErrorContext(ctx, "[初始化 日志数据库] 自动迁移失败",
+			slog.Any("err", err),
+		)
+		os.Exit(1)
 	}
 }
 
@@ -125,7 +147,10 @@ func InitEntLogDb(ctx context.Context) {
 func CloseEntLogDb() {
 	if global.GvaEntLogDb != nil {
 		if err := global.GvaEntLogDb.Close(); err != nil {
-			log.Fatalf("[关闭 ent] :%v", err)
+			slog.Error("[关闭 日志数据库] 关闭错误",
+				slog.Any("err", err),
+			)
+			os.Exit(1)
 		}
 	}
 }

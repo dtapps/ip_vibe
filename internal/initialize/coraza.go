@@ -1,7 +1,8 @@
 package initialize
 
 import (
-	"log"
+	"log/slog"
+	"os"
 	"vibe_ip/internal/global"
 
 	coreruleset "github.com/corazawaf/coraza-coreruleset"
@@ -36,7 +37,10 @@ SecRequestBodyAccess On
 			WithRootFS(coreruleset.FS),
 	)
 	if err != nil {
-		log.Fatalf("[初始化 Coraza] 错误:%v", err)
+		slog.Error("[初始化 Coraza] 错误",
+			slog.Any("err", err),
+		)
+		os.Exit(1)
 	}
 }
 

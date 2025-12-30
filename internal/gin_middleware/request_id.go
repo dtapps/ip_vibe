@@ -9,6 +9,7 @@ import (
 )
 
 func RequestID(logger *slog.Logger) gin.HandlerFunc {
+	// 日志
 	if logger == nil {
 		logger = slog.Default()
 	}

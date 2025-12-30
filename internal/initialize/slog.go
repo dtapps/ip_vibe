@@ -10,7 +10,7 @@ import (
 
 // InitSLog 初始化 日志
 func InitSLog(name string) {
-	golog.NewSlog(
+	global.GvaSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(&lumberjack.Logger{
 			Filename:   filepath.Join("logs", "slog_"+name+".log"), // 日志文件的位置
 			MaxSize:    3,                                          // 每个日志文件最大尺寸（MB）

@@ -1,13 +1,20 @@
 package initialize
 
 import (
+	"context"
+	"log/slog"
 	"vibe_ip/internal/global"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 // 初始化 MCP
-func InitMCP() {
+func InitMCP(ctx context.Context, logger *slog.Logger) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
 	// 创建 Model Context Protocol 服务器
 	impl := mcp.Implementation{
 		Name:    "IPVibe",
@@ -15,8 +22,6 @@ func InitMCP() {
 		Version: global.GvaVersion,
 	}
 	options := mcp.ServerOptions{}
-	if global.GvaMcpSlog != nil {
-		options.Logger = global.GvaMcpSlog.WithLogger()
-	}
+	options.Logger = logger
 	global.GvaMcpServer = mcp.NewServer(&impl, &options)
 }

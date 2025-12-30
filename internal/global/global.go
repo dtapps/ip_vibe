@@ -46,6 +46,7 @@ var (
 	GvaOS        string // 操作系统
 	GvaArch      string // CPU 架构
 
+	GvaSlog       *golog.SLog // slog 日志
 	GvaEntSlog    *golog.SLog // ent 日志
 	GvaGinSlog    *golog.SLog // gin 日志
 	GvaGrpcSlog   *golog.SLog // gRPC 日志

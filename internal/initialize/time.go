@@ -1,8 +1,8 @@
 package initialize
 
 import (
-	"log"
 	"log/slog"
+	"os"
 	"runtime"
 	"time"
 	_ "time/tzdata" // 时区 https://www.itlangzi.com/s/1526209468730183680.html
@@ -17,10 +17,10 @@ func init() {
 		var err error
 		time.Local, err = time.LoadLocation(global.DefaultTimezone)
 		if err != nil {
-			slog.Error("[初始化时间] 错误",
+			slog.Error("[初始化 时间] 错误",
 				slog.Any("err", err),
 			)
-			log.Fatal(err)
+			os.Exit(1)
 		}
 	}
 	carbon.SetTimezone(carbon.Shanghai)

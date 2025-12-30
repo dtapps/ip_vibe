@@ -1,7 +1,9 @@
 package initialize
 
 import (
-	"log"
+	"context"
+	"log/slog"
+	"os"
 	"time"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gocron_slog"
@@ -10,19 +12,25 @@ import (
 )
 
 // InitGoCron 初始化 GoCron 调度器
-func InitGoCron() {
+func InitGoCron(ctx context.Context, logger *slog.Logger) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
 	options := make([]gocron.SchedulerOption, 0)
 	// 日志
-	if global.GvaGocronSlog != nil {
-		options = append(options, gocron.WithLogger(gocron_slog.NewSlogLogger(global.GvaGocronSlog.WithLogger())))
-	}
+	options = append(options, gocron.WithLogger(gocron_slog.NewSlogLogger(logger)))
 	// 设置时区
 	options = append(options, gocron.WithLocation(time.Local))
 	// 全局任务选项
 	options = append(options, gocron.WithGlobalJobOptions())
 	s, err := gocron.NewScheduler(options...)
 	if err != nil {
-		log.Fatalf("[初始化 GoCron] :%v", err)
+		slog.ErrorContext(ctx, "[初始化 GoCron] 错误",
+			slog.Any("err", err),
+		)
+		os.Exit(1)
 	}
 	global.GvaGoCron = s
 }
@@ -31,7 +39,10 @@ func InitGoCron() {
 func CloseGoCron() {
 	if global.GvaGoCron != nil {
 		if err := global.GvaGoCron.Shutdown(); err != nil {
-			log.Fatalf("[关闭 GoCron] :%v", err)
+			slog.Error("[关闭 GoCron] 错误",
+				slog.Any("err", err),
+			)
+			os.Exit(1)
 		}
 	}
 }
@@ -50,7 +61,9 @@ func StopGoCron() {
 		if err := global.GvaGoCron.StopJobs(); err == nil {
 			global.GvaGoCronRunning = 0
 		} else {
-			log.Printf("[停止 GoCron] :%v \n", err)
+			slog.Error("[停止 GoCron] 错误",
+				slog.Any("err", err),
+			)
 		}
 	}
 }
