@@ -13,7 +13,7 @@ func InitSLog(name string) {
 	global.GvaSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(&lumberjack.Logger{
 			Filename:   filepath.Join("logs", "slog_"+name+".log"), // 日志文件的位置
-			MaxSize:    3,                                          // 每个日志文件最大尺寸（MB）
+			MaxSize:    2,                                          // 每个日志文件最大尺寸（MB）
 			MaxAge:     15,                                         // 留旧文件的最大天数
 			MaxBackups: 10 * 15,                                    // 保留的最大旧文件数量
 			LocalTime:  true,                                       // 使用本地时间创建时间戳
@@ -29,7 +29,7 @@ func InitEntSLog(name string) {
 	global.GvaEntSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(&lumberjack.Logger{
 			Filename:   filepath.Join("logs", "ent_"+name+".log"), // 日志文件的位置
-			MaxSize:    3,                                         // 每个日志文件最大尺寸（MB）
+			MaxSize:    2,                                         // 每个日志文件最大尺寸（MB）
 			MaxAge:     15,                                        // 留旧文件的最大天数
 			MaxBackups: 10 * 15,                                   // 保留的最大旧文件数量
 			LocalTime:  true,                                      // 使用本地时间创建时间戳
@@ -43,7 +43,7 @@ func InitGinSLog(name string) {
 	global.GvaGinSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(&lumberjack.Logger{
 			Filename:   filepath.Join("logs", "gin_"+name+".log"), // 日志文件的位置
-			MaxSize:    3,                                         // 每个日志文件最大尺寸（MB）
+			MaxSize:    2,                                         // 每个日志文件最大尺寸（MB）
 			MaxAge:     15,                                        // 留旧文件的最大天数
 			MaxBackups: 10 * 15,                                   // 保留的最大旧文件数量
 			LocalTime:  true,                                      // 使用本地时间创建时间戳
@@ -57,7 +57,7 @@ func InitGrpcSLog(name string) {
 	global.GvaGrpcSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(&lumberjack.Logger{
 			Filename:   filepath.Join("logs", "grpc_"+name+".log"), // 日志文件的位置
-			MaxSize:    3,                                          // 每个日志文件最大尺寸（MB）
+			MaxSize:    2,                                          // 每个日志文件最大尺寸（MB）
 			MaxAge:     15,                                         // 留旧文件的最大天数
 			MaxBackups: 10 * 15,                                    // 保留的最大旧文件数量
 			LocalTime:  true,                                       // 使用本地时间创建时间戳
@@ -71,7 +71,7 @@ func InitGocronSLog(name string) {
 	global.GvaGocronSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(&lumberjack.Logger{
 			Filename:   filepath.Join("logs", "gocron_"+name+".log"), // 日志文件的位置
-			MaxSize:    3,                                            // 每个日志文件最大尺寸（MB）
+			MaxSize:    2,                                            // 每个日志文件最大尺寸（MB）
 			MaxAge:     15,                                           // 留旧文件的最大天数
 			MaxBackups: 10 * 15,                                      // 保留的最大旧文件数量
 			LocalTime:  true,                                         // 使用本地时间创建时间戳
@@ -85,7 +85,7 @@ func InitMcpSLog(name string) {
 	global.GvaMcpSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(&lumberjack.Logger{
 			Filename:   filepath.Join("logs", "mcp_"+name+".log"), // 日志文件的位置
-			MaxSize:    3,                                         // 每个日志文件最大尺寸（MB）
+			MaxSize:    2,                                         // 每个日志文件最大尺寸（MB）
 			MaxAge:     15,                                        // 留旧文件的最大天数
 			MaxBackups: 10 * 15,                                   // 保留的最大旧文件数量
 			LocalTime:  true,                                      // 使用本地时间创建时间戳

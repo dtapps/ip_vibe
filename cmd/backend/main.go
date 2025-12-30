@@ -370,13 +370,19 @@ func loadTemplates(logger *slog.Logger, templatePath string, funcMap template.Fu
 	// 所有业务页面
 	pages, err := filepath.Glob(filepath.Join(templatePath, "pages", "*.html"))
 	if err != nil {
-		panic(err)
+		logger.Error("开发环境",
+			slog.Any("err", err),
+		)
+		os.Exit(1)
 	}
 
 	// 所有组件（自动注入）
 	components, err := filepath.Glob(filepath.Join(templatePath, "components", "*.html"))
 	if err != nil {
-		panic(err)
+		logger.Error("开发环境",
+			slog.Any("err", err),
+		)
+		os.Exit(1)
 	}
 	for _, c := range components {
 		name := filepath.Join("components", filepath.Base(c))
@@ -390,6 +396,11 @@ func loadTemplates(logger *slog.Logger, templatePath string, funcMap template.Fu
 	// 检查文件是否存在
 	var fileExists func(string) bool = func(path string) bool {
 		_, err := os.Stat(path)
+		if err != nil {
+			logger.Error("开发环境",
+				slog.Any("err", err),
+			)
+		}
 		return err == nil
 	}
 
@@ -469,13 +480,19 @@ func loadTemplatesFS(logger *slog.Logger, efs embed.FS, funcMap template.FuncMap
 	// 所有业务页面
 	pages, err := fs.Glob(efs, filepath.Join(templatePath, "pages", "*.html"))
 	if err != nil {
-		panic(err)
+		logger.Error("生产环境",
+			slog.Any("err", err),
+		)
+		os.Exit(1)
 	}
 
 	// 所有组件（自动注入）
 	components, err := fs.Glob(efs, filepath.Join(templatePath, "components", "*.html"))
 	if err != nil {
-		panic(err)
+		logger.Error("生产环境",
+			slog.Any("err", err),
+		)
+		os.Exit(1)
 	}
 	for _, c := range components {
 		name := filepath.Join("components", filepath.Base(c))
@@ -489,6 +506,11 @@ func loadTemplatesFS(logger *slog.Logger, efs embed.FS, funcMap template.FuncMap
 	// 检查文件是否存在
 	var fileExists func(string) bool = func(path string) bool {
 		_, err := embeddedFiles.Open(path)
+		if err != nil {
+			logger.Error("生产环境",
+				slog.Any("err", err),
+			)
+		}
 		return err == nil
 	}
 
