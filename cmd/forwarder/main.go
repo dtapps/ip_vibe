@@ -41,6 +41,8 @@ func main() {
 	initialize.InitSLog("forwarder")       // 初始化 日志
 	initialize.InitGrpcSLog("forwarder")   // 初始化 gRPC 日志
 	initialize.InitGocronSLog("forwarder") // 初始化 gocron 日志
+	initialize.InitRestySLog("forwarder")  // 初始化 resty 日志
+	initialize.InitHttpSLog("forwarder")   // 初始化 http 日志
 
 	initialize.InitGoCron(ctx, global.GvaGocronSlog.WithLogger()) // 初始化 GoCron 调度器
 	defer func() {

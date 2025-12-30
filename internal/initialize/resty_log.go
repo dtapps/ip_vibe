@@ -11,12 +11,13 @@ import (
 
 // 实现 LogSaver 接口
 type EntRestyLogSaver struct {
-	db *ent_log.Client
+	logger *slog.Logger
+	db     *ent_log.Client
 }
 
 func (s *EntRestyLogSaver) SaveLog(ctx context.Context, data *resty_log.LogData) error {
 	if global.GvaEnv.DEBUG {
-		slog.InfoContext(ctx, "[接口方式]准备保存日志",
+		s.logger.InfoContext(ctx, "[接口方式]准备保存日志",
 			slog.String("Hostname", data.Hostname),
 			slog.String("Method", data.Method),
 			slog.String("URL", data.URL),
@@ -26,7 +27,7 @@ func (s *EntRestyLogSaver) SaveLog(ctx context.Context, data *resty_log.LogData)
 		return nil
 	}
 	if global.GvaEnv.DEBUG {
-		slog.InfoContext(ctx, "[接口方式]执行保存日志",
+		s.logger.InfoContext(ctx, "[接口方式]执行保存日志",
 			slog.String("Hostname", data.Hostname),
 			slog.String("Method", data.Method),
 			slog.String("URL", data.URL),
@@ -37,7 +38,7 @@ func (s *EntRestyLogSaver) SaveLog(ctx context.Context, data *resty_log.LogData)
 	}
 
 	go func(asyncCtx context.Context, asyncDb *ent_log.Client) {
-		_ = asyncDb.RestyLog.Create().
+		err := asyncDb.RestyLog.Create().
 			SetHostname(data.Hostname).
 			SetMethod(data.Method).
 			SetURL(data.URL).
@@ -52,17 +53,26 @@ func (s *EntRestyLogSaver) SaveLog(ctx context.Context, data *resty_log.LogData)
 			SetPluginVersion(data.PluginVersion).
 			SetRestyVersion(data.RestyVersion).
 			Exec(asyncCtx)
+		if err != nil {
+			s.logger.ErrorContext(ctx, "[接口方式]执行保存日志失败",
+				slog.Any("err", err),
+			)
+		}
 	}(ctx, s.db)
 
 	return nil
 }
 
-func InitEntRestyLog() {
+func InitEntRestyLog(logger *slog.Logger) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
 
 	// 定义回调函数
 	saveFunc := func(ctx context.Context, data *resty_log.LogData) error {
 		if global.GvaEnv.DEBUG {
-			slog.InfoContext(ctx, "[回调方式]准备保存日志",
+			logger.InfoContext(ctx, "[回调方式]准备保存日志",
 				slog.String("Hostname", data.Hostname),
 				slog.String("Method", data.Method),
 				slog.String("URL", data.URL),
@@ -72,7 +82,7 @@ func InitEntRestyLog() {
 			return nil
 		}
 		if global.GvaEnv.DEBUG {
-			slog.InfoContext(ctx, "[回调方式]执行保存日志",
+			logger.InfoContext(ctx, "[回调方式]执行保存日志",
 				slog.String("Hostname", data.Hostname),
 				slog.String("Method", data.Method),
 				slog.String("URL", data.URL),
@@ -83,7 +93,7 @@ func InitEntRestyLog() {
 		}
 
 		go func(asyncCtx context.Context, asyncDb *ent_log.Client) {
-			_ = asyncDb.RestyLog.Create().
+			err := asyncDb.RestyLog.Create().
 				SetHostname(data.Hostname).
 				SetMethod(data.Method).
 				SetURL(data.URL).
@@ -98,6 +108,11 @@ func InitEntRestyLog() {
 				SetPluginVersion(data.PluginVersion).
 				SetRestyVersion(data.RestyVersion).
 				Exec(asyncCtx)
+			if err != nil {
+				logger.ErrorContext(ctx, "[回调方式]执行保存日志失败",
+					slog.Any("err", err),
+				)
+			}
 		}(ctx, global.GvaEntLogDb)
 
 		return nil
@@ -105,7 +120,8 @@ func InitEntRestyLog() {
 
 	// 创建 LogSaver 实现
 	saver := &EntRestyLogSaver{
-		db: global.GvaEntLogDb,
+		logger: logger,
+		db:     global.GvaEntLogDb,
 	}
 
 	// 初始化 Logger，传入回调和接口（回调优先）

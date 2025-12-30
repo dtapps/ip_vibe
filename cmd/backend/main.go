@@ -97,6 +97,8 @@ func main() {
 	initialize.InitGrpcSLog("backend")   // 初始化 gRPC 日志
 	initialize.InitGocronSLog("backend") // 初始化 gocron 日志
 	initialize.InitMcpSLog("backend")    // 初始化 mcp 日志
+	initialize.InitRestySLog("backend")  // 初始化 resty 日志
+	initialize.InitHttpSLog("backend")   // 初始化 http 日志
 
 	initialize.InitCoraza() // 初始化 Coraza 防火墙
 
@@ -104,8 +106,8 @@ func main() {
 	initialize.InitEntLogDb(ctx, global.GvaEntSlog.WithLogger())  // 初始化 日志数据库
 	initialize.InitGoCron(ctx, global.GvaGocronSlog.WithLogger()) // 初始化 GoCron 调度器
 	initialize.InitMCP(ctx, global.GvaMcpSlog.WithLogger())       // 初始化 MCP
-	initialize.InitEntRestyLog()                                  // 初始化 Resty 日志
-	initialize.InitEntHttpLog()                                   // 初始化 HTTP 日志
+	initialize.InitEntRestyLog(global.GvaRestySLog.WithLogger())  // 初始化 Resty 日志
+	initialize.InitEntHttpLog(global.GvaHttpSlog.WithLogger())    // 初始化 HTTP 日志
 	initialize.InitThirdParty(ctx)                                // 初始化 第三方
 
 	initialize.InitOperationLogHelper() // 初始化操作日志助手
