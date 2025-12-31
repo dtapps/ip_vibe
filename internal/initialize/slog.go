@@ -72,8 +72,7 @@ func InitGinSLog(name string) {
 func InitGrpcSLog(name string) {
 	if name == "backend" && global.GvaEnv.GRPC_ADDR == "" {
 		return
-	}
-	if name != "backend" && global.GvaEnv.GRPC_URL == "" {
+	} else if name != "backend" && global.GvaEnv.GRPC_URL == "" {
 		return
 	}
 	level := slog.LevelInfo
@@ -97,8 +96,7 @@ func InitGrpcSLog(name string) {
 func InitThriftSLog(name string) {
 	if name == "backend" && global.GvaEnv.THRIFT_ADDR == "" {
 		return
-	}
-	if name != "backend" && global.GvaEnv.THRIFT_URL == "" {
+	} else if name != "backend" && global.GvaEnv.THRIFT_URL == "" {
 		return
 	}
 	level := slog.LevelInfo
