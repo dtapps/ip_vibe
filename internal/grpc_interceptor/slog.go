@@ -37,17 +37,17 @@ func UnaryLogger(logger *slog.Logger) grpc.UnaryServerInterceptor {
 		code := st.Code()
 
 		attrs := []slog.Attr{
-			slog.String("grpc.service", svc),
-			slog.String("grpc.method", mtd),
-			slog.String("grpc.code", code.String()),
-			slog.Int64("grpc.time_ms", dur),
-			slog.String("peer.address", peerAddr(ctx)),
+			slog.String("service", svc),
+			slog.String("method", mtd),
+			slog.String("code", code.String()),
+			slog.Int64("time_ms", dur),
+			slog.String("address", peerAddr(ctx)),
 		}
 		if err != nil && code != codes.OK {
 			attrs = append(attrs, slog.Any("err", err))
 		}
 
-		logger.LogAttrs(ctx, slog.LevelInfo, "完成一元调用", attrs...)
+		logger.LogAttrs(ctx, slog.LevelInfo, "完成调用", attrs...)
 		return resp, err
 	}
 }

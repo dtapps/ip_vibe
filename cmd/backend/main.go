@@ -35,6 +35,7 @@ import (
 	"vibe_ip/internal/mcp_prompt"
 	"vibe_ip/internal/mcp_resource"
 	"vibe_ip/internal/mcp_tool"
+	"vibe_ip/internal/thrift_process"
 	"vibe_ip/internal/thrift_server"
 
 	"github.com/apache/thrift/lib/go/thrift"
@@ -1371,7 +1372,9 @@ func thrift_run(ctx context.Context, logger *slog.Logger) {
 	// 注册业务服务
 	openServer := thrift_server.NewOpenServer()
 	processor := openServer.RegisterService()
-	thriftServerInstance := thrift.NewTSimpleServer2(processor, transport)
+	loggingProcessor := thrift_process.NewLoggingProcessor(processor, logger)
+	thriftServerInstance := thrift.NewTSimpleServer2(loggingProcessor, transport)
+	// thriftServerInstance := thrift.NewTSimpleServer2(processor, transport)
 
 	logger.InfoContext(ctx, "Thrift 服务器正在启动",
 		slog.String("port", global.GvaEnv.THRIFT_ADDR),

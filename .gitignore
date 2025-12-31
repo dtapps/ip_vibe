@@ -9,5 +9,6 @@
 /cmd/frontend/node_modules
 /data
 /logs
+/tests
 # docker-compose-*.sh
 test-*.yml
