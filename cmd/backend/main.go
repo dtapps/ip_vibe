@@ -35,7 +35,9 @@ import (
 	"vibe_ip/internal/mcp_prompt"
 	"vibe_ip/internal/mcp_resource"
 	"vibe_ip/internal/mcp_tool"
+	"vibe_ip/internal/thrift_server"
 
+	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/denisbrodbeck/machineid"
 	"github.com/dromara/carbon/v2"
 	"github.com/gin-contrib/multitemplate"
@@ -48,8 +50,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/health"
-	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"
 )
 
@@ -57,6 +57,8 @@ import (
 var (
 	grpcServerInstance   *grpc.Server
 	grpcListenerInstance net.Listener
+	thriftServerInstance *thrift.TSimpleServer
+	thriftTransport      thrift.TServerTransport
 	httpServerInstance   *http.Server
 	grpcConnInstance     *grpc.ClientConn
 	shutdownOnce         sync.Once
@@ -96,6 +98,7 @@ func main() {
 	initialize.InitEntSLog("backend")    // 初始化 ent 日志
 	initialize.InitGinSLog("backend")    // 初始化 gin 日志
 	initialize.InitGrpcSLog("backend")   // 初始化 gRPC 日志
+	initialize.InitThriftSLog("backend") // 初始化 Thrift 日志
 	initialize.InitGocronSLog("backend") // 初始化 gocron 日志
 	initialize.InitMcpSLog("backend")    // 初始化 mcp 日志
 	initialize.InitRestySLog("backend")  // 初始化 resty 日志
@@ -204,6 +207,9 @@ func main() {
 
 	// gRPC-Gateway 启动
 	go grpc_gw_run(ctx, global.GvaGrpcSlog.WithLogger(), router)
+
+	// Thrift 启动
+	go thrift_run(ctx, global.GvaThriftSlog.WithLogger())
 
 	// 启动 GoCron 调度器
 	initialize.StartGoCron()
@@ -1218,11 +1224,6 @@ func grpc_run(ctx context.Context, logger *slog.Logger) {
 	)
 	grpcServerInstance = grpc.NewServer(opts...)
 
-	// 注册健康检查服务
-	healthServer := health.NewServer()
-	healthServer.SetServingStatus("grpc.health.v1.Health", healthpb.HealthCheckResponse_SERVING)
-	healthpb.RegisterHealthServer(grpcServerInstance, healthServer)
-
 	// 注册业务服务
 	openServer := grpc_server.NewOpenServer()
 	openServer.RegisterService(grpcServerInstance)
@@ -1252,7 +1253,10 @@ func grpc_run(ctx context.Context, logger *slog.Logger) {
 	}()
 
 	<-shutdownChan // 等待关闭信号
-	grpcServerInstance.GracefulStop()
+	logger.InfoContext(ctx, "接收到关闭信号，gRPC 服务器正在优雅关闭")
+	if grpcServerInstance != nil {
+		grpcServerInstance.GracefulStop() // 优雅关闭
+	}
 	if grpcListenerInstance != nil {
 		grpcListenerInstance.Close()
 	}
@@ -1340,4 +1344,57 @@ func grpc_gw_run(ctx context.Context, logger *slog.Logger, router *gin.Engine) {
 		slog.String("prefix", "/grpc"),
 		slog.String("upstream", global.GvaEnv.GRPC_ADDR),
 	)
+}
+
+// Thrift 启动
+func thrift_run(ctx context.Context, logger *slog.Logger) {
+	// 日志
+	if logger == nil {
+		logger = slog.Default()
+	}
+
+	// 判断是否开启 Thrift 功能
+	if global.GvaEnv.THRIFT_ADDR == "" {
+		logger.InfoContext(ctx, "Thrift 服务器不启动，因为没有配置端口")
+		return
+	}
+
+	// 创建 Thrift 服务器
+	transport, err := thrift.NewTServerSocket(global.GvaEnv.THRIFT_ADDR)
+	if err != nil {
+		logger.ErrorContext(ctx, "Thrift 服务器启动失败",
+			slog.Any("error", err),
+		)
+		os.Exit(1)
+	}
+
+	// 注册业务服务
+	openServer := thrift_server.NewOpenServer()
+	processor := openServer.RegisterService()
+	thriftServerInstance := thrift.NewTSimpleServer2(processor, transport)
+
+	logger.InfoContext(ctx, "Thrift 服务器正在启动",
+		slog.String("port", global.GvaEnv.THRIFT_ADDR),
+	)
+
+	// 使用 goroutine 启动，不阻塞
+	go func() {
+		if err := thriftServerInstance.Serve(); err != nil {
+			logger.ErrorContext(ctx, "Thrift 服务器异常退出",
+				slog.Any("error", err),
+			)
+		}
+		logger.InfoContext(ctx, "Thrift 服务器已停止")
+	}()
+
+	// 等待关闭信号
+	<-shutdownChan
+	logger.InfoContext(ctx, "接收到关闭信号，Thrift 服务器正在优雅关闭")
+	if thriftServerInstance != nil {
+		thriftServerInstance.Stop() // 优雅关闭
+	}
+	if thriftTransport != nil {
+		thriftTransport.Close()
+	}
+	logger.InfoContext(ctx, "Thrift 服务器已优雅关闭")
 }

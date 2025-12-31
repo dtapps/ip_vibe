@@ -70,6 +70,12 @@ func InitGinSLog(name string) {
 
 // InitGrpcSLog 初始化 gRPC 日志
 func InitGrpcSLog(name string) {
+	if name == "backend" && global.GvaEnv.GRPC_ADDR == "" {
+		return
+	}
+	if name != "backend" && global.GvaEnv.GRPC_URL == "" {
+		return
+	}
 	level := slog.LevelInfo
 	if global.GvaEnv.DEBUG {
 		level = slog.LevelDebug
@@ -82,6 +88,31 @@ func InitGrpcSLog(name string) {
 			MaxBackups: 10 * 15,                                    // 保留的最大旧文件数量
 			LocalTime:  true,                                       // 使用本地时间创建时间戳
 			Compress:   true,                                       // 是否压缩/归档旧文件
+		}),
+		golog.WithSLogSetLevel(level),
+	)
+}
+
+// InitThriftSLog 初始化 Thrift 日志
+func InitThriftSLog(name string) {
+	if name == "backend" && global.GvaEnv.THRIFT_ADDR == "" {
+		return
+	}
+	if name != "backend" && global.GvaEnv.THRIFT_URL == "" {
+		return
+	}
+	level := slog.LevelInfo
+	if global.GvaEnv.DEBUG {
+		level = slog.LevelDebug
+	}
+	global.GvaThriftSlog = golog.NewSlog(
+		golog.WithSLogLumberjack(&lumberjack.Logger{
+			Filename:   filepath.Join("logs", "thrift_"+name+".log"), // 日志文件的位置
+			MaxSize:    2,                                            // 每个日志文件最大尺寸（MB）
+			MaxAge:     15,                                           // 留旧文件的最大天数
+			MaxBackups: 10 * 15,                                      // 保留的最大旧文件数量
+			LocalTime:  true,                                         // 使用本地时间创建时间戳
+			Compress:   true,                                         // 是否压缩/归档旧文件
 		}),
 		golog.WithSLogSetLevel(level),
 	)

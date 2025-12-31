@@ -28,11 +28,13 @@ var (
 	GvaEnv struct {
 		DEBUG bool // [backend][reporter][forwarder] 是否开启调试模式
 
-		HTTP_ADDR string // [backend] HTTP 地址
-		GRPC_ADDR string // [backend] gRPC 地址
+		HTTP_ADDR   string // [backend] HTTP 地址
+		GRPC_ADDR   string // [backend] gRPC 地址
+		THRIFT_ADDR string // [backend] Thrift 地址
 
-		HTTP_URL string // [reporter][forwarder] HTTP URL
-		GRPC_URL string // [reporter][forwarder] gRPC URL
+		HTTP_URL   string // [reporter][forwarder] HTTP URL
+		GRPC_URL   string // [reporter][forwarder] gRPC URL
+		THRIFT_URL string // [reporter][forwarder] Thrift URL
 
 		BASIC_AUTH_USERNAME string // [backend][reporter][forwarder] 基本认证用户名
 		BASIC_AUTH_PASSWORD string // [backend][reporter][forwarder] 基本认证密码
@@ -50,6 +52,7 @@ var (
 	GvaEntSlog    *golog.SLog // ent 日志
 	GvaGinSlog    *golog.SLog // gin 日志
 	GvaGrpcSlog   *golog.SLog // gRPC 日志
+	GvaThriftSlog *golog.SLog // Thrift 日志
 	GvaGocronSlog *golog.SLog // gocron 日志
 	GvaMcpSlog    *golog.SLog // mcp 日志
 	GvaRestySLog  *golog.SLog // resty 日志

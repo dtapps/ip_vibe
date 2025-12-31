@@ -8,16 +8,17 @@ import (
 	"vibe_ip/internal/thrift_generated/open"
 	"vibe_ip/internal/types"
 
+	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/spf13/cast"
 )
 
 // 实现 Thrift 服务接口
-type OpenService struct {
+type OpenServer struct {
 	deviceService service.DeviceOpenService
 }
 
-// NewOpenService 创建 Thrift 服务实例
-func NewOpenService() *OpenService {
+// NewOpenServer 创建 Thrift 服务实例
+func NewOpenServer() *OpenServer {
 	// 使用与你的 HTTP 处理器相同的服务实例
 	deviceService := service.NewDeviceOpenService(
 		global.GvaEntDb,
@@ -27,13 +28,18 @@ func NewOpenService() *OpenService {
 		global.GvaEnv.DEBUG,
 	)
 
-	return &OpenService{
+	return &OpenServer{
 		deviceService: deviceService,
 	}
 }
 
+// RegisterService 注册 gRPC 服务到服务器
+func (s *OpenServer) RegisterService() thrift.TProcessor {
+	return open.NewOpenServiceProcessor(s)
+}
+
 // ReportDeviceIP 实现 设备上报 IP 方法
-func (s *OpenService) ReportDeviceIP(ctx context.Context, req open.ReportDeviceIPRequest) (r open.ReportDeviceIPResponse, err error) {
+func (s *OpenServer) ReportDeviceIP(ctx context.Context, req *open.ReportDeviceIPRequest) (*open.ReportDeviceIPResponse, error) {
 	// 将 Thrift 请求转换为你的 types 结构
 	request := &types.DeviceReportDeviceIpRequest{
 		DevicePortForwardsRequest: types.DevicePortForwardsRequest{
@@ -47,21 +53,21 @@ func (s *OpenService) ReportDeviceIP(ctx context.Context, req open.ReportDeviceI
 	// 调用服务方法
 	response, err := s.deviceService.DeviceReportDeviceIp(ctx, request)
 	if err != nil {
-		return open.ReportDeviceIPResponse{}, err
+		return nil, err
 	}
 
 	// 转换为 Thrift 响应
-	return open.ReportDeviceIPResponse{
+	return &open.ReportDeviceIPResponse{
 		Msg: &response.Msg,
 	}, nil
 }
 
 // GetDevicePortForwards 实现 获取设备端口转发 方法
-func (s *OpenService) GetDevicePortForwards(ctx context.Context, req open.GetDevicePortForwardsRequest) (r open.GetDevicePortForwardsResponse, err error) {
+func (s *OpenServer) GetDevicePortForwards(ctx context.Context, req *open.GetDevicePortForwardsRequest) (*open.GetDevicePortForwardsResponse, error) {
 	// 调用服务方法
 	response, err := s.deviceService.DevicePortForwards(ctx, req.DeviceCode)
 	if err != nil {
-		return open.GetDevicePortForwardsResponse{}, err
+		return nil, err
 	}
 
 	// 转换为 Thrift 响应
@@ -78,13 +84,13 @@ func (s *OpenService) GetDevicePortForwards(ctx context.Context, req open.GetDev
 	}
 
 	// 转换为 Thrift 响应
-	return open.GetDevicePortForwardsResponse{
+	return &open.GetDevicePortForwardsResponse{
 		Rules: rules,
 	}, nil
 }
 
 // CreatePortForwardStats 实现 创建端口转发统计 方法
-func (s *OpenService) CreatePortForwardStats(ctx context.Context, req open.CreatePortForwardStatsRequest) (r open.CreatePortForwardStatsResponse, err error) {
+func (s *OpenServer) CreatePortForwardStats(ctx context.Context, req *open.CreatePortForwardStatsRequest) (*open.CreatePortForwardStatsResponse, error) {
 	// 将 Thrift 请求转换为你的 types 结构
 	request := &types.CreatePortForwardStatsRequest{
 		DevicePortForwardsRequest: types.DevicePortForwardsRequest{
@@ -102,11 +108,11 @@ func (s *OpenService) CreatePortForwardStats(ctx context.Context, req open.Creat
 	}
 
 	// 调用服务方法
-	err = s.deviceService.CreatePortForwardStats(ctx, req.DeviceCode, req.PortForwardID, request)
+	err := s.deviceService.CreatePortForwardStats(ctx, req.DeviceCode, req.PortForwardID, request)
 	if err != nil {
-		return open.CreatePortForwardStatsResponse{}, err
+		return nil, err
 	}
 
 	// 转换为 Thrift 响应
-	return open.CreatePortForwardStatsResponse{}, nil
+	return &open.CreatePortForwardStatsResponse{}, nil
 }

@@ -43,6 +43,7 @@ func main() {
 
 	initialize.InitSLog("forwarder")       // 初始化 日志
 	initialize.InitGrpcSLog("forwarder")   // 初始化 gRPC 日志
+	initialize.InitThriftSLog("forwarder") // 初始化 Thrift 日志
 	initialize.InitGocronSLog("forwarder") // 初始化 gocron 日志
 	initialize.InitRestySLog("forwarder")  // 初始化 resty 日志
 	initialize.InitHttpSLog("forwarder")   // 初始化 http 日志
