@@ -1,34 +1,30 @@
 namespace go open
 
+/**
+ * 开放接口
+ */
 service OpenService {
-
     /**
      * 设备上报 IP
      */
     ReportDeviceIPResponse reportDeviceIP(
-        1: ReportDeviceIPRequest request
+        1: required ReportDeviceIPRequest req
     )
 
     /**
      * 获取设备端口转发
      */
     GetDevicePortForwardsResponse getDevicePortForwards(
-        1: GetDevicePortForwardsRequest request
+        1: required GetDevicePortForwardsRequest req
     )
 
     /**
      * 创建端口转发统计信息
      */
-    CreatePortForwardStatsResponse createPortForwardStats(
-        1: CreatePortForwardStatsRequest request
+    void createPortForwardStats(
+        1: required CreatePortForwardStatsRequest req
     )
 }
-
-/**
- * ======================
- * 请求 / 响应定义
- * ======================
- */
 
 /**
  * 设备上报 IP 请求
@@ -77,17 +73,16 @@ struct GetDevicePortForwardsResponse {
  * 创建端口转发统计信息 请求
  */
 struct CreatePortForwardStatsRequest {
-    1: required string device_code
-    2:          i64    port_forward_id
-    3:          i64    start_time
-
-    4:  i64 active_conn
-    5:  i64 total_conn
-    6:  i64 bytes_in
-    7:  i64 bytes_out
-    8:  i64 udp_packets_in
-    9:  i64 udp_packets_out
-    10: i64 errors
+    1:  required string device_code
+    2:           i64    port_forward_id
+    3:           i64    start_time
+    4:           i64    active_conn
+    5:           i64    total_conn
+    6:           i64    bytes_in
+    7:           i64    bytes_out
+    8:           i64    udp_packets_in
+    9:           i64    udp_packets_out
+    10:          i64    errors
 }
 
 /**

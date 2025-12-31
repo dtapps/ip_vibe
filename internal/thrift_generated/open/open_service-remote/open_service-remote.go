@@ -12,9 +12,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"vibe_ip/internal/thrift_generated/open"
-
 	thrift "github.com/apache/thrift/lib/go/thrift"
+	"vibe_ip/internal/thrift_generated/open"
 )
 
 var _ = open.GoUnusedProtection__
@@ -23,9 +22,9 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  ReportDeviceIPResponse reportDeviceIP(ReportDeviceIPRequest request)")
-	fmt.Fprintln(os.Stderr, "  GetDevicePortForwardsResponse getDevicePortForwards(GetDevicePortForwardsRequest request)")
-	fmt.Fprintln(os.Stderr, "  CreatePortForwardStatsResponse createPortForwardStats(CreatePortForwardStatsRequest request)")
+	fmt.Fprintln(os.Stderr, "  ReportDeviceIPResponse reportDeviceIP(ReportDeviceIPRequest req)")
+	fmt.Fprintln(os.Stderr, "  GetDevicePortForwardsResponse getDevicePortForwards(GetDevicePortForwardsRequest req)")
+	fmt.Fprintln(os.Stderr, "  void createPortForwardStats(CreatePortForwardStatsRequest req)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -68,7 +67,7 @@ func main() {
 	flag.BoolVar(&useHttp, "http", false, "Use http")
 	flag.Var(headers, "H", "Headers to set on the http(s) request (e.g. -H \"Key: Value\")")
 	flag.Parse()
-
+	
 	if len(urlString) > 0 {
 		var err error
 		parsedUrl, err = url.Parse(urlString)
@@ -85,7 +84,7 @@ func main() {
 			flag.Usage()
 		}
 	}
-
+	
 	cmd := flag.Arg(0)
 	var err error
 	var cfg *thrift.TConfiguration = nil
@@ -142,10 +141,10 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
 		os.Exit(1)
 	}
-
+	
 	switch cmd {
 	case "reportDeviceIP":
-		if flag.NArg()-1 != 1 {
+		if flag.NArg() - 1 != 1 {
 			fmt.Fprintln(os.Stderr, "ReportDeviceIP requires 1 args")
 			flag.Usage()
 		}
@@ -165,12 +164,12 @@ func main() {
 			Usage()
 			return
 		}
-		value0 := argvalue0
+		value0 := open.ReportDeviceIPRequest(argvalue0)
 		fmt.Print(client.ReportDeviceIP(context.Background(), value0))
 		fmt.Print("\n")
 		break
 	case "getDevicePortForwards":
-		if flag.NArg()-1 != 1 {
+		if flag.NArg() - 1 != 1 {
 			fmt.Fprintln(os.Stderr, "GetDevicePortForwards requires 1 args")
 			flag.Usage()
 		}
@@ -190,12 +189,12 @@ func main() {
 			Usage()
 			return
 		}
-		value0 := argvalue0
+		value0 := open.GetDevicePortForwardsRequest(argvalue0)
 		fmt.Print(client.GetDevicePortForwards(context.Background(), value0))
 		fmt.Print("\n")
 		break
 	case "createPortForwardStats":
-		if flag.NArg()-1 != 1 {
+		if flag.NArg() - 1 != 1 {
 			fmt.Fprintln(os.Stderr, "CreatePortForwardStats requires 1 args")
 			flag.Usage()
 		}
@@ -215,7 +214,7 @@ func main() {
 			Usage()
 			return
 		}
-		value0 := argvalue0
+		value0 := open.CreatePortForwardStatsRequest(argvalue0)
 		fmt.Print(client.CreatePortForwardStats(context.Background(), value0))
 		fmt.Print("\n")
 		break
