@@ -15,7 +15,7 @@
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">对象类型</span>
-            <select name="obj_type" class="ui-filter-select w-36">
+            <select name="obj_type" class="ui-filter-select w-30">
                 <option value="">所有类型</option>
                 {{ range $opt := (fieldEnumMap "operation_log_obj_type") }}
                 {{ if eq $opt.Value $filter.ObjType }}
@@ -35,7 +35,7 @@
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">操作类型</span>
-            <select name="op_type" class="ui-filter-select w-36">
+            <select name="op_type" class="ui-filter-select w-30">
                 <option value="">所有类型</option>
                 {{ range $opt := (fieldEnumMap "operation_log_op_type") }}
                 {{ if eq $opt.Value $filter.OpType }}
@@ -49,7 +49,7 @@
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">状态</span>
-            <select name="status" class="ui-filter-select w-36">
+            <select name="status" class="ui-filter-select w-30">
                 <option value="">所有状态</option>
                 {{ range $opt := (fieldEnumMap "operation_log_status") }}
                 {{ if eq $opt.Value $filter.Status }}

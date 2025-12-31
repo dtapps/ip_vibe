@@ -22,12 +22,12 @@
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">域名</span>
             <input type="text" name="domain" value="{{ if $filter.Domain }}{{ $filter.Domain }}{{ end }}"
-                placeholder="域名" class="ui-filter-input-compact w-20 font-mono text-center">
+                placeholder="域名" class="ui-filter-input-compact w-40 font-mono text-center">
         </div>
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">证书状态</span>
-            <select name="status" class="ui-filter-select w-36">
+            <select name="status" class="ui-filter-select w-30">
                 <option value="">所有状态</option>
                 {{ range $opt := (fieldEnumMap "ssl_record_status") }}
                 {{ if eq $opt.Value $filter.Status }}
@@ -41,7 +41,7 @@
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">状态</span>
-            <select name="is_active" class="ui-filter-select w-36">
+            <select name="is_active" class="ui-filter-select w-30">
                 <option value="">所有状态</option>
                 <option value="true" {{ if eq $filter.IsActive.IsTrue true }}selected{{ end }}>是</option>
                 <option value="false" {{ if eq $filter.IsActive.IsFalse true }}selected{{ end }}>否</option>
@@ -50,7 +50,7 @@
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">自动续期</span>
-            <select name="is_auto_renewal" class="ui-filter-select w-36">
+            <select name="is_auto_renewal" class="ui-filter-select w-30">
                 <option value="">所有状态</option>
                 <option value="true" {{ if eq $filter.IsAutoRenewal.IsTrue true }}selected{{ end }}>是</option>
                 <option value="false" {{ if eq $filter.IsAutoRenewal.IsFalse true }}selected{{ end }}>否</option>

@@ -28,12 +28,12 @@
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">子域名</span>
             <input type="text" name="sub_domain" value="{{ if $filter.SubDomain }}{{ $filter.SubDomain }}{{ end }}"
-                placeholder="域名监控名称" class="ui-filter-input-compact w-20 font-mono text-center">
+                placeholder="域名监控名称" class="ui-filter-input-compact w-40 font-mono text-center">
         </div>
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">检查类型</span>
-            <select name="type" class="ui-filter-select w-36">
+            <select name="type" class="ui-filter-select w-30">
                 <option value="">所有类型</option>
                 {{ range $opt := (fieldEnumMap "cdn_type") }}
                 {{ if eq $opt.Value $filter.Type }}
@@ -47,7 +47,7 @@
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">回源协议</span>
-            <select name="origin_protocol" class="ui-filter-select w-36">
+            <select name="origin_protocol" class="ui-filter-select w-30">
                 <option value="">所有协议</option>
                 {{ range $opt := (fieldEnumMap "cdn_origin_protocol") }}
                 {{ if eq $opt.Value $filter.OriginProtocol }}
@@ -67,7 +67,7 @@
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">状态</span>
-            <select name="is_active" class="ui-filter-select w-36">
+            <select name="is_active" class="ui-filter-select w-30">
                 <option value="">所有状态</option>
                 <option value="true" {{ if eq $filter.IsActive.IsTrue true }}selected{{ end }}>是</option>
                 <option value="false" {{ if eq $filter.IsActive.IsFalse true }}selected{{ end }}>否</option>

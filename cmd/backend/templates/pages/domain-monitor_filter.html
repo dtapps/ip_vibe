@@ -16,18 +16,18 @@
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">名称</span>
             <input type="text" name="name" value="{{ if $filter.Name }}{{ $filter.Name }}{{ end }}" placeholder="域名监控名称"
-                class="ui-filter-input-compact w-20 font-mono text-center">
+                class="ui-filter-input-compact w-40 font-mono text-center">
         </div>
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">域名</span>
             <input type="text" name="domain" value="{{ if $filter.Domain }}{{ $filter.Domain }}{{ end }}"
-                placeholder="域名" class="ui-filter-input-compact w-20 font-mono text-center">
+                placeholder="域名" class="ui-filter-input-compact w-40 font-mono text-center">
         </div>
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">检查类型</span>
-            <select name="check_protocol" class="ui-filter-select w-36">
+            <select name="check_protocol" class="ui-filter-select w-30">
                 <option value="">所有类型</option>
                 {{ range $opt := (fieldEnumMap "domain_monitor_check_protocol") }}
                 {{ if eq $opt.Value $filter.CheckProtocol }}
@@ -41,7 +41,7 @@
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">状态</span>
-            <select name="is_active" class="ui-filter-select w-36">
+            <select name="is_active" class="ui-filter-select w-30">
                 <option value="">所有状态</option>
                 <option value="true" {{ if eq $filter.IsActive.IsTrue true }}selected{{ end }}>是</option>
                 <option value="false" {{ if eq $filter.IsActive.IsFalse true }}selected{{ end }}>否</option>
@@ -50,7 +50,7 @@
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">运行状态</span>
-            <select name="current_status" class="ui-filter-select w-36">
+            <select name="current_status" class="ui-filter-select w-30">
                 <option value="">所有状态</option>
                 {{ range $opt := (fieldEnumMap "domain_monitor_current_status") }}
                 {{ if eq $opt.Value $filter.CurrentStatus }}

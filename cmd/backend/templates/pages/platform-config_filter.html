@@ -15,7 +15,7 @@
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">服务能力</span>
-            <select name="capability" class="ui-filter-select w-36">
+            <select name="capability" class="ui-filter-select w-30">
                 <option value="">所有服务能力</option>
                 {{ range $opt := (fieldEnumMap "platform_config_capability") }}
                 {{ if eq $opt.Value $filter.Capability }}
@@ -30,12 +30,12 @@
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">名称</span>
             <input type="text" name="name" value="{{ if $filter.Name }}{{ $filter.Name }}{{ end }}" placeholder="平台配置名称"
-                class="ui-filter-input-compact w-20 font-mono text-center">
+                class="ui-filter-input-compact w-40 font-mono text-center">
         </div>
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">平台类型</span>
-            <select name="platform" class="ui-filter-select w-36">
+            <select name="platform" class="ui-filter-select w-30">
                 <option value="">所有类型</option>
                 {{ range $opt := (fieldEnumMap "platform_config_platform") }}
                 {{ if eq $opt.Value $filter.Platform }}

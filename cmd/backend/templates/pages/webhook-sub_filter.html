@@ -16,7 +16,7 @@
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">名称</span>
             <input type="text" name="name" value="{{ if $filter.Name }}{{ $filter.Name }}{{ end }}" placeholder="名称"
-                class="ui-filter-input-compact w-20 font-mono text-center">
+                class="ui-filter-input-compact w-40 font-mono text-center">
         </div>
 
         <div class="flex items-center gap-3">
@@ -27,7 +27,7 @@
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">对象类型</span>
-            <select name="obj_type" class="ui-filter-select w-36">
+            <select name="obj_type" class="ui-filter-select w-30">
                 <option value="">所有类型</option>
                 {{ range $opt := (fieldEnumMap "webhook_subscription_obj_type") }}
                 {{ if eq $opt.Value $filter.ObjType }}
@@ -47,7 +47,7 @@
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">状态</span>
-            <select name="is_active" class="ui-filter-select w-36">
+            <select name="is_active" class="ui-filter-select w-30">
                 <option value="">所有状态</option>
                 <option value="true" {{ if eq $filter.IsActive.IsTrue true }}selected{{ end }}>是</option>
                 <option value="false" {{ if eq $filter.IsActive.IsFalse true }}selected{{ end }}>否</option>
