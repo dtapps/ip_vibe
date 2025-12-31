@@ -12,19 +12,20 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"vibe_ip/internal/thrift_generated/open"
+
 	thrift "github.com/apache/thrift/lib/go/thrift"
-	"thrift_generated"
 )
 
-var _ = thrift_generated.GoUnusedProtection__
+var _ = open.GoUnusedProtection__
 
 func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  string ReportDeviceIP(ReportDeviceIPRequest req)")
-	fmt.Fprintln(os.Stderr, "   GetDevicePortForwards(GetDevicePortForwardsRequest req)")
-	fmt.Fprintln(os.Stderr, "  void CreatePortForwardStats(CreatePortForwardStatsRequest req)")
+	fmt.Fprintln(os.Stderr, "  ReportDeviceIPResponse reportDeviceIP(ReportDeviceIPRequest request)")
+	fmt.Fprintln(os.Stderr, "  GetDevicePortForwardsResponse getDevicePortForwards(GetDevicePortForwardsRequest request)")
+	fmt.Fprintln(os.Stderr, "  CreatePortForwardStatsResponse createPortForwardStats(CreatePortForwardStatsRequest request)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -67,7 +68,7 @@ func main() {
 	flag.BoolVar(&useHttp, "http", false, "Use http")
 	flag.Var(headers, "H", "Headers to set on the http(s) request (e.g. -H \"Key: Value\")")
 	flag.Parse()
-	
+
 	if len(urlString) > 0 {
 		var err error
 		parsedUrl, err = url.Parse(urlString)
@@ -84,7 +85,7 @@ func main() {
 			flag.Usage()
 		}
 	}
-	
+
 	cmd := flag.Arg(0)
 	var err error
 	var cfg *thrift.TConfiguration = nil
@@ -136,85 +137,85 @@ func main() {
 	}
 	iprot := protocolFactory.GetProtocol(trans)
 	oprot := protocolFactory.GetProtocol(trans)
-	client := thrift_generated.NewOpenServiceClient(thrift.NewTStandardClient(iprot, oprot))
+	client := open.NewOpenServiceClient(thrift.NewTStandardClient(iprot, oprot))
 	if err := trans.Open(); err != nil {
 		fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
 		os.Exit(1)
 	}
-	
+
 	switch cmd {
-	case "ReportDeviceIP":
-		if flag.NArg() - 1 != 1 {
+	case "reportDeviceIP":
+		if flag.NArg()-1 != 1 {
 			fmt.Fprintln(os.Stderr, "ReportDeviceIP requires 1 args")
 			flag.Usage()
 		}
-		arg20 := flag.Arg(1)
-		mbTrans21 := thrift.NewTMemoryBufferLen(len(arg20))
-		defer mbTrans21.Close()
-		_, err22 := mbTrans21.WriteString(arg20)
-		if err22 != nil {
+		arg21 := flag.Arg(1)
+		mbTrans22 := thrift.NewTMemoryBufferLen(len(arg21))
+		defer mbTrans22.Close()
+		_, err23 := mbTrans22.WriteString(arg21)
+		if err23 != nil {
 			Usage()
 			return
 		}
-		factory23 := thrift.NewTJSONProtocolFactory()
-		jsProt24 := factory23.GetProtocol(mbTrans21)
-		argvalue0 := thrift_generated.NewReportDeviceIPRequest()
-		err25 := argvalue0.Read(context.Background(), jsProt24)
-		if err25 != nil {
+		factory24 := thrift.NewTJSONProtocolFactory()
+		jsProt25 := factory24.GetProtocol(mbTrans22)
+		argvalue0 := open.NewReportDeviceIPRequest()
+		err26 := argvalue0.Read(context.Background(), jsProt25)
+		if err26 != nil {
 			Usage()
 			return
 		}
-		value0 := thrift_generated.ReportDeviceIPRequest(argvalue0)
+		value0 := argvalue0
 		fmt.Print(client.ReportDeviceIP(context.Background(), value0))
 		fmt.Print("\n")
 		break
-	case "GetDevicePortForwards":
-		if flag.NArg() - 1 != 1 {
+	case "getDevicePortForwards":
+		if flag.NArg()-1 != 1 {
 			fmt.Fprintln(os.Stderr, "GetDevicePortForwards requires 1 args")
 			flag.Usage()
 		}
-		arg26 := flag.Arg(1)
-		mbTrans27 := thrift.NewTMemoryBufferLen(len(arg26))
-		defer mbTrans27.Close()
-		_, err28 := mbTrans27.WriteString(arg26)
-		if err28 != nil {
+		arg27 := flag.Arg(1)
+		mbTrans28 := thrift.NewTMemoryBufferLen(len(arg27))
+		defer mbTrans28.Close()
+		_, err29 := mbTrans28.WriteString(arg27)
+		if err29 != nil {
 			Usage()
 			return
 		}
-		factory29 := thrift.NewTJSONProtocolFactory()
-		jsProt30 := factory29.GetProtocol(mbTrans27)
-		argvalue0 := thrift_generated.NewGetDevicePortForwardsRequest()
-		err31 := argvalue0.Read(context.Background(), jsProt30)
-		if err31 != nil {
+		factory30 := thrift.NewTJSONProtocolFactory()
+		jsProt31 := factory30.GetProtocol(mbTrans28)
+		argvalue0 := open.NewGetDevicePortForwardsRequest()
+		err32 := argvalue0.Read(context.Background(), jsProt31)
+		if err32 != nil {
 			Usage()
 			return
 		}
-		value0 := thrift_generated.GetDevicePortForwardsRequest(argvalue0)
+		value0 := argvalue0
 		fmt.Print(client.GetDevicePortForwards(context.Background(), value0))
 		fmt.Print("\n")
 		break
-	case "CreatePortForwardStats":
-		if flag.NArg() - 1 != 1 {
+	case "createPortForwardStats":
+		if flag.NArg()-1 != 1 {
 			fmt.Fprintln(os.Stderr, "CreatePortForwardStats requires 1 args")
 			flag.Usage()
 		}
-		arg32 := flag.Arg(1)
-		mbTrans33 := thrift.NewTMemoryBufferLen(len(arg32))
-		defer mbTrans33.Close()
-		_, err34 := mbTrans33.WriteString(arg32)
-		if err34 != nil {
+		arg33 := flag.Arg(1)
+		mbTrans34 := thrift.NewTMemoryBufferLen(len(arg33))
+		defer mbTrans34.Close()
+		_, err35 := mbTrans34.WriteString(arg33)
+		if err35 != nil {
 			Usage()
 			return
 		}
-		factory35 := thrift.NewTJSONProtocolFactory()
-		jsProt36 := factory35.GetProtocol(mbTrans33)
-		argvalue0 := thrift_generated.NewCreatePortForwardStatsRequest()
-		err37 := argvalue0.Read(context.Background(), jsProt36)
-		if err37 != nil {
+		factory36 := thrift.NewTJSONProtocolFactory()
+		jsProt37 := factory36.GetProtocol(mbTrans34)
+		argvalue0 := open.NewCreatePortForwardStatsRequest()
+		err38 := argvalue0.Read(context.Background(), jsProt37)
+		if err38 != nil {
 			Usage()
 			return
 		}
-		value0 := thrift_generated.CreatePortForwardStatsRequest(argvalue0)
+		value0 := argvalue0
 		fmt.Print(client.CreatePortForwardStats(context.Background(), value0))
 		fmt.Print("\n")
 		break
