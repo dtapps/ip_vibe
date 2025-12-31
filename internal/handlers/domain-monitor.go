@@ -46,6 +46,12 @@ func DomainMonitor(c *gin.Context) {
 
 	// 查询全部域名监控
 	allDomainMonitor, err := global.GvaEntDb.DomainMonitor.Query().
+		WhereIf(requestParams.ID > 0, domainmonitor.IDEQ(requestParams.ID)).
+		WhereIf(requestParams.Name != "", domainmonitor.NameContains(requestParams.Name)).
+		WhereIf(requestParams.Domain != "", domainmonitor.DomainContains(requestParams.Domain)).
+		WhereIf(requestParams.CheckProtocol != "", domainmonitor.CheckProtocolEQ(domainmonitor.CheckProtocol(requestParams.CheckProtocol))).
+		WhereIf(!requestParams.IsActive.IsEmpty(), domainmonitor.IsActiveEQ(requestParams.IsActive.Value())).
+		WhereIf(requestParams.CurrentStatus != "", domainmonitor.CurrentStatusEQ(domainmonitor.CurrentStatus(requestParams.CurrentStatus))).
 		OrderByCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {

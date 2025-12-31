@@ -39,6 +39,9 @@ func Device(c *gin.Context) {
 
 	// 查询全部设备
 	allDevice, err := global.GvaEntDb.Device.Query().
+		WhereIf(requestParams.ID > 0, device.IDEQ(requestParams.ID)).
+		WhereIf(requestParams.Code != "", device.CodeEQ(requestParams.Code)).
+		WhereIf(requestParams.Name != "", device.NameContains(requestParams.Name)).
 		OrderByCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {

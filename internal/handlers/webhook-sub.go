@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
+	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -36,6 +37,12 @@ func WebhookSub(c *gin.Context) {
 
 	// 查询全部通知订阅
 	allWebhookSubscription, err := global.GvaEntDb.WebhookSubscription.Query().
+		WhereIf(requestParams.ID > 0, webhooksubscription.IDEQ(requestParams.ID)).
+		WhereIf(requestParams.Name != "", webhooksubscription.NameContains(requestParams.Name)).
+		WhereIf(requestParams.WebhookID > 0, webhooksubscription.WebhookIDEQ(requestParams.WebhookID)).
+		WhereIf(requestParams.ObjType != "", webhooksubscription.ObjTypeEQ(webhooksubscription.ObjType(requestParams.ObjType))).
+		WhereIf(requestParams.ObjID > 0, webhooksubscription.ObjIDEQ(requestParams.ObjID)).
+		WhereIf(!requestParams.IsActive.IsEmpty(), webhooksubscription.IsActiveEQ(requestParams.IsActive.Value())).
 		WithWebhook().
 		OrderByCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)

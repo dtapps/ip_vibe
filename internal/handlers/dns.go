@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
+	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -36,6 +37,14 @@ func Dns(c *gin.Context) {
 
 	// 查询全部DNS记录
 	allDnsRecord, err := global.GvaEntDb.DNSRecord.Query().
+		WhereIf(requestParams.ID > 0, dnsrecord.IDEQ(requestParams.ID)).
+		WhereIf(requestParams.ConfigID > 0, dnsrecord.ConfigIDEQ(requestParams.ConfigID)).
+		WhereIf(requestParams.RecordID != "", dnsrecord.RecordIDEQ(requestParams.RecordID)).
+		WhereIf(requestParams.SubDomain != "", dnsrecord.SubDomainContains(requestParams.SubDomain)).
+		WhereIf(requestParams.Type != "", dnsrecord.TypeEQ(dnsrecord.Type(requestParams.Type))).
+		WhereIf(requestParams.IPGroupID > 0, dnsrecord.IPGroupID(requestParams.IPGroupID)).
+		WhereIf(requestParams.CdnRecordID > 0, dnsrecord.CdnRecordID(requestParams.CdnRecordID)).
+		WhereIf(!requestParams.IsActive.IsEmpty(), dnsrecord.IsActiveEQ(requestParams.IsActive.Value())).
 		WithConfig().
 		WithIPGroup().
 		WithCdnRecord().

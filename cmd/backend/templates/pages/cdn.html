@@ -5,6 +5,7 @@
 {{ $page := .Data.Page }}
 {{ $total := .Data.Total }}
 {{ $pageSize := .Data.PageSize }}
+{{ $baseWebUrlPath := "/cdn" }}
 
 <h1 class="text-3xl font-black mb-10 pl-4 text-base-content">🌐 DDNS管理平台</h1>
 
@@ -17,6 +18,12 @@
       {{ template "icons" (dict "Name" "i-lucide-plus") }} 添加记录
     </button>
   </div>
+
+  <!-- 表格搜索 -->
+  {{ template "pages/cdn_filter.html" (dict
+  "Action" $baseWebUrlPath
+  "Filter" .Data.Filter
+  )}}
 
   <div class="ui-table-container">
     <table class="ui-table">

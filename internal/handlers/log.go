@@ -31,8 +31,8 @@ func Log(c *gin.Context) {
 	allOperationLog, err := global.GvaEntLogDb.OperationLog.Query().
 		WhereIf(requestParams.ID > 0, operationlog.IDEQ(requestParams.ID)).
 		WhereIf(requestParams.OpType != "", operationlog.OpTypeEQ(operationlog.OpType(requestParams.OpType))).
-		WhereIf(requestParams.ObjID > 0, operationlog.ObjIDEQ(requestParams.ObjID)).
 		WhereIf(requestParams.ObjType != "", operationlog.ObjTypeEQ(operationlog.ObjType(requestParams.ObjType))).
+		WhereIf(requestParams.ObjID > 0, operationlog.ObjIDEQ(requestParams.ObjID)).
 		WhereIf(requestParams.Status != "", operationlog.StatusEQ(operationlog.Status(requestParams.Status))).
 		WhereIf(requestParams.Message != "", operationlog.MessageContains(requestParams.Message)).
 		OrderByCreatedAtDesc().

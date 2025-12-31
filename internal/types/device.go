@@ -7,6 +7,9 @@ import (
 // 设备页面 请求结构
 type DeviceRequest struct {
 	CommonPageRequest
+	ID   int64  `json:"id,omitempty" form:"id,omitempty"`     // 设备序号
+	Code string `json:"code,omitempty" form:"code,omitempty"` // 设备编号
+	Name string `json:"name,omitempty" form:"name,omitempty"` // 设备名称
 }
 
 // 设备页面 响应结构

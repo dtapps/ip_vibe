@@ -11,7 +11,7 @@ ignore ./cmd/frontend/node_modules
 require (
 	connectrpc.com/connect v1.19.1
 	entgo.io/ent v0.14.5
-	github.com/alibabacloud-go/alidns-20150109/v5 v5.0.0
+	github.com/alibabacloud-go/alidns-20150109/v5 v5.1.0
 	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.13
 	github.com/alibabacloud-go/esa-20240910/v2 v2.44.0
@@ -45,10 +45,10 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc4
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.22
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.23
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.16
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.24
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.21
-	github.com/wdcbot/qingfeng v1.5.7
+	github.com/wdcbot/qingfeng v1.5.8
 	go.dtapp.net/library/contrib/http_log v1.0.1
 	go.dtapp.net/library/contrib/resty_log v1.0.10
 	go.dtapp.net/library/service/bark v1.0.7
@@ -165,7 +165,7 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/libc v1.67.2 // indirect
+	modernc.org/libc v1.67.3 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 	rsc.io/binaryregexp v0.2.0 // indirect

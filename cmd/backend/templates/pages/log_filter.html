@@ -8,15 +8,9 @@
     <form method="GET" action="{{ $action }}" class="flex items-center gap-6 flex-1">
 
         <div class="flex items-center gap-3">
-            <span class="ui-filter-label">ID</span>
+            <span class="ui-filter-label">序号</span>
             <input type="number" name="id" value="{{ if $filter.ID }}{{ $filter.ID }}{{ end }}" placeholder="ID"
                 class="ui-filter-input-compact w-20 font-mono text-center">
-        </div>
-
-        <div class="flex items-center gap-3">
-            <span class="ui-filter-label">对象ID</span>
-            <input type="number" name="obj_id" value="{{ if $filter.ObjID }}{{ $filter.ObjID }}{{ end }}"
-                placeholder="对象ID" class="ui-filter-input-compact w-20 font-mono text-center">
         </div>
 
         <div class="flex items-center gap-3">
@@ -31,6 +25,12 @@
                 {{ end }}
                 {{ end }}
             </select>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span class="ui-filter-label">对象序号</span>
+            <input type="number" name="obj_id" value="{{ if $filter.ObjID }}{{ $filter.ObjID }}{{ end }}"
+                placeholder="对象序号" class="ui-filter-input-compact w-20 font-mono text-center">
         </div>
 
         <div class="flex items-center gap-3">

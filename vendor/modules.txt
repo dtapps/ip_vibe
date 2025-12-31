@@ -53,7 +53,7 @@ github.com/agext/levenshtein
 # github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.5
 ## explicit; go 1.14
 github.com/alibabacloud-go/alibabacloud-gateway-spi/client
-# github.com/alibabacloud-go/alidns-20150109/v5 v5.0.0
+# github.com/alibabacloud-go/alidns-20150109/v5 v5.1.0
 ## explicit; go 1.14
 github.com/alibabacloud-go/alidns-20150109/v5/client
 # github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
@@ -663,7 +663,7 @@ github.com/swaggo/swag/v2
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.22
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.23
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.24
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors
@@ -671,7 +671,7 @@ github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/http
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/json
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/regions
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.16
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.21
@@ -721,7 +721,7 @@ github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/events/application
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/events/application/enums
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects/enums
-# github.com/wdcbot/qingfeng v1.5.7
+# github.com/wdcbot/qingfeng v1.5.8
 ## explicit; go 1.20
 github.com/wdcbot/qingfeng
 # github.com/yosida95/uritemplate/v3 v3.0.2
@@ -1036,7 +1036,7 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
-# modernc.org/libc v1.67.2
+# modernc.org/libc v1.67.3
 ## explicit; go 1.24.0
 modernc.org/libc
 modernc.org/libc/errno

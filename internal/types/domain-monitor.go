@@ -8,6 +8,12 @@ import (
 // 域名监控页面 请求结构
 type DomainMonitorRequest struct {
 	CommonPageRequest
+	ID            int64        `json:"id,omitempty" form:"id,omitempty"`                         // 域名监控记录序号
+	Name          string       `json:"name,omitempty" form:"name,omitempty"`                     // 域名监控名称
+	Domain        string       `json:"domain,omitempty" form:"domain,omitempty"`                 // 域名
+	CheckProtocol string       `json:"check_protocol,omitempty" form:"check_protocol,omitempty"` // 检查类型（HTTP/HTTPS）
+	IsActive      NullableBool `json:"is_active,omitempty" form:"is_active,omitempty"`           // 是否活跃
+	CurrentStatus string       `json:"current_status,omitempty" form:"current_status,omitempty"` // 当前运行状态
 }
 
 // 域名监控页面 响应结构

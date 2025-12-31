@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
+	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -36,6 +37,14 @@ func Cdn(c *gin.Context) {
 
 	// 查询全部CDN记录
 	allCdnRecord, err := global.GvaEntDb.CDNRecord.Query().
+		WhereIf(requestParams.ID > 0, cdnrecord.ID(requestParams.ID)).
+		WhereIf(requestParams.ConfigID > 0, cdnrecord.ConfigIDEQ(requestParams.ConfigID)).
+		WhereIf(requestParams.RecordID != "", cdnrecord.RecordIDEQ(requestParams.RecordID)).
+		WhereIf(requestParams.SubDomain != "", cdnrecord.SubDomainContains(requestParams.SubDomain)).
+		WhereIf(requestParams.Type != "", cdnrecord.TypeEQ(cdnrecord.Type(requestParams.Type))).
+		WhereIf(requestParams.OriginProtocol != "", cdnrecord.OriginProtocolEQ(cdnrecord.OriginProtocol(requestParams.OriginProtocol))).
+		WhereIf(requestParams.IPGroupID > 0, cdnrecord.IPGroupID(requestParams.IPGroupID)).
+		WhereIf(!requestParams.IsActive.IsEmpty(), cdnrecord.IsActive(requestParams.IsActive.Value())).
 		WithConfig().
 		WithIPGroup().
 		OrderByCreatedAtDesc().

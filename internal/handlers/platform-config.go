@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
+	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -36,6 +37,10 @@ func PlatformConfig(c *gin.Context) {
 
 	// 查询全部配置
 	allConfig, err := global.GvaEntDb.PlatformConfig.Query().
+		WhereIf(requestParams.ID > 0, platformconfig.IDEQ(requestParams.ID)).
+		WhereIf(requestParams.Capability != "", platformconfig.CapabilityEQ(platformconfig.Capability(requestParams.Capability))).
+		WhereIf(requestParams.Name != "", platformconfig.NameContains(requestParams.Name)).
+		WhereIf(requestParams.Platform != "", platformconfig.PlatformEQ(platformconfig.Platform(requestParams.Platform))).
 		OrderByCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {

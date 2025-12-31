@@ -60,6 +60,12 @@ func Ssl(c *gin.Context) {
 
 	// 查询全部SSL记录
 	allSSLRecord, err := global.GvaEntDb.SSLRecord.Query().
+		WhereIf(requestParams.ID > 0, sslrecord.IDEQ(requestParams.ID)).
+		WhereIf(requestParams.ConfigID > 0, sslrecord.ConfigIDEQ(requestParams.ConfigID)).
+		WhereIf(requestParams.Domain != "", sslrecord.DomainContains(requestParams.Domain)).
+		WhereIf(requestParams.Status != "", sslrecord.StatusEQ(sslrecord.Status(requestParams.Status))).
+		WhereIf(!requestParams.IsActive.IsEmpty(), sslrecord.IsActiveEQ(requestParams.IsActive.Value())).
+		WhereIf(!requestParams.IsAutoRenewal.IsEmpty(), sslrecord.IsAutoRenewalEQ(requestParams.IsAutoRenewal.Value())).
 		WithConfig().
 		OrderByCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)

@@ -39,6 +39,10 @@ func PortForward(c *gin.Context) {
 
 	// 查询全部端口转发
 	allPortForward, err := global.GvaEntDb.DevicePortForward.Query().
+		WhereIf(requestParams.ID > 0, deviceportforward.IDEQ(requestParams.ID)).
+		WhereIf(requestParams.Name != "", deviceportforward.NameContains(requestParams.Name)).
+		WhereIf(!requestParams.AutoForward.IsEmpty(), deviceportforward.AutoForwardEQ(requestParams.AutoForward.Value())).
+		WhereIf(!requestParams.IsActive.IsEmpty(), deviceportforward.IsActiveEQ(requestParams.IsActive.Value())).
 		WithDevice().
 		OrderByCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
