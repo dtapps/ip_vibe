@@ -50,30 +50,13 @@ message ReportDeviceIPRequest {
   ]; 
   
    // 设备名称
-  string device_name = 2 [
-    (validate.rules).string = {
-      max_len: 100,
-      ignore_empty: true  // 允许为空
-    }
-  ];
+  string device_name = 2;
   
   // IP地址V4
-  string ipv4_addr = 3 [
-    (validate.rules).string = {
-      max_len: 15,
-      ignore_empty: true,  // 允许为空
-      ip: true             // 验证是否为有效IPv4格式
-    }
-  ];  
+  string ipv4_addr = 3;  
   
   // IP地址V6
-  string ipv6_addr = 4 [
-    (validate.rules).string = {
-      max_len: 45,
-      ignore_empty: true,  // 允许为空
-      ipv6: true           // 验证是否为有效IPv6格式
-    }
-  ]; 
+  string ipv6_addr = 4; 
 }
 
 // 设备上报IP 响应参数

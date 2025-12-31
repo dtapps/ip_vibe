@@ -985,17 +985,22 @@ func (p *PortForwardRule) Validate() error {
 //  - Rules
 // 
 type GetDevicePortForwardsResponse struct {
-	Rules []*PortForwardRule `thrift:"rules,1" db:"rules" json:"rules"`
+	Rules []*PortForwardRule `thrift:"rules,1" db:"rules" json:"rules,omitempty"`
 }
 
 func NewGetDevicePortForwardsResponse() *GetDevicePortForwardsResponse {
 	return &GetDevicePortForwardsResponse{}
 }
 
+var GetDevicePortForwardsResponse_Rules_DEFAULT []*PortForwardRule
 
 
 func (p *GetDevicePortForwardsResponse) GetRules() []*PortForwardRule {
 	return p.Rules
+}
+
+func (p *GetDevicePortForwardsResponse) IsSetRules() bool {
+	return p.Rules != nil
 }
 
 func (p *GetDevicePortForwardsResponse) Read(ctx context.Context, iprot thrift.TProtocol) error {
@@ -1075,22 +1080,24 @@ func (p *GetDevicePortForwardsResponse) Write(ctx context.Context, oprot thrift.
 }
 
 func (p *GetDevicePortForwardsResponse) writeField1(ctx context.Context, oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin(ctx, "rules", thrift.LIST, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:rules: ", p), err)
-	}
-	if err := oprot.WriteListBegin(ctx, thrift.STRUCT, len(p.Rules)); err != nil {
-		return thrift.PrependError("error writing list begin: ", err)
-	}
-	for _, v := range p.Rules {
-		if err := v.Write(ctx, oprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
+	if p.IsSetRules() {
+		if err := oprot.WriteFieldBegin(ctx, "rules", thrift.LIST, 1); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:rules: ", p), err)
 		}
-	}
-	if err := oprot.WriteListEnd(ctx); err != nil {
-		return thrift.PrependError("error writing list end: ", err)
-	}
-	if err := oprot.WriteFieldEnd(ctx); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:rules: ", p), err)
+		if err := oprot.WriteListBegin(ctx, thrift.STRUCT, len(p.Rules)); err != nil {
+			return thrift.PrependError("error writing list begin: ", err)
+		}
+		for _, v := range p.Rules {
+			if err := v.Write(ctx, oprot); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
+			}
+		}
+		if err := oprot.WriteListEnd(ctx); err != nil {
+			return thrift.PrependError("error writing list end: ", err)
+		}
+		if err := oprot.WriteFieldEnd(ctx); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 1:rules: ", p), err)
+		}
 	}
 	return err
 }
@@ -1149,15 +1156,15 @@ func (p *GetDevicePortForwardsResponse) Validate() error {
 // 
 type CreatePortForwardStatsRequest struct {
 	DeviceCode string `thrift:"device_code,1,required" db:"device_code" json:"device_code"`
-	PortForwardID int64 `thrift:"port_forward_id,2" db:"port_forward_id" json:"port_forward_id"`
-	StartTime int64 `thrift:"start_time,3" db:"start_time" json:"start_time"`
-	ActiveConn int64 `thrift:"active_conn,4" db:"active_conn" json:"active_conn"`
-	TotalConn int64 `thrift:"total_conn,5" db:"total_conn" json:"total_conn"`
-	BytesIn int64 `thrift:"bytes_in,6" db:"bytes_in" json:"bytes_in"`
-	BytesOut int64 `thrift:"bytes_out,7" db:"bytes_out" json:"bytes_out"`
-	UDPPacketsIn int64 `thrift:"udp_packets_in,8" db:"udp_packets_in" json:"udp_packets_in"`
-	UDPPacketsOut int64 `thrift:"udp_packets_out,9" db:"udp_packets_out" json:"udp_packets_out"`
-	Errors int64 `thrift:"errors,10" db:"errors" json:"errors"`
+	PortForwardID int64 `thrift:"port_forward_id,2,required" db:"port_forward_id" json:"port_forward_id"`
+	StartTime int64 `thrift:"start_time,3,required" db:"start_time" json:"start_time"`
+	ActiveConn *int64 `thrift:"active_conn,4" db:"active_conn" json:"active_conn,omitempty"`
+	TotalConn *int64 `thrift:"total_conn,5" db:"total_conn" json:"total_conn,omitempty"`
+	BytesIn *int64 `thrift:"bytes_in,6" db:"bytes_in" json:"bytes_in,omitempty"`
+	BytesOut *int64 `thrift:"bytes_out,7" db:"bytes_out" json:"bytes_out,omitempty"`
+	UDPPacketsIn *int64 `thrift:"udp_packets_in,8" db:"udp_packets_in" json:"udp_packets_in,omitempty"`
+	UDPPacketsOut *int64 `thrift:"udp_packets_out,9" db:"udp_packets_out" json:"udp_packets_out,omitempty"`
+	Errors *int64 `thrift:"errors,10" db:"errors" json:"errors,omitempty"`
 }
 
 func NewCreatePortForwardStatsRequest() *CreatePortForwardStatsRequest {
@@ -1182,46 +1189,95 @@ func (p *CreatePortForwardStatsRequest) GetStartTime() int64 {
 	return p.StartTime
 }
 
-
+var CreatePortForwardStatsRequest_ActiveConn_DEFAULT int64
 
 func (p *CreatePortForwardStatsRequest) GetActiveConn() int64 {
-	return p.ActiveConn
+	if !p.IsSetActiveConn() {
+		return CreatePortForwardStatsRequest_ActiveConn_DEFAULT
+	}
+	return *p.ActiveConn
 }
 
-
+var CreatePortForwardStatsRequest_TotalConn_DEFAULT int64
 
 func (p *CreatePortForwardStatsRequest) GetTotalConn() int64 {
-	return p.TotalConn
+	if !p.IsSetTotalConn() {
+		return CreatePortForwardStatsRequest_TotalConn_DEFAULT
+	}
+	return *p.TotalConn
 }
 
-
+var CreatePortForwardStatsRequest_BytesIn_DEFAULT int64
 
 func (p *CreatePortForwardStatsRequest) GetBytesIn() int64 {
-	return p.BytesIn
+	if !p.IsSetBytesIn() {
+		return CreatePortForwardStatsRequest_BytesIn_DEFAULT
+	}
+	return *p.BytesIn
 }
 
-
+var CreatePortForwardStatsRequest_BytesOut_DEFAULT int64
 
 func (p *CreatePortForwardStatsRequest) GetBytesOut() int64 {
-	return p.BytesOut
+	if !p.IsSetBytesOut() {
+		return CreatePortForwardStatsRequest_BytesOut_DEFAULT
+	}
+	return *p.BytesOut
 }
 
-
+var CreatePortForwardStatsRequest_UDPPacketsIn_DEFAULT int64
 
 func (p *CreatePortForwardStatsRequest) GetUDPPacketsIn() int64 {
-	return p.UDPPacketsIn
+	if !p.IsSetUDPPacketsIn() {
+		return CreatePortForwardStatsRequest_UDPPacketsIn_DEFAULT
+	}
+	return *p.UDPPacketsIn
 }
 
-
+var CreatePortForwardStatsRequest_UDPPacketsOut_DEFAULT int64
 
 func (p *CreatePortForwardStatsRequest) GetUDPPacketsOut() int64 {
-	return p.UDPPacketsOut
+	if !p.IsSetUDPPacketsOut() {
+		return CreatePortForwardStatsRequest_UDPPacketsOut_DEFAULT
+	}
+	return *p.UDPPacketsOut
 }
 
-
+var CreatePortForwardStatsRequest_Errors_DEFAULT int64
 
 func (p *CreatePortForwardStatsRequest) GetErrors() int64 {
-	return p.Errors
+	if !p.IsSetErrors() {
+		return CreatePortForwardStatsRequest_Errors_DEFAULT
+	}
+	return *p.Errors
+}
+
+func (p *CreatePortForwardStatsRequest) IsSetActiveConn() bool {
+	return p.ActiveConn != nil
+}
+
+func (p *CreatePortForwardStatsRequest) IsSetTotalConn() bool {
+	return p.TotalConn != nil
+}
+
+func (p *CreatePortForwardStatsRequest) IsSetBytesIn() bool {
+	return p.BytesIn != nil
+}
+
+func (p *CreatePortForwardStatsRequest) IsSetBytesOut() bool {
+	return p.BytesOut != nil
+}
+
+func (p *CreatePortForwardStatsRequest) IsSetUDPPacketsIn() bool {
+	return p.UDPPacketsIn != nil
+}
+
+func (p *CreatePortForwardStatsRequest) IsSetUDPPacketsOut() bool {
+	return p.UDPPacketsOut != nil
+}
+
+func (p *CreatePortForwardStatsRequest) IsSetErrors() bool {
+	return p.Errors != nil
 }
 
 func (p *CreatePortForwardStatsRequest) Read(ctx context.Context, iprot thrift.TProtocol) error {
@@ -1230,6 +1286,8 @@ func (p *CreatePortForwardStatsRequest) Read(ctx context.Context, iprot thrift.T
 	}
 
 	var issetDeviceCode bool = false;
+	var issetPortForwardID bool = false;
+	var issetStartTime bool = false;
 
 	for {
 		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
@@ -1256,6 +1314,7 @@ func (p *CreatePortForwardStatsRequest) Read(ctx context.Context, iprot thrift.T
 				if err := p.ReadField2(ctx, iprot); err != nil {
 					return err
 				}
+				issetPortForwardID = true
 			} else {
 				if err := iprot.Skip(ctx, fieldTypeId); err != nil {
 					return err
@@ -1266,6 +1325,7 @@ func (p *CreatePortForwardStatsRequest) Read(ctx context.Context, iprot thrift.T
 				if err := p.ReadField3(ctx, iprot); err != nil {
 					return err
 				}
+				issetStartTime = true
 			} else {
 				if err := iprot.Skip(ctx, fieldTypeId); err != nil {
 					return err
@@ -1356,6 +1416,12 @@ func (p *CreatePortForwardStatsRequest) Read(ctx context.Context, iprot thrift.T
 	if !issetDeviceCode{
 		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field DeviceCode is not set"))
 	}
+	if !issetPortForwardID{
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field PortForwardID is not set"))
+	}
+	if !issetStartTime{
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field StartTime is not set"))
+	}
 	return nil
 }
 
@@ -1390,7 +1456,7 @@ func (p *CreatePortForwardStatsRequest) ReadField4(ctx context.Context, iprot th
 	if v, err := iprot.ReadI64(ctx); err != nil {
 		return thrift.PrependError("error reading field 4: ", err)
 	} else {
-		p.ActiveConn = v
+		p.ActiveConn = &v
 	}
 	return nil
 }
@@ -1399,7 +1465,7 @@ func (p *CreatePortForwardStatsRequest) ReadField5(ctx context.Context, iprot th
 	if v, err := iprot.ReadI64(ctx); err != nil {
 		return thrift.PrependError("error reading field 5: ", err)
 	} else {
-		p.TotalConn = v
+		p.TotalConn = &v
 	}
 	return nil
 }
@@ -1408,7 +1474,7 @@ func (p *CreatePortForwardStatsRequest) ReadField6(ctx context.Context, iprot th
 	if v, err := iprot.ReadI64(ctx); err != nil {
 		return thrift.PrependError("error reading field 6: ", err)
 	} else {
-		p.BytesIn = v
+		p.BytesIn = &v
 	}
 	return nil
 }
@@ -1417,7 +1483,7 @@ func (p *CreatePortForwardStatsRequest) ReadField7(ctx context.Context, iprot th
 	if v, err := iprot.ReadI64(ctx); err != nil {
 		return thrift.PrependError("error reading field 7: ", err)
 	} else {
-		p.BytesOut = v
+		p.BytesOut = &v
 	}
 	return nil
 }
@@ -1426,7 +1492,7 @@ func (p *CreatePortForwardStatsRequest) ReadField8(ctx context.Context, iprot th
 	if v, err := iprot.ReadI64(ctx); err != nil {
 		return thrift.PrependError("error reading field 8: ", err)
 	} else {
-		p.UDPPacketsIn = v
+		p.UDPPacketsIn = &v
 	}
 	return nil
 }
@@ -1435,7 +1501,7 @@ func (p *CreatePortForwardStatsRequest) ReadField9(ctx context.Context, iprot th
 	if v, err := iprot.ReadI64(ctx); err != nil {
 		return thrift.PrependError("error reading field 9: ", err)
 	} else {
-		p.UDPPacketsOut = v
+		p.UDPPacketsOut = &v
 	}
 	return nil
 }
@@ -1444,7 +1510,7 @@ func (p *CreatePortForwardStatsRequest) ReadField10(ctx context.Context, iprot t
 	if v, err := iprot.ReadI64(ctx); err != nil {
 		return thrift.PrependError("error reading field 10: ", err)
 	} else {
-		p.Errors = v
+		p.Errors = &v
 	}
 	return nil
 }
@@ -1514,92 +1580,106 @@ func (p *CreatePortForwardStatsRequest) writeField3(ctx context.Context, oprot t
 }
 
 func (p *CreatePortForwardStatsRequest) writeField4(ctx context.Context, oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin(ctx, "active_conn", thrift.I64, 4); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:active_conn: ", p), err)
-	}
-	if err := oprot.WriteI64(ctx, int64(p.ActiveConn)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.active_conn (4) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(ctx); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 4:active_conn: ", p), err)
+	if p.IsSetActiveConn() {
+		if err := oprot.WriteFieldBegin(ctx, "active_conn", thrift.I64, 4); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:active_conn: ", p), err)
+		}
+		if err := oprot.WriteI64(ctx, int64(*p.ActiveConn)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.active_conn (4) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(ctx); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 4:active_conn: ", p), err)
+		}
 	}
 	return err
 }
 
 func (p *CreatePortForwardStatsRequest) writeField5(ctx context.Context, oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin(ctx, "total_conn", thrift.I64, 5); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:total_conn: ", p), err)
-	}
-	if err := oprot.WriteI64(ctx, int64(p.TotalConn)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.total_conn (5) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(ctx); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 5:total_conn: ", p), err)
+	if p.IsSetTotalConn() {
+		if err := oprot.WriteFieldBegin(ctx, "total_conn", thrift.I64, 5); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:total_conn: ", p), err)
+		}
+		if err := oprot.WriteI64(ctx, int64(*p.TotalConn)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.total_conn (5) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(ctx); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 5:total_conn: ", p), err)
+		}
 	}
 	return err
 }
 
 func (p *CreatePortForwardStatsRequest) writeField6(ctx context.Context, oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin(ctx, "bytes_in", thrift.I64, 6); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:bytes_in: ", p), err)
-	}
-	if err := oprot.WriteI64(ctx, int64(p.BytesIn)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.bytes_in (6) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(ctx); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 6:bytes_in: ", p), err)
+	if p.IsSetBytesIn() {
+		if err := oprot.WriteFieldBegin(ctx, "bytes_in", thrift.I64, 6); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:bytes_in: ", p), err)
+		}
+		if err := oprot.WriteI64(ctx, int64(*p.BytesIn)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.bytes_in (6) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(ctx); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 6:bytes_in: ", p), err)
+		}
 	}
 	return err
 }
 
 func (p *CreatePortForwardStatsRequest) writeField7(ctx context.Context, oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin(ctx, "bytes_out", thrift.I64, 7); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:bytes_out: ", p), err)
-	}
-	if err := oprot.WriteI64(ctx, int64(p.BytesOut)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.bytes_out (7) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(ctx); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 7:bytes_out: ", p), err)
+	if p.IsSetBytesOut() {
+		if err := oprot.WriteFieldBegin(ctx, "bytes_out", thrift.I64, 7); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:bytes_out: ", p), err)
+		}
+		if err := oprot.WriteI64(ctx, int64(*p.BytesOut)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.bytes_out (7) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(ctx); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 7:bytes_out: ", p), err)
+		}
 	}
 	return err
 }
 
 func (p *CreatePortForwardStatsRequest) writeField8(ctx context.Context, oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin(ctx, "udp_packets_in", thrift.I64, 8); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 8:udp_packets_in: ", p), err)
-	}
-	if err := oprot.WriteI64(ctx, int64(p.UDPPacketsIn)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.udp_packets_in (8) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(ctx); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 8:udp_packets_in: ", p), err)
+	if p.IsSetUDPPacketsIn() {
+		if err := oprot.WriteFieldBegin(ctx, "udp_packets_in", thrift.I64, 8); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 8:udp_packets_in: ", p), err)
+		}
+		if err := oprot.WriteI64(ctx, int64(*p.UDPPacketsIn)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.udp_packets_in (8) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(ctx); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 8:udp_packets_in: ", p), err)
+		}
 	}
 	return err
 }
 
 func (p *CreatePortForwardStatsRequest) writeField9(ctx context.Context, oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin(ctx, "udp_packets_out", thrift.I64, 9); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:udp_packets_out: ", p), err)
-	}
-	if err := oprot.WriteI64(ctx, int64(p.UDPPacketsOut)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.udp_packets_out (9) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(ctx); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 9:udp_packets_out: ", p), err)
+	if p.IsSetUDPPacketsOut() {
+		if err := oprot.WriteFieldBegin(ctx, "udp_packets_out", thrift.I64, 9); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:udp_packets_out: ", p), err)
+		}
+		if err := oprot.WriteI64(ctx, int64(*p.UDPPacketsOut)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.udp_packets_out (9) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(ctx); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 9:udp_packets_out: ", p), err)
+		}
 	}
 	return err
 }
 
 func (p *CreatePortForwardStatsRequest) writeField10(ctx context.Context, oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin(ctx, "errors", thrift.I64, 10); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 10:errors: ", p), err)
-	}
-	if err := oprot.WriteI64(ctx, int64(p.Errors)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.errors (10) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(ctx); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 10:errors: ", p), err)
+	if p.IsSetErrors() {
+		if err := oprot.WriteFieldBegin(ctx, "errors", thrift.I64, 10); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 10:errors: ", p), err)
+		}
+		if err := oprot.WriteI64(ctx, int64(*p.Errors)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.errors (10) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(ctx); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 10:errors: ", p), err)
+		}
 	}
 	return err
 }
@@ -1613,13 +1693,48 @@ func (p *CreatePortForwardStatsRequest) Equals(other *CreatePortForwardStatsRequ
 	if p.DeviceCode != other.DeviceCode { return false }
 	if p.PortForwardID != other.PortForwardID { return false }
 	if p.StartTime != other.StartTime { return false }
-	if p.ActiveConn != other.ActiveConn { return false }
-	if p.TotalConn != other.TotalConn { return false }
-	if p.BytesIn != other.BytesIn { return false }
-	if p.BytesOut != other.BytesOut { return false }
-	if p.UDPPacketsIn != other.UDPPacketsIn { return false }
-	if p.UDPPacketsOut != other.UDPPacketsOut { return false }
-	if p.Errors != other.Errors { return false }
+	if p.ActiveConn != other.ActiveConn {
+		if p.ActiveConn == nil || other.ActiveConn == nil {
+			return false
+		}
+		if (*p.ActiveConn) != (*other.ActiveConn) { return false }
+	}
+	if p.TotalConn != other.TotalConn {
+		if p.TotalConn == nil || other.TotalConn == nil {
+			return false
+		}
+		if (*p.TotalConn) != (*other.TotalConn) { return false }
+	}
+	if p.BytesIn != other.BytesIn {
+		if p.BytesIn == nil || other.BytesIn == nil {
+			return false
+		}
+		if (*p.BytesIn) != (*other.BytesIn) { return false }
+	}
+	if p.BytesOut != other.BytesOut {
+		if p.BytesOut == nil || other.BytesOut == nil {
+			return false
+		}
+		if (*p.BytesOut) != (*other.BytesOut) { return false }
+	}
+	if p.UDPPacketsIn != other.UDPPacketsIn {
+		if p.UDPPacketsIn == nil || other.UDPPacketsIn == nil {
+			return false
+		}
+		if (*p.UDPPacketsIn) != (*other.UDPPacketsIn) { return false }
+	}
+	if p.UDPPacketsOut != other.UDPPacketsOut {
+		if p.UDPPacketsOut == nil || other.UDPPacketsOut == nil {
+			return false
+		}
+		if (*p.UDPPacketsOut) != (*other.UDPPacketsOut) { return false }
+	}
+	if p.Errors != other.Errors {
+		if p.Errors == nil || other.Errors == nil {
+			return false
+		}
+		if (*p.Errors) != (*other.Errors) { return false }
+	}
 	return true
 }
 

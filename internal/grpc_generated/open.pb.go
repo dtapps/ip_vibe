@@ -488,16 +488,14 @@ var File_open_proto protoreflect.FileDescriptor
 const file_open_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"open.proto\x12\x04open\x1a\x1cgoogle/api/annotations.proto\x1a\x17validate/validate.proto\"\xd9\x01\n" +
+	"open.proto\x12\x04open\x1a\x1cgoogle/api/annotations.proto\x1a\x17validate/validate.proto\"\xb0\x01\n" +
 	"\x15ReportDeviceIPRequest\x12<\n" +
 	"\vdevice_code\x18\x01 \x01(\tB\x1b\xfaB\x18r\x16\x10\x01\x1822\x10^[a-zA-Z0-9_-]+$R\n" +
-	"deviceCode\x12+\n" +
-	"\vdevice_name\x18\x02 \x01(\tB\n" +
-	"\xfaB\ar\x05\x18d\xd0\x01\x01R\n" +
-	"deviceName\x12)\n" +
-	"\tipv4_addr\x18\x03 \x01(\tB\f\xfaB\tr\a\x18\x0f\xd0\x01\x01p\x01R\bipv4Addr\x12*\n" +
-	"\tipv6_addr\x18\x04 \x01(\tB\r\xfaB\n" +
-	"r\b\x18-\xd0\x01\x01\x80\x01\x01R\bipv6Addr\"*\n" +
+	"deviceCode\x12\x1f\n" +
+	"\vdevice_name\x18\x02 \x01(\tR\n" +
+	"deviceName\x12\x1b\n" +
+	"\tipv4_addr\x18\x03 \x01(\tR\bipv4Addr\x12\x1b\n" +
+	"\tipv6_addr\x18\x04 \x01(\tR\bipv6Addr\"*\n" +
 	"\x16ReportDeviceIPResponse\x12\x10\n" +
 	"\x03msg\x18\x01 \x01(\tR\x03msg\"\\\n" +
 	"\x1cGetDevicePortForwardsRequest\x12<\n" +

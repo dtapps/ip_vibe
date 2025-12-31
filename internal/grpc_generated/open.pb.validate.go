@@ -79,72 +79,11 @@ func (m *ReportDeviceIPRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetDeviceName() != "" {
+	// no validation rules for DeviceName
 
-		if utf8.RuneCountInString(m.GetDeviceName()) > 100 {
-			err := ReportDeviceIPRequestValidationError{
-				field:  "DeviceName",
-				reason: "value length must be at most 100 runes",
-			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
-		}
+	// no validation rules for Ipv4Addr
 
-	}
-
-	if m.GetIpv4Addr() != "" {
-
-		if utf8.RuneCountInString(m.GetIpv4Addr()) > 15 {
-			err := ReportDeviceIPRequestValidationError{
-				field:  "Ipv4Addr",
-				reason: "value length must be at most 15 runes",
-			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
-		}
-
-		if ip := net.ParseIP(m.GetIpv4Addr()); ip == nil {
-			err := ReportDeviceIPRequestValidationError{
-				field:  "Ipv4Addr",
-				reason: "value must be a valid IP address",
-			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
-		}
-
-	}
-
-	if m.GetIpv6Addr() != "" {
-
-		if utf8.RuneCountInString(m.GetIpv6Addr()) > 45 {
-			err := ReportDeviceIPRequestValidationError{
-				field:  "Ipv6Addr",
-				reason: "value length must be at most 45 runes",
-			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
-		}
-
-		if ip := net.ParseIP(m.GetIpv6Addr()); ip == nil || ip.To4() != nil {
-			err := ReportDeviceIPRequestValidationError{
-				field:  "Ipv6Addr",
-				reason: "value must be a valid IPv6 address",
-			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
-		}
-
-	}
+	// no validation rules for Ipv6Addr
 
 	if len(errors) > 0 {
 		return ReportDeviceIPRequestMultiError(errors)

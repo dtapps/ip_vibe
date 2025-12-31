@@ -11,13 +11,13 @@ import (
 	"google.golang.org/grpc"
 )
 
-// OpenServer 实现 gRPC 服务
+// OpenServer 实现 gRPC 服务接口
 type OpenServer struct {
 	grpc_generated.UnimplementedOpenServiceServer
 	deviceService service.DeviceOpenService
 }
 
-// NewOpenServer 创建新的 gRPC 服务实例
+// NewOpenServer 创建 gRPC 服务实例
 func NewOpenServer() *OpenServer {
 	// 使用与你的 HTTP 处理器相同的服务实例
 	deviceService := service.NewDeviceOpenService(
@@ -38,7 +38,7 @@ func (s *OpenServer) RegisterService(server *grpc.Server) {
 	grpc_generated.RegisterOpenServiceServer(server, s)
 }
 
-// ReportDeviceIP 实现设备上报IP的 gRPC 方法
+// ReportDeviceIP 实现 设备上报 IP 方法
 func (s *OpenServer) ReportDeviceIP(ctx context.Context, req *grpc_generated.ReportDeviceIPRequest) (*grpc_generated.ReportDeviceIPResponse, error) {
 	// 将 gRPC 请求转换为你的 types 结构
 	request := &types.DeviceReportDeviceIpRequest{
@@ -50,27 +50,27 @@ func (s *OpenServer) ReportDeviceIP(ctx context.Context, req *grpc_generated.Rep
 		IPV6Addr:   req.Ipv6Addr,
 	}
 
-	// 调用你现有的业务逻辑（与 HTTP 处理器使用相同的代码）
+	// 调用服务方法
 	response, err := s.deviceService.DeviceReportDeviceIp(ctx, request)
 	if err != nil {
 		return nil, err
 	}
 
-	// 将业务响应转换为 gRPC 响应
+	// 转换为 gRPC 响应
 	return &grpc_generated.ReportDeviceIPResponse{
 		Msg: response.Msg,
 	}, nil
 }
 
-// GetDevicePortForwards 实现获取设备端口转发的 gRPC 方法
+// GetDevicePortForwards 实现 获取设备端口转发 方法
 func (s *OpenServer) GetDevicePortForwards(ctx context.Context, req *grpc_generated.GetDevicePortForwardsRequest) (*grpc_generated.GetDevicePortForwardsResponse, error) {
-	// 调用你现有的业务逻辑（与 HTTP 处理器使用相同的代码）
+	// 调用服务方法
 	response, err := s.deviceService.DevicePortForwards(ctx, req.DeviceCode)
 	if err != nil {
 		return nil, err
 	}
 
-	// 将业务响应转换为 gRPC 响应
+	// 转换为 gRPC 响应
 	var rules []*grpc_generated.PortForwardRule
 	for _, rule := range response {
 		rules = append(rules, &grpc_generated.PortForwardRule{
@@ -83,13 +83,13 @@ func (s *OpenServer) GetDevicePortForwards(ctx context.Context, req *grpc_genera
 		})
 	}
 
-	// 将业务响应转换为 gRPC 响应
+	// 转换为 gRPC 响应
 	return &grpc_generated.GetDevicePortForwardsResponse{
 		Rules: rules,
 	}, nil
 }
 
-// CreatePortForwardStats 实现创建端口转发统计的 gRPC 方法
+// CreatePortForwardStats 实现 创建端口转发统计 方法
 func (s *OpenServer) CreatePortForwardStats(ctx context.Context, req *grpc_generated.CreatePortForwardStatsRequest) (*grpc_generated.CreatePortForwardStatsResponse, error) {
 	// 将 gRPC 请求转换为你的 types 结构
 	request := &types.CreatePortForwardStatsRequest{
@@ -107,12 +107,12 @@ func (s *OpenServer) CreatePortForwardStats(ctx context.Context, req *grpc_gener
 		Errors:        req.Errors,
 	}
 
-	// 调用你现有的业务逻辑（与 HTTP 处理器使用相同的代码）
+	// 调用服务方法
 	err := s.deviceService.CreatePortForwardStats(ctx, req.DeviceCode, req.PortForwardId, request)
 	if err != nil {
 		return nil, err
 	}
 
-	// 将业务响应转换为 gRPC 响应
+	// 转换为 gRPC 响应
 	return &grpc_generated.CreatePortForwardStatsResponse{}, nil
 }
