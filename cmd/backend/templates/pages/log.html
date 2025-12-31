@@ -5,7 +5,8 @@
 {{ $page := .Data.Page }}
 {{ $total := .Data.Total }}
 {{ $pageSize := .Data.PageSize }}
-{{ $baseWebUrlPath := "/log" }}
+{{ $baseWebUrlPath := .CurrentPath }}
+{{ $baseWebUrlPathWithQuery := .CurrentPathWithQuery }}
 
 <h1 class="text-3xl font-black mb-10 pl-4 text-base-content transition-colors">🌐 DDNS管理平台</h1>
 
@@ -18,7 +19,7 @@
 
   <!-- 表格搜索 -->
   {{ template "pages/log_filter.html" (dict
-  "Action" $baseWebUrlPath
+  "Action" $baseWebUrlPathWithQuery
   "Filter" .Data.Filter
   )}}
 

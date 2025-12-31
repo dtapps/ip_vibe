@@ -80,14 +80,17 @@ func renderHTML[T any](c *gin.Context, templateName string, data types.BasePageD
 	baseData.SetDebug(data.Debug)
 	baseData.SetTitle(data.Title)
 	baseData.SetData(data.Data)
+
 	// 打印
 	logger.DebugContext(c, "通用渲染HTML",
 		slog.String("path", c.Request.URL.Path),
 		slog.String("template", templateName),
 		slog.Any("data", baseData),
 	)
+
 	// 推送
 	pusher(c, logger)
+
 	// 渲染HTML
 	c.HTML(http.StatusOK, templateName, baseData)
 }
@@ -106,6 +109,7 @@ func renderHTMLWithMenu[T any](c *gin.Context, templateName string, data types.B
 	baseData.SetActiveMenu(activeMenu)
 	baseData.SetTitle(data.Title)
 	baseData.SetData(data.Data)
+
 	// 打印
 	logger.DebugContext(c, "指定菜单渲染HTML",
 		slog.String("path", c.Request.URL.Path),
@@ -113,16 +117,27 @@ func renderHTMLWithMenu[T any](c *gin.Context, templateName string, data types.B
 		slog.String("template", templateName),
 		slog.Any("data", baseData),
 	)
+
 	// 推送
 	pusher(c, logger)
+
 	// 渲染HTML
 	c.HTML(http.StatusOK, templateName, baseData)
 }
 
 // 获取基础数据
 func getBaseData[T any](c *gin.Context) types.BasePageData[T] {
+	// 构造 path + query
+	currentPath := c.Request.URL.Path
+	currentPathWithQuery := currentPath
+	if q := c.Request.URL.RawQuery; q != "" {
+		currentPathWithQuery += "?" + q
+	}
+
 	return types.BasePageData[T]{
-		ActiveMenu: getActiveMenu(c),
+		ActiveMenu:           getActiveMenu(c),
+		CurrentPath:          currentPath,
+		CurrentPathWithQuery: currentPathWithQuery,
 	}
 }
 

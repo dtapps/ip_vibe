@@ -11,10 +11,12 @@ import (
 
 // 公共 页面数据 结构
 type BasePageData[T any] struct {
-	Debug      bool   // 是否开启调试模式
-	ActiveMenu string // 当前激活的菜单
-	Title      string // 页面标题
-	Data       T      // 页面数据
+	Debug                bool   // 是否开启调试模式
+	ActiveMenu           string // 当前激活的菜单
+	Title                string // 页面标题
+	Data                 T      // 页面数据
+	CurrentPath          string // 当前路径，如 /dashboard
+	CurrentPathWithQuery string // 当前路径 + 查询字符串，如 /dashboard?id=1&name=test
 }
 
 // 设置是否开启调试模式
@@ -35,6 +37,16 @@ func (b *BasePageData[T]) SetTitle(title string) {
 // 设置页面数据
 func (b *BasePageData[T]) SetData(data T) {
 	b.Data = data
+}
+
+// 设置当前路径
+func (b *BasePageData[T]) SetCurrentPath(path string) {
+	b.CurrentPath = path
+}
+
+// 设置当前路径 + 查询字符串
+func (b *BasePageData[T]) SetCurrentPathWithQuery(pathWithQuery string) {
+	b.CurrentPathWithQuery = pathWithQuery
 }
 
 // 公共 页面分页 请求结构
