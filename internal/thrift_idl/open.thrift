@@ -21,7 +21,7 @@ service OpenService {
     /**
      * 创建端口转发统计信息
      */
-    void createPortForwardStats(
+    CreatePortForwardStatsResponse createPortForwardStats(
         1: required CreatePortForwardStatsRequest req
     )
 }

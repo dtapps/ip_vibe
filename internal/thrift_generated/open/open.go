@@ -1749,7 +1749,7 @@ type OpenService interface {	//开放接口
 	// Parameters:
 	//  - Req
 	// 
-	CreatePortForwardStats(ctx context.Context, req *CreatePortForwardStatsRequest) (_err error)
+	CreatePortForwardStats(ctx context.Context, req *CreatePortForwardStatsRequest) (_r *CreatePortForwardStatsResponse, _err error)
 }
 
 //开放接口
@@ -1829,7 +1829,7 @@ func (p *OpenServiceClient) GetDevicePortForwards(ctx context.Context, req *GetD
 // Parameters:
 //  - Req
 // 
-func (p *OpenServiceClient) CreatePortForwardStats(ctx context.Context, req *CreatePortForwardStatsRequest) (_err error) {
+func (p *OpenServiceClient) CreatePortForwardStats(ctx context.Context, req *CreatePortForwardStatsRequest) (_r *CreatePortForwardStatsResponse, _err error) {
 	var _args10 OpenServiceCreatePortForwardStatsArgs
 	_args10.Req = req
 	var _result12 OpenServiceCreatePortForwardStatsResult
@@ -1839,7 +1839,7 @@ func (p *OpenServiceClient) CreatePortForwardStats(ctx context.Context, req *Cre
 	if _err != nil {
 		return
 	}
-	return nil
+	return _result12.GetSuccess(), nil
 }
 
 type OpenServiceProcessor struct {
@@ -2144,7 +2144,7 @@ func (p *openServiceProcessorCreatePortForwardStats) Process(ctx context.Context
 	}
 
 	result := OpenServiceCreatePortForwardStatsResult{}
-	if err2 := p.handler.CreatePortForwardStats(ctx, args.Req); err2 != nil {
+	if retval, err2 := p.handler.CreatePortForwardStats(ctx, args.Req); err2 != nil {
 		tickerCancel()
 		err = thrift.WrapTException(err2)
 		if errors.Is(err2, thrift.ErrAbandonRequest) {
@@ -2181,6 +2181,8 @@ func (p *openServiceProcessorCreatePortForwardStats) Process(ctx context.Context
 			}
 		}
 		return true, err
+	} else {
+		result.Success = retval
 	}
 	tickerCancel()
 	if err2 := oprot.WriteMessageBegin(ctx, "createPortForwardStats", thrift.REPLY, seqId); err2 != nil {
@@ -2831,11 +2833,28 @@ func (p *OpenServiceCreatePortForwardStatsArgs) LogValue() slog.Value {
 
 var _ slog.LogValuer = (*OpenServiceCreatePortForwardStatsArgs)(nil)
 
+// Attributes:
+//  - Success
+// 
 type OpenServiceCreatePortForwardStatsResult struct {
+	Success *CreatePortForwardStatsResponse `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
 func NewOpenServiceCreatePortForwardStatsResult() *OpenServiceCreatePortForwardStatsResult {
 	return &OpenServiceCreatePortForwardStatsResult{}
+}
+
+var OpenServiceCreatePortForwardStatsResult_Success_DEFAULT *CreatePortForwardStatsResponse
+
+func (p *OpenServiceCreatePortForwardStatsResult) GetSuccess() *CreatePortForwardStatsResponse {
+	if !p.IsSetSuccess() {
+		return OpenServiceCreatePortForwardStatsResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *OpenServiceCreatePortForwardStatsResult) IsSetSuccess() bool {
+	return p.Success != nil
 }
 
 func (p *OpenServiceCreatePortForwardStatsResult) Read(ctx context.Context, iprot thrift.TProtocol) error {
@@ -2852,8 +2871,21 @@ func (p *OpenServiceCreatePortForwardStatsResult) Read(ctx context.Context, ipro
 		if fieldTypeId == thrift.STOP {
 			break
 		}
-		if err := iprot.Skip(ctx, fieldTypeId); err != nil {
-			return err
+		switch fieldId {
+		case 0:
+			if fieldTypeId == thrift.STRUCT {
+				if err := p.ReadField0(ctx, iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+				return err
+			}
 		}
 		if err := iprot.ReadFieldEnd(ctx); err != nil {
 			return err
@@ -2865,11 +2897,20 @@ func (p *OpenServiceCreatePortForwardStatsResult) Read(ctx context.Context, ipro
 	return nil
 }
 
+func (p *OpenServiceCreatePortForwardStatsResult) ReadField0(ctx context.Context, iprot thrift.TProtocol) error {
+	p.Success = &CreatePortForwardStatsResponse{}
+	if err := p.Success.Read(ctx, iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
 func (p *OpenServiceCreatePortForwardStatsResult) Write(ctx context.Context, oprot thrift.TProtocol) error {
 	if err := oprot.WriteStructBegin(ctx, "createPortForwardStats_result"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if p != nil {
+		if err := p.writeField0(ctx, oprot); err != nil { return err }
 	}
 	if err := oprot.WriteFieldStop(ctx); err != nil {
 		return thrift.PrependError("write field stop error: ", err)
@@ -2878,6 +2919,21 @@ func (p *OpenServiceCreatePortForwardStatsResult) Write(ctx context.Context, opr
 		return thrift.PrependError("write struct stop error: ", err)
 	}
 	return nil
+}
+
+func (p *OpenServiceCreatePortForwardStatsResult) writeField0(ctx context.Context, oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin(ctx, "success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(ctx, oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(ctx); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
 }
 
 func (p *OpenServiceCreatePortForwardStatsResult) String() string {

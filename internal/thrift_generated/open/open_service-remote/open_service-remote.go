@@ -24,7 +24,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
 	fmt.Fprintln(os.Stderr, "  ReportDeviceIPResponse reportDeviceIP(ReportDeviceIPRequest req)")
 	fmt.Fprintln(os.Stderr, "  GetDevicePortForwardsResponse getDevicePortForwards(GetDevicePortForwardsRequest req)")
-	fmt.Fprintln(os.Stderr, "  void createPortForwardStats(CreatePortForwardStatsRequest req)")
+	fmt.Fprintln(os.Stderr, "  CreatePortForwardStatsResponse createPortForwardStats(CreatePortForwardStatsRequest req)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
