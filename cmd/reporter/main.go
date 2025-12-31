@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"runtime"
+	"time"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_client"
 	"vibe_ip/internal/grpc_credential"
@@ -13,7 +14,9 @@ import (
 	"vibe_ip/internal/reporter/service"
 	"vibe_ip/internal/reporter/task"
 
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/retry"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
@@ -145,6 +148,23 @@ func get_grpc_client() (*grpc.ClientConn, error) {
 			global.GvaGrpcSlog.WithLogger(),
 			global.GvaEnv.BASIC_AUTH_USERNAME,
 			global.GvaEnv.BASIC_AUTH_PASSWORD,
+		)),
+	)
+	// 添加 retry 中间件（Unary 和 Stream）
+	grpc_client.AddDialOption(
+		grpc.WithUnaryInterceptor(retry.UnaryClientInterceptor(
+			retry.WithMax(5), // 最多 5 次尝试（初始 + 4 重试）
+			retry.WithBackoff(retry.BackoffExponential(100*time.Millisecond)), // 指数退避，初始 100ms
+			retry.WithCodes(codes.Unavailable),                                // 只针对 Unavailable 重试（你的 connection refused）
+			retry.WithPerRetryTimeout(5*time.Second),                          // 每个重试超时 5s
+		)),
+	)
+	grpc_client.AddDialOption(
+		grpc.WithStreamInterceptor(retry.StreamClientInterceptor(
+			retry.WithMax(5), // 最多 5 次尝试（初始 + 4 重试）
+			retry.WithBackoff(retry.BackoffExponential(100*time.Millisecond)), // 指数退避，初始 100ms
+			retry.WithCodes(codes.Unavailable),                                // 只针对 Unavailable 重试（你的 connection refused）
+			retry.WithPerRetryTimeout(5*time.Second),                          // 每个重试超时 5s
 		)),
 	)
 	// 连接 gRPC 服务器

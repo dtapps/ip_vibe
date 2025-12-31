@@ -44,10 +44,10 @@ func UnaryLogger(logger *slog.Logger) grpc.UnaryServerInterceptor {
 			slog.String("peer.address", peerAddr(ctx)),
 		}
 		if err != nil && code != codes.OK {
-			attrs = append(attrs, slog.String("error", err.Error()))
+			attrs = append(attrs, slog.Any("err", err))
 		}
 
-		logger.LogAttrs(ctx, slog.LevelInfo, "finished unary call", attrs...)
+		logger.LogAttrs(ctx, slog.LevelInfo, "完成一元调用", attrs...)
 		return resp, err
 	}
 }

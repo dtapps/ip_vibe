@@ -33,6 +33,7 @@ require (
 	github.com/go-acme/lego/v4 v4.30.1
 	github.com/go-co-op/gocron/v2 v2.19.0
 	github.com/google/uuid v1.6.0
+	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.4
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.182
 	github.com/lib4u/fake-useragent v1.0.6
@@ -48,7 +49,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.24
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.21
-	github.com/wdcbot/qingfeng v1.5.8
+	github.com/wdcbot/qingfeng v1.5.9
 	go.dtapp.net/library/contrib/http_log v1.0.1
 	go.dtapp.net/library/contrib/resty_log v1.0.10
 	go.dtapp.net/library/service/bark v1.0.7

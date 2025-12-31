@@ -26,44 +26,39 @@ func BasicAuth(logger *slog.Logger, username string, password string) grpc.Unary
 			return handler(ctx, req)
 		}
 
-		// 读取 Authorization 头
+		// 提取 Authorization 头（basic scheme）
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
-			logger.Warn("missing metadata", slog.String("method", info.FullMethod))
-			return nil, status.Error(codes.Unauthenticated, "missing authorization")
+			return nil, status.Error(codes.Unauthenticated, "缺少或无效的 Authorization 头")
 		}
 		vals := md["authorization"]
 		if len(vals) == 0 {
-			logger.Warn("missing authorization header", slog.String("method", info.FullMethod))
-			return nil, status.Error(codes.Unauthenticated, "missing authorization")
+			return nil, status.Error(codes.Unauthenticated, "缺少或无效的 Authorization 头")
 		}
 		authHeader := vals[0]
-
-		// 解析 Basic
 		const prefix = "Basic "
 		if !strings.HasPrefix(authHeader, prefix) {
-			logger.Warn("invalid authorization scheme", slog.String("auth", authHeader), slog.String("method", info.FullMethod))
-			return nil, status.Error(codes.Unauthenticated, "invalid authorization scheme")
+			return nil, status.Error(codes.Unauthenticated, "缺少或无效的 Authorization 头")
 		}
-		b, err := base64.StdEncoding.DecodeString(authHeader[len(prefix):])
+
+		// Base64 解码
+		decoded, err := base64.StdEncoding.DecodeString(authHeader[len(prefix):])
 		if err != nil {
-			logger.Warn("base64 decode failed", slog.String("err", err.Error()), slog.String("method", info.FullMethod))
-			return nil, status.Error(codes.Unauthenticated, "invalid base64")
+			return nil, status.Error(codes.Unauthenticated, "凭证解码失败")
 		}
-		pair := strings.SplitN(string(b), ":", 2)
-		if len(pair) != 2 {
-			logger.Warn("invalid basic auth format", slog.String("auth", authHeader), slog.String("method", info.FullMethod))
-			return nil, status.Error(codes.Unauthenticated, "invalid basic auth format")
+
+		// 分离 username:password
+		parts := strings.SplitN(string(decoded), ":", 2)
+		if len(parts) != 2 {
+			return nil, status.Error(codes.Unauthenticated, "无效凭证格式")
 		}
-		user, pass := pair[0], pair[1]
 
 		// 校验
+		user, pass := parts[0], parts[1]
 		if user != username || pass != password {
-			logger.Warn("invalid username or password", slog.String("user", user), slog.String("method", info.FullMethod))
-			return nil, status.Error(codes.Unauthenticated, "invalid username or password")
+			return nil, status.Error(codes.Unauthenticated, "用户名或密码错误")
 		}
 
-		logger.Info("basic auth passed", slog.String("user", user), slog.String("method", info.FullMethod))
 		return handler(ctx, req)
 	}
 }
