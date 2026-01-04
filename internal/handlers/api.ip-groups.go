@@ -84,7 +84,7 @@ func GetIPGroupDetail(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.CreateIPGroupRequest					true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetIPGroupResponse}	"成功响应"
+//	@Success		200		{object}	APIResponse{data=types.GetIPGroupRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}								"参数错误"
 //	@Failure		404		{object}	APIResponse{}								"错误响应"
 //	@Router			/ip-groups [post]
@@ -158,7 +158,7 @@ func UpdateIPGroup(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"IP组序号"
-//	@Success		200	{object}	APIResponse{data=types.GetIPGroupResponse}	"成功响应"
+//	@Success		200	{object}	APIResponse{data=types.GetIPGroupRequest}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Router			/ip-groups/{id} [delete]

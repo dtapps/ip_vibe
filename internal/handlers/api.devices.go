@@ -162,7 +162,7 @@ func UpdateDevice(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id	path		int64										true	"设备序号"
-//	@Success		200	{object}	APIResponse{data=types.GetDeviceResponse}	"成功响应"
+//	@Success		200	{object}	APIResponse{data=types.GetDeviceRequest}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}								"参数错误"
 //	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Router			/devices/{id} [delete]

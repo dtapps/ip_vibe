@@ -24,7 +24,7 @@ type DeviceService interface {
 	GetDevice(ctx context.Context, id int64) (*types.GetDeviceResponse, error)
 	CreateDevice(ctx context.Context, request *types.CreateDeviceRequest) (*types.GetDeviceRequest, error)
 	UpdateDevice(ctx context.Context, request *types.UpdateDeviceRequest) (*types.GetDeviceRequest, error)
-	DeleteDevice(ctx context.Context, id int64) (*types.GetDeviceResponse, error)
+	DeleteDevice(ctx context.Context, id int64) (*types.GetDeviceRequest, error)
 	GetDeviceIpHistory(ctx context.Context, id int64) ([]*types.GetDeviceIpHistoryResponse, error)
 	HealthcheckDevice(ctx context.Context, id int64) ([][]ToPairsStruct, error)
 	GetDevicePortForwardStats(ctx context.Context, id int64, request *types.GetDevicePortForwardStatsRequest) ([]*types.GetDevicePortForwardStatsResponse, error)
@@ -189,7 +189,7 @@ func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.Upd
 }
 
 // DeleteDevice 删除设备
-func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) (*types.GetDeviceResponse, error) {
+func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) (*types.GetDeviceRequest, error) {
 	// 查询设备
 	firstDevice, err := s.db.Device.Query().
 		Where(device.IDEQ(id)).
@@ -199,18 +199,6 @@ func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) (*types.
 			return nil, fmt.Errorf("查询设备失败: 记录不存在或 %w", err)
 		}
 		return nil, fmt.Errorf("查询设备失败: %w", err)
-	}
-
-	// 提取原始数据用于返回
-	response := types.GetDeviceResponse{
-		ID:              firstDevice.ID,
-		Code:            firstDevice.Code,
-		Name:            firstDevice.Name,
-		Description:     firstDevice.Description,
-		IPV4:            firstDevice.IPV4,
-		IPV6:            firstDevice.IPV6,
-		LastReportedAt:  firstDevice.LastReportedAt,
-		LastHeartbeatAt: firstDevice.LastHeartbeatAt,
 	}
 
 	// 删除设备
@@ -232,7 +220,9 @@ func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) (*types.
 		}
 	}
 
-	return &response, nil
+	return &types.GetDeviceRequest{
+		ID: firstDevice.ID,
+	}, nil
 }
 
 // GetDeviceIpHistory 获取设备的IP历史记录

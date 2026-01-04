@@ -404,11 +404,11 @@ func ApplySSLRecord(c *gin.Context) {
 //	@Tags			SSL记录
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64										true	"SSL记录序号"
-//	@Param			history_id	path		int64										true	"SSL记录历史序号"
-//	@Success		200	{object}	APIResponse{data=types.GetSSLRecordHistoryDetailResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数错误"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Param			id			path		int64														true	"SSL记录序号"
+//	@Param			history_id	path		int64														true	"SSL记录历史序号"
+//	@Success		200			{object}	APIResponse{data=types.GetSSLRecordHistoryDetailResponse}	"成功响应"
+//	@Failure		400			{object}	APIResponse{}												"参数错误"
+//	@Failure		404			{object}	APIResponse{}												"错误响应"
 //	@Router			/ssl-records/{id}/history/{history_id} [get]
 func GetSSLRecordHistoryDetail(c *gin.Context) {
 	// 请求参数

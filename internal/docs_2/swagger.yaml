@@ -639,6 +639,48 @@ definitions:
         description: 远程目标端口
         type: integer
     type: object
+  vibe_ip_internal_types.GetSSLRecordHistoryDetailResponse:
+    properties:
+      cert_certificate:
+        description: 证书(PEM格式)
+        type: string
+      cert_csr:
+        description: 证书签名请求(PEM格式)
+        type: string
+      cert_domain:
+        description: 证书域名
+        type: string
+      cert_issuer_certificate:
+        description: 颁发者证书(PEM格式)
+        type: string
+      cert_private_key:
+        description: 私钥(PEM格式)
+        type: string
+      cert_stable_url:
+        description: 稳定证书URL
+        type: string
+      cert_url:
+        description: 证书URL
+        type: string
+      created_at:
+        description: 创建时间
+        type: string
+      id:
+        description: SSL证书申请历史记录序号
+        type: integer
+      not_after:
+        description: 证书过期时间
+        type: string
+      not_before:
+        description: 证书生效时间
+        type: string
+      provider:
+        description: CA提供商
+        type: string
+      ssl_record_id:
+        description: 关联 SSLRecord 序号
+        type: integer
+    type: object
   vibe_ip_internal_types.GetSSLRecordRequest:
     properties:
       id:
@@ -1496,7 +1538,7 @@ paths:
             - $ref: '#/definitions/internal_handlers.APIResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetDeviceResponse'
+                  $ref: '#/definitions/vibe_ip_internal_types.GetDeviceRequest'
               type: object
         "400":
           description: 参数错误
@@ -1653,6 +1695,44 @@ paths:
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 获取设备IP历史记录
+      tags:
+      - 设备
+  /devices/{id}/port-forward-stats:
+    get:
+      consumes:
+      - application/json
+      description: 获取设备端口转发统计数据
+      parameters:
+      - description: 设备序号
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  items:
+                    items:
+                      $ref: '#/definitions/vibe_ip_internal_backend_service.ToPairsStruct'
+                    type: array
+                  type: array
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取设备端口转发统计数据
       tags:
       - 设备
   /dns-records:
@@ -2204,7 +2284,7 @@ paths:
             - $ref: '#/definitions/internal_handlers.APIResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetIPGroupResponse'
+                  $ref: '#/definitions/vibe_ip_internal_types.GetIPGroupRequest'
               type: object
         "400":
           description: 参数错误
@@ -2238,7 +2318,7 @@ paths:
             - $ref: '#/definitions/internal_handlers.APIResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetIPGroupResponse'
+                  $ref: '#/definitions/vibe_ip_internal_types.GetIPGroupRequest'
               type: object
         "400":
           description: 参数错误
@@ -2973,6 +3053,44 @@ paths:
       summary: 检查端口转发健康状态
       tags:
       - 端口转发
+  /port-forwards/{id}/stats:
+    get:
+      consumes:
+      - application/json
+      description: 获取端口转发统计数据
+      parameters:
+      - description: 端口转发序号
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  items:
+                    items:
+                      $ref: '#/definitions/vibe_ip_internal_backend_service.ToPairsStruct'
+                    type: array
+                  type: array
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取端口转发统计数据
+      tags:
+      - 端口转发
   /ssl-records:
     get:
       consumes:
@@ -3260,6 +3378,45 @@ paths:
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 更新SSL记录自动续费状态
+      tags:
+      - SSL记录
+  /ssl-records/{id}/history/{history_id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取SSL记录历史详情
+      parameters:
+      - description: SSL记录序号
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: SSL记录历史序号
+        in: path
+        name: history_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordHistoryDetailResponse'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取SSL记录历史详情
       tags:
       - SSL记录
   /tasks:

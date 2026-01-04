@@ -617,7 +617,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDeviceResponse"
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDeviceRequest"
                                         }
                                     }
                                 }
@@ -801,6 +801,68 @@ const docTemplate = `{
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/definitions/vibe_ip_internal_types.GetDeviceIpHistoryResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/devices/{id}/port-forward-stats": {
+            "get": {
+                "description": "获取设备端口转发统计数据",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设备"
+                ],
+                "summary": "获取设备端口转发统计数据",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "设备序号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/definitions/vibe_ip_internal_backend_service.ToPairsStruct"
+                                                }
                                             }
                                         }
                                     }
@@ -1723,7 +1785,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetIPGroupResponse"
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetIPGroupRequest"
                                         }
                                     }
                                 }
@@ -1833,7 +1895,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetIPGroupResponse"
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetIPGroupRequest"
                                         }
                                     }
                                 }
@@ -2977,6 +3039,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/port-forwards/{id}/stats": {
+            "get": {
+                "description": "获取端口转发统计数据",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "端口转发"
+                ],
+                "summary": "获取端口转发统计数据",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "端口转发序号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/definitions/vibe_ip_internal_backend_service.ToPairsStruct"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/ssl-records": {
             "get": {
                 "description": "获取全部SSL记录",
@@ -3429,6 +3553,69 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/vibe_ip_internal_types.GetSSLRecordRequest"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ssl-records/{id}/history/{history_id}": {
+            "get": {
+                "description": "获取SSL记录历史详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "SSL记录"
+                ],
+                "summary": "获取SSL记录历史详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "SSL记录序号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "SSL记录历史序号",
+                        "name": "history_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetSSLRecordHistoryDetailResponse"
                                         }
                                     }
                                 }
@@ -5191,6 +5378,63 @@ const docTemplate = `{
                 },
                 "remote_port": {
                     "description": "远程目标端口",
+                    "type": "integer"
+                }
+            }
+        },
+        "vibe_ip_internal_types.GetSSLRecordHistoryDetailResponse": {
+            "type": "object",
+            "properties": {
+                "cert_certificate": {
+                    "description": "证书(PEM格式)",
+                    "type": "string"
+                },
+                "cert_csr": {
+                    "description": "证书签名请求(PEM格式)",
+                    "type": "string"
+                },
+                "cert_domain": {
+                    "description": "证书域名",
+                    "type": "string"
+                },
+                "cert_issuer_certificate": {
+                    "description": "颁发者证书(PEM格式)",
+                    "type": "string"
+                },
+                "cert_private_key": {
+                    "description": "私钥(PEM格式)",
+                    "type": "string"
+                },
+                "cert_stable_url": {
+                    "description": "稳定证书URL",
+                    "type": "string"
+                },
+                "cert_url": {
+                    "description": "证书URL",
+                    "type": "string"
+                },
+                "created_at": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "SSL证书申请历史记录序号",
+                    "type": "integer"
+                },
+                "not_after": {
+                    "description": "证书过期时间",
+                    "type": "string"
+                },
+                "not_before": {
+                    "description": "证书生效时间",
+                    "type": "string"
+                },
+                "provider": {
+                    "description": "CA提供商",
+                    "type": "string"
+                },
+                "ssl_record_id": {
+                    "description": "关联 SSLRecord 序号",
                     "type": "integer"
                 }
             }

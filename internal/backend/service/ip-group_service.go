@@ -20,7 +20,7 @@ type IPGroupService interface {
 	GetIPGroup(ctx context.Context, id int64) (*types.GetIPGroupResponse, error)
 	CreateIPGroup(ctx context.Context, request *types.CreateIPGroupRequest) (int64, error)
 	UpdateIPGroup(ctx context.Context, request *types.UpdateIPGroupRequest) (*types.GetIPGroupRequest, error)
-	DeleteIPGroup(ctx context.Context, id int64) (*types.GetIPGroupResponse, error)
+	DeleteIPGroup(ctx context.Context, id int64) (*types.GetIPGroupRequest, error)
 	GetIPGroupDevices(ctx context.Context, id int64) ([]*types.GetDeviceResponse, error)
 	HealthcheckIPGroup(ctx context.Context, id int64) ([][]ToPairsStruct, error)
 }
@@ -177,7 +177,7 @@ func (s *IPGroupServiceImpl) UpdateIPGroup(ctx context.Context, request *types.U
 }
 
 // DeleteIPGroup 删除IP组
-func (s *IPGroupServiceImpl) DeleteIPGroup(ctx context.Context, id int64) (*types.GetIPGroupResponse, error) {
+func (s *IPGroupServiceImpl) DeleteIPGroup(ctx context.Context, id int64) (*types.GetIPGroupRequest, error) {
 	// 查询IP组
 	firstIpGroup, err := s.db.IpGroup.Query().
 		Where(ipgroup.IDEQ(id)).
@@ -207,8 +207,7 @@ func (s *IPGroupServiceImpl) DeleteIPGroup(ctx context.Context, id int64) (*type
 		}
 	}
 
-	// 保持 Handler 逻辑，返回包含 ID 的响应结构
-	return &types.GetIPGroupResponse{
+	return &types.GetIPGroupRequest{
 		ID: firstIpGroup.ID,
 	}, nil
 }
