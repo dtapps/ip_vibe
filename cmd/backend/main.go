@@ -788,6 +788,10 @@ func web_resource(ctx context.Context, logger *slog.Logger, router *gin.Engine) 
 			}
 			return enumItems
 		},
+		// 自定义函数：将多个字符串参数转换为字符串切片
+		"slice": func(s ...string) []string {
+			return s
+		},
 	}
 
 	// 判断是否为开发模式：version == "dev"
@@ -877,6 +881,9 @@ func web_router(ctx context.Context, logger *slog.Logger, router *gin.Engine) {
 
 	// 日志页面 - 提供HTML页面并渲染数据
 	router.GET("/log", handlers.Log)
+
+	// 接口页面 - 提供HTML页面并渲染数据
+	router.GET("/interface", handlers.Interface)
 
 	// 未匹配到任何路由
 	router.NoRoute(func(c *gin.Context) {

@@ -1,0 +1,177 @@
+{{ define "content" }}
+
+{{/* 初始化局部变量 */}}
+{{ $protocols := slice "api" "mcp" "grpc" "thrift" "dubbo" "tars" }}
+{{ $data := .Data }}
+
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content transition-colors">🔌 接口接入说明</h1>
+
+<div class="ui-panel">
+    <div class="bg-base-200/30 px-8 pt-6 border-b border-base-200">
+        <div role="tablist" class="tabs tabs-lifted tabs-lg">
+            {{ range $protocols }}
+            <a href="/interface?proto={{ . }}" role="tab"
+                class="tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $data.CurrentProto . }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}">
+                {{ . }} 接入
+            </a>
+            {{ end }}
+        </div>
+    </div>
+
+    <div class="p-8">
+        {{ if $data.Token }}
+        <div class="mb-10 group">
+            <div class="flex items-center gap-3 mb-3 px-1">
+                <span class="text-[11px] font-black uppercase tracking-[0.2em] opacity-30">Access Token / 鉴权凭证</span>
+                <div class="h-px flex-1 bg-base-200"></div>
+            </div>
+
+            <div class="flex items-center gap-4 p-4 bg-primary/5 rounded-[1.5rem] border border-primary/10">
+                <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                    {{ template "icons" (dict "Name" "i-lucide-shield-check" "Class" "w-5 h-5") }}
+                </div>
+
+                <div class="flex-1">
+                    <input type="password" id="tokenInput" value="{{ $data.Token }}" readonly
+                        class="w-full bg-transparent border-none font-mono text-sm text-primary font-bold focus:ring-0 p-0 tracking-[0.2em]">
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleToken()"
+                        class="btn btn-ghost btn-sm btn-square rounded-xl opacity-40 hover:opacity-100">
+                        <span id="eyeIcon">{{ template "icons" (dict "Name" "i-lucide-eye" "Class" "w-4 h-4") }}</span>
+                    </button>
+                    <button onclick="copyToken()"
+                        class="btn btn-primary btn-sm rounded-xl px-4 font-bold gap-2 shadow-lg shadow-primary/20">
+                        {{ template "icons" (dict "Name" "i-lucide-copy" "Class" "w-3.5 h-3.5") }} 复制
+                    </button>
+                </div>
+            </div>
+        </div>
+        {{ else }}
+        <div class="mb-10 alert alert-warning">
+            <span>建议配置用户名和密码</span>
+        </div>
+        {{ end }}
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="space-y-6">
+
+                <div>
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        {{ template "icons" (dict "Name" "i-lucide-terminal" "Class" "w-5 h-5 text-primary") }}
+                        鉴权逻辑说明
+                    </h3>
+                    {{ if $data.Token }}
+                    <div class="p-5 bg-base-200/50 rounded-2xl border border-base-300/50">
+                        <ul class="space-y-4 text-sm">
+                            <li class="flex gap-3">
+                                <span class="badge badge-outline badge-sm mt-0.5">AUTH</span>
+                                <span class="opacity-70">
+                                    {{ if eq $data.CurrentProto "api" }}
+                                    使用标准的 <b>HTTP Basic Auth</b>。将 Token 拆分为 <code>user:pass</code> 填入请求头。
+                                    {{ else if eq $data.CurrentProto "mcp" }}
+                                    手动构造 Header：<code>Authorization: Basic {base64(Token)}</code>。
+                                    {{ else if eq $data.CurrentProto "grpc" }}
+                                    利用 gRPC <b>Metadata</b> 传输鉴权信息，Key 为 <code>authorization</code>。
+                                    {{ else if eq $data.CurrentProto "thrift" }}
+                                    鉴权信息位于结构体 <b>Base.Token</b> 字段中，由 IDL 统一定义。
+                                    {{ else }}
+                                    通用方式：通过注册中心进行服务发现及 Token 校验。
+                                    {{ end }}
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                    {{ end }}
+                </div>
+
+                <div class="p-4 bg-base-300/20 rounded-2xl border border-base-300/50">
+                    <h4 class="text-[10px] font-black uppercase opacity-40 mb-2">Endpoint</h4>
+                    <code class="text-xs font-mono opacity-80 break-all">
+                        {{ if eq $data.CurrentProto "api" }}
+
+                        {{ if $data.HttpAddr }}
+                        {{ $data.HttpAddr }}/api/open
+                        {{ else }}
+                        未配置 HTTP 地址
+                        {{ end}}
+
+                        {{ else if eq $data.CurrentProto "mcp" }}
+
+                        {{ if $data.HttpAddr }}
+                        {{ $data.HttpAddr }}/mcp
+                        {{ else }}
+                        未配置 HTTP 地址
+                        {{ end}}
+                        
+                        {{ else if eq $data.CurrentProto "grpc" }}
+
+                        {{ if $data.GrpcAddr }}
+                        {{ $data.GrpcAddr }}
+                        {{ else }}
+                        未配置 gRPC 地址
+                        {{ end}}
+                        
+                        {{ else if eq $data.CurrentProto "thrift" }}
+
+                        {{ if $data.ThriftAddr }}
+                        {{ $data.ThriftAddr }}
+                        {{ else }}
+                        未配置 Thrift 地址
+                        {{ end}}
+                        
+                        {{ else }}
+                        internal://{{ $data.CurrentProto }}.cluster.local
+                        {{ end }}
+                    </code>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <div class="flex justify-between items-center px-2">
+                    <span class="text-[11px] font-black uppercase opacity-30 tracking-widest">Client Snippet</span>
+                    <span class="badge badge-ghost badge-sm font-mono opacity-50">{{ $data.CurrentProto }}</span>
+                </div>
+
+                <div
+                    class="bg-neutral text-neutral-content p-6 rounded-[2rem] shadow-2xl font-mono text-xs overflow-hidden relative group">
+                    <pre class="leading-relaxed"><code class="language-go">{{ if eq $data.CurrentProto "api" }}// API (Basic Auth)
+req.SetBasicAuth("admin", "{{ $data.Token }}")
+{{ else if eq $data.CurrentProto "mcp" }}// MCP (Header Basic)
+auth := "Basic " + base64.StdEncoding.EncodeToString([]byte("{{ $data.Token }}"))
+req.Header.Add("Authorization", auth)
+{{ else if eq $data.CurrentProto "grpc" }}// gRPC (Metadata)
+md := metadata.Pairs("authorization", "Basic " + encodedToken)
+ctx := metadata.NewOutgoingContext(context.Background(), md)
+{{ else if eq $data.CurrentProto "thrift" }}// Thrift (Request Params)
+req := &SyncRequest{
+    Base: &Base{ Token: "{{ $data.Token }}" },
+    Data: payload,
+}
+{{ else }}// Others
+// Please refer to the specific protocol SDK
+{{ end }}</code></pre>
+
+                    <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-primary/10 rounded-full blur-3xl"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleToken() {
+        const input = document.getElementById('tokenInput');
+        input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function copyToken() {
+        const val = document.getElementById('tokenInput').value;
+        navigator.clipboard.writeText(val);
+        // 配合你可能存在的 toast 组件
+        alert('已复制凭证');
+    }
+</script>
+
+{{ end }}
