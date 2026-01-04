@@ -11,7 +11,9 @@ import (
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/platformconfig"
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/cdn_helper"
 	"vibe_ip/internal/helper/dns_helper"
@@ -137,7 +139,8 @@ func (s *IPUpdateTask) StartCdnJob(ctx context.Context) (err error) {
 // 运行DNS任务
 func (s *IPUpdateTask) RunDnsTask() {
 
-	ctx := context.Background()
+	// 创建上下文
+	ctx := schemahook.WithSource(context.Background(), operationlog.SourceTask.String())
 
 	// 日志
 	logger := s.jobHelper.SlogWith(s.logger.With(
@@ -248,11 +251,11 @@ func (s *IPUpdateTask) RunDnsTask() {
 				item := item // 创建副本以避免闭包问题
 				eg.Go(func() error {
 
-					logger = logger.With(
+					sonLogger := logger.With(
 						slog.String("处理方式", "并发"),
 					)
 
-					if err = s.DnsUpdate(egCtx, logger, item); err != nil {
+					if err = s.DnsUpdate(egCtx, sonLogger, item); err != nil {
 						logger.ErrorContext(egCtx, "处理失败",
 							slog.Any("error", err),
 						)
@@ -273,11 +276,11 @@ func (s *IPUpdateTask) RunDnsTask() {
 		// 2. 串行处理不支持并发的记录
 		for _, item := range serialRecords {
 
-			logger = logger.With(
+			sonLogger := logger.With(
 				slog.String("处理方式", "串行"),
 			)
 
-			if err = s.DnsUpdate(ctx, logger, item); err != nil {
+			if err = s.DnsUpdate(ctx, sonLogger, item); err != nil {
 				logger.ErrorContext(ctx, "处理失败",
 					slog.Any("error", err),
 				)
@@ -309,7 +312,8 @@ func (s *IPUpdateTask) RunDnsTask() {
 // 运行CDN任务
 func (s *IPUpdateTask) RunCdnTask() {
 
-	ctx := context.Background()
+	// 创建上下文
+	ctx := schemahook.WithSource(context.Background(), operationlog.SourceTask.String())
 
 	// 日志
 	logger := s.jobHelper.SlogWith(s.logger.With(
@@ -409,11 +413,11 @@ func (s *IPUpdateTask) RunCdnTask() {
 				item := item // 创建副本以避免闭包问题
 				eg.Go(func() error {
 
-					logger = logger.With(
+					sonLogger := logger.With(
 						slog.String("处理方式", "并发"),
 					)
 
-					if err = s.CdnUpdate(egCtx, logger, item); err != nil {
+					if err = s.CdnUpdate(egCtx, sonLogger, item); err != nil {
 						logger.ErrorContext(egCtx, "处理失败",
 							slog.Any("error", err),
 						)
@@ -434,11 +438,11 @@ func (s *IPUpdateTask) RunCdnTask() {
 		// 2. 串行处理不支持并发的记录
 		for _, item := range serialRecords {
 
-			logger = logger.With(
+			sonLogger := logger.With(
 				slog.String("处理方式", "串行"),
 			)
 
-			if err = s.CdnUpdate(ctx, logger, item); err != nil {
+			if err = s.CdnUpdate(ctx, sonLogger, item); err != nil {
 				logger.ErrorContext(ctx, "处理失败",
 					slog.Any("error", err),
 				)

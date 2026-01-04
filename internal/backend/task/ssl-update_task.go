@@ -11,8 +11,10 @@ import (
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/platformconfig"
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gocron_helper"
@@ -134,7 +136,7 @@ func (s *SSLUpdateTask) StartPeriodicTask(ctx context.Context) (err error) {
 func (s *SSLUpdateTask) RunPeriodicTask() {
 
 	// 创建上下文
-	ctx := context.Background()
+	ctx := schemahook.WithSource(context.Background(), operationlog.SourceTask.String())
 
 	// 日志
 	logger := s.jobHelper.SlogWith(s.logger, s.job.ID().String(), s.job.Name())
