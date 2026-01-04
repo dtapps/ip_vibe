@@ -9,7 +9,6 @@ import (
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/deviceipreport"
-	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/portforwardstats"
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/helper/webhook_sub_helper"
@@ -133,7 +132,7 @@ func (s *DeviceServiceImpl) CreateDevice(ctx context.Context, request *types.Cre
 		return nil, fmt.Errorf("创建设备失败: %w", err)
 	}
 	// 记录操作日志
-	_ = s.logHelper.RecordDataCreate(ctx, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "创建设备")
+	// _ = s.logHelper.RecordDataCreate(ctx, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "创建设备")
 
 	// 创建通知订阅 (保持原始逻辑)
 	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
@@ -174,7 +173,7 @@ func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.Upd
 		return nil, fmt.Errorf("更新设备失败: %w", err)
 	}
 	// 记录操作日志
-	_ = s.logHelper.RecordDataUpdate(ctx, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "更新设备")
+	// _ = s.logHelper.RecordDataUpdate(ctx, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "更新设备")
 
 	// 更新通知订阅 (保持原始逻辑)
 	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
@@ -223,7 +222,7 @@ func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) (*types.
 		return nil, fmt.Errorf("删除设备失败: %w", err)
 	}
 	// 记录操作日志
-	_ = s.logHelper.RecordDataDelete(ctx, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "删除设备")
+	// _ = s.logHelper.RecordDataDelete(ctx, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "删除设备")
 
 	// 删除通知订阅 (保持原始逻辑)
 	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDevice, firstDevice.ID)

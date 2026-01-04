@@ -7,7 +7,6 @@ import (
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent/webhooksubscription"
-	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
@@ -155,7 +154,7 @@ func (s *CDNRecordServiceImpl) CreateCdnRecord(ctx context.Context, request *typ
 	}
 
 	// 记录操作日志
-	_ = s.logHelper.RecordDataCreate(ctx, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "创建CDN记录")
+	// _ = s.logHelper.RecordDataCreate(ctx, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "创建CDN记录")
 
 	// 创建通知订阅
 	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeCdnRecord, saveCdnRecord.ID)
@@ -199,7 +198,7 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *typ
 	}
 
 	// 记录操作日志
-	_ = s.logHelper.RecordDataUpdate(ctx, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录")
+	// _ = s.logHelper.RecordDataUpdate(ctx, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录")
 
 	// 更新通知订阅
 	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeCdnRecord, saveCdnRecord.ID)
@@ -239,7 +238,7 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecordActive(ctx context.Context, reques
 	}
 
 	// 记录操作日志
-	_ = s.logHelper.RecordDataUpdate(ctx, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录状态")
+	// _ = s.logHelper.RecordDataUpdate(ctx, saveCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "更新CDN记录状态")
 
 	return &types.GetCdnRecordRequest{
 		ID: saveCdnRecord.ID,
@@ -266,7 +265,7 @@ func (s *CDNRecordServiceImpl) DeleteCdnRecord(ctx context.Context, id int64) (*
 	}
 
 	// 记录操作日志
-	_ = s.logHelper.RecordDataDelete(ctx, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "删除CDN记录")
+	// _ = s.logHelper.RecordDataDelete(ctx, firstCdnRecord.ID, operationlog.ObjTypeCdnRecord, operationlog.StatusSuccess, "删除CDN记录")
 
 	// 删除通知订阅
 	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeCdnRecord, firstCdnRecord.ID)

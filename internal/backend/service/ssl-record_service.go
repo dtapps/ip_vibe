@@ -8,7 +8,6 @@ import (
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
-	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/helper/ssl_helper"
@@ -157,7 +156,7 @@ func (s *SSLRecordServiceImpl) CreateSSLRecord(ctx context.Context, request *typ
 	}
 
 	// 记录操作日志
-	_ = s.logHelper.RecordDataCreate(ctx, saveSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "创建SSL记录")
+	// _ = s.logHelper.RecordDataCreate(ctx, saveSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "创建SSL记录")
 
 	// 创建通知订阅
 	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeSslRecord, saveSSLRecord.ID)
@@ -198,7 +197,7 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecord(ctx context.Context, request *typ
 	}
 
 	// 记录操作日志
-	_ = s.logHelper.RecordDataUpdate(ctx, firstSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "更新SSL记录")
+	// _ = s.logHelper.RecordDataUpdate(ctx, firstSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "更新SSL记录")
 
 	// 更新通知订阅
 	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeSslRecord, saveSSLRecord.ID)
@@ -238,7 +237,7 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecordAutoRenewal(ctx context.Context, r
 	}
 
 	// 记录操作日志
-	_ = s.logHelper.RecordDataUpdate(ctx, saveSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "更新SSL记录状态")
+	// _ = s.logHelper.RecordDataUpdate(ctx, saveSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "更新SSL记录状态")
 
 	return &types.GetSSLRecordRequest{
 		ID: saveSSLRecord.ID,
@@ -270,7 +269,7 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecordActive(ctx context.Context, reques
 	}
 
 	// 记录操作日志
-	_ = s.logHelper.RecordDataUpdate(ctx, saveSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "更新SSL记录状态")
+	// _ = s.logHelper.RecordDataUpdate(ctx, saveSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "更新SSL记录状态")
 
 	return &types.GetSSLRecordRequest{
 		ID: saveSSLRecord.ID,
@@ -297,7 +296,7 @@ func (s *SSLRecordServiceImpl) DeleteSSLRecord(ctx context.Context, id int64) (*
 	}
 
 	// 记录操作日志
-	_ = s.logHelper.RecordDataDelete(ctx, firstSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "删除SSL记录")
+	// _ = s.logHelper.RecordDataDelete(ctx, firstSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "删除SSL记录")
 
 	// 删除通知订阅
 	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeSslRecord, firstSSLRecord.ID)

@@ -12,7 +12,6 @@ import (
 	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
-	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
 
@@ -186,13 +185,13 @@ func (s *WebhookSubServiceImpl) CreateWebhookSub(ctx context.Context, request *t
 	// 这里保持 Handler 的逻辑结构，尽管它会在第一个 ObjID 失败时立即返回。
 	for _, objID := range request.ObjIDs {
 		// 创建通知订阅
-		saveWebhookSubscription, err := s.db.WebhookSubscription.Create().
+		err := s.db.WebhookSubscription.Create().
 			SetName(request.Name).
 			SetDescription(request.Description).
 			SetWebhookID(request.WebhookID).
 			SetObjType(webhooksubscription.ObjType(request.ObjType)).
 			SetObjID(objID).
-			Save(ctx)
+			Exec(ctx)
 		if err != nil {
 			if s.debug {
 				fmt.Printf("创建通知订阅: %s\n", err.Error())
@@ -201,7 +200,7 @@ func (s *WebhookSubServiceImpl) CreateWebhookSub(ctx context.Context, request *t
 			return nil, fmt.Errorf("创建通知订阅失败: %w", err)
 		}
 		// 记录操作日志
-		_ = s.logHelper.RecordDataCreate(ctx, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "创建通知订阅")
+		// _ = s.logHelper.RecordDataCreate(ctx, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "创建通知订阅")
 	}
 
 	return &types.CreateWebhookSubResponse{
@@ -233,7 +232,7 @@ func (s *WebhookSubServiceImpl) UpdateWebhookSub(ctx context.Context, request *t
 		return nil, fmt.Errorf("更新通知订阅失败: %w", err)
 	}
 	// 记录操作日志
-	_ = s.logHelper.RecordDataUpdate(ctx, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅")
+	// _ = s.logHelper.RecordDataUpdate(ctx, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅")
 	return &types.GetWebhookSubRequest{
 		ID: saveWebhookSubscription.ID,
 	}, nil
@@ -262,7 +261,7 @@ func (s *WebhookSubServiceImpl) UpdateWebhookSubActive(ctx context.Context, requ
 		return nil, fmt.Errorf("更新通知订阅状态失败: %w", err)
 	}
 	// 记录操作日志
-	_ = s.logHelper.RecordDataUpdate(ctx, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅状态")
+	// _ = s.logHelper.RecordDataUpdate(ctx, saveWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "更新通知订阅状态")
 	return &types.GetWebhookSubRequest{
 		ID: saveWebhookSubscription.ID,
 	}, nil
@@ -289,7 +288,7 @@ func (s *WebhookSubServiceImpl) DeleteWebhookSub(ctx context.Context, id int64) 
 		return nil, fmt.Errorf("删除通知订阅失败: %w", err)
 	}
 	// 记录操作日志
-	_ = s.logHelper.RecordDataDelete(ctx, firstWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "删除通知订阅")
+	// _ = s.logHelper.RecordDataDelete(ctx, firstWebhookSubscription.ID, operationlog.ObjTypeWebhookSubscription, operationlog.StatusSuccess, "删除通知订阅")
 	return &types.GetWebhookSubRequest{
 		ID: firstWebhookSubscription.ID,
 	}, nil

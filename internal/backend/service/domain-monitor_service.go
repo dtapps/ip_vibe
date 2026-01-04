@@ -9,7 +9,6 @@ import (
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
-	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
@@ -141,7 +140,7 @@ func (s *DomainMonitorServiceImpl) CreateDomainMonitor(ctx context.Context, requ
 		return nil, fmt.Errorf("创建域名监控失败: %w", err)
 	}
 	// 记录操作日志
-	_ = s.logHelper.RecordDataCreate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "创建域名监控")
+	// _ = s.logHelper.RecordDataCreate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "创建域名监控")
 
 	// 创建通知订阅
 	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
@@ -181,7 +180,7 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitor(ctx context.Context, requ
 		return nil, fmt.Errorf("更新域名监控失败: %w", err)
 	}
 	// 记录操作日志
-	_ = s.logHelper.RecordDataUpdate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控")
+	// _ = s.logHelper.RecordDataUpdate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控")
 
 	// 更新通知订阅
 	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
@@ -219,7 +218,7 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitorActive(ctx context.Context
 		return nil, fmt.Errorf("更新域名监控启用状态失败: %w", err)
 	}
 	// 记录操作日志
-	_ = s.logHelper.RecordDataUpdate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控启用状态")
+	// _ = s.logHelper.RecordDataUpdate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控启用状态")
 
 	return &types.GetDomainMonitorRequest{
 		ID: saveDomainMonitor.ID,
@@ -247,7 +246,7 @@ func (s *DomainMonitorServiceImpl) DeleteDomainMonitor(ctx context.Context, id i
 		return nil, fmt.Errorf("删除域名监控失败: %w", err)
 	}
 	// 记录操作日志
-	_ = s.logHelper.RecordDataDelete(ctx, firstDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "删除域名监控")
+	// _ = s.logHelper.RecordDataDelete(ctx, firstDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "删除域名监控")
 
 	// 删除通知订阅
 	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDomainMonitor, firstDomainMonitor.ID)
