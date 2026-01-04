@@ -22,7 +22,7 @@ func UnaryLogger(logger *slog.Logger) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		start := time.Now()
 		resp, err := handler(ctx, req)
-		dur := time.Since(start).Milliseconds()
+		duration := time.Since(start)
 
 		// 从 FullMethod 解析：/package.service/method
 		full := info.FullMethod               // e.g. "/helloworld.Greeter/SayHello"
@@ -36,18 +36,26 @@ func UnaryLogger(logger *slog.Logger) grpc.UnaryServerInterceptor {
 		st, _ := status.FromError(err)
 		code := st.Code()
 
-		attrs := []slog.Attr{
-			slog.String("service", svc),
-			slog.String("method", mtd),
-			slog.String("code", code.String()),
-			slog.Int64("time_ms", dur),
-			slog.String("address", peerAddr(ctx)),
-		}
+		// 记录日志
 		if err != nil && code != codes.OK {
-			attrs = append(attrs, slog.Any("err", err))
+			logger.ErrorContext(ctx, "gRPC 调用错误",
+				slog.Duration("duration", duration),
+				slog.String("service", svc),
+				slog.String("method", mtd),
+				slog.String("code", code.String()),
+				slog.String("address", peerAddr(ctx)),
+				slog.Any("err", err),
+			)
+		} else {
+			logger.DebugContext(ctx, "gRPC 调用完成",
+				slog.Duration("duration", duration),
+				slog.String("service", svc),
+				slog.String("method", mtd),
+				slog.String("code", code.String()),
+				slog.String("address", peerAddr(ctx)),
+			)
 		}
 
-		logger.LogAttrs(ctx, slog.LevelInfo, "完成调用", attrs...)
 		return resp, err
 	}
 }

@@ -35,6 +35,7 @@ import (
 	"vibe_ip/internal/mcp_prompt"
 	"vibe_ip/internal/mcp_resource"
 	"vibe_ip/internal/mcp_tool"
+	"vibe_ip/internal/thrift_generated/open"
 	"vibe_ip/internal/thrift_process"
 	"vibe_ip/internal/thrift_server"
 
@@ -1361,7 +1362,7 @@ func thrift_run(ctx context.Context, logger *slog.Logger) {
 	}
 
 	// 创建 Thrift 服务器
-	transport, err := thrift.NewTServerSocket(global.GvaEnv.THRIFT_ADDR)
+	socket, err := thrift.NewTServerSocket(global.GvaEnv.THRIFT_ADDR)
 	if err != nil {
 		logger.ErrorContext(ctx, "Thrift 服务器启动失败",
 			slog.Any("error", err),
@@ -1369,12 +1370,30 @@ func thrift_run(ctx context.Context, logger *slog.Logger) {
 		os.Exit(1)
 	}
 
-	// 注册业务服务
-	openServer := thrift_server.NewOpenServer()
-	processor := openServer.RegisterService()
-	loggingProcessor := thrift_process.NewLoggingProcessor(processor, logger)
-	thriftServerInstance := thrift.NewTSimpleServer2(loggingProcessor, transport)
-	// thriftServerInstance := thrift.NewTSimpleServer2(processor, transport)
+	// 传输工厂
+	transportFactory := thrift.NewTFramedTransportFactoryConf(
+		thrift.NewTTransportFactory(),
+		&thrift.TConfiguration{},
+	)
+
+	// 协议工厂
+	protocolFactory := thrift.NewTBinaryProtocolFactoryConf(&thrift.TConfiguration{})
+
+	// 业务逻辑层 (Handler)
+	openHandler := thrift_server.NewOpenServer(logger)
+	processor := open.NewOpenServiceProcessor(openHandler)
+
+	// 挂载【通用】处理器包装器
+	// 无论 IDL 怎么变，这里一行代码搞定所有服务的日志和耗时
+	wrappedProcessor := thrift_process.NewGenericInterceptor(processor, logger)
+
+	// 传入 SimpleServer
+	thriftServerInstance = thrift.NewTSimpleServer4(
+		wrappedProcessor,
+		socket,
+		transportFactory,
+		protocolFactory,
+	)
 
 	logger.InfoContext(ctx, "Thrift 服务器正在启动",
 		slog.String("port", global.GvaEnv.THRIFT_ADDR),

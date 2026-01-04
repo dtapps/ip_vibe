@@ -41,9 +41,10 @@ func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 
 		// 将 Gin 请求桥接到 Coraza（用请求数据填充 tx）
 		if err := populateTransaction(tx, c.Request); err != nil {
-			if logger != nil {
-				logger.Error("WAF 事务填充失败", slog.String("error", err.Error()))
-			}
+			// 记录日志
+			logger.ErrorContext(c, "[Coraza] WAF 事务填充失败",
+				slog.String("err", err.Error()),
+			)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, handlers.APIResponse{
 				Code:    http.StatusInternalServerError,
 				Message: "WAF 初始化失败",
@@ -53,17 +54,18 @@ func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 
 		// 处理请求头阶段
 		if i := tx.ProcessRequestHeaders(); i != nil {
+			// 计算消耗时间
 			duration := time.Since(start)
-			if logger != nil {
-				logger.Warn("[Coraza] 请求头阶段阻塞",
-					slog.Duration("duration", duration),
-					slog.String("method", c.Request.Method),
-					slog.String("path", c.Request.URL.Path),
-					slog.Int("ruleID", i.RuleID),
-					slog.String("action", i.Action),
-					slog.String("data", i.Data),
-				)
-			}
+
+			// 记录日志
+			logger.WarnContext(c, "[Coraza] 请求头阶段阻塞",
+				slog.Duration("duration", duration),
+				slog.String("method", c.Request.Method),
+				slog.String("path", c.Request.URL.Path),
+				slog.Int("ruleID", i.RuleID),
+				slog.String("action", i.Action),
+				slog.String("data", i.Data),
+			)
 			c.AbortWithStatusJSON(http.StatusForbidden, handlers.APIResponse{
 				Code:    http.StatusForbidden,
 				Message: "请求被 WAF 阻塞",
@@ -80,9 +82,10 @@ func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 		if c.Request.Body != nil && c.Request.ContentLength > 0 {
 			body, err := io.ReadAll(c.Request.Body)
 			if err != nil {
-				if logger != nil {
-					logger.Error("读取请求体失败", slog.String("error", err.Error()))
-				}
+				// 记录日志
+				logger.ErrorContext(c, "[Coraza] 读取请求体失败",
+					slog.String("err", err.Error()),
+				)
 				c.AbortWithStatusJSON(http.StatusBadRequest, handlers.APIResponse{
 					Code:    http.StatusBadRequest,
 					Message: "无效请求体",
@@ -94,9 +97,10 @@ func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 
 			interruption, _, werr := tx.WriteRequestBody(body)
 			if werr != nil {
-				if logger != nil {
-					logger.Error("WAF 写入请求体失败", slog.String("error", werr.Error()))
-				}
+				// 记录日志
+				logger.ErrorContext(c, "[Coraza] WAF 写入请求体失败",
+					slog.String("err", werr.Error()),
+				)
 				c.AbortWithStatusJSON(http.StatusInternalServerError, handlers.APIResponse{
 					Code:    http.StatusInternalServerError,
 					Message: "WAF 体写入失败",
@@ -104,17 +108,18 @@ func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 				return
 			}
 			if interruption != nil {
+				// 计算消耗时间
 				duration := time.Since(start)
-				if logger != nil {
-					logger.Warn("[Coraza] 写入请求体阶段阻塞",
-						slog.Duration("duration", duration),
-						slog.String("method", c.Request.Method),
-						slog.String("path", c.Request.URL.Path),
-						slog.Int("ruleID", interruption.RuleID),
-						slog.String("action", interruption.Action),
-						slog.String("data", interruption.Data),
-					)
-				}
+
+				// 记录日志
+				logger.WarnContext(c, "[Coraza] 写入请求体阶段阻塞",
+					slog.Duration("duration", duration),
+					slog.String("method", c.Request.Method),
+					slog.String("path", c.Request.URL.Path),
+					slog.Int("ruleID", interruption.RuleID),
+					slog.String("action", interruption.Action),
+					slog.String("data", interruption.Data),
+				)
 				c.AbortWithStatusJSON(http.StatusForbidden, handlers.APIResponse{
 					Code:    http.StatusForbidden,
 					Message: "请求被 WAF 阻塞",
@@ -129,9 +134,10 @@ func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 
 			bodyInterruption, perr := tx.ProcessRequestBody()
 			if perr != nil {
-				if logger != nil {
-					logger.Error("[Coraza] 请求体处理失败", slog.String("error", perr.Error()))
-				}
+				// 记录日志
+				logger.ErrorContext(c, "[Coraza] 请求体处理失败",
+					slog.String("err", perr.Error()),
+				)
 				c.AbortWithStatusJSON(http.StatusInternalServerError, handlers.APIResponse{
 					Code:    http.StatusInternalServerError,
 					Message: "WAF 体处理失败",
@@ -139,17 +145,18 @@ func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 				return
 			}
 			if bodyInterruption != nil {
+				// 计算消耗时间
 				duration := time.Since(start)
-				if logger != nil {
-					logger.Warn("[Coraza] 请求体阶段阻塞",
-						slog.Duration("duration", duration),
-						slog.String("method", c.Request.Method),
-						slog.String("path", c.Request.URL.Path),
-						slog.Int("ruleID", bodyInterruption.RuleID),
-						slog.String("action", bodyInterruption.Action),
-						slog.String("data", bodyInterruption.Data),
-					)
-				}
+
+				// 记录日志
+				logger.WarnContext(c, "[Coraza] 请求体阶段阻塞",
+					slog.Duration("duration", duration),
+					slog.String("method", c.Request.Method),
+					slog.String("path", c.Request.URL.Path),
+					slog.Int("ruleID", bodyInterruption.RuleID),
+					slog.String("action", bodyInterruption.Action),
+					slog.String("data", bodyInterruption.Data),
+				)
 				c.AbortWithStatusJSON(http.StatusForbidden, handlers.APIResponse{
 					Code:    http.StatusForbidden,
 					Message: "请求被 WAF 阻塞",
@@ -173,13 +180,12 @@ func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 
 		proto := c.Request.Proto // 如 "HTTP/1.1"
 		if i := tx.ProcessResponseHeaders(rw.Status(), proto); i != nil {
-			if logger != nil {
-				logger.Warn("[Coraza] 响应头阶段检测到问题",
-					slog.Int("ruleID", i.RuleID),
-					slog.String("action", i.Action),
-					slog.String("data", i.Data),
-				)
-			}
+			// 记录日志
+			logger.WarnContext(c, "[Coraza] 响应头阶段检测到问题",
+				slog.Int("ruleID", i.RuleID),
+				slog.String("action", i.Action),
+				slog.String("data", i.Data),
+			)
 			// 注意：响应已发送，无法 abort，但可以日志或进一步处理
 		}
 
@@ -187,14 +193,13 @@ func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 
 		duration := time.Since(start)
 		blocked := c.Writer.Status() >= http.StatusBadRequest
-		if logger != nil {
-			logger.Debug("[Coraza] 中间件处理时间",
-				slog.Duration("duration", duration),
-				slog.String("method", c.Request.Method),
-				slog.String("path", c.Request.URL.Path),
-				slog.Bool("blocked", blocked),
-			)
-		}
+		// 记录日志
+		logger.DebugContext(c, "[Coraza] 中间件处理时间",
+			slog.Duration("duration", duration),
+			slog.String("method", c.Request.Method),
+			slog.String("path", c.Request.URL.Path),
+			slog.Bool("blocked", blocked),
+		)
 	}
 }
 

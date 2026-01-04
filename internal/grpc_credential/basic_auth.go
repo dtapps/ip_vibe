@@ -2,8 +2,8 @@ package grpc_credential
 
 import (
 	"context"
-	"encoding/base64"
 	"log/slog"
+	"vibe_ip/internal/core"
 )
 
 type BasicAuth struct {
@@ -32,8 +32,12 @@ func (b *BasicAuth) GetRequestMetadata(ctx context.Context, uri ...string) (map[
 		return nil, nil
 	}
 
-	cred := "Basic " + base64.StdEncoding.EncodeToString([]byte(b.username+":"+b.password))
-	return map[string]string{"authorization": cred}, nil
+	// 获取基本认证 token
+	token := core.GetBasicAuthHeader(core.GetBasicAuthToken(b.username, b.password))
+
+	return map[string]string{
+		"authorization": token,
+	}, nil
 }
 
 func (b *BasicAuth) RequireTransportSecurity() bool {

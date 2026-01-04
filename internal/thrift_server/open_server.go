@@ -2,23 +2,25 @@ package thrift_server
 
 import (
 	"context"
+	"log/slog"
 	"vibe_ip/internal/backend/service"
 	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/thrift_generated/open"
 	"vibe_ip/internal/types"
 
-	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/spf13/cast"
 )
 
 // 实现 Thrift 服务接口
 type OpenServer struct {
+	logger        *slog.Logger
+	authWrapper   *AuthWrapper
 	deviceService service.DeviceOpenService
 }
 
 // NewOpenServer 创建 Thrift 服务实例
-func NewOpenServer() *OpenServer {
+func NewOpenServer(logger *slog.Logger) *OpenServer {
 	// 使用与你的 HTTP 处理器相同的服务实例
 	deviceService := service.NewDeviceOpenService(
 		global.GvaEntDb,
@@ -29,17 +31,20 @@ func NewOpenServer() *OpenServer {
 	)
 
 	return &OpenServer{
+		logger:        logger,
+		authWrapper:   NewAuthWrapper(logger),
 		deviceService: deviceService,
 	}
 }
 
-// RegisterService 注册 gRPC 服务到服务器
-func (s *OpenServer) RegisterService() thrift.TProcessor {
-	return open.NewOpenServiceProcessor(s)
-}
-
 // ReportDeviceIP 实现 设备上报 IP 方法
-func (s *OpenServer) ReportDeviceIP(ctx context.Context, req *open.ReportDeviceIPRequest) (*open.ReportDeviceIPResponse, error) {
+func (s *OpenServer) ReportDeviceIP(ctx context.Context, req *open.ReportDeviceIPRequest, base *open.Base) (*open.ReportDeviceIPResponse, error) {
+
+	// 检查认证
+	if _, err := s.authWrapper.check(ctx, base, req); err != nil {
+		return &open.ReportDeviceIPResponse{}, err
+	}
+
 	// 将 Thrift 请求转换为你的 types 结构
 	request := &types.DeviceReportDeviceIpRequest{
 		DevicePortForwardsRequest: types.DevicePortForwardsRequest{
@@ -63,7 +68,13 @@ func (s *OpenServer) ReportDeviceIP(ctx context.Context, req *open.ReportDeviceI
 }
 
 // GetDevicePortForwards 实现 获取设备端口转发 方法
-func (s *OpenServer) GetDevicePortForwards(ctx context.Context, req *open.GetDevicePortForwardsRequest) (*open.GetDevicePortForwardsResponse, error) {
+func (s *OpenServer) GetDevicePortForwards(ctx context.Context, req *open.GetDevicePortForwardsRequest, base *open.Base) (*open.GetDevicePortForwardsResponse, error) {
+
+	// 检查认证
+	if _, err := s.authWrapper.check(ctx, base, req); err != nil {
+		return &open.GetDevicePortForwardsResponse{}, err
+	}
+
 	// 调用服务方法
 	response, err := s.deviceService.DevicePortForwards(ctx, req.DeviceCode)
 	if err != nil {
@@ -90,7 +101,13 @@ func (s *OpenServer) GetDevicePortForwards(ctx context.Context, req *open.GetDev
 }
 
 // CreatePortForwardStats 实现 创建端口转发统计 方法
-func (s *OpenServer) CreatePortForwardStats(ctx context.Context, req *open.CreatePortForwardStatsRequest) (*open.CreatePortForwardStatsResponse, error) {
+func (s *OpenServer) CreatePortForwardStats(ctx context.Context, req *open.CreatePortForwardStatsRequest, base *open.Base) (*open.CreatePortForwardStatsResponse, error) {
+
+	// 检查认证
+	if _, err := s.authWrapper.check(ctx, base, req); err != nil {
+		return &open.CreatePortForwardStatsResponse{}, err
+	}
+
 	// 将 Thrift 请求转换为你的 types 结构
 	request := &types.CreatePortForwardStatsRequest{
 		DevicePortForwardsRequest: types.DevicePortForwardsRequest{

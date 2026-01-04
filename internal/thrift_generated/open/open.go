@@ -28,6 +28,224 @@ var _ = thrift.ZERO
 var _ = strings.Contains
 var _ = regexp.MatchString
 
+// Attributes:
+//  - Token
+//  - Extra
+// 
+type Base struct {
+	Token string `thrift:"token,1,required" db:"token" json:"token"`
+	// unused field # 2
+	Extra map[string]string `thrift:"extra,3" db:"extra" json:"extra,omitempty"`
+}
+
+func NewBase() *Base {
+	return &Base{}
+}
+
+
+
+func (p *Base) GetToken() string {
+	return p.Token
+}
+
+var Base_Extra_DEFAULT map[string]string
+
+
+func (p *Base) GetExtra() map[string]string {
+	return p.Extra
+}
+
+func (p *Base) IsSetExtra() bool {
+	return p.Extra != nil
+}
+
+func (p *Base) Read(ctx context.Context, iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(ctx); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	var issetToken bool = false;
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.STRING {
+				if err := p.ReadField1(ctx, iprot); err != nil {
+					return err
+				}
+				issetToken = true
+			} else {
+				if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+					return err
+				}
+			}
+		case 3:
+			if fieldTypeId == thrift.MAP {
+				if err := p.ReadField3(ctx, iprot); err != nil {
+					return err
+				}
+			} else {
+				if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(ctx); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(ctx); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	if !issetToken{
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Token is not set"))
+	}
+	return nil
+}
+
+func (p *Base) ReadField1(ctx context.Context, iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(ctx); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.Token = v
+	}
+	return nil
+}
+
+func (p *Base) ReadField3(ctx context.Context, iprot thrift.TProtocol) error {
+	_, _, size, err := iprot.ReadMapBegin(ctx)
+	if err != nil {
+		return thrift.PrependError("error reading map begin: ", err)
+	}
+	tMap := make(map[string]string, size)
+	p.Extra = tMap
+	for i := 0; i < size; i++ {
+		var _key0 string
+		if v, err := iprot.ReadString(ctx); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_key0 = v
+		}
+		var _val1 string
+		if v, err := iprot.ReadString(ctx); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_val1 = v
+		}
+		p.Extra[_key0] = _val1
+	}
+	if err := iprot.ReadMapEnd(ctx); err != nil {
+		return thrift.PrependError("error reading map end: ", err)
+	}
+	return nil
+}
+
+func (p *Base) Write(ctx context.Context, oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin(ctx, "Base"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(ctx, oprot); err != nil { return err }
+		if err := p.writeField3(ctx, oprot); err != nil { return err }
+	}
+	if err := oprot.WriteFieldStop(ctx); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(ctx); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *Base) writeField1(ctx context.Context, oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin(ctx, "token", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:token: ", p), err)
+	}
+	if err := oprot.WriteString(ctx, string(p.Token)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.token (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(ctx); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:token: ", p), err)
+	}
+	return err
+}
+
+func (p *Base) writeField3(ctx context.Context, oprot thrift.TProtocol) (err error) {
+	if p.IsSetExtra() {
+		if err := oprot.WriteFieldBegin(ctx, "extra", thrift.MAP, 3); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:extra: ", p), err)
+		}
+		if err := oprot.WriteMapBegin(ctx, thrift.STRING, thrift.STRING, len(p.Extra)); err != nil {
+			return thrift.PrependError("error writing map begin: ", err)
+		}
+		for k, v := range p.Extra {
+			if err := oprot.WriteString(ctx, string(k)); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+			}
+			if err := oprot.WriteString(ctx, string(v)); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+			}
+		}
+		if err := oprot.WriteMapEnd(ctx); err != nil {
+			return thrift.PrependError("error writing map end: ", err)
+		}
+		if err := oprot.WriteFieldEnd(ctx); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 3:extra: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *Base) Equals(other *Base) bool {
+	if p == other {
+		return true
+	} else if p == nil || other == nil {
+		return false
+	}
+	if p.Token != other.Token { return false }
+	if len(p.Extra) != len(other.Extra) { return false }
+	for k, _tgt := range p.Extra {
+		_src2 := other.Extra[k]
+		if _tgt != _src2 { return false }
+	}
+	return true
+}
+
+func (p *Base) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("Base(%+v)", *p)
+}
+
+func (p *Base) LogValue() slog.Value {
+	if p == nil {
+		return slog.AnyValue(nil)
+	}
+	v := thrift.SlogTStructWrapper{
+		Type: "*open.Base",
+		Value: p,
+	}
+	return slog.AnyValue(v)
+}
+
+var _ slog.LogValuer = (*Base)(nil)
+
+func (p *Base) Validate() error {
+	return nil
+}
+
 // 设备上报 IP 请求
 // 
 // Attributes:
@@ -806,13 +1024,13 @@ func (p *PortForwardRule) ReadField5(ctx context.Context, iprot thrift.TProtocol
 	tSlice := make([]string, 0, size)
 	p.Protocols = tSlice
 	for i := 0; i < size; i++ {
-		var _elem0 string
+		var _elem3 string
 		if v, err := iprot.ReadString(ctx); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem0 = v
+			_elem3 = v
 		}
-		p.Protocols = append(p.Protocols, _elem0)
+		p.Protocols = append(p.Protocols, _elem3)
 	}
 	if err := iprot.ReadListEnd(ctx); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -948,8 +1166,8 @@ func (p *PortForwardRule) Equals(other *PortForwardRule) bool {
 	if p.RemotePort != other.RemotePort { return false }
 	if len(p.Protocols) != len(other.Protocols) { return false }
 	for i, _tgt := range p.Protocols {
-		_src1 := other.Protocols[i]
-		if _tgt != _src1 { return false }
+		_src4 := other.Protocols[i]
+		if _tgt != _src4 { return false }
 	}
 	if p.AutoForward != other.AutoForward { return false }
 	return true
@@ -1051,11 +1269,11 @@ func (p *GetDevicePortForwardsResponse) ReadField1(ctx context.Context, iprot th
 	tSlice := make([]*PortForwardRule, 0, size)
 	p.Rules = tSlice
 	for i := 0; i < size; i++ {
-		_elem2 := &PortForwardRule{}
-		if err := _elem2.Read(ctx, iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem2), err)
+		_elem5 := &PortForwardRule{}
+		if err := _elem5.Read(ctx, iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem5), err)
 		}
-		p.Rules = append(p.Rules, _elem2)
+		p.Rules = append(p.Rules, _elem5)
 	}
 	if err := iprot.ReadListEnd(ctx); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
@@ -1110,8 +1328,8 @@ func (p *GetDevicePortForwardsResponse) Equals(other *GetDevicePortForwardsRespo
 	}
 	if len(p.Rules) != len(other.Rules) { return false }
 	for i, _tgt := range p.Rules {
-		_src3 := other.Rules[i]
-		if !_tgt.Equals(_src3) { return false }
+		_src6 := other.Rules[i]
+		if !_tgt.Equals(_src6) { return false }
 	}
 	return true
 }
@@ -1851,20 +2069,23 @@ type OpenService interface {	//开放接口
 	// 
 	// Parameters:
 	//  - Req
+	//  - Base
 	// 
-	ReportDeviceIP(ctx context.Context, req *ReportDeviceIPRequest) (_r *ReportDeviceIPResponse, _err error)
+	ReportDeviceIP(ctx context.Context, req *ReportDeviceIPRequest, base *Base) (_r *ReportDeviceIPResponse, _err error)
 	// 获取设备端口转发
 	// 
 	// Parameters:
 	//  - Req
+	//  - Base
 	// 
-	GetDevicePortForwards(ctx context.Context, req *GetDevicePortForwardsRequest) (_r *GetDevicePortForwardsResponse, _err error)
+	GetDevicePortForwards(ctx context.Context, req *GetDevicePortForwardsRequest, base *Base) (_r *GetDevicePortForwardsResponse, _err error)
 	// 创建端口转发统计信息
 	// 
 	// Parameters:
 	//  - Req
+	//  - Base
 	// 
-	CreatePortForwardStats(ctx context.Context, req *CreatePortForwardStatsRequest) (_r *CreatePortForwardStatsResponse, _err error)
+	CreatePortForwardStats(ctx context.Context, req *CreatePortForwardStatsRequest, base *Base) (_r *CreatePortForwardStatsResponse, _err error)
 }
 
 //开放接口
@@ -1907,31 +2128,15 @@ func (p *OpenServiceClient) SetLastResponseMeta_(meta thrift.ResponseMeta) {
 // 
 // Parameters:
 //  - Req
+//  - Base
 // 
-func (p *OpenServiceClient) ReportDeviceIP(ctx context.Context, req *ReportDeviceIPRequest) (_r *ReportDeviceIPResponse, _err error) {
-	var _args4 OpenServiceReportDeviceIPArgs
-	_args4.Req = req
-	var _result6 OpenServiceReportDeviceIPResult
-	var _meta5 thrift.ResponseMeta
-	_meta5, _err = p.Client_().Call(ctx, "reportDeviceIP", &_args4, &_result6)
-	p.SetLastResponseMeta_(_meta5)
-	if _err != nil {
-		return
-	}
-	return _result6.GetSuccess(), nil
-}
-
-// 获取设备端口转发
-// 
-// Parameters:
-//  - Req
-// 
-func (p *OpenServiceClient) GetDevicePortForwards(ctx context.Context, req *GetDevicePortForwardsRequest) (_r *GetDevicePortForwardsResponse, _err error) {
-	var _args7 OpenServiceGetDevicePortForwardsArgs
+func (p *OpenServiceClient) ReportDeviceIP(ctx context.Context, req *ReportDeviceIPRequest, base *Base) (_r *ReportDeviceIPResponse, _err error) {
+	var _args7 OpenServiceReportDeviceIPArgs
 	_args7.Req = req
-	var _result9 OpenServiceGetDevicePortForwardsResult
+	_args7.Base = base
+	var _result9 OpenServiceReportDeviceIPResult
 	var _meta8 thrift.ResponseMeta
-	_meta8, _err = p.Client_().Call(ctx, "getDevicePortForwards", &_args7, &_result9)
+	_meta8, _err = p.Client_().Call(ctx, "reportDeviceIP", &_args7, &_result9)
 	p.SetLastResponseMeta_(_meta8)
 	if _err != nil {
 		return
@@ -1939,22 +2144,44 @@ func (p *OpenServiceClient) GetDevicePortForwards(ctx context.Context, req *GetD
 	return _result9.GetSuccess(), nil
 }
 
-// 创建端口转发统计信息
+// 获取设备端口转发
 // 
 // Parameters:
 //  - Req
+//  - Base
 // 
-func (p *OpenServiceClient) CreatePortForwardStats(ctx context.Context, req *CreatePortForwardStatsRequest) (_r *CreatePortForwardStatsResponse, _err error) {
-	var _args10 OpenServiceCreatePortForwardStatsArgs
+func (p *OpenServiceClient) GetDevicePortForwards(ctx context.Context, req *GetDevicePortForwardsRequest, base *Base) (_r *GetDevicePortForwardsResponse, _err error) {
+	var _args10 OpenServiceGetDevicePortForwardsArgs
 	_args10.Req = req
-	var _result12 OpenServiceCreatePortForwardStatsResult
+	_args10.Base = base
+	var _result12 OpenServiceGetDevicePortForwardsResult
 	var _meta11 thrift.ResponseMeta
-	_meta11, _err = p.Client_().Call(ctx, "createPortForwardStats", &_args10, &_result12)
+	_meta11, _err = p.Client_().Call(ctx, "getDevicePortForwards", &_args10, &_result12)
 	p.SetLastResponseMeta_(_meta11)
 	if _err != nil {
 		return
 	}
 	return _result12.GetSuccess(), nil
+}
+
+// 创建端口转发统计信息
+// 
+// Parameters:
+//  - Req
+//  - Base
+// 
+func (p *OpenServiceClient) CreatePortForwardStats(ctx context.Context, req *CreatePortForwardStatsRequest, base *Base) (_r *CreatePortForwardStatsResponse, _err error) {
+	var _args13 OpenServiceCreatePortForwardStatsArgs
+	_args13.Req = req
+	_args13.Base = base
+	var _result15 OpenServiceCreatePortForwardStatsResult
+	var _meta14 thrift.ResponseMeta
+	_meta14, _err = p.Client_().Call(ctx, "createPortForwardStats", &_args13, &_result15)
+	p.SetLastResponseMeta_(_meta14)
+	if _err != nil {
+		return
+	}
+	return _result15.GetSuccess(), nil
 }
 
 type OpenServiceProcessor struct {
@@ -1977,11 +2204,11 @@ func (p *OpenServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFuncti
 
 func NewOpenServiceProcessor(handler OpenService) *OpenServiceProcessor {
 
-	self13 := &OpenServiceProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-	self13.processorMap["reportDeviceIP"] = &openServiceProcessorReportDeviceIP{handler:handler}
-	self13.processorMap["getDevicePortForwards"] = &openServiceProcessorGetDevicePortForwards{handler:handler}
-	self13.processorMap["createPortForwardStats"] = &openServiceProcessorCreatePortForwardStats{handler:handler}
-	return self13
+	self16 := &OpenServiceProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+	self16.processorMap["reportDeviceIP"] = &openServiceProcessorReportDeviceIP{handler:handler}
+	self16.processorMap["getDevicePortForwards"] = &openServiceProcessorGetDevicePortForwards{handler:handler}
+	self16.processorMap["createPortForwardStats"] = &openServiceProcessorCreatePortForwardStats{handler:handler}
+	return self16
 }
 
 func (p *OpenServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -1992,12 +2219,12 @@ func (p *OpenServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.
 	}
 	iprot.Skip(ctx, thrift.STRUCT)
 	iprot.ReadMessageEnd(ctx)
-	x14 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+	x17 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
 	oprot.WriteMessageBegin(ctx, name, thrift.EXCEPTION, seqId)
-	x14.Write(ctx, oprot)
+	x17.Write(ctx, oprot)
 	oprot.WriteMessageEnd(ctx)
 	oprot.Flush(ctx)
-	return false, x14
+	return false, x17
 }
 
 type openServiceProcessorReportDeviceIP struct {
@@ -2005,7 +2232,7 @@ type openServiceProcessorReportDeviceIP struct {
 }
 
 func (p *openServiceProcessorReportDeviceIP) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	var _write_err15 thrift.TException
+	var _write_err18 thrift.TException
 	args := OpenServiceReportDeviceIPArgs{}
 	if err2 := args.Read(ctx, iprot); err2 != nil {
 		iprot.ReadMessageEnd(ctx)
@@ -2045,7 +2272,7 @@ func (p *openServiceProcessorReportDeviceIP) Process(ctx context.Context, seqId 
 	}
 
 	result := OpenServiceReportDeviceIPResult{}
-	if retval, err2 := p.handler.ReportDeviceIP(ctx, args.Req); err2 != nil {
+	if retval, err2 := p.handler.ReportDeviceIP(ctx, args.Req, args.Base); err2 != nil {
 		tickerCancel()
 		err = thrift.WrapTException(err2)
 		if errors.Is(err2, thrift.ErrAbandonRequest) {
@@ -2062,22 +2289,22 @@ func (p *openServiceProcessorReportDeviceIP) Process(ctx context.Context, seqId 
 				}
 			}
 		}
-		_exc16 := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing reportDeviceIP: " + err2.Error())
+		_exc19 := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing reportDeviceIP: " + err2.Error())
 		if err2 := oprot.WriteMessageBegin(ctx, "reportDeviceIP", thrift.EXCEPTION, seqId); err2 != nil {
-			_write_err15 = thrift.WrapTException(err2)
+			_write_err18 = thrift.WrapTException(err2)
 		}
-		if err2 := _exc16.Write(ctx, oprot); _write_err15 == nil && err2 != nil {
-			_write_err15 = thrift.WrapTException(err2)
+		if err2 := _exc19.Write(ctx, oprot); _write_err18 == nil && err2 != nil {
+			_write_err18 = thrift.WrapTException(err2)
 		}
-		if err2 := oprot.WriteMessageEnd(ctx); _write_err15 == nil && err2 != nil {
-			_write_err15 = thrift.WrapTException(err2)
+		if err2 := oprot.WriteMessageEnd(ctx); _write_err18 == nil && err2 != nil {
+			_write_err18 = thrift.WrapTException(err2)
 		}
-		if err2 := oprot.Flush(ctx); _write_err15 == nil && err2 != nil {
-			_write_err15 = thrift.WrapTException(err2)
+		if err2 := oprot.Flush(ctx); _write_err18 == nil && err2 != nil {
+			_write_err18 = thrift.WrapTException(err2)
 		}
-		if _write_err15 != nil {
+		if _write_err18 != nil {
 			return false, &thrift.ProcessorError{
-				WriteError:    _write_err15,
+				WriteError:    _write_err18,
 				EndpointError: err,
 			}
 		}
@@ -2087,20 +2314,20 @@ func (p *openServiceProcessorReportDeviceIP) Process(ctx context.Context, seqId 
 	}
 	tickerCancel()
 	if err2 := oprot.WriteMessageBegin(ctx, "reportDeviceIP", thrift.REPLY, seqId); err2 != nil {
-		_write_err15 = thrift.WrapTException(err2)
+		_write_err18 = thrift.WrapTException(err2)
 	}
-	if err2 := result.Write(ctx, oprot); _write_err15 == nil && err2 != nil {
-		_write_err15 = thrift.WrapTException(err2)
+	if err2 := result.Write(ctx, oprot); _write_err18 == nil && err2 != nil {
+		_write_err18 = thrift.WrapTException(err2)
 	}
-	if err2 := oprot.WriteMessageEnd(ctx); _write_err15 == nil && err2 != nil {
-		_write_err15 = thrift.WrapTException(err2)
+	if err2 := oprot.WriteMessageEnd(ctx); _write_err18 == nil && err2 != nil {
+		_write_err18 = thrift.WrapTException(err2)
 	}
-	if err2 := oprot.Flush(ctx); _write_err15 == nil && err2 != nil {
-		_write_err15 = thrift.WrapTException(err2)
+	if err2 := oprot.Flush(ctx); _write_err18 == nil && err2 != nil {
+		_write_err18 = thrift.WrapTException(err2)
 	}
-	if _write_err15 != nil {
+	if _write_err18 != nil {
 		return false, &thrift.ProcessorError{
-			WriteError:    _write_err15,
+			WriteError:    _write_err18,
 			EndpointError: err,
 		}
 	}
@@ -2112,7 +2339,7 @@ type openServiceProcessorGetDevicePortForwards struct {
 }
 
 func (p *openServiceProcessorGetDevicePortForwards) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	var _write_err17 thrift.TException
+	var _write_err20 thrift.TException
 	args := OpenServiceGetDevicePortForwardsArgs{}
 	if err2 := args.Read(ctx, iprot); err2 != nil {
 		iprot.ReadMessageEnd(ctx)
@@ -2152,7 +2379,7 @@ func (p *openServiceProcessorGetDevicePortForwards) Process(ctx context.Context,
 	}
 
 	result := OpenServiceGetDevicePortForwardsResult{}
-	if retval, err2 := p.handler.GetDevicePortForwards(ctx, args.Req); err2 != nil {
+	if retval, err2 := p.handler.GetDevicePortForwards(ctx, args.Req, args.Base); err2 != nil {
 		tickerCancel()
 		err = thrift.WrapTException(err2)
 		if errors.Is(err2, thrift.ErrAbandonRequest) {
@@ -2169,22 +2396,22 @@ func (p *openServiceProcessorGetDevicePortForwards) Process(ctx context.Context,
 				}
 			}
 		}
-		_exc18 := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing getDevicePortForwards: " + err2.Error())
+		_exc21 := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing getDevicePortForwards: " + err2.Error())
 		if err2 := oprot.WriteMessageBegin(ctx, "getDevicePortForwards", thrift.EXCEPTION, seqId); err2 != nil {
-			_write_err17 = thrift.WrapTException(err2)
+			_write_err20 = thrift.WrapTException(err2)
 		}
-		if err2 := _exc18.Write(ctx, oprot); _write_err17 == nil && err2 != nil {
-			_write_err17 = thrift.WrapTException(err2)
+		if err2 := _exc21.Write(ctx, oprot); _write_err20 == nil && err2 != nil {
+			_write_err20 = thrift.WrapTException(err2)
 		}
-		if err2 := oprot.WriteMessageEnd(ctx); _write_err17 == nil && err2 != nil {
-			_write_err17 = thrift.WrapTException(err2)
+		if err2 := oprot.WriteMessageEnd(ctx); _write_err20 == nil && err2 != nil {
+			_write_err20 = thrift.WrapTException(err2)
 		}
-		if err2 := oprot.Flush(ctx); _write_err17 == nil && err2 != nil {
-			_write_err17 = thrift.WrapTException(err2)
+		if err2 := oprot.Flush(ctx); _write_err20 == nil && err2 != nil {
+			_write_err20 = thrift.WrapTException(err2)
 		}
-		if _write_err17 != nil {
+		if _write_err20 != nil {
 			return false, &thrift.ProcessorError{
-				WriteError:    _write_err17,
+				WriteError:    _write_err20,
 				EndpointError: err,
 			}
 		}
@@ -2194,20 +2421,20 @@ func (p *openServiceProcessorGetDevicePortForwards) Process(ctx context.Context,
 	}
 	tickerCancel()
 	if err2 := oprot.WriteMessageBegin(ctx, "getDevicePortForwards", thrift.REPLY, seqId); err2 != nil {
-		_write_err17 = thrift.WrapTException(err2)
+		_write_err20 = thrift.WrapTException(err2)
 	}
-	if err2 := result.Write(ctx, oprot); _write_err17 == nil && err2 != nil {
-		_write_err17 = thrift.WrapTException(err2)
+	if err2 := result.Write(ctx, oprot); _write_err20 == nil && err2 != nil {
+		_write_err20 = thrift.WrapTException(err2)
 	}
-	if err2 := oprot.WriteMessageEnd(ctx); _write_err17 == nil && err2 != nil {
-		_write_err17 = thrift.WrapTException(err2)
+	if err2 := oprot.WriteMessageEnd(ctx); _write_err20 == nil && err2 != nil {
+		_write_err20 = thrift.WrapTException(err2)
 	}
-	if err2 := oprot.Flush(ctx); _write_err17 == nil && err2 != nil {
-		_write_err17 = thrift.WrapTException(err2)
+	if err2 := oprot.Flush(ctx); _write_err20 == nil && err2 != nil {
+		_write_err20 = thrift.WrapTException(err2)
 	}
-	if _write_err17 != nil {
+	if _write_err20 != nil {
 		return false, &thrift.ProcessorError{
-			WriteError:    _write_err17,
+			WriteError:    _write_err20,
 			EndpointError: err,
 		}
 	}
@@ -2219,7 +2446,7 @@ type openServiceProcessorCreatePortForwardStats struct {
 }
 
 func (p *openServiceProcessorCreatePortForwardStats) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	var _write_err19 thrift.TException
+	var _write_err22 thrift.TException
 	args := OpenServiceCreatePortForwardStatsArgs{}
 	if err2 := args.Read(ctx, iprot); err2 != nil {
 		iprot.ReadMessageEnd(ctx)
@@ -2259,7 +2486,7 @@ func (p *openServiceProcessorCreatePortForwardStats) Process(ctx context.Context
 	}
 
 	result := OpenServiceCreatePortForwardStatsResult{}
-	if retval, err2 := p.handler.CreatePortForwardStats(ctx, args.Req); err2 != nil {
+	if retval, err2 := p.handler.CreatePortForwardStats(ctx, args.Req, args.Base); err2 != nil {
 		tickerCancel()
 		err = thrift.WrapTException(err2)
 		if errors.Is(err2, thrift.ErrAbandonRequest) {
@@ -2276,22 +2503,22 @@ func (p *openServiceProcessorCreatePortForwardStats) Process(ctx context.Context
 				}
 			}
 		}
-		_exc20 := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing createPortForwardStats: " + err2.Error())
+		_exc23 := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing createPortForwardStats: " + err2.Error())
 		if err2 := oprot.WriteMessageBegin(ctx, "createPortForwardStats", thrift.EXCEPTION, seqId); err2 != nil {
-			_write_err19 = thrift.WrapTException(err2)
+			_write_err22 = thrift.WrapTException(err2)
 		}
-		if err2 := _exc20.Write(ctx, oprot); _write_err19 == nil && err2 != nil {
-			_write_err19 = thrift.WrapTException(err2)
+		if err2 := _exc23.Write(ctx, oprot); _write_err22 == nil && err2 != nil {
+			_write_err22 = thrift.WrapTException(err2)
 		}
-		if err2 := oprot.WriteMessageEnd(ctx); _write_err19 == nil && err2 != nil {
-			_write_err19 = thrift.WrapTException(err2)
+		if err2 := oprot.WriteMessageEnd(ctx); _write_err22 == nil && err2 != nil {
+			_write_err22 = thrift.WrapTException(err2)
 		}
-		if err2 := oprot.Flush(ctx); _write_err19 == nil && err2 != nil {
-			_write_err19 = thrift.WrapTException(err2)
+		if err2 := oprot.Flush(ctx); _write_err22 == nil && err2 != nil {
+			_write_err22 = thrift.WrapTException(err2)
 		}
-		if _write_err19 != nil {
+		if _write_err22 != nil {
 			return false, &thrift.ProcessorError{
-				WriteError:    _write_err19,
+				WriteError:    _write_err22,
 				EndpointError: err,
 			}
 		}
@@ -2301,20 +2528,20 @@ func (p *openServiceProcessorCreatePortForwardStats) Process(ctx context.Context
 	}
 	tickerCancel()
 	if err2 := oprot.WriteMessageBegin(ctx, "createPortForwardStats", thrift.REPLY, seqId); err2 != nil {
-		_write_err19 = thrift.WrapTException(err2)
+		_write_err22 = thrift.WrapTException(err2)
 	}
-	if err2 := result.Write(ctx, oprot); _write_err19 == nil && err2 != nil {
-		_write_err19 = thrift.WrapTException(err2)
+	if err2 := result.Write(ctx, oprot); _write_err22 == nil && err2 != nil {
+		_write_err22 = thrift.WrapTException(err2)
 	}
-	if err2 := oprot.WriteMessageEnd(ctx); _write_err19 == nil && err2 != nil {
-		_write_err19 = thrift.WrapTException(err2)
+	if err2 := oprot.WriteMessageEnd(ctx); _write_err22 == nil && err2 != nil {
+		_write_err22 = thrift.WrapTException(err2)
 	}
-	if err2 := oprot.Flush(ctx); _write_err19 == nil && err2 != nil {
-		_write_err19 = thrift.WrapTException(err2)
+	if err2 := oprot.Flush(ctx); _write_err22 == nil && err2 != nil {
+		_write_err22 = thrift.WrapTException(err2)
 	}
-	if _write_err19 != nil {
+	if _write_err22 != nil {
 		return false, &thrift.ProcessorError{
-			WriteError:    _write_err19,
+			WriteError:    _write_err22,
 			EndpointError: err,
 		}
 	}
@@ -2326,9 +2553,12 @@ func (p *openServiceProcessorCreatePortForwardStats) Process(ctx context.Context
 
 // Attributes:
 //  - Req
+//  - Base
 // 
 type OpenServiceReportDeviceIPArgs struct {
 	Req *ReportDeviceIPRequest `thrift:"req,1,required" db:"req" json:"req"`
+	// unused fields # 2 to 254
+	Base *Base `thrift:"base,255,required" db:"base" json:"base"`
 }
 
 func NewOpenServiceReportDeviceIPArgs() *OpenServiceReportDeviceIPArgs {
@@ -2344,8 +2574,21 @@ func (p *OpenServiceReportDeviceIPArgs) GetReq() *ReportDeviceIPRequest {
 	return p.Req
 }
 
+var OpenServiceReportDeviceIPArgs_Base_DEFAULT *Base
+
+func (p *OpenServiceReportDeviceIPArgs) GetBase() *Base {
+	if !p.IsSetBase() {
+		return OpenServiceReportDeviceIPArgs_Base_DEFAULT
+	}
+	return p.Base
+}
+
 func (p *OpenServiceReportDeviceIPArgs) IsSetReq() bool {
 	return p.Req != nil
+}
+
+func (p *OpenServiceReportDeviceIPArgs) IsSetBase() bool {
+	return p.Base != nil
 }
 
 func (p *OpenServiceReportDeviceIPArgs) Read(ctx context.Context, iprot thrift.TProtocol) error {
@@ -2354,6 +2597,7 @@ func (p *OpenServiceReportDeviceIPArgs) Read(ctx context.Context, iprot thrift.T
 	}
 
 	var issetReq bool = false;
+	var issetBase bool = false;
 
 	for {
 		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
@@ -2375,6 +2619,17 @@ func (p *OpenServiceReportDeviceIPArgs) Read(ctx context.Context, iprot thrift.T
 					return err
 				}
 			}
+		case 255:
+			if fieldTypeId == thrift.STRUCT {
+				if err := p.ReadField255(ctx, iprot); err != nil {
+					return err
+				}
+				issetBase = true
+			} else {
+				if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+					return err
+				}
+			}
 		default:
 			if err := iprot.Skip(ctx, fieldTypeId); err != nil {
 				return err
@@ -2390,6 +2645,9 @@ func (p *OpenServiceReportDeviceIPArgs) Read(ctx context.Context, iprot thrift.T
 	if !issetReq{
 		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Req is not set"))
 	}
+	if !issetBase{
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Base is not set"))
+	}
 	return nil
 }
 
@@ -2401,12 +2659,21 @@ func (p *OpenServiceReportDeviceIPArgs) ReadField1(ctx context.Context, iprot th
 	return nil
 }
 
+func (p *OpenServiceReportDeviceIPArgs) ReadField255(ctx context.Context, iprot thrift.TProtocol) error {
+	p.Base = &Base{}
+	if err := p.Base.Read(ctx, iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Base), err)
+	}
+	return nil
+}
+
 func (p *OpenServiceReportDeviceIPArgs) Write(ctx context.Context, oprot thrift.TProtocol) error {
 	if err := oprot.WriteStructBegin(ctx, "reportDeviceIP_args"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if p != nil {
 		if err := p.writeField1(ctx, oprot); err != nil { return err }
+		if err := p.writeField255(ctx, oprot); err != nil { return err }
 	}
 	if err := oprot.WriteFieldStop(ctx); err != nil {
 		return thrift.PrependError("write field stop error: ", err)
@@ -2426,6 +2693,19 @@ func (p *OpenServiceReportDeviceIPArgs) writeField1(ctx context.Context, oprot t
 	}
 	if err := oprot.WriteFieldEnd(ctx); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:req: ", p), err)
+	}
+	return err
+}
+
+func (p *OpenServiceReportDeviceIPArgs) writeField255(ctx context.Context, oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin(ctx, "base", thrift.STRUCT, 255); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 255:base: ", p), err)
+	}
+	if err := p.Base.Write(ctx, oprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Base), err)
+	}
+	if err := oprot.WriteFieldEnd(ctx); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 255:base: ", p), err)
 	}
 	return err
 }
@@ -2575,9 +2855,12 @@ var _ slog.LogValuer = (*OpenServiceReportDeviceIPResult)(nil)
 
 // Attributes:
 //  - Req
+//  - Base
 // 
 type OpenServiceGetDevicePortForwardsArgs struct {
 	Req *GetDevicePortForwardsRequest `thrift:"req,1,required" db:"req" json:"req"`
+	// unused fields # 2 to 254
+	Base *Base `thrift:"base,255,required" db:"base" json:"base"`
 }
 
 func NewOpenServiceGetDevicePortForwardsArgs() *OpenServiceGetDevicePortForwardsArgs {
@@ -2593,8 +2876,21 @@ func (p *OpenServiceGetDevicePortForwardsArgs) GetReq() *GetDevicePortForwardsRe
 	return p.Req
 }
 
+var OpenServiceGetDevicePortForwardsArgs_Base_DEFAULT *Base
+
+func (p *OpenServiceGetDevicePortForwardsArgs) GetBase() *Base {
+	if !p.IsSetBase() {
+		return OpenServiceGetDevicePortForwardsArgs_Base_DEFAULT
+	}
+	return p.Base
+}
+
 func (p *OpenServiceGetDevicePortForwardsArgs) IsSetReq() bool {
 	return p.Req != nil
+}
+
+func (p *OpenServiceGetDevicePortForwardsArgs) IsSetBase() bool {
+	return p.Base != nil
 }
 
 func (p *OpenServiceGetDevicePortForwardsArgs) Read(ctx context.Context, iprot thrift.TProtocol) error {
@@ -2603,6 +2899,7 @@ func (p *OpenServiceGetDevicePortForwardsArgs) Read(ctx context.Context, iprot t
 	}
 
 	var issetReq bool = false;
+	var issetBase bool = false;
 
 	for {
 		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
@@ -2624,6 +2921,17 @@ func (p *OpenServiceGetDevicePortForwardsArgs) Read(ctx context.Context, iprot t
 					return err
 				}
 			}
+		case 255:
+			if fieldTypeId == thrift.STRUCT {
+				if err := p.ReadField255(ctx, iprot); err != nil {
+					return err
+				}
+				issetBase = true
+			} else {
+				if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+					return err
+				}
+			}
 		default:
 			if err := iprot.Skip(ctx, fieldTypeId); err != nil {
 				return err
@@ -2639,6 +2947,9 @@ func (p *OpenServiceGetDevicePortForwardsArgs) Read(ctx context.Context, iprot t
 	if !issetReq{
 		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Req is not set"))
 	}
+	if !issetBase{
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Base is not set"))
+	}
 	return nil
 }
 
@@ -2650,12 +2961,21 @@ func (p *OpenServiceGetDevicePortForwardsArgs) ReadField1(ctx context.Context, i
 	return nil
 }
 
+func (p *OpenServiceGetDevicePortForwardsArgs) ReadField255(ctx context.Context, iprot thrift.TProtocol) error {
+	p.Base = &Base{}
+	if err := p.Base.Read(ctx, iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Base), err)
+	}
+	return nil
+}
+
 func (p *OpenServiceGetDevicePortForwardsArgs) Write(ctx context.Context, oprot thrift.TProtocol) error {
 	if err := oprot.WriteStructBegin(ctx, "getDevicePortForwards_args"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if p != nil {
 		if err := p.writeField1(ctx, oprot); err != nil { return err }
+		if err := p.writeField255(ctx, oprot); err != nil { return err }
 	}
 	if err := oprot.WriteFieldStop(ctx); err != nil {
 		return thrift.PrependError("write field stop error: ", err)
@@ -2675,6 +2995,19 @@ func (p *OpenServiceGetDevicePortForwardsArgs) writeField1(ctx context.Context, 
 	}
 	if err := oprot.WriteFieldEnd(ctx); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:req: ", p), err)
+	}
+	return err
+}
+
+func (p *OpenServiceGetDevicePortForwardsArgs) writeField255(ctx context.Context, oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin(ctx, "base", thrift.STRUCT, 255); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 255:base: ", p), err)
+	}
+	if err := p.Base.Write(ctx, oprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Base), err)
+	}
+	if err := oprot.WriteFieldEnd(ctx); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 255:base: ", p), err)
 	}
 	return err
 }
@@ -2824,9 +3157,12 @@ var _ slog.LogValuer = (*OpenServiceGetDevicePortForwardsResult)(nil)
 
 // Attributes:
 //  - Req
+//  - Base
 // 
 type OpenServiceCreatePortForwardStatsArgs struct {
 	Req *CreatePortForwardStatsRequest `thrift:"req,1,required" db:"req" json:"req"`
+	// unused fields # 2 to 254
+	Base *Base `thrift:"base,255,required" db:"base" json:"base"`
 }
 
 func NewOpenServiceCreatePortForwardStatsArgs() *OpenServiceCreatePortForwardStatsArgs {
@@ -2842,8 +3178,21 @@ func (p *OpenServiceCreatePortForwardStatsArgs) GetReq() *CreatePortForwardStats
 	return p.Req
 }
 
+var OpenServiceCreatePortForwardStatsArgs_Base_DEFAULT *Base
+
+func (p *OpenServiceCreatePortForwardStatsArgs) GetBase() *Base {
+	if !p.IsSetBase() {
+		return OpenServiceCreatePortForwardStatsArgs_Base_DEFAULT
+	}
+	return p.Base
+}
+
 func (p *OpenServiceCreatePortForwardStatsArgs) IsSetReq() bool {
 	return p.Req != nil
+}
+
+func (p *OpenServiceCreatePortForwardStatsArgs) IsSetBase() bool {
+	return p.Base != nil
 }
 
 func (p *OpenServiceCreatePortForwardStatsArgs) Read(ctx context.Context, iprot thrift.TProtocol) error {
@@ -2852,6 +3201,7 @@ func (p *OpenServiceCreatePortForwardStatsArgs) Read(ctx context.Context, iprot 
 	}
 
 	var issetReq bool = false;
+	var issetBase bool = false;
 
 	for {
 		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
@@ -2873,6 +3223,17 @@ func (p *OpenServiceCreatePortForwardStatsArgs) Read(ctx context.Context, iprot 
 					return err
 				}
 			}
+		case 255:
+			if fieldTypeId == thrift.STRUCT {
+				if err := p.ReadField255(ctx, iprot); err != nil {
+					return err
+				}
+				issetBase = true
+			} else {
+				if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+					return err
+				}
+			}
 		default:
 			if err := iprot.Skip(ctx, fieldTypeId); err != nil {
 				return err
@@ -2888,6 +3249,9 @@ func (p *OpenServiceCreatePortForwardStatsArgs) Read(ctx context.Context, iprot 
 	if !issetReq{
 		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Req is not set"))
 	}
+	if !issetBase{
+		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Base is not set"))
+	}
 	return nil
 }
 
@@ -2899,12 +3263,21 @@ func (p *OpenServiceCreatePortForwardStatsArgs) ReadField1(ctx context.Context, 
 	return nil
 }
 
+func (p *OpenServiceCreatePortForwardStatsArgs) ReadField255(ctx context.Context, iprot thrift.TProtocol) error {
+	p.Base = &Base{}
+	if err := p.Base.Read(ctx, iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Base), err)
+	}
+	return nil
+}
+
 func (p *OpenServiceCreatePortForwardStatsArgs) Write(ctx context.Context, oprot thrift.TProtocol) error {
 	if err := oprot.WriteStructBegin(ctx, "createPortForwardStats_args"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if p != nil {
 		if err := p.writeField1(ctx, oprot); err != nil { return err }
+		if err := p.writeField255(ctx, oprot); err != nil { return err }
 	}
 	if err := oprot.WriteFieldStop(ctx); err != nil {
 		return thrift.PrependError("write field stop error: ", err)
@@ -2924,6 +3297,19 @@ func (p *OpenServiceCreatePortForwardStatsArgs) writeField1(ctx context.Context,
 	}
 	if err := oprot.WriteFieldEnd(ctx); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:req: ", p), err)
+	}
+	return err
+}
+
+func (p *OpenServiceCreatePortForwardStatsArgs) writeField255(ctx context.Context, oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin(ctx, "base", thrift.STRUCT, 255); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 255:base: ", p), err)
+	}
+	if err := p.Base.Write(ctx, oprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Base), err)
+	}
+	if err := oprot.WriteFieldEnd(ctx); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 255:base: ", p), err)
 	}
 	return err
 }

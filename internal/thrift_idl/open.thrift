@@ -8,22 +8,31 @@ service OpenService {
      * 设备上报 IP
      */
     ReportDeviceIPResponse reportDeviceIP(
-        1: required ReportDeviceIPRequest req
+        1: required ReportDeviceIPRequest req// 业务请求参数
+        255: required Base base // 通用头
     )
 
     /**
      * 获取设备端口转发
      */
     GetDevicePortForwardsResponse getDevicePortForwards(
-        1: required GetDevicePortForwardsRequest req
+        1: required GetDevicePortForwardsRequest req// 业务请求参数
+        255: required Base base // 通用头
     )
 
     /**
      * 创建端口转发统计信息
      */
     CreatePortForwardStatsResponse createPortForwardStats(
-        1: required CreatePortForwardStatsRequest req
+        1: required CreatePortForwardStatsRequest req // 业务请求参数
+        255: required Base base // 通用头
     )
+}
+
+// 定义通用头
+struct Base {
+    1: required string             token,  // 认证令牌
+    3: optional map<string,string> extra,  // 预留扩展
 }
 
 /**

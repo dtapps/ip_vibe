@@ -17,6 +17,7 @@ require (
 	github.com/alibabacloud-go/esa-20240910/v2 v2.44.0
 	github.com/alibabacloud-go/tea v1.3.14
 	github.com/aliyun/credentials-go v1.4.10
+	github.com/apache/thrift v0.22.0
 	github.com/baidubce/bce-sdk-go v0.9.256
 	github.com/basgys/goxml2json v1.1.0
 	github.com/cloudflare/cloudflare-go/v6 v6.5.0
@@ -46,7 +47,7 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc4
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.22
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.24
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.25
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.21
 	github.com/wdcbot/qingfeng v1.5.9
@@ -85,7 +86,6 @@ require (
 	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.5 // indirect
 	github.com/alibabacloud-go/debug v1.0.1 // indirect
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.9 // indirect
-	github.com/apache/thrift v0.22.0 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
 	github.com/bytedance/gopkg v0.1.3 // indirect
@@ -167,7 +167,7 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/libc v1.67.3 // indirect
+	modernc.org/libc v1.67.4 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 	rsc.io/binaryregexp v0.2.0 // indirect

@@ -27,14 +27,12 @@ func Gzip(logger *slog.Logger) gin.HandlerFunc {
 		// 计算消耗时间
 		duration := time.Since(start)
 
-		// 记录消耗时间日志
-		if logger != nil {
-			logger.Debug("[Gzip] 中间件处理时间",
-				slog.Duration("duration", duration),
-				slog.String("method", c.Request.Method),
-				slog.String("path", c.Request.URL.Path),
-			)
-		}
+		// 记录日志
+		logger.DebugContext(c, "[Gzip] 中间件处理时间",
+			slog.Duration("duration", duration),
+			slog.String("method", c.Request.Method),
+			slog.String("path", c.Request.URL.Path),
+		)
 
 		// 无阻塞：继续 Gin 链
 		c.Next()

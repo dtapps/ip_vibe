@@ -2,15 +2,17 @@ package grpc_interceptor
 
 import (
 	"context"
-	"encoding/base64"
+	"fmt"
 	"log/slog"
-	"strings"
+	"vibe_ip/internal/core"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
+
+const authKey = "authorization"
 
 // BasicAuth 返回一个 gRPC 拦截器：仅允许通过 Basic 认证的用户访问指定路径
 func BasicAuth(logger *slog.Logger, username string, password string) grpc.UnaryServerInterceptor {
@@ -29,34 +31,32 @@ func BasicAuth(logger *slog.Logger, username string, password string) grpc.Unary
 		// 提取 Authorization 头（basic scheme）
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
-			return nil, status.Error(codes.Unauthenticated, "缺少或无效的 Authorization 头")
+			err := fmt.Errorf("缺少或无效的 Authorization 头")
+
+			logger.ErrorContext(ctx, "[BasicAuth] 缺少或无效的 Authorization 头")
+			return nil, status.Error(codes.Unauthenticated, err.Error())
 		}
-		vals := md["authorization"]
+		vals := md[authKey]
 		if len(vals) == 0 {
-			return nil, status.Error(codes.Unauthenticated, "缺少或无效的 Authorization 头")
-		}
-		authHeader := vals[0]
-		const prefix = "Basic "
-		if !strings.HasPrefix(authHeader, prefix) {
-			return nil, status.Error(codes.Unauthenticated, "缺少或无效的 Authorization 头")
+			err := fmt.Errorf("缺少或无效的 Authorization 头")
+
+			logger.ErrorContext(ctx, "[BasicAuth] 缺少或无效的 Authorization 头")
+			return nil, status.Error(codes.Unauthenticated, err.Error())
 		}
 
-		// Base64 解码
-		decoded, err := base64.StdEncoding.DecodeString(authHeader[len(prefix):])
+		// 解析
+		user, pass, err := core.ParseBasicAuthToken(vals[0])
 		if err != nil {
-			return nil, status.Error(codes.Unauthenticated, "凭证解码失败")
+			logger.ErrorContext(ctx, "[BasicAuth] 解析 Authorization 头失败",
+				slog.String("err", err.Error()),
+			)
+			return nil, status.Error(codes.Unauthenticated, err.Error())
 		}
-
-		// 分离 username:password
-		parts := strings.SplitN(string(decoded), ":", 2)
-		if len(parts) != 2 {
-			return nil, status.Error(codes.Unauthenticated, "无效凭证格式")
-		}
-
-		// 校验
-		user, pass := parts[0], parts[1]
 		if user != username || pass != password {
-			return nil, status.Error(codes.Unauthenticated, "用户名或密码错误")
+			err := fmt.Errorf("用户名或密码错误")
+
+			logger.ErrorContext(ctx, "[BasicAuth] 用户名或密码错误")
+			return nil, status.Error(codes.Unauthenticated, err.Error())
 		}
 
 		return handler(ctx, req)
