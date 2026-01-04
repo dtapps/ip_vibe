@@ -4,7 +4,7 @@ syntax = "proto3";
 package open;
 
 // Go 包路径：路径;包名（匹配输出目录，避免子包冲突）option go_package = ".;dubbo_generated"
-option go_package = "vibe_ip/internal/dubbo_generated;open";
+option go_package = "vibe_ip/internal/dubbo_generated;dubbo_generated";
 
 // 开放
 service OpenService {

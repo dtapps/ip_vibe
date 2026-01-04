@@ -2,11 +2,11 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v6.33.2
-// source: internal/dubbo_idl/open.proto
+// source: open.proto
 
 // 包名
 
-package open
+package dubbo_generated
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -40,7 +40,7 @@ type ReportDeviceIPRequest struct {
 
 func (x *ReportDeviceIPRequest) Reset() {
 	*x = ReportDeviceIPRequest{}
-	mi := &file_internal_dubbo_idl_open_proto_msgTypes[0]
+	mi := &file_open_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -52,7 +52,7 @@ func (x *ReportDeviceIPRequest) String() string {
 func (*ReportDeviceIPRequest) ProtoMessage() {}
 
 func (x *ReportDeviceIPRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_dubbo_idl_open_proto_msgTypes[0]
+	mi := &file_open_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -65,7 +65,7 @@ func (x *ReportDeviceIPRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportDeviceIPRequest.ProtoReflect.Descriptor instead.
 func (*ReportDeviceIPRequest) Descriptor() ([]byte, []int) {
-	return file_internal_dubbo_idl_open_proto_rawDescGZIP(), []int{0}
+	return file_open_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *ReportDeviceIPRequest) GetDeviceCode() string {
@@ -106,7 +106,7 @@ type ReportDeviceIPResponse struct {
 
 func (x *ReportDeviceIPResponse) Reset() {
 	*x = ReportDeviceIPResponse{}
-	mi := &file_internal_dubbo_idl_open_proto_msgTypes[1]
+	mi := &file_open_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -118,7 +118,7 @@ func (x *ReportDeviceIPResponse) String() string {
 func (*ReportDeviceIPResponse) ProtoMessage() {}
 
 func (x *ReportDeviceIPResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_dubbo_idl_open_proto_msgTypes[1]
+	mi := &file_open_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -131,7 +131,7 @@ func (x *ReportDeviceIPResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportDeviceIPResponse.ProtoReflect.Descriptor instead.
 func (*ReportDeviceIPResponse) Descriptor() ([]byte, []int) {
-	return file_internal_dubbo_idl_open_proto_rawDescGZIP(), []int{1}
+	return file_open_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ReportDeviceIPResponse) GetMsg() string {
@@ -152,7 +152,7 @@ type GetDevicePortForwardsRequest struct {
 
 func (x *GetDevicePortForwardsRequest) Reset() {
 	*x = GetDevicePortForwardsRequest{}
-	mi := &file_internal_dubbo_idl_open_proto_msgTypes[2]
+	mi := &file_open_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -164,7 +164,7 @@ func (x *GetDevicePortForwardsRequest) String() string {
 func (*GetDevicePortForwardsRequest) ProtoMessage() {}
 
 func (x *GetDevicePortForwardsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_dubbo_idl_open_proto_msgTypes[2]
+	mi := &file_open_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -177,7 +177,7 @@ func (x *GetDevicePortForwardsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDevicePortForwardsRequest.ProtoReflect.Descriptor instead.
 func (*GetDevicePortForwardsRequest) Descriptor() ([]byte, []int) {
-	return file_internal_dubbo_idl_open_proto_rawDescGZIP(), []int{2}
+	return file_open_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetDevicePortForwardsRequest) GetDeviceCode() string {
@@ -202,7 +202,7 @@ type PortForwardRule struct {
 
 func (x *PortForwardRule) Reset() {
 	*x = PortForwardRule{}
-	mi := &file_internal_dubbo_idl_open_proto_msgTypes[3]
+	mi := &file_open_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -214,7 +214,7 @@ func (x *PortForwardRule) String() string {
 func (*PortForwardRule) ProtoMessage() {}
 
 func (x *PortForwardRule) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_dubbo_idl_open_proto_msgTypes[3]
+	mi := &file_open_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -227,7 +227,7 @@ func (x *PortForwardRule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PortForwardRule.ProtoReflect.Descriptor instead.
 func (*PortForwardRule) Descriptor() ([]byte, []int) {
-	return file_internal_dubbo_idl_open_proto_rawDescGZIP(), []int{3}
+	return file_open_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *PortForwardRule) GetId() int64 {
@@ -282,7 +282,7 @@ type GetDevicePortForwardsResponse struct {
 
 func (x *GetDevicePortForwardsResponse) Reset() {
 	*x = GetDevicePortForwardsResponse{}
-	mi := &file_internal_dubbo_idl_open_proto_msgTypes[4]
+	mi := &file_open_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -294,7 +294,7 @@ func (x *GetDevicePortForwardsResponse) String() string {
 func (*GetDevicePortForwardsResponse) ProtoMessage() {}
 
 func (x *GetDevicePortForwardsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_dubbo_idl_open_proto_msgTypes[4]
+	mi := &file_open_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -307,7 +307,7 @@ func (x *GetDevicePortForwardsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDevicePortForwardsResponse.ProtoReflect.Descriptor instead.
 func (*GetDevicePortForwardsResponse) Descriptor() ([]byte, []int) {
-	return file_internal_dubbo_idl_open_proto_rawDescGZIP(), []int{4}
+	return file_open_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetDevicePortForwardsResponse) GetRules() []*PortForwardRule {
@@ -346,7 +346,7 @@ type CreatePortForwardStatsRequest struct {
 
 func (x *CreatePortForwardStatsRequest) Reset() {
 	*x = CreatePortForwardStatsRequest{}
-	mi := &file_internal_dubbo_idl_open_proto_msgTypes[5]
+	mi := &file_open_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -358,7 +358,7 @@ func (x *CreatePortForwardStatsRequest) String() string {
 func (*CreatePortForwardStatsRequest) ProtoMessage() {}
 
 func (x *CreatePortForwardStatsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_dubbo_idl_open_proto_msgTypes[5]
+	mi := &file_open_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -371,7 +371,7 @@ func (x *CreatePortForwardStatsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePortForwardStatsRequest.ProtoReflect.Descriptor instead.
 func (*CreatePortForwardStatsRequest) Descriptor() ([]byte, []int) {
-	return file_internal_dubbo_idl_open_proto_rawDescGZIP(), []int{5}
+	return file_open_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CreatePortForwardStatsRequest) GetDeviceCode() string {
@@ -453,7 +453,7 @@ type CreatePortForwardStatsResponse struct {
 
 func (x *CreatePortForwardStatsResponse) Reset() {
 	*x = CreatePortForwardStatsResponse{}
-	mi := &file_internal_dubbo_idl_open_proto_msgTypes[6]
+	mi := &file_open_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -465,7 +465,7 @@ func (x *CreatePortForwardStatsResponse) String() string {
 func (*CreatePortForwardStatsResponse) ProtoMessage() {}
 
 func (x *CreatePortForwardStatsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_dubbo_idl_open_proto_msgTypes[6]
+	mi := &file_open_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -478,14 +478,15 @@ func (x *CreatePortForwardStatsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePortForwardStatsResponse.ProtoReflect.Descriptor instead.
 func (*CreatePortForwardStatsResponse) Descriptor() ([]byte, []int) {
-	return file_internal_dubbo_idl_open_proto_rawDescGZIP(), []int{6}
+	return file_open_proto_rawDescGZIP(), []int{6}
 }
 
-var File_internal_dubbo_idl_open_proto protoreflect.FileDescriptor
+var File_open_proto protoreflect.FileDescriptor
 
-const file_internal_dubbo_idl_open_proto_rawDesc = "" +
+const file_open_proto_rawDesc = "" +
 	"\n" +
-	"\x1dinternal/dubbo_idl/open.proto\x12\x04open\"\x93\x01\n" +
+	"\n" +
+	"open.proto\x12\x04open\"\x93\x01\n" +
 	"\x15ReportDeviceIPRequest\x12\x1f\n" +
 	"\vdevice_code\x18\x01 \x01(\tR\n" +
 	"deviceCode\x12\x1f\n" +
@@ -530,22 +531,22 @@ const file_internal_dubbo_idl_open_proto_rawDesc = "" +
 	"\vOpenService\x12M\n" +
 	"\x0eReportDeviceIP\x12\x1b.open.ReportDeviceIPRequest\x1a\x1c.open.ReportDeviceIPResponse\"\x00\x12b\n" +
 	"\x15GetDevicePortForwards\x12\".open.GetDevicePortForwardsRequest\x1a#.open.GetDevicePortForwardsResponse\"\x00\x12e\n" +
-	"\x16CreatePortForwardStats\x12#.open.CreatePortForwardStatsRequest\x1a$.open.CreatePortForwardStatsResponse\"\x00B'Z%vibe_ip/internal/dubbo_generated;openb\x06proto3"
+	"\x16CreatePortForwardStats\x12#.open.CreatePortForwardStatsRequest\x1a$.open.CreatePortForwardStatsResponse\"\x00B2Z0vibe_ip/internal/dubbo_generated;dubbo_generatedb\x06proto3"
 
 var (
-	file_internal_dubbo_idl_open_proto_rawDescOnce sync.Once
-	file_internal_dubbo_idl_open_proto_rawDescData []byte
+	file_open_proto_rawDescOnce sync.Once
+	file_open_proto_rawDescData []byte
 )
 
-func file_internal_dubbo_idl_open_proto_rawDescGZIP() []byte {
-	file_internal_dubbo_idl_open_proto_rawDescOnce.Do(func() {
-		file_internal_dubbo_idl_open_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_internal_dubbo_idl_open_proto_rawDesc), len(file_internal_dubbo_idl_open_proto_rawDesc)))
+func file_open_proto_rawDescGZIP() []byte {
+	file_open_proto_rawDescOnce.Do(func() {
+		file_open_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_open_proto_rawDesc), len(file_open_proto_rawDesc)))
 	})
-	return file_internal_dubbo_idl_open_proto_rawDescData
+	return file_open_proto_rawDescData
 }
 
-var file_internal_dubbo_idl_open_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
-var file_internal_dubbo_idl_open_proto_goTypes = []any{
+var file_open_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_open_proto_goTypes = []any{
 	(*ReportDeviceIPRequest)(nil),          // 0: open.ReportDeviceIPRequest
 	(*ReportDeviceIPResponse)(nil),         // 1: open.ReportDeviceIPResponse
 	(*GetDevicePortForwardsRequest)(nil),   // 2: open.GetDevicePortForwardsRequest
@@ -554,7 +555,7 @@ var file_internal_dubbo_idl_open_proto_goTypes = []any{
 	(*CreatePortForwardStatsRequest)(nil),  // 5: open.CreatePortForwardStatsRequest
 	(*CreatePortForwardStatsResponse)(nil), // 6: open.CreatePortForwardStatsResponse
 }
-var file_internal_dubbo_idl_open_proto_depIdxs = []int32{
+var file_open_proto_depIdxs = []int32{
 	3, // 0: open.GetDevicePortForwardsResponse.rules:type_name -> open.PortForwardRule
 	0, // 1: open.OpenService.ReportDeviceIP:input_type -> open.ReportDeviceIPRequest
 	2, // 2: open.OpenService.GetDevicePortForwards:input_type -> open.GetDevicePortForwardsRequest
@@ -569,26 +570,26 @@ var file_internal_dubbo_idl_open_proto_depIdxs = []int32{
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_internal_dubbo_idl_open_proto_init() }
-func file_internal_dubbo_idl_open_proto_init() {
-	if File_internal_dubbo_idl_open_proto != nil {
+func init() { file_open_proto_init() }
+func file_open_proto_init() {
+	if File_open_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_internal_dubbo_idl_open_proto_rawDesc), len(file_internal_dubbo_idl_open_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_open_proto_rawDesc), len(file_open_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_internal_dubbo_idl_open_proto_goTypes,
-		DependencyIndexes: file_internal_dubbo_idl_open_proto_depIdxs,
-		MessageInfos:      file_internal_dubbo_idl_open_proto_msgTypes,
+		GoTypes:           file_open_proto_goTypes,
+		DependencyIndexes: file_open_proto_depIdxs,
+		MessageInfos:      file_open_proto_msgTypes,
 	}.Build()
-	File_internal_dubbo_idl_open_proto = out.File
-	file_internal_dubbo_idl_open_proto_goTypes = nil
-	file_internal_dubbo_idl_open_proto_depIdxs = nil
+	File_open_proto = out.File
+	file_open_proto_goTypes = nil
+	file_open_proto_depIdxs = nil
 }
