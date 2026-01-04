@@ -531,7 +531,7 @@ const file_open_proto_rawDesc = "" +
 	"\vOpenService\x12M\n" +
 	"\x0eReportDeviceIP\x12\x1b.open.ReportDeviceIPRequest\x1a\x1c.open.ReportDeviceIPResponse\"\x00\x12b\n" +
 	"\x15GetDevicePortForwards\x12\".open.GetDevicePortForwardsRequest\x1a#.open.GetDevicePortForwardsResponse\"\x00\x12e\n" +
-	"\x16CreatePortForwardStats\x12#.open.CreatePortForwardStatsRequest\x1a$.open.CreatePortForwardStatsResponse\"\x00B!Z\x1fvibe_ip/internal/tars_generatedb\x06proto3"
+	"\x16CreatePortForwardStats\x12#.open.CreatePortForwardStatsRequest\x1a$.open.CreatePortForwardStatsResponse\"\x00B0Z.vibe_ip/internal/tars_generated;tars_generatedb\x06proto3"
 
 var (
 	file_open_proto_rawDescOnce sync.Once

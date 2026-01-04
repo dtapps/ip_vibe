@@ -19,7 +19,12 @@ install-tools:
 	go install github.com/envoyproxy/protoc-gen-validate@latest && \
 	go install connectrpc.com/connect/cmd/protoc-gen-connect-go@latest && \
 	go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest && \
-	go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
+	go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest && \
+	go install github.com/cloudwego/thriftgo@latest && \
+	go install github.com/dubbogo/protoc-gen-go-triple/v3@latest && \
+	go install github.com/TarsCloud/TarsGo/tars/tools/tarsgo@latest && \
+	go install github.com/TarsCloud/TarsGo/tars/tools/tars2go@latest && \
+go install github.com/TarsCloud/TarsGo/tars/tools/protoc-gen-go-tarsrpc@latest
 	@echo "🎉 All tools installed successfully!"
 
 # 验证安装
@@ -37,6 +42,11 @@ verify-tools:
 	@test -f $(shell go env GOPATH)/bin/protoc-gen-connect-go && echo "✅ protoc-gen-connect-go found" || echo "❌ protoc-gen-connect-go not found"
 	@test -f $(shell go env GOPATH)/bin/grpcurl && echo "✅ grpcurl found" || echo "❌ grpcurl not found"
 	@test -f $(shell go env GOPATH)/bin/protoc-gen-doc && echo "✅ protoc-gen-doc found" || echo "❌ protoc-gen-doc not found"
+	@test -f $(shell go env GOPATH)/bin/thriftgo && echo "✅ thriftgo found" || echo "❌ thriftgo not found"
+	@test -f $(shell go env GOPATH)/bin/protoc-gen-go-triple && echo "✅ protoc-gen-go-triple found" || echo "❌ protoc-gen-go-triple not found"
+	@test -f $(shell go env GOPATH)/bin/tarsgo && echo "✅ tarsgo found" || echo "❌ tarsgo not found"
+	@test -f $(shell go env GOPATH)/bin/tars2go && echo "✅ tars2go found" || echo "❌ tars2go not found"
+	@test -f $(shell go env GOPATH)/bin/protoc-gen-go-tarsrpc && echo "✅ protoc-gen-go-tarsrpc found" || echo "❌ protoc-gen-go-tarsrpc not found"
 	@echo "🎉 Verification complete!"
 
 # 项目目录
@@ -158,6 +168,46 @@ grpc_generate_old:
 	       ./internal/grpc_proto/*.proto
 	echo "✅ gRPC code generated successfully!"
 
+# remote = false 禁止生成远程调用代码
+# read_write_private = true 允许读写私有字段
+# ignore_initialisms = true 忽略驼峰命名规则
+thrift_generate:
+	thrift \
+		   --gen go:package_prefix=vibe_ip/internal/thrift_generated/ \
+	       -out ./internal/thrift_generated \
+	       ./internal/thrift_idl/*.thrift 
+	rm -rf ./internal/thrift_generated/*/*-remote
+
+thriftgo_generate:
+	thriftgo \
+		   --gen go:package_prefix=vibe_ip/internal/thriftgo_generated/,gen_setter,gen_db_tag,omitempty_for_optional,use_type_alias,validate_set,scan_value_for_enum,reserve_comments \
+	       --out ./internal/thriftgo_generated \
+	       ./internal/thrift_idl/*.thrift
+
+dubbo_generate:
+	@echo "Generating Dubbo code..."
+	protoc --proto_path=./internal/dubbo_idl \
+		   --go_out=./internal/dubbo_generated \
+		   --go_opt=paths=source_relative \
+		   --go-triple_out=./internal/dubbo_generated \
+		   --go-triple_opt=paths=source_relative \
+		   ./internal/dubbo_idl/*.proto
+	@echo "✅ Dubbo code generated successfully!"
+
+tars_idl:
+	tars2go  -outdir=tars-protocol ./internal/tars_idl/*.tars
+	@echo "✅ TarsGo code generated successfully!"
+
+tars_generate:
+	@echo "Generating TarsGo code..."
+	protoc --proto_path=./internal/tars_idl \
+		   --go_out=./internal/tars_generated \
+		   --go_opt=paths=source_relative \
+		   --go-tarsrpc_out=./internal/tars_generated \
+		   --go-tarsrpc_opt=paths=source_relative \
+		   ./internal/tars_idl/*.proto
+	@echo "✅ TarsGo code generated successfully!"
+
 # 二进制文件名
 BINARY_NAME=ip_vibe
 # BINARY_NAME_CLI=cli
@@ -174,9 +224,11 @@ ENV_DEBUG=true
 
 ENV_HTTP_ADDR=0.0.0.0:9999
 ENV_GRPC_ADDR=0.0.0.0:9998
+ENV_THRIFT_ADDR=0.0.0.0:9997
 
 ENV_HTTP_URL=http://localhost:9999
 ENV_GRPC_URL=localhost:9998
+ENV_THRIFT_URL=localhost:9997
 
 ENV_BASIC_AUTH_USERNAME=admin
 ENV_BASIC_AUTH_PASSWORD=123456
@@ -197,6 +249,7 @@ dev_backend:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_ADDR=$(ENV_HTTP_ADDR) && \
 	export GRPC_ADDR=$(ENV_GRPC_ADDR) && \
+	export THRIFT_ADDR=$(ENV_THRIFT_ADDR) && \
 	go run cmd/$(BINARY_NAME_BACKEND)/main.go
 
 # 启动后端服务（启用 Basic Auth）
@@ -204,6 +257,7 @@ dev_backend_basic_auth:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_ADDR=$(ENV_HTTP_ADDR) && \
 	export GRPC_ADDR=$(ENV_GRPC_ADDR) && \
+	export THRIFT_ADDR=$(ENV_THRIFT_ADDR) && \
 	export BASIC_AUTH_USERNAME=$(ENV_BASIC_AUTH_USERNAME) && \
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_BACKEND)/main.go
@@ -213,6 +267,7 @@ dev_reporter:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_URL=$(ENV_HTTP_URL) && \
 	export GRPC_URL=$(ENV_GRPC_URL) && \
+	export THRIFT_URL=$(ENV_THRIFT_URL) && \
 	go run cmd/$(BINARY_NAME_REPORTER)/main.go
 
 # 启动IP上报服务（启用 Basic Auth）
@@ -220,6 +275,7 @@ dev_reporter_basic_auth:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_URL=$(ENV_HTTP_URL) && \
 	export GRPC_URL=$(ENV_GRPC_URL) && \
+	export THRIFT_URL=$(ENV_THRIFT_URL) && \
 	export BASIC_AUTH_USERNAME=$(ENV_BASIC_AUTH_USERNAME) && \
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_REPORTER)/main.go
@@ -229,6 +285,7 @@ dev_forwarder:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_URL=$(ENV_HTTP_URL) && \
 	export GRPC_URL=$(ENV_GRPC_URL) && \
+	export THRIFT_URL=$(ENV_THRIFT_URL) && \
 	go run cmd/$(BINARY_NAME_FORWARDER)/main.go
 
 # 启动端口转发服务（启用 Basic Auth）
@@ -236,6 +293,7 @@ dev_forwarder_basic_auth:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_URL=$(ENV_HTTP_URL) && \
 	export GRPC_URL=$(ENV_GRPC_URL) && \
+	export THRIFT_URL=$(ENV_THRIFT_URL) && \
 	export BASIC_AUTH_USERNAME=$(ENV_BASIC_AUTH_USERNAME) && \
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_FORWARDER)/main.go

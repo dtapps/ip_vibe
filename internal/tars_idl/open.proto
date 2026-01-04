@@ -4,7 +4,7 @@ syntax = "proto3";
 package open;
 
 // Go 包路径：路径;包名（匹配输出目录，避免子包冲突）option go_package = ".;tars_generated"
-option go_package = "vibe_ip/internal/tars_generated";
+option go_package = "vibe_ip/internal/tars_generated;tars_generated";
 
 // 开放
 service OpenService {
