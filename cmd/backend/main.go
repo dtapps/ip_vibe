@@ -781,6 +781,14 @@ func web_resource(ctx context.Context, logger *slog.Logger, router *gin.Engine) 
 						Value: value,
 					})
 				}
+			case "operation_log_source":
+				// 操作日志 操作来源
+				for _, value := range schematype.GetLogSources {
+					enumItems = append(enumItems, EnumItem{
+						Label: schematype.GetLogSourceDescriptions[value],
+						Value: value,
+					})
+				}
 			case "operation_log_op_type":
 				// 操作日志 操作类型
 				for _, value := range schematype.GetLogOpTypes {
