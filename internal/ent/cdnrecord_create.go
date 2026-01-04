@@ -241,7 +241,9 @@ func (_c *CDNRecordCreate) Mutation() *CDNRecordMutation {
 
 // Save creates the CDNRecord in the database.
 func (_c *CDNRecordCreate) Save(ctx context.Context) (*CDNRecord, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -268,12 +270,18 @@ func (_c *CDNRecordCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *CDNRecordCreate) defaults() {
+func (_c *CDNRecordCreate) defaults() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
+		if cdnrecord.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cdnrecord.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := cdnrecord.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		if cdnrecord.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cdnrecord.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cdnrecord.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
@@ -293,6 +301,7 @@ func (_c *CDNRecordCreate) defaults() {
 		v := cdnrecord.DefaultIsActive
 		_c.mutation.SetIsActive(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

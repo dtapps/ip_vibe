@@ -450,7 +450,8 @@ func (c *CDNRecordClient) QueryDNSRecords(_m *CDNRecord) *DNSRecordQuery {
 
 // Hooks returns the client hooks.
 func (c *CDNRecordClient) Hooks() []Hook {
-	return c.hooks.CDNRecord
+	hooks := c.hooks.CDNRecord
+	return append(hooks[:len(hooks):len(hooks)], cdnrecord.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.

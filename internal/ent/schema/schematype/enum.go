@@ -230,53 +230,74 @@ var GetLogOpTypes = []string{
 // --------
 
 const (
-	LogObjTypePlatformConfig       string = "platform_config"        // 平台配置
-	LogObjTypeCDNRecord            string = "cdn_record"             // CDN记录
-	LogObjTypeDNSRecord            string = "dns_record"             // DNS记录
-	LogObjTypeDevice               string = "device"                 // 设备
-	LogObjTypeDeviceIPRecord       string = "device_ip_report"       // 设备IP记录
-	LogObjTypeIPGroup              string = "ip_group"               // IP组
-	LogObjTypeIPGroupDevice        string = "ip_group_device"        // IP组设备
-	LogObjTypeWebhook              string = "webhook"                // 通知
-	LogObjTypeWebhookSubscription  string = "webhook_subscription"   // 通知订阅
-	LogObjTypeDevicePortForward    string = "device_port_forward"    // 端口转发
-	LogObjTypeDomainMonitor        string = "domain_monitor"         // 域名监控
-	LogObjTypeDomainMonitorHistory string = "domain_monitor_history" // 域名监控历史记录
-	LogObjTypeSSLRecord            string = "ssl_record"             // SSL记录
+	LogObjTypeCDNRecord           string = "cdn_record"           // CDN记录
+	LogObjTypeDNSRecord           string = "dns_record"           // DNS记录
+	LogObjTypeDevice              string = "device"               // 设备
+	LogObjTypeDevicePortForward   string = "device_port_forward"  // 端口转发
+	LogObjTypeDomainMonitor       string = "domain_monitor"       // 域名监控
+	LogObjTypeIPGroup             string = "ip_group"             // IP组
+	LogObjTypeIPGroupDevice       string = "ip_group_device"      // IP组设备
+	LogObjTypePlatformConfig      string = "platform_config"      // 平台配置
+	LogObjTypeSSLRecord           string = "ssl_record"           // SSL记录
+	LogObjTypeWebhook             string = "webhook"              // 通知
+	LogObjTypeWebhookSubscription string = "webhook_subscription" // 通知订阅
+
+	LogObjTypeDeviceIPRecord        string = "device_ip_report"        // 设备IP记录
+	LogObjTypeDomainMonitorHistory  string = "domain_monitor_history"  // 域名监控历史记录
+	LogObjTypeHttpLog               string = "http_log"                // http请求日志
+	LogObjTypeOperationLog          string = "operation_log"           // 操作日志
+	LogObjTypePortForwardStats      string = "port_forward_stats"      // 端口转发统计快照记录
+	LogObjTypeRestyLog              string = "resty_log"               // resty请求日志
+	LogObjTypeSSLCertificateHistory string = "ssl_certificate_history" // SSL证书申请历史记录
+	LogObjTypeWebhookHistory        string = "webhook_history"         // 通知历史记录
 )
 
 // GetLogObjTypeDescriptions 对象类型说明映射
 var GetLogObjTypeDescriptions = map[string]string{
-	LogObjTypePlatformConfig:       "平台配置",
-	LogObjTypeCDNRecord:            "CDN记录",
-	LogObjTypeDNSRecord:            "DNS记录",
-	LogObjTypeDevice:               "设备",
-	LogObjTypeDeviceIPRecord:       "设备IP记录",
-	LogObjTypeIPGroup:              "IP组",
-	LogObjTypeIPGroupDevice:        "IP组设备",
-	LogObjTypeWebhook:              "通知",
-	LogObjTypeWebhookSubscription:  "通知订阅",
-	LogObjTypeDevicePortForward:    "端口转发",
-	LogObjTypeDomainMonitor:        "域名监控",
-	LogObjTypeDomainMonitorHistory: "域名监控历史记录",
-	LogObjTypeSSLRecord:            "SSL记录",
+	LogObjTypeCDNRecord:           "CDN记录",
+	LogObjTypeDNSRecord:           "DNS记录",
+	LogObjTypeDevice:              "设备",
+	LogObjTypeDevicePortForward:   "端口转发",
+	LogObjTypeDomainMonitor:       "域名监控",
+	LogObjTypeIPGroup:             "IP组",
+	LogObjTypeIPGroupDevice:       "IP组设备",
+	LogObjTypePlatformConfig:      "平台配置",
+	LogObjTypeSSLRecord:           "SSL记录",
+	LogObjTypeWebhook:             "通知",
+	LogObjTypeWebhookSubscription: "通知订阅",
+
+	LogObjTypeDeviceIPRecord:        "设备IP记录",
+	LogObjTypeDomainMonitorHistory:  "域名监控历史记录",
+	LogObjTypeHttpLog:               "http请求日志",
+	LogObjTypeOperationLog:          "操作日志",
+	LogObjTypePortForwardStats:      "端口转发统计快照记录",
+	LogObjTypeRestyLog:              "resty请求日志",
+	LogObjTypeSSLCertificateHistory: "SSL证书申请历史记录",
+	LogObjTypeWebhookHistory:        "通知历史记录",
 }
 
 // GetLogObjTypes 返回所有对象类型
 var GetLogObjTypes = []string{
-	LogObjTypePlatformConfig,
 	LogObjTypeCDNRecord,
 	LogObjTypeDNSRecord,
 	LogObjTypeDevice,
-	LogObjTypeDeviceIPRecord,
-	LogObjTypeIPGroup,
-	LogObjTypeIPGroupDevice,
-	LogObjTypeWebhook,
-	LogObjTypeWebhookSubscription,
 	LogObjTypeDevicePortForward,
 	LogObjTypeDomainMonitor,
-	LogObjTypeDomainMonitorHistory,
+	LogObjTypeIPGroup,
+	LogObjTypeIPGroupDevice,
+	LogObjTypePlatformConfig,
 	LogObjTypeSSLRecord,
+	LogObjTypeWebhook,
+	LogObjTypeWebhookSubscription,
+
+	LogObjTypeDeviceIPRecord,
+	LogObjTypeDomainMonitorHistory,
+	LogObjTypeHttpLog,
+	LogObjTypeOperationLog,
+	LogObjTypePortForwardStats,
+	LogObjTypeRestyLog,
+	LogObjTypeSSLCertificateHistory,
+	LogObjTypeWebhookHistory,
 }
 
 // --------

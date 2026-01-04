@@ -16,7 +16,7 @@ func CDNRecordLogHook() ent.Hook {
 				start := time.Now()
 				op := m.Op()
 				opType := getOpType(op)
-				objType := m.Type()
+				objType := getObjType(m)
 
 				// 1. Mutate 前：抓取变更字段和旧值快照
 				oldV, _ := getChangedFields(m)
@@ -41,7 +41,7 @@ func CDNRecordLogHook() ent.Hook {
 				// 5. 异步记录审计日志
 				go func(id int64, ot string, oType string, ov map[string]any, nv map[string]any, stat string, message string, cost int64) {
 					// 使用独立的 context 保证写入
-					_ = logDb.OperationLog.Create().
+					logErr := getLogDb().OperationLog.Create().
 						SetOpType(operationlog.OpType(ot)).
 						SetObjType(operationlog.ObjType(oType)).
 						SetObjID(id).
@@ -50,11 +50,16 @@ func CDNRecordLogHook() ent.Hook {
 						SetStatus(operationlog.Status(stat)).
 						SetMessage(message).
 						Exec(context.Background())
+					if logErr != nil {
+						getSlog().ErrorContext(ctx, "记录操作日志失败",
+							slog.Any("err", logErr),
+						)
+					}
 				}(objID, opType, objType, oldV, newV, string(status), msg, time.Since(start).Milliseconds())
 
 				// 6. 本地打印
 				if err != nil {
-					entSlog.ErrorContext(ctx, "CDNRecord 变更失败",
+					getSlog().ErrorContext(ctx, "CDNRecord 变更失败",
 						slog.Int64("id", objID),
 						slog.Any("err", err),
 					)

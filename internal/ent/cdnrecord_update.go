@@ -289,7 +289,9 @@ func (_u *CDNRecordUpdate) RemoveDNSRecords(v ...*DNSRecord) *CDNRecordUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *CDNRecordUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -316,11 +318,15 @@ func (_u *CDNRecordUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *CDNRecordUpdate) defaults() {
+func (_u *CDNRecordUpdate) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if cdnrecord.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cdnrecord.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cdnrecord.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -783,7 +789,9 @@ func (_u *CDNRecordUpdateOne) Select(field string, fields ...string) *CDNRecordU
 
 // Save executes the query and returns the updated CDNRecord entity.
 func (_u *CDNRecordUpdateOne) Save(ctx context.Context) (*CDNRecord, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -810,11 +818,15 @@ func (_u *CDNRecordUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *CDNRecordUpdateOne) defaults() {
+func (_u *CDNRecordUpdateOne) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if cdnrecord.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cdnrecord.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cdnrecord.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
