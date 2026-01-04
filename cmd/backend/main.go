@@ -94,6 +94,29 @@ func init() {
 // @BasePath		/api/
 func main() {
 
+	// 全局 Panic 捕获
+	defer func() {
+		if r := recover(); r != nil {
+			// 获取堆栈信息
+			buf := make([]byte, 4096)
+			n := runtime.Stack(buf, false)
+			stackInfo := string(buf[:n])
+
+			// 格式化错误消息
+			errMsg := fmt.Sprintf("%v", r)
+
+			// 使用标准 slog 记录到控制台/文件（此时 global 变量可能不可靠，用标准 slog 最稳）
+			slog.Error("🔥 系统触发致命崩溃 (Panic)",
+				slog.String("error", errMsg),
+				slog.String("stack", stackInfo),
+			)
+
+			// 给日志留一点写入时间
+			time.Sleep(time.Second)
+			os.Exit(1)
+		}
+	}()
+
 	ctx := context.Background()
 
 	initialize.InitSLog("backend")       // 初始化 日志
