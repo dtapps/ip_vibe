@@ -246,7 +246,7 @@ func (p *Base) Validate() error {
 	return nil
 }
 
-// 设备上报 IP 请求
+// 设备上报IP 请求
 // 
 // Attributes:
 //  - DeviceCode
@@ -550,7 +550,7 @@ func (p *ReportDeviceIPRequest) Validate() error {
 	return nil
 }
 
-// 设备上报 IP 响应
+// 设备上报IP 响应
 // 
 // Attributes:
 //  - Msg
@@ -2063,9 +2063,9 @@ func (p *CreatePortForwardStatsResponse) Validate() error {
 	return nil
 }
 
-type OpenService interface {	//开放接口
+type OpenService interface {	//开放
 
-	// 设备上报 IP
+	// 设备上报IP
 	// 
 	// Parameters:
 	//  - Req
@@ -2088,7 +2088,7 @@ type OpenService interface {	//开放接口
 	CreatePortForwardStats(ctx context.Context, req *CreatePortForwardStatsRequest, base *Base) (_r *CreatePortForwardStatsResponse, _err error)
 }
 
-//开放接口
+//开放
 type OpenServiceClient struct {
 	c thrift.TClient
 	meta thrift.ResponseMeta
@@ -2124,7 +2124,7 @@ func (p *OpenServiceClient) SetLastResponseMeta_(meta thrift.ResponseMeta) {
 	p.meta = meta
 }
 
-// 设备上报 IP
+// 设备上报IP
 // 
 // Parameters:
 //  - Req
