@@ -33,7 +33,7 @@ func CDNRecordLogHook() ent.Hook {
 				}
 
 				// 4. 获取 ID (如果是 Create 且报错了，ID 可能是 0)
-				objID, _ := getID(ctx, op, m, result)
+				objID, _ := getObjID(ctx, op, m, result)
 
 				// 5. 获取新值快照
 				_, newV := getChangedFields(ctx, m)
@@ -51,7 +51,7 @@ func CDNRecordLogHook() ent.Hook {
 						SetMessage(message).
 						Exec(context.Background())
 					if logErr != nil {
-						getSlog().ErrorContext(ctx, "记录操作日志失败",
+						getEntLogSlog().ErrorContext(ctx, "记录操作日志失败",
 							slog.Any("err", logErr),
 						)
 					}
@@ -59,7 +59,7 @@ func CDNRecordLogHook() ent.Hook {
 
 				// 7. 本地打印
 				if err != nil {
-					getSlog().ErrorContext(ctx, "CDNRecord 变更失败",
+					getEntSlog().ErrorContext(ctx, "CDNRecord 变更失败",
 						slog.Int64("id", objID),
 						slog.Any("err", err),
 					)

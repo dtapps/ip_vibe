@@ -54,6 +54,7 @@ var (
 
 	GvaSlog       *golog.SLog // slog 日志
 	GvaEntSlog    *golog.SLog // ent 日志
+	GvaEntLogSlog *golog.SLog // ent log 日志
 	GvaGinSlog    *golog.SLog // gin 日志
 	GvaGrpcSlog   *golog.SLog // gRPC 日志
 	GvaThriftSlog *golog.SLog // Thrift 日志

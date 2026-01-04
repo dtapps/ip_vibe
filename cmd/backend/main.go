@@ -131,13 +131,13 @@ func main() {
 
 	initialize.InitCoraza() // 初始化 Coraza 防火墙
 
-	initialize.InitEntDb(ctx, global.GvaEntSlog.WithLogger())     // 初始化 业务数据库
-	initialize.InitEntLogDb(ctx, global.GvaEntSlog.WithLogger())  // 初始化 日志数据库
-	initialize.InitGoCron(ctx, global.GvaGocronSlog.WithLogger()) // 初始化 GoCron 调度器
-	initialize.InitMCP(ctx, global.GvaMcpSlog.WithLogger())       // 初始化 MCP
-	initialize.InitEntRestyLog(global.GvaRestySLog.WithLogger())  // 初始化 Resty 日志
-	initialize.InitEntHttpLog(global.GvaHttpSlog.WithLogger())    // 初始化 HTTP 日志
-	initialize.InitThirdParty(ctx)                                // 初始化 第三方
+	initialize.InitEntDb(ctx, global.GvaEntSlog.WithLogger())       // 初始化 业务数据库
+	initialize.InitEntLogDb(ctx, global.GvaEntLogSlog.WithLogger()) // 初始化 日志数据库
+	initialize.InitGoCron(ctx, global.GvaGocronSlog.WithLogger())   // 初始化 GoCron 调度器
+	initialize.InitMCP(ctx, global.GvaMcpSlog.WithLogger())         // 初始化 MCP
+	initialize.InitEntRestyLog(global.GvaRestySLog.WithLogger())    // 初始化 Resty 日志
+	initialize.InitEntHttpLog(global.GvaHttpSlog.WithLogger())      // 初始化 HTTP 日志
+	initialize.InitThirdParty(ctx)                                  // 初始化 第三方
 
 	initialize.InitOperationLogHelper() // 初始化操作日志助手
 

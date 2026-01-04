@@ -10,22 +10,31 @@ import (
 	"vibe_ip/internal/global"
 )
 
-func getSlog() *slog.Logger {
-	entSlog := slog.Default()
+func getEntSlog() *slog.Logger {
+	logger := slog.Default()
 	if global.GvaEntSlog != nil {
-		entSlog = global.GvaEntSlog.WithLogger()
+		logger = global.GvaEntSlog.WithLogger()
 	}
-	return entSlog
+	return logger
 }
 
-func getLogDb() (logDb *ent_log.Client) {
-	if logDb == nil {
-		logDb = global.GvaEntLogDb
+func getEntLogSlog() *slog.Logger {
+	logger := slog.Default()
+	if global.GvaEntLogSlog != nil {
+		logger = global.GvaEntLogSlog.WithLogger()
 	}
-	return logDb
+	return logger
 }
 
-// getOpType 将 ent.Op 映射为 operationlog.OpType 的字符串值
+func getDb() (db *ent.Client) {
+	return global.GvaEntDb
+}
+
+func getLogDb() (db *ent_log.Client) {
+	return global.GvaEntLogDb
+}
+
+// 将 ent.Op 映射为 operationlog.OpType 的字符串值
 func getOpType(op ent.Op) string {
 	switch op {
 	case ent.OpCreate:
@@ -39,8 +48,8 @@ func getOpType(op ent.Op) string {
 	}
 }
 
-// getID: 适配 Int64 的通用 ID 获取
-func getID[M ent.Mutation](ctx context.Context, op ent.Op, m M, result ent.Value) (int64, error) {
+// 适配 Int64 的通用 ID 获取
+func getObjID[M ent.Mutation](ctx context.Context, op ent.Op, m M, result ent.Value) (int64, error) {
 	// 1. 处理 Create 场景：从返回的 result 中获取 ID
 	if op.Is(ent.OpCreate) && result != nil {
 		// 先转为 any 再断言
@@ -60,7 +69,7 @@ func getID[M ent.Mutation](ctx context.Context, op ent.Op, m M, result ent.Value
 	return 0, fmt.Errorf("无法获取对象 ID, Op: %s", op.String())
 }
 
-// 获取表名逻辑
+// 将 ent.Mutation 映射为 operationlog.ObjType 的字符串值
 func getObjType[M ent.Mutation](m M) string {
 	var entityToObjType = map[string]operationlog.ObjType{
 		ent.TypeCDNRecord:           operationlog.ObjTypeCdnRecord,
