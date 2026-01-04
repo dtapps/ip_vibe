@@ -19,7 +19,7 @@ func CDNRecordLogHook() ent.Hook {
 				objType := getObjType(m)
 
 				// 1. Mutate 前：抓取变更字段和旧值快照
-				oldV, _ := getChangedFields(m)
+				oldV, _ := getChangedFields(ctx, m)
 
 				// 2. 执行数据库变更
 				result, err := next.Mutate(ctx, m)
@@ -35,10 +35,10 @@ func CDNRecordLogHook() ent.Hook {
 				// 4. 获取 ID (如果是 Create 且报错了，ID 可能是 0)
 				objID, _ := getID(ctx, op, m, result)
 
-				// 获取新值快照
-				_, newV := getChangedFields(m)
+				// 5. 获取新值快照
+				_, newV := getChangedFields(ctx, m)
 
-				// 5. 异步记录审计日志
+				// 6. 异步记录审计日志
 				go func(id int64, ot string, oType string, ov map[string]any, nv map[string]any, stat string, message string, cost int64) {
 					// 使用独立的 context 保证写入
 					logErr := getLogDb().OperationLog.Create().
@@ -57,7 +57,7 @@ func CDNRecordLogHook() ent.Hook {
 					}
 				}(objID, opType, objType, oldV, newV, string(status), msg, time.Since(start).Milliseconds())
 
-				// 6. 本地打印
+				// 7. 本地打印
 				if err != nil {
 					getSlog().ErrorContext(ctx, "CDNRecord 变更失败",
 						slog.Int64("id", objID),

@@ -92,26 +92,27 @@ func getObjType[M ent.Mutation](m M) string {
 }
 
 // getChangedFields: 返回 JSON 字符串以适配你的 Schema
-func getChangedFields[M ent.Mutation](m M) (map[string]any, map[string]any) {
+func getChangedFields[M ent.Mutation](ctx context.Context, m M) (map[string]any, map[string]any) {
 	changed := m.Fields()
 	oldMap := make(map[string]any)
 	newMap := make(map[string]any)
 
-	// 使用软断言，防止断言失败导致 panic
-	mutation, ok := any(m).(interface {
-		OldField(context.Context, string) (any, error)
-	})
-
+	// 获取新值
 	for _, f := range changed {
-		// 只有断言成功才尝试获取旧值
-		if ok {
-			if val, err := mutation.OldField(context.Background(), f); err == nil {
-				oldMap[f] = val
-			}
-		}
-		// 获取新值
 		if val, exists := m.Field(f); exists {
 			newMap[f] = val
+		}
+	}
+
+	// 获取旧值 (关键点：使用 OldField 前确保断言成功)
+	if v, ok := any(m).(interface {
+		OldField(context.Context, string) (any, error)
+	}); ok {
+		for _, f := range changed {
+			// 注意：OldField 可能会因为数据不存在或未加载而报错
+			if val, err := v.OldField(ctx, f); err == nil {
+				oldMap[f] = val
+			}
 		}
 	}
 
