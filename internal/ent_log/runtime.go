@@ -97,7 +97,7 @@ func init() {
 	// operationlog.DefaultCreatedAt holds the default value on creation for the created_at field.
 	operationlog.DefaultCreatedAt = operationlogDescCreatedAt.Default.(func() time.Time)
 	// operationlogDescObjID is the schema descriptor for obj_id field.
-	operationlogDescObjID := operationlogFields[3].Descriptor()
+	operationlogDescObjID := operationlogFields[4].Descriptor()
 	// operationlog.ObjIDValidator is a validator for the "obj_id" field. It is called by the builders before save.
 	operationlog.ObjIDValidator = operationlogDescObjID.Validators[0].(func(int64) error)
 	// operationlogDescID is the schema descriptor for id field.

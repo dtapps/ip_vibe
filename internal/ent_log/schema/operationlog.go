@@ -42,6 +42,13 @@ func (OperationLog) Fields() []ent.Field {
 			Comment("操作日志序号").
 			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
 
+		field.Enum("source").
+			Values("user", "system", "task"). // user: 用户手动, system: 系统自动, task: 定时任务
+			Default("user").
+			Immutable().
+			Comment("操作来源").
+			Annotations(entsql.WithComments(true)),
+
 		field.Enum("op_type").
 			Values(schematype.GetLogOpTypes...).
 			Immutable().

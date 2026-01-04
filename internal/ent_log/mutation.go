@@ -3513,6 +3513,7 @@ type OperationLogMutation struct {
 	typ           string
 	id            *int64
 	created_at    *time.Time
+	source        *operationlog.Source
 	op_type       *operationlog.OpType
 	obj_type      *operationlog.ObjType
 	obj_id        *int64
@@ -3665,6 +3666,42 @@ func (m *OperationLogMutation) OldCreatedAt(ctx context.Context) (v time.Time, e
 // ResetCreatedAt resets all changes to the "created_at" field.
 func (m *OperationLogMutation) ResetCreatedAt() {
 	m.created_at = nil
+}
+
+// SetSource sets the "source" field.
+func (m *OperationLogMutation) SetSource(o operationlog.Source) {
+	m.source = &o
+}
+
+// Source returns the value of the "source" field in the mutation.
+func (m *OperationLogMutation) Source() (r operationlog.Source, exists bool) {
+	v := m.source
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSource returns the old "source" field's value of the OperationLog entity.
+// If the OperationLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationLogMutation) OldSource(ctx context.Context) (v operationlog.Source, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSource is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSource requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSource: %w", err)
+	}
+	return oldValue.Source, nil
+}
+
+// ResetSource resets all changes to the "source" field.
+func (m *OperationLogMutation) ResetSource() {
+	m.source = nil
 }
 
 // SetOpType sets the "op_type" field.
@@ -3999,9 +4036,12 @@ func (m *OperationLogMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OperationLogMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, operationlog.FieldCreatedAt)
+	}
+	if m.source != nil {
+		fields = append(fields, operationlog.FieldSource)
 	}
 	if m.op_type != nil {
 		fields = append(fields, operationlog.FieldOpType)
@@ -4034,6 +4074,8 @@ func (m *OperationLogMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case operationlog.FieldCreatedAt:
 		return m.CreatedAt()
+	case operationlog.FieldSource:
+		return m.Source()
 	case operationlog.FieldOpType:
 		return m.OpType()
 	case operationlog.FieldObjType:
@@ -4059,6 +4101,8 @@ func (m *OperationLogMutation) OldField(ctx context.Context, name string) (ent.V
 	switch name {
 	case operationlog.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
+	case operationlog.FieldSource:
+		return m.OldSource(ctx)
 	case operationlog.FieldOpType:
 		return m.OldOpType(ctx)
 	case operationlog.FieldObjType:
@@ -4088,6 +4132,13 @@ func (m *OperationLogMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
+		return nil
+	case operationlog.FieldSource:
+		v, ok := value.(operationlog.Source)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSource(v)
 		return nil
 	case operationlog.FieldOpType:
 		v, ok := value.(operationlog.OpType)
@@ -4219,6 +4270,9 @@ func (m *OperationLogMutation) ResetField(name string) error {
 	switch name {
 	case operationlog.FieldCreatedAt:
 		m.ResetCreatedAt()
+		return nil
+	case operationlog.FieldSource:
+		m.ResetSource()
 		return nil
 	case operationlog.FieldOpType:
 		m.ResetOpType()

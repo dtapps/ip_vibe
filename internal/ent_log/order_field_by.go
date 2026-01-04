@@ -1013,6 +1013,31 @@ func (q *OperationLogQuery) OrderByCreatedAtAsc() *OperationLogQuery {
 	return q.Order(Asc(operationlog.FieldCreatedAt))
 }
 
+// OrderBySourceDesc 按字段 source 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *OperationLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.OperationLog.Query().
+//	    OrderBySourceDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *OperationLogQuery) OrderBySourceDesc() *OperationLogQuery {
+	return q.Order(Desc(operationlog.FieldSource))
+}
+
+// OrderBySourceAsc 按字段 source 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *OperationLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.OperationLog.Query().
+//	    OrderBySourceAsc().
+//	    All(ctx)
+func (q *OperationLogQuery) OrderBySourceAsc() *OperationLogQuery {
+	return q.Order(Asc(operationlog.FieldSource))
+}
+
 // OrderByOpTypeDesc 按字段 op_type 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *OperationLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。

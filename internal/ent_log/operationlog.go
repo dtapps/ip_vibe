@@ -21,6 +21,8 @@ type OperationLog struct {
 	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
+	// 操作来源
+	Source operationlog.Source `json:"source,omitempty"`
 	// 操作类型
 	OpType operationlog.OpType `json:"op_type,omitempty"`
 	// 对象类型
@@ -47,7 +49,7 @@ func (*OperationLog) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case operationlog.FieldID, operationlog.FieldObjID:
 			values[i] = new(sql.NullInt64)
-		case operationlog.FieldOpType, operationlog.FieldObjType, operationlog.FieldStatus, operationlog.FieldMessage:
+		case operationlog.FieldSource, operationlog.FieldOpType, operationlog.FieldObjType, operationlog.FieldStatus, operationlog.FieldMessage:
 			values[i] = new(sql.NullString)
 		case operationlog.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -77,6 +79,12 @@ func (_m *OperationLog) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				_m.CreatedAt = value.Time
+			}
+		case operationlog.FieldSource:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field source", values[i])
+			} else if value.Valid {
+				_m.Source = operationlog.Source(value.String)
 			}
 		case operationlog.FieldOpType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -162,6 +170,9 @@ func (_m *OperationLog) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("source=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Source))
 	builder.WriteString(", ")
 	builder.WriteString("op_type=")
 	builder.WriteString(fmt.Sprintf("%v", _m.OpType))

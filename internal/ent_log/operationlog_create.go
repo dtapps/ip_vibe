@@ -36,6 +36,20 @@ func (_c *OperationLogCreate) SetNillableCreatedAt(v *time.Time) *OperationLogCr
 	return _c
 }
 
+// SetSource sets the "source" field.
+func (_c *OperationLogCreate) SetSource(v operationlog.Source) *OperationLogCreate {
+	_c.mutation.SetSource(v)
+	return _c
+}
+
+// SetNillableSource sets the "source" field if the given value is not nil.
+func (_c *OperationLogCreate) SetNillableSource(v *operationlog.Source) *OperationLogCreate {
+	if v != nil {
+		_c.SetSource(*v)
+	}
+	return _c
+}
+
 // SetOpType sets the "op_type" field.
 func (_c *OperationLogCreate) SetOpType(v operationlog.OpType) *OperationLogCreate {
 	_c.mutation.SetOpType(v)
@@ -123,12 +137,24 @@ func (_c *OperationLogCreate) defaults() {
 		v := operationlog.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
+	if _, ok := _c.mutation.Source(); !ok {
+		v := operationlog.DefaultSource
+		_c.mutation.SetSource(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *OperationLogCreate) check() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent_log: missing required field "OperationLog.created_at"`)}
+	}
+	if _, ok := _c.mutation.Source(); !ok {
+		return &ValidationError{Name: "source", err: errors.New(`ent_log: missing required field "OperationLog.source"`)}
+	}
+	if v, ok := _c.mutation.Source(); ok {
+		if err := operationlog.SourceValidator(v); err != nil {
+			return &ValidationError{Name: "source", err: fmt.Errorf(`ent_log: validator failed for field "OperationLog.source": %w`, err)}
+		}
 	}
 	if _, ok := _c.mutation.OpType(); !ok {
 		return &ValidationError{Name: "op_type", err: errors.New(`ent_log: missing required field "OperationLog.op_type"`)}
@@ -206,6 +232,10 @@ func (_c *OperationLogCreate) createSpec() (*OperationLog, *sqlgraph.CreateSpec)
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(operationlog.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
+	}
+	if value, ok := _c.mutation.Source(); ok {
+		_spec.SetField(operationlog.FieldSource, field.TypeEnum, value)
+		_node.Source = value
 	}
 	if value, ok := _c.mutation.OpType(); ok {
 		_spec.SetField(operationlog.FieldOpType, field.TypeEnum, value)
@@ -306,6 +336,9 @@ func (u *OperationLogUpsertOne) UpdateNewValues() *OperationLogUpsertOne {
 		}
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(operationlog.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.Source(); exists {
+			s.SetIgnore(operationlog.FieldSource)
 		}
 		if _, exists := u.create.mutation.OpType(); exists {
 			s.SetIgnore(operationlog.FieldOpType)
@@ -543,6 +576,9 @@ func (u *OperationLogUpsertBulk) UpdateNewValues() *OperationLogUpsertBulk {
 			}
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(operationlog.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.Source(); exists {
+				s.SetIgnore(operationlog.FieldSource)
 			}
 			if _, exists := b.mutation.OpType(); exists {
 				s.SetIgnore(operationlog.FieldOpType)

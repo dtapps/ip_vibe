@@ -16,6 +16,8 @@ const (
 	FieldID = "id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
+	// FieldSource holds the string denoting the source field in the database.
+	FieldSource = "source"
 	// FieldOpType holds the string denoting the op_type field in the database.
 	FieldOpType = "op_type"
 	// FieldObjType holds the string denoting the obj_type field in the database.
@@ -38,6 +40,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
+	FieldSource,
 	FieldOpType,
 	FieldObjType,
 	FieldObjID,
@@ -65,6 +68,33 @@ var (
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(int64) error
 )
+
+// Source defines the type for the "source" enum field.
+type Source string
+
+// SourceUser is the default value of the Source enum.
+const DefaultSource = SourceUser
+
+// Source values.
+const (
+	SourceUser   Source = "user"
+	SourceSystem Source = "system"
+	SourceTask   Source = "task"
+)
+
+func (s Source) String() string {
+	return string(s)
+}
+
+// SourceValidator is a validator for the "source" field enum values. It is called by the builders before save.
+func SourceValidator(s Source) error {
+	switch s {
+	case SourceUser, SourceSystem, SourceTask:
+		return nil
+	default:
+		return fmt.Errorf("operationlog: invalid enum value for source field: %q", s)
+	}
+}
 
 // OpType defines the type for the "op_type" enum field.
 type OpType string
@@ -166,6 +196,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// BySource orders the results by the source field.
+func BySource(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSource, opts...).ToFunc()
 }
 
 // ByOpType orders the results by the op_type field.

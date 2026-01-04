@@ -109,6 +109,26 @@ func CreatedAtLTE(v time.Time) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldLTE(FieldCreatedAt, v))
 }
 
+// SourceEQ applies the EQ predicate on the "source" field.
+func SourceEQ(v Source) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldEQ(FieldSource, v))
+}
+
+// SourceNEQ applies the NEQ predicate on the "source" field.
+func SourceNEQ(v Source) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldNEQ(FieldSource, v))
+}
+
+// SourceIn applies the In predicate on the "source" field.
+func SourceIn(vs ...Source) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldIn(FieldSource, vs...))
+}
+
+// SourceNotIn applies the NotIn predicate on the "source" field.
+func SourceNotIn(vs ...Source) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldNotIn(FieldSource, vs...))
+}
+
 // OpTypeEQ applies the EQ predicate on the "op_type" field.
 func OpTypeEQ(v OpType) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldEQ(FieldOpType, v))

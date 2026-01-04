@@ -162,6 +162,7 @@ var (
 	OperationLogColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "操作日志序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "source", Type: field.TypeEnum, Comment: "操作来源", Enums: []string{"user", "system", "task"}, Default: "user"},
 		{Name: "op_type", Type: field.TypeEnum, Comment: "操作类型", Enums: []string{"data_create", "data_update", "data_delete", "device_report", "ip_refresh"}},
 		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"cdn_record", "dns_record", "device", "device_port_forward", "domain_monitor", "ip_group", "ip_group_device", "platform_config", "ssl_record", "webhook", "webhook_subscription", "device_ip_report", "domain_monitor_history", "http_log", "operation_log", "port_forward_stats", "resty_log", "ssl_certificate_history", "webhook_history"}},
 		{Name: "obj_id", Type: field.TypeInt64, Comment: "对象主键"},
@@ -188,27 +189,27 @@ var (
 			{
 				Name:    "operationlog_op_type",
 				Unique:  false,
-				Columns: []*schema.Column{OperationLogColumns[2]},
+				Columns: []*schema.Column{OperationLogColumns[3]},
 			},
 			{
 				Name:    "operationlog_obj_type",
 				Unique:  false,
-				Columns: []*schema.Column{OperationLogColumns[3]},
+				Columns: []*schema.Column{OperationLogColumns[4]},
 			},
 			{
 				Name:    "operationlog_obj_id",
 				Unique:  false,
-				Columns: []*schema.Column{OperationLogColumns[4]},
+				Columns: []*schema.Column{OperationLogColumns[5]},
 			},
 			{
 				Name:    "operationlog_obj_type_obj_id",
 				Unique:  false,
-				Columns: []*schema.Column{OperationLogColumns[3], OperationLogColumns[4]},
+				Columns: []*schema.Column{OperationLogColumns[4], OperationLogColumns[5]},
 			},
 			{
 				Name:    "operationlog_obj_type_obj_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{OperationLogColumns[3], OperationLogColumns[4], OperationLogColumns[1]},
+				Columns: []*schema.Column{OperationLogColumns[4], OperationLogColumns[5], OperationLogColumns[1]},
 				Annotation: &entsql.IndexAnnotation{
 					Desc: true,
 				},
