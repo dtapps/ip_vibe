@@ -177,16 +177,6 @@ func ByObjID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldObjID, opts...).ToFunc()
 }
 
-// ByOldValue orders the results by the old_value field.
-func ByOldValue(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOldValue, opts...).ToFunc()
-}
-
-// ByNewValue orders the results by the new_value field.
-func ByNewValue(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldNewValue, opts...).ToFunc()
-}
-
 // ByStatus orders the results by the status field.
 func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()

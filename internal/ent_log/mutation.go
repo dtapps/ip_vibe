@@ -3517,8 +3517,8 @@ type OperationLogMutation struct {
 	obj_type      *operationlog.ObjType
 	obj_id        *int64
 	addobj_id     *int64
-	old_value     *string
-	new_value     *string
+	old_value     *map[string]interface{}
+	new_value     *map[string]interface{}
 	status        *operationlog.Status
 	message       *string
 	clearedFields map[string]struct{}
@@ -3796,12 +3796,12 @@ func (m *OperationLogMutation) ResetObjID() {
 }
 
 // SetOldValue sets the "old_value" field.
-func (m *OperationLogMutation) SetOldValue(s string) {
-	m.old_value = &s
+func (m *OperationLogMutation) SetOldValue(value map[string]interface{}) {
+	m.old_value = &value
 }
 
 // OldValue returns the value of the "old_value" field in the mutation.
-func (m *OperationLogMutation) OldValue() (r string, exists bool) {
+func (m *OperationLogMutation) OldValue() (r map[string]interface{}, exists bool) {
 	v := m.old_value
 	if v == nil {
 		return
@@ -3812,7 +3812,7 @@ func (m *OperationLogMutation) OldValue() (r string, exists bool) {
 // OldOldValue returns the old "old_value" field's value of the OperationLog entity.
 // If the OperationLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OperationLogMutation) OldOldValue(ctx context.Context) (v string, err error) {
+func (m *OperationLogMutation) OldOldValue(ctx context.Context) (v map[string]interface{}, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldOldValue is only allowed on UpdateOne operations")
 	}
@@ -3845,12 +3845,12 @@ func (m *OperationLogMutation) ResetOldValue() {
 }
 
 // SetNewValue sets the "new_value" field.
-func (m *OperationLogMutation) SetNewValue(s string) {
-	m.new_value = &s
+func (m *OperationLogMutation) SetNewValue(value map[string]interface{}) {
+	m.new_value = &value
 }
 
 // NewValue returns the value of the "new_value" field in the mutation.
-func (m *OperationLogMutation) NewValue() (r string, exists bool) {
+func (m *OperationLogMutation) NewValue() (r map[string]interface{}, exists bool) {
 	v := m.new_value
 	if v == nil {
 		return
@@ -3861,7 +3861,7 @@ func (m *OperationLogMutation) NewValue() (r string, exists bool) {
 // OldNewValue returns the old "new_value" field's value of the OperationLog entity.
 // If the OperationLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OperationLogMutation) OldNewValue(ctx context.Context) (v string, err error) {
+func (m *OperationLogMutation) OldNewValue(ctx context.Context) (v map[string]interface{}, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldNewValue is only allowed on UpdateOne operations")
 	}
@@ -4111,14 +4111,14 @@ func (m *OperationLogMutation) SetField(name string, value ent.Value) error {
 		m.SetObjID(v)
 		return nil
 	case operationlog.FieldOldValue:
-		v, ok := value.(string)
+		v, ok := value.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetOldValue(v)
 		return nil
 	case operationlog.FieldNewValue:
-		v, ok := value.(string)
+		v, ok := value.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

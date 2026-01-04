@@ -3,6 +3,7 @@
 package ent_log
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -27,9 +28,9 @@ type OperationLog struct {
 	// 对象主键
 	ObjID int64 `json:"obj_id,omitempty"`
 	// 旧值
-	OldValue string `json:"old_value,omitempty"`
+	OldValue map[string]interface{} `json:"old_value,omitempty"`
 	// 新值
-	NewValue string `json:"new_value,omitempty"`
+	NewValue map[string]interface{} `json:"new_value,omitempty"`
 	// 状态
 	Status operationlog.Status `json:"status,omitempty"`
 	// 详情
@@ -42,9 +43,11 @@ func (*OperationLog) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case operationlog.FieldOldValue, operationlog.FieldNewValue:
+			values[i] = new([]byte)
 		case operationlog.FieldID, operationlog.FieldObjID:
 			values[i] = new(sql.NullInt64)
-		case operationlog.FieldOpType, operationlog.FieldObjType, operationlog.FieldOldValue, operationlog.FieldNewValue, operationlog.FieldStatus, operationlog.FieldMessage:
+		case operationlog.FieldOpType, operationlog.FieldObjType, operationlog.FieldStatus, operationlog.FieldMessage:
 			values[i] = new(sql.NullString)
 		case operationlog.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -94,16 +97,20 @@ func (_m *OperationLog) assignValues(columns []string, values []any) error {
 				_m.ObjID = value.Int64
 			}
 		case operationlog.FieldOldValue:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field old_value", values[i])
-			} else if value.Valid {
-				_m.OldValue = value.String
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.OldValue); err != nil {
+					return fmt.Errorf("unmarshal field old_value: %w", err)
+				}
 			}
 		case operationlog.FieldNewValue:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field new_value", values[i])
-			} else if value.Valid {
-				_m.NewValue = value.String
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.NewValue); err != nil {
+					return fmt.Errorf("unmarshal field new_value: %w", err)
+				}
 			}
 		case operationlog.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -166,10 +173,10 @@ func (_m *OperationLog) String() string {
 	builder.WriteString(fmt.Sprintf("%v", _m.ObjID))
 	builder.WriteString(", ")
 	builder.WriteString("old_value=")
-	builder.WriteString(_m.OldValue)
+	builder.WriteString(fmt.Sprintf("%v", _m.OldValue))
 	builder.WriteString(", ")
 	builder.WriteString("new_value=")
-	builder.WriteString(_m.NewValue)
+	builder.WriteString(fmt.Sprintf("%v", _m.NewValue))
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Status))

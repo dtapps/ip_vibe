@@ -64,16 +64,6 @@ func ObjID(v int64) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldEQ(FieldObjID, v))
 }
 
-// OldValue applies equality check predicate on the "old_value" field. It's identical to OldValueEQ.
-func OldValue(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldEQ(FieldOldValue, v))
-}
-
-// NewValue applies equality check predicate on the "new_value" field. It's identical to NewValueEQ.
-func NewValue(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldEQ(FieldNewValue, v))
-}
-
 // Message applies equality check predicate on the "message" field. It's identical to MessageEQ.
 func Message(v string) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldEQ(FieldMessage, v))
@@ -199,61 +189,6 @@ func ObjIDLTE(v int64) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldLTE(FieldObjID, v))
 }
 
-// OldValueEQ applies the EQ predicate on the "old_value" field.
-func OldValueEQ(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldEQ(FieldOldValue, v))
-}
-
-// OldValueNEQ applies the NEQ predicate on the "old_value" field.
-func OldValueNEQ(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldNEQ(FieldOldValue, v))
-}
-
-// OldValueIn applies the In predicate on the "old_value" field.
-func OldValueIn(vs ...string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldIn(FieldOldValue, vs...))
-}
-
-// OldValueNotIn applies the NotIn predicate on the "old_value" field.
-func OldValueNotIn(vs ...string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldNotIn(FieldOldValue, vs...))
-}
-
-// OldValueGT applies the GT predicate on the "old_value" field.
-func OldValueGT(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldGT(FieldOldValue, v))
-}
-
-// OldValueGTE applies the GTE predicate on the "old_value" field.
-func OldValueGTE(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldGTE(FieldOldValue, v))
-}
-
-// OldValueLT applies the LT predicate on the "old_value" field.
-func OldValueLT(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldLT(FieldOldValue, v))
-}
-
-// OldValueLTE applies the LTE predicate on the "old_value" field.
-func OldValueLTE(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldLTE(FieldOldValue, v))
-}
-
-// OldValueContains applies the Contains predicate on the "old_value" field.
-func OldValueContains(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldContains(FieldOldValue, v))
-}
-
-// OldValueHasPrefix applies the HasPrefix predicate on the "old_value" field.
-func OldValueHasPrefix(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldHasPrefix(FieldOldValue, v))
-}
-
-// OldValueHasSuffix applies the HasSuffix predicate on the "old_value" field.
-func OldValueHasSuffix(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldHasSuffix(FieldOldValue, v))
-}
-
 // OldValueIsNil applies the IsNil predicate on the "old_value" field.
 func OldValueIsNil() predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldIsNull(FieldOldValue))
@@ -264,71 +199,6 @@ func OldValueNotNil() predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldNotNull(FieldOldValue))
 }
 
-// OldValueEqualFold applies the EqualFold predicate on the "old_value" field.
-func OldValueEqualFold(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldEqualFold(FieldOldValue, v))
-}
-
-// OldValueContainsFold applies the ContainsFold predicate on the "old_value" field.
-func OldValueContainsFold(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldContainsFold(FieldOldValue, v))
-}
-
-// NewValueEQ applies the EQ predicate on the "new_value" field.
-func NewValueEQ(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldEQ(FieldNewValue, v))
-}
-
-// NewValueNEQ applies the NEQ predicate on the "new_value" field.
-func NewValueNEQ(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldNEQ(FieldNewValue, v))
-}
-
-// NewValueIn applies the In predicate on the "new_value" field.
-func NewValueIn(vs ...string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldIn(FieldNewValue, vs...))
-}
-
-// NewValueNotIn applies the NotIn predicate on the "new_value" field.
-func NewValueNotIn(vs ...string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldNotIn(FieldNewValue, vs...))
-}
-
-// NewValueGT applies the GT predicate on the "new_value" field.
-func NewValueGT(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldGT(FieldNewValue, v))
-}
-
-// NewValueGTE applies the GTE predicate on the "new_value" field.
-func NewValueGTE(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldGTE(FieldNewValue, v))
-}
-
-// NewValueLT applies the LT predicate on the "new_value" field.
-func NewValueLT(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldLT(FieldNewValue, v))
-}
-
-// NewValueLTE applies the LTE predicate on the "new_value" field.
-func NewValueLTE(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldLTE(FieldNewValue, v))
-}
-
-// NewValueContains applies the Contains predicate on the "new_value" field.
-func NewValueContains(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldContains(FieldNewValue, v))
-}
-
-// NewValueHasPrefix applies the HasPrefix predicate on the "new_value" field.
-func NewValueHasPrefix(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldHasPrefix(FieldNewValue, v))
-}
-
-// NewValueHasSuffix applies the HasSuffix predicate on the "new_value" field.
-func NewValueHasSuffix(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldHasSuffix(FieldNewValue, v))
-}
-
 // NewValueIsNil applies the IsNil predicate on the "new_value" field.
 func NewValueIsNil() predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldIsNull(FieldNewValue))
@@ -337,16 +207,6 @@ func NewValueIsNil() predicate.OperationLog {
 // NewValueNotNil applies the NotNil predicate on the "new_value" field.
 func NewValueNotNil() predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldNotNull(FieldNewValue))
-}
-
-// NewValueEqualFold applies the EqualFold predicate on the "new_value" field.
-func NewValueEqualFold(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldEqualFold(FieldNewValue, v))
-}
-
-// NewValueContainsFold applies the ContainsFold predicate on the "new_value" field.
-func NewValueContainsFold(v string) predicate.OperationLog {
-	return predicate.OperationLog(sql.FieldContainsFold(FieldNewValue, v))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.

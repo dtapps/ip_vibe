@@ -76,10 +76,10 @@ func (_u *OperationLogUpdate) sqlSave(ctx context.Context) (_node int, err error
 		}
 	}
 	if _u.mutation.OldValueCleared() {
-		_spec.ClearField(operationlog.FieldOldValue, field.TypeString)
+		_spec.ClearField(operationlog.FieldOldValue, field.TypeJSON)
 	}
 	if _u.mutation.NewValueCleared() {
-		_spec.ClearField(operationlog.FieldNewValue, field.TypeString)
+		_spec.ClearField(operationlog.FieldNewValue, field.TypeJSON)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -181,10 +181,10 @@ func (_u *OperationLogUpdateOne) sqlSave(ctx context.Context) (_node *OperationL
 		}
 	}
 	if _u.mutation.OldValueCleared() {
-		_spec.ClearField(operationlog.FieldOldValue, field.TypeString)
+		_spec.ClearField(operationlog.FieldOldValue, field.TypeJSON)
 	}
 	if _u.mutation.NewValueCleared() {
-		_spec.ClearField(operationlog.FieldNewValue, field.TypeString)
+		_spec.ClearField(operationlog.FieldNewValue, field.TypeJSON)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &OperationLog{config: _u.config}

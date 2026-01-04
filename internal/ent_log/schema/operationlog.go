@@ -60,13 +60,13 @@ func (OperationLog) Fields() []ent.Field {
 			Comment("对象主键").
 			Annotations(entsql.WithComments(true)),
 
-		field.String("old_value").
+		field.JSON("old_value", map[string]any{}).
 			Optional().
 			Immutable().
 			Comment("旧值").
 			Annotations(entsql.WithComments(true)),
 
-		field.String("new_value").
+		field.JSON("new_value", map[string]any{}).
 			Optional().
 			Immutable().
 			Comment("新值").

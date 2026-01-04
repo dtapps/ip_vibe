@@ -55,30 +55,14 @@ func (_c *OperationLogCreate) SetObjID(v int64) *OperationLogCreate {
 }
 
 // SetOldValue sets the "old_value" field.
-func (_c *OperationLogCreate) SetOldValue(v string) *OperationLogCreate {
+func (_c *OperationLogCreate) SetOldValue(v map[string]interface{}) *OperationLogCreate {
 	_c.mutation.SetOldValue(v)
 	return _c
 }
 
-// SetNillableOldValue sets the "old_value" field if the given value is not nil.
-func (_c *OperationLogCreate) SetNillableOldValue(v *string) *OperationLogCreate {
-	if v != nil {
-		_c.SetOldValue(*v)
-	}
-	return _c
-}
-
 // SetNewValue sets the "new_value" field.
-func (_c *OperationLogCreate) SetNewValue(v string) *OperationLogCreate {
+func (_c *OperationLogCreate) SetNewValue(v map[string]interface{}) *OperationLogCreate {
 	_c.mutation.SetNewValue(v)
-	return _c
-}
-
-// SetNillableNewValue sets the "new_value" field if the given value is not nil.
-func (_c *OperationLogCreate) SetNillableNewValue(v *string) *OperationLogCreate {
-	if v != nil {
-		_c.SetNewValue(*v)
-	}
 	return _c
 }
 
@@ -236,11 +220,11 @@ func (_c *OperationLogCreate) createSpec() (*OperationLog, *sqlgraph.CreateSpec)
 		_node.ObjID = value
 	}
 	if value, ok := _c.mutation.OldValue(); ok {
-		_spec.SetField(operationlog.FieldOldValue, field.TypeString, value)
+		_spec.SetField(operationlog.FieldOldValue, field.TypeJSON, value)
 		_node.OldValue = value
 	}
 	if value, ok := _c.mutation.NewValue(); ok {
-		_spec.SetField(operationlog.FieldNewValue, field.TypeString, value)
+		_spec.SetField(operationlog.FieldNewValue, field.TypeJSON, value)
 		_node.NewValue = value
 	}
 	if value, ok := _c.mutation.Status(); ok {
