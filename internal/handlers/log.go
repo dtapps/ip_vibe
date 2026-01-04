@@ -18,6 +18,9 @@ func Log(c *gin.Context) {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
+	if requestParams.Source == "" {
+		requestParams.Source = operationlog.SourceUser.String()
+	}
 
 	// 准备页面数据
 	pageData := types.LogResponse{
@@ -30,6 +33,7 @@ func Log(c *gin.Context) {
 	// 查询全部操作日志
 	allOperationLog, err := global.GvaEntLogDb.OperationLog.Query().
 		WhereIf(requestParams.ID > 0, operationlog.IDEQ(requestParams.ID)).
+		WhereIf(requestParams.Source != "", operationlog.SourceEQ(operationlog.Source(requestParams.Source))).
 		WhereIf(requestParams.OpType != "", operationlog.OpTypeEQ(operationlog.OpType(requestParams.OpType))).
 		WhereIf(requestParams.ObjType != "", operationlog.ObjTypeEQ(operationlog.ObjType(requestParams.ObjType))).
 		WhereIf(requestParams.ObjID > 0, operationlog.ObjIDEQ(requestParams.ObjID)).

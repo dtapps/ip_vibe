@@ -202,6 +202,26 @@ var GetWebhookSubscriptionObjTypes = []string{
 // --------
 
 const (
+	LogSourceUser   string = "user"   // 用户手动
+	LogSourceSystem string = "system" // 系统自动
+	LogSourceTask   string = "task"   // 定时任务
+)
+
+// GetLogSourceDescriptions 操作来源说明映射
+var GetLogSourceDescriptions = map[string]string{
+	LogSourceUser:   "用户手动",
+	LogSourceSystem: "系统自动",
+	LogSourceTask:   "定时任务",
+}
+
+// GetLogSources 返回所有操作来源
+var GetLogSources = []string{
+	LogSourceUser,
+	LogSourceSystem,
+	LogSourceTask,
+}
+
+const (
 	LogOpTypeDataCreate   string = "data_create"   // 数据创建
 	LogOpTypeDataUpdate   string = "data_update"   // 数据更新
 	LogOpTypeDataDelete   string = "data_delete"   // 数据删除
