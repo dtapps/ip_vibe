@@ -1,11 +1,11 @@
 namespace go open
 
 /**
- * 开放接口
+ * 开放
  */
 service OpenService {
     /**
-     * 设备上报 IP
+     * 设备上报IP
      */
     ReportDeviceIPResponse reportDeviceIP(
         1: required ReportDeviceIPRequest req// 业务请求参数
@@ -36,7 +36,7 @@ struct Base {
 }
 
 /**
- * 设备上报 IP 请求
+ * 设备上报IP 请求
  */
 struct ReportDeviceIPRequest {
     1: required string device_code // 设备编码
@@ -46,7 +46,7 @@ struct ReportDeviceIPRequest {
 }
 
 /**
- * 设备上报 IP 响应
+ * 设备上报IP 响应
  */
 struct ReportDeviceIPResponse {
     1: optional string msg // 消息

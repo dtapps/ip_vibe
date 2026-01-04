@@ -12,6 +12,7 @@ import "google/api/annotations.proto";
 // 引入验证规则（用于 protoc-gen-validate）
 import "validate/validate.proto";
 
+// 开放
 service OpenService {
   // 设备上报IP
   rpc ReportDeviceIP(ReportDeviceIPRequest) returns (ReportDeviceIPResponse) {
