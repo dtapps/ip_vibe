@@ -194,6 +194,11 @@ func main() {
 		global.GvaGinSlog.WithLogger(),
 	))
 
+	// 审计上下文中间件 中间件
+	router.Use(gin_middleware.AuditContext(
+		global.GvaGinSlog.WithLogger(),
+	))
+
 	// health check
 	router.Any("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, handlers.APIResponse{
