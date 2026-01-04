@@ -12,6 +12,7 @@ require (
 	connectrpc.com/connect v1.19.1
 	dubbo.apache.org/dubbo-go/v3 v3.3.1
 	entgo.io/ent v0.14.5
+	github.com/TarsCloud/TarsGo v1.4.6
 	github.com/alibabacloud-go/alidns-20150109/v5 v5.1.0
 	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.13
@@ -206,6 +207,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.39.0 // indirect
 	go.opentelemetry.io/otel/trace v1.39.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
+	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.1 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
