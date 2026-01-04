@@ -201,7 +201,9 @@ func (_u *WebhookUpdate) RemoveSubscriptions(v ...*WebhookSubscription) *Webhook
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *WebhookUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -228,11 +230,15 @@ func (_u *WebhookUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *WebhookUpdate) defaults() {
+func (_u *WebhookUpdate) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if webhook.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized webhook.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := webhook.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -537,7 +543,9 @@ func (_u *WebhookUpdateOne) Select(field string, fields ...string) *WebhookUpdat
 
 // Save executes the query and returns the updated Webhook entity.
 func (_u *WebhookUpdateOne) Save(ctx context.Context) (*Webhook, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -564,11 +572,15 @@ func (_u *WebhookUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *WebhookUpdateOne) defaults() {
+func (_u *WebhookUpdateOne) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if webhook.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized webhook.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := webhook.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.

@@ -221,7 +221,9 @@ func (_u *PlatformConfigUpdate) RemoveSslRecords(v ...*SSLRecord) *PlatformConfi
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *PlatformConfigUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -248,11 +250,15 @@ func (_u *PlatformConfigUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *PlatformConfigUpdate) defaults() {
+func (_u *PlatformConfigUpdate) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if platformconfig.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized platformconfig.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := platformconfig.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -666,7 +672,9 @@ func (_u *PlatformConfigUpdateOne) Select(field string, fields ...string) *Platf
 
 // Save executes the query and returns the updated PlatformConfig entity.
 func (_u *PlatformConfigUpdateOne) Save(ctx context.Context) (*PlatformConfig, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -693,11 +701,15 @@ func (_u *PlatformConfigUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *PlatformConfigUpdateOne) defaults() {
+func (_u *PlatformConfigUpdateOne) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if platformconfig.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized platformconfig.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := platformconfig.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

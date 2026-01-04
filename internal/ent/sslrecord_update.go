@@ -359,7 +359,9 @@ func (_u *SSLRecordUpdate) Mutation() *SSLRecordMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *SSLRecordUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -386,11 +388,15 @@ func (_u *SSLRecordUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *SSLRecordUpdate) defaults() {
+func (_u *SSLRecordUpdate) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if sslrecord.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized sslrecord.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := sslrecord.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -887,7 +893,9 @@ func (_u *SSLRecordUpdateOne) Select(field string, fields ...string) *SSLRecordU
 
 // Save executes the query and returns the updated SSLRecord entity.
 func (_u *SSLRecordUpdateOne) Save(ctx context.Context) (*SSLRecord, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -914,11 +922,15 @@ func (_u *SSLRecordUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *SSLRecordUpdateOne) defaults() {
+func (_u *SSLRecordUpdateOne) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if sslrecord.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized sslrecord.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := sslrecord.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

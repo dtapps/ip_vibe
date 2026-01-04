@@ -2,6 +2,7 @@ package schema
 
 import (
 	"encoding/json"
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
 
@@ -116,5 +117,12 @@ func (PlatformConfig) Indexes() []ent.Index {
 		// 按平台类型排序
 		index.Fields("platform").
 			Annotations(entsql.WithComments(true)),
+	}
+}
+
+// Hooks of the PlatformConfig.
+func (PlatformConfig) Hooks() []ent.Hook {
+	return []ent.Hook{
+		schemahook.PlatformConfigLogHook(),
 	}
 }

@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
 
@@ -110,5 +111,12 @@ func (DomainMonitor) Indexes() []ent.Index {
 		index.Fields("domain", "check_protocol").
 			Unique().
 			Annotations(entsql.WithComments(true)),
+	}
+}
+
+// Hooks of the DomainMonitor.
+func (DomainMonitor) Hooks() []ent.Hook {
+	return []ent.Hook{
+		schemahook.DomainMonitorLogHook(),
 	}
 }

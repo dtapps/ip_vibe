@@ -632,7 +632,8 @@ func (c *DNSRecordClient) QueryCdnRecord(_m *DNSRecord) *CDNRecordQuery {
 
 // Hooks returns the client hooks.
 func (c *DNSRecordClient) Hooks() []Hook {
-	return c.hooks.DNSRecord
+	hooks := c.hooks.DNSRecord
+	return append(hooks[:len(hooks):len(hooks)], dnsrecord.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -813,7 +814,8 @@ func (c *DeviceClient) QueryIPGroupDevice(_m *Device) *IpGroupDeviceQuery {
 
 // Hooks returns the client hooks.
 func (c *DeviceClient) Hooks() []Hook {
-	return c.hooks.Device
+	hooks := c.hooks.Device
+	return append(hooks[:len(hooks):len(hooks)], device.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -962,7 +964,8 @@ func (c *DevicePortForwardClient) QueryDevice(_m *DevicePortForward) *DeviceQuer
 
 // Hooks returns the client hooks.
 func (c *DevicePortForwardClient) Hooks() []Hook {
-	return c.hooks.DevicePortForward
+	hooks := c.hooks.DevicePortForward
+	return append(hooks[:len(hooks):len(hooks)], deviceportforward.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -1095,7 +1098,8 @@ func (c *DomainMonitorClient) GetX(ctx context.Context, id int64) *DomainMonitor
 
 // Hooks returns the client hooks.
 func (c *DomainMonitorClient) Hooks() []Hook {
-	return c.hooks.DomainMonitor
+	hooks := c.hooks.DomainMonitor
+	return append(hooks[:len(hooks):len(hooks)], domainmonitor.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -1292,7 +1296,8 @@ func (c *IpGroupClient) QueryIPGroupDevice(_m *IpGroup) *IpGroupDeviceQuery {
 
 // Hooks returns the client hooks.
 func (c *IpGroupClient) Hooks() []Hook {
-	return c.hooks.IpGroup
+	hooks := c.hooks.IpGroup
+	return append(hooks[:len(hooks):len(hooks)], ipgroup.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -1408,7 +1413,8 @@ func (c *IpGroupDeviceClient) QueryIPGroup(_m *IpGroupDevice) *IpGroupQuery {
 
 // Hooks returns the client hooks.
 func (c *IpGroupDeviceClient) Hooks() []Hook {
-	return c.hooks.IpGroupDevice
+	hooks := c.hooks.IpGroupDevice
+	return append(hooks[:len(hooks):len(hooks)], ipgroupdevice.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -1589,7 +1595,8 @@ func (c *PlatformConfigClient) QuerySslRecords(_m *PlatformConfig) *SSLRecordQue
 
 // Hooks returns the client hooks.
 func (c *PlatformConfigClient) Hooks() []Hook {
-	return c.hooks.PlatformConfig
+	hooks := c.hooks.PlatformConfig
+	return append(hooks[:len(hooks):len(hooks)], platformconfig.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -1738,7 +1745,8 @@ func (c *SSLRecordClient) QueryConfig(_m *SSLRecord) *PlatformConfigQuery {
 
 // Hooks returns the client hooks.
 func (c *SSLRecordClient) Hooks() []Hook {
-	return c.hooks.SSLRecord
+	hooks := c.hooks.SSLRecord
+	return append(hooks[:len(hooks):len(hooks)], sslrecord.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -1887,7 +1895,8 @@ func (c *WebhookClient) QuerySubscriptions(_m *Webhook) *WebhookSubscriptionQuer
 
 // Hooks returns the client hooks.
 func (c *WebhookClient) Hooks() []Hook {
-	return c.hooks.Webhook
+	hooks := c.hooks.Webhook
+	return append(hooks[:len(hooks):len(hooks)], webhook.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -2036,7 +2045,8 @@ func (c *WebhookSubscriptionClient) QueryWebhook(_m *WebhookSubscription) *Webho
 
 // Hooks returns the client hooks.
 func (c *WebhookSubscriptionClient) Hooks() []Hook {
-	return c.hooks.WebhookSubscription
+	hooks := c.hooks.WebhookSubscription
+	return append(hooks[:len(hooks):len(hooks)], webhooksubscription.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.

@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 
 	"entgo.io/ent"
@@ -101,5 +102,12 @@ func (IpGroup) Indexes() []ent.Index {
 		// 按平台侧记录ID排序
 		index.Fields("record_id").
 			Annotations(entsql.WithComments(true)),
+	}
+}
+
+// Hooks of the IpGroup.
+func (IpGroup) Hooks() []ent.Hook {
+	return []ent.Hook{
+		schemahook.IpGroupLogHook(),
 	}
 }

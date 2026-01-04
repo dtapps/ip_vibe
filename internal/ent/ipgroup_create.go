@@ -173,7 +173,9 @@ func (_c *IpGroupCreate) Mutation() *IpGroupMutation {
 
 // Save creates the IpGroup in the database.
 func (_c *IpGroupCreate) Save(ctx context.Context) (*IpGroup, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -200,15 +202,22 @@ func (_c *IpGroupCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *IpGroupCreate) defaults() {
+func (_c *IpGroupCreate) defaults() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
+		if ipgroup.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized ipgroup.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := ipgroup.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		if ipgroup.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized ipgroup.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := ipgroup.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -303,7 +312,7 @@ func (_c *IpGroupCreate) createSpec() (*IpGroup, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		createE := &IpGroupDeviceCreate{config: _c.config, mutation: newIpGroupDeviceMutation(_c.config, OpCreate)}
-		createE.defaults()
+		_ = createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields
 		_spec.Edges = append(_spec.Edges, edge)

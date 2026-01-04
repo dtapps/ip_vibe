@@ -214,7 +214,9 @@ func (_u *DNSRecordUpdate) ClearCdnRecord() *DNSRecordUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *DNSRecordUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -241,11 +243,15 @@ func (_u *DNSRecordUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *DNSRecordUpdate) defaults() {
+func (_u *DNSRecordUpdate) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if dnsrecord.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized dnsrecord.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := dnsrecord.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -588,7 +594,9 @@ func (_u *DNSRecordUpdateOne) Select(field string, fields ...string) *DNSRecordU
 
 // Save executes the query and returns the updated DNSRecord entity.
 func (_u *DNSRecordUpdateOne) Save(ctx context.Context) (*DNSRecord, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -615,11 +623,15 @@ func (_u *DNSRecordUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *DNSRecordUpdateOne) defaults() {
+func (_u *DNSRecordUpdateOne) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if dnsrecord.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized dnsrecord.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := dnsrecord.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

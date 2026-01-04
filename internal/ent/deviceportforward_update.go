@@ -191,7 +191,9 @@ func (_u *DevicePortForwardUpdate) ClearDevice() *DevicePortForwardUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *DevicePortForwardUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -218,11 +220,15 @@ func (_u *DevicePortForwardUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *DevicePortForwardUpdate) defaults() {
+func (_u *DevicePortForwardUpdate) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if deviceportforward.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized deviceportforward.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := deviceportforward.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -531,7 +537,9 @@ func (_u *DevicePortForwardUpdateOne) Select(field string, fields ...string) *De
 
 // Save executes the query and returns the updated DevicePortForward entity.
 func (_u *DevicePortForwardUpdateOne) Save(ctx context.Context) (*DevicePortForward, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -558,11 +566,15 @@ func (_u *DevicePortForwardUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *DevicePortForwardUpdateOne) defaults() {
+func (_u *DevicePortForwardUpdateOne) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if deviceportforward.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized deviceportforward.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := deviceportforward.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

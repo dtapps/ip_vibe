@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
 
@@ -194,5 +195,12 @@ func (SSLRecord) Indexes() []ent.Index {
 		// 按是否自动续期排序
 		index.Fields("is_auto_renewal").
 			Annotations(entsql.WithComments(true)),
+	}
+}
+
+// Hooks of the SSLRecord.
+func (SSLRecord) Hooks() []ent.Hook {
+	return []ent.Hook{
+		schemahook.SSLRecordLogHook(),
 	}
 }

@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
 
@@ -163,5 +164,12 @@ func (DNSRecord) Indexes() []ent.Index {
 		// 按是否活跃排序
 		index.Fields("is_active").
 			Annotations(entsql.WithComments(true)),
+	}
+}
+
+// Hooks of the DNSRecord.
+func (DNSRecord) Hooks() []ent.Hook {
+	return []ent.Hook{
+		schemahook.DNSRecordLogHook(),
 	}
 }

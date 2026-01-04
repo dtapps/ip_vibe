@@ -165,7 +165,9 @@ func (_u *DomainMonitorUpdate) Mutation() *DomainMonitorMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *DomainMonitorUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -192,11 +194,15 @@ func (_u *DomainMonitorUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *DomainMonitorUpdate) defaults() {
+func (_u *DomainMonitorUpdate) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if domainmonitor.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized domainmonitor.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := domainmonitor.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -434,7 +440,9 @@ func (_u *DomainMonitorUpdateOne) Select(field string, fields ...string) *Domain
 
 // Save executes the query and returns the updated DomainMonitor entity.
 func (_u *DomainMonitorUpdateOne) Save(ctx context.Context) (*DomainMonitor, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -461,11 +469,15 @@ func (_u *DomainMonitorUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *DomainMonitorUpdateOne) defaults() {
+func (_u *DomainMonitorUpdateOne) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if domainmonitor.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized domainmonitor.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := domainmonitor.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

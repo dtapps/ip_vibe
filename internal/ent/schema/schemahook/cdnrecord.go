@@ -2,6 +2,7 @@ package schemahook
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"time"
 	"vibe_ip/internal/ent"
@@ -51,7 +52,7 @@ func CDNRecordLogHook() ent.Hook {
 						SetMessage(message).
 						Exec(context.Background())
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(ctx, "记录操作日志失败",
+						getEntLogSlog().ErrorContext(ctx, fmt.Sprintf("%s 记录操作日志失败", m.Type()),
 							slog.Any("err", logErr),
 						)
 					}
@@ -59,7 +60,7 @@ func CDNRecordLogHook() ent.Hook {
 
 				// 7. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, "CDNRecord 变更失败",
+					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", m.Type()),
 						slog.Int64("id", objID),
 						slog.Any("err", err),
 					)

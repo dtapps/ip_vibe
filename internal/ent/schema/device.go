@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schemavalidate"
 
@@ -115,5 +116,12 @@ func (Device) Indexes() []ent.Index {
 		// 按最后心跳时间排序
 		index.Fields("last_heartbeat_at").
 			Annotations(entsql.WithComments(true)),
+	}
+}
+
+// Hooks of the Device.
+func (Device) Hooks() []ent.Hook {
+	return []ent.Hook{
+		schemahook.DeviceLogHook(),
 	}
 }

@@ -197,7 +197,9 @@ func (_c *DNSRecordCreate) Mutation() *DNSRecordMutation {
 
 // Save creates the DNSRecord in the database.
 func (_c *DNSRecordCreate) Save(ctx context.Context) (*DNSRecord, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -224,12 +226,18 @@ func (_c *DNSRecordCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *DNSRecordCreate) defaults() {
+func (_c *DNSRecordCreate) defaults() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
+		if dnsrecord.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized dnsrecord.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := dnsrecord.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		if dnsrecord.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized dnsrecord.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := dnsrecord.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
@@ -237,6 +245,7 @@ func (_c *DNSRecordCreate) defaults() {
 		v := dnsrecord.DefaultIsActive
 		_c.mutation.SetIsActive(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

@@ -247,7 +247,9 @@ func (_u *IpGroupUpdate) RemoveCdnRecords(v ...*CDNRecord) *IpGroupUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *IpGroupUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -274,11 +276,15 @@ func (_u *IpGroupUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *IpGroupUpdate) defaults() {
+func (_u *IpGroupUpdate) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if ipgroup.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized ipgroup.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := ipgroup.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -338,7 +344,7 @@ func (_u *IpGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			},
 		}
 		createE := &IpGroupDeviceCreate{config: _u.config, mutation: newIpGroupDeviceMutation(_u.config, OpCreate)}
-		createE.defaults()
+		_ = createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -358,7 +364,7 @@ func (_u *IpGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		createE := &IpGroupDeviceCreate{config: _u.config, mutation: newIpGroupDeviceMutation(_u.config, OpCreate)}
-		createE.defaults()
+		_ = createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -378,7 +384,7 @@ func (_u *IpGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		createE := &IpGroupDeviceCreate{config: _u.config, mutation: newIpGroupDeviceMutation(_u.config, OpCreate)}
-		createE.defaults()
+		_ = createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
@@ -723,7 +729,9 @@ func (_u *IpGroupUpdateOne) Select(field string, fields ...string) *IpGroupUpdat
 
 // Save executes the query and returns the updated IpGroup entity.
 func (_u *IpGroupUpdateOne) Save(ctx context.Context) (*IpGroup, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -750,11 +758,15 @@ func (_u *IpGroupUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *IpGroupUpdateOne) defaults() {
+func (_u *IpGroupUpdateOne) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if ipgroup.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized ipgroup.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := ipgroup.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -831,7 +843,7 @@ func (_u *IpGroupUpdateOne) sqlSave(ctx context.Context) (_node *IpGroup, err er
 			},
 		}
 		createE := &IpGroupDeviceCreate{config: _u.config, mutation: newIpGroupDeviceMutation(_u.config, OpCreate)}
-		createE.defaults()
+		_ = createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -851,7 +863,7 @@ func (_u *IpGroupUpdateOne) sqlSave(ctx context.Context) (_node *IpGroup, err er
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		createE := &IpGroupDeviceCreate{config: _u.config, mutation: newIpGroupDeviceMutation(_u.config, OpCreate)}
-		createE.defaults()
+		_ = createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -871,7 +883,7 @@ func (_u *IpGroupUpdateOne) sqlSave(ctx context.Context) (_node *IpGroup, err er
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		createE := &IpGroupDeviceCreate{config: _u.config, mutation: newIpGroupDeviceMutation(_u.config, OpCreate)}
-		createE.defaults()
+		_ = createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)

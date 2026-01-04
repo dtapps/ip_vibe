@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
 
@@ -125,5 +126,12 @@ func (WebhookSubscription) Indexes() []ent.Index {
 		index.Fields("webhook_id", "obj_type", "obj_id").
 			Unique().
 			Annotations(entsql.WithComments(true)),
+	}
+}
+
+// Hooks of the WebhookSubscription.
+func (WebhookSubscription) Hooks() []ent.Hook {
+	return []ent.Hook{
+		schemahook.WebhookSubscriptionLogHook(),
 	}
 }

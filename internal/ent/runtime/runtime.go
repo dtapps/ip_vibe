@@ -60,6 +60,8 @@ func init() {
 	// cdnrecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	cdnrecord.IDValidator = cdnrecordDescID.Validators[0].(func(int64) error)
 	dnsrecordMixin := schema.DNSRecord{}.Mixin()
+	dnsrecordHooks := schema.DNSRecord{}.Hooks()
+	dnsrecord.Hooks[0] = dnsrecordHooks[0]
 	dnsrecordMixinFields0 := dnsrecordMixin[0].Fields()
 	_ = dnsrecordMixinFields0
 	dnsrecordFields := schema.DNSRecord{}.Fields()
@@ -87,6 +89,8 @@ func init() {
 	// dnsrecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	dnsrecord.IDValidator = dnsrecordDescID.Validators[0].(func(int64) error)
 	deviceMixin := schema.Device{}.Mixin()
+	deviceHooks := schema.Device{}.Hooks()
+	device.Hooks[0] = deviceHooks[0]
 	deviceMixinFields0 := deviceMixin[0].Fields()
 	_ = deviceMixinFields0
 	deviceFields := schema.Device{}.Fields()
@@ -114,6 +118,8 @@ func init() {
 	// device.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	device.IDValidator = deviceDescID.Validators[0].(func(int64) error)
 	deviceportforwardMixin := schema.DevicePortForward{}.Mixin()
+	deviceportforwardHooks := schema.DevicePortForward{}.Hooks()
+	deviceportforward.Hooks[0] = deviceportforwardHooks[0]
 	deviceportforwardMixinFields0 := deviceportforwardMixin[0].Fields()
 	_ = deviceportforwardMixinFields0
 	deviceportforwardFields := schema.DevicePortForward{}.Fields()
@@ -157,6 +163,8 @@ func init() {
 	// deviceportforward.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	deviceportforward.IDValidator = deviceportforwardDescID.Validators[0].(func(int64) error)
 	domainmonitorMixin := schema.DomainMonitor{}.Mixin()
+	domainmonitorHooks := schema.DomainMonitor{}.Hooks()
+	domainmonitor.Hooks[0] = domainmonitorHooks[0]
 	domainmonitorMixinFields0 := domainmonitorMixin[0].Fields()
 	_ = domainmonitorMixinFields0
 	domainmonitorFields := schema.DomainMonitor{}.Fields()
@@ -184,6 +192,8 @@ func init() {
 	// domainmonitor.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	domainmonitor.IDValidator = domainmonitorDescID.Validators[0].(func(int64) error)
 	ipgroupMixin := schema.IpGroup{}.Mixin()
+	ipgroupHooks := schema.IpGroup{}.Hooks()
+	ipgroup.Hooks[0] = ipgroupHooks[0]
 	ipgroupMixinFields0 := ipgroupMixin[0].Fields()
 	_ = ipgroupMixinFields0
 	ipgroupFields := schema.IpGroup{}.Fields()
@@ -203,6 +213,8 @@ func init() {
 	// ipgroup.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	ipgroup.IDValidator = ipgroupDescID.Validators[0].(func(int64) error)
 	ipgroupdeviceMixin := schema.IpGroupDevice{}.Mixin()
+	ipgroupdeviceHooks := schema.IpGroupDevice{}.Hooks()
+	ipgroupdevice.Hooks[0] = ipgroupdeviceHooks[0]
 	ipgroupdeviceMixinFields0 := ipgroupdeviceMixin[0].Fields()
 	_ = ipgroupdeviceMixinFields0
 	ipgroupdeviceFields := schema.IpGroupDevice{}.Fields()
@@ -220,6 +232,8 @@ func init() {
 	// ipgroupdevice.IPGroupIDValidator is a validator for the "ip_group_id" field. It is called by the builders before save.
 	ipgroupdevice.IPGroupIDValidator = ipgroupdeviceDescIPGroupID.Validators[0].(func(int64) error)
 	platformconfigMixin := schema.PlatformConfig{}.Mixin()
+	platformconfigHooks := schema.PlatformConfig{}.Hooks()
+	platformconfig.Hooks[0] = platformconfigHooks[0]
 	platformconfigMixinFields0 := platformconfigMixin[0].Fields()
 	_ = platformconfigMixinFields0
 	platformconfigFields := schema.PlatformConfig{}.Fields()
@@ -239,6 +253,8 @@ func init() {
 	// platformconfig.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	platformconfig.IDValidator = platformconfigDescID.Validators[0].(func(int64) error)
 	sslrecordMixin := schema.SSLRecord{}.Mixin()
+	sslrecordHooks := schema.SSLRecord{}.Hooks()
+	sslrecord.Hooks[0] = sslrecordHooks[0]
 	sslrecordMixinFields0 := sslrecordMixin[0].Fields()
 	_ = sslrecordMixinFields0
 	sslrecordFields := schema.SSLRecord{}.Fields()
@@ -274,6 +290,8 @@ func init() {
 	// sslrecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	sslrecord.IDValidator = sslrecordDescID.Validators[0].(func(int64) error)
 	webhookMixin := schema.Webhook{}.Mixin()
+	webhookHooks := schema.Webhook{}.Hooks()
+	webhook.Hooks[0] = webhookHooks[0]
 	webhookMixinFields0 := webhookMixin[0].Fields()
 	_ = webhookMixinFields0
 	webhookFields := schema.Webhook{}.Fields()
@@ -297,6 +315,8 @@ func init() {
 	// webhook.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	webhook.IDValidator = webhookDescID.Validators[0].(func(int64) error)
 	webhooksubscriptionMixin := schema.WebhookSubscription{}.Mixin()
+	webhooksubscriptionHooks := schema.WebhookSubscription{}.Hooks()
+	webhooksubscription.Hooks[0] = webhooksubscriptionHooks[0]
 	webhooksubscriptionMixinFields0 := webhooksubscriptionMixin[0].Fields()
 	_ = webhooksubscriptionMixinFields0
 	webhooksubscriptionFields := schema.WebhookSubscription{}.Fields()

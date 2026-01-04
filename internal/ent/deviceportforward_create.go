@@ -147,7 +147,9 @@ func (_c *DevicePortForwardCreate) Mutation() *DevicePortForwardMutation {
 
 // Save creates the DevicePortForward in the database.
 func (_c *DevicePortForwardCreate) Save(ctx context.Context) (*DevicePortForward, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -174,12 +176,18 @@ func (_c *DevicePortForwardCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *DevicePortForwardCreate) defaults() {
+func (_c *DevicePortForwardCreate) defaults() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
+		if deviceportforward.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized deviceportforward.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := deviceportforward.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		if deviceportforward.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized deviceportforward.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := deviceportforward.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
@@ -195,6 +203,7 @@ func (_c *DevicePortForwardCreate) defaults() {
 		v := deviceportforward.DefaultIsActive
 		_c.mutation.SetIsActive(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

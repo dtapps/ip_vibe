@@ -167,7 +167,9 @@ func (_c *WebhookCreate) Mutation() *WebhookMutation {
 
 // Save creates the Webhook in the database.
 func (_c *WebhookCreate) Save(ctx context.Context) (*Webhook, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -194,12 +196,18 @@ func (_c *WebhookCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *WebhookCreate) defaults() {
+func (_c *WebhookCreate) defaults() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
+		if webhook.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized webhook.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := webhook.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		if webhook.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized webhook.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := webhook.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
@@ -207,6 +215,7 @@ func (_c *WebhookCreate) defaults() {
 		v := webhook.DefaultIsActive
 		_c.mutation.SetIsActive(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

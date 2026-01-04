@@ -107,7 +107,9 @@ func (_c *WebhookSubscriptionCreate) Mutation() *WebhookSubscriptionMutation {
 
 // Save creates the WebhookSubscription in the database.
 func (_c *WebhookSubscriptionCreate) Save(ctx context.Context) (*WebhookSubscription, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -134,8 +136,11 @@ func (_c *WebhookSubscriptionCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *WebhookSubscriptionCreate) defaults() {
+func (_c *WebhookSubscriptionCreate) defaults() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
+		if webhooksubscription.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized webhooksubscription.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := webhooksubscription.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
@@ -143,6 +148,7 @@ func (_c *WebhookSubscriptionCreate) defaults() {
 		v := webhooksubscription.DefaultIsActive
 		_c.mutation.SetIsActive(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
