@@ -176,9 +176,10 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	// 配置 审计上下文中间件 中间件
+	// 配置 审计上下文 中间件
 	router.Use(gin_middleware.AuditContextMiddleware(
 		global.GvaGinSlog.WithLogger(),
+		operationlog.SourceUser,
 	))
 
 	// 配置 请求ID 中间件
@@ -1089,8 +1090,11 @@ func api_router(ctx context.Context, logger *slog.Logger, router *gin.Engine) {
 			tasks.POST("/stop-scheduler", handlers.StopScheduler)   // 停止调度器
 		}
 
-		// 开放
-		opens := api.Group("/open")
+		// 开放API
+		opens := api.Group("/open").Use(gin_middleware.AuditContextMiddleware(
+			global.GvaGinSlog.WithLogger(),
+			operationlog.SourceAPI,
+		))
 		{
 			opens.POST("/device/:device_code/ip-report", handlers.DeviceReportDeviceIp)                              // 设备上报IP
 			opens.GET("/device/:device_code/port-forwards", handlers.DevicePortForwards)                             // 获取设备端口转发
@@ -1244,7 +1248,15 @@ func grpc_run(ctx context.Context, logger *slog.Logger) {
 	// 创建 gRPC 服务器
 	opts := make([]grpc.ServerOption, 0)
 	usis := make([]grpc.UnaryServerInterceptor, 0)
-	// 鉴权拦截器
+	// 审计上下文 一元拦截器
+	usis = append(
+		usis,
+		grpc_interceptor.AuditContextInterceptor(
+			global.GvaGrpcSlog.WithLogger(),
+			operationlog.SourceGrpc,
+		),
+	)
+	// BasicAuth 一元拦截器
 	usis = append(
 		usis,
 		grpc_interceptor.BasicAuthUnaryInterceptor(
@@ -1253,7 +1265,7 @@ func grpc_run(ctx context.Context, logger *slog.Logger) {
 			global.GvaEnv.BASIC_AUTH_PASSWORD,
 		),
 	)
-	// 日志拦截器
+	// 日志 一元拦截器
 	usis = append(
 		usis,
 		grpc_interceptor.LoggerUnaryInterceptor(global.GvaGrpcSlog.WithLogger()),
@@ -1333,7 +1345,7 @@ func grpc_gw_run(ctx context.Context, logger *slog.Logger, router *gin.Engine) {
 	// 添加 gRPC 连接选项
 	grpc_client.AddDialOption(
 		// 鉴权
-		grpc.WithPerRPCCredentials(grpc_credential.NewBasicAuth(
+		grpc.WithPerRPCCredentials(grpc_credential.NewClientBasicAuth(
 			global.GvaGrpcSlog.WithLogger(),
 			global.GvaEnv.BASIC_AUTH_USERNAME,
 			global.GvaEnv.BASIC_AUTH_PASSWORD,

@@ -6,26 +6,29 @@ import (
 	"vibe_ip/internal/core"
 )
 
-type BasicAuth struct {
+// ClientBasicAuth 实现了 grpc.PerRPCCredentials 接口
+// 用于客户端在发起请求时自动注入 HTTP Basic Auth 头
+type ClientBasicAuth struct {
 	logger   *slog.Logger
 	username string
 	password string
 }
 
-func NewBasicAuth(logger *slog.Logger, username, password string) *BasicAuth {
+// NewClientBasicAuth 创建一个新的客户端基础认证凭证
+func NewClientBasicAuth(logger *slog.Logger, username, password string) *ClientBasicAuth {
 	// 日志
 	if logger == nil {
 		logger = slog.Default()
 	}
 
-	return &BasicAuth{
+	return &ClientBasicAuth{
 		logger:   logger,
 		username: username,
 		password: password,
 	}
 }
 
-func (b *BasicAuth) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+func (b *ClientBasicAuth) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 
 	// 如果用户名或密码为空就不校验
 	if b.username == "" || b.password == "" {
@@ -40,6 +43,6 @@ func (b *BasicAuth) GetRequestMetadata(ctx context.Context, uri ...string) (map[
 	}, nil
 }
 
-func (b *BasicAuth) RequireTransportSecurity() bool {
+func (b *ClientBasicAuth) RequireTransportSecurity() bool {
 	return false // 若启用 TLS，建议返回 true
 }

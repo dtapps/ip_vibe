@@ -78,9 +78,16 @@ const DefaultSource = SourceUnknown
 // Source values.
 const (
 	SourceUnknown Source = "unknown"
-	SourceUser    Source = "user"
 	SourceSystem  Source = "system"
 	SourceTask    Source = "task"
+	SourceUser    Source = "user"
+	SourceGin     Source = "gin"
+	SourceAPI     Source = "api"
+	SourceMcp     Source = "mcp"
+	SourceGrpc    Source = "grpc"
+	SourceThrift  Source = "thrift"
+	SourceDubbo   Source = "dubbo"
+	SourceTars    Source = "tars"
 )
 
 func (s Source) String() string {
@@ -90,7 +97,7 @@ func (s Source) String() string {
 // SourceValidator is a validator for the "source" field enum values. It is called by the builders before save.
 func SourceValidator(s Source) error {
 	switch s {
-	case SourceUnknown, SourceUser, SourceSystem, SourceTask:
+	case SourceUnknown, SourceSystem, SourceTask, SourceUser, SourceGin, SourceAPI, SourceMcp, SourceGrpc, SourceThrift, SourceDubbo, SourceTars:
 		return nil
 	default:
 		return fmt.Errorf("operationlog: invalid enum value for source field: %q", s)

@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// UnaryLogger Logger 拦截器：记录开始、结束、耗时与状态码
+// LoggerUnaryInterceptor 日志 一元拦截器
 func LoggerUnaryInterceptor(logger *slog.Logger) grpc.UnaryServerInterceptor {
 	// 日志
 	if logger == nil {

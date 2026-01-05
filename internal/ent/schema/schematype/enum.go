@@ -203,25 +203,46 @@ var GetWebhookSubscriptionObjTypes = []string{
 
 const (
 	LogSourceUnknown string = "unknown" // 未知来源
-	LogSourceUser    string = "user"    // 用户手动
 	LogSourceSystem  string = "system"  // 系统自动
 	LogSourceTask    string = "task"    // 定时任务
+	LogSourceUser    string = "user"    // 用户手动
+	LogSourceGin     string = "gin"     // Gin
+	LogSourceAPI     string = "api"     // API
+	LogSourceMCP     string = "mcp"     // MCP
+	LogSourceGrpc    string = "grpc"    // gRPC
+	LogSourceThrift  string = "thrift"  // Thrift
+	LogSourceDubbo   string = "dubbo"   // Dubbo
+	LogSourceTars    string = "tars"    // Tars
 )
 
 // GetLogSourceDescriptions 操作来源说明映射
 var GetLogSourceDescriptions = map[string]string{
 	LogSourceUnknown: "未知来源",
-	LogSourceUser:    "用户手动",
 	LogSourceSystem:  "系统自动",
 	LogSourceTask:    "定时任务",
+	LogSourceUser:    "用户手动",
+	LogSourceGin:     "Gin",
+	LogSourceAPI:     "API",
+	LogSourceMCP:     "MCP",
+	LogSourceGrpc:    "gRPC",
+	LogSourceThrift:  "Thrift",
+	LogSourceDubbo:   "Dubbo",
+	LogSourceTars:    "Tars",
 }
 
 // GetLogSources 返回所有操作来源
 var GetLogSources = []string{
 	LogSourceUnknown,
-	LogSourceUser,
 	LogSourceSystem,
 	LogSourceTask,
+	LogSourceUser,
+	LogSourceGin,
+	LogSourceAPI,
+	LogSourceMCP,
+	LogSourceGrpc,
+	LogSourceThrift,
+	LogSourceDubbo,
+	LogSourceTars,
 }
 
 const (

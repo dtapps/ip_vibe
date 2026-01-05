@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// RequestIDMiddleware 配置 RequestID 中间件
+// RequestIDMiddleware RequestID 中间件
 func RequestIDMiddleware(logger *slog.Logger) gin.HandlerFunc {
 	// 日志
 	if logger == nil {

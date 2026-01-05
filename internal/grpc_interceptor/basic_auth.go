@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// BasicAuth BasicAuth 拦截器：仅允许通过 Basic 认证的用户访问指定路径
+// BasicAuthUnaryInterceptor BasicAuth 一元拦截器
 func BasicAuthUnaryInterceptor(logger *slog.Logger, username string, password string) grpc.UnaryServerInterceptor {
 	// 日志
 	if logger == nil {

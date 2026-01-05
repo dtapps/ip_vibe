@@ -168,7 +168,7 @@ func get_grpc_client() (*grpc.ClientConn, error) {
 	// 添加 gRPC 连接选项
 	grpc_client.AddDialOption(
 		// 鉴权
-		grpc.WithPerRPCCredentials(grpc_credential.NewBasicAuth(
+		grpc.WithPerRPCCredentials(grpc_credential.NewClientBasicAuth(
 			global.GvaGrpcSlog.WithLogger(),
 			global.GvaEnv.BASIC_AUTH_USERNAME,
 			global.GvaEnv.BASIC_AUTH_PASSWORD,
