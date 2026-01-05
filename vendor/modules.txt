@@ -625,6 +625,7 @@ github.com/go-acme/lego/v4/providers/dns/internal/errutils
 github.com/go-acme/lego/v4/providers/dns/internal/ptr
 github.com/go-acme/lego/v4/providers/dns/internal/useragent
 github.com/go-acme/lego/v4/providers/dns/tencentcloud
+github.com/go-acme/lego/v4/providers/dns/volcengine
 github.com/go-acme/lego/v4/registration
 # github.com/go-acme/tencentclouddnspod v1.1.25
 ## explicit; go 1.14
@@ -1091,6 +1092,7 @@ github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects/enums
 # github.com/volcengine/volc-sdk-golang v1.0.233
 ## explicit; go 1.14
 github.com/volcengine/volc-sdk-golang/base
+github.com/volcengine/volc-sdk-golang/service/dns
 github.com/volcengine/volc-sdk-golang/service/sts
 # github.com/volcengine/volcengine-go-sdk v1.2.4
 ## explicit; go 1.14
