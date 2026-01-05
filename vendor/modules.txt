@@ -281,6 +281,9 @@ github.com/bytedance/sonic/loader/internal/abi
 github.com/bytedance/sonic/loader/internal/iasm/expr
 github.com/bytedance/sonic/loader/internal/iasm/x86_64
 github.com/bytedance/sonic/loader/internal/rt
+# github.com/cenkalti/backoff/v4 v4.3.0
+## explicit; go 1.18
+github.com/cenkalti/backoff/v4
 # github.com/cenkalti/backoff/v5 v5.0.3
 ## explicit; go 1.23
 github.com/cenkalti/backoff/v5
@@ -798,6 +801,9 @@ github.com/influxdata/tdigest
 # github.com/jinzhu/copier v0.4.0
 ## explicit; go 1.13
 github.com/jinzhu/copier
+# github.com/jmespath/go-jmespath v0.4.0
+## explicit; go 1.14
+github.com/jmespath/go-jmespath
 # github.com/jonboulle/clockwork v0.5.0
 ## explicit; go 1.21
 github.com/jonboulle/clockwork
@@ -1082,6 +1088,40 @@ github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/events/application
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/events/application/enums
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects/enums
+# github.com/volcengine/volc-sdk-golang v1.0.233
+## explicit; go 1.14
+github.com/volcengine/volc-sdk-golang/base
+github.com/volcengine/volc-sdk-golang/service/sts
+# github.com/volcengine/volcengine-go-sdk v1.2.4
+## explicit; go 1.14
+github.com/volcengine/volcengine-go-sdk/internal/ini
+github.com/volcengine/volcengine-go-sdk/internal/sdkio
+github.com/volcengine/volcengine-go-sdk/internal/sdkmath
+github.com/volcengine/volcengine-go-sdk/internal/sdkrand
+github.com/volcengine/volcengine-go-sdk/internal/shareddefaults
+github.com/volcengine/volcengine-go-sdk/private/protocol
+github.com/volcengine/volcengine-go-sdk/private/protocol/json/jsonutil
+github.com/volcengine/volcengine-go-sdk/private/protocol/query/queryutil
+github.com/volcengine/volcengine-go-sdk/service/dns
+github.com/volcengine/volcengine-go-sdk/volcengine
+github.com/volcengine/volcengine-go-sdk/volcengine/client
+github.com/volcengine/volcengine-go-sdk/volcengine/client/metadata
+github.com/volcengine/volcengine-go-sdk/volcengine/corehandlers
+github.com/volcengine/volcengine-go-sdk/volcengine/credentials
+github.com/volcengine/volcengine-go-sdk/volcengine/credentials/endpointcreds
+github.com/volcengine/volcengine-go-sdk/volcengine/credentials/processcreds
+github.com/volcengine/volcengine-go-sdk/volcengine/custom
+github.com/volcengine/volcengine-go-sdk/volcengine/defaults
+github.com/volcengine/volcengine-go-sdk/volcengine/endpoints
+github.com/volcengine/volcengine-go-sdk/volcengine/request
+github.com/volcengine/volcengine-go-sdk/volcengine/response
+github.com/volcengine/volcengine-go-sdk/volcengine/session
+github.com/volcengine/volcengine-go-sdk/volcengine/signer/volc
+github.com/volcengine/volcengine-go-sdk/volcengine/special
+github.com/volcengine/volcengine-go-sdk/volcengine/volcenginebody
+github.com/volcengine/volcengine-go-sdk/volcengine/volcengineerr
+github.com/volcengine/volcengine-go-sdk/volcengine/volcenginequery
+github.com/volcengine/volcengine-go-sdk/volcengine/volcengineutil
 # github.com/wdcbot/qingfeng v1.6.0
 ## explicit; go 1.20
 github.com/wdcbot/qingfeng
@@ -1259,6 +1299,7 @@ golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
 golang.org/x/net/http/httpguts
+golang.org/x/net/http/httpproxy
 golang.org/x/net/http2
 golang.org/x/net/http2/h2c
 golang.org/x/net/http2/hpack
