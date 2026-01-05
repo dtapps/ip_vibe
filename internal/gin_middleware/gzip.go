@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 配置 Gzip 压缩 中间件
-func Gzip(logger *slog.Logger) gin.HandlerFunc {
+// GzipMiddleware 配置 Gzip 压缩 中间件
+func GzipMiddleware(logger *slog.Logger) gin.HandlerFunc {
 	// 日志
 	if logger == nil {
 		logger = slog.Default()

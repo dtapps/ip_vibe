@@ -177,28 +177,28 @@ func main() {
 	}
 
 	// 配置 审计上下文中间件 中间件
-	router.Use(gin_middleware.AuditContext(
+	router.Use(gin_middleware.AuditContextMiddleware(
 		global.GvaGinSlog.WithLogger(),
 	))
 
 	// 配置 请求ID 中间件
-	router.Use(gin_middleware.RequestID(
+	router.Use(gin_middleware.RequestIDMiddleware(
 		global.GvaGinSlog.WithLogger(),
 	))
 
 	// 配置 Coraza 中间件
-	router.Use(gin_middleware.Coraza(
+	router.Use(gin_middleware.CorazaMiddleware(
 		global.GvaCoraza,
 		global.GvaGinSlog.WithLogger(),
 	))
 
 	// 配置 Gzip 压缩 中间件
-	router.Use(gin_middleware.Gzip(
+	router.Use(gin_middleware.GzipMiddleware(
 		global.GvaGinSlog.WithLogger(),
 	))
 
 	// 配置 CORS 中间件
-	router.Use(gin_middleware.CORS(
+	router.Use(gin_middleware.CORSMiddleware(
 		global.GvaGinSlog.WithLogger(),
 	))
 
@@ -214,7 +214,7 @@ func main() {
 	web_resource(ctx, global.GvaGinSlog.WithLogger(), router)
 
 	// 配置 BasicAuth 中间件
-	router.Use(gin_middleware.BasicAuth(
+	router.Use(gin_middleware.BasicAuthMiddleware(
 		global.GvaGinSlog.WithLogger(),
 		global.GvaEnv.BASIC_AUTH_USERNAME,
 		global.GvaEnv.BASIC_AUTH_PASSWORD,
@@ -1247,7 +1247,7 @@ func grpc_run(ctx context.Context, logger *slog.Logger) {
 	// 鉴权拦截器
 	usis = append(
 		usis,
-		grpc_interceptor.BasicAuth(
+		grpc_interceptor.BasicAuthUnaryInterceptor(
 			global.GvaGrpcSlog.WithLogger(),
 			global.GvaEnv.BASIC_AUTH_USERNAME,
 			global.GvaEnv.BASIC_AUTH_PASSWORD,
@@ -1256,7 +1256,7 @@ func grpc_run(ctx context.Context, logger *slog.Logger) {
 	// 日志拦截器
 	usis = append(
 		usis,
-		grpc_interceptor.UnaryLogger(global.GvaGrpcSlog.WithLogger()),
+		grpc_interceptor.LoggerUnaryInterceptor(global.GvaGrpcSlog.WithLogger()),
 	)
 	opts = append(
 		opts,

@@ -12,14 +12,15 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-const authKey = "authorization"
-
-// BasicAuth 返回一个 gRPC 拦截器：仅允许通过 Basic 认证的用户访问指定路径
-func BasicAuth(logger *slog.Logger, username string, password string) grpc.UnaryServerInterceptor {
+// BasicAuth BasicAuth 拦截器：仅允许通过 Basic 认证的用户访问指定路径
+func BasicAuthUnaryInterceptor(logger *slog.Logger, username string, password string) grpc.UnaryServerInterceptor {
 	// 日志
 	if logger == nil {
 		logger = slog.Default()
 	}
+
+	// 认证头键名
+	const authKey = "authorization"
 
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 

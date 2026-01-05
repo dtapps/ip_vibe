@@ -16,9 +16,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Coraza 是 Gin 中间件，用于集成 Coraza WAF
-// 参数：waf 是已初始化的 Coraza WAF 实例，logger 是可选的日志记录器
-func Coraza(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
+// CorazaMiddleware 是 Gin 中间件，用于集成 Coraza WAF
+func CorazaMiddleware(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
 	// 日志
 	if logger == nil {
 		logger = slog.Default()

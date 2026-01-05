@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// AuditContext 配置 审计上下文中间件 中间件
-func AuditContext(logger *slog.Logger) gin.HandlerFunc {
+// AuditContextMiddleware 配置 审计上下文中间件 中间件
+func AuditContextMiddleware(logger *slog.Logger) gin.HandlerFunc {
 	// 日志
 	if logger == nil {
 		logger = slog.Default()

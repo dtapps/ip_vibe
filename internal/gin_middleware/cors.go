@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 配置 CORS 中间件
-func CORS(logger *slog.Logger) gin.HandlerFunc {
+// CORSMiddleware 配置 CORS 中间件
+func CORSMiddleware(logger *slog.Logger) gin.HandlerFunc {
 	// 日志
 	if logger == nil {
 		logger = slog.Default()

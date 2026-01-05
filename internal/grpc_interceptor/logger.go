@@ -12,8 +12,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// UnaryLogger 返回一个 unary 拦截器：记录开始、结束、耗时与状态码
-func UnaryLogger(logger *slog.Logger) grpc.UnaryServerInterceptor {
+// UnaryLogger Logger 拦截器：记录开始、结束、耗时与状态码
+func LoggerUnaryInterceptor(logger *slog.Logger) grpc.UnaryServerInterceptor {
 	// 日志
 	if logger == nil {
 		logger = slog.Default()
