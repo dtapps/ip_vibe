@@ -832,6 +832,10 @@ func web_resource(ctx context.Context, logger *slog.Logger, router *gin.Engine) 
 		"slice": func(s ...string) []string {
 			return s
 		},
+		// 自定义函数：将字符串按指定分隔符分割为字符串切片
+		"split": func(s, sep string) []string {
+			return strings.Split(s, sep)
+		},
 	}
 
 	// 判断是否为开发模式：version == "dev"

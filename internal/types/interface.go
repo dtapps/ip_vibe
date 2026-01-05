@@ -10,9 +10,7 @@ type InterfaceResponse struct {
 	CurrentProto string `json:"current_proto,omitempty"` // 当前选中的协议
 	CodeSnippet  string `json:"code_snippet,omitempty"`  // 代码片段
 
-	Username string `json:"username,omitempty"` // 用户名
-	Password string `json:"password,omitempty"` // 密码
-	Token    string `json:"token,omitempty"`    // 认证 token
+	Token string `json:"token,omitempty"` // 认证 token
 
 	HttpAddr   string `json:"http_addr,omitempty"`   // HTTP 地址
 	GrpcAddr   string `json:"grpc_addr,omitempty"`   // gRPC 地址

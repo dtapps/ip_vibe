@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/core"
@@ -24,15 +25,18 @@ func Interface(c *gin.Context) {
 		CurrentProto: requestParams.Proto,
 		CodeSnippet:  getInterfaceCodeSnippet(requestParams.Proto),
 
-		Username: global.GvaEnv.BASIC_AUTH_USERNAME,
-		Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
-		Token:    core.GetBasicAuthToken(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD),
-
 		HttpAddr:   global.GvaEnv.HTTP_ADDR,
 		GrpcAddr:   global.GvaEnv.GRPC_ADDR,
 		ThriftAddr: global.GvaEnv.THRIFT_ADDR,
 		DubboAddr:  global.GvaEnv.DUBBO_ADDR,
 		TarsAddr:   global.GvaEnv.TARS_ADDR,
+	}
+	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
+		if requestParams.Proto == "api" {
+			pageData.Token = fmt.Sprintf("%s:%s", global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+		} else {
+			pageData.Token = core.GetBasicAuthToken(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+		}
 	}
 
 	// 渲染模板

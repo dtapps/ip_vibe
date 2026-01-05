@@ -136,22 +136,32 @@
 
                 <div
                     class="bg-neutral text-neutral-content p-6 rounded-[2rem] shadow-2xl font-mono text-xs overflow-hidden relative group">
-                    <pre class="leading-relaxed"><code class="language-go">{{ if eq $data.CurrentProto "api" }}// API (Basic Auth)
-req.SetBasicAuth("admin", "{{ $data.Token }}")
-{{ else if eq $data.CurrentProto "mcp" }}// MCP (Header Basic)
+                    <pre class="leading-relaxed"><code class="language-go">
+{{- if eq $data.CurrentProto "api" }}
+// API (Basic Auth)
+{{- $parts := split $data.Token ":" }}
+{{- $user := index $parts 0 }}
+{{- $pass := index $parts 1 }}
+req.SetBasicAuth("{{ if $user }}{{ $user }}{{ else }}{{ end }}", "{{ if $pass }}{{ $pass }}{{ else }}{{ end }}")
+{{- else if eq $data.CurrentProto "mcp" }}
+// MCP (Header Basic)
 auth := "Basic " + base64.StdEncoding.EncodeToString([]byte("{{ $data.Token }}"))
 req.Header.Add("Authorization", auth)
-{{ else if eq $data.CurrentProto "grpc" }}// gRPC (Metadata)
+{{- else if eq $data.CurrentProto "grpc" }}
+// gRPC (Metadata)
 md := metadata.Pairs("authorization", "Basic " + encodedToken)
 ctx := metadata.NewOutgoingContext(context.Background(), md)
-{{ else if eq $data.CurrentProto "thrift" }}// Thrift (Request Params)
+{{- else if eq $data.CurrentProto "thrift" }}
+// Thrift (Request Params)
 req := &SyncRequest{
     Base: &Base{ Token: "{{ $data.Token }}" },
     Data: payload,
 }
-{{ else }}// Others
+{{- else }}
+// Others
 // Please refer to the specific protocol SDK
-{{ end }}</code></pre>
+{{- end }}
+</code></pre>
 
                     <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-primary/10 rounded-full blur-3xl"></div>
                 </div>
