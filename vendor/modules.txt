@@ -726,6 +726,9 @@ github.com/goccy/go-yaml/parser
 github.com/goccy/go-yaml/printer
 github.com/goccy/go-yaml/scanner
 github.com/goccy/go-yaml/token
+# github.com/gofrs/uuid v4.4.0+incompatible
+## explicit
+github.com/gofrs/uuid
 # github.com/golang/protobuf v1.5.4
 ## explicit; go 1.17
 github.com/golang/protobuf/proto
@@ -807,6 +810,15 @@ github.com/huaweicloud/huaweicloud-sdk-go-v3/services/dns/v2/region
 # github.com/influxdata/tdigest v0.0.1
 ## explicit; go 1.13
 github.com/influxdata/tdigest
+# github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
+## explicit
+github.com/jdcloud-api/jdcloud-sdk-go/core
+github.com/jdcloud-api/jdcloud-sdk-go/services/domain/apis
+github.com/jdcloud-api/jdcloud-sdk-go/services/domain/client
+github.com/jdcloud-api/jdcloud-sdk-go/services/domain/models
+github.com/jdcloud-api/jdcloud-sdk-go/services/domainservice/apis
+github.com/jdcloud-api/jdcloud-sdk-go/services/domainservice/client
+github.com/jdcloud-api/jdcloud-sdk-go/services/domainservice/models
 # github.com/jinzhu/copier v0.4.0
 ## explicit; go 1.13
 github.com/jinzhu/copier

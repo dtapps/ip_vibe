@@ -15,6 +15,21 @@ func PtrToUint64(a *uint64) uint64 {
 	return *a
 }
 
+// IntToPtr 将 int 转为 *int（返回新分配的内存，跨函数安全）
+func IntToPtr(v int) *int {
+	p := new(int)
+	*p = v
+	return p
+}
+
+// PtrToInt 将 *int 转为 int，nil 安全（nil 返回 0）
+func PtrToInt(p *int) int {
+	if p == nil {
+		return 0
+	}
+	return *p
+}
+
 // Int32ToPtr 将 int32 转为 *int32（返回新分配的内存，跨函数安全）
 func Int32ToPtr(v int32) *int32 {
 	p := new(int32)

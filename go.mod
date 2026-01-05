@@ -39,6 +39,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.4
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.182
+	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
 	github.com/lib4u/fake-useragent v1.0.6
 	github.com/miekg/dns v1.1.69
 	github.com/modelcontextprotocol/go-sdk v1.2.0
@@ -139,6 +140,7 @@ require (
 	github.com/go-playground/validator/v10 v10.30.1 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/goccy/go-yaml v1.19.1 // indirect
+	github.com/gofrs/uuid v4.4.0+incompatible // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/golang/snappy v1.0.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
