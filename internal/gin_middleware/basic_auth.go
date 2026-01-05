@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// 配置 BasicAuth 中间件
 func BasicAuth(logger *slog.Logger, username string, password string) gin.HandlerFunc {
 	// 日志
 	if logger == nil {

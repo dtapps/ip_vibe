@@ -176,6 +176,11 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
+	// 配置 审计上下文中间件 中间件
+	router.Use(gin_middleware.AuditContext(
+		global.GvaGinSlog.WithLogger(),
+	))
+
 	// 配置 请求ID 中间件
 	router.Use(gin_middleware.RequestID(
 		global.GvaGinSlog.WithLogger(),
@@ -194,11 +199,6 @@ func main() {
 
 	// 配置 CORS 中间件
 	router.Use(gin_middleware.CORS(
-		global.GvaGinSlog.WithLogger(),
-	))
-
-	// 审计上下文中间件 中间件
-	router.Use(gin_middleware.AuditContext(
 		global.GvaGinSlog.WithLogger(),
 	))
 

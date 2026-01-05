@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// AuditContext 审计上下文中间件
+// AuditContext 配置 审计上下文中间件 中间件
 func AuditContext(logger *slog.Logger) gin.HandlerFunc {
 	// 日志
 	if logger == nil {
@@ -18,7 +18,7 @@ func AuditContext(logger *slog.Logger) gin.HandlerFunc {
 	// 审计上下文中间件
 	return func(c *gin.Context) {
 
-		// 默认来源设为 User (因为是 API 请求)
+		// 设置来源设为 User (因为是 API 请求)
 		ctx := schemahook.WithSource(c.Request.Context(), operationlog.SourceUser.String())
 
 		// 将包装后的标准 ctx 回填到 gin.Context 的 Request 中
