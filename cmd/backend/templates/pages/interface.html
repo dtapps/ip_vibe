@@ -41,8 +41,8 @@
                         class="btn btn-ghost btn-sm btn-square rounded-xl opacity-40 hover:opacity-100">
                         <span id="eyeIcon">{{ template "icons" (dict "Name" "i-lucide-eye" "Class" "w-4 h-4") }}</span>
                     </button>
-                    <button onclick="copyToken()"
-                        class="btn btn-primary btn-sm rounded-xl px-4 font-bold gap-2 shadow-lg shadow-primary/20">
+                    <button data-clipboard-target="#tokenInput"
+                        class="btn btn-primary btn-sm rounded-xl px-4 font-bold gap-2 shadow-lg shadow-primary/20 copy-btn">
                         {{ template "icons" (dict "Name" "i-lucide-copy" "Class" "w-3.5 h-3.5") }} 复制
                     </button>
                 </div>
@@ -166,12 +166,46 @@ req := &SyncRequest{
         input.type = input.type === 'password' ? 'text' : 'password';
     }
 
-    function copyToken() {
-        const val = document.getElementById('tokenInput').value;
-        navigator.clipboard.writeText(val);
-        // 配合你可能存在的 toast 组件
-        alert('已复制凭证');
-    }
+    // 使用监听器确保 ClipboardJS 已经加载
+    (function initClipboard() {
+        if (typeof ClipboardJS === 'undefined') {
+            // 如果还没加载完，等 200ms 再试
+            setTimeout(initClipboard, 200);
+            return;
+        }
+
+        const clipboard = new ClipboardJS('.copy-btn', {
+            text: function () {
+                // 直接从内存中获取 input 的原始 value
+                return document.getElementById('tokenInput').value;
+            }
+        });
+
+        clipboard.on('success', function (e) {
+            const btn = e.trigger;
+            const oldText = btn.innerText;
+            const icon = btn.querySelector('span');
+
+            btn.innerText = "";
+            btn.appendChild(document.createTextNode(' ✅ 已复制'));
+            btn.classList.add("text-success");
+
+            setTimeout(() => {
+                btn.innerText = "";
+                if (icon) {
+                    btn.appendChild(icon)
+                };
+                btn.appendChild(document.createTextNode(oldText));
+                btn.classList.remove("text-success");
+            }, 1500);
+            e.clearSelection();
+        });
+
+        clipboard.on('error', function (e) {
+            console.error('ssl_view clipboard error', e);
+            alert('复制失败，请手动选择复制');
+        });
+    })();
 </script>
 
 {{ end }}
