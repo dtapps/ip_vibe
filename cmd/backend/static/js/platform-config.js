@@ -289,58 +289,58 @@ async function openFormModal(id) {
 
     switch (config.platform) {
       case "cloudflare":
-        document.getElementById(`${id}_api_key`).value =
+        document.getElementById(`${config.platform}_api_key`).value =
           config.config_json.api_key || "";
-        document.getElementById(`${id}_zone_id`).value =
+        document.getElementById(`${config.platform}_zone_id`).value =
           config.config_json.zone_id || "";
         break;
       case "tencent_dns":
-        document.getElementById(`${id}_secret_id`).value =
+        document.getElementById(`${config.platform}_secret_id`).value =
           config.config_json.secret_id || "";
-        document.getElementById(`${id}_secret_key`).value =
+        document.getElementById(`${config.platform}_secret_key`).value =
           config.config_json.secret_key || "";
         break;
       case "tencent_eo":
-        document.getElementById(`${id}_secret_id`).value =
+        document.getElementById(`${config.platform}_secret_id`).value =
           config.config_json.secret_id || "";
-        document.getElementById(`${id}_secret_key`).value =
+        document.getElementById(`${config.platform}_secret_key`).value =
           config.config_json.secret_key || "";
-        document.getElementById(`${id}_zone_id`).value =
+        document.getElementById(`${config.platform}_zone_id`).value =
           config.config_json.zone_id || "";
         break;
       case "aliyun_dns":
-        document.getElementById(`${id}_access_key_id`).value =
+        document.getElementById(`${config.platform}_access_key_id`).value =
           config.config_json.access_key_id || "";
-        document.getElementById(`${id}_access_key_secret`).value =
+        document.getElementById(`${config.platform}_access_key_secret`).value =
           config.config_json.access_key_secret || "";
         break;
       case "aliyun_esa":
-        document.getElementById(`${id}_access_key_id`).value =
+        document.getElementById(`${config.platform}_access_key_id`).value =
           config.config_json.access_key_id || "";
-        document.getElementById(`${id}_access_key_secret`).value =
+        document.getElementById(`${config.platform}_access_key_secret`).value =
           config.config_json.access_key_secret || "";
-        document.getElementById(`${id}_site_id`).value =
+        document.getElementById(`${config.platform}_site_id`).value =
           config.config_json.site_id || 0;
         break;
       case "baidu_dns":
-        document.getElementById(`${id}_access_key_id`).value =
+        document.getElementById(`${config.platform}_access_key_id`).value =
           config.config_json.access_key_id || "";
-        document.getElementById(`${id}_secret_access_key`).value =
+        document.getElementById(`${config.platform}_secret_access_key`).value =
           config.config_json.secret_access_key || "";
         break;
       case "huawei_dns":
-        document.getElementById(`${id}_access_key_id`).value =
+        document.getElementById(`${config.platform}_access_key_id`).value =
           config.config_json.access_key_id || "";
-        document.getElementById(`${id}_secret_access_key`).value =
+        document.getElementById(`${config.platform}_secret_access_key`).value =
           config.config_json.secret_access_key || "";
-        document.getElementById(`${id}_zone_id`).value =
+        document.getElementById(`${config.platform}_zone_id`).value =
           config.config_json.zone_id || "";
       case "volcengine_dns":
-        document.getElementById(`${id}_access_key`).value =
+        document.getElementById(`${config.platform}_access_key`).value =
           config.config_json.access_key || "";
-        document.getElementById(`${id}_secret_key`).value =
+        document.getElementById(`${config.platform}_secret_key`).value =
           config.config_json.secret_key || "";
-        document.getElementById(`${id}_zone_id`).value =
+        document.getElementById(`${config.platform}_zone_id`).value =
           config.config_json.zone_id || 0;
         break;
     }
