@@ -287,6 +287,8 @@ async function openFormModal(id) {
       changeCapability({ value: config.capability });
     }, 100);
 
+    console.debug("config.platform", config.platform ?? "");
+    console.debug("config.config_json", config.config_json ?? {});
     switch (config.platform) {
       case "cloudflare":
         document.getElementById(`${config.platform}_api_key`).value =
@@ -335,6 +337,7 @@ async function openFormModal(id) {
           config.config_json.secret_access_key || "";
         document.getElementById(`${config.platform}_zone_id`).value =
           config.config_json.zone_id || "";
+        break;
       case "volcengine_dns":
         document.getElementById(`${config.platform}_access_key`).value =
           config.config_json.access_key || "";
