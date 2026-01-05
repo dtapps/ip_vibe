@@ -202,20 +202,23 @@ var GetWebhookSubscriptionObjTypes = []string{
 // --------
 
 const (
-	LogSourceUser   string = "user"   // 用户手动
-	LogSourceSystem string = "system" // 系统自动
-	LogSourceTask   string = "task"   // 定时任务
+	LogSourceUnknown string = "unknown" // 未知来源
+	LogSourceUser    string = "user"    // 用户手动
+	LogSourceSystem  string = "system"  // 系统自动
+	LogSourceTask    string = "task"    // 定时任务
 )
 
 // GetLogSourceDescriptions 操作来源说明映射
 var GetLogSourceDescriptions = map[string]string{
-	LogSourceUser:   "用户手动",
-	LogSourceSystem: "系统自动",
-	LogSourceTask:   "定时任务",
+	LogSourceUnknown: "未知来源",
+	LogSourceUser:    "用户手动",
+	LogSourceSystem:  "系统自动",
+	LogSourceTask:    "定时任务",
 }
 
 // GetLogSources 返回所有操作来源
 var GetLogSources = []string{
+	LogSourceUnknown,
 	LogSourceUser,
 	LogSourceSystem,
 	LogSourceTask,

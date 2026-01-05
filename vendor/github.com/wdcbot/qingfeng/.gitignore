@@ -31,3 +31,6 @@ node_modules/
 
 # Generated swagger docs
 example/docs/
+
+# Personal scripts
+sync.sh

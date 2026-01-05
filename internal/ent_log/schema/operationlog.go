@@ -44,7 +44,7 @@ func (OperationLog) Fields() []ent.Field {
 
 		field.Enum("source").
 			Values(schematype.GetLogSources...).
-			Default(schematype.LogSourceUser).
+			Default(schematype.LogSourceUnknown).
 			Immutable().
 			Comment("操作来源").
 			Annotations(entsql.WithComments(true)),

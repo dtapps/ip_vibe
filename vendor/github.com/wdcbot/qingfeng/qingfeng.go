@@ -16,7 +16,7 @@ import (
 )
 
 // Version is the current version of QingFeng
-const Version = "1.5.5"
+const Version = "1.6.0"
 
 //go:embed ui/default/* ui/minimal/* ui/modern/* ui/assets/css/* ui/assets/webfonts/*
 var uiFS embed.FS
@@ -70,6 +70,9 @@ type Config struct {
 	EnableDebug bool
 	// DarkMode enables dark theme by default
 	DarkMode bool
+	// PersistParams enables saving debug parameters to sessionStorage (default: true)
+	// 是否将调试参数保存到 sessionStorage（默认: true）
+	PersistParams *bool
 	// GlobalHeaders are custom headers that will be sent with every API request
 	// 全局请求头，会在每个 API 请求中自动添加
 	GlobalHeaders []Header
@@ -164,6 +167,12 @@ func HTTPHandler(cfg Config) http.Handler {
 		defaultTheme = "default"
 	}
 
+	// PersistParams default to true
+	persistParams := true
+	if cfg.PersistParams != nil {
+		persistParams = *cfg.PersistParams
+	}
+
 	// Prepare config JSON for frontend
 	configJSON, _ := json.Marshal(map[string]interface{}{
 		"title":           cfg.Title,
@@ -178,6 +187,7 @@ func HTTPHandler(cfg Config) http.Handler {
 		"logo":            cfg.Logo,
 		"logoLink":        cfg.LogoLink,
 		"environments":    cfg.Environments,
+		"persistParams":   persistParams,
 	})
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -162,7 +162,7 @@ var (
 	OperationLogColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "操作日志序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
-		{Name: "source", Type: field.TypeEnum, Comment: "操作来源", Enums: []string{"user", "system", "task"}, Default: "user"},
+		{Name: "source", Type: field.TypeEnum, Comment: "操作来源", Enums: []string{"unknown", "user", "system", "task"}, Default: "unknown"},
 		{Name: "op_type", Type: field.TypeEnum, Comment: "操作类型", Enums: []string{"data_create", "data_update", "data_delete", "device_report", "ip_refresh"}},
 		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"cdn_record", "dns_record", "device", "device_port_forward", "domain_monitor", "ip_group", "ip_group_device", "platform_config", "ssl_record", "webhook", "webhook_subscription", "device_ip_report", "domain_monitor_history", "http_log", "operation_log", "port_forward_stats", "resty_log", "ssl_certificate_history", "webhook_history"}},
 		{Name: "obj_id", Type: field.TypeInt64, Comment: "对象主键"},

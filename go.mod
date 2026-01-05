@@ -49,10 +49,10 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc4
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.22
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.25
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.26
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.21
-	github.com/wdcbot/qingfeng v1.5.9
+	github.com/wdcbot/qingfeng v1.6.0
 	go.dtapp.net/library/contrib/http_log v1.0.1
 	go.dtapp.net/library/contrib/resty_log v1.0.10
 	go.dtapp.net/library/service/bark v1.0.7

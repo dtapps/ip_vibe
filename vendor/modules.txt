@@ -1000,7 +1000,7 @@ github.com/swaggo/swag/v2
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.22
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.25
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.26
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors
@@ -1082,7 +1082,7 @@ github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/events/application
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/events/application/enums
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects/enums
-# github.com/wdcbot/qingfeng v1.5.9
+# github.com/wdcbot/qingfeng v1.6.0
 ## explicit; go 1.20
 github.com/wdcbot/qingfeng
 # github.com/yosida95/uritemplate/v3 v3.0.2

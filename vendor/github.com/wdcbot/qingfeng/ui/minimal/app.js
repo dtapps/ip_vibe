@@ -1096,16 +1096,20 @@ function getDebugStorageKey(path, method) {
 }
 
 function getDebugData(path, method) {
+    if (config.persistParams === false) {
+        return { params: {}, body: '', bodyFields: {}, response: null };
+    }
     try {
         const key = getDebugStorageKey(path, method);
         const saved = sessionStorage.getItem(key);
-        return saved ? JSON.parse(saved) : { params: {}, body: '', response: null };
+        return saved ? JSON.parse(saved) : { params: {}, body: '', bodyFields: {}, response: null };
     } catch (e) {
-        return { params: {}, body: '', response: null };
+        return { params: {}, body: '', bodyFields: {}, response: null };
     }
 }
 
 function saveDebugData(path, method, data) {
+    if (config.persistParams === false) return;
     try {
         const key = getDebugStorageKey(path, method);
         sessionStorage.setItem(key, JSON.stringify(data));

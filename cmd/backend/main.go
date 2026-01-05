@@ -21,7 +21,9 @@ import (
 	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/docs_2"
 	"vibe_ip/internal/docs_3"
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schematype"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/gin_middleware"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_client"
@@ -117,7 +119,8 @@ func main() {
 		}
 	}()
 
-	ctx := context.Background()
+	// 创建上下文
+	ctx := schemahook.WithSource(context.Background(), operationlog.SourceSystem.String())
 
 	initialize.InitSLog("backend")       // 初始化 日志
 	initialize.InitEntSLog("backend")    // 初始化 ent 日志

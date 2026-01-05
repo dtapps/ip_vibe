@@ -72,14 +72,15 @@ var (
 // Source defines the type for the "source" enum field.
 type Source string
 
-// SourceUser is the default value of the Source enum.
-const DefaultSource = SourceUser
+// SourceUnknown is the default value of the Source enum.
+const DefaultSource = SourceUnknown
 
 // Source values.
 const (
-	SourceUser   Source = "user"
-	SourceSystem Source = "system"
-	SourceTask   Source = "task"
+	SourceUnknown Source = "unknown"
+	SourceUser    Source = "user"
+	SourceSystem  Source = "system"
+	SourceTask    Source = "task"
 )
 
 func (s Source) String() string {
@@ -89,7 +90,7 @@ func (s Source) String() string {
 // SourceValidator is a validator for the "source" field enum values. It is called by the builders before save.
 func SourceValidator(s Source) error {
 	switch s {
-	case SourceUser, SourceSystem, SourceTask:
+	case SourceUnknown, SourceUser, SourceSystem, SourceTask:
 		return nil
 	default:
 		return fmt.Errorf("operationlog: invalid enum value for source field: %q", s)
