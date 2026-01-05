@@ -617,6 +617,7 @@ github.com/go-acme/lego/v4/providers/dns/aliesa
 github.com/go-acme/lego/v4/providers/dns/baiducloud
 github.com/go-acme/lego/v4/providers/dns/cloudflare
 github.com/go-acme/lego/v4/providers/dns/cloudflare/internal
+github.com/go-acme/lego/v4/providers/dns/dnspod
 github.com/go-acme/lego/v4/providers/dns/edgeone
 github.com/go-acme/lego/v4/providers/dns/huaweicloud
 github.com/go-acme/lego/v4/providers/dns/huaweicloud/internal
@@ -624,8 +625,12 @@ github.com/go-acme/lego/v4/providers/dns/internal/clientdebug
 github.com/go-acme/lego/v4/providers/dns/internal/errutils
 github.com/go-acme/lego/v4/providers/dns/internal/ptr
 github.com/go-acme/lego/v4/providers/dns/internal/useragent
+github.com/go-acme/lego/v4/providers/dns/rainyun
+github.com/go-acme/lego/v4/providers/dns/rainyun/internal
 github.com/go-acme/lego/v4/providers/dns/tencentcloud
 github.com/go-acme/lego/v4/providers/dns/volcengine
+github.com/go-acme/lego/v4/providers/dns/westcn
+github.com/go-acme/lego/v4/providers/dns/westcn/internal
 github.com/go-acme/lego/v4/registration
 # github.com/go-acme/tencentclouddnspod v1.1.25
 ## explicit; go 1.14
@@ -738,6 +743,9 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
+# github.com/google/go-querystring v1.2.0
+## explicit; go 1.13
+github.com/google/go-querystring/query
 # github.com/google/jsonschema-go v0.4.2
 ## explicit; go 1.23.0
 github.com/google/jsonschema-go/jsonschema
@@ -890,6 +898,9 @@ github.com/natefinch/lumberjack
 # github.com/ncruces/go-strftime v1.0.0
 ## explicit; go 1.17
 github.com/ncruces/go-strftime
+# github.com/nrdcg/dnspod-go v0.4.0
+## explicit; go 1.13
+github.com/nrdcg/dnspod-go
 # github.com/opentracing/opentracing-go v1.2.0
 ## explicit; go 1.14
 github.com/opentracing/opentracing-go
