@@ -169,82 +169,84 @@ function buildConfigPlatform() {
   switch (platform) {
     case "cloudflare":
       config = {
-        api_key: document.getElementById("cloudflare_api_key").value.trim(),
-        zone_id: document.getElementById("cloudflare_zone_id").value.trim(),
+        api_key: document.getElementById(`${platform}_api_key`).value.trim(),
+        zone_id: document.getElementById(`${platform}_zone_id`).value.trim(),
       };
       break;
     case "tencent_dns":
       config = {
         secret_id: document
-          .getElementById("tencent_dns_secret_id")
+          .getElementById(`${platform}_secret_id`)
           .value.trim(),
         secret_key: document
-          .getElementById("tencent_dns_secret_key")
+          .getElementById(`${platform}_secret_key`)
           .value.trim(),
       };
       break;
     case "tencent_eo":
       config = {
-        secret_id: document.getElementById("tencent_eo_secret_id").value.trim(),
-        secret_key: document
-          .getElementById("tencent_eo_secret_key")
+        secret_id: document
+          .getElementById(`${platform}_secret_id`)
           .value.trim(),
-        zone_id: document.getElementById("tencent_eo_zone_id").value.trim(),
+        secret_key: document
+          .getElementById(`${platform}_secret_key`)
+          .value.trim(),
+        zone_id: document.getElementById(`${platform}_zone_id`).value.trim(),
       };
       break;
     case "aliyun_dns":
       config = {
         access_key_id: document
-          .getElementById("aliyun_dns_access_key_id")
+          .getElementById(`${platform}_access_key_id`)
           .value.trim(),
         access_key_secret: document
-          .getElementById("aliyun_dns_access_key_secret")
+          .getElementById(`${platform}_access_key_secret`)
           .value.trim(),
       };
       break;
     case "aliyun_esa":
       config = {
         access_key_id: document
-          .getElementById("aliyun_esa_access_key_id")
+          .getElementById(`${platform}_access_key_id`)
           .value.trim(),
         access_key_secret: document
-          .getElementById("aliyun_esa_access_key_secret")
+          .getElementById(`${platform}_access_key_secret`)
           .value.trim(),
         site_id: Number(
-          document.getElementById("aliyun_esa_site_id").value.trim()
+          document.getElementById(`${platform}_site_id`).value.trim()
         ),
       };
       break;
     case "baidu_dns":
       config = {
         access_key_id: document
-          .getElementById("baidu_dns_access_key_id")
+          .getElementById(`${platform}_access_key_id`)
           .value.trim(),
         secret_access_key: document
-          .getElementById("baidu_dns_secret_access_key")
+          .getElementById(`${platform}_secret_access_key`)
           .value.trim(),
       };
       break;
     case "huawei_dns":
       config = {
         access_key_id: document
-          .getElementById("huawei_dns_access_key_id")
+          .getElementById(`${platform}_access_key_id`)
           .value.trim(),
         secret_access_key: document
-          .getElementById("huawei_dns_secret_access_key")
+          .getElementById(`${platform}_secret_access_key`)
           .value.trim(),
-        zone_id: document.getElementById("huawei_dns_zone_id").value.trim(),
+        zone_id: document.getElementById(`${platform}_zone_id`).value.trim(),
       };
     case "volcengine_dns":
       config = {
         access_key: document
-          .getElementById("volcengine_dns_access_key")
+          .getElementById(`${platform}_access_key`)
           .value.trim(),
         secret_key: document
-          .getElementById("volcengine_dns_secret_key")
+          .getElementById(`${platform}_secret_key`)
           .value.trim(),
         zone_id: Number(
-          document.getElementById("volcengine_dns_zone_id").value.trim()
+          document.getElementById(`${platform}_zone_id`).value.trim()
         ),
       };
       break;
@@ -287,59 +289,59 @@ async function openFormModal(id) {
 
     switch (config.platform) {
       case "cloudflare":
-        document.getElementById("cloudflare_api_key").value =
+        document.getElementById(`${id}_api_key`).value =
           config.config_json.api_key || "";
-        document.getElementById("cloudflare_zone_id").value =
+        document.getElementById(`${id}_zone_id`).value =
           config.config_json.zone_id || "";
         break;
       case "tencent_dns":
-        document.getElementById("tencent_dns_secret_id").value =
+        document.getElementById(`${id}_secret_id`).value =
           config.config_json.secret_id || "";
-        document.getElementById("tencent_dns_secret_key").value =
+        document.getElementById(`${id}_secret_key`).value =
           config.config_json.secret_key || "";
         break;
       case "tencent_eo":
-        document.getElementById("tencent_eo_secret_id").value =
+        document.getElementById(`${id}_secret_id`).value =
           config.config_json.secret_id || "";
-        document.getElementById("tencent_eo_secret_key").value =
+        document.getElementById(`${id}_secret_key`).value =
           config.config_json.secret_key || "";
-        document.getElementById("tencent_eo_zone_id").value =
+        document.getElementById(`${id}_zone_id`).value =
           config.config_json.zone_id || "";
         break;
       case "aliyun_dns":
-        document.getElementById("aliyun_dns_access_key_id").value =
+        document.getElementById(`${id}_access_key_id`).value =
           config.config_json.access_key_id || "";
-        document.getElementById("aliyun_dns_access_key_secret").value =
+        document.getElementById(`${id}_access_key_secret`).value =
           config.config_json.access_key_secret || "";
         break;
       case "aliyun_esa":
-        document.getElementById("aliyun_esa_access_key_id").value =
+        document.getElementById(`${id}_access_key_id`).value =
           config.config_json.access_key_id || "";
-        document.getElementById("aliyun_esa_access_key_secret").value =
+        document.getElementById(`${id}_access_key_secret`).value =
           config.config_json.access_key_secret || "";
-        document.getElementById("aliyun_esa_site_id").value =
+        document.getElementById(`${id}_site_id`).value =
           config.config_json.site_id || 0;
         break;
       case "baidu_dns":
-        document.getElementById("baidu_dns_access_key_id").value =
+        document.getElementById(`${id}_access_key_id`).value =
           config.config_json.access_key_id || "";
-        document.getElementById("baidu_dns_secret_access_key").value =
+        document.getElementById(`${id}_secret_access_key`).value =
           config.config_json.secret_access_key || "";
         break;
       case "huawei_dns":
-        document.getElementById("huawei_dns_access_key_id").value =
+        document.getElementById(`${id}_access_key_id`).value =
           config.config_json.access_key_id || "";
-        document.getElementById("huawei_dns_secret_access_key").value =
+        document.getElementById(`${id}_secret_access_key`).value =
           config.config_json.secret_access_key || "";
-        document.getElementById("huawei_dns_zone_id").value =
+        document.getElementById(`${id}_zone_id`).value =
           config.config_json.zone_id || "";
       case "volcengine_dns":
-        document.getElementById("volcengine_dns_access_key").value =
+        document.getElementById(`${id}_access_key`).value =
           config.config_json.access_key || "";
-        document.getElementById("volcengine_dns_secret_key").value =
+        document.getElementById(`${id}_secret_key`).value =
           config.config_json.secret_key || "";
-        document.getElementById("volcengine_dns_zone_id").value =
-          config.config_json.zone_id || "";
+        document.getElementById(`${id}_zone_id`).value =
+          config.config_json.zone_id || 0;
         break;
     }
 
