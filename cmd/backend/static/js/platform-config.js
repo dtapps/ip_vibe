@@ -235,6 +235,18 @@ function buildConfigPlatform() {
           .value.trim(),
         zone_id: document.getElementById("huawei_dns_zone_id").value.trim(),
       };
+    case "volcengine_dns":
+      config = {
+        access_key: document
+          .getElementById("volcengine_dns_access_key")
+          .value.trim(),
+        secret_key: document
+          .getElementById("volcengine_dns_secret_key")
+          .value.trim(),
+        zone_id: Number(
+          document.getElementById("volcengine_dns_zone_id").value.trim()
+        ),
+      };
       break;
   }
 
@@ -320,6 +332,13 @@ async function openFormModal(id) {
         document.getElementById("huawei_dns_secret_access_key").value =
           config.config_json.secret_access_key || "";
         document.getElementById("huawei_dns_zone_id").value =
+          config.config_json.zone_id || "";
+      case "volcengine_dns":
+        document.getElementById("volcengine_dns_access_key").value =
+          config.config_json.access_key || "";
+        document.getElementById("volcengine_dns_secret_key").value =
+          config.config_json.secret_key || "";
+        document.getElementById("volcengine_dns_zone_id").value =
           config.config_json.zone_id || "";
         break;
     }

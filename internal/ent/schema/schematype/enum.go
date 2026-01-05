@@ -108,18 +108,21 @@ const (
 	ConfigPlatformBaiduDns string = "baidu_dns" // 百度云 DNS
 
 	ConfigPlatformHuaweiDns string = "huawei_dns" // 华为云 DNS
+
+	ConfigPlatformvolcengineDns string = "volcengine_dns" // 火山引擎 DNS
 )
 
 // GetConfigPlatformDescriptions 平台类型说明映射
 var GetConfigPlatformDescriptions = map[string]string{
-	ConfigPlatformCloudflare: "Cloudflare",
-	ConfigPlatformTencentDns: "腾讯云 DNS",
-	ConfigPlatformTencentEO:  "腾讯云 EdgeOne",
-	ConfigPlatformAliyunDns:  "阿里云 DNS",
-	ConfigPlatformAliyunCdn:  "阿里云 CDN",
-	ConfigPlatformAliyunEsa:  "阿里云 ESA",
-	ConfigPlatformBaiduDns:   "百度云 DNS",
-	ConfigPlatformHuaweiDns:  "华为云 DNS",
+	ConfigPlatformCloudflare:    "Cloudflare",
+	ConfigPlatformTencentDns:    "腾讯云 DNS",
+	ConfigPlatformTencentEO:     "腾讯云 EdgeOne",
+	ConfigPlatformAliyunDns:     "阿里云 DNS",
+	ConfigPlatformAliyunCdn:     "阿里云 CDN",
+	ConfigPlatformAliyunEsa:     "阿里云 ESA",
+	ConfigPlatformBaiduDns:      "百度云 DNS",
+	ConfigPlatformHuaweiDns:     "华为云 DNS",
+	ConfigPlatformvolcengineDns: "火山引擎 DNS",
 }
 
 // GetConfigPlatforms 返回所有平台类型
@@ -132,6 +135,7 @@ var GetConfigPlatforms = []string{
 	ConfigPlatformAliyunEsa,
 	ConfigPlatformBaiduDns,
 	ConfigPlatformHuaweiDns,
+	ConfigPlatformvolcengineDns,
 }
 
 // --------

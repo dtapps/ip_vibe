@@ -37,6 +37,7 @@
           <option value="aliyun_esa">阿里云 ESA</option>
           <option value="baidu_dns">百度云 DNS</option>
           <option value="huawei_dns">华为云 DNS</option>
+          <option value="volcengine_dns">火山引擎 DNS</option>
         </select>
       </div>
 
@@ -263,6 +264,41 @@
           <div class="ui-form-control hidden" data-type="email">
             <label class="ui-label-text">Email <span class="text-error">*</span></label>
             <input type="email" id="huawei_dns_email" class="ui-input email-field"
+              placeholder="your-email@example.com" />
+          </div>
+        </div>
+      </div>
+
+      <div id="volcengine_dns_fields" class="platform-fields hidden space-y-4">
+        <div class="divider text-xs opacity-40">火山引擎 DNS 配置</div>
+        <div class="ui-form-control">
+          <label class="ui-label-text">Access Key <span class="text-error">*</span></label>
+          <input type="text" id="volcengine_dns_access_key" class="ui-input" placeholder="AK..." />
+        </div>
+        <div class="ui-form-control">
+          <label class="ui-label-text">Secret Key <span class="text-error">*</span></label>
+          <div class="flex items-center gap-2">
+            <input type="password" id="volcengine_dns_secret_key" class="ui-input" placeholder="Secret..."
+              autocomplete="new-password" />
+            <button type="button" class="btn btn-square btn-ghost btn-sm"
+              onclick="togglePasswordVisibility('volcengine_dns_secret_key', this)">
+              {{ template "icons" (dict "Name" "i-lucide-eye") }}
+            </button>
+          </div>
+        </div>
+        <div class="ui-form-control">
+          <label class="ui-label-text">Zone ID <span class="text-error">*</span></label>
+          <input type="number" id="volcengine_dns_zone_id" class="ui-input" placeholder="zone-..." />
+        </div>
+        <div class="form-group domain-or-email-group" data-platform="volcengine_dns">
+          <div class="ui-form-control" data-type="domain">
+            <label class="ui-label-text">Domain Name <span class="text-error">*</span></label>
+            <input type="text" id="volcengine_dns_domain_name" class="ui-input domain-field"
+              placeholder="your-domain.com" />
+          </div>
+          <div class="ui-form-control hidden" data-type="email">
+            <label class="ui-label-text">Email <span class="text-error">*</span></label>
+            <input type="email" id="volcengine_dns_email" class="ui-input email-field"
               placeholder="your-email@example.com" />
           </div>
         </div>

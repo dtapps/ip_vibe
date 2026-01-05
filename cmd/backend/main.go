@@ -1232,8 +1232,12 @@ func mcp_run(ctx context.Context, logger *slog.Logger, router *gin.Engine) {
 	httpTransport := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
 		return global.GvaMcpServer
 	}, nil)
-	router.Any("/mcp/*path", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
-	router.Any("/mcp", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
+	mcpRouter := router.Use(gin_middleware.AuditContextMiddleware(
+		global.GvaGinSlog.WithLogger(),
+		operationlog.SourceMcp,
+	))
+	mcpRouter.Any("/mcp/*path", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
+	mcpRouter.Any("/mcp", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
 }
 
 // gRPC 启动
@@ -1403,7 +1407,11 @@ func grpc_gw_run(ctx context.Context, logger *slog.Logger, router *gin.Engine) {
 	}
 
 	// 关键：把网关挂到 Gin 的 /grpc 前缀
-	router.Group("/grpc").Any("/*any", gin.WrapH(http.StripPrefix("/grpc", gwMux)))
+	grpcGwRouter := router.Group("/grpc").Use(gin_middleware.AuditContextMiddleware(
+		global.GvaGinSlog.WithLogger(),
+		operationlog.SourceGrpc,
+	))
+	grpcGwRouter.Any("/*any", gin.WrapH(http.StripPrefix("/grpc", gwMux)))
 	logger.InfoContext(ctx, "gRPC-Gateway 已挂载到 Gin",
 		slog.String("prefix", "/grpc"),
 		slog.String("upstream", global.GvaEnv.GRPC_ADDR),

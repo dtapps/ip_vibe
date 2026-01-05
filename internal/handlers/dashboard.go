@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 	"time"
 	"vibe_ip/internal/ent/device"
+	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/helper/system_helper"
@@ -42,6 +43,7 @@ func Dashboard(c *gin.Context) {
 
 	// 最新操作日志
 	allOperationLog, err := global.GvaEntLogDb.OperationLog.Query().
+		Where(operationlog.SourceEQ(operationlog.SourceUser)).
 		OrderByCreatedAtDesc().
 		Limit(pageData.Stats.LogLimit).
 		All(c)

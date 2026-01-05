@@ -26,6 +26,8 @@
 <span class="{{$class}}" data-tip="{{$tips}}">百度云 DNS</span>
 {{else if eq $platform "huawei_dns"}}
 <span class="{{$class}}" data-tip="{{$tips}}">华为云 DNS</span>
+{{else if eq $platform "volcengine_dns"}}
+<span class="{{$class}}" data-tip="{{$tips}}">火山引擎 DNS</span>
 {{else}}
 <span class="{{$class}}" data-tip="{{$tips}}">{{$platform}}</span>
 {{end}}

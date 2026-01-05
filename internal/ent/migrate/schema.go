@@ -392,7 +392,7 @@ var (
 		{Name: "capability", Type: field.TypeEnum, Comment: "平台支持的服务能力：all（全部）dns（仅DNS）、cdn（仅CDN）、ssl（仅SSL）", Enums: []string{"all", "dns", "cdn", "ssl"}, Default: "all"},
 		{Name: "name", Type: field.TypeString, Comment: "平台配置名称"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "平台配置描述"},
-		{Name: "platform", Type: field.TypeEnum, Comment: "平台类型", Enums: []string{"cloudflare", "tencent_dns", "tencent_eo", "aliyun_dns", "aliyun_cdn", "aliyun_esa", "baidu_dns", "huawei_dns"}},
+		{Name: "platform", Type: field.TypeEnum, Comment: "平台类型", Enums: []string{"cloudflare", "tencent_dns", "tencent_eo", "aliyun_dns", "aliyun_cdn", "aliyun_esa", "baidu_dns", "huawei_dns", "volcengine_dns"}},
 		{Name: "config_json", Type: field.TypeJSON, Nullable: true, Comment: "平台密钥等敏感信息（JSON）"},
 	}
 	// PlatformConfigTable holds the schema information for the "platform_config" table.
