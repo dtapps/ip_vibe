@@ -181,15 +181,22 @@ func main() {
 		gin.ForceConsoleColor()
 	}
 
-	// 创建Gin引擎
-	router := gin.Default()
-
 	// 配置调试模式
 	if global.GvaEnv.DEBUG {
 		gin.SetMode(gin.DebugMode)
 	} else {
 		gin.SetMode(gin.ReleaseMode)
 	}
+
+	// 创建Gin引擎
+	// router := gin.Default()
+	router := gin.New()
+
+	// 配置 日志 中间件
+	router.Use(gin.Logger())
+
+	// 配置 恢复 中间件
+	router.Use(gin_middleware.RecoveryMiddleware(ginLogger, true))
 
 	// 配置 审计上下文 中间件
 	router.Use(gin_middleware.AuditContextMiddleware(
@@ -655,7 +662,7 @@ func web_resource(ctx context.Context, ginLogger *slog.Logger, router *gin.Engin
 		"selfDeviceCode": func() string {
 			code, err := machineid.ID()
 			if err != nil {
-				ginLogger.Error("获取当前设备 Code 失败",
+				ginLogger.Error("[selfDeviceCode] 获取当前设备 Code 失败",
 					slog.Any("err", err),
 				)
 				return "—"
@@ -671,7 +678,7 @@ func web_resource(ctx context.Context, ginLogger *slog.Logger, router *gin.Engin
 		"dict": func(values ...any) (map[string]any, error) {
 			if len(values)%2 != 0 {
 				err := fmt.Errorf("期望有偶数个参数")
-				ginLogger.Error("dict 函数参数错误",
+				ginLogger.Error("[dict] 函数参数错误",
 					slog.Any("err", err),
 				)
 				return nil, err
@@ -681,7 +688,7 @@ func web_resource(ctx context.Context, ginLogger *slog.Logger, router *gin.Engin
 				key, ok := values[i].(string)
 				if !ok {
 					err := fmt.Errorf("键必须是字符串")
-					ginLogger.Error("dict 函数参数错误",
+					ginLogger.Error("[dict] 函数参数错误",
 						slog.Any("err", err),
 					)
 					return nil, err
@@ -689,10 +696,6 @@ func web_resource(ctx context.Context, ginLogger *slog.Logger, router *gin.Engin
 				m[key] = values[i+1]
 			}
 			return m, nil
-		},
-		// 字符串拼接
-		"join": func(strs ...string) string {
-			return strings.Join(strs, "")
 		},
 		// 获取字段的枚举项
 		"fieldEnumMap": func(fieldType string) (enumItems []EnumItem) {
@@ -828,12 +831,25 @@ func web_resource(ctx context.Context, ginLogger *slog.Logger, router *gin.Engin
 			}
 			return enumItems
 		},
-		// 自定义函数：将多个字符串参数转换为字符串切片
+		// 将多个字符串参数拼接为一个字符串
+		"join": func(s ...string) string {
+			if len(s) == 0 {
+				return ""
+			}
+			return strings.Join(s, "")
+		},
+		// 将字符串按指定分隔符分割为字符串切片
 		"slice": func(s ...string) []string {
+			if len(s) == 0 {
+				return []string{}
+			}
 			return s
 		},
-		// 自定义函数：将字符串按指定分隔符分割为字符串切片
+		// 将字符串按指定分隔符分割为字符串切片
 		"split": func(s, sep string) []string {
+			if s == "" || sep == "" {
+				return []string{}
+			}
 			return strings.Split(s, sep)
 		},
 	}
@@ -1142,14 +1158,12 @@ func qingfeng_router(ctx context.Context, ginLogger *slog.Logger, router *gin.En
 	{
 		// 配置 Swagger 页面
 		qingfengGroup.GET("/*any", qingfeng.Handler(qingfeng.Config{
-			Title:       docs_2.SwaggerInfo.Title, // 文档标题
-			Description: docs_2.SwaggerInfo.Description,
-			Version:     docs_2.SwaggerInfo.Version, // API 版本号
-			BasePath:    "/qingfeng",                // 文档路由前缀
-			DocJSON:     docs_2.GetSwaggerBytes(),   // 直接传入 swagger JSON 内容
-			EnableDebug: true,                       // 是否启用在线调试
-			DarkMode:    true,                       // 是否默认深色模式
-			UITheme:     qingfeng.ThemeDefault,      // UI 主题风格: ThemeDefault(默认) / ThemeMinimal(简约) / ThemeModern(现代)
+			Title:       docs_2.SwaggerInfo.Title,       // 文档标题
+			Description: docs_2.SwaggerInfo.Description, // 文档描述
+			Version:     docs_2.SwaggerInfo.Version,     // API 版本号
+			BasePath:    "/qingfeng",                    // 文档路由前缀
+			DocJSON:     docs_2.GetSwaggerBytes(),       // 直接传入 swagger JSON 内容
+			EnableDebug: global.GvaEnv.DEBUG,            // 是否启用在线调试
 			Environments: []qingfeng.Environment{
 				{
 					Name:    "本地开发",
