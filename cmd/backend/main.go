@@ -109,8 +109,8 @@ func main() {
 
 			// 使用标准 slog 记录到控制台/文件（此时 global 变量可能不可靠，用标准 slog 最稳）
 			slog.Error("🔥 系统触发致命崩溃 (Panic)",
-				slog.String("error", errMsg),
 				slog.String("stack", stackInfo),
+				slog.String("err", errMsg),
 			)
 
 			// 给日志留一点写入时间
@@ -306,28 +306,29 @@ func main() {
 		os.Exit(1)
 	}
 
-	// 创建 HTTP 服务器实例（用于优雅关闭）
+	// 创建 HTTP 服务实例（用于优雅关闭）
 	httpServerInstance = &http.Server{
 		Addr:    global.GvaEnv.HTTP_ADDR,
 		Handler: router,
 	}
 
-	// 启动 Gin 服务器
-	ginLogger.Info("Gin 服务器正在启动",
+	// 启动 Gin 服务
+	ginLogger.Info("Gin 服务正在启动",
 		slog.String("port", global.GvaEnv.HTTP_ADDR),
 	)
 
 	// 使用 ListenAndServe 在 goroutine 中运行，以便能够捕获关闭信号
 	go func() {
 		if err := httpServerInstance.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			ginLogger.Error("Gin 服务器启动失败",
+			ginLogger.Error("Gin 服务启动失败",
 				slog.Any("err", err),
 			)
 			os.Exit(1)
 		}
+		ginLogger.InfoContext(ctx, "Gin 服务已停止")
 	}()
 
-	ginLogger.Info("Gin 服务器启动成功",
+	ginLogger.Info("Gin 服务启动成功",
 		slog.String("port", global.GvaEnv.HTTP_ADDR),
 	)
 
@@ -351,18 +352,18 @@ func waitForShutdown(logger *slog.Logger, ginLogger *slog.Logger) {
 func gracefulShutdown(logger *slog.Logger, ginLogger *slog.Logger) {
 
 	shutdownOnce.Do(func() {
-		// 1. 首先关闭 HTTP 服务器（停止接收新请求）
-		ginLogger.Info("开始关闭 HTTP 服务器...")
+		// 1. 首先关闭 HTTP 服务（停止接收新请求）
+		ginLogger.Info("开始关闭 HTTP 服务...")
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 
 		if httpServerInstance != nil {
 			if err := httpServerInstance.Shutdown(ctx); err != nil {
-				ginLogger.Error("HTTP 服务器关闭失败",
+				ginLogger.Error("HTTP 服务关闭失败",
 					slog.Any("err", err),
 				)
 			} else {
-				ginLogger.Info("HTTP 服务器已关闭")
+				ginLogger.Info("HTTP 服务已关闭")
 			}
 		}
 
@@ -373,7 +374,7 @@ func gracefulShutdown(logger *slog.Logger, ginLogger *slog.Logger) {
 			logger.Info("gRPC-Gateway 连接已关闭")
 		}
 
-		// 3. 通知 gRPC 服务器开始优雅关闭
+		// 3. 通知 gRPC、Thrift 服务开始优雅关闭
 		close(shutdownChan)
 
 		// 4. 等待一段时间让 goroutine 完成
@@ -1222,11 +1223,13 @@ func grpc_run(ctx context.Context, grpcLogger *slog.Logger) {
 
 	// 判断是否开启 gRPC 功能
 	if global.GvaEnv.GRPC_ADDR == "" {
-		grpcLogger.InfoContext(ctx, "gRPC 服务器不启动，因为没有配置端口")
+		grpcLogger.InfoContext(ctx, "gRPC 服务不启动，因为没有配置端口",
+			slog.String("port", global.GvaEnv.GRPC_ADDR),
+		)
 		return
 	}
 
-	// 创建 gRPC 服务器
+	// 创建 gRPC 服务
 	opts := make([]grpc.ServerOption, 0)
 	usis := make([]grpc.UnaryServerInterceptor, 0)
 	// 审计上下文 一元拦截器
@@ -1269,39 +1272,43 @@ func grpc_run(ctx context.Context, grpcLogger *slog.Logger) {
 	openServer := grpc_server.NewOpenServer()
 	openServer.RegisterService(grpcServerInstance)
 
-	// 启动 gRPC 服务器
+	// 启动 gRPC 服务
 	var err error
 	grpcListenerInstance, err = net.Listen("tcp", global.GvaEnv.GRPC_ADDR)
 	if err != nil {
-		grpcLogger.ErrorContext(ctx, "gRPC 服务器启动失败",
-			slog.Any("error", err),
+		grpcLogger.ErrorContext(ctx, "gRPC 服务启动失败",
+			slog.Any("err", err),
 		)
 		os.Exit(1)
 	}
 
-	grpcLogger.InfoContext(ctx, "gRPC 服务器正在启动",
+	grpcLogger.InfoContext(ctx, "gRPC 服务正在启动",
 		slog.String("port", global.GvaEnv.GRPC_ADDR),
 	)
 
 	// 使用 Serve 但不阻塞，通过 channel 监听关闭信号
 	go func() {
 		if err := grpcServerInstance.Serve(grpcListenerInstance); err != nil {
-			grpcLogger.ErrorContext(ctx, "gRPC 服务器异常退出",
-				slog.Any("error", err),
+			grpcLogger.ErrorContext(ctx, "gRPC 服务异常退出",
+				slog.Any("err", err),
 			)
 		}
-		grpcLogger.InfoContext(ctx, "gRPC 服务器已停止")
+		grpcLogger.InfoContext(ctx, "gRPC 服务已停止")
 	}()
 
+	grpcLogger.InfoContext(ctx, "gRPC 服务启动成功",
+		slog.String("port", global.GvaEnv.GRPC_ADDR),
+	)
+
 	<-shutdownChan // 等待关闭信号
-	grpcLogger.InfoContext(ctx, "接收到关闭信号，gRPC 服务器正在优雅关闭")
+	grpcLogger.InfoContext(ctx, "接收到关闭信号，gRPC 服务正在优雅关闭")
 	if grpcServerInstance != nil {
 		grpcServerInstance.GracefulStop() // 优雅关闭
 	}
 	if grpcListenerInstance != nil {
 		grpcListenerInstance.Close()
 	}
-	grpcLogger.InfoContext(ctx, "gRPC 服务器已优雅关闭")
+	grpcLogger.InfoContext(ctx, "gRPC 服务已优雅关闭")
 }
 
 // gRPC-Gateway 启动
@@ -1328,11 +1335,11 @@ func grpc_gw_run(ctx context.Context, grpcLogger *slog.Logger, router *gin.Engin
 			global.GvaEnv.BASIC_AUTH_PASSWORD,
 		)),
 	)
-	// 连接 gRPC 服务器
+	// 连接 gRPC 服务
 	err := grpc_client.Dial(global.GvaEnv.GRPC_ADDR)
 	if err != nil {
 		grpcLogger.ErrorContext(ctx, "gRPC-Gateway 连接上游失败（忽略路由注册）",
-			slog.Any("error", err),
+			slog.Any("err", err),
 		)
 		return
 	}
@@ -1370,7 +1377,7 @@ func grpc_gw_run(ctx context.Context, grpcLogger *slog.Logger, router *gin.Engin
 	// 注册服务
 	if err := grpc_generated.RegisterOpenServiceHandler(ctx, gwMux, grpcConnInstance); err != nil {
 		grpcLogger.ErrorContext(ctx, "注册 OpenService 网关路由失败",
-			slog.Any("error", err),
+			slog.Any("err", err),
 		)
 		return
 	}
@@ -1392,18 +1399,24 @@ func thrift_run(ctx context.Context, thriftLogger *slog.Logger) {
 
 	// 判断是否开启 Thrift 功能
 	if global.GvaEnv.THRIFT_ADDR == "" {
-		thriftLogger.InfoContext(ctx, "Thrift 服务器不启动，因为没有配置端口")
+		thriftLogger.InfoContext(ctx, "Thrift 服务不启动，因为没有配置端口",
+			slog.String("port", global.GvaEnv.THRIFT_ADDR),
+		)
 		return
 	}
 
-	// 创建 Thrift 服务器
+	// 启动 Thrift 服务
 	socket, err := thrift.NewTServerSocket(global.GvaEnv.THRIFT_ADDR)
 	if err != nil {
-		thriftLogger.ErrorContext(ctx, "Thrift 服务器启动失败",
-			slog.Any("error", err),
+		thriftLogger.ErrorContext(ctx, "Thrift 服务启动失败",
+			slog.Any("err", err),
 		)
 		os.Exit(1)
 	}
+
+	thriftLogger.InfoContext(ctx, "Thrift 服务正在启动",
+		slog.String("port", global.GvaEnv.THRIFT_ADDR),
+	)
 
 	// 传输工厂
 	transportFactory := thrift.NewTFramedTransportFactoryConf(
@@ -1430,28 +1443,28 @@ func thrift_run(ctx context.Context, thriftLogger *slog.Logger) {
 		protocolFactory,
 	)
 
-	thriftLogger.InfoContext(ctx, "Thrift 服务器正在启动",
+	// 使用 Serve 但不阻塞，通过 channel 监听关闭信号
+	go func() {
+		if err := thriftServerInstance.Serve(); err != nil {
+			thriftLogger.ErrorContext(ctx, "Thrift 服务启动失败",
+				slog.Any("err", err),
+			)
+		}
+		thriftLogger.InfoContext(ctx, "Thrift 服务已停止")
+	}()
+
+	thriftLogger.InfoContext(ctx, "Thrift 服务启动成功",
 		slog.String("port", global.GvaEnv.THRIFT_ADDR),
 	)
 
-	// 使用 goroutine 启动，不阻塞
-	go func() {
-		if err := thriftServerInstance.Serve(); err != nil {
-			thriftLogger.ErrorContext(ctx, "Thrift 服务器异常退出",
-				slog.Any("error", err),
-			)
-		}
-		thriftLogger.InfoContext(ctx, "Thrift 服务器已停止")
-	}()
-
 	// 等待关闭信号
 	<-shutdownChan
-	thriftLogger.InfoContext(ctx, "接收到关闭信号，Thrift 服务器正在优雅关闭")
+	thriftLogger.InfoContext(ctx, "接收到关闭信号，Thrift 服务正在优雅关闭")
 	if thriftServerInstance != nil {
 		thriftServerInstance.Stop() // 优雅关闭
 	}
 	if thriftTransport != nil {
 		thriftTransport.Close()
 	}
-	thriftLogger.InfoContext(ctx, "Thrift 服务器已优雅关闭")
+	thriftLogger.InfoContext(ctx, "Thrift 服务已优雅关闭")
 }
