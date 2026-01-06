@@ -43,7 +43,7 @@ func CDNRecordLogHook() ent.Hook {
 				_, newV := getChangedFields(ctx, m)
 
 				// 7. 异步记录审计日志
-				go func(source string, id int64, ot string, oType string, ov map[string]any, nv map[string]any, stat string, message string, cost int64) {
+				go func(asyncCtx context.Context, source string, id int64, ot string, oType string, ov map[string]any, nv map[string]any, stat string, message string, cost int64) {
 					// 使用独立的 context 保证写入
 					logErr := getLogDb().OperationLog.Create().
 						SetSource(operationlog.Source(source)).
@@ -54,13 +54,13 @@ func CDNRecordLogHook() ent.Hook {
 						SetNewValue(nv).
 						SetStatus(operationlog.Status(stat)).
 						SetMessage(message).
-						Exec(context.Background())
+						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(ctx, fmt.Sprintf("%s 记录操作日志失败", m.Type()),
+						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", m.Type()),
 							slog.Any("err", logErr),
 						)
 					}
-				}(source, objID, opType, objType, oldV, newV, string(status), msg, time.Since(start).Milliseconds())
+				}(context.WithoutCancel(ctx), source, objID, opType, objType, oldV, newV, string(status), msg, time.Since(start).Milliseconds())
 
 				// 8. 本地打印
 				if err != nil {

@@ -40,45 +40,45 @@ func (s *EntHttpLogSaver) HandleLog(ctx context.Context, data *http_log.LogData)
 		slog.Bool("IsError", data.IsError),
 	)
 
-	go func(asyncCtx context.Context, asyncDb *ent_log.Client) {
+	go func(asyncCtx context.Context, asyncDb *ent_log.Client, syncData *http_log.LogData) {
 		var (
 			requestBody  json.RawMessage = nil
 			responseBody json.RawMessage = nil
 		)
-		if len(data.RequestBodyJSON) > 0 {
-			requestBody = json.RawMessage(data.RequestBodyJSON)
+		if len(syncData.RequestBodyJSON) > 0 {
+			requestBody = json.RawMessage(syncData.RequestBodyJSON)
 		}
-		if len(data.RequestBodyXML) > 0 {
-			xj, _ := xml2json.Convert(strings.NewReader(string(data.RequestBodyXML)))
+		if len(syncData.RequestBodyXML) > 0 {
+			xj, _ := xml2json.Convert(strings.NewReader(string(syncData.RequestBodyXML)))
 			requestBody = json.RawMessage(xj.Bytes())
 		}
-		if len(data.ResponseBodyJSON) > 0 {
-			responseBody = json.RawMessage(data.ResponseBodyJSON)
+		if len(syncData.ResponseBodyJSON) > 0 {
+			responseBody = json.RawMessage(syncData.ResponseBodyJSON)
 		}
-		if len(data.ResponseBodyXML) > 0 {
-			xj, _ := xml2json.Convert(strings.NewReader(string(data.ResponseBodyXML)))
+		if len(syncData.ResponseBodyXML) > 0 {
+			xj, _ := xml2json.Convert(strings.NewReader(string(syncData.ResponseBodyXML)))
 			responseBody = json.RawMessage(xj.Bytes())
 		}
 		err := asyncDb.HttpLog.Create().
-			SetHostname(data.Hostname).
-			SetMethod(data.Method).
-			SetURL(data.URL).
-			SetRequestHeaders(data.RequestHeaders).
+			SetHostname(syncData.Hostname).
+			SetMethod(syncData.Method).
+			SetURL(syncData.URL).
+			SetRequestHeaders(syncData.RequestHeaders).
 			SetRequestBody(requestBody).
-			SetStatusCode(data.StatusCode).
-			SetResponseHeaders(data.ResponseHeaders).
+			SetStatusCode(syncData.StatusCode).
+			SetResponseHeaders(syncData.ResponseHeaders).
 			SetResponseBody(responseBody).
-			SetElapseTime(data.ElapseTime).
-			SetIsError(data.IsError).
-			SetGoVersion(data.GoVersion).
-			SetPluginVersion(data.PluginVersion).
+			SetElapseTime(syncData.ElapseTime).
+			SetIsError(syncData.IsError).
+			SetGoVersion(syncData.GoVersion).
+			SetPluginVersion(syncData.PluginVersion).
 			Exec(asyncCtx)
 		if err != nil {
-			s.logger.ErrorContext(ctx, "[接口方式]执行保存日志失败",
+			s.logger.ErrorContext(asyncCtx, "[接口方式]执行保存日志失败",
 				slog.Any("err", err),
 			)
 		}
-	}(ctx, s.db)
+	}(context.WithoutCancel(ctx), s.db, data)
 
 	return nil
 }
@@ -111,45 +111,45 @@ func InitEntHttpLog(logger *slog.Logger) {
 				slog.Bool("IsError", data.IsError),
 			)
 
-			go func(asyncCtx context.Context, asyncDb *ent_log.Client) {
+			go func(asyncCtx context.Context, asyncDb *ent_log.Client, syncData *http_log.LogData) {
 				var (
 					requestBody  json.RawMessage = nil
 					responseBody json.RawMessage = nil
 				)
-				if len(data.RequestBodyJSON) > 0 {
-					requestBody = json.RawMessage(data.RequestBodyJSON)
+				if len(syncData.RequestBodyJSON) > 0 {
+					requestBody = json.RawMessage(syncData.RequestBodyJSON)
 				}
-				if len(data.RequestBodyXML) > 0 {
-					xj, _ := xml2json.Convert(strings.NewReader(string(data.RequestBodyXML)))
+				if len(syncData.RequestBodyXML) > 0 {
+					xj, _ := xml2json.Convert(strings.NewReader(string(syncData.RequestBodyXML)))
 					requestBody = json.RawMessage(xj.Bytes())
 				}
-				if len(data.ResponseBodyJSON) > 0 {
-					responseBody = json.RawMessage(data.ResponseBodyJSON)
+				if len(syncData.ResponseBodyJSON) > 0 {
+					responseBody = json.RawMessage(syncData.ResponseBodyJSON)
 				}
-				if len(data.ResponseBodyXML) > 0 {
-					xj, _ := xml2json.Convert(strings.NewReader(string(data.ResponseBodyXML)))
+				if len(syncData.ResponseBodyXML) > 0 {
+					xj, _ := xml2json.Convert(strings.NewReader(string(syncData.ResponseBodyXML)))
 					responseBody = json.RawMessage(xj.Bytes())
 				}
 				err := asyncDb.HttpLog.Create().
-					SetHostname(data.Hostname).
-					SetMethod(data.Method).
-					SetURL(data.URL).
-					SetRequestHeaders(data.RequestHeaders).
+					SetHostname(syncData.Hostname).
+					SetMethod(syncData.Method).
+					SetURL(syncData.URL).
+					SetRequestHeaders(syncData.RequestHeaders).
 					SetRequestBody(requestBody).
-					SetStatusCode(data.StatusCode).
-					SetResponseHeaders(data.ResponseHeaders).
+					SetStatusCode(syncData.StatusCode).
+					SetResponseHeaders(syncData.ResponseHeaders).
 					SetResponseBody(responseBody).
-					SetElapseTime(data.ElapseTime).
-					SetIsError(data.IsError).
-					SetGoVersion(data.GoVersion).
-					SetPluginVersion(data.PluginVersion).
+					SetElapseTime(syncData.ElapseTime).
+					SetIsError(syncData.IsError).
+					SetGoVersion(syncData.GoVersion).
+					SetPluginVersion(syncData.PluginVersion).
 					Exec(asyncCtx)
 				if err != nil {
-					logger.ErrorContext(ctx, "[回调方式]执行保存日志失败",
+					logger.ErrorContext(asyncCtx, "[回调方式]执行保存日志失败",
 						slog.Any("err", err),
 					)
 				}
-			}(ctx, global.GvaEntLogDb)
+			}(context.WithoutCancel(ctx), global.GvaEntLogDb, data)
 
 			return nil
 		}

@@ -33,28 +33,28 @@ func (s *EntRestyLogSaver) SaveLog(ctx context.Context, data *resty_log.LogData)
 		slog.Bool("IsError", data.IsError),
 	)
 
-	go func(asyncCtx context.Context, asyncDb *ent_log.Client) {
+	go func(asyncCtx context.Context, asyncDb *ent_log.Client, syncData *resty_log.LogData) {
 		err := asyncDb.RestyLog.Create().
-			SetHostname(data.Hostname).
-			SetMethod(data.Method).
-			SetURL(data.URL).
-			SetRequestHeaders(data.RequestHeaders).
-			SetRequestBody(data.RequestBody).
-			SetStatusCode(data.StatusCode).
-			SetResponseHeaders(data.ResponseHeaders).
-			SetResponseBody(data.ResponseBody).
-			SetElapseTime(data.ElapseTime).
-			SetIsError(data.IsError).
-			SetGoVersion(data.GoVersion).
-			SetPluginVersion(data.PluginVersion).
-			SetRestyVersion(data.RestyVersion).
+			SetHostname(syncData.Hostname).
+			SetMethod(syncData.Method).
+			SetURL(syncData.URL).
+			SetRequestHeaders(syncData.RequestHeaders).
+			SetRequestBody(syncData.RequestBody).
+			SetStatusCode(syncData.StatusCode).
+			SetResponseHeaders(syncData.ResponseHeaders).
+			SetResponseBody(syncData.ResponseBody).
+			SetElapseTime(syncData.ElapseTime).
+			SetIsError(syncData.IsError).
+			SetGoVersion(syncData.GoVersion).
+			SetPluginVersion(syncData.PluginVersion).
+			SetRestyVersion(syncData.RestyVersion).
 			Exec(asyncCtx)
 		if err != nil {
-			s.logger.ErrorContext(ctx, "[接口方式]执行保存日志失败",
+			s.logger.ErrorContext(asyncCtx, "[接口方式]执行保存日志失败",
 				slog.Any("err", err),
 			)
 		}
-	}(ctx, s.db)
+	}(context.WithoutCancel(ctx), s.db, data)
 
 	return nil
 }
@@ -84,28 +84,28 @@ func InitEntRestyLog(logger *slog.Logger) {
 			slog.Bool("IsError", data.IsError),
 		)
 
-		go func(asyncCtx context.Context, asyncDb *ent_log.Client) {
+		go func(asyncCtx context.Context, asyncDb *ent_log.Client, syncData *resty_log.LogData) {
 			err := asyncDb.RestyLog.Create().
-				SetHostname(data.Hostname).
-				SetMethod(data.Method).
-				SetURL(data.URL).
-				SetRequestHeaders(data.RequestHeaders).
-				SetRequestBody(data.RequestBody).
-				SetStatusCode(data.StatusCode).
-				SetResponseHeaders(data.ResponseHeaders).
-				SetResponseBody(data.ResponseBody).
-				SetElapseTime(data.ElapseTime).
-				SetIsError(data.IsError).
-				SetGoVersion(data.GoVersion).
-				SetPluginVersion(data.PluginVersion).
-				SetRestyVersion(data.RestyVersion).
+				SetHostname(syncData.Hostname).
+				SetMethod(syncData.Method).
+				SetURL(syncData.URL).
+				SetRequestHeaders(syncData.RequestHeaders).
+				SetRequestBody(syncData.RequestBody).
+				SetStatusCode(syncData.StatusCode).
+				SetResponseHeaders(syncData.ResponseHeaders).
+				SetResponseBody(syncData.ResponseBody).
+				SetElapseTime(syncData.ElapseTime).
+				SetIsError(syncData.IsError).
+				SetGoVersion(syncData.GoVersion).
+				SetPluginVersion(syncData.PluginVersion).
+				SetRestyVersion(syncData.RestyVersion).
 				Exec(asyncCtx)
 			if err != nil {
-				logger.ErrorContext(ctx, "[回调方式]执行保存日志失败",
+				logger.ErrorContext(asyncCtx, "[回调方式]执行保存日志失败",
 					slog.Any("err", err),
 				)
 			}
-		}(ctx, global.GvaEntLogDb)
+		}(context.WithoutCancel(ctx), global.GvaEntLogDb, data)
 
 		return nil
 	}

@@ -74,7 +74,7 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 
 	msg := ""
 
-	// 开始事务 (保持原始事务逻辑)
+	// 开始事务
 	tx, err := s.db.Tx(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("开始事务失败: %w", err)
@@ -214,7 +214,7 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 			// 发送通知 (使用注入的 webhookService)
 			_ = s.webhookService.Send(asyncCtx, webhooksubscription.ObjTypeDevice, deviceID, notifyData)
 		}
-	}(context.Background(), s)
+	}(context.WithoutCancel(ctx), s)
 
 	return &types.DeviceReportDeviceIpResponse{
 		Msg: msg,

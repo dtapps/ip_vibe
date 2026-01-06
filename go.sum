@@ -1151,10 +1151,10 @@ github.com/zclconf/go-cty-debug v0.0.0-20240509010212-0d6042c53940 h1:4r45xpDWB6
 github.com/zclconf/go-cty-debug v0.0.0-20240509010212-0d6042c53940/go.mod h1:CmBdvvj3nqzfzJ6nTCIwDTPZ56aVGvDrmztiO5g3qrM=
 github.com/zclconf/go-cty-yaml v1.2.0 h1:GDyL4+e/Qe/S0B7YaecMLbVvAR/Mp21CXMOSiCTOi1M=
 github.com/zclconf/go-cty-yaml v1.2.0/go.mod h1:9YLUH4g7lOhVWqUbctnVlZ5KLpg7JAprQNgxSZ1Gyxs=
-go.dtapp.net/library/contrib/http_log v1.0.1 h1:yfnJTr2f9DloEYNwoGInqnytvRjeu4ag5g5Zgmpb5Do=
-go.dtapp.net/library/contrib/http_log v1.0.1/go.mod h1:D8vsozqA3ODPWGtFmoZbKzf/1OZbD7NioTJP5TmIW6c=
-go.dtapp.net/library/contrib/resty_log v1.0.10 h1:AfVHSJskChTyXRythDHxgg9ycoKA+OW+9f8/uFeI1fw=
-go.dtapp.net/library/contrib/resty_log v1.0.10/go.mod h1:KBIRpQ/pDjoeIKdhIN+dJxgB3E+aTSLKB2zFgu1Yv3U=
+go.dtapp.net/library/contrib/http_log v1.0.2 h1:ZH3fkEFWY64ZUlOHPzHaUiT9HqFJgzwTQeuj15YUIE0=
+go.dtapp.net/library/contrib/http_log v1.0.2/go.mod h1:D8vsozqA3ODPWGtFmoZbKzf/1OZbD7NioTJP5TmIW6c=
+go.dtapp.net/library/contrib/resty_log v1.0.11 h1:Q2QCMsw+YqRPEMzWWMDMGxIckyrdRnh8H0FqeeSxTbw=
+go.dtapp.net/library/contrib/resty_log v1.0.11/go.mod h1:CJ+ytwFGUopEiKWn2pdx08GqttnnGWjO9IKBr6asN5k=
 go.dtapp.net/library/service/bark v1.0.7 h1:Zz02Rh/N/DGCc5C9P5odxoMIbPBVlDq5LEP6yGhbmMM=
 go.dtapp.net/library/service/bark v1.0.7/go.mod h1:5a/Hxz9GYxU5ynlsZ2L7eXc83yWnVXa+Hu2Ta2spKMg=
 go.dtapp.net/library/service/dingtalk v1.0.39 h1:4JdEMn05XGllhlRx0Fsp7snhz5u8/IrTMf212xHc+yE=
