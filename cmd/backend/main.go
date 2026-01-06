@@ -1268,7 +1268,9 @@ func grpc_run(ctx context.Context, grpcLogger *slog.Logger) {
 	)
 	grpcServerInstance = grpc.NewServer(opts...)
 
-	// 注册业务服务
+	// 注册服务
+	indexServer := grpc_server.NewIndexServer()
+	indexServer.RegisterService(grpcServerInstance)
 	openServer := grpc_server.NewOpenServer()
 	openServer.RegisterService(grpcServerInstance)
 
@@ -1377,6 +1379,12 @@ func grpc_gw_run(ctx context.Context, grpcLogger *slog.Logger, router *gin.Engin
 	// 注册服务
 	if err := grpc_generated.RegisterOpenServiceHandler(ctx, gwMux, grpcConnInstance); err != nil {
 		grpcLogger.ErrorContext(ctx, "注册 OpenService 网关路由失败",
+			slog.Any("err", err),
+		)
+		return
+	}
+	if err := grpc_generated.RegisterIndexServiceHandler(ctx, gwMux, grpcConnInstance); err != nil {
+		grpcLogger.ErrorContext(ctx, "注册 IndexService 网关路由失败",
 			slog.Any("err", err),
 		)
 		return
