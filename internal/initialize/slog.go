@@ -3,6 +3,7 @@ package initialize
 import (
 	"log/slog"
 	"path/filepath"
+	"strings"
 	"vibe_ip/internal/global"
 
 	"go.dtapp.net/library/utils/golog"
@@ -11,23 +12,34 @@ import (
 
 // getLumberjack 获取 lumberjack 日志
 func getLumberjack(prefix string, name string) *lumberjack.Logger {
+	// 使用 -拼接 转字符串
+	elems := make([]string, 0)
+	if prefix != "" {
+		elems = append(elems, prefix)
+	}
+	if name != "" {
+		elems = append(elems, name)
+	}
+	elems = append(elems, name+".log")
+	completeName := strings.Join(elems, "_")
+
 	if global.GvaVersion == "dev" {
 		return &lumberjack.Logger{
-			Filename:   filepath.Join("logs", prefix+"_"+name+".log"), // 日志文件的位置
-			MaxSize:    3,                                             // 每个日志文件最大尺寸（MB）
-			MaxAge:     1,                                             // 留旧文件的最大天数
-			MaxBackups: 5,                                             // 保留的最大旧文件数量
-			LocalTime:  true,                                          // 使用本地时间创建时间戳
-			Compress:   true,                                          // 是否压缩/归档旧文件
+			Filename:   filepath.Join("logs", completeName), // 日志文件的位置
+			MaxSize:    3,                                   // 每个日志文件最大尺寸（MB）
+			MaxAge:     1,                                   // 留旧文件的最大天数
+			MaxBackups: 5,                                   // 保留的最大旧文件数量
+			LocalTime:  true,                                // 使用本地时间创建时间戳
+			Compress:   true,                                // 是否压缩/归档旧文件
 		}
 	} else {
 		return &lumberjack.Logger{
-			Filename:   filepath.Join("logs", prefix+"_"+name+".log"), // 日志文件的位置
-			MaxSize:    2,                                             // 每个日志文件最大尺寸（MB）
-			MaxAge:     15,                                            // 留旧文件的最大天数
-			MaxBackups: 10 * 15,                                       // 保留的最大旧文件数量
-			LocalTime:  true,                                          // 使用本地时间创建时间戳
-			Compress:   true,                                          // 是否压缩/归档旧文件
+			Filename:   filepath.Join("logs", completeName), // 日志文件的位置
+			MaxSize:    2,                                   // 每个日志文件最大尺寸（MB）
+			MaxAge:     15,                                  // 留旧文件的最大天数
+			MaxBackups: 10 * 15,                             // 保留的最大旧文件数量
+			LocalTime:  true,                                // 使用本地时间创建时间戳
+			Compress:   true,                                // 是否压缩/归档旧文件
 		}
 	}
 }
@@ -41,12 +53,16 @@ func getLevel() slog.Level {
 	}
 }
 
+// getShowLine 获取是否显示行号
+func getShowLine() bool {
+	return true
+}
+
 // InitSLog 初始化 日志
 func InitSLog(name string) {
-	level := getLevel()
 	global.GvaSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack("slog", name)),
-		golog.WithSLogSetLevel(level),
+		golog.WithSLogSetLevel(getLevel()),
 		golog.WithSLogSetDefault(true),
 		golog.WithSLogSetDefaultCtx(true),
 	)
