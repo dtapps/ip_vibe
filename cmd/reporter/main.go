@@ -70,13 +70,22 @@ func main() {
 	initialize.InitRestySLog("reporter")  // 初始化 resty 日志
 	initialize.InitHttpSLog("reporter")   // 初始化 http 日志
 
-	initialize.InitGoCron(ctx, global.GvaGocronSlog.WithLogger()) // 初始化 GoCron 调度器
+	var (
+		logger     = slog.Default()
+		grpcLogger = global.GvaGrpcSlog.WithLogger()
+		// thriftLogger = global.GvaThriftSlog.WithLogger()
+		gocronLogger = global.GvaGocronSlog.WithLogger()
+		// restyLogger  = global.GvaRestySlog.WithLogger()
+		// httpLogger   = global.GvaHttpSlog.WithLogger()
+	)
+
+	initialize.InitGoCron(ctx, gocronLogger) // 初始化 GoCron 调度器
 	defer func() {
-		initialize.CloseGoCron() // 关闭 GoCron 调度器
+		initialize.CloseGoCron(ctx, gocronLogger) // 关闭 GoCron 调度器
 	}()
 
 	// 打印
-	slog.Info("服务启动",
+	logger.Info("服务启动",
 		slog.Bool("debug", global.GvaEnv.DEBUG),
 		slog.String("version", global.GvaVersion),
 		slog.String("git_commit", global.GvaGitCommit),
@@ -99,11 +108,11 @@ func main() {
 	}
 
 	// 创建 IP 报告服务
-	ipReportService := service.NewIPReportService(global.GvaGocronSlog.WithLogger())
+	ipReportService := service.NewIPReportService(gocronLogger)
 
 	if global.GvaEnv.GRPC_URL != "" {
 		// 获取 gRPC 客户端
-		grpcClient, err := get_grpc_client()
+		grpcClient, err := get_grpc_client(ctx, grpcLogger)
 		if err != nil {
 			fmt.Printf("获取 gRPC 客户端失败: %v\n", err)
 			panic(err)
@@ -113,7 +122,7 @@ func main() {
 		// 创建IP上报实例
 		ipReportTask := task.NewIPReportGRPCTask(
 			global.GvaGoCron,
-			global.GvaGocronSlog.WithLogger(),
+			gocronLogger,
 			ipReportService,
 			grpcClient,
 		)
@@ -130,7 +139,7 @@ func main() {
 		// 创建IP上报实例
 		ipReportTask := task.NewIPReportRestyTask(
 			global.GvaGoCron,
-			global.GvaGocronSlog.WithLogger(),
+			gocronLogger,
 			ipReportService,
 		)
 		ipReportTask.SetDebug(global.GvaEnv.DEBUG)
@@ -151,14 +160,14 @@ func main() {
 	}
 
 	// 启动 GoCron 调度器
-	initialize.StartGoCron()
+	initialize.StartGoCron(ctx, gocronLogger)
 
 	// 阻止主线程退出
 	select {}
 }
 
 // get_grpc_client 获取 gRPC 客户端
-func get_grpc_client() (*grpc.ClientConn, error) {
+func get_grpc_client(ctx context.Context, grpcLogger *slog.Logger) (*grpc.ClientConn, error) {
 	// 创建 gRPC 客户端
 	grpc_client := grpc_client.NewGRPCClient()
 	// 添加 gRPC 连接选项

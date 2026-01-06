@@ -83,7 +83,8 @@ func (s *EntHttpLogSaver) HandleLog(ctx context.Context, data *http_log.LogData)
 	return nil
 }
 
-func InitEntHttpLog(logger *slog.Logger) {
+// InitEntHttpLog 初始化 ent http 日志
+func InitEntHttpLog(ctx context.Context, logger *slog.Logger) {
 	// 日志
 	if logger == nil {
 		logger = slog.Default()

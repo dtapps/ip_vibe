@@ -76,10 +76,10 @@ func InitEntDb(ctx context.Context, logger *slog.Logger) {
 }
 
 // CloseEntDb 关闭 业务数据库
-func CloseEntDb() {
+func CloseEntDb(ctx context.Context, logger *slog.Logger) {
 	if global.GvaEntDb != nil {
 		if err := global.GvaEntDb.Close(); err != nil {
-			slog.Error("[关闭 业务数据库] 关闭错误",
+			logger.ErrorContext(ctx, "[关闭 业务数据库] 关闭错误",
 				slog.Any("err", err),
 			)
 			panic(err)
@@ -142,11 +142,11 @@ func InitEntLogDb(ctx context.Context, logger *slog.Logger) {
 	}
 }
 
-// CloseEntLogDb 关闭 业务数据库
-func CloseEntLogDb() {
+// CloseEntLogDb 关闭 日志数据库
+func CloseEntLogDb(ctx context.Context, logger *slog.Logger) {
 	if global.GvaEntLogDb != nil {
 		if err := global.GvaEntLogDb.Close(); err != nil {
-			slog.Error("[关闭 日志数据库] 关闭错误",
+			logger.ErrorContext(ctx, "[关闭 日志数据库] 关闭错误",
 				slog.Any("err", err),
 			)
 			panic(err)

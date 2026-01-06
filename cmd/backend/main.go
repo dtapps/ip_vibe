@@ -143,24 +143,24 @@ func main() {
 		thriftLogger = global.GvaThriftSlog.WithLogger()
 		gocronLogger = global.GvaGocronSlog.WithLogger()
 		mcpLogger    = global.GvaMcpSlog.WithLogger()
-		restyLogger  = global.GvaRestySLog.WithLogger()
+		restyLogger  = global.GvaRestySlog.WithLogger()
 		httpLogger   = global.GvaHttpSlog.WithLogger()
 	)
 
-	initialize.InitCoraza() // 初始化 Coraza 防火墙
+	initialize.InitCoraza(ctx, logger) // 初始化 Coraza 防火墙
 
-	initialize.InitEntDb(ctx, entLogger)       // 初始化 业务数据库
-	initialize.InitEntLogDb(ctx, entLogLogger) // 初始化 日志数据库
-	initialize.InitGoCron(ctx, gocronLogger)   // 初始化 GoCron 调度器
-	initialize.InitMCP(ctx, mcpLogger)         // 初始化 MCP
-	initialize.InitEntRestyLog(restyLogger)    // 初始化 Resty 日志
-	initialize.InitEntHttpLog(httpLogger)      // 初始化 HTTP 日志
-	initialize.InitThirdParty(ctx)             // 初始化 第三方
+	initialize.InitEntDb(ctx, entLogger)         // 初始化 业务数据库
+	initialize.InitEntLogDb(ctx, entLogLogger)   // 初始化 日志数据库
+	initialize.InitGoCron(ctx, gocronLogger)     // 初始化 GoCron 调度器
+	initialize.InitMCP(ctx, mcpLogger)           // 初始化 MCP
+	initialize.InitEntRestyLog(ctx, restyLogger) // 初始化 Resty 日志
+	initialize.InitEntHttpLog(ctx, httpLogger)   // 初始化 HTTP 日志
+	initialize.InitThirdParty(ctx)               // 初始化 第三方
 
 	initialize.InitOperationLogHelper() // 初始化操作日志助手
 
 	// 打印
-	slog.Info("服务启动",
+	logger.InfoContext(ctx, "服务启动",
 		slog.Bool("debug", global.GvaEnv.DEBUG),
 		slog.String("version", global.GvaVersion),
 		slog.String("git_commit", global.GvaGitCommit),
@@ -268,7 +268,7 @@ func main() {
 	go thrift_run(ctx, thriftLogger)
 
 	// 启动 GoCron 调度器
-	initialize.StartGoCron()
+	initialize.StartGoCron(ctx, gocronLogger)
 
 	// 启动 CDN、DNS 刷新任务
 	ipUpdate := task.NewIPUpdateTask(
@@ -342,11 +342,11 @@ func main() {
 	)
 
 	// 等待中断信号进行优雅关闭
-	waitForShutdown(logger, ginLogger)
+	waitForShutdown(logger, ginLogger, gocronLogger, entLogger, entLogLogger)
 }
 
 // 优雅关闭函数
-func waitForShutdown(logger *slog.Logger, ginLogger *slog.Logger) {
+func waitForShutdown(logger *slog.Logger, ginLogger *slog.Logger, gocronLogger *slog.Logger, entLogger *slog.Logger, entLogLogger *slog.Logger) {
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
@@ -354,11 +354,11 @@ func waitForShutdown(logger *slog.Logger, ginLogger *slog.Logger) {
 	logger.Info("收到退出信号，开始优雅关闭...")
 
 	// 执行关闭流程
-	gracefulShutdown(logger, ginLogger)
+	gracefulShutdown(logger, ginLogger, gocronLogger, entLogger, entLogLogger)
 }
 
 // 优雅关闭实现
-func gracefulShutdown(logger *slog.Logger, ginLogger *slog.Logger) {
+func gracefulShutdown(logger *slog.Logger, ginLogger *slog.Logger, gocronLogger *slog.Logger, entLogger *slog.Logger, entLogLogger *slog.Logger) {
 
 	shutdownOnce.Do(func() {
 		// 1. 首先关闭 HTTP 服务（停止接收新请求）
@@ -396,16 +396,16 @@ func gracefulShutdown(logger *slog.Logger, ginLogger *slog.Logger) {
 		// initialize.CloseThirdParty()
 
 		// 7. 关闭 GoCron 调度器
-		initialize.CloseGoCron()
+		initialize.CloseGoCron(ctx, gocronLogger)
 
 		// 8. 等待一段时间让 goroutine 完成
 		time.Sleep(1 * time.Second)
 
 		// 9. 关闭 业务数据库
-		initialize.CloseEntDb()
+		initialize.CloseEntDb(ctx, entLogger)
 
 		// 10. 关闭 日志数据库
-		initialize.CloseEntLogDb()
+		initialize.CloseEntLogDb(ctx, entLogLogger)
 
 		logger.Info("所有资源已优雅关闭")
 	})

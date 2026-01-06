@@ -26,7 +26,7 @@ func InitGoCron(ctx context.Context, logger *slog.Logger) {
 	options = append(options, gocron.WithGlobalJobOptions())
 	s, err := gocron.NewScheduler(options...)
 	if err != nil {
-		slog.ErrorContext(ctx, "[初始化 GoCron] 错误",
+		logger.ErrorContext(ctx, "[初始化 GoCron] 错误",
 			slog.Any("err", err),
 		)
 		panic(err)
@@ -35,10 +35,10 @@ func InitGoCron(ctx context.Context, logger *slog.Logger) {
 }
 
 // CloseGoCron 关闭 GoCron 调度器
-func CloseGoCron() {
+func CloseGoCron(ctx context.Context, logger *slog.Logger) {
 	if global.GvaGoCron != nil {
 		if err := global.GvaGoCron.Shutdown(); err != nil {
-			slog.Error("[关闭 GoCron] 错误",
+			logger.Error("[关闭 GoCron] 错误",
 				slog.Any("err", err),
 			)
 			panic(err)
@@ -47,7 +47,7 @@ func CloseGoCron() {
 }
 
 // StartGoCron 启动 GoCron 调度器
-func StartGoCron() {
+func StartGoCron(ctx context.Context, logger *slog.Logger) {
 	if global.GvaGoCron != nil {
 		global.GvaGoCron.Start()
 		global.GvaGoCronRunning = 1
@@ -55,12 +55,12 @@ func StartGoCron() {
 }
 
 // StopGoCron 停止 GoCron 调度器
-func StopGoCron() {
+func StopGoCron(ctx context.Context, logger *slog.Logger) {
 	if global.GvaGoCron != nil {
 		if err := global.GvaGoCron.StopJobs(); err == nil {
 			global.GvaGoCronRunning = 0
 		} else {
-			slog.Error("[停止 GoCron] 错误",
+			logger.Error("[停止 GoCron] 错误",
 				slog.Any("err", err),
 			)
 		}

@@ -1,6 +1,7 @@
 package initialize
 
 import (
+	"context"
 	"log/slog"
 	"vibe_ip/internal/global"
 
@@ -22,7 +23,7 @@ SecRule RESPONSE_BODY "@rx sensitive|password|secret" "id:200003,phase:4,log,pas
 **/
 
 // InitCoraza 初始化 Coraza 防火墙
-func InitCoraza() {
+func InitCoraza(ctx context.Context, logger *slog.Logger) {
 	var err error
 	global.GvaCoraza, err = coraza.NewWAF(
 		coraza.NewWAFConfig().
@@ -36,7 +37,7 @@ SecRequestBodyAccess On
 			WithRootFS(coreruleset.FS),
 	)
 	if err != nil {
-		slog.Error("[初始化 Coraza] 错误",
+		logger.Error("[初始化 Coraza] 错误",
 			slog.Any("err", err),
 		)
 		panic(err)

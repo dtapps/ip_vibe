@@ -60,7 +60,7 @@ var (
 	GvaThriftSlog *golog.SLog // Thrift 日志
 	GvaGocronSlog *golog.SLog // gocron 日志
 	GvaMcpSlog    *golog.SLog // mcp 日志
-	GvaRestySLog  *golog.SLog // resty 日志
+	GvaRestySlog  *golog.SLog // resty 日志
 	GvaHttpSlog   *golog.SLog // http 日志
 
 	GvaCoraza coraza.WAF // Coraza 防火墙

@@ -142,7 +142,7 @@ func (s *TaskServiceImpl) StartScheduler(ctx context.Context) error {
 	// 获取任务列表
 	jobs := jobHelper.GetJobsData(5)
 
-	initialize.StartGoCron()
+	initialize.StartGoCron(ctx, s.logger)
 
 	if len(jobs) == 0 {
 		// 启动CDN刷新任务
@@ -167,5 +167,5 @@ func (s *TaskServiceImpl) StartScheduler(ctx context.Context) error {
 
 // StopScheduler 停止调度器
 func (s *TaskServiceImpl) StopScheduler(ctx context.Context) {
-	initialize.StopGoCron()
+	initialize.StopGoCron(ctx, s.logger)
 }

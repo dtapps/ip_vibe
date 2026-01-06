@@ -129,7 +129,7 @@ func InitMcpSLog(name string) {
 // InitRestySLog 初始化 resty 日志
 func InitRestySLog(name string) {
 	prefix := "resty"
-	global.GvaRestySLog = golog.NewSlog(
+	global.GvaRestySlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
 	)

@@ -59,7 +59,8 @@ func (s *EntRestyLogSaver) SaveLog(ctx context.Context, data *resty_log.LogData)
 	return nil
 }
 
-func InitEntRestyLog(logger *slog.Logger) {
+// InitEntRestyLog 初始化 ent resty 日志
+func InitEntRestyLog(ctx context.Context, logger *slog.Logger) {
 	// 日志
 	if logger == nil {
 		logger = slog.Default()
