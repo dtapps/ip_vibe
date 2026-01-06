@@ -9,6 +9,7 @@ import (
 	"vibe_ip/internal/types"
 
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // OpenServer 实现 gRPC 服务接口
@@ -90,7 +91,7 @@ func (s *OpenServer) GetDevicePortForwards(ctx context.Context, req *grpc_genera
 }
 
 // CreatePortForwardStats 实现 创建端口转发统计 方法
-func (s *OpenServer) CreatePortForwardStats(ctx context.Context, req *grpc_generated.CreatePortForwardStatsRequest) (*grpc_generated.CreatePortForwardStatsResponse, error) {
+func (s *OpenServer) CreatePortForwardStats(ctx context.Context, req *grpc_generated.CreatePortForwardStatsRequest) (*emptypb.Empty, error) {
 	// 将 gRPC 请求转换为你的 types 结构
 	request := &types.CreatePortForwardStatsRequest{
 		DevicePortForwardsRequest: types.DevicePortForwardsRequest{
@@ -114,5 +115,5 @@ func (s *OpenServer) CreatePortForwardStats(ctx context.Context, req *grpc_gener
 	}
 
 	// 转换为 gRPC 响应
-	return &grpc_generated.CreatePortForwardStatsResponse{}, nil
+	return &emptypb.Empty{}, nil
 }

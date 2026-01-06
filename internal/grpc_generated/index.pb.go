@@ -12,8 +12,8 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -24,110 +24,20 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// 入口 请求参数
-type IndexRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *IndexRequest) Reset() {
-	*x = IndexRequest{}
-	mi := &file_index_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *IndexRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*IndexRequest) ProtoMessage() {}
-
-func (x *IndexRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_index_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use IndexRequest.ProtoReflect.Descriptor instead.
-func (*IndexRequest) Descriptor() ([]byte, []int) {
-	return file_index_proto_rawDescGZIP(), []int{0}
-}
-
-// 入口 响应参数
-type IndexResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *IndexResponse) Reset() {
-	*x = IndexResponse{}
-	mi := &file_index_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *IndexResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*IndexResponse) ProtoMessage() {}
-
-func (x *IndexResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_index_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use IndexResponse.ProtoReflect.Descriptor instead.
-func (*IndexResponse) Descriptor() ([]byte, []int) {
-	return file_index_proto_rawDescGZIP(), []int{1}
-}
-
 var File_index_proto protoreflect.FileDescriptor
 
 const file_index_proto_rawDesc = "" +
 	"\n" +
-	"\vindex.proto\x12\x05index\x1a\x1cgoogle/api/annotations.proto\"\x0e\n" +
-	"\fIndexRequest\"\x0f\n" +
-	"\rIndexResponse2M\n" +
-	"\fIndexService\x12=\n" +
-	"\x05Index\x12\x13.index.IndexRequest\x1a\x14.index.IndexResponse\"\t\x82\xd3\xe4\x93\x02\x03\x12\x01/B!Z\x1fvibe_ip/internal/grpc_generatedb\x06proto3"
+	"\vindex.proto\x12\x05index\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto2R\n" +
+	"\fIndexService\x12B\n" +
+	"\x05Index\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\t\x82\xd3\xe4\x93\x02\x03\x12\x01/B!Z\x1fvibe_ip/internal/grpc_generatedb\x06proto3"
 
-var (
-	file_index_proto_rawDescOnce sync.Once
-	file_index_proto_rawDescData []byte
-)
-
-func file_index_proto_rawDescGZIP() []byte {
-	file_index_proto_rawDescOnce.Do(func() {
-		file_index_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_index_proto_rawDesc), len(file_index_proto_rawDesc)))
-	})
-	return file_index_proto_rawDescData
-}
-
-var file_index_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_index_proto_goTypes = []any{
-	(*IndexRequest)(nil),  // 0: index.IndexRequest
-	(*IndexResponse)(nil), // 1: index.IndexResponse
+	(*emptypb.Empty)(nil), // 0: google.protobuf.Empty
 }
 var file_index_proto_depIdxs = []int32{
-	0, // 0: index.IndexService.Index:input_type -> index.IndexRequest
-	1, // 1: index.IndexService.Index:output_type -> index.IndexResponse
+	0, // 0: index.IndexService.Index:input_type -> google.protobuf.Empty
+	0, // 1: index.IndexService.Index:output_type -> google.protobuf.Empty
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -146,13 +56,12 @@ func file_index_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_index_proto_rawDesc), len(file_index_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   0,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_index_proto_goTypes,
 		DependencyIndexes: file_index_proto_depIdxs,
-		MessageInfos:      file_index_proto_msgTypes,
 	}.Build()
 	File_index_proto = out.File
 	file_index_proto_goTypes = nil

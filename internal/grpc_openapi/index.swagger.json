@@ -24,7 +24,8 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/indexIndexResponse"
+              "type": "object",
+              "properties": {}
             }
           },
           "default": {
@@ -41,10 +42,6 @@
     }
   },
   "definitions": {
-    "indexIndexResponse": {
-      "type": "object",
-      "title": "入口 响应参数"
-    },
     "protobufAny": {
       "type": "object",
       "properties": {

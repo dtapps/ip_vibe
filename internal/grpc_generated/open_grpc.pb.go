@@ -13,6 +13,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -37,7 +38,7 @@ type OpenServiceClient interface {
 	// 获取设备端口转发
 	GetDevicePortForwards(ctx context.Context, in *GetDevicePortForwardsRequest, opts ...grpc.CallOption) (*GetDevicePortForwardsResponse, error)
 	// 创建端口转发统计信息
-	CreatePortForwardStats(ctx context.Context, in *CreatePortForwardStatsRequest, opts ...grpc.CallOption) (*CreatePortForwardStatsResponse, error)
+	CreatePortForwardStats(ctx context.Context, in *CreatePortForwardStatsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type openServiceClient struct {
@@ -68,9 +69,9 @@ func (c *openServiceClient) GetDevicePortForwards(ctx context.Context, in *GetDe
 	return out, nil
 }
 
-func (c *openServiceClient) CreatePortForwardStats(ctx context.Context, in *CreatePortForwardStatsRequest, opts ...grpc.CallOption) (*CreatePortForwardStatsResponse, error) {
+func (c *openServiceClient) CreatePortForwardStats(ctx context.Context, in *CreatePortForwardStatsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreatePortForwardStatsResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, OpenService_CreatePortForwardStats_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -89,7 +90,7 @@ type OpenServiceServer interface {
 	// 获取设备端口转发
 	GetDevicePortForwards(context.Context, *GetDevicePortForwardsRequest) (*GetDevicePortForwardsResponse, error)
 	// 创建端口转发统计信息
-	CreatePortForwardStats(context.Context, *CreatePortForwardStatsRequest) (*CreatePortForwardStatsResponse, error)
+	CreatePortForwardStats(context.Context, *CreatePortForwardStatsRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedOpenServiceServer()
 }
 
@@ -106,7 +107,7 @@ func (UnimplementedOpenServiceServer) ReportDeviceIP(context.Context, *ReportDev
 func (UnimplementedOpenServiceServer) GetDevicePortForwards(context.Context, *GetDevicePortForwardsRequest) (*GetDevicePortForwardsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetDevicePortForwards not implemented")
 }
-func (UnimplementedOpenServiceServer) CreatePortForwardStats(context.Context, *CreatePortForwardStatsRequest) (*CreatePortForwardStatsResponse, error) {
+func (UnimplementedOpenServiceServer) CreatePortForwardStats(context.Context, *CreatePortForwardStatsRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreatePortForwardStats not implemented")
 }
 func (UnimplementedOpenServiceServer) mustEmbedUnimplementedOpenServiceServer() {}

@@ -89,7 +89,8 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/openCreatePortForwardStatsResponse"
+              "type": "object",
+              "properties": {}
             }
           },
           "default": {
@@ -176,10 +177,6 @@
         }
       },
       "title": "创建端口转发统计信息 请求参数"
-    },
-    "openCreatePortForwardStatsResponse": {
-      "type": "object",
-      "title": "创建端口转发统计信息 响应参数"
     },
     "openGetDevicePortForwardsResponse": {
       "type": "object",

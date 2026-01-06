@@ -22,6 +22,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // Suppress "imported and not used" errors
@@ -37,7 +38,7 @@ var (
 
 func request_IndexService_Index_0(ctx context.Context, marshaler runtime.Marshaler, client IndexServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq IndexRequest
+		protoReq emptypb.Empty
 		metadata runtime.ServerMetadata
 	)
 	if req.Body != nil {
@@ -49,7 +50,7 @@ func request_IndexService_Index_0(ctx context.Context, marshaler runtime.Marshal
 
 func local_request_IndexService_Index_0(ctx context.Context, marshaler runtime.Marshaler, server IndexServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq IndexRequest
+		protoReq emptypb.Empty
 		metadata runtime.ServerMetadata
 	)
 	msg, err := server.Index(ctx, &protoReq)

@@ -13,6 +13,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -31,7 +32,7 @@ const (
 // 入口服务
 type IndexServiceClient interface {
 	// 入口
-	Index(ctx context.Context, in *IndexRequest, opts ...grpc.CallOption) (*IndexResponse, error)
+	Index(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type indexServiceClient struct {
@@ -42,9 +43,9 @@ func NewIndexServiceClient(cc grpc.ClientConnInterface) IndexServiceClient {
 	return &indexServiceClient{cc}
 }
 
-func (c *indexServiceClient) Index(ctx context.Context, in *IndexRequest, opts ...grpc.CallOption) (*IndexResponse, error) {
+func (c *indexServiceClient) Index(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(IndexResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, IndexService_Index_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -59,7 +60,7 @@ func (c *indexServiceClient) Index(ctx context.Context, in *IndexRequest, opts .
 // 入口服务
 type IndexServiceServer interface {
 	// 入口
-	Index(context.Context, *IndexRequest) (*IndexResponse, error)
+	Index(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	mustEmbedUnimplementedIndexServiceServer()
 }
 
@@ -70,7 +71,7 @@ type IndexServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedIndexServiceServer struct{}
 
-func (UnimplementedIndexServiceServer) Index(context.Context, *IndexRequest) (*IndexResponse, error) {
+func (UnimplementedIndexServiceServer) Index(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method Index not implemented")
 }
 func (UnimplementedIndexServiceServer) mustEmbedUnimplementedIndexServiceServer() {}
@@ -95,7 +96,7 @@ func RegisterIndexServiceServer(s grpc.ServiceRegistrar, srv IndexServiceServer)
 }
 
 func _IndexService_Index_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IndexRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -107,7 +108,7 @@ func _IndexService_Index_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: IndexService_Index_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IndexServiceServer).Index(ctx, req.(*IndexRequest))
+		return srv.(IndexServiceServer).Index(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }

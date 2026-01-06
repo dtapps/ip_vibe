@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/grpc_generated"
 
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // IndexServer 实现 gRPC 服务接口
@@ -23,7 +24,7 @@ func (s *IndexServer) RegisterService(server *grpc.Server) {
 }
 
 // Index 实现 入口 方法
-func (s *IndexServer) Index(ctx context.Context, req *grpc_generated.IndexRequest) (*grpc_generated.IndexResponse, error) {
+func (s *IndexServer) Index(ctx context.Context, req *emptypb.Empty) (*emptypb.Empty, error) {
 	// 转换为 gRPC 响应
-	return &grpc_generated.IndexResponse{}, nil
+	return &emptypb.Empty{}, nil
 }

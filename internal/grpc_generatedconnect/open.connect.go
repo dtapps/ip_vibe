@@ -9,6 +9,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
 	strings "strings"
 	grpc_generated "vibe_ip/internal/grpc_generated"
@@ -52,7 +53,7 @@ type OpenServiceClient interface {
 	// 获取设备端口转发
 	GetDevicePortForwards(context.Context, *connect.Request[grpc_generated.GetDevicePortForwardsRequest]) (*connect.Response[grpc_generated.GetDevicePortForwardsResponse], error)
 	// 创建端口转发统计信息
-	CreatePortForwardStats(context.Context, *connect.Request[grpc_generated.CreatePortForwardStatsRequest]) (*connect.Response[grpc_generated.CreatePortForwardStatsResponse], error)
+	CreatePortForwardStats(context.Context, *connect.Request[grpc_generated.CreatePortForwardStatsRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewOpenServiceClient constructs a client for the open.OpenService service. By default, it uses
@@ -78,7 +79,7 @@ func NewOpenServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(openServiceMethods.ByName("GetDevicePortForwards")),
 			connect.WithClientOptions(opts...),
 		),
-		createPortForwardStats: connect.NewClient[grpc_generated.CreatePortForwardStatsRequest, grpc_generated.CreatePortForwardStatsResponse](
+		createPortForwardStats: connect.NewClient[grpc_generated.CreatePortForwardStatsRequest, emptypb.Empty](
 			httpClient,
 			baseURL+OpenServiceCreatePortForwardStatsProcedure,
 			connect.WithSchema(openServiceMethods.ByName("CreatePortForwardStats")),
@@ -91,7 +92,7 @@ func NewOpenServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 type openServiceClient struct {
 	reportDeviceIP         *connect.Client[grpc_generated.ReportDeviceIPRequest, grpc_generated.ReportDeviceIPResponse]
 	getDevicePortForwards  *connect.Client[grpc_generated.GetDevicePortForwardsRequest, grpc_generated.GetDevicePortForwardsResponse]
-	createPortForwardStats *connect.Client[grpc_generated.CreatePortForwardStatsRequest, grpc_generated.CreatePortForwardStatsResponse]
+	createPortForwardStats *connect.Client[grpc_generated.CreatePortForwardStatsRequest, emptypb.Empty]
 }
 
 // ReportDeviceIP calls open.OpenService.ReportDeviceIP.
@@ -105,7 +106,7 @@ func (c *openServiceClient) GetDevicePortForwards(ctx context.Context, req *conn
 }
 
 // CreatePortForwardStats calls open.OpenService.CreatePortForwardStats.
-func (c *openServiceClient) CreatePortForwardStats(ctx context.Context, req *connect.Request[grpc_generated.CreatePortForwardStatsRequest]) (*connect.Response[grpc_generated.CreatePortForwardStatsResponse], error) {
+func (c *openServiceClient) CreatePortForwardStats(ctx context.Context, req *connect.Request[grpc_generated.CreatePortForwardStatsRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.createPortForwardStats.CallUnary(ctx, req)
 }
 
@@ -116,7 +117,7 @@ type OpenServiceHandler interface {
 	// 获取设备端口转发
 	GetDevicePortForwards(context.Context, *connect.Request[grpc_generated.GetDevicePortForwardsRequest]) (*connect.Response[grpc_generated.GetDevicePortForwardsResponse], error)
 	// 创建端口转发统计信息
-	CreatePortForwardStats(context.Context, *connect.Request[grpc_generated.CreatePortForwardStatsRequest]) (*connect.Response[grpc_generated.CreatePortForwardStatsResponse], error)
+	CreatePortForwardStats(context.Context, *connect.Request[grpc_generated.CreatePortForwardStatsRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewOpenServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -169,6 +170,6 @@ func (UnimplementedOpenServiceHandler) GetDevicePortForwards(context.Context, *c
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("open.OpenService.GetDevicePortForwards is not implemented"))
 }
 
-func (UnimplementedOpenServiceHandler) CreatePortForwardStats(context.Context, *connect.Request[grpc_generated.CreatePortForwardStatsRequest]) (*connect.Response[grpc_generated.CreatePortForwardStatsResponse], error) {
+func (UnimplementedOpenServiceHandler) CreatePortForwardStats(context.Context, *connect.Request[grpc_generated.CreatePortForwardStatsRequest]) (*connect.Response[emptypb.Empty], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("open.OpenService.CreatePortForwardStats is not implemented"))
 }

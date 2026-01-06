@@ -9,6 +9,9 @@ option go_package = "vibe_ip/internal/grpc_generated";
 // 引入 HTTP 注解定义（用于 gateway）
 import "google/api/annotations.proto";
 
+// 引入空消息（用于无请求体的 RPC）
+import "google/protobuf/empty.proto";
+
 // 引入验证规则（用于 protoc-gen-validate）
 import "validate/validate.proto";
 
@@ -31,7 +34,7 @@ service OpenService {
   }
 
   // 创建端口转发统计信息
-  rpc CreatePortForwardStats(CreatePortForwardStatsRequest) returns (CreatePortForwardStatsResponse) {
+  rpc CreatePortForwardStats(CreatePortForwardStatsRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/device/{device_code}/port-forwards/{port_forward_id}/stats"
       body: "*"
@@ -138,8 +141,4 @@ message CreatePortForwardStatsRequest {
   
   // 错误数
   int64 errors = 10 ;
-}
-
-// 创建端口转发统计信息 响应参数
-message CreatePortForwardStatsResponse {
 }

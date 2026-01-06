@@ -9,6 +9,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
 	strings "strings"
 	grpc_generated "vibe_ip/internal/grpc_generated"
@@ -41,7 +42,7 @@ const (
 // IndexServiceClient is a client for the index.IndexService service.
 type IndexServiceClient interface {
 	// 入口
-	Index(context.Context, *connect.Request[grpc_generated.IndexRequest]) (*connect.Response[grpc_generated.IndexResponse], error)
+	Index(context.Context, *connect.Request[emptypb.Empty]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewIndexServiceClient constructs a client for the index.IndexService service. By default, it uses
@@ -55,7 +56,7 @@ func NewIndexServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 	baseURL = strings.TrimRight(baseURL, "/")
 	indexServiceMethods := grpc_generated.File_index_proto.Services().ByName("IndexService").Methods()
 	return &indexServiceClient{
-		index: connect.NewClient[grpc_generated.IndexRequest, grpc_generated.IndexResponse](
+		index: connect.NewClient[emptypb.Empty, emptypb.Empty](
 			httpClient,
 			baseURL+IndexServiceIndexProcedure,
 			connect.WithSchema(indexServiceMethods.ByName("Index")),
@@ -66,18 +67,18 @@ func NewIndexServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 
 // indexServiceClient implements IndexServiceClient.
 type indexServiceClient struct {
-	index *connect.Client[grpc_generated.IndexRequest, grpc_generated.IndexResponse]
+	index *connect.Client[emptypb.Empty, emptypb.Empty]
 }
 
 // Index calls index.IndexService.Index.
-func (c *indexServiceClient) Index(ctx context.Context, req *connect.Request[grpc_generated.IndexRequest]) (*connect.Response[grpc_generated.IndexResponse], error) {
+func (c *indexServiceClient) Index(ctx context.Context, req *connect.Request[emptypb.Empty]) (*connect.Response[emptypb.Empty], error) {
 	return c.index.CallUnary(ctx, req)
 }
 
 // IndexServiceHandler is an implementation of the index.IndexService service.
 type IndexServiceHandler interface {
 	// 入口
-	Index(context.Context, *connect.Request[grpc_generated.IndexRequest]) (*connect.Response[grpc_generated.IndexResponse], error)
+	Index(context.Context, *connect.Request[emptypb.Empty]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewIndexServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -106,6 +107,6 @@ func NewIndexServiceHandler(svc IndexServiceHandler, opts ...connect.HandlerOpti
 // UnimplementedIndexServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedIndexServiceHandler struct{}
 
-func (UnimplementedIndexServiceHandler) Index(context.Context, *connect.Request[grpc_generated.IndexRequest]) (*connect.Response[grpc_generated.IndexResponse], error) {
+func (UnimplementedIndexServiceHandler) Index(context.Context, *connect.Request[emptypb.Empty]) (*connect.Response[emptypb.Empty], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("index.IndexService.Index is not implemented"))
 }

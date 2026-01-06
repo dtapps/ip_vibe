@@ -9,20 +9,15 @@ option go_package = "vibe_ip/internal/grpc_generated";
 // 引入 HTTP 注解定义（用于 gateway）
 import "google/api/annotations.proto";
 
+// 引入空消息（用于无请求体的 RPC）
+import "google/protobuf/empty.proto";
+
 // 入口服务
 service IndexService {
   // 入口
-  rpc Index(IndexRequest) returns (IndexResponse) {
+  rpc Index(google.protobuf.Empty) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       get: "/"
     };
   }
-}
-
-// 入口 请求参数
-message IndexRequest {
-}
-
-// 入口 响应参数
-message IndexResponse {
 }
