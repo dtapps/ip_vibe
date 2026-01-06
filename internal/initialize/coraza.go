@@ -2,7 +2,6 @@ package initialize
 
 import (
 	"log/slog"
-	"os"
 	"vibe_ip/internal/global"
 
 	coreruleset "github.com/corazawaf/coraza-coreruleset"
@@ -40,7 +39,7 @@ SecRequestBodyAccess On
 		slog.Error("[初始化 Coraza] 错误",
 			slog.Any("err", err),
 		)
-		os.Exit(1)
+		panic(err)
 	}
 }
 

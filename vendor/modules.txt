@@ -1179,7 +1179,7 @@ go.dtapp.net/library/service/bark
 # go.dtapp.net/library/service/dingtalk v1.0.39
 ## explicit; go 1.25.1
 go.dtapp.net/library/service/dingtalk
-# go.dtapp.net/library/service/feishu v1.0.36
+# go.dtapp.net/library/service/feishu v1.0.37
 ## explicit; go 1.25.1
 go.dtapp.net/library/service/feishu
 # go.dtapp.net/library/service/ft07 v1.0.8

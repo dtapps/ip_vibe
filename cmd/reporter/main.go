@@ -106,7 +106,7 @@ func main() {
 		grpcClient, err := get_grpc_client()
 		if err != nil {
 			fmt.Printf("获取 gRPC 客户端失败: %v\n", err)
-			os.Exit(1)
+			panic(err)
 		}
 		defer grpcClient.Close()
 
@@ -122,7 +122,7 @@ func main() {
 		err = ipReportTask.StartPeriodicTask(ctx)
 		if err != nil {
 			fmt.Printf("启动任务失败: %v\n", err)
-			os.Exit(1)
+			panic(err)
 		}
 		// 关闭IP上报实例
 		defer ipReportTask.Close()
@@ -141,13 +141,13 @@ func main() {
 		err := ipReportTask.StartPeriodicTask(ctx)
 		if err != nil {
 			fmt.Printf("启动任务失败: %v\n", err)
-			os.Exit(1)
+			panic(err)
 		}
 		// 关闭IP上报实例
 		defer ipReportTask.Close()
 	} else {
 		fmt.Printf("服务启动失败: GRPC_URL / HTTP_URL未配置\n")
-		os.Exit(1)
+		panic("GRPC_URL / HTTP_URL未配置")
 	}
 
 	// 启动 GoCron 调度器

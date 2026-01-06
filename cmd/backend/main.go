@@ -282,7 +282,7 @@ func main() {
 		logger.Error("启动CDN、DNS刷新任务失败",
 			slog.Any("err", err),
 		)
-		os.Exit(1)
+		panic(err)
 	}
 
 	// 启动 SSL 刷新任务
@@ -297,7 +297,7 @@ func main() {
 		logger.Error("启动SSL刷新任务失败",
 			slog.Any("err", err),
 		)
-		os.Exit(1)
+		panic(err)
 	}
 
 	// 启动域名监控任务
@@ -312,7 +312,7 @@ func main() {
 		logger.Error("启动域名监控任务失败",
 			slog.Any("err", err),
 		)
-		os.Exit(1)
+		panic(err)
 	}
 
 	// 创建 HTTP 服务实例（用于优雅关闭）
@@ -332,7 +332,7 @@ func main() {
 			ginLogger.Error("Gin 服务启动失败",
 				slog.Any("err", err),
 			)
-			os.Exit(1)
+			panic(err)
 		}
 		ginLogger.InfoContext(ctx, "Gin 服务已停止")
 	}()
@@ -431,7 +431,7 @@ func loadTemplates(ginLogger *slog.Logger, templatePath string, funcMap template
 		ginLogger.Error("开发环境",
 			slog.Any("err", err),
 		)
-		os.Exit(1)
+		panic(err)
 	}
 
 	// 所有组件（自动注入）
@@ -440,7 +440,7 @@ func loadTemplates(ginLogger *slog.Logger, templatePath string, funcMap template
 		ginLogger.Error("开发环境",
 			slog.Any("err", err),
 		)
-		os.Exit(1)
+		panic(err)
 	}
 	for _, c := range components {
 		name := filepath.Join("components", filepath.Base(c))
@@ -540,7 +540,7 @@ func loadTemplatesFS(ginLogger *slog.Logger, efs embed.FS, funcMap template.Func
 		ginLogger.Error("生产环境",
 			slog.Any("err", err),
 		)
-		os.Exit(1)
+		panic(err)
 	}
 
 	// 所有组件（自动注入）
@@ -549,7 +549,7 @@ func loadTemplatesFS(ginLogger *slog.Logger, efs embed.FS, funcMap template.Func
 		ginLogger.Error("生产环境",
 			slog.Any("err", err),
 		)
-		os.Exit(1)
+		panic(err)
 	}
 	for _, c := range components {
 		name := filepath.Join("components", filepath.Base(c))
@@ -1297,7 +1297,7 @@ func grpc_run(ctx context.Context, grpcLogger *slog.Logger) {
 		grpcLogger.ErrorContext(ctx, "gRPC 服务启动失败",
 			slog.Any("err", err),
 		)
-		os.Exit(1)
+		panic(err)
 	}
 
 	grpcLogger.InfoContext(ctx, "gRPC 服务正在启动",
@@ -1450,7 +1450,7 @@ func thrift_run(ctx context.Context, thriftLogger *slog.Logger) {
 		thriftLogger.ErrorContext(ctx, "Thrift 服务启动失败",
 			slog.Any("err", err),
 		)
-		os.Exit(1)
+		panic(err)
 	}
 
 	thriftLogger.InfoContext(ctx, "Thrift 服务正在启动",

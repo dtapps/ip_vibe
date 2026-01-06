@@ -61,7 +61,7 @@ require (
 	go.dtapp.net/library/contrib/resty_log v1.0.11
 	go.dtapp.net/library/service/bark v1.0.7
 	go.dtapp.net/library/service/dingtalk v1.0.39
-	go.dtapp.net/library/service/feishu v1.0.36
+	go.dtapp.net/library/service/feishu v1.0.37
 	go.dtapp.net/library/service/ft07 v1.0.8
 	go.dtapp.net/library/service/pushdeer v1.0.8
 	go.dtapp.net/library/service/wechatqy v1.0.38

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"log/slog"
-	"os"
 	"vibe_ip/internal/ent"
 	_ "vibe_ip/internal/ent/runtime"
 	"vibe_ip/internal/ent_log"
@@ -39,7 +38,7 @@ func InitEntDb(ctx context.Context, logger *slog.Logger) {
 		slog.ErrorContext(ctx, "[初始化 业务数据库] 打开数据库失败",
 			slog.Any("err", err),
 		)
-		os.Exit(1)
+		panic(err)
 	}
 
 	// 2. 设置连接池（防止并发写冲突）
@@ -72,7 +71,7 @@ func InitEntDb(ctx context.Context, logger *slog.Logger) {
 		slog.ErrorContext(ctx, "[初始化 业务数据库] 自动迁移失败",
 			slog.Any("err", err),
 		)
-		os.Exit(1)
+		panic(err)
 	}
 }
 
@@ -83,7 +82,7 @@ func CloseEntDb() {
 			slog.Error("[关闭 业务数据库] 关闭错误",
 				slog.Any("err", err),
 			)
-			os.Exit(1)
+			panic(err)
 		}
 	}
 }
@@ -106,7 +105,7 @@ func InitEntLogDb(ctx context.Context, logger *slog.Logger) {
 		slog.ErrorContext(ctx, "[初始化 日志数据库] 打开数据库失败",
 			slog.Any("err", err),
 		)
-		os.Exit(1)
+		panic(err)
 	}
 
 	// 2. 设置连接池（防止并发写冲突）
@@ -139,7 +138,7 @@ func InitEntLogDb(ctx context.Context, logger *slog.Logger) {
 		slog.ErrorContext(ctx, "[初始化 日志数据库] 自动迁移失败",
 			slog.Any("err", err),
 		)
-		os.Exit(1)
+		panic(err)
 	}
 }
 
@@ -150,7 +149,7 @@ func CloseEntLogDb() {
 			slog.Error("[关闭 日志数据库] 关闭错误",
 				slog.Any("err", err),
 			)
-			os.Exit(1)
+			panic(err)
 		}
 	}
 }

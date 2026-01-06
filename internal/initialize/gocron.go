@@ -3,7 +3,6 @@ package initialize
 import (
 	"context"
 	"log/slog"
-	"os"
 	"time"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gocron_slog"
@@ -30,7 +29,7 @@ func InitGoCron(ctx context.Context, logger *slog.Logger) {
 		slog.ErrorContext(ctx, "[初始化 GoCron] 错误",
 			slog.Any("err", err),
 		)
-		os.Exit(1)
+		panic(err)
 	}
 	global.GvaGoCron = s
 }
@@ -42,7 +41,7 @@ func CloseGoCron() {
 			slog.Error("[关闭 GoCron] 错误",
 				slog.Any("err", err),
 			)
-			os.Exit(1)
+			panic(err)
 		}
 	}
 }

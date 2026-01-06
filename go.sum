@@ -1159,8 +1159,8 @@ go.dtapp.net/library/service/bark v1.0.7 h1:Zz02Rh/N/DGCc5C9P5odxoMIbPBVlDq5LEP6
 go.dtapp.net/library/service/bark v1.0.7/go.mod h1:5a/Hxz9GYxU5ynlsZ2L7eXc83yWnVXa+Hu2Ta2spKMg=
 go.dtapp.net/library/service/dingtalk v1.0.39 h1:4JdEMn05XGllhlRx0Fsp7snhz5u8/IrTMf212xHc+yE=
 go.dtapp.net/library/service/dingtalk v1.0.39/go.mod h1:CTeFgAm8M8eTBPhbWWVKf5TdXqptDkpSrHh2gh4CFrI=
-go.dtapp.net/library/service/feishu v1.0.36 h1:Z4s9v8XGQGvxA+OcBoqUT2wESLId+ZT9//BwtpvjPzk=
-go.dtapp.net/library/service/feishu v1.0.36/go.mod h1:IeZhzpx+2X1dex9iy7IyIz63GD3pnjMvVvHg73K1V8A=
+go.dtapp.net/library/service/feishu v1.0.37 h1:xGVd9ZWNgGuNdkMx6OBBmE4n30KNVRsoeJNDAuvoO20=
+go.dtapp.net/library/service/feishu v1.0.37/go.mod h1:u/eqhj06IcUz2TkUDCsBXwrg94Seakp7Y62x8zP5+Ic=
 go.dtapp.net/library/service/ft07 v1.0.8 h1:GuysqXjZ97iKNnLZU4pV4EodEThRv185sKkFIaBbrYY=
 go.dtapp.net/library/service/ft07 v1.0.8/go.mod h1:8M87eVThjq96YWaXpVTyOpN0u72W2P3dO3kVief4kkE=
 go.dtapp.net/library/service/pushdeer v1.0.8 h1:DUzbijqJBc07lA+7rSpD7b4haGpaS9KoLNM2XSg5IWo=

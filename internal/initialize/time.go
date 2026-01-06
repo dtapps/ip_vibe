@@ -2,7 +2,6 @@ package initialize
 
 import (
 	"log/slog"
-	"os"
 	"runtime"
 	"time"
 	_ "time/tzdata" // 时区 https://www.itlangzi.com/s/1526209468730183680.html
@@ -20,7 +19,7 @@ func init() {
 			slog.Error("[初始化 时间] 错误",
 				slog.Any("err", err),
 			)
-			os.Exit(1)
+			panic(err)
 		}
 	}
 	carbon.SetTimezone(carbon.Shanghai)

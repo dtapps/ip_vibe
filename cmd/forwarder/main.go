@@ -110,7 +110,7 @@ func main() {
 		grpcClient, err := get_grpc_client()
 		if err != nil {
 			fmt.Printf("获取 gRPC 客户端失败: %v\n", err)
-			os.Exit(1)
+			panic(err)
 		}
 		defer grpcClient.Close()
 
@@ -127,7 +127,7 @@ func main() {
 		err = portForwardTask.StartPeriodicTask(ctx)
 		if err != nil {
 			fmt.Printf("启动端口转发任务失败: %v\n", err)
-			os.Exit(1)
+			panic(err)
 		}
 		// 关闭端口转发实例
 		defer portForwardTask.Close()
@@ -145,7 +145,7 @@ func main() {
 		err = statsReportTask.StartPeriodicTask(ctx)
 		if err != nil {
 			fmt.Printf("启动统计上报任务失败: %v\n", err)
-			os.Exit(1)
+			panic(err)
 		}
 		// 关闭统计上报实例
 		defer statsReportTask.Close()
@@ -165,7 +165,7 @@ func main() {
 		err := portForwardTask.StartPeriodicTask(ctx)
 		if err != nil {
 			fmt.Printf("启动端口转发任务失败: %v\n", err)
-			os.Exit(1)
+			panic(err)
 		}
 		// 关闭端口转发实例
 		defer portForwardTask.Close()
@@ -184,13 +184,13 @@ func main() {
 		err = statsReportTask.StartPeriodicTask(ctx)
 		if err != nil {
 			fmt.Printf("启动统计上报任务失败: %v\n", err)
-			os.Exit(1)
+			panic(err)
 		}
 		// 关闭统计上报实例
 		defer statsReportTask.Close()
 	} else {
 		fmt.Printf("服务启动失败: GRPC_URL / HTTP_URL未配置\n")
-		os.Exit(1)
+		panic("GRPC_URL / HTTP_URL未配置")
 	}
 
 	// 启动 GoCron 调度器
