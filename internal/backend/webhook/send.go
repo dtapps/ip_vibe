@@ -77,7 +77,7 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 						slog.String("webhook_platform", item.Edges.Webhook.Platform.String()),
 						slog.Any("err", err),
 					)
-					return fmt.Errorf("渲染标题模板失败: %w", err)
+					return nil
 				}
 
 				templateContent, err := utils.RenderTemplate(item.Edges.Webhook.TemplateContent, payload)
@@ -87,25 +87,26 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 						slog.String("webhook_platform", item.Edges.Webhook.Platform.String()),
 						slog.Any("err", err),
 					)
-					return fmt.Errorf("渲染内容模板失败: %w", err)
+					return nil
 				}
 
 				var resp json.RawMessage
+				var rErr error
 				switch item.Edges.Webhook.Platform {
 				case webhook.PlatformWechatWork:
-					resp, err = s.WechatWork(egCtx, item.Edges.Webhook.URL, templateTitle, templateContent)
+					resp, rErr = s.WechatWork(egCtx, item.Edges.Webhook.URL, templateTitle, templateContent)
 				case webhook.PlatformDingtalk:
-					resp, err = s.Dingtalk(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
+					resp, rErr = s.Dingtalk(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				case webhook.PlatformFeishu:
-					resp, err = s.Feishu(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
+					resp, rErr = s.Feishu(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				case webhook.PlatformBark:
-					resp, err = s.Bark(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
+					resp, rErr = s.Bark(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				case webhook.PlatformFt07:
-					resp, err = s.Ft07(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
+					resp, rErr = s.Ft07(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				case webhook.PlatformPushDeer:
-					resp, err = s.PushDeer(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
+					resp, rErr = s.PushDeer(egCtx, item.Edges.Webhook.URL, item.Edges.Webhook.Secret, templateTitle, templateContent)
 				default:
-					resp, err = s.Http(egCtx, item.Edges.Webhook.URL, templateTitle, templateContent)
+					resp, rErr = s.Http(egCtx, item.Edges.Webhook.URL, templateTitle, templateContent)
 				}
 
 				// 记录到域名监控历史
@@ -116,15 +117,15 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 					SetTitle(templateTitle).
 					SetContent(templateContent).
 					SetResponse(resp).
-					SetSuccess(err == nil).
-					SetErrorMessage(fmt.Sprintf("%v", err)).
+					SetSuccess(rErr == nil).
+					SetErrorMessage(fmt.Sprintf("%v", rErr)).
 					Exec(egCtx)
 
-				if err != nil {
+				if rErr != nil {
 					s.logger.ErrorContext(egCtx, "发送Webhook失败",
 						slog.Int64("webhook_id", item.Edges.Webhook.ID),
 						slog.String("webhook_platform", item.Edges.Webhook.Platform.String()),
-						slog.Any("err", err),
+						slog.Any("err", rErr),
 					)
 				} else {
 					s.logger.InfoContext(egCtx, "Webhook发送成功",
@@ -134,7 +135,6 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 				}
 			}
 
-			// 返回nil而不是错误，这样单个通知订阅更新失败不会导致整个errgroup取消上下文
 			return nil
 		})
 	}

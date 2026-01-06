@@ -6,7 +6,9 @@ ignore ./cmd/backend/static
 
 ignore ./cmd/backend/templates
 
-ignore ./cmd/frontend/node_modules
+ignore ./cmd/frontend
+
+ignore ./sql
 
 require (
 	connectrpc.com/connect v1.19.1
