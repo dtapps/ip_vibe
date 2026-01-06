@@ -35,7 +35,7 @@ func InitEntDb(ctx context.Context, logger *slog.Logger) {
 	// 1. 先打开原生 *sql.DB
 	sqlDB, err := sql.Open("sqlite", dsn)
 	if err != nil {
-		slog.ErrorContext(ctx, "[初始化 业务数据库] 打开数据库失败",
+		logger.ErrorContext(ctx, "[初始化 业务数据库] 打开数据库失败",
 			slog.Any("err", err),
 		)
 		panic(err)
@@ -68,7 +68,7 @@ func InitEntDb(ctx context.Context, logger *slog.Logger) {
 
 	// 4. 自动迁移
 	if err := global.GvaEntDb.Schema.Create(ctx); err != nil {
-		slog.ErrorContext(ctx, "[初始化 业务数据库] 自动迁移失败",
+		logger.ErrorContext(ctx, "[初始化 业务数据库] 自动迁移失败",
 			slog.Any("err", err),
 		)
 		panic(err)
@@ -102,7 +102,7 @@ func InitEntLogDb(ctx context.Context, logger *slog.Logger) {
 	// 1. 先打开原生 *sql.DB
 	sqlDB, err := sql.Open("sqlite", dsn)
 	if err != nil {
-		slog.ErrorContext(ctx, "[初始化 日志数据库] 打开数据库失败",
+		logger.ErrorContext(ctx, "[初始化 日志数据库] 打开数据库失败",
 			slog.Any("err", err),
 		)
 		panic(err)
@@ -135,7 +135,7 @@ func InitEntLogDb(ctx context.Context, logger *slog.Logger) {
 
 	// 4. 自动迁移
 	if err := global.GvaEntLogDb.Schema.Create(ctx); err != nil {
-		slog.ErrorContext(ctx, "[初始化 日志数据库] 自动迁移失败",
+		logger.ErrorContext(ctx, "[初始化 日志数据库] 自动迁移失败",
 			slog.Any("err", err),
 		)
 		panic(err)

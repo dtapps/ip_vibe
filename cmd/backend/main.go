@@ -149,13 +149,13 @@ func main() {
 
 	initialize.InitCoraza(ctx, logger) // 初始化 Coraza 防火墙
 
-	initialize.InitEntDb(ctx, entLogger)         // 初始化 业务数据库
-	initialize.InitEntLogDb(ctx, entLogLogger)   // 初始化 日志数据库
-	initialize.InitGoCron(ctx, gocronLogger)     // 初始化 GoCron 调度器
-	initialize.InitMCP(ctx, mcpLogger)           // 初始化 MCP
-	initialize.InitEntRestyLog(ctx, restyLogger) // 初始化 Resty 日志
-	initialize.InitEntHttpLog(ctx, httpLogger)   // 初始化 HTTP 日志
-	initialize.InitThirdParty(ctx)               // 初始化 第三方
+	initialize.InitEntDb(ctx, entLogger)       // 初始化 业务数据库
+	initialize.InitEntLogDb(ctx, entLogLogger) // 初始化 日志数据库
+	initialize.InitGoCron(ctx, gocronLogger)   // 初始化 GoCron 调度器
+	initialize.InitMCP(ctx, mcpLogger)         // 初始化 MCP
+	initialize.InitEntRestyLog(restyLogger)    // 初始化 Resty 日志
+	initialize.InitEntHttpLog(httpLogger)      // 初始化 HTTP 日志
+	initialize.InitThirdParty(ctx)             // 初始化 第三方
 
 	initialize.InitOperationLogHelper() // 初始化操作日志助手
 

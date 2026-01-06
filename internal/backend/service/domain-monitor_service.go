@@ -42,11 +42,12 @@ type DomainMonitorServiceImpl struct {
 // NewDomainMonitorService 创建域名监控服务实例
 func NewDomainMonitorService(db *ent.Client, dbLog *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) DomainMonitorService {
 	return &DomainMonitorServiceImpl{
-		db:     db,
-		dbLog:  dbLog,
-		cron:   cron,
-		logger: logger,
-		debug:  debug,
+		db:            db,
+		dbLog:         dbLog,
+		cron:          cron,
+		logger:        logger,
+		httpTransport: httpTransport,
+		debug:         debug,
 	}
 }
 
