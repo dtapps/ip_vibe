@@ -4,7 +4,6 @@ import (
 	"context"
 	"log/slog"
 	"vibe_ip/internal/backend/service"
-	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/thrift_generated/open"
 	"vibe_ip/internal/types"
@@ -25,8 +24,6 @@ func NewOpenServer(logger *slog.Logger) *OpenServer {
 	deviceService := service.NewDeviceOpenService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
-		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
 		global.GvaEnv.DEBUG,
 	)
 

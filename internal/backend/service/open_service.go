@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/internal/backend/webhook"
+	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/deviceportforward"
@@ -35,7 +36,8 @@ type DeviceOpenServiceImpl struct {
 }
 
 // NewDeviceOpenService 创建设备服务实例
-func NewDeviceOpenService(db *ent.Client, dbLog *ent_log.Client, webhookService *webhook.Send, debug bool) DeviceOpenService {
+func NewDeviceOpenService(db *ent.Client, dbLog *ent_log.Client, debug bool) DeviceOpenService {
+	webhookService := webhookService.NewSend(db, dbLog)
 	return &DeviceOpenServiceImpl{
 		db:             db,
 		dbLog:          dbLog,

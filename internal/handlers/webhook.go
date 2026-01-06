@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
-	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
@@ -32,7 +31,7 @@ func Webhook(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 	)
 

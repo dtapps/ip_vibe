@@ -3,7 +3,6 @@ package handlers
 import (
 	"net/http"
 	"vibe_ip/internal/backend/service"
-	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -38,8 +37,6 @@ func DeviceReportDeviceIp(c *gin.Context) {
 	service := service.NewDeviceOpenService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
-		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
 		global.GvaEnv.DEBUG,
 	)
 
@@ -77,8 +74,6 @@ func DevicePortForwards(c *gin.Context) {
 	service := service.NewDeviceOpenService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
-		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
 		global.GvaEnv.DEBUG,
 	)
 
@@ -118,8 +113,6 @@ func CreatePortForwardStats(c *gin.Context) {
 	service := service.NewDeviceOpenService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
-		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
 		global.GvaEnv.DEBUG,
 	)
 

@@ -13,8 +13,12 @@ import (
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/utils"
 
+	"go.dtapp.net/library/service/bark"
 	"go.dtapp.net/library/service/dingtalk"
 	"go.dtapp.net/library/service/feishu"
+	"go.dtapp.net/library/service/ft07"
+	"go.dtapp.net/library/service/pushdeer"
+	"go.dtapp.net/library/service/wechatqy"
 	"go.dtapp.net/library/utils/gorequest"
 	"golang.org/x/sync/errgroup"
 	"resty.dev/v3"
@@ -25,6 +29,13 @@ type Send struct {
 	logDb  *ent_log.Client // 日志数据库客户端
 	client *resty.Client   // Resty HTTP 客户端
 	logger *slog.Logger    // 日志记录器
+
+	wechatWorkClient *wechatqy.Client // 企业微信
+	dingTalkClient   *dingtalk.Client // 钉钉
+	feishuClient     *feishu.Client   // 飞书
+	barkClient       *bark.Client     // Bark
+	ft07Client       *ft07.Client     // Server酱
+	pushDeerClient   *pushdeer.Client // PushDeer
 }
 
 func NewSend(db *ent.Client, logDb *ent_log.Client) *Send {
@@ -37,6 +48,13 @@ func NewSend(db *ent.Client, logDb *ent_log.Client) *Send {
 		logDb:  logDb,
 		client: client,
 		logger: slog.With("component", "webhook"),
+
+		wechatWorkClient: global.GvaWechatWork,
+		dingTalkClient:   global.GvaDingTalk,
+		feishuClient:     global.GvaFeishu,
+		barkClient:       global.GvaBark,
+		ft07Client:       global.GvaFt07,
+		pushDeerClient:   global.GvaPushDeer,
 	}
 }
 
@@ -229,8 +247,6 @@ func (s *Send) Test(ctx context.Context, id int64, payload utils.TemplateData) (
 // https://developer.work.weixin.qq.com/document/path/99110
 func (s *Send) WechatWork(ctx context.Context, url string, title string, content any) (response json.RawMessage, err error) {
 
-	client := global.GvaWechatWork
-
 	// 参数
 	params := gorequest.NewParams()
 	params.Set("msgtype", "markdown")
@@ -239,7 +255,7 @@ func (s *Send) WechatWork(ctx context.Context, url string, title string, content
 	})
 
 	// 请求
-	resp, err := client.WebhookSendURL(
+	resp, err := s.wechatWorkClient.WebhookSendURL(
 		ctx,
 		url,
 		"markdown",
@@ -256,8 +272,6 @@ func (s *Send) WechatWork(ctx context.Context, url string, title string, content
 // https://open.dingtalk.com/document/group/custom-robot-access
 func (s *Send) Dingtalk(ctx context.Context, url string, secret string, title string, content any) (response json.RawMessage, err error) {
 
-	client := global.GvaDingTalk
-
 	// 参数
 	params := gorequest.NewParams()
 	params.Set("msgtype", "markdown")
@@ -266,14 +280,14 @@ func (s *Send) Dingtalk(ctx context.Context, url string, secret string, title st
 	// 请求
 	var resp dingtalk.RobotSend
 	if secret != "" {
-		resp, err = client.RobotSendSignURL(
+		resp, err = s.dingTalkClient.RobotSendSignURL(
 			ctx,
 			url,
 			secret,
 			params,
 		)
 	} else {
-		resp, err = client.RobotSendURL(
+		resp, err = s.dingTalkClient.RobotSendURL(
 			ctx,
 			url,
 			params,
@@ -290,8 +304,6 @@ func (s *Send) Dingtalk(ctx context.Context, url string, secret string, title st
 // https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot
 func (s *Send) Feishu(ctx context.Context, url string, secret string, title string, content string) (response json.RawMessage, err error) {
 
-	client := global.GvaFeishu
-
 	// 参数
 	params := gorequest.NewParams()
 	params.Set("msg_type", "post")
@@ -306,14 +318,14 @@ func (s *Send) Feishu(ctx context.Context, url string, secret string, title stri
 	// 请求
 	var resp feishu.WebhookSend
 	if secret != "" {
-		resp, err = client.WebhookSendSignURL(
+		resp, err = s.feishuClient.WebhookSendSignURL(
 			ctx,
 			url,
 			secret,
 			params,
 		)
 	} else {
-		resp, err = client.WebhookSendURL(
+		resp, err = s.feishuClient.WebhookSendURL(
 			ctx,
 			url,
 			params,
@@ -331,13 +343,11 @@ func (s *Send) Feishu(ctx context.Context, url string, secret string, title stri
 // - 第二个
 func (s *Send) Bark(ctx context.Context, url string, key string, title string, content any) (response json.RawMessage, err error) {
 
-	client := global.GvaBark
-
 	if url != "" {
-		client.SetUrl(url)
+		s.barkClient.SetUrl(url)
 	}
 	if key != "" {
-		client.SetPushKey(key)
+		s.barkClient.SetPushKey(key)
 	}
 
 	// 参数
@@ -348,7 +358,7 @@ func (s *Send) Bark(ctx context.Context, url string, key string, title string, c
 	params.Set("isArchive", 1)
 
 	// 请求
-	resp, err := client.Push(ctx, params)
+	resp, err := s.barkClient.Push(ctx, params)
 	if err != nil {
 		return nil, err
 	}
@@ -361,13 +371,11 @@ func (s *Send) Bark(ctx context.Context, url string, key string, title string, c
 // - 第二个
 func (s *Send) Ft07(ctx context.Context, url string, key string, title string, content any) (response json.RawMessage, err error) {
 
-	client := global.GvaFt07
-
 	if url != "" {
-		client.SetUrl(url)
+		s.ft07Client.SetUrl(url)
 	}
 	if key != "" {
-		client.SetSendKey(key)
+		s.ft07Client.SetSendKey(key)
 	}
 
 	// 参数
@@ -377,7 +385,7 @@ func (s *Send) Ft07(ctx context.Context, url string, key string, title string, c
 	params.Set("tags", "ip_vibe")
 
 	// 请求
-	resp, err := client.Push(ctx, params)
+	resp, err := s.ft07Client.Push(ctx, params)
 	if err != nil {
 		return nil, err
 	}
@@ -389,13 +397,11 @@ func (s *Send) Ft07(ctx context.Context, url string, key string, title string, c
 // https://www.pushdeer.com/dev.html
 func (s *Send) PushDeer(ctx context.Context, url string, key string, title string, content any) (response json.RawMessage, err error) {
 
-	client := global.GvaPushDeer
-
 	if url != "" {
-		client.SetUrl(url)
+		s.pushDeerClient.SetUrl(url)
 	}
 	if key != "" {
-		client.SetPushKey(key)
+		s.pushDeerClient.SetPushKey(key)
 	}
 
 	// 参数
@@ -404,7 +410,7 @@ func (s *Send) PushDeer(ctx context.Context, url string, key string, title strin
 	params.Set("type", "markdown")
 
 	// 请求
-	resp, err := client.MessagePush(ctx, title, params)
+	resp, err := s.pushDeerClient.MessagePush(ctx, title, params)
 	if err != nil {
 		return nil, err
 	}

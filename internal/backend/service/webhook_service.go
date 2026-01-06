@@ -7,6 +7,8 @@ import (
 	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/webhook"
+	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/global"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
@@ -28,14 +30,17 @@ type WebhookService interface {
 // WebhookServiceImpl 通知服务实现
 type WebhookServiceImpl struct {
 	db             *ent.Client          // 数据库客户端
+	dbLog          *ent_log.Client      // 日志数据库客户端
 	webhookService *webhookService.Send // Webhook服务
 	debug          bool                 // 调试模式
 }
 
 // NewWebhookService 创建通知服务实例
-func NewWebhookService(db *ent.Client, webhookService *webhookService.Send, debug bool) WebhookService {
+func NewWebhookService(db *ent.Client, dbLog *ent_log.Client, debug bool) WebhookService {
+	webhookService := webhookService.NewSend(db, global.GvaEntLogDb)
 	return &WebhookServiceImpl{
 		db:             db,
+		dbLog:          dbLog,
 		webhookService: webhookService,
 		debug:          debug,
 	}

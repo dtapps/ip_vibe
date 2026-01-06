@@ -3,7 +3,6 @@ package handlers
 import (
 	"net/http"
 	"vibe_ip/internal/backend/service"
-	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -35,7 +34,7 @@ func GetWebhooks(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 	)
 
@@ -72,7 +71,7 @@ func GetWebhookDetail(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 	)
 
@@ -108,7 +107,7 @@ func CreateWebhook(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 	)
 
@@ -146,7 +145,7 @@ func UpdateWebhook(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 	)
 
@@ -184,7 +183,7 @@ func UpdateWebhookActive(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 	)
 
@@ -221,7 +220,7 @@ func DeleteWebhook(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 	)
 
@@ -258,7 +257,7 @@ func TestWebhook(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEntLogDb,
 		global.GvaEnv.DEBUG,
 	)
 
