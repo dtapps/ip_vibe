@@ -32,12 +32,18 @@ func getLumberjack(prefix string, name string) *lumberjack.Logger {
 	}
 }
 
+// getLevel 获取日志级别
+func getLevel() slog.Level {
+	if global.GvaEnv.DEBUG {
+		return slog.LevelDebug
+	} else {
+		return slog.LevelInfo
+	}
+}
+
 // InitSLog 初始化 日志
 func InitSLog(name string) {
-	level := slog.LevelInfo
-	if global.GvaEnv.DEBUG {
-		level = slog.LevelDebug
-	}
+	level := getLevel()
 	global.GvaSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack("slog", name)),
 		golog.WithSLogSetLevel(level),
@@ -48,108 +54,76 @@ func InitSLog(name string) {
 
 // InitEntSLog 初始化 ent 日志
 func InitEntSLog(name string) {
-	level := slog.LevelInfo
-	if global.GvaEnv.DEBUG {
-		level = slog.LevelDebug
-	}
 	prefix := "ent"
 	global.GvaEntSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
-		golog.WithSLogSetLevel(level),
+		golog.WithSLogSetLevel(getLevel()),
 	)
 	global.GvaEntLogSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix+"_log", name)),
-		golog.WithSLogSetLevel(level),
+		golog.WithSLogSetLevel(getLevel()),
 	)
 }
 
 // InitGinSLog 初始化 gin 日志
 func InitGinSLog(name string) {
-	level := slog.LevelInfo
-	if global.GvaEnv.DEBUG {
-		level = slog.LevelDebug
-	}
 	prefix := "gin"
 	global.GvaGinSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
-		golog.WithSLogSetLevel(level),
+		golog.WithSLogSetLevel(getLevel()),
 	)
 }
 
 // InitGrpcSLog 初始化 gRPC 日志
 func InitGrpcSLog(name string) {
-	level := slog.LevelInfo
-	if global.GvaEnv.DEBUG {
-		level = slog.LevelDebug
-	}
 	prefix := "grpc"
 	global.GvaGrpcSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
-		golog.WithSLogSetLevel(level),
+		golog.WithSLogSetLevel(getLevel()),
 	)
 }
 
 // InitThriftSLog 初始化 Thrift 日志
 func InitThriftSLog(name string) {
-	level := slog.LevelInfo
-	if global.GvaEnv.DEBUG {
-		level = slog.LevelDebug
-	}
 	prefix := "thrift"
 	global.GvaThriftSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
-		golog.WithSLogSetLevel(level),
+		golog.WithSLogSetLevel(getLevel()),
 	)
 }
 
 // InitGocronSLog 初始化 gocron 日志
 func InitGocronSLog(name string) {
-	level := slog.LevelInfo
-	if global.GvaEnv.DEBUG {
-		level = slog.LevelDebug
-	}
 	prefix := "gocron"
 	global.GvaGocronSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
-		golog.WithSLogSetLevel(level),
+		golog.WithSLogSetLevel(getLevel()),
 	)
 }
 
 // InitMcpSLog 初始化 mcp 日志
 func InitMcpSLog(name string) {
-	level := slog.LevelInfo
-	if global.GvaEnv.DEBUG {
-		level = slog.LevelDebug
-	}
 	prefix := "mcp"
 	global.GvaMcpSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
-		golog.WithSLogSetLevel(level),
+		golog.WithSLogSetLevel(getLevel()),
 	)
 }
 
 // InitRestySLog 初始化 resty 日志
 func InitRestySLog(name string) {
-	level := slog.LevelInfo
-	if global.GvaEnv.DEBUG {
-		level = slog.LevelDebug
-	}
 	prefix := "resty"
 	global.GvaRestySLog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
-		golog.WithSLogSetLevel(level),
+		golog.WithSLogSetLevel(getLevel()),
 	)
 }
 
 // InitHttpSLog 初始化 http 日志
 func InitHttpSLog(name string) {
-	level := slog.LevelInfo
-	if global.GvaEnv.DEBUG {
-		level = slog.LevelDebug
-	}
 	prefix := "http"
 	global.GvaHttpSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
-		golog.WithSLogSetLevel(level),
+		golog.WithSLogSetLevel(getLevel()),
 	)
 }
