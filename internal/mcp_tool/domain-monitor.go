@@ -55,7 +55,7 @@ func getDomainMonitorList(ctx context.Context, req *mcp.CallToolRequest, params 
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -78,7 +78,7 @@ func getDomainMonitorDetail(ctx context.Context, req *mcp.CallToolRequest, param
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -101,7 +101,7 @@ func createDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -124,7 +124,7 @@ func updateDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -147,7 +147,7 @@ func updateDomainMonitorActive(ctx context.Context, req *mcp.CallToolRequest, pa
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -170,7 +170,7 @@ func deleteDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -193,7 +193,7 @@ func checkDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *t
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,

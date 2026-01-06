@@ -32,7 +32,6 @@ func IPGroup(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 查询全部IP组

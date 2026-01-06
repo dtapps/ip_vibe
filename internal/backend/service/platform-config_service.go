@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/platformconfig"
-	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
 )
 
@@ -22,14 +21,16 @@ type PlatformConfigService interface {
 
 // PlatformConfigServiceImpl 配置服务实现
 type PlatformConfigServiceImpl struct {
-	db        *ent.Client // 数据库客户端
-	debug     bool
-	logHelper *operation_logs_helper.OperationLogHelper
+	db    *ent.Client // 数据库客户端
+	debug bool        // 调试模式
 }
 
 // NewPlatformConfigService 创建配置服务实例
-func NewPlatformConfigService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper) PlatformConfigService {
-	return &PlatformConfigServiceImpl{db: db, debug: debug, logHelper: logHelper}
+func NewPlatformConfigService(db *ent.Client, debug bool) PlatformConfigService {
+	return &PlatformConfigServiceImpl{
+		db:    db,
+		debug: debug,
+	}
 }
 
 // BuildResponse 将实体转换为响应
@@ -112,9 +113,6 @@ func (s *PlatformConfigServiceImpl) CreateConfig(ctx context.Context, request *t
 		return nil, fmt.Errorf("创建配置失败: %w", err)
 	}
 
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataCreate(ctx, saveConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "创建配置")
-
 	return &types.GetPlatformConfigRequest{
 		ID: saveConfig.ID,
 	}, nil
@@ -147,9 +145,6 @@ func (s *PlatformConfigServiceImpl) UpdateConfig(ctx context.Context, request *t
 		return nil, fmt.Errorf("更新配置失败: %w", err)
 	}
 
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataUpdate(ctx, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "更新配置")
-
 	return &types.GetPlatformConfigRequest{
 		ID: saveConfig.ID,
 	}, nil
@@ -176,9 +171,6 @@ func (s *PlatformConfigServiceImpl) DeleteConfig(ctx context.Context, id int64) 
 		}
 		return nil, fmt.Errorf("删除配置失败: %w", err)
 	}
-
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataDelete(ctx, firstConfig.ID, operationlog.ObjTypePlatformConfig, operationlog.StatusSuccess, "删除配置")
 
 	return &types.GetPlatformConfigRequest{
 		ID: firstConfig.ID,

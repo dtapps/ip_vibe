@@ -32,7 +32,6 @@ func getPlatformConfigList(ctx context.Context, req *mcp.ReadResourceRequest) (*
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -59,7 +58,6 @@ func getPlatformConfigDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用

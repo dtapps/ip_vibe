@@ -9,7 +9,6 @@ import (
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
-	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
@@ -32,24 +31,22 @@ type DomainMonitorService interface {
 
 // DomainMonitorServiceImpl 域名监控服务实现
 type DomainMonitorServiceImpl struct {
-	db            *ent.Client                               // 数据库客户端
-	dbLog         *ent_log.Client                           // 日志数据库客户端
-	logHelper     *operation_logs_helper.OperationLogHelper // 操作日志助手
-	cron          gocron.Scheduler                          // 定时任务调度器
-	logger        *slog.Logger                              // 日志记录器
-	httpTransport *http_log.LoggingTransport                // HTTP日志记录器
-	debug         bool                                      // 调试模式
+	db            *ent.Client                // 数据库客户端
+	dbLog         *ent_log.Client            // 日志数据库客户端
+	cron          gocron.Scheduler           // 定时任务调度器
+	logger        *slog.Logger               // 日志记录器
+	httpTransport *http_log.LoggingTransport // HTTP日志记录器
+	debug         bool                       // 调试模式
 }
 
 // NewDomainMonitorService 创建域名监控服务实例
-func NewDomainMonitorService(db *ent.Client, dbLog *ent_log.Client, logHelper *operation_logs_helper.OperationLogHelper, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) DomainMonitorService {
+func NewDomainMonitorService(db *ent.Client, dbLog *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) DomainMonitorService {
 	return &DomainMonitorServiceImpl{
-		db:        db,
-		dbLog:     dbLog,
-		logHelper: logHelper,
-		cron:      cron,
-		logger:    logger,
-		debug:     debug,
+		db:     db,
+		dbLog:  dbLog,
+		cron:   cron,
+		logger: logger,
+		debug:  debug,
 	}
 }
 
@@ -139,8 +136,6 @@ func (s *DomainMonitorServiceImpl) CreateDomainMonitor(ctx context.Context, requ
 		}
 		return nil, fmt.Errorf("创建域名监控失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataCreate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "创建域名监控")
 
 	// 创建通知订阅
 	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
@@ -179,8 +174,6 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitor(ctx context.Context, requ
 		}
 		return nil, fmt.Errorf("更新域名监控失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataUpdate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控")
 
 	// 更新通知订阅
 	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
@@ -217,8 +210,6 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitorActive(ctx context.Context
 		}
 		return nil, fmt.Errorf("更新域名监控启用状态失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataUpdate(ctx, saveDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "更新域名监控启用状态")
 
 	return &types.GetDomainMonitorRequest{
 		ID: saveDomainMonitor.ID,
@@ -245,8 +236,6 @@ func (s *DomainMonitorServiceImpl) DeleteDomainMonitor(ctx context.Context, id i
 		}
 		return nil, fmt.Errorf("删除域名监控失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataDelete(ctx, firstDomainMonitor.ID, operationlog.ObjTypeDomainMonitor, operationlog.StatusSuccess, "删除域名监控")
 
 	// 删除通知订阅
 	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDomainMonitor, firstDomainMonitor.ID)

@@ -26,7 +26,7 @@ func GetTasks(c *gin.Context) {
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -67,7 +67,7 @@ func GetTaskDetail(c *gin.Context) {
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -108,7 +108,7 @@ func RunTask(c *gin.Context) {
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -149,7 +149,7 @@ func DeleteTask(c *gin.Context) {
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -181,7 +181,7 @@ func CleanAllTask(c *gin.Context) {
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -213,7 +213,7 @@ func StartScheduler(c *gin.Context) {
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -245,7 +245,7 @@ func StopScheduler(c *gin.Context) {
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,

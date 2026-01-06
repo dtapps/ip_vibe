@@ -38,7 +38,7 @@ func DeviceReportDeviceIp(c *gin.Context) {
 	service := service.NewDeviceOpenService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
 		global.GvaEnv.DEBUG,
 	)
@@ -77,7 +77,7 @@ func DevicePortForwards(c *gin.Context) {
 	service := service.NewDeviceOpenService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
 		global.GvaEnv.DEBUG,
 	)
@@ -118,7 +118,7 @@ func CreatePortForwardStats(c *gin.Context) {
 	service := service.NewDeviceOpenService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
 		global.GvaEnv.DEBUG,
 	)

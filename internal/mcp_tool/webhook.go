@@ -50,9 +50,8 @@ func getWebhookList(ctx context.Context, req *mcp.CallToolRequest, params *types
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -70,9 +69,8 @@ func getWebhookDetail(ctx context.Context, req *mcp.CallToolRequest, params *typ
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -90,9 +88,8 @@ func createWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -110,9 +107,8 @@ func updateWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -130,9 +126,8 @@ func updateWebhookActive(ctx context.Context, req *mcp.CallToolRequest, params *
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -150,9 +145,8 @@ func deleteWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用

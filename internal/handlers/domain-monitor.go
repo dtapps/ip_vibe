@@ -37,7 +37,7 @@ func DomainMonitor(c *gin.Context) {
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,

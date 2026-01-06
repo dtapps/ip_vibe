@@ -8,7 +8,6 @@ import (
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/portforwardstats"
-	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/spf13/cast"
@@ -31,19 +30,17 @@ type PortForwardService interface {
 
 // PortForwardServiceImpl 端口转发服务实现
 type PortForwardServiceImpl struct {
-	db        *ent.Client                               // 数据库客户端
-	dbLog     *ent_log.Client                           // 日志数据库客户端
-	logHelper *operation_logs_helper.OperationLogHelper // 操作日志助手
-	debug     bool                                      // 调试模式
+	db    *ent.Client     // 数据库客户端
+	dbLog *ent_log.Client // 日志数据库客户端
+	debug bool            // 调试模式
 }
 
 // NewPortForwardService 创建端口转发服务实例
-func NewPortForwardService(db *ent.Client, dbLog *ent_log.Client, logHelper *operation_logs_helper.OperationLogHelper, debug bool) PortForwardService {
+func NewPortForwardService(db *ent.Client, dbLog *ent_log.Client, debug bool) PortForwardService {
 	return &PortForwardServiceImpl{
-		db:        db,
-		dbLog:     dbLog,
-		logHelper: logHelper,
-		debug:     debug,
+		db:    db,
+		dbLog: dbLog,
+		debug: debug,
 	}
 }
 
@@ -133,8 +130,6 @@ func (s *PortForwardServiceImpl) CreatePortForward(ctx context.Context, request 
 		}
 		return nil, fmt.Errorf("创建端口转发失败: %w", err)
 	}
-	// 记录操作日志 (使用全局 GvaOperationLogHelper)
-	// _ = s.logHelper.RecordDataCreate(ctx, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "创建端口转发")
 	return &types.GetPortForwardRequest{
 		ID: savePortForward.ID,
 	}, nil
@@ -168,8 +163,6 @@ func (s *PortForwardServiceImpl) UpdatePortForward(ctx context.Context, request 
 		}
 		return nil, fmt.Errorf("更新端口转发失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataUpdate(ctx, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发")
 	return &types.GetPortForwardRequest{
 		ID: savePortForward.ID,
 	}, nil
@@ -197,8 +190,6 @@ func (s *PortForwardServiceImpl) UpdatePortForwardForward(ctx context.Context, r
 		}
 		return nil, fmt.Errorf("更新端口转发防火墙状态失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataUpdate(ctx, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发防火墙状态")
 	return &types.GetPortForwardRequest{
 		ID: savePortForward.ID,
 	}, nil
@@ -226,8 +217,6 @@ func (s *PortForwardServiceImpl) UpdatePortForwardActive(ctx context.Context, re
 		}
 		return nil, fmt.Errorf("更新端口转发启用状态失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataUpdate(ctx, savePortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "更新端口转发启用状态")
 	return &types.GetPortForwardRequest{
 		ID: savePortForward.ID,
 	}, nil
@@ -253,8 +242,6 @@ func (s *PortForwardServiceImpl) DeletePortForward(ctx context.Context, id int64
 		}
 		return nil, fmt.Errorf("删除端口转发失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataDelete(ctx, firstPortForward.ID, operationlog.ObjTypeDevicePortForward, operationlog.StatusSuccess, "删除端口转发")
 	return &types.GetPortForwardRequest{
 		ID: firstPortForward.ID,
 	}, nil

@@ -45,7 +45,6 @@ func getPlatformConfigList(ctx context.Context, req *mcp.CallToolRequest, params
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -64,7 +63,6 @@ func getPlatformConfigDetail(ctx context.Context, req *mcp.CallToolRequest, para
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -83,7 +81,6 @@ func createPlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -102,7 +99,6 @@ func updatePlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -121,7 +117,6 @@ func deletePlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用

@@ -35,9 +35,8 @@ func GetWebhooks(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -73,9 +72,8 @@ func GetWebhookDetail(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -110,9 +108,8 @@ func CreateWebhook(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -149,9 +146,8 @@ func UpdateWebhook(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -188,9 +184,8 @@ func UpdateWebhookActive(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -226,9 +221,8 @@ func DeleteWebhook(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -264,9 +258,8 @@ func TestWebhook(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
+		global.GvaEnv.DEBUG,
 	)
 
 	// 调用

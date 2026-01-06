@@ -32,7 +32,6 @@ func Cdn(c *gin.Context) {
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 查询全部CDN记录

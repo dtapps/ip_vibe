@@ -54,7 +54,6 @@ func getIPGroupList(ctx context.Context, req *mcp.CallToolRequest, params *types
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -73,7 +72,6 @@ func getIPGroupDetail(ctx context.Context, req *mcp.CallToolRequest, params *typ
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -92,7 +90,6 @@ func createIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -111,7 +108,6 @@ func updateIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -130,7 +126,6 @@ func deleteIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -149,7 +144,6 @@ func getIPGroupDevices(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -168,7 +162,6 @@ func healthCheckIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *t
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用

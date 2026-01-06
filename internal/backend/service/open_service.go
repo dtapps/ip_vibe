@@ -10,8 +10,6 @@ import (
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
-	"vibe_ip/internal/ent_log/operationlog"
-	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
@@ -30,19 +28,17 @@ type DeviceOpenService interface {
 
 // DeviceOpenServiceImpl 设备服务实现
 type DeviceOpenServiceImpl struct {
-	db             *ent.Client                               // 数据库客户端
-	dbLog          *ent_log.Client                           // 日志数据库客户端
-	logHelper      *operation_logs_helper.OperationLogHelper // 操作日志助手
-	webhookService *webhook.Send                             // Webhook服务
-	debug          bool                                      // 调试模式
+	db             *ent.Client     // 数据库客户端
+	dbLog          *ent_log.Client // 日志数据库客户端
+	webhookService *webhook.Send   // Webhook服务
+	debug          bool            // 调试模式
 }
 
 // NewDeviceOpenService 创建设备服务实例
-func NewDeviceOpenService(db *ent.Client, dbLog *ent_log.Client, logHelper *operation_logs_helper.OperationLogHelper, webhookService *webhook.Send, debug bool) DeviceOpenService {
+func NewDeviceOpenService(db *ent.Client, dbLog *ent_log.Client, webhookService *webhook.Send, debug bool) DeviceOpenService {
 	return &DeviceOpenServiceImpl{
 		db:             db,
 		dbLog:          dbLog,
-		logHelper:      logHelper,
 		webhookService: webhookService,
 		debug:          debug,
 	}
@@ -58,8 +54,6 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 	// 异步处理所需数据
 	isNotify := false
 	var deviceID int64
-	var isNewDevice bool
-	var isIPChanged bool
 
 	// 通知模板数据 (保持原始结构)
 	notifyData := utils.TemplateData{
@@ -97,7 +91,6 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 		}
 
 		// 如果设备不存在：创建设备 (保持原始逻辑)
-		isNewDevice = true
 		if request.DeviceName == "" {
 			request.DeviceName = request.DeviceCode
 		}
@@ -120,7 +113,6 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 
 		deviceID = saveDevice.ID
 		isNotify = true
-		isIPChanged = true
 		msg = "创建设备IP成功"
 
 	} else {
@@ -130,7 +122,6 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 
 		if firstDevice.IPV4 != request.IPV4Addr || firstDevice.IPV6 != request.IPV6Addr {
 			// IP 发生变化
-			isIPChanged = true
 			isNotify = true
 
 			// 更新设备IP和心跳时间
@@ -185,30 +176,19 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 
 	// --- 异步处理非核心写入和通知 ---
 	// 使用独立的 Go Routine 和 Background Context，不阻塞 HTTP 响应
-	// 注入 Service 自身的依赖 (s.db, s.logHelper, s.webhookService)
 	go func(asyncCtx context.Context, s *DeviceOpenServiceImpl) {
-
-		// 记录 Device 相关的操作日志 (保持原始逻辑)
-		if isNewDevice {
-			_ = s.logHelper.RecordDataCreate(asyncCtx, deviceID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "接口创建设备")
-		} else if isIPChanged {
-			_ = s.logHelper.RecordDataUpdate(asyncCtx, deviceID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "接口更新设备")
-		}
 
 		// 记录 IP 报告并发送通知 (保持原始逻辑)
 		if isNotify {
 			// 创建设备IP报告
-			saveDeviceIPReport, err := s.dbLog.DeviceIpReport.Create().
+			err := s.dbLog.DeviceIpReport.Create().
 				SetDeviceID(deviceID).
 				SetIPV4(request.IPV4Addr).
 				SetIPV6(request.IPV6Addr).
-				Save(asyncCtx)
+				Exec(asyncCtx)
 			if err != nil {
 				// 异步写入失败，仅打印日志
 				fmt.Printf("[异步写入失败] 创建设备IP报告: %s\n", err.Error())
-			} else {
-				// 记录设备IP报告的操作日志
-				_ = s.logHelper.RecordDataCreate(asyncCtx, saveDeviceIPReport.ID, operationlog.ObjTypeDeviceIPReport, operationlog.StatusSuccess, "接口创建设备IP报告")
 			}
 
 			// 发送通知 (使用注入的 webhookService)

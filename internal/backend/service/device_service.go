@@ -10,7 +10,6 @@ import (
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/deviceipreport"
 	"vibe_ip/internal/ent_log/portforwardstats"
-	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
@@ -32,19 +31,17 @@ type DeviceService interface {
 
 // DeviceServiceImpl 设备服务实现
 type DeviceServiceImpl struct {
-	db        *ent.Client                               // 数据库客户端
-	dbLog     *ent_log.Client                           // 日志数据库客户端
-	logHelper *operation_logs_helper.OperationLogHelper // 操作日志助手
-	debug     bool                                      // 调试模式
+	db    *ent.Client     // 数据库客户端
+	dbLog *ent_log.Client // 日志数据库客户端
+	debug bool            // 调试模式
 }
 
 // NewDeviceService 创建设备服务实例
-func NewDeviceService(db *ent.Client, dbLog *ent_log.Client, logHelper *operation_logs_helper.OperationLogHelper, debug bool) DeviceService {
+func NewDeviceService(db *ent.Client, dbLog *ent_log.Client, debug bool) DeviceService {
 	return &DeviceServiceImpl{
-		db:        db,
-		dbLog:     dbLog,
-		logHelper: logHelper,
-		debug:     debug,
+		db:    db,
+		dbLog: dbLog,
+		debug: debug,
 	}
 }
 
@@ -131,8 +128,6 @@ func (s *DeviceServiceImpl) CreateDevice(ctx context.Context, request *types.Cre
 		}
 		return nil, fmt.Errorf("创建设备失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataCreate(ctx, saveDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "创建设备")
 
 	// 创建通知订阅 (保持原始逻辑)
 	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
@@ -172,8 +167,6 @@ func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.Upd
 		}
 		return nil, fmt.Errorf("更新设备失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataUpdate(ctx, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "更新设备")
 
 	// 更新通知订阅 (保持原始逻辑)
 	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
@@ -209,8 +202,6 @@ func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) (*types.
 		}
 		return nil, fmt.Errorf("删除设备失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataDelete(ctx, firstDevice.ID, operationlog.ObjTypeDevice, operationlog.StatusSuccess, "删除设备")
 
 	// 删除通知订阅 (保持原始逻辑)
 	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDevice, firstDevice.ID)

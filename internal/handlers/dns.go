@@ -32,7 +32,6 @@ func Dns(c *gin.Context) {
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 查询全部DNS记录

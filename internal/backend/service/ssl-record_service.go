@@ -9,7 +9,6 @@ import (
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
-	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/helper/ssl_helper"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
@@ -34,19 +33,17 @@ type SSLRecordService interface {
 
 // SSLRecordServiceImpl SSL 记录服务实现
 type SSLRecordServiceImpl struct {
-	db            *ent.Client                               // 数据库客户端
-	dbLog         *ent_log.Client                           // 日志数据库客户端
-	logHelper     *operation_logs_helper.OperationLogHelper // 操作日志助手
-	sslUpdateTask *task.SSLUpdateTask                       // SSL刷新任务
-	debug         bool                                      // 调试模式
+	db            *ent.Client         // 数据库客户端
+	dbLog         *ent_log.Client     // 日志数据库客户端
+	sslUpdateTask *task.SSLUpdateTask // SSL刷新任务
+	debug         bool                // 调试模式
 }
 
 // NewSSLRecordService 创建 SSL 记录服务实例
-func NewSSLRecordService(db *ent.Client, dbLog *ent_log.Client, logHelper *operation_logs_helper.OperationLogHelper, sslUpdateTask *task.SSLUpdateTask, debug bool) SSLRecordService {
+func NewSSLRecordService(db *ent.Client, dbLog *ent_log.Client, sslUpdateTask *task.SSLUpdateTask, debug bool) SSLRecordService {
 	return &SSLRecordServiceImpl{
 		db:            db,
 		dbLog:         dbLog,
-		logHelper:     logHelper,
 		sslUpdateTask: sslUpdateTask,
 		debug:         debug,
 	}
@@ -155,9 +152,6 @@ func (s *SSLRecordServiceImpl) CreateSSLRecord(ctx context.Context, request *typ
 		return nil, fmt.Errorf("创建SSL记录失败: %w", err)
 	}
 
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataCreate(ctx, saveSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "创建SSL记录")
-
 	// 创建通知订阅
 	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeSslRecord, saveSSLRecord.ID)
 	if err != nil {
@@ -196,9 +190,6 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecord(ctx context.Context, request *typ
 		return nil, fmt.Errorf("更新CDN记录失败: %w", err)
 	}
 
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataUpdate(ctx, firstSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "更新SSL记录")
-
 	// 更新通知订阅
 	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeSslRecord, saveSSLRecord.ID)
 	if err != nil {
@@ -236,9 +227,6 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecordAutoRenewal(ctx context.Context, r
 		return nil, fmt.Errorf("更新SSL记录状态失败: %w", err)
 	}
 
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataUpdate(ctx, saveSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "更新SSL记录状态")
-
 	return &types.GetSSLRecordRequest{
 		ID: saveSSLRecord.ID,
 	}, nil
@@ -268,9 +256,6 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecordActive(ctx context.Context, reques
 		return nil, fmt.Errorf("更新SSL记录状态失败: %w", err)
 	}
 
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataUpdate(ctx, saveSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "更新SSL记录状态")
-
 	return &types.GetSSLRecordRequest{
 		ID: saveSSLRecord.ID,
 	}, nil
@@ -294,9 +279,6 @@ func (s *SSLRecordServiceImpl) DeleteSSLRecord(ctx context.Context, id int64) (*
 	if err != nil {
 		return nil, fmt.Errorf("删除SSL记录失败: %w", err)
 	}
-
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataDelete(ctx, firstSSLRecord.ID, operationlog.ObjTypeSslRecord, operationlog.StatusSuccess, "删除SSL记录")
 
 	// 删除通知订阅
 	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeSslRecord, firstSSLRecord.ID)

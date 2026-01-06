@@ -24,7 +24,6 @@ func NewOpenServer() *OpenServer {
 	deviceService := service.NewDeviceOpenService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
 		webhookService.NewSend(global.GvaEntDb, global.GvaEntLogDb),
 		global.GvaEnv.DEBUG,
 	)

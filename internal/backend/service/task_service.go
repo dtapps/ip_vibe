@@ -8,7 +8,6 @@ import (
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/helper/gocron_helper"
-	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/types"
 
@@ -29,21 +28,19 @@ type TaskService interface {
 
 // TaskServiceImpl 任务调度服务实现
 type TaskServiceImpl struct {
-	db            *ent.Client                               // 数据库客户端
-	dbLog         *ent_log.Client                           // 日志数据库客户端
-	logHelper     *operation_logs_helper.OperationLogHelper // 操作日志助手
-	cron          gocron.Scheduler                          // 定时任务调度器
-	logger        *slog.Logger                              // 日志记录器
-	httpTransport *http_log.LoggingTransport                // HTTP日志记录器
-	debug         bool                                      // 调试模式
+	db            *ent.Client                // 数据库客户端
+	dbLog         *ent_log.Client            // 日志数据库客户端
+	cron          gocron.Scheduler           // 定时任务调度器
+	logger        *slog.Logger               // 日志记录器
+	httpTransport *http_log.LoggingTransport // HTTP日志记录器
+	debug         bool                       // 调试模式
 }
 
 // NewTaskService 创建任务调度服务实例
-func NewTaskService(db *ent.Client, dbLog *ent_log.Client, logHelper *operation_logs_helper.OperationLogHelper, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) TaskService {
+func NewTaskService(db *ent.Client, dbLog *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) TaskService {
 	return &TaskServiceImpl{
 		db:            db,
 		dbLog:         dbLog,
-		logHelper:     logHelper,
 		cron:          cron,
 		logger:        logger,
 		httpTransport: httpTransport,

@@ -35,7 +35,6 @@ func GetWebhookSubs(c *gin.Context) {
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -73,7 +72,6 @@ func UpdateWebhookSubActive(c *gin.Context) {
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -110,7 +108,6 @@ func DeleteWebhookSub(c *gin.Context) {
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用

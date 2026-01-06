@@ -45,7 +45,7 @@ func GetSSLRecords(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		sslUpdateTask,
 		global.GvaEnv.DEBUG,
 	)
@@ -93,7 +93,7 @@ func GetSSLRecordDetail(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		sslUpdateTask,
 		global.GvaEnv.DEBUG,
 	)
@@ -140,7 +140,7 @@ func CreateSSLRecord(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		sslUpdateTask,
 		global.GvaEnv.DEBUG,
 	)
@@ -189,7 +189,7 @@ func UpdateSSLRecord(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		sslUpdateTask,
 		global.GvaEnv.DEBUG,
 	)
@@ -238,7 +238,7 @@ func UpdateSSLRecordAutoRenewal(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		sslUpdateTask,
 		global.GvaEnv.DEBUG,
 	)
@@ -287,7 +287,7 @@ func UpdateSSLRecordActive(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		sslUpdateTask,
 		global.GvaEnv.DEBUG,
 	)
@@ -335,7 +335,7 @@ func DeleteSSLRecord(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		sslUpdateTask,
 		global.GvaEnv.DEBUG,
 	)
@@ -383,7 +383,7 @@ func ApplySSLRecord(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		sslUpdateTask,
 		global.GvaEnv.DEBUG,
 	)
@@ -433,7 +433,7 @@ func GetSSLRecordHistoryDetail(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		sslUpdateTask,
 		global.GvaEnv.DEBUG,
 	)

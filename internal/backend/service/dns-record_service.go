@@ -7,7 +7,6 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent/webhooksubscription"
-	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
@@ -29,14 +28,16 @@ type DNSRecordService interface {
 
 // DNSRecordServiceImpl DNS 记录服务实现
 type DNSRecordServiceImpl struct {
-	db        *ent.Client // 数据库客户端
-	debug     bool
-	logHelper *operation_logs_helper.OperationLogHelper
+	db    *ent.Client // 数据库客户端
+	debug bool        // 调试模式
 }
 
 // NewDNSRecordService 创建 DNS 记录服务实例
-func NewDNSRecordService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper) DNSRecordService {
-	return &DNSRecordServiceImpl{db: db, debug: debug, logHelper: logHelper}
+func NewDNSRecordService(db *ent.Client, debug bool) DNSRecordService {
+	return &DNSRecordServiceImpl{
+		db:    db,
+		debug: debug,
+	}
 }
 
 // BuildResponse 将实体转换为响应
@@ -159,8 +160,6 @@ func (s *DNSRecordServiceImpl) CreateDnsRecord(ctx context.Context, request *typ
 		}
 		return nil, fmt.Errorf("创建DNS记录失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataCreate(ctx, saveDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "创建DNS记录")
 
 	// 创建通知订阅
 	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDNSRecord, saveDnsRecord.ID)
@@ -207,8 +206,6 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *typ
 		}
 		return nil, fmt.Errorf("更新DNS记录失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataUpdate(ctx, saveDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "更新DNS记录")
 
 	// 更新通知订阅
 	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDNSRecord, saveDnsRecord.ID)
@@ -245,8 +242,6 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecordActive(ctx context.Context, reques
 		}
 		return nil, fmt.Errorf("更新DNS记录状态失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataUpdate(ctx, firstDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "更新DNS记录状态")
 
 	return &types.GetDnsRecordRequest{
 		ID: saveRecord.ID,
@@ -270,8 +265,6 @@ func (s *DNSRecordServiceImpl) DeleteDnsRecord(ctx context.Context, id int64) (*
 	if err != nil {
 		return nil, fmt.Errorf("删除DNS记录失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataDelete(ctx, firstDnsRecord.ID, operationlog.ObjTypeDNSRecord, operationlog.StatusSuccess, "删除DNS记录")
 
 	// 删除通知订阅
 	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDNSRecord, firstDnsRecord.ID)

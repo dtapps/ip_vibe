@@ -52,7 +52,7 @@ func getTaskList(ctx context.Context, req *mcp.CallToolRequest, params *types.Ge
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -75,7 +75,7 @@ func getTaskDetail(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -98,7 +98,7 @@ func runTask(ctx context.Context, req *mcp.CallToolRequest, params *types.RunTas
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -121,7 +121,7 @@ func deleteTask(ctx context.Context, req *mcp.CallToolRequest, params *types.Del
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -144,7 +144,7 @@ func cleanAllTask(ctx context.Context, req *mcp.CallToolRequest, params *any) (*
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -167,7 +167,7 @@ func startScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) 
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -190,7 +190,7 @@ func stopScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) (
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,

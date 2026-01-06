@@ -35,7 +35,6 @@ func GetCdnRecords(c *gin.Context) {
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -72,7 +71,6 @@ func GetCdnRecordDetail(c *gin.Context) {
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -108,7 +106,6 @@ func CreateCdnRecord(c *gin.Context) {
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -146,7 +143,6 @@ func UpdateCdnRecord(c *gin.Context) {
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -184,7 +180,6 @@ func UpdateCdnRecordActive(c *gin.Context) {
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -221,7 +216,6 @@ func DeleteCdnRecord(c *gin.Context) {
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -258,7 +252,6 @@ func HealthCheckCdnRecord(c *gin.Context) {
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用

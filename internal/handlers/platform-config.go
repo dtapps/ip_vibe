@@ -32,7 +32,6 @@ func PlatformConfig(c *gin.Context) {
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 查询全部配置

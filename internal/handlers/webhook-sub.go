@@ -32,7 +32,6 @@ func WebhookSub(c *gin.Context) {
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 查询全部通知订阅

@@ -32,7 +32,7 @@ func getPortForwardList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 
@@ -60,7 +60,7 @@ func getPortForwardDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *m
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 

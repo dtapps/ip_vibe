@@ -38,7 +38,7 @@ func getDeviceList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.Read
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 
@@ -66,7 +66,7 @@ func getDeviceDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.Re
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 
@@ -94,7 +94,7 @@ func getDeviceIpHistory(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 

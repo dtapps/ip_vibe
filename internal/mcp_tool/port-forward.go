@@ -60,7 +60,7 @@ func getPortForwardList(ctx context.Context, req *mcp.CallToolRequest, params *t
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 
@@ -80,7 +80,7 @@ func getPortForwardDetail(ctx context.Context, req *mcp.CallToolRequest, params 
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 
@@ -100,7 +100,7 @@ func createPortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 
@@ -120,7 +120,7 @@ func updatePortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 
@@ -140,7 +140,7 @@ func updatePortForwardForward(ctx context.Context, req *mcp.CallToolRequest, par
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 
@@ -160,7 +160,7 @@ func updatePortForwardActive(ctx context.Context, req *mcp.CallToolRequest, para
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 
@@ -180,7 +180,7 @@ func deletePortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 
@@ -200,7 +200,7 @@ func healthCheckPortForward(ctx context.Context, req *mcp.CallToolRequest, param
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 

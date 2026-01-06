@@ -27,7 +27,6 @@ func GetIPGroups(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -64,7 +63,6 @@ func GetIPGroupDetail(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -100,7 +98,6 @@ func CreateIPGroup(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -138,7 +135,6 @@ func UpdateIPGroup(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -175,7 +171,6 @@ func DeleteIPGroup(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -212,7 +207,6 @@ func GetIPGroupDevices(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -249,7 +243,6 @@ func HealthCheckIPGroup(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用

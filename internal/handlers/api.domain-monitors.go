@@ -35,7 +35,7 @@ func GetDomainMonitors(c *gin.Context) {
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -76,7 +76,7 @@ func GetDomainMonitorDetail(c *gin.Context) {
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -116,7 +116,7 @@ func CreateDomainMonitor(c *gin.Context) {
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -158,7 +158,7 @@ func UpdateDomainMonitor(c *gin.Context) {
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -200,7 +200,7 @@ func UpdateDomainMonitorActive(c *gin.Context) {
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -241,7 +241,7 @@ func DeleteDomainMonitor(c *gin.Context) {
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,
@@ -282,7 +282,7 @@ func CheckDomainMonitor(c *gin.Context) {
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaGoCron,
 		global.GvaGocronSlog.WithLogger(),
 		global.GvaHttpLog,

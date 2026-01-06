@@ -7,7 +7,6 @@ import (
 	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/webhook"
-	"vibe_ip/internal/helper/operation_logs_helper"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
@@ -28,19 +27,17 @@ type WebhookService interface {
 
 // WebhookServiceImpl 通知服务实现
 type WebhookServiceImpl struct {
-	db             *ent.Client // 数据库客户端
-	debug          bool
-	logHelper      *operation_logs_helper.OperationLogHelper
-	webhookService *webhookService.Send
+	db             *ent.Client          // 数据库客户端
+	webhookService *webhookService.Send // Webhook服务
+	debug          bool                 // 调试模式
 }
 
 // NewWebhookService 创建通知服务实例
-func NewWebhookService(db *ent.Client, debug bool, logHelper *operation_logs_helper.OperationLogHelper, webhookService *webhookService.Send) WebhookService {
+func NewWebhookService(db *ent.Client, webhookService *webhookService.Send, debug bool) WebhookService {
 	return &WebhookServiceImpl{
 		db:             db,
-		debug:          debug,
-		logHelper:      logHelper,
 		webhookService: webhookService,
+		debug:          debug,
 	}
 }
 
@@ -121,8 +118,6 @@ func (s *WebhookServiceImpl) CreateWebhook(ctx context.Context, request *types.C
 		}
 		return nil, fmt.Errorf("创建通知失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataCreate(ctx, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "创建通知")
 	return &types.GetWebhookRequest{
 		ID: saveWebhook.ID,
 	}, nil
@@ -155,8 +150,6 @@ func (s *WebhookServiceImpl) UpdateWebhook(ctx context.Context, request *types.U
 		}
 		return nil, fmt.Errorf("更新通知失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataUpdate(ctx, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "更新通知")
 	return &types.GetWebhookRequest{
 		ID: saveWebhook.ID,
 	}, nil
@@ -184,8 +177,6 @@ func (s *WebhookServiceImpl) UpdateWebhookActive(ctx context.Context, request *t
 		}
 		return nil, fmt.Errorf("更新通知状态失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataUpdate(ctx, saveWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "更新通知状态")
 	return &types.GetWebhookRequest{
 		ID: saveWebhook.ID,
 	}, nil
@@ -211,8 +202,6 @@ func (s *WebhookServiceImpl) DeleteWebhook(ctx context.Context, id int64) (*type
 		}
 		return nil, fmt.Errorf("删除通知失败: %w", err)
 	}
-	// 记录操作日志
-	// _ = s.logHelper.RecordDataDelete(ctx, firstWebhook.ID, operationlog.ObjTypeWebhook, operationlog.StatusSuccess, "删除通知")
 	return &types.GetWebhookRequest{
 		ID: firstWebhook.ID,
 	}, nil

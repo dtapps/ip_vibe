@@ -35,7 +35,6 @@ func GetDnsRecords(c *gin.Context) {
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -72,7 +71,6 @@ func GetDnsRecordDetail(c *gin.Context) {
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -108,7 +106,6 @@ func CreateDnsRecord(c *gin.Context) {
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -146,7 +143,6 @@ func UpdateDnsRecord(c *gin.Context) {
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -184,7 +180,6 @@ func UpdateDnsRecordActive(c *gin.Context) {
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -221,7 +216,6 @@ func DeleteDnsRecord(c *gin.Context) {
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -258,7 +252,6 @@ func HealthCheckDnsRecord(c *gin.Context) {
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用

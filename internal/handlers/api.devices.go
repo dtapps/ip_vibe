@@ -27,7 +27,6 @@ func GetDevices(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
 		global.GvaEnv.DEBUG,
 	)
 
@@ -65,7 +64,6 @@ func GetDeviceDetail(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
 		global.GvaEnv.DEBUG,
 	)
 
@@ -102,7 +100,6 @@ func CreateDevice(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
 		global.GvaEnv.DEBUG,
 	)
 
@@ -141,7 +138,7 @@ func UpdateDevice(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 
@@ -179,7 +176,7 @@ func DeleteDevice(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 
@@ -217,7 +214,7 @@ func GetDeviceIpHistory(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 
@@ -255,7 +252,7 @@ func HealthCheckDevice(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 
@@ -293,7 +290,7 @@ func GetDevicePortForwardStats(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaOperationLogHelper,
+
 		global.GvaEnv.DEBUG,
 	)
 

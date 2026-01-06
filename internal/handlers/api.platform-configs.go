@@ -27,7 +27,6 @@ func GetPlatformConfigs(c *gin.Context) {
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -64,7 +63,6 @@ func GetPlatformConfigDetail(c *gin.Context) {
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -100,7 +98,6 @@ func CreatePlatformConfig(c *gin.Context) {
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -138,7 +135,6 @@ func UpdatePlatformConfig(c *gin.Context) {
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
@@ -175,7 +171,6 @@ func DeletePlatformConfig(c *gin.Context) {
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
 		global.GvaEnv.DEBUG,
-		global.GvaOperationLogHelper,
 	)
 
 	// 调用
