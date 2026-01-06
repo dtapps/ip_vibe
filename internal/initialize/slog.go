@@ -9,6 +9,29 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+// getLumberjack 获取 lumberjack 日志
+func getLumberjack(prefix string, name string) *lumberjack.Logger {
+	if global.GvaVersion == "dev" {
+		return &lumberjack.Logger{
+			Filename:   filepath.Join("logs", prefix+"_"+name+".log"), // 日志文件的位置
+			MaxSize:    3,                                             // 每个日志文件最大尺寸（MB）
+			MaxAge:     1,                                             // 留旧文件的最大天数
+			MaxBackups: 5,                                             // 保留的最大旧文件数量
+			LocalTime:  true,                                          // 使用本地时间创建时间戳
+			Compress:   true,                                          // 是否压缩/归档旧文件
+		}
+	} else {
+		return &lumberjack.Logger{
+			Filename:   filepath.Join("logs", prefix+"_"+name+".log"), // 日志文件的位置
+			MaxSize:    2,                                             // 每个日志文件最大尺寸（MB）
+			MaxAge:     15,                                            // 留旧文件的最大天数
+			MaxBackups: 10 * 15,                                       // 保留的最大旧文件数量
+			LocalTime:  true,                                          // 使用本地时间创建时间戳
+			Compress:   true,                                          // 是否压缩/归档旧文件
+		}
+	}
+}
+
 // InitSLog 初始化 日志
 func InitSLog(name string) {
 	level := slog.LevelInfo
@@ -16,14 +39,7 @@ func InitSLog(name string) {
 		level = slog.LevelDebug
 	}
 	global.GvaSlog = golog.NewSlog(
-		golog.WithSLogLumberjack(&lumberjack.Logger{
-			Filename:   filepath.Join("logs", "slog_"+name+".log"), // 日志文件的位置
-			MaxSize:    2,                                          // 每个日志文件最大尺寸（MB）
-			MaxAge:     15,                                         // 留旧文件的最大天数
-			MaxBackups: 10 * 15,                                    // 保留的最大旧文件数量
-			LocalTime:  true,                                       // 使用本地时间创建时间戳
-			Compress:   true,                                       // 是否压缩/归档旧文件
-		}),
+		golog.WithSLogLumberjack(getLumberjack("slog", name)),
 		golog.WithSLogSetLevel(level),
 		golog.WithSLogSetDefault(true),
 		golog.WithSLogSetDefaultCtx(true),
@@ -36,26 +52,13 @@ func InitEntSLog(name string) {
 	if global.GvaEnv.DEBUG {
 		level = slog.LevelDebug
 	}
+	prefix := "ent"
 	global.GvaEntSlog = golog.NewSlog(
-		golog.WithSLogLumberjack(&lumberjack.Logger{
-			Filename:   filepath.Join("logs", "ent_"+name+".log"), // 日志文件的位置
-			MaxSize:    2,                                         // 每个日志文件最大尺寸（MB）
-			MaxAge:     15,                                        // 留旧文件的最大天数
-			MaxBackups: 10 * 15,                                   // 保留的最大旧文件数量
-			LocalTime:  true,                                      // 使用本地时间创建时间戳
-			Compress:   true,                                      // 是否压缩/归档旧文件
-		}),
+		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(level),
 	)
 	global.GvaEntLogSlog = golog.NewSlog(
-		golog.WithSLogLumberjack(&lumberjack.Logger{
-			Filename:   filepath.Join("logs", "ent_log_"+name+".log"), // 日志文件的位置
-			MaxSize:    2,                                             // 每个日志文件最大尺寸（MB）
-			MaxAge:     15,                                            // 留旧文件的最大天数
-			MaxBackups: 10 * 15,                                       // 保留的最大旧文件数量
-			LocalTime:  true,                                          // 使用本地时间创建时间戳
-			Compress:   true,                                          // 是否压缩/归档旧文件
-		}),
+		golog.WithSLogLumberjack(getLumberjack(prefix+"_log", name)),
 		golog.WithSLogSetLevel(level),
 	)
 }
@@ -66,15 +69,9 @@ func InitGinSLog(name string) {
 	if global.GvaEnv.DEBUG {
 		level = slog.LevelDebug
 	}
+	prefix := "gin"
 	global.GvaGinSlog = golog.NewSlog(
-		golog.WithSLogLumberjack(&lumberjack.Logger{
-			Filename:   filepath.Join("logs", "gin_"+name+".log"), // 日志文件的位置
-			MaxSize:    2,                                         // 每个日志文件最大尺寸（MB）
-			MaxAge:     15,                                        // 留旧文件的最大天数
-			MaxBackups: 10 * 15,                                   // 保留的最大旧文件数量
-			LocalTime:  true,                                      // 使用本地时间创建时间戳
-			Compress:   true,                                      // 是否压缩/归档旧文件
-		}),
+		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(level),
 	)
 }
@@ -85,15 +82,9 @@ func InitGrpcSLog(name string) {
 	if global.GvaEnv.DEBUG {
 		level = slog.LevelDebug
 	}
+	prefix := "grpc"
 	global.GvaGrpcSlog = golog.NewSlog(
-		golog.WithSLogLumberjack(&lumberjack.Logger{
-			Filename:   filepath.Join("logs", "grpc_"+name+".log"), // 日志文件的位置
-			MaxSize:    2,                                          // 每个日志文件最大尺寸（MB）
-			MaxAge:     15,                                         // 留旧文件的最大天数
-			MaxBackups: 10 * 15,                                    // 保留的最大旧文件数量
-			LocalTime:  true,                                       // 使用本地时间创建时间戳
-			Compress:   true,                                       // 是否压缩/归档旧文件
-		}),
+		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(level),
 	)
 }
@@ -104,15 +95,9 @@ func InitThriftSLog(name string) {
 	if global.GvaEnv.DEBUG {
 		level = slog.LevelDebug
 	}
+	prefix := "thrift"
 	global.GvaThriftSlog = golog.NewSlog(
-		golog.WithSLogLumberjack(&lumberjack.Logger{
-			Filename:   filepath.Join("logs", "thrift_"+name+".log"), // 日志文件的位置
-			MaxSize:    2,                                            // 每个日志文件最大尺寸（MB）
-			MaxAge:     15,                                           // 留旧文件的最大天数
-			MaxBackups: 10 * 15,                                      // 保留的最大旧文件数量
-			LocalTime:  true,                                         // 使用本地时间创建时间戳
-			Compress:   true,                                         // 是否压缩/归档旧文件
-		}),
+		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(level),
 	)
 }
@@ -123,15 +108,9 @@ func InitGocronSLog(name string) {
 	if global.GvaEnv.DEBUG {
 		level = slog.LevelDebug
 	}
+	prefix := "gocron"
 	global.GvaGocronSlog = golog.NewSlog(
-		golog.WithSLogLumberjack(&lumberjack.Logger{
-			Filename:   filepath.Join("logs", "gocron_"+name+".log"), // 日志文件的位置
-			MaxSize:    2,                                            // 每个日志文件最大尺寸（MB）
-			MaxAge:     15,                                           // 留旧文件的最大天数
-			MaxBackups: 10 * 15,                                      // 保留的最大旧文件数量
-			LocalTime:  true,                                         // 使用本地时间创建时间戳
-			Compress:   true,                                         // 是否压缩/归档旧文件
-		}),
+		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(level),
 	)
 }
@@ -142,15 +121,9 @@ func InitMcpSLog(name string) {
 	if global.GvaEnv.DEBUG {
 		level = slog.LevelDebug
 	}
+	prefix := "mcp"
 	global.GvaMcpSlog = golog.NewSlog(
-		golog.WithSLogLumberjack(&lumberjack.Logger{
-			Filename:   filepath.Join("logs", "mcp_"+name+".log"), // 日志文件的位置
-			MaxSize:    2,                                         // 每个日志文件最大尺寸（MB）
-			MaxAge:     15,                                        // 留旧文件的最大天数
-			MaxBackups: 10 * 15,                                   // 保留的最大旧文件数量
-			LocalTime:  true,                                      // 使用本地时间创建时间戳
-			Compress:   true,                                      // 是否压缩/归档旧文件
-		}),
+		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(level),
 	)
 }
@@ -161,15 +134,9 @@ func InitRestySLog(name string) {
 	if global.GvaEnv.DEBUG {
 		level = slog.LevelDebug
 	}
+	prefix := "resty"
 	global.GvaRestySLog = golog.NewSlog(
-		golog.WithSLogLumberjack(&lumberjack.Logger{
-			Filename:   filepath.Join("logs", "resty_"+name+".log"), // 日志文件的位置
-			MaxSize:    2,                                           // 每个日志文件最大尺寸（MB）
-			MaxAge:     15,                                          // 留旧文件的最大天数
-			MaxBackups: 10 * 15,                                     // 保留的最大旧文件数量
-			LocalTime:  true,                                        // 使用本地时间创建时间戳
-			Compress:   true,                                        // 是否压缩/归档旧文件
-		}),
+		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(level),
 	)
 }
@@ -180,15 +147,9 @@ func InitHttpSLog(name string) {
 	if global.GvaEnv.DEBUG {
 		level = slog.LevelDebug
 	}
+	prefix := "http"
 	global.GvaHttpSlog = golog.NewSlog(
-		golog.WithSLogLumberjack(&lumberjack.Logger{
-			Filename:   filepath.Join("logs", "http_"+name+".log"), // 日志文件的位置
-			MaxSize:    2,                                          // 每个日志文件最大尺寸（MB）
-			MaxAge:     15,                                         // 留旧文件的最大天数
-			MaxBackups: 10 * 15,                                    // 保留的最大旧文件数量
-			LocalTime:  true,                                       // 使用本地时间创建时间戳
-			Compress:   true,                                       // 是否压缩/归档旧文件
-		}),
+		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(level),
 	)
 }
