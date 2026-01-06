@@ -156,10 +156,6 @@ func (m *IndexResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Code
-
-	// no validation rules for Message
-
 	if len(errors) > 0 {
 		return IndexResponseMultiError(errors)
 	}

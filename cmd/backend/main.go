@@ -51,10 +51,12 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/wdcbot/qingfeng"
+	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // 全局资源管理
@@ -1349,30 +1351,45 @@ func grpc_gw_run(ctx context.Context, grpcLogger *slog.Logger, router *gin.Engin
 	grpcConnInstance = grpc_client.GetClient()
 
 	gwMux := grpcGatewayRuntime.NewServeMux(
-		grpcGatewayRuntime.WithErrorHandler(func(
-			ctx context.Context, mux *grpcGatewayRuntime.ServeMux, marshaler grpcGatewayRuntime.Marshaler,
-			w http.ResponseWriter, r *http.Request, err error,
-		) {
-			st, ok := status.FromError(err)
-			code := http.StatusInternalServerError
-			if ok {
-				switch st.Code() {
-				case codes.Unavailable:
-					code = http.StatusServiceUnavailable
-				case codes.InvalidArgument:
-					code = http.StatusBadRequest
-				case codes.NotFound:
-					code = http.StatusNotFound
-				case codes.Canceled:
-					code = http.StatusServiceUnavailable
-				}
+		// 错误响应统一包装
+		grpcGatewayRuntime.WithErrorHandler(func(ctx context.Context, mux *grpcGatewayRuntime.ServeMux, marshaler grpcGatewayRuntime.Marshaler, w http.ResponseWriter, r *http.Request, err error) {
+			// 默认错误处理器
+			st, _ := status.FromError(err)
+
+			// 映射 HTTP 状态码
+			httpCode := grpcGatewayRuntime.HTTPStatusFromCode(st.Code())
+
+			// 构造响应
+			resp := handlers.APIResponse{
+				Code:    int(st.Code()),
+				Message: st.Message(),
+				Data:    st.Details(),
 			}
+
+			// 设置响应头
 			w.Header().Set("Content-Type", marshaler.ContentType(nil))
-			w.WriteHeader(code)
-			_ = marshaler.NewEncoder(w).Encode(handlers.APIResponse{
-				Code:    code,
-				Message: err.Error(),
-			})
+
+			// 设置 HTTP 状态码
+			w.WriteHeader(httpCode)
+
+			// 使用 JSON 编码写回
+			_ = marshaler.NewEncoder(w).Encode(resp)
+		}),
+		// 成功响应统一包装
+		grpcGatewayRuntime.WithForwardResponseRewriter(func(ctx context.Context, resp proto.Message) (any, error) {
+			if _, ok := resp.(*statuspb.Status); ok {
+				return resp, nil
+			}
+			var data any = resp
+			// 判断是否是 Empty 类型，如果是，强行设为 nil 以触发 omitempty
+			if _, ok := resp.(*emptypb.Empty); ok || resp == nil {
+				data = nil
+			}
+			return handlers.APIResponse{
+				Code:    http.StatusOK,
+				Message: "success",
+				Data:    data,
+			}, nil
 		}),
 	)
 

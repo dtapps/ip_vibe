@@ -16,7 +16,7 @@ import (
 )
 
 // Version is the current version of QingFeng
-const Version = "1.6.0"
+const Version = "1.6.1"
 
 //go:embed ui/default/* ui/minimal/* ui/modern/* ui/assets/css/* ui/assets/webfonts/*
 var uiFS embed.FS
@@ -211,7 +211,7 @@ func HTTPHandler(cfg Config) http.Handler {
 		}
 
 		// Serve swagger.json
-		if path == "/swagger.json" || path == "/api-docs" {
+		if path == "/swagger.json" || path == "/api-docs" || path == "/doc.json" {
 			w.Header().Set("Content-Type", "application/json")
 			if cfg.DocJSON != nil {
 				w.Write(cfg.DocJSON)

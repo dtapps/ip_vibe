@@ -25,6 +25,4 @@ message IndexRequest {
 
 // 入口 响应参数
 message IndexResponse {
-    uint32 code = 1;
-    string message = 2;
 }

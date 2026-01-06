@@ -4,7 +4,6 @@ import (
 	"context"
 	"vibe_ip/internal/grpc_generated"
 
-	"github.com/dubbogo/grpc-go/codes"
 	"google.golang.org/grpc"
 )
 
@@ -26,8 +25,5 @@ func (s *IndexServer) RegisterService(server *grpc.Server) {
 // Index 实现 入口 方法
 func (s *IndexServer) Index(ctx context.Context, req *grpc_generated.IndexRequest) (*grpc_generated.IndexResponse, error) {
 	// 转换为 gRPC 响应
-	return &grpc_generated.IndexResponse{
-		Code:    uint32(codes.OK),
-		Message: "grpc ok",
-	}, nil
+	return &grpc_generated.IndexResponse{}, nil
 }

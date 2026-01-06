@@ -64,8 +64,6 @@ func (*IndexRequest) Descriptor() ([]byte, []int) {
 // 入口 响应参数
 type IndexResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          uint32                 `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -100,29 +98,13 @@ func (*IndexResponse) Descriptor() ([]byte, []int) {
 	return file_index_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *IndexResponse) GetCode() uint32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *IndexResponse) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
 var File_index_proto protoreflect.FileDescriptor
 
 const file_index_proto_rawDesc = "" +
 	"\n" +
 	"\vindex.proto\x12\x05index\x1a\x1cgoogle/api/annotations.proto\"\x0e\n" +
-	"\fIndexRequest\"=\n" +
-	"\rIndexResponse\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\rR\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2M\n" +
+	"\fIndexRequest\"\x0f\n" +
+	"\rIndexResponse2M\n" +
 	"\fIndexService\x12=\n" +
 	"\x05Index\x12\x13.index.IndexRequest\x1a\x14.index.IndexResponse\"\t\x82\xd3\xe4\x93\x02\x03\x12\x01/B!Z\x1fvibe_ip/internal/grpc_generatedb\x06proto3"
 

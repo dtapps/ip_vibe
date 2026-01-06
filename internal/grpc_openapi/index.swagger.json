@@ -43,15 +43,6 @@
   "definitions": {
     "indexIndexResponse": {
       "type": "object",
-      "properties": {
-        "code": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "message": {
-          "type": "string"
-        }
-      },
       "title": "入口 响应参数"
     },
     "protobufAny": {

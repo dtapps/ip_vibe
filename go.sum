@@ -941,8 +941,8 @@ github.com/prometheus/common v0.15.0/go.mod h1:U+gB1OBLb1lF3O42bTCL+FK18tX9Oar16
 github.com/prometheus/common v0.26.0/go.mod h1:M7rCNAaPfAosfx8veZJCuw84e35h3Cfd9VFqTh1DIvc=
 github.com/prometheus/common v0.30.0/go.mod h1:vu+V0TpY+O6vW9J44gczi3Ap/oXXR10b+M/gUGO4Hls=
 github.com/prometheus/common v0.32.1/go.mod h1:vu+V0TpY+O6vW9J44gczi3Ap/oXXR10b+M/gUGO4Hls=
-github.com/prometheus/common v0.67.4 h1:yR3NqWO1/UyO1w2PhUvXlGQs/PtFmoveVO0KZ4+Lvsc=
-github.com/prometheus/common v0.67.4/go.mod h1:gP0fq6YjjNCLssJCQp0yk4M8W6ikLURwkdd/YKtTbyI=
+github.com/prometheus/common v0.67.5 h1:pIgK94WWlQt1WLwAC5j2ynLaBRDiinoAb86HZHTUGI4=
+github.com/prometheus/common v0.67.5/go.mod h1:SjE/0MzDEEAyrdr5Gqc6G+sXI67maCxzaT3A2+HqjUw=
 github.com/prometheus/procfs v0.0.0-20181005140218-185b4288413d/go.mod h1:c3At6R/oaqEKCNdg8wHV1ftS6bRYblBhIjjI8uT2IGk=
 github.com/prometheus/procfs v0.0.0-20190117184657-bf6a532e95b1/go.mod h1:c3At6R/oaqEKCNdg8wHV1ftS6bRYblBhIjjI8uT2IGk=
 github.com/prometheus/procfs v0.0.0-20190507164030-5867b95ac084/go.mod h1:TjEm7ze935MbeOT/UhFTIMYKhuLP4wbCsTZCD3I8kEA=
@@ -1067,8 +1067,8 @@ github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.1.48/go.mod h
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.21/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.22/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.24/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
-github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.26 h1:MQTVNuzBed4sTTCWhGm2rJbrdGFWLzNusegysprbNwU=
-github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.26/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
+github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.27 h1:RFgZXfWLA/qG399kIyU7EJ0XIB/dhuTlTUdcHoLnszE=
+github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.27/go.mod h1:r5r4xbfxSaeR04b166HGsBa/R4U3SueirEUpXGuw+Q0=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24 h1:pL+2Fy2usARzY+OpY38UAsGzGCO0hqsSIk8d5rAzkRE=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24/go.mod h1:0+GSU/4UcPXMyTtxxypbd9jWRTDzWlIrRkNmuxwM5Zo=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.21 h1:N5Ssdyy1TubNHYBDbK/KuS7tQXgEOwQkimejo+ebDN4=
@@ -1124,8 +1124,8 @@ github.com/volcengine/volc-sdk-golang v1.0.233 h1:Hh2pzwu/Wq19rsZgNo3HdpjQB28D/F
 github.com/volcengine/volc-sdk-golang v1.0.233/go.mod h1:zHJlaqiMbIB+0mcrsZPTwOb3FB7S/0MCfqlnO8R7hlM=
 github.com/volcengine/volcengine-go-sdk v1.2.4 h1:smBdDwwkXoXldCuumuZDJQASlAgVUIeL/RQ26D0OgI4=
 github.com/volcengine/volcengine-go-sdk v1.2.4/go.mod h1:oxoVo+A17kvkwPkIeIHPVLjSw7EQAm+l/Vau1YGHN+A=
-github.com/wdcbot/qingfeng v1.6.0 h1:K7kFJuM9+YjlOiKzYhGdzTldR8kz2B1AtsfYwLY/muc=
-github.com/wdcbot/qingfeng v1.6.0/go.mod h1:KMSPnNS5ij5UQ5wLgZSibUYReZAkLvbS6s5hqpiUJEQ=
+github.com/wdcbot/qingfeng v1.6.1 h1:7/ej1F+cg47xG60aJg9DtKLv5Gfe26UZW+xXeLTDsS8=
+github.com/wdcbot/qingfeng v1.6.1/go.mod h1:KMSPnNS5ij5UQ5wLgZSibUYReZAkLvbS6s5hqpiUJEQ=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.0.2/go.mod h1:1WAq6h33pAW+iRreB34OORO2Nf7qel3VV3fjBj+hCSs=
 github.com/xdg-go/scram v1.1.2/go.mod h1:RT/sEzTbU5y00aCK8UOx6R7YryM0iF1N2MOmC3kKLN4=

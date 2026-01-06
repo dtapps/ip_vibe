@@ -5,17 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.0] - 2025-01-05
+## [1.6.1] - 2026-01-06
 
 ### Added
 - 🔧 **PersistParams 配置** - 新增 `PersistParams` 配置项，控制是否将调试参数保存到 sessionStorage
   - `nil`（不配置）→ 默认 true，存储参数
   - `&true` → 存储参数
   - `&false` → 不存储参数
+- ✅ **参数启用/禁用勾选** - 每个参数前添加勾选框，可控制是否发送该参数
+  - 禁用的参数显示半透明，输入框禁用
+  - 勾选状态保存到 sessionStorage
+  - cURL 生成也会跳过禁用的参数
+- 🔗 **新增 /doc.json 路径** - 支持通过 `/doc.json` 访问 swagger.json (PR #7 by @buyfakett)
 
 ### Fixed
 - 修复枚举参数默认值不显示问题（header/query/path/formData 参数）
 - 修复 body 字段的 default 默认值不生效问题
+- 修复表单模式布尔值被解析成字符串的问题
+- 修复带文件接口不上传文件时其他 formData 参数不发送的问题
 - 布尔类型参数自动渲染为下拉选择框（true/false），无需手动配置枚举
 
 ## [1.5.5] - 2024-12-30
