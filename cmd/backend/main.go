@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"embed"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"html/template"
@@ -851,6 +852,14 @@ func web_resource(ctx context.Context, ginLogger *slog.Logger, router *gin.Engin
 				return false
 			}
 			return strings.Contains(s, substr)
+		},
+		// 将任意类型转换为 JSON 字符串
+		"marshalJSON": func(v any) string {
+			if v == nil || v == "" {
+				return ""
+			}
+			b, _ := json.Marshal(v)
+			return string(b)
 		},
 	}
 

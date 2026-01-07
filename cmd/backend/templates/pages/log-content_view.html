@@ -1,0 +1,100 @@
+{{ define "pages/log-content_view.html" }}
+<div id="viewModal" class="modal">
+    <div class="ui-modal-box !max-w-6xl">
+        <div class="ui-header">
+            <h3 class="text-xl font-bold flex items-center gap-2 uppercase tracking-tighter">
+                {{ template "icons" (dict "Name" "i-lucide-braces" "Class" "w-6 h-6 text-primary") }}
+                <span id="detailTitle">请求追踪详情</span>
+            </h3>
+            <button class="btn btn-sm btn-circle btn-ghost" onclick="closeModal('viewModal')">
+                {{ template "icons" (dict "Name" "i-lucide-x") }}
+            </button>
+        </div>
+
+        <div class="px-8 py-4 bg-base-200/30 border-b border-base-200 flex flex-wrap gap-6 items-center">
+            <div class="flex items-center gap-2">
+                <span class="text-[10px] font-black opacity-40 uppercase">ID</span>
+                <span id="detailId" class="font-mono text-xs font-bold"></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-[10px] font-black opacity-40 uppercase">Method</span>
+                <span id="detailMethod" class="badge badge-sm font-black italic"></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-[10px] font-black opacity-40 uppercase">Status</span>
+                <span id="detailStatus" class="badge badge-sm font-bold"></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-[10px] font-black opacity-40 uppercase">Latency</span>
+                <span id="detailLatency" class="font-mono text-xs text-primary"></span>
+            </div>
+        </div>
+
+        <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <label class="text-[11px] font-black opacity-40 uppercase tracking-widest">Request Payload
+                        (Body)</label>
+                    <button class="btn btn-xs btn-ghost text-primary log-copy-btn"
+                        data-clipboard-target="#detailReqBody">复制</button>
+                </div>
+                <textarea id="detailReqBody" readonly
+                    class="w-full h-96 p-4 bg-neutral text-neutral-content rounded-2xl font-mono text-[11px] leading-relaxed border-none focus:outline-none resize-none"></textarea>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <label class="text-[11px] font-black opacity-40 uppercase tracking-widest">Response Content</label>
+                    <button class="btn btn-xs btn-ghost text-primary log-copy-btn"
+                        data-clipboard-target="#detailResBody">复制</button>
+                </div>
+                <textarea id="detailResBody" readonly
+                    class="w-full h-96 p-4 bg-neutral text-neutral-content rounded-2xl font-mono text-[11px] leading-relaxed border-none focus:outline-none resize-none"></textarea>
+            </div>
+        </div>
+
+        <div class="modal-action p-8 pt-0">
+            <button class="btn btn-sm btn-ghost rounded-xl font-black uppercase"
+                onclick="closeModal('viewModal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 使用监听器确保 ClipboardJS 已经加载
+    (function initClipboard() {
+        if (typeof ClipboardJS === 'undefined') {
+            // 如果还没加载完，等 200ms 再试
+            setTimeout(initClipboard, 200);
+            return;
+        }
+
+        const clipboard = new ClipboardJS('.copy-btn',);
+
+        clipboard.on('success', function (e) {
+            const btn = e.trigger;
+            const oldText = btn.innerText;
+            const icon = btn.querySelector('span');
+
+            btn.innerText = "";
+            btn.appendChild(document.createTextNode(' ✅ 已复制'));
+            btn.classList.add("text-success");
+
+            setTimeout(() => {
+                btn.innerText = "";
+                if (icon) {
+                    btn.appendChild(icon)
+                };
+                btn.appendChild(document.createTextNode(oldText));
+                btn.classList.remove("text-success");
+            }, 1500);
+            e.clearSelection();
+        });
+
+        clipboard.on('error', function (e) {
+            console.error('ssl_view clipboard error', e);
+            alert('复制失败，请手动选择复制');
+        });
+    })();
+</script>
+{{ end }}

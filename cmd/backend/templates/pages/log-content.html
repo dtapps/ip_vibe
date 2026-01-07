@@ -99,7 +99,9 @@
                         </td>
                         <td class="ui-td text-right">
                             <button class="btn btn-ghost btn-xs font-black hover:text-primary"
-                                onclick="viewDetail('{{.ID}}')">详情</button>
+                                data-detail='{{ marshalJSON . }}' onclick="viewDetailFromData(this)">
+                                详情
+                            </button>
                         </td>
                     </tr>
                     {{ end }}
@@ -108,6 +110,7 @@
         </div>
 
         <div class="mt-8 border-t border-base-200 pt-8">
+            <!-- 分页 -->
             {{ template "pagination" (dict "Page" $page "Total" $total "PageSize" $pageSize) }}
         </div>
 
@@ -161,10 +164,8 @@
     </div>
 </div>
 
-<script>
-    const consoleBox = document.getElementById('logConsole');
-    if (consoleBox && document.getElementById('autoScroll').checked) {
-        consoleBox.scrollTop = consoleBox.scrollHeight;
-    }
-</script>
+<!-- 查看 -->
+{{ template "pages/log-content_view.html" . }}
+
+<script src="/static/js/log-content.js"></script>
 {{ end }}
