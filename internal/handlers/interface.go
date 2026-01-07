@@ -23,7 +23,6 @@ func Interface(c *gin.Context) {
 	// 准备页面数据
 	pageData := types.InterfaceResponse{
 		CurrentProto: requestParams.Proto,
-		CodeSnippet:  getInterfaceCodeSnippet(requestParams.Proto),
 
 		HttpAddr:   global.GvaEnv.HTTP_ADDR,
 		GrpcAddr:   global.GvaEnv.GRPC_ADDR,
@@ -49,23 +48,4 @@ func Interface(c *gin.Context) {
 			Data:  pageData,
 		},
 	)
-}
-
-func getInterfaceCodeSnippet(proto string) string {
-	switch proto {
-	case "api":
-		return "// API 接口代码片段"
-	case "mcp":
-		return "// MCP 接口代码片段"
-	case "grpc":
-		return "// gRPC 接口代码片段"
-	case "thrift":
-		return "// Thrift 接口代码片段"
-	case "dubbo":
-		return "// Dubbo 接口代码片段"
-	case "tars":
-		return "// Tars 接口代码片段"
-	default:
-		return "// 未知协议"
-	}
 }

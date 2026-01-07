@@ -24,9 +24,9 @@ func Log(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.LogResponse{
-		CommonPageResponse: types.CommonPageResponse[types.GetLogResponse, types.LogRequest]{
+		CommonPageResponse: types.CommonPageResponse[any, types.LogRequest]{
 			Filter: requestParams,
-			List:   []types.GetLogResponse{},
+			List:   []any{},
 		},
 	}
 
@@ -43,17 +43,7 @@ func Log(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allOperationLog.Items {
-			pageData.List = append(pageData.List, types.GetLogResponse{
-				ID:        item.ID,
-				OpType:    item.OpType.String(),
-				ObjID:     item.ObjID,
-				ObjType:   item.ObjType.String(),
-				OldValue:  item.OldValue,
-				NewValue:  item.NewValue,
-				Status:    item.Status.String(),
-				Message:   item.Message,
-				CreatedAt: item.CreatedAt,
-			})
+			pageData.List = append(pageData.List, &item)
 		}
 	}
 

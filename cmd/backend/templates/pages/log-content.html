@@ -1,0 +1,170 @@
+{{ define "content" }}
+
+{{/* 初始化局部变量 */}}
+{{ $filter := .Data.Filter }}
+{{ $list := .Data.List }}
+{{ $page := .Data.Page }}
+{{ $total := .Data.Total }}
+{{ $pageSize := .Data.PageSize }}
+{{ $baseWebUrlPath := .CurrentPath }}
+{{ $baseWebUrlPathWithQuery := .CurrentPathWithQuery }}
+
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content uppercase tracking-tighter flex items-center gap-3">
+    {{ template "icons" (dict "Name" "i-lucide-scroll-text" "Class" "w-8 h-8 text-primary") }}
+    技术日志中心
+</h1>
+
+<div class="ui-panel">
+    <div class="bg-base-200/30 px-8 pt-6 border-b border-base-200">
+        <div role="tablist" class="tabs tabs-lifted tabs-lg">
+            <a href="?type=http_log" role="tab"
+                class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "http_log" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
+                HTTP 请求
+            </a>
+            <a href="?type=resty_log" role="tab"
+                class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "resty_log" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
+                RESTY 请求
+            </a>
+            <a href="?type=slog_file&file_name=slog_backend.log" role="tab"
+                class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "slog_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
+                Slog 语句
+            </a>
+            <a href="?type=ent_file&file_name=ent_backend.log" role="tab"
+                class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "ent_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
+                ENT 语句
+            </a>
+            <a href="?type=ent_log_file&file_name=ent_log_backend.log" role="tab"
+                class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "ent_log_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
+                ENT LOG 语句
+            </a>
+            <a href="?type=gin_file&file_name=gin_backend.log" role="tab"
+                class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "gin_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
+                GIN 流水
+            </a>
+            <a href="?type=gocron_file&file_name=gocron_backend.log" role="tab"
+                class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "gocron_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
+                GoCron 流水
+            </a>
+            <a href="?type=grpc_file&file_name=grpc_backend.log" role="tab"
+                class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "grpc_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
+                Grpc 流水
+            </a>
+            <a href="?type=thrift_file&file_name=thrift_backend.log" role="tab"
+                class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "thrift_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
+                Thrift 流水
+            </a>
+            <a href="?type=http_file&file_name=http_backend.log" role="tab"
+                class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "http_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
+                HTTP 流水
+            </a>
+            <a href="?type=resty_file&file_name=resty_backend.log" role="tab"
+                class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "resty_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
+                RESTY 流水
+            </a>
+        </div>
+    </div>
+
+    <div class="p-8">
+        {{ if or (eq $filter.Type "http_log") (eq $filter.Type "resty_log") }}
+        <div class="ui-table-container border border-base-200 rounded-2xl overflow-hidden">
+            <table class="ui-table">
+                <thead>
+                    <tr>
+                        <th class="ui-th">时间</th>
+                        <th class="ui-th">方法</th>
+                        <th class="ui-th">路径 / URL</th>
+                        <th class="ui-th">状态码</th>
+                        <th class="ui-th text-right">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range $list }}
+                    <tr class="hover:bg-base-200/50 transition-colors">
+                        <td class="ui-td text-xs opacity-50 font-mono">
+                            {{ formatTimeOrNil .CreatedAt }}
+                        </td>
+                        <td class="ui-td">
+                            <span class="badge badge-ghost font-mono text-[10px] font-bold uppercase">
+                                {{ .Method }}
+                            </span>
+                        </td>
+                        <td class="ui-td font-mono text-xs max-w-md truncate text-primary/80">
+                            {{ .URL }}
+                        </td>
+                        <td class="ui-td">
+                            <span
+                                class="badge {{ if lt .StatusCode 400 }}badge-success{{ else }}badge-error{{ end }} badge-sm font-bold">
+                                {{ .StatusCode }}
+                            </span>
+                        </td>
+                        <td class="ui-td text-right">
+                            <button class="btn btn-ghost btn-xs font-black hover:text-primary"
+                                onclick="viewDetail('{{.ID}}')">详情</button>
+                        </td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-8 border-t border-base-200 pt-8">
+            {{ template "pagination" (dict "Page" $page "Total" $total "PageSize" $pageSize) }}
+        </div>
+
+        {{ else }}
+        <div class="flex flex-col gap-4">
+            <div class="flex justify-between items-center px-2">
+                <span class="text-[11px] font-black uppercase opacity-30 tracking-widest">
+                    Real-time Stream: {{ $filter.FileName }}
+                </span>
+                <div class="flex items-center gap-4">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="autoScroll" checked class="checkbox checkbox-xs checkbox-primary">
+                        <span class="text-[10px] font-black opacity-40">自动滚动</span>
+                    </label>
+                    <button onclick="location.reload()" class="btn btn-primary btn-xs rounded-lg px-3">
+                        {{ template "icons" (dict "Name" "i-lucide-refresh-cw" "Class" "w-3 h-3") }} 刷新
+                    </button>
+                </div>
+            </div>
+
+            <div
+                class="bg-neutral text-neutral-content p-6 rounded-[2rem] shadow-2xl font-mono text-xs h-[600px] overflow-hidden relative group">
+                <div id="logConsole" class="h-full overflow-y-auto leading-relaxed scrollbar-hide">
+                    {{ range $list }}
+                    <div class="mb-1 py-0.5 hover:bg-white/5 transition-colors">
+                        {{ if contains . "ERROR" }}
+                        <span class="text-error font-bold"> {{ . }}</span>
+                        {{ else if contains . "服务启动" }}
+                        <div
+                            class="divider divider-warning text-[10px] my-6 font-black uppercase tracking-[0.5em] before:bg-warning/20 after:bg-warning/20 text-warning">
+                            --- System Reboot ---
+                        </div>
+                        <span class="text-warning font-black tracking-wider">{{ . }}</span>
+                        {{ else if contains . "Panic" }}
+                        <div class="bg-error/20 border-l-4 border-error p-4 my-2 text-error font-bold rounded-r-xl">{{ .
+                            }}</div>
+                        {{ else }}
+                        <span class="opacity-60">{{ . }}</span>
+                        {{ end }}
+                    </div>
+                    {{ end }}
+                    <div class="mt-4 flex items-center gap-2 opacity-20">
+                        <span class="w-2 h-4 bg-primary animate-pulse"></span>
+                        <span class="text-[10px] uppercase">Waiting for input...</span>
+                    </div>
+                </div>
+                <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-primary/10 rounded-full blur-3xl"></div>
+            </div>
+        </div>
+        {{ end }}
+    </div>
+</div>
+
+<script>
+    const consoleBox = document.getElementById('logConsole');
+    if (consoleBox && document.getElementById('autoScroll').checked) {
+        consoleBox.scrollTop = consoleBox.scrollHeight;
+    }
+</script>
+{{ end }}

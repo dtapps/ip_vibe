@@ -845,6 +845,13 @@ func web_resource(ctx context.Context, ginLogger *slog.Logger, router *gin.Engin
 			}
 			return strings.Split(s, sep)
 		},
+		// 判断字符串是否包含指定子字符串
+		"contains": func(s, substr string) bool {
+			if s == "" || substr == "" {
+				return false
+			}
+			return strings.Contains(s, substr)
+		},
 	}
 
 	// 判断是否为开发模式：version == "dev"
@@ -933,6 +940,9 @@ func web_router(ctx context.Context, ginLogger *slog.Logger, router *gin.Engine)
 
 	// 接口页面 - 提供HTML页面并渲染数据
 	router.GET("/interface", handlers.Interface)
+
+	// 日志内容页面 - 提供HTML页面并渲染数据
+	router.GET("/log-content", handlers.LogContent)
 
 	// 未匹配到任何路由
 	router.NoRoute(func(c *gin.Context) {

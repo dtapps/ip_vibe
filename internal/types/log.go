@@ -14,5 +14,5 @@ type LogRequest struct {
 
 // 日志页面 响应结构
 type LogResponse struct {
-	CommonPageResponse[GetLogResponse, LogRequest] // 操作日志列表
+	CommonPageResponse[any, LogRequest] // 操作日志列表
 }

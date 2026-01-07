@@ -8,7 +8,6 @@ type InterfaceRequest struct {
 // 接口页面 响应结构
 type InterfaceResponse struct {
 	CurrentProto string `json:"current_proto,omitempty"` // 当前选中的协议
-	CodeSnippet  string `json:"code_snippet,omitempty"`  // 代码片段
 
 	Token string `json:"token,omitempty"` // 认证 token
 
