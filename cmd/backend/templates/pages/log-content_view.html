@@ -1,55 +1,85 @@
 {{ define "pages/log-content_view.html" }}
 <div id="viewModal" class="modal">
-    <div class="ui-modal-box !max-w-6xl">
+    <div class="ui-modal-box !max-w-7xl">
         <div class="ui-header">
             <h3 class="text-xl font-bold flex items-center gap-2 uppercase tracking-tighter">
                 {{ template "icons" (dict "Name" "i-lucide-braces" "Class" "w-6 h-6 text-primary") }}
-                <span id="detailTitle">请求追踪详情</span>
+                <span>请求追踪详情</span>
             </h3>
             <button class="btn btn-sm btn-circle btn-ghost" onclick="closeModal('viewModal')">
                 {{ template "icons" (dict "Name" "i-lucide-x") }}
             </button>
         </div>
 
-        <div class="px-8 py-4 bg-base-200/30 border-b border-base-200 flex flex-wrap gap-6 items-center">
-            <div class="flex items-center gap-2">
-                <span class="text-[10px] font-black opacity-40 uppercase">ID</span>
-                <span id="detailId" class="font-mono text-xs font-bold"></span>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="text-[10px] font-black opacity-40 uppercase">Method</span>
-                <span id="detailMethod" class="badge badge-sm font-black italic"></span>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="text-[10px] font-black opacity-40 uppercase">Status</span>
-                <span id="detailStatus" class="badge badge-sm font-bold"></span>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="text-[10px] font-black opacity-40 uppercase">Latency</span>
-                <span id="detailLatency" class="font-mono text-xs text-primary"></span>
-            </div>
+        <div
+            class="px-8 py-4 bg-base-200/30 border-b border-base-200 flex flex-wrap gap-x-8 gap-y-2 items-center text-[11px]">
+            <div class="flex items-center gap-2"><span class="font-black opacity-30 uppercase">ID</span><span
+                    id="detailId" class="font-mono font-bold"></span></div>
+            <div class="flex items-center gap-2"><span class="font-black opacity-30 uppercase">Host</span><span
+                    id="detailHost" class="text-primary font-bold"></span></div>
+            <div class="flex items-center gap-2"><span class="font-black opacity-30 uppercase">Method</span><span
+                    id="detailMethod" class="badge badge-outline badge-sm font-black italic"></span></div>
+            <div class="flex items-center gap-2"><span class="font-black opacity-30 uppercase">Status</span><span
+                    id="detailStatus" class="badge badge-sm font-bold"></span></div>
+            <div class="flex items-center gap-2"><span class="font-black opacity-30 uppercase">Latency</span><span
+                    id="detailLatency" class="font-mono text-primary font-bold"></span></div>
+            <div class="flex items-center gap-2"><span class="font-black opacity-30 uppercase">Time</span><span
+                    id="detailTime" class="opacity-60"></span></div>
         </div>
 
-        <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-4">
-                <div class="flex justify-between items-center">
-                    <label class="text-[11px] font-black opacity-40 uppercase tracking-widest">Request Payload
-                        (Body)</label>
-                    <button class="btn btn-xs btn-ghost text-primary log-copy-btn"
-                        data-clipboard-target="#detailReqBody">复制</button>
+        <div
+            class="px-8 py-2 bg-base-200/10 border-b border-base-200 flex gap-6 text-[9px] font-mono opacity-40 uppercase">
+            <div id="verGo">GO: -</div>
+            <div id="verPlugin">PLUGIN: -</div>
+            <div id="verResty" class="hidden text-secondary">RESTY: -</div>
+        </div>
+
+        <div class="p-8 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center px-1">
+                        <label class="text-[10px] font-black opacity-40 uppercase tracking-widest">Request
+                            Headers</label>
+                        <button id="copyReqHeaders" class="btn btn-xs btn-ghost text-primary log-copy-btn"
+                            data-clipboard-text="">复制 JSON</button>
+                    </div>
+                    <div id="detailReqHeaders"
+                        class="bg-base-300/20 rounded-xl p-4 font-mono text-[10px] h-44 overflow-y-auto border border-base-300/30 shadow-inner">
+                    </div>
                 </div>
-                <textarea id="detailReqBody" readonly
-                    class="w-full h-96 p-4 bg-neutral text-neutral-content rounded-2xl font-mono text-[11px] leading-relaxed border-none focus:outline-none resize-none"></textarea>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center px-1">
+                        <label class="text-[10px] font-black opacity-40 uppercase tracking-widest">Response
+                            Headers</label>
+                        <button id="copyResHeaders" class="btn btn-xs btn-ghost text-primary log-copy-btn"
+                            data-clipboard-text="">复制 JSON</button>
+                    </div>
+                    <div id="detailResHeaders"
+                        class="bg-base-300/20 rounded-xl p-4 font-mono text-[10px] h-44 overflow-y-auto border border-base-300/30 shadow-inner">
+                    </div>
+                </div>
             </div>
 
-            <div class="space-y-4">
-                <div class="flex justify-between items-center">
-                    <label class="text-[11px] font-black opacity-40 uppercase tracking-widest">Response Content</label>
-                    <button class="btn btn-xs btn-ghost text-primary log-copy-btn"
-                        data-clipboard-target="#detailResBody">复制</button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center px-1">
+                        <label class="text-[10px] font-black opacity-40 uppercase tracking-widest">Request Body</label>
+                        <button class="btn btn-xs btn-ghost text-primary log-copy-btn"
+                            data-clipboard-target="#detailReqBody">复制</button>
+                    </div>
+                    <textarea id="detailReqBody" readonly
+                        class="w-full h-80 p-4 bg-neutral text-neutral-content rounded-2xl font-mono text-[11px] leading-relaxed border-none focus:outline-none resize-none shadow-inner"></textarea>
                 </div>
-                <textarea id="detailResBody" readonly
-                    class="w-full h-96 p-4 bg-neutral text-neutral-content rounded-2xl font-mono text-[11px] leading-relaxed border-none focus:outline-none resize-none"></textarea>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center px-1">
+                        <label class="text-[10px] font-black opacity-40 uppercase tracking-widest">Response Body</label>
+                        <button class="btn btn-xs btn-ghost text-primary log-copy-btn"
+                            data-clipboard-target="#detailResBody">复制</button>
+                    </div>
+                    <textarea id="detailResBody" readonly
+                        class="w-full h-80 p-4 bg-neutral text-neutral-content rounded-2xl font-mono text-[11px] leading-relaxed border-none focus:outline-none resize-none shadow-inner"></textarea>
+                </div>
             </div>
         </div>
 
@@ -61,39 +91,23 @@
 </div>
 
 <script>
-    // 使用监听器确保 ClipboardJS 已经加载
-    (function initClipboard() {
+    // 统一初始化 ClipboardJS (支持 target 复制 textarea 和 text 复制 Header JSON)
+    (function initLogClipboard() {
         if (typeof ClipboardJS === 'undefined') {
-            // 如果还没加载完，等 200ms 再试
-            setTimeout(initClipboard, 200);
+            setTimeout(initLogClipboard, 200);
             return;
         }
-
-        const clipboard = new ClipboardJS('.copy-btn',);
-
-        clipboard.on('success', function (e) {
+        const cb = new ClipboardJS('.log-copy-btn');
+        cb.on('success', function (e) {
             const btn = e.trigger;
             const oldText = btn.innerText;
-            const icon = btn.querySelector('span');
-
-            btn.innerText = "";
-            btn.appendChild(document.createTextNode(' ✅ 已复制'));
+            btn.innerText = '✅ 已复制';
             btn.classList.add("text-success");
-
             setTimeout(() => {
-                btn.innerText = "";
-                if (icon) {
-                    btn.appendChild(icon)
-                };
-                btn.appendChild(document.createTextNode(oldText));
+                btn.innerText = oldText;
                 btn.classList.remove("text-success");
             }, 1500);
             e.clearSelection();
-        });
-
-        clipboard.on('error', function (e) {
-            console.error('ssl_view clipboard error', e);
-            alert('复制失败，请手动选择复制');
         });
     })();
 </script>
