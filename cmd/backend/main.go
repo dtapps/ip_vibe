@@ -141,9 +141,11 @@ func main() {
 	initialize.InitEntLogDb(ctx, global.GvaEntLogSlog) // 初始化 日志数据库
 	initialize.InitGoCron(ctx, global.GvaGocronSlog)   // 初始化 GoCron 调度器
 	initialize.InitMCP(ctx, global.GvaMcpSlog)         // 初始化 MCP
-	initialize.InitEntRestyLog(global.GvaRestySlog)    // 初始化 Resty 日志
-	initialize.InitEntHttpLog(global.GvaHttpSlog)      // 初始化 HTTP 日志
-	initialize.InitThirdParty(ctx)                     // 初始化 第三方
+
+	initialize.InitEntHttpLog(global.GvaHttpSlog)   // 初始化 HTTP 日志
+	initialize.InitEntRestyLog(global.GvaRestySlog) // 初始化 Resty 日志
+
+	initialize.InitThirdParty(ctx, global.GvaSlog) // 初始化 第三方
 
 	initialize.InitOperationLogHelper() // 初始化操作日志助手
 
