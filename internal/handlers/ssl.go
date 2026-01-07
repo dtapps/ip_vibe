@@ -45,6 +45,7 @@ func Ssl(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)

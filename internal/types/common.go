@@ -151,10 +151,7 @@ func (nb *NullableBool) UnmarshalParam(param string) (err error) {
 // 打印 NullableBool 的值
 func (nb NullableBool) printParam(name string, paramKey string, paramValue string) {
 	// 日志
-	logger := slog.Default()
-	if global.GvaGinSlog != nil {
-		logger = global.GvaGinSlog.WithLogger()
-	}
+	logger := global.GvaGinSlog
 
 	// 打印参数
 	logger.Debug(name,
@@ -165,10 +162,7 @@ func (nb NullableBool) printParam(name string, paramKey string, paramValue strin
 // 打印 NullableBool 的值
 func (nb NullableBool) printValue(name string) {
 	// 日志
-	logger := slog.Default()
-	if global.GvaGinSlog != nil {
-		logger = global.GvaGinSlog.WithLogger()
-	}
+	logger := global.GvaGinSlog
 
 	// 打印结果
 	logger.Debug(name,

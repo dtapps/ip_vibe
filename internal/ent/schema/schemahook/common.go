@@ -13,7 +13,7 @@ import (
 func getEntSlog() *slog.Logger {
 	logger := slog.Default()
 	if global.GvaEntSlog != nil {
-		logger = global.GvaEntSlog.WithLogger()
+		logger = global.GvaEntSlog
 	}
 	return logger
 }
@@ -21,7 +21,7 @@ func getEntSlog() *slog.Logger {
 func getEntLogSlog() *slog.Logger {
 	logger := slog.Default()
 	if global.GvaEntLogSlog != nil {
-		logger = global.GvaEntLogSlog.WithLogger()
+		logger = global.GvaEntLogSlog
 	}
 	return logger
 }

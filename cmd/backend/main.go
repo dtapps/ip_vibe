@@ -133,34 +133,22 @@ func main() {
 	initialize.InitMcpSLog("backend")    // 初始化 mcp 日志
 	initialize.InitRestySLog("backend")  // 初始化 resty 日志
 	initialize.InitHttpSLog("backend")   // 初始化 http 日志
+	initialize.EnsureDefaultSLog()       // 确保日志不为 nil
 
-	var (
-		logger       = slog.Default()
-		entLogger    = global.GvaEntSlog.WithLogger()
-		entLogLogger = global.GvaEntLogSlog.WithLogger()
-		ginLogger    = global.GvaGinSlog.WithLogger()
-		grpcLogger   = global.GvaGrpcSlog.WithLogger()
-		thriftLogger = global.GvaThriftSlog.WithLogger()
-		gocronLogger = global.GvaGocronSlog.WithLogger()
-		mcpLogger    = global.GvaMcpSlog.WithLogger()
-		restyLogger  = global.GvaRestySlog.WithLogger()
-		httpLogger   = global.GvaHttpSlog.WithLogger()
-	)
+	initialize.InitCoraza(ctx, global.GvaSlog) // 初始化 Coraza 防火墙
 
-	initialize.InitCoraza(ctx, logger) // 初始化 Coraza 防火墙
-
-	initialize.InitEntDb(ctx, entLogger)       // 初始化 业务数据库
-	initialize.InitEntLogDb(ctx, entLogLogger) // 初始化 日志数据库
-	initialize.InitGoCron(ctx, gocronLogger)   // 初始化 GoCron 调度器
-	initialize.InitMCP(ctx, mcpLogger)         // 初始化 MCP
-	initialize.InitEntRestyLog(restyLogger)    // 初始化 Resty 日志
-	initialize.InitEntHttpLog(httpLogger)      // 初始化 HTTP 日志
-	initialize.InitThirdParty(ctx)             // 初始化 第三方
+	initialize.InitEntDb(ctx, global.GvaEntSlog)       // 初始化 业务数据库
+	initialize.InitEntLogDb(ctx, global.GvaEntLogSlog) // 初始化 日志数据库
+	initialize.InitGoCron(ctx, global.GvaGocronSlog)   // 初始化 GoCron 调度器
+	initialize.InitMCP(ctx, global.GvaMcpSlog)         // 初始化 MCP
+	initialize.InitEntRestyLog(global.GvaRestySlog)    // 初始化 Resty 日志
+	initialize.InitEntHttpLog(global.GvaHttpSlog)      // 初始化 HTTP 日志
+	initialize.InitThirdParty(ctx)                     // 初始化 第三方
 
 	initialize.InitOperationLogHelper() // 初始化操作日志助手
 
 	// 打印
-	logger.InfoContext(ctx, "服务启动",
+	slog.InfoContext(ctx, "服务启动",
 		slog.Bool("debug", global.GvaEnv.DEBUG),
 		slog.String("version", global.GvaVersion),
 		slog.String("git_commit", global.GvaGitCommit),
@@ -174,8 +162,8 @@ func main() {
 		// 禁用控制台颜色
 		gin.DisableConsoleColor()
 		// 配置gin日志输出到slog
-		gin.DefaultWriter = gin_slog.NewSlogWriter(ginLogger)
-		gin.DefaultErrorWriter = gin_slog.NewSlogWriter(ginLogger)
+		gin.DefaultWriter = gin_slog.NewSlogWriter(global.GvaGinSlog)
+		gin.DefaultErrorWriter = gin_slog.NewSlogWriter(global.GvaGinSlog)
 	} else {
 		// 强制控制台颜色
 		gin.ForceConsoleColor()
@@ -196,33 +184,33 @@ func main() {
 	router.Use(gin.Logger())
 
 	// 配置 恢复 中间件
-	router.Use(gin_middleware.RecoveryMiddleware(ginLogger, true))
+	router.Use(gin_middleware.RecoveryMiddleware(global.GvaGinSlog, true))
 
 	// 配置 审计上下文 中间件
 	router.Use(gin_middleware.AuditContextMiddleware(
-		ginLogger,
+		global.GvaGinSlog,
 		operationlog.SourceUser,
 	))
 
 	// 配置 请求ID 中间件
 	router.Use(gin_middleware.RequestIDMiddleware(
-		ginLogger,
+		global.GvaGinSlog,
 	))
 
 	// 配置 Coraza 中间件
 	router.Use(gin_middleware.CorazaMiddleware(
 		global.GvaCoraza,
-		ginLogger,
+		global.GvaGinSlog,
 	))
 
 	// 配置 Gzip 压缩 中间件
 	router.Use(gin_middleware.GzipMiddleware(
-		ginLogger,
+		global.GvaGinSlog,
 	))
 
 	// 配置 CORS 中间件
 	router.Use(gin_middleware.CORSMiddleware(
-		ginLogger,
+		global.GvaGinSlog,
 	))
 
 	// health check
@@ -234,52 +222,53 @@ func main() {
 	})
 
 	// Web 资源
-	web_resource(ctx, ginLogger, router)
+	web_resource(ctx, global.GvaGinSlog, router)
 
 	// 配置 BasicAuth 中间件
 	router.Use(gin_middleware.BasicAuthMiddleware(
-		ginLogger,
+		global.GvaGinSlog,
 		global.GvaEnv.BASIC_AUTH_USERNAME,
 		global.GvaEnv.BASIC_AUTH_PASSWORD,
 	))
 
 	// Web 路由
-	web_router(ctx, ginLogger, router)
+	web_router(ctx, global.GvaGinSlog, router)
 
 	// API 路由
-	api_router(ctx, ginLogger, router)
+	api_router(ctx, global.GvaGinSlog, router)
 
 	// Swagger 路由
-	swagger_router(ctx, ginLogger, router)
+	swagger_router(ctx, global.GvaGinSlog, router)
 
 	// 新 Swagger 路由
-	qingfeng_router(ctx, ginLogger, router)
+	qingfeng_router(ctx, global.GvaGinSlog, router)
 
 	// MCP 启动
-	mcp_run(ctx, ginLogger, mcpLogger, router)
+	mcp_run(ctx, global.GvaGinSlog, global.GvaMcpSlog, router)
 
 	// gRPC 启动
-	go grpc_run(ctx, grpcLogger)
+	go grpc_run(ctx, global.GvaGrpcSlog)
 
 	// gRPC-Gateway 启动
-	go grpc_gw_run(ctx, grpcLogger, router)
+	go grpc_gw_run(ctx, global.GvaGrpcSlog, router)
 
 	// Thrift 启动
-	go thrift_run(ctx, thriftLogger)
+	go thrift_run(ctx, global.GvaThriftSlog)
 
 	// 启动 GoCron 调度器
-	initialize.StartGoCron(ctx, gocronLogger)
+	initialize.StartGoCron(ctx, global.GvaGocronSlog)
 
 	// 启动 CDN、DNS 刷新任务
 	ipUpdate := task.NewIPUpdateTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
 	if err := ipUpdate.StartCdnJob(ctx); err != nil {
-		logger.Error("启动CDN、DNS刷新任务失败",
+		slog.Error("启动CDN、DNS刷新任务失败",
 			slog.Any("err", err),
 		)
 		panic(err)
@@ -290,11 +279,12 @@ func main() {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
 	if err := sslUpdate.StartPeriodicTask(ctx); err != nil {
-		logger.Error("启动SSL刷新任务失败",
+		slog.Error("启动SSL刷新任务失败",
 			slog.Any("err", err),
 		)
 		panic(err)
@@ -305,11 +295,12 @@ func main() {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
 	if err := domainMonitor.StartPeriodicTask(ctx); err != nil {
-		logger.Error("启动域名监控任务失败",
+		slog.Error("启动域名监控任务失败",
 			slog.Any("err", err),
 		)
 		panic(err)
@@ -322,43 +313,43 @@ func main() {
 	}
 
 	// 启动 Gin 服务
-	ginLogger.Info("Gin 服务正在启动",
+	global.GvaGinSlog.Info("Gin 服务正在启动",
 		slog.String("port", global.GvaEnv.HTTP_ADDR),
 	)
 
 	// 使用 ListenAndServe 在 goroutine 中运行，以便能够捕获关闭信号
 	go func() {
 		if err := httpServerInstance.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			ginLogger.Error("Gin 服务启动失败",
+			global.GvaGinSlog.Error("Gin 服务启动失败",
 				slog.Any("err", err),
 			)
 			panic(err)
 		}
-		ginLogger.InfoContext(ctx, "Gin 服务已停止")
+		global.GvaGinSlog.InfoContext(ctx, "Gin 服务已停止")
 	}()
 
-	ginLogger.Info("Gin 服务启动成功",
+	global.GvaGinSlog.Info("Gin 服务启动成功",
 		slog.String("port", global.GvaEnv.HTTP_ADDR),
 	)
 
 	// 等待中断信号进行优雅关闭
-	waitForShutdown(logger, ginLogger, gocronLogger, entLogger, entLogLogger)
+	waitForShutdown(global.GvaGinSlog, global.GvaGocronSlog, global.GvaEntSlog, global.GvaEntLogSlog)
 }
 
 // 优雅关闭函数
-func waitForShutdown(logger *slog.Logger, ginLogger *slog.Logger, gocronLogger *slog.Logger, entLogger *slog.Logger, entLogLogger *slog.Logger) {
+func waitForShutdown(ginLogger *slog.Logger, gocronLogger *slog.Logger, entLogger *slog.Logger, entLogLogger *slog.Logger) {
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	logger.Info("收到退出信号，开始优雅关闭...")
+	slog.Info("收到退出信号，开始优雅关闭...")
 
 	// 执行关闭流程
-	gracefulShutdown(logger, ginLogger, gocronLogger, entLogger, entLogLogger)
+	gracefulShutdown(ginLogger, gocronLogger, entLogger, entLogLogger)
 }
 
 // 优雅关闭实现
-func gracefulShutdown(logger *slog.Logger, ginLogger *slog.Logger, gocronLogger *slog.Logger, entLogger *slog.Logger, entLogLogger *slog.Logger) {
+func gracefulShutdown(ginLogger *slog.Logger, gocronLogger *slog.Logger, entLogger *slog.Logger, entLogLogger *slog.Logger) {
 
 	shutdownOnce.Do(func() {
 		// 1. 首先关闭 HTTP 服务（停止接收新请求）
@@ -377,10 +368,10 @@ func gracefulShutdown(logger *slog.Logger, ginLogger *slog.Logger, gocronLogger 
 		}
 
 		// 2. 关闭 gRPC-Gateway 到上游的连接
-		logger.Info("开始关闭 gRPC-Gateway 连接...")
+		slog.Info("开始关闭 gRPC-Gateway 连接...")
 		if grpcConnInstance != nil {
 			grpcConnInstance.Close()
-			logger.Info("gRPC-Gateway 连接已关闭")
+			slog.Info("gRPC-Gateway 连接已关闭")
 		}
 
 		// 3. 通知 gRPC、Thrift 服务开始优雅关闭
@@ -390,7 +381,7 @@ func gracefulShutdown(logger *slog.Logger, ginLogger *slog.Logger, gocronLogger 
 		time.Sleep(1 * time.Second)
 
 		// 5. 关闭数据库连接和其他资源（现有的 defer 逻辑）
-		logger.Info("开始关闭数据库连接...")
+		slog.Info("开始关闭数据库连接...")
 
 		// 6. 关闭 第三方服务
 		// initialize.CloseThirdParty()
@@ -407,7 +398,7 @@ func gracefulShutdown(logger *slog.Logger, ginLogger *slog.Logger, gocronLogger 
 		// 10. 关闭 日志数据库
 		initialize.CloseEntLogDb(ctx, entLogLogger)
 
-		logger.Info("所有资源已优雅关闭")
+		slog.Info("所有资源已优雅关闭")
 	})
 }
 

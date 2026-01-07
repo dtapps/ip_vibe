@@ -145,10 +145,7 @@ func compileURITemplate(templ string) (*regexp.Regexp, []string, error) {
 func ExtractURIParams(tpl *mcp.ResourceTemplate, uri string) (map[string]string, error) {
 
 	// 日志
-	logger := slog.Default()
-	if global.GvaMcpSlog != nil {
-		logger = global.GvaMcpSlog.WithLogger()
-	}
+	logger := global.GvaMcpSlog
 
 	// 打印
 	logger.Debug("ExtractURIParams",

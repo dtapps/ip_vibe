@@ -78,10 +78,7 @@ func setDefaultsRecursive(v reflect.Value) {
 // 通用绑定器（推荐方式）
 func BindWithDefaults(c *gin.Context, obj any, b binding.Binding) (err error) {
 	// 日志
-	logger := slog.Default()
-	if global.GvaGinSlog != nil {
-		logger = global.GvaGinSlog.WithLogger()
-	}
+	logger := global.GvaGinSlog
 
 	setDefaults(obj)             // ← 先设默认值
 	err = b.Bind(c.Request, obj) // ← 再绑定，覆盖传了的字段
@@ -107,10 +104,7 @@ func BindWithDefaults(c *gin.Context, obj any, b binding.Binding) (err error) {
 // 快捷方法
 func BindQueryWithDefaults(c *gin.Context, obj any) (err error) {
 	// 日志
-	logger := slog.Default()
-	if global.GvaGinSlog != nil {
-		logger = global.GvaGinSlog.WithLogger()
-	}
+	logger := global.GvaGinSlog
 
 	// 先设默认值
 	setDefaults(obj)
@@ -149,10 +143,7 @@ func BindQueryWithDefaults(c *gin.Context, obj any) (err error) {
 
 func BindJSONWithDefaults(c *gin.Context, obj any) (err error) {
 	// 日志
-	logger := slog.Default()
-	if global.GvaGinSlog != nil {
-		logger = global.GvaGinSlog.WithLogger()
-	}
+	logger := global.GvaGinSlog
 
 	// 先设默认值
 	setDefaults(obj)
@@ -194,10 +185,7 @@ func BindJSONWithDefaults(c *gin.Context, obj any) (err error) {
 
 func BindUriWithDefaults(c *gin.Context, obj any) (err error) {
 	// 日志
-	logger := slog.Default()
-	if global.GvaGinSlog != nil {
-		logger = global.GvaGinSlog.WithLogger()
-	}
+	logger := global.GvaGinSlog
 
 	setDefaults(obj)           // ← 先设默认值
 	err = c.ShouldBindUri(obj) // ← 再绑定，覆盖传了的字段

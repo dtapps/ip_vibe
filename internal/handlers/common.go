@@ -70,10 +70,7 @@ func pusher(c *gin.Context, logger *slog.Logger) {
 // 通用渲染HTML
 func renderHTML[T any](c *gin.Context, templateName string, data types.BasePageData[T]) {
 	// 日志
-	logger := slog.Default()
-	if global.GvaGinSlog != nil {
-		logger = global.GvaGinSlog.WithLogger()
-	}
+	logger := global.GvaGinSlog
 
 	// 获取基础数据
 	baseData := getBaseData[T](c)
@@ -98,10 +95,7 @@ func renderHTML[T any](c *gin.Context, templateName string, data types.BasePageD
 // 指定菜单渲染HTML
 func renderHTMLWithMenu[T any](c *gin.Context, templateName string, data types.BasePageData[T], activeMenu string) {
 	// 日志
-	logger := slog.Default()
-	if global.GvaGinSlog != nil {
-		logger = global.GvaGinSlog.WithLogger()
-	}
+	logger := global.GvaGinSlog
 
 	// 获取基础数据
 	baseData := getBaseData[T](c)

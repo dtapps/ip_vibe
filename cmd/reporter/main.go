@@ -69,23 +69,15 @@ func main() {
 	initialize.InitGocronSLog("reporter") // 初始化 gocron 日志
 	initialize.InitRestySLog("reporter")  // 初始化 resty 日志
 	initialize.InitHttpSLog("reporter")   // 初始化 http 日志
+	initialize.EnsureDefaultSLog()        // 确保日志不为 nil
 
-	var (
-		logger     = slog.Default()
-		grpcLogger = global.GvaGrpcSlog.WithLogger()
-		// thriftLogger = global.GvaThriftSlog.WithLogger()
-		gocronLogger = global.GvaGocronSlog.WithLogger()
-		// restyLogger  = global.GvaRestySlog.WithLogger()
-		// httpLogger   = global.GvaHttpSlog.WithLogger()
-	)
-
-	initialize.InitGoCron(ctx, gocronLogger) // 初始化 GoCron 调度器
+	initialize.InitGoCron(ctx, global.GvaGocronSlog) // 初始化 GoCron 调度器
 	defer func() {
-		initialize.CloseGoCron(ctx, gocronLogger) // 关闭 GoCron 调度器
+		initialize.CloseGoCron(ctx, global.GvaGocronSlog) // 关闭 GoCron 调度器
 	}()
 
 	// 打印
-	logger.Info("服务启动",
+	slog.Info("服务启动",
 		slog.Bool("debug", global.GvaEnv.DEBUG),
 		slog.String("version", global.GvaVersion),
 		slog.String("git_commit", global.GvaGitCommit),
@@ -108,11 +100,11 @@ func main() {
 	}
 
 	// 创建 IP 报告服务
-	ipReportService := service.NewIPReportService(gocronLogger)
+	ipReportService := service.NewIPReportService(global.GvaGocronSlog)
 
 	if global.GvaEnv.GRPC_URL != "" {
 		// 获取 gRPC 客户端
-		grpcClient, err := get_grpc_client(ctx, grpcLogger)
+		grpcClient, err := get_grpc_client(ctx, global.GvaGrpcSlog)
 		if err != nil {
 			fmt.Printf("获取 gRPC 客户端失败: %v\n", err)
 			panic(err)
@@ -122,7 +114,7 @@ func main() {
 		// 创建IP上报实例
 		ipReportTask := task.NewIPReportGRPCTask(
 			global.GvaGoCron,
-			gocronLogger,
+			global.GvaGocronSlog,
 			ipReportService,
 			grpcClient,
 		)
@@ -139,7 +131,7 @@ func main() {
 		// 创建IP上报实例
 		ipReportTask := task.NewIPReportRestyTask(
 			global.GvaGoCron,
-			gocronLogger,
+			global.GvaGocronSlog,
 			ipReportService,
 		)
 		ipReportTask.SetDebug(global.GvaEnv.DEBUG)
@@ -160,7 +152,7 @@ func main() {
 	}
 
 	// 启动 GoCron 调度器
-	initialize.StartGoCron(ctx, gocronLogger)
+	initialize.StartGoCron(ctx, global.GvaGocronSlog)
 
 	// 阻止主线程退出
 	select {}
@@ -178,7 +170,7 @@ func get_grpc_client(ctx context.Context, grpcLogger *slog.Logger) (*grpc.Client
 	grpc_client.AddDialOption(
 		// 鉴权
 		grpc.WithPerRPCCredentials(grpc_credential.NewClientBasicAuth(
-			global.GvaGrpcSlog.WithLogger(),
+			grpcLogger,
 			global.GvaEnv.BASIC_AUTH_USERNAME,
 			global.GvaEnv.BASIC_AUTH_PASSWORD,
 		)),

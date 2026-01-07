@@ -31,9 +31,8 @@ func getTaskList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.ReadRe
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -62,9 +61,8 @@ func getTaskDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.Read
 	service := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)

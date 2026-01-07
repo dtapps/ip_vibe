@@ -19,7 +19,7 @@ require (
 	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.13
 	github.com/alibabacloud-go/esa-20240910/v2 v2.44.0
-	github.com/alibabacloud-go/tea v1.3.14
+	github.com/alibabacloud-go/tea v1.4.0
 	github.com/aliyun/credentials-go v1.4.10
 	github.com/apache/thrift v0.22.0
 	github.com/baidubce/bce-sdk-go v0.9.256
@@ -52,19 +52,19 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc4
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.22
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.27
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.28
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.21
 	github.com/volcengine/volcengine-go-sdk v1.2.4
 	github.com/wdcbot/qingfeng v1.6.1
 	go.dtapp.net/library/contrib/http_log v1.0.2
 	go.dtapp.net/library/contrib/resty_log v1.0.11
-	go.dtapp.net/library/service/bark v1.0.7
-	go.dtapp.net/library/service/dingtalk v1.0.39
-	go.dtapp.net/library/service/feishu v1.0.37
-	go.dtapp.net/library/service/ft07 v1.0.8
-	go.dtapp.net/library/service/pushdeer v1.0.8
-	go.dtapp.net/library/service/wechatqy v1.0.38
+	go.dtapp.net/library/service/bark v1.0.8
+	go.dtapp.net/library/service/dingtalk v1.0.40
+	go.dtapp.net/library/service/feishu v1.0.38
+	go.dtapp.net/library/service/ft07 v1.0.9
+	go.dtapp.net/library/service/pushdeer v1.0.9
+	go.dtapp.net/library/service/wechatqy v1.0.39
 	go.dtapp.net/library/utils/goarray v1.0.4
 	go.dtapp.net/library/utils/gojson v1.0.13
 	go.dtapp.net/library/utils/golog v1.0.180

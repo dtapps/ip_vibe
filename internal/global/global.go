@@ -1,6 +1,7 @@
 package global
 
 import (
+	"log/slog"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/helper/operation_logs_helper"
@@ -16,7 +17,6 @@ import (
 	"go.dtapp.net/library/service/ft07"
 	"go.dtapp.net/library/service/pushdeer"
 	"go.dtapp.net/library/service/wechatqy"
-	"go.dtapp.net/library/utils/golog"
 )
 
 var (
@@ -52,16 +52,16 @@ var (
 	GvaOS        string // 操作系统
 	GvaArch      string // CPU 架构
 
-	GvaSlog       *golog.SLog // slog 日志
-	GvaEntSlog    *golog.SLog // ent 日志
-	GvaEntLogSlog *golog.SLog // ent log 日志
-	GvaGinSlog    *golog.SLog // gin 日志
-	GvaGrpcSlog   *golog.SLog // gRPC 日志
-	GvaThriftSlog *golog.SLog // Thrift 日志
-	GvaGocronSlog *golog.SLog // gocron 日志
-	GvaMcpSlog    *golog.SLog // mcp 日志
-	GvaRestySlog  *golog.SLog // resty 日志
-	GvaHttpSlog   *golog.SLog // http 日志
+	GvaSlog       *slog.Logger // slog 日志
+	GvaEntSlog    *slog.Logger // ent 日志
+	GvaEntLogSlog *slog.Logger // ent log 日志
+	GvaGinSlog    *slog.Logger // gin 日志
+	GvaGrpcSlog   *slog.Logger // gRPC 日志
+	GvaThriftSlog *slog.Logger // Thrift 日志
+	GvaGocronSlog *slog.Logger // gocron 日志
+	GvaMcpSlog    *slog.Logger // mcp 日志
+	GvaRestySlog  *slog.Logger // resty 日志
+	GvaHttpSlog   *slog.Logger // http 日志
 
 	GvaCoraza coraza.WAF // Coraza 防火墙
 

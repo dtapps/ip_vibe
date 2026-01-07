@@ -32,9 +32,8 @@ func getDomainMonitorList(ctx context.Context, req *mcp.ReadResourceRequest) (*m
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -63,9 +62,8 @@ func getDomainMonitorDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req 
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)

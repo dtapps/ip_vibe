@@ -55,9 +55,8 @@ func getDomainMonitorList(ctx context.Context, req *mcp.CallToolRequest, params 
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -78,9 +77,8 @@ func getDomainMonitorDetail(ctx context.Context, req *mcp.CallToolRequest, param
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -101,9 +99,8 @@ func createDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -124,9 +121,8 @@ func updateDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -147,9 +143,8 @@ func updateDomainMonitorActive(ctx context.Context, req *mcp.CallToolRequest, pa
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -170,9 +165,8 @@ func deleteDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -193,9 +187,8 @@ func checkDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *t
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)

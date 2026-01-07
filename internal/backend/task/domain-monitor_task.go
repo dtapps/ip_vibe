@@ -10,7 +10,6 @@ import (
 	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/operationlog"
-	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/domain_helper"
 	"vibe_ip/internal/helper/gocron_helper"
 
@@ -34,11 +33,7 @@ type DomainMonitorTask struct {
 }
 
 // 创建实例
-func NewDomainMonitorTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, httpTransport *http_log.LoggingTransport, debug bool) *DomainMonitorTask {
-	logger := slog.Default()
-	if global.GvaGocronSlog != nil {
-		logger = global.GvaGocronSlog.WithLogger()
-	}
+func NewDomainMonitorTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) *DomainMonitorTask {
 	return &DomainMonitorTask{
 		db:            db,
 		logDb:         logDb,

@@ -39,7 +39,7 @@ func DomainMonitor(c *gin.Context) {
 		global.GvaEntLogDb,
 
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)

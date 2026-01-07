@@ -14,7 +14,6 @@ import (
 	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/operationlog"
-	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/cdn_helper"
 	"vibe_ip/internal/helper/dns_helper"
 	"vibe_ip/internal/helper/gocron_helper"
@@ -42,11 +41,7 @@ type IPUpdateTask struct {
 }
 
 // 创建实例
-func NewIPUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, httpTransport *http_log.LoggingTransport, debug bool) *IPUpdateTask {
-	logger := slog.Default()
-	if global.GvaGocronSlog != nil {
-		logger = global.GvaGocronSlog.WithLogger()
-	}
+func NewIPUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) *IPUpdateTask {
 	return &IPUpdateTask{
 		db:        db,
 		logDb:     logDb,

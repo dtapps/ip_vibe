@@ -28,7 +28,7 @@ func GetTasks(c *gin.Context) {
 		global.GvaEntLogDb,
 
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -69,7 +69,7 @@ func GetTaskDetail(c *gin.Context) {
 		global.GvaEntLogDb,
 
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -110,7 +110,7 @@ func RunTask(c *gin.Context) {
 		global.GvaEntLogDb,
 
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -151,7 +151,7 @@ func DeleteTask(c *gin.Context) {
 		global.GvaEntLogDb,
 
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -183,7 +183,7 @@ func CleanAllTask(c *gin.Context) {
 		global.GvaEntLogDb,
 
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -215,7 +215,7 @@ func StartScheduler(c *gin.Context) {
 		global.GvaEntLogDb,
 
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)
@@ -247,7 +247,7 @@ func StopScheduler(c *gin.Context) {
 		global.GvaEntLogDb,
 
 		global.GvaGoCron,
-		global.GvaGocronSlog.WithLogger(),
+		global.GvaGocronSlog,
 		global.GvaHttpLog,
 		global.GvaEnv.DEBUG,
 	)

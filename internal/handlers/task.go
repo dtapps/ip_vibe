@@ -28,7 +28,7 @@ func Task(c *gin.Context) {
 	}
 
 	// 任务助手
-	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron, global.GvaGocronSlog.WithLogger())
+	jobHelper := gocron_helper.NewJobHelper(global.GvaGoCron, global.GvaGocronSlog)
 
 	// 获取全部任务
 	jobs := jobHelper.GetJobsData(5)

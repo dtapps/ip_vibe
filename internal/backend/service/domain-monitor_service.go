@@ -269,6 +269,7 @@ func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id in
 		s.db,
 		s.dbLog,
 		s.cron,
+		s.logger,
 		s.httpTransport,
 		s.debug,
 	)

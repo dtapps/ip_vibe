@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"path/filepath"
 	"strings"
+	"sync"
 	"vibe_ip/internal/global"
 
 	"go.dtapp.net/library/utils/golog"
@@ -55,17 +56,26 @@ func getLevel() slog.Level {
 
 // getShowLine 获取是否显示行号
 func getShowLine() bool {
-	return true
+	if global.GvaEnv.DEBUG {
+		return true
+	} else {
+		return false
+	}
 }
+
+var setSlogOnce sync.Once
 
 // InitSLog 初始化 日志
 func InitSLog(name string) {
-	global.GvaSlog = golog.NewSlog(
-		golog.WithSLogLumberjack(getLumberjack("slog", name)),
-		golog.WithSLogSetLevel(getLevel()),
-		golog.WithSLogSetDefault(true),
-		golog.WithSLogSetDefaultCtx(true),
-	)
+	setSlogOnce.Do(func() {
+		global.GvaSlog = golog.NewSlog(
+			golog.WithSLogLumberjack(getLumberjack("slog", name)),
+			golog.WithSLogSetLevel(getLevel()),
+			golog.WithSLogShowLine(getShowLine()),
+			golog.WithSLogSetDefault(true),
+			golog.WithSLogSetDefaultCtx(true),
+		).WithLogger()
+	})
 }
 
 // InitEntSLog 初始化 ent 日志
@@ -74,11 +84,11 @@ func InitEntSLog(name string) {
 	global.GvaEntSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
-	)
+	).WithLogger()
 	global.GvaEntLogSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix+"_log", name)),
 		golog.WithSLogSetLevel(getLevel()),
-	)
+	).WithLogger()
 }
 
 // InitGinSLog 初始化 gin 日志
@@ -87,7 +97,7 @@ func InitGinSLog(name string) {
 	global.GvaGinSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
-	)
+	).WithLogger()
 }
 
 // InitGrpcSLog 初始化 gRPC 日志
@@ -96,7 +106,7 @@ func InitGrpcSLog(name string) {
 	global.GvaGrpcSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
-	)
+	).WithLogger()
 }
 
 // InitThriftSLog 初始化 Thrift 日志
@@ -105,7 +115,7 @@ func InitThriftSLog(name string) {
 	global.GvaThriftSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
-	)
+	).WithLogger()
 }
 
 // InitGocronSLog 初始化 gocron 日志
@@ -114,7 +124,7 @@ func InitGocronSLog(name string) {
 	global.GvaGocronSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
-	)
+	).WithLogger()
 }
 
 // InitMcpSLog 初始化 mcp 日志
@@ -123,7 +133,7 @@ func InitMcpSLog(name string) {
 	global.GvaMcpSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
-	)
+	).WithLogger()
 }
 
 // InitRestySLog 初始化 resty 日志
@@ -132,7 +142,7 @@ func InitRestySLog(name string) {
 	global.GvaRestySlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
-	)
+	).WithLogger()
 }
 
 // InitHttpSLog 初始化 http 日志
@@ -141,5 +151,40 @@ func InitHttpSLog(name string) {
 	global.GvaHttpSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
-	)
+	).WithLogger()
+}
+
+var setDefaultSlogOnce sync.Once
+
+// EnsureDefaultSLog 若全局日志器为 nil，则统一设置为  global.GvaSlog
+func EnsureDefaultSLog() {
+	setDefaultSlogOnce.Do(func() {
+		if global.GvaEntSlog == nil {
+			global.GvaEntSlog = global.GvaSlog
+		}
+		if global.GvaEntLogSlog == nil {
+			global.GvaEntLogSlog = global.GvaSlog
+		}
+		if global.GvaGinSlog == nil {
+			global.GvaGinSlog = global.GvaSlog
+		}
+		if global.GvaGrpcSlog == nil {
+			global.GvaGrpcSlog = global.GvaSlog
+		}
+		if global.GvaThriftSlog == nil {
+			global.GvaThriftSlog = global.GvaSlog
+		}
+		if global.GvaGocronSlog == nil {
+			global.GvaGocronSlog = global.GvaSlog
+		}
+		if global.GvaMcpSlog == nil {
+			global.GvaMcpSlog = global.GvaSlog
+		}
+		if global.GvaRestySlog == nil {
+			global.GvaRestySlog = global.GvaSlog
+		}
+		if global.GvaHttpSlog == nil {
+			global.GvaHttpSlog = global.GvaSlog
+		}
+	})
 }

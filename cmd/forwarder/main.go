@@ -70,23 +70,15 @@ func main() {
 	initialize.InitGocronSLog("forwarder") // 初始化 gocron 日志
 	initialize.InitRestySLog("forwarder")  // 初始化 resty 日志
 	initialize.InitHttpSLog("forwarder")   // 初始化 http 日志
+	initialize.EnsureDefaultSLog()         // 确保日志不为 nil
 
-	var (
-		logger     = slog.Default()
-		grpcLogger = global.GvaGrpcSlog.WithLogger()
-		// thriftLogger = global.GvaThriftSlog.WithLogger()
-		gocronLogger = global.GvaGocronSlog.WithLogger()
-		// restyLogger  = global.GvaRestySlog.WithLogger()
-		// httpLogger   = global.GvaHttpSlog.WithLogger()
-	)
-
-	initialize.InitGoCron(ctx, gocronLogger) // 初始化 GoCron 调度器
+	initialize.InitGoCron(ctx, global.GvaGocronSlog) // 初始化 GoCron 调度器
 	defer func() {
-		initialize.CloseGoCron(ctx, gocronLogger) // 关闭 GoCron 调度器
+		initialize.CloseGoCron(ctx, global.GvaGocronSlog) // 关闭 GoCron 调度器
 	}()
 
 	// 打印
-	logger.InfoContext(ctx, "服务启动",
+	slog.InfoContext(ctx, "服务启动",
 		slog.Bool("debug", global.GvaEnv.DEBUG),
 		slog.String("version", global.GvaVersion),
 		slog.String("git_commit", global.GvaGitCommit),
@@ -109,14 +101,14 @@ func main() {
 	}
 
 	// 创建端口转发服务
-	portForwardServer := service.NewPortForwardServer(gocronLogger)
+	portForwardServer := service.NewPortForwardServer(global.GvaGocronSlog)
 
 	// 创建端口转发器
-	forwardAgent := forward.NewAgent(gocronLogger)
+	forwardAgent := forward.NewAgent(global.GvaGocronSlog)
 
 	if global.GvaEnv.GRPC_URL != "" {
 		// 获取 gRPC 客户端
-		grpcClient, err := get_grpc_client(ctx, grpcLogger)
+		grpcClient, err := get_grpc_client(ctx, global.GvaGrpcSlog)
 		if err != nil {
 			fmt.Printf("获取 gRPC 客户端失败: %v\n", err)
 			panic(err)
@@ -126,7 +118,7 @@ func main() {
 		// 创建端口转发实例
 		portForwardTask := task.NewPortForwardGRPCTask(
 			global.GvaGoCron,
-			gocronLogger,
+			global.GvaGocronSlog,
 			portForwardServer,
 			forwardAgent,
 			grpcClient,
@@ -144,7 +136,7 @@ func main() {
 		// 创建统计上报实例
 		statsReportTask := task.NewStatsReportGRPCTask(
 			global.GvaGoCron,
-			gocronLogger,
+			global.GvaGocronSlog,
 			portForwardServer,
 			forwardAgent,
 			grpcClient,
@@ -162,7 +154,7 @@ func main() {
 		// 创建端口转发实例
 		portForwardTask := task.NewPortForwardRestyTask(
 			global.GvaGoCron,
-			gocronLogger,
+			global.GvaGocronSlog,
 			portForwardServer,
 			forwardAgent,
 		)
@@ -182,7 +174,7 @@ func main() {
 		// 创建统计上报实例
 		statsReportTask := task.NewStatsReportRestyTask(
 			global.GvaGoCron,
-			gocronLogger,
+			global.GvaGocronSlog,
 			portForwardServer,
 			forwardAgent,
 		)
@@ -203,7 +195,7 @@ func main() {
 	}
 
 	// 启动 GoCron 调度器
-	initialize.StartGoCron(ctx, gocronLogger)
+	initialize.StartGoCron(ctx, global.GvaGocronSlog)
 
 	// 阻止主线程退出
 	select {}

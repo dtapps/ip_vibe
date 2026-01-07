@@ -16,7 +16,6 @@ import (
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
-	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/helper/ssl_helper"
 
@@ -43,11 +42,7 @@ type SSLUpdateTask struct {
 }
 
 // 创建实例
-func NewSSLUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, httpTransport *http_log.LoggingTransport, debug bool) *SSLUpdateTask {
-	logger := slog.Default()
-	if global.GvaGocronSlog != nil {
-		logger = global.GvaGocronSlog.WithLogger()
-	}
+func NewSSLUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) *SSLUpdateTask {
 	return &SSLUpdateTask{
 		db:            db,
 		logDb:         logDb,
