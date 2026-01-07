@@ -56,7 +56,7 @@ func getWebhookList(ctx context.Context, req *mcp.CallToolRequest, params *types
 	// 调用
 	response, err := service.GetWebhooks(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -75,7 +75,7 @@ func getWebhookDetail(ctx context.Context, req *mcp.CallToolRequest, params *typ
 	// 调用
 	response, err := service.GetWebhook(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -94,7 +94,7 @@ func createWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	// 调用
 	response, err := service.CreateWebhook(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -113,7 +113,7 @@ func updateWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	// 调用
 	response, err := service.UpdateWebhook(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -132,7 +132,7 @@ func updateWebhookActive(ctx context.Context, req *mcp.CallToolRequest, params *
 	// 调用
 	response, err := service.UpdateWebhookActive(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -151,7 +151,7 @@ func deleteWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	// 调用
 	response, err := service.DeleteWebhook(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)

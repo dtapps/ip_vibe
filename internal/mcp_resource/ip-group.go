@@ -42,7 +42,7 @@ func getIPGroupList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.Rea
 	// 调用
 	response, err := service.GetIPGroups(ctx)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(req.Params.URI, response)
@@ -54,7 +54,7 @@ func getIPGroupDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.R
 	// 请求参数
 	param, err := ExtractURIParams(tpl, req.Params.URI)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 	params := &types.GetIPGroupRequest{}
 	params.ID = cast.ToInt64(param["id"])
@@ -68,7 +68,7 @@ func getIPGroupDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.R
 	// 调用
 	response, err := service.GetIPGroup(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(req.Params.URI, response)
@@ -80,7 +80,7 @@ func getIPGroupDevices(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.
 	// 请求参数
 	param, err := ExtractURIParams(tpl, req.Params.URI)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 	params := &types.GetIPGroupRequest{}
 	params.ID = cast.ToInt64(param["id"])
@@ -94,7 +94,7 @@ func getIPGroupDevices(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.
 	// 调用
 	response, err := service.GetIPGroupDevices(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(req.Params.URI, response)

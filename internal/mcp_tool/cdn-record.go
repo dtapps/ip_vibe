@@ -60,7 +60,7 @@ func getCdnRecordList(ctx context.Context, req *mcp.CallToolRequest, params *typ
 	// 调用
 	response, err := service.GetCdnRecords(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 	return successResponse(response, response)
 }
@@ -77,7 +77,7 @@ func getCdnRecordDetail(ctx context.Context, req *mcp.CallToolRequest, params *t
 	// 调用
 	response, err := service.GetCdnRecord(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 	return successResponse(response, response)
 }
@@ -94,7 +94,7 @@ func createCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	// 调用
 	response, err := service.CreateCdnRecord(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 	return successResponse(response, response)
 }
@@ -111,7 +111,7 @@ func updateCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	// 调用
 	response, err := service.UpdateCdnRecord(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 	return successResponse(response, response)
 }
@@ -128,7 +128,7 @@ func updateCdnRecordActive(ctx context.Context, req *mcp.CallToolRequest, params
 	// 调用
 	response, err := service.UpdateCdnRecordActive(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 	return successResponse(response, response)
 }
@@ -145,7 +145,7 @@ func deleteCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	// 调用
 	response, err := service.DeleteCdnRecord(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 	return successResponse(response, response)
 }
@@ -162,7 +162,7 @@ func healthCheckCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 调用
 	response, err := service.HealthcheckCdnRecord(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 	return successResponse(response, response)
 }

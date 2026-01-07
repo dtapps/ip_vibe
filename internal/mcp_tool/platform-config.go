@@ -50,7 +50,7 @@ func getPlatformConfigList(ctx context.Context, req *mcp.CallToolRequest, params
 	// 调用
 	response, err := service.GetConfigs(ctx)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -68,7 +68,7 @@ func getPlatformConfigDetail(ctx context.Context, req *mcp.CallToolRequest, para
 	// 调用
 	response, err := service.GetConfig(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -86,7 +86,7 @@ func createPlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 调用
 	response, err := service.CreateConfig(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -104,7 +104,7 @@ func updatePlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 调用
 	response, err := service.UpdateConfig(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -122,7 +122,7 @@ func deletePlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 调用
 	response, err := service.DeleteConfig(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)

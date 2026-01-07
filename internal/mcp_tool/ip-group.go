@@ -59,7 +59,7 @@ func getIPGroupList(ctx context.Context, req *mcp.CallToolRequest, params *types
 	// 调用
 	response, err := service.GetIPGroups(ctx)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -77,7 +77,7 @@ func getIPGroupDetail(ctx context.Context, req *mcp.CallToolRequest, params *typ
 	// 调用
 	response, err := service.GetIPGroup(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -95,7 +95,7 @@ func createIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	// 调用
 	response, err := service.CreateIPGroup(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -113,7 +113,7 @@ func updateIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	// 调用
 	response, err := service.UpdateIPGroup(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -131,7 +131,7 @@ func deleteIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	// 调用
 	response, err := service.DeleteIPGroup(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -149,7 +149,7 @@ func getIPGroupDevices(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	// 调用
 	response, err := service.GetIPGroupDevices(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -167,7 +167,7 @@ func healthCheckIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *t
 	// 调用
 	response, err := service.HealthcheckIPGroup(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)

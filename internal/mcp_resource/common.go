@@ -24,6 +24,11 @@ func errorResponse(format string, args ...any) (*mcp.ReadResourceResult, error) 
 	return nil, fmt.Errorf(format, args...)
 }
 
+// errorResponseErr 错误响应（支持错误）
+func errorResponseErr(err error) (*mcp.ReadResourceResult, error) {
+	return nil, err
+}
+
 // successResponse 成功响应（自动处理多种数据类型）
 func successResponse(uri string, data any) (*mcp.ReadResourceResult, error) {
 	var content string

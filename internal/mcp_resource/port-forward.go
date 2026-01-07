@@ -39,7 +39,7 @@ func getPortForwardList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp
 	// 调用
 	response, err := service.GetPortForwards(ctx, &types.GetPortForwardsRequest{})
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(req.Params.URI, response)
@@ -51,7 +51,7 @@ func getPortForwardDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *m
 	// 请求参数
 	param, err := ExtractURIParams(tpl, req.Params.URI)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 	params := &types.GetPortForwardRequest{}
 	params.ID = cast.ToInt64(param["id"])
@@ -67,7 +67,7 @@ func getPortForwardDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *m
 	// 调用
 	response, err := service.GetPortForward(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(req.Params.URI, response)

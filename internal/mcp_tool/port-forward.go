@@ -67,7 +67,7 @@ func getPortForwardList(ctx context.Context, req *mcp.CallToolRequest, params *t
 	// 调用
 	response, err := service.GetPortForwards(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -87,7 +87,7 @@ func getPortForwardDetail(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 调用
 	response, err := service.GetPortForward(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -107,7 +107,7 @@ func createPortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	// 调用
 	response, err := service.CreatePortForward(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -127,7 +127,7 @@ func updatePortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	// 调用
 	response, err := service.UpdatePortForward(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -147,7 +147,7 @@ func updatePortForwardForward(ctx context.Context, req *mcp.CallToolRequest, par
 	// 调用
 	response, err := service.UpdatePortForwardForward(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -167,7 +167,7 @@ func updatePortForwardActive(ctx context.Context, req *mcp.CallToolRequest, para
 	// 调用
 	response, err := service.UpdatePortForwardActive(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -187,7 +187,7 @@ func deletePortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	// 调用
 	response, err := service.DeletePortForward(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -207,7 +207,7 @@ func healthCheckPortForward(ctx context.Context, req *mcp.CallToolRequest, param
 	// 调用
 	response, err := service.HealthcheckPortForward(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)

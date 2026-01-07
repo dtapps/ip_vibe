@@ -12,6 +12,11 @@ func errorResponse(format string, args ...any) (*mcp.GetPromptResult, error) {
 	return nil, fmt.Errorf(format, args...)
 }
 
+// errorResponseErr 错误响应（支持错误）
+func errorResponseErr(err error) (*mcp.GetPromptResult, error) {
+	return nil, err
+}
+
 // successResponse 成功响应（自动处理多种数据类型）
 func successResponse(format string, args ...any) (*mcp.GetPromptResult, error) {
 	return &mcp.GetPromptResult{

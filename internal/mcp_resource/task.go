@@ -40,7 +40,7 @@ func getTaskList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.ReadRe
 	// 调用
 	response, err := service.GetTasks(ctx)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(req.Params.URI, response)
@@ -52,7 +52,7 @@ func getTaskDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.Read
 	// 请求参数
 	param, err := ExtractURIParams(tpl, req.Params.URI)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 	params := &types.GetTaskRequest{}
 	params.ID = param["id"]
@@ -70,7 +70,7 @@ func getTaskDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.Read
 	// 调用
 	response, err := service.GetTask(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(req.Params.URI, response)

@@ -61,7 +61,7 @@ func getTaskList(ctx context.Context, req *mcp.CallToolRequest, params *types.Ge
 	// 调用
 	response, err := service.GetTasks(ctx)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -83,7 +83,7 @@ func getTaskDetail(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	// 调用
 	response, err := service.GetTask(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -105,7 +105,7 @@ func runTask(ctx context.Context, req *mcp.CallToolRequest, params *types.RunTas
 	// 调用
 	err := service.RunTask(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse("运行任务成功", nil)
@@ -127,7 +127,7 @@ func deleteTask(ctx context.Context, req *mcp.CallToolRequest, params *types.Del
 	// 调用
 	err := service.DeleteTask(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse("删除任务成功", nil)
@@ -149,7 +149,7 @@ func cleanAllTask(ctx context.Context, req *mcp.CallToolRequest, params *any) (*
 	// 调用
 	err := service.CleanAllTask(ctx)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse("清理全部任务成功", nil)
@@ -171,7 +171,7 @@ func startScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) 
 	// 调用
 	err := service.StartScheduler(ctx)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse("启动调度器成功", nil)

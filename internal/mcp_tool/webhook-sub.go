@@ -40,7 +40,7 @@ func getWebhookSubList(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	// 调用
 	response, err := service.GetWebhookSubs(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -58,7 +58,7 @@ func updateWebhookSubActive(ctx context.Context, req *mcp.CallToolRequest, param
 	// 调用
 	response, err := service.UpdateWebhookSubActive(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -76,7 +76,7 @@ func deleteWebhookSub(ctx context.Context, req *mcp.CallToolRequest, params *typ
 	// 调用
 	response, err := service.DeleteWebhookSub(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)

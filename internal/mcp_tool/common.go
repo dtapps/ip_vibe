@@ -12,6 +12,11 @@ func errorResponse(format string, args ...any) (*mcp.CallToolResult, any, error)
 	return nil, nil, fmt.Errorf(format, args...)
 }
 
+// errorResponseErr 错误响应（支持错误）
+func errorResponseErr(err error) (*mcp.CallToolResult, any, error) {
+	return nil, nil, err
+}
+
 // successResponse 成功响应（自动处理多种数据类型）
 func successResponse(data any, response any) (*mcp.CallToolResult, any, error) {
 	var content string

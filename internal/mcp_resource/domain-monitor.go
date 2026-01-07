@@ -41,7 +41,7 @@ func getDomainMonitorList(ctx context.Context, req *mcp.ReadResourceRequest) (*m
 	// 调用
 	response, err := service.GetDomainMonitors(ctx, &types.GetDomainMonitorsRequest{})
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(req.Params.URI, response)
@@ -53,7 +53,7 @@ func getDomainMonitorDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req 
 	// 请求参数
 	param, err := ExtractURIParams(tpl, req.Params.URI)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 	params := &types.GetDomainMonitorRequest{}
 	params.ID = cast.ToInt64(param["id"])
@@ -71,7 +71,7 @@ func getDomainMonitorDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req 
 	// 调用
 	response, err := service.GetDomainMonitor(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(req.Params.URI, response)

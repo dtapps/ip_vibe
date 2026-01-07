@@ -60,7 +60,7 @@ func getDnsRecordList(ctx context.Context, req *mcp.CallToolRequest, params *typ
 	// 调用
 	response, err := service.GetDnsRecords(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -78,7 +78,7 @@ func getDnsRecordDetail(ctx context.Context, req *mcp.CallToolRequest, params *t
 	// 调用
 	response, err := service.GetDnsRecord(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -96,7 +96,7 @@ func createDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	// 调用
 	response, err := service.CreateDnsRecord(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -114,7 +114,7 @@ func updateDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	// 调用
 	response, err := service.UpdateDnsRecord(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -132,7 +132,7 @@ func updateDnsRecordActive(ctx context.Context, req *mcp.CallToolRequest, params
 	// 调用
 	response, err := service.UpdateDnsRecordActive(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -150,7 +150,7 @@ func deleteDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	// 调用
 	response, err := service.DeleteDnsRecord(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -168,7 +168,7 @@ func healthCheckDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 调用
 	response, err := service.HealthcheckDnsRecord(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)

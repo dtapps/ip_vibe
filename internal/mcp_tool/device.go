@@ -62,7 +62,7 @@ func getDeviceList(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	// 调用
 	response, err := service.GetDevices(ctx)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -82,7 +82,7 @@ func getDeviceDetail(ctx context.Context, req *mcp.CallToolRequest, params *type
 	// 调用
 	response, err := service.GetDevice(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -102,7 +102,7 @@ func createDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.C
 	// 调用
 	response, err := service.CreateDevice(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -122,7 +122,7 @@ func updateDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.U
 	// 调用
 	response, err := service.UpdateDevice(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -142,7 +142,7 @@ func deleteDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.D
 	// 调用
 	response, err := service.DeleteDevice(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -162,7 +162,7 @@ func getDeviceIpHistory(ctx context.Context, req *mcp.CallToolRequest, params *t
 	// 调用
 	response, err := service.GetDeviceIpHistory(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -182,7 +182,7 @@ func healthCheckDevice(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	// 调用
 	response, err := service.HealthcheckDevice(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)

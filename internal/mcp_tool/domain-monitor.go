@@ -64,7 +64,7 @@ func getDomainMonitorList(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 调用
 	response, err := service.GetDomainMonitors(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -86,7 +86,7 @@ func getDomainMonitorDetail(ctx context.Context, req *mcp.CallToolRequest, param
 	// 调用
 	response, err := service.GetDomainMonitor(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -108,7 +108,7 @@ func createDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 	// 调用
 	response, err := service.CreateDomainMonitor(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -130,7 +130,7 @@ func updateDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 	// 调用
 	response, err := service.UpdateDomainMonitor(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -152,7 +152,7 @@ func updateDomainMonitorActive(ctx context.Context, req *mcp.CallToolRequest, pa
 	// 调用
 	response, err := service.UpdateDomainMonitorActive(ctx, params)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -174,7 +174,7 @@ func deleteDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 	// 调用
 	response, err := service.DeleteDomainMonitor(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)
@@ -196,7 +196,7 @@ func checkDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *t
 	// 调用
 	response, err := service.CheckDomainMonitor(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(response, response)

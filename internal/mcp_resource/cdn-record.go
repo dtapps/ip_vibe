@@ -37,7 +37,7 @@ func getCdnRecordList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.R
 	// 调用
 	response, err := service.GetCdnRecords(ctx, &types.GetCdnRecordsRequest{})
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(req.Params.URI, response)
@@ -49,7 +49,7 @@ func getCdnRecordDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp
 	// 请求参数
 	param, err := ExtractURIParams(tpl, req.Params.URI)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 	params := &types.GetCdnRecordRequest{}
 	params.ID = cast.ToInt64(param["id"])
@@ -63,7 +63,7 @@ func getCdnRecordDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp
 	// 调用
 	response, err := service.GetCdnRecord(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(req.Params.URI, response)

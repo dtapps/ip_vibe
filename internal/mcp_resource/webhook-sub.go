@@ -37,7 +37,7 @@ func getWebhookSubList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.
 	// 调用
 	response, err := service.GetWebhookSubs(ctx, &types.GetWebhookSubsRequest{})
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(req.Params.URI, response)
@@ -49,7 +49,7 @@ func getWebhookSubDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mc
 	// 请求参数
 	param, err := ExtractURIParams(tpl, req.Params.URI)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 	params := &types.GetWebhookSubRequest{}
 	params.ID = cast.ToInt64(param["id"])
@@ -63,7 +63,7 @@ func getWebhookSubDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mc
 	// 调用
 	response, err := service.GetWebhookSub(ctx, params.ID)
 	if err != nil {
-		return errorResponse(err.Error())
+		return errorResponseErr(err)
 	}
 
 	return successResponse(req.Params.URI, response)
