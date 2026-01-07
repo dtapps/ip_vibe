@@ -29,8 +29,9 @@ type JdcloudDnsClient struct {
 	client *client.DomainserviceClient
 }
 
-// TrafficRoute DNS套件
-// https://www.volcengine.com/product/trafficroute
+// 京东云 云解析 DNS
+// https://www.jdcloud.com/cn/products/jd-cloud-dns
+// https://docs.jdcloud.com/cn/jd-cloud-dns/api/introduction
 func NewJdcloudDnsClient(ctx context.Context, config *JdcloudDnsConfig) (*JdcloudDnsClient, error) {
 
 	c := &JdcloudDnsClient{}
@@ -40,7 +41,7 @@ func NewJdcloudDnsClient(ctx context.Context, config *JdcloudDnsConfig) (*Jdclou
 	// 认证
 	c.auth = core.NewCredentials(c.config.AccessKey, c.config.SecretKey)
 
-	// 实例化client对象
+	// 实例化
 	c.client = client.NewDomainserviceClient(c.auth)
 
 	return c, nil

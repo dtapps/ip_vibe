@@ -25,6 +25,7 @@ type KsyunCdnClient struct {
 
 // 金山云内容分发网络
 // https://www.ksyun.com/nv/product/CDN.html
+// https://apiexplorer.ksyun.com/#/api/0/1031
 func NewKsyunCdnClient(ctx context.Context, config *KsyunCdnConfig) (*KsyunCdnClient, error) {
 
 	var err error

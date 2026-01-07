@@ -857,6 +857,9 @@ github.com/influxdata/tdigest
 # github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
 ## explicit
 github.com/jdcloud-api/jdcloud-sdk-go/core
+github.com/jdcloud-api/jdcloud-sdk-go/services/cdn/apis
+github.com/jdcloud-api/jdcloud-sdk-go/services/cdn/client
+github.com/jdcloud-api/jdcloud-sdk-go/services/cdn/models
 github.com/jdcloud-api/jdcloud-sdk-go/services/domainservice/apis
 github.com/jdcloud-api/jdcloud-sdk-go/services/domainservice/client
 github.com/jdcloud-api/jdcloud-sdk-go/services/domainservice/models
