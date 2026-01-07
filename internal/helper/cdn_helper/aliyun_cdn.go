@@ -48,8 +48,9 @@ type AliyunCdnClient struct {
 	client       *cdn20180510.Client
 }
 
-// 内容分发服务
-// https://cloud.tencent.com/document/product/1552
+// 阿里云 内容分发网络 CDN
+// https://www.aliyun.com/product/cdn
+// https://next.api.aliyun.com/api/Cdn/2018-05-10
 func NewAliyunCdnClient(ctx context.Context, config *AliyunCdnConfig) (*AliyunCdnClient, error) {
 
 	var err error

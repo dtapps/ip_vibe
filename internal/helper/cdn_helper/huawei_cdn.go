@@ -33,8 +33,9 @@ type HuaweiCdnClient struct {
 	client  *cdn.CdnClient
 }
 
-// 华为云 CDN
-// https://support.huaweicloud.com/cdn/index.html
+// 华为云 内容分发网络 CDN
+// https://www.huaweicloud.com/product/cdn.html
+// https://console.huaweicloud.com/apiexplorer/#/openapi/CDN/doc
 func NewHuaweiCdnClient(ctx context.Context, config *HuaweiCdnConfig) (*HuaweiCdnClient, error) {
 
 	var err error

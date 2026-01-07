@@ -29,8 +29,9 @@ type TencentEOClient struct {
 	client       *teo.Client
 }
 
-// 边缘安全加速平台 EO
-// https://cloud.tencent.com/document/product/1552
+// 腾讯云 边缘安全加速平台 EO
+// https://cloud.tencent.com/product/teo
+// https://console.cloud.tencent.com/api/explorer
 func NewTencentEOClient(ctx context.Context, config *TencentEOConfig) (*TencentEOClient, error) {
 
 	var err error

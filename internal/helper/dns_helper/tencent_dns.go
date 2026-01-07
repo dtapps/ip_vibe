@@ -27,10 +27,9 @@ type TencentDnsClient struct {
 	client       *dnspod.Client
 }
 
-// 云解析 DNS
-// DnsPod
-// https://cloud.tencent.com/document/product/302
-// https://cloud.tencent.com/document/product/1427
+// 腾讯云 云解析 DNS DnsPod
+// https://cloud.tencent.com/product/dns
+// https://console.cloud.tencent.com/api/explorer
 func NewTencentDnsClient(ctx context.Context, config *TencentDnsConfig) (*TencentDnsClient, error) {
 
 	var err error

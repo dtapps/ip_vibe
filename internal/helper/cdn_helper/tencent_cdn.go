@@ -28,8 +28,9 @@ type TencentCdnClient struct {
 	client       *cdn.Client
 }
 
-// 内容分发网络
-// https://cloud.tencent.com/document/product/1552
+// 腾讯云 内容分发网络 CDN
+// https://cloud.tencent.com/product/cdn
+// https://console.cloud.tencent.com/api/explorer
 func NewTencentCdnClient(ctx context.Context, config *TencentCdnConfig) (*TencentCdnClient, error) {
 
 	var err error

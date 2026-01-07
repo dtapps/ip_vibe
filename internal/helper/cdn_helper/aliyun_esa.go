@@ -49,6 +49,9 @@ type AliyunEsaClient struct {
 	client       *esa20240910.Client
 }
 
+// 阿里云 边缘安全加速 ESA
+// https://www.aliyun.com/product/esa
+// https://next.api.aliyun.com/api/ESA/2024-09-10
 func NewAliyunEsaClient(ctx context.Context, config *AliyunEsaConfig) (*AliyunEsaClient, error) {
 
 	var err error

@@ -34,8 +34,8 @@ type HuaweiDnsClient struct {
 	client  *dns.DnsClient
 }
 
-// 华为云 DNS
-// https://support.huaweicloud.com/dns/index.html
+// 华为云 云解析服务 DNS
+// https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/doc
 func NewHuaweiDnsClient(ctx context.Context, config *HuaweiDnsConfig) (*HuaweiDnsClient, error) {
 
 	var err error

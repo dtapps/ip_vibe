@@ -45,6 +45,9 @@ type AliyunDnsClient struct {
 	client       *alidns20150109.Client
 }
 
+// 阿里云 云解析 DNS
+// https://www.aliyun.com/product/dns
+// https://next.api.aliyun.com/api/Alidns/2015-01-09
 func NewAliyunDnsClient(ctx context.Context, config *AliyunDnsConfig) (*AliyunDnsClient, error) {
 
 	var err error
