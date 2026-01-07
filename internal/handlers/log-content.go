@@ -108,7 +108,7 @@ func LogContent(c *gin.Context) {
 
 		// 文件模式下，分页数据可以设为固定或 0
 		pageData.Total = int64(len(lists))
-		pageData.PageSize = 200
+		pageData.PageSize = 0
 
 	}
 

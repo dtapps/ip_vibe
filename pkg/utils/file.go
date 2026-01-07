@@ -10,7 +10,7 @@ import (
 func ReadLastLines(filePath string, maxLines int) ([]string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		slog.Error("ReadLastLines",
+		slog.Error("ReadLastLines Open Error",
 			slog.String("filePath", filePath),
 			slog.Any("err", err),
 		)
@@ -20,6 +20,16 @@ func ReadLastLines(filePath string, maxLines int) ([]string, error) {
 
 	var lines []string
 	scanner := bufio.NewScanner(file)
+
+	// 设定一个 5MB 的缓冲区上限
+	const maxCapacity = 5 * 1024 * 1024
+
+	// 初始大小 64KB
+	buf := make([]byte, 64*1024)
+	// 设置缓冲区及其上限
+
+	scanner.Buffer(buf, maxCapacity)
+
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 		if len(lines) > maxLines {
@@ -28,7 +38,8 @@ func ReadLastLines(filePath string, maxLines int) ([]string, error) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		slog.Error("ReadLastLines",
+		// 如果一行超过了 5MB，这里依然会报错，但 5MB 对日志来说足够了
+		slog.Error("ReadLastLines Scanner Error",
 			slog.String("filePath", filePath),
 			slog.Any("err", err),
 		)
