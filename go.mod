@@ -42,6 +42,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.4
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.182
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
+	github.com/kingsoftcloud/sdk-go/v2 v2.2.57
 	github.com/lib4u/fake-useragent v1.0.6
 	github.com/miekg/dns v1.1.69
 	github.com/modelcontextprotocol/go-sdk v1.2.0
@@ -98,6 +99,7 @@ require (
 	github.com/apache/dubbo-getty v1.5.0 // indirect
 	github.com/apache/dubbo-go-hessian2 v1.12.5 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
+	github.com/aws/aws-sdk-go v1.55.8 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bits-and-blooms/bitset v1.24.4 // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
