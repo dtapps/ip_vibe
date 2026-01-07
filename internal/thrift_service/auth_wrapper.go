@@ -1,4 +1,4 @@
-package thrift_server
+package thrift_service
 
 import (
 	"context"

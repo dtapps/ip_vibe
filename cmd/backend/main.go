@@ -30,7 +30,7 @@ import (
 	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/grpc_interceptor"
-	"vibe_ip/internal/grpc_server"
+	"vibe_ip/internal/grpc_service"
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/helper/gin_slog"
 	"vibe_ip/internal/initialize"
@@ -39,7 +39,7 @@ import (
 	"vibe_ip/internal/mcp_tool"
 	"vibe_ip/internal/thrift_generated/open"
 	"vibe_ip/internal/thrift_process"
-	"vibe_ip/internal/thrift_server"
+	"vibe_ip/internal/thrift_service"
 
 	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/denisbrodbeck/machineid"
@@ -1278,9 +1278,9 @@ func grpc_run(ctx context.Context, grpcLogger *slog.Logger) {
 	grpcServerInstance = grpc.NewServer(opts...)
 
 	// 注册服务
-	indexServer := grpc_server.NewIndexServer()
+	indexServer := grpc_service.NewIndexServer()
 	indexServer.RegisterService(grpcServerInstance)
-	openServer := grpc_server.NewOpenServer()
+	openServer := grpc_service.NewOpenServer()
 	openServer.RegisterService(grpcServerInstance)
 
 	// 启动 gRPC 服务
@@ -1460,7 +1460,7 @@ func thrift_run(ctx context.Context, thriftLogger *slog.Logger) {
 	protocolFactory := thrift.NewTBinaryProtocolFactoryConf(&thrift.TConfiguration{})
 
 	// 业务逻辑层 (Handler)
-	openHandler := thrift_server.NewOpenServer(thriftLogger)
+	openHandler := thrift_service.NewOpenServer(thriftLogger)
 	processor := open.NewOpenServiceProcessor(openHandler)
 
 	// 挂载【通用】处理器包装器
