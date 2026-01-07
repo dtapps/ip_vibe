@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"vibe_ip/internal/global"
 
+	"go.dtapp.net/library/contrib/resty_log"
 	"go.dtapp.net/library/service/bark"
 	"go.dtapp.net/library/service/dingtalk"
 	"go.dtapp.net/library/service/feishu"
@@ -21,20 +22,21 @@ func InitThirdParty(ctx context.Context, logger *slog.Logger) {
 	var err error
 
 	// Resty 客户端
-	restyClient := resty.New()
-	restyClientBool := false
+	var restyClient = resty.New()
+	var restyClientBool = false
 
 	// Resty 日志
-	restyLog := global.GvaRestyLog
-	restyLogBool := false
+	var restyLog *resty_log.Logger
+	var restyLogBool = false
 
-	if global.GvaHttpLog != nil {
+	if global.GvaRestyLog != nil {
+		restyLog = global.GvaRestyLog
+		restyLogBool = true
+	} else if global.GvaHttpLog != nil {
 		restyClient = resty.NewWithClient(&http.Client{
 			Transport: global.GvaHttpLog,
 		})
 		restyClientBool = true
-	} else {
-		restyLogBool = true
 	}
 
 	// 企业微信

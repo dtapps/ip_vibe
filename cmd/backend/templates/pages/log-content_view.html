@@ -1,6 +1,6 @@
 {{ define "pages/log-content_view.html" }}
 <div id="viewModal" class="modal">
-    <div class="ui-modal-box !max-w-7xl">
+    <div class="ui-modal-box !max-w-6xl">
         <div class="ui-header">
             <h3 class="text-xl font-bold flex items-center gap-2 uppercase tracking-tighter">
                 {{ template "icons" (dict "Name" "i-lucide-braces" "Class" "w-6 h-6 text-primary") }}
@@ -13,18 +13,30 @@
 
         <div
             class="px-8 py-4 bg-base-200/30 border-b border-base-200 flex flex-wrap gap-x-8 gap-y-2 items-center text-[11px]">
-            <div class="flex items-center gap-2"><span class="font-black opacity-30 uppercase">ID</span><span
-                    id="detailId" class="font-mono font-bold"></span></div>
-            <div class="flex items-center gap-2"><span class="font-black opacity-30 uppercase">Host</span><span
-                    id="detailHost" class="text-primary font-bold"></span></div>
-            <div class="flex items-center gap-2"><span class="font-black opacity-30 uppercase">Method</span><span
-                    id="detailMethod" class="badge badge-outline badge-sm font-black italic"></span></div>
-            <div class="flex items-center gap-2"><span class="font-black opacity-30 uppercase">Status</span><span
-                    id="detailStatus" class="badge badge-sm font-bold"></span></div>
-            <div class="flex items-center gap-2"><span class="font-black opacity-30 uppercase">Latency</span><span
-                    id="detailLatency" class="font-mono text-primary font-bold"></span></div>
-            <div class="flex items-center gap-2"><span class="font-black opacity-30 uppercase">Time</span><span
-                    id="detailTime" class="opacity-60"></span></div>
+            <div class="flex items-center gap-2">
+                <span class="font-black opacity-30 uppercase">序号</span>
+                <span id="detailId" class="font-mono font-bold"></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="font-black opacity-30 uppercase">主机</span>
+                <span id="detailHost" class="text-primary font-bold"></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="font-black opacity-30 uppercase">方法</span>
+                <span id="detailMethod" class="badge badge-outline badge-sm font-black italic"></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="font-black opacity-30 uppercase">状态</span>
+                <span id="detailStatus" class="badge badge-sm font-bold"></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="font-black opacity-30 uppercase">延迟</span>
+                <span id="detailLatency" class="font-mono text-primary font-bold"></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="font-black opacity-30 uppercase">时间</span>
+                <span id="detailTime" class="opacity-60"></span>
+            </div>
         </div>
 
         <div
@@ -38,10 +50,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2">
                     <div class="flex justify-between items-center px-1">
-                        <label class="text-[10px] font-black opacity-40 uppercase tracking-widest">Request
-                            Headers</label>
+                        <label class="text-[10px] font-black opacity-40 uppercase tracking-widest">
+                            Request Headers
+                        </label>
                         <button id="copyReqHeaders" class="btn btn-xs btn-ghost text-primary log-copy-btn"
-                            data-clipboard-text="">复制 JSON</button>
+                            data-clipboard-text="">
+                            复制 JSON
+                        </button>
                     </div>
                     <div id="detailReqHeaders"
                         class="bg-base-300/20 rounded-xl p-4 font-mono text-[10px] h-44 overflow-y-auto border border-base-300/30 shadow-inner">
@@ -49,10 +64,13 @@
                 </div>
                 <div class="space-y-2">
                     <div class="flex justify-between items-center px-1">
-                        <label class="text-[10px] font-black opacity-40 uppercase tracking-widest">Response
-                            Headers</label>
+                        <label class="text-[10px] font-black opacity-40 uppercase tracking-widest">
+                            Response Headers
+                        </label>
                         <button id="copyResHeaders" class="btn btn-xs btn-ghost text-primary log-copy-btn"
-                            data-clipboard-text="">复制 JSON</button>
+                            data-clipboard-text="">
+                            复制 JSON
+                        </button>
                     </div>
                     <div id="detailResHeaders"
                         class="bg-base-300/20 rounded-xl p-4 font-mono text-[10px] h-44 overflow-y-auto border border-base-300/30 shadow-inner">
@@ -63,9 +81,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-2">
                     <div class="flex justify-between items-center px-1">
-                        <label class="text-[10px] font-black opacity-40 uppercase tracking-widest">Request Body</label>
+                        <label class="text-[10px] font-black opacity-40 uppercase tracking-widest">
+                            Request Body
+                        </label>
                         <button class="btn btn-xs btn-ghost text-primary log-copy-btn"
-                            data-clipboard-target="#detailReqBody">复制</button>
+                            data-clipboard-target="#detailReqBody">
+                            复制
+                        </button>
                     </div>
                     <textarea id="detailReqBody" readonly
                         class="w-full h-80 p-4 bg-neutral text-neutral-content rounded-2xl font-mono text-[11px] leading-relaxed border-none focus:outline-none resize-none shadow-inner"></textarea>
@@ -73,9 +95,13 @@
 
                 <div class="space-y-2">
                     <div class="flex justify-between items-center px-1">
-                        <label class="text-[10px] font-black opacity-40 uppercase tracking-widest">Response Body</label>
+                        <label class="text-[10px] font-black opacity-40 uppercase tracking-widest">
+                            Response Body
+                        </label>
                         <button class="btn btn-xs btn-ghost text-primary log-copy-btn"
-                            data-clipboard-target="#detailResBody">复制</button>
+                            data-clipboard-target="#detailResBody">
+                            复制
+                        </button>
                     </div>
                     <textarea id="detailResBody" readonly
                         class="w-full h-80 p-4 bg-neutral text-neutral-content rounded-2xl font-mono text-[11px] leading-relaxed border-none focus:outline-none resize-none shadow-inner"></textarea>
@@ -84,8 +110,9 @@
         </div>
 
         <div class="modal-action p-8 pt-0">
-            <button class="btn btn-sm btn-ghost rounded-xl font-black uppercase"
-                onclick="closeModal('viewModal')">Close</button>
+            <button class="btn btn-sm btn-ghost rounded-xl font-black uppercase" onclick="closeModal('viewModal')">
+                关闭
+            </button>
         </div>
     </div>
 </div>

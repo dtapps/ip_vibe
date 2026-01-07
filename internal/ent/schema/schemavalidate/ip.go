@@ -15,10 +15,10 @@ func ValidateIPV4(s string) error {
 	}
 	ip := net.ParseIP(s)
 	if ip == nil {
-		return fmt.Errorf("invalid IP address: %s", s)
+		return fmt.Errorf("invalid IP address: %s / %s", s, ip)
 	}
 	if ip == nil || ip.To4() == nil {
-		return fmt.Errorf("invalid IPv4 address: %s", s)
+		return fmt.Errorf("invalid IPv4 address: %s / %s", s, ip)
 	}
 	return nil
 }
@@ -32,10 +32,10 @@ func ValidateIPV6(s string) error {
 	}
 	ip := net.ParseIP(s)
 	if ip == nil {
-		return fmt.Errorf("invalid IP address: %s", ip)
+		return fmt.Errorf("invalid IP address: %s / %s", s, ip)
 	}
 	if ip == nil || ip.To4() != nil {
-		return fmt.Errorf("invalid IPv6 address: %s", s)
+		return fmt.Errorf("invalid IPv6 address: %s / %s", s, ip)
 	}
 	return nil
 }
