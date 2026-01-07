@@ -125,6 +125,7 @@ func DomainMonitorDetail(c *gin.Context) {
 
 	// 最近操作日志
 	allOperationLogs, err := global.GvaEntLogDb.OperationLog.Query().
+		Where(operationlog.SourceIn(operationlog.SourceUser)).
 		Where(operationlog.ObjTypeEQ(operationlog.ObjTypeDomainMonitor)).
 		Where(operationlog.ObjIDEQ(firstDomainMonitor.ID)).
 		OrderByCreatedAtDesc().
