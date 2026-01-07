@@ -21,8 +21,8 @@ func getLumberjack(prefix string, name string) *lumberjack.Logger {
 	if name != "" {
 		elems = append(elems, name)
 	}
-	elems = append(elems, name+".log")
 	completeName := strings.Join(elems, "_")
+	completeName += ".log"
 
 	if global.GvaVersion == "dev" {
 		return &lumberjack.Logger{
