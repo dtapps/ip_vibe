@@ -16,11 +16,6 @@ type ClientBasicAuth struct {
 
 // NewClientBasicAuth 创建一个新的客户端基础认证凭证
 func NewClientBasicAuth(logger *slog.Logger, username, password string) *ClientBasicAuth {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
-
 	return &ClientBasicAuth{
 		logger:   logger,
 		username: username,

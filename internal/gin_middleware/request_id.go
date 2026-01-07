@@ -10,10 +10,6 @@ import (
 
 // RequestIDMiddleware RequestID 中间件
 func RequestIDMiddleware(logger *slog.Logger) gin.HandlerFunc {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
 
 	// 创建 RequestID 中间件
 	originalMiddleware := requestid.New()

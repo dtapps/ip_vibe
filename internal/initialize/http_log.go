@@ -85,10 +85,6 @@ func (s *EntHttpLogSaver) HandleLog(ctx context.Context, data *http_log.LogData)
 
 // InitEntHttpLog 初始化 ent http 日志
 func InitEntHttpLog(logger *slog.Logger) {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
 
 	httpLogMutex.Do(func() {
 		originalTransport := http.DefaultTransport

@@ -14,10 +14,6 @@ import (
 
 // RecoveryMiddleware Recovery 中间件
 func RecoveryMiddleware(logger *slog.Logger, stack bool) gin.HandlerFunc {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
 
 	return func(c *gin.Context) {
 		defer func() {

@@ -22,10 +22,8 @@ func init() {
 
 // InitEntDb 初始化 业务数据库
 func InitEntDb(ctx context.Context, logger *slog.Logger) {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
+
+	logger.InfoContext(ctx, "Ent 服务正在启动")
 
 	var err error
 
@@ -73,6 +71,9 @@ func InitEntDb(ctx context.Context, logger *slog.Logger) {
 		)
 		panic(err)
 	}
+
+	logger.InfoContext(ctx, "Ent 服务启动成功")
+
 }
 
 // CloseEntDb 关闭 业务数据库
@@ -89,10 +90,8 @@ func CloseEntDb(ctx context.Context, logger *slog.Logger) {
 
 // InitEntLogDb 初始化 日志数据库
 func InitEntLogDb(ctx context.Context, logger *slog.Logger) {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
+
+	logger.InfoContext(ctx, "Ent Log 服务正在启动")
 
 	var err error
 
@@ -140,6 +139,9 @@ func InitEntLogDb(ctx context.Context, logger *slog.Logger) {
 		)
 		panic(err)
 	}
+
+	logger.InfoContext(ctx, "Ent Log 服务启动成功")
+
 }
 
 // CloseEntLogDb 关闭 日志数据库

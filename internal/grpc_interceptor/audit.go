@@ -11,10 +11,6 @@ import (
 
 // AuditContextInterceptor 审计上下文 一元拦截器
 func AuditContextInterceptor(logger *slog.Logger, source operationlog.Source) grpc.UnaryServerInterceptor {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
 
 	if source == operationlog.SourceUnknown {
 		source = operationlog.SourceGrpc

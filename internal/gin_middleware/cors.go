@@ -10,10 +10,6 @@ import (
 
 // CORSMiddleware CORS 中间件
 func CORSMiddleware(logger *slog.Logger) gin.HandlerFunc {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
 
 	// 配置 CORS 中间件
 	corsConfig := cors.Config{

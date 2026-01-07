@@ -10,10 +10,6 @@ import (
 
 // AuditContextMiddleware 审计上下文 中间件
 func AuditContextMiddleware(logger *slog.Logger, source operationlog.Source) gin.HandlerFunc {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
 
 	if source == operationlog.SourceUnknown {
 		source = operationlog.SourceGin

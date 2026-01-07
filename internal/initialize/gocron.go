@@ -12,10 +12,8 @@ import (
 
 // InitGoCron 初始化 GoCron 调度器
 func InitGoCron(ctx context.Context, logger *slog.Logger) {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
+
+	logger.InfoContext(ctx, "GoCron 服务正在启动")
 
 	options := make([]gocron.SchedulerOption, 0)
 	// 日志
@@ -32,6 +30,8 @@ func InitGoCron(ctx context.Context, logger *slog.Logger) {
 		panic(err)
 	}
 	global.GvaGoCron = s
+
+	logger.InfoContext(ctx, "GoCron 服务启动成功")
 }
 
 // CloseGoCron 关闭 GoCron 调度器

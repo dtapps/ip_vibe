@@ -17,10 +17,6 @@ type AuthWrapper struct {
 }
 
 func NewAuthWrapper(logger *slog.Logger) *AuthWrapper {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
 
 	// 获取基本认证 token
 	validToken := core.GetBasicAuthToken(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)

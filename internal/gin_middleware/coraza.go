@@ -18,10 +18,6 @@ import (
 
 // CorazaMiddleware Coraza WAF 中间件
 func CorazaMiddleware(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
 
 	// 如果 WAF 实例为空，直接返回空的 HandlerFunc
 	if waf == nil {

@@ -10,10 +10,6 @@ import (
 
 // GzipMiddleware Gzip 压缩 中间件
 func GzipMiddleware(logger *slog.Logger) gin.HandlerFunc {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
 
 	// 创建 Gzip 压缩 中间件，但排除 SVG 文件
 	originalMiddleware := gzip.Gzip(gzip.DefaultCompression, gzip.WithExcludedExtensions([]string{".svg"}))

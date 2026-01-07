@@ -14,10 +14,6 @@ import (
 
 // BasicAuthUnaryInterceptor BasicAuth 一元拦截器
 func BasicAuthUnaryInterceptor(logger *slog.Logger, username string, password string) grpc.UnaryServerInterceptor {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
 
 	// 认证头键名
 	const authKey = "authorization"

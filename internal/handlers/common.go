@@ -36,10 +36,6 @@ func errorResponse(c *gin.Context, statusCode int, message string) {
 // HTTP2 server 推送
 // https://gin-gonic.com/zh-cn/docs/examples/http2-server-push/
 func pusher(c *gin.Context, logger *slog.Logger) {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
 
 	if pusher := c.Writer.Pusher(); pusher != nil {
 		// 推送 CSS 和 JS 文件

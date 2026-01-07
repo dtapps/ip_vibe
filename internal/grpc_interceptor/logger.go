@@ -14,10 +14,6 @@ import (
 
 // LoggerUnaryInterceptor 日志 一元拦截器
 func LoggerUnaryInterceptor(logger *slog.Logger) grpc.UnaryServerInterceptor {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
 
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		start := time.Now()

@@ -10,10 +10,8 @@ import (
 
 // 初始化 MCP
 func InitMCP(ctx context.Context, logger *slog.Logger) {
-	// 日志
-	if logger == nil {
-		logger = slog.Default()
-	}
+
+	logger.InfoContext(ctx, "MCP 服务正在启动")
 
 	// 创建 Model Context Protocol 服务器
 	impl := mcp.Implementation{
@@ -24,4 +22,7 @@ func InitMCP(ctx context.Context, logger *slog.Logger) {
 	options := mcp.ServerOptions{}
 	options.Logger = logger
 	global.GvaMcpServer = mcp.NewServer(&impl, &options)
+
+	logger.InfoContext(ctx, "MCP 服务启动成功")
+
 }
