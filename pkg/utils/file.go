@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bufio"
+	"log/slog"
 	"os"
 )
 
@@ -9,6 +10,10 @@ import (
 func ReadLastLines(filePath string, maxLines int) ([]string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
+		slog.Error("ReadLastLines",
+			slog.String("filePath", filePath),
+			slog.Any("err", err),
+		)
 		return nil, err
 	}
 	defer file.Close()
@@ -22,6 +27,14 @@ func ReadLastLines(filePath string, maxLines int) ([]string, error) {
 		}
 	}
 
+	if err := scanner.Err(); err != nil {
+		slog.Error("ReadLastLines",
+			slog.String("filePath", filePath),
+			slog.Any("err", err),
+		)
+		return nil, err
+	}
+
 	// 习惯上日志最新的在下面，如果前端需要最新的在最上面，可以 Reverse 这个 slice
-	return lines, scanner.Err()
+	return lines, nil
 }
