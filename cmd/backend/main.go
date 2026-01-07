@@ -309,6 +309,21 @@ func main() {
 		panic(err)
 	}
 
+	// 启动清除数据任务
+	clearData := task.NewClearDataTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog,
+		global.GvaEnv.DEBUG,
+	)
+	if err := clearData.StartPeriodicTask(ctx); err != nil {
+		slog.Error("启动清除数据任务失败",
+			slog.Any("err", err),
+		)
+		panic(err)
+	}
+
 	// 创建 HTTP 服务实例（用于优雅关闭）
 	httpServerInstance = &http.Server{
 		Addr:    global.GvaEnv.HTTP_ADDR,
