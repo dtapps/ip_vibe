@@ -59,6 +59,14 @@ func (_c *RestyLogCreate) SetStatusCode(v int) *RestyLogCreate {
 	return _c
 }
 
+// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
+func (_c *RestyLogCreate) SetNillableStatusCode(v *int) *RestyLogCreate {
+	if v != nil {
+		_c.SetStatusCode(*v)
+	}
+	return _c
+}
+
 // SetResponseHeaders sets the "response_headers" field.
 func (_c *RestyLogCreate) SetResponseHeaders(v map[string][]string) *RestyLogCreate {
 	_c.mutation.SetResponseHeaders(v)
@@ -220,14 +228,6 @@ func (_c *RestyLogCreate) check() error {
 	}
 	if _, ok := _c.mutation.URL(); !ok {
 		return &ValidationError{Name: "url", err: errors.New(`ent_log: missing required field "RestyLog.url"`)}
-	}
-	if _, ok := _c.mutation.StatusCode(); !ok {
-		return &ValidationError{Name: "status_code", err: errors.New(`ent_log: missing required field "RestyLog.status_code"`)}
-	}
-	if v, ok := _c.mutation.StatusCode(); ok {
-		if err := restylog.StatusCodeValidator(v); err != nil {
-			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent_log: validator failed for field "RestyLog.status_code": %w`, err)}
-		}
 	}
 	if _, ok := _c.mutation.ElapseTime(); !ok {
 		return &ValidationError{Name: "elapse_time", err: errors.New(`ent_log: missing required field "RestyLog.elapse_time"`)}

@@ -81,6 +81,9 @@ func (_u *HttpLogUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.RequestBodyCleared() {
 		_spec.ClearField(httplog.FieldRequestBody, field.TypeJSON)
 	}
+	if _u.mutation.StatusCodeCleared() {
+		_spec.ClearField(httplog.FieldStatusCode, field.TypeInt)
+	}
 	if _u.mutation.ResponseHeadersCleared() {
 		_spec.ClearField(httplog.FieldResponseHeaders, field.TypeJSON)
 	}
@@ -200,6 +203,9 @@ func (_u *HttpLogUpdateOne) sqlSave(ctx context.Context) (_node *HttpLog, err er
 	}
 	if _u.mutation.RequestBodyCleared() {
 		_spec.ClearField(httplog.FieldRequestBody, field.TypeJSON)
+	}
+	if _u.mutation.StatusCodeCleared() {
+		_spec.ClearField(httplog.FieldStatusCode, field.TypeInt)
 	}
 	if _u.mutation.ResponseHeadersCleared() {
 		_spec.ClearField(httplog.FieldResponseHeaders, field.TypeJSON)

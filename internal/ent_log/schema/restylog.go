@@ -67,7 +67,7 @@ func (RestyLog) Fields() []ent.Field {
 
 		field.Int("status_code").
 			Comment("响应码").
-			Positive(). // 正数
+			Optional().
 			Immutable().
 			Annotations(entsql.WithComments(true)),
 

@@ -27,7 +27,7 @@
             </a>
             <a href="?type=slog_file&file_name=slog_backend.log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "slog_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
-                Slog 语句
+                Slog 流水
             </a>
             <a href="?type=ent_file&file_name=ent_backend.log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "ent_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
@@ -133,22 +133,25 @@
 
             <div
                 class="bg-neutral text-neutral-content p-6 rounded-[2rem] shadow-2xl font-mono text-xs h-[600px] overflow-hidden relative group">
-                <div id="logConsole" class="h-full overflow-y-auto leading-relaxed scrollbar-hide">
+                <div id="logConsole" class="h-full overflow-y-auto leading-relaxed scrollbar-hide text-left">
                     {{ range $list }}
-                    <div class="mb-1 py-0.5 hover:bg-white/5 transition-colors">
+                    <div
+                        class="mb-1 py-0.5 hover:bg-white/5 transition-colors break-all whitespace-pre-wrap text-left flex flex-col items-start">
                         {{ if contains . "ERROR" }}
-                        <span class="text-error font-bold"> {{ . }}</span>
+                        <span class="text-error font-bold text-left w-full"> {{ . }}</span>
                         {{ else if contains . "服务启动" }}
                         <div
                             class="divider divider-warning text-[10px] my-6 font-black uppercase tracking-[0.5em] before:bg-warning/20 after:bg-warning/20 text-warning">
                             --- System Reboot ---
                         </div>
-                        <span class="text-warning font-black tracking-wider">{{ . }}</span>
+                        <span class="text-warning font-black tracking-wider text-left w-full">{{ . }}</span>
                         {{ else if contains . "Panic" }}
-                        <div class="bg-error/20 border-l-4 border-error p-4 my-2 text-error font-bold rounded-r-xl">{{ .
-                            }}</div>
+                        <div
+                            class="bg-error/20 border-l-4 border-error p-4 my-2 text-error font-bold rounded-r-xl text-left w-full">
+                            {{ . }}
+                        </div>
                         {{ else }}
-                        <span class="opacity-60">{{ . }}</span>
+                        <span class="opacity-60 text-left w-full">{{ . }}</span>
                         {{ end }}
                     </div>
                     {{ end }}

@@ -2692,10 +2692,24 @@ func (m *HttpLogMutation) AddedStatusCode() (r int, exists bool) {
 	return *v, true
 }
 
+// ClearStatusCode clears the value of the "status_code" field.
+func (m *HttpLogMutation) ClearStatusCode() {
+	m.status_code = nil
+	m.addstatus_code = nil
+	m.clearedFields[httplog.FieldStatusCode] = struct{}{}
+}
+
+// StatusCodeCleared returns if the "status_code" field was cleared in this mutation.
+func (m *HttpLogMutation) StatusCodeCleared() bool {
+	_, ok := m.clearedFields[httplog.FieldStatusCode]
+	return ok
+}
+
 // ResetStatusCode resets all changes to the "status_code" field.
 func (m *HttpLogMutation) ResetStatusCode() {
 	m.status_code = nil
 	m.addstatus_code = nil
+	delete(m.clearedFields, httplog.FieldStatusCode)
 }
 
 // SetResponseHeaders sets the "response_headers" field.
@@ -3357,6 +3371,9 @@ func (m *HttpLogMutation) ClearedFields() []string {
 	if m.FieldCleared(httplog.FieldRequestBody) {
 		fields = append(fields, httplog.FieldRequestBody)
 	}
+	if m.FieldCleared(httplog.FieldStatusCode) {
+		fields = append(fields, httplog.FieldStatusCode)
+	}
 	if m.FieldCleared(httplog.FieldResponseHeaders) {
 		fields = append(fields, httplog.FieldResponseHeaders)
 	}
@@ -3391,6 +3408,9 @@ func (m *HttpLogMutation) ClearField(name string) error {
 		return nil
 	case httplog.FieldRequestBody:
 		m.ClearRequestBody()
+		return nil
+	case httplog.FieldStatusCode:
+		m.ClearStatusCode()
 		return nil
 	case httplog.FieldResponseHeaders:
 		m.ClearResponseHeaders()
@@ -6068,10 +6088,24 @@ func (m *RestyLogMutation) AddedStatusCode() (r int, exists bool) {
 	return *v, true
 }
 
+// ClearStatusCode clears the value of the "status_code" field.
+func (m *RestyLogMutation) ClearStatusCode() {
+	m.status_code = nil
+	m.addstatus_code = nil
+	m.clearedFields[restylog.FieldStatusCode] = struct{}{}
+}
+
+// StatusCodeCleared returns if the "status_code" field was cleared in this mutation.
+func (m *RestyLogMutation) StatusCodeCleared() bool {
+	_, ok := m.clearedFields[restylog.FieldStatusCode]
+	return ok
+}
+
 // ResetStatusCode resets all changes to the "status_code" field.
 func (m *RestyLogMutation) ResetStatusCode() {
 	m.status_code = nil
 	m.addstatus_code = nil
+	delete(m.clearedFields, restylog.FieldStatusCode)
 }
 
 // SetResponseHeaders sets the "response_headers" field.
@@ -6796,6 +6830,9 @@ func (m *RestyLogMutation) ClearedFields() []string {
 	if m.FieldCleared(restylog.FieldRequestBody) {
 		fields = append(fields, restylog.FieldRequestBody)
 	}
+	if m.FieldCleared(restylog.FieldStatusCode) {
+		fields = append(fields, restylog.FieldStatusCode)
+	}
 	if m.FieldCleared(restylog.FieldResponseHeaders) {
 		fields = append(fields, restylog.FieldResponseHeaders)
 	}
@@ -6833,6 +6870,9 @@ func (m *RestyLogMutation) ClearField(name string) error {
 		return nil
 	case restylog.FieldRequestBody:
 		m.ClearRequestBody()
+		return nil
+	case restylog.FieldStatusCode:
+		m.ClearStatusCode()
 		return nil
 	case restylog.FieldResponseHeaders:
 		m.ClearResponseHeaders()

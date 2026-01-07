@@ -59,6 +59,14 @@ func (_c *HttpLogCreate) SetStatusCode(v int) *HttpLogCreate {
 	return _c
 }
 
+// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
+func (_c *HttpLogCreate) SetNillableStatusCode(v *int) *HttpLogCreate {
+	if v != nil {
+		_c.SetStatusCode(*v)
+	}
+	return _c
+}
+
 // SetResponseHeaders sets the "response_headers" field.
 func (_c *HttpLogCreate) SetResponseHeaders(v map[string][]string) *HttpLogCreate {
 	_c.mutation.SetResponseHeaders(v)
@@ -202,14 +210,6 @@ func (_c *HttpLogCreate) check() error {
 	}
 	if _, ok := _c.mutation.URL(); !ok {
 		return &ValidationError{Name: "url", err: errors.New(`ent_log: missing required field "HttpLog.url"`)}
-	}
-	if _, ok := _c.mutation.StatusCode(); !ok {
-		return &ValidationError{Name: "status_code", err: errors.New(`ent_log: missing required field "HttpLog.status_code"`)}
-	}
-	if v, ok := _c.mutation.StatusCode(); ok {
-		if err := httplog.StatusCodeValidator(v); err != nil {
-			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent_log: validator failed for field "HttpLog.status_code": %w`, err)}
-		}
 	}
 	if _, ok := _c.mutation.ElapseTime(); !ok {
 		return &ValidationError{Name: "elapse_time", err: errors.New(`ent_log: missing required field "HttpLog.elapse_time"`)}

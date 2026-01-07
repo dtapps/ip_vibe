@@ -354,6 +354,16 @@ func StatusCodeLTE(v int) predicate.HttpLog {
 	return predicate.HttpLog(sql.FieldLTE(FieldStatusCode, v))
 }
 
+// StatusCodeIsNil applies the IsNil predicate on the "status_code" field.
+func StatusCodeIsNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldIsNull(FieldStatusCode))
+}
+
+// StatusCodeNotNil applies the NotNil predicate on the "status_code" field.
+func StatusCodeNotNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldNotNull(FieldStatusCode))
+}
+
 // ResponseHeadersIsNil applies the IsNil predicate on the "response_headers" field.
 func ResponseHeadersIsNil() predicate.HttpLog {
 	return predicate.HttpLog(sql.FieldIsNull(FieldResponseHeaders))

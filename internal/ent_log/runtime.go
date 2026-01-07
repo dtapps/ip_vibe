@@ -59,10 +59,6 @@ func init() {
 	domainmonitorhistory.IDValidator = domainmonitorhistoryDescID.Validators[0].(func(int64) error)
 	httplogFields := schema.HttpLog{}.Fields()
 	_ = httplogFields
-	// httplogDescStatusCode is the schema descriptor for status_code field.
-	httplogDescStatusCode := httplogFields[6].Descriptor()
-	// httplog.StatusCodeValidator is a validator for the "status_code" field. It is called by the builders before save.
-	httplog.StatusCodeValidator = httplogDescStatusCode.Validators[0].(func(int) error)
 	// httplogDescElapseTime is the schema descriptor for elapse_time field.
 	httplogDescElapseTime := httplogFields[9].Descriptor()
 	// httplog.ElapseTimeValidator is a validator for the "elapse_time" field. It is called by the builders before save.
@@ -127,10 +123,6 @@ func init() {
 	portforwardstats.IDValidator = portforwardstatsDescID.Validators[0].(func(int64) error)
 	restylogFields := schema.RestyLog{}.Fields()
 	_ = restylogFields
-	// restylogDescStatusCode is the schema descriptor for status_code field.
-	restylogDescStatusCode := restylogFields[6].Descriptor()
-	// restylog.StatusCodeValidator is a validator for the "status_code" field. It is called by the builders before save.
-	restylog.StatusCodeValidator = restylogDescStatusCode.Validators[0].(func(int) error)
 	// restylogDescElapseTime is the schema descriptor for elapse_time field.
 	restylogDescElapseTime := restylogFields[9].Descriptor()
 	// restylog.ElapseTimeValidator is a validator for the "elapse_time" field. It is called by the builders before save.
