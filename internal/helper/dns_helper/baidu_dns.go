@@ -23,6 +23,9 @@ type BaiduDnsClient struct {
 	client *dns.Client
 }
 
+// 百度云 智能云解析DNS
+// https://cloud.baidu.com/product/dns.html
+// https://cloud.baidu.com/doc/DNS/s/fm4tmlvcs
 func NewBaiduDnsClient(ctx context.Context, config *BaiduDnsConfig) (*BaiduDnsClient, error) {
 
 	var err error
