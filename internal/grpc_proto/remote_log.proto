@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+// 包名
+package remote_log;
+
+// Go 包路径：路径;包名（匹配输出目录，避免子包冲突）option go_package = ".;grpc_generated"
+option go_package = "vibe_ip/internal/grpc_generated";
+
+// 远程日志服务：专门用于从服务端调取客户端本地的日志文件
+service RemoteLogService {
+    // 建立双向通信隧道
+    // 服务端通过此流发送文件名（ServerRequest）
+    // 客户端通过此流返回该文件的最后200行内容（DeviceResponse）
+   rpc LogTunnel(stream DeviceResponse) returns (stream ServerRequest);
+}
+
+// 服务端下发的指令：指定要读取的文件名
+message ServerRequest {
+    string file_name = 1; // 对应你代码里的 requestParams.FileName，例如 "app.log"
+}
+
+// 客户端返回的数据：日志文件内容列表
+message DeviceResponse {
+    string device_id = 1;      // 设备标识
+    repeated string lines = 2; // 对应你代码里的 lists，即 ReadLastLines 读到的行
+    string error_msg = 3;      // 错误提示（如文件不存在、非法路径等）
+}
