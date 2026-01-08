@@ -116,6 +116,8 @@ func (m *GRPCGatewayClientManager) Conn(ctx context.Context) (err error) {
 		return err
 	}
 
+	logger.InfoContext(ctx, "gRPC-Gateway 客户端连接服务器成功")
+
 	gwOpts := []runtime.ServeMuxOption{
 		// 错误响应统一包装
 		runtime.WithErrorHandler(func(ctx context.Context, mux *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, r *http.Request, err error) {

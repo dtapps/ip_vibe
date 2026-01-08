@@ -139,12 +139,30 @@
                         class="mb-1 py-0.5 hover:bg-white/5 transition-colors break-all whitespace-pre-wrap text-left flex flex-col items-start">
                         {{ if contains . "ERROR" }}
                         <span class="text-error font-bold text-left w-full"> {{ . }}</span>
-                        {{ else if contains . "服务启动" }}
+                        {{ else if contains . "服务启动成功" }}
                         <div
                             class="divider divider-warning text-[10px] my-6 font-black uppercase tracking-[0.5em] before:bg-warning/20 after:bg-warning/20 text-warning">
-                            --- System Reboot ---
+                            --- Service Start Success ---
                         </div>
                         <span class="text-warning font-black tracking-wider text-left w-full">{{ . }}</span>
+                        {{ else if contains . "服务启动失败" }}
+                        <div
+                            class="divider divider-error text-[10px] my-6 font-black uppercase tracking-[0.5em] before:bg-error/20 after:bg-error/20 text-error">
+                            --- Service Start Failed ---
+                        </div>
+                        <span class="text-error font-black tracking-wider text-left w-full">{{ . }}</span>
+                        {{ else if contains . "连接服务器成功" }}
+                        <div
+                            class="divider divider-warning text-[10px] my-6 font-black uppercase tracking-[0.5em] before:bg-warning/20 after:bg-warning/20 text-warning">
+                            --- Service Connection Success ---
+                        </div>
+                        <span class="text-warning font-black tracking-wider text-left w-full">{{ . }}</span>
+                        {{ else if contains . "连接服务器失败" }}
+                        <div
+                            class="divider divider-error text-[10px] my-6 font-black uppercase tracking-[0.5em] before:bg-error/20 after:bg-error/20 text-error">
+                            --- Service Connection Failed ---
+                        </div>
+                        <span class="text-error font-black tracking-wider text-left w-full">{{ . }}</span>
                         {{ else if contains . "Panic" }}
                         <div
                             class="bg-error/20 border-l-4 border-error p-4 my-2 text-error font-bold rounded-r-xl text-left w-full">

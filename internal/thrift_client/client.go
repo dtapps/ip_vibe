@@ -76,6 +76,8 @@ func (m *ThriftClientManager) Conn(ctx context.Context) (err error) {
 		return err
 	}
 
+	logger.InfoContext(ctx, "Thrift 客户端连接服务器成功")
+
 	// 设置协议层
 	protocol := thrift.NewTBinaryProtocolConf(transport, conf)
 

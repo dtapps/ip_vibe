@@ -255,6 +255,8 @@ var shutdownOnce sync.Once
 func gracefulShutdown() {
 
 	shutdownOnce.Do(func() {
+		slog.Info("开始优雅关闭所有服务...")
+
 		// 1. 创建上下文，设置超时时间为 30 秒
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
@@ -274,25 +276,22 @@ func gracefulShutdown() {
 		// 6. 优雅关闭 Thrift 服务
 		thrift_server.NewManager(global.GvaThriftSlog, thrift_server.Config{}).Stop(ctx)
 
-		// 7. 等待一段时间让 goroutine 完成
-		time.Sleep(1 * time.Second)
-
-		// 8. 关闭数据库连接和其他资源（现有的 defer 逻辑）
+		// 7. 关闭数据库连接和其他资源（现有的 defer 逻辑）
 		slog.Info("开始关闭数据库连接...")
 
-		// 9. 关闭 第三方服务
+		// 8. 关闭 第三方服务
 		initialize.CloseThirdParty()
 
-		// 10. 关闭 GoCron 调度器
+		// 9. 关闭 GoCron 调度器
 		initialize.CloseGoCron(ctx, global.GvaGocronSlog)
 
-		// 11. 等待一段时间让 goroutine 完成
+		// 10. 等待一段时间让 goroutine 完成
 		time.Sleep(1 * time.Second)
 
-		// 12. 关闭 业务数据库
+		// 11. 关闭 业务数据库
 		initialize.CloseEntDb(ctx, global.GvaEntSlog)
 
-		// 43. 关闭 日志数据库
+		// 12. 关闭 日志数据库
 		initialize.CloseEntLogDb(ctx, global.GvaEntLogSlog)
 
 		slog.Info("所有资源已优雅关闭")

@@ -101,6 +101,8 @@ func (m *GRPCClientManager) Conn(ctx context.Context) (err error) {
 		return err
 	}
 
+	logger.InfoContext(ctx, "gRPC 客户端连接服务器成功")
+
 	return nil
 }
 

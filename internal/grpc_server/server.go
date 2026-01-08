@@ -64,7 +64,7 @@ func (m *GRPCServerManager) Run(ctx context.Context) {
 
 	// 检查地址
 	if m.config.Addr == "" {
-		logger.ErrorContext(ctx, "gRPC 服务不启动，未配置地址")
+		logger.ErrorContext(ctx, "gRPC 服务启动错误，未配置地址")
 		return
 	}
 
