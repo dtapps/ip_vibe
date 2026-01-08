@@ -32,11 +32,8 @@ import (
 	"vibe_ip/internal/helper/gin_slog"
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/mcp_server"
-	"vibe_ip/internal/thrift_generated/open"
-	"vibe_ip/internal/thrift_process"
-	"vibe_ip/internal/thrift_service"
+	"vibe_ip/internal/thrift_server"
 
-	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/denisbrodbeck/machineid"
 	"github.com/dromara/carbon/v2"
 	"github.com/gin-contrib/multitemplate"
@@ -48,11 +45,9 @@ import (
 
 // 全局资源管理
 var (
-	thriftServerInstance *thrift.TSimpleServer
-	thriftTransport      thrift.TServerTransport
-	httpServerInstance   *http.Server
-	shutdownOnce         sync.Once
-	shutdownChan         = make(chan struct{})
+	httpServerInstance *http.Server
+	shutdownOnce       sync.Once
+	shutdownChan       = make(chan struct{})
 )
 
 //go:embed templates static
@@ -248,7 +243,10 @@ func main() {
 	go grpcGwMgr.Run(ctx)
 
 	// Thrift 启动
-	go thrift_run(ctx, global.GvaThriftSlog)
+	thriftMgr := thrift_server.NewManager(global.GvaThriftSlog, thrift_server.Config{
+		Addr: global.GvaEnv.THRIFT_ADDR,
+	})
+	go thriftMgr.Run(ctx)
 
 	// 启动 GoCron 调度器
 	initialize.StartGoCron(ctx, global.GvaGocronSlog)
@@ -386,28 +384,31 @@ func gracefulShutdown(ginLogger *slog.Logger, gocronLogger *slog.Logger, entLogg
 		// 4. 优雅关闭 gRPC 服务
 		grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{}).Stop(ctx)
 
-		// 5. 通知 gRPC、Thrift 服务开始优雅关闭
+		// 5. 优雅关闭 Thrift 服务
+		thrift_server.NewManager(global.GvaThriftSlog, thrift_server.Config{}).Stop(ctx)
+
+		// 6. 通知 gRPC、Thrift 服务开始优雅关闭
 		close(shutdownChan)
 
-		// 6. 等待一段时间让 goroutine 完成
+		// 7. 等待一段时间让 goroutine 完成
 		time.Sleep(1 * time.Second)
 
-		// 7. 关闭数据库连接和其他资源（现有的 defer 逻辑）
+		// 8. 关闭数据库连接和其他资源（现有的 defer 逻辑）
 		slog.Info("开始关闭数据库连接...")
 
-		// 8. 关闭 第三方服务
+		// 9. 关闭 第三方服务
 		initialize.CloseThirdParty()
 
-		// 9. 关闭 GoCron 调度器
+		// 10. 关闭 GoCron 调度器
 		initialize.CloseGoCron(ctx, gocronLogger)
 
-		// 10. 等待一段时间让 goroutine 完成
+		// 11. 等待一段时间让 goroutine 完成
 		time.Sleep(1 * time.Second)
 
-		// 11. 关闭 业务数据库
+		// 12. 关闭 业务数据库
 		initialize.CloseEntDb(ctx, entLogger)
 
-		// 12. 关闭 日志数据库
+		// 43. 关闭 日志数据库
 		initialize.CloseEntLogDb(ctx, entLogLogger)
 
 		slog.Info("所有资源已优雅关闭")
@@ -1192,79 +1193,4 @@ func qingfeng_router(ctx context.Context, ginLogger *slog.Logger, router *gin.En
 			}, // 多环境配置
 		}))
 	}
-}
-
-// Thrift 启动
-func thrift_run(ctx context.Context, thriftLogger *slog.Logger) {
-
-	// 判断是否开启 Thrift 功能
-	if global.GvaEnv.THRIFT_ADDR == "" {
-		thriftLogger.InfoContext(ctx, "Thrift 服务不启动，因为没有配置端口",
-			slog.String("port", global.GvaEnv.THRIFT_ADDR),
-		)
-		return
-	}
-
-	// 启动 Thrift 服务
-	socket, err := thrift.NewTServerSocket(global.GvaEnv.THRIFT_ADDR)
-	if err != nil {
-		thriftLogger.ErrorContext(ctx, "Thrift 服务启动失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
-
-	thriftLogger.InfoContext(ctx, "Thrift 服务正在启动",
-		slog.String("port", global.GvaEnv.THRIFT_ADDR),
-	)
-
-	// 传输工厂
-	transportFactory := thrift.NewTFramedTransportFactoryConf(
-		thrift.NewTTransportFactory(),
-		&thrift.TConfiguration{},
-	)
-
-	// 协议工厂
-	protocolFactory := thrift.NewTBinaryProtocolFactoryConf(&thrift.TConfiguration{})
-
-	// 业务逻辑层 (Handler)
-	openHandler := thrift_service.NewOpenServer(thriftLogger)
-	processor := open.NewOpenServiceProcessor(openHandler)
-
-	// 挂载【通用】处理器包装器
-	// 无论 IDL 怎么变，这里一行代码搞定所有服务的日志和耗时
-	wrappedProcessor := thrift_process.NewGenericInterceptor(processor, thriftLogger)
-
-	// 传入 SimpleServer
-	thriftServerInstance = thrift.NewTSimpleServer4(
-		wrappedProcessor,
-		socket,
-		transportFactory,
-		protocolFactory,
-	)
-
-	// 使用 Serve 但不阻塞，通过 channel 监听关闭信号
-	go func() {
-		if err := thriftServerInstance.Serve(); err != nil {
-			thriftLogger.ErrorContext(ctx, "Thrift 服务启动失败",
-				slog.Any("err", err),
-			)
-		}
-		thriftLogger.InfoContext(ctx, "Thrift 服务已停止")
-	}()
-
-	thriftLogger.InfoContext(ctx, "Thrift 服务启动成功",
-		slog.String("port", global.GvaEnv.THRIFT_ADDR),
-	)
-
-	// 等待关闭信号
-	<-shutdownChan
-	thriftLogger.InfoContext(ctx, "接收到关闭信号，Thrift 服务正在优雅关闭")
-	if thriftServerInstance != nil {
-		thriftServerInstance.Stop() // 优雅关闭
-	}
-	if thriftTransport != nil {
-		thriftTransport.Close()
-	}
-	thriftLogger.InfoContext(ctx, "Thrift 服务已优雅关闭")
 }
