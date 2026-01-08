@@ -84,7 +84,7 @@ func LogContent(c *gin.Context) {
 
 			// 二次检查：确保最终生成的路径依然在 logs 目录下
 			if !strings.HasPrefix(targetPath, absLogDir) {
-				pageData.List = []any{"[Security] 拒绝跨目录访问"}
+				lists = []string{"[Security] 拒绝跨目录访问"}
 				return
 			}
 
@@ -95,11 +95,11 @@ func LogContent(c *gin.Context) {
 			lines, err := utils.ReadLastLines(targetPath, 200)
 			if err != nil {
 				// 如果文件不存在或读取失败，返回空列表或错误提示
-				pageData.List = []any{"[System] 暂无日志文件或读取失败: " + err.Error()}
+				lists = []string{"[System] 暂无日志文件或读取失败: " + err.Error()}
 			}
 			lists = lines
 		} else {
-			pageData.List = []any{"[System] 请输入日志文件名"}
+			lists = []string{"[System] 请输入日志文件名"}
 		}
 
 		for _, line := range lists {
