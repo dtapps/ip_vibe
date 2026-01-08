@@ -14,7 +14,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/retry"
-	grpcGatewayRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -106,14 +106,14 @@ func (m *GRPCGatewayClientManager) Run(ctx context.Context) (err error) {
 		return err
 	}
 
-	gwOpts := []grpcGatewayRuntime.ServeMuxOption{
+	gwOpts := []runtime.ServeMuxOption{
 		// 错误响应统一包装
-		grpcGatewayRuntime.WithErrorHandler(func(ctx context.Context, mux *grpcGatewayRuntime.ServeMux, marshaler grpcGatewayRuntime.Marshaler, w http.ResponseWriter, r *http.Request, err error) {
+		runtime.WithErrorHandler(func(ctx context.Context, mux *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, r *http.Request, err error) {
 			// 默认错误处理器
 			st, _ := status.FromError(err)
 
 			// 映射 HTTP 状态码
-			httpCode := grpcGatewayRuntime.HTTPStatusFromCode(st.Code())
+			httpCode := runtime.HTTPStatusFromCode(st.Code())
 
 			// 构造响应
 			resp := handlers.APIResponse{
@@ -132,7 +132,7 @@ func (m *GRPCGatewayClientManager) Run(ctx context.Context) (err error) {
 			_ = marshaler.NewEncoder(w).Encode(resp)
 		}),
 		// 成功响应统一包装
-		grpcGatewayRuntime.WithForwardResponseRewriter(func(ctx context.Context, resp proto.Message) (any, error) {
+		runtime.WithForwardResponseRewriter(func(ctx context.Context, resp proto.Message) (any, error) {
 			if _, ok := resp.(*statuspb.Status); ok {
 				return resp, nil
 			}
@@ -143,13 +143,13 @@ func (m *GRPCGatewayClientManager) Run(ctx context.Context) (err error) {
 			}
 			return handlers.APIResponse{
 				Code:    http.StatusOK,
-				Message: "success",
+				Message: handlers.MessageSuccess,
 				Data:    data,
 			}, nil
 		}),
 	}
 
-	gwMux := grpcGatewayRuntime.NewServeMux(gwOpts...)
+	gwMux := runtime.NewServeMux(gwOpts...)
 
 	// 注册服务
 	if err = grpc_generated.RegisterIndexServiceHandler(ctx, gwMux, m.client); err != nil {
@@ -174,6 +174,7 @@ func (m *GRPCGatewayClientManager) Run(ctx context.Context) (err error) {
 			slog.String("prefix", "/grpc"),
 		)
 	}
+
 	return nil
 }
 

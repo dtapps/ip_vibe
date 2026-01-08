@@ -10,6 +10,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	MessageSuccess = "success"
+)
+
 // API响应结构
 type APIResponse struct {
 	Code    int    `json:"code"`
@@ -21,7 +25,7 @@ type APIResponse struct {
 func successResponse(c *gin.Context, data any) {
 	c.JSON(http.StatusOK, APIResponse{
 		Code:    http.StatusOK,
-		Message: "success",
+		Message: MessageSuccess,
 		Data:    data,
 	})
 }
