@@ -52,6 +52,14 @@ func NewManager(logger *slog.Logger, cfg Config, ginRouter *gin.Engine) *MCPServ
 	return instance
 }
 
+// GetServer 获取底层的 mcp.Server 服务实例
+func (m *MCPServerManager) GetServer() *mcp.Server {
+	if m.server == nil {
+		return nil
+	}
+	return m.server
+}
+
 // Run 启动 MCP 服务
 func (m *MCPServerManager) Run(ctx context.Context) {
 
@@ -127,12 +135,6 @@ func (m *MCPServerManager) Run(ctx context.Context) {
 		)
 	}
 
-}
-
-// GetServer 获取底层的 mcp.Server 实例
-// 注意：如果在 Run 之前调用，可能会返回 nil
-func (m *MCPServerManager) GetServer() *mcp.Server {
-	return m.server
 }
 
 // Stop 优雅关闭

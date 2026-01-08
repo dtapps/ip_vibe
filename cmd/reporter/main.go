@@ -113,15 +113,15 @@ func main() {
 		}
 		defer grpc_client.NewManager(global.GvaGrpcSlog, grpc_client.Config{}).Stop(ctx)
 
-		// 获取 gRPC 客户端
-		grpcClient := grpcMgr.GetClient()
+		// 获取 gRPC 客户端连接
+		grpcClientConn := grpcMgr.GetConn()
 
 		// 创建IP上报实例
 		ipReportTask := task.NewIPReportGRPCTask(
 			global.GvaGoCron,
 			global.GvaGocronSlog,
 			ipReportService,
-			grpcClient,
+			grpcClientConn,
 		)
 		ipReportTask.SetConfig(config)
 

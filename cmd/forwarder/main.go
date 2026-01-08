@@ -117,8 +117,8 @@ func main() {
 		}
 		defer grpc_client.NewManager(global.GvaGrpcSlog, grpc_client.Config{}).Stop(ctx)
 
-		// 获取 gRPC 客户端
-		grpcClient := grpcMgr.GetClient()
+		// 获取 gRPC 客户端连接
+		grpcClientConn := grpcMgr.GetConn()
 
 		// 创建端口转发实例
 		portForwardTask := task.NewPortForwardGRPCTask(
@@ -126,7 +126,7 @@ func main() {
 			global.GvaGocronSlog,
 			portForwardServer,
 			forwardAgent,
-			grpcClient,
+			grpcClientConn,
 		)
 		portForwardTask.SetConfig(config)
 
@@ -146,7 +146,7 @@ func main() {
 			global.GvaGocronSlog,
 			portForwardServer,
 			forwardAgent,
-			grpcClient,
+			grpcClientConn,
 		)
 		statsReportTask.SetConfig(config)
 

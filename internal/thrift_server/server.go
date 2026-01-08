@@ -45,7 +45,6 @@ func NewManager(logger *slog.Logger, cfg Config) *ThriftServerManager {
 }
 
 // GetServer 获取底层的 Thrift 服务实例
-// 注意：如果在 Run 之前调用，可能会返回 nil
 func (m *ThriftServerManager) GetServer() *thrift.TSimpleServer {
 	if m.server == nil {
 		return nil

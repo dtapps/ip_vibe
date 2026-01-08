@@ -41,6 +41,14 @@ func NewManager(logger *slog.Logger, cfg Config) *ThriftClientManager {
 	return instance
 }
 
+// GetConn 获取底层的 Thrift 客户端连接
+func (m *ThriftClientManager) GetConn() *thrift.TStandardClient {
+	if m.client == nil {
+		return nil
+	}
+	return m.client
+}
+
 // Conn 连接 Thrift 客户端
 func (m *ThriftClientManager) Conn(ctx context.Context) (err error) {
 
@@ -75,14 +83,6 @@ func (m *ThriftClientManager) Conn(ctx context.Context) (err error) {
 	m.client = thrift.NewTStandardClient(protocol, protocol)
 
 	return nil
-}
-
-// GetClient 获取底层的 Thrift 客户端连接
-func (m *ThriftClientManager) GetClient() *thrift.TStandardClient {
-	if m.client == nil {
-		return nil
-	}
-	return m.client
 }
 
 // Stop 优雅关闭

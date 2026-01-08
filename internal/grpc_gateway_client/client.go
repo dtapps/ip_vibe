@@ -61,6 +61,14 @@ func NewManager(logger *slog.Logger, cfg Config, ginRouter *gin.Engine) *GRPCGat
 	return instance
 }
 
+// GetConn 获取底层的 grpc.ClientConn 客户端连接
+func (m *GRPCGatewayClientManager) GetConn() *grpc.ClientConn {
+	if m.client == nil {
+		return nil
+	}
+	return m.client
+}
+
 // Conn 连接 gRPC 网关客户端
 func (m *GRPCGatewayClientManager) Conn(ctx context.Context) (err error) {
 
@@ -178,14 +186,6 @@ func (m *GRPCGatewayClientManager) Conn(ctx context.Context) (err error) {
 	}
 
 	return nil
-}
-
-// GetServer 获取底层的 grpc.ClientConn 客户端连接
-func (m *GRPCGatewayClientManager) GetClient() *grpc.ClientConn {
-	if m.client == nil {
-		return nil
-	}
-	return m.client
 }
 
 // Stop 优雅关闭
