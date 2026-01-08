@@ -27,8 +27,6 @@ func Interface(c *gin.Context) {
 		HttpAddr:   global.GvaEnv.HTTP_ADDR,
 		GrpcAddr:   global.GvaEnv.GRPC_ADDR,
 		ThriftAddr: global.GvaEnv.THRIFT_ADDR,
-		DubboAddr:  global.GvaEnv.DUBBO_ADDR,
-		TarsAddr:   global.GvaEnv.TARS_ADDR,
 	}
 	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
 		if requestParams.Proto == "api" {

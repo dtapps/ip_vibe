@@ -28,18 +28,6 @@ func init() {
 	// global.GvaEnv.THRIFT_ADDR = "0.0.0.0:9090" // thrift默认端口
 	// }
 
-	// 从环境变量获取 [backend] Dubbo 地址
-	global.GvaEnv.DUBBO_ADDR = os.Getenv("DUBBO_ADDR")
-	// if global.GvaEnv.DUBBO_ADDR == "" {
-	// global.GvaEnv.DUBBO_ADDR = "0.0.0.0:20880" // dubbo默认端口
-	// }
-
-	// 从环境变量获取 [backend] TARS 地址
-	global.GvaEnv.TARS_ADDR = os.Getenv("TARS_ADDR")
-	// if global.GvaEnv.TARS_ADDR == "" {
-	// global.GvaEnv.TARS_ADDR = "0.0.0.0:10000" // tars默认端口
-	// }
-
 	// 从环境变量获取 [reporter][forwarder] HTTP URL
 	global.GvaEnv.HTTP_URL = os.Getenv("HTTP_URL")
 
@@ -48,12 +36,6 @@ func init() {
 
 	// 从环境变量获取 [reporter][forwarder] Thrift URL
 	global.GvaEnv.THRIFT_URL = os.Getenv("THRIFT_URL")
-
-	// 从环境变量获取 [reporter][forwarder] Dubbo URL
-	global.GvaEnv.DUBBO_URL = os.Getenv("DUBBO_URL")
-
-	// 从环境变量获取 [reporter][forwarder] TARS URL
-	global.GvaEnv.TARS_URL = os.Getenv("TARS_URL")
 
 	// 从环境变量获取 [backend][reporter][forwarder] 基本认证用户名和密码
 	global.GvaEnv.BASIC_AUTH_USERNAME = os.Getenv("BASIC_AUTH_USERNAME")

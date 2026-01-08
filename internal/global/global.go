@@ -28,14 +28,10 @@ var (
 		HTTP_ADDR   string // [backend] HTTP 地址
 		GRPC_ADDR   string // [backend] gRPC 地址
 		THRIFT_ADDR string // [backend] Thrift 地址
-		DUBBO_ADDR  string // [backend] Dubbo 地址
-		TARS_ADDR   string // [backend] TARS 地址
 
 		HTTP_URL   string // [reporter][forwarder] HTTP URL
 		GRPC_URL   string // [reporter][forwarder] gRPC URL
 		THRIFT_URL string // [reporter][forwarder] Thrift URL
-		DUBBO_URL  string // [reporter][forwarder] Dubbo URL
-		TARS_URL   string // [reporter][forwarder] TARS URL
 
 		BASIC_AUTH_USERNAME string // [backend][reporter][forwarder] 基本认证用户名
 		BASIC_AUTH_PASSWORD string // [backend][reporter][forwarder] 基本认证密码

@@ -2987,6 +2987,13 @@
       background-color: color-mix(in oklab, var(--color-warning) 5%, transparent);
     }
   }
+  .divider-error {
+    @layer daisyui.l1.l2 {
+      &:before, &:after {
+        background-color: var(--color-error);
+      }
+    }
+  }
   .divider-warning {
     @layer daisyui.l1.l2 {
       &:before, &:after {
@@ -3663,6 +3670,15 @@
       }
     }
   }
+  .before\:bg-error\/20 {
+    &::before {
+      content: var(--tw-content);
+      background-color: var(--color-error);
+      @supports (color: color-mix(in lab, red, red)) {
+        background-color: color-mix(in oklab, var(--color-error) 20%, transparent);
+      }
+    }
+  }
   .before\:bg-warning\/20 {
     &::before {
       content: var(--tw-content);
@@ -3677,6 +3693,15 @@
       content: var(--tw-content);
       font-size: var(--text-xs);
       line-height: var(--tw-leading, var(--text-xs--line-height));
+    }
+  }
+  .after\:bg-error\/20 {
+    &::after {
+      content: var(--tw-content);
+      background-color: var(--color-error);
+      @supports (color: color-mix(in lab, red, red)) {
+        background-color: color-mix(in oklab, var(--color-error) 20%, transparent);
+      }
     }
   }
   .after\:bg-warning\/20 {

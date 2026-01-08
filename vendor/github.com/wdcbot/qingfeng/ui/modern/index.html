@@ -70,6 +70,29 @@
         .api-item { border-radius: 12px; transition: all 0.2s; }
         .api-item:hover { background: var(--bg-tertiary); transform: translateX(4px); }
         .api-item.active { background: var(--bg-tertiary); border-left: 3px solid var(--primary); }
+        /* Fix hover text visibility for buttons and tag groups */
+        .sidebar button:hover,
+        .mobile-header button:hover,
+        .mobile-actions button:hover {
+            background: var(--bg-tertiary) !important;
+            color: var(--text-primary) !important;
+        }
+        /* Fix hover text visibility for header buttons */
+        .desktop-header button:hover {
+            background: var(--bg-tertiary) !important;
+            color: var(--text-primary) !important;
+        }
+        /* Fix hover text visibility for modal buttons */
+        .card button:hover {
+            background: var(--bg-tertiary) !important;
+            color: var(--text-primary) !important;
+        }
+        /* Fix hover text visibility for tag groups */
+        .tag-group > div:hover {
+            background: var(--bg-tertiary) !important;
+            color: var(--text-primary) !important;
+            font-weight: 500;
+        }
         .input-field {
             background: var(--bg-tertiary);
             border: 1px solid var(--border);
@@ -90,6 +113,11 @@
         pre code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; }
         .scrollbar-thin::-webkit-scrollbar { width: 6px; }
         .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        /* Fix text selection in dark mode */
+        .dark ::selection {
+            background: var(--primary) !important;
+            color: white !important;
+        }
         .tag-group { border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
         .welcome-icon { font-size: 80px; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
@@ -186,7 +214,7 @@
                 </div>
             </div>
             <div class="p-4 text-xs text-center" style="color: var(--text-secondary)">
-                Powered by <a href="https://github.com/delfDog/QingFeng" class="font-medium hover:underline" style="color: var(--primary)">青峰</a> · <span id="version">v1.2.0</span>
+                Powered by <a href="https://github.com/wdcbot/qingfeng" target="_blank" class="font-medium hover:underline" style="color: var(--primary)">青峰</a> · <span id="version">v1.2.0</span>
             </div>
         </aside>
 

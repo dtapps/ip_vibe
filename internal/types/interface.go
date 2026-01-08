@@ -14,6 +14,4 @@ type InterfaceResponse struct {
 	HttpAddr   string `json:"http_addr,omitempty"`   // HTTP 地址
 	GrpcAddr   string `json:"grpc_addr,omitempty"`   // gRPC 地址
 	ThriftAddr string `json:"thrift_addr,omitempty"` // Thrift 地址
-	DubboAddr  string `json:"dubbo_addr,omitempty"`  // Dubbo 地址
-	TarsAddr   string `json:"tars_addr,omitempty"`   // TARS 地址
 }
