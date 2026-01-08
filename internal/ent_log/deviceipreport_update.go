@@ -81,6 +81,9 @@ func (_u *DeviceIpReportUpdate) sqlSave(ctx context.Context) (_node int, err err
 	if _u.mutation.IPV6Cleared() {
 		_spec.ClearField(deviceipreport.FieldIPV6, field.TypeString)
 	}
+	if _u.mutation.ReportTypeCleared() {
+		_spec.ClearField(deviceipreport.FieldReportType, field.TypeEnum)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -185,6 +188,9 @@ func (_u *DeviceIpReportUpdateOne) sqlSave(ctx context.Context) (_node *DeviceIp
 	}
 	if _u.mutation.IPV6Cleared() {
 		_spec.ClearField(deviceipreport.FieldIPV6, field.TypeString)
+	}
+	if _u.mutation.ReportTypeCleared() {
+		_spec.ClearField(deviceipreport.FieldReportType, field.TypeEnum)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &DeviceIpReport{config: _u.config}

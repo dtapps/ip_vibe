@@ -206,6 +206,28 @@ var GetWebhookSubscriptionObjTypes = []string{
 // --------
 
 const (
+	DeviceIpReportReportTypeAPI    string = "api"    // API
+	DeviceIpReportReportTypeGrpc   string = "grpc"   // gRPC
+	DeviceIpReportReportTypeThrift string = "thrift" // Thrift
+)
+
+// GetDeviceIpReportReportTypeDescriptions 设备 IP 上报方式说明映射
+var GetDeviceIpReportReportTypeDescriptions = map[string]string{
+	DeviceIpReportReportTypeAPI:    "API",
+	DeviceIpReportReportTypeGrpc:   "gRPC",
+	DeviceIpReportReportTypeThrift: "Thrift",
+}
+
+// GetDeviceIpReportReportTypes 返回所有设备 IP 上报方式
+var GetDeviceIpReportReportTypes = []string{
+	DeviceIpReportReportTypeAPI,
+	DeviceIpReportReportTypeGrpc,
+	DeviceIpReportReportTypeThrift,
+}
+
+// --------
+
+const (
 	LogSourceUnknown string = "unknown" // 未知来源
 	LogSourceSystem  string = "system"  // 系统自动
 	LogSourceTask    string = "task"    // 定时任务

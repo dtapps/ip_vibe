@@ -25,7 +25,9 @@ type DeviceIpReport struct {
 	// IP地址V4
 	IPV4 string `json:"ip_v4,omitempty"`
 	// IP地址V6
-	IPV6         string `json:"ip_v6,omitempty"`
+	IPV6 string `json:"ip_v6,omitempty"`
+	// 上报方式 api / grpc /thrift
+	ReportType   deviceipreport.ReportType `json:"report_type,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -36,7 +38,7 @@ func (*DeviceIpReport) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case deviceipreport.FieldID, deviceipreport.FieldDeviceID:
 			values[i] = new(sql.NullInt64)
-		case deviceipreport.FieldIPV4, deviceipreport.FieldIPV6:
+		case deviceipreport.FieldIPV4, deviceipreport.FieldIPV6, deviceipreport.FieldReportType:
 			values[i] = new(sql.NullString)
 		case deviceipreport.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -85,6 +87,12 @@ func (_m *DeviceIpReport) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.IPV6 = value.String
 			}
+		case deviceipreport.FieldReportType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field report_type", values[i])
+			} else if value.Valid {
+				_m.ReportType = deviceipreport.ReportType(value.String)
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -132,6 +140,9 @@ func (_m *DeviceIpReport) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("ip_v6=")
 	builder.WriteString(_m.IPV6)
+	builder.WriteString(", ")
+	builder.WriteString("report_type=")
+	builder.WriteString(fmt.Sprintf("%v", _m.ReportType))
 	builder.WriteByte(')')
 	return builder.String()
 }

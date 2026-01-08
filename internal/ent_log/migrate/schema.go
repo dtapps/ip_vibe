@@ -16,6 +16,7 @@ var (
 		{Name: "device_id", Type: field.TypeInt64, Comment: "关联 Device 序号"},
 		{Name: "ip_v4", Type: field.TypeString, Nullable: true, Comment: "IP地址V4"},
 		{Name: "ip_v6", Type: field.TypeString, Nullable: true, Comment: "IP地址V6"},
+		{Name: "report_type", Type: field.TypeEnum, Nullable: true, Comment: "上报方式 api / grpc /thrift", Enums: []string{"api", "grpc", "thrift"}},
 	}
 	// DeviceIPReportTable holds the schema information for the "device_ip_report" table.
 	DeviceIPReportTable = &schema.Table{

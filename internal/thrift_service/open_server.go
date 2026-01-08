@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"vibe_ip/internal/backend/service"
+	"vibe_ip/internal/ent_log/deviceipreport"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/thrift_generated/open"
 	"vibe_ip/internal/types"
@@ -55,6 +56,7 @@ func (s *OpenServer) ReportDeviceIP(ctx context.Context, req *open.ReportDeviceI
 		DeviceName: cast.ToString(req.DeviceName),
 		IPV4Addr:   cast.ToString(req.Ipv4Addr),
 		IPV6Addr:   cast.ToString(req.Ipv6Addr),
+		ReportType: deviceipreport.ReportTypeThrift.String(),
 	}
 
 	// 调用服务方法

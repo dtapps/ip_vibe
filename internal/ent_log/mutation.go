@@ -53,6 +53,7 @@ type DeviceIpReportMutation struct {
 	adddevice_id  *int64
 	ip_v4         *string
 	ip_v6         *string
+	report_type   *deviceipreport.ReportType
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*DeviceIpReport, error)
@@ -353,6 +354,55 @@ func (m *DeviceIpReportMutation) ResetIPV6() {
 	delete(m.clearedFields, deviceipreport.FieldIPV6)
 }
 
+// SetReportType sets the "report_type" field.
+func (m *DeviceIpReportMutation) SetReportType(dt deviceipreport.ReportType) {
+	m.report_type = &dt
+}
+
+// ReportType returns the value of the "report_type" field in the mutation.
+func (m *DeviceIpReportMutation) ReportType() (r deviceipreport.ReportType, exists bool) {
+	v := m.report_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReportType returns the old "report_type" field's value of the DeviceIpReport entity.
+// If the DeviceIpReport object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeviceIpReportMutation) OldReportType(ctx context.Context) (v deviceipreport.ReportType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReportType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReportType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReportType: %w", err)
+	}
+	return oldValue.ReportType, nil
+}
+
+// ClearReportType clears the value of the "report_type" field.
+func (m *DeviceIpReportMutation) ClearReportType() {
+	m.report_type = nil
+	m.clearedFields[deviceipreport.FieldReportType] = struct{}{}
+}
+
+// ReportTypeCleared returns if the "report_type" field was cleared in this mutation.
+func (m *DeviceIpReportMutation) ReportTypeCleared() bool {
+	_, ok := m.clearedFields[deviceipreport.FieldReportType]
+	return ok
+}
+
+// ResetReportType resets all changes to the "report_type" field.
+func (m *DeviceIpReportMutation) ResetReportType() {
+	m.report_type = nil
+	delete(m.clearedFields, deviceipreport.FieldReportType)
+}
+
 // Where appends a list predicates to the DeviceIpReportMutation builder.
 func (m *DeviceIpReportMutation) Where(ps ...predicate.DeviceIpReport) {
 	m.predicates = append(m.predicates, ps...)
@@ -387,7 +437,7 @@ func (m *DeviceIpReportMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeviceIpReportMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.created_at != nil {
 		fields = append(fields, deviceipreport.FieldCreatedAt)
 	}
@@ -399,6 +449,9 @@ func (m *DeviceIpReportMutation) Fields() []string {
 	}
 	if m.ip_v6 != nil {
 		fields = append(fields, deviceipreport.FieldIPV6)
+	}
+	if m.report_type != nil {
+		fields = append(fields, deviceipreport.FieldReportType)
 	}
 	return fields
 }
@@ -416,6 +469,8 @@ func (m *DeviceIpReportMutation) Field(name string) (ent.Value, bool) {
 		return m.IPV4()
 	case deviceipreport.FieldIPV6:
 		return m.IPV6()
+	case deviceipreport.FieldReportType:
+		return m.ReportType()
 	}
 	return nil, false
 }
@@ -433,6 +488,8 @@ func (m *DeviceIpReportMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldIPV4(ctx)
 	case deviceipreport.FieldIPV6:
 		return m.OldIPV6(ctx)
+	case deviceipreport.FieldReportType:
+		return m.OldReportType(ctx)
 	}
 	return nil, fmt.Errorf("unknown DeviceIpReport field %s", name)
 }
@@ -469,6 +526,13 @@ func (m *DeviceIpReportMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIPV6(v)
+		return nil
+	case deviceipreport.FieldReportType:
+		v, ok := value.(deviceipreport.ReportType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReportType(v)
 		return nil
 	}
 	return fmt.Errorf("unknown DeviceIpReport field %s", name)
@@ -521,6 +585,9 @@ func (m *DeviceIpReportMutation) ClearedFields() []string {
 	if m.FieldCleared(deviceipreport.FieldIPV6) {
 		fields = append(fields, deviceipreport.FieldIPV6)
 	}
+	if m.FieldCleared(deviceipreport.FieldReportType) {
+		fields = append(fields, deviceipreport.FieldReportType)
+	}
 	return fields
 }
 
@@ -541,6 +608,9 @@ func (m *DeviceIpReportMutation) ClearField(name string) error {
 	case deviceipreport.FieldIPV6:
 		m.ClearIPV6()
 		return nil
+	case deviceipreport.FieldReportType:
+		m.ClearReportType()
+		return nil
 	}
 	return fmt.Errorf("unknown DeviceIpReport nullable field %s", name)
 }
@@ -560,6 +630,9 @@ func (m *DeviceIpReportMutation) ResetField(name string) error {
 		return nil
 	case deviceipreport.FieldIPV6:
 		m.ResetIPV6()
+		return nil
+	case deviceipreport.FieldReportType:
+		m.ResetReportType()
 		return nil
 	}
 	return fmt.Errorf("unknown DeviceIpReport field %s", name)

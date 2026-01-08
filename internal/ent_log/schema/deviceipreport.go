@@ -2,6 +2,7 @@ package schema
 
 import (
 	"vibe_ip/internal/ent/schema/schemamixin"
+	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent/schema/schemavalidate"
 
 	"entgo.io/ent"
@@ -60,6 +61,13 @@ func (DeviceIpReport) Fields() []ent.Field {
 			Optional().
 			Immutable().
 			Comment("IP地址V6").
+			Annotations(entsql.WithComments(true)),
+
+		field.Enum("report_type").
+			Values(schematype.GetDeviceIpReportReportTypes...).
+			Optional().
+			Immutable().
+			Comment("上报方式 api / grpc /thrift").
 			Annotations(entsql.WithComments(true)),
 	}
 }

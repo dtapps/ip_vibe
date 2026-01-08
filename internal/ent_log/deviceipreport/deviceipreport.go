@@ -3,6 +3,7 @@
 package deviceipreport
 
 import (
+	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -21,6 +22,8 @@ const (
 	FieldIPV4 = "ip_v4"
 	// FieldIPV6 holds the string denoting the ip_v6 field in the database.
 	FieldIPV6 = "ip_v6"
+	// FieldReportType holds the string denoting the report_type field in the database.
+	FieldReportType = "report_type"
 	// Table holds the table name of the deviceipreport in the database.
 	Table = "device_ip_report"
 )
@@ -32,6 +35,7 @@ var Columns = []string{
 	FieldDeviceID,
 	FieldIPV4,
 	FieldIPV6,
+	FieldReportType,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -56,6 +60,30 @@ var (
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(int64) error
 )
+
+// ReportType defines the type for the "report_type" enum field.
+type ReportType string
+
+// ReportType values.
+const (
+	ReportTypeAPI    ReportType = "api"
+	ReportTypeGrpc   ReportType = "grpc"
+	ReportTypeThrift ReportType = "thrift"
+)
+
+func (rt ReportType) String() string {
+	return string(rt)
+}
+
+// ReportTypeValidator is a validator for the "report_type" field enum values. It is called by the builders before save.
+func ReportTypeValidator(rt ReportType) error {
+	switch rt {
+	case ReportTypeAPI, ReportTypeGrpc, ReportTypeThrift:
+		return nil
+	default:
+		return fmt.Errorf("deviceipreport: invalid enum value for report_type field: %q", rt)
+	}
+}
 
 // OrderOption defines the ordering options for the DeviceIpReport queries.
 type OrderOption func(*sql.Selector)
@@ -83,4 +111,9 @@ func ByIPV4(opts ...sql.OrderTermOption) OrderOption {
 // ByIPV6 orders the results by the ip_v6 field.
 func ByIPV6(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIPV6, opts...).ToFunc()
+}
+
+// ByReportType orders the results by the report_type field.
+func ByReportType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldReportType, opts...).ToFunc()
 }

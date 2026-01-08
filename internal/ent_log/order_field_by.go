@@ -138,6 +138,31 @@ func (q *DeviceIpReportQuery) OrderByIPV6Asc() *DeviceIpReportQuery {
 	return q.Order(Asc(deviceipreport.FieldIPV6))
 }
 
+// OrderByReportTypeDesc 按字段 report_type 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *DeviceIpReportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DeviceIpReport.Query().
+//	    OrderByReportTypeDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DeviceIpReportQuery) OrderByReportTypeDesc() *DeviceIpReportQuery {
+	return q.Order(Desc(deviceipreport.FieldReportType))
+}
+
+// OrderByReportTypeAsc 按字段 report_type 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *DeviceIpReportQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DeviceIpReport.Query().
+//	    OrderByReportTypeAsc().
+//	    All(ctx)
+func (q *DeviceIpReportQuery) OrderByReportTypeAsc() *DeviceIpReportQuery {
+	return q.Order(Asc(deviceipreport.FieldReportType))
+}
+
 // OrderByIDDesc 按主键 ID 降序排列查询结果。
 // 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
 // 返回值类型为 *DomainMonitorHistoryQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。

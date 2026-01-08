@@ -70,6 +70,20 @@ func (_c *DeviceIpReportCreate) SetNillableIPV6(v *string) *DeviceIpReportCreate
 	return _c
 }
 
+// SetReportType sets the "report_type" field.
+func (_c *DeviceIpReportCreate) SetReportType(v deviceipreport.ReportType) *DeviceIpReportCreate {
+	_c.mutation.SetReportType(v)
+	return _c
+}
+
+// SetNillableReportType sets the "report_type" field if the given value is not nil.
+func (_c *DeviceIpReportCreate) SetNillableReportType(v *deviceipreport.ReportType) *DeviceIpReportCreate {
+	if v != nil {
+		_c.SetReportType(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *DeviceIpReportCreate) SetID(v int64) *DeviceIpReportCreate {
 	_c.mutation.SetID(v)
@@ -140,6 +154,11 @@ func (_c *DeviceIpReportCreate) check() error {
 			return &ValidationError{Name: "ip_v6", err: fmt.Errorf(`ent_log: validator failed for field "DeviceIpReport.ip_v6": %w`, err)}
 		}
 	}
+	if v, ok := _c.mutation.ReportType(); ok {
+		if err := deviceipreport.ReportTypeValidator(v); err != nil {
+			return &ValidationError{Name: "report_type", err: fmt.Errorf(`ent_log: validator failed for field "DeviceIpReport.report_type": %w`, err)}
+		}
+	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := deviceipreport.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent_log: validator failed for field "DeviceIpReport.id": %w`, err)}
@@ -193,6 +212,10 @@ func (_c *DeviceIpReportCreate) createSpec() (*DeviceIpReport, *sqlgraph.CreateS
 	if value, ok := _c.mutation.IPV6(); ok {
 		_spec.SetField(deviceipreport.FieldIPV6, field.TypeString, value)
 		_node.IPV6 = value
+	}
+	if value, ok := _c.mutation.ReportType(); ok {
+		_spec.SetField(deviceipreport.FieldReportType, field.TypeEnum, value)
+		_node.ReportType = value
 	}
 	return _node, _spec
 }
@@ -274,6 +297,9 @@ func (u *DeviceIpReportUpsertOne) UpdateNewValues() *DeviceIpReportUpsertOne {
 		}
 		if _, exists := u.create.mutation.IPV6(); exists {
 			s.SetIgnore(deviceipreport.FieldIPV6)
+		}
+		if _, exists := u.create.mutation.ReportType(); exists {
+			s.SetIgnore(deviceipreport.FieldReportType)
 		}
 	}))
 	return u
@@ -499,6 +525,9 @@ func (u *DeviceIpReportUpsertBulk) UpdateNewValues() *DeviceIpReportUpsertBulk {
 			}
 			if _, exists := b.mutation.IPV6(); exists {
 				s.SetIgnore(deviceipreport.FieldIPV6)
+			}
+			if _, exists := b.mutation.ReportType(); exists {
+				s.SetIgnore(deviceipreport.FieldReportType)
 			}
 		}
 	}))

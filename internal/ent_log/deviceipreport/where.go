@@ -304,6 +304,36 @@ func IPV6ContainsFold(v string) predicate.DeviceIpReport {
 	return predicate.DeviceIpReport(sql.FieldContainsFold(FieldIPV6, v))
 }
 
+// ReportTypeEQ applies the EQ predicate on the "report_type" field.
+func ReportTypeEQ(v ReportType) predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldEQ(FieldReportType, v))
+}
+
+// ReportTypeNEQ applies the NEQ predicate on the "report_type" field.
+func ReportTypeNEQ(v ReportType) predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldNEQ(FieldReportType, v))
+}
+
+// ReportTypeIn applies the In predicate on the "report_type" field.
+func ReportTypeIn(vs ...ReportType) predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldIn(FieldReportType, vs...))
+}
+
+// ReportTypeNotIn applies the NotIn predicate on the "report_type" field.
+func ReportTypeNotIn(vs ...ReportType) predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldNotIn(FieldReportType, vs...))
+}
+
+// ReportTypeIsNil applies the IsNil predicate on the "report_type" field.
+func ReportTypeIsNil() predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldIsNull(FieldReportType))
+}
+
+// ReportTypeNotNil applies the NotNil predicate on the "report_type" field.
+func ReportTypeNotNil() predicate.DeviceIpReport {
+	return predicate.DeviceIpReport(sql.FieldNotNull(FieldReportType))
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.DeviceIpReport) predicate.DeviceIpReport {
 	return predicate.DeviceIpReport(sql.AndPredicates(predicates...))
