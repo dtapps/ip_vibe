@@ -31,7 +31,7 @@ func NewOpenServer() *OpenServer {
 	}
 }
 
-// RegisterService 注册 gRPC 服务到服务器
+// RegisterService 注册服务到 gRPC
 func (s *OpenServer) RegisterService(server *grpc.Server) {
 	grpc_generated.RegisterOpenServiceServer(server, s)
 }

@@ -34,6 +34,11 @@ func NewOpenServer(logger *slog.Logger, authWrapper *AuthWrapper) *OpenServer {
 	}
 }
 
+// RegisterService 注册服务到 Thrift
+func (s *OpenServer) RegisterService() *open.OpenServiceProcessor {
+	return open.NewOpenServiceProcessor(s)
+}
+
 // ReportDeviceIP 实现 设备上报 IP 方法
 func (s *OpenServer) ReportDeviceIP(ctx context.Context, req *open.ReportDeviceIPRequest, base *open.Base) (*open.ReportDeviceIPResponse, error) {
 

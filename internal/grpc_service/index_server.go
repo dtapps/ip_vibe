@@ -18,7 +18,7 @@ func NewIndexServer() *IndexServer {
 	return &IndexServer{}
 }
 
-// RegisterService 注册 gRPC 服务到服务器
+// RegisterService 注册服务到 gRPC
 func (s *IndexServer) RegisterService(server *grpc.Server) {
 	grpc_generated.RegisterIndexServiceServer(server, s)
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 	"log/slog"
 	"sync"
-	"vibe_ip/internal/thrift_generated/open"
 	"vibe_ip/internal/thrift_process"
 	"vibe_ip/internal/thrift_service"
 
@@ -86,8 +85,7 @@ func (m *ThriftServerManager) Run(ctx context.Context) {
 
 	// 业务逻辑层 (Handler)
 	authWrapper := thrift_service.NewAuthWrapper(m.logger, m.config.Username, m.config.Password)
-	openHandler := thrift_service.NewOpenServer(m.logger, authWrapper)
-	processor := open.NewOpenServiceProcessor(openHandler)
+	processor := thrift_service.NewOpenServer(m.logger, authWrapper).RegisterService()
 
 	// 挂载【通用】处理器包装器
 	// 无论 IDL 怎么变，这里一行代码搞定所有服务的日志和耗时
