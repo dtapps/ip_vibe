@@ -4,6 +4,8 @@ import (
 	"context"
 	"log/slog"
 	"sync"
+	"vibe_ip/internal/core"
+	"vibe_ip/internal/thrift_generated/open"
 
 	"github.com/apache/thrift/lib/go/thrift"
 )
@@ -47,6 +49,13 @@ func (m *ThriftClientManager) GetConn() *thrift.TStandardClient {
 		return nil
 	}
 	return m.client
+}
+
+// GetAuth 获取 Thrift 客户端的认证信息
+func (m *ThriftClientManager) GetAuth() *open.Base {
+	return &open.Base{
+		Token: core.GetBasicAuthToken(m.config.Username, m.config.Password),
+	}
 }
 
 // Conn 连接 Thrift 客户端

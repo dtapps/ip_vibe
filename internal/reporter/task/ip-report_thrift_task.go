@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"sync"
 	"time"
-	"vibe_ip/internal/core"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/reporter/service"
 	"vibe_ip/internal/thrift_generated/open"
@@ -33,14 +32,14 @@ type IPReportThriftTask struct {
 }
 
 // NewIPReportThriftTask 创建IP上报实例
-func NewIPReportThriftTask(cron gocron.Scheduler, logger *slog.Logger, service *service.IPReportService, thriftClient *thrift.TStandardClient) *IPReportThriftTask {
+func NewIPReportThriftTask(cron gocron.Scheduler, logger *slog.Logger, service *service.IPReportService, thriftClient *thrift.TStandardClient, clientBase *open.Base) *IPReportThriftTask {
 	return &IPReportThriftTask{
 		cron:              cron,
 		taskName:          "Thrift IP上报",
 		jobHelper:         gocron_helper.NewJobHelper(cron, logger),
 		logger:            logger.With("component", "ip-report-thrift"),
 		service:           service,
-		clientBase:        &open.Base{},
+		clientBase:        clientBase,
 		thriftClient:      thriftClient,
 		openServiceClient: open.NewOpenServiceClient(thriftClient),
 	}
@@ -56,12 +55,6 @@ func (s *IPReportThriftTask) Close() {
 // SetConfig 设置任务配置
 func (s *IPReportThriftTask) SetConfig(config *IPReportTaskConfig) *IPReportThriftTask {
 	s.config = config
-	return s
-}
-
-// SetClientBase 设置Thrift客户端基础
-func (s *IPReportThriftTask) SetClientBase(username string, password string) *IPReportThriftTask {
-	s.clientBase.Token = core.GetBasicAuthToken(username, password)
 	return s
 }
 

@@ -153,18 +153,15 @@ func main() {
 		}
 		defer thrift_client.NewManager(global.GvaThriftSlog, thrift_client.Config{}).Stop(ctx)
 
-		// 获取 Thrift 客户端连接
-		thriftClientConn := thriftMgr.GetConn()
-
 		// 创建IP上报实例
 		ipReportTask := task.NewIPReportThriftTask(
 			global.GvaGoCron,
 			global.GvaGocronSlog,
 			ipReportService,
-			thriftClientConn,
+			thriftMgr.GetConn(),
+			thriftMgr.GetAuth(),
 		)
 		ipReportTask.SetConfig(config)
-		ipReportTask.SetClientBase(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
 
 		// 启动IP上报任务
 		err = ipReportTask.StartPeriodicTask(ctx)
@@ -200,8 +197,8 @@ func main() {
 		defer ipReportTask.Close()
 
 	} else {
-		slog.ErrorContext(ctx, "服务启动失败: GRPC_URL / HTTP_URL未配置")
-		panic("GRPC_URL / HTTP_URL未配置")
+		slog.ErrorContext(ctx, "服务启动失败: GRPC_URL / THRIFT_URL / HTTP_URL未配置")
+		panic("GRPC_URL / THRIFT_URL / HTTP_URL未配置")
 	}
 
 	// 启动 GoCron 调度器

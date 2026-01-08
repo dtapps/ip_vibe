@@ -13,6 +13,7 @@ import (
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_client"
 	"vibe_ip/internal/initialize"
+	"vibe_ip/internal/thrift_client"
 )
 
 var (
@@ -159,7 +160,68 @@ func main() {
 			panic(err)
 		}
 		defer statsReportTask.Close()
+
+	} else if global.GvaEnv.THRIFT_URL != "" {
+
+		// 连接 Thrift 客户端
+		thriftMgr := thrift_client.NewManager(global.GvaThriftSlog, thrift_client.Config{
+			Addr:     global.GvaEnv.THRIFT_URL,
+			Username: global.GvaEnv.BASIC_AUTH_USERNAME,
+			Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
+		})
+		err := thriftMgr.Conn(ctx)
+		if err != nil {
+			slog.ErrorContext(ctx, "启动 Thrift 客户端失败",
+				slog.Any("err", err),
+			)
+			panic(err)
+		}
+		defer thrift_client.NewManager(global.GvaThriftSlog, thrift_client.Config{}).Stop(ctx)
+
+		// 创建端口转发实例
+		portForwardTask := task.NewPortForwardThriftTask(
+			global.GvaGoCron,
+			global.GvaGocronSlog,
+			portForwardServer,
+			forwardAgent,
+			thriftMgr.GetConn(),
+			thriftMgr.GetAuth(),
+		)
+		portForwardTask.SetConfig(config)
+
+		// 启动端口转发任务
+		err = portForwardTask.StartPeriodicTask(ctx)
+		if err != nil {
+			slog.ErrorContext(ctx, "启动端口转发任务失败",
+				slog.Any("err", err),
+			)
+			panic(err)
+		}
+		defer portForwardTask.Close()
+
+		// 创建统计上报实例
+		statsReportTask := task.NewStatsReportThriftTask(
+			global.GvaGoCron,
+			global.GvaGocronSlog,
+			portForwardServer,
+			forwardAgent,
+			thriftMgr.GetConn(),
+			thriftMgr.GetAuth(),
+		)
+		statsReportTask.SetConfig(config)
+
+		// 启动统计上报任务
+		err = statsReportTask.StartPeriodicTask(ctx)
+		if err != nil {
+			slog.ErrorContext(ctx, "启动统计上报任务失败",
+				slog.Any("err", err),
+			)
+			panic(err)
+		}
+		defer statsReportTask.Close()
+
 	} else if global.GvaEnv.HTTP_URL != "" {
+
 		// 创建端口转发实例
 		portForwardTask := task.NewPortForwardRestyTask(
 			global.GvaGoCron,
@@ -204,8 +266,8 @@ func main() {
 		defer statsReportTask.Close()
 
 	} else {
-		slog.ErrorContext(ctx, "服务启动失败: GRPC_URL / HTTP_URL未配置")
-		panic("GRPC_URL / HTTP_URL未配置")
+		slog.ErrorContext(ctx, "服务启动失败: GRPC_URL / THRIFT_URL / HTTP_URL未配置")
+		panic("GRPC_URL / THRIFT_URL / HTTP_URL未配置")
 	}
 
 	// 启动 GoCron 调度器
