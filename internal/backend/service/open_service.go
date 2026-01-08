@@ -11,6 +11,7 @@ import (
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/ent_log/deviceipreport"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
@@ -187,6 +188,7 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 				SetDeviceID(deviceID).
 				SetIPV4(request.IPV4Addr).
 				SetIPV6(request.IPV6Addr).
+				SetReportType(deviceipreport.ReportType(request.ReportType)).
 				Exec(asyncCtx)
 			if err != nil {
 				// 异步写入失败，仅打印日志
