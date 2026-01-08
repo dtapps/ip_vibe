@@ -54,7 +54,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.29
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.21
-	github.com/volcengine/volcengine-go-sdk v1.2.4
+	github.com/volcengine/volcengine-go-sdk v1.2.5
 	github.com/wdcbot/qingfeng v1.6.2
 	go.dtapp.net/library/contrib/http_log v1.0.2
 	go.dtapp.net/library/contrib/resty_log v1.0.11
@@ -161,7 +161,7 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.3.1 // indirect
 	github.com/valllabh/ocsf-schema-golang v1.0.3 // indirect
-	github.com/volcengine/volc-sdk-golang v1.0.233 // indirect
+	github.com/volcengine/volc-sdk-golang v1.0.234 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	github.com/zclconf/go-cty v1.17.0 // indirect
 	github.com/zclconf/go-cty-yaml v1.2.0 // indirect
@@ -174,7 +174,7 @@ require (
 	golang.org/x/exp v0.0.0-20251219203646-944ab1f22d93 // indirect
 	golang.org/x/mod v0.31.0 // indirect
 	golang.org/x/oauth2 v0.34.0 // indirect
-	golang.org/x/sys v0.39.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
 	golang.org/x/text v0.32.0 // indirect
 	golang.org/x/tools v0.40.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
