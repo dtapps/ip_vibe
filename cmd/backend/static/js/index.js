@@ -230,3 +230,17 @@ document.querySelectorAll(".simple-tooltip").forEach((item) => {
     }
   });
 });
+
+// 通用切换密码显示
+function togglePasswordVisibilityByPrev(btn) {
+  const input = btn.previousElementSibling;
+  const icon = btn.querySelector("span");
+  if (input) {
+    const isPwd = input.type === "password";
+    input.type = isPwd ? "text" : "password";
+    // 动态切换图标类名
+    if (icon) {
+      icon.className = isPwd ? "i-lucide-x w-4 h-4" : "i-lucide-eye w-4 h-4";
+    }
+  }
+}

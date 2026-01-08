@@ -98,165 +98,25 @@ function setDomainAndEmailField(
 }
 
 // 请选择服务能力 capability
-function changeCapability(sel) {
-  console.log("changeCapability", sel);
+function changeCapability(el) {
+  console.log("changeCapability", el);
 
-  const capability = sel.value;
-  const domainOrEmailGroups = document.querySelectorAll(
-    ".domain-or-email-group"
-  );
+  const platform = document.getElementById("platform").value;
+  const capability = el.value;
 
-  domainOrEmailGroups.forEach((group) => {
-    const domainField = group.querySelector(".domain-field");
-    const emailField = group.querySelector(".email-field");
-    const domainLabel = group.querySelector('[data-type="domain"]');
-    const emailLabel = group.querySelector('[data-type="email"]');
-
-    if (capability === "all") {
-      // 同时显示 domain 和 email
-      domainField.classList.remove("hidden");
-      emailField.classList.remove("hidden");
-      domainLabel.classList.remove("hidden");
-      emailLabel.classList.remove("hidden");
-    } else if (capability === "ssl") {
-      // 只显示 email，隐藏 domain
-      domainField.classList.add("hidden");
-      emailField.classList.remove("hidden");
-      domainLabel.classList.add("hidden");
-      emailLabel.classList.remove("hidden");
-
-      // 清空 domain 字段值
-      domainField.value = "";
-    } else {
-      // 只显示 domain，隐藏 email
-      domainField.classList.remove("hidden");
-      emailField.classList.add("hidden");
-      domainLabel.classList.remove("hidden");
-      emailLabel.classList.add("hidden");
-
-      // 清空 email 字段值
-      emailField.value = "";
-    }
-  });
+  // 重新渲染，自动处理显隐
+  renderPlatformFields(platform, capability);
 }
 
 // 请选择平台 platform
-function changePlatform(platform) {
-  // 隐藏所有平台字段
-  document.querySelectorAll(".platform-fields").forEach((el) => {
-    el.classList.add("hidden");
-  });
+function changePlatform(el) {
+  console.log("changePlatform", el);
 
-  // 显示选中平台的字段
-  const fields = document.getElementById(platform + "_fields");
-  if (fields) {
-    fields.classList.remove("hidden");
+  const platform = el.value;
+  const capability = document.getElementById("capability").value;
 
-    // 根据当前 capability 设置字段显示
-    const currentCapability = document.getElementById("capability").value;
-    if (currentCapability) {
-      changeCapability({ value: currentCapability });
-    }
-  }
-}
-
-// 组装JSON配置
-function buildConfigPlatform() {
-  const platform = document.getElementById("platform").value.trim();
-  const capability = document.getElementById("capability").value.trim();
-  let config = {};
-
-  switch (platform) {
-    case "cloudflare":
-      config = {
-        api_key: document.getElementById(`${platform}_api_key`).value.trim(),
-        zone_id: document.getElementById(`${platform}_zone_id`).value.trim(),
-      };
-      break;
-    case "tencent_dns":
-      config = {
-        secret_id: document
-          .getElementById(`${platform}_secret_id`)
-          .value.trim(),
-        secret_key: document
-          .getElementById(`${platform}_secret_key`)
-          .value.trim(),
-      };
-      break;
-    case "tencent_eo":
-      config = {
-        secret_id: document
-          .getElementById(`${platform}_secret_id`)
-          .value.trim(),
-        secret_key: document
-          .getElementById(`${platform}_secret_key`)
-          .value.trim(),
-        zone_id: document.getElementById(`${platform}_zone_id`).value.trim(),
-      };
-      break;
-    case "aliyun_dns":
-      config = {
-        access_key_id: document
-          .getElementById(`${platform}_access_key_id`)
-          .value.trim(),
-        access_key_secret: document
-          .getElementById(`${platform}_access_key_secret`)
-          .value.trim(),
-      };
-      break;
-    case "aliyun_esa":
-      config = {
-        access_key_id: document
-          .getElementById(`${platform}_access_key_id`)
-          .value.trim(),
-        access_key_secret: document
-          .getElementById(`${platform}_access_key_secret`)
-          .value.trim(),
-        site_id: Number(
-          document.getElementById(`${platform}_site_id`).value.trim()
-        ),
-      };
-      break;
-    case "baidu_dns":
-      config = {
-        access_key_id: document
-          .getElementById(`${platform}_access_key_id`)
-          .value.trim(),
-        secret_access_key: document
-          .getElementById(`${platform}_secret_access_key`)
-          .value.trim(),
-      };
-      break;
-    case "huawei_dns":
-      config = {
-        access_key_id: document
-          .getElementById(`${platform}_access_key_id`)
-          .value.trim(),
-        secret_access_key: document
-          .getElementById(`${platform}_secret_access_key`)
-          .value.trim(),
-        zone_id: document.getElementById(`${platform}_zone_id`).value.trim(),
-      };
-    case "volcengine_dns":
-      config = {
-        access_key: document
-          .getElementById(`${platform}_access_key`)
-          .value.trim(),
-        secret_key: document
-          .getElementById(`${platform}_secret_key`)
-          .value.trim(),
-        zone_id: Number(
-          document.getElementById(`${platform}_zone_id`).value.trim()
-        ),
-      };
-      break;
-  }
-
-  // 合并 domain_name 和 email 字段（可能同时存在）
-  Object.assign(config, getDomainAndEmailKeyValue(platform, capability));
-
-  // 设置隐藏字段的值
-  document.getElementById("config_json").value = JSON.stringify(config);
+  // 重新渲染，自动处理显隐
+  renderPlatformFields(platform, capability);
 }
 
 // 打开 表单 弹窗
@@ -279,81 +139,11 @@ async function openFormModal(id) {
     document.getElementById("platform").value = config.platform;
     document.getElementById("platform").disabled = true;
 
-    // 解析JSON并填充表单
-    changePlatform(config.platform);
-
-    // 根据 capability 设置字段显示
-    setTimeout(() => {
-      changeCapability({ value: config.capability });
-    }, 100);
-
-    console.debug("config.platform", config.platform ?? "");
-    console.debug("config.config_json", config.config_json ?? {});
-    switch (config.platform) {
-      case "cloudflare":
-        document.getElementById(`${config.platform}_api_key`).value =
-          config.config_json.api_key || "";
-        document.getElementById(`${config.platform}_zone_id`).value =
-          config.config_json.zone_id || "";
-        break;
-      case "tencent_dns":
-        document.getElementById(`${config.platform}_secret_id`).value =
-          config.config_json.secret_id || "";
-        document.getElementById(`${config.platform}_secret_key`).value =
-          config.config_json.secret_key || "";
-        break;
-      case "tencent_eo":
-        document.getElementById(`${config.platform}_secret_id`).value =
-          config.config_json.secret_id || "";
-        document.getElementById(`${config.platform}_secret_key`).value =
-          config.config_json.secret_key || "";
-        document.getElementById(`${config.platform}_zone_id`).value =
-          config.config_json.zone_id || "";
-        break;
-      case "aliyun_dns":
-        document.getElementById(`${config.platform}_access_key_id`).value =
-          config.config_json.access_key_id || "";
-        document.getElementById(`${config.platform}_access_key_secret`).value =
-          config.config_json.access_key_secret || "";
-        break;
-      case "aliyun_esa":
-        document.getElementById(`${config.platform}_access_key_id`).value =
-          config.config_json.access_key_id || "";
-        document.getElementById(`${config.platform}_access_key_secret`).value =
-          config.config_json.access_key_secret || "";
-        document.getElementById(`${config.platform}_site_id`).value =
-          config.config_json.site_id || 0;
-        break;
-      case "baidu_dns":
-        document.getElementById(`${config.platform}_access_key_id`).value =
-          config.config_json.access_key_id || "";
-        document.getElementById(`${config.platform}_secret_access_key`).value =
-          config.config_json.secret_access_key || "";
-        break;
-      case "huawei_dns":
-        document.getElementById(`${config.platform}_access_key_id`).value =
-          config.config_json.access_key_id || "";
-        document.getElementById(`${config.platform}_secret_access_key`).value =
-          config.config_json.secret_access_key || "";
-        document.getElementById(`${config.platform}_zone_id`).value =
-          config.config_json.zone_id || "";
-        break;
-      case "volcengine_dns":
-        document.getElementById(`${config.platform}_access_key`).value =
-          config.config_json.access_key || "";
-        document.getElementById(`${config.platform}_secret_key`).value =
-          config.config_json.secret_key || "";
-        document.getElementById(`${config.platform}_zone_id`).value =
-          config.config_json.zone_id || 0;
-        break;
-    }
-
-    // 设置 domain_name 或 email 字段值
-    setDomainAndEmailField(
+    // 回填数据
+    renderPlatformFields(
       config.platform,
       config.capability,
-      config.config_json.domain_name || "",
-      config.config_json.email || ""
+      config.config_json
     );
 
     showModal("formModal", "modalTitle", "编辑 平台配置");
@@ -363,23 +153,10 @@ async function openFormModal(id) {
   if (!id) {
     document.getElementById("id").value = "";
     document.getElementById("id").disabled = true;
-    document
-      .querySelectorAll(".platform-fields")
-      .forEach((el) => el.classList.add("hidden"));
     document.getElementById("platform").disabled = false;
 
-    // 重置所有字段显示
-    document.querySelectorAll(".domain-or-email-group").forEach((group) => {
-      const domainField = group.querySelector(".domain-field");
-      const emailField = group.querySelector(".email-field");
-      const domainLabel = group.querySelector('[data-type="domain"]');
-      const emailLabel = group.querySelector('[data-type="email"]');
-
-      domainField.classList.remove("hidden");
-      emailField.classList.add("hidden");
-      domainLabel.classList.remove("hidden");
-      emailLabel.classList.add("hidden");
-    });
+    // 默认渲染第一个
+    renderPlatformFields(document.getElementById("platform").value, "all");
 
     showModal("formModal", "modalTitle", "添加 平台配置");
   }
@@ -391,8 +168,8 @@ if (form) {
   form.onsubmit = async (e) => {
     e.preventDefault();
 
-    // 组装JSON
-    buildConfigPlatform();
+    // 自动从动态字段中组装 JSON
+    buildConfigFromDynamicFields();
 
     // 表单数据
     const form_id = Number(document.getElementById("id").value.trim());
