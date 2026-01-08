@@ -4,9 +4,7 @@ import (
 	"log/slog"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent_log"
-	"vibe_ip/internal/helper/operation_logs_helper"
 
-	"github.com/corazawaf/coraza/v3"
 	"github.com/go-co-op/gocron/v2"
 	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/contrib/resty_log"
@@ -62,8 +60,6 @@ var (
 	GvaRestySlog  *slog.Logger // resty 日志
 	GvaHttpSlog   *slog.Logger // http 日志
 
-	GvaCoraza coraza.WAF // Coraza 防火墙
-
 	GvaEntDb    *ent.Client     // 业务数据库
 	GvaEntLogDb *ent_log.Client // 日志数据库
 
@@ -79,6 +75,4 @@ var (
 	GvaBark       *bark.Client     // Bark
 	GvaFt07       *ft07.Client     // Server酱
 	GvaPushDeer   *pushdeer.Client // PushDeer
-
-	GvaOperationLogHelper *operation_logs_helper.OperationLogHelper // 操作日志助手
 )

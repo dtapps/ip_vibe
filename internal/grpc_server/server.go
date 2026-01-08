@@ -21,7 +21,7 @@ type Config struct {
 
 // GRPCServerManager gRPC 服务管理器
 type GRPCServerManager struct {
-	server   *grpc.Server // gRPC 服务器实例
+	server   *grpc.Server // gRPC 服务实例
 	listener net.Listener // 监听套接字
 	logger   *slog.Logger // 日志记录器
 	config   Config       // gRPC 服务配置参数
@@ -44,6 +44,14 @@ func NewManager(logger *slog.Logger, cfg Config) *GRPCServerManager {
 		}
 	})
 	return instance
+}
+
+// GetServer 获取底层的 gRPC 服务实例
+func (m *GRPCServerManager) GetServer() *grpc.Server {
+	if m.server == nil {
+		return nil
+	}
+	return m.server
 }
 
 // Run 启动 gRPC 服务
@@ -99,16 +107,11 @@ func (m *GRPCServerManager) Run(ctx context.Context) {
 	logger.InfoContext(ctx, "gRPC 服务启动成功")
 
 	if err := m.server.Serve(m.listener); err != nil {
-		logger.ErrorContext(ctx, "gRPC 服务运行异常",
+		logger.ErrorContext(ctx, "gRPC 服务启动失败",
 			slog.Any("err", err),
 		)
+		panic(err)
 	}
-}
-
-// GetServer 获取底层的 grpc.Server 实例
-// 注意：如果在 Run 之前调用，可能会返回 nil
-func (m *GRPCServerManager) GetServer() *grpc.Server {
-	return m.server
 }
 
 // Stop 优雅关闭

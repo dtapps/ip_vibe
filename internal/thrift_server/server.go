@@ -20,7 +20,7 @@ type Config struct {
 
 // ThriftServerManager Thrift 服务管理器
 type ThriftServerManager struct {
-	server *thrift.TSimpleServer // Thrift 服务器实例
+	server *thrift.TSimpleServer // Thrift 服务实例
 	logger *slog.Logger          // 日志记录器
 	config Config                // Thrift 服务配置参数
 }
@@ -42,6 +42,15 @@ func NewManager(logger *slog.Logger, cfg Config) *ThriftServerManager {
 		}
 	})
 	return instance
+}
+
+// GetServer 获取底层的 Thrift 服务实例
+// 注意：如果在 Run 之前调用，可能会返回 nil
+func (m *ThriftServerManager) GetServer() *thrift.TSimpleServer {
+	if m.server == nil {
+		return nil
+	}
+	return m.server
 }
 
 // Run 启动 Thrift 服务
@@ -96,16 +105,10 @@ func (m *ThriftServerManager) Run(ctx context.Context) {
 	logger.InfoContext(ctx, "Thrift 服务启动成功")
 
 	if err := m.server.Serve(); err != nil {
-		logger.ErrorContext(ctx, "Thrift 服务运行异常",
+		logger.ErrorContext(ctx, "Thrift 服务启动失败",
 			slog.Any("err", err),
 		)
 	}
-}
-
-// GetServer 获取底层的 thrift.TSimpleServer 实例
-// 注意：如果在 Run 之前调用，可能会返回 nil
-func (m *ThriftServerManager) GetServer() *thrift.TSimpleServer {
-	return m.server
 }
 
 // Stop 优雅关闭

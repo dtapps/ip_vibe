@@ -1,9 +1,7 @@
-package initialize
+package gin_server
 
 import (
-	"context"
 	"log/slog"
-	"vibe_ip/internal/global"
 
 	coreruleset "github.com/corazawaf/coraza-coreruleset"
 	"github.com/corazawaf/coraza/v3"
@@ -22,10 +20,9 @@ SecRule RESPONSE_BODY "@rx sensitive|password|secret" "id:200003,phase:4,log,pas
 
 **/
 
-// InitCoraza 初始化 Coraza 防火墙
-func InitCoraza(ctx context.Context, logger *slog.Logger) {
-	var err error
-	global.GvaCoraza, err = coraza.NewWAF(
+// initCoraza 初始化 Coraza 防火墙
+func initCoraza(logger *slog.Logger) (coraza.WAF, error) {
+	coraza, err := coraza.NewWAF(
 		coraza.NewWAFConfig().
 			WithDirectives(`
 # 开启 WAF
@@ -37,11 +34,10 @@ SecRequestBodyAccess On
 			WithRootFS(coreruleset.FS),
 	)
 	if err != nil {
-		logger.Error("[初始化 Coraza] 错误",
-			slog.Any("err", err),
-		)
-		panic(err)
+		return nil, err
 	}
+
+	return coraza, nil
 }
 
 /**
