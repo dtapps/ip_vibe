@@ -137,5 +137,8 @@ func (m *MCPServerManager) GetServer() *mcp.Server {
 
 // Stop 优雅关闭
 func (m *MCPServerManager) Stop(ctx context.Context) {
+	if m.server != nil {
+		m.logger.InfoContext(ctx, "MCP 服务正在优雅关闭...")
+	}
 	m.logger.InfoContext(ctx, "MCP 服务已安全停止")
 }

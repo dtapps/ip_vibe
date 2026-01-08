@@ -223,7 +223,7 @@ func main() {
 	// 新 Swagger 路由
 	qingfeng_router(ctx, global.GvaGinSlog, router)
 
-	// MCP 启动
+	// 启动 MCP 服务
 	mcpMgr := mcp_server.NewManager(global.GvaMcpSlog, mcp_server.Config{
 		Name:    "IPVibe",
 		Title:   "IPVibe",
@@ -231,7 +231,7 @@ func main() {
 	}, router)
 	go mcpMgr.Run(ctx)
 
-	// gRPC 启动
+	// 启动 gRPC 服务
 	grpcMgr := grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{
 		Addr:     global.GvaEnv.GRPC_ADDR,
 		Username: global.GvaEnv.BASIC_AUTH_USERNAME,
@@ -239,7 +239,7 @@ func main() {
 	})
 	go grpcMgr.Run(ctx)
 
-	// gRPC-Gateway 启动
+	// 启动 gRPC-Gateway 服务
 	grpcGwMgr := grpc_gateway_client.NewManager(global.GvaGrpcSlog, grpc_gateway_client.Config{
 		Addr:     global.GvaEnv.GRPC_ADDR,
 		Username: global.GvaEnv.BASIC_AUTH_USERNAME,
@@ -377,34 +377,37 @@ func gracefulShutdown(ginLogger *slog.Logger, gocronLogger *slog.Logger, entLogg
 			}
 		}
 
-		// 2. 关闭 gRPC-Gateway 到上游的连接
+		// 2. 优雅关闭 MCP 服务
+		mcp_server.NewManager(global.GvaMcpSlog, mcp_server.Config{}, nil).Stop(ctx)
+
+		// 3. 优雅关闭 gRPC-Gateway 服务
 		grpc_gateway_client.NewManager(global.GvaGrpcSlog, grpc_gateway_client.Config{}, nil).Stop(ctx)
 
-		// 3. 优雅关闭 gRPC 服务
+		// 4. 优雅关闭 gRPC 服务
 		grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{}).Stop(ctx)
 
-		// 4. 通知 gRPC、Thrift 服务开始优雅关闭
+		// 5. 通知 gRPC、Thrift 服务开始优雅关闭
 		close(shutdownChan)
 
-		// 5. 等待一段时间让 goroutine 完成
+		// 6. 等待一段时间让 goroutine 完成
 		time.Sleep(1 * time.Second)
 
-		// 6. 关闭数据库连接和其他资源（现有的 defer 逻辑）
+		// 7. 关闭数据库连接和其他资源（现有的 defer 逻辑）
 		slog.Info("开始关闭数据库连接...")
 
-		// 7. 关闭 第三方服务
+		// 8. 关闭 第三方服务
 		initialize.CloseThirdParty()
 
-		// 8. 关闭 GoCron 调度器
+		// 9. 关闭 GoCron 调度器
 		initialize.CloseGoCron(ctx, gocronLogger)
 
-		// 9. 等待一段时间让 goroutine 完成
+		// 10. 等待一段时间让 goroutine 完成
 		time.Sleep(1 * time.Second)
 
-		// 10. 关闭 业务数据库
+		// 11. 关闭 业务数据库
 		initialize.CloseEntDb(ctx, entLogger)
 
-		// 11. 关闭 日志数据库
+		// 12. 关闭 日志数据库
 		initialize.CloseEntLogDb(ctx, entLogLogger)
 
 		slog.Info("所有资源已优雅关闭")
