@@ -1,7 +1,6 @@
 package gin_middleware
 
 import (
-	"log/slog"
 	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent_log/operationlog"
 
@@ -9,7 +8,7 @@ import (
 )
 
 // AuditContextMiddleware 审计上下文 中间件
-func AuditContextMiddleware(logger *slog.Logger, source operationlog.Source) gin.HandlerFunc {
+func AuditContextMiddleware(source operationlog.Source) gin.HandlerFunc {
 
 	if source == operationlog.SourceUnknown {
 		source = operationlog.SourceGin

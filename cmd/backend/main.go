@@ -31,9 +31,7 @@ import (
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/helper/gin_slog"
 	"vibe_ip/internal/initialize"
-	"vibe_ip/internal/mcp_prompt"
-	"vibe_ip/internal/mcp_resource"
-	"vibe_ip/internal/mcp_tool"
+	"vibe_ip/internal/mcp_server"
 	"vibe_ip/internal/thrift_generated/open"
 	"vibe_ip/internal/thrift_process"
 	"vibe_ip/internal/thrift_service"
@@ -43,7 +41,6 @@ import (
 	"github.com/dromara/carbon/v2"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/wdcbot/qingfeng"
@@ -127,7 +124,6 @@ func main() {
 	initialize.InitEntDb(ctx, global.GvaEntSlog)       // 初始化 业务数据库
 	initialize.InitEntLogDb(ctx, global.GvaEntLogSlog) // 初始化 日志数据库
 	initialize.InitGoCron(ctx, global.GvaGocronSlog)   // 初始化 GoCron 调度器
-	initialize.InitMCP(ctx, global.GvaMcpSlog)         // 初始化 MCP
 
 	initialize.InitEntHttpLog(global.GvaHttpSlog)   // 初始化 HTTP 日志
 	initialize.InitEntRestyLog(global.GvaRestySlog) // 初始化 Resty 日志
@@ -177,25 +173,20 @@ func main() {
 
 	// 配置 审计上下文 中间件
 	router.Use(gin_middleware.AuditContextMiddleware(
-		global.GvaGinSlog,
 		operationlog.SourceUser,
 	))
 
 	// 配置 请求ID 中间件
-	router.Use(gin_middleware.RequestIDMiddleware(
-		global.GvaGinSlog,
-	))
+	router.Use(gin_middleware.RequestIDMiddleware())
 
 	// 配置 Coraza 中间件
 	router.Use(gin_middleware.CorazaMiddleware(
-		global.GvaCoraza,
 		global.GvaGinSlog,
+		global.GvaCoraza,
 	))
 
 	// 配置 Gzip 压缩 中间件
-	router.Use(gin_middleware.GzipMiddleware(
-		global.GvaGinSlog,
-	))
+	router.Use(gin_middleware.GzipMiddleware())
 
 	// 配置 CORS 中间件
 	router.Use(gin_middleware.CORSMiddleware(
@@ -233,7 +224,12 @@ func main() {
 	qingfeng_router(ctx, global.GvaGinSlog, router)
 
 	// MCP 启动
-	mcp_run(ctx, global.GvaGinSlog, global.GvaMcpSlog, router)
+	mcpMgr := mcp_server.NewManager(global.GvaMcpSlog, mcp_server.Config{
+		Name:    "IPVibe",
+		Title:   "IPVibe",
+		Version: global.GvaVersion,
+	}, router)
+	go mcpMgr.Run(ctx)
 
 	// gRPC 启动
 	grpcMgr := grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{
@@ -1126,7 +1122,6 @@ func api_router(ctx context.Context, ginLogger *slog.Logger, router *gin.Engine)
 
 		// 开放API
 		opens := api.Group("/open").Use(gin_middleware.AuditContextMiddleware(
-			ginLogger,
 			operationlog.SourceAPI,
 		))
 		{
@@ -1194,66 +1189,6 @@ func qingfeng_router(ctx context.Context, ginLogger *slog.Logger, router *gin.En
 			}, // 多环境配置
 		}))
 	}
-}
-
-// MCP 启动
-func mcp_run(ctx context.Context, ginLogger *slog.Logger, mcpLogger *slog.Logger, router *gin.Engine) {
-
-	// 判断是否开启 MCP 功能
-	if global.GvaMcpServer == nil {
-		return
-	}
-
-	// 注册 MCP 实现
-	mcp_resource.RegisterTimeResources(global.GvaMcpServer)
-	mcp_tool.RegisterTimeTools(global.GvaMcpServer)
-
-	mcp_prompt.RegisterPlatformConfigPrompts(global.GvaMcpServer)
-	mcp_resource.RegisterPlatformConfigResources(global.GvaMcpServer)
-	mcp_tool.RegisterPlatformConfigTools(global.GvaMcpServer)
-
-	mcp_prompt.RegisterCDNRecordPrompts(global.GvaMcpServer)
-	mcp_resource.RegisterCDNRecordResources(global.GvaMcpServer)
-	mcp_tool.RegisterCDNRecordTools(global.GvaMcpServer)
-
-	mcp_prompt.RegisterDNSRecordPrompts(global.GvaMcpServer)
-	mcp_resource.RegisterDNSRecordResources(global.GvaMcpServer)
-	mcp_tool.RegisterDNSRecordTools(global.GvaMcpServer)
-
-	mcp_prompt.RegisterDevicePrompts(global.GvaMcpServer)
-	mcp_resource.RegisterDeviceResources(global.GvaMcpServer)
-	mcp_tool.RegisterDeviceTools(global.GvaMcpServer)
-
-	mcp_prompt.RegisterIPGroupPrompts(global.GvaMcpServer)
-	mcp_resource.RegisterIPGroupResources(global.GvaMcpServer)
-	mcp_tool.RegisterIPGroupTools(global.GvaMcpServer)
-
-	mcp_prompt.RegisterPortForwardPrompts(global.GvaMcpServer)
-	mcp_resource.RegisterPortForwardResources(global.GvaMcpServer)
-	mcp_tool.RegisterPortForwardTools(global.GvaMcpServer)
-
-	mcp_prompt.RegisterDomainMonitorPrompts(global.GvaMcpServer)
-	mcp_resource.RegisterDomainMonitorResources(global.GvaMcpServer)
-	mcp_tool.RegisterDomainMonitorTools(global.GvaMcpServer)
-
-	mcp_prompt.RegisterWebhookPrompts(global.GvaMcpServer)
-	mcp_resource.RegisterWebhookResources(global.GvaMcpServer)
-	mcp_tool.RegisterWebhookTools(global.GvaMcpServer)
-
-	mcp_prompt.RegisterWebhookSubPrompts(global.GvaMcpServer)
-	mcp_resource.RegisterWebhookSubResources(global.GvaMcpServer)
-	mcp_tool.RegisterWebhookSubTools(global.GvaMcpServer)
-
-	// 注册 MCP 路由
-	httpTransport := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
-		return global.GvaMcpServer
-	}, nil)
-	mcpRouter := router.Use(gin_middleware.AuditContextMiddleware(
-		ginLogger,
-		operationlog.SourceMcp,
-	))
-	mcpRouter.Any("/mcp/*path", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
-	mcpRouter.Any("/mcp", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
 }
 
 // Thrift 启动

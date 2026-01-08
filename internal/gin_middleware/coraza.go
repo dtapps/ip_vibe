@@ -17,7 +17,7 @@ import (
 )
 
 // CorazaMiddleware Coraza WAF 中间件
-func CorazaMiddleware(waf coraza.WAF, logger *slog.Logger) gin.HandlerFunc {
+func CorazaMiddleware(logger *slog.Logger, waf coraza.WAF) gin.HandlerFunc {
 
 	// 如果 WAF 实例为空，直接返回空的 HandlerFunc
 	if waf == nil {

@@ -33,10 +33,11 @@ type Config struct {
 
 // GRPCGatewayClientManager gRPC 网关客户端管理器
 type GRPCGatewayClientManager struct {
-	client    *grpc.ClientConn // gRPC 客户端连接
-	logger    *slog.Logger     // 日志记录器
-	config    Config           // gRPC 客户端配置参数
-	ginRouter *gin.Engine      // Gin 路由
+	client          *grpc.ClientConn // gRPC 客户端连接
+	logger          *slog.Logger     // 日志记录器
+	config          Config           // gRPC 客户端配置参数
+	ginRouter       *gin.Engine      // Gin 路由
+	ginRouterPrefix string           // Gin 路由前缀
 }
 
 var (
@@ -51,9 +52,10 @@ func NewManager(logger *slog.Logger, cfg Config, ginRouter *gin.Engine) *GRPCGat
 			logger = slog.Default()
 		}
 		instance = &GRPCGatewayClientManager{
-			logger:    logger,
-			config:    cfg,
-			ginRouter: ginRouter,
+			logger:          logger,
+			config:          cfg,
+			ginRouter:       ginRouter,
+			ginRouterPrefix: "/grpc",
 		}
 	})
 	return instance
@@ -163,15 +165,15 @@ func (m *GRPCGatewayClientManager) Run(ctx context.Context) (err error) {
 		)
 	}
 
-	// 挂载网关
+	// 挂载到路由
 	if m.ginRouter != nil {
-		grpcGwRouter := m.ginRouter.Group("/grpc").Use(gin_middleware.AuditContextMiddleware(
-			m.logger,
-			operationlog.SourceGrpc,
-		))
-		grpcGwRouter.Any("/*any", gin.WrapH(http.StripPrefix("/grpc", gwMux)))
+		grpcGwRouter := m.ginRouter.Group(m.ginRouterPrefix).
+			Use(gin_middleware.AuditContextMiddleware(
+				operationlog.SourceGrpc,
+			))
+		grpcGwRouter.Any("/*any", gin.WrapH(http.StripPrefix(m.ginRouterPrefix, gwMux)))
 		logger.InfoContext(ctx, "gRPC-Gateway 已挂载到 Gin 路由",
-			slog.String("prefix", "/grpc"),
+			slog.String("prefix", m.ginRouterPrefix),
 		)
 	}
 

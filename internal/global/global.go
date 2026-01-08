@@ -8,7 +8,6 @@ import (
 
 	"github.com/corazawaf/coraza/v3"
 	"github.com/go-co-op/gocron/v2"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/contrib/resty_log"
 	"go.dtapp.net/library/service/bark"
@@ -70,8 +69,6 @@ var (
 
 	GvaGoCron        gocron.Scheduler // 定时任务
 	GvaGoCronRunning int32            // 定时任务状态 0=停 1=运行
-
-	GvaMcpServer *mcp.Server // Model Context Protocol 服务器
 
 	GvaHttpLog  *http_log.LoggingTransport // HTTP框架日志
 	GvaRestyLog *resty_log.Logger          // Resty框架日志
