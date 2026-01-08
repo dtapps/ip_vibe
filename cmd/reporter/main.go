@@ -98,13 +98,13 @@ func main() {
 
 	if global.GvaEnv.GRPC_URL != "" {
 
-		// 启动 gRPC 客户端
+		// 连接 gRPC 客户端
 		grpcMgr := grpc_client.NewManager(global.GvaGrpcSlog, grpc_client.Config{
 			Addr:     global.GvaEnv.GRPC_URL,
 			Username: global.GvaEnv.BASIC_AUTH_USERNAME,
 			Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
 		})
-		err := grpcMgr.Run(ctx)
+		err := grpcMgr.Conn(ctx)
 		if err != nil {
 			slog.ErrorContext(ctx, "启动 gRPC 客户端失败",
 				slog.Any("err", err),

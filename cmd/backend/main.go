@@ -151,13 +151,13 @@ func main() {
 	})
 	go grpcMgr.Run(ctx)
 
-	// 启动 gRPC-Gateway 服务
+	// 连接 gRPC-Gateway 服务
 	grpcGwMgr := grpc_gateway_client.NewManager(global.GvaGrpcSlog, grpc_gateway_client.Config{
 		Addr:     global.GvaEnv.GRPC_ADDR,
 		Username: global.GvaEnv.BASIC_AUTH_USERNAME,
 		Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
 	}, router)
-	go grpcGwMgr.Run(ctx)
+	go grpcGwMgr.Conn(ctx)
 
 	// Thrift 启动
 	thriftMgr := thrift_server.NewManager(global.GvaThriftSlog, thrift_server.Config{

@@ -61,8 +61,8 @@ func NewManager(logger *slog.Logger, cfg Config, ginRouter *gin.Engine) *GRPCGat
 	return instance
 }
 
-// Run 启动 gRPC 网关客户端
-func (m *GRPCGatewayClientManager) Run(ctx context.Context) (err error) {
+// Conn 连接 gRPC 网关客户端
+func (m *GRPCGatewayClientManager) Conn(ctx context.Context) (err error) {
 
 	// 日志
 	logger := m.logger.With(
@@ -71,7 +71,7 @@ func (m *GRPCGatewayClientManager) Run(ctx context.Context) (err error) {
 
 	// 检查地址
 	if m.config.Addr == "" {
-		logger.ErrorContext(ctx, "gRPC-Gateway 客户端不启动，未配置地址")
+		logger.ErrorContext(ctx, "gRPC-Gateway 客户端不连接，未配置地址")
 		return nil
 	}
 
@@ -180,9 +180,11 @@ func (m *GRPCGatewayClientManager) Run(ctx context.Context) (err error) {
 	return nil
 }
 
-// GetServer 获取底层的 grpc.Server 实例
-// 注意：如果在 Run 之前调用，可能会返回 nil
+// GetServer 获取底层的 grpc.ClientConn 客户端连接
 func (m *GRPCGatewayClientManager) GetClient() *grpc.ClientConn {
+	if m.client == nil {
+		return nil
+	}
 	return m.client
 }
 
