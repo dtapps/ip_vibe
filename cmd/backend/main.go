@@ -244,7 +244,9 @@ func main() {
 
 	// Thrift 启动
 	thriftMgr := thrift_server.NewManager(global.GvaThriftSlog, thrift_server.Config{
-		Addr: global.GvaEnv.THRIFT_ADDR,
+		Addr:     global.GvaEnv.THRIFT_ADDR,
+		Username: global.GvaEnv.BASIC_AUTH_USERNAME,
+		Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
 	})
 	go thriftMgr.Run(ctx)
 

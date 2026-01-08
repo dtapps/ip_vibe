@@ -19,7 +19,7 @@ type OpenServer struct {
 }
 
 // NewOpenServer 创建 Thrift 服务实例
-func NewOpenServer(logger *slog.Logger) *OpenServer {
+func NewOpenServer(logger *slog.Logger, authWrapper *AuthWrapper) *OpenServer {
 	// 使用与你的 HTTP 处理器相同的服务实例
 	deviceService := service.NewDeviceOpenService(
 		global.GvaEntDb,
@@ -29,7 +29,7 @@ func NewOpenServer(logger *slog.Logger) *OpenServer {
 
 	return &OpenServer{
 		logger:        logger,
-		authWrapper:   NewAuthWrapper(logger),
+		authWrapper:   authWrapper,
 		deviceService: deviceService,
 	}
 }

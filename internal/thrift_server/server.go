@@ -13,7 +13,9 @@ import (
 
 // Config Thrift 服务所需的配置参数
 type Config struct {
-	Addr string
+	Addr     string // 地址
+	Username string // 用户名
+	Password string // 密码
 }
 
 // ThriftServerManager Thrift 服务管理器
@@ -75,7 +77,8 @@ func (m *ThriftServerManager) Run(ctx context.Context) {
 	protocolFactory := thrift.NewTBinaryProtocolFactoryConf(&thrift.TConfiguration{})
 
 	// 业务逻辑层 (Handler)
-	openHandler := thrift_service.NewOpenServer(m.logger)
+	authWrapper := thrift_service.NewAuthWrapper(m.logger, m.config.Username, m.config.Password)
+	openHandler := thrift_service.NewOpenServer(m.logger, authWrapper)
 	processor := open.NewOpenServiceProcessor(openHandler)
 
 	// 挂载【通用】处理器包装器

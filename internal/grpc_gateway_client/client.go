@@ -26,7 +26,7 @@ import (
 
 // Config gRPC 客户端所需的配置参数
 type Config struct {
-	Addr     string // 服务器地址
+	Addr     string // 地址
 	Username string // 用户名
 	Password string // 密码
 }

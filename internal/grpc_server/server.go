@@ -14,9 +14,9 @@ import (
 
 // Config gRPC 服务所需的配置参数
 type Config struct {
-	Addr     string
-	Username string
-	Password string
+	Addr     string // 地址
+	Username string // 用户名
+	Password string // 密码
 }
 
 // GRPCServerManager gRPC 服务管理器

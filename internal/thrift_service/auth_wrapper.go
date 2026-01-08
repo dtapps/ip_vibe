@@ -6,8 +6,7 @@ import (
 	"log/slog"
 	"time"
 	"vibe_ip/internal/core"
-	"vibe_ip/internal/global"
-	"vibe_ip/internal/thrift_generated/open" // 请根据实际路径修改
+	"vibe_ip/internal/thrift_generated/open"
 )
 
 // AuthWrapper 包装原始 Handler，实现日志和认证的解耦
@@ -16,10 +15,10 @@ type AuthWrapper struct {
 	logger     *slog.Logger
 }
 
-func NewAuthWrapper(logger *slog.Logger) *AuthWrapper {
+func NewAuthWrapper(logger *slog.Logger, username, password string) *AuthWrapper {
 
 	// 获取基本认证 token
-	validToken := core.GetBasicAuthToken(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+	validToken := core.GetBasicAuthToken(username, password)
 
 	return &AuthWrapper{
 		logger:     logger,
