@@ -9,7 +9,6 @@ import (
 	"html/template"
 	"io/fs"
 	"log/slog"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -27,8 +26,7 @@ import (
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/gin_middleware"
 	"vibe_ip/internal/global"
-	"vibe_ip/internal/grpc_client"
-	"vibe_ip/internal/grpc_generated"
+	"vibe_ip/internal/grpc_gateway_client"
 	"vibe_ip/internal/grpc_server"
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/helper/gin_slog"
@@ -45,22 +43,14 @@ import (
 	"github.com/dromara/carbon/v2"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
-	grpcGatewayRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/wdcbot/qingfeng"
-	statuspb "google.golang.org/genproto/googleapis/rpc/status"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // 全局资源管理
 var (
-	grpcServerInstance   *grpc.Server
-	grpcListenerInstance net.Listener
 	thriftServerInstance *thrift.TSimpleServer
 	thriftTransport      thrift.TServerTransport
 	httpServerInstance   *http.Server
@@ -254,7 +244,12 @@ func main() {
 	go grpcMgr.Run(ctx)
 
 	// gRPC-Gateway 启动
-	go grpc_gw_run(ctx, global.GvaGrpcSlog, router)
+	grpcGwMgr := grpc_gateway_client.NewManager(global.GvaGrpcSlog, grpc_gateway_client.Config{
+		Addr:     global.GvaEnv.GRPC_ADDR,
+		Username: global.GvaEnv.BASIC_AUTH_USERNAME,
+		Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
+	}, router)
+	go grpcGwMgr.Run(ctx)
 
 	// Thrift 启动
 	go thrift_run(ctx, global.GvaThriftSlog)
@@ -387,7 +382,7 @@ func gracefulShutdown(ginLogger *slog.Logger, gocronLogger *slog.Logger, entLogg
 		}
 
 		// 2. 关闭 gRPC-Gateway 到上游的连接
-		grpc_client.NewManager(global.GvaGrpcSlog, grpc_client.Config{}).Stop(ctx)
+		grpc_gateway_client.NewManager(global.GvaGrpcSlog, grpc_gateway_client.Config{}, nil).Stop(ctx)
 
 		// 3. 优雅关闭 gRPC 服务
 		grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{}).Stop(ctx)
@@ -1259,101 +1254,6 @@ func mcp_run(ctx context.Context, ginLogger *slog.Logger, mcpLogger *slog.Logger
 	))
 	mcpRouter.Any("/mcp/*path", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
 	mcpRouter.Any("/mcp", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
-}
-
-// gRPC-Gateway 启动
-func grpc_gw_run(ctx context.Context, grpcLogger *slog.Logger, router *gin.Engine) {
-
-	// 判断是否开启 gRPC-Gateway 功能
-	if global.GvaEnv.GRPC_ADDR == "" {
-		grpcLogger.InfoContext(ctx, "gRPC-Gateway 不启动，因为没有配置端口")
-		return
-	}
-
-	// 启动 gRPC 客户端
-	grpcMgr := grpc_client.NewManager(global.GvaGrpcSlog, grpc_client.Config{
-		Addr:     global.GvaEnv.GRPC_ADDR,
-		Username: global.GvaEnv.BASIC_AUTH_USERNAME,
-		Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
-	})
-	err := grpcMgr.Run(ctx)
-	if err != nil {
-		slog.ErrorContext(ctx, "启动 gRPC 客户端失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
-
-	// 获取 gRPC 客户端
-	grpcClient := grpcMgr.GetClient()
-
-	gwMux := grpcGatewayRuntime.NewServeMux(
-		// 错误响应统一包装
-		grpcGatewayRuntime.WithErrorHandler(func(ctx context.Context, mux *grpcGatewayRuntime.ServeMux, marshaler grpcGatewayRuntime.Marshaler, w http.ResponseWriter, r *http.Request, err error) {
-			// 默认错误处理器
-			st, _ := status.FromError(err)
-
-			// 映射 HTTP 状态码
-			httpCode := grpcGatewayRuntime.HTTPStatusFromCode(st.Code())
-
-			// 构造响应
-			resp := handlers.APIResponse{
-				Code:    int(st.Code()),
-				Message: st.Message(),
-				Data:    st.Details(),
-			}
-
-			// 设置响应头
-			w.Header().Set("Content-Type", marshaler.ContentType(nil))
-
-			// 设置 HTTP 状态码
-			w.WriteHeader(httpCode)
-
-			// 使用 JSON 编码写回
-			_ = marshaler.NewEncoder(w).Encode(resp)
-		}),
-		// 成功响应统一包装
-		grpcGatewayRuntime.WithForwardResponseRewriter(func(ctx context.Context, resp proto.Message) (any, error) {
-			if _, ok := resp.(*statuspb.Status); ok {
-				return resp, nil
-			}
-			var data any = resp
-			// 判断是否是 Empty 类型，如果是，强行设为 nil 以触发 omitempty
-			if _, ok := resp.(*emptypb.Empty); ok || resp == nil {
-				data = nil
-			}
-			return handlers.APIResponse{
-				Code:    http.StatusOK,
-				Message: "success",
-				Data:    data,
-			}, nil
-		}),
-	)
-
-	// 注册服务
-	if err := grpc_generated.RegisterOpenServiceHandler(ctx, gwMux, grpcClient); err != nil {
-		grpcLogger.ErrorContext(ctx, "注册 OpenService 网关路由失败",
-			slog.Any("err", err),
-		)
-		return
-	}
-	if err := grpc_generated.RegisterIndexServiceHandler(ctx, gwMux, grpcClient); err != nil {
-		grpcLogger.ErrorContext(ctx, "注册 IndexService 网关路由失败",
-			slog.Any("err", err),
-		)
-		return
-	}
-
-	// 关键：把网关挂到 Gin 的 /grpc 前缀
-	grpcGwRouter := router.Group("/grpc").Use(gin_middleware.AuditContextMiddleware(
-		grpcLogger,
-		operationlog.SourceGrpc,
-	))
-	grpcGwRouter.Any("/*any", gin.WrapH(http.StripPrefix("/grpc", gwMux)))
-	grpcLogger.InfoContext(ctx, "gRPC-Gateway 已挂载到 Gin",
-		slog.String("prefix", "/grpc"),
-		slog.String("upstream", global.GvaEnv.GRPC_ADDR),
-	)
 }
 
 // Thrift 启动

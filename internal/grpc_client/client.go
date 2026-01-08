@@ -47,7 +47,7 @@ func NewManager(logger *slog.Logger, cfg Config) *GRPCClientManager {
 }
 
 // Run 启动 gRPC 客户端
-func (m *GRPCClientManager) Run(ctx context.Context) error {
+func (m *GRPCClientManager) Run(ctx context.Context) (err error) {
 
 	// 日志
 	logger := m.logger.With(
@@ -85,14 +85,13 @@ func (m *GRPCClientManager) Run(ctx context.Context) error {
 	}
 
 	// 连接 gRPC 服务器
-	client, err := grpc.NewClient(m.config.Addr, opts...)
+	m.client, err = grpc.NewClient(m.config.Addr, opts...)
 	if err != nil {
 		logger.ErrorContext(ctx, "gRPC 客户端连接服务器失败",
 			slog.Any("err", err),
 		)
 		return err
 	}
-	m.client = client
 
 	return nil
 }
