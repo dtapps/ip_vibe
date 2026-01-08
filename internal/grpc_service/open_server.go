@@ -2,6 +2,7 @@ package grpc_service
 
 import (
 	"context"
+	"log/slog"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_generated"
@@ -13,12 +14,13 @@ import (
 
 // OpenServer 实现 gRPC 服务接口
 type OpenServer struct {
-	grpc_generated.UnimplementedOpenServiceServer
-	deviceService service.DeviceOpenService
+	grpc_generated.UnimplementedOpenServiceServer                           // 嵌入未实现的服务
+	logger                                        *slog.Logger              // 日志记录器
+	deviceService                                 service.DeviceOpenService // 设备服务
 }
 
 // NewOpenServer 创建 gRPC 服务实例
-func NewOpenServer() *OpenServer {
+func NewOpenServer(logger *slog.Logger) *OpenServer {
 	// 使用与你的 HTTP 处理器相同的服务实例
 	deviceService := service.NewDeviceOpenService(
 		global.GvaEntDb,
@@ -27,6 +29,7 @@ func NewOpenServer() *OpenServer {
 	)
 
 	return &OpenServer{
+		logger:        logger,
 		deviceService: deviceService,
 	}
 }

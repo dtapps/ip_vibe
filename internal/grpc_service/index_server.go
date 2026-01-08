@@ -2,6 +2,7 @@ package grpc_service
 
 import (
 	"context"
+	"log/slog"
 	"vibe_ip/internal/grpc_generated"
 
 	"google.golang.org/grpc"
@@ -10,12 +11,15 @@ import (
 
 // IndexServer 实现 gRPC 服务接口
 type IndexServer struct {
-	grpc_generated.UnimplementedIndexServiceServer
+	grpc_generated.UnimplementedIndexServiceServer              // 嵌入未实现的服务
+	logger                                         *slog.Logger // 日志记录器
 }
 
 // NewIndexServer 创建 gRPC 服务实例
-func NewIndexServer() *IndexServer {
-	return &IndexServer{}
+func NewIndexServer(logger *slog.Logger) *IndexServer {
+	return &IndexServer{
+		logger: logger,
+	}
 }
 
 // RegisterService 注册服务到 gRPC

@@ -1,6 +1,7 @@
 package grpc_service
 
 import (
+	"fmt"
 	"io"
 	"log/slog"
 	"sync"
@@ -34,6 +35,18 @@ func (s *RemoteLogService) RegisterService(server *grpc.Server) {
 func (s *RemoteLogService) LogTunnel(stream grpc_generated.RemoteLogService_LogTunnelServer) error {
 	var deviceID string
 
+	// 退出时自动清理，防止内存泄漏
+	defer func() {
+		if deviceID != "" {
+			s.mu.Lock()
+			delete(s.streams, deviceID)
+			s.mu.Unlock()
+			s.logger.Info("设备日志隧道已关闭",
+				slog.String("deviceID", deviceID),
+			)
+		}
+	}()
+
 	for {
 		// 1. 接收来自设备（客户端）的消息
 		resp, err := stream.Recv()
@@ -65,6 +78,7 @@ func (s *RemoteLogService) LogTunnel(stream grpc_generated.RemoteLogService_LogT
 				slog.String("deviceID", deviceID),
 				slog.Int("count", len(resp.Lines)),
 			)
+			// 这里你可以根据业务需求，把 lines 发送给前端 WebSocket 或者存入临时变量
 		}
 
 		if resp.ErrorMsg != "" {
@@ -83,11 +97,25 @@ func (s *RemoteLogService) SendRequestToFile(deviceID string, fileName string) e
 	s.mu.RUnlock()
 
 	if !ok {
-		return any(nil).(error) // 简单示意：设备不在线
+		s.logger.Warn("发送指令失败：设备不在线",
+			slog.String("deviceID", deviceID),
+		)
+		return fmt.Errorf("device not online")
 	}
 
-	// 服务端主动下发文件名给设备
-	return stream.Send(&grpc_generated.ServerRequest{
+	// 服务端主动通过隧道下发文件名给设备
+	// 注意：这里的 stream.Send 在高并发下需要加锁，目前普通调用没问题
+	err := stream.Send(&grpc_generated.ServerRequest{
 		FileName: fileName,
 	})
+
+	if err != nil {
+		s.logger.Error("下发日志提取指令失败",
+			slog.String("deviceID", deviceID),
+			slog.Any("err", err),
+		)
+		return err
+	}
+
+	return nil
 }
