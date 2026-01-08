@@ -12,6 +12,7 @@ import (
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/reporter/service"
 	"vibe_ip/internal/reporter/task"
+	"vibe_ip/internal/thrift_client"
 )
 
 var (
@@ -124,6 +125,46 @@ func main() {
 			grpcClientConn,
 		)
 		ipReportTask.SetConfig(config)
+
+		// 启动IP上报任务
+		err = ipReportTask.StartPeriodicTask(ctx)
+		if err != nil {
+			slog.ErrorContext(ctx, "启动IP上报任务失败",
+				slog.Any("err", err),
+			)
+			panic(err)
+		}
+		defer ipReportTask.Close()
+
+	} else if global.GvaEnv.THRIFT_URL != "" {
+
+		// 连接 Thrift 客户端
+		thriftMgr := thrift_client.NewManager(global.GvaThriftSlog, thrift_client.Config{
+			Addr:     global.GvaEnv.THRIFT_URL,
+			Username: global.GvaEnv.BASIC_AUTH_USERNAME,
+			Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
+		})
+		err := thriftMgr.Conn(ctx)
+		if err != nil {
+			slog.ErrorContext(ctx, "启动 Thrift 客户端失败",
+				slog.Any("err", err),
+			)
+			panic(err)
+		}
+		defer thrift_client.NewManager(global.GvaThriftSlog, thrift_client.Config{}).Stop(ctx)
+
+		// 获取 Thrift 客户端连接
+		thriftClientConn := thriftMgr.GetConn()
+
+		// 创建IP上报实例
+		ipReportTask := task.NewIPReportThriftTask(
+			global.GvaGoCron,
+			global.GvaGocronSlog,
+			ipReportService,
+			thriftClientConn,
+		)
+		ipReportTask.SetConfig(config)
+		ipReportTask.SetClientBase(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
 
 		// 启动IP上报任务
 		err = ipReportTask.StartPeriodicTask(ctx)
