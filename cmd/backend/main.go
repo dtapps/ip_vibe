@@ -64,7 +64,6 @@ var (
 	thriftServerInstance *thrift.TSimpleServer
 	thriftTransport      thrift.TServerTransport
 	httpServerInstance   *http.Server
-	grpcConnInstance     *grpc.ClientConn
 	shutdownOnce         sync.Once
 	shutdownChan         = make(chan struct{})
 )
@@ -388,37 +387,33 @@ func gracefulShutdown(ginLogger *slog.Logger, gocronLogger *slog.Logger, entLogg
 		}
 
 		// 2. 关闭 gRPC-Gateway 到上游的连接
-		slog.Info("开始关闭 gRPC-Gateway 连接...")
-		if grpcConnInstance != nil {
-			grpcConnInstance.Close()
-			slog.Info("gRPC-Gateway 连接已关闭")
-		}
+		grpc_client.NewManager(global.GvaGrpcSlog, grpc_client.Config{}).Stop(ctx)
 
 		// 3. 优雅关闭 gRPC 服务
 		grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{}).Stop(ctx)
 
-		// 3. 通知 gRPC、Thrift 服务开始优雅关闭
+		// 4. 通知 gRPC、Thrift 服务开始优雅关闭
 		close(shutdownChan)
 
-		// 4. 等待一段时间让 goroutine 完成
+		// 5. 等待一段时间让 goroutine 完成
 		time.Sleep(1 * time.Second)
 
-		// 5. 关闭数据库连接和其他资源（现有的 defer 逻辑）
+		// 6. 关闭数据库连接和其他资源（现有的 defer 逻辑）
 		slog.Info("开始关闭数据库连接...")
 
-		// 6. 关闭 第三方服务
-		// initialize.CloseThirdParty()
+		// 7. 关闭 第三方服务
+		initialize.CloseThirdParty()
 
-		// 7. 关闭 GoCron 调度器
+		// 8. 关闭 GoCron 调度器
 		initialize.CloseGoCron(ctx, gocronLogger)
 
-		// 8. 等待一段时间让 goroutine 完成
+		// 9. 等待一段时间让 goroutine 完成
 		time.Sleep(1 * time.Second)
 
-		// 9. 关闭 业务数据库
+		// 10. 关闭 业务数据库
 		initialize.CloseEntDb(ctx, entLogger)
 
-		// 10. 关闭 日志数据库
+		// 11. 关闭 日志数据库
 		initialize.CloseEntLogDb(ctx, entLogLogger)
 
 		slog.Info("所有资源已优雅关闭")
@@ -1275,22 +1270,22 @@ func grpc_gw_run(ctx context.Context, grpcLogger *slog.Logger, router *gin.Engin
 		return
 	}
 
-	// 获取 gRPC 客户端
-	grpcClient, err := grpc_client.Run(ctx, grpc_client.Options{
-		Addr: global.GvaEnv.GRPC_URL,
-		BasicAuth: grpc_client.BasicAuth{
-			Username: global.GvaEnv.BASIC_AUTH_USERNAME,
-			Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
-		},
-		Logger: global.GvaGrpcSlog,
+	// 启动 gRPC 客户端
+	grpcMgr := grpc_client.NewManager(global.GvaGrpcSlog, grpc_client.Config{
+		Addr:     global.GvaEnv.GRPC_ADDR,
+		Username: global.GvaEnv.BASIC_AUTH_USERNAME,
+		Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
 	})
+	err := grpcMgr.Run(ctx)
 	if err != nil {
-		slog.ErrorContext(ctx, "获取 gRPC 客户端失败",
+		slog.ErrorContext(ctx, "启动 gRPC 客户端失败",
 			slog.Any("err", err),
 		)
 		panic(err)
 	}
-	grpcConnInstance = grpcClient.GetClient()
+
+	// 获取 gRPC 客户端
+	grpcClient := grpcMgr.GetClient()
 
 	gwMux := grpcGatewayRuntime.NewServeMux(
 		// 错误响应统一包装
@@ -1336,13 +1331,13 @@ func grpc_gw_run(ctx context.Context, grpcLogger *slog.Logger, router *gin.Engin
 	)
 
 	// 注册服务
-	if err := grpc_generated.RegisterOpenServiceHandler(ctx, gwMux, grpcConnInstance); err != nil {
+	if err := grpc_generated.RegisterOpenServiceHandler(ctx, gwMux, grpcClient); err != nil {
 		grpcLogger.ErrorContext(ctx, "注册 OpenService 网关路由失败",
 			slog.Any("err", err),
 		)
 		return
 	}
-	if err := grpc_generated.RegisterIndexServiceHandler(ctx, gwMux, grpcConnInstance); err != nil {
+	if err := grpc_generated.RegisterIndexServiceHandler(ctx, gwMux, grpcClient); err != nil {
 		grpcLogger.ErrorContext(ctx, "注册 IndexService 网关路由失败",
 			slog.Any("err", err),
 		)

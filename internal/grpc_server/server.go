@@ -21,10 +21,10 @@ type Config struct {
 
 // GRPCServerManager gRPC 服务管理器
 type GRPCServerManager struct {
-	server   *grpc.Server
-	listener net.Listener
-	logger   *slog.Logger
-	config   Config
+	server   *grpc.Server // gRPC 服务器实例
+	listener net.Listener // 监听套接字
+	logger   *slog.Logger // 日志记录器
+	config   Config       // gRPC 服务配置参数
 }
 
 var (
@@ -35,6 +35,9 @@ var (
 // GetManager 获取单例（方便优雅关闭时调用）
 func NewManager(logger *slog.Logger, cfg Config) *GRPCServerManager {
 	once.Do(func() {
+		if logger == nil {
+			logger = slog.Default()
+		}
 		instance = &GRPCServerManager{
 			logger: logger,
 			config: cfg,
@@ -43,7 +46,7 @@ func NewManager(logger *slog.Logger, cfg Config) *GRPCServerManager {
 	return instance
 }
 
-// Run 启动服务
+// Run 启动 gRPC 服务
 func (m *GRPCServerManager) Run(ctx context.Context) {
 
 	// 日志
@@ -51,8 +54,9 @@ func (m *GRPCServerManager) Run(ctx context.Context) {
 		slog.String("addr", m.config.Addr),
 	)
 
+	// 检查地址
 	if m.config.Addr == "" {
-		logger.InfoContext(ctx, "gRPC 服务不启动，未配置地址")
+		logger.ErrorContext(ctx, "gRPC 服务不启动，未配置地址")
 		return
 	}
 

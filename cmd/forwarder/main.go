@@ -101,22 +101,24 @@ func main() {
 	forwardAgent := forward.NewAgent(global.GvaGocronSlog)
 
 	if global.GvaEnv.GRPC_URL != "" {
-		// 获取 gRPC 客户端
-		grpcClient, err := grpc_client.Run(ctx, grpc_client.Options{
-			Addr: global.GvaEnv.GRPC_URL,
-			BasicAuth: grpc_client.BasicAuth{
-				Username: global.GvaEnv.BASIC_AUTH_USERNAME,
-				Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
-			},
-			Logger: global.GvaGrpcSlog,
+
+		// 启动 gRPC 客户端
+		grpcMgr := grpc_client.NewManager(global.GvaGrpcSlog, grpc_client.Config{
+			Addr:     global.GvaEnv.GRPC_URL,
+			Username: global.GvaEnv.BASIC_AUTH_USERNAME,
+			Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
 		})
+		err := grpcMgr.Run(ctx)
 		if err != nil {
-			slog.ErrorContext(ctx, "获取 gRPC 客户端失败",
+			slog.ErrorContext(ctx, "启动 gRPC 客户端失败",
 				slog.Any("err", err),
 			)
 			panic(err)
 		}
-		defer grpcClient.Close()
+		defer grpc_client.NewManager(global.GvaGrpcSlog, grpc_client.Config{}).Stop(ctx)
+
+		// 获取 gRPC 客户端
+		grpcClient := grpcMgr.GetClient()
 
 		// 创建端口转发实例
 		portForwardTask := task.NewPortForwardGRPCTask(
@@ -124,9 +126,10 @@ func main() {
 			global.GvaGocronSlog,
 			portForwardServer,
 			forwardAgent,
-			grpcClient.GetClient(),
+			grpcClient,
 		)
 		portForwardTask.SetConfig(config)
+
 		// 启动端口转发任务
 		err = portForwardTask.StartPeriodicTask(ctx)
 		if err != nil {
@@ -135,7 +138,6 @@ func main() {
 			)
 			panic(err)
 		}
-		// 关闭端口转发实例
 		defer portForwardTask.Close()
 
 		// 创建统计上报实例
@@ -144,9 +146,10 @@ func main() {
 			global.GvaGocronSlog,
 			portForwardServer,
 			forwardAgent,
-			grpcClient.GetClient(),
+			grpcClient,
 		)
 		statsReportTask.SetConfig(config)
+
 		// 启动统计上报任务
 		err = statsReportTask.StartPeriodicTask(ctx)
 		if err != nil {
@@ -155,7 +158,6 @@ func main() {
 			)
 			panic(err)
 		}
-		// 关闭统计上报实例
 		defer statsReportTask.Close()
 	} else if global.GvaEnv.HTTP_URL != "" {
 		// 创建端口转发实例
@@ -169,6 +171,7 @@ func main() {
 		portForwardTask.SetConfig(config)
 		portForwardTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
 		portForwardTask.SetBaseURL(global.GvaEnv.HTTP_URL)
+
 		// 启动端口转发任务
 		err := portForwardTask.StartPeriodicTask(ctx)
 		if err != nil {
@@ -177,7 +180,6 @@ func main() {
 			)
 			panic(err)
 		}
-		// 关闭端口转发实例
 		defer portForwardTask.Close()
 
 		// 创建统计上报实例
@@ -190,6 +192,7 @@ func main() {
 		statsReportTask.SetConfig(config)
 		statsReportTask.SetBaseURL(global.GvaEnv.HTTP_URL)
 		statsReportTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+
 		// 启动统计上报任务
 		err = statsReportTask.StartPeriodicTask(ctx)
 		if err != nil {
@@ -198,8 +201,8 @@ func main() {
 			)
 			panic(err)
 		}
-		// 关闭统计上报实例
 		defer statsReportTask.Close()
+
 	} else {
 		slog.ErrorContext(ctx, "服务启动失败: GRPC_URL / HTTP_URL未配置")
 		panic("GRPC_URL / HTTP_URL未配置")
