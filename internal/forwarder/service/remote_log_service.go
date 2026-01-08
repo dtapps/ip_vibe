@@ -12,28 +12,12 @@ import (
 	"vibe_ip/pkg/utils"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
-
-// RemoteLogServiceConfig 配置
-type RemoteLogServiceConfig struct {
-	DeviceCode string `json:"device_code"` // 设备编号
-	DeviceName string `json:"device_name"` // 设备名称
-
-	Version   string `json:"version"`
-	GitCommit string `json:"git_commit"`
-	BuildTime string `json:"build_time"`
-	GoVersion string `json:"go_version"`
-	OS        string `json:"os"`
-	Arch      string `json:"arch"`
-}
 
 // RemoteLogService 远程日志服务
 type RemoteLogService struct {
-	logger *slog.Logger            // 日志记录器
-	config *RemoteLogServiceConfig // 配置
+	logger *slog.Logger // 日志记录器
 
-	clientBaseMD    metadata.MD                           // gRPC 客户端基础 metadata
 	grpcClient      *grpc.ClientConn                      // gRPC 客户端
 	remoteLogClient grpc_generated.RemoteLogServiceClient // gRPC 业务服务
 }
@@ -44,21 +28,6 @@ func NewRemoteLogService(logger *slog.Logger, grpcClient *grpc.ClientConn) *Remo
 		grpcClient:      grpcClient,
 		remoteLogClient: grpc_generated.NewRemoteLogServiceClient(grpcClient),
 	}
-}
-
-// SetConfig 设置任务配置
-func (s *RemoteLogService) SetConfig(config *RemoteLogServiceConfig) *RemoteLogService {
-	s.config = config
-	// 设置基础 metadata（相当于HTTP headers）
-	s.clientBaseMD = metadata.Pairs(
-		"x-version", config.Version,
-		"x-git-commit", config.GitCommit,
-		"x-build-time", config.BuildTime,
-		"x-go-version", config.GoVersion,
-		"x-os", config.OS,
-		"x-arch", config.Arch,
-	)
-	return s
 }
 
 // StartTunnel 启动日志隧道

@@ -136,6 +136,10 @@ func main() {
 		}
 		defer ipReportTask.Close()
 
+		// 启动远程日志隧道
+		remoteLogService := service.NewRemoteLogService(global.GvaGocronSlog, grpcClientConn)
+		go remoteLogService.StartTunnel(ctx, config.DeviceCode)
+
 	} else if global.GvaEnv.THRIFT_URL != "" {
 
 		// 连接 Thrift 客户端
