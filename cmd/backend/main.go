@@ -29,8 +29,7 @@ import (
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_client"
 	"vibe_ip/internal/grpc_generated"
-	"vibe_ip/internal/grpc_interceptor"
-	"vibe_ip/internal/grpc_service"
+	"vibe_ip/internal/grpc_server"
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/helper/gin_slog"
 	"vibe_ip/internal/initialize"
@@ -248,7 +247,12 @@ func main() {
 	mcp_run(ctx, global.GvaGinSlog, global.GvaMcpSlog, router)
 
 	// gRPC 启动
-	go grpc_run(ctx, global.GvaGrpcSlog)
+	grpcMgr := grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{
+		Addr:     global.GvaEnv.GRPC_ADDR,
+		Username: global.GvaEnv.BASIC_AUTH_USERNAME,
+		Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
+	})
+	go grpcMgr.Run(ctx)
 
 	// gRPC-Gateway 启动
 	go grpc_gw_run(ctx, global.GvaGrpcSlog, router)
@@ -389,6 +393,9 @@ func gracefulShutdown(ginLogger *slog.Logger, gocronLogger *slog.Logger, entLogg
 			grpcConnInstance.Close()
 			slog.Info("gRPC-Gateway 连接已关闭")
 		}
+
+		// 3. 优雅关闭 gRPC 服务
+		grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{}).Stop(ctx)
 
 		// 3. 通知 gRPC、Thrift 服务开始优雅关闭
 		close(shutdownChan)
@@ -1257,101 +1264,6 @@ func mcp_run(ctx context.Context, ginLogger *slog.Logger, mcpLogger *slog.Logger
 	))
 	mcpRouter.Any("/mcp/*path", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
 	mcpRouter.Any("/mcp", gin.WrapH(http.StripPrefix("/mcp", httpTransport)))
-}
-
-// gRPC 启动
-func grpc_run(ctx context.Context, grpcLogger *slog.Logger) {
-
-	// 判断是否开启 gRPC 功能
-	if global.GvaEnv.GRPC_ADDR == "" {
-		grpcLogger.InfoContext(ctx, "gRPC 服务不启动，因为没有配置端口",
-			slog.String("port", global.GvaEnv.GRPC_ADDR),
-		)
-		return
-	}
-
-	// 创建 gRPC 服务
-	opts := make([]grpc.ServerOption, 0)
-	usis := make([]grpc.UnaryServerInterceptor, 0)
-	// 审计上下文 一元拦截器
-	usis = append(
-		usis,
-		grpc_interceptor.AuditContextInterceptor(
-			grpcLogger,
-			operationlog.SourceGrpc,
-		),
-	)
-	// BasicAuth 一元拦截器
-	usis = append(
-		usis,
-		grpc_interceptor.BasicAuthUnaryInterceptor(
-			grpcLogger,
-			global.GvaEnv.BASIC_AUTH_USERNAME,
-			global.GvaEnv.BASIC_AUTH_PASSWORD,
-		),
-	)
-	// 日志 一元拦截器
-	usis = append(
-		usis,
-		grpc_interceptor.LoggerUnaryInterceptor(grpcLogger),
-	)
-	opts = append(
-		opts,
-		grpc.ChainUnaryInterceptor(usis...),
-	)
-	opts = append(
-		opts,
-		grpc.MaxRecvMsgSize(10*1024*1024), // 10MB
-	)
-	opts = append(
-		opts,
-		grpc.MaxSendMsgSize(10*1024*1024), // 10MB
-	)
-	grpcServerInstance = grpc.NewServer(opts...)
-
-	// 注册服务
-	indexServer := grpc_service.NewIndexServer()
-	indexServer.RegisterService(grpcServerInstance)
-	openServer := grpc_service.NewOpenServer()
-	openServer.RegisterService(grpcServerInstance)
-
-	// 启动 gRPC 服务
-	var err error
-	grpcListenerInstance, err = net.Listen("tcp", global.GvaEnv.GRPC_ADDR)
-	if err != nil {
-		grpcLogger.ErrorContext(ctx, "gRPC 服务启动失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
-
-	grpcLogger.InfoContext(ctx, "gRPC 服务正在启动",
-		slog.String("port", global.GvaEnv.GRPC_ADDR),
-	)
-
-	// 使用 Serve 但不阻塞，通过 channel 监听关闭信号
-	go func() {
-		if err := grpcServerInstance.Serve(grpcListenerInstance); err != nil {
-			grpcLogger.ErrorContext(ctx, "gRPC 服务异常退出",
-				slog.Any("err", err),
-			)
-		}
-		grpcLogger.InfoContext(ctx, "gRPC 服务已停止")
-	}()
-
-	grpcLogger.InfoContext(ctx, "gRPC 服务启动成功",
-		slog.String("port", global.GvaEnv.GRPC_ADDR),
-	)
-
-	<-shutdownChan // 等待关闭信号
-	grpcLogger.InfoContext(ctx, "接收到关闭信号，gRPC 服务正在优雅关闭")
-	if grpcServerInstance != nil {
-		grpcServerInstance.GracefulStop() // 优雅关闭
-	}
-	if grpcListenerInstance != nil {
-		grpcListenerInstance.Close()
-	}
-	grpcLogger.InfoContext(ctx, "gRPC 服务已优雅关闭")
 }
 
 // gRPC-Gateway 启动
