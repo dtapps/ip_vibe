@@ -9,15 +9,9 @@ import (
 	"time"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_client"
-	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/reporter/service"
 	"vibe_ip/internal/reporter/task"
-
-	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/retry"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 var (
@@ -51,7 +45,7 @@ func main() {
 
 			// 使用标准 slog 记录到控制台/文件（此时 global 变量可能不可靠，用标准 slog 最稳）
 			slog.Error("🔥 系统触发致命崩溃 (Panic)",
-				slog.String("error", errMsg),
+				slog.String("err", errMsg),
 				slog.String("stack", stackInfo),
 			)
 
@@ -104,9 +98,18 @@ func main() {
 
 	if global.GvaEnv.GRPC_URL != "" {
 		// 获取 gRPC 客户端
-		grpcClient, err := get_grpc_client(ctx, global.GvaGrpcSlog)
+		grpcClient, err := grpc_client.Run(ctx, grpc_client.Options{
+			Addr: global.GvaEnv.GRPC_URL,
+			BasicAuth: grpc_client.BasicAuth{
+				Username: global.GvaEnv.BASIC_AUTH_USERNAME,
+				Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
+			},
+			Logger: global.GvaGrpcSlog,
+		})
 		if err != nil {
-			fmt.Printf("获取 gRPC 客户端失败: %v\n", err)
+			slog.ErrorContext(ctx, "获取 gRPC 客户端失败",
+				slog.Any("err", err),
+			)
 			panic(err)
 		}
 		defer grpcClient.Close()
@@ -116,13 +119,15 @@ func main() {
 			global.GvaGoCron,
 			global.GvaGocronSlog,
 			ipReportService,
-			grpcClient,
+			grpcClient.GetClient(),
 		)
 		ipReportTask.SetConfig(config)
 		// 启动IP上报任务
 		err = ipReportTask.StartPeriodicTask(ctx)
 		if err != nil {
-			fmt.Printf("启动任务失败: %v\n", err)
+			slog.ErrorContext(ctx, "启动IP上报任务失败",
+				slog.Any("err", err),
+			)
 			panic(err)
 		}
 		// 关闭IP上报实例
@@ -141,13 +146,15 @@ func main() {
 		// 启动IP上报任务
 		err := ipReportTask.StartPeriodicTask(ctx)
 		if err != nil {
-			fmt.Printf("启动任务失败: %v\n", err)
+			slog.ErrorContext(ctx, "启动IP上报任务失败",
+				slog.Any("err", err),
+			)
 			panic(err)
 		}
 		// 关闭IP上报实例
 		defer ipReportTask.Close()
 	} else {
-		fmt.Printf("服务启动失败: GRPC_URL / HTTP_URL未配置\n")
+		slog.ErrorContext(ctx, "服务启动失败: GRPC_URL / HTTP_URL未配置")
 		panic("GRPC_URL / HTTP_URL未配置")
 	}
 
@@ -156,47 +163,4 @@ func main() {
 
 	// 阻止主线程退出
 	select {}
-}
-
-// get_grpc_client 获取 gRPC 客户端
-func get_grpc_client(ctx context.Context, grpcLogger *slog.Logger) (*grpc.ClientConn, error) {
-	// 创建 gRPC 客户端
-	grpc_client := grpc_client.NewGRPCClient()
-	// 添加 gRPC 连接选项
-	grpc_client.AddDialOption(
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
-	// 添加 gRPC 连接选项
-	grpc_client.AddDialOption(
-		// 鉴权
-		grpc.WithPerRPCCredentials(grpc_credential.NewClientBasicAuth(
-			grpcLogger,
-			global.GvaEnv.BASIC_AUTH_USERNAME,
-			global.GvaEnv.BASIC_AUTH_PASSWORD,
-		)),
-	)
-	// 添加 retry 中间件（Unary 和 Stream）
-	grpc_client.AddDialOption(
-		grpc.WithUnaryInterceptor(retry.UnaryClientInterceptor(
-			retry.WithMax(5), // 最多 5 次尝试（初始 + 4 重试）
-			retry.WithBackoff(retry.BackoffExponential(100*time.Millisecond)), // 指数退避，初始 100ms
-			retry.WithCodes(codes.Unavailable),                                // 只针对 Unavailable 重试（你的 connection refused）
-			retry.WithPerRetryTimeout(5*time.Second),                          // 每个重试超时 5s
-		)),
-	)
-	grpc_client.AddDialOption(
-		grpc.WithStreamInterceptor(retry.StreamClientInterceptor(
-			retry.WithMax(5), // 最多 5 次尝试（初始 + 4 重试）
-			retry.WithBackoff(retry.BackoffExponential(100*time.Millisecond)), // 指数退避，初始 100ms
-			retry.WithCodes(codes.Unavailable),                                // 只针对 Unavailable 重试（你的 connection refused）
-			retry.WithPerRetryTimeout(5*time.Second),                          // 每个重试超时 5s
-		)),
-	)
-	// 连接 gRPC 服务器
-	err := grpc_client.Dial(global.GvaEnv.GRPC_URL)
-	if err != nil {
-		return nil, fmt.Errorf("连接gRPC服务器失败: %w", err)
-	}
-	// 获取 gRPC 客户端
-	return grpc_client.GetClient(), nil
 }

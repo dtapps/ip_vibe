@@ -28,7 +28,6 @@ import (
 	"vibe_ip/internal/gin_middleware"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_client"
-	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/grpc_interceptor"
 	"vibe_ip/internal/grpc_service"
@@ -54,7 +53,6 @@ import (
 	"github.com/wdcbot/qingfeng"
 	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -112,8 +110,8 @@ func main() {
 
 			// 使用标准 slog 记录到控制台/文件（此时 global 变量可能不可靠，用标准 slog 最稳）
 			slog.Error("🔥 系统触发致命崩溃 (Panic)",
-				slog.String("stack", stackInfo),
 				slog.String("err", errMsg),
+				slog.String("stack", stackInfo),
 			)
 
 			// 给日志留一点写入时间
@@ -1365,31 +1363,22 @@ func grpc_gw_run(ctx context.Context, grpcLogger *slog.Logger, router *gin.Engin
 		return
 	}
 
-	// 创建 gRPC 客户端
-	grpc_client := grpc_client.NewGRPCClient()
-	// 添加 gRPC 连接选项
-	grpc_client.AddDialOption(
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
-	// 添加 gRPC 连接选项
-	grpc_client.AddDialOption(
-		// 鉴权
-		grpc.WithPerRPCCredentials(grpc_credential.NewClientBasicAuth(
-			grpcLogger,
-			global.GvaEnv.BASIC_AUTH_USERNAME,
-			global.GvaEnv.BASIC_AUTH_PASSWORD,
-		)),
-	)
-	// 连接 gRPC 服务
-	err := grpc_client.Dial(global.GvaEnv.GRPC_ADDR)
+	// 获取 gRPC 客户端
+	grpcClient, err := grpc_client.Run(ctx, grpc_client.Options{
+		Addr: global.GvaEnv.GRPC_URL,
+		BasicAuth: grpc_client.BasicAuth{
+			Username: global.GvaEnv.BASIC_AUTH_USERNAME,
+			Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
+		},
+		Logger: global.GvaGrpcSlog,
+	})
 	if err != nil {
-		grpcLogger.ErrorContext(ctx, "gRPC-Gateway 连接上游失败（忽略路由注册）",
+		slog.ErrorContext(ctx, "获取 gRPC 客户端失败",
 			slog.Any("err", err),
 		)
-		return
+		panic(err)
 	}
-	// 获取 gRPC 客户端
-	grpcConnInstance = grpc_client.GetClient()
+	grpcConnInstance = grpcClient.GetClient()
 
 	gwMux := grpcGatewayRuntime.NewServeMux(
 		// 错误响应统一包装
