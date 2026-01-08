@@ -101,7 +101,7 @@ func (m *GRPCServerManager) Run(ctx context.Context) {
 		logger.ErrorContext(ctx, "gRPC 服务监听失败",
 			slog.Any("err", err),
 		)
-		return
+		panic(err)
 	}
 
 	logger.InfoContext(ctx, "gRPC 服务启动成功")
@@ -121,7 +121,11 @@ func (m *GRPCServerManager) Stop(ctx context.Context) {
 		m.server.GracefulStop()
 	}
 	if m.listener != nil {
-		m.listener.Close()
+		if err := m.listener.Close(); err != nil {
+			m.logger.ErrorContext(ctx, "gRPC 服务关闭监听失败",
+				slog.Any("err", err),
+			)
+		}
 	}
 	m.logger.InfoContext(ctx, "gRPC 服务已安全停止")
 }

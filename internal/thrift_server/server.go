@@ -73,7 +73,7 @@ func (m *ThriftServerManager) Run(ctx context.Context) {
 		logger.ErrorContext(ctx, "Thrift 服务监听失败",
 			slog.Any("err", err),
 		)
-		return
+		panic(err)
 	}
 
 	// 传输工厂
@@ -108,6 +108,7 @@ func (m *ThriftServerManager) Run(ctx context.Context) {
 		logger.ErrorContext(ctx, "Thrift 服务启动失败",
 			slog.Any("err", err),
 		)
+		panic(err)
 	}
 }
 
@@ -115,7 +116,11 @@ func (m *ThriftServerManager) Run(ctx context.Context) {
 func (m *ThriftServerManager) Stop(ctx context.Context) {
 	if m.server != nil {
 		m.logger.InfoContext(ctx, "Thrift 服务正在优雅关闭...")
-		m.server.Stop()
+		if err := m.server.Stop(); err != nil {
+			m.logger.ErrorContext(ctx, "Thrift 服务关闭失败",
+				slog.Any("err", err),
+			)
+		}
 	}
 	m.logger.InfoContext(ctx, "Thrift 服务已安全停止")
 }

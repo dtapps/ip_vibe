@@ -190,7 +190,11 @@ func (m *GRPCGatewayClientManager) GetClient() *grpc.ClientConn {
 func (m *GRPCGatewayClientManager) Stop(ctx context.Context) {
 	if m.client != nil {
 		m.logger.InfoContext(ctx, "gRPC-Gateway 客户端正在优雅关闭...")
-		m.client.Close()
+		if err := m.client.Close(); err != nil {
+			m.logger.ErrorContext(ctx, "gRPC-Gateway 客户端关闭连接失败",
+				slog.Any("err", err),
+			)
+		}
 	}
 	m.logger.InfoContext(ctx, "gRPC-Gateway 客户端已安全停止")
 }
