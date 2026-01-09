@@ -787,8 +787,8 @@ github.com/valllabh/ocsf-schema-golang v1.0.3/go.mod h1:sZ3as9xqm1SSK5feFWIR2CuG
 github.com/volcengine/volc-sdk-golang v1.0.23/go.mod h1:AfG/PZRUkHJ9inETvbjNifTDgut25Wbkm2QoYBTbvyU=
 github.com/volcengine/volc-sdk-golang v1.0.234 h1:qAvUesHWFqPkidWrS4la2n2yX+NObujC8D0GSNYpifw=
 github.com/volcengine/volc-sdk-golang v1.0.234/go.mod h1:zHJlaqiMbIB+0mcrsZPTwOb3FB7S/0MCfqlnO8R7hlM=
-github.com/volcengine/volcengine-go-sdk v1.2.5 h1:B8RoFnzm6i5rPtLQ8PxxjCsU7+10hUf9iLme1bi54pg=
-github.com/volcengine/volcengine-go-sdk v1.2.5/go.mod h1:oxoVo+A17kvkwPkIeIHPVLjSw7EQAm+l/Vau1YGHN+A=
+github.com/volcengine/volcengine-go-sdk v1.2.6 h1:NWUf73Zb10CCPurRp9EVvYQ8Z38DZECNdHq6zbpJZmk=
+github.com/volcengine/volcengine-go-sdk v1.2.6/go.mod h1:oxoVo+A17kvkwPkIeIHPVLjSw7EQAm+l/Vau1YGHN+A=
 github.com/wdcbot/qingfeng v1.6.2 h1:7MBNT/kEy42sXfVD+FVXmt7BsndP+AYFrIjhWmewruw=
 github.com/wdcbot/qingfeng v1.6.2/go.mod h1:KMSPnNS5ij5UQ5wLgZSibUYReZAkLvbS6s5hqpiUJEQ=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
@@ -814,8 +814,8 @@ github.com/zclconf/go-cty-debug v0.0.0-20240509010212-0d6042c53940 h1:4r45xpDWB6
 github.com/zclconf/go-cty-debug v0.0.0-20240509010212-0d6042c53940/go.mod h1:CmBdvvj3nqzfzJ6nTCIwDTPZ56aVGvDrmztiO5g3qrM=
 github.com/zclconf/go-cty-yaml v1.2.0 h1:GDyL4+e/Qe/S0B7YaecMLbVvAR/Mp21CXMOSiCTOi1M=
 github.com/zclconf/go-cty-yaml v1.2.0/go.mod h1:9YLUH4g7lOhVWqUbctnVlZ5KLpg7JAprQNgxSZ1Gyxs=
-go.dtapp.net/library/contrib/http_log v1.0.3 h1:e/WDqgAyv6DOxJh1FFqVL4vFv94j6SoZtsjIQbs4UoQ=
-go.dtapp.net/library/contrib/http_log v1.0.3/go.mod h1:D8vsozqA3ODPWGtFmoZbKzf/1OZbD7NioTJP5TmIW6c=
+go.dtapp.net/library/contrib/http_log v1.0.5 h1:2IsCBT+hmqjdo59sgOS5sEEMb7daRhxSxGjmwuo8OVk=
+go.dtapp.net/library/contrib/http_log v1.0.5/go.mod h1:D8vsozqA3ODPWGtFmoZbKzf/1OZbD7NioTJP5TmIW6c=
 go.dtapp.net/library/contrib/resty_log v1.0.11 h1:Q2QCMsw+YqRPEMzWWMDMGxIckyrdRnh8H0FqeeSxTbw=
 go.dtapp.net/library/contrib/resty_log v1.0.11/go.mod h1:CJ+ytwFGUopEiKWn2pdx08GqttnnGWjO9IKBr6asN5k=
 go.dtapp.net/library/service/bark v1.0.8 h1:2dLp2HH+cxAHkJXFr1+FMG3Qr4bOPbtpTk2xYTHwpM0=

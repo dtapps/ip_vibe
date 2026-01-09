@@ -154,7 +154,9 @@ func InitEntHttpLog(logger *slog.Logger) {
 		// 创建 LogSaver 实现
 		saver := &EntHttpLogSaver{
 			logger: logger,
-			db:     global.GvaEntLogDb,
+		}
+		if global.GvaEntLogDb != nil {
+			saver.db = global.GvaEntLogDb
 		}
 
 		// 初始化 Logger，传入回调和接口（回调优先）

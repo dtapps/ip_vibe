@@ -27,10 +27,6 @@ type DomainCheck struct {
 	logger        *slog.Logger               // 日志记录器
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
 	debug         bool                       // 是否开启调试模式
-	clients       struct {
-		resty *resty.Client
-		req   *req.Client
-	} // 自定义客户端列表
 }
 
 func NewDomainCheck(logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) *DomainCheck {
@@ -77,10 +73,20 @@ func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string)
 
 	result := &CheckResult{
 		StatusMsg: "未执行",
+		CheckType: schematype.DomainMonitorHistoryCheckTypeUnknown,
+	}
+
+	// 把 protocol + domain 解析成 URL
+	u, err := url.Parse(fmt.Sprintf("%s://%s", protocol, domain))
+	if err != nil {
+		result.StatusMsg = "URL 解析失败"
+		result.ErrorLog = err.Error()
+		result.Duration = time.Since(start)
+		return result
 	}
 
 	// ---------- DNS 解析 ----------
-	if ips, err := net.LookupIP(domain); err == nil {
+	if ips, err := net.LookupIP(u.Host); err == nil {
 		for _, ip := range ips {
 			result.IPResolved = append(result.IPResolved, ip.String())
 		}
@@ -93,7 +99,7 @@ func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string)
 
 	// ---------- HTTPS：单独获取 SSL 信息 ----------
 	if protocol == "https" {
-		if err := s.fetchSSLInfo(ctx, domain, result); err != nil {
+		if err := s.fetchSSLInfo(ctx, u.Host, result); err != nil {
 			result.StatusMsg = "TLS 握手失败"
 			result.ErrorLog = err.Error()
 			result.Duration = time.Since(start)
@@ -113,7 +119,7 @@ func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string)
 	// 随机选一个
 	selectedIndex := rand.Intn(len(fetchMethods))
 	selectedMethod := fetchMethods[selectedIndex]
-	if err := selectedMethod(ctx, protocol, domain, start, result); err != nil {
+	if err := selectedMethod(ctx, u, start, result); err != nil {
 		return result
 	}
 
@@ -161,30 +167,26 @@ func (s *DomainCheck) fetchSSLInfo(ctx context.Context, domain string, result *C
 	return nil
 }
 
-type fetchFunc func(ctx context.Context, protocol, domain string, start time.Time, result *CheckResult) error
+type fetchFunc func(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error
 
 // 发起 HTTP 请求，使用官方 标准 库
-func (s *DomainCheck) fetchHTTP(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
+func (s *DomainCheck) fetchHTTP(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeStandard
 
-	// 构建 URL
-	u := &url.URL{Scheme: protocol, Host: domain}
-	fullURL := u.String()
-
-	// 创建客户端
+	// 创建 HTTP 客户端
 	client := &http.Client{
 		Timeout: 60 * time.Second,
 	}
 
 	// 添加 HTTP 日志记录器
 	if s.httpTransport != nil {
-		client.Transport = s.httpTransport
+		client.Transport = s.httpTransport.Instance(nil)
 	}
 
 	// 创建请求
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fullURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
 		result.StatusMsg = "请求创建失败"
 		result.ErrorLog = err.Error()
@@ -203,7 +205,7 @@ func (s *DomainCheck) fetchHTTP(ctx context.Context, protocol string, domain str
 	result.Duration = time.Since(start)
 
 	if err != nil {
-		result.StatusMsg = "HTTP 请求失败"
+		result.StatusMsg = "HTTP 请求失败 " + u.String()
 		result.ErrorLog = err.Error()
 		return err
 	}
@@ -223,47 +225,33 @@ func (s *DomainCheck) fetchHTTP(ctx context.Context, protocol string, domain str
 
 // 发起 HTTP 请求，使用第三方 Resty 库
 // https://resty.dev/
-func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
+func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeResty
 
-	// 构建 URL
-	u := &url.URL{Scheme: protocol, Host: domain}
-	fullURL := u.String()
+	// 创建 Resty 客户端
+	client := resty.New()
+	defer client.Close()
 
-	// 检查是否已创建客户端
-	if s.clients.resty == nil {
+	// 设置超时
+	client.SetTimeout(60 * time.Second)
 
-		// 创建 Resty 客户端
-		s.clients.resty = resty.New()
-
-		// 设置调试模式
-		if s.debug {
-			s.clients.resty.EnableDebug()
-			// s.clients.resty.EnableTrace()
-		}
-
-		// 设置超时
-		s.clients.resty.SetTimeout(60 * time.Second)
-
-		// 添加 HTTP 日志记录器
-		if s.httpTransport != nil {
-			s.clients.resty.SetTransport(s.httpTransport)
-		}
-
+	// 添加 HTTP 日志记录器
+	if s.httpTransport != nil {
+		client.SetTransport(s.httpTransport.Instance(nil))
 	}
-	client := s.clients.resty
 
 	// 发起 GET 请求
-	resp, err := client.R().SetContext(ctx).Get(fullURL)
+	resp, err := client.R().SetContext(ctx).Get(u.String())
 	result.Duration = time.Since(start)
 
 	if err != nil {
-		result.StatusMsg = "HTTP(Resty) 请求失败"
+		result.StatusMsg = "HTTP(Resty) 请求失败 " + u.String()
 		result.ErrorLog = err.Error()
 		return err
 	}
+	defer resp.Body.Close()
 
 	result.HTTPStatus = resp.StatusCode()
 
@@ -278,14 +266,10 @@ func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, protocol string, d
 }
 
 // 发起 HTTP 请求，使用第三方 Grequests 库
-func (s *DomainCheck) fetchHTTPWithGrequests(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
+func (s *DomainCheck) fetchHTTPWithGrequests(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeGrequests
-
-	// 构建 URL
-	u := &url.URL{Scheme: protocol, Host: domain}
-	fullURL := u.String()
 
 	// 组装 RequestOptions
 	opts := &grequests.RequestOptions{
@@ -297,15 +281,15 @@ func (s *DomainCheck) fetchHTTPWithGrequests(ctx context.Context, protocol strin
 
 	// 添加 HTTP 日志记录器
 	if s.httpTransport != nil {
-		opts.HTTPClient.Transport = s.httpTransport
+		opts.HTTPClient.Transport = s.httpTransport.Instance(nil)
 	}
 
 	// 发起 GET 请求
-	resp, err := grequests.Get(ctx, fullURL, grequests.FromRequestOptions(opts))
+	resp, err := grequests.Get(ctx, u.String(), grequests.FromRequestOptions(opts))
 	result.Duration = time.Since(start)
 
 	if err != nil {
-		result.StatusMsg = "HTTP(Grequests) 请求失败"
+		result.StatusMsg = "HTTP(Grequests) 请求失败 " + u.String()
 		result.ErrorLog = err.Error()
 		return err
 	}
@@ -325,65 +309,38 @@ func (s *DomainCheck) fetchHTTPWithGrequests(ctx context.Context, protocol strin
 
 // 发起 HTTP 请求，使用第三方 Req 库
 // https://req.cool/
-func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
+func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeReq
 
-	// 构建 URL
-	u := &url.URL{Scheme: protocol, Host: domain}
-	fullURL := u.String()
+	// 创建 Req 客户端
+	client := req.NewClient()
 
-	// 检查是否已创建客户端
-	if s.clients.req == nil {
+	// 设置超时
+	client.SetTimeout(60 * time.Second)
 
-		// // 创建 Transport
-		// transport := req.NewTransport()
-
-		// // 添加 HTTP 日志记录器
-		// if s.httpTransport != nil {
-		// 	transport.WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
-		// 		fmt.Println("Req 客户端添加 HTTP 日志记录器", fullURL)
-		// 		return s.httpTransport
-		// 	})
-		// }
-
-		// 创建 Req 客户端
-		s.clients.req = req.NewClient()
-		// s.clients.req.Transport = transport
-
-		// 设置调试模式
-		if s.debug {
-			s.clients.req.EnableDebugLog()
-			// s.clients.req.DevMode()
-		}
-
-		// 设置超时
-		s.clients.req.SetTimeout(60 * time.Second)
-
-		// 添加 HTTP 日志记录器
-		if s.httpTransport != nil {
-			transport := s.clients.req.GetTransport()
-			transport.WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
-				return s.httpTransport.Middleware()(rt)
-			})
-		}
-
-		// 伪装 HTTP 指纹
-		// s.clients.req.ImpersonateChrome()
-
+	// 添加 HTTP 日志记录器
+	if s.httpTransport != nil {
+		transport := client.GetTransport()
+		transport.WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
+			return s.httpTransport.Middleware()(rt)
+		})
 	}
-	client := s.clients.req
+
+	// 伪装 HTTP 指纹
+	// client.ImpersonateChrome()
 
 	// 发起 GET 请求
-	resp, err := client.R().SetContext(ctx).Get(fullURL)
+	resp, err := client.R().SetContext(ctx).Get(u.String())
 	result.Duration = time.Since(start)
 
 	if err != nil {
-		result.StatusMsg = "HTTP(Req) 请求失败"
+		result.StatusMsg = "HTTP(Req) 请求失败 " + u.String()
 		result.ErrorLog = err.Error()
 		return err
 	}
+	defer resp.Body.Close()
 
 	result.HTTPStatus = resp.StatusCode
 
@@ -399,49 +356,45 @@ func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, protocol string, dom
 
 // 发起 HTTP 请求，使用第三方 Colly 库
 // https://go-colly.org/
-func (s *DomainCheck) fetchHTTPWithColly(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
+func (s *DomainCheck) fetchHTTPWithColly(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeColly
 
-	// 构建 URL
-	u := &url.URL{Scheme: protocol, Host: domain}
-	fullURL := u.String()
-
 	// 创建 Colly 采集器
-	c := colly.NewCollector(
+	client := colly.NewCollector(
 		colly.MaxDepth(1),
 		colly.Async(true), // 避免阻塞
 	)
 
 	// 设置超时
-	c.SetRequestTimeout(60 * time.Second)
+	client.SetRequestTimeout(60 * time.Second)
 
 	// 添加 HTTP 日志记录器
 	if s.httpTransport != nil {
-		c.WithTransport(s.httpTransport)
+		client.WithTransport(s.httpTransport.Instance(nil))
 	}
 
 	// 初始化结果变量（通过闭包捕获）
 	var statusCode int
 
 	// 注册回调
-	c.OnResponse(func(r *colly.Response) {
+	client.OnResponse(func(r *colly.Response) {
 		statusCode = r.StatusCode
 	})
 
 	// 启动请求
-	err := c.Request(http.MethodGet, fullURL, nil, nil, nil)
+	err := client.Request(http.MethodGet, u.String(), nil, nil, nil)
 	result.Duration = time.Since(start)
 
 	if err != nil {
-		result.StatusMsg = "HTTP(Colly) 请求失败"
+		result.StatusMsg = "HTTP(Colly) 请求失败 " + u.String()
 		result.ErrorLog = err.Error()
 		return err
 	}
 
 	// 等待异步请求完成（Colly 默认异步）
-	c.Wait()
+	client.Wait()
 
 	result.HTTPStatus = statusCode
 
