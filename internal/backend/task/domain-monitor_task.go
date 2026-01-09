@@ -207,7 +207,7 @@ func (s *DomainMonitorTask) executeDomainMonitorCheck(ctx context.Context, logge
 	defer logger.InfoContext(ctx, "处理完成")
 
 	// 执行检查
-	domainCheck := domain_helper.NewDomainCheck(logger, s.httpTransport)
+	domainCheck := domain_helper.NewDomainCheck(logger, s.httpTransport, s.debug)
 	result := domainCheck.Check(ctx, domainMonitor.Domain, domainMonitor.CheckProtocol.String())
 
 	// 历史记录创建

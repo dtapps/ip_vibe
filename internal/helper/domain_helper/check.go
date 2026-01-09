@@ -26,9 +26,14 @@ type DomainCheck struct {
 	useragent     string                     // 浏览器标识
 	logger        *slog.Logger               // 日志记录器
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
+	debug         bool                       // 是否开启调试模式
+	clients       struct {
+		resty *resty.Client
+		req   *req.Client
+	} // 自定义客户端列表
 }
 
-func NewDomainCheck(logger *slog.Logger, httpTransport *http_log.LoggingTransport) *DomainCheck {
+func NewDomainCheck(logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) *DomainCheck {
 	var useragent string
 	ua, err := fakeUserAgent.New()
 	if err == nil {
@@ -38,6 +43,7 @@ func NewDomainCheck(logger *slog.Logger, httpTransport *http_log.LoggingTranspor
 		useragent:     useragent,
 		logger:        logger,
 		httpTransport: httpTransport,
+		debug:         debug,
 	}
 }
 
@@ -226,17 +232,28 @@ func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, protocol string, d
 	u := &url.URL{Scheme: protocol, Host: domain}
 	fullURL := u.String()
 
-	// 创建客户端
-	client := resty.New()
-	defer client.Close()
+	// 检查是否已创建客户端
+	if s.clients.resty == nil {
 
-	// 设置超时
-	client.SetTimeout(60 * time.Second)
+		// 创建 Resty 客户端
+		s.clients.resty = resty.New()
 
-	// 添加 HTTP 日志记录器
-	if s.httpTransport != nil {
-		client.SetTransport(s.httpTransport)
+		// 设置调试模式
+		if s.debug {
+			s.clients.resty.EnableDebug()
+			// s.clients.resty.EnableTrace()
+		}
+
+		// 设置超时
+		s.clients.resty.SetTimeout(60 * time.Second)
+
+		// 添加 HTTP 日志记录器
+		if s.httpTransport != nil {
+			s.clients.resty.SetTransport(s.httpTransport)
+		}
+
 	}
+	client := s.clients.resty
 
 	// 发起 GET 请求
 	resp, err := client.R().SetContext(ctx).Get(fullURL)
@@ -317,21 +334,46 @@ func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, protocol string, dom
 	u := &url.URL{Scheme: protocol, Host: domain}
 	fullURL := u.String()
 
-	// 创建客户端
-	client := req.C()
+	// 检查是否已创建客户端
+	if s.clients.req == nil {
 
-	// 设置超时
-	client.SetTimeout(60 * time.Second)
+		// // 创建 Transport
+		// transport := req.NewTransport()
 
-	// 添加 HTTP 日志记录器
-	if s.httpTransport != nil {
-		client.GetTransport().WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
-			return s.httpTransport
-		})
+		// // 添加 HTTP 日志记录器
+		// if s.httpTransport != nil {
+		// 	transport.WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
+		// 		fmt.Println("Req 客户端添加 HTTP 日志记录器", fullURL)
+		// 		return s.httpTransport
+		// 	})
+		// }
+
+		// 创建 Req 客户端
+		s.clients.req = req.NewClient()
+		// s.clients.req.Transport = transport
+
+		// 设置调试模式
+		if s.debug {
+			s.clients.req.EnableDebugLog()
+			// s.clients.req.DevMode()
+		}
+
+		// 设置超时
+		s.clients.req.SetTimeout(60 * time.Second)
+
+		// 添加 HTTP 日志记录器
+		if s.httpTransport != nil {
+			transport := s.clients.req.GetTransport()
+			transport.WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
+				return s.httpTransport.Middleware()(rt)
+			})
+		}
+
+		// 伪装 HTTP 指纹
+		// s.clients.req.ImpersonateChrome()
+
 	}
-
-	// 伪装 HTTP 指纹
-	// client.ImpersonateChrome()
+	client := s.clients.req
 
 	// 发起 GET 请求
 	resp, err := client.R().SetContext(ctx).Get(fullURL)
