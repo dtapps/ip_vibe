@@ -33,7 +33,7 @@ type DomainMonitorHistory struct {
 	StatusMessage string `json:"status_message,omitempty"`
 	// HTTP/HTTPS 状态码
 	HTTPStatus int `json:"http_status,omitempty"`
-	// 检查方式 标准 / Resty / Grequests / Colly
+	// 检查方式 标准 / Resty / Grequests / req / Colly
 	CheckType domainmonitorhistory.CheckType `json:"check_type,omitempty"`
 	// 解析到的 IP 地址列表
 	IPResolved []string `json:"ip_resolved,omitempty"`

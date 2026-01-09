@@ -65,6 +65,7 @@ func (DeviceIpReport) Fields() []ent.Field {
 
 		field.Enum("report_type").
 			Values(schematype.GetDeviceIpReportReportTypes...).
+			Default(schematype.DeviceIpReportReportTypeUnknown).
 			Optional().
 			Immutable().
 			Comment("上报方式 api / grpc / thrift").

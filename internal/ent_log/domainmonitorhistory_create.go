@@ -301,6 +301,10 @@ func (_c *DomainMonitorHistoryCreate) defaults() {
 		v := domainmonitorhistory.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
+	if _, ok := _c.mutation.CheckType(); !ok {
+		v := domainmonitorhistory.DefaultCheckType
+		_c.mutation.SetCheckType(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.

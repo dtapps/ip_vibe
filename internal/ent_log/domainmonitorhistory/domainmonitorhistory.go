@@ -100,11 +100,16 @@ var (
 // CheckType defines the type for the "check_type" enum field.
 type CheckType string
 
+// CheckTypeUnknown is the default value of the CheckType enum.
+const DefaultCheckType = CheckTypeUnknown
+
 // CheckType values.
 const (
+	CheckTypeUnknown   CheckType = "unknown"
 	CheckTypeStandard  CheckType = "standard"
 	CheckTypeResty     CheckType = "resty"
 	CheckTypeGrequests CheckType = "grequests"
+	CheckTypeReq       CheckType = "req"
 	CheckTypeColly     CheckType = "colly"
 )
 
@@ -115,7 +120,7 @@ func (ct CheckType) String() string {
 // CheckTypeValidator is a validator for the "check_type" field enum values. It is called by the builders before save.
 func CheckTypeValidator(ct CheckType) error {
 	switch ct {
-	case CheckTypeStandard, CheckTypeResty, CheckTypeGrequests, CheckTypeColly:
+	case CheckTypeUnknown, CheckTypeStandard, CheckTypeResty, CheckTypeGrequests, CheckTypeReq, CheckTypeColly:
 		return nil
 	default:
 		return fmt.Errorf("domainmonitorhistory: invalid enum value for check_type field: %q", ct)

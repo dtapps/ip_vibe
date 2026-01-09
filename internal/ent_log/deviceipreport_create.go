@@ -129,6 +129,10 @@ func (_c *DeviceIpReportCreate) defaults() {
 		v := deviceipreport.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
+	if _, ok := _c.mutation.ReportType(); !ok {
+		v := deviceipreport.DefaultReportType
+		_c.mutation.SetReportType(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.

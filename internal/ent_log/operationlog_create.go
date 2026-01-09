@@ -56,9 +56,25 @@ func (_c *OperationLogCreate) SetOpType(v operationlog.OpType) *OperationLogCrea
 	return _c
 }
 
+// SetNillableOpType sets the "op_type" field if the given value is not nil.
+func (_c *OperationLogCreate) SetNillableOpType(v *operationlog.OpType) *OperationLogCreate {
+	if v != nil {
+		_c.SetOpType(*v)
+	}
+	return _c
+}
+
 // SetObjType sets the "obj_type" field.
 func (_c *OperationLogCreate) SetObjType(v operationlog.ObjType) *OperationLogCreate {
 	_c.mutation.SetObjType(v)
+	return _c
+}
+
+// SetNillableObjType sets the "obj_type" field if the given value is not nil.
+func (_c *OperationLogCreate) SetNillableObjType(v *operationlog.ObjType) *OperationLogCreate {
+	if v != nil {
+		_c.SetObjType(*v)
+	}
 	return _c
 }
 
@@ -83,6 +99,14 @@ func (_c *OperationLogCreate) SetNewValue(v map[string]interface{}) *OperationLo
 // SetStatus sets the "status" field.
 func (_c *OperationLogCreate) SetStatus(v operationlog.Status) *OperationLogCreate {
 	_c.mutation.SetStatus(v)
+	return _c
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_c *OperationLogCreate) SetNillableStatus(v *operationlog.Status) *OperationLogCreate {
+	if v != nil {
+		_c.SetStatus(*v)
+	}
 	return _c
 }
 
@@ -140,6 +164,18 @@ func (_c *OperationLogCreate) defaults() {
 	if _, ok := _c.mutation.Source(); !ok {
 		v := operationlog.DefaultSource
 		_c.mutation.SetSource(v)
+	}
+	if _, ok := _c.mutation.OpType(); !ok {
+		v := operationlog.DefaultOpType
+		_c.mutation.SetOpType(v)
+	}
+	if _, ok := _c.mutation.ObjType(); !ok {
+		v := operationlog.DefaultObjType
+		_c.mutation.SetObjType(v)
+	}
+	if _, ok := _c.mutation.Status(); !ok {
+		v := operationlog.DefaultStatus
+		_c.mutation.SetStatus(v)
 	}
 }
 

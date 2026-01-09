@@ -206,20 +206,23 @@ var GetWebhookSubscriptionObjTypes = []string{
 // --------
 
 const (
-	DeviceIpReportReportTypeAPI    string = "api"    // API
-	DeviceIpReportReportTypeGrpc   string = "grpc"   // gRPC
-	DeviceIpReportReportTypeThrift string = "thrift" // Thrift
+	DeviceIpReportReportTypeUnknown string = "unknown" // 未知
+	DeviceIpReportReportTypeAPI     string = "api"     // API
+	DeviceIpReportReportTypeGrpc    string = "grpc"    // gRPC
+	DeviceIpReportReportTypeThrift  string = "thrift"  // Thrift
 )
 
 // GetDeviceIpReportReportTypeDescriptions 设备 IP 上报方式说明映射
 var GetDeviceIpReportReportTypeDescriptions = map[string]string{
-	DeviceIpReportReportTypeAPI:    "API",
-	DeviceIpReportReportTypeGrpc:   "gRPC",
-	DeviceIpReportReportTypeThrift: "Thrift",
+	DeviceIpReportReportTypeUnknown: "未知",
+	DeviceIpReportReportTypeAPI:     "API",
+	DeviceIpReportReportTypeGrpc:    "gRPC",
+	DeviceIpReportReportTypeThrift:  "Thrift",
 }
 
 // GetDeviceIpReportReportTypes 返回所有设备 IP 上报方式
 var GetDeviceIpReportReportTypes = []string{
+	DeviceIpReportReportTypeUnknown,
 	DeviceIpReportReportTypeAPI,
 	DeviceIpReportReportTypeGrpc,
 	DeviceIpReportReportTypeThrift,
@@ -228,25 +231,31 @@ var GetDeviceIpReportReportTypes = []string{
 // --------
 
 const (
+	DomainMonitorHistoryCheckTypeUnknown   string = "unknown"   // 未知
 	DomainMonitorHistoryCheckTypeStandard  string = "standard"  // 标准
 	DomainMonitorHistoryCheckTypeResty     string = "resty"     // Resty
 	DomainMonitorHistoryCheckTypeGrequests string = "grequests" // Grequests
+	DomainMonitorHistoryCheckTypeReq       string = "req"       // Req
 	DomainMonitorHistoryCheckTypeColly     string = "colly"     // Colly
 )
 
 // GetDomainMonitorHistoryCheckTypeDescriptions 域名监控检查方式说明映射
 var GetDomainMonitorHistoryCheckTypeDescriptions = map[string]string{
+	DomainMonitorHistoryCheckTypeUnknown:   "未知",
 	DomainMonitorHistoryCheckTypeStandard:  "标准",
 	DomainMonitorHistoryCheckTypeResty:     "Resty",
 	DomainMonitorHistoryCheckTypeGrequests: "Grequests",
+	DomainMonitorHistoryCheckTypeReq:       "Req",
 	DomainMonitorHistoryCheckTypeColly:     "Colly",
 }
 
 // GetDomainMonitorHistoryCheckTypes 返回所有域名监控检查方式
 var GetDomainMonitorHistoryCheckTypes = []string{
+	DomainMonitorHistoryCheckTypeUnknown,
 	DomainMonitorHistoryCheckTypeStandard,
 	DomainMonitorHistoryCheckTypeResty,
 	DomainMonitorHistoryCheckTypeGrequests,
+	DomainMonitorHistoryCheckTypeReq,
 	DomainMonitorHistoryCheckTypeColly,
 }
 
@@ -297,6 +306,7 @@ var GetLogSources = []string{
 }
 
 const (
+	LogOpTypeUnknown      string = "unknown"       // 未知操作
 	LogOpTypeDataCreate   string = "data_create"   // 数据创建
 	LogOpTypeDataUpdate   string = "data_update"   // 数据更新
 	LogOpTypeDataDelete   string = "data_delete"   // 数据删除
@@ -306,6 +316,7 @@ const (
 
 // GetLogOpTypeDescriptions 操作类型说明映射
 var GetLogOpTypeDescriptions = map[string]string{
+	LogOpTypeUnknown:      "未知操作",
 	LogOpTypeDataCreate:   "数据创建",
 	LogOpTypeDataUpdate:   "数据更新",
 	LogOpTypeDataDelete:   "数据删除",
@@ -315,6 +326,7 @@ var GetLogOpTypeDescriptions = map[string]string{
 
 // GetLogOpTypes 返回所有操作类型
 var GetLogOpTypes = []string{
+	LogOpTypeUnknown,
 	LogOpTypeDataCreate,
 	LogOpTypeDataUpdate,
 	LogOpTypeDataDelete,
@@ -325,6 +337,8 @@ var GetLogOpTypes = []string{
 // --------
 
 const (
+	LogObjTypeUnknown string = "unknown" // 未知对象
+
 	LogObjTypeCDNRecord           string = "cdn_record"           // CDN记录
 	LogObjTypeDNSRecord           string = "dns_record"           // DNS记录
 	LogObjTypeDevice              string = "device"               // 设备
@@ -349,6 +363,8 @@ const (
 
 // GetLogObjTypeDescriptions 对象类型说明映射
 var GetLogObjTypeDescriptions = map[string]string{
+	LogObjTypeUnknown: "未知对象",
+
 	LogObjTypeCDNRecord:           "CDN记录",
 	LogObjTypeDNSRecord:           "DNS记录",
 	LogObjTypeDevice:              "设备",
@@ -373,6 +389,8 @@ var GetLogObjTypeDescriptions = map[string]string{
 
 // GetLogObjTypes 返回所有对象类型
 var GetLogObjTypes = []string{
+	LogObjTypeUnknown,
+
 	LogObjTypeCDNRecord,
 	LogObjTypeDNSRecord,
 	LogObjTypeDevice,
@@ -398,18 +416,21 @@ var GetLogObjTypes = []string{
 // --------
 
 const (
+	LogStatusUnknown string = "unknown" // 未知状态
 	LogStatusSuccess string = "success" // 成功
 	LogStatusFailed  string = "failed"  // 失败
 )
 
 // GetLogStatusDescriptions 状态说明映射
 var GetLogStatusDescriptions = map[string]string{
+	LogStatusUnknown: "未知状态",
 	LogStatusSuccess: "成功",
 	LogStatusFailed:  "失败",
 }
 
 // GetLogStatuss 返回所有状态
 var GetLogStatuss = []string{
+	LogStatusUnknown,
 	LogStatusSuccess,
 	LogStatusFailed,
 }

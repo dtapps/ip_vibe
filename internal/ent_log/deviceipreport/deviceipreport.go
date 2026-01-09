@@ -64,11 +64,15 @@ var (
 // ReportType defines the type for the "report_type" enum field.
 type ReportType string
 
+// ReportTypeUnknown is the default value of the ReportType enum.
+const DefaultReportType = ReportTypeUnknown
+
 // ReportType values.
 const (
-	ReportTypeAPI    ReportType = "api"
-	ReportTypeGrpc   ReportType = "grpc"
-	ReportTypeThrift ReportType = "thrift"
+	ReportTypeUnknown ReportType = "unknown"
+	ReportTypeAPI     ReportType = "api"
+	ReportTypeGrpc    ReportType = "grpc"
+	ReportTypeThrift  ReportType = "thrift"
 )
 
 func (rt ReportType) String() string {
@@ -78,7 +82,7 @@ func (rt ReportType) String() string {
 // ReportTypeValidator is a validator for the "report_type" field enum values. It is called by the builders before save.
 func ReportTypeValidator(rt ReportType) error {
 	switch rt {
-	case ReportTypeAPI, ReportTypeGrpc, ReportTypeThrift:
+	case ReportTypeUnknown, ReportTypeAPI, ReportTypeGrpc, ReportTypeThrift:
 		return nil
 	default:
 		return fmt.Errorf("deviceipreport: invalid enum value for report_type field: %q", rt)

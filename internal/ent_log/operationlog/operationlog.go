@@ -107,8 +107,12 @@ func SourceValidator(s Source) error {
 // OpType defines the type for the "op_type" enum field.
 type OpType string
 
+// OpTypeUnknown is the default value of the OpType enum.
+const DefaultOpType = OpTypeUnknown
+
 // OpType values.
 const (
+	OpTypeUnknown      OpType = "unknown"
 	OpTypeDataCreate   OpType = "data_create"
 	OpTypeDataUpdate   OpType = "data_update"
 	OpTypeDataDelete   OpType = "data_delete"
@@ -123,7 +127,7 @@ func (ot OpType) String() string {
 // OpTypeValidator is a validator for the "op_type" field enum values. It is called by the builders before save.
 func OpTypeValidator(ot OpType) error {
 	switch ot {
-	case OpTypeDataCreate, OpTypeDataUpdate, OpTypeDataDelete, OpTypeDeviceReport, OpTypeIPRefresh:
+	case OpTypeUnknown, OpTypeDataCreate, OpTypeDataUpdate, OpTypeDataDelete, OpTypeDeviceReport, OpTypeIPRefresh:
 		return nil
 	default:
 		return fmt.Errorf("operationlog: invalid enum value for op_type field: %q", ot)
@@ -133,8 +137,12 @@ func OpTypeValidator(ot OpType) error {
 // ObjType defines the type for the "obj_type" enum field.
 type ObjType string
 
+// ObjTypeUnknown is the default value of the ObjType enum.
+const DefaultObjType = ObjTypeUnknown
+
 // ObjType values.
 const (
+	ObjTypeUnknown               ObjType = "unknown"
 	ObjTypeCdnRecord             ObjType = "cdn_record"
 	ObjTypeDNSRecord             ObjType = "dns_record"
 	ObjTypeDevice                ObjType = "device"
@@ -163,7 +171,7 @@ func (ot ObjType) String() string {
 // ObjTypeValidator is a validator for the "obj_type" field enum values. It is called by the builders before save.
 func ObjTypeValidator(ot ObjType) error {
 	switch ot {
-	case ObjTypeCdnRecord, ObjTypeDNSRecord, ObjTypeDevice, ObjTypeDevicePortForward, ObjTypeDomainMonitor, ObjTypeIPGroup, ObjTypeIPGroupDevice, ObjTypePlatformConfig, ObjTypeSslRecord, ObjTypeWebhook, ObjTypeWebhookSubscription, ObjTypeDeviceIPReport, ObjTypeDomainMonitorHistory, ObjTypeHTTPLog, ObjTypeOperationLog, ObjTypePortForwardStats, ObjTypeRestyLog, ObjTypeSslCertificateHistory, ObjTypeWebhookHistory:
+	case ObjTypeUnknown, ObjTypeCdnRecord, ObjTypeDNSRecord, ObjTypeDevice, ObjTypeDevicePortForward, ObjTypeDomainMonitor, ObjTypeIPGroup, ObjTypeIPGroupDevice, ObjTypePlatformConfig, ObjTypeSslRecord, ObjTypeWebhook, ObjTypeWebhookSubscription, ObjTypeDeviceIPReport, ObjTypeDomainMonitorHistory, ObjTypeHTTPLog, ObjTypeOperationLog, ObjTypePortForwardStats, ObjTypeRestyLog, ObjTypeSslCertificateHistory, ObjTypeWebhookHistory:
 		return nil
 	default:
 		return fmt.Errorf("operationlog: invalid enum value for obj_type field: %q", ot)
@@ -173,8 +181,12 @@ func ObjTypeValidator(ot ObjType) error {
 // Status defines the type for the "status" enum field.
 type Status string
 
+// StatusUnknown is the default value of the Status enum.
+const DefaultStatus = StatusUnknown
+
 // Status values.
 const (
+	StatusUnknown Status = "unknown"
 	StatusSuccess Status = "success"
 	StatusFailed  Status = "failed"
 )
@@ -186,7 +198,7 @@ func (s Status) String() string {
 // StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
 func StatusValidator(s Status) error {
 	switch s {
-	case StatusSuccess, StatusFailed:
+	case StatusUnknown, StatusSuccess, StatusFailed:
 		return nil
 	default:
 		return fmt.Errorf("operationlog: invalid enum value for status field: %q", s)

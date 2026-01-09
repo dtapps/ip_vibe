@@ -77,9 +77,10 @@ func (DomainMonitorHistory) Fields() []ent.Field {
 
 		field.Enum("check_type").
 			Values(schematype.GetDomainMonitorHistoryCheckTypes...).
+			Default(schematype.DomainMonitorHistoryCheckTypeUnknown).
 			Optional().
 			Immutable().
-			Comment("检查方式 标准 / Resty / Grequests / Colly").
+			Comment("检查方式 标准 / Resty / Grequests / req / Colly").
 			Annotations(entsql.WithComments(true)),
 
 		field.JSON("ip_resolved", []string{}).

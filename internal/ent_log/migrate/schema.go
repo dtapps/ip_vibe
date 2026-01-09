@@ -16,7 +16,7 @@ var (
 		{Name: "device_id", Type: field.TypeInt64, Comment: "关联 Device 序号"},
 		{Name: "ip_v4", Type: field.TypeString, Nullable: true, Comment: "IP地址V4"},
 		{Name: "ip_v6", Type: field.TypeString, Nullable: true, Comment: "IP地址V6"},
-		{Name: "report_type", Type: field.TypeEnum, Nullable: true, Comment: "上报方式 api / grpc / thrift", Enums: []string{"api", "grpc", "thrift"}},
+		{Name: "report_type", Type: field.TypeEnum, Nullable: true, Comment: "上报方式 api / grpc / thrift", Enums: []string{"unknown", "api", "grpc", "thrift"}, Default: "unknown"},
 	}
 	// DeviceIPReportTable holds the schema information for the "device_ip_report" table.
 	DeviceIPReportTable = &schema.Table{
@@ -55,7 +55,7 @@ var (
 		{Name: "check_duration", Type: field.TypeInt, Nullable: true, Comment: "检查耗时（毫秒）"},
 		{Name: "status_message", Type: field.TypeString, Nullable: true, Comment: "简要状态信息（如：200 OK，连接超时）"},
 		{Name: "http_status", Type: field.TypeInt, Nullable: true, Comment: "HTTP/HTTPS 状态码"},
-		{Name: "check_type", Type: field.TypeEnum, Nullable: true, Comment: "检查方式 标准 / Resty / Grequests / Colly", Enums: []string{"standard", "resty", "grequests", "colly"}},
+		{Name: "check_type", Type: field.TypeEnum, Nullable: true, Comment: "检查方式 标准 / Resty / Grequests / req / Colly", Enums: []string{"unknown", "standard", "resty", "grequests", "req", "colly"}, Default: "unknown"},
 		{Name: "ip_resolved", Type: field.TypeJSON, Nullable: true, Comment: "解析到的 IP 地址列表"},
 		{Name: "error_log", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "详细错误信息或异常堆栈"},
 		{Name: "ssl_not_date", Type: field.TypeTime, Nullable: true, Comment: "证书生效日期（NotBefore）"},
@@ -165,12 +165,12 @@ var (
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "操作日志序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "source", Type: field.TypeEnum, Comment: "操作来源", Enums: []string{"unknown", "system", "task", "user", "gin", "api", "mcp", "grpc", "thrift", "dubbo", "tars"}, Default: "unknown"},
-		{Name: "op_type", Type: field.TypeEnum, Comment: "操作类型", Enums: []string{"data_create", "data_update", "data_delete", "device_report", "ip_refresh"}},
-		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"cdn_record", "dns_record", "device", "device_port_forward", "domain_monitor", "ip_group", "ip_group_device", "platform_config", "ssl_record", "webhook", "webhook_subscription", "device_ip_report", "domain_monitor_history", "http_log", "operation_log", "port_forward_stats", "resty_log", "ssl_certificate_history", "webhook_history"}},
+		{Name: "op_type", Type: field.TypeEnum, Comment: "操作类型", Enums: []string{"unknown", "data_create", "data_update", "data_delete", "device_report", "ip_refresh"}, Default: "unknown"},
+		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"unknown", "cdn_record", "dns_record", "device", "device_port_forward", "domain_monitor", "ip_group", "ip_group_device", "platform_config", "ssl_record", "webhook", "webhook_subscription", "device_ip_report", "domain_monitor_history", "http_log", "operation_log", "port_forward_stats", "resty_log", "ssl_certificate_history", "webhook_history"}, Default: "unknown"},
 		{Name: "obj_id", Type: field.TypeInt64, Comment: "对象主键"},
 		{Name: "old_value", Type: field.TypeJSON, Nullable: true, Comment: "旧值"},
 		{Name: "new_value", Type: field.TypeJSON, Nullable: true, Comment: "新值"},
-		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"success", "failed"}},
+		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"unknown", "success", "failed"}, Default: "unknown"},
 		{Name: "message", Type: field.TypeString, Comment: "详情"},
 	}
 	// OperationLogTable holds the schema information for the "operation_log" table.

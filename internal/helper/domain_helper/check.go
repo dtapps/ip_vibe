@@ -311,7 +311,7 @@ func (s *DomainCheck) fetchHTTPWithGrequests(ctx context.Context, protocol strin
 func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
-	result.CheckType = schematype.DomainMonitorHistoryCheckTypeResty
+	result.CheckType = schematype.DomainMonitorHistoryCheckTypeReq
 
 	// 构建 URL
 	u := &url.URL{Scheme: protocol, Host: domain}
@@ -325,8 +325,13 @@ func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, protocol string, dom
 
 	// 添加 HTTP 日志记录器
 	if s.httpTransport != nil {
-		// client.SetTransport(s.httpTransport)
+		client.GetTransport().WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
+			return s.httpTransport
+		})
 	}
+
+	// 伪装 HTTP 指纹
+	// client.ImpersonateChrome()
 
 	// 发起 GET 请求
 	resp, err := client.R().SetContext(ctx).Get(fullURL)
