@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gocolly/colly/v2"
 	"github.com/levigross/grequests/v2"
 	fakeUserAgent "github.com/lib4u/fake-useragent"
 	"go.dtapp.net/library/contrib/http_log"
@@ -202,8 +203,10 @@ func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, protocol string, d
 
 	// 创建客户端
 	client := resty.New()
-	client.SetTimeout(60 * time.Second)
 	defer client.Close()
+
+	// 设置超时
+	client.SetTimeout(60 * time.Second)
 
 	// 添加 HTTP 日志记录器
 	if s.httpTransport != nil {
@@ -270,6 +273,60 @@ func (s *DomainCheck) fetchHTTPWithGrequests(ctx context.Context, protocol strin
 		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
 	} else {
 		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
+	}
+
+	return nil
+}
+
+// 发起 HTTP 请求，使用第三方 Colly 库（仅用于演示，不推荐用于纯 HTTP 检查）
+func (s *DomainCheck) fetchHTTPWithColly(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
+
+	// 构建 URL
+	u := &url.URL{Scheme: protocol, Host: domain}
+	fullURL := u.String()
+
+	// 创建 Colly 采集器
+	c := colly.NewCollector(
+		colly.MaxDepth(1),
+		colly.Async(true), // 避免阻塞
+	)
+
+	// 设置超时
+	c.SetRequestTimeout(60 * time.Second)
+
+	// 添加 HTTP 日志记录器
+	if s.httpTransport != nil {
+		c.WithTransport(s.httpTransport)
+	}
+
+	// 初始化结果变量（通过闭包捕获）
+	var statusCode int
+
+	// 注册回调
+	c.OnResponse(func(r *colly.Response) {
+		statusCode = r.StatusCode
+	})
+
+	// 启动请求
+	err := c.Request(http.MethodGet, fullURL, nil, nil, nil)
+	result.Duration = time.Since(start)
+
+	if err != nil {
+		result.StatusMsg = "HTTP(Colly) 请求失败"
+		result.ErrorLog = err.Error()
+		return err
+	}
+
+	// 等待异步请求完成（Colly 默认异步）
+	c.Wait()
+
+	result.HTTPStatus = statusCode
+
+	if statusCode >= 200 && statusCode < 400 {
+		result.IsSuccess = true
+		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", statusCode)
+	} else {
+		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", statusCode)
 	}
 
 	return nil
