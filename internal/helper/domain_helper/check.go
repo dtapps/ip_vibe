@@ -15,6 +15,7 @@ import (
 	"vibe_ip/internal/ent/schema/schematype"
 
 	"github.com/gocolly/colly/v2"
+	"github.com/imroc/req/v3"
 	"github.com/levigross/grequests/v2"
 	fakeUserAgent "github.com/lib4u/fake-useragent"
 	"go.dtapp.net/library/contrib/http_log"
@@ -99,6 +100,7 @@ func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string)
 		s.fetchHTTP,              // 官方 标准 库
 		s.fetchHTTPWithResty,     // 第三方 Resty 库
 		s.fetchHTTPWithGrequests, // 第三方 Grequests 库
+		s.fetchHTTPWithReq,       // 第三方 Req 库
 		s.fetchHTTPWithColly,     // 第三方 Colly 库
 	}
 
@@ -214,6 +216,7 @@ func (s *DomainCheck) fetchHTTP(ctx context.Context, protocol string, domain str
 }
 
 // 发起 HTTP 请求，使用第三方 Resty 库
+// https://resty.dev/
 func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
@@ -303,7 +306,52 @@ func (s *DomainCheck) fetchHTTPWithGrequests(ctx context.Context, protocol strin
 	return nil
 }
 
+// 发起 HTTP 请求，使用第三方 Req 库
+// https://req.cool/
+func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
+
+	// 设置检查类型
+	result.CheckType = schematype.DomainMonitorHistoryCheckTypeResty
+
+	// 构建 URL
+	u := &url.URL{Scheme: protocol, Host: domain}
+	fullURL := u.String()
+
+	// 创建客户端
+	client := req.C()
+
+	// 设置超时
+	client.SetTimeout(60 * time.Second)
+
+	// 添加 HTTP 日志记录器
+	if s.httpTransport != nil {
+		// client.SetTransport(s.httpTransport)
+	}
+
+	// 发起 GET 请求
+	resp, err := client.R().SetContext(ctx).Get(fullURL)
+	result.Duration = time.Since(start)
+
+	if err != nil {
+		result.StatusMsg = "HTTP(Req) 请求失败"
+		result.ErrorLog = err.Error()
+		return err
+	}
+
+	result.HTTPStatus = resp.StatusCode
+
+	if resp.StatusCode >= 200 && resp.StatusCode < 400 {
+		result.IsSuccess = true
+		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
+	} else {
+		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
+	}
+
+	return nil
+}
+
 // 发起 HTTP 请求，使用第三方 Colly 库
+// https://go-colly.org/
 func (s *DomainCheck) fetchHTTPWithColly(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
