@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -82,6 +83,12 @@ func (_c *DNSRecordCreate) SetSubDomain(v string) *DNSRecordCreate {
 // SetType sets the "type" field.
 func (_c *DNSRecordCreate) SetType(v dnsrecord.Type) *DNSRecordCreate {
 	_c.mutation.SetType(v)
+	return _c
+}
+
+// SetConfigJSON sets the "config_json" field.
+func (_c *DNSRecordCreate) SetConfigJSON(v json.RawMessage) *DNSRecordCreate {
+	_c.mutation.SetConfigJSON(v)
 	return _c
 }
 
@@ -339,6 +346,10 @@ func (_c *DNSRecordCreate) createSpec() (*DNSRecord, *sqlgraph.CreateSpec) {
 		_spec.SetField(dnsrecord.FieldType, field.TypeEnum, value)
 		_node.Type = value
 	}
+	if value, ok := _c.mutation.ConfigJSON(); ok {
+		_spec.SetField(dnsrecord.FieldConfigJSON, field.TypeJSON, value)
+		_node.ConfigJSON = value
+	}
 	if value, ok := _c.mutation.IsActive(); ok {
 		_spec.SetField(dnsrecord.FieldIsActive, field.TypeBool, value)
 		_node.IsActive = value
@@ -497,6 +508,24 @@ func (u *DNSRecordUpsert) SetType(v dnsrecord.Type) *DNSRecordUpsert {
 // UpdateType sets the "type" field to the value that was provided on create.
 func (u *DNSRecordUpsert) UpdateType() *DNSRecordUpsert {
 	u.SetExcluded(dnsrecord.FieldType)
+	return u
+}
+
+// SetConfigJSON sets the "config_json" field.
+func (u *DNSRecordUpsert) SetConfigJSON(v json.RawMessage) *DNSRecordUpsert {
+	u.Set(dnsrecord.FieldConfigJSON, v)
+	return u
+}
+
+// UpdateConfigJSON sets the "config_json" field to the value that was provided on create.
+func (u *DNSRecordUpsert) UpdateConfigJSON() *DNSRecordUpsert {
+	u.SetExcluded(dnsrecord.FieldConfigJSON)
+	return u
+}
+
+// ClearConfigJSON clears the value of the "config_json" field.
+func (u *DNSRecordUpsert) ClearConfigJSON() *DNSRecordUpsert {
+	u.SetNull(dnsrecord.FieldConfigJSON)
 	return u
 }
 
@@ -705,6 +734,27 @@ func (u *DNSRecordUpsertOne) SetType(v dnsrecord.Type) *DNSRecordUpsertOne {
 func (u *DNSRecordUpsertOne) UpdateType() *DNSRecordUpsertOne {
 	return u.Update(func(s *DNSRecordUpsert) {
 		s.UpdateType()
+	})
+}
+
+// SetConfigJSON sets the "config_json" field.
+func (u *DNSRecordUpsertOne) SetConfigJSON(v json.RawMessage) *DNSRecordUpsertOne {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.SetConfigJSON(v)
+	})
+}
+
+// UpdateConfigJSON sets the "config_json" field to the value that was provided on create.
+func (u *DNSRecordUpsertOne) UpdateConfigJSON() *DNSRecordUpsertOne {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.UpdateConfigJSON()
+	})
+}
+
+// ClearConfigJSON clears the value of the "config_json" field.
+func (u *DNSRecordUpsertOne) ClearConfigJSON() *DNSRecordUpsertOne {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.ClearConfigJSON()
 	})
 }
 
@@ -1096,6 +1146,27 @@ func (u *DNSRecordUpsertBulk) SetType(v dnsrecord.Type) *DNSRecordUpsertBulk {
 func (u *DNSRecordUpsertBulk) UpdateType() *DNSRecordUpsertBulk {
 	return u.Update(func(s *DNSRecordUpsert) {
 		s.UpdateType()
+	})
+}
+
+// SetConfigJSON sets the "config_json" field.
+func (u *DNSRecordUpsertBulk) SetConfigJSON(v json.RawMessage) *DNSRecordUpsertBulk {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.SetConfigJSON(v)
+	})
+}
+
+// UpdateConfigJSON sets the "config_json" field to the value that was provided on create.
+func (u *DNSRecordUpsertBulk) UpdateConfigJSON() *DNSRecordUpsertBulk {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.UpdateConfigJSON()
+	})
+}
+
+// ClearConfigJSON clears the value of the "config_json" field.
+func (u *DNSRecordUpsertBulk) ClearConfigJSON() *DNSRecordUpsertBulk {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.ClearConfigJSON()
 	})
 }
 

@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"encoding/json"
 	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
@@ -63,6 +64,11 @@ func (CDNRecord) Fields() []ent.Field {
 		field.Enum("type").
 			Values(schematype.GetCDNRecordTypes...).
 			Comment("记录类型（A、AAAA）").
+			Annotations(entsql.WithComments(true)),
+
+		field.JSON("config_json", json.RawMessage{}).
+			Optional().
+			Comment("CDN记录配置（JSON）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("origin_protocol").

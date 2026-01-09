@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -14,6 +15,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -68,6 +70,24 @@ func (_u *DNSRecordUpdate) SetNillableType(v *dnsrecord.Type) *DNSRecordUpdate {
 	if v != nil {
 		_u.SetType(*v)
 	}
+	return _u
+}
+
+// SetConfigJSON sets the "config_json" field.
+func (_u *DNSRecordUpdate) SetConfigJSON(v json.RawMessage) *DNSRecordUpdate {
+	_u.mutation.SetConfigJSON(v)
+	return _u
+}
+
+// AppendConfigJSON appends value to the "config_json" field.
+func (_u *DNSRecordUpdate) AppendConfigJSON(v json.RawMessage) *DNSRecordUpdate {
+	_u.mutation.AppendConfigJSON(v)
+	return _u
+}
+
+// ClearConfigJSON clears the value of the "config_json" field.
+func (_u *DNSRecordUpdate) ClearConfigJSON() *DNSRecordUpdate {
+	_u.mutation.ClearConfigJSON()
 	return _u
 }
 
@@ -297,6 +317,17 @@ func (_u *DNSRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(dnsrecord.FieldType, field.TypeEnum, value)
 	}
+	if value, ok := _u.mutation.ConfigJSON(); ok {
+		_spec.SetField(dnsrecord.FieldConfigJSON, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedConfigJSON(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, dnsrecord.FieldConfigJSON, value)
+		})
+	}
+	if _u.mutation.ConfigJSONCleared() {
+		_spec.ClearField(dnsrecord.FieldConfigJSON, field.TypeJSON)
+	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(dnsrecord.FieldIsActive, field.TypeBool, value)
 	}
@@ -435,6 +466,24 @@ func (_u *DNSRecordUpdateOne) SetNillableType(v *dnsrecord.Type) *DNSRecordUpdat
 	if v != nil {
 		_u.SetType(*v)
 	}
+	return _u
+}
+
+// SetConfigJSON sets the "config_json" field.
+func (_u *DNSRecordUpdateOne) SetConfigJSON(v json.RawMessage) *DNSRecordUpdateOne {
+	_u.mutation.SetConfigJSON(v)
+	return _u
+}
+
+// AppendConfigJSON appends value to the "config_json" field.
+func (_u *DNSRecordUpdateOne) AppendConfigJSON(v json.RawMessage) *DNSRecordUpdateOne {
+	_u.mutation.AppendConfigJSON(v)
+	return _u
+}
+
+// ClearConfigJSON clears the value of the "config_json" field.
+func (_u *DNSRecordUpdateOne) ClearConfigJSON() *DNSRecordUpdateOne {
+	_u.mutation.ClearConfigJSON()
 	return _u
 }
 
@@ -693,6 +742,17 @@ func (_u *DNSRecordUpdateOne) sqlSave(ctx context.Context) (_node *DNSRecord, er
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(dnsrecord.FieldType, field.TypeEnum, value)
+	}
+	if value, ok := _u.mutation.ConfigJSON(); ok {
+		_spec.SetField(dnsrecord.FieldConfigJSON, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedConfigJSON(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, dnsrecord.FieldConfigJSON, value)
+		})
+	}
+	if _u.mutation.ConfigJSONCleared() {
+		_spec.ClearField(dnsrecord.FieldConfigJSON, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(dnsrecord.FieldIsActive, field.TypeBool, value)

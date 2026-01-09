@@ -33,7 +33,7 @@ require (
 	github.com/gin-contrib/multitemplate v1.1.1
 	github.com/gin-contrib/requestid v1.0.5
 	github.com/gin-gonic/gin v1.11.0
-	github.com/go-acme/lego/v4 v4.30.1
+	github.com/go-acme/lego/v4 v4.31.0
 	github.com/go-co-op/gocron/v2 v2.19.0
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
@@ -49,11 +49,11 @@ require (
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.1
 	github.com/swaggo/swag v1.16.6
-	github.com/swaggo/swag/v2 v2.0.0-rc4
+	github.com/swaggo/swag/v2 v2.0.0-rc5
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.22
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.29
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.30
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.21
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.30
 	github.com/volcengine/volcengine-go-sdk v1.2.5
 	github.com/wdcbot/qingfeng v1.6.2
 	go.dtapp.net/library/contrib/http_log v1.0.2
@@ -79,7 +79,7 @@ require (
 	google.golang.org/grpc v1.78.0
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
-	modernc.org/sqlite v1.42.2
+	modernc.org/sqlite v1.43.0
 	resty.dev/v3 v3.0.0-beta.6
 )
 
@@ -152,7 +152,7 @@ require (
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
-	github.com/sv-tools/openapi v0.2.1 // indirect
+	github.com/sv-tools/openapi v0.4.0 // indirect
 	github.com/tidwall/gjson v1.18.0 // indirect
 	github.com/tidwall/match v1.2.0 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect

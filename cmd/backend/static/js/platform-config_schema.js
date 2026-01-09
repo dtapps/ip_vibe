@@ -434,7 +434,7 @@ function renderPlatformFields(platform, capability, initialData = {}) {
 function buildConfigFromDynamicFields() {
   const config = {};
   document.querySelectorAll(".dynamic-input").forEach((el) => {
-    // 隐藏的字段不参与组装（除非你需要保存隐藏字段的值）
+    // 隐藏的字段不参与组装（除非需要保存隐藏字段的值）
     if (el.closest(".ui-form-control").classList.contains("hidden")) return;
 
     const key = el.getAttribute("data-key");

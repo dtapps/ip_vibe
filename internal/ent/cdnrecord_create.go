@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -82,6 +83,12 @@ func (_c *CDNRecordCreate) SetSubDomain(v string) *CDNRecordCreate {
 // SetType sets the "type" field.
 func (_c *CDNRecordCreate) SetType(v cdnrecord.Type) *CDNRecordCreate {
 	_c.mutation.SetType(v)
+	return _c
+}
+
+// SetConfigJSON sets the "config_json" field.
+func (_c *CDNRecordCreate) SetConfigJSON(v json.RawMessage) *CDNRecordCreate {
+	_c.mutation.SetConfigJSON(v)
 	return _c
 }
 
@@ -415,6 +422,10 @@ func (_c *CDNRecordCreate) createSpec() (*CDNRecord, *sqlgraph.CreateSpec) {
 		_spec.SetField(cdnrecord.FieldType, field.TypeEnum, value)
 		_node.Type = value
 	}
+	if value, ok := _c.mutation.ConfigJSON(); ok {
+		_spec.SetField(cdnrecord.FieldConfigJSON, field.TypeJSON, value)
+		_node.ConfigJSON = value
+	}
 	if value, ok := _c.mutation.OriginProtocol(); ok {
 		_spec.SetField(cdnrecord.FieldOriginProtocol, field.TypeEnum, value)
 		_node.OriginProtocol = value
@@ -588,6 +599,24 @@ func (u *CDNRecordUpsert) SetType(v cdnrecord.Type) *CDNRecordUpsert {
 // UpdateType sets the "type" field to the value that was provided on create.
 func (u *CDNRecordUpsert) UpdateType() *CDNRecordUpsert {
 	u.SetExcluded(cdnrecord.FieldType)
+	return u
+}
+
+// SetConfigJSON sets the "config_json" field.
+func (u *CDNRecordUpsert) SetConfigJSON(v json.RawMessage) *CDNRecordUpsert {
+	u.Set(cdnrecord.FieldConfigJSON, v)
+	return u
+}
+
+// UpdateConfigJSON sets the "config_json" field to the value that was provided on create.
+func (u *CDNRecordUpsert) UpdateConfigJSON() *CDNRecordUpsert {
+	u.SetExcluded(cdnrecord.FieldConfigJSON)
+	return u
+}
+
+// ClearConfigJSON clears the value of the "config_json" field.
+func (u *CDNRecordUpsert) ClearConfigJSON() *CDNRecordUpsert {
+	u.SetNull(cdnrecord.FieldConfigJSON)
 	return u
 }
 
@@ -838,6 +867,27 @@ func (u *CDNRecordUpsertOne) SetType(v cdnrecord.Type) *CDNRecordUpsertOne {
 func (u *CDNRecordUpsertOne) UpdateType() *CDNRecordUpsertOne {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.UpdateType()
+	})
+}
+
+// SetConfigJSON sets the "config_json" field.
+func (u *CDNRecordUpsertOne) SetConfigJSON(v json.RawMessage) *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetConfigJSON(v)
+	})
+}
+
+// UpdateConfigJSON sets the "config_json" field to the value that was provided on create.
+func (u *CDNRecordUpsertOne) UpdateConfigJSON() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateConfigJSON()
+	})
+}
+
+// ClearConfigJSON clears the value of the "config_json" field.
+func (u *CDNRecordUpsertOne) ClearConfigJSON() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.ClearConfigJSON()
 	})
 }
 
@@ -1278,6 +1328,27 @@ func (u *CDNRecordUpsertBulk) SetType(v cdnrecord.Type) *CDNRecordUpsertBulk {
 func (u *CDNRecordUpsertBulk) UpdateType() *CDNRecordUpsertBulk {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.UpdateType()
+	})
+}
+
+// SetConfigJSON sets the "config_json" field.
+func (u *CDNRecordUpsertBulk) SetConfigJSON(v json.RawMessage) *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetConfigJSON(v)
+	})
+}
+
+// UpdateConfigJSON sets the "config_json" field to the value that was provided on create.
+func (u *CDNRecordUpsertBulk) UpdateConfigJSON() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateConfigJSON()
+	})
+}
+
+// ClearConfigJSON clears the value of the "config_json" field.
+func (u *CDNRecordUpsertBulk) ClearConfigJSON() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.ClearConfigJSON()
 	})
 }
 

@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -32,6 +33,8 @@ type CDNRecord struct {
 	SubDomain string `json:"sub_domain,omitempty"`
 	// 记录类型（A、AAAA）
 	Type cdnrecord.Type `json:"type,omitempty"`
+	// CDN记录配置（JSON）
+	ConfigJSON json.RawMessage `json:"config_json,omitempty"`
 	// 回源协议（http、https、follow）
 	OriginProtocol cdnrecord.OriginProtocol `json:"origin_protocol,omitempty"`
 	// HTTP 回源端口
@@ -106,6 +109,8 @@ func (*CDNRecord) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case cdnrecord.FieldConfigJSON:
+			values[i] = new([]byte)
 		case cdnrecord.FieldIsActive:
 			values[i] = new(sql.NullBool)
 		case cdnrecord.FieldID, cdnrecord.FieldConfigID, cdnrecord.FieldHTTPPort, cdnrecord.FieldHTTPSPort, cdnrecord.FieldIPGroupID:
@@ -170,6 +175,14 @@ func (_m *CDNRecord) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
 				_m.Type = cdnrecord.Type(value.String)
+			}
+		case cdnrecord.FieldConfigJSON:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field config_json", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.ConfigJSON); err != nil {
+					return fmt.Errorf("unmarshal field config_json: %w", err)
+				}
 			}
 		case cdnrecord.FieldOriginProtocol:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -293,6 +306,9 @@ func (_m *CDNRecord) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Type))
+	builder.WriteString(", ")
+	builder.WriteString("config_json=")
+	builder.WriteString(fmt.Sprintf("%v", _m.ConfigJSON))
 	builder.WriteString(", ")
 	builder.WriteString("origin_protocol=")
 	builder.WriteString(fmt.Sprintf("%v", _m.OriginProtocol))

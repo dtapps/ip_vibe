@@ -166,6 +166,31 @@ func (q *CDNRecordQuery) OrderByTypeAsc() *CDNRecordQuery {
 	return q.Order(Asc(cdnrecord.FieldType))
 }
 
+// OrderByConfigJSONDesc 按字段 config_json 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CDNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CDNRecord.Query().
+//	    OrderByConfigJSONDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CDNRecordQuery) OrderByConfigJSONDesc() *CDNRecordQuery {
+	return q.Order(Desc(cdnrecord.FieldConfigJSON))
+}
+
+// OrderByConfigJSONAsc 按字段 config_json 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CDNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CDNRecord.Query().
+//	    OrderByConfigJSONAsc().
+//	    All(ctx)
+func (q *CDNRecordQuery) OrderByConfigJSONAsc() *CDNRecordQuery {
+	return q.Order(Asc(cdnrecord.FieldConfigJSON))
+}
+
 // OrderByOriginProtocolDesc 按字段 origin_protocol 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *CDNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
@@ -514,6 +539,31 @@ func (q *DNSRecordQuery) OrderByTypeDesc() *DNSRecordQuery {
 //	    All(ctx)
 func (q *DNSRecordQuery) OrderByTypeAsc() *DNSRecordQuery {
 	return q.Order(Asc(dnsrecord.FieldType))
+}
+
+// OrderByConfigJSONDesc 按字段 config_json 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *DNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DNSRecord.Query().
+//	    OrderByConfigJSONDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DNSRecordQuery) OrderByConfigJSONDesc() *DNSRecordQuery {
+	return q.Order(Desc(dnsrecord.FieldConfigJSON))
+}
+
+// OrderByConfigJSONAsc 按字段 config_json 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *DNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DNSRecord.Query().
+//	    OrderByConfigJSONAsc().
+//	    All(ctx)
+func (q *DNSRecordQuery) OrderByConfigJSONAsc() *DNSRecordQuery {
+	return q.Order(Asc(dnsrecord.FieldConfigJSON))
 }
 
 // OrderByIsActiveDesc 按字段 is_active 降序排列查询结果。

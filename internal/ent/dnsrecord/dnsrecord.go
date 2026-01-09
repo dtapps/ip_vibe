@@ -28,6 +28,8 @@ const (
 	FieldSubDomain = "sub_domain"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
+	// FieldConfigJSON holds the string denoting the config_json field in the database.
+	FieldConfigJSON = "config_json"
 	// FieldIPGroupID holds the string denoting the ip_group_id field in the database.
 	FieldIPGroupID = "ip_group_id"
 	// FieldCdnRecordID holds the string denoting the cdn_record_id field in the database.
@@ -80,6 +82,7 @@ var Columns = []string{
 	FieldRecordID,
 	FieldSubDomain,
 	FieldType,
+	FieldConfigJSON,
 	FieldIPGroupID,
 	FieldCdnRecordID,
 	FieldIsActive,

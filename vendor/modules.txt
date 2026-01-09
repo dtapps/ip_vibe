@@ -420,7 +420,7 @@ github.com/go-acme/alidns-20150109/v4/client
 # github.com/go-acme/esa-20240910/v2 v2.44.0
 ## explicit; go 1.14
 github.com/go-acme/esa-20240910/v2/client
-# github.com/go-acme/lego/v4 v4.30.1
+# github.com/go-acme/lego/v4 v4.31.0
 ## explicit; go 1.24.0
 github.com/go-acme/lego/v4/acme
 github.com/go-acme/lego/v4/acme/api
@@ -451,12 +451,13 @@ github.com/go-acme/lego/v4/providers/dns/internal/clientdebug
 github.com/go-acme/lego/v4/providers/dns/internal/errutils
 github.com/go-acme/lego/v4/providers/dns/internal/ptr
 github.com/go-acme/lego/v4/providers/dns/internal/useragent
+github.com/go-acme/lego/v4/providers/dns/internal/westcn
+github.com/go-acme/lego/v4/providers/dns/internal/westcn/internal
 github.com/go-acme/lego/v4/providers/dns/rainyun
 github.com/go-acme/lego/v4/providers/dns/rainyun/internal
 github.com/go-acme/lego/v4/providers/dns/tencentcloud
 github.com/go-acme/lego/v4/providers/dns/volcengine
 github.com/go-acme/lego/v4/providers/dns/westcn
-github.com/go-acme/lego/v4/providers/dns/westcn/internal
 github.com/go-acme/lego/v4/registration
 # github.com/go-acme/tencentclouddnspod v1.1.25
 ## explicit; go 1.14
@@ -736,7 +737,7 @@ github.com/robfig/cron/v3
 ## explicit; go 1.21.0
 github.com/spf13/cast
 github.com/spf13/cast/internal
-# github.com/sv-tools/openapi v0.2.1
+# github.com/sv-tools/openapi v0.4.0
 ## explicit; go 1.18
 github.com/sv-tools/openapi/spec
 # github.com/swaggo/files v1.0.1
@@ -748,13 +749,13 @@ github.com/swaggo/gin-swagger
 # github.com/swaggo/swag v1.16.6
 ## explicit; go 1.18
 github.com/swaggo/swag
-# github.com/swaggo/swag/v2 v2.0.0-rc4
+# github.com/swaggo/swag/v2 v2.0.0-rc5
 ## explicit; go 1.18
 github.com/swaggo/swag/v2
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.22
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.29
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.30
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors
@@ -765,7 +766,7 @@ github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/regions
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.21
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.30
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901
 # github.com/tidwall/gjson v1.18.0
@@ -1199,7 +1200,7 @@ modernc.org/mathutil
 # modernc.org/memory v1.11.0
 ## explicit; go 1.23.0
 modernc.org/memory
-# modernc.org/sqlite v1.42.2
+# modernc.org/sqlite v1.43.0
 ## explicit; go 1.24.0
 modernc.org/sqlite
 modernc.org/sqlite/lib

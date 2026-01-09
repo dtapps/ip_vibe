@@ -28,6 +28,8 @@ const (
 	FieldSubDomain = "sub_domain"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
+	// FieldConfigJSON holds the string denoting the config_json field in the database.
+	FieldConfigJSON = "config_json"
 	// FieldOriginProtocol holds the string denoting the origin_protocol field in the database.
 	FieldOriginProtocol = "origin_protocol"
 	// FieldHTTPPort holds the string denoting the http_port field in the database.
@@ -86,6 +88,7 @@ var Columns = []string{
 	FieldRecordID,
 	FieldSubDomain,
 	FieldType,
+	FieldConfigJSON,
 	FieldOriginProtocol,
 	FieldHTTPPort,
 	FieldHTTPSPort,

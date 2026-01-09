@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -14,6 +15,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -68,6 +70,24 @@ func (_u *CDNRecordUpdate) SetNillableType(v *cdnrecord.Type) *CDNRecordUpdate {
 	if v != nil {
 		_u.SetType(*v)
 	}
+	return _u
+}
+
+// SetConfigJSON sets the "config_json" field.
+func (_u *CDNRecordUpdate) SetConfigJSON(v json.RawMessage) *CDNRecordUpdate {
+	_u.mutation.SetConfigJSON(v)
+	return _u
+}
+
+// AppendConfigJSON appends value to the "config_json" field.
+func (_u *CDNRecordUpdate) AppendConfigJSON(v json.RawMessage) *CDNRecordUpdate {
+	_u.mutation.AppendConfigJSON(v)
+	return _u
+}
+
+// ClearConfigJSON clears the value of the "config_json" field.
+func (_u *CDNRecordUpdate) ClearConfigJSON() *CDNRecordUpdate {
+	_u.mutation.ClearConfigJSON()
 	return _u
 }
 
@@ -380,6 +400,17 @@ func (_u *CDNRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(cdnrecord.FieldType, field.TypeEnum, value)
 	}
+	if value, ok := _u.mutation.ConfigJSON(); ok {
+		_spec.SetField(cdnrecord.FieldConfigJSON, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedConfigJSON(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, cdnrecord.FieldConfigJSON, value)
+		})
+	}
+	if _u.mutation.ConfigJSONCleared() {
+		_spec.ClearField(cdnrecord.FieldConfigJSON, field.TypeJSON)
+	}
 	if value, ok := _u.mutation.OriginProtocol(); ok {
 		_spec.SetField(cdnrecord.FieldOriginProtocol, field.TypeEnum, value)
 	}
@@ -555,6 +586,24 @@ func (_u *CDNRecordUpdateOne) SetNillableType(v *cdnrecord.Type) *CDNRecordUpdat
 	if v != nil {
 		_u.SetType(*v)
 	}
+	return _u
+}
+
+// SetConfigJSON sets the "config_json" field.
+func (_u *CDNRecordUpdateOne) SetConfigJSON(v json.RawMessage) *CDNRecordUpdateOne {
+	_u.mutation.SetConfigJSON(v)
+	return _u
+}
+
+// AppendConfigJSON appends value to the "config_json" field.
+func (_u *CDNRecordUpdateOne) AppendConfigJSON(v json.RawMessage) *CDNRecordUpdateOne {
+	_u.mutation.AppendConfigJSON(v)
+	return _u
+}
+
+// ClearConfigJSON clears the value of the "config_json" field.
+func (_u *CDNRecordUpdateOne) ClearConfigJSON() *CDNRecordUpdateOne {
+	_u.mutation.ClearConfigJSON()
 	return _u
 }
 
@@ -896,6 +945,17 @@ func (_u *CDNRecordUpdateOne) sqlSave(ctx context.Context) (_node *CDNRecord, er
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(cdnrecord.FieldType, field.TypeEnum, value)
+	}
+	if value, ok := _u.mutation.ConfigJSON(); ok {
+		_spec.SetField(cdnrecord.FieldConfigJSON, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedConfigJSON(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, cdnrecord.FieldConfigJSON, value)
+		})
+	}
+	if _u.mutation.ConfigJSONCleared() {
+		_spec.ClearField(cdnrecord.FieldConfigJSON, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.OriginProtocol(); ok {
 		_spec.SetField(cdnrecord.FieldOriginProtocol, field.TypeEnum, value)

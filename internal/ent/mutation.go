@@ -59,6 +59,8 @@ type CDNRecordMutation struct {
 	record_id            *string
 	sub_domain           *string
 	_type                *cdnrecord.Type
+	config_json          *json.RawMessage
+	appendconfig_json    json.RawMessage
 	origin_protocol      *cdnrecord.OriginProtocol
 	http_port            *int
 	addhttp_port         *int
@@ -413,6 +415,71 @@ func (m *CDNRecordMutation) OldType(ctx context.Context) (v cdnrecord.Type, err 
 // ResetType resets all changes to the "type" field.
 func (m *CDNRecordMutation) ResetType() {
 	m._type = nil
+}
+
+// SetConfigJSON sets the "config_json" field.
+func (m *CDNRecordMutation) SetConfigJSON(jm json.RawMessage) {
+	m.config_json = &jm
+	m.appendconfig_json = nil
+}
+
+// ConfigJSON returns the value of the "config_json" field in the mutation.
+func (m *CDNRecordMutation) ConfigJSON() (r json.RawMessage, exists bool) {
+	v := m.config_json
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldConfigJSON returns the old "config_json" field's value of the CDNRecord entity.
+// If the CDNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CDNRecordMutation) OldConfigJSON(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldConfigJSON is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldConfigJSON requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldConfigJSON: %w", err)
+	}
+	return oldValue.ConfigJSON, nil
+}
+
+// AppendConfigJSON adds jm to the "config_json" field.
+func (m *CDNRecordMutation) AppendConfigJSON(jm json.RawMessage) {
+	m.appendconfig_json = append(m.appendconfig_json, jm...)
+}
+
+// AppendedConfigJSON returns the list of values that were appended to the "config_json" field in this mutation.
+func (m *CDNRecordMutation) AppendedConfigJSON() (json.RawMessage, bool) {
+	if len(m.appendconfig_json) == 0 {
+		return nil, false
+	}
+	return m.appendconfig_json, true
+}
+
+// ClearConfigJSON clears the value of the "config_json" field.
+func (m *CDNRecordMutation) ClearConfigJSON() {
+	m.config_json = nil
+	m.appendconfig_json = nil
+	m.clearedFields[cdnrecord.FieldConfigJSON] = struct{}{}
+}
+
+// ConfigJSONCleared returns if the "config_json" field was cleared in this mutation.
+func (m *CDNRecordMutation) ConfigJSONCleared() bool {
+	_, ok := m.clearedFields[cdnrecord.FieldConfigJSON]
+	return ok
+}
+
+// ResetConfigJSON resets all changes to the "config_json" field.
+func (m *CDNRecordMutation) ResetConfigJSON() {
+	m.config_json = nil
+	m.appendconfig_json = nil
+	delete(m.clearedFields, cdnrecord.FieldConfigJSON)
 }
 
 // SetOriginProtocol sets the "origin_protocol" field.
@@ -973,7 +1040,7 @@ func (m *CDNRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CDNRecordMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, cdnrecord.FieldCreatedAt)
 	}
@@ -991,6 +1058,9 @@ func (m *CDNRecordMutation) Fields() []string {
 	}
 	if m._type != nil {
 		fields = append(fields, cdnrecord.FieldType)
+	}
+	if m.config_json != nil {
+		fields = append(fields, cdnrecord.FieldConfigJSON)
 	}
 	if m.origin_protocol != nil {
 		fields = append(fields, cdnrecord.FieldOriginProtocol)
@@ -1039,6 +1109,8 @@ func (m *CDNRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.SubDomain()
 	case cdnrecord.FieldType:
 		return m.GetType()
+	case cdnrecord.FieldConfigJSON:
+		return m.ConfigJSON()
 	case cdnrecord.FieldOriginProtocol:
 		return m.OriginProtocol()
 	case cdnrecord.FieldHTTPPort:
@@ -1078,6 +1150,8 @@ func (m *CDNRecordMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldSubDomain(ctx)
 	case cdnrecord.FieldType:
 		return m.OldType(ctx)
+	case cdnrecord.FieldConfigJSON:
+		return m.OldConfigJSON(ctx)
 	case cdnrecord.FieldOriginProtocol:
 		return m.OldOriginProtocol(ctx)
 	case cdnrecord.FieldHTTPPort:
@@ -1146,6 +1220,13 @@ func (m *CDNRecordMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetType(v)
+		return nil
+	case cdnrecord.FieldConfigJSON:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConfigJSON(v)
 		return nil
 	case cdnrecord.FieldOriginProtocol:
 		v, ok := value.(cdnrecord.OriginProtocol)
@@ -1270,6 +1351,9 @@ func (m *CDNRecordMutation) ClearedFields() []string {
 	if m.FieldCleared(cdnrecord.FieldRecordID) {
 		fields = append(fields, cdnrecord.FieldRecordID)
 	}
+	if m.FieldCleared(cdnrecord.FieldConfigJSON) {
+		fields = append(fields, cdnrecord.FieldConfigJSON)
+	}
 	if m.FieldCleared(cdnrecord.FieldCdnDomain) {
 		fields = append(fields, cdnrecord.FieldCdnDomain)
 	}
@@ -1298,6 +1382,9 @@ func (m *CDNRecordMutation) ClearField(name string) error {
 	switch name {
 	case cdnrecord.FieldRecordID:
 		m.ClearRecordID()
+		return nil
+	case cdnrecord.FieldConfigJSON:
+		m.ClearConfigJSON()
 		return nil
 	case cdnrecord.FieldCdnDomain:
 		m.ClearCdnDomain()
@@ -1336,6 +1423,9 @@ func (m *CDNRecordMutation) ResetField(name string) error {
 		return nil
 	case cdnrecord.FieldType:
 		m.ResetType()
+		return nil
+	case cdnrecord.FieldConfigJSON:
+		m.ResetConfigJSON()
 		return nil
 	case cdnrecord.FieldOriginProtocol:
 		m.ResetOriginProtocol()
@@ -1499,6 +1589,8 @@ type DNSRecordMutation struct {
 	record_id            *string
 	sub_domain           *string
 	_type                *dnsrecord.Type
+	config_json          *json.RawMessage
+	appendconfig_json    json.RawMessage
 	is_active            *bool
 	last_refresh_at      *time.Time
 	last_api_response    *string
@@ -1846,6 +1938,71 @@ func (m *DNSRecordMutation) OldType(ctx context.Context) (v dnsrecord.Type, err 
 // ResetType resets all changes to the "type" field.
 func (m *DNSRecordMutation) ResetType() {
 	m._type = nil
+}
+
+// SetConfigJSON sets the "config_json" field.
+func (m *DNSRecordMutation) SetConfigJSON(jm json.RawMessage) {
+	m.config_json = &jm
+	m.appendconfig_json = nil
+}
+
+// ConfigJSON returns the value of the "config_json" field in the mutation.
+func (m *DNSRecordMutation) ConfigJSON() (r json.RawMessage, exists bool) {
+	v := m.config_json
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldConfigJSON returns the old "config_json" field's value of the DNSRecord entity.
+// If the DNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DNSRecordMutation) OldConfigJSON(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldConfigJSON is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldConfigJSON requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldConfigJSON: %w", err)
+	}
+	return oldValue.ConfigJSON, nil
+}
+
+// AppendConfigJSON adds jm to the "config_json" field.
+func (m *DNSRecordMutation) AppendConfigJSON(jm json.RawMessage) {
+	m.appendconfig_json = append(m.appendconfig_json, jm...)
+}
+
+// AppendedConfigJSON returns the list of values that were appended to the "config_json" field in this mutation.
+func (m *DNSRecordMutation) AppendedConfigJSON() (json.RawMessage, bool) {
+	if len(m.appendconfig_json) == 0 {
+		return nil, false
+	}
+	return m.appendconfig_json, true
+}
+
+// ClearConfigJSON clears the value of the "config_json" field.
+func (m *DNSRecordMutation) ClearConfigJSON() {
+	m.config_json = nil
+	m.appendconfig_json = nil
+	m.clearedFields[dnsrecord.FieldConfigJSON] = struct{}{}
+}
+
+// ConfigJSONCleared returns if the "config_json" field was cleared in this mutation.
+func (m *DNSRecordMutation) ConfigJSONCleared() bool {
+	_, ok := m.clearedFields[dnsrecord.FieldConfigJSON]
+	return ok
+}
+
+// ResetConfigJSON resets all changes to the "config_json" field.
+func (m *DNSRecordMutation) ResetConfigJSON() {
+	m.config_json = nil
+	m.appendconfig_json = nil
+	delete(m.clearedFields, dnsrecord.FieldConfigJSON)
 }
 
 // SetIPGroupID sets the "ip_group_id" field.
@@ -2244,7 +2401,7 @@ func (m *DNSRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DNSRecordMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, dnsrecord.FieldCreatedAt)
 	}
@@ -2262,6 +2419,9 @@ func (m *DNSRecordMutation) Fields() []string {
 	}
 	if m._type != nil {
 		fields = append(fields, dnsrecord.FieldType)
+	}
+	if m.config_json != nil {
+		fields = append(fields, dnsrecord.FieldConfigJSON)
 	}
 	if m.ip_group != nil {
 		fields = append(fields, dnsrecord.FieldIPGroupID)
@@ -2301,6 +2461,8 @@ func (m *DNSRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.SubDomain()
 	case dnsrecord.FieldType:
 		return m.GetType()
+	case dnsrecord.FieldConfigJSON:
+		return m.ConfigJSON()
 	case dnsrecord.FieldIPGroupID:
 		return m.IPGroupID()
 	case dnsrecord.FieldCdnRecordID:
@@ -2334,6 +2496,8 @@ func (m *DNSRecordMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldSubDomain(ctx)
 	case dnsrecord.FieldType:
 		return m.OldType(ctx)
+	case dnsrecord.FieldConfigJSON:
+		return m.OldConfigJSON(ctx)
 	case dnsrecord.FieldIPGroupID:
 		return m.OldIPGroupID(ctx)
 	case dnsrecord.FieldCdnRecordID:
@@ -2396,6 +2560,13 @@ func (m *DNSRecordMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetType(v)
+		return nil
+	case dnsrecord.FieldConfigJSON:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConfigJSON(v)
 		return nil
 	case dnsrecord.FieldIPGroupID:
 		v, ok := value.(int64)
@@ -2475,6 +2646,9 @@ func (m *DNSRecordMutation) ClearedFields() []string {
 	if m.FieldCleared(dnsrecord.FieldRecordID) {
 		fields = append(fields, dnsrecord.FieldRecordID)
 	}
+	if m.FieldCleared(dnsrecord.FieldConfigJSON) {
+		fields = append(fields, dnsrecord.FieldConfigJSON)
+	}
 	if m.FieldCleared(dnsrecord.FieldIPGroupID) {
 		fields = append(fields, dnsrecord.FieldIPGroupID)
 	}
@@ -2506,6 +2680,9 @@ func (m *DNSRecordMutation) ClearField(name string) error {
 	switch name {
 	case dnsrecord.FieldRecordID:
 		m.ClearRecordID()
+		return nil
+	case dnsrecord.FieldConfigJSON:
+		m.ClearConfigJSON()
 		return nil
 	case dnsrecord.FieldIPGroupID:
 		m.ClearIPGroupID()
@@ -2547,6 +2724,9 @@ func (m *DNSRecordMutation) ResetField(name string) error {
 		return nil
 	case dnsrecord.FieldType:
 		m.ResetType()
+		return nil
+	case dnsrecord.FieldConfigJSON:
+		m.ResetConfigJSON()
 		return nil
 	case dnsrecord.FieldIPGroupID:
 		m.ResetIPGroupID()

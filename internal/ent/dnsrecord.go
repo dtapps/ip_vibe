@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -33,6 +34,8 @@ type DNSRecord struct {
 	SubDomain string `json:"sub_domain,omitempty"`
 	// 记录类型（A、AAAA、CNAME）
 	Type dnsrecord.Type `json:"type,omitempty"`
+	// DNS记录配置（JSON）
+	ConfigJSON json.RawMessage `json:"config_json,omitempty"`
 	// IP组序号（与 cdn_record_id 二选一）
 	IPGroupID int64 `json:"ip_group_id,omitempty"`
 	// CDN记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）
@@ -102,6 +105,8 @@ func (*DNSRecord) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case dnsrecord.FieldConfigJSON:
+			values[i] = new([]byte)
 		case dnsrecord.FieldIsActive:
 			values[i] = new(sql.NullBool)
 		case dnsrecord.FieldID, dnsrecord.FieldConfigID, dnsrecord.FieldIPGroupID, dnsrecord.FieldCdnRecordID:
@@ -166,6 +171,14 @@ func (_m *DNSRecord) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
 				_m.Type = dnsrecord.Type(value.String)
+			}
+		case dnsrecord.FieldConfigJSON:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field config_json", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.ConfigJSON); err != nil {
+					return fmt.Errorf("unmarshal field config_json: %w", err)
+				}
 			}
 		case dnsrecord.FieldIPGroupID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -271,6 +284,9 @@ func (_m *DNSRecord) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Type))
+	builder.WriteString(", ")
+	builder.WriteString("config_json=")
+	builder.WriteString(fmt.Sprintf("%v", _m.ConfigJSON))
 	builder.WriteString(", ")
 	builder.WriteString("ip_group_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IPGroupID))

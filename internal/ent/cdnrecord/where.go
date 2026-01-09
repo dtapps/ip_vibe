@@ -380,6 +380,16 @@ func TypeNotIn(vs ...Type) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldNotIn(FieldType, vs...))
 }
 
+// ConfigJSONIsNil applies the IsNil predicate on the "config_json" field.
+func ConfigJSONIsNil() predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldIsNull(FieldConfigJSON))
+}
+
+// ConfigJSONNotNil applies the NotNil predicate on the "config_json" field.
+func ConfigJSONNotNil() predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldNotNull(FieldConfigJSON))
+}
+
 // OriginProtocolEQ applies the EQ predicate on the "origin_protocol" field.
 func OriginProtocolEQ(v OriginProtocol) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldEQ(FieldOriginProtocol, v))

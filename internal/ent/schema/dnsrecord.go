@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"encoding/json"
 	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
@@ -63,6 +64,11 @@ func (DNSRecord) Fields() []ent.Field {
 		field.Enum("type").
 			Values(schematype.GetDNSRecordTypes...).
 			Comment("记录类型（A、AAAA、CNAME）").
+			Annotations(entsql.WithComments(true)),
+
+		field.JSON("config_json", json.RawMessage{}).
+			Optional().
+			Comment("DNS记录配置（JSON）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("ip_group_id").

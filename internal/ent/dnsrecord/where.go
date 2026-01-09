@@ -370,6 +370,16 @@ func TypeNotIn(vs ...Type) predicate.DNSRecord {
 	return predicate.DNSRecord(sql.FieldNotIn(FieldType, vs...))
 }
 
+// ConfigJSONIsNil applies the IsNil predicate on the "config_json" field.
+func ConfigJSONIsNil() predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldIsNull(FieldConfigJSON))
+}
+
+// ConfigJSONNotNil applies the NotNil predicate on the "config_json" field.
+func ConfigJSONNotNil() predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldNotNull(FieldConfigJSON))
+}
+
 // IPGroupIDEQ applies the EQ predicate on the "ip_group_id" field.
 func IPGroupIDEQ(v int64) predicate.DNSRecord {
 	return predicate.DNSRecord(sql.FieldEQ(FieldIPGroupID, v))
