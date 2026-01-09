@@ -6,6 +6,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	"log/slog"
+	"math/rand"
 	"net"
 	"net/http"
 	"net/url"
@@ -91,7 +92,17 @@ func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string)
 	}
 
 	// ---------- HTTP / HTTPS 请求 ----------
-	if err := s.fetchHTTP(ctx, domain, protocol, start, result); err != nil {
+	fetchMethods := []fetchFunc{
+		s.fetchHTTP,              // 官方 标准 库
+		s.fetchHTTPWithResty,     // 第三方 Resty 库
+		s.fetchHTTPWithGrequests, // 第三方 Grequests 库
+		s.fetchHTTPWithColly,     // 第三方 Colly 库
+	}
+
+	// 随机选一个
+	selectedIndex := rand.Intn(len(fetchMethods))
+	selectedMethod := fetchMethods[selectedIndex]
+	if err := selectedMethod(ctx, protocol, domain, start, result); err != nil {
 		return result
 	}
 
@@ -139,7 +150,9 @@ func (s *DomainCheck) fetchSSLInfo(ctx context.Context, domain string, result *C
 	return nil
 }
 
-// 发起 HTTP 请求，使用官方 http.Client
+type fetchFunc func(ctx context.Context, protocol, domain string, start time.Time, result *CheckResult) error
+
+// 发起 HTTP 请求，使用官方 标准 库
 func (s *DomainCheck) fetchHTTP(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
 
 	// 构建 URL
@@ -278,7 +291,7 @@ func (s *DomainCheck) fetchHTTPWithGrequests(ctx context.Context, protocol strin
 	return nil
 }
 
-// 发起 HTTP 请求，使用第三方 Colly 库（仅用于演示，不推荐用于纯 HTTP 检查）
+// 发起 HTTP 请求，使用第三方 Colly 库
 func (s *DomainCheck) fetchHTTPWithColly(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
 
 	// 构建 URL
