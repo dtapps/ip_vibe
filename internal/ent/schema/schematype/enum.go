@@ -228,6 +228,31 @@ var GetDeviceIpReportReportTypes = []string{
 // --------
 
 const (
+	DomainMonitorHistoryCheckTypeStandard  string = "standard"  // 标准
+	DomainMonitorHistoryCheckTypeResty     string = "resty"     // Resty
+	DomainMonitorHistoryCheckTypeGrequests string = "grequests" // Grequests
+	DomainMonitorHistoryCheckTypeColly     string = "colly"     // Colly
+)
+
+// GetDomainMonitorHistoryCheckTypeDescriptions 域名监控检查方式说明映射
+var GetDomainMonitorHistoryCheckTypeDescriptions = map[string]string{
+	DomainMonitorHistoryCheckTypeStandard:  "标准",
+	DomainMonitorHistoryCheckTypeResty:     "Resty",
+	DomainMonitorHistoryCheckTypeGrequests: "Grequests",
+	DomainMonitorHistoryCheckTypeColly:     "Colly",
+}
+
+// GetDomainMonitorHistoryCheckTypes 返回所有域名监控检查方式
+var GetDomainMonitorHistoryCheckTypes = []string{
+	DomainMonitorHistoryCheckTypeStandard,
+	DomainMonitorHistoryCheckTypeResty,
+	DomainMonitorHistoryCheckTypeGrequests,
+	DomainMonitorHistoryCheckTypeColly,
+}
+
+// --------
+
+const (
 	LogSourceUnknown string = "unknown" // 未知来源
 	LogSourceSystem  string = "system"  // 系统自动
 	LogSourceTask    string = "task"    // 定时任务

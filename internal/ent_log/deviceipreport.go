@@ -26,7 +26,7 @@ type DeviceIpReport struct {
 	IPV4 string `json:"ip_v4,omitempty"`
 	// IP地址V6
 	IPV6 string `json:"ip_v6,omitempty"`
-	// 上报方式 api / grpc /thrift
+	// 上报方式 api / grpc / thrift
 	ReportType   deviceipreport.ReportType `json:"report_type,omitempty"`
 	selectValues sql.SelectValues
 }

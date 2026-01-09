@@ -2,6 +2,7 @@ package schema
 
 import (
 	"vibe_ip/internal/ent/schema/schemamixin"
+	"vibe_ip/internal/ent/schema/schematype"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -72,6 +73,13 @@ func (DomainMonitorHistory) Fields() []ent.Field {
 			Optional().
 			Immutable().
 			Comment("HTTP/HTTPS 状态码").
+			Annotations(entsql.WithComments(true)),
+
+		field.Enum("check_type").
+			Values(schematype.GetDomainMonitorHistoryCheckTypes...).
+			Optional().
+			Immutable().
+			Comment("检查方式 标准 / Resty / Grequests / Colly").
 			Annotations(entsql.WithComments(true)),
 
 		field.JSON("ip_resolved", []string{}).

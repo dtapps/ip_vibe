@@ -3,6 +3,7 @@
 package domainmonitorhistory
 
 import (
+	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -27,6 +28,8 @@ const (
 	FieldStatusMessage = "status_message"
 	// FieldHTTPStatus holds the string denoting the http_status field in the database.
 	FieldHTTPStatus = "http_status"
+	// FieldCheckType holds the string denoting the check_type field in the database.
+	FieldCheckType = "check_type"
 	// FieldIPResolved holds the string denoting the ip_resolved field in the database.
 	FieldIPResolved = "ip_resolved"
 	// FieldErrorLog holds the string denoting the error_log field in the database.
@@ -63,6 +66,7 @@ var Columns = []string{
 	FieldCheckDuration,
 	FieldStatusMessage,
 	FieldHTTPStatus,
+	FieldCheckType,
 	FieldIPResolved,
 	FieldErrorLog,
 	FieldSslNotDate,
@@ -92,6 +96,31 @@ var (
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(int64) error
 )
+
+// CheckType defines the type for the "check_type" enum field.
+type CheckType string
+
+// CheckType values.
+const (
+	CheckTypeStandard  CheckType = "standard"
+	CheckTypeResty     CheckType = "resty"
+	CheckTypeGrequests CheckType = "grequests"
+	CheckTypeColly     CheckType = "colly"
+)
+
+func (ct CheckType) String() string {
+	return string(ct)
+}
+
+// CheckTypeValidator is a validator for the "check_type" field enum values. It is called by the builders before save.
+func CheckTypeValidator(ct CheckType) error {
+	switch ct {
+	case CheckTypeStandard, CheckTypeResty, CheckTypeGrequests, CheckTypeColly:
+		return nil
+	default:
+		return fmt.Errorf("domainmonitorhistory: invalid enum value for check_type field: %q", ct)
+	}
+}
 
 // OrderOption defines the ordering options for the DomainMonitorHistory queries.
 type OrderOption func(*sql.Selector)
@@ -134,6 +163,11 @@ func ByStatusMessage(opts ...sql.OrderTermOption) OrderOption {
 // ByHTTPStatus orders the results by the http_status field.
 func ByHTTPStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldHTTPStatus, opts...).ToFunc()
+}
+
+// ByCheckType orders the results by the check_type field.
+func ByCheckType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCheckType, opts...).ToFunc()
 }
 
 // ByErrorLog orders the results by the error_log field.

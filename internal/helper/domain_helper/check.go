@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"strings"
 	"time"
+	"vibe_ip/internal/ent/schema/schematype"
 
 	"github.com/gocolly/colly/v2"
 	"github.com/levigross/grequests/v2"
@@ -46,6 +47,8 @@ type CheckResult struct {
 	StatusMsg  string        // 状态信息
 	HTTPStatus int           // HTTP状态码
 	ErrorLog   string        // 错误日志
+
+	CheckType string // 检查类型
 
 	IPResolved []string // 解析的IP地址
 
@@ -155,6 +158,9 @@ type fetchFunc func(ctx context.Context, protocol, domain string, start time.Tim
 // 发起 HTTP 请求，使用官方 标准 库
 func (s *DomainCheck) fetchHTTP(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
 
+	// 设置检查类型
+	result.CheckType = schematype.DomainMonitorHistoryCheckTypeStandard
+
 	// 构建 URL
 	u := &url.URL{Scheme: protocol, Host: domain}
 	fullURL := u.String()
@@ -210,6 +216,9 @@ func (s *DomainCheck) fetchHTTP(ctx context.Context, protocol string, domain str
 // 发起 HTTP 请求，使用第三方 Resty 库
 func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
 
+	// 设置检查类型
+	result.CheckType = schematype.DomainMonitorHistoryCheckTypeResty
+
 	// 构建 URL
 	u := &url.URL{Scheme: protocol, Host: domain}
 	fullURL := u.String()
@@ -250,6 +259,9 @@ func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, protocol string, d
 
 // 发起 HTTP 请求，使用第三方 Grequests 库
 func (s *DomainCheck) fetchHTTPWithGrequests(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
+
+	// 设置检查类型
+	result.CheckType = schematype.DomainMonitorHistoryCheckTypeGrequests
 
 	// 构建 URL
 	u := &url.URL{Scheme: protocol, Host: domain}
@@ -293,6 +305,9 @@ func (s *DomainCheck) fetchHTTPWithGrequests(ctx context.Context, protocol strin
 
 // 发起 HTTP 请求，使用第三方 Colly 库
 func (s *DomainCheck) fetchHTTPWithColly(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
+
+	// 设置检查类型
+	result.CheckType = schematype.DomainMonitorHistoryCheckTypeColly
 
 	// 构建 URL
 	u := &url.URL{Scheme: protocol, Host: domain}

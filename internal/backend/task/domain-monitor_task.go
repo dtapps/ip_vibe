@@ -9,6 +9,7 @@ import (
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/ent_log/domainmonitorhistory"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/helper/domain_helper"
 	"vibe_ip/internal/helper/gocron_helper"
@@ -217,6 +218,7 @@ func (s *DomainMonitorTask) executeDomainMonitorCheck(ctx context.Context, logge
 	historyCreator.SetCheckDuration(int(result.Duration.Milliseconds()))
 	historyCreator.SetStatusMessage(result.StatusMsg)
 	historyCreator.SetHTTPStatus(result.HTTPStatus)
+	historyCreator.SetCheckType(domainmonitorhistory.CheckType(result.CheckType))
 	historyCreator.SetIPResolved(result.IPResolved)
 	historyCreator.SetErrorLog(result.ErrorLog)
 

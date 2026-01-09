@@ -96,6 +96,20 @@ func (_c *DomainMonitorHistoryCreate) SetNillableHTTPStatus(v *int) *DomainMonit
 	return _c
 }
 
+// SetCheckType sets the "check_type" field.
+func (_c *DomainMonitorHistoryCreate) SetCheckType(v domainmonitorhistory.CheckType) *DomainMonitorHistoryCreate {
+	_c.mutation.SetCheckType(v)
+	return _c
+}
+
+// SetNillableCheckType sets the "check_type" field if the given value is not nil.
+func (_c *DomainMonitorHistoryCreate) SetNillableCheckType(v *domainmonitorhistory.CheckType) *DomainMonitorHistoryCreate {
+	if v != nil {
+		_c.SetCheckType(*v)
+	}
+	return _c
+}
+
 // SetIPResolved sets the "ip_resolved" field.
 func (_c *DomainMonitorHistoryCreate) SetIPResolved(v []string) *DomainMonitorHistoryCreate {
 	_c.mutation.SetIPResolved(v)
@@ -303,6 +317,11 @@ func (_c *DomainMonitorHistoryCreate) check() error {
 	if _, ok := _c.mutation.IsSuccess(); !ok {
 		return &ValidationError{Name: "is_success", err: errors.New(`ent_log: missing required field "DomainMonitorHistory.is_success"`)}
 	}
+	if v, ok := _c.mutation.CheckType(); ok {
+		if err := domainmonitorhistory.CheckTypeValidator(v); err != nil {
+			return &ValidationError{Name: "check_type", err: fmt.Errorf(`ent_log: validator failed for field "DomainMonitorHistory.check_type": %w`, err)}
+		}
+	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := domainmonitorhistory.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent_log: validator failed for field "DomainMonitorHistory.id": %w`, err)}
@@ -368,6 +387,10 @@ func (_c *DomainMonitorHistoryCreate) createSpec() (*DomainMonitorHistory, *sqlg
 	if value, ok := _c.mutation.HTTPStatus(); ok {
 		_spec.SetField(domainmonitorhistory.FieldHTTPStatus, field.TypeInt, value)
 		_node.HTTPStatus = value
+	}
+	if value, ok := _c.mutation.CheckType(); ok {
+		_spec.SetField(domainmonitorhistory.FieldCheckType, field.TypeEnum, value)
+		_node.CheckType = value
 	}
 	if value, ok := _c.mutation.IPResolved(); ok {
 		_spec.SetField(domainmonitorhistory.FieldIPResolved, field.TypeJSON, value)
@@ -502,6 +525,9 @@ func (u *DomainMonitorHistoryUpsertOne) UpdateNewValues() *DomainMonitorHistoryU
 		}
 		if _, exists := u.create.mutation.HTTPStatus(); exists {
 			s.SetIgnore(domainmonitorhistory.FieldHTTPStatus)
+		}
+		if _, exists := u.create.mutation.CheckType(); exists {
+			s.SetIgnore(domainmonitorhistory.FieldCheckType)
 		}
 		if _, exists := u.create.mutation.IPResolved(); exists {
 			s.SetIgnore(domainmonitorhistory.FieldIPResolved)
@@ -769,6 +795,9 @@ func (u *DomainMonitorHistoryUpsertBulk) UpdateNewValues() *DomainMonitorHistory
 			}
 			if _, exists := b.mutation.HTTPStatus(); exists {
 				s.SetIgnore(domainmonitorhistory.FieldHTTPStatus)
+			}
+			if _, exists := b.mutation.CheckType(); exists {
+				s.SetIgnore(domainmonitorhistory.FieldCheckType)
 			}
 			if _, exists := b.mutation.IPResolved(); exists {
 				s.SetIgnore(domainmonitorhistory.FieldIPResolved)

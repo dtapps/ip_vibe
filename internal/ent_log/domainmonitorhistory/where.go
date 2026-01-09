@@ -444,6 +444,36 @@ func HTTPStatusNotNil() predicate.DomainMonitorHistory {
 	return predicate.DomainMonitorHistory(sql.FieldNotNull(FieldHTTPStatus))
 }
 
+// CheckTypeEQ applies the EQ predicate on the "check_type" field.
+func CheckTypeEQ(v CheckType) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldEQ(FieldCheckType, v))
+}
+
+// CheckTypeNEQ applies the NEQ predicate on the "check_type" field.
+func CheckTypeNEQ(v CheckType) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldNEQ(FieldCheckType, v))
+}
+
+// CheckTypeIn applies the In predicate on the "check_type" field.
+func CheckTypeIn(vs ...CheckType) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldIn(FieldCheckType, vs...))
+}
+
+// CheckTypeNotIn applies the NotIn predicate on the "check_type" field.
+func CheckTypeNotIn(vs ...CheckType) predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldNotIn(FieldCheckType, vs...))
+}
+
+// CheckTypeIsNil applies the IsNil predicate on the "check_type" field.
+func CheckTypeIsNil() predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldIsNull(FieldCheckType))
+}
+
+// CheckTypeNotNil applies the NotNil predicate on the "check_type" field.
+func CheckTypeNotNil() predicate.DomainMonitorHistory {
+	return predicate.DomainMonitorHistory(sql.FieldNotNull(FieldCheckType))
+}
+
 // IPResolvedIsNil applies the IsNil predicate on the "ip_resolved" field.
 func IPResolvedIsNil() predicate.DomainMonitorHistory {
 	return predicate.DomainMonitorHistory(sql.FieldIsNull(FieldIPResolved))

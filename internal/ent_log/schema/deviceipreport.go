@@ -67,7 +67,7 @@ func (DeviceIpReport) Fields() []ent.Field {
 			Values(schematype.GetDeviceIpReportReportTypes...).
 			Optional().
 			Immutable().
-			Comment("上报方式 api / grpc /thrift").
+			Comment("上报方式 api / grpc / thrift").
 			Annotations(entsql.WithComments(true)),
 	}
 }

@@ -363,6 +363,31 @@ func (q *DomainMonitorHistoryQuery) OrderByHTTPStatusAsc() *DomainMonitorHistory
 	return q.Order(Asc(domainmonitorhistory.FieldHTTPStatus))
 }
 
+// OrderByCheckTypeDesc 按字段 check_type 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *DomainMonitorHistoryQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DomainMonitorHistory.Query().
+//	    OrderByCheckTypeDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DomainMonitorHistoryQuery) OrderByCheckTypeDesc() *DomainMonitorHistoryQuery {
+	return q.Order(Desc(domainmonitorhistory.FieldCheckType))
+}
+
+// OrderByCheckTypeAsc 按字段 check_type 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *DomainMonitorHistoryQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DomainMonitorHistory.Query().
+//	    OrderByCheckTypeAsc().
+//	    All(ctx)
+func (q *DomainMonitorHistoryQuery) OrderByCheckTypeAsc() *DomainMonitorHistoryQuery {
+	return q.Order(Asc(domainmonitorhistory.FieldCheckType))
+}
+
 // OrderByIPResolvedDesc 按字段 ip_resolved 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *DomainMonitorHistoryQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。

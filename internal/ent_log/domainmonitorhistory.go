@@ -33,6 +33,8 @@ type DomainMonitorHistory struct {
 	StatusMessage string `json:"status_message,omitempty"`
 	// HTTP/HTTPS 状态码
 	HTTPStatus int `json:"http_status,omitempty"`
+	// 检查方式 标准 / Resty / Grequests / Colly
+	CheckType domainmonitorhistory.CheckType `json:"check_type,omitempty"`
 	// 解析到的 IP 地址列表
 	IPResolved []string `json:"ip_resolved,omitempty"`
 	// 详细错误信息或异常堆栈
@@ -69,7 +71,7 @@ func (*DomainMonitorHistory) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case domainmonitorhistory.FieldID, domainmonitorhistory.FieldMonitorID, domainmonitorhistory.FieldCheckDuration, domainmonitorhistory.FieldHTTPStatus, domainmonitorhistory.FieldSslVersion:
 			values[i] = new(sql.NullInt64)
-		case domainmonitorhistory.FieldStatusMessage, domainmonitorhistory.FieldErrorLog, domainmonitorhistory.FieldSslCommonName, domainmonitorhistory.FieldSslIssuerName, domainmonitorhistory.FieldSslSignatureAlg, domainmonitorhistory.FieldSslSanList, domainmonitorhistory.FieldSslCertificateChain, domainmonitorhistory.FieldSslSerialNumber:
+		case domainmonitorhistory.FieldStatusMessage, domainmonitorhistory.FieldCheckType, domainmonitorhistory.FieldErrorLog, domainmonitorhistory.FieldSslCommonName, domainmonitorhistory.FieldSslIssuerName, domainmonitorhistory.FieldSslSignatureAlg, domainmonitorhistory.FieldSslSanList, domainmonitorhistory.FieldSslCertificateChain, domainmonitorhistory.FieldSslSerialNumber:
 			values[i] = new(sql.NullString)
 		case domainmonitorhistory.FieldCreatedAt, domainmonitorhistory.FieldCheckTime, domainmonitorhistory.FieldSslNotDate, domainmonitorhistory.FieldSslExpiryDate:
 			values[i] = new(sql.NullTime)
@@ -135,6 +137,12 @@ func (_m *DomainMonitorHistory) assignValues(columns []string, values []any) err
 				return fmt.Errorf("unexpected type %T for field http_status", values[i])
 			} else if value.Valid {
 				_m.HTTPStatus = int(value.Int64)
+			}
+		case domainmonitorhistory.FieldCheckType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field check_type", values[i])
+			} else if value.Valid {
+				_m.CheckType = domainmonitorhistory.CheckType(value.String)
 			}
 		case domainmonitorhistory.FieldIPResolved:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -260,6 +268,9 @@ func (_m *DomainMonitorHistory) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("http_status=")
 	builder.WriteString(fmt.Sprintf("%v", _m.HTTPStatus))
+	builder.WriteString(", ")
+	builder.WriteString("check_type=")
+	builder.WriteString(fmt.Sprintf("%v", _m.CheckType))
 	builder.WriteString(", ")
 	builder.WriteString("ip_resolved=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IPResolved))

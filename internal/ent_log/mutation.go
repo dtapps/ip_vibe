@@ -702,6 +702,7 @@ type DomainMonitorHistoryMutation struct {
 	status_message        *string
 	http_status           *int
 	addhttp_status        *int
+	check_type            *domainmonitorhistory.CheckType
 	ip_resolved           *[]string
 	appendip_resolved     []string
 	error_log             *string
@@ -1176,6 +1177,55 @@ func (m *DomainMonitorHistoryMutation) ResetHTTPStatus() {
 	m.http_status = nil
 	m.addhttp_status = nil
 	delete(m.clearedFields, domainmonitorhistory.FieldHTTPStatus)
+}
+
+// SetCheckType sets the "check_type" field.
+func (m *DomainMonitorHistoryMutation) SetCheckType(dt domainmonitorhistory.CheckType) {
+	m.check_type = &dt
+}
+
+// CheckType returns the value of the "check_type" field in the mutation.
+func (m *DomainMonitorHistoryMutation) CheckType() (r domainmonitorhistory.CheckType, exists bool) {
+	v := m.check_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCheckType returns the old "check_type" field's value of the DomainMonitorHistory entity.
+// If the DomainMonitorHistory object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorHistoryMutation) OldCheckType(ctx context.Context) (v domainmonitorhistory.CheckType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCheckType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCheckType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCheckType: %w", err)
+	}
+	return oldValue.CheckType, nil
+}
+
+// ClearCheckType clears the value of the "check_type" field.
+func (m *DomainMonitorHistoryMutation) ClearCheckType() {
+	m.check_type = nil
+	m.clearedFields[domainmonitorhistory.FieldCheckType] = struct{}{}
+}
+
+// CheckTypeCleared returns if the "check_type" field was cleared in this mutation.
+func (m *DomainMonitorHistoryMutation) CheckTypeCleared() bool {
+	_, ok := m.clearedFields[domainmonitorhistory.FieldCheckType]
+	return ok
+}
+
+// ResetCheckType resets all changes to the "check_type" field.
+func (m *DomainMonitorHistoryMutation) ResetCheckType() {
+	m.check_type = nil
+	delete(m.clearedFields, domainmonitorhistory.FieldCheckType)
 }
 
 // SetIPResolved sets the "ip_resolved" field.
@@ -1788,7 +1838,7 @@ func (m *DomainMonitorHistoryMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DomainMonitorHistoryMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, domainmonitorhistory.FieldCreatedAt)
 	}
@@ -1809,6 +1859,9 @@ func (m *DomainMonitorHistoryMutation) Fields() []string {
 	}
 	if m.http_status != nil {
 		fields = append(fields, domainmonitorhistory.FieldHTTPStatus)
+	}
+	if m.check_type != nil {
+		fields = append(fields, domainmonitorhistory.FieldCheckType)
 	}
 	if m.ip_resolved != nil {
 		fields = append(fields, domainmonitorhistory.FieldIPResolved)
@@ -1865,6 +1918,8 @@ func (m *DomainMonitorHistoryMutation) Field(name string) (ent.Value, bool) {
 		return m.StatusMessage()
 	case domainmonitorhistory.FieldHTTPStatus:
 		return m.HTTPStatus()
+	case domainmonitorhistory.FieldCheckType:
+		return m.CheckType()
 	case domainmonitorhistory.FieldIPResolved:
 		return m.IPResolved()
 	case domainmonitorhistory.FieldErrorLog:
@@ -1910,6 +1965,8 @@ func (m *DomainMonitorHistoryMutation) OldField(ctx context.Context, name string
 		return m.OldStatusMessage(ctx)
 	case domainmonitorhistory.FieldHTTPStatus:
 		return m.OldHTTPStatus(ctx)
+	case domainmonitorhistory.FieldCheckType:
+		return m.OldCheckType(ctx)
 	case domainmonitorhistory.FieldIPResolved:
 		return m.OldIPResolved(ctx)
 	case domainmonitorhistory.FieldErrorLog:
@@ -1989,6 +2046,13 @@ func (m *DomainMonitorHistoryMutation) SetField(name string, value ent.Value) er
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetHTTPStatus(v)
+		return nil
+	case domainmonitorhistory.FieldCheckType:
+		v, ok := value.(domainmonitorhistory.CheckType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCheckType(v)
 		return nil
 	case domainmonitorhistory.FieldIPResolved:
 		v, ok := value.([]string)
@@ -2157,6 +2221,9 @@ func (m *DomainMonitorHistoryMutation) ClearedFields() []string {
 	if m.FieldCleared(domainmonitorhistory.FieldHTTPStatus) {
 		fields = append(fields, domainmonitorhistory.FieldHTTPStatus)
 	}
+	if m.FieldCleared(domainmonitorhistory.FieldCheckType) {
+		fields = append(fields, domainmonitorhistory.FieldCheckType)
+	}
 	if m.FieldCleared(domainmonitorhistory.FieldIPResolved) {
 		fields = append(fields, domainmonitorhistory.FieldIPResolved)
 	}
@@ -2212,6 +2279,9 @@ func (m *DomainMonitorHistoryMutation) ClearField(name string) error {
 		return nil
 	case domainmonitorhistory.FieldHTTPStatus:
 		m.ClearHTTPStatus()
+		return nil
+	case domainmonitorhistory.FieldCheckType:
+		m.ClearCheckType()
 		return nil
 	case domainmonitorhistory.FieldIPResolved:
 		m.ClearIPResolved()
@@ -2274,6 +2344,9 @@ func (m *DomainMonitorHistoryMutation) ResetField(name string) error {
 		return nil
 	case domainmonitorhistory.FieldHTTPStatus:
 		m.ResetHTTPStatus()
+		return nil
+	case domainmonitorhistory.FieldCheckType:
+		m.ResetCheckType()
 		return nil
 	case domainmonitorhistory.FieldIPResolved:
 		m.ResetIPResolved()

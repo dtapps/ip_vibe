@@ -84,6 +84,9 @@ func (_u *DomainMonitorHistoryUpdate) sqlSave(ctx context.Context) (_node int, e
 	if _u.mutation.HTTPStatusCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldHTTPStatus, field.TypeInt)
 	}
+	if _u.mutation.CheckTypeCleared() {
+		_spec.ClearField(domainmonitorhistory.FieldCheckType, field.TypeEnum)
+	}
 	if _u.mutation.IPResolvedCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldIPResolved, field.TypeJSON)
 	}
@@ -224,6 +227,9 @@ func (_u *DomainMonitorHistoryUpdateOne) sqlSave(ctx context.Context) (_node *Do
 	}
 	if _u.mutation.HTTPStatusCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldHTTPStatus, field.TypeInt)
+	}
+	if _u.mutation.CheckTypeCleared() {
+		_spec.ClearField(domainmonitorhistory.FieldCheckType, field.TypeEnum)
 	}
 	if _u.mutation.IPResolvedCleared() {
 		_spec.ClearField(domainmonitorhistory.FieldIPResolved, field.TypeJSON)

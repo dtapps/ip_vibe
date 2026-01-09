@@ -16,7 +16,7 @@ var (
 		{Name: "device_id", Type: field.TypeInt64, Comment: "关联 Device 序号"},
 		{Name: "ip_v4", Type: field.TypeString, Nullable: true, Comment: "IP地址V4"},
 		{Name: "ip_v6", Type: field.TypeString, Nullable: true, Comment: "IP地址V6"},
-		{Name: "report_type", Type: field.TypeEnum, Nullable: true, Comment: "上报方式 api / grpc /thrift", Enums: []string{"api", "grpc", "thrift"}},
+		{Name: "report_type", Type: field.TypeEnum, Nullable: true, Comment: "上报方式 api / grpc / thrift", Enums: []string{"api", "grpc", "thrift"}},
 	}
 	// DeviceIPReportTable holds the schema information for the "device_ip_report" table.
 	DeviceIPReportTable = &schema.Table{
@@ -55,6 +55,7 @@ var (
 		{Name: "check_duration", Type: field.TypeInt, Nullable: true, Comment: "检查耗时（毫秒）"},
 		{Name: "status_message", Type: field.TypeString, Nullable: true, Comment: "简要状态信息（如：200 OK，连接超时）"},
 		{Name: "http_status", Type: field.TypeInt, Nullable: true, Comment: "HTTP/HTTPS 状态码"},
+		{Name: "check_type", Type: field.TypeEnum, Nullable: true, Comment: "检查方式 标准 / Resty / Grequests / Colly", Enums: []string{"standard", "resty", "grequests", "colly"}},
 		{Name: "ip_resolved", Type: field.TypeJSON, Nullable: true, Comment: "解析到的 IP 地址列表"},
 		{Name: "error_log", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "详细错误信息或异常堆栈"},
 		{Name: "ssl_not_date", Type: field.TypeTime, Nullable: true, Comment: "证书生效日期（NotBefore）"},
