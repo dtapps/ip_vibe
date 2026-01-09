@@ -84,47 +84,14 @@ func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string)
 	}
 
 	// ---------- HTTP / HTTPS 请求 ----------
-	url := protocol + "://" + domain
-	client := &http.Client{
-		Timeout: 60 * time.Second,
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		result.StatusMsg = "请求创建失败"
-		result.ErrorLog = err.Error()
-		result.Duration = time.Since(start)
+	if err := s.fetchHTTP(ctx, domain, protocol, start, result); err != nil {
 		return result
-	}
-
-	// 添加浏览器标识
-	req.Header.Set("User-Agent", s.useragent)
-	s.logger.Debug("请求浏览器标识",
-		slog.String("useragent", s.useragent),
-	)
-
-	resp, err := client.Do(req)
-	result.Duration = time.Since(start)
-
-	if err != nil {
-		result.StatusMsg = "HTTP 请求失败"
-		result.ErrorLog = err.Error()
-		return result
-	}
-	defer resp.Body.Close()
-
-	result.HTTPStatus = resp.StatusCode
-
-	if resp.StatusCode >= 200 && resp.StatusCode < 400 {
-		result.IsSuccess = true
-		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
-	} else {
-		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
 	}
 
 	return result
 }
 
+// 获取 SSL 信息
 func (s *DomainCheck) fetchSSLInfo(ctx context.Context, domain string, result *CheckResult) error {
 	dialer := &net.Dialer{Timeout: 60 * time.Second}
 
@@ -161,6 +128,51 @@ func (s *DomainCheck) fetchSSLInfo(ctx context.Context, domain string, result *C
 
 	result.SSLSerialNumber = cert.SerialNumber.String()
 	result.SSLVersion = cert.Version
+
+	return nil
+}
+
+// 发起 HTTP 请求，使用官方 http.Client
+func (s *DomainCheck) fetchHTTP(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
+
+	url := protocol + "://" + domain
+
+	client := &http.Client{
+		Timeout: 60 * time.Second,
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		result.StatusMsg = "请求创建失败"
+		result.ErrorLog = err.Error()
+		result.Duration = time.Since(start)
+		return err
+	}
+
+	// 添加浏览器标识
+	req.Header.Set("User-Agent", s.useragent)
+	s.logger.Debug("请求浏览器标识",
+		slog.String("useragent", s.useragent),
+	)
+
+	resp, err := client.Do(req)
+	result.Duration = time.Since(start)
+
+	if err != nil {
+		result.StatusMsg = "HTTP 请求失败"
+		result.ErrorLog = err.Error()
+		return err
+	}
+	defer resp.Body.Close()
+
+	result.HTTPStatus = resp.StatusCode
+
+	if resp.StatusCode >= 200 && resp.StatusCode < 400 {
+		result.IsSuccess = true
+		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
+	} else {
+		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
+	}
 
 	return nil
 }
