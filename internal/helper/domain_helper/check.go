@@ -8,26 +8,32 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
+	"github.com/levigross/grequests/v2"
 	fakeUserAgent "github.com/lib4u/fake-useragent"
+	"go.dtapp.net/library/contrib/http_log"
+	"resty.dev/v3"
 )
 
 type DomainCheck struct {
-	useragent string       // 浏览器标识
-	logger    *slog.Logger // 日志记录器
+	useragent     string                     // 浏览器标识
+	logger        *slog.Logger               // 日志记录器
+	httpTransport *http_log.LoggingTransport // HTTP日志记录器
 }
 
-func NewDomainCheck(logger *slog.Logger) *DomainCheck {
+func NewDomainCheck(logger *slog.Logger, httpTransport *http_log.LoggingTransport) *DomainCheck {
 	var useragent string
 	ua, err := fakeUserAgent.New()
 	if err == nil {
 		useragent = ua.GetRandom()
 	}
 	return &DomainCheck{
-		useragent: useragent,
-		logger:    logger,
+		useragent:     useragent,
+		logger:        logger,
+		httpTransport: httpTransport,
 	}
 }
 
@@ -135,13 +141,22 @@ func (s *DomainCheck) fetchSSLInfo(ctx context.Context, domain string, result *C
 // 发起 HTTP 请求，使用官方 http.Client
 func (s *DomainCheck) fetchHTTP(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
 
-	url := protocol + "://" + domain
+	// 构建 URL
+	u := &url.URL{Scheme: protocol, Host: domain}
+	fullURL := u.String()
 
+	// 创建客户端
 	client := &http.Client{
 		Timeout: 60 * time.Second,
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	// 添加 HTTP 日志记录器
+	if s.httpTransport != nil {
+		client.Transport = s.httpTransport
+	}
+
+	// 创建请求
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fullURL, nil)
 	if err != nil {
 		result.StatusMsg = "请求创建失败"
 		result.ErrorLog = err.Error()
@@ -150,11 +165,12 @@ func (s *DomainCheck) fetchHTTP(ctx context.Context, protocol string, domain str
 	}
 
 	// 添加浏览器标识
-	req.Header.Set("User-Agent", s.useragent)
-	s.logger.Debug("请求浏览器标识",
-		slog.String("useragent", s.useragent),
-	)
+	// req.Header.Set("User-Agent", s.useragent)
+	// s.logger.Debug("请求浏览器标识",
+	// 	slog.String("useragent", s.useragent),
+	// )
 
+	// 发起 GET 请求
 	resp, err := client.Do(req)
 	result.Duration = time.Since(start)
 
@@ -164,6 +180,88 @@ func (s *DomainCheck) fetchHTTP(ctx context.Context, protocol string, domain str
 		return err
 	}
 	defer resp.Body.Close()
+
+	result.HTTPStatus = resp.StatusCode
+
+	if resp.StatusCode >= 200 && resp.StatusCode < 400 {
+		result.IsSuccess = true
+		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
+	} else {
+		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
+	}
+
+	return nil
+}
+
+// 发起 HTTP 请求，使用第三方 Resty 库
+func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
+
+	// 构建 URL
+	u := &url.URL{Scheme: protocol, Host: domain}
+	fullURL := u.String()
+
+	// 创建客户端
+	client := resty.New()
+	client.SetTimeout(60 * time.Second)
+	defer client.Close()
+
+	// 添加 HTTP 日志记录器
+	if s.httpTransport != nil {
+		client.SetTransport(s.httpTransport)
+	}
+
+	// 发起 GET 请求
+	resp, err := client.R().SetContext(ctx).Get(fullURL)
+	result.Duration = time.Since(start)
+
+	if err != nil {
+		result.StatusMsg = "HTTP(Resty) 请求失败"
+		result.ErrorLog = err.Error()
+		return err
+	}
+
+	result.HTTPStatus = resp.StatusCode()
+
+	if resp.StatusCode() >= 200 && resp.StatusCode() < 400 {
+		result.IsSuccess = true
+		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode())
+	} else {
+		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode())
+	}
+
+	return nil
+}
+
+// 发起 HTTP 请求，使用第三方 Grequests 库
+func (s *DomainCheck) fetchHTTPWithGrequests(ctx context.Context, protocol string, domain string, start time.Time, result *CheckResult) error {
+
+	// 构建 URL
+	u := &url.URL{Scheme: protocol, Host: domain}
+	fullURL := u.String()
+
+	// 组装 RequestOptions
+	opts := &grequests.RequestOptions{
+		Context: ctx,
+		HTTPClient: &http.Client{
+			Timeout: 60 * time.Second,
+		},
+	}
+
+	// 添加 HTTP 日志记录器
+	if s.httpTransport != nil {
+		opts.HTTPClient.Transport = s.httpTransport
+	}
+
+	// 发起 GET 请求
+	resp, err := grequests.Get(ctx, fullURL, grequests.FromRequestOptions(opts))
+	result.Duration = time.Since(start)
+
+	if err != nil {
+		result.StatusMsg = "HTTP(Grequests) 请求失败"
+		result.ErrorLog = err.Error()
+		return err
+	}
+	defer resp.Close()
 
 	result.HTTPStatus = resp.StatusCode
 

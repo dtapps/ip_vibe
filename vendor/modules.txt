@@ -642,6 +642,9 @@ github.com/klauspost/cpuid/v2
 ## explicit; go 1.18
 github.com/leodido/go-urn
 github.com/leodido/go-urn/scim/schema
+# github.com/levigross/grequests/v2 v2.0.0-20250606223341-05add15eea25
+## explicit; go 1.21
+github.com/levigross/grequests/v2
 # github.com/lib4u/fake-useragent v1.0.6
 ## explicit; go 1.23.4
 github.com/lib4u/fake-useragent
