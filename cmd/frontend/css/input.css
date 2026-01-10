@@ -238,4 +238,17 @@
     @apply h-8 pl-2 pr-6 text-xs rounded-xl border border-base-300/60 bg-base-100 
            cursor-pointer outline-none shadow-sm focus:border-primary/40;
   }
+
+  /* 针对所有嵌套数组生成的 form-group */
+  .form-group[class*="-group"] {
+    /* 使用 daisyUI 推荐的布局方式：直接 apply tailwind 工具类 */
+    @apply grid grid-cols-2 gap-4 mb-4;
+  }
+
+  /* 手机端响应式切换 */
+  @media (max-width: 640px) {
+    .form-group[class*="-group"] {
+      @apply grid-cols-1;
+    }
+  }
 }

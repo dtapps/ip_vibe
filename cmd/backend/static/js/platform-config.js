@@ -57,7 +57,10 @@ async function openFormModal(id) {
     document.getElementById("platform").disabled = false;
 
     // 默认渲染字段
-    renderPlatformFields(document.getElementById("platform").value, "all");
+    renderPlatformFields(
+      document.getElementById("platform").value.trim(),
+      "all"
+    );
 
     showModal("formModal", "modalTitle", "添加 平台配置");
   }
@@ -70,7 +73,9 @@ if (form) {
     e.preventDefault();
 
     // 自动从动态字段中组装 JSON
-    buildConfigFromPlatformFields();
+    buildConfigFromPlatformFields(
+      document.getElementById("platform").value.trim()
+    );
 
     // 表单数据
     const form_id = Number(document.getElementById("id").value.trim());

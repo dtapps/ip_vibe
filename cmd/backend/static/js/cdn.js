@@ -15,7 +15,7 @@ function onConfigSelect(el) {
   }
 
   // 重新渲染字段
-  renderCDNFields(platform);
+  renderCdnFields(platform);
 }
 
 // 选择类型 type
@@ -143,7 +143,7 @@ async function openFormModal(id) {
       }
 
       // 渲染字段，回填数据
-      renderCDNFields(cdnRecord.platform, cdnRecord.config_json);
+      renderCdnFields(cdnRecord.platform, cdnRecord.config_json);
 
       showModal("formModal", "modalTitle", "编辑 CDN记录");
     }
@@ -160,7 +160,7 @@ async function openFormModal(id) {
       selectId2.val(null).trigger("change");
 
       // 默认渲染字段
-      renderCDNFields(document.getElementById("platform").value);
+      renderCdnFields(document.getElementById("platform").value.trim());
 
       showModal("formModal", "modalTitle", "添加 CDN记录");
     }
@@ -178,7 +178,7 @@ if (form) {
     e.preventDefault();
 
     // 自动从动态字段中组装 JSON
-    buildConfigFromCDNFields();
+    buildConfigFromCdnFields(document.getElementById("platform").value.trim());
 
     const selectedWebhookIDs = $("#webhook_ids").val() || [];
 

@@ -17,24 +17,24 @@ const PLATFORM_SCHEMA = {
         placeholder: "your-zone-id",
         required: true,
       },
-      {
-        id: "domain_name",
-        label: "Domain Name",
-        type: "text",
-        placeholder: "example.com",
-        required: true,
-        pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
-        title: "格式错误",
-        group: "common",
-      },
-      {
-        id: "email",
-        label: "Email",
-        type: "email",
-        placeholder: "your@email.com",
-        required: true,
-        group: "common",
-      },
+      [
+        {
+          id: "domain_name",
+          label: "Domain Name",
+          type: "text",
+          placeholder: "example.com",
+          required: true,
+          pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
+          title: "格式错误",
+        },
+        {
+          id: "email",
+          label: "Email",
+          type: "email",
+          placeholder: "your@email.com",
+          required: true,
+        },
+      ],
     ],
   },
   tencent_dns: {
@@ -54,24 +54,24 @@ const PLATFORM_SCHEMA = {
         placeholder: "Secret Key...",
         required: true,
       },
-      {
-        id: "domain_name",
-        label: "Domain Name",
-        type: "text",
-        placeholder: "example.com",
-        required: true,
-        pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
-        title: "格式错误",
-        group: "common",
-      },
-      {
-        id: "email",
-        label: "Email",
-        type: "email",
-        placeholder: "your@email.com",
-        required: true,
-        group: "common",
-      },
+      [
+        {
+          id: "domain_name",
+          label: "Domain Name",
+          type: "text",
+          placeholder: "example.com",
+          required: true,
+          pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
+          title: "格式错误",
+        },
+        {
+          id: "email",
+          label: "Email",
+          type: "email",
+          placeholder: "your@email.com",
+          required: true,
+        },
+      ],
     ],
   },
   tencent_eo: {
@@ -98,24 +98,24 @@ const PLATFORM_SCHEMA = {
         placeholder: "zone-...",
         required: true,
       },
-      {
-        id: "domain_name",
-        label: "Domain Name",
-        type: "text",
-        placeholder: "example.com",
-        required: true,
-        pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
-        title: "格式错误",
-        group: "common",
-      },
-      {
-        id: "email",
-        label: "Email",
-        type: "email",
-        placeholder: "your@email.com",
-        required: true,
-        group: "common",
-      },
+      [
+        {
+          id: "domain_name",
+          label: "Domain Name",
+          type: "text",
+          placeholder: "example.com",
+          required: true,
+          pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
+          title: "格式错误",
+        },
+        {
+          id: "email",
+          label: "Email",
+          type: "email",
+          placeholder: "your@email.com",
+          required: true,
+        },
+      ],
     ],
   },
   aliyun_dns: {
@@ -135,24 +135,24 @@ const PLATFORM_SCHEMA = {
         placeholder: "Secret...",
         required: true,
       },
-      {
-        id: "domain_name",
-        label: "Domain Name",
-        type: "text",
-        placeholder: "example.com",
-        required: true,
-        pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
-        title: "格式错误",
-        group: "common",
-      },
-      {
-        id: "email",
-        label: "Email",
-        type: "email",
-        placeholder: "your@email.com",
-        required: true,
-        group: "common",
-      },
+      [
+        {
+          id: "domain_name",
+          label: "Domain Name",
+          type: "text",
+          placeholder: "example.com",
+          required: true,
+          pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
+          title: "格式错误",
+        },
+        {
+          id: "email",
+          label: "Email",
+          type: "email",
+          placeholder: "your@email.com",
+          required: true,
+        },
+      ],
     ],
   },
   aliyun_esa: {
@@ -179,24 +179,24 @@ const PLATFORM_SCHEMA = {
         placeholder: "Site ID",
         required: true,
       },
-      {
-        id: "domain_name",
-        label: "Domain Name",
-        type: "text",
-        placeholder: "example.com",
-        required: true,
-        pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
-        title: "格式错误",
-        group: "common",
-      },
-      {
-        id: "email",
-        label: "Email",
-        type: "email",
-        placeholder: "your@email.com",
-        required: true,
-        group: "common",
-      },
+      [
+        {
+          id: "domain_name",
+          label: "Domain Name",
+          type: "text",
+          placeholder: "example.com",
+          required: true,
+          pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
+          title: "格式错误",
+        },
+        {
+          id: "email",
+          label: "Email",
+          type: "email",
+          placeholder: "your@email.com",
+          required: true,
+        },
+      ],
     ],
   },
   baidu_dns: {
@@ -216,24 +216,24 @@ const PLATFORM_SCHEMA = {
         placeholder: "Secret...",
         required: true,
       },
-      {
-        id: "domain_name",
-        label: "Domain Name",
-        type: "text",
-        placeholder: "example.com",
-        required: true,
-        pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
-        title: "格式错误",
-        group: "common",
-      },
-      {
-        id: "email",
-        label: "Email",
-        type: "email",
-        placeholder: "your@email.com",
-        required: true,
-        group: "common",
-      },
+      [
+        {
+          id: "domain_name",
+          label: "Domain Name",
+          type: "text",
+          placeholder: "example.com",
+          required: true,
+          pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
+          title: "格式错误",
+        },
+        {
+          id: "email",
+          label: "Email",
+          type: "email",
+          placeholder: "your@email.com",
+          required: true,
+        },
+      ],
     ],
   },
   huawei_dns: {
@@ -260,24 +260,24 @@ const PLATFORM_SCHEMA = {
         placeholder: "zone-...",
         required: true,
       },
-      {
-        id: "domain_name",
-        label: "Domain Name",
-        type: "text",
-        placeholder: "example.com",
-        required: true,
-        pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
-        title: "格式错误",
-        group: "common",
-      },
-      {
-        id: "email",
-        label: "Email",
-        type: "email",
-        placeholder: "your@email.com",
-        required: true,
-        group: "common",
-      },
+      [
+        {
+          id: "domain_name",
+          label: "Domain Name",
+          type: "text",
+          placeholder: "example.com",
+          required: true,
+          pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
+          title: "格式错误",
+        },
+        {
+          id: "email",
+          label: "Email",
+          type: "email",
+          placeholder: "your@email.com",
+          required: true,
+        },
+      ],
     ],
   },
   volcengine_dns: {
@@ -304,24 +304,26 @@ const PLATFORM_SCHEMA = {
         placeholder: "Zone ID",
         required: true,
       },
-      {
-        id: "domain_name",
-        label: "Domain Name",
-        type: "text",
-        placeholder: "example.com",
-        required: true,
-        pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
-        title: "格式错误",
-        group: "common",
-      },
-      {
-        id: "email",
-        label: "Email",
-        type: "email",
-        placeholder: "your@email.com",
-        required: true,
-        group: "common",
-      },
+      [
+        {
+          id: "domain_name",
+          label: "Domain Name",
+          type: "text",
+          placeholder: "example.com",
+          required: true,
+          pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
+          title: "格式错误",
+          group: "common",
+        },
+        {
+          id: "email",
+          label: "Email",
+          type: "email",
+          placeholder: "your@email.com",
+          required: true,
+          group: "common",
+        },
+      ],
     ],
   },
 };
@@ -334,17 +336,15 @@ const PLATFORM_SCHEMA = {
  */
 function renderPlatformFields(platform, capability, initialData = {}) {
   const container = document.getElementById("dynamic_fields_container");
+  const schema = PLATFORM_SCHEMA[platform];
 
-  // 安全检查
-  if (!platform || !PLATFORM_SCHEMA[platform]) {
+  if (!schema) {
     container.innerHTML =
       '<div class="text-warning text-xs text-center py-4">请选择有效的平台类型</div>';
     return;
   }
 
-  const schema = PLATFORM_SCHEMA[platform];
-
-  // 确保数据是对象（处理后端传回 JSON 字符串的情况）
+  // 数据预处理
   let data = initialData;
   if (typeof initialData === "string" && initialData !== "") {
     try {
@@ -356,36 +356,68 @@ function renderPlatformFields(platform, capability, initialData = {}) {
 
   let html = `<div class="divider text-[10px] opacity-30 uppercase tracking-[0.2em] mb-6">${schema.label} 参数配置</div>`;
 
-  schema.fields.forEach((field) => {
-    // 处理显隐逻辑
-    let isHidden = false;
-    if (field.id === "domain_name") {
-      isHidden = !(
-        capability === "all" ||
-        capability === "cdn" ||
-        capability === "dns"
-      );
-    }
-    if (field.id === "email") {
-      isHidden = !(capability === "all" || capability === "ssl");
-    }
+  // 遍历 fields 定义
+  schema.fields.forEach((item) => {
+    // 检查是否是嵌套数组（即：分组容器）
+    if (Array.isArray(item)) {
+      // 直接使用 ID 拼接类名，例如：domain_name-or-email-group
+      const groupClassName = item.map((f) => f.id).join("-or-") + "-group";
 
-    const value = data[field.id] !== undefined ? data[field.id] : "";
-    const requiredAttr = field.required && !isHidden ? "required" : "";
+      html += `<div class="form-group ${groupClassName}" data-platform="${platform}">`;
+      item.forEach((subField) => {
+        html += generatePlatformFieldHtml(subField, data, capability);
+      });
+      html += `</div>`;
+    } else {
+      // 普通非分组字段
+      html += generatePlatformFieldHtml(item, data, capability);
+    }
+  });
 
-    let inputHtml = "";
-    switch (field.type) {
-      case "password":
-        inputHtml = `
-          <div class="flex items-center gap-2">
-            <input type="password" class="ui-input dynamic-input" data-key="${field.id}" value="${value}" placeholder="${field.placeholder}" ${requiredAttr} autocomplete="new-password" />
-            <button type="button" class="btn btn-square btn-sm btn-ghost" onclick="togglePasswordVisibilityByPrev(this)">
-              <span class="i-lucide-eye w-4 h-4"></span>
-            </button>
-          </div>`;
-        break;
-      case "select":
-        inputHtml = `
+  container.innerHTML = html;
+}
+
+/**
+ * 生成单个字段 HTML，通过 ID 自动映射特殊属性
+ * @param {Object} field - 字段定义对象
+ * @param {Object} data - 表单数据对象
+ * @param {string} capability - 服务能力 (all, cdn, dns, ssl)
+ * @returns {string} - 生成的 HTML 字符串
+ */
+function generatePlatformFieldHtml(field, data, capability) {
+  // 1. 自动属性映射 (根据 ID 直接映射，不写死)
+  let specialClass = "";
+  let dataTypeAttr = "";
+  let isHidden = false;
+
+  if (field.id === "domain_name") {
+    specialClass = "domain-field";
+    dataTypeAttr = 'data-type="domain_name"';
+    isHidden = !(
+      capability === "all" ||
+      capability === "cdn" ||
+      capability === "dns"
+    );
+  } else if (field.id === "email") {
+    specialClass = "email-field";
+    dataTypeAttr = 'data-type="email"';
+    isHidden = !(capability === "all" || capability === "ssl");
+  }
+
+  const value = data[field.id] !== undefined ? data[field.id] : "";
+  const requiredAttr = field.required && !isHidden ? "required" : "";
+
+  let inputHtml = "";
+  if (field.type === "password") {
+    inputHtml = `
+      <div class="flex items-center gap-2">
+        <input type="password" class="ui-input dynamic-input" data-key="${field.id}" value="${value}" placeholder="${field.placeholder}" ${requiredAttr} autocomplete="new-password" />
+        <button type="button" class="btn btn-square btn-sm btn-ghost" onclick="togglePasswordVisibilityByPrev(this)">
+          <span class="i-lucide-eye w-4 h-4"></span>
+        </button>
+      </div>`;
+  } else if (field.type === "select") {
+    inputHtml = `
           <select class="ui-select dynamic-input" data-key="${
             field.id
           }" ${requiredAttr}>
@@ -398,56 +430,53 @@ function renderPlatformFields(platform, capability, initialData = {}) {
               )
               .join("")}
           </select>`;
-        break;
-      default:
-        inputHtml = `
-          <input type="${
-            field.type
-          }" class="ui-input dynamic-input" data-key="${
-          field.id
-        }" value="${value}" 
-                 placeholder="${field.placeholder}" ${
-          field.pattern ? `pattern="${field.pattern}"` : ""
-        } 
-                 ${
-                   field.title ? `title="${field.title}"` : ""
-                 } ${requiredAttr} />`;
-    }
-
-    html += `
-      <div class="ui-form-control ${isHidden ? "hidden" : ""}" data-field-id="${
+  } else {
+    inputHtml = `<input type="${
+      field.type
+    }" class="ui-input dynamic-input ${specialClass}" data-key="${
       field.id
-    }">
-        <label class="ui-label-text">${field.label} ${
-      field.required ? '<span class="text-error">*</span>' : ""
-    }</label>
-        ${inputHtml}
-      </div>`;
-  });
+    }" value="${value}" 
+                  placeholder="${field.placeholder}" ${
+      field.pattern ? `pattern="${field.pattern}"` : ""
+    } 
+                  ${
+                    field.title ? `title="${field.title}"` : ""
+                  } ${requiredAttr} />`;
+  }
 
-  container.innerHTML = html;
+  return `
+    <div class="ui-form-control ${isHidden ? "hidden" : ""}" ${dataTypeAttr}>
+      <label class="ui-label-text">${field.label} ${
+    field.required ? '<span class="text-error">*</span>' : ""
+  }</label>
+      ${inputHtml}
+    </div>`;
 }
 
 /**
  * 自动从动态字段中组装 JSON
+ * @param {string} platform - 平台 key (如 cloudflare)
  */
-function buildConfigFromPlatformFields() {
+function buildConfigFromPlatformFields(platform = "") {
   const config = {};
+  const fields = PLATFORM_SCHEMA[platform]?.fields || [];
+
+  // 处理嵌套数组，打平后查找字段定义
+  const flatFields = fields.flat();
+
   document.querySelectorAll(".dynamic-input").forEach((el) => {
-    // 隐藏的字段不参与组装（除非需要保存隐藏字段的值）
-    if (el.closest(".ui-form-control").classList.contains("hidden")) return;
+    const parent = el.closest(".ui-form-control");
+    if (parent && parent.classList.contains("hidden")) return;
 
     const key = el.getAttribute("data-key");
-    const type = PLATFORM_SCHEMA[
-      document.getElementById("platform").value
-    ]?.fields.find((f) => f.id === key)?.type;
-
+    const fieldSchema = flatFields.find((f) => f.id === key);
     let val = el.value.trim();
-    // 如果是数字类型，转为 Number
-    if (type === "number" && val !== "") {
+
+    if (fieldSchema?.type === "number" && val !== "") {
       val = Number(val);
     }
     config[key] = val;
   });
+
   document.getElementById("config_json").value = JSON.stringify(config);
 }
