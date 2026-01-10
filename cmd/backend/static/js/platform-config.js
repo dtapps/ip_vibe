@@ -52,9 +52,18 @@ async function openFormModal(id) {
 
   // 创建
   if (!id) {
-    document.getElementById("id").value = "";
-    document.getElementById("id").disabled = true;
-    document.getElementById("platform").disabled = false;
+    updateFormFields([
+      {
+        id: "id",
+        value: 0,
+        disabled: true,
+      },
+      {
+        id: "platform",
+        value: "",
+        disabled: true,
+      },
+    ]);
 
     // 默认渲染字段
     renderPlatformFields(

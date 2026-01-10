@@ -192,12 +192,37 @@ async function openFormModal(id) {
 
     // 创建
     if (!id) {
-      document.getElementById("id").value = 0;
-      document.getElementById("id").disabled = true;
-      document.getElementById("config_id").disabled = false;
-      document.getElementById("sub_domain").disabled = false;
-      document.getElementById("cdn_record_id").disabled = true;
-      document.getElementById("ip_group_id").disabled = true;
+      updateFormFields([
+        {
+          id: "id",
+          value: 0,
+          disabled: true,
+        },
+        {
+          id: "platform",
+          value: "",
+          disabled: true,
+        },
+        {
+          id: "config_id",
+          disabled: false,
+        },
+        {
+          id: "sub_domain",
+          value: "",
+          disabled: false,
+        },
+        {
+          id: "cdn_record_id",
+          value: 0,
+          disabled: true,
+        },
+        {
+          id: "ip_group_id",
+          value: 0,
+          disabled: true,
+        },
+      ]);
 
       // 清空已选
       console.log("select2 清空已选");

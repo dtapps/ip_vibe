@@ -244,3 +244,26 @@ function togglePasswordVisibilityByPrev(btn) {
     }
   }
 }
+
+/**
+ * 批量更新 Form 字段状态与值
+ * @param {Array} configs - 结构: [{ id: "id名", value: "值", disabled: true/false }]
+ */
+function updateFormFields(configs = []) {
+  if (!Array.isArray(configs)) return;
+
+  configs.forEach((item) => {
+    const el = document.getElementById(item.id);
+    if (!el) return;
+
+    // 更新值：判断 undefined 是为了允许传 0 或空字符串
+    if (item.value !== undefined) {
+      el.value = item.value;
+    }
+
+    // 更新禁用状态
+    if (item.disabled !== undefined) {
+      el.disabled = item.disabled;
+    }
+  });
+}
