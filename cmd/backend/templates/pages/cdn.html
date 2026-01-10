@@ -36,9 +36,6 @@
         <tr>
           <th class="ui-th">域名</th>
           <th class="ui-th">类型</th>
-          <th class="ui-th">回源协议</th>
-          <th class="ui-th">HTTP端口</th>
-          <th class="ui-th">HTTPS端口</th>
           <th class="ui-th">别名</th>
           <th class="ui-th">IP组</th>
           <th class="ui-th text-center">平台</th>
@@ -59,26 +56,6 @@
             <span class="badge badge-ghost badge-sm font-mono">
               {{.Type}}
             </span>
-          </td>
-
-          <td class="ui-td text-xs italic">
-            {{if eq .OriginProtocol "follow"}}
-            协议跟随
-            {{else if eq .OriginProtocol "http"}}
-            HTTP协议
-            {{else if eq .OriginProtocol "https"}}
-            HTTPS协议
-            {{else}}
-            {{.OriginProtocol}}
-            {{end}}
-          </td>
-
-          <td class="ui-td font-mono">
-            {{.HTTPPort}}
-          </td>
-
-          <td class="ui-td font-mono">
-            {{.HTTPSPort}}
           </td>
 
           <td class="ui-td text-xs opacity-50">
@@ -156,5 +133,6 @@
 <!-- 弹窗 -->
 {{ template "popup" . }}
 
+<script src="/static/js/cdn_schema.js"></script>
 <script src="/static/js/cdn.js"></script>
 {{ end }}

@@ -46,20 +46,6 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <span class="ui-filter-label">回源协议</span>
-            <select name="origin_protocol" class="ui-filter-select w-30">
-                <option value="">所有协议</option>
-                {{ range $opt := (fieldEnumMap "cdn_origin_protocol") }}
-                {{ if eq $opt.Value $filter.OriginProtocol }}
-                <option value="{{ $opt.Value }}" selected>{{ $opt.Label }}</option>
-                {{ else }}
-                <option value="{{ $opt.Value }}">{{ $opt.Label }}</option>
-                {{ end }}
-                {{ end }}
-            </select>
-        </div>
-
-        <div class="flex items-center gap-3">
             <span class="ui-filter-label">IP组序号</span>
             <input type="number" name="ip_group_id" value="{{ if $filter.IPGroupID }}{{ $filter.IPGroupID }}{{ end }}"
                 placeholder="IP组序号" class="ui-filter-input-compact w-20 font-mono text-center">

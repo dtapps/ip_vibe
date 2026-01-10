@@ -30,12 +30,6 @@ const (
 	FieldType = "type"
 	// FieldConfigJSON holds the string denoting the config_json field in the database.
 	FieldConfigJSON = "config_json"
-	// FieldOriginProtocol holds the string denoting the origin_protocol field in the database.
-	FieldOriginProtocol = "origin_protocol"
-	// FieldHTTPPort holds the string denoting the http_port field in the database.
-	FieldHTTPPort = "http_port"
-	// FieldHTTPSPort holds the string denoting the https_port field in the database.
-	FieldHTTPSPort = "https_port"
 	// FieldCdnDomain holds the string denoting the cdn_domain field in the database.
 	FieldCdnDomain = "cdn_domain"
 	// FieldIPGroupID holds the string denoting the ip_group_id field in the database.
@@ -89,9 +83,6 @@ var Columns = []string{
 	FieldSubDomain,
 	FieldType,
 	FieldConfigJSON,
-	FieldOriginProtocol,
-	FieldHTTPPort,
-	FieldHTTPSPort,
 	FieldCdnDomain,
 	FieldIPGroupID,
 	FieldIsActive,
@@ -125,10 +116,6 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
 	ConfigIDValidator func(int64) error
-	// DefaultHTTPPort holds the default value on creation for the "http_port" field.
-	DefaultHTTPPort int
-	// DefaultHTTPSPort holds the default value on creation for the "https_port" field.
-	DefaultHTTPSPort int
 	// DefaultIsActive holds the default value on creation for the "is_active" field.
 	DefaultIsActive bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -155,33 +142,6 @@ func TypeValidator(_type Type) error {
 		return nil
 	default:
 		return fmt.Errorf("cdnrecord: invalid enum value for type field: %q", _type)
-	}
-}
-
-// OriginProtocol defines the type for the "origin_protocol" enum field.
-type OriginProtocol string
-
-// OriginProtocolFollow is the default value of the OriginProtocol enum.
-const DefaultOriginProtocol = OriginProtocolFollow
-
-// OriginProtocol values.
-const (
-	OriginProtocolHTTP   OriginProtocol = "http"
-	OriginProtocolHTTPS  OriginProtocol = "https"
-	OriginProtocolFollow OriginProtocol = "follow"
-)
-
-func (op OriginProtocol) String() string {
-	return string(op)
-}
-
-// OriginProtocolValidator is a validator for the "origin_protocol" field enum values. It is called by the builders before save.
-func OriginProtocolValidator(op OriginProtocol) error {
-	switch op {
-	case OriginProtocolHTTP, OriginProtocolHTTPS, OriginProtocolFollow:
-		return nil
-	default:
-		return fmt.Errorf("cdnrecord: invalid enum value for origin_protocol field: %q", op)
 	}
 }
 
@@ -221,21 +181,6 @@ func BySubDomain(opts ...sql.OrderTermOption) OrderOption {
 // ByType orders the results by the type field.
 func ByType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldType, opts...).ToFunc()
-}
-
-// ByOriginProtocol orders the results by the origin_protocol field.
-func ByOriginProtocol(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOriginProtocol, opts...).ToFunc()
-}
-
-// ByHTTPPort orders the results by the http_port field.
-func ByHTTPPort(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldHTTPPort, opts...).ToFunc()
-}
-
-// ByHTTPSPort orders the results by the https_port field.
-func ByHTTPSPort(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldHTTPSPort, opts...).ToFunc()
 }
 
 // ByCdnDomain orders the results by the cdn_domain field.

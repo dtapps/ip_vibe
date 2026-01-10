@@ -1,28 +1,6 @@
 package schematype
 
 const (
-	OriginProtocolHTTP   string = "http"   // HTTP协议
-	OriginProtocolHTTPS  string = "https"  // HTTPS协议
-	OriginProtocolFollow string = "follow" // 跟随协议
-)
-
-// GetOriginProtocolDescriptions 回源协议说明映射
-var GetOriginProtocolDescriptions = map[string]string{
-	OriginProtocolHTTP:   "HTTP协议",
-	OriginProtocolHTTPS:  "HTTPS协议",
-	OriginProtocolFollow: "跟随协议",
-}
-
-// GetOriginProtocols 返回回源协议
-var GetOriginProtocols = []string{
-	OriginProtocolHTTP,
-	OriginProtocolHTTPS,
-	OriginProtocolFollow,
-}
-
-// --------
-
-const (
 	RecordTypeA     string = "A"     // A记录
 	RecordTypeAAAA  string = "AAAA"  // AAAA记录
 	RecordTypeCNAME string = "CNAME" // CNAME记录

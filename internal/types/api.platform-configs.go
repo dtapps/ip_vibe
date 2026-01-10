@@ -13,7 +13,7 @@ type GetPlatformConfigResponse struct {
 	Name        string          `json:"name" jsonschema:"配置的名称"`                                            // 配置名称
 	Description string          `json:"description" jsonschema:"配置的描述信息"`                                   // 配置描述
 	Platform    string          `json:"platform" jsonschema:"配置所属的平台"`                                      // 配置平台
-	ConfigJSON  json.RawMessage `json:"config_json,omitempty" jsonschema:"配置平台密钥等敏感信息（JSON格式）"`             // 配置平台密钥等敏感信息（JSON）
+	ConfigJSON  json.RawMessage `json:"config_json,omitempty" jsonschema:"平台密钥等敏感信息（JSON）"`                 // 平台密钥等敏感信息（JSON）
 
 	ConfigJSONDomainName string `json:"config_json_domain_name,omitempty" jsonschema:"配置平台域名"` // 配置平台域名
 	ConfigJSONEmail      string `json:"config_json_email,omitempty" jsonschema:"配置平台邮箱"`       // 配置平台邮箱

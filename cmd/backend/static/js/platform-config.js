@@ -1,102 +1,3 @@
-/**
- * 判断是否需要 domain_name 字段
- * @param {string} capability - 服务能力
- * @returns {boolean} 是否需要 domain_name 字段
- */
-function needsDomainField(capability) {
-  return capability === "all" || capability === "cdn" || capability === "dns";
-}
-
-/**
- * 判断是否需要 email 字段
- * @param {string} capability - 服务能力
- * @returns {boolean} 是否需要 email 字段
- */
-function needsEmailField(capability) {
-  return capability === "all" || capability === "ssl";
-}
-
-/**
- * 获取 domain_name 和 email 字段值及类型
- * @param {string} platform - 平台名称
- * @param {string} capability - 服务能力
- * @returns {Object} { domain_name?: string, email?: string }
- */
-function getDomainAndEmailFieldInfo(platform, capability) {
-  const result = {};
-
-  // 总是尝试获取 domain_name（如果字段存在）
-  const domainField = document.getElementById(`${platform}_domain_name`);
-  if (domainField && needsDomainField(capability)) {
-    const value = domainField.value.trim();
-    if (value) {
-      result.domain_name = value;
-    }
-  }
-
-  // 总是尝试获取 email（如果字段存在）
-  const emailField = document.getElementById(`${platform}_email`);
-  if (emailField && needsEmailField(capability)) {
-    const value = emailField.value.trim();
-    if (value) {
-      result.email = value;
-    }
-  }
-
-  return result;
-}
-
-/**
- * 直接返回键值对，根据服务能力判断返回 domain_name 和/或 email
- * @param {string} platform - 平台名称
- * @param {string} capability - 服务能力
- * @returns {Object} { domain_name?: string, email?: string }
- */
-function getDomainAndEmailKeyValue(platform, capability) {
-  return getDomainAndEmailFieldInfo(platform, capability);
-}
-
-/**
- * 设置 domain_name 和 email 字段值
- * @param {string} platform - 平台名称
- * @param {string} capability - 服务能力
- * @param {string} domain_name_value - domain_name 值
- * @param {string} email_value - email 值
- * @returns {Object} { domain_name?: string, email?: string }
- */
-function setDomainAndEmailField(
-  platform,
-  capability,
-  domain_name_value,
-  email_value
-) {
-  const result = {};
-
-  // 设置 domain_name（如果需要且值不为空）
-  if (needsDomainField(capability)) {
-    const domainField = document.getElementById(`${platform}_domain_name`);
-    if (domainField) {
-      domainField.value = domain_name_value || "";
-      if (domain_name_value) {
-        result.domain_name = domain_name_value;
-      }
-    }
-  }
-
-  // 设置 email（如果需要且值不为空）
-  if (needsEmailField(capability)) {
-    const emailField = document.getElementById(`${platform}_email`);
-    if (emailField) {
-      emailField.value = email_value || "";
-      if (email_value) {
-        result.email = email_value;
-      }
-    }
-  }
-
-  return result;
-}
-
 // 请选择服务能力 capability
 function changeCapability(el) {
   console.log("changeCapability", el);
@@ -104,7 +5,7 @@ function changeCapability(el) {
   const platform = document.getElementById("platform").value;
   const capability = el.value;
 
-  // 重新渲染，自动处理显隐
+  // 重新渲染字段，自动处理显隐
   renderPlatformFields(platform, capability);
 }
 
@@ -115,7 +16,7 @@ function changePlatform(el) {
   const platform = el.value;
   const capability = document.getElementById("capability").value;
 
-  // 重新渲染，自动处理显隐
+  // 重新渲染字段，自动处理显隐
   renderPlatformFields(platform, capability);
 }
 
@@ -139,7 +40,7 @@ async function openFormModal(id) {
     document.getElementById("platform").value = config.platform;
     document.getElementById("platform").disabled = true;
 
-    // 回填数据
+    // 渲染字段，回填数据，自动处理显隐
     renderPlatformFields(
       config.platform,
       config.capability,
@@ -155,7 +56,7 @@ async function openFormModal(id) {
     document.getElementById("id").disabled = true;
     document.getElementById("platform").disabled = false;
 
-    // 默认渲染第一个
+    // 默认渲染字段
     renderPlatformFields(document.getElementById("platform").value, "all");
 
     showModal("formModal", "modalTitle", "添加 平台配置");
@@ -169,7 +70,7 @@ if (form) {
     e.preventDefault();
 
     // 自动从动态字段中组装 JSON
-    buildConfigFromDynamicFields();
+    buildConfigFromPlatformFields();
 
     // 表单数据
     const form_id = Number(document.getElementById("id").value.trim());

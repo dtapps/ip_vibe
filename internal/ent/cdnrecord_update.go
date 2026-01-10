@@ -91,62 +91,6 @@ func (_u *CDNRecordUpdate) ClearConfigJSON() *CDNRecordUpdate {
 	return _u
 }
 
-// SetOriginProtocol sets the "origin_protocol" field.
-func (_u *CDNRecordUpdate) SetOriginProtocol(v cdnrecord.OriginProtocol) *CDNRecordUpdate {
-	_u.mutation.SetOriginProtocol(v)
-	return _u
-}
-
-// SetNillableOriginProtocol sets the "origin_protocol" field if the given value is not nil.
-func (_u *CDNRecordUpdate) SetNillableOriginProtocol(v *cdnrecord.OriginProtocol) *CDNRecordUpdate {
-	if v != nil {
-		_u.SetOriginProtocol(*v)
-	}
-	return _u
-}
-
-// SetHTTPPort sets the "http_port" field.
-func (_u *CDNRecordUpdate) SetHTTPPort(v int) *CDNRecordUpdate {
-	_u.mutation.ResetHTTPPort()
-	_u.mutation.SetHTTPPort(v)
-	return _u
-}
-
-// SetNillableHTTPPort sets the "http_port" field if the given value is not nil.
-func (_u *CDNRecordUpdate) SetNillableHTTPPort(v *int) *CDNRecordUpdate {
-	if v != nil {
-		_u.SetHTTPPort(*v)
-	}
-	return _u
-}
-
-// AddHTTPPort adds value to the "http_port" field.
-func (_u *CDNRecordUpdate) AddHTTPPort(v int) *CDNRecordUpdate {
-	_u.mutation.AddHTTPPort(v)
-	return _u
-}
-
-// SetHTTPSPort sets the "https_port" field.
-func (_u *CDNRecordUpdate) SetHTTPSPort(v int) *CDNRecordUpdate {
-	_u.mutation.ResetHTTPSPort()
-	_u.mutation.SetHTTPSPort(v)
-	return _u
-}
-
-// SetNillableHTTPSPort sets the "https_port" field if the given value is not nil.
-func (_u *CDNRecordUpdate) SetNillableHTTPSPort(v *int) *CDNRecordUpdate {
-	if v != nil {
-		_u.SetHTTPSPort(*v)
-	}
-	return _u
-}
-
-// AddHTTPSPort adds value to the "https_port" field.
-func (_u *CDNRecordUpdate) AddHTTPSPort(v int) *CDNRecordUpdate {
-	_u.mutation.AddHTTPSPort(v)
-	return _u
-}
-
 // SetCdnDomain sets the "cdn_domain" field.
 func (_u *CDNRecordUpdate) SetCdnDomain(v string) *CDNRecordUpdate {
 	_u.mutation.SetCdnDomain(v)
@@ -356,11 +300,6 @@ func (_u *CDNRecordUpdate) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.type": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.OriginProtocol(); ok {
-		if err := cdnrecord.OriginProtocolValidator(v); err != nil {
-			return &ValidationError{Name: "origin_protocol", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.origin_protocol": %w`, err)}
-		}
-	}
 	if _u.mutation.ConfigCleared() && len(_u.mutation.ConfigIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CDNRecord.config"`)
 	}
@@ -410,21 +349,6 @@ func (_u *CDNRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.ConfigJSONCleared() {
 		_spec.ClearField(cdnrecord.FieldConfigJSON, field.TypeJSON)
-	}
-	if value, ok := _u.mutation.OriginProtocol(); ok {
-		_spec.SetField(cdnrecord.FieldOriginProtocol, field.TypeEnum, value)
-	}
-	if value, ok := _u.mutation.HTTPPort(); ok {
-		_spec.SetField(cdnrecord.FieldHTTPPort, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedHTTPPort(); ok {
-		_spec.AddField(cdnrecord.FieldHTTPPort, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.HTTPSPort(); ok {
-		_spec.SetField(cdnrecord.FieldHTTPSPort, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedHTTPSPort(); ok {
-		_spec.AddField(cdnrecord.FieldHTTPSPort, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.CdnDomain(); ok {
 		_spec.SetField(cdnrecord.FieldCdnDomain, field.TypeString, value)
@@ -604,62 +528,6 @@ func (_u *CDNRecordUpdateOne) AppendConfigJSON(v json.RawMessage) *CDNRecordUpda
 // ClearConfigJSON clears the value of the "config_json" field.
 func (_u *CDNRecordUpdateOne) ClearConfigJSON() *CDNRecordUpdateOne {
 	_u.mutation.ClearConfigJSON()
-	return _u
-}
-
-// SetOriginProtocol sets the "origin_protocol" field.
-func (_u *CDNRecordUpdateOne) SetOriginProtocol(v cdnrecord.OriginProtocol) *CDNRecordUpdateOne {
-	_u.mutation.SetOriginProtocol(v)
-	return _u
-}
-
-// SetNillableOriginProtocol sets the "origin_protocol" field if the given value is not nil.
-func (_u *CDNRecordUpdateOne) SetNillableOriginProtocol(v *cdnrecord.OriginProtocol) *CDNRecordUpdateOne {
-	if v != nil {
-		_u.SetOriginProtocol(*v)
-	}
-	return _u
-}
-
-// SetHTTPPort sets the "http_port" field.
-func (_u *CDNRecordUpdateOne) SetHTTPPort(v int) *CDNRecordUpdateOne {
-	_u.mutation.ResetHTTPPort()
-	_u.mutation.SetHTTPPort(v)
-	return _u
-}
-
-// SetNillableHTTPPort sets the "http_port" field if the given value is not nil.
-func (_u *CDNRecordUpdateOne) SetNillableHTTPPort(v *int) *CDNRecordUpdateOne {
-	if v != nil {
-		_u.SetHTTPPort(*v)
-	}
-	return _u
-}
-
-// AddHTTPPort adds value to the "http_port" field.
-func (_u *CDNRecordUpdateOne) AddHTTPPort(v int) *CDNRecordUpdateOne {
-	_u.mutation.AddHTTPPort(v)
-	return _u
-}
-
-// SetHTTPSPort sets the "https_port" field.
-func (_u *CDNRecordUpdateOne) SetHTTPSPort(v int) *CDNRecordUpdateOne {
-	_u.mutation.ResetHTTPSPort()
-	_u.mutation.SetHTTPSPort(v)
-	return _u
-}
-
-// SetNillableHTTPSPort sets the "https_port" field if the given value is not nil.
-func (_u *CDNRecordUpdateOne) SetNillableHTTPSPort(v *int) *CDNRecordUpdateOne {
-	if v != nil {
-		_u.SetHTTPSPort(*v)
-	}
-	return _u
-}
-
-// AddHTTPSPort adds value to the "https_port" field.
-func (_u *CDNRecordUpdateOne) AddHTTPSPort(v int) *CDNRecordUpdateOne {
-	_u.mutation.AddHTTPSPort(v)
 	return _u
 }
 
@@ -885,11 +753,6 @@ func (_u *CDNRecordUpdateOne) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.type": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.OriginProtocol(); ok {
-		if err := cdnrecord.OriginProtocolValidator(v); err != nil {
-			return &ValidationError{Name: "origin_protocol", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.origin_protocol": %w`, err)}
-		}
-	}
 	if _u.mutation.ConfigCleared() && len(_u.mutation.ConfigIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CDNRecord.config"`)
 	}
@@ -956,21 +819,6 @@ func (_u *CDNRecordUpdateOne) sqlSave(ctx context.Context) (_node *CDNRecord, er
 	}
 	if _u.mutation.ConfigJSONCleared() {
 		_spec.ClearField(cdnrecord.FieldConfigJSON, field.TypeJSON)
-	}
-	if value, ok := _u.mutation.OriginProtocol(); ok {
-		_spec.SetField(cdnrecord.FieldOriginProtocol, field.TypeEnum, value)
-	}
-	if value, ok := _u.mutation.HTTPPort(); ok {
-		_spec.SetField(cdnrecord.FieldHTTPPort, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedHTTPPort(); ok {
-		_spec.AddField(cdnrecord.FieldHTTPPort, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.HTTPSPort(); ok {
-		_spec.SetField(cdnrecord.FieldHTTPSPort, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedHTTPSPort(); ok {
-		_spec.AddField(cdnrecord.FieldHTTPSPort, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.CdnDomain(); ok {
 		_spec.SetField(cdnrecord.FieldCdnDomain, field.TypeString, value)

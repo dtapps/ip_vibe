@@ -61,11 +61,6 @@ type CDNRecordMutation struct {
 	_type                *cdnrecord.Type
 	config_json          *json.RawMessage
 	appendconfig_json    json.RawMessage
-	origin_protocol      *cdnrecord.OriginProtocol
-	http_port            *int
-	addhttp_port         *int
-	https_port           *int
-	addhttps_port        *int
 	cdn_domain           *string
 	is_active            *bool
 	last_refresh_at      *time.Time
@@ -482,154 +477,6 @@ func (m *CDNRecordMutation) ResetConfigJSON() {
 	delete(m.clearedFields, cdnrecord.FieldConfigJSON)
 }
 
-// SetOriginProtocol sets the "origin_protocol" field.
-func (m *CDNRecordMutation) SetOriginProtocol(cp cdnrecord.OriginProtocol) {
-	m.origin_protocol = &cp
-}
-
-// OriginProtocol returns the value of the "origin_protocol" field in the mutation.
-func (m *CDNRecordMutation) OriginProtocol() (r cdnrecord.OriginProtocol, exists bool) {
-	v := m.origin_protocol
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldOriginProtocol returns the old "origin_protocol" field's value of the CDNRecord entity.
-// If the CDNRecord object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CDNRecordMutation) OldOriginProtocol(ctx context.Context) (v cdnrecord.OriginProtocol, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldOriginProtocol is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldOriginProtocol requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldOriginProtocol: %w", err)
-	}
-	return oldValue.OriginProtocol, nil
-}
-
-// ResetOriginProtocol resets all changes to the "origin_protocol" field.
-func (m *CDNRecordMutation) ResetOriginProtocol() {
-	m.origin_protocol = nil
-}
-
-// SetHTTPPort sets the "http_port" field.
-func (m *CDNRecordMutation) SetHTTPPort(i int) {
-	m.http_port = &i
-	m.addhttp_port = nil
-}
-
-// HTTPPort returns the value of the "http_port" field in the mutation.
-func (m *CDNRecordMutation) HTTPPort() (r int, exists bool) {
-	v := m.http_port
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldHTTPPort returns the old "http_port" field's value of the CDNRecord entity.
-// If the CDNRecord object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CDNRecordMutation) OldHTTPPort(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldHTTPPort is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldHTTPPort requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldHTTPPort: %w", err)
-	}
-	return oldValue.HTTPPort, nil
-}
-
-// AddHTTPPort adds i to the "http_port" field.
-func (m *CDNRecordMutation) AddHTTPPort(i int) {
-	if m.addhttp_port != nil {
-		*m.addhttp_port += i
-	} else {
-		m.addhttp_port = &i
-	}
-}
-
-// AddedHTTPPort returns the value that was added to the "http_port" field in this mutation.
-func (m *CDNRecordMutation) AddedHTTPPort() (r int, exists bool) {
-	v := m.addhttp_port
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetHTTPPort resets all changes to the "http_port" field.
-func (m *CDNRecordMutation) ResetHTTPPort() {
-	m.http_port = nil
-	m.addhttp_port = nil
-}
-
-// SetHTTPSPort sets the "https_port" field.
-func (m *CDNRecordMutation) SetHTTPSPort(i int) {
-	m.https_port = &i
-	m.addhttps_port = nil
-}
-
-// HTTPSPort returns the value of the "https_port" field in the mutation.
-func (m *CDNRecordMutation) HTTPSPort() (r int, exists bool) {
-	v := m.https_port
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldHTTPSPort returns the old "https_port" field's value of the CDNRecord entity.
-// If the CDNRecord object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CDNRecordMutation) OldHTTPSPort(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldHTTPSPort is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldHTTPSPort requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldHTTPSPort: %w", err)
-	}
-	return oldValue.HTTPSPort, nil
-}
-
-// AddHTTPSPort adds i to the "https_port" field.
-func (m *CDNRecordMutation) AddHTTPSPort(i int) {
-	if m.addhttps_port != nil {
-		*m.addhttps_port += i
-	} else {
-		m.addhttps_port = &i
-	}
-}
-
-// AddedHTTPSPort returns the value that was added to the "https_port" field in this mutation.
-func (m *CDNRecordMutation) AddedHTTPSPort() (r int, exists bool) {
-	v := m.addhttps_port
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetHTTPSPort resets all changes to the "https_port" field.
-func (m *CDNRecordMutation) ResetHTTPSPort() {
-	m.https_port = nil
-	m.addhttps_port = nil
-}
-
 // SetCdnDomain sets the "cdn_domain" field.
 func (m *CDNRecordMutation) SetCdnDomain(s string) {
 	m.cdn_domain = &s
@@ -1040,7 +887,7 @@ func (m *CDNRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CDNRecordMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, cdnrecord.FieldCreatedAt)
 	}
@@ -1061,15 +908,6 @@ func (m *CDNRecordMutation) Fields() []string {
 	}
 	if m.config_json != nil {
 		fields = append(fields, cdnrecord.FieldConfigJSON)
-	}
-	if m.origin_protocol != nil {
-		fields = append(fields, cdnrecord.FieldOriginProtocol)
-	}
-	if m.http_port != nil {
-		fields = append(fields, cdnrecord.FieldHTTPPort)
-	}
-	if m.https_port != nil {
-		fields = append(fields, cdnrecord.FieldHTTPSPort)
 	}
 	if m.cdn_domain != nil {
 		fields = append(fields, cdnrecord.FieldCdnDomain)
@@ -1111,12 +949,6 @@ func (m *CDNRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.GetType()
 	case cdnrecord.FieldConfigJSON:
 		return m.ConfigJSON()
-	case cdnrecord.FieldOriginProtocol:
-		return m.OriginProtocol()
-	case cdnrecord.FieldHTTPPort:
-		return m.HTTPPort()
-	case cdnrecord.FieldHTTPSPort:
-		return m.HTTPSPort()
 	case cdnrecord.FieldCdnDomain:
 		return m.CdnDomain()
 	case cdnrecord.FieldIPGroupID:
@@ -1152,12 +984,6 @@ func (m *CDNRecordMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldType(ctx)
 	case cdnrecord.FieldConfigJSON:
 		return m.OldConfigJSON(ctx)
-	case cdnrecord.FieldOriginProtocol:
-		return m.OldOriginProtocol(ctx)
-	case cdnrecord.FieldHTTPPort:
-		return m.OldHTTPPort(ctx)
-	case cdnrecord.FieldHTTPSPort:
-		return m.OldHTTPSPort(ctx)
 	case cdnrecord.FieldCdnDomain:
 		return m.OldCdnDomain(ctx)
 	case cdnrecord.FieldIPGroupID:
@@ -1228,27 +1054,6 @@ func (m *CDNRecordMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetConfigJSON(v)
 		return nil
-	case cdnrecord.FieldOriginProtocol:
-		v, ok := value.(cdnrecord.OriginProtocol)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetOriginProtocol(v)
-		return nil
-	case cdnrecord.FieldHTTPPort:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetHTTPPort(v)
-		return nil
-	case cdnrecord.FieldHTTPSPort:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetHTTPSPort(v)
-		return nil
 	case cdnrecord.FieldCdnDomain:
 		v, ok := value.(string)
 		if !ok {
@@ -1299,12 +1104,6 @@ func (m *CDNRecordMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *CDNRecordMutation) AddedFields() []string {
 	var fields []string
-	if m.addhttp_port != nil {
-		fields = append(fields, cdnrecord.FieldHTTPPort)
-	}
-	if m.addhttps_port != nil {
-		fields = append(fields, cdnrecord.FieldHTTPSPort)
-	}
 	return fields
 }
 
@@ -1313,10 +1112,6 @@ func (m *CDNRecordMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *CDNRecordMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case cdnrecord.FieldHTTPPort:
-		return m.AddedHTTPPort()
-	case cdnrecord.FieldHTTPSPort:
-		return m.AddedHTTPSPort()
 	}
 	return nil, false
 }
@@ -1326,20 +1121,6 @@ func (m *CDNRecordMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *CDNRecordMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case cdnrecord.FieldHTTPPort:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddHTTPPort(v)
-		return nil
-	case cdnrecord.FieldHTTPSPort:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddHTTPSPort(v)
-		return nil
 	}
 	return fmt.Errorf("unknown CDNRecord numeric field %s", name)
 }
@@ -1426,15 +1207,6 @@ func (m *CDNRecordMutation) ResetField(name string) error {
 		return nil
 	case cdnrecord.FieldConfigJSON:
 		m.ResetConfigJSON()
-		return nil
-	case cdnrecord.FieldOriginProtocol:
-		m.ResetOriginProtocol()
-		return nil
-	case cdnrecord.FieldHTTPPort:
-		m.ResetHTTPPort()
-		return nil
-	case cdnrecord.FieldHTTPSPort:
-		m.ResetHTTPSPort()
 		return nil
 	case cdnrecord.FieldCdnDomain:
 		m.ResetCdnDomain()

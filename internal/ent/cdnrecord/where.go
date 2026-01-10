@@ -80,16 +80,6 @@ func SubDomain(v string) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldEQ(FieldSubDomain, v))
 }
 
-// HTTPPort applies equality check predicate on the "http_port" field. It's identical to HTTPPortEQ.
-func HTTPPort(v int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldEQ(FieldHTTPPort, v))
-}
-
-// HTTPSPort applies equality check predicate on the "https_port" field. It's identical to HTTPSPortEQ.
-func HTTPSPort(v int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldEQ(FieldHTTPSPort, v))
-}
-
 // CdnDomain applies equality check predicate on the "cdn_domain" field. It's identical to CdnDomainEQ.
 func CdnDomain(v string) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldEQ(FieldCdnDomain, v))
@@ -388,106 +378,6 @@ func ConfigJSONIsNil() predicate.CDNRecord {
 // ConfigJSONNotNil applies the NotNil predicate on the "config_json" field.
 func ConfigJSONNotNil() predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldNotNull(FieldConfigJSON))
-}
-
-// OriginProtocolEQ applies the EQ predicate on the "origin_protocol" field.
-func OriginProtocolEQ(v OriginProtocol) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldEQ(FieldOriginProtocol, v))
-}
-
-// OriginProtocolNEQ applies the NEQ predicate on the "origin_protocol" field.
-func OriginProtocolNEQ(v OriginProtocol) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldNEQ(FieldOriginProtocol, v))
-}
-
-// OriginProtocolIn applies the In predicate on the "origin_protocol" field.
-func OriginProtocolIn(vs ...OriginProtocol) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldIn(FieldOriginProtocol, vs...))
-}
-
-// OriginProtocolNotIn applies the NotIn predicate on the "origin_protocol" field.
-func OriginProtocolNotIn(vs ...OriginProtocol) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldNotIn(FieldOriginProtocol, vs...))
-}
-
-// HTTPPortEQ applies the EQ predicate on the "http_port" field.
-func HTTPPortEQ(v int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldEQ(FieldHTTPPort, v))
-}
-
-// HTTPPortNEQ applies the NEQ predicate on the "http_port" field.
-func HTTPPortNEQ(v int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldNEQ(FieldHTTPPort, v))
-}
-
-// HTTPPortIn applies the In predicate on the "http_port" field.
-func HTTPPortIn(vs ...int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldIn(FieldHTTPPort, vs...))
-}
-
-// HTTPPortNotIn applies the NotIn predicate on the "http_port" field.
-func HTTPPortNotIn(vs ...int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldNotIn(FieldHTTPPort, vs...))
-}
-
-// HTTPPortGT applies the GT predicate on the "http_port" field.
-func HTTPPortGT(v int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldGT(FieldHTTPPort, v))
-}
-
-// HTTPPortGTE applies the GTE predicate on the "http_port" field.
-func HTTPPortGTE(v int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldGTE(FieldHTTPPort, v))
-}
-
-// HTTPPortLT applies the LT predicate on the "http_port" field.
-func HTTPPortLT(v int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldLT(FieldHTTPPort, v))
-}
-
-// HTTPPortLTE applies the LTE predicate on the "http_port" field.
-func HTTPPortLTE(v int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldLTE(FieldHTTPPort, v))
-}
-
-// HTTPSPortEQ applies the EQ predicate on the "https_port" field.
-func HTTPSPortEQ(v int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldEQ(FieldHTTPSPort, v))
-}
-
-// HTTPSPortNEQ applies the NEQ predicate on the "https_port" field.
-func HTTPSPortNEQ(v int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldNEQ(FieldHTTPSPort, v))
-}
-
-// HTTPSPortIn applies the In predicate on the "https_port" field.
-func HTTPSPortIn(vs ...int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldIn(FieldHTTPSPort, vs...))
-}
-
-// HTTPSPortNotIn applies the NotIn predicate on the "https_port" field.
-func HTTPSPortNotIn(vs ...int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldNotIn(FieldHTTPSPort, vs...))
-}
-
-// HTTPSPortGT applies the GT predicate on the "https_port" field.
-func HTTPSPortGT(v int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldGT(FieldHTTPSPort, v))
-}
-
-// HTTPSPortGTE applies the GTE predicate on the "https_port" field.
-func HTTPSPortGTE(v int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldGTE(FieldHTTPSPort, v))
-}
-
-// HTTPSPortLT applies the LT predicate on the "https_port" field.
-func HTTPSPortLT(v int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldLT(FieldHTTPSPort, v))
-}
-
-// HTTPSPortLTE applies the LTE predicate on the "https_port" field.
-func HTTPSPortLTE(v int) predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldLTE(FieldHTTPSPort, v))
 }
 
 // CdnDomainEQ applies the EQ predicate on the "cdn_domain" field.

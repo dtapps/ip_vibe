@@ -71,22 +71,6 @@ func (CDNRecord) Fields() []ent.Field {
 			Comment("CDN记录配置（JSON）").
 			Annotations(entsql.WithComments(true)),
 
-		field.Enum("origin_protocol").
-			Default(schematype.OriginProtocolFollow).
-			Values(schematype.GetOriginProtocols...).
-			Comment("回源协议（http、https、follow）").
-			Annotations(entsql.WithComments(true)),
-
-		field.Int("http_port").
-			Default(80).
-			Comment("HTTP 回源端口").
-			Annotations(entsql.WithComments(true)),
-
-		field.Int("https_port").
-			Default(443).
-			Comment("HTTPS 回源端口").
-			Annotations(entsql.WithComments(true)),
-
 		field.String("cdn_domain").
 			Optional().
 			Comment("CDN边缘域名（平台提供）").

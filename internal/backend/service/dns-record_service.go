@@ -49,6 +49,7 @@ func (s *DNSRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.DNSR
 		RecordID:      item.RecordID,
 		SubDomain:     item.SubDomain,
 		Type:          item.Type.String(),
+		ConfigJSON:    item.ConfigJSON,
 		IsActive:      item.IsActive,
 		LastRefreshAt: item.LastRefreshAt,
 	}
@@ -145,7 +146,8 @@ func (s *DNSRecordServiceImpl) CreateDnsRecord(ctx context.Context, request *typ
 	createDnsRecord := s.db.DNSRecord.Create().
 		SetConfigID(request.ConfigID).
 		SetSubDomain(request.SubDomain).
-		SetType(dnsrecord.Type(request.Type))
+		SetType(dnsrecord.Type(request.Type)).
+		SetConfigJSON([]byte(request.ConfigJSON))
 	if request.IPGroupID > 0 {
 		createDnsRecord.SetIPGroupID(request.IPGroupID)
 	}
@@ -189,7 +191,8 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *typ
 
 	// 更新DNS记录 (保持原始的链式设置逻辑)
 	updateDnsRecord := s.db.DNSRecord.UpdateOne(firstDnsRecord).
-		SetType(dnsrecord.Type(request.Type))
+		SetType(dnsrecord.Type(request.Type)).
+		SetConfigJSON([]byte(request.ConfigJSON))
 	if request.IPGroupID > 0 {
 		updateDnsRecord.SetIPGroupID(request.IPGroupID)
 		updateDnsRecord.ClearCdnRecordID()

@@ -92,48 +92,6 @@ func (_c *CDNRecordCreate) SetConfigJSON(v json.RawMessage) *CDNRecordCreate {
 	return _c
 }
 
-// SetOriginProtocol sets the "origin_protocol" field.
-func (_c *CDNRecordCreate) SetOriginProtocol(v cdnrecord.OriginProtocol) *CDNRecordCreate {
-	_c.mutation.SetOriginProtocol(v)
-	return _c
-}
-
-// SetNillableOriginProtocol sets the "origin_protocol" field if the given value is not nil.
-func (_c *CDNRecordCreate) SetNillableOriginProtocol(v *cdnrecord.OriginProtocol) *CDNRecordCreate {
-	if v != nil {
-		_c.SetOriginProtocol(*v)
-	}
-	return _c
-}
-
-// SetHTTPPort sets the "http_port" field.
-func (_c *CDNRecordCreate) SetHTTPPort(v int) *CDNRecordCreate {
-	_c.mutation.SetHTTPPort(v)
-	return _c
-}
-
-// SetNillableHTTPPort sets the "http_port" field if the given value is not nil.
-func (_c *CDNRecordCreate) SetNillableHTTPPort(v *int) *CDNRecordCreate {
-	if v != nil {
-		_c.SetHTTPPort(*v)
-	}
-	return _c
-}
-
-// SetHTTPSPort sets the "https_port" field.
-func (_c *CDNRecordCreate) SetHTTPSPort(v int) *CDNRecordCreate {
-	_c.mutation.SetHTTPSPort(v)
-	return _c
-}
-
-// SetNillableHTTPSPort sets the "https_port" field if the given value is not nil.
-func (_c *CDNRecordCreate) SetNillableHTTPSPort(v *int) *CDNRecordCreate {
-	if v != nil {
-		_c.SetHTTPSPort(*v)
-	}
-	return _c
-}
-
 // SetCdnDomain sets the "cdn_domain" field.
 func (_c *CDNRecordCreate) SetCdnDomain(v string) *CDNRecordCreate {
 	_c.mutation.SetCdnDomain(v)
@@ -292,18 +250,6 @@ func (_c *CDNRecordCreate) defaults() error {
 		v := cdnrecord.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _c.mutation.OriginProtocol(); !ok {
-		v := cdnrecord.DefaultOriginProtocol
-		_c.mutation.SetOriginProtocol(v)
-	}
-	if _, ok := _c.mutation.HTTPPort(); !ok {
-		v := cdnrecord.DefaultHTTPPort
-		_c.mutation.SetHTTPPort(v)
-	}
-	if _, ok := _c.mutation.HTTPSPort(); !ok {
-		v := cdnrecord.DefaultHTTPSPort
-		_c.mutation.SetHTTPSPort(v)
-	}
 	if _, ok := _c.mutation.IsActive(); !ok {
 		v := cdnrecord.DefaultIsActive
 		_c.mutation.SetIsActive(v)
@@ -337,20 +283,6 @@ func (_c *CDNRecordCreate) check() error {
 		if err := cdnrecord.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.type": %w`, err)}
 		}
-	}
-	if _, ok := _c.mutation.OriginProtocol(); !ok {
-		return &ValidationError{Name: "origin_protocol", err: errors.New(`ent: missing required field "CDNRecord.origin_protocol"`)}
-	}
-	if v, ok := _c.mutation.OriginProtocol(); ok {
-		if err := cdnrecord.OriginProtocolValidator(v); err != nil {
-			return &ValidationError{Name: "origin_protocol", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.origin_protocol": %w`, err)}
-		}
-	}
-	if _, ok := _c.mutation.HTTPPort(); !ok {
-		return &ValidationError{Name: "http_port", err: errors.New(`ent: missing required field "CDNRecord.http_port"`)}
-	}
-	if _, ok := _c.mutation.HTTPSPort(); !ok {
-		return &ValidationError{Name: "https_port", err: errors.New(`ent: missing required field "CDNRecord.https_port"`)}
 	}
 	if _, ok := _c.mutation.IPGroupID(); !ok {
 		return &ValidationError{Name: "ip_group_id", err: errors.New(`ent: missing required field "CDNRecord.ip_group_id"`)}
@@ -425,18 +357,6 @@ func (_c *CDNRecordCreate) createSpec() (*CDNRecord, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.ConfigJSON(); ok {
 		_spec.SetField(cdnrecord.FieldConfigJSON, field.TypeJSON, value)
 		_node.ConfigJSON = value
-	}
-	if value, ok := _c.mutation.OriginProtocol(); ok {
-		_spec.SetField(cdnrecord.FieldOriginProtocol, field.TypeEnum, value)
-		_node.OriginProtocol = value
-	}
-	if value, ok := _c.mutation.HTTPPort(); ok {
-		_spec.SetField(cdnrecord.FieldHTTPPort, field.TypeInt, value)
-		_node.HTTPPort = value
-	}
-	if value, ok := _c.mutation.HTTPSPort(); ok {
-		_spec.SetField(cdnrecord.FieldHTTPSPort, field.TypeInt, value)
-		_node.HTTPSPort = value
 	}
 	if value, ok := _c.mutation.CdnDomain(); ok {
 		_spec.SetField(cdnrecord.FieldCdnDomain, field.TypeString, value)
@@ -617,54 +537,6 @@ func (u *CDNRecordUpsert) UpdateConfigJSON() *CDNRecordUpsert {
 // ClearConfigJSON clears the value of the "config_json" field.
 func (u *CDNRecordUpsert) ClearConfigJSON() *CDNRecordUpsert {
 	u.SetNull(cdnrecord.FieldConfigJSON)
-	return u
-}
-
-// SetOriginProtocol sets the "origin_protocol" field.
-func (u *CDNRecordUpsert) SetOriginProtocol(v cdnrecord.OriginProtocol) *CDNRecordUpsert {
-	u.Set(cdnrecord.FieldOriginProtocol, v)
-	return u
-}
-
-// UpdateOriginProtocol sets the "origin_protocol" field to the value that was provided on create.
-func (u *CDNRecordUpsert) UpdateOriginProtocol() *CDNRecordUpsert {
-	u.SetExcluded(cdnrecord.FieldOriginProtocol)
-	return u
-}
-
-// SetHTTPPort sets the "http_port" field.
-func (u *CDNRecordUpsert) SetHTTPPort(v int) *CDNRecordUpsert {
-	u.Set(cdnrecord.FieldHTTPPort, v)
-	return u
-}
-
-// UpdateHTTPPort sets the "http_port" field to the value that was provided on create.
-func (u *CDNRecordUpsert) UpdateHTTPPort() *CDNRecordUpsert {
-	u.SetExcluded(cdnrecord.FieldHTTPPort)
-	return u
-}
-
-// AddHTTPPort adds v to the "http_port" field.
-func (u *CDNRecordUpsert) AddHTTPPort(v int) *CDNRecordUpsert {
-	u.Add(cdnrecord.FieldHTTPPort, v)
-	return u
-}
-
-// SetHTTPSPort sets the "https_port" field.
-func (u *CDNRecordUpsert) SetHTTPSPort(v int) *CDNRecordUpsert {
-	u.Set(cdnrecord.FieldHTTPSPort, v)
-	return u
-}
-
-// UpdateHTTPSPort sets the "https_port" field to the value that was provided on create.
-func (u *CDNRecordUpsert) UpdateHTTPSPort() *CDNRecordUpsert {
-	u.SetExcluded(cdnrecord.FieldHTTPSPort)
-	return u
-}
-
-// AddHTTPSPort adds v to the "https_port" field.
-func (u *CDNRecordUpsert) AddHTTPSPort(v int) *CDNRecordUpsert {
-	u.Add(cdnrecord.FieldHTTPSPort, v)
 	return u
 }
 
@@ -888,62 +760,6 @@ func (u *CDNRecordUpsertOne) UpdateConfigJSON() *CDNRecordUpsertOne {
 func (u *CDNRecordUpsertOne) ClearConfigJSON() *CDNRecordUpsertOne {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.ClearConfigJSON()
-	})
-}
-
-// SetOriginProtocol sets the "origin_protocol" field.
-func (u *CDNRecordUpsertOne) SetOriginProtocol(v cdnrecord.OriginProtocol) *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.SetOriginProtocol(v)
-	})
-}
-
-// UpdateOriginProtocol sets the "origin_protocol" field to the value that was provided on create.
-func (u *CDNRecordUpsertOne) UpdateOriginProtocol() *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.UpdateOriginProtocol()
-	})
-}
-
-// SetHTTPPort sets the "http_port" field.
-func (u *CDNRecordUpsertOne) SetHTTPPort(v int) *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.SetHTTPPort(v)
-	})
-}
-
-// AddHTTPPort adds v to the "http_port" field.
-func (u *CDNRecordUpsertOne) AddHTTPPort(v int) *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.AddHTTPPort(v)
-	})
-}
-
-// UpdateHTTPPort sets the "http_port" field to the value that was provided on create.
-func (u *CDNRecordUpsertOne) UpdateHTTPPort() *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.UpdateHTTPPort()
-	})
-}
-
-// SetHTTPSPort sets the "https_port" field.
-func (u *CDNRecordUpsertOne) SetHTTPSPort(v int) *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.SetHTTPSPort(v)
-	})
-}
-
-// AddHTTPSPort adds v to the "https_port" field.
-func (u *CDNRecordUpsertOne) AddHTTPSPort(v int) *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.AddHTTPSPort(v)
-	})
-}
-
-// UpdateHTTPSPort sets the "https_port" field to the value that was provided on create.
-func (u *CDNRecordUpsertOne) UpdateHTTPSPort() *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.UpdateHTTPSPort()
 	})
 }
 
@@ -1349,62 +1165,6 @@ func (u *CDNRecordUpsertBulk) UpdateConfigJSON() *CDNRecordUpsertBulk {
 func (u *CDNRecordUpsertBulk) ClearConfigJSON() *CDNRecordUpsertBulk {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.ClearConfigJSON()
-	})
-}
-
-// SetOriginProtocol sets the "origin_protocol" field.
-func (u *CDNRecordUpsertBulk) SetOriginProtocol(v cdnrecord.OriginProtocol) *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.SetOriginProtocol(v)
-	})
-}
-
-// UpdateOriginProtocol sets the "origin_protocol" field to the value that was provided on create.
-func (u *CDNRecordUpsertBulk) UpdateOriginProtocol() *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.UpdateOriginProtocol()
-	})
-}
-
-// SetHTTPPort sets the "http_port" field.
-func (u *CDNRecordUpsertBulk) SetHTTPPort(v int) *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.SetHTTPPort(v)
-	})
-}
-
-// AddHTTPPort adds v to the "http_port" field.
-func (u *CDNRecordUpsertBulk) AddHTTPPort(v int) *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.AddHTTPPort(v)
-	})
-}
-
-// UpdateHTTPPort sets the "http_port" field to the value that was provided on create.
-func (u *CDNRecordUpsertBulk) UpdateHTTPPort() *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.UpdateHTTPPort()
-	})
-}
-
-// SetHTTPSPort sets the "https_port" field.
-func (u *CDNRecordUpsertBulk) SetHTTPSPort(v int) *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.SetHTTPSPort(v)
-	})
-}
-
-// AddHTTPSPort adds v to the "https_port" field.
-func (u *CDNRecordUpsertBulk) AddHTTPSPort(v int) *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.AddHTTPSPort(v)
-	})
-}
-
-// UpdateHTTPSPort sets the "https_port" field to the value that was provided on create.
-func (u *CDNRecordUpsertBulk) UpdateHTTPSPort() *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.UpdateHTTPSPort()
 	})
 }
 

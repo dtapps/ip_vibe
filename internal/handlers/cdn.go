@@ -41,7 +41,6 @@ func Cdn(c *gin.Context) {
 		WhereIf(requestParams.RecordID != "", cdnrecord.RecordIDEQ(requestParams.RecordID)).
 		WhereIf(requestParams.SubDomain != "", cdnrecord.SubDomainContains(requestParams.SubDomain)).
 		WhereIf(requestParams.Type != "", cdnrecord.TypeEQ(cdnrecord.Type(requestParams.Type))).
-		WhereIf(requestParams.OriginProtocol != "", cdnrecord.OriginProtocolEQ(cdnrecord.OriginProtocol(requestParams.OriginProtocol))).
 		WhereIf(requestParams.IPGroupID > 0, cdnrecord.IPGroupID(requestParams.IPGroupID)).
 		WhereIf(!requestParams.IsActive.IsEmpty(), cdnrecord.IsActive(requestParams.IsActive.Value())).
 		WithConfig().

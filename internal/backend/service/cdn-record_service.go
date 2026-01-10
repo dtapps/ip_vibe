@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cdnrecord"
@@ -43,17 +44,15 @@ func NewCDNRecordService(db *ent.Client, debug bool) CDNRecordService {
 // BuildResponse 将实体转换为响应
 func (s *CDNRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.CDNRecord) (*types.GetCdnRecordResponse, error) {
 	resp := &types.GetCdnRecordResponse{
-		ID:             item.ID,
-		ConfigID:       item.ConfigID,
-		RecordID:       item.RecordID,
-		SubDomain:      item.SubDomain,
-		Type:           item.Type.String(),
-		OriginProtocol: item.OriginProtocol.String(),
-		HTTPPort:       item.HTTPPort,
-		HTTPSPort:      item.HTTPSPort,
-		CdnDomain:      item.CdnDomain,
-		IsActive:       item.IsActive,
-		LastRefreshAt:  item.LastRefreshAt,
+		ID:            item.ID,
+		ConfigID:      item.ConfigID,
+		RecordID:      item.RecordID,
+		SubDomain:     item.SubDomain,
+		Type:          item.Type.String(),
+		ConfigJSON:    item.ConfigJSON,
+		CdnDomain:     item.CdnDomain,
+		IsActive:      item.IsActive,
+		LastRefreshAt: item.LastRefreshAt,
 	}
 
 	// 平台配置
@@ -142,9 +141,7 @@ func (s *CDNRecordServiceImpl) CreateCdnRecord(ctx context.Context, request *typ
 		SetConfigID(request.ConfigID).
 		SetSubDomain(request.SubDomain).
 		SetType(cdnrecord.Type(request.Type)).
-		SetOriginProtocol(cdnrecord.OriginProtocol(request.OriginProtocol)).
-		SetHTTPPort(request.HTTPPort).
-		SetHTTPSPort(request.HTTPSPort).
+		SetConfigJSON([]byte(request.ConfigJSON)).
 		SetIPGroupID(request.IPGroupID).
 		Save(ctx)
 	if err != nil {
@@ -183,9 +180,7 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *typ
 	// 更新CDN记录
 	saveCdnRecord, err := s.db.CDNRecord.UpdateOne(firstCdnRecord).
 		SetType(cdnrecord.Type(request.Type)).
-		SetOriginProtocol(cdnrecord.OriginProtocol(request.OriginProtocol)).
-		SetHTTPPort(request.HTTPPort).
-		SetHTTPSPort(request.HTTPSPort).
+		SetConfigJSON([]byte(request.ConfigJSON)).
 		SetIPGroupID(request.IPGroupID).
 		Save(ctx)
 	if err != nil {
@@ -283,12 +278,17 @@ func (s *CDNRecordServiceImpl) HealthcheckCdnRecord(ctx context.Context, id int6
 		return nil, fmt.Errorf("查询CDN记录失败: %w", err)
 	}
 
-	// 端口处理逻辑保持不变
-	switch firstCdnRecord.OriginProtocol {
-	case cdnrecord.OriginProtocolHTTP:
-		firstCdnRecord.HTTPSPort = 0
-	case cdnrecord.OriginProtocolHTTPS:
-		firstCdnRecord.HTTPPort = 0
+	// 解析CDN记录配置
+	var cdnRecordConfigJson schematype.CDNRecordConfigJSON
+	err = json.Unmarshal([]byte(firstCdnRecord.ConfigJSON), &cdnRecordConfigJson)
+	if err != nil {
+		return nil, fmt.Errorf("解析CDN记录配置失败: %w", err)
+	}
+	switch cdnRecordConfigJson.OriginProtocol {
+	case schematype.CDNRecordOriginProtocolHTTP:
+		cdnRecordConfigJson.HTTPSPort = 0
+	case schematype.CDNRecordOriginProtocolHTTPS:
+		cdnRecordConfigJson.HTTPPort = 0
 	}
 
 	results := make([][]ToPairsStruct, 0)

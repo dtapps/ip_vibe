@@ -35,12 +35,6 @@ type CDNRecord struct {
 	Type cdnrecord.Type `json:"type,omitempty"`
 	// CDN记录配置（JSON）
 	ConfigJSON json.RawMessage `json:"config_json,omitempty"`
-	// 回源协议（http、https、follow）
-	OriginProtocol cdnrecord.OriginProtocol `json:"origin_protocol,omitempty"`
-	// HTTP 回源端口
-	HTTPPort int `json:"http_port,omitempty"`
-	// HTTPS 回源端口
-	HTTPSPort int `json:"https_port,omitempty"`
 	// CDN边缘域名（平台提供）
 	CdnDomain string `json:"cdn_domain,omitempty"`
 	// IP组序号
@@ -113,9 +107,9 @@ func (*CDNRecord) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case cdnrecord.FieldIsActive:
 			values[i] = new(sql.NullBool)
-		case cdnrecord.FieldID, cdnrecord.FieldConfigID, cdnrecord.FieldHTTPPort, cdnrecord.FieldHTTPSPort, cdnrecord.FieldIPGroupID:
+		case cdnrecord.FieldID, cdnrecord.FieldConfigID, cdnrecord.FieldIPGroupID:
 			values[i] = new(sql.NullInt64)
-		case cdnrecord.FieldRecordID, cdnrecord.FieldSubDomain, cdnrecord.FieldType, cdnrecord.FieldOriginProtocol, cdnrecord.FieldCdnDomain, cdnrecord.FieldLastAPIResponse:
+		case cdnrecord.FieldRecordID, cdnrecord.FieldSubDomain, cdnrecord.FieldType, cdnrecord.FieldCdnDomain, cdnrecord.FieldLastAPIResponse:
 			values[i] = new(sql.NullString)
 		case cdnrecord.FieldCreatedAt, cdnrecord.FieldUpdatedAt, cdnrecord.FieldLastRefreshAt, cdnrecord.FieldLastAPIResponseAt:
 			values[i] = new(sql.NullTime)
@@ -183,24 +177,6 @@ func (_m *CDNRecord) assignValues(columns []string, values []any) error {
 				if err := json.Unmarshal(*value, &_m.ConfigJSON); err != nil {
 					return fmt.Errorf("unmarshal field config_json: %w", err)
 				}
-			}
-		case cdnrecord.FieldOriginProtocol:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field origin_protocol", values[i])
-			} else if value.Valid {
-				_m.OriginProtocol = cdnrecord.OriginProtocol(value.String)
-			}
-		case cdnrecord.FieldHTTPPort:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field http_port", values[i])
-			} else if value.Valid {
-				_m.HTTPPort = int(value.Int64)
-			}
-		case cdnrecord.FieldHTTPSPort:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field https_port", values[i])
-			} else if value.Valid {
-				_m.HTTPSPort = int(value.Int64)
 			}
 		case cdnrecord.FieldCdnDomain:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -309,15 +285,6 @@ func (_m *CDNRecord) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("config_json=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ConfigJSON))
-	builder.WriteString(", ")
-	builder.WriteString("origin_protocol=")
-	builder.WriteString(fmt.Sprintf("%v", _m.OriginProtocol))
-	builder.WriteString(", ")
-	builder.WriteString("http_port=")
-	builder.WriteString(fmt.Sprintf("%v", _m.HTTPPort))
-	builder.WriteString(", ")
-	builder.WriteString("https_port=")
-	builder.WriteString(fmt.Sprintf("%v", _m.HTTPSPort))
 	builder.WriteString(", ")
 	builder.WriteString("cdn_domain=")
 	builder.WriteString(_m.CdnDomain)

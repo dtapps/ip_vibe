@@ -99,14 +99,6 @@ func (m *GinServerManager) getTemplateFuncMap() template.FuncMap {
 						Value: value,
 					})
 				}
-			case "cdn_origin_protocol":
-				// CDN记录 回源协议
-				for _, value := range schematype.GetOriginProtocols {
-					enumItems = append(enumItems, EnumItem{
-						Label: schematype.GetOriginProtocolDescriptions[value],
-						Value: value,
-					})
-				}
 			case "dns_type":
 				// DNS记录 记录类型
 				for _, value := range schematype.GetDNSRecordTypes {

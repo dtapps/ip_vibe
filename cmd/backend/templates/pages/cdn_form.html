@@ -35,32 +35,10 @@
         </div>
 
         <div class="ui-form-control">
-          <label class="ui-label-text">回源协议 <span class="text-error">*</span></label>
-          <select name="origin_protocol" id="origin_protocol" class="ui-select" required
-            onchange="onOriginProtocolSelect(this)">
-            <option value="follow">协议跟随</option>
-            <option value="http">HTTP协议回源</option>
-            <option value="https">HTTPS协议回源</option>
-          </select>
+          <label class="ui-label-text">IP 组 <span class="text-error">*</span></label>
+          <select name="ip_group_id" id="ip_group_id" class="ui-select" required
+            onchange="onIpGroupSelect(this)"></select>
         </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
-        <div class="ui-form-control">
-          <label class="ui-label-text">HTTP 端口 <span class="text-error">*</span></label>
-          <input type="number" name="http_port" id="http_port" class="ui-input" required placeholder="如 80" />
-        </div>
-
-        <div class="ui-form-control">
-          <label class="ui-label-text">HTTPS 端口 <span class="text-error">*</span></label>
-          <input type="number" name="https_port" id="https_port" class="ui-input" required placeholder="如 443" />
-        </div>
-      </div>
-
-      <div class="ui-form-control">
-        <label class="ui-label-text">IP 组 <span class="text-error">*</span></label>
-        <select name="ip_group_id" id="ip_group_id" class="ui-select" required
-          onchange="onIpGroupSelect(this)"></select>
       </div>
 
       <div class="ui-form-control">
@@ -69,7 +47,12 @@
         <div class="ui-hint">选择需要接收此记录变动通知的 Webhook</div>
       </div>
 
+      <!-- 动态渲染 -->
+      <div id="dynamic_fields_container" class="space-y-4"> </div>
+
       <input type="hidden" name="id" id="id" />
+      <input type="hidden" name="platform" id="platform" />
+      <input type="hidden" name="config" id="config_json" />
 
       <div class="modal-action gap-3">
         <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('formModal')">

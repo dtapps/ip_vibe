@@ -1,4 +1,4 @@
-// 定义平台字段 Schema
+// 定义字段 Schema
 const PLATFORM_SCHEMA = {
   cloudflare: {
     label: "CloudFlare",
@@ -327,7 +327,7 @@ const PLATFORM_SCHEMA = {
 };
 
 /**
- * 动态渲染平台字段
+ * 动态渲染字段
  * @param {string} platform - 平台 key (如 cloudflare)
  * @param {string} capability - 服务能力 (all, cdn, dns, ssl)
  * @param {Object} initialData - 编辑模式下的初始数据 (可选)
@@ -431,7 +431,7 @@ function renderPlatformFields(platform, capability, initialData = {}) {
 /**
  * 自动从动态字段中组装 JSON
  */
-function buildConfigFromDynamicFields() {
+function buildConfigFromPlatformFields() {
   const config = {};
   document.querySelectorAll(".dynamic-input").forEach((el) => {
     // 隐藏的字段不参与组装（除非需要保存隐藏字段的值）

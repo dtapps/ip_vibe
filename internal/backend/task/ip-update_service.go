@@ -2,6 +2,7 @@ package task
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -12,6 +13,7 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/schema/schemahook"
+	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/helper/cdn_helper"
@@ -339,6 +341,16 @@ func (s *IPUpdateTask) RunCdnTask() {
 		// 按策略分组
 		for _, cdnRecord := range allCdnRecord {
 
+			// 解析CDN记录配置
+			var cdnRecordConfigJson schematype.CDNRecordConfigJSON
+			err = json.Unmarshal([]byte(cdnRecord.ConfigJSON), &cdnRecordConfigJson)
+			if err != nil {
+				logger.ErrorContext(ctx, "解析CDN记录配置失败",
+					slog.Any("error", err),
+				)
+				continue
+			}
+
 			// 创建待处理记录
 			pendingRecord := &PendingCdnRecord{
 				item:     cdnRecord,
@@ -348,9 +360,9 @@ func (s *IPUpdateTask) RunCdnTask() {
 
 					ConfigJSON:     cdnRecord.Edges.Config.ConfigJSON,
 					SubDomain:      cdnRecord.SubDomain,
-					OriginProtocol: strings.ToUpper(cdnRecord.OriginProtocol.String()),
-					HttpPort:       cdnRecord.HTTPPort,
-					HttpsPort:      cdnRecord.HTTPSPort,
+					OriginProtocol: strings.ToUpper(cdnRecordConfigJson.OriginProtocol),
+					HttpPort:       cdnRecordConfigJson.HTTPPort,
+					HttpsPort:      cdnRecordConfigJson.HTTPSPort,
 				},
 			}
 

@@ -18,9 +18,6 @@ var (
 		{Name: "sub_domain", Type: field.TypeString, Comment: "子域名（如 www, blog, api）"},
 		{Name: "type", Type: field.TypeEnum, Comment: "记录类型（A、AAAA）", Enums: []string{"A", "AAAA"}},
 		{Name: "config_json", Type: field.TypeJSON, Nullable: true, Comment: "CDN记录配置（JSON）"},
-		{Name: "origin_protocol", Type: field.TypeEnum, Comment: "回源协议（http、https、follow）", Enums: []string{"http", "https", "follow"}, Default: "follow"},
-		{Name: "http_port", Type: field.TypeInt, Comment: "HTTP 回源端口", Default: 80},
-		{Name: "https_port", Type: field.TypeInt, Comment: "HTTPS 回源端口", Default: 443},
 		{Name: "cdn_domain", Type: field.TypeString, Nullable: true, Comment: "CDN边缘域名（平台提供）"},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
 		{Name: "last_refresh_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次刷新成功时间"},
@@ -38,13 +35,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cdn_record_ip_group_cdn_records",
-				Columns:    []*schema.Column{CdnRecordColumns[15]},
+				Columns:    []*schema.Column{CdnRecordColumns[12]},
 				RefColumns: []*schema.Column{IPGroupColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "cdn_record_platform_config_cdn_records",
-				Columns:    []*schema.Column{CdnRecordColumns[16]},
+				Columns:    []*schema.Column{CdnRecordColumns[13]},
 				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -61,7 +58,7 @@ var (
 			{
 				Name:    "cdnrecord_config_id",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[16]},
+				Columns: []*schema.Column{CdnRecordColumns[13]},
 			},
 			{
 				Name:    "cdnrecord_record_id",
@@ -81,12 +78,12 @@ var (
 			{
 				Name:    "cdnrecord_ip_group_id",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[15]},
+				Columns: []*schema.Column{CdnRecordColumns[12]},
 			},
 			{
 				Name:    "cdnrecord_is_active",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[11]},
+				Columns: []*schema.Column{CdnRecordColumns[8]},
 			},
 		},
 	}
