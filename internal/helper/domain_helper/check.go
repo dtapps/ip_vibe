@@ -117,6 +117,8 @@ func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string)
 		s.fetchHTTPWithGrequests, // 第三方 Grequests 库
 		s.fetchHTTPWithReq,       // 第三方 Req 库
 		s.fetchHTTPWithRequests,  // 第三方 Requests 库
+		s.fetchHTTPWithAxios4go,  // 第三方 Axios4go 库
+		s.fetchHTTPWithAzureTLS,  // 第三方 AzureTLS 库
 		s.fetchHTTPWithColly,     // 第三方 Colly 库
 	}
 
@@ -383,7 +385,7 @@ func (s *DomainCheck) fetchHTTPWithRequests(ctx context.Context, u *url.URL, sta
 	result.Duration = time.Since(start)
 
 	if err != nil {
-		result.StatusMsg = "HTTP(Req) 请求失败 " + u.String()
+		result.StatusMsg = "HTTP(Requests) 请求失败 " + u.String()
 		result.ErrorLog = err.Error()
 		return err
 	}
@@ -420,6 +422,7 @@ func (s *DomainCheck) fetchHTTPWithAxios4go(ctx context.Context, u *url.URL, sta
 
 	// 添加 HTTP 日志记录器
 	if s.httpTransport != nil {
+		client.HTTPClient.Transport = s.httpTransport.Instance(nil)
 	}
 
 	// 发起 GET 请求
