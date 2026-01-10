@@ -1,17 +1,28 @@
 // 选择配置 config_id
-function onConfigSelect(sel) {
-  const opt = sel.options[sel.selectedIndex];
-  console.log("onConfigSelect", opt);
-  if (opt.dataset.domain_name) {
-    document.getElementById("domain_name").innerHTML =
-      "." + opt.dataset.domain_name;
+function onConfigSelect(el) {
+  console.log("onConfigSelect", el);
+
+  const opt = el.options[el.selectedIndex];
+
+  const platform = opt.dataset.platform || "";
+  const domain_name = opt.dataset.domain_name || "";
+
+  if (platform) {
+    document.getElementById("platform").value = platform;
   }
+  if (domain_name) {
+    document.getElementById("domain_name").innerHTML = "." + domain_name;
+  }
+
+  // 重新渲染字段
+  renderDNSFields(platform);
 }
 
 // 选择类型 type
-function onTypeSelect(sel) {
-  const opt = sel.options[sel.selectedIndex];
-  console.log("onTypeSelect", opt);
+function onTypeSelect(el) {
+  console.log("onTypeSelect", el);
+
+  const opt = el.options[el.selectedIndex];
   if (opt.value === "CNAME") {
     document.getElementById("ip_group_id").disabled = true;
     document.getElementById("cdn_record_id").disabled = false;
@@ -24,15 +35,17 @@ function onTypeSelect(sel) {
 }
 
 // 选择IP组 ip_group_id
-function onIpGroupSelect(sel) {
-  const opt = sel.options[sel.selectedIndex];
-  console.log("onIpGroupSelect", opt);
+function onIpGroupSelect(el) {
+  console.log("onIpGroupSelect", el);
+
+  const opt = el.options[sel.selectedIndex];
 }
 
 // 选择CDN记录 cdn_record_id
-function onCdnRecordSelect(sel) {
-  const opt = sel.options[sel.selectedIndex];
-  console.log("onCdnRecordSelect", opt);
+function onCdnRecordSelect(el) {
+  console.log("onCdnRecordSelect", el);
+
+  const opt = el.options[el.selectedIndex];
 }
 
 // 打开 表单 弹窗
@@ -142,6 +155,8 @@ async function openFormModal(id) {
 
       document.getElementById("id").value = dnsRecord.id;
       document.getElementById("id").disabled = true;
+      document.getElementById("platform").value = dnsRecord.platform;
+      document.getElementById("platform").disabled = true;
       document.getElementById("config_id").value = dnsRecord.config_id;
       document.getElementById("config_id").disabled = true;
       document.getElementById("sub_domain").value = dnsRecord.sub_domain;
@@ -169,6 +184,9 @@ async function openFormModal(id) {
         selectId2.val(null).trigger("change");
       }
 
+      // 渲染字段，回填数据
+      renderDNSFields(dnsRecord.platform, dnsRecord.config_json);
+
       showModal("formModal", "modalTitle", "编辑 DNS记录");
     }
 
@@ -185,6 +203,9 @@ async function openFormModal(id) {
       console.log("select2 清空已选");
       selectId2.val(null).trigger("change");
 
+      // 默认渲染字段
+      renderDNSFields(document.getElementById("platform").value);
+
       showModal("formModal", "modalTitle", "添加 DNS记录");
     }
   } catch (error) {
@@ -200,6 +221,9 @@ if (form) {
   form.onsubmit = async (e) => {
     e.preventDefault();
 
+    // 自动从动态字段中组装 JSON
+    buildConfigFromDNSFields();
+
     const selectedWebhookIDs = $("#webhook_ids").val() || [];
 
     // 表单数据
@@ -213,6 +237,7 @@ if (form) {
         document.getElementById("cdn_record_id").value.trim()
       ),
       webhook_ids: selectedWebhookIDs.map(Number),
+      config_json: document.getElementById("config_json").value.trim(),
     };
     console.log("form_id, form_data", form_id, form_data);
 

@@ -55,7 +55,7 @@ function renderCDNFields(platform = "", initialData = {}) {
   // 安全检查
   if (!platform || !CDN_SCHEMA[platform]) {
     container.innerHTML =
-      '<div class="text-warning text-xs text-center py-4">请选择有效的平台类型</div>';
+      '<div class="text-warning text-xs text-center py-4">该平台暂不支持自定义配置</div>';
     return;
   }
 
