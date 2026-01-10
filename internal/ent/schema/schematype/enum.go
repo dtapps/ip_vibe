@@ -236,6 +236,9 @@ const (
 	DomainMonitorHistoryCheckTypeResty     string = "resty"     // Resty
 	DomainMonitorHistoryCheckTypeGrequests string = "grequests" // Grequests
 	DomainMonitorHistoryCheckTypeReq       string = "req"       // Req
+	DomainMonitorHistoryCheckTypeRequests  string = "requests"  // Requests
+	DomainMonitorHistoryCheckTypeAxios4go  string = "axios4go"  // Axios4go
+	DomainMonitorHistoryCheckTypeAzureTLS  string = "azure_tls" // AzureTLS
 	DomainMonitorHistoryCheckTypeColly     string = "colly"     // Colly
 )
 
@@ -246,6 +249,9 @@ var GetDomainMonitorHistoryCheckTypeDescriptions = map[string]string{
 	DomainMonitorHistoryCheckTypeResty:     "Resty",
 	DomainMonitorHistoryCheckTypeGrequests: "Grequests",
 	DomainMonitorHistoryCheckTypeReq:       "Req",
+	DomainMonitorHistoryCheckTypeRequests:  "Requests",
+	DomainMonitorHistoryCheckTypeAxios4go:  "Axios4go",
+	DomainMonitorHistoryCheckTypeAzureTLS:  "AzureTLS",
 	DomainMonitorHistoryCheckTypeColly:     "Colly",
 }
 
@@ -256,6 +262,9 @@ var GetDomainMonitorHistoryCheckTypes = []string{
 	DomainMonitorHistoryCheckTypeResty,
 	DomainMonitorHistoryCheckTypeGrequests,
 	DomainMonitorHistoryCheckTypeReq,
+	DomainMonitorHistoryCheckTypeRequests,
+	DomainMonitorHistoryCheckTypeAxios4go,
+	DomainMonitorHistoryCheckTypeAzureTLS,
 	DomainMonitorHistoryCheckTypeColly,
 }
 

@@ -14,11 +14,13 @@ import (
 	"time"
 	"vibe_ip/internal/ent/schema/schematype"
 
+	"github.com/Noooste/azuretls-client"
 	"github.com/carlmjohnson/requests"
 	"github.com/gocolly/colly/v2"
 	"github.com/imroc/req/v3"
 	"github.com/levigross/grequests/v2"
 	fakeUserAgent "github.com/lib4u/fake-useragent"
+	"github.com/rezmoss/axios4go"
 	"go.dtapp.net/library/contrib/http_log"
 	"resty.dev/v3"
 )
@@ -360,7 +362,7 @@ func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, u *url.URL, start ti
 func (s *DomainCheck) fetchHTTPWithRequests(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
-	result.CheckType = schematype.DomainMonitorHistoryCheckTypeReq
+	result.CheckType = schematype.DomainMonitorHistoryCheckTypeRequests
 
 	// 创建 Requests 客户端
 	client := requests.URL(u.String()).
@@ -394,6 +396,88 @@ func (s *DomainCheck) fetchHTTPWithRequests(ctx context.Context, u *url.URL, sta
 	// } else {
 	// 	result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
 	// }
+
+	return nil
+}
+
+// 发起 HTTP 请求，使用第三方 Axios4go 库
+func (s *DomainCheck) fetchHTTPWithAxios4go(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
+
+	// 设置检查类型
+	result.CheckType = schematype.DomainMonitorHistoryCheckTypeAxios4go
+
+	// 组装 RequestOptions
+	opts := &axios4go.RequestOptions{
+		Method: http.MethodGet,
+		URL:    u.String(),
+	}
+
+	// 创建 Axios4go 客户端
+	client := axios4go.NewClient(u.String())
+
+	// 设置超时
+	opts.Timeout = int(60 * time.Second)
+
+	// 添加 HTTP 日志记录器
+	if s.httpTransport != nil {
+	}
+
+	// 发起 GET 请求
+	resp, err := client.Request(opts)
+	result.Duration = time.Since(start)
+
+	if err != nil {
+		result.StatusMsg = "HTTP(Axios4go) 请求失败 " + u.String()
+		result.ErrorLog = err.Error()
+		return err
+	}
+
+	result.HTTPStatus = resp.StatusCode
+
+	if resp.StatusCode >= 200 && resp.StatusCode < 400 {
+		result.IsSuccess = true
+		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
+	} else {
+		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
+	}
+
+	return nil
+}
+
+// 发起 HTTP 请求，使用第三方 AzureTLS 库
+func (s *DomainCheck) fetchHTTPWithAzureTLS(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
+
+	// 设置检查类型
+	result.CheckType = schematype.DomainMonitorHistoryCheckTypeAzureTLS
+
+	// 创建 AzureTLS 客户端
+	client := azuretls.NewSessionWithContext(ctx)
+
+	// 设置超时
+	client.SetTimeout(60 * time.Second)
+
+	// 添加 HTTP 日志记录器
+	if s.httpTransport != nil {
+	}
+
+	// 发起 GET 请求
+	resp, err := client.Get(u.String())
+	result.Duration = time.Since(start)
+
+	if err != nil {
+		result.StatusMsg = "HTTP(AzureTLS) 请求失败 " + u.String()
+		result.ErrorLog = err.Error()
+		return err
+	}
+
+	result.HTTPStatus = resp.StatusCode
+
+	if resp.StatusCode >= 200 && resp.StatusCode < 400 {
+		result.IsSuccess = true
+		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
+	} else {
+		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
+	}
 
 	return nil
 }
