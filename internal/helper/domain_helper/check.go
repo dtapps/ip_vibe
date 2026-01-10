@@ -14,6 +14,7 @@ import (
 	"time"
 	"vibe_ip/internal/ent/schema/schematype"
 
+	"github.com/carlmjohnson/requests"
 	"github.com/gocolly/colly/v2"
 	"github.com/imroc/req/v3"
 	"github.com/levigross/grequests/v2"
@@ -113,6 +114,7 @@ func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string)
 		s.fetchHTTPWithResty,     // 第三方 Resty 库
 		s.fetchHTTPWithGrequests, // 第三方 Grequests 库
 		s.fetchHTTPWithReq,       // 第三方 Req 库
+		s.fetchHTTPWithRequests,  // 第三方 Requests 库
 		s.fetchHTTPWithColly,     // 第三方 Colly 库
 	}
 
@@ -350,6 +352,48 @@ func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, u *url.URL, start ti
 	} else {
 		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
 	}
+
+	return nil
+}
+
+// 发起 HTTP 请求，使用第三方 Requests 库
+func (s *DomainCheck) fetchHTTPWithRequests(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
+
+	// 设置检查类型
+	result.CheckType = schematype.DomainMonitorHistoryCheckTypeReq
+
+	// 创建 Requests 客户端
+	client := requests.URL(u.String()).
+		Method(http.MethodGet)
+
+	// 设置超时
+	client.Client(&http.Client{
+		Timeout: 60 * time.Second,
+	})
+
+	// 添加 HTTP 日志记录器
+	if s.httpTransport != nil {
+		client.Transport(s.httpTransport.Instance(nil))
+	}
+
+	// 发起 GET 请求
+	err := client.Fetch(ctx)
+	result.Duration = time.Since(start)
+
+	if err != nil {
+		result.StatusMsg = "HTTP(Req) 请求失败 " + u.String()
+		result.ErrorLog = err.Error()
+		return err
+	}
+
+	// result.HTTPStatus = resp.StatusCode
+
+	// if resp.StatusCode >= 200 && resp.StatusCode < 400 {
+	// 	result.IsSuccess = true
+	// 	result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
+	// } else {
+	// 	result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
+	// }
 
 	return nil
 }

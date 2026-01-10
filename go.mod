@@ -22,6 +22,7 @@ require (
 	github.com/apache/thrift v0.22.0
 	github.com/baidubce/bce-sdk-go v0.9.256
 	github.com/basgys/goxml2json v1.1.0
+	github.com/carlmjohnson/requests v0.25.1
 	github.com/cloudflare/cloudflare-go/v6 v6.5.0
 	github.com/corazawaf/coraza-coreruleset v0.0.0-20240226094324-415b1017abdc
 	github.com/corazawaf/coraza/v3 v3.3.3

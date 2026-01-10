@@ -223,6 +223,10 @@ github.com/bytedance/sonic/loader/internal/abi
 github.com/bytedance/sonic/loader/internal/iasm/expr
 github.com/bytedance/sonic/loader/internal/iasm/x86_64
 github.com/bytedance/sonic/loader/internal/rt
+# github.com/carlmjohnson/requests v0.25.1
+## explicit; go 1.23.0
+github.com/carlmjohnson/requests
+github.com/carlmjohnson/requests/internal/minitrue
 # github.com/cenkalti/backoff/v4 v4.3.0
 ## explicit; go 1.18
 github.com/cenkalti/backoff/v4
