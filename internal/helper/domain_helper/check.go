@@ -15,12 +15,7 @@ import (
 	"vibe_ip/internal/core"
 	"vibe_ip/internal/ent/schema/schematype"
 
-	"github.com/Noooste/azuretls-client"
-	"github.com/carlmjohnson/requests"
-	"github.com/gocolly/colly/v2"
 	"github.com/imroc/req/v3"
-	"github.com/levigross/grequests/v2"
-	"github.com/rezmoss/axios4go"
 	"go.dtapp.net/library/contrib/http_log"
 	"resty.dev/v3"
 )
@@ -116,14 +111,9 @@ func (s *DomainCheck) Check(ctx context.Context, protocol string, domain string,
 
 	// ---------- HTTP / HTTPS 请求 ----------
 	fetchMethods := []fetchFunc{
-		s.fetchHTTP,              // 官方 标准 库
-		s.fetchHTTPWithResty,     // 第三方 Resty 库
-		s.fetchHTTPWithGrequests, // 第三方 Grequests 库
-		s.fetchHTTPWithReq,       // 第三方 Req 库
-		s.fetchHTTPWithRequests,  // 第三方 Requests 库
-		s.fetchHTTPWithAxios4go,  // 第三方 Axios4go 库
-		s.fetchHTTPWithAzureTLS,  // 第三方 AzureTLS 库
-		s.fetchHTTPWithColly,     // 第三方 Colly 库
+		s.fetchHTTP,          // 官方 标准 库
+		s.fetchHTTPWithResty, // 第三方 Resty 库
+		s.fetchHTTPWithReq,   // 第三方 Req 库
 	}
 
 	// 随机选一个
@@ -279,53 +269,6 @@ func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, u *url.URL, httpHe
 	return nil
 }
 
-// 发起 HTTP 请求，使用第三方 Grequests 库
-func (s *DomainCheck) fetchHTTPWithGrequests(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
-
-	// 设置检查类型
-	result.CheckType = schematype.DomainMonitorHistoryCheckTypeGrequests
-
-	// 组装 RequestOptions
-	opts := &grequests.RequestOptions{
-		Context: ctx,
-		HTTPClient: &http.Client{
-			Timeout: 60 * time.Second,
-		},
-	}
-
-	// 添加 HTTP 日志记录器
-	if s.httpTransport != nil {
-		opts.HTTPClient.Transport = s.httpTransport.Instance(nil)
-	}
-
-	// 添加自定义 HTTP 请求头
-	for k, v := range httpHeaders {
-		opts.Headers[k] = v
-	}
-
-	// 发起 GET 请求
-	resp, err := grequests.Get(ctx, u.String(), grequests.FromRequestOptions(opts))
-	result.Duration = time.Since(start)
-
-	if err != nil {
-		result.StatusMsg = "HTTP(Grequests) 请求失败 " + u.String()
-		result.ErrorLog = err.Error()
-		return err
-	}
-	defer resp.Close()
-
-	result.HTTPStatus = resp.StatusCode
-
-	if resp.StatusCode >= 200 && resp.StatusCode < 400 {
-		result.IsSuccess = true
-		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
-	} else {
-		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
-	}
-
-	return nil
-}
-
 // 发起 HTTP 请求，使用第三方 Req 库
 // https://req.cool/
 func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
@@ -376,201 +319,6 @@ func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, u *url.URL, httpHead
 		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
 	} else {
 		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
-	}
-
-	return nil
-}
-
-// 发起 HTTP 请求，使用第三方 Requests 库
-func (s *DomainCheck) fetchHTTPWithRequests(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
-
-	// 设置检查类型
-	result.CheckType = schematype.DomainMonitorHistoryCheckTypeRequests
-
-	// 创建 Requests 客户端
-	client := requests.URL(u.String()).
-		Method(http.MethodGet)
-
-	// 设置超时
-	client.Client(&http.Client{
-		Timeout: 60 * time.Second,
-	})
-
-	// 添加 HTTP 日志记录器
-	if s.httpTransport != nil {
-		client.Transport(s.httpTransport.Instance(nil))
-	}
-
-	// 添加自定义 HTTP 请求头
-	for k, v := range httpHeaders {
-		client.Header(k, v)
-	}
-
-	// 发起 GET 请求
-	err := client.Fetch(ctx)
-	result.Duration = time.Since(start)
-
-	if err != nil {
-		result.StatusMsg = "HTTP(Requests) 请求失败 " + u.String()
-		result.ErrorLog = err.Error()
-		return err
-	}
-
-	// result.HTTPStatus = resp.StatusCode
-
-	// if resp.StatusCode >= 200 && resp.StatusCode < 400 {
-	// 	result.IsSuccess = true
-	// 	result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
-	// } else {
-	// 	result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
-	// }
-
-	return nil
-}
-
-// 发起 HTTP 请求，使用第三方 Axios4go 库
-func (s *DomainCheck) fetchHTTPWithAxios4go(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
-
-	// 设置检查类型
-	result.CheckType = schematype.DomainMonitorHistoryCheckTypeAxios4go
-
-	// 组装 RequestOptions
-	opts := &axios4go.RequestOptions{
-		Method: http.MethodGet,
-		URL:    u.String(),
-	}
-
-	// 创建 Axios4go 客户端
-	client := axios4go.NewClient(u.String())
-
-	// 设置超时
-	opts.Timeout = int(60 * time.Second)
-
-	// 添加 HTTP 日志记录器
-	if s.httpTransport != nil {
-		client.HTTPClient.Transport = s.httpTransport.Instance(nil)
-	}
-
-	// 添加自定义 HTTP 请求头
-
-	// 发起 GET 请求
-	resp, err := client.Request(opts)
-	result.Duration = time.Since(start)
-
-	if err != nil {
-		result.StatusMsg = "HTTP(Axios4go) 请求失败 " + u.String()
-		result.ErrorLog = err.Error()
-		return err
-	}
-
-	result.HTTPStatus = resp.StatusCode
-
-	if resp.StatusCode >= 200 && resp.StatusCode < 400 {
-		result.IsSuccess = true
-		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
-	} else {
-		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
-	}
-
-	return nil
-}
-
-// 发起 HTTP 请求，使用第三方 AzureTLS 库
-func (s *DomainCheck) fetchHTTPWithAzureTLS(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
-
-	// 设置检查类型
-	result.CheckType = schematype.DomainMonitorHistoryCheckTypeAzureTLS
-
-	// 创建 AzureTLS 客户端
-	client := azuretls.NewSessionWithContext(ctx)
-
-	// 设置超时
-	client.SetTimeout(60 * time.Second)
-
-	// 添加 HTTP 日志记录器
-	if s.httpTransport != nil {
-	}
-
-	// 添加自定义 HTTP 请求头
-
-	// 发起 GET 请求
-	resp, err := client.Get(u.String())
-	result.Duration = time.Since(start)
-
-	if err != nil {
-		result.StatusMsg = "HTTP(AzureTLS) 请求失败 " + u.String()
-		result.ErrorLog = err.Error()
-		return err
-	}
-
-	result.HTTPStatus = resp.StatusCode
-
-	if resp.StatusCode >= 200 && resp.StatusCode < 400 {
-		result.IsSuccess = true
-		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
-	} else {
-		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
-	}
-
-	return nil
-}
-
-// 发起 HTTP 请求，使用第三方 Colly 库
-// https://go-colly.org/
-func (s *DomainCheck) fetchHTTPWithColly(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
-
-	// 设置检查类型
-	result.CheckType = schematype.DomainMonitorHistoryCheckTypeColly
-
-	// 创建 Colly 采集器
-	client := colly.NewCollector(
-		colly.MaxDepth(1),
-		colly.Async(true), // 避免阻塞
-	)
-
-	// 设置超时
-	client.SetRequestTimeout(60 * time.Second)
-
-	// 添加 HTTP 日志记录器
-	if s.httpTransport != nil {
-		client.WithTransport(s.httpTransport.Instance(nil))
-	}
-
-	// 添加自定义 HTTP 请求头
-	for k, v := range httpHeaders {
-		client.OnRequest(func(r *colly.Request) {
-			r.Headers.Set(k, v)
-		})
-	}
-
-	// 初始化结果变量（通过闭包捕获）
-	var statusCode int
-
-	// 注册回调
-	client.OnResponse(func(r *colly.Response) {
-		statusCode = r.StatusCode
-	})
-
-	// 启动请求
-	err := client.Request(http.MethodGet, u.String(), nil, nil, nil)
-	result.Duration = time.Since(start)
-
-	if err != nil {
-		result.StatusMsg = "HTTP(Colly) 请求失败 " + u.String()
-		result.ErrorLog = err.Error()
-		return err
-	}
-
-	// 等待异步请求完成（Colly 默认异步）
-	client.Wait()
-
-	result.HTTPStatus = statusCode
-
-	if statusCode >= 200 && statusCode < 400 {
-		result.IsSuccess = true
-		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", statusCode)
-	} else {
-		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", statusCode)
 	}
 
 	return nil

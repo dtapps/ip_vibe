@@ -209,28 +209,18 @@ var GetDeviceIpReportReportTypes = []string{
 // --------
 
 const (
-	DomainMonitorHistoryCheckTypeUnknown   string = "unknown"   // 未知
-	DomainMonitorHistoryCheckTypeStandard  string = "standard"  // 标准
-	DomainMonitorHistoryCheckTypeResty     string = "resty"     // Resty
-	DomainMonitorHistoryCheckTypeGrequests string = "grequests" // Grequests
-	DomainMonitorHistoryCheckTypeReq       string = "req"       // Req
-	DomainMonitorHistoryCheckTypeRequests  string = "requests"  // Requests
-	DomainMonitorHistoryCheckTypeAxios4go  string = "axios4go"  // Axios4go
-	DomainMonitorHistoryCheckTypeAzureTLS  string = "azure_tls" // AzureTLS
-	DomainMonitorHistoryCheckTypeColly     string = "colly"     // Colly
+	DomainMonitorHistoryCheckTypeUnknown  string = "unknown"  // 未知
+	DomainMonitorHistoryCheckTypeStandard string = "standard" // 标准
+	DomainMonitorHistoryCheckTypeResty    string = "resty"    // Resty
+	DomainMonitorHistoryCheckTypeReq      string = "req"      // Req
 )
 
 // GetDomainMonitorHistoryCheckTypeDescriptions 域名监控检查方式说明映射
 var GetDomainMonitorHistoryCheckTypeDescriptions = map[string]string{
-	DomainMonitorHistoryCheckTypeUnknown:   "未知",
-	DomainMonitorHistoryCheckTypeStandard:  "标准",
-	DomainMonitorHistoryCheckTypeResty:     "Resty",
-	DomainMonitorHistoryCheckTypeGrequests: "Grequests",
-	DomainMonitorHistoryCheckTypeReq:       "Req",
-	DomainMonitorHistoryCheckTypeRequests:  "Requests",
-	DomainMonitorHistoryCheckTypeAxios4go:  "Axios4go",
-	DomainMonitorHistoryCheckTypeAzureTLS:  "AzureTLS",
-	DomainMonitorHistoryCheckTypeColly:     "Colly",
+	DomainMonitorHistoryCheckTypeUnknown:  "未知",
+	DomainMonitorHistoryCheckTypeStandard: "标准",
+	DomainMonitorHistoryCheckTypeResty:    "Resty",
+	DomainMonitorHistoryCheckTypeReq:      "Req",
 }
 
 // GetDomainMonitorHistoryCheckTypes 返回所有域名监控检查方式
@@ -238,12 +228,7 @@ var GetDomainMonitorHistoryCheckTypes = []string{
 	DomainMonitorHistoryCheckTypeUnknown,
 	DomainMonitorHistoryCheckTypeStandard,
 	DomainMonitorHistoryCheckTypeResty,
-	DomainMonitorHistoryCheckTypeGrequests,
 	DomainMonitorHistoryCheckTypeReq,
-	DomainMonitorHistoryCheckTypeRequests,
-	DomainMonitorHistoryCheckTypeAxios4go,
-	DomainMonitorHistoryCheckTypeAzureTLS,
-	DomainMonitorHistoryCheckTypeColly,
 }
 
 // --------
