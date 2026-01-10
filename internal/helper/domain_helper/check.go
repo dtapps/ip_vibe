@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"strings"
 	"time"
+	"vibe_ip/internal/core"
 	"vibe_ip/internal/ent/schema/schematype"
 
 	"github.com/Noooste/azuretls-client"
@@ -89,9 +90,9 @@ func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string)
 	}
 
 	// ---------- DNS 解析 ----------
-	if ips, err := net.LookupIP(u.Host); err == nil {
+	if ips, err := core.GetDNSResultList(ctx, domain, net.JoinHostPort("119.29.29.29", "53")); err == nil {
 		for _, ip := range ips {
-			result.IPResolved = append(result.IPResolved, ip.String())
+			result.IPResolved = append(result.IPResolved, ip)
 		}
 	} else {
 		result.StatusMsg = "DNS解析失败"

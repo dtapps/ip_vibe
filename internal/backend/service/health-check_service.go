@@ -9,8 +9,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"vibe_ip/internal/core"
 
-	"github.com/miekg/dns"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -52,21 +52,10 @@ type HealthCheckResult struct {
 
 // CheckDomainHealth 检测域名是否可通（含 DNS + HTTP + HTTPS）
 func CheckDomainHealth(ctx context.Context, domain string, httpPort, httpsPort int, dnsServers []string) (*HealthCheckResult, error) {
+
+	// 获取 DNS 服务地址列表
 	if len(dnsServers) == 0 {
-		dnsServers = []string{
-			JoinHostPort("119.29.29.29", 53),
-			JoinHostPort("2402:4e00::", 53),
-			JoinHostPort("223.5.5.5", 53),
-			JoinHostPort("2400:3200::1", 53),
-			JoinHostPort("180.76.76.76", 53),
-			JoinHostPort("2400:da00::6666", 53),
-			JoinHostPort("180.184.1.1", 53),
-			JoinHostPort("101.226.4.6", 53),
-			JoinHostPort("1.1.1.1", 53),
-			JoinHostPort("2606:4700:4700::1111", 53),
-			JoinHostPort("8.8.8.8", 53),
-			JoinHostPort("2001:4860:4860::8888", 53),
-		}
+		dnsServers = core.GetDNSServerList()
 	}
 
 	result := &HealthCheckResult{
@@ -99,12 +88,12 @@ func CheckDomainHealth(ctx context.Context, domain string, httpPort, httpsPort i
 			default:
 			}
 
-			ips, err := resolveDNS(dnsCtx, domain, server)
-			if err == nil && len(ips) > 0 {
+			dnsResults, err := core.GetDNSResultList(dnsCtx, domain, server)
+			if err == nil && len(dnsResults) > 0 {
 				mu.Lock()
 				// 再次检查，防止多个 goroutine 同时成功
 				if len(resolvedIPs) == 0 {
-					resolvedIPs = ips
+					resolvedIPs = dnsResults
 					usedDNS = server
 					select {
 					case found <- struct{}{}: // 发出完成信号
@@ -257,50 +246,6 @@ func CheckIPHealth(ctx context.Context, ip string, httpPort, httpsPort int) (*He
 	_ = eg.Wait()
 
 	return result, nil
-}
-
-// resolveDNS 使用指定 DNS 服务器解析 A/AAAA 记录
-func resolveDNS(ctx context.Context, domain string, server string) (ips []string, err error) {
-	c := dns.Client{Timeout: 5 * time.Second}
-	m := dns.Msg{}
-
-	// 查 A
-	m.SetQuestion(dns.Fqdn(domain), dns.TypeA)
-	r, _, err := c.Exchange(&m, server)
-	if err != nil {
-		return nil, err
-	}
-	for _, ans := range r.Answer {
-		if a, ok := ans.(*dns.A); ok {
-			ips = append(ips, a.A.String())
-		}
-	}
-
-	// 查 AAAA
-	m.SetQuestion(dns.Fqdn(domain), dns.TypeAAAA)
-	r, _, err = c.Exchange(&m, server)
-	if err != nil {
-		return nil, err
-	}
-	for _, ans := range r.Answer {
-		if aaaa, ok := ans.(*dns.AAAA); ok {
-			ips = append(ips, aaaa.AAAA.String())
-		}
-	}
-
-	// 查 CNAME
-	m.SetQuestion(dns.Fqdn(domain), dns.TypeCNAME)
-	r, _, err = c.Exchange(&m, server)
-	if err != nil {
-		return nil, err
-	}
-	for _, ans := range r.Answer {
-		if cname, ok := ans.(*dns.CNAME); ok {
-			ips = append(ips, cname.Target)
-		}
-	}
-
-	return ips, nil
 }
 
 // checkHTTP 发起 HTTP(S) 请求并返回状态码 + 耗时
