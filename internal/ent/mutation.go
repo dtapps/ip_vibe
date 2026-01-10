@@ -4893,25 +4893,27 @@ func (m *DevicePortForwardMutation) ResetEdge(name string) error {
 // DomainMonitorMutation represents an operation that mutates the DomainMonitor nodes in the graph.
 type DomainMonitorMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *int64
-	created_at        *time.Time
-	updated_at        *time.Time
-	name              *string
-	description       *string
-	domain            *string
-	check_interval    *int
-	addcheck_interval *int
-	check_protocol    *domainmonitor.CheckProtocol
-	is_active         *bool
-	current_status    *domainmonitor.CurrentStatus
-	last_success_at   *time.Time
-	last_failure_at   *time.Time
-	clearedFields     map[string]struct{}
-	done              bool
-	oldValue          func(context.Context) (*DomainMonitor, error)
-	predicates        []predicate.DomainMonitor
+	op                    Op
+	typ                   string
+	id                    *int64
+	created_at            *time.Time
+	updated_at            *time.Time
+	name                  *string
+	description           *string
+	domain                *string
+	request_headers       *[]string
+	appendrequest_headers []string
+	check_interval        *int
+	addcheck_interval     *int
+	check_protocol        *domainmonitor.CheckProtocol
+	is_active             *bool
+	current_status        *domainmonitor.CurrentStatus
+	last_success_at       *time.Time
+	last_failure_at       *time.Time
+	clearedFields         map[string]struct{}
+	done                  bool
+	oldValue              func(context.Context) (*DomainMonitor, error)
+	predicates            []predicate.DomainMonitor
 }
 
 var _ ent.Mutation = (*DomainMonitorMutation)(nil)
@@ -5211,6 +5213,71 @@ func (m *DomainMonitorMutation) ResetDomain() {
 	m.domain = nil
 }
 
+// SetRequestHeaders sets the "request_headers" field.
+func (m *DomainMonitorMutation) SetRequestHeaders(s []string) {
+	m.request_headers = &s
+	m.appendrequest_headers = nil
+}
+
+// RequestHeaders returns the value of the "request_headers" field in the mutation.
+func (m *DomainMonitorMutation) RequestHeaders() (r []string, exists bool) {
+	v := m.request_headers
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestHeaders returns the old "request_headers" field's value of the DomainMonitor entity.
+// If the DomainMonitor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DomainMonitorMutation) OldRequestHeaders(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestHeaders is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestHeaders requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestHeaders: %w", err)
+	}
+	return oldValue.RequestHeaders, nil
+}
+
+// AppendRequestHeaders adds s to the "request_headers" field.
+func (m *DomainMonitorMutation) AppendRequestHeaders(s []string) {
+	m.appendrequest_headers = append(m.appendrequest_headers, s...)
+}
+
+// AppendedRequestHeaders returns the list of values that were appended to the "request_headers" field in this mutation.
+func (m *DomainMonitorMutation) AppendedRequestHeaders() ([]string, bool) {
+	if len(m.appendrequest_headers) == 0 {
+		return nil, false
+	}
+	return m.appendrequest_headers, true
+}
+
+// ClearRequestHeaders clears the value of the "request_headers" field.
+func (m *DomainMonitorMutation) ClearRequestHeaders() {
+	m.request_headers = nil
+	m.appendrequest_headers = nil
+	m.clearedFields[domainmonitor.FieldRequestHeaders] = struct{}{}
+}
+
+// RequestHeadersCleared returns if the "request_headers" field was cleared in this mutation.
+func (m *DomainMonitorMutation) RequestHeadersCleared() bool {
+	_, ok := m.clearedFields[domainmonitor.FieldRequestHeaders]
+	return ok
+}
+
+// ResetRequestHeaders resets all changes to the "request_headers" field.
+func (m *DomainMonitorMutation) ResetRequestHeaders() {
+	m.request_headers = nil
+	m.appendrequest_headers = nil
+	delete(m.clearedFields, domainmonitor.FieldRequestHeaders)
+}
+
 // SetCheckInterval sets the "check_interval" field.
 func (m *DomainMonitorMutation) SetCheckInterval(i int) {
 	m.check_interval = &i
@@ -5507,7 +5574,7 @@ func (m *DomainMonitorMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DomainMonitorMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
 		fields = append(fields, domainmonitor.FieldCreatedAt)
 	}
@@ -5522,6 +5589,9 @@ func (m *DomainMonitorMutation) Fields() []string {
 	}
 	if m.domain != nil {
 		fields = append(fields, domainmonitor.FieldDomain)
+	}
+	if m.request_headers != nil {
+		fields = append(fields, domainmonitor.FieldRequestHeaders)
 	}
 	if m.check_interval != nil {
 		fields = append(fields, domainmonitor.FieldCheckInterval)
@@ -5559,6 +5629,8 @@ func (m *DomainMonitorMutation) Field(name string) (ent.Value, bool) {
 		return m.Description()
 	case domainmonitor.FieldDomain:
 		return m.Domain()
+	case domainmonitor.FieldRequestHeaders:
+		return m.RequestHeaders()
 	case domainmonitor.FieldCheckInterval:
 		return m.CheckInterval()
 	case domainmonitor.FieldCheckProtocol:
@@ -5590,6 +5662,8 @@ func (m *DomainMonitorMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldDescription(ctx)
 	case domainmonitor.FieldDomain:
 		return m.OldDomain(ctx)
+	case domainmonitor.FieldRequestHeaders:
+		return m.OldRequestHeaders(ctx)
 	case domainmonitor.FieldCheckInterval:
 		return m.OldCheckInterval(ctx)
 	case domainmonitor.FieldCheckProtocol:
@@ -5645,6 +5719,13 @@ func (m *DomainMonitorMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDomain(v)
+		return nil
+	case domainmonitor.FieldRequestHeaders:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestHeaders(v)
 		return nil
 	case domainmonitor.FieldCheckInterval:
 		v, ok := value.(int)
@@ -5736,6 +5817,9 @@ func (m *DomainMonitorMutation) ClearedFields() []string {
 	if m.FieldCleared(domainmonitor.FieldDescription) {
 		fields = append(fields, domainmonitor.FieldDescription)
 	}
+	if m.FieldCleared(domainmonitor.FieldRequestHeaders) {
+		fields = append(fields, domainmonitor.FieldRequestHeaders)
+	}
 	if m.FieldCleared(domainmonitor.FieldLastSuccessAt) {
 		fields = append(fields, domainmonitor.FieldLastSuccessAt)
 	}
@@ -5758,6 +5842,9 @@ func (m *DomainMonitorMutation) ClearField(name string) error {
 	switch name {
 	case domainmonitor.FieldDescription:
 		m.ClearDescription()
+		return nil
+	case domainmonitor.FieldRequestHeaders:
+		m.ClearRequestHeaders()
 		return nil
 	case domainmonitor.FieldLastSuccessAt:
 		m.ClearLastSuccessAt()
@@ -5787,6 +5874,9 @@ func (m *DomainMonitorMutation) ResetField(name string) error {
 		return nil
 	case domainmonitor.FieldDomain:
 		m.ResetDomain()
+		return nil
+	case domainmonitor.FieldRequestHeaders:
+		m.ResetRequestHeaders()
 		return nil
 	case domainmonitor.FieldCheckInterval:
 		m.ResetCheckInterval()

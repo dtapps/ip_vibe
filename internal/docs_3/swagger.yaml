@@ -131,6 +131,12 @@ components:
         name:
           description: 名称
           type: string
+        request_headers:
+          description: 请求头（多个之间用换行符分隔，格式：key=value）
+          items:
+            type: string
+          type: array
+          uniqueItems: false
         webhook_ids:
           description: 关联的 Webhook 列表
           items:
@@ -535,6 +541,12 @@ components:
         name:
           description: 名称
           type: string
+        request_headers:
+          description: 请求头（多个之间用换行符分隔，格式：key=value）
+          items:
+            type: string
+          type: array
+          uniqueItems: false
         webhooks:
           description: 关联的 Webhook 列表
           items:
@@ -1016,6 +1028,12 @@ components:
         name:
           description: 名称
           type: string
+        request_headers:
+          description: 请求头（多个之间用换行符分隔，格式：key=value）
+          items:
+            type: string
+          type: array
+          uniqueItems: false
         webhook_ids:
           description: 关联的 Webhook 列表
           items:
@@ -1291,7 +1309,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.CreateCdnRecordRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.CreateCdnRecordRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -1426,7 +1448,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateCdnRecordRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdateCdnRecordRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -1473,7 +1499,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateCdnRecordActiveRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdateCdnRecordActiveRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -1589,7 +1619,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.CreateDeviceRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.CreateDeviceRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -1724,7 +1758,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateDeviceRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdateDeviceRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -1944,7 +1982,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.CreateDnsRecordRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.CreateDnsRecordRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -2079,7 +2121,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateDnsRecordRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdateDnsRecordRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -2126,7 +2172,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateDnsRecordActiveRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdateDnsRecordActiveRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -2256,7 +2306,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.CreateDomainMonitorRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.CreateDomainMonitorRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -2391,7 +2445,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateDomainMonitorRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdateDomainMonitorRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -2438,7 +2496,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateDomainMonitorActiveRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdateDomainMonitorActiveRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -2554,7 +2616,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.CreateIPGroupRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.CreateIPGroupRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -2690,7 +2756,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateIPGroupRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdateIPGroupRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -2827,7 +2897,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.DeviceReportDeviceIpRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.DeviceReportDeviceIpRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -2925,7 +2999,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.CreatePortForwardStatsRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.CreatePortForwardStatsRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -2988,7 +3066,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.CreatePlatformConfigRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.CreatePlatformConfigRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -3123,7 +3205,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdatePlatformConfigRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdatePlatformConfigRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -3208,7 +3294,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.CreatePortForwardRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.CreatePortForwardRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -3343,7 +3433,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdatePortForwardRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdatePortForwardRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -3390,7 +3484,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdatePortForwardActiveRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdatePortForwardActiveRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -3437,7 +3535,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdatePortForwardForwardRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdatePortForwardForwardRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -3612,7 +3714,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.CreateSSLRecordRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.CreateSSLRecordRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -3747,7 +3853,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateSSLRecordRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdateSSLRecordRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -3794,7 +3904,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateSSLRecordActiveRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdateSSLRecordActiveRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -3886,7 +4000,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateSSLRecordAutoRenewalRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdateSSLRecordAutoRenewalRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -4296,7 +4414,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateWebhookSubActiveRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdateWebhookSubActiveRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -4381,7 +4503,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.CreateWebhookRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.CreateWebhookRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -4516,7 +4642,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateWebhookRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdateWebhookRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:
@@ -4563,7 +4693,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/vibe_ip_internal_types.UpdateWebhookActiveRequest'
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/vibe_ip_internal_types.UpdateWebhookActiveRequest'
+                description: 请求参数
+                summary: request
         description: 请求参数
         required: true
       responses:

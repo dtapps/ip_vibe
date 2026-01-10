@@ -25,7 +25,7 @@ type DNSResult struct {
 }
 
 // resolveDNS 使用指定 DNS 服务器解析 A/AAAA/CNAME 记录
-func resolveDNS(ctx context.Context, domain string, server string) (result []DNSResult, err error) {
+func resolveDNS(ctx context.Context, domain string, server string) (list []DNSResult, err error) {
 	c := dns.Client{
 		Timeout: 5 * time.Second,
 	}
@@ -34,49 +34,46 @@ func resolveDNS(ctx context.Context, domain string, server string) (result []DNS
 	// 查 A
 	m.SetQuestion(dns.Fqdn(domain), dns.TypeA)
 	aR, _, err := c.Exchange(&m, server)
-	if err != nil {
-		return result, err
-	}
-	for _, ans := range aR.Answer {
-		if a, ok := ans.(*dns.A); ok {
-			result = append(result, DNSResult{
-				Type:  TypeA,
-				Value: a.A.String(),
-			})
+	if err == nil {
+		for _, ans := range aR.Answer {
+			if a, ok := ans.(*dns.A); ok {
+				list = append(list, DNSResult{
+					Type:  TypeA,
+					Value: a.A.String(),
+				})
+			}
 		}
 	}
 
 	// 查 AAAA
 	m.SetQuestion(dns.Fqdn(domain), dns.TypeAAAA)
 	aaaaR, _, err := c.Exchange(&m, server)
-	if err != nil {
-		return result, err
-	}
-	for _, ans := range aaaaR.Answer {
-		if aaaa, ok := ans.(*dns.AAAA); ok {
-			result = append(result, DNSResult{
-				Type:  TypeAAAA,
-				Value: aaaa.AAAA.String(),
-			})
+	if err == nil {
+		for _, ans := range aaaaR.Answer {
+			if aaaa, ok := ans.(*dns.AAAA); ok {
+				list = append(list, DNSResult{
+					Type:  TypeAAAA,
+					Value: aaaa.AAAA.String(),
+				})
+			}
 		}
 	}
 
 	// 查 CNAME
 	m.SetQuestion(dns.Fqdn(domain), dns.TypeCNAME)
 	cnameR, _, err := c.Exchange(&m, server)
-	if err != nil {
-		return result, err
-	}
-	for _, ans := range cnameR.Answer {
-		if cname, ok := ans.(*dns.CNAME); ok {
-			result = append(result, DNSResult{
-				Type:  TypeCNAME,
-				Value: cname.Target,
-			})
+	if err == nil {
+		for _, ans := range cnameR.Answer {
+			if cname, ok := ans.(*dns.CNAME); ok {
+				list = append(list, DNSResult{
+					Type:  TypeCNAME,
+					Value: cname.Target,
+				})
+			}
 		}
 	}
 
-	return result, nil
+	return list, nil
 }
 
 // joinHostPort 拼接主机名和端口号
@@ -104,13 +101,13 @@ func GetDNSServerList() (servers []string) {
 }
 
 // GetDNSResultList 获取 DNS 解析结果列表
-func GetDNSResultList(ctx context.Context, domain string, server string) (dnsResults []string, err error) {
+func GetDNSResultList(ctx context.Context, domain string, server string) (list []string, err error) {
 	result, err := resolveDNS(ctx, domain, server)
 	if err != nil {
-		return dnsResults, err
+		return list, err
 	}
 	for _, res := range result {
-		dnsResults = append(dnsResults, res.Value)
+		list = append(list, res.Value)
 	}
-	return dnsResults, nil
+	return list, nil
 }

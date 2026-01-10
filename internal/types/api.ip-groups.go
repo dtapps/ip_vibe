@@ -6,13 +6,13 @@ type GetIPGroupsRequest struct {
 
 // 获取IP组 响应结构
 type GetIPGroupResponse struct {
-	ID          int64   `json:"id" jsonschema:"IP组的唯一标识符"`                   // IP组序号
-	Name        string  `json:"name" jsonschema:"IP组的名称"`                    // IP组名称
-	Description string  `json:"description,omitempty" jsonschema:"IP组的描述信息"` // IP组描述
-	DeviceCount int     `json:"device_count,omitempty" jsonschema:"关联的设备数量"` // 设备数
-	Devices     []int64 `json:"devices,omitempty" jsonschema:"关联的设备ID列表"`    // 设备列表
+	ID          int64   `json:"id" jsonschema:"IP组的唯一标识符"`         // IP组序号
+	Name        string  `json:"name" jsonschema:"IP组的名称"`          // IP组名称
+	Description string  `json:"description" jsonschema:"IP组的描述信息"` // IP组描述
+	DeviceCount int     `json:"device_count" jsonschema:"关联的设备数量"` // 设备数
+	Devices     []int64 `json:"devices" jsonschema:"关联的设备ID列表"`    // 设备列表
 
-	Webhooks []int64 `json:"webhooks,omitempty" jsonschema:"关联的Webhook ID列表"` // 关联的 Webhook 列表
+	Webhooks []int64 `json:"webhooks" jsonschema:"关联的Webhook ID列表"` // 关联的 Webhook 列表
 }
 
 // 获取IP组 请求结构

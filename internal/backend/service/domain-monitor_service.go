@@ -54,16 +54,17 @@ func NewDomainMonitorService(db *ent.Client, dbLog *ent_log.Client, cron gocron.
 // BuildResponse 将实体转换为响应
 func (s *DomainMonitorServiceImpl) BuildResponse(ctx context.Context, item *ent.DomainMonitor) (*types.GetDomainMonitorResponse, error) {
 	resp := &types.GetDomainMonitorResponse{
-		ID:            item.ID,
-		Name:          item.Name,
-		Description:   item.Description,
-		Domain:        item.Domain,
-		CheckInterval: item.CheckInterval,
-		CheckProtocol: item.CheckProtocol.String(),
-		IsActive:      item.IsActive,
-		CurrentStatus: item.CurrentStatus.String(),
-		LastSuccessAt: item.LastSuccessAt,
-		LastFailureAt: item.LastFailureAt,
+		ID:             item.ID,
+		Name:           item.Name,
+		Description:    item.Description,
+		Domain:         item.Domain,
+		RequestHeaders: item.RequestHeaders,
+		CheckInterval:  item.CheckInterval,
+		CheckProtocol:  item.CheckProtocol.String(),
+		IsActive:       item.IsActive,
+		CurrentStatus:  item.CurrentStatus.String(),
+		LastSuccessAt:  item.LastSuccessAt,
+		LastFailureAt:  item.LastFailureAt,
 	}
 
 	// 查询通知订阅
@@ -128,6 +129,7 @@ func (s *DomainMonitorServiceImpl) CreateDomainMonitor(ctx context.Context, requ
 		SetName(request.Name).
 		SetDescription(request.Description).
 		SetDomain(request.Domain).
+		SetRequestHeaders(request.RequestHeaders).
 		SetCheckInterval(request.CheckInterval).
 		SetCheckProtocol(domainmonitor.CheckProtocol(request.CheckProtocol)).
 		Save(ctx)
@@ -167,6 +169,7 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitor(ctx context.Context, requ
 	saveDomainMonitor, err := s.db.DomainMonitor.UpdateOne(firstDomainMonitor).
 		SetName(request.Name).
 		SetDescription(request.Description).
+		SetRequestHeaders(request.RequestHeaders).
 		SetCheckInterval(request.CheckInterval).
 		Save(ctx)
 	if err != nil {

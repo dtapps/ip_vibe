@@ -11,7 +11,7 @@ type GetPortForwardsRequest struct {
 type GetPortForwardResponse struct {
 	ID          int64    `json:"id" jsonschema:"端口转发记录的唯一标识符"`                             // 设备端口转发序号
 	Name        string   `json:"name" jsonschema:"端口转发的名称"`                                // 设备端口转发名称
-	Description string   `json:"description,omitempty" jsonschema:"端口转发的描述信息"`             // 设备端口转发描述
+	Description string   `json:"description" jsonschema:"端口转发的描述信息"`                       // 设备端口转发描述
 	LocalPort   int      `json:"local_port" jsonschema:"本地监听的端口号"`                         // 本地监听端口
 	RemoteHost  string   `json:"remote_host" jsonschema:"远程目标主机地址"`                        // 远程目标地址
 	RemotePort  int      `json:"remote_port" jsonschema:"远程目标端口号"`                         // 远程目标端口
@@ -19,8 +19,8 @@ type GetPortForwardResponse struct {
 	AutoForward bool     `json:"auto_forward" jsonschema:"是否启用防火墙自动放行"`                    // 防火墙自动放行
 	IsActive    bool     `json:"is_active" jsonschema:"端口转发是否处于活跃状态"`                      // 是否活跃
 
-	DeviceID   int64  `json:"device_id,omitempty" jsonschema:"关联的设备ID"`   // 设备ID
-	DeviceName string `json:"device_name,omitempty" jsonschema:"关联的设备名称"` // 设备名称
+	DeviceID   int64  `json:"device_id" jsonschema:"关联的设备ID"`   // 设备ID
+	DeviceName string `json:"device_name" jsonschema:"关联的设备名称"` // 设备名称
 }
 
 // 获取端口转发 请求结构

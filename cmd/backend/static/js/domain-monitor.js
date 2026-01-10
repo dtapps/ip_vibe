@@ -66,6 +66,10 @@ async function openFormModal(id) {
         domainMonitor.description ?? "";
       document.getElementById("domain").value = domainMonitor.domain;
       document.getElementById("domain").disabled = true;
+      document.getElementById("request_headers").value =
+        domainMonitor.request_headers == ""
+          ? domainMonitor.request_headers.join("\n")
+          : "";
       document.getElementById("check_interval").value =
         domainMonitor.check_interval;
       document.getElementById("check_protocol").value =
@@ -120,6 +124,10 @@ if (form) {
       name: document.getElementById("name").value.trim(),
       description: document.getElementById("description").value.trim(),
       domain: document.getElementById("domain").value.trim(),
+      request_headers: document
+        .getElementById("request_headers")
+        .value.trim()
+        .split("\n"),
       check_interval: Number(
         document.getElementById("check_interval").value.trim()
       ),

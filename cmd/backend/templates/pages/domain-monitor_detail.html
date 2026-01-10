@@ -53,7 +53,12 @@
                             {{ if eq $item.CurrentStatus "success" }}
                             <span class="badge badge-success gap-2 py-4 px-4 font-bold">✅ 运行正常</span>
                             {{ else if eq $item.CurrentStatus "failure" }}
+                            {{ if $latestHistory.ID }}
+                            <span class="badge badge-error gap-2 py-4 px-4 font-bold text-white"
+                                data-tip="{{ $latestHistory.ErrorLog }}">❌ 检查失败</span>
+                            {{ else }}
                             <span class="badge badge-error gap-2 py-4 px-4 font-bold text-white">❌ 检查失败</span>
+                            {{ end }}
                             {{ else }}
                             <span class="badge badge-ghost gap-2 py-4 px-4 font-bold">❓ 状态未知</span>
                             {{ end }}

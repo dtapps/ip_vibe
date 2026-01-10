@@ -180,11 +180,11 @@ func init() {
 	// domainmonitor.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	domainmonitor.UpdateDefaultUpdatedAt = domainmonitorDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// domainmonitorDescCheckInterval is the schema descriptor for check_interval field.
-	domainmonitorDescCheckInterval := domainmonitorFields[4].Descriptor()
+	domainmonitorDescCheckInterval := domainmonitorFields[5].Descriptor()
 	// domainmonitor.DefaultCheckInterval holds the default value on creation for the check_interval field.
 	domainmonitor.DefaultCheckInterval = domainmonitorDescCheckInterval.Default.(int)
 	// domainmonitorDescIsActive is the schema descriptor for is_active field.
-	domainmonitorDescIsActive := domainmonitorFields[6].Descriptor()
+	domainmonitorDescIsActive := domainmonitorFields[7].Descriptor()
 	// domainmonitor.DefaultIsActive holds the default value on creation for the is_active field.
 	domainmonitor.DefaultIsActive = domainmonitorDescIsActive.Default.(bool)
 	// domainmonitorDescID is the schema descriptor for id field.

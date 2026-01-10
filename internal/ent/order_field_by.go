@@ -1341,6 +1341,31 @@ func (q *DomainMonitorQuery) OrderByDomainAsc() *DomainMonitorQuery {
 	return q.Order(Asc(domainmonitor.FieldDomain))
 }
 
+// OrderByRequestHeadersDesc 按字段 request_headers 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *DomainMonitorQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DomainMonitor.Query().
+//	    OrderByRequestHeadersDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DomainMonitorQuery) OrderByRequestHeadersDesc() *DomainMonitorQuery {
+	return q.Order(Desc(domainmonitor.FieldRequestHeaders))
+}
+
+// OrderByRequestHeadersAsc 按字段 request_headers 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *DomainMonitorQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DomainMonitor.Query().
+//	    OrderByRequestHeadersAsc().
+//	    All(ctx)
+func (q *DomainMonitorQuery) OrderByRequestHeadersAsc() *DomainMonitorQuery {
+	return q.Order(Asc(domainmonitor.FieldRequestHeaders))
+}
+
 // OrderByCheckIntervalDesc 按字段 check_interval 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *DomainMonitorQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。

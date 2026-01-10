@@ -4663,6 +4663,13 @@ const docTemplate = `{
                     "description": "名称",
                     "type": "string"
                 },
+                "request_headers": {
+                    "description": "请求头（多个之间用换行符分隔，格式：key=value）",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "webhook_ids": {
                     "description": "关联的 Webhook 列表",
                     "type": "array",
@@ -5209,6 +5216,13 @@ const docTemplate = `{
                 "name": {
                     "description": "名称",
                     "type": "string"
+                },
+                "request_headers": {
+                    "description": "请求头（多个之间用换行符分隔，格式：key=value）",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "webhooks": {
                     "description": "关联的 Webhook 列表",
@@ -5866,6 +5880,13 @@ const docTemplate = `{
                 "name": {
                     "description": "名称",
                     "type": "string"
+                },
+                "request_headers": {
+                    "description": "请求头（多个之间用换行符分隔，格式：key=value）",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "webhook_ids": {
                     "description": "关联的 Webhook 列表",

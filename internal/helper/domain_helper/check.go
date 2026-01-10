@@ -20,27 +20,19 @@ import (
 	"github.com/gocolly/colly/v2"
 	"github.com/imroc/req/v3"
 	"github.com/levigross/grequests/v2"
-	fakeUserAgent "github.com/lib4u/fake-useragent"
 	"github.com/rezmoss/axios4go"
 	"go.dtapp.net/library/contrib/http_log"
 	"resty.dev/v3"
 )
 
 type DomainCheck struct {
-	useragent     string                     // 浏览器标识
 	logger        *slog.Logger               // 日志记录器
 	httpTransport *http_log.LoggingTransport // HTTP日志记录器
 	debug         bool                       // 是否开启调试模式
 }
 
 func NewDomainCheck(logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) *DomainCheck {
-	var useragent string
-	ua, err := fakeUserAgent.New()
-	if err == nil {
-		useragent = ua.GetRandom()
-	}
 	return &DomainCheck{
-		useragent:     useragent,
 		logger:        logger,
 		httpTransport: httpTransport,
 		debug:         debug,
@@ -72,7 +64,10 @@ type CheckResult struct {
 }
 
 // Check 执行实际的网络检查并返回结果
-func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string) *CheckResult {
+// protocol: 协议，例如 "http" 或 "https"
+// domain: 要检查的域名
+// headers: HTTP 请求头，格式为 "Key=Value"
+func (s *DomainCheck) Check(ctx context.Context, protocol string, domain string, headers []string) *CheckResult {
 	start := time.Now()
 
 	result := &CheckResult{
@@ -87,6 +82,14 @@ func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string)
 		result.ErrorLog = err.Error()
 		result.Duration = time.Since(start)
 		return result
+	}
+
+	httpHeaders := make(map[string]string)
+	for _, h := range headers {
+		parts := strings.SplitN(h, "=", 2)
+		if len(parts) == 2 {
+			httpHeaders[parts[0]] = parts[1]
+		}
 	}
 
 	// ---------- DNS 解析 ----------
@@ -126,7 +129,7 @@ func (s *DomainCheck) Check(ctx context.Context, domain string, protocol string)
 	// 随机选一个
 	selectedIndex := rand.Intn(len(fetchMethods))
 	selectedMethod := fetchMethods[selectedIndex]
-	if err := selectedMethod(ctx, u, start, result); err != nil {
+	if err := selectedMethod(ctx, u, httpHeaders, start, result); err != nil {
 		return result
 	}
 
@@ -174,10 +177,10 @@ func (s *DomainCheck) fetchSSLInfo(ctx context.Context, domain string, result *C
 	return nil
 }
 
-type fetchFunc func(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error
+type fetchFunc func(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error
 
 // 发起 HTTP 请求，使用官方 标准 库
-func (s *DomainCheck) fetchHTTP(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
+func (s *DomainCheck) fetchHTTP(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeStandard
@@ -201,11 +204,10 @@ func (s *DomainCheck) fetchHTTP(ctx context.Context, u *url.URL, start time.Time
 		return err
 	}
 
-	// 添加浏览器标识
-	// req.Header.Set("User-Agent", s.useragent)
-	// s.logger.Debug("请求浏览器标识",
-	// 	slog.String("useragent", s.useragent),
-	// )
+	// 添加自定义 HTTP 请求头
+	for k, v := range httpHeaders {
+		req.Header.Set(k, v)
+	}
 
 	// 发起 GET 请求
 	resp, err := client.Do(req)
@@ -232,7 +234,7 @@ func (s *DomainCheck) fetchHTTP(ctx context.Context, u *url.URL, start time.Time
 
 // 发起 HTTP 请求，使用第三方 Resty 库
 // https://resty.dev/
-func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
+func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeResty
@@ -247,6 +249,11 @@ func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, u *url.URL, start 
 	// 添加 HTTP 日志记录器
 	if s.httpTransport != nil {
 		client.SetTransport(s.httpTransport.Instance(nil))
+	}
+
+	// 添加自定义 HTTP 请求头
+	for k, v := range httpHeaders {
+		client.SetHeader(k, v)
 	}
 
 	// 发起 GET 请求
@@ -273,7 +280,7 @@ func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, u *url.URL, start 
 }
 
 // 发起 HTTP 请求，使用第三方 Grequests 库
-func (s *DomainCheck) fetchHTTPWithGrequests(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
+func (s *DomainCheck) fetchHTTPWithGrequests(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeGrequests
@@ -289,6 +296,11 @@ func (s *DomainCheck) fetchHTTPWithGrequests(ctx context.Context, u *url.URL, st
 	// 添加 HTTP 日志记录器
 	if s.httpTransport != nil {
 		opts.HTTPClient.Transport = s.httpTransport.Instance(nil)
+	}
+
+	// 添加自定义 HTTP 请求头
+	for k, v := range httpHeaders {
+		opts.Headers[k] = v
 	}
 
 	// 发起 GET 请求
@@ -316,7 +328,7 @@ func (s *DomainCheck) fetchHTTPWithGrequests(ctx context.Context, u *url.URL, st
 
 // 发起 HTTP 请求，使用第三方 Req 库
 // https://req.cool/
-func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
+func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeReq
@@ -338,8 +350,16 @@ func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, u *url.URL, start ti
 	// 伪装 HTTP 指纹
 	// client.ImpersonateChrome()
 
+	// 创建 Req 请求
+	req := client.R().SetContext(ctx)
+
+	// 添加自定义 HTTP 请求头
+	for k, v := range httpHeaders {
+		req.SetHeader(k, v)
+	}
+
 	// 发起 GET 请求
-	resp, err := client.R().SetContext(ctx).Get(u.String())
+	resp, err := req.Get(u.String())
 	result.Duration = time.Since(start)
 
 	if err != nil {
@@ -362,7 +382,7 @@ func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, u *url.URL, start ti
 }
 
 // 发起 HTTP 请求，使用第三方 Requests 库
-func (s *DomainCheck) fetchHTTPWithRequests(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
+func (s *DomainCheck) fetchHTTPWithRequests(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeRequests
@@ -379,6 +399,11 @@ func (s *DomainCheck) fetchHTTPWithRequests(ctx context.Context, u *url.URL, sta
 	// 添加 HTTP 日志记录器
 	if s.httpTransport != nil {
 		client.Transport(s.httpTransport.Instance(nil))
+	}
+
+	// 添加自定义 HTTP 请求头
+	for k, v := range httpHeaders {
+		client.Header(k, v)
 	}
 
 	// 发起 GET 请求
@@ -404,7 +429,7 @@ func (s *DomainCheck) fetchHTTPWithRequests(ctx context.Context, u *url.URL, sta
 }
 
 // 发起 HTTP 请求，使用第三方 Axios4go 库
-func (s *DomainCheck) fetchHTTPWithAxios4go(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
+func (s *DomainCheck) fetchHTTPWithAxios4go(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeAxios4go
@@ -425,6 +450,8 @@ func (s *DomainCheck) fetchHTTPWithAxios4go(ctx context.Context, u *url.URL, sta
 	if s.httpTransport != nil {
 		client.HTTPClient.Transport = s.httpTransport.Instance(nil)
 	}
+
+	// 添加自定义 HTTP 请求头
 
 	// 发起 GET 请求
 	resp, err := client.Request(opts)
@@ -449,7 +476,7 @@ func (s *DomainCheck) fetchHTTPWithAxios4go(ctx context.Context, u *url.URL, sta
 }
 
 // 发起 HTTP 请求，使用第三方 AzureTLS 库
-func (s *DomainCheck) fetchHTTPWithAzureTLS(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
+func (s *DomainCheck) fetchHTTPWithAzureTLS(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeAzureTLS
@@ -463,6 +490,8 @@ func (s *DomainCheck) fetchHTTPWithAzureTLS(ctx context.Context, u *url.URL, sta
 	// 添加 HTTP 日志记录器
 	if s.httpTransport != nil {
 	}
+
+	// 添加自定义 HTTP 请求头
 
 	// 发起 GET 请求
 	resp, err := client.Get(u.String())
@@ -488,7 +517,7 @@ func (s *DomainCheck) fetchHTTPWithAzureTLS(ctx context.Context, u *url.URL, sta
 
 // 发起 HTTP 请求，使用第三方 Colly 库
 // https://go-colly.org/
-func (s *DomainCheck) fetchHTTPWithColly(ctx context.Context, u *url.URL, start time.Time, result *CheckResult) error {
+func (s *DomainCheck) fetchHTTPWithColly(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeColly
@@ -505,6 +534,13 @@ func (s *DomainCheck) fetchHTTPWithColly(ctx context.Context, u *url.URL, start 
 	// 添加 HTTP 日志记录器
 	if s.httpTransport != nil {
 		client.WithTransport(s.httpTransport.Instance(nil))
+	}
+
+	// 添加自定义 HTTP 请求头
+	for k, v := range httpHeaders {
+		client.OnRequest(func(r *colly.Request) {
+			r.Headers.Set(k, v)
+		})
 	}
 
 	// 初始化结果变量（通过闭包捕获）

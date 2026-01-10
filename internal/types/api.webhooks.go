@@ -7,15 +7,15 @@ type GetWebhooksRequest struct {
 
 // 获取通知 响应结构
 type GetWebhookResponse struct {
-	ID              int64  `json:"id" jsonschema:"通知的唯一标识符"`                                 // 通知序号
-	Name            string `json:"name" jsonschema:"通知的名称"`                                  // 通知名称
-	Description     string `json:"description,omitempty" jsonschema:"通知的描述信息"`               // 通知描述
-	Platform        string `json:"platform" jsonschema:"通知平台类型"`                             // 通知平台类型
-	URL             string `json:"url" jsonschema:"Webhook的URL地址"`                           // Webhook URL
-	Secret          string `json:"secret" jsonschema:"Webhook签名密钥或额外Token"`                  // Webhook 签名密钥或额外Token
-	TemplateTitle   string `json:"template_title,omitempty" jsonschema:"通知标题的Go Template"`   // 通知标题 Go Template
-	TemplateContent string `json:"template_content,omitempty" jsonschema:"通知内容的Go Template"` // 通知内容 Go Template
-	IsActive        bool   `json:"is_active" jsonschema:"是否启用该通知"`                           // 是否启用
+	ID              int64  `json:"id" jsonschema:"通知的唯一标识符"`                       // 通知序号
+	Name            string `json:"name" jsonschema:"通知的名称"`                        // 通知名称
+	Description     string `json:"description" jsonschema:"通知的描述信息"`               // 通知描述
+	Platform        string `json:"platform" jsonschema:"通知平台类型"`                   // 通知平台类型
+	URL             string `json:"url" jsonschema:"Webhook的URL地址"`                 // Webhook URL
+	Secret          string `json:"secret" jsonschema:"Webhook签名密钥或额外Token"`        // Webhook 签名密钥或额外Token
+	TemplateTitle   string `json:"template_title" jsonschema:"通知标题的Go Template"`   // 通知标题 Go Template
+	TemplateContent string `json:"template_content" jsonschema:"通知内容的Go Template"` // 通知内容 Go Template
+	IsActive        bool   `json:"is_active" jsonschema:"是否启用该通知"`                 // 是否启用
 }
 
 // 获取通知 请求结构

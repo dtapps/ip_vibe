@@ -25,6 +25,8 @@ const (
 	FieldDescription = "description"
 	// FieldDomain holds the string denoting the domain field in the database.
 	FieldDomain = "domain"
+	// FieldRequestHeaders holds the string denoting the request_headers field in the database.
+	FieldRequestHeaders = "request_headers"
 	// FieldCheckInterval holds the string denoting the check_interval field in the database.
 	FieldCheckInterval = "check_interval"
 	// FieldCheckProtocol holds the string denoting the check_protocol field in the database.
@@ -49,6 +51,7 @@ var Columns = []string{
 	FieldName,
 	FieldDescription,
 	FieldDomain,
+	FieldRequestHeaders,
 	FieldCheckInterval,
 	FieldCheckProtocol,
 	FieldIsActive,

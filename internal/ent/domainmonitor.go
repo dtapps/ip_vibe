@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -28,6 +29,8 @@ type DomainMonitor struct {
 	Description string `json:"description,omitempty"`
 	// 域名
 	Domain string `json:"domain,omitempty"`
+	// 请求头（多个之间用换行符分隔，格式：key=value）
+	RequestHeaders []string `json:"request_headers,omitempty"`
 	// 检查间隔（秒）
 	CheckInterval int `json:"check_interval,omitempty"`
 	// 检查类型（HTTP/HTTPS）
@@ -48,6 +51,8 @@ func (*DomainMonitor) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case domainmonitor.FieldRequestHeaders:
+			values[i] = new([]byte)
 		case domainmonitor.FieldIsActive:
 			values[i] = new(sql.NullBool)
 		case domainmonitor.FieldID, domainmonitor.FieldCheckInterval:
@@ -106,6 +111,14 @@ func (_m *DomainMonitor) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field domain", values[i])
 			} else if value.Valid {
 				_m.Domain = value.String
+			}
+		case domainmonitor.FieldRequestHeaders:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field request_headers", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.RequestHeaders); err != nil {
+					return fmt.Errorf("unmarshal field request_headers: %w", err)
+				}
 			}
 		case domainmonitor.FieldCheckInterval:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -193,6 +206,9 @@ func (_m *DomainMonitor) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("domain=")
 	builder.WriteString(_m.Domain)
+	builder.WriteString(", ")
+	builder.WriteString("request_headers=")
+	builder.WriteString(fmt.Sprintf("%v", _m.RequestHeaders))
 	builder.WriteString(", ")
 	builder.WriteString("check_interval=")
 	builder.WriteString(fmt.Sprintf("%v", _m.CheckInterval))

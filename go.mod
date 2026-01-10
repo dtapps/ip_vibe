@@ -46,7 +46,6 @@ require (
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
 	github.com/kingsoftcloud/sdk-go/v2 v2.2.57
 	github.com/levigross/grequests/v2 v2.0.0-20250606223341-05add15eea25
-	github.com/lib4u/fake-useragent v1.0.6
 	github.com/miekg/dns v1.1.70
 	github.com/modelcontextprotocol/go-sdk v1.2.0
 	github.com/qiniu/go-sdk/v7 v7.25.5

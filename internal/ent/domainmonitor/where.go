@@ -384,6 +384,16 @@ func DomainContainsFold(v string) predicate.DomainMonitor {
 	return predicate.DomainMonitor(sql.FieldContainsFold(FieldDomain, v))
 }
 
+// RequestHeadersIsNil applies the IsNil predicate on the "request_headers" field.
+func RequestHeadersIsNil() predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldIsNull(FieldRequestHeaders))
+}
+
+// RequestHeadersNotNil applies the NotNil predicate on the "request_headers" field.
+func RequestHeadersNotNil() predicate.DomainMonitor {
+	return predicate.DomainMonitor(sql.FieldNotNull(FieldRequestHeaders))
+}
+
 // CheckIntervalEQ applies the EQ predicate on the "check_interval" field.
 func CheckIntervalEQ(v int) predicate.DomainMonitor {
 	return predicate.DomainMonitor(sql.FieldEQ(FieldCheckInterval, v))

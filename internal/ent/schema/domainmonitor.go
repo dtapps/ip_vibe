@@ -57,6 +57,11 @@ func (DomainMonitor) Fields() []ent.Field {
 			Comment("域名").
 			Annotations(entsql.WithComments(true)),
 
+		field.Strings("request_headers").
+			Optional().
+			Comment("请求头（多个之间用换行符分隔，格式：key=value）").
+			Annotations(entsql.WithComments(true)),
+
 		field.Int("check_interval").
 			Default(60).
 			Comment("检查间隔（秒）").

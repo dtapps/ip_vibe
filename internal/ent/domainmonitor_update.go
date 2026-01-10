@@ -12,6 +12,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -66,6 +67,24 @@ func (_u *DomainMonitorUpdate) SetNillableDescription(v *string) *DomainMonitorU
 // ClearDescription clears the value of the "description" field.
 func (_u *DomainMonitorUpdate) ClearDescription() *DomainMonitorUpdate {
 	_u.mutation.ClearDescription()
+	return _u
+}
+
+// SetRequestHeaders sets the "request_headers" field.
+func (_u *DomainMonitorUpdate) SetRequestHeaders(v []string) *DomainMonitorUpdate {
+	_u.mutation.SetRequestHeaders(v)
+	return _u
+}
+
+// AppendRequestHeaders appends value to the "request_headers" field.
+func (_u *DomainMonitorUpdate) AppendRequestHeaders(v []string) *DomainMonitorUpdate {
+	_u.mutation.AppendRequestHeaders(v)
+	return _u
+}
+
+// ClearRequestHeaders clears the value of the "request_headers" field.
+func (_u *DomainMonitorUpdate) ClearRequestHeaders() *DomainMonitorUpdate {
+	_u.mutation.ClearRequestHeaders()
 	return _u
 }
 
@@ -245,6 +264,17 @@ func (_u *DomainMonitorUpdate) sqlSave(ctx context.Context) (_node int, err erro
 	if _u.mutation.DescriptionCleared() {
 		_spec.ClearField(domainmonitor.FieldDescription, field.TypeString)
 	}
+	if value, ok := _u.mutation.RequestHeaders(); ok {
+		_spec.SetField(domainmonitor.FieldRequestHeaders, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedRequestHeaders(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, domainmonitor.FieldRequestHeaders, value)
+		})
+	}
+	if _u.mutation.RequestHeadersCleared() {
+		_spec.ClearField(domainmonitor.FieldRequestHeaders, field.TypeJSON)
+	}
 	if value, ok := _u.mutation.CheckInterval(); ok {
 		_spec.SetField(domainmonitor.FieldCheckInterval, field.TypeInt, value)
 	}
@@ -328,6 +358,24 @@ func (_u *DomainMonitorUpdateOne) SetNillableDescription(v *string) *DomainMonit
 // ClearDescription clears the value of the "description" field.
 func (_u *DomainMonitorUpdateOne) ClearDescription() *DomainMonitorUpdateOne {
 	_u.mutation.ClearDescription()
+	return _u
+}
+
+// SetRequestHeaders sets the "request_headers" field.
+func (_u *DomainMonitorUpdateOne) SetRequestHeaders(v []string) *DomainMonitorUpdateOne {
+	_u.mutation.SetRequestHeaders(v)
+	return _u
+}
+
+// AppendRequestHeaders appends value to the "request_headers" field.
+func (_u *DomainMonitorUpdateOne) AppendRequestHeaders(v []string) *DomainMonitorUpdateOne {
+	_u.mutation.AppendRequestHeaders(v)
+	return _u
+}
+
+// ClearRequestHeaders clears the value of the "request_headers" field.
+func (_u *DomainMonitorUpdateOne) ClearRequestHeaders() *DomainMonitorUpdateOne {
+	_u.mutation.ClearRequestHeaders()
 	return _u
 }
 
@@ -536,6 +584,17 @@ func (_u *DomainMonitorUpdateOne) sqlSave(ctx context.Context) (_node *DomainMon
 	}
 	if _u.mutation.DescriptionCleared() {
 		_spec.ClearField(domainmonitor.FieldDescription, field.TypeString)
+	}
+	if value, ok := _u.mutation.RequestHeaders(); ok {
+		_spec.SetField(domainmonitor.FieldRequestHeaders, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedRequestHeaders(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, domainmonitor.FieldRequestHeaders, value)
+		})
+	}
+	if _u.mutation.RequestHeadersCleared() {
+		_spec.ClearField(domainmonitor.FieldRequestHeaders, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.CheckInterval(); ok {
 		_spec.SetField(domainmonitor.FieldCheckInterval, field.TypeInt, value)

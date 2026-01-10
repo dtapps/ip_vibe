@@ -272,6 +272,7 @@ var (
 		{Name: "name", Type: field.TypeString, Comment: "域名监控名称"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "域名监控描述"},
 		{Name: "domain", Type: field.TypeString, Comment: "域名"},
+		{Name: "request_headers", Type: field.TypeJSON, Nullable: true, Comment: "请求头（多个之间用换行符分隔，格式：key=value）"},
 		{Name: "check_interval", Type: field.TypeInt, Comment: "检查间隔（秒）", Default: 60},
 		{Name: "check_protocol", Type: field.TypeEnum, Comment: "检查类型（HTTP/HTTPS）", Enums: []string{"http", "https"}},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
@@ -302,7 +303,7 @@ var (
 			{
 				Name:    "domainmonitor_domain_check_protocol",
 				Unique:  true,
-				Columns: []*schema.Column{DomainMonitorColumns[5], DomainMonitorColumns[7]},
+				Columns: []*schema.Column{DomainMonitorColumns[5], DomainMonitorColumns[8]},
 			},
 		},
 	}

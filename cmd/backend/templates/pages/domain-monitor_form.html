@@ -26,6 +26,11 @@
         <input type="text" name="domain" id="domain" class="ui-input" required placeholder="如 www.example.com" />
       </div>
 
+      <div class="ui-form-control">
+        <label class="ui-label-text">请求头（多个之间用换行符分隔，格式：key=value）</label>
+        <textarea name="request_headers" id="request_headers" class="ui-textarea" placeholder="可选"></textarea>
+      </div>
+
       <div class="grid grid-cols-2 gap-4">
         <div class="ui-form-control">
           <label class="ui-label-text">检查间隔（秒） <span class="text-error">*</span></label>

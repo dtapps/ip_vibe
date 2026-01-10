@@ -76,6 +76,12 @@ func (_c *DomainMonitorCreate) SetDomain(v string) *DomainMonitorCreate {
 	return _c
 }
 
+// SetRequestHeaders sets the "request_headers" field.
+func (_c *DomainMonitorCreate) SetRequestHeaders(v []string) *DomainMonitorCreate {
+	_c.mutation.SetRequestHeaders(v)
+	return _c
+}
+
 // SetCheckInterval sets the "check_interval" field.
 func (_c *DomainMonitorCreate) SetCheckInterval(v int) *DomainMonitorCreate {
 	_c.mutation.SetCheckInterval(v)
@@ -318,6 +324,10 @@ func (_c *DomainMonitorCreate) createSpec() (*DomainMonitor, *sqlgraph.CreateSpe
 		_spec.SetField(domainmonitor.FieldDomain, field.TypeString, value)
 		_node.Domain = value
 	}
+	if value, ok := _c.mutation.RequestHeaders(); ok {
+		_spec.SetField(domainmonitor.FieldRequestHeaders, field.TypeJSON, value)
+		_node.RequestHeaders = value
+	}
 	if value, ok := _c.mutation.CheckInterval(); ok {
 		_spec.SetField(domainmonitor.FieldCheckInterval, field.TypeInt, value)
 		_node.CheckInterval = value
@@ -433,6 +443,24 @@ func (u *DomainMonitorUpsert) UpdateDescription() *DomainMonitorUpsert {
 // ClearDescription clears the value of the "description" field.
 func (u *DomainMonitorUpsert) ClearDescription() *DomainMonitorUpsert {
 	u.SetNull(domainmonitor.FieldDescription)
+	return u
+}
+
+// SetRequestHeaders sets the "request_headers" field.
+func (u *DomainMonitorUpsert) SetRequestHeaders(v []string) *DomainMonitorUpsert {
+	u.Set(domainmonitor.FieldRequestHeaders, v)
+	return u
+}
+
+// UpdateRequestHeaders sets the "request_headers" field to the value that was provided on create.
+func (u *DomainMonitorUpsert) UpdateRequestHeaders() *DomainMonitorUpsert {
+	u.SetExcluded(domainmonitor.FieldRequestHeaders)
+	return u
+}
+
+// ClearRequestHeaders clears the value of the "request_headers" field.
+func (u *DomainMonitorUpsert) ClearRequestHeaders() *DomainMonitorUpsert {
+	u.SetNull(domainmonitor.FieldRequestHeaders)
 	return u
 }
 
@@ -617,6 +645,27 @@ func (u *DomainMonitorUpsertOne) UpdateDescription() *DomainMonitorUpsertOne {
 func (u *DomainMonitorUpsertOne) ClearDescription() *DomainMonitorUpsertOne {
 	return u.Update(func(s *DomainMonitorUpsert) {
 		s.ClearDescription()
+	})
+}
+
+// SetRequestHeaders sets the "request_headers" field.
+func (u *DomainMonitorUpsertOne) SetRequestHeaders(v []string) *DomainMonitorUpsertOne {
+	return u.Update(func(s *DomainMonitorUpsert) {
+		s.SetRequestHeaders(v)
+	})
+}
+
+// UpdateRequestHeaders sets the "request_headers" field to the value that was provided on create.
+func (u *DomainMonitorUpsertOne) UpdateRequestHeaders() *DomainMonitorUpsertOne {
+	return u.Update(func(s *DomainMonitorUpsert) {
+		s.UpdateRequestHeaders()
+	})
+}
+
+// ClearRequestHeaders clears the value of the "request_headers" field.
+func (u *DomainMonitorUpsertOne) ClearRequestHeaders() *DomainMonitorUpsertOne {
+	return u.Update(func(s *DomainMonitorUpsert) {
+		s.ClearRequestHeaders()
 	})
 }
 
@@ -980,6 +1029,27 @@ func (u *DomainMonitorUpsertBulk) UpdateDescription() *DomainMonitorUpsertBulk {
 func (u *DomainMonitorUpsertBulk) ClearDescription() *DomainMonitorUpsertBulk {
 	return u.Update(func(s *DomainMonitorUpsert) {
 		s.ClearDescription()
+	})
+}
+
+// SetRequestHeaders sets the "request_headers" field.
+func (u *DomainMonitorUpsertBulk) SetRequestHeaders(v []string) *DomainMonitorUpsertBulk {
+	return u.Update(func(s *DomainMonitorUpsert) {
+		s.SetRequestHeaders(v)
+	})
+}
+
+// UpdateRequestHeaders sets the "request_headers" field to the value that was provided on create.
+func (u *DomainMonitorUpsertBulk) UpdateRequestHeaders() *DomainMonitorUpsertBulk {
+	return u.Update(func(s *DomainMonitorUpsert) {
+		s.UpdateRequestHeaders()
+	})
+}
+
+// ClearRequestHeaders clears the value of the "request_headers" field.
+func (u *DomainMonitorUpsertBulk) ClearRequestHeaders() *DomainMonitorUpsertBulk {
+	return u.Update(func(s *DomainMonitorUpsert) {
+		s.ClearRequestHeaders()
 	})
 }
 
