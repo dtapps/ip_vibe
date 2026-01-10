@@ -97,6 +97,8 @@ func main() {
 
 	initialize.InitThirdParty(ctx, global.GvaSlog) // 初始化 第三方
 
+	initialize.MigrateOldData(ctx, global.GvaEntSlog, global.GvaEntDb) // 迁移旧数据
+
 	// 打印
 	slog.InfoContext(ctx, "服务启动",
 		slog.Bool("debug", global.GvaEnv.DEBUG),

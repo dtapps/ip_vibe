@@ -13,6 +13,7 @@ import (
 
 	"entgo.io/ent/dialect"
 	entSql "entgo.io/ent/dialect/sql"
+	"go.dtapp.net/library/utils/gojson"
 	"modernc.org/sqlite"
 )
 
@@ -149,6 +150,47 @@ func CloseEntLogDb(ctx context.Context, logger *slog.Logger) {
 	if global.GvaEntLogDb != nil {
 		if err := global.GvaEntLogDb.Close(); err != nil {
 			logger.ErrorContext(ctx, "[关闭 日志数据库] 关闭错误",
+				slog.Any("err", err),
+			)
+			panic(err)
+		}
+	}
+}
+
+// 迁移旧数据
+func MigrateOldData(ctx context.Context, logger *slog.Logger, db *ent.Client) {
+	// 1. 迁移 CDNRecord
+	cdnRecords, err := db.CDNRecord.Query().
+		OrderByCreatedAtAsc().
+		All(ctx)
+	if err != nil {
+		logger.ErrorContext(ctx, "[迁移旧数据] 迁移 CDNRecord 失败",
+			slog.Any("err", err),
+		)
+		panic(err)
+	}
+
+	type CDNRecordConfigJSON struct {
+		OriginProtocol string `json:"origin_protocol"` // 回源协议（http、https、follow）
+		HttpPort       int    `json:"http_port"`       // HTTP 回源端口
+		HttpsPort      int    `json:"https_port"`      // HTTPS 回源端口
+	}
+
+	for _, record := range cdnRecords {
+		// 如果 record.ConfigJSON 不为空，则跳过
+		if len(record.ConfigJSON) > 0 {
+			continue
+		}
+		configJSON := CDNRecordConfigJSON{
+			OriginProtocol: record.OriginProtocol.String(),
+			HttpPort:       record.HTTPPort,
+			HttpsPort:      record.HTTPSPort,
+		}
+		err = db.CDNRecord.UpdateOneID(record.ID).
+			SetConfigJSON([]byte(gojson.JsonEncodeNoError(configJSON))).
+			Exec(ctx)
+		if err != nil {
+			logger.ErrorContext(ctx, "[迁移旧数据] 更新 CDNRecord 失败",
 				slog.Any("err", err),
 			)
 			panic(err)
