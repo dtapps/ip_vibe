@@ -55,7 +55,7 @@ var (
 		{Name: "check_duration", Type: field.TypeInt, Nullable: true, Comment: "检查耗时（毫秒）"},
 		{Name: "status_message", Type: field.TypeString, Nullable: true, Comment: "简要状态信息（如：200 OK，连接超时）"},
 		{Name: "http_status", Type: field.TypeInt, Nullable: true, Comment: "HTTP/HTTPS 状态码"},
-		{Name: "check_type", Type: field.TypeEnum, Nullable: true, Comment: "检查方式 标准 / Resty / Grequests / req / Colly", Enums: []string{"unknown", "standard", "resty", "grequests", "req", "colly"}, Default: "unknown"},
+		{Name: "check_type", Type: field.TypeEnum, Nullable: true, Comment: "检查方式 标准 / Resty / Grequests / req / Colly", Enums: []string{"unknown", "standard", "resty", "grequests", "req", "requests", "axios4go", "azure_tls", "colly"}, Default: "unknown"},
 		{Name: "ip_resolved", Type: field.TypeJSON, Nullable: true, Comment: "解析到的 IP 地址列表"},
 		{Name: "error_log", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "详细错误信息或异常堆栈"},
 		{Name: "ssl_not_date", Type: field.TypeTime, Nullable: true, Comment: "证书生效日期（NotBefore）"},
@@ -121,7 +121,7 @@ var (
 		{Name: "is_error", Type: field.TypeBool, Nullable: true, Comment: "是否为错误请求（如 5xx、4xx）", Default: false},
 		{Name: "created_at", Type: field.TypeTime, Comment: "请求时间"},
 		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "go 版本", Default: "go1.26rc1"},
-		{Name: "plugin_version", Type: field.TypeString, Nullable: true, Comment: "plugin 版本", Default: "1.0.2"},
+		{Name: "plugin_version", Type: field.TypeString, Nullable: true, Comment: "plugin 版本", Default: "1.0.5"},
 	}
 	// HTTPLogTable holds the schema information for the "http_log" table.
 	HTTPLogTable = &schema.Table{
