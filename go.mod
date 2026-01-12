@@ -46,7 +46,7 @@ require (
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.183
 	github.com/imroc/req/v3 v3.57.0
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
-	github.com/kingsoftcloud/sdk-go/v2 v2.2.57
+	github.com/kingsoftcloud/sdk-go/v2 v2.2.58
 	github.com/miekg/dns v1.1.70
 	github.com/modelcontextprotocol/go-sdk v1.2.0
 	github.com/qiniu/go-sdk/v7 v7.25.5
