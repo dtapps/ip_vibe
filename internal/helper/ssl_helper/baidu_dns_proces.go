@@ -26,9 +26,9 @@ type BaiduDNSConfigure struct {
 
 // 实现 SSLProcess 接口
 type SSLProcessBaiduDNSImpl struct {
-	logger        *slog.Logger               // 日志
-	httpTransport *http_log.LoggingTransport // HTTP日志记录器
-	debug         bool                       // 调试模式
+	logger        *slog.Logger                  // 日志
+	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	debug         bool                          // 调试模式
 
 	platformConfig BaiduDNSConfigure // 平台配置
 
@@ -37,7 +37,7 @@ type SSLProcessBaiduDNSImpl struct {
 }
 
 // NewSSLProcessBaiduDNS 创建实例
-func NewSSLProcessBaiduDNS(logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) SSLProcess {
+func NewSSLProcessBaiduDNS(logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) SSLProcess {
 	return &SSLProcessBaiduDNSImpl{
 		logger:        logger,
 		httpTransport: httpTransport,

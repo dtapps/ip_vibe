@@ -68,6 +68,18 @@ func (f PortForwardStatsFunc) Mutate(ctx context.Context, m ent_log.Mutation) (e
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent_log.PortForwardStatsMutation", m)
 }
 
+// The ReqLogFunc type is an adapter to allow the use of ordinary
+// function as ReqLog mutator.
+type ReqLogFunc func(context.Context, *ent_log.ReqLogMutation) (ent_log.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ReqLogFunc) Mutate(ctx context.Context, m ent_log.Mutation) (ent_log.Value, error) {
+	if mv, ok := m.(*ent_log.ReqLogMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent_log.ReqLogMutation", m)
+}
+
 // The RestyLogFunc type is an adapter to allow the use of ordinary
 // function as RestyLog mutator.
 type RestyLogFunc func(context.Context, *ent_log.RestyLogMutation) (ent_log.Value, error)

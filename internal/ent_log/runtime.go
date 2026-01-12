@@ -9,6 +9,7 @@ import (
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/portforwardstats"
+	"vibe_ip/internal/ent_log/reqlog"
 	"vibe_ip/internal/ent_log/restylog"
 	"vibe_ip/internal/ent_log/schema"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
@@ -59,10 +60,6 @@ func init() {
 	domainmonitorhistory.IDValidator = domainmonitorhistoryDescID.Validators[0].(func(int64) error)
 	httplogFields := schema.HttpLog{}.Fields()
 	_ = httplogFields
-	// httplogDescElapseTime is the schema descriptor for elapse_time field.
-	httplogDescElapseTime := httplogFields[9].Descriptor()
-	// httplog.ElapseTimeValidator is a validator for the "elapse_time" field. It is called by the builders before save.
-	httplog.ElapseTimeValidator = httplogDescElapseTime.Validators[0].(func(int64) error)
 	// httplogDescIsError is the schema descriptor for is_error field.
 	httplogDescIsError := httplogFields[10].Descriptor()
 	// httplog.DefaultIsError holds the default value on creation for the is_error field.
@@ -121,30 +118,48 @@ func init() {
 	portforwardstatsDescID := portforwardstatsFields[0].Descriptor()
 	// portforwardstats.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	portforwardstats.IDValidator = portforwardstatsDescID.Validators[0].(func(int64) error)
+	reqlogFields := schema.ReqLog{}.Fields()
+	_ = reqlogFields
+	// reqlogDescIsError is the schema descriptor for is_error field.
+	reqlogDescIsError := reqlogFields[13].Descriptor()
+	// reqlog.DefaultIsError holds the default value on creation for the is_error field.
+	reqlog.DefaultIsError = reqlogDescIsError.Default.(bool)
+	// reqlogDescCreatedAt is the schema descriptor for created_at field.
+	reqlogDescCreatedAt := reqlogFields[14].Descriptor()
+	// reqlog.DefaultCreatedAt holds the default value on creation for the created_at field.
+	reqlog.DefaultCreatedAt = reqlogDescCreatedAt.Default.(func() time.Time)
+	// reqlogDescGoVersion is the schema descriptor for go_version field.
+	reqlogDescGoVersion := reqlogFields[15].Descriptor()
+	// reqlog.DefaultGoVersion holds the default value on creation for the go_version field.
+	reqlog.DefaultGoVersion = reqlogDescGoVersion.Default.(string)
+	// reqlogDescPluginVersion is the schema descriptor for plugin_version field.
+	reqlogDescPluginVersion := reqlogFields[16].Descriptor()
+	// reqlog.DefaultPluginVersion holds the default value on creation for the plugin_version field.
+	reqlog.DefaultPluginVersion = reqlogDescPluginVersion.Default.(string)
+	// reqlogDescID is the schema descriptor for id field.
+	reqlogDescID := reqlogFields[0].Descriptor()
+	// reqlog.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	reqlog.IDValidator = reqlogDescID.Validators[0].(func(int64) error)
 	restylogFields := schema.RestyLog{}.Fields()
 	_ = restylogFields
-	// restylogDescElapseTime is the schema descriptor for elapse_time field.
-	restylogDescElapseTime := restylogFields[9].Descriptor()
-	// restylog.ElapseTimeValidator is a validator for the "elapse_time" field. It is called by the builders before save.
-	restylog.ElapseTimeValidator = restylogDescElapseTime.Validators[0].(func(int64) error)
 	// restylogDescIsError is the schema descriptor for is_error field.
-	restylogDescIsError := restylogFields[10].Descriptor()
+	restylogDescIsError := restylogFields[13].Descriptor()
 	// restylog.DefaultIsError holds the default value on creation for the is_error field.
 	restylog.DefaultIsError = restylogDescIsError.Default.(bool)
 	// restylogDescCreatedAt is the schema descriptor for created_at field.
-	restylogDescCreatedAt := restylogFields[11].Descriptor()
+	restylogDescCreatedAt := restylogFields[14].Descriptor()
 	// restylog.DefaultCreatedAt holds the default value on creation for the created_at field.
 	restylog.DefaultCreatedAt = restylogDescCreatedAt.Default.(func() time.Time)
 	// restylogDescGoVersion is the schema descriptor for go_version field.
-	restylogDescGoVersion := restylogFields[12].Descriptor()
+	restylogDescGoVersion := restylogFields[15].Descriptor()
 	// restylog.DefaultGoVersion holds the default value on creation for the go_version field.
 	restylog.DefaultGoVersion = restylogDescGoVersion.Default.(string)
 	// restylogDescPluginVersion is the schema descriptor for plugin_version field.
-	restylogDescPluginVersion := restylogFields[13].Descriptor()
+	restylogDescPluginVersion := restylogFields[16].Descriptor()
 	// restylog.DefaultPluginVersion holds the default value on creation for the plugin_version field.
 	restylog.DefaultPluginVersion = restylogDescPluginVersion.Default.(string)
 	// restylogDescRestyVersion is the schema descriptor for resty_version field.
-	restylogDescRestyVersion := restylogFields[14].Descriptor()
+	restylogDescRestyVersion := restylogFields[17].Descriptor()
 	// restylog.DefaultRestyVersion holds the default value on creation for the resty_version field.
 	restylog.DefaultRestyVersion = restylogDescRestyVersion.Default.(string)
 	// restylogDescID is the schema descriptor for id field.

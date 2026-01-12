@@ -66,7 +66,7 @@ func (c *VolcengineDnsClient) SetDebug(debug bool) *VolcengineDnsClient {
 }
 
 // 设置HTTP日志记录器
-func (c *VolcengineDnsClient) SetLog(loggingTransport *http_log.LoggingTransport) *VolcengineDnsClient {
+func (c *VolcengineDnsClient) SetLog(loggingTransport *http_log.LoggingRoundTripper) *VolcengineDnsClient {
 	if loggingTransport == nil {
 		return c
 	}

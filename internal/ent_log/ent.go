@@ -13,6 +13,7 @@ import (
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/portforwardstats"
+	"vibe_ip/internal/ent_log/reqlog"
 	"vibe_ip/internal/ent_log/restylog"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/ent_log/webhookhistory"
@@ -85,6 +86,7 @@ func checkColumn(t, c string) error {
 			httplog.Table:               httplog.ValidColumn,
 			operationlog.Table:          operationlog.ValidColumn,
 			portforwardstats.Table:      portforwardstats.ValidColumn,
+			reqlog.Table:                reqlog.ValidColumn,
 			restylog.Table:              restylog.ValidColumn,
 			sslcertificatehistory.Table: sslcertificatehistory.ValidColumn,
 			webhookhistory.Table:        webhookhistory.ValidColumn,

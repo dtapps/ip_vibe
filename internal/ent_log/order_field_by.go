@@ -8,6 +8,7 @@ import (
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/portforwardstats"
+	"vibe_ip/internal/ent_log/reqlog"
 	"vibe_ip/internal/ent_log/restylog"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/ent_log/webhookhistory"
@@ -1565,6 +1566,431 @@ func (q *PortForwardStatsQuery) OrderByErrorsAsc() *PortForwardStatsQuery {
 
 // OrderByIDDesc 按主键 ID 降序排列查询结果。
 // 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByIDDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByIDAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldID))
+}
+
+// OrderByHostnameDesc 按字段 hostname 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByHostnameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByHostnameDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldHostname))
+}
+
+// OrderByHostnameAsc 按字段 hostname 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByHostnameAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByHostnameAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldHostname))
+}
+
+// OrderByMethodDesc 按字段 method 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByMethodDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByMethodDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldMethod))
+}
+
+// OrderByMethodAsc 按字段 method 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByMethodAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByMethodAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldMethod))
+}
+
+// OrderByURLDesc 按字段 url 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByURLDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByURLDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldURL))
+}
+
+// OrderByURLAsc 按字段 url 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByURLAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByURLAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldURL))
+}
+
+// OrderByRequestHeadersDesc 按字段 request_headers 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByRequestHeadersDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByRequestHeadersDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldRequestHeaders))
+}
+
+// OrderByRequestHeadersAsc 按字段 request_headers 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByRequestHeadersAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByRequestHeadersAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldRequestHeaders))
+}
+
+// OrderByRequestBodyDesc 按字段 request_body 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByRequestBodyDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByRequestBodyDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldRequestBody))
+}
+
+// OrderByRequestBodyAsc 按字段 request_body 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByRequestBodyAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByRequestBodyAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldRequestBody))
+}
+
+// OrderByRequestQueryParamsDesc 按字段 request_query_params 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByRequestQueryParamsDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByRequestQueryParamsDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldRequestQueryParams))
+}
+
+// OrderByRequestQueryParamsAsc 按字段 request_query_params 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByRequestQueryParamsAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByRequestQueryParamsAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldRequestQueryParams))
+}
+
+// OrderByRequestFormDataDesc 按字段 request_form_data 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByRequestFormDataDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByRequestFormDataDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldRequestFormData))
+}
+
+// OrderByRequestFormDataAsc 按字段 request_form_data 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByRequestFormDataAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByRequestFormDataAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldRequestFormData))
+}
+
+// OrderByRequestPathParamsDesc 按字段 request_path_params 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByRequestPathParamsDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByRequestPathParamsDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldRequestPathParams))
+}
+
+// OrderByRequestPathParamsAsc 按字段 request_path_params 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByRequestPathParamsAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByRequestPathParamsAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldRequestPathParams))
+}
+
+// OrderByStatusCodeDesc 按字段 status_code 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByStatusCodeDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByStatusCodeDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldStatusCode))
+}
+
+// OrderByStatusCodeAsc 按字段 status_code 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByStatusCodeAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByStatusCodeAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldStatusCode))
+}
+
+// OrderByResponseHeadersDesc 按字段 response_headers 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByResponseHeadersDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByResponseHeadersDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldResponseHeaders))
+}
+
+// OrderByResponseHeadersAsc 按字段 response_headers 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByResponseHeadersAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByResponseHeadersAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldResponseHeaders))
+}
+
+// OrderByResponseBodyDesc 按字段 response_body 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByResponseBodyDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByResponseBodyDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldResponseBody))
+}
+
+// OrderByResponseBodyAsc 按字段 response_body 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByResponseBodyAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByResponseBodyAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldResponseBody))
+}
+
+// OrderByElapseTimeDesc 按字段 elapse_time 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByElapseTimeDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByElapseTimeDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldElapseTime))
+}
+
+// OrderByElapseTimeAsc 按字段 elapse_time 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByElapseTimeAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByElapseTimeAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldElapseTime))
+}
+
+// OrderByIsErrorDesc 按字段 is_error 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByIsErrorDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByIsErrorDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldIsError))
+}
+
+// OrderByIsErrorAsc 按字段 is_error 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByIsErrorAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByIsErrorAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldIsError))
+}
+
+// OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByCreatedAtDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldCreatedAt))
+}
+
+// OrderByCreatedAtAsc 按字段 created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByCreatedAtAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByCreatedAtAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldCreatedAt))
+}
+
+// OrderByGoVersionDesc 按字段 go_version 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByGoVersionDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByGoVersionDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldGoVersion))
+}
+
+// OrderByGoVersionAsc 按字段 go_version 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByGoVersionAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByGoVersionAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldGoVersion))
+}
+
+// OrderByPluginVersionDesc 按字段 plugin_version 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByPluginVersionDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByPluginVersionDesc() *ReqLogQuery {
+	return q.Order(Desc(reqlog.FieldPluginVersion))
+}
+
+// OrderByPluginVersionAsc 按字段 plugin_version 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *ReqLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.ReqLog.Query().
+//	    OrderByPluginVersionAsc().
+//	    All(ctx)
+func (q *ReqLogQuery) OrderByPluginVersionAsc() *ReqLogQuery {
+	return q.Order(Asc(reqlog.FieldPluginVersion))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
 // 返回值类型为 *RestyLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
 // 示例：
 //
@@ -1711,6 +2137,81 @@ func (q *RestyLogQuery) OrderByRequestBodyDesc() *RestyLogQuery {
 //	    All(ctx)
 func (q *RestyLogQuery) OrderByRequestBodyAsc() *RestyLogQuery {
 	return q.Order(Asc(restylog.FieldRequestBody))
+}
+
+// OrderByRequestQueryParamsDesc 按字段 request_query_params 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *RestyLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.RestyLog.Query().
+//	    OrderByRequestQueryParamsDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *RestyLogQuery) OrderByRequestQueryParamsDesc() *RestyLogQuery {
+	return q.Order(Desc(restylog.FieldRequestQueryParams))
+}
+
+// OrderByRequestQueryParamsAsc 按字段 request_query_params 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *RestyLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.RestyLog.Query().
+//	    OrderByRequestQueryParamsAsc().
+//	    All(ctx)
+func (q *RestyLogQuery) OrderByRequestQueryParamsAsc() *RestyLogQuery {
+	return q.Order(Asc(restylog.FieldRequestQueryParams))
+}
+
+// OrderByRequestFormDataDesc 按字段 request_form_data 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *RestyLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.RestyLog.Query().
+//	    OrderByRequestFormDataDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *RestyLogQuery) OrderByRequestFormDataDesc() *RestyLogQuery {
+	return q.Order(Desc(restylog.FieldRequestFormData))
+}
+
+// OrderByRequestFormDataAsc 按字段 request_form_data 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *RestyLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.RestyLog.Query().
+//	    OrderByRequestFormDataAsc().
+//	    All(ctx)
+func (q *RestyLogQuery) OrderByRequestFormDataAsc() *RestyLogQuery {
+	return q.Order(Asc(restylog.FieldRequestFormData))
+}
+
+// OrderByRequestPathParamsDesc 按字段 request_path_params 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *RestyLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.RestyLog.Query().
+//	    OrderByRequestPathParamsDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *RestyLogQuery) OrderByRequestPathParamsDesc() *RestyLogQuery {
+	return q.Order(Desc(restylog.FieldRequestPathParams))
+}
+
+// OrderByRequestPathParamsAsc 按字段 request_path_params 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *RestyLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.RestyLog.Query().
+//	    OrderByRequestPathParamsAsc().
+//	    All(ctx)
+func (q *RestyLogQuery) OrderByRequestPathParamsAsc() *RestyLogQuery {
+	return q.Order(Asc(restylog.FieldRequestPathParams))
 }
 
 // OrderByStatusCodeDesc 按字段 status_code 降序排列查询结果。

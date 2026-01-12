@@ -7,6 +7,7 @@ import (
 	"vibe_ip/internal/global"
 
 	"go.dtapp.net/library/contrib/resty_log"
+	"resty.dev/v3"
 )
 
 // 实现 LogSaver 接口
@@ -15,7 +16,7 @@ type EntRestyLogSaver struct {
 	db     *ent_log.Client
 }
 
-func (s *EntRestyLogSaver) SaveLog(ctx context.Context, data *resty_log.LogData) error {
+func (s *EntRestyLogSaver) HandleLog(ctx context.Context, data *resty_log.LogData) error {
 	s.logger.DebugContext(ctx, "[接口方式]准备保存日志",
 		slog.String("Hostname", data.Hostname),
 		slog.String("Method", data.Method),
@@ -63,7 +64,7 @@ func (s *EntRestyLogSaver) SaveLog(ctx context.Context, data *resty_log.LogData)
 func InitEntRestyLog(logger *slog.Logger) {
 
 	// 定义回调函数
-	saveFunc := func(ctx context.Context, data *resty_log.LogData) error {
+	callbackFunc := func(ctx context.Context, data *resty_log.LogData) error {
 		logger.DebugContext(ctx, "[回调方式]准备保存日志",
 			slog.String("Hostname", data.Hostname),
 			slog.String("Method", data.Method),
@@ -110,10 +111,26 @@ func InitEntRestyLog(logger *slog.Logger) {
 	// 创建 LogSaver 实现
 	saver := &EntRestyLogSaver{
 		logger: logger,
-		db:     global.GvaEntLogDb,
+	}
+	if global.GvaEntLogDb != nil {
+		saver.db = global.GvaEntLogDb
 	}
 
 	// 初始化 Logger，传入回调和接口（回调优先）
-	global.GvaRestyLog = resty_log.NewLogger(saveFunc, saver, false)
+	global.GvaRestyLog = resty_log.NewLoggerMiddleware(saver, callbackFunc)
 
+	// 创建 Resty 客户端
+	global.GvaRestyClient = resty.New()
+	// 请求中间件
+	global.GvaRestyClient.SetRequestMiddlewares(
+		global.GvaRestyLog.IntrusionRequest,
+		resty.PrepareRequestMiddleware,
+		global.GvaRestyLog.BeforeRequest,
+	)
+	// 响应中间件
+	global.GvaRestyClient.SetResponseMiddlewares(
+		global.GvaRestyLog.CopyResponseBodyMiddleware,
+		resty.AutoParseResponseMiddleware,
+		global.GvaRestyLog.AfterResponse,
+	)
 }

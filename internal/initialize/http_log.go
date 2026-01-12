@@ -2,15 +2,12 @@ package initialize
 
 import (
 	"context"
-	"encoding/json"
 	"log/slog"
 	"net/http"
-	"strings"
 	"sync"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/global"
 
-	xml2json "github.com/basgys/goxml2json"
 	"go.dtapp.net/library/contrib/http_log"
 )
 
@@ -41,33 +38,15 @@ func (s *EntHttpLogSaver) HandleLog(ctx context.Context, data *http_log.LogData)
 	)
 
 	go func(asyncCtx context.Context, asyncDb *ent_log.Client, syncData *http_log.LogData) {
-		var (
-			requestBody  json.RawMessage = nil
-			responseBody json.RawMessage = nil
-		)
-		if len(syncData.RequestBodyJSON) > 0 {
-			requestBody = json.RawMessage(syncData.RequestBodyJSON)
-		}
-		if len(syncData.RequestBodyXML) > 0 {
-			xj, _ := xml2json.Convert(strings.NewReader(string(syncData.RequestBodyXML)))
-			requestBody = json.RawMessage(xj.Bytes())
-		}
-		if len(syncData.ResponseBodyJSON) > 0 {
-			responseBody = json.RawMessage(syncData.ResponseBodyJSON)
-		}
-		if len(syncData.ResponseBodyXML) > 0 {
-			xj, _ := xml2json.Convert(strings.NewReader(string(syncData.ResponseBodyXML)))
-			responseBody = json.RawMessage(xj.Bytes())
-		}
 		err := asyncDb.HttpLog.Create().
 			SetHostname(syncData.Hostname).
 			SetMethod(syncData.Method).
 			SetURL(syncData.URL).
 			SetRequestHeaders(syncData.RequestHeaders).
-			SetRequestBody(requestBody).
+			SetRequestBody(syncData.RequestBody).
 			SetStatusCode(syncData.StatusCode).
 			SetResponseHeaders(syncData.ResponseHeaders).
-			SetResponseBody(responseBody).
+			SetResponseBody(syncData.ResponseBody).
 			SetElapseTime(syncData.ElapseTime).
 			SetIsError(syncData.IsError).
 			SetGoVersion(syncData.GoVersion).
@@ -90,7 +69,7 @@ func InitEntHttpLog(logger *slog.Logger) {
 		originalTransport := http.DefaultTransport
 
 		// 定义回调函数
-		saveFunc := func(ctx context.Context, data *http_log.LogData) error {
+		callbackFunc := func(ctx context.Context, data *http_log.LogData) error {
 			logger.DebugContext(ctx, "[回调方式]准备保存日志",
 				slog.String("Hostname", data.Hostname),
 				slog.String("Method", data.Method),
@@ -109,33 +88,15 @@ func InitEntHttpLog(logger *slog.Logger) {
 			)
 
 			go func(asyncCtx context.Context, asyncDb *ent_log.Client, syncData *http_log.LogData) {
-				var (
-					requestBody  json.RawMessage = nil
-					responseBody json.RawMessage = nil
-				)
-				if len(syncData.RequestBodyJSON) > 0 {
-					requestBody = json.RawMessage(syncData.RequestBodyJSON)
-				}
-				if len(syncData.RequestBodyXML) > 0 {
-					xj, _ := xml2json.Convert(strings.NewReader(string(syncData.RequestBodyXML)))
-					requestBody = json.RawMessage(xj.Bytes())
-				}
-				if len(syncData.ResponseBodyJSON) > 0 {
-					responseBody = json.RawMessage(syncData.ResponseBodyJSON)
-				}
-				if len(syncData.ResponseBodyXML) > 0 {
-					xj, _ := xml2json.Convert(strings.NewReader(string(syncData.ResponseBodyXML)))
-					responseBody = json.RawMessage(xj.Bytes())
-				}
 				err := asyncDb.HttpLog.Create().
 					SetHostname(syncData.Hostname).
 					SetMethod(syncData.Method).
 					SetURL(syncData.URL).
 					SetRequestHeaders(syncData.RequestHeaders).
-					SetRequestBody(requestBody).
+					SetRequestBody(syncData.RequestBody).
 					SetStatusCode(syncData.StatusCode).
 					SetResponseHeaders(syncData.ResponseHeaders).
-					SetResponseBody(responseBody).
+					SetResponseBody(syncData.ResponseBody).
 					SetElapseTime(syncData.ElapseTime).
 					SetIsError(syncData.IsError).
 					SetGoVersion(syncData.GoVersion).
@@ -160,11 +121,7 @@ func InitEntHttpLog(logger *slog.Logger) {
 		}
 
 		// 初始化 Logger，传入回调和接口（回调优先）
-		global.GvaHttpLog = &http_log.LoggingTransport{
-			Proxied: originalTransport,
-			OnLog:   saveFunc,
-			Handler: saver,
-		}
+		global.GvaHttpLog = http_log.NewLoggingRoundTripper(originalTransport, saver, callbackFunc)
 
 		// 设置全局默认的 Transport
 		http.DefaultTransport = global.GvaHttpLog

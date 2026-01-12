@@ -164,6 +164,37 @@ func (q *PortForwardStatsQuery) WhereIfFunc(condition bool, predicateFunc func()
 
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
+func (q *ReqLogQuery) WhereIf(condition bool, p predicate.ReqLog) *ReqLogQuery {
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p)
+	}
+	return q
+}
+
+// WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *ReqLogQuery) WhereIfs(condition bool, p ...predicate.ReqLog) *ReqLogQuery {
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p...)
+	}
+	return q
+}
+
+// WhereIfFunc 动态地添加一个 WHERE 子句到查询构建器。
+// conditionFunc 决定是否应用过滤。
+// predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
+func (q *ReqLogQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.ReqLog) *ReqLogQuery {
+	q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
+	if condition {
+		q.Where(predicateFunc())
+	}
+	return q
+}
+
+// WhereIf 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
 func (q *RestyLogQuery) WhereIf(condition bool, p predicate.RestyLog) *RestyLogQuery {
 	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {

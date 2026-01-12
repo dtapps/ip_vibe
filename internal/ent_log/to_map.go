@@ -71,6 +71,31 @@ func (t *PortForwardStats) ToMap() map[string]any {
 	return m
 }
 
+// ToMap 将 ReqLog 实体转换为 map[string]any。
+// 键为数据库列名（snake_case），值为字段当前值。
+// 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。
+func (t *ReqLog) ToMap() map[string]any {
+	if t == nil {
+		return nil
+	}
+	m := make(map[string]any)
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["request_headers"] = t.RequestHeaders
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["request_body"] = t.RequestBody
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["request_query_params"] = t.RequestQueryParams
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["request_form_data"] = t.RequestFormData
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["request_path_params"] = t.RequestPathParams
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["response_headers"] = t.ResponseHeaders
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["response_body"] = t.ResponseBody
+	return m
+}
+
 // ToMap 将 RestyLog 实体转换为 map[string]any。
 // 键为数据库列名（snake_case），值为字段当前值。
 // 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。
@@ -83,6 +108,12 @@ func (t *RestyLog) ToMap() map[string]any {
 	m["request_headers"] = t.RequestHeaders
 	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
 	m["request_body"] = t.RequestBody
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["request_query_params"] = t.RequestQueryParams
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["request_form_data"] = t.RequestFormData
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["request_path_params"] = t.RequestPathParams
 	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
 	m["response_headers"] = t.ResponseHeaders
 	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）

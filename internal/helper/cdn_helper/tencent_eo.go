@@ -65,7 +65,7 @@ func (c *TencentEOClient) SetDebug(debug bool) *TencentEOClient {
 }
 
 // 设置HTTP日志记录器
-func (c *TencentEOClient) SetLog(loggingTransport *http_log.LoggingTransport) *TencentEOClient {
+func (c *TencentEOClient) SetLog(loggingTransport *http_log.LoggingRoundTripper) *TencentEOClient {
 	if loggingTransport == nil {
 		return c
 	}

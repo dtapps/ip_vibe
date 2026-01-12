@@ -79,7 +79,7 @@ func (c *HuaweiDnsClient) SetDebug(debug bool) *HuaweiDnsClient {
 }
 
 // 设置HTTP日志记录器
-func (c *HuaweiDnsClient) SetLog(loggingTransport *http_log.LoggingTransport) *HuaweiDnsClient {
+func (c *HuaweiDnsClient) SetLog(loggingTransport *http_log.LoggingRoundTripper) *HuaweiDnsClient {
 	if loggingTransport == nil {
 		return c
 	}

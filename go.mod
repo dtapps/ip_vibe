@@ -10,6 +10,12 @@ ignore ./cmd/frontend
 
 ignore ./sql
 
+replace github.com/quic-go/qpack => github.com/quic-go/qpack v0.6.0
+
+replace github.com/quic-go/quic-go => github.com/quic-go/quic-go v0.58.0
+
+replace github.com/imroc/req/v3 => github.com/imroc/req/v3 v3.57.0
+
 require (
 	connectrpc.com/connect v1.19.1
 	entgo.io/ent v0.14.5
@@ -21,7 +27,6 @@ require (
 	github.com/aliyun/credentials-go v1.4.10
 	github.com/apache/thrift v0.22.0
 	github.com/baidubce/bce-sdk-go v0.9.256
-	github.com/basgys/goxml2json v1.1.0
 	github.com/cloudflare/cloudflare-go/v6 v6.5.0
 	github.com/corazawaf/coraza-coreruleset v0.0.0-20240226094324-415b1017abdc
 	github.com/corazawaf/coraza/v3 v3.3.3
@@ -55,15 +60,16 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.30
 	github.com/volcengine/volcengine-go-sdk v1.2.6
-	github.com/wdcbot/qingfeng v1.6.2
-	go.dtapp.net/library/contrib/http_log v1.0.5
-	go.dtapp.net/library/contrib/resty_log v1.0.11
-	go.dtapp.net/library/service/bark v1.0.8
-	go.dtapp.net/library/service/dingtalk v1.0.40
-	go.dtapp.net/library/service/feishu v1.0.38
-	go.dtapp.net/library/service/ft07 v1.0.9
-	go.dtapp.net/library/service/pushdeer v1.0.9
-	go.dtapp.net/library/service/wechatqy v1.0.39
+	github.com/wdcbot/qingfeng v1.6.3
+	go.dtapp.net/library/contrib/http_log v1.0.6
+	go.dtapp.net/library/contrib/req_log v1.0.1
+	go.dtapp.net/library/contrib/resty_log v1.0.12
+	go.dtapp.net/library/service/bark v1.0.9
+	go.dtapp.net/library/service/dingtalk v1.0.41
+	go.dtapp.net/library/service/feishu v1.0.39
+	go.dtapp.net/library/service/ft07 v1.0.10
+	go.dtapp.net/library/service/pushdeer v1.0.10
+	go.dtapp.net/library/service/wechatqy v1.0.40
 	go.dtapp.net/library/utils/goarray v1.0.4
 	go.dtapp.net/library/utils/gojson v1.0.13
 	go.dtapp.net/library/utils/golog v1.0.180
@@ -95,6 +101,7 @@ require (
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/aws/aws-sdk-go v1.55.8 // indirect
+	github.com/basgys/goxml2json v1.1.0 // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
 	github.com/bytedance/gopkg v0.1.3 // indirect
 	github.com/bytedance/sonic v1.14.2 // indirect

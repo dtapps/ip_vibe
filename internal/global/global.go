@@ -6,7 +6,9 @@ import (
 	"vibe_ip/internal/ent_log"
 
 	"github.com/go-co-op/gocron/v2"
+	"github.com/imroc/req/v3"
 	"go.dtapp.net/library/contrib/http_log"
+	"go.dtapp.net/library/contrib/req_log"
 	"go.dtapp.net/library/contrib/resty_log"
 	"go.dtapp.net/library/service/bark"
 	"go.dtapp.net/library/service/dingtalk"
@@ -14,6 +16,7 @@ import (
 	"go.dtapp.net/library/service/ft07"
 	"go.dtapp.net/library/service/pushdeer"
 	"go.dtapp.net/library/service/wechatqy"
+	"resty.dev/v3"
 )
 
 var (
@@ -53,8 +56,9 @@ var (
 	GvaThriftSlog *slog.Logger // Thrift 日志
 	GvaGocronSlog *slog.Logger // gocron 日志
 	GvaMcpSlog    *slog.Logger // mcp 日志
-	GvaRestySlog  *slog.Logger // resty 日志
 	GvaHttpSlog   *slog.Logger // http 日志
+	GvaRestySlog  *slog.Logger // resty 日志
+	GvaReqSlog    *slog.Logger // req 日志
 
 	GvaEntDb    *ent.Client     // 业务数据库
 	GvaEntLogDb *ent_log.Client // 日志数据库
@@ -62,8 +66,12 @@ var (
 	GvaGoCron        gocron.Scheduler // 定时任务
 	GvaGoCronRunning int32            // 定时任务状态 0=停 1=运行
 
-	GvaHttpLog  *http_log.LoggingTransport // HTTP框架日志
-	GvaRestyLog *resty_log.Logger          // Resty框架日志
+	GvaRestyClient *resty.Client // Resty 客户端
+	GvaReqClient   *req.Client   // Req 客户端
+
+	GvaHttpLog  *http_log.LoggingRoundTripper // HTTP框架日志
+	GvaRestyLog *resty_log.LoggerMiddleware   // Resty框架日志
+	GvaReqLog   *req_log.LoggerMiddleware     // Req框架日志
 
 	GvaWechatWork *wechatqy.Client // 企业微信
 	GvaDingTalk   *dingtalk.Client // 钉钉

@@ -21,7 +21,7 @@ type AliyunCdnHttpHandler struct {
 	httpClient *http.Client
 }
 
-func NewAliyunCdnHttpHandler(log *http_log.LoggingTransport) *AliyunCdnHttpHandler {
+func NewAliyunCdnHttpHandler(log *http_log.LoggingRoundTripper) *AliyunCdnHttpHandler {
 	return &AliyunCdnHttpHandler{
 		httpClient: &http.Client{
 			Transport: log,
@@ -90,7 +90,7 @@ func (c *AliyunCdnClient) SetDebug(debug bool) *AliyunCdnClient {
 }
 
 // 设置HTTP日志记录器
-func (c *AliyunCdnClient) SetLog(loggingTransport *http_log.LoggingTransport) *AliyunCdnClient {
+func (c *AliyunCdnClient) SetLog(loggingTransport *http_log.LoggingRoundTripper) *AliyunCdnClient {
 	if loggingTransport == nil {
 		return c
 	}

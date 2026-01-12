@@ -47,7 +47,7 @@ func (c *JdcloudCdnClient) SetDebug(debug bool) *JdcloudCdnClient {
 }
 
 // 设置HTTP日志记录器
-func (c *JdcloudCdnClient) SetLog(loggingTransport *http_log.LoggingTransport) *JdcloudCdnClient {
+func (c *JdcloudCdnClient) SetLog(loggingTransport *http_log.LoggingRoundTripper) *JdcloudCdnClient {
 	if loggingTransport == nil {
 		return c
 	}

@@ -44,7 +44,7 @@ func (c *CloudflareClient) SetDebug(debug bool) *CloudflareClient {
 }
 
 // 设置HTTP日志记录器
-func (c *CloudflareClient) SetLog(loggingTransport *http_log.LoggingTransport) *CloudflareClient {
+func (c *CloudflareClient) SetLog(loggingTransport *http_log.LoggingRoundTripper) *CloudflareClient {
 	if loggingTransport == nil {
 		return c
 	}

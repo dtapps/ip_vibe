@@ -15,14 +15,14 @@ import (
 
 // 实现 DNSProcess 接口
 type DNSProcessCloudflareImpl struct {
-	db            *ent.Client                // 数据库
-	logger        *slog.Logger               // 日志
-	httpTransport *http_log.LoggingTransport // HTTP日志记录器
-	debug         bool                       // 调试模式
+	db            *ent.Client                   // 数据库
+	logger        *slog.Logger                  // 日志
+	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	debug         bool                          // 调试模式
 }
 
 // 创建实例
-func NewDNSProcessCloudflare(db *ent.Client, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) DNSProcess {
+func NewDNSProcessCloudflare(db *ent.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) DNSProcess {
 	return &DNSProcessCloudflareImpl{
 		db:            db,
 		logger:        logger,

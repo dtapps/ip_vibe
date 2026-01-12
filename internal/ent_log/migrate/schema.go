@@ -55,7 +55,7 @@ var (
 		{Name: "check_duration", Type: field.TypeInt, Nullable: true, Comment: "检查耗时（毫秒）"},
 		{Name: "status_message", Type: field.TypeString, Nullable: true, Comment: "简要状态信息（如：200 OK，连接超时）"},
 		{Name: "http_status", Type: field.TypeInt, Nullable: true, Comment: "HTTP/HTTPS 状态码"},
-		{Name: "check_type", Type: field.TypeEnum, Nullable: true, Comment: "检查方式 标准 / Resty / Grequests / req / Colly", Enums: []string{"unknown", "standard", "resty", "grequests", "req", "requests", "axios4go", "azure_tls", "colly"}, Default: "unknown"},
+		{Name: "check_type", Type: field.TypeEnum, Nullable: true, Comment: "检查方式 标准 / Resty / Grequests / req / Colly", Enums: []string{"unknown", "standard", "resty", "req"}, Default: "unknown"},
 		{Name: "ip_resolved", Type: field.TypeJSON, Nullable: true, Comment: "解析到的 IP 地址列表"},
 		{Name: "error_log", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "详细错误信息或异常堆栈"},
 		{Name: "ssl_not_date", Type: field.TypeTime, Nullable: true, Comment: "证书生效日期（NotBefore）"},
@@ -109,24 +109,24 @@ var (
 	// HTTPLogColumns holds the columns for the "http_log" table.
 	HTTPLogColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "请求日志序号"},
-		{Name: "hostname", Type: field.TypeString, Comment: "请求主机名"},
-		{Name: "method", Type: field.TypeString, Comment: "请求方式"},
-		{Name: "url", Type: field.TypeString, Comment: "请求url"},
-		{Name: "request_headers", Type: field.TypeJSON, Nullable: true, Comment: "请求header"},
-		{Name: "request_body", Type: field.TypeJSON, Nullable: true, Comment: "请求参数"},
-		{Name: "status_code", Type: field.TypeInt, Nullable: true, Comment: "响应码"},
-		{Name: "response_headers", Type: field.TypeJSON, Nullable: true, Comment: "响应header"},
-		{Name: "response_body", Type: field.TypeJSON, Nullable: true, Comment: "响应结果"},
-		{Name: "elapse_time", Type: field.TypeInt64, Comment: "请求耗时, 单位:毫秒"},
-		{Name: "is_error", Type: field.TypeBool, Nullable: true, Comment: "是否为错误请求（如 5xx、4xx）", Default: false},
+		{Name: "hostname", Type: field.TypeString, Comment: "主机名"},
+		{Name: "method", Type: field.TypeString, Comment: "请求方法"},
+		{Name: "url", Type: field.TypeString, Comment: "请求 URL"},
+		{Name: "request_headers", Type: field.TypeJSON, Nullable: true, Comment: "请求头"},
+		{Name: "request_body", Type: field.TypeJSON, Nullable: true, Comment: "请求体"},
+		{Name: "status_code", Type: field.TypeInt, Nullable: true, Comment: "状态码"},
+		{Name: "response_headers", Type: field.TypeJSON, Nullable: true, Comment: "响应头"},
+		{Name: "response_body", Type: field.TypeJSON, Nullable: true, Comment: "响应体"},
+		{Name: "elapse_time", Type: field.TypeInt64, Nullable: true, Comment: "耗时, 单位:毫秒"},
+		{Name: "is_error", Type: field.TypeBool, Nullable: true, Comment: "是否出错（如 5xx、4xx）", Default: false},
 		{Name: "created_at", Type: field.TypeTime, Comment: "请求时间"},
-		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "go 版本", Default: "go1.26rc1"},
-		{Name: "plugin_version", Type: field.TypeString, Nullable: true, Comment: "plugin 版本", Default: "1.0.5"},
+		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "Go 版本", Default: "go1.26rc1"},
+		{Name: "plugin_version", Type: field.TypeString, Nullable: true, Comment: "插件版本", Default: "1.0.6"},
 	}
 	// HTTPLogTable holds the schema information for the "http_log" table.
 	HTTPLogTable = &schema.Table{
 		Name:       "http_log",
-		Comment:    "http请求日志",
+		Comment:    "http 请求日志",
 		Columns:    HTTPLogColumns,
 		PrimaryKey: []*schema.Column{HTTPLogColumns[0]},
 		Indexes: []*schema.Index{
@@ -275,28 +275,88 @@ var (
 			},
 		},
 	}
+	// ReqLogColumns holds the columns for the "req_log" table.
+	ReqLogColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "请求日志序号"},
+		{Name: "hostname", Type: field.TypeString, Comment: "主机名"},
+		{Name: "method", Type: field.TypeString, Comment: "请求方法"},
+		{Name: "url", Type: field.TypeString, Comment: "请求 URL"},
+		{Name: "request_headers", Type: field.TypeJSON, Nullable: true, Comment: "请求头"},
+		{Name: "request_body", Type: field.TypeJSON, Nullable: true, Comment: "请求体"},
+		{Name: "request_query_params", Type: field.TypeJSON, Nullable: true, Comment: "请求参数"},
+		{Name: "request_form_data", Type: field.TypeJSON, Nullable: true, Comment: "请求表单数据"},
+		{Name: "request_path_params", Type: field.TypeJSON, Nullable: true, Comment: "请求路径参数"},
+		{Name: "status_code", Type: field.TypeInt, Nullable: true, Comment: "状态码"},
+		{Name: "response_headers", Type: field.TypeJSON, Nullable: true, Comment: "响应头"},
+		{Name: "response_body", Type: field.TypeJSON, Nullable: true, Comment: "响应体"},
+		{Name: "elapse_time", Type: field.TypeInt64, Nullable: true, Comment: "耗时, 单位:毫秒"},
+		{Name: "is_error", Type: field.TypeBool, Nullable: true, Comment: "是否错误（如 5xx、4xx）", Default: false},
+		{Name: "created_at", Type: field.TypeTime, Comment: "请求时间"},
+		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "Go 版本", Default: "go1.26rc1"},
+		{Name: "plugin_version", Type: field.TypeString, Nullable: true, Comment: "插件版本", Default: "1.0.1"},
+	}
+	// ReqLogTable holds the schema information for the "req_log" table.
+	ReqLogTable = &schema.Table{
+		Name:       "req_log",
+		Comment:    "req 请求日志",
+		Columns:    ReqLogColumns,
+		PrimaryKey: []*schema.Column{ReqLogColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "reqlog_hostname",
+				Unique:  false,
+				Columns: []*schema.Column{ReqLogColumns[1]},
+			},
+			{
+				Name:    "reqlog_method",
+				Unique:  false,
+				Columns: []*schema.Column{ReqLogColumns[2]},
+			},
+			{
+				Name:    "reqlog_url",
+				Unique:  false,
+				Columns: []*schema.Column{ReqLogColumns[3]},
+			},
+			{
+				Name:    "reqlog_status_code",
+				Unique:  false,
+				Columns: []*schema.Column{ReqLogColumns[9]},
+			},
+			{
+				Name:    "reqlog_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{ReqLogColumns[14]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+		},
+	}
 	// RestyLogColumns holds the columns for the "resty_log" table.
 	RestyLogColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "请求日志序号"},
-		{Name: "hostname", Type: field.TypeString, Comment: "请求主机名"},
-		{Name: "method", Type: field.TypeString, Comment: "请求方式"},
-		{Name: "url", Type: field.TypeString, Comment: "请求url"},
-		{Name: "request_headers", Type: field.TypeJSON, Nullable: true, Comment: "请求header"},
-		{Name: "request_body", Type: field.TypeJSON, Nullable: true, Comment: "请求参数"},
-		{Name: "status_code", Type: field.TypeInt, Nullable: true, Comment: "响应码"},
-		{Name: "response_headers", Type: field.TypeJSON, Nullable: true, Comment: "响应header"},
-		{Name: "response_body", Type: field.TypeJSON, Nullable: true, Comment: "响应结果"},
-		{Name: "elapse_time", Type: field.TypeInt64, Comment: "请求耗时, 单位:毫秒"},
-		{Name: "is_error", Type: field.TypeBool, Nullable: true, Comment: "是否为错误请求（如 5xx、4xx）", Default: false},
+		{Name: "hostname", Type: field.TypeString, Comment: "主机名"},
+		{Name: "method", Type: field.TypeString, Comment: "请求方法"},
+		{Name: "url", Type: field.TypeString, Comment: "请求 URL"},
+		{Name: "request_headers", Type: field.TypeJSON, Nullable: true, Comment: "请求头"},
+		{Name: "request_body", Type: field.TypeJSON, Nullable: true, Comment: "请求体"},
+		{Name: "request_query_params", Type: field.TypeJSON, Nullable: true, Comment: "请求参数"},
+		{Name: "request_form_data", Type: field.TypeJSON, Nullable: true, Comment: "请求表单数据"},
+		{Name: "request_path_params", Type: field.TypeJSON, Nullable: true, Comment: "请求路径参数"},
+		{Name: "status_code", Type: field.TypeInt, Nullable: true, Comment: "状态码"},
+		{Name: "response_headers", Type: field.TypeJSON, Nullable: true, Comment: "响应头"},
+		{Name: "response_body", Type: field.TypeJSON, Nullable: true, Comment: "响应体"},
+		{Name: "elapse_time", Type: field.TypeInt64, Nullable: true, Comment: "耗时, 单位:毫秒"},
+		{Name: "is_error", Type: field.TypeBool, Nullable: true, Comment: "是否错误（如 5xx、4xx）", Default: false},
 		{Name: "created_at", Type: field.TypeTime, Comment: "请求时间"},
-		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "go 版本", Default: "go1.26rc1"},
-		{Name: "plugin_version", Type: field.TypeString, Nullable: true, Comment: "plugin 版本", Default: "1.0.11"},
-		{Name: "resty_version", Type: field.TypeString, Nullable: true, Comment: "resty 版本", Default: "3.0.0-beta.6"},
+		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "Go 版本", Default: "go1.26rc1"},
+		{Name: "plugin_version", Type: field.TypeString, Nullable: true, Comment: "插件版本", Default: "1.0.12"},
+		{Name: "resty_version", Type: field.TypeString, Nullable: true, Comment: "Resty 版本", Default: "3.0.0-beta.6"},
 	}
 	// RestyLogTable holds the schema information for the "resty_log" table.
 	RestyLogTable = &schema.Table{
 		Name:       "resty_log",
-		Comment:    "resty请求日志",
+		Comment:    "resty 请求日志",
 		Columns:    RestyLogColumns,
 		PrimaryKey: []*schema.Column{RestyLogColumns[0]},
 		Indexes: []*schema.Index{
@@ -318,12 +378,12 @@ var (
 			{
 				Name:    "restylog_status_code",
 				Unique:  false,
-				Columns: []*schema.Column{RestyLogColumns[6]},
+				Columns: []*schema.Column{RestyLogColumns[9]},
 			},
 			{
 				Name:    "restylog_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{RestyLogColumns[11]},
+				Columns: []*schema.Column{RestyLogColumns[14]},
 				Annotation: &entsql.IndexAnnotation{
 					Desc: true,
 				},
@@ -436,6 +496,7 @@ var (
 		HTTPLogTable,
 		OperationLogTable,
 		PortForwardStatsTable,
+		ReqLogTable,
 		RestyLogTable,
 		SslCertificateHistoryTable,
 		WebhookHistoryTable,
@@ -457,6 +518,9 @@ func init() {
 	}
 	PortForwardStatsTable.Annotation = &entsql.Annotation{
 		Table: "port_forward_stats",
+	}
+	ReqLogTable.Annotation = &entsql.Annotation{
+		Table: "req_log",
 	}
 	RestyLogTable.Annotation = &entsql.Annotation{
 		Table: "resty_log",

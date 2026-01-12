@@ -23,7 +23,7 @@ func (HttpLog) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entsql.Annotation{Table: "http_log"},
 		entsql.WithComments(true),
-		schema.Comment("http请求日志"),
+		schema.Comment("http 请求日志"),
 	}
 }
 
@@ -39,33 +39,33 @@ func (HttpLog) Fields() []ent.Field {
 
 		field.String("hostname").
 			Immutable().
-			Comment("请求主机名").
+			Comment("主机名").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("method").
 			Immutable().
-			Comment("请求方式").
+			Comment("请求方法").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("url").
 			Immutable().
-			Comment("请求url").
+			Comment("请求 URL").
 			Annotations(entsql.WithComments(true)),
 
 		field.JSON("request_headers", map[string][]string{}).
 			Optional().
 			Immutable().
-			Comment("请求header").
+			Comment("请求头").
 			Annotations(entsql.WithComments(true)),
 
 		field.JSON("request_body", json.RawMessage{}).
 			Optional().
 			Immutable().
-			Comment("请求参数").
+			Comment("请求体").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int("status_code").
-			Comment("响应码").
+			Comment("状态码").
 			Optional().
 			Immutable().
 			Annotations(entsql.WithComments(true)),
@@ -73,26 +73,26 @@ func (HttpLog) Fields() []ent.Field {
 		field.JSON("response_headers", map[string][]string{}).
 			Optional().
 			Immutable().
-			Comment("响应header").
+			Comment("响应头").
 			Annotations(entsql.WithComments(true)),
 
 		field.JSON("response_body", json.RawMessage{}).
 			Optional().
 			Immutable().
-			Comment("响应结果").
+			Comment("响应体").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("elapse_time").
-			Positive(). // 正数
+			Optional().
 			Immutable().
-			Comment("请求耗时, 单位:毫秒").
+			Comment("耗时, 单位:毫秒").
 			Annotations(entsql.WithComments(true)),
 
 		field.Bool("is_error").
 			Default(false).
 			Optional().
 			Immutable().
-			Comment("是否为错误请求（如 5xx、4xx）").
+			Comment("是否出错（如 5xx、4xx）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Time("created_at").
@@ -105,14 +105,14 @@ func (HttpLog) Fields() []ent.Field {
 			Default(runtime.Version()).
 			Optional().
 			Immutable().
-			Comment("go 版本").
+			Comment("Go 版本").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("plugin_version").
 			Default(http_log.Version).
 			Optional().
 			Immutable().
-			Comment("plugin 版本").
+			Comment("插件版本").
 			Annotations(entsql.WithComments(true)),
 	}
 }

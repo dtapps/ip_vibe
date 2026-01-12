@@ -133,10 +133,6 @@ func (h *sentPacketHistory) Len() int {
 	return len(h.packets)
 }
 
-func (h *sentPacketHistory) NumOutstanding() int {
-	return h.numOutstanding
-}
-
 // Remove removes a packet from the sent packet history.
 // It must not be used for skipped packet numbers.
 func (h *sentPacketHistory) Remove(pn protocol.PacketNumber) error {

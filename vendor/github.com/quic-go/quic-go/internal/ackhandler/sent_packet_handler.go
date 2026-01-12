@@ -239,12 +239,12 @@ func (h *sentPacketHandler) ReceivedPacket(l protocol.EncryptionLevel, t monotim
 }
 
 func (h *sentPacketHandler) packetsInFlight() int {
-	packetsInFlight := h.appDataPackets.history.NumOutstanding()
+	packetsInFlight := h.appDataPackets.history.Len()
 	if h.handshakePackets != nil {
-		packetsInFlight += h.handshakePackets.history.NumOutstanding()
+		packetsInFlight += h.handshakePackets.history.Len()
 	}
 	if h.initialPackets != nil {
-		packetsInFlight += h.initialPackets.history.NumOutstanding()
+		packetsInFlight += h.initialPackets.history.Len()
 	}
 	return packetsInFlight
 }
@@ -351,9 +351,8 @@ func (h *sentPacketHandler) qlogMetricsUpdated() {
 		h.lastMetrics.BytesInFlight = metricsUpdatedEvent.BytesInFlight
 		updated = true
 	}
-	packetsInFlight := h.packetsInFlight()
-	if h.lastMetrics.PacketsInFlight != packetsInFlight {
-		metricsUpdatedEvent.PacketsInFlight = packetsInFlight
+	if h.lastMetrics.PacketsInFlight != h.packetsInFlight() {
+		metricsUpdatedEvent.PacketsInFlight = h.packetsInFlight()
 		h.lastMetrics.PacketsInFlight = metricsUpdatedEvent.PacketsInFlight
 		updated = true
 	}
@@ -437,7 +436,7 @@ func (h *sentPacketHandler) ReceivedAck(ack *wire.AckFrame, encLevel protocol.En
 	}
 	var acked1RTTPacket bool
 	for _, p := range ackedPackets {
-		if p.includedInBytesInFlight {
+		if p.includedInBytesInFlight && !p.declaredLost {
 			h.congestion.OnPacketAcked(p.PacketNumber, p.Length, priorInFlight, rcvTime)
 		}
 		if p.EncryptionLevel == protocol.Encryption1RTT {
@@ -1044,12 +1043,11 @@ func (h *sentPacketHandler) QueueProbePacket(encLevel protocol.EncryptionLevel) 
 	if p == nil {
 		return false
 	}
+	h.queueFramesForRetransmission(p)
 	// TODO: don't declare the packet lost here.
 	// Keep track of acknowledged frames instead.
-	// Call DeclareLost before queueFramesForRetransmission, which clears the packet's frames.
-	pnSpace.history.DeclareLost(pn)
 	h.removeFromBytesInFlight(p)
-	h.queueFramesForRetransmission(p)
+	pnSpace.history.DeclareLost(pn)
 	return true
 }
 
@@ -1078,14 +1076,14 @@ func (h *sentPacketHandler) ResetForRetry(now monotime.Time) {
 		if firstPacketSendTime.IsZero() {
 			firstPacketSendTime = p.SendTime
 		}
-		if p.IsAckEliciting() {
+		if !p.declaredLost && p.IsAckEliciting() {
 			h.queueFramesForRetransmission(p)
 		}
 	}
 	// All application data packets sent at this point are 0-RTT packets.
 	// In the case of a Retry, we can assume that the server dropped all of them.
 	for _, p := range h.appDataPackets.history.Packets() {
-		if p.IsAckEliciting() {
+		if !p.declaredLost && p.IsAckEliciting() {
 			h.queueFramesForRetransmission(p)
 		}
 	}

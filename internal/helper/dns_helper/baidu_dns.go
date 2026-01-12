@@ -48,7 +48,7 @@ func (c *BaiduDnsClient) SetDebug(debug bool) *BaiduDnsClient {
 }
 
 // 设置HTTP日志记录器
-func (c *BaiduDnsClient) SetLog(loggingTransport *http_log.LoggingTransport) *BaiduDnsClient {
+func (c *BaiduDnsClient) SetLog(loggingTransport *http_log.LoggingRoundTripper) *BaiduDnsClient {
 	if loggingTransport == nil {
 		return c
 	}

@@ -14,6 +14,7 @@ import (
 	"time"
 	"vibe_ip/internal/core"
 	"vibe_ip/internal/ent/schema/schematype"
+	"vibe_ip/internal/global"
 
 	"github.com/imroc/req/v3"
 	"go.dtapp.net/library/contrib/http_log"
@@ -21,16 +22,28 @@ import (
 )
 
 type DomainCheck struct {
-	logger        *slog.Logger               // 日志记录器
-	httpTransport *http_log.LoggingTransport // HTTP日志记录器
-	debug         bool                       // 是否开启调试模式
+	logger        *slog.Logger                  // 日志记录器
+	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	debug         bool                          // 是否开启调试模式
+	restyClient   *resty.Client                 // Resty 客户端
+	reqClient     *req.Client                   // Req 客户端
 }
 
-func NewDomainCheck(logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) *DomainCheck {
+func NewDomainCheck(logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) *DomainCheck {
+	restyClient := resty.New()
+	if global.GvaRestyClient != nil {
+		restyClient = global.GvaRestyClient
+	}
+	reqClient := req.NewClient()
+	if global.GvaReqClient != nil {
+		reqClient = global.GvaReqClient
+	}
 	return &DomainCheck{
 		logger:        logger,
 		httpTransport: httpTransport,
 		debug:         debug,
+		restyClient:   restyClient,
+		reqClient:     reqClient,
 	}
 }
 
@@ -229,17 +242,17 @@ func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, u *url.URL, httpHe
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeResty
 
-	// 创建 Resty 客户端
-	client := resty.New()
+	// 复制 Resty 客户端
+	client := s.restyClient.Clone(ctx)
 	defer client.Close()
 
 	// 设置超时
 	client.SetTimeout(60 * time.Second)
 
 	// 添加 HTTP 日志记录器
-	if s.httpTransport != nil {
-		client.SetTransport(s.httpTransport.Instance(nil))
-	}
+	// if s.httpTransport != nil {
+	// 	client.SetTransport(s.httpTransport.Instance(nil))
+	// }
 
 	// 添加自定义 HTTP 请求头
 	for k, v := range httpHeaders {
@@ -277,18 +290,18 @@ func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, u *url.URL, httpHead
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeReq
 
 	// 创建 Req 客户端
-	client := req.NewClient()
+	client := s.reqClient.Clone()
 
 	// 设置超时
 	client.SetTimeout(60 * time.Second)
 
 	// 添加 HTTP 日志记录器
-	if s.httpTransport != nil {
-		transport := client.GetTransport()
-		transport.WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
-			return s.httpTransport.Middleware()(rt)
-		})
-	}
+	// if s.httpTransport != nil {
+	// 	transport := client.GetTransport()
+	// 	transport.WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
+	// 		return s.httpTransport.Middleware()(rt)
+	// 	})
+	// }
 
 	// 伪装 HTTP 指纹
 	// client.ImpersonateChrome()

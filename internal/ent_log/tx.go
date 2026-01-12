@@ -24,6 +24,8 @@ type Tx struct {
 	OperationLog *OperationLogClient
 	// PortForwardStats is the client for interacting with the PortForwardStats builders.
 	PortForwardStats *PortForwardStatsClient
+	// ReqLog is the client for interacting with the ReqLog builders.
+	ReqLog *ReqLogClient
 	// RestyLog is the client for interacting with the RestyLog builders.
 	RestyLog *RestyLogClient
 	// SSLCertificateHistory is the client for interacting with the SSLCertificateHistory builders.
@@ -166,6 +168,7 @@ func (tx *Tx) init() {
 	tx.HttpLog = NewHttpLogClient(tx.config)
 	tx.OperationLog = NewOperationLogClient(tx.config)
 	tx.PortForwardStats = NewPortForwardStatsClient(tx.config)
+	tx.ReqLog = NewReqLogClient(tx.config)
 	tx.RestyLog = NewRestyLogClient(tx.config)
 	tx.SSLCertificateHistory = NewSSLCertificateHistoryClient(tx.config)
 	tx.WebhookHistory = NewWebhookHistoryClient(tx.config)

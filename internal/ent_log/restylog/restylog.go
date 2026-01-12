@@ -23,6 +23,12 @@ const (
 	FieldRequestHeaders = "request_headers"
 	// FieldRequestBody holds the string denoting the request_body field in the database.
 	FieldRequestBody = "request_body"
+	// FieldRequestQueryParams holds the string denoting the request_query_params field in the database.
+	FieldRequestQueryParams = "request_query_params"
+	// FieldRequestFormData holds the string denoting the request_form_data field in the database.
+	FieldRequestFormData = "request_form_data"
+	// FieldRequestPathParams holds the string denoting the request_path_params field in the database.
+	FieldRequestPathParams = "request_path_params"
 	// FieldStatusCode holds the string denoting the status_code field in the database.
 	FieldStatusCode = "status_code"
 	// FieldResponseHeaders holds the string denoting the response_headers field in the database.
@@ -53,6 +59,9 @@ var Columns = []string{
 	FieldURL,
 	FieldRequestHeaders,
 	FieldRequestBody,
+	FieldRequestQueryParams,
+	FieldRequestFormData,
+	FieldRequestPathParams,
 	FieldStatusCode,
 	FieldResponseHeaders,
 	FieldResponseBody,
@@ -75,8 +84,6 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// ElapseTimeValidator is a validator for the "elapse_time" field. It is called by the builders before save.
-	ElapseTimeValidator func(int64) error
 	// DefaultIsError holds the default value on creation for the "is_error" field.
 	DefaultIsError bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.

@@ -26,9 +26,9 @@ type HuaweiDNSConfigure struct {
 
 // 实现 SSLProcess 接口
 type SSLProcessHuaweiDNSImpl struct {
-	logger        *slog.Logger               // 日志
-	httpTransport *http_log.LoggingTransport // HTTP日志记录器
-	debug         bool                       // 调试模式
+	logger        *slog.Logger                  // 日志
+	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	debug         bool                          // 调试模式
 
 	platformConfig HuaweiDNSConfigure // 平台配置
 
@@ -37,7 +37,7 @@ type SSLProcessHuaweiDNSImpl struct {
 }
 
 // NewSSLProcessHuaweiDNS 创建实例
-func NewSSLProcessHuaweiDNS(logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) SSLProcess {
+func NewSSLProcessHuaweiDNS(logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) SSLProcess {
 	return &SSLProcessHuaweiDNSImpl{
 		logger:        logger,
 		httpTransport: httpTransport,

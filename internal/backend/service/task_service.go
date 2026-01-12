@@ -28,16 +28,16 @@ type TaskService interface {
 
 // TaskServiceImpl 任务调度服务实现
 type TaskServiceImpl struct {
-	db            *ent.Client                // 数据库客户端
-	dbLog         *ent_log.Client            // 日志数据库客户端
-	cron          gocron.Scheduler           // 定时任务调度器
-	logger        *slog.Logger               // 日志记录器
-	httpTransport *http_log.LoggingTransport // HTTP日志记录器
-	debug         bool                       // 调试模式
+	db            *ent.Client                   // 数据库客户端
+	dbLog         *ent_log.Client               // 日志数据库客户端
+	cron          gocron.Scheduler              // 定时任务调度器
+	logger        *slog.Logger                  // 日志记录器
+	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	debug         bool                          // 调试模式
 }
 
 // NewTaskService 创建任务调度服务实例
-func NewTaskService(db *ent.Client, dbLog *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) TaskService {
+func NewTaskService(db *ent.Client, dbLog *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) TaskService {
 	return &TaskServiceImpl{
 		db:            db,
 		dbLog:         dbLog,

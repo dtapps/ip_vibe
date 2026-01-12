@@ -319,6 +319,36 @@ func RequestBodyNotNil() predicate.RestyLog {
 	return predicate.RestyLog(sql.FieldNotNull(FieldRequestBody))
 }
 
+// RequestQueryParamsIsNil applies the IsNil predicate on the "request_query_params" field.
+func RequestQueryParamsIsNil() predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldIsNull(FieldRequestQueryParams))
+}
+
+// RequestQueryParamsNotNil applies the NotNil predicate on the "request_query_params" field.
+func RequestQueryParamsNotNil() predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldNotNull(FieldRequestQueryParams))
+}
+
+// RequestFormDataIsNil applies the IsNil predicate on the "request_form_data" field.
+func RequestFormDataIsNil() predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldIsNull(FieldRequestFormData))
+}
+
+// RequestFormDataNotNil applies the NotNil predicate on the "request_form_data" field.
+func RequestFormDataNotNil() predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldNotNull(FieldRequestFormData))
+}
+
+// RequestPathParamsIsNil applies the IsNil predicate on the "request_path_params" field.
+func RequestPathParamsIsNil() predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldIsNull(FieldRequestPathParams))
+}
+
+// RequestPathParamsNotNil applies the NotNil predicate on the "request_path_params" field.
+func RequestPathParamsNotNil() predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldNotNull(FieldRequestPathParams))
+}
+
 // StatusCodeEQ applies the EQ predicate on the "status_code" field.
 func StatusCodeEQ(v int) predicate.RestyLog {
 	return predicate.RestyLog(sql.FieldEQ(FieldStatusCode, v))
@@ -427,6 +457,16 @@ func ElapseTimeLT(v int64) predicate.RestyLog {
 // ElapseTimeLTE applies the LTE predicate on the "elapse_time" field.
 func ElapseTimeLTE(v int64) predicate.RestyLog {
 	return predicate.RestyLog(sql.FieldLTE(FieldElapseTime, v))
+}
+
+// ElapseTimeIsNil applies the IsNil predicate on the "elapse_time" field.
+func ElapseTimeIsNil() predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldIsNull(FieldElapseTime))
+}
+
+// ElapseTimeNotNil applies the NotNil predicate on the "elapse_time" field.
+func ElapseTimeNotNil() predicate.RestyLog {
+	return predicate.RestyLog(sql.FieldNotNull(FieldElapseTime))
 }
 
 // IsErrorEQ applies the EQ predicate on the "is_error" field.

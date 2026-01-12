@@ -64,7 +64,7 @@ func (c *TencentCdnClient) SetDebug(debug bool) *TencentCdnClient {
 }
 
 // 设置HTTP日志记录器
-func (c *TencentCdnClient) SetLog(loggingTransport *http_log.LoggingTransport) *TencentCdnClient {
+func (c *TencentCdnClient) SetLog(loggingTransport *http_log.LoggingRoundTripper) *TencentCdnClient {
 	if loggingTransport == nil {
 		return c
 	}

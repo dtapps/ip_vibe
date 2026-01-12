@@ -21,6 +21,9 @@ type OperationLog func(*sql.Selector)
 // PortForwardStats is the predicate function for portforwardstats builders.
 type PortForwardStats func(*sql.Selector)
 
+// ReqLog is the predicate function for reqlog builders.
+type ReqLog func(*sql.Selector)
+
 // RestyLog is the predicate function for restylog builders.
 type RestyLog func(*sql.Selector)
 

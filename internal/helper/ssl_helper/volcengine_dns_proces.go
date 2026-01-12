@@ -26,9 +26,9 @@ type VolcengineDnsConfigure struct {
 
 // 实现 SSLProcess 接口
 type SSLProcessVolcengineDnsImpl struct {
-	logger        *slog.Logger               // 日志
-	httpTransport *http_log.LoggingTransport // HTTP日志记录器
-	debug         bool                       // 调试模式
+	logger        *slog.Logger                  // 日志
+	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	debug         bool                          // 调试模式
 
 	platformConfig VolcengineDnsConfigure // 平台配置
 
@@ -37,7 +37,7 @@ type SSLProcessVolcengineDnsImpl struct {
 }
 
 // NewSSLProcessVolcengineDns 创建实例
-func NewSSLProcessVolcengineDns(logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) SSLProcess {
+func NewSSLProcessVolcengineDns(logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) SSLProcess {
 	return &SSLProcessVolcengineDnsImpl{
 		logger:        logger,
 		httpTransport: httpTransport,

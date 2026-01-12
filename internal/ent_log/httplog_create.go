@@ -85,6 +85,14 @@ func (_c *HttpLogCreate) SetElapseTime(v int64) *HttpLogCreate {
 	return _c
 }
 
+// SetNillableElapseTime sets the "elapse_time" field if the given value is not nil.
+func (_c *HttpLogCreate) SetNillableElapseTime(v *int64) *HttpLogCreate {
+	if v != nil {
+		_c.SetElapseTime(*v)
+	}
+	return _c
+}
+
 // SetIsError sets the "is_error" field.
 func (_c *HttpLogCreate) SetIsError(v bool) *HttpLogCreate {
 	_c.mutation.SetIsError(v)
@@ -210,14 +218,6 @@ func (_c *HttpLogCreate) check() error {
 	}
 	if _, ok := _c.mutation.URL(); !ok {
 		return &ValidationError{Name: "url", err: errors.New(`ent_log: missing required field "HttpLog.url"`)}
-	}
-	if _, ok := _c.mutation.ElapseTime(); !ok {
-		return &ValidationError{Name: "elapse_time", err: errors.New(`ent_log: missing required field "HttpLog.elapse_time"`)}
-	}
-	if v, ok := _c.mutation.ElapseTime(); ok {
-		if err := httplog.ElapseTimeValidator(v); err != nil {
-			return &ValidationError{Name: "elapse_time", err: fmt.Errorf(`ent_log: validator failed for field "HttpLog.elapse_time": %w`, err)}
-		}
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent_log: missing required field "HttpLog.created_at"`)}

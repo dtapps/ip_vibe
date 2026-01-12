@@ -72,8 +72,6 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// ElapseTimeValidator is a validator for the "elapse_time" field. It is called by the builders before save.
-	ElapseTimeValidator func(int64) error
 	// DefaultIsError holds the default value on creation for the "is_error" field.
 	DefaultIsError bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.

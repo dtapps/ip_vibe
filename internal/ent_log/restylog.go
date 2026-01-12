@@ -13,39 +13,45 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// resty请求日志
+// resty 请求日志
 type RestyLog struct {
 	config `json:"-"`
 	// ID of the ent.
 	// 请求日志序号
 	ID int64 `json:"id,omitempty"`
-	// 请求主机名
+	// 主机名
 	Hostname string `json:"hostname,omitempty"`
-	// 请求方式
+	// 请求方法
 	Method string `json:"method,omitempty"`
-	// 请求url
+	// 请求 URL
 	URL string `json:"url,omitempty"`
-	// 请求header
+	// 请求头
 	RequestHeaders map[string][]string `json:"request_headers,omitempty"`
-	// 请求参数
+	// 请求体
 	RequestBody json.RawMessage `json:"request_body,omitempty"`
-	// 响应码
+	// 请求参数
+	RequestQueryParams map[string][]string `json:"request_query_params,omitempty"`
+	// 请求表单数据
+	RequestFormData map[string][]string `json:"request_form_data,omitempty"`
+	// 请求路径参数
+	RequestPathParams map[string]string `json:"request_path_params,omitempty"`
+	// 状态码
 	StatusCode int `json:"status_code,omitempty"`
-	// 响应header
+	// 响应头
 	ResponseHeaders map[string][]string `json:"response_headers,omitempty"`
-	// 响应结果
+	// 响应体
 	ResponseBody json.RawMessage `json:"response_body,omitempty"`
-	// 请求耗时, 单位:毫秒
+	// 耗时, 单位:毫秒
 	ElapseTime int64 `json:"elapse_time,omitempty"`
-	// 是否为错误请求（如 5xx、4xx）
+	// 是否错误（如 5xx、4xx）
 	IsError bool `json:"is_error,omitempty"`
 	// 请求时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
-	// go 版本
+	// Go 版本
 	GoVersion string `json:"go_version,omitempty"`
-	// plugin 版本
+	// 插件版本
 	PluginVersion string `json:"plugin_version,omitempty"`
-	// resty 版本
+	// Resty 版本
 	RestyVersion string `json:"resty_version,omitempty"`
 	selectValues sql.SelectValues
 }
@@ -55,7 +61,7 @@ func (*RestyLog) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case restylog.FieldRequestHeaders, restylog.FieldRequestBody, restylog.FieldResponseHeaders, restylog.FieldResponseBody:
+		case restylog.FieldRequestHeaders, restylog.FieldRequestBody, restylog.FieldRequestQueryParams, restylog.FieldRequestFormData, restylog.FieldRequestPathParams, restylog.FieldResponseHeaders, restylog.FieldResponseBody:
 			values[i] = new([]byte)
 		case restylog.FieldIsError:
 			values[i] = new(sql.NullBool)
@@ -118,6 +124,30 @@ func (_m *RestyLog) assignValues(columns []string, values []any) error {
 			} else if value != nil && len(*value) > 0 {
 				if err := json.Unmarshal(*value, &_m.RequestBody); err != nil {
 					return fmt.Errorf("unmarshal field request_body: %w", err)
+				}
+			}
+		case restylog.FieldRequestQueryParams:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field request_query_params", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.RequestQueryParams); err != nil {
+					return fmt.Errorf("unmarshal field request_query_params: %w", err)
+				}
+			}
+		case restylog.FieldRequestFormData:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field request_form_data", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.RequestFormData); err != nil {
+					return fmt.Errorf("unmarshal field request_form_data: %w", err)
+				}
+			}
+		case restylog.FieldRequestPathParams:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field request_path_params", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.RequestPathParams); err != nil {
+					return fmt.Errorf("unmarshal field request_path_params: %w", err)
 				}
 			}
 		case restylog.FieldStatusCode:
@@ -228,6 +258,15 @@ func (_m *RestyLog) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("request_body=")
 	builder.WriteString(fmt.Sprintf("%v", _m.RequestBody))
+	builder.WriteString(", ")
+	builder.WriteString("request_query_params=")
+	builder.WriteString(fmt.Sprintf("%v", _m.RequestQueryParams))
+	builder.WriteString(", ")
+	builder.WriteString("request_form_data=")
+	builder.WriteString(fmt.Sprintf("%v", _m.RequestFormData))
+	builder.WriteString(", ")
+	builder.WriteString("request_path_params=")
+	builder.WriteString(fmt.Sprintf("%v", _m.RequestPathParams))
 	builder.WriteString(", ")
 	builder.WriteString("status_code=")
 	builder.WriteString(fmt.Sprintf("%v", _m.StatusCode))

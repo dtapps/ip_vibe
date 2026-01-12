@@ -25,9 +25,9 @@ type RainyunConfigure struct {
 
 // 实现 SSLProcess 接口
 type SSLProcessRainyunImpl struct {
-	logger        *slog.Logger               // 日志
-	httpTransport *http_log.LoggingTransport // HTTP日志记录器
-	debug         bool                       // 调试模式
+	logger        *slog.Logger                  // 日志
+	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	debug         bool                          // 调试模式
 
 	platformConfig RainyunConfigure // 平台配置
 
@@ -36,7 +36,7 @@ type SSLProcessRainyunImpl struct {
 }
 
 // NewSSLProcessRainyun 创建实例
-func NewSSLProcessRainyun(logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) SSLProcess {
+func NewSSLProcessRainyun(logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) SSLProcess {
 	return &SSLProcessRainyunImpl{
 		logger:        logger,
 		httpTransport: httpTransport,

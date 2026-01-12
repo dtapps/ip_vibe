@@ -105,15 +105,10 @@ const DefaultCheckType = CheckTypeUnknown
 
 // CheckType values.
 const (
-	CheckTypeUnknown   CheckType = "unknown"
-	CheckTypeStandard  CheckType = "standard"
-	CheckTypeResty     CheckType = "resty"
-	CheckTypeGrequests CheckType = "grequests"
-	CheckTypeReq       CheckType = "req"
-	CheckTypeRequests  CheckType = "requests"
-	CheckTypeAxios4go  CheckType = "axios4go"
-	CheckTypeAzureTLS  CheckType = "azure_tls"
-	CheckTypeColly     CheckType = "colly"
+	CheckTypeUnknown  CheckType = "unknown"
+	CheckTypeStandard CheckType = "standard"
+	CheckTypeResty    CheckType = "resty"
+	CheckTypeReq      CheckType = "req"
 )
 
 func (ct CheckType) String() string {
@@ -123,7 +118,7 @@ func (ct CheckType) String() string {
 // CheckTypeValidator is a validator for the "check_type" field enum values. It is called by the builders before save.
 func CheckTypeValidator(ct CheckType) error {
 	switch ct {
-	case CheckTypeUnknown, CheckTypeStandard, CheckTypeResty, CheckTypeGrequests, CheckTypeReq, CheckTypeRequests, CheckTypeAxios4go, CheckTypeAzureTLS, CheckTypeColly:
+	case CheckTypeUnknown, CheckTypeStandard, CheckTypeResty, CheckTypeReq:
 		return nil
 	default:
 		return fmt.Errorf("domainmonitorhistory: invalid enum value for check_type field: %q", ct)

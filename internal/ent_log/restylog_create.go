@@ -53,6 +53,24 @@ func (_c *RestyLogCreate) SetRequestBody(v json.RawMessage) *RestyLogCreate {
 	return _c
 }
 
+// SetRequestQueryParams sets the "request_query_params" field.
+func (_c *RestyLogCreate) SetRequestQueryParams(v map[string][]string) *RestyLogCreate {
+	_c.mutation.SetRequestQueryParams(v)
+	return _c
+}
+
+// SetRequestFormData sets the "request_form_data" field.
+func (_c *RestyLogCreate) SetRequestFormData(v map[string][]string) *RestyLogCreate {
+	_c.mutation.SetRequestFormData(v)
+	return _c
+}
+
+// SetRequestPathParams sets the "request_path_params" field.
+func (_c *RestyLogCreate) SetRequestPathParams(v map[string]string) *RestyLogCreate {
+	_c.mutation.SetRequestPathParams(v)
+	return _c
+}
+
 // SetStatusCode sets the "status_code" field.
 func (_c *RestyLogCreate) SetStatusCode(v int) *RestyLogCreate {
 	_c.mutation.SetStatusCode(v)
@@ -82,6 +100,14 @@ func (_c *RestyLogCreate) SetResponseBody(v json.RawMessage) *RestyLogCreate {
 // SetElapseTime sets the "elapse_time" field.
 func (_c *RestyLogCreate) SetElapseTime(v int64) *RestyLogCreate {
 	_c.mutation.SetElapseTime(v)
+	return _c
+}
+
+// SetNillableElapseTime sets the "elapse_time" field if the given value is not nil.
+func (_c *RestyLogCreate) SetNillableElapseTime(v *int64) *RestyLogCreate {
+	if v != nil {
+		_c.SetElapseTime(*v)
+	}
 	return _c
 }
 
@@ -229,14 +255,6 @@ func (_c *RestyLogCreate) check() error {
 	if _, ok := _c.mutation.URL(); !ok {
 		return &ValidationError{Name: "url", err: errors.New(`ent_log: missing required field "RestyLog.url"`)}
 	}
-	if _, ok := _c.mutation.ElapseTime(); !ok {
-		return &ValidationError{Name: "elapse_time", err: errors.New(`ent_log: missing required field "RestyLog.elapse_time"`)}
-	}
-	if v, ok := _c.mutation.ElapseTime(); ok {
-		if err := restylog.ElapseTimeValidator(v); err != nil {
-			return &ValidationError{Name: "elapse_time", err: fmt.Errorf(`ent_log: validator failed for field "RestyLog.elapse_time": %w`, err)}
-		}
-	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent_log: missing required field "RestyLog.created_at"`)}
 	}
@@ -297,6 +315,18 @@ func (_c *RestyLogCreate) createSpec() (*RestyLog, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.RequestBody(); ok {
 		_spec.SetField(restylog.FieldRequestBody, field.TypeJSON, value)
 		_node.RequestBody = value
+	}
+	if value, ok := _c.mutation.RequestQueryParams(); ok {
+		_spec.SetField(restylog.FieldRequestQueryParams, field.TypeJSON, value)
+		_node.RequestQueryParams = value
+	}
+	if value, ok := _c.mutation.RequestFormData(); ok {
+		_spec.SetField(restylog.FieldRequestFormData, field.TypeJSON, value)
+		_node.RequestFormData = value
+	}
+	if value, ok := _c.mutation.RequestPathParams(); ok {
+		_spec.SetField(restylog.FieldRequestPathParams, field.TypeJSON, value)
+		_node.RequestPathParams = value
 	}
 	if value, ok := _c.mutation.StatusCode(); ok {
 		_spec.SetField(restylog.FieldStatusCode, field.TypeInt, value)
@@ -417,6 +447,15 @@ func (u *RestyLogUpsertOne) UpdateNewValues() *RestyLogUpsertOne {
 		}
 		if _, exists := u.create.mutation.RequestBody(); exists {
 			s.SetIgnore(restylog.FieldRequestBody)
+		}
+		if _, exists := u.create.mutation.RequestQueryParams(); exists {
+			s.SetIgnore(restylog.FieldRequestQueryParams)
+		}
+		if _, exists := u.create.mutation.RequestFormData(); exists {
+			s.SetIgnore(restylog.FieldRequestFormData)
+		}
+		if _, exists := u.create.mutation.RequestPathParams(); exists {
+			s.SetIgnore(restylog.FieldRequestPathParams)
 		}
 		if _, exists := u.create.mutation.StatusCode(); exists {
 			s.SetIgnore(restylog.FieldStatusCode)
@@ -672,6 +711,15 @@ func (u *RestyLogUpsertBulk) UpdateNewValues() *RestyLogUpsertBulk {
 			}
 			if _, exists := b.mutation.RequestBody(); exists {
 				s.SetIgnore(restylog.FieldRequestBody)
+			}
+			if _, exists := b.mutation.RequestQueryParams(); exists {
+				s.SetIgnore(restylog.FieldRequestQueryParams)
+			}
+			if _, exists := b.mutation.RequestFormData(); exists {
+				s.SetIgnore(restylog.FieldRequestFormData)
+			}
+			if _, exists := b.mutation.RequestPathParams(); exists {
+				s.SetIgnore(restylog.FieldRequestPathParams)
 			}
 			if _, exists := b.mutation.StatusCode(); exists {
 				s.SetIgnore(restylog.FieldStatusCode)

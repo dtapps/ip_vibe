@@ -424,6 +424,16 @@ func ElapseTimeLTE(v int64) predicate.HttpLog {
 	return predicate.HttpLog(sql.FieldLTE(FieldElapseTime, v))
 }
 
+// ElapseTimeIsNil applies the IsNil predicate on the "elapse_time" field.
+func ElapseTimeIsNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldIsNull(FieldElapseTime))
+}
+
+// ElapseTimeNotNil applies the NotNil predicate on the "elapse_time" field.
+func ElapseTimeNotNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldNotNull(FieldElapseTime))
+}
+
 // IsErrorEQ applies the EQ predicate on the "is_error" field.
 func IsErrorEQ(v bool) predicate.HttpLog {
 	return predicate.HttpLog(sql.FieldEQ(FieldIsError, v))

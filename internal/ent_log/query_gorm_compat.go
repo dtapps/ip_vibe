@@ -9,6 +9,7 @@ import (
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/portforwardstats"
+	"vibe_ip/internal/ent_log/reqlog"
 	"vibe_ip/internal/ent_log/restylog"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/ent_log/webhookhistory"
@@ -108,6 +109,25 @@ func (q *PortForwardStatsQuery) Last(ctx context.Context) (*PortForwardStats, er
 // Find 获取所有匹配的记录。
 // 行为类比 GORM 的 Find(ctx, &dest)，此处直接返回 []*T。
 func (q *PortForwardStatsQuery) Find(ctx context.Context) ([]*PortForwardStats, error) {
+	return q.All(ctx)
+}
+
+// Take 获取任意一条记录（不保证顺序），等价于 LIMIT 1。
+// 行为与 GORM 的 Take(ctx) 一致：不添加 ORDER，仅限制结果为 1 行。
+func (q *ReqLogQuery) Take(ctx context.Context) (*ReqLog, error) {
+	return q.Limit(1).First(ctx)
+}
+
+// Last 获取最后一条记录，按主键降序排列（ORDER BY id DESC LIMIT 1）。
+// 行为与 GORM 的 Last(ctx) 一致。
+// 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
+func (q *ReqLogQuery) Last(ctx context.Context) (*ReqLog, error) {
+	return q.Order(reqlog.ByID(sql.OrderDesc())).First(ctx)
+}
+
+// Find 获取所有匹配的记录。
+// 行为类比 GORM 的 Find(ctx, &dest)，此处直接返回 []*T。
+func (q *ReqLogQuery) Find(ctx context.Context) ([]*ReqLog, error) {
 	return q.All(ctx)
 }
 

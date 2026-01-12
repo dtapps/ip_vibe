@@ -15,6 +15,7 @@ import (
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/portforwardstats"
 	"vibe_ip/internal/ent_log/predicate"
+	"vibe_ip/internal/ent_log/reqlog"
 	"vibe_ip/internal/ent_log/restylog"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/ent_log/webhookhistory"
@@ -37,6 +38,7 @@ const (
 	TypeHttpLog               = "HttpLog"
 	TypeOperationLog          = "OperationLog"
 	TypePortForwardStats      = "PortForwardStats"
+	TypeReqLog                = "ReqLog"
 	TypeRestyLog              = "RestyLog"
 	TypeSSLCertificateHistory = "SSLCertificateHistory"
 	TypeWebhookHistory        = "WebhookHistory"
@@ -3022,10 +3024,24 @@ func (m *HttpLogMutation) AddedElapseTime() (r int64, exists bool) {
 	return *v, true
 }
 
+// ClearElapseTime clears the value of the "elapse_time" field.
+func (m *HttpLogMutation) ClearElapseTime() {
+	m.elapse_time = nil
+	m.addelapse_time = nil
+	m.clearedFields[httplog.FieldElapseTime] = struct{}{}
+}
+
+// ElapseTimeCleared returns if the "elapse_time" field was cleared in this mutation.
+func (m *HttpLogMutation) ElapseTimeCleared() bool {
+	_, ok := m.clearedFields[httplog.FieldElapseTime]
+	return ok
+}
+
 // ResetElapseTime resets all changes to the "elapse_time" field.
 func (m *HttpLogMutation) ResetElapseTime() {
 	m.elapse_time = nil
 	m.addelapse_time = nil
+	delete(m.clearedFields, httplog.FieldElapseTime)
 }
 
 // SetIsError sets the "is_error" field.
@@ -3526,6 +3542,9 @@ func (m *HttpLogMutation) ClearedFields() []string {
 	if m.FieldCleared(httplog.FieldResponseBody) {
 		fields = append(fields, httplog.FieldResponseBody)
 	}
+	if m.FieldCleared(httplog.FieldElapseTime) {
+		fields = append(fields, httplog.FieldElapseTime)
+	}
 	if m.FieldCleared(httplog.FieldIsError) {
 		fields = append(fields, httplog.FieldIsError)
 	}
@@ -3563,6 +3582,9 @@ func (m *HttpLogMutation) ClearField(name string) error {
 		return nil
 	case httplog.FieldResponseBody:
 		m.ClearResponseBody()
+		return nil
+	case httplog.FieldElapseTime:
+		m.ClearElapseTime()
 		return nil
 	case httplog.FieldIsError:
 		m.ClearIsError()
@@ -5828,34 +5850,1515 @@ func (m *PortForwardStatsMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown PortForwardStats edge %s", name)
 }
 
+// ReqLogMutation represents an operation that mutates the ReqLog nodes in the graph.
+type ReqLogMutation struct {
+	config
+	op                   Op
+	typ                  string
+	id                   *int64
+	hostname             *string
+	method               *string
+	url                  *string
+	request_headers      *map[string][]string
+	request_body         *json.RawMessage
+	appendrequest_body   json.RawMessage
+	request_query_params *map[string][]string
+	request_form_data    *map[string][]string
+	request_path_params  *map[string]string
+	status_code          *int
+	addstatus_code       *int
+	response_headers     *map[string][]string
+	response_body        *json.RawMessage
+	appendresponse_body  json.RawMessage
+	elapse_time          *int64
+	addelapse_time       *int64
+	is_error             *bool
+	created_at           *time.Time
+	go_version           *string
+	plugin_version       *string
+	clearedFields        map[string]struct{}
+	done                 bool
+	oldValue             func(context.Context) (*ReqLog, error)
+	predicates           []predicate.ReqLog
+}
+
+var _ ent.Mutation = (*ReqLogMutation)(nil)
+
+// reqlogOption allows management of the mutation configuration using functional options.
+type reqlogOption func(*ReqLogMutation)
+
+// newReqLogMutation creates new mutation for the ReqLog entity.
+func newReqLogMutation(c config, op Op, opts ...reqlogOption) *ReqLogMutation {
+	m := &ReqLogMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeReqLog,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withReqLogID sets the ID field of the mutation.
+func withReqLogID(id int64) reqlogOption {
+	return func(m *ReqLogMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ReqLog
+		)
+		m.oldValue = func(ctx context.Context) (*ReqLog, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ReqLog.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withReqLog sets the old ReqLog of the mutation.
+func withReqLog(node *ReqLog) reqlogOption {
+	return func(m *ReqLogMutation) {
+		m.oldValue = func(context.Context) (*ReqLog, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ReqLogMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ReqLogMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent_log: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ReqLog entities.
+func (m *ReqLogMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ReqLogMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ReqLogMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ReqLog.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetHostname sets the "hostname" field.
+func (m *ReqLogMutation) SetHostname(s string) {
+	m.hostname = &s
+}
+
+// Hostname returns the value of the "hostname" field in the mutation.
+func (m *ReqLogMutation) Hostname() (r string, exists bool) {
+	v := m.hostname
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHostname returns the old "hostname" field's value of the ReqLog entity.
+// If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReqLogMutation) OldHostname(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHostname is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHostname requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHostname: %w", err)
+	}
+	return oldValue.Hostname, nil
+}
+
+// ResetHostname resets all changes to the "hostname" field.
+func (m *ReqLogMutation) ResetHostname() {
+	m.hostname = nil
+}
+
+// SetMethod sets the "method" field.
+func (m *ReqLogMutation) SetMethod(s string) {
+	m.method = &s
+}
+
+// Method returns the value of the "method" field in the mutation.
+func (m *ReqLogMutation) Method() (r string, exists bool) {
+	v := m.method
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMethod returns the old "method" field's value of the ReqLog entity.
+// If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReqLogMutation) OldMethod(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMethod is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMethod requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMethod: %w", err)
+	}
+	return oldValue.Method, nil
+}
+
+// ResetMethod resets all changes to the "method" field.
+func (m *ReqLogMutation) ResetMethod() {
+	m.method = nil
+}
+
+// SetURL sets the "url" field.
+func (m *ReqLogMutation) SetURL(s string) {
+	m.url = &s
+}
+
+// URL returns the value of the "url" field in the mutation.
+func (m *ReqLogMutation) URL() (r string, exists bool) {
+	v := m.url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldURL returns the old "url" field's value of the ReqLog entity.
+// If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReqLogMutation) OldURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldURL: %w", err)
+	}
+	return oldValue.URL, nil
+}
+
+// ResetURL resets all changes to the "url" field.
+func (m *ReqLogMutation) ResetURL() {
+	m.url = nil
+}
+
+// SetRequestHeaders sets the "request_headers" field.
+func (m *ReqLogMutation) SetRequestHeaders(value map[string][]string) {
+	m.request_headers = &value
+}
+
+// RequestHeaders returns the value of the "request_headers" field in the mutation.
+func (m *ReqLogMutation) RequestHeaders() (r map[string][]string, exists bool) {
+	v := m.request_headers
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestHeaders returns the old "request_headers" field's value of the ReqLog entity.
+// If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReqLogMutation) OldRequestHeaders(ctx context.Context) (v map[string][]string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestHeaders is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestHeaders requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestHeaders: %w", err)
+	}
+	return oldValue.RequestHeaders, nil
+}
+
+// ClearRequestHeaders clears the value of the "request_headers" field.
+func (m *ReqLogMutation) ClearRequestHeaders() {
+	m.request_headers = nil
+	m.clearedFields[reqlog.FieldRequestHeaders] = struct{}{}
+}
+
+// RequestHeadersCleared returns if the "request_headers" field was cleared in this mutation.
+func (m *ReqLogMutation) RequestHeadersCleared() bool {
+	_, ok := m.clearedFields[reqlog.FieldRequestHeaders]
+	return ok
+}
+
+// ResetRequestHeaders resets all changes to the "request_headers" field.
+func (m *ReqLogMutation) ResetRequestHeaders() {
+	m.request_headers = nil
+	delete(m.clearedFields, reqlog.FieldRequestHeaders)
+}
+
+// SetRequestBody sets the "request_body" field.
+func (m *ReqLogMutation) SetRequestBody(jm json.RawMessage) {
+	m.request_body = &jm
+	m.appendrequest_body = nil
+}
+
+// RequestBody returns the value of the "request_body" field in the mutation.
+func (m *ReqLogMutation) RequestBody() (r json.RawMessage, exists bool) {
+	v := m.request_body
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestBody returns the old "request_body" field's value of the ReqLog entity.
+// If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReqLogMutation) OldRequestBody(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestBody is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestBody requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestBody: %w", err)
+	}
+	return oldValue.RequestBody, nil
+}
+
+// AppendRequestBody adds jm to the "request_body" field.
+func (m *ReqLogMutation) AppendRequestBody(jm json.RawMessage) {
+	m.appendrequest_body = append(m.appendrequest_body, jm...)
+}
+
+// AppendedRequestBody returns the list of values that were appended to the "request_body" field in this mutation.
+func (m *ReqLogMutation) AppendedRequestBody() (json.RawMessage, bool) {
+	if len(m.appendrequest_body) == 0 {
+		return nil, false
+	}
+	return m.appendrequest_body, true
+}
+
+// ClearRequestBody clears the value of the "request_body" field.
+func (m *ReqLogMutation) ClearRequestBody() {
+	m.request_body = nil
+	m.appendrequest_body = nil
+	m.clearedFields[reqlog.FieldRequestBody] = struct{}{}
+}
+
+// RequestBodyCleared returns if the "request_body" field was cleared in this mutation.
+func (m *ReqLogMutation) RequestBodyCleared() bool {
+	_, ok := m.clearedFields[reqlog.FieldRequestBody]
+	return ok
+}
+
+// ResetRequestBody resets all changes to the "request_body" field.
+func (m *ReqLogMutation) ResetRequestBody() {
+	m.request_body = nil
+	m.appendrequest_body = nil
+	delete(m.clearedFields, reqlog.FieldRequestBody)
+}
+
+// SetRequestQueryParams sets the "request_query_params" field.
+func (m *ReqLogMutation) SetRequestQueryParams(value map[string][]string) {
+	m.request_query_params = &value
+}
+
+// RequestQueryParams returns the value of the "request_query_params" field in the mutation.
+func (m *ReqLogMutation) RequestQueryParams() (r map[string][]string, exists bool) {
+	v := m.request_query_params
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestQueryParams returns the old "request_query_params" field's value of the ReqLog entity.
+// If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReqLogMutation) OldRequestQueryParams(ctx context.Context) (v map[string][]string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestQueryParams is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestQueryParams requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestQueryParams: %w", err)
+	}
+	return oldValue.RequestQueryParams, nil
+}
+
+// ClearRequestQueryParams clears the value of the "request_query_params" field.
+func (m *ReqLogMutation) ClearRequestQueryParams() {
+	m.request_query_params = nil
+	m.clearedFields[reqlog.FieldRequestQueryParams] = struct{}{}
+}
+
+// RequestQueryParamsCleared returns if the "request_query_params" field was cleared in this mutation.
+func (m *ReqLogMutation) RequestQueryParamsCleared() bool {
+	_, ok := m.clearedFields[reqlog.FieldRequestQueryParams]
+	return ok
+}
+
+// ResetRequestQueryParams resets all changes to the "request_query_params" field.
+func (m *ReqLogMutation) ResetRequestQueryParams() {
+	m.request_query_params = nil
+	delete(m.clearedFields, reqlog.FieldRequestQueryParams)
+}
+
+// SetRequestFormData sets the "request_form_data" field.
+func (m *ReqLogMutation) SetRequestFormData(value map[string][]string) {
+	m.request_form_data = &value
+}
+
+// RequestFormData returns the value of the "request_form_data" field in the mutation.
+func (m *ReqLogMutation) RequestFormData() (r map[string][]string, exists bool) {
+	v := m.request_form_data
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestFormData returns the old "request_form_data" field's value of the ReqLog entity.
+// If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReqLogMutation) OldRequestFormData(ctx context.Context) (v map[string][]string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestFormData is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestFormData requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestFormData: %w", err)
+	}
+	return oldValue.RequestFormData, nil
+}
+
+// ClearRequestFormData clears the value of the "request_form_data" field.
+func (m *ReqLogMutation) ClearRequestFormData() {
+	m.request_form_data = nil
+	m.clearedFields[reqlog.FieldRequestFormData] = struct{}{}
+}
+
+// RequestFormDataCleared returns if the "request_form_data" field was cleared in this mutation.
+func (m *ReqLogMutation) RequestFormDataCleared() bool {
+	_, ok := m.clearedFields[reqlog.FieldRequestFormData]
+	return ok
+}
+
+// ResetRequestFormData resets all changes to the "request_form_data" field.
+func (m *ReqLogMutation) ResetRequestFormData() {
+	m.request_form_data = nil
+	delete(m.clearedFields, reqlog.FieldRequestFormData)
+}
+
+// SetRequestPathParams sets the "request_path_params" field.
+func (m *ReqLogMutation) SetRequestPathParams(value map[string]string) {
+	m.request_path_params = &value
+}
+
+// RequestPathParams returns the value of the "request_path_params" field in the mutation.
+func (m *ReqLogMutation) RequestPathParams() (r map[string]string, exists bool) {
+	v := m.request_path_params
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestPathParams returns the old "request_path_params" field's value of the ReqLog entity.
+// If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReqLogMutation) OldRequestPathParams(ctx context.Context) (v map[string]string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestPathParams is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestPathParams requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestPathParams: %w", err)
+	}
+	return oldValue.RequestPathParams, nil
+}
+
+// ClearRequestPathParams clears the value of the "request_path_params" field.
+func (m *ReqLogMutation) ClearRequestPathParams() {
+	m.request_path_params = nil
+	m.clearedFields[reqlog.FieldRequestPathParams] = struct{}{}
+}
+
+// RequestPathParamsCleared returns if the "request_path_params" field was cleared in this mutation.
+func (m *ReqLogMutation) RequestPathParamsCleared() bool {
+	_, ok := m.clearedFields[reqlog.FieldRequestPathParams]
+	return ok
+}
+
+// ResetRequestPathParams resets all changes to the "request_path_params" field.
+func (m *ReqLogMutation) ResetRequestPathParams() {
+	m.request_path_params = nil
+	delete(m.clearedFields, reqlog.FieldRequestPathParams)
+}
+
+// SetStatusCode sets the "status_code" field.
+func (m *ReqLogMutation) SetStatusCode(i int) {
+	m.status_code = &i
+	m.addstatus_code = nil
+}
+
+// StatusCode returns the value of the "status_code" field in the mutation.
+func (m *ReqLogMutation) StatusCode() (r int, exists bool) {
+	v := m.status_code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatusCode returns the old "status_code" field's value of the ReqLog entity.
+// If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReqLogMutation) OldStatusCode(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatusCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatusCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatusCode: %w", err)
+	}
+	return oldValue.StatusCode, nil
+}
+
+// AddStatusCode adds i to the "status_code" field.
+func (m *ReqLogMutation) AddStatusCode(i int) {
+	if m.addstatus_code != nil {
+		*m.addstatus_code += i
+	} else {
+		m.addstatus_code = &i
+	}
+}
+
+// AddedStatusCode returns the value that was added to the "status_code" field in this mutation.
+func (m *ReqLogMutation) AddedStatusCode() (r int, exists bool) {
+	v := m.addstatus_code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearStatusCode clears the value of the "status_code" field.
+func (m *ReqLogMutation) ClearStatusCode() {
+	m.status_code = nil
+	m.addstatus_code = nil
+	m.clearedFields[reqlog.FieldStatusCode] = struct{}{}
+}
+
+// StatusCodeCleared returns if the "status_code" field was cleared in this mutation.
+func (m *ReqLogMutation) StatusCodeCleared() bool {
+	_, ok := m.clearedFields[reqlog.FieldStatusCode]
+	return ok
+}
+
+// ResetStatusCode resets all changes to the "status_code" field.
+func (m *ReqLogMutation) ResetStatusCode() {
+	m.status_code = nil
+	m.addstatus_code = nil
+	delete(m.clearedFields, reqlog.FieldStatusCode)
+}
+
+// SetResponseHeaders sets the "response_headers" field.
+func (m *ReqLogMutation) SetResponseHeaders(value map[string][]string) {
+	m.response_headers = &value
+}
+
+// ResponseHeaders returns the value of the "response_headers" field in the mutation.
+func (m *ReqLogMutation) ResponseHeaders() (r map[string][]string, exists bool) {
+	v := m.response_headers
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResponseHeaders returns the old "response_headers" field's value of the ReqLog entity.
+// If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReqLogMutation) OldResponseHeaders(ctx context.Context) (v map[string][]string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResponseHeaders is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResponseHeaders requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResponseHeaders: %w", err)
+	}
+	return oldValue.ResponseHeaders, nil
+}
+
+// ClearResponseHeaders clears the value of the "response_headers" field.
+func (m *ReqLogMutation) ClearResponseHeaders() {
+	m.response_headers = nil
+	m.clearedFields[reqlog.FieldResponseHeaders] = struct{}{}
+}
+
+// ResponseHeadersCleared returns if the "response_headers" field was cleared in this mutation.
+func (m *ReqLogMutation) ResponseHeadersCleared() bool {
+	_, ok := m.clearedFields[reqlog.FieldResponseHeaders]
+	return ok
+}
+
+// ResetResponseHeaders resets all changes to the "response_headers" field.
+func (m *ReqLogMutation) ResetResponseHeaders() {
+	m.response_headers = nil
+	delete(m.clearedFields, reqlog.FieldResponseHeaders)
+}
+
+// SetResponseBody sets the "response_body" field.
+func (m *ReqLogMutation) SetResponseBody(jm json.RawMessage) {
+	m.response_body = &jm
+	m.appendresponse_body = nil
+}
+
+// ResponseBody returns the value of the "response_body" field in the mutation.
+func (m *ReqLogMutation) ResponseBody() (r json.RawMessage, exists bool) {
+	v := m.response_body
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResponseBody returns the old "response_body" field's value of the ReqLog entity.
+// If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReqLogMutation) OldResponseBody(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResponseBody is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResponseBody requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResponseBody: %w", err)
+	}
+	return oldValue.ResponseBody, nil
+}
+
+// AppendResponseBody adds jm to the "response_body" field.
+func (m *ReqLogMutation) AppendResponseBody(jm json.RawMessage) {
+	m.appendresponse_body = append(m.appendresponse_body, jm...)
+}
+
+// AppendedResponseBody returns the list of values that were appended to the "response_body" field in this mutation.
+func (m *ReqLogMutation) AppendedResponseBody() (json.RawMessage, bool) {
+	if len(m.appendresponse_body) == 0 {
+		return nil, false
+	}
+	return m.appendresponse_body, true
+}
+
+// ClearResponseBody clears the value of the "response_body" field.
+func (m *ReqLogMutation) ClearResponseBody() {
+	m.response_body = nil
+	m.appendresponse_body = nil
+	m.clearedFields[reqlog.FieldResponseBody] = struct{}{}
+}
+
+// ResponseBodyCleared returns if the "response_body" field was cleared in this mutation.
+func (m *ReqLogMutation) ResponseBodyCleared() bool {
+	_, ok := m.clearedFields[reqlog.FieldResponseBody]
+	return ok
+}
+
+// ResetResponseBody resets all changes to the "response_body" field.
+func (m *ReqLogMutation) ResetResponseBody() {
+	m.response_body = nil
+	m.appendresponse_body = nil
+	delete(m.clearedFields, reqlog.FieldResponseBody)
+}
+
+// SetElapseTime sets the "elapse_time" field.
+func (m *ReqLogMutation) SetElapseTime(i int64) {
+	m.elapse_time = &i
+	m.addelapse_time = nil
+}
+
+// ElapseTime returns the value of the "elapse_time" field in the mutation.
+func (m *ReqLogMutation) ElapseTime() (r int64, exists bool) {
+	v := m.elapse_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldElapseTime returns the old "elapse_time" field's value of the ReqLog entity.
+// If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReqLogMutation) OldElapseTime(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldElapseTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldElapseTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldElapseTime: %w", err)
+	}
+	return oldValue.ElapseTime, nil
+}
+
+// AddElapseTime adds i to the "elapse_time" field.
+func (m *ReqLogMutation) AddElapseTime(i int64) {
+	if m.addelapse_time != nil {
+		*m.addelapse_time += i
+	} else {
+		m.addelapse_time = &i
+	}
+}
+
+// AddedElapseTime returns the value that was added to the "elapse_time" field in this mutation.
+func (m *ReqLogMutation) AddedElapseTime() (r int64, exists bool) {
+	v := m.addelapse_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearElapseTime clears the value of the "elapse_time" field.
+func (m *ReqLogMutation) ClearElapseTime() {
+	m.elapse_time = nil
+	m.addelapse_time = nil
+	m.clearedFields[reqlog.FieldElapseTime] = struct{}{}
+}
+
+// ElapseTimeCleared returns if the "elapse_time" field was cleared in this mutation.
+func (m *ReqLogMutation) ElapseTimeCleared() bool {
+	_, ok := m.clearedFields[reqlog.FieldElapseTime]
+	return ok
+}
+
+// ResetElapseTime resets all changes to the "elapse_time" field.
+func (m *ReqLogMutation) ResetElapseTime() {
+	m.elapse_time = nil
+	m.addelapse_time = nil
+	delete(m.clearedFields, reqlog.FieldElapseTime)
+}
+
+// SetIsError sets the "is_error" field.
+func (m *ReqLogMutation) SetIsError(b bool) {
+	m.is_error = &b
+}
+
+// IsError returns the value of the "is_error" field in the mutation.
+func (m *ReqLogMutation) IsError() (r bool, exists bool) {
+	v := m.is_error
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsError returns the old "is_error" field's value of the ReqLog entity.
+// If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReqLogMutation) OldIsError(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsError is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsError requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsError: %w", err)
+	}
+	return oldValue.IsError, nil
+}
+
+// ClearIsError clears the value of the "is_error" field.
+func (m *ReqLogMutation) ClearIsError() {
+	m.is_error = nil
+	m.clearedFields[reqlog.FieldIsError] = struct{}{}
+}
+
+// IsErrorCleared returns if the "is_error" field was cleared in this mutation.
+func (m *ReqLogMutation) IsErrorCleared() bool {
+	_, ok := m.clearedFields[reqlog.FieldIsError]
+	return ok
+}
+
+// ResetIsError resets all changes to the "is_error" field.
+func (m *ReqLogMutation) ResetIsError() {
+	m.is_error = nil
+	delete(m.clearedFields, reqlog.FieldIsError)
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ReqLogMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ReqLogMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ReqLog entity.
+// If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReqLogMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ReqLogMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetGoVersion sets the "go_version" field.
+func (m *ReqLogMutation) SetGoVersion(s string) {
+	m.go_version = &s
+}
+
+// GoVersion returns the value of the "go_version" field in the mutation.
+func (m *ReqLogMutation) GoVersion() (r string, exists bool) {
+	v := m.go_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGoVersion returns the old "go_version" field's value of the ReqLog entity.
+// If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReqLogMutation) OldGoVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGoVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGoVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGoVersion: %w", err)
+	}
+	return oldValue.GoVersion, nil
+}
+
+// ClearGoVersion clears the value of the "go_version" field.
+func (m *ReqLogMutation) ClearGoVersion() {
+	m.go_version = nil
+	m.clearedFields[reqlog.FieldGoVersion] = struct{}{}
+}
+
+// GoVersionCleared returns if the "go_version" field was cleared in this mutation.
+func (m *ReqLogMutation) GoVersionCleared() bool {
+	_, ok := m.clearedFields[reqlog.FieldGoVersion]
+	return ok
+}
+
+// ResetGoVersion resets all changes to the "go_version" field.
+func (m *ReqLogMutation) ResetGoVersion() {
+	m.go_version = nil
+	delete(m.clearedFields, reqlog.FieldGoVersion)
+}
+
+// SetPluginVersion sets the "plugin_version" field.
+func (m *ReqLogMutation) SetPluginVersion(s string) {
+	m.plugin_version = &s
+}
+
+// PluginVersion returns the value of the "plugin_version" field in the mutation.
+func (m *ReqLogMutation) PluginVersion() (r string, exists bool) {
+	v := m.plugin_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPluginVersion returns the old "plugin_version" field's value of the ReqLog entity.
+// If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReqLogMutation) OldPluginVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPluginVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPluginVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPluginVersion: %w", err)
+	}
+	return oldValue.PluginVersion, nil
+}
+
+// ClearPluginVersion clears the value of the "plugin_version" field.
+func (m *ReqLogMutation) ClearPluginVersion() {
+	m.plugin_version = nil
+	m.clearedFields[reqlog.FieldPluginVersion] = struct{}{}
+}
+
+// PluginVersionCleared returns if the "plugin_version" field was cleared in this mutation.
+func (m *ReqLogMutation) PluginVersionCleared() bool {
+	_, ok := m.clearedFields[reqlog.FieldPluginVersion]
+	return ok
+}
+
+// ResetPluginVersion resets all changes to the "plugin_version" field.
+func (m *ReqLogMutation) ResetPluginVersion() {
+	m.plugin_version = nil
+	delete(m.clearedFields, reqlog.FieldPluginVersion)
+}
+
+// Where appends a list predicates to the ReqLogMutation builder.
+func (m *ReqLogMutation) Where(ps ...predicate.ReqLog) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ReqLogMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ReqLogMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.ReqLog, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ReqLogMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ReqLogMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (ReqLog).
+func (m *ReqLogMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ReqLogMutation) Fields() []string {
+	fields := make([]string, 0, 16)
+	if m.hostname != nil {
+		fields = append(fields, reqlog.FieldHostname)
+	}
+	if m.method != nil {
+		fields = append(fields, reqlog.FieldMethod)
+	}
+	if m.url != nil {
+		fields = append(fields, reqlog.FieldURL)
+	}
+	if m.request_headers != nil {
+		fields = append(fields, reqlog.FieldRequestHeaders)
+	}
+	if m.request_body != nil {
+		fields = append(fields, reqlog.FieldRequestBody)
+	}
+	if m.request_query_params != nil {
+		fields = append(fields, reqlog.FieldRequestQueryParams)
+	}
+	if m.request_form_data != nil {
+		fields = append(fields, reqlog.FieldRequestFormData)
+	}
+	if m.request_path_params != nil {
+		fields = append(fields, reqlog.FieldRequestPathParams)
+	}
+	if m.status_code != nil {
+		fields = append(fields, reqlog.FieldStatusCode)
+	}
+	if m.response_headers != nil {
+		fields = append(fields, reqlog.FieldResponseHeaders)
+	}
+	if m.response_body != nil {
+		fields = append(fields, reqlog.FieldResponseBody)
+	}
+	if m.elapse_time != nil {
+		fields = append(fields, reqlog.FieldElapseTime)
+	}
+	if m.is_error != nil {
+		fields = append(fields, reqlog.FieldIsError)
+	}
+	if m.created_at != nil {
+		fields = append(fields, reqlog.FieldCreatedAt)
+	}
+	if m.go_version != nil {
+		fields = append(fields, reqlog.FieldGoVersion)
+	}
+	if m.plugin_version != nil {
+		fields = append(fields, reqlog.FieldPluginVersion)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ReqLogMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case reqlog.FieldHostname:
+		return m.Hostname()
+	case reqlog.FieldMethod:
+		return m.Method()
+	case reqlog.FieldURL:
+		return m.URL()
+	case reqlog.FieldRequestHeaders:
+		return m.RequestHeaders()
+	case reqlog.FieldRequestBody:
+		return m.RequestBody()
+	case reqlog.FieldRequestQueryParams:
+		return m.RequestQueryParams()
+	case reqlog.FieldRequestFormData:
+		return m.RequestFormData()
+	case reqlog.FieldRequestPathParams:
+		return m.RequestPathParams()
+	case reqlog.FieldStatusCode:
+		return m.StatusCode()
+	case reqlog.FieldResponseHeaders:
+		return m.ResponseHeaders()
+	case reqlog.FieldResponseBody:
+		return m.ResponseBody()
+	case reqlog.FieldElapseTime:
+		return m.ElapseTime()
+	case reqlog.FieldIsError:
+		return m.IsError()
+	case reqlog.FieldCreatedAt:
+		return m.CreatedAt()
+	case reqlog.FieldGoVersion:
+		return m.GoVersion()
+	case reqlog.FieldPluginVersion:
+		return m.PluginVersion()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ReqLogMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case reqlog.FieldHostname:
+		return m.OldHostname(ctx)
+	case reqlog.FieldMethod:
+		return m.OldMethod(ctx)
+	case reqlog.FieldURL:
+		return m.OldURL(ctx)
+	case reqlog.FieldRequestHeaders:
+		return m.OldRequestHeaders(ctx)
+	case reqlog.FieldRequestBody:
+		return m.OldRequestBody(ctx)
+	case reqlog.FieldRequestQueryParams:
+		return m.OldRequestQueryParams(ctx)
+	case reqlog.FieldRequestFormData:
+		return m.OldRequestFormData(ctx)
+	case reqlog.FieldRequestPathParams:
+		return m.OldRequestPathParams(ctx)
+	case reqlog.FieldStatusCode:
+		return m.OldStatusCode(ctx)
+	case reqlog.FieldResponseHeaders:
+		return m.OldResponseHeaders(ctx)
+	case reqlog.FieldResponseBody:
+		return m.OldResponseBody(ctx)
+	case reqlog.FieldElapseTime:
+		return m.OldElapseTime(ctx)
+	case reqlog.FieldIsError:
+		return m.OldIsError(ctx)
+	case reqlog.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case reqlog.FieldGoVersion:
+		return m.OldGoVersion(ctx)
+	case reqlog.FieldPluginVersion:
+		return m.OldPluginVersion(ctx)
+	}
+	return nil, fmt.Errorf("unknown ReqLog field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ReqLogMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case reqlog.FieldHostname:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHostname(v)
+		return nil
+	case reqlog.FieldMethod:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMethod(v)
+		return nil
+	case reqlog.FieldURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetURL(v)
+		return nil
+	case reqlog.FieldRequestHeaders:
+		v, ok := value.(map[string][]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestHeaders(v)
+		return nil
+	case reqlog.FieldRequestBody:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestBody(v)
+		return nil
+	case reqlog.FieldRequestQueryParams:
+		v, ok := value.(map[string][]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestQueryParams(v)
+		return nil
+	case reqlog.FieldRequestFormData:
+		v, ok := value.(map[string][]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestFormData(v)
+		return nil
+	case reqlog.FieldRequestPathParams:
+		v, ok := value.(map[string]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestPathParams(v)
+		return nil
+	case reqlog.FieldStatusCode:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatusCode(v)
+		return nil
+	case reqlog.FieldResponseHeaders:
+		v, ok := value.(map[string][]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResponseHeaders(v)
+		return nil
+	case reqlog.FieldResponseBody:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResponseBody(v)
+		return nil
+	case reqlog.FieldElapseTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetElapseTime(v)
+		return nil
+	case reqlog.FieldIsError:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsError(v)
+		return nil
+	case reqlog.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case reqlog.FieldGoVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGoVersion(v)
+		return nil
+	case reqlog.FieldPluginVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPluginVersion(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ReqLog field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ReqLogMutation) AddedFields() []string {
+	var fields []string
+	if m.addstatus_code != nil {
+		fields = append(fields, reqlog.FieldStatusCode)
+	}
+	if m.addelapse_time != nil {
+		fields = append(fields, reqlog.FieldElapseTime)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ReqLogMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case reqlog.FieldStatusCode:
+		return m.AddedStatusCode()
+	case reqlog.FieldElapseTime:
+		return m.AddedElapseTime()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ReqLogMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case reqlog.FieldStatusCode:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatusCode(v)
+		return nil
+	case reqlog.FieldElapseTime:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddElapseTime(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ReqLog numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ReqLogMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(reqlog.FieldRequestHeaders) {
+		fields = append(fields, reqlog.FieldRequestHeaders)
+	}
+	if m.FieldCleared(reqlog.FieldRequestBody) {
+		fields = append(fields, reqlog.FieldRequestBody)
+	}
+	if m.FieldCleared(reqlog.FieldRequestQueryParams) {
+		fields = append(fields, reqlog.FieldRequestQueryParams)
+	}
+	if m.FieldCleared(reqlog.FieldRequestFormData) {
+		fields = append(fields, reqlog.FieldRequestFormData)
+	}
+	if m.FieldCleared(reqlog.FieldRequestPathParams) {
+		fields = append(fields, reqlog.FieldRequestPathParams)
+	}
+	if m.FieldCleared(reqlog.FieldStatusCode) {
+		fields = append(fields, reqlog.FieldStatusCode)
+	}
+	if m.FieldCleared(reqlog.FieldResponseHeaders) {
+		fields = append(fields, reqlog.FieldResponseHeaders)
+	}
+	if m.FieldCleared(reqlog.FieldResponseBody) {
+		fields = append(fields, reqlog.FieldResponseBody)
+	}
+	if m.FieldCleared(reqlog.FieldElapseTime) {
+		fields = append(fields, reqlog.FieldElapseTime)
+	}
+	if m.FieldCleared(reqlog.FieldIsError) {
+		fields = append(fields, reqlog.FieldIsError)
+	}
+	if m.FieldCleared(reqlog.FieldGoVersion) {
+		fields = append(fields, reqlog.FieldGoVersion)
+	}
+	if m.FieldCleared(reqlog.FieldPluginVersion) {
+		fields = append(fields, reqlog.FieldPluginVersion)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ReqLogMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ReqLogMutation) ClearField(name string) error {
+	switch name {
+	case reqlog.FieldRequestHeaders:
+		m.ClearRequestHeaders()
+		return nil
+	case reqlog.FieldRequestBody:
+		m.ClearRequestBody()
+		return nil
+	case reqlog.FieldRequestQueryParams:
+		m.ClearRequestQueryParams()
+		return nil
+	case reqlog.FieldRequestFormData:
+		m.ClearRequestFormData()
+		return nil
+	case reqlog.FieldRequestPathParams:
+		m.ClearRequestPathParams()
+		return nil
+	case reqlog.FieldStatusCode:
+		m.ClearStatusCode()
+		return nil
+	case reqlog.FieldResponseHeaders:
+		m.ClearResponseHeaders()
+		return nil
+	case reqlog.FieldResponseBody:
+		m.ClearResponseBody()
+		return nil
+	case reqlog.FieldElapseTime:
+		m.ClearElapseTime()
+		return nil
+	case reqlog.FieldIsError:
+		m.ClearIsError()
+		return nil
+	case reqlog.FieldGoVersion:
+		m.ClearGoVersion()
+		return nil
+	case reqlog.FieldPluginVersion:
+		m.ClearPluginVersion()
+		return nil
+	}
+	return fmt.Errorf("unknown ReqLog nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ReqLogMutation) ResetField(name string) error {
+	switch name {
+	case reqlog.FieldHostname:
+		m.ResetHostname()
+		return nil
+	case reqlog.FieldMethod:
+		m.ResetMethod()
+		return nil
+	case reqlog.FieldURL:
+		m.ResetURL()
+		return nil
+	case reqlog.FieldRequestHeaders:
+		m.ResetRequestHeaders()
+		return nil
+	case reqlog.FieldRequestBody:
+		m.ResetRequestBody()
+		return nil
+	case reqlog.FieldRequestQueryParams:
+		m.ResetRequestQueryParams()
+		return nil
+	case reqlog.FieldRequestFormData:
+		m.ResetRequestFormData()
+		return nil
+	case reqlog.FieldRequestPathParams:
+		m.ResetRequestPathParams()
+		return nil
+	case reqlog.FieldStatusCode:
+		m.ResetStatusCode()
+		return nil
+	case reqlog.FieldResponseHeaders:
+		m.ResetResponseHeaders()
+		return nil
+	case reqlog.FieldResponseBody:
+		m.ResetResponseBody()
+		return nil
+	case reqlog.FieldElapseTime:
+		m.ResetElapseTime()
+		return nil
+	case reqlog.FieldIsError:
+		m.ResetIsError()
+		return nil
+	case reqlog.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case reqlog.FieldGoVersion:
+		m.ResetGoVersion()
+		return nil
+	case reqlog.FieldPluginVersion:
+		m.ResetPluginVersion()
+		return nil
+	}
+	return fmt.Errorf("unknown ReqLog field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ReqLogMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ReqLogMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ReqLogMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ReqLogMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ReqLogMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ReqLogMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ReqLogMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ReqLog unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ReqLogMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ReqLog edge %s", name)
+}
+
 // RestyLogMutation represents an operation that mutates the RestyLog nodes in the graph.
 type RestyLogMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *int64
-	hostname            *string
-	method              *string
-	url                 *string
-	request_headers     *map[string][]string
-	request_body        *json.RawMessage
-	appendrequest_body  json.RawMessage
-	status_code         *int
-	addstatus_code      *int
-	response_headers    *map[string][]string
-	response_body       *json.RawMessage
-	appendresponse_body json.RawMessage
-	elapse_time         *int64
-	addelapse_time      *int64
-	is_error            *bool
-	created_at          *time.Time
-	go_version          *string
-	plugin_version      *string
-	resty_version       *string
-	clearedFields       map[string]struct{}
-	done                bool
-	oldValue            func(context.Context) (*RestyLog, error)
-	predicates          []predicate.RestyLog
+	op                   Op
+	typ                  string
+	id                   *int64
+	hostname             *string
+	method               *string
+	url                  *string
+	request_headers      *map[string][]string
+	request_body         *json.RawMessage
+	appendrequest_body   json.RawMessage
+	request_query_params *map[string][]string
+	request_form_data    *map[string][]string
+	request_path_params  *map[string]string
+	status_code          *int
+	addstatus_code       *int
+	response_headers     *map[string][]string
+	response_body        *json.RawMessage
+	appendresponse_body  json.RawMessage
+	elapse_time          *int64
+	addelapse_time       *int64
+	is_error             *bool
+	created_at           *time.Time
+	go_version           *string
+	plugin_version       *string
+	resty_version        *string
+	clearedFields        map[string]struct{}
+	done                 bool
+	oldValue             func(context.Context) (*RestyLog, error)
+	predicates           []predicate.RestyLog
 }
 
 var _ ent.Mutation = (*RestyLogMutation)(nil)
@@ -6184,6 +7687,153 @@ func (m *RestyLogMutation) ResetRequestBody() {
 	delete(m.clearedFields, restylog.FieldRequestBody)
 }
 
+// SetRequestQueryParams sets the "request_query_params" field.
+func (m *RestyLogMutation) SetRequestQueryParams(value map[string][]string) {
+	m.request_query_params = &value
+}
+
+// RequestQueryParams returns the value of the "request_query_params" field in the mutation.
+func (m *RestyLogMutation) RequestQueryParams() (r map[string][]string, exists bool) {
+	v := m.request_query_params
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestQueryParams returns the old "request_query_params" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldRequestQueryParams(ctx context.Context) (v map[string][]string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestQueryParams is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestQueryParams requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestQueryParams: %w", err)
+	}
+	return oldValue.RequestQueryParams, nil
+}
+
+// ClearRequestQueryParams clears the value of the "request_query_params" field.
+func (m *RestyLogMutation) ClearRequestQueryParams() {
+	m.request_query_params = nil
+	m.clearedFields[restylog.FieldRequestQueryParams] = struct{}{}
+}
+
+// RequestQueryParamsCleared returns if the "request_query_params" field was cleared in this mutation.
+func (m *RestyLogMutation) RequestQueryParamsCleared() bool {
+	_, ok := m.clearedFields[restylog.FieldRequestQueryParams]
+	return ok
+}
+
+// ResetRequestQueryParams resets all changes to the "request_query_params" field.
+func (m *RestyLogMutation) ResetRequestQueryParams() {
+	m.request_query_params = nil
+	delete(m.clearedFields, restylog.FieldRequestQueryParams)
+}
+
+// SetRequestFormData sets the "request_form_data" field.
+func (m *RestyLogMutation) SetRequestFormData(value map[string][]string) {
+	m.request_form_data = &value
+}
+
+// RequestFormData returns the value of the "request_form_data" field in the mutation.
+func (m *RestyLogMutation) RequestFormData() (r map[string][]string, exists bool) {
+	v := m.request_form_data
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestFormData returns the old "request_form_data" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldRequestFormData(ctx context.Context) (v map[string][]string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestFormData is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestFormData requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestFormData: %w", err)
+	}
+	return oldValue.RequestFormData, nil
+}
+
+// ClearRequestFormData clears the value of the "request_form_data" field.
+func (m *RestyLogMutation) ClearRequestFormData() {
+	m.request_form_data = nil
+	m.clearedFields[restylog.FieldRequestFormData] = struct{}{}
+}
+
+// RequestFormDataCleared returns if the "request_form_data" field was cleared in this mutation.
+func (m *RestyLogMutation) RequestFormDataCleared() bool {
+	_, ok := m.clearedFields[restylog.FieldRequestFormData]
+	return ok
+}
+
+// ResetRequestFormData resets all changes to the "request_form_data" field.
+func (m *RestyLogMutation) ResetRequestFormData() {
+	m.request_form_data = nil
+	delete(m.clearedFields, restylog.FieldRequestFormData)
+}
+
+// SetRequestPathParams sets the "request_path_params" field.
+func (m *RestyLogMutation) SetRequestPathParams(value map[string]string) {
+	m.request_path_params = &value
+}
+
+// RequestPathParams returns the value of the "request_path_params" field in the mutation.
+func (m *RestyLogMutation) RequestPathParams() (r map[string]string, exists bool) {
+	v := m.request_path_params
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestPathParams returns the old "request_path_params" field's value of the RestyLog entity.
+// If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RestyLogMutation) OldRequestPathParams(ctx context.Context) (v map[string]string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestPathParams is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestPathParams requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestPathParams: %w", err)
+	}
+	return oldValue.RequestPathParams, nil
+}
+
+// ClearRequestPathParams clears the value of the "request_path_params" field.
+func (m *RestyLogMutation) ClearRequestPathParams() {
+	m.request_path_params = nil
+	m.clearedFields[restylog.FieldRequestPathParams] = struct{}{}
+}
+
+// RequestPathParamsCleared returns if the "request_path_params" field was cleared in this mutation.
+func (m *RestyLogMutation) RequestPathParamsCleared() bool {
+	_, ok := m.clearedFields[restylog.FieldRequestPathParams]
+	return ok
+}
+
+// ResetRequestPathParams resets all changes to the "request_path_params" field.
+func (m *RestyLogMutation) ResetRequestPathParams() {
+	m.request_path_params = nil
+	delete(m.clearedFields, restylog.FieldRequestPathParams)
+}
+
 // SetStatusCode sets the "status_code" field.
 func (m *RestyLogMutation) SetStatusCode(i int) {
 	m.status_code = &i
@@ -6418,10 +8068,24 @@ func (m *RestyLogMutation) AddedElapseTime() (r int64, exists bool) {
 	return *v, true
 }
 
+// ClearElapseTime clears the value of the "elapse_time" field.
+func (m *RestyLogMutation) ClearElapseTime() {
+	m.elapse_time = nil
+	m.addelapse_time = nil
+	m.clearedFields[restylog.FieldElapseTime] = struct{}{}
+}
+
+// ElapseTimeCleared returns if the "elapse_time" field was cleared in this mutation.
+func (m *RestyLogMutation) ElapseTimeCleared() bool {
+	_, ok := m.clearedFields[restylog.FieldElapseTime]
+	return ok
+}
+
 // ResetElapseTime resets all changes to the "elapse_time" field.
 func (m *RestyLogMutation) ResetElapseTime() {
 	m.elapse_time = nil
 	m.addelapse_time = nil
+	delete(m.clearedFields, restylog.FieldElapseTime)
 }
 
 // SetIsError sets the "is_error" field.
@@ -6690,7 +8354,7 @@ func (m *RestyLogMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RestyLogMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 17)
 	if m.hostname != nil {
 		fields = append(fields, restylog.FieldHostname)
 	}
@@ -6705,6 +8369,15 @@ func (m *RestyLogMutation) Fields() []string {
 	}
 	if m.request_body != nil {
 		fields = append(fields, restylog.FieldRequestBody)
+	}
+	if m.request_query_params != nil {
+		fields = append(fields, restylog.FieldRequestQueryParams)
+	}
+	if m.request_form_data != nil {
+		fields = append(fields, restylog.FieldRequestFormData)
+	}
+	if m.request_path_params != nil {
+		fields = append(fields, restylog.FieldRequestPathParams)
 	}
 	if m.status_code != nil {
 		fields = append(fields, restylog.FieldStatusCode)
@@ -6751,6 +8424,12 @@ func (m *RestyLogMutation) Field(name string) (ent.Value, bool) {
 		return m.RequestHeaders()
 	case restylog.FieldRequestBody:
 		return m.RequestBody()
+	case restylog.FieldRequestQueryParams:
+		return m.RequestQueryParams()
+	case restylog.FieldRequestFormData:
+		return m.RequestFormData()
+	case restylog.FieldRequestPathParams:
+		return m.RequestPathParams()
 	case restylog.FieldStatusCode:
 		return m.StatusCode()
 	case restylog.FieldResponseHeaders:
@@ -6788,6 +8467,12 @@ func (m *RestyLogMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldRequestHeaders(ctx)
 	case restylog.FieldRequestBody:
 		return m.OldRequestBody(ctx)
+	case restylog.FieldRequestQueryParams:
+		return m.OldRequestQueryParams(ctx)
+	case restylog.FieldRequestFormData:
+		return m.OldRequestFormData(ctx)
+	case restylog.FieldRequestPathParams:
+		return m.OldRequestPathParams(ctx)
 	case restylog.FieldStatusCode:
 		return m.OldStatusCode(ctx)
 	case restylog.FieldResponseHeaders:
@@ -6849,6 +8534,27 @@ func (m *RestyLogMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRequestBody(v)
+		return nil
+	case restylog.FieldRequestQueryParams:
+		v, ok := value.(map[string][]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestQueryParams(v)
+		return nil
+	case restylog.FieldRequestFormData:
+		v, ok := value.(map[string][]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestFormData(v)
+		return nil
+	case restylog.FieldRequestPathParams:
+		v, ok := value.(map[string]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestPathParams(v)
 		return nil
 	case restylog.FieldStatusCode:
 		v, ok := value.(int)
@@ -6976,6 +8682,15 @@ func (m *RestyLogMutation) ClearedFields() []string {
 	if m.FieldCleared(restylog.FieldRequestBody) {
 		fields = append(fields, restylog.FieldRequestBody)
 	}
+	if m.FieldCleared(restylog.FieldRequestQueryParams) {
+		fields = append(fields, restylog.FieldRequestQueryParams)
+	}
+	if m.FieldCleared(restylog.FieldRequestFormData) {
+		fields = append(fields, restylog.FieldRequestFormData)
+	}
+	if m.FieldCleared(restylog.FieldRequestPathParams) {
+		fields = append(fields, restylog.FieldRequestPathParams)
+	}
 	if m.FieldCleared(restylog.FieldStatusCode) {
 		fields = append(fields, restylog.FieldStatusCode)
 	}
@@ -6984,6 +8699,9 @@ func (m *RestyLogMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(restylog.FieldResponseBody) {
 		fields = append(fields, restylog.FieldResponseBody)
+	}
+	if m.FieldCleared(restylog.FieldElapseTime) {
+		fields = append(fields, restylog.FieldElapseTime)
 	}
 	if m.FieldCleared(restylog.FieldIsError) {
 		fields = append(fields, restylog.FieldIsError)
@@ -7017,6 +8735,15 @@ func (m *RestyLogMutation) ClearField(name string) error {
 	case restylog.FieldRequestBody:
 		m.ClearRequestBody()
 		return nil
+	case restylog.FieldRequestQueryParams:
+		m.ClearRequestQueryParams()
+		return nil
+	case restylog.FieldRequestFormData:
+		m.ClearRequestFormData()
+		return nil
+	case restylog.FieldRequestPathParams:
+		m.ClearRequestPathParams()
+		return nil
 	case restylog.FieldStatusCode:
 		m.ClearStatusCode()
 		return nil
@@ -7025,6 +8752,9 @@ func (m *RestyLogMutation) ClearField(name string) error {
 		return nil
 	case restylog.FieldResponseBody:
 		m.ClearResponseBody()
+		return nil
+	case restylog.FieldElapseTime:
+		m.ClearElapseTime()
 		return nil
 	case restylog.FieldIsError:
 		m.ClearIsError()
@@ -7060,6 +8790,15 @@ func (m *RestyLogMutation) ResetField(name string) error {
 		return nil
 	case restylog.FieldRequestBody:
 		m.ResetRequestBody()
+		return nil
+	case restylog.FieldRequestQueryParams:
+		m.ResetRequestQueryParams()
+		return nil
+	case restylog.FieldRequestFormData:
+		m.ResetRequestFormData()
+		return nil
+	case restylog.FieldRequestPathParams:
+		m.ResetRequestPathParams()
 		return nil
 	case restylog.FieldStatusCode:
 		m.ResetStatusCode()

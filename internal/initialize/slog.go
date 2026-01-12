@@ -136,6 +136,15 @@ func InitMcpSLog(name string) {
 	).WithLogger()
 }
 
+// InitHttpSLog 初始化 http 日志
+func InitHttpSLog(name string) {
+	prefix := "http"
+	global.GvaHttpSlog = golog.NewSlog(
+		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
+		golog.WithSLogSetLevel(getLevel()),
+	).WithLogger()
+}
+
 // InitRestySLog 初始化 resty 日志
 func InitRestySLog(name string) {
 	prefix := "resty"
@@ -145,10 +154,10 @@ func InitRestySLog(name string) {
 	).WithLogger()
 }
 
-// InitHttpSLog 初始化 http 日志
-func InitHttpSLog(name string) {
-	prefix := "http"
-	global.GvaHttpSlog = golog.NewSlog(
+// InitReqSLog 初始化 req 日志
+func InitReqSLog(name string) {
+	prefix := "req"
+	global.GvaReqSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
 	).WithLogger()

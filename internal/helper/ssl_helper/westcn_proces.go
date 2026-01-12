@@ -26,9 +26,9 @@ type WestcnConfigure struct {
 
 // 实现 SSLProcess 接口
 type SSLProcessWestcnImpl struct {
-	logger        *slog.Logger               // 日志
-	httpTransport *http_log.LoggingTransport // HTTP日志记录器
-	debug         bool                       // 调试模式
+	logger        *slog.Logger                  // 日志
+	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	debug         bool                          // 调试模式
 
 	platformConfig WestcnConfigure // 平台配置
 
@@ -37,7 +37,7 @@ type SSLProcessWestcnImpl struct {
 }
 
 // NewSSLProcessWestcn 创建实例
-func NewSSLProcessWestcn(logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) SSLProcess {
+func NewSSLProcessWestcn(logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) SSLProcess {
 	return &SSLProcessWestcnImpl{
 		logger:        logger,
 		httpTransport: httpTransport,

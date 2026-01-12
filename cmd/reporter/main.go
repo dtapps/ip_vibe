@@ -62,8 +62,9 @@ func main() {
 	initialize.InitGrpcSLog("reporter")   // 初始化 gRPC 日志
 	initialize.InitThriftSLog("reporter") // 初始化 Thrift 日志
 	initialize.InitGocronSLog("reporter") // 初始化 gocron 日志
-	initialize.InitRestySLog("reporter")  // 初始化 resty 日志
 	initialize.InitHttpSLog("reporter")   // 初始化 http 日志
+	initialize.InitRestySLog("reporter")  // 初始化 resty 日志
+	initialize.InitReqSLog("reporter")    // 初始化 req 日志
 	initialize.EnsureDefaultSLog()        // 确保日志不为 nil
 
 	initialize.InitGoCron(ctx, global.GvaGocronSlog) // 初始化 GoCron 调度器

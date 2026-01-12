@@ -31,19 +31,19 @@ import (
 
 // IP更新任务
 type IPUpdateTask struct {
-	db            *ent.Client                // 数据库客户端
-	logDb         *ent_log.Client            // 日志数据库客户端
-	cron          gocron.Scheduler           // 定时任务调度器
-	dnsJob        gocron.Job                 // DNS刷新任务
-	cdnJob        gocron.Job                 // CDN刷新任务
-	jobHelper     *gocron_helper.JobHelper   // 任务助手
-	logger        *slog.Logger               // 日志记录器
-	httpTransport *http_log.LoggingTransport // HTTP日志记录器
-	debug         bool                       // 是否开启调试模式
+	db            *ent.Client                   // 数据库客户端
+	logDb         *ent_log.Client               // 日志数据库客户端
+	cron          gocron.Scheduler              // 定时任务调度器
+	dnsJob        gocron.Job                    // DNS刷新任务
+	cdnJob        gocron.Job                    // CDN刷新任务
+	jobHelper     *gocron_helper.JobHelper      // 任务助手
+	logger        *slog.Logger                  // 日志记录器
+	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	debug         bool                          // 是否开启调试模式
 }
 
 // 创建实例
-func NewIPUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) *IPUpdateTask {
+func NewIPUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) *IPUpdateTask {
 	return &IPUpdateTask{
 		db:        db,
 		logDb:     logDb,

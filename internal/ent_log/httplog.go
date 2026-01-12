@@ -13,37 +13,37 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// http请求日志
+// http 请求日志
 type HttpLog struct {
 	config `json:"-"`
 	// ID of the ent.
 	// 请求日志序号
 	ID int64 `json:"id,omitempty"`
-	// 请求主机名
+	// 主机名
 	Hostname string `json:"hostname,omitempty"`
-	// 请求方式
+	// 请求方法
 	Method string `json:"method,omitempty"`
-	// 请求url
+	// 请求 URL
 	URL string `json:"url,omitempty"`
-	// 请求header
+	// 请求头
 	RequestHeaders map[string][]string `json:"request_headers,omitempty"`
-	// 请求参数
+	// 请求体
 	RequestBody json.RawMessage `json:"request_body,omitempty"`
-	// 响应码
+	// 状态码
 	StatusCode int `json:"status_code,omitempty"`
-	// 响应header
+	// 响应头
 	ResponseHeaders map[string][]string `json:"response_headers,omitempty"`
-	// 响应结果
+	// 响应体
 	ResponseBody json.RawMessage `json:"response_body,omitempty"`
-	// 请求耗时, 单位:毫秒
+	// 耗时, 单位:毫秒
 	ElapseTime int64 `json:"elapse_time,omitempty"`
-	// 是否为错误请求（如 5xx、4xx）
+	// 是否出错（如 5xx、4xx）
 	IsError bool `json:"is_error,omitempty"`
 	// 请求时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
-	// go 版本
+	// Go 版本
 	GoVersion string `json:"go_version,omitempty"`
-	// plugin 版本
+	// 插件版本
 	PluginVersion string `json:"plugin_version,omitempty"`
 	selectValues  sql.SelectValues
 }

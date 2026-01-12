@@ -26,9 +26,9 @@ type AliyunDNSConfigure struct {
 
 // 实现 SSLProcess 接口
 type SSLProcessAliyunDNSImpl struct {
-	logger        *slog.Logger               // 日志
-	httpTransport *http_log.LoggingTransport // HTTP日志记录器
-	debug         bool                       // 调试模式
+	logger        *slog.Logger                  // 日志
+	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	debug         bool                          // 调试模式
 
 	platformConfig AliyunDNSConfigure // 平台配置
 
@@ -37,7 +37,7 @@ type SSLProcessAliyunDNSImpl struct {
 }
 
 // NewSSLProcessAliyunDNS 创建实例
-func NewSSLProcessAliyunDNS(logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) SSLProcess {
+func NewSSLProcessAliyunDNS(logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) SSLProcess {
 	return &SSLProcessAliyunDNSImpl{
 		logger:        logger,
 		httpTransport: httpTransport,

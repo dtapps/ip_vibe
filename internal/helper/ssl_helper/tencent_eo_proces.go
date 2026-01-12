@@ -26,9 +26,9 @@ type TencentEOConfigure struct {
 
 // 实现 SSLProcess 接口
 type SSLProcessTencentEOImpl struct {
-	logger        *slog.Logger               // 日志
-	httpTransport *http_log.LoggingTransport // HTTP日志记录器
-	debug         bool                       // 调试模式
+	logger        *slog.Logger                  // 日志
+	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	debug         bool                          // 调试模式
 
 	platformConfig TencentEOConfigure // 平台配置
 
@@ -37,7 +37,7 @@ type SSLProcessTencentEOImpl struct {
 }
 
 // NewSSLProcessTencentEO 创建实例
-func NewSSLProcessTencentEO(logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) SSLProcess {
+func NewSSLProcessTencentEO(logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) SSLProcess {
 	return &SSLProcessTencentEOImpl{
 		logger:        logger,
 		httpTransport: httpTransport,

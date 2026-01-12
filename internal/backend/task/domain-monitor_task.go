@@ -22,19 +22,19 @@ import (
 
 // 域名监控任务
 type DomainMonitorTask struct {
-	db            *ent.Client                // 业务数据库客户端
-	logDb         *ent_log.Client            // 日志数据库客户端
-	cron          gocron.Scheduler           // 定时任务调度器
-	job           gocron.Job                 // 域名监控任务
-	taskName      string                     // 任务名称
-	jobHelper     *gocron_helper.JobHelper   // 任务助手
-	logger        *slog.Logger               // 日志记录器
-	httpTransport *http_log.LoggingTransport // HTTP日志记录器
-	debug         bool                       // 是否开启调试模式
+	db            *ent.Client                   // 业务数据库客户端
+	logDb         *ent_log.Client               // 日志数据库客户端
+	cron          gocron.Scheduler              // 定时任务调度器
+	job           gocron.Job                    // 域名监控任务
+	taskName      string                        // 任务名称
+	jobHelper     *gocron_helper.JobHelper      // 任务助手
+	logger        *slog.Logger                  // 日志记录器
+	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	debug         bool                          // 是否开启调试模式
 }
 
 // 创建实例
-func NewDomainMonitorTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingTransport, debug bool) *DomainMonitorTask {
+func NewDomainMonitorTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) *DomainMonitorTask {
 	return &DomainMonitorTask{
 		db:            db,
 		logDb:         logDb,

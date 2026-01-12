@@ -21,7 +21,7 @@ type AliyunEsaHttpHandler struct {
 	httpClient *http.Client
 }
 
-func NewAliyunEsaHttpHandler(log *http_log.LoggingTransport) *AliyunEsaHttpHandler {
+func NewAliyunEsaHttpHandler(log *http_log.LoggingRoundTripper) *AliyunEsaHttpHandler {
 	return &AliyunEsaHttpHandler{
 		httpClient: &http.Client{
 			Transport: log,
@@ -91,7 +91,7 @@ func (c *AliyunEsaClient) SetDebug(debug bool) *AliyunEsaClient {
 }
 
 // 设置HTTP日志记录器
-func (c *AliyunEsaClient) SetLog(loggingTransport *http_log.LoggingTransport) *AliyunEsaClient {
+func (c *AliyunEsaClient) SetLog(loggingTransport *http_log.LoggingRoundTripper) *AliyunEsaClient {
 	if loggingTransport == nil {
 		return c
 	}

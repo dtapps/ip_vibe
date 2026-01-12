@@ -12,7 +12,7 @@ type HttpHandler struct {
 }
 
 // NewHttpHandler 创建一个新的 HttpHandler 实例
-func NewHttpHandler(httpTransport *http_log.LoggingTransport) *HttpHandler {
+func NewHttpHandler(httpTransport *http_log.LoggingRoundTripper) *HttpHandler {
 	return &HttpHandler{
 		httpClient: &http.Client{
 			Transport: httpTransport,

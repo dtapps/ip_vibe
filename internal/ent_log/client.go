@@ -16,6 +16,7 @@ import (
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/portforwardstats"
+	"vibe_ip/internal/ent_log/reqlog"
 	"vibe_ip/internal/ent_log/restylog"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/ent_log/webhookhistory"
@@ -42,6 +43,8 @@ type Client struct {
 	OperationLog *OperationLogClient
 	// PortForwardStats is the client for interacting with the PortForwardStats builders.
 	PortForwardStats *PortForwardStatsClient
+	// ReqLog is the client for interacting with the ReqLog builders.
+	ReqLog *ReqLogClient
 	// RestyLog is the client for interacting with the RestyLog builders.
 	RestyLog *RestyLogClient
 	// SSLCertificateHistory is the client for interacting with the SSLCertificateHistory builders.
@@ -64,6 +67,7 @@ func (c *Client) init() {
 	c.HttpLog = NewHttpLogClient(c.config)
 	c.OperationLog = NewOperationLogClient(c.config)
 	c.PortForwardStats = NewPortForwardStatsClient(c.config)
+	c.ReqLog = NewReqLogClient(c.config)
 	c.RestyLog = NewRestyLogClient(c.config)
 	c.SSLCertificateHistory = NewSSLCertificateHistoryClient(c.config)
 	c.WebhookHistory = NewWebhookHistoryClient(c.config)
@@ -164,6 +168,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		HttpLog:               NewHttpLogClient(cfg),
 		OperationLog:          NewOperationLogClient(cfg),
 		PortForwardStats:      NewPortForwardStatsClient(cfg),
+		ReqLog:                NewReqLogClient(cfg),
 		RestyLog:              NewRestyLogClient(cfg),
 		SSLCertificateHistory: NewSSLCertificateHistoryClient(cfg),
 		WebhookHistory:        NewWebhookHistoryClient(cfg),
@@ -191,6 +196,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		HttpLog:               NewHttpLogClient(cfg),
 		OperationLog:          NewOperationLogClient(cfg),
 		PortForwardStats:      NewPortForwardStatsClient(cfg),
+		ReqLog:                NewReqLogClient(cfg),
 		RestyLog:              NewRestyLogClient(cfg),
 		SSLCertificateHistory: NewSSLCertificateHistoryClient(cfg),
 		WebhookHistory:        NewWebhookHistoryClient(cfg),
@@ -224,7 +230,8 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.DeviceIpReport, c.DomainMonitorHistory, c.HttpLog, c.OperationLog,
-		c.PortForwardStats, c.RestyLog, c.SSLCertificateHistory, c.WebhookHistory,
+		c.PortForwardStats, c.ReqLog, c.RestyLog, c.SSLCertificateHistory,
+		c.WebhookHistory,
 	} {
 		n.Use(hooks...)
 	}
@@ -235,7 +242,8 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.DeviceIpReport, c.DomainMonitorHistory, c.HttpLog, c.OperationLog,
-		c.PortForwardStats, c.RestyLog, c.SSLCertificateHistory, c.WebhookHistory,
+		c.PortForwardStats, c.ReqLog, c.RestyLog, c.SSLCertificateHistory,
+		c.WebhookHistory,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -254,6 +262,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.OperationLog.mutate(ctx, m)
 	case *PortForwardStatsMutation:
 		return c.PortForwardStats.mutate(ctx, m)
+	case *ReqLogMutation:
+		return c.ReqLog.mutate(ctx, m)
 	case *RestyLogMutation:
 		return c.RestyLog.mutate(ctx, m)
 	case *SSLCertificateHistoryMutation:
@@ -930,6 +940,139 @@ func (c *PortForwardStatsClient) mutate(ctx context.Context, m *PortForwardStats
 	}
 }
 
+// ReqLogClient is a client for the ReqLog schema.
+type ReqLogClient struct {
+	config
+}
+
+// NewReqLogClient returns a client for the ReqLog from the given config.
+func NewReqLogClient(c config) *ReqLogClient {
+	return &ReqLogClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `reqlog.Hooks(f(g(h())))`.
+func (c *ReqLogClient) Use(hooks ...Hook) {
+	c.hooks.ReqLog = append(c.hooks.ReqLog, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `reqlog.Intercept(f(g(h())))`.
+func (c *ReqLogClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ReqLog = append(c.inters.ReqLog, interceptors...)
+}
+
+// Create returns a builder for creating a ReqLog entity.
+func (c *ReqLogClient) Create() *ReqLogCreate {
+	mutation := newReqLogMutation(c.config, OpCreate)
+	return &ReqLogCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ReqLog entities.
+func (c *ReqLogClient) CreateBulk(builders ...*ReqLogCreate) *ReqLogCreateBulk {
+	return &ReqLogCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ReqLogClient) MapCreateBulk(slice any, setFunc func(*ReqLogCreate, int)) *ReqLogCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ReqLogCreateBulk{err: fmt.Errorf("calling to ReqLogClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ReqLogCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ReqLogCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ReqLog.
+func (c *ReqLogClient) Update() *ReqLogUpdate {
+	mutation := newReqLogMutation(c.config, OpUpdate)
+	return &ReqLogUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ReqLogClient) UpdateOne(_m *ReqLog) *ReqLogUpdateOne {
+	mutation := newReqLogMutation(c.config, OpUpdateOne, withReqLog(_m))
+	return &ReqLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ReqLogClient) UpdateOneID(id int64) *ReqLogUpdateOne {
+	mutation := newReqLogMutation(c.config, OpUpdateOne, withReqLogID(id))
+	return &ReqLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ReqLog.
+func (c *ReqLogClient) Delete() *ReqLogDelete {
+	mutation := newReqLogMutation(c.config, OpDelete)
+	return &ReqLogDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ReqLogClient) DeleteOne(_m *ReqLog) *ReqLogDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ReqLogClient) DeleteOneID(id int64) *ReqLogDeleteOne {
+	builder := c.Delete().Where(reqlog.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ReqLogDeleteOne{builder}
+}
+
+// Query returns a query builder for ReqLog.
+func (c *ReqLogClient) Query() *ReqLogQuery {
+	return &ReqLogQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeReqLog},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ReqLog entity by its id.
+func (c *ReqLogClient) Get(ctx context.Context, id int64) (*ReqLog, error) {
+	return c.Query().Where(reqlog.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ReqLogClient) GetX(ctx context.Context, id int64) *ReqLog {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ReqLogClient) Hooks() []Hook {
+	return c.hooks.ReqLog
+}
+
+// Interceptors returns the client interceptors.
+func (c *ReqLogClient) Interceptors() []Interceptor {
+	return c.inters.ReqLog
+}
+
+func (c *ReqLogClient) mutate(ctx context.Context, m *ReqLogMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ReqLogCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ReqLogUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ReqLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ReqLogDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent_log: unknown ReqLog mutation op: %q", m.Op())
+	}
+}
+
 // RestyLogClient is a client for the RestyLog schema.
 type RestyLogClient struct {
 	config
@@ -1333,11 +1476,11 @@ func (c *WebhookHistoryClient) mutate(ctx context.Context, m *WebhookHistoryMuta
 type (
 	hooks struct {
 		DeviceIpReport, DomainMonitorHistory, HttpLog, OperationLog, PortForwardStats,
-		RestyLog, SSLCertificateHistory, WebhookHistory []ent.Hook
+		ReqLog, RestyLog, SSLCertificateHistory, WebhookHistory []ent.Hook
 	}
 	inters struct {
 		DeviceIpReport, DomainMonitorHistory, HttpLog, OperationLog, PortForwardStats,
-		RestyLog, SSLCertificateHistory, WebhookHistory []ent.Interceptor
+		ReqLog, RestyLog, SSLCertificateHistory, WebhookHistory []ent.Interceptor
 	}
 )
 

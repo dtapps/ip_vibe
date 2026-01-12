@@ -40,6 +40,7 @@ func newRequestWriter() *requestWriter {
 }
 
 func (w *requestWriter) WriteRequestHeader(wr io.Writer, req *http.Request, gzip bool, streamID quic.StreamID, qlogger qlogwriter.Recorder) error {
+	// TODO: figure out how to add support for trailers
 	buf := &bytes.Buffer{}
 	if err := w.writeHeaders(buf, req, gzip, streamID, qlogger); err != nil {
 		return err
@@ -58,18 +59,7 @@ func (w *requestWriter) writeHeaders(wr io.Writer, req *http.Request, gzip bool,
 	defer w.encoder.Close()
 	defer w.headerBuf.Reset()
 
-	var trailers string
-	if len(req.Trailer) > 0 {
-		keys := make([]string, 0, len(req.Trailer))
-		for k := range req.Trailer {
-			if httpguts.ValidTrailerHeader(k) {
-				keys = append(keys, k)
-			}
-		}
-		trailers = strings.Join(keys, ", ")
-	}
-
-	headerFields, err := w.encodeHeaders(req, gzip, trailers, actualContentLength(req), qlogger != nil)
+	headerFields, err := w.encodeHeaders(req, gzip, "", actualContentLength(req), qlogger != nil)
 	if err != nil {
 		return err
 	}
@@ -311,11 +301,4 @@ func shouldSendReqContentLength(method string, contentLength int64) bool {
 	default:
 		return false
 	}
-}
-
-// WriteRequestTrailer writes HTTP trailers to the stream.
-// It should be called after the request body has been fully written.
-func (w *requestWriter) WriteRequestTrailer(wr io.Writer, req *http.Request, streamID quic.StreamID, qlogger qlogwriter.Recorder) error {
-	_, err := writeTrailers(wr, req.Trailer, streamID, qlogger)
-	return err
 }

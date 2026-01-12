@@ -81,6 +81,15 @@ func (_u *RestyLogUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.RequestBodyCleared() {
 		_spec.ClearField(restylog.FieldRequestBody, field.TypeJSON)
 	}
+	if _u.mutation.RequestQueryParamsCleared() {
+		_spec.ClearField(restylog.FieldRequestQueryParams, field.TypeJSON)
+	}
+	if _u.mutation.RequestFormDataCleared() {
+		_spec.ClearField(restylog.FieldRequestFormData, field.TypeJSON)
+	}
+	if _u.mutation.RequestPathParamsCleared() {
+		_spec.ClearField(restylog.FieldRequestPathParams, field.TypeJSON)
+	}
 	if _u.mutation.StatusCodeCleared() {
 		_spec.ClearField(restylog.FieldStatusCode, field.TypeInt)
 	}
@@ -89,6 +98,9 @@ func (_u *RestyLogUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.ResponseBodyCleared() {
 		_spec.ClearField(restylog.FieldResponseBody, field.TypeJSON)
+	}
+	if _u.mutation.ElapseTimeCleared() {
+		_spec.ClearField(restylog.FieldElapseTime, field.TypeInt64)
 	}
 	if _u.mutation.IsErrorCleared() {
 		_spec.ClearField(restylog.FieldIsError, field.TypeBool)
@@ -207,6 +219,15 @@ func (_u *RestyLogUpdateOne) sqlSave(ctx context.Context) (_node *RestyLog, err 
 	if _u.mutation.RequestBodyCleared() {
 		_spec.ClearField(restylog.FieldRequestBody, field.TypeJSON)
 	}
+	if _u.mutation.RequestQueryParamsCleared() {
+		_spec.ClearField(restylog.FieldRequestQueryParams, field.TypeJSON)
+	}
+	if _u.mutation.RequestFormDataCleared() {
+		_spec.ClearField(restylog.FieldRequestFormData, field.TypeJSON)
+	}
+	if _u.mutation.RequestPathParamsCleared() {
+		_spec.ClearField(restylog.FieldRequestPathParams, field.TypeJSON)
+	}
 	if _u.mutation.StatusCodeCleared() {
 		_spec.ClearField(restylog.FieldStatusCode, field.TypeInt)
 	}
@@ -215,6 +236,9 @@ func (_u *RestyLogUpdateOne) sqlSave(ctx context.Context) (_node *RestyLog, err 
 	}
 	if _u.mutation.ResponseBodyCleared() {
 		_spec.ClearField(restylog.FieldResponseBody, field.TypeJSON)
+	}
+	if _u.mutation.ElapseTimeCleared() {
+		_spec.ClearField(restylog.FieldElapseTime, field.TypeInt64)
 	}
 	if _u.mutation.IsErrorCleared() {
 		_spec.ClearField(restylog.FieldIsError, field.TypeBool)

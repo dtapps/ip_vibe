@@ -3,7 +3,6 @@ package initialize
 import (
 	"context"
 	"log/slog"
-	"net/http"
 	"vibe_ip/internal/global"
 
 	"go.dtapp.net/library/contrib/resty_log"
@@ -26,16 +25,14 @@ func InitThirdParty(ctx context.Context, logger *slog.Logger) {
 	var restyClientBool = false
 
 	// Resty 日志
-	var restyLog *resty_log.Logger
+	var restyLog *resty_log.LoggerMiddleware
 	var restyLogBool = false
 
 	if global.GvaRestyLog != nil {
 		restyLog = global.GvaRestyLog
 		restyLogBool = true
-	} else if global.GvaHttpLog != nil {
-		restyClient = resty.NewWithClient(&http.Client{
-			Transport: global.GvaHttpLog,
-		})
+	} else if global.GvaRestyClient != nil {
+		restyClient = global.GvaRestyClient
 		restyClientBool = true
 	}
 

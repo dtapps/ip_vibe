@@ -9,11 +9,11 @@ type DnsOption func(*dnsOptions)
 
 // dnsOptions 内部DNS配置选项
 type dnsOptions struct {
-	httpTransport *http_log.LoggingTransport
+	httpTransport *http_log.LoggingRoundTripper
 }
 
 // WithHttpTransport 设置HTTP日志传输器
-func WithHttpTransport(transport *http_log.LoggingTransport) DnsOption {
+func WithHttpTransport(transport *http_log.LoggingRoundTripper) DnsOption {
 	return func(o *dnsOptions) {
 		o.httpTransport = transport
 	}
