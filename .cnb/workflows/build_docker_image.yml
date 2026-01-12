@@ -9,7 +9,8 @@
       docker:
         build: .cnb/Dockerfile # 使用自定义 Dockerfile
         volumes:
-          - /root/.cache/go-build:copy-on-write # 挂载 Go 构建缓存
+          - /root/.cache/go-build:copy-on-write # 挂载 Go
+          - /root/.local/share/pnpm/store:copy-on-write # 缓存 pnpm
           - /go:copy-on-write # 挂载项目依赖目录（可选，根据需要）
       imports: https://cnb.cool/dtapp/envs/-/blob/main/docker.yml # 导入外部环境变量/配置
       stages:
@@ -49,10 +50,10 @@
             go env -w GO111MODULE=on
             go env -w GOPROXY="$INTERIOR_GOPROXY"
 
-            # 2. 下载 Go 依赖
-            echo "下载 Go 依赖..."
-            go mod tidy
-            go mod vendor
+            # 2. 下载 依赖
+            echo "下载 依赖..."
+            make pnpm_update
+            make mod
 
             # 3. 清理并构建
             echo "清理并构建..."
