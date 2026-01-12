@@ -61,7 +61,7 @@ async function openFormModal(id) {
       {
         id: "platform",
         value: "",
-        disabled: true,
+        disabled: false,
       },
     ]);
 

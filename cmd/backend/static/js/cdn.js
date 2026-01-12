@@ -162,6 +162,11 @@ async function openFormModal(id) {
           disabled: true,
         },
         {
+          id: "domain_name",
+          value: "",
+          disabled: true,
+        },
+        {
           id: "config_id",
           disabled: false,
         },
