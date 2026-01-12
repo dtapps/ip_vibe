@@ -13,24 +13,32 @@
           - /go:copy-on-write # 挂载项目依赖目录（可选，根据需要）
       imports: https://cnb.cool/dtapp/envs/-/blob/main/docker.yml # 导入外部环境变量/配置
       stages:
-        - name: 1. 安装环境
+        - name: 1. 安装环境并配置加速
           script: |
-            # 设置腾讯云镜像
+            # Debian Trixie APT 源加速
+            sed -i 's|deb.debian.org|mirrors.cloud.tencent.com|g' /etc/apt/sources.list.d/debian.sources 2>/dev/null || true
+            sed -i 's|deb.debian.org|mirrors.cloud.tencent.com|g' /etc/apt/sources.list 2>/dev/null || true
+
+            apt-get update && apt-get install -y curl gnupg
+
+            # Node 20 & pnpm 加速安装
+            export NODEJS_ORG_MIRROR=https://mirrors.cloud.tencent.com/nodejs-release/
+            curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+            apt-get install -y nodejs
+
             npm config set registry https://mirrors.cloud.tencent.com/npm/
             npm install -g pnpm
 
-            # 找到 pnpm 到底装哪了，并存入变量
-            PNPM_PATH=$(npm prefix -g)/bin
-            echo "##[set-output pnpm_path=$PNPM_PATH]"
+            # 【核心解决】将 pnpm 路径通过 exports 传给全局
+            echo "##[set-output pnpm_bin=$(npm prefix -g)/bin]"
           exports:
             pnpm_path: GLOBAL_PNPM_PATH
 
-        - name: 2. 检查环境
+        - name: 2. 验证 pnpm 状态
           script: |
-            # 把路径加回来
-            export PATH="$GLOBAL_PNPM_PATH:$PATH"
-            which pnpm
+            export PATH="$GLOBAL_PNPM_BIN:$PATH"
             pnpm -v
+            which pnpm
 
         - name: 验证 make 工具
           script: make --version
@@ -64,7 +72,7 @@
             echo "=============================="
 
             # 必须再次 export，否则 make 还是找不到
-            export PATH="$GLOBAL_PNPM_PATH:$PATH"
+            export PATH="$GLOBAL_PNPM_BIN:$PATH"
 
             # 1. 配置 GOPROXY
             echo "配置 GOPROXY: ${INTERIOR_GOPROXY}"
