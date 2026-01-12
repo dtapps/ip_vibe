@@ -75,8 +75,13 @@ async function openFormModal(id) {
 
     // 创建
     if (!id) {
-      document.getElementById("id").value = "";
-      document.getElementById("id").disabled = true;
+      updateFormFields([
+        {
+          id: "id",
+          value: 0,
+          disabled: true,
+        },
+      ]);
 
       // 清空已选
       console.log("select2 清空已选");

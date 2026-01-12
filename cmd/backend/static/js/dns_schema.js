@@ -11,8 +11,9 @@ function renderDnsFields(platform, initialData = {}) {
   const schema = DNS_SCHEMA[platform];
 
   if (!schema) {
-    container.innerHTML =
-      '<div class="text-warning text-xs text-center py-4">请选择有效的平台类型</div>';
+    // container.innerHTML =
+    //   '<div class="text-warning text-xs text-center py-4">请选择有效的平台类型</div>';
+    container.innerHTML = "";
     return;
   }
 

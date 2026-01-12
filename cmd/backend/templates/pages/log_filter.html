@@ -16,7 +16,7 @@
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">操作来源</span>
             <select name="source" class="ui-filter-select w-30">
-                <option value="">所有来源</option>
+                <option value="all">所有来源</option>
                 {{ range $opt := (fieldEnumMap "operation_log_source") }}
                 {{ if eq $opt.Value $filter.Source }}
                 <option value="{{ $opt.Value }}" selected>{{ $opt.Label }}</option>

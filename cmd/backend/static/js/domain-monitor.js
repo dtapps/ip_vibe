@@ -91,11 +91,26 @@ async function openFormModal(id) {
 
     // 创建
     if (!id) {
-      document.getElementById("id").value = 0;
-      document.getElementById("id").disabled = true;
-      document.getElementById("domain").disabled = false;
-      document.getElementById("check_interval").value = 60;
-      document.getElementById("check_protocol").disabled = false;
+      updateFormFields([
+        {
+          id: "id",
+          value: 0,
+          disabled: true,
+        },
+        {
+          id: "domain",
+          disabled: false,
+        },
+        {
+          id: "check_interval",
+          value: 60,
+          disabled: false,
+        },
+        {
+          id: "check_protocol",
+          disabled: false,
+        },
+      ]);
 
       // 清空已选
       console.log("select2 清空已选");

@@ -21,6 +21,9 @@ func Log(c *gin.Context) {
 	if requestParams.Source == "" {
 		requestParams.Source = operationlog.SourceUser.String()
 	}
+	if requestParams.Source == "all" {
+		requestParams.Source = ""
+	}
 
 	// 准备页面数据
 	pageData := types.LogResponse{
