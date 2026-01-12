@@ -13,6 +13,22 @@
           - /go:copy-on-write # 挂载项目依赖目录（可选，根据需要）
       imports: https://cnb.cool/dtapp/envs/-/blob/main/docker.yml # 导入外部环境变量/配置
       stages:
+        - name: 自动安装前端依赖环境
+          script: |
+            # 使用速安装脚本
+            curl -fsSL https://get.pnpm.io/install.sh | SHELL="$(which bash)" bash -
+            # 将 pnpm 加入路径
+            export PNPM_HOME="/root/.local/share/pnpm"
+            export PATH="$PNPM_HOME:$PATH"
+
+            # 如果没有 node，还需要安装 node
+            apt-get update && apt-get install -y nodejs npm
+
+            # 验证
+            pnpm -v
+            node -v
+            npm -v
+
         - name: 验证 make 工具
           script: make --version
 
