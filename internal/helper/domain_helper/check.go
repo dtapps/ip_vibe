@@ -77,6 +77,8 @@ type CheckResult struct {
 	SSLVersion          int       // 版本
 }
 
+type fetchHttpFunc func(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error
+
 // Check 执行实际的网络检查并返回结果
 // protocol: 协议，例如 "http" 或 "https"
 // domain: 要检查的域名
@@ -129,16 +131,16 @@ func (s *DomainCheck) Check(ctx context.Context, protocol string, domain string,
 	}
 
 	// ---------- HTTP / HTTPS 请求 ----------
-	fetchMethods := []fetchFunc{
+	fetchHttps := []fetchHttpFunc{
 		s.fetchHTTP,          // 官方 标准 库
 		s.fetchHTTPWithResty, // 第三方 Resty 库
 		s.fetchHTTPWithReq,   // 第三方 Req 库
 	}
 
 	// 随机选一个
-	selectedIndex := rand.Intn(len(fetchMethods))
-	selectedMethod := fetchMethods[selectedIndex]
-	if err := selectedMethod(ctx, u, httpHeaders, start, result); err != nil {
+	selectedHttpIndex := rand.Intn(len(fetchHttps))
+	selectedHttpMethod := fetchHttps[selectedHttpIndex]
+	if err := selectedHttpMethod(ctx, u, httpHeaders, start, result); err != nil {
 		return result
 	}
 
@@ -185,8 +187,6 @@ func (s *DomainCheck) fetchSSLInfo(ctx context.Context, domain string, result *C
 
 	return nil
 }
-
-type fetchFunc func(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error
 
 // 发起 HTTP 请求，使用官方 标准 库
 func (s *DomainCheck) fetchHTTP(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
@@ -288,6 +288,8 @@ func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, u *url.URL, httpHe
 	return nil
 }
 
+type fetchImpersonateFunc func() *req.Client
+
 // 发起 HTTP 请求，使用第三方 Req 库
 // https://req.cool/
 func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
@@ -310,7 +312,16 @@ func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, u *url.URL, httpHead
 	// }
 
 	// 伪装 HTTP 指纹
-	// client.ImpersonateChrome()
+	fetchImpersonates := []fetchImpersonateFunc{
+		client.ImpersonateChrome,
+		client.ImpersonateFirefox,
+		client.ImpersonateSafari,
+	}
+
+	// 随机选一个
+	selectedImpersonateIndex := rand.Intn(len(fetchImpersonates))
+	selectedImpersonateMethod := fetchImpersonates[selectedImpersonateIndex]
+	selectedImpersonateMethod()
 
 	// 创建 Req 请求
 	req := client.R().SetContext(ctx)
