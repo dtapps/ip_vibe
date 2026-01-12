@@ -54,9 +54,10 @@
             go mod tidy
             go mod vendor
 
-            # 3. 清理并只构建 Linux amd64
-            echo "清理并只构建 Linux amd64..."
+            # 3. 清理并构建
+            echo "清理并构建..."
             make clean
+            VERSION=${INTERIOR_VERSION} make build-frontend
             VERSION=${INTERIOR_VERSION} make build-linux-amd64
 
             # 4. 登录 Docker Registry

@@ -20,11 +20,7 @@ install-tools:
 	go install connectrpc.com/connect/cmd/protoc-gen-connect-go@latest && \
 	go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest && \
 	go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest && \
-	go install github.com/cloudwego/thriftgo@latest && \
-	go install github.com/dubbogo/protoc-gen-go-triple/v3@latest && \
-	go install github.com/TarsCloud/TarsGo/tars/tools/tarsgo@latest && \
-	go install github.com/TarsCloud/TarsGo/tars/tools/tars2go@latest && \
-go install github.com/TarsCloud/TarsGo/tars/tools/protoc-gen-go-tarsrpc@latest
+	go install github.com/cloudwego/thriftgo@latest
 	@echo "🎉 All tools installed successfully!"
 
 # 验证安装
@@ -44,9 +40,6 @@ verify-tools:
 	@test -f $(shell go env GOPATH)/bin/protoc-gen-doc && echo "✅ protoc-gen-doc found" || echo "❌ protoc-gen-doc not found"
 	@test -f $(shell go env GOPATH)/bin/thriftgo && echo "✅ thriftgo found" || echo "❌ thriftgo not found"
 	@test -f $(shell go env GOPATH)/bin/protoc-gen-go-triple && echo "✅ protoc-gen-go-triple found" || echo "❌ protoc-gen-go-triple not found"
-	@test -f $(shell go env GOPATH)/bin/tarsgo && echo "✅ tarsgo found" || echo "❌ tarsgo not found"
-	@test -f $(shell go env GOPATH)/bin/tars2go && echo "✅ tars2go found" || echo "❌ tars2go not found"
-	@test -f $(shell go env GOPATH)/bin/protoc-gen-go-tarsrpc && echo "✅ protoc-gen-go-tarsrpc found" || echo "❌ protoc-gen-go-tarsrpc not found"
 	@echo "🎉 Verification complete!"
 
 # 项目目录
@@ -57,7 +50,7 @@ mod:
 	go mod tidy
 	go mod vendor
 
-generate: swag_v1_all swag_v2_all swag2op_all grpc_generate_all
+generate: swag_v1_all swag_v2_all swag2op_all grpc_generate_all thrift_generate
 
 generate_ent:
 # 	ent generate --feature schema/snapshot,privacy,entql,namedges,bidiedges,sql/schemaconfig,sql/lock,sql/modifier,sql/execquery,sql/upsert ./ent/schema
@@ -168,9 +161,7 @@ grpc_generate_old:
 	       ./internal/grpc_proto/*.proto
 	echo "✅ gRPC code generated successfully!"
 
-# remote = false 禁止生成远程调用代码
-# read_write_private = true 允许读写私有字段
-# ignore_initialisms = true 忽略驼峰命名规则
+# https://thrift.apache.org/lib/go.html
 thrift_generate:
 	thrift \
 		   --gen go:package_prefix=vibe_ip/internal/thrift_generated/ \
@@ -183,30 +174,6 @@ thriftgo_generate:
 		   --gen go:package_prefix=vibe_ip/internal/thriftgo_generated/,gen_setter,gen_db_tag,omitempty_for_optional,use_type_alias,validate_set,scan_value_for_enum,reserve_comments \
 	       --out ./internal/thriftgo_generated \
 	       ./internal/thrift_idl/*.thrift
-
-dubbo_generate:
-	@echo "Generating Dubbo code..."
-	protoc --proto_path=./internal/dubbo_idl \
-		   --go_out=./internal/dubbo_generated \
-		   --go_opt=paths=source_relative \
-		   --go-triple_out=./internal/dubbo_generated \
-		   --go-triple_opt=paths=source_relative \
-		   ./internal/dubbo_idl/*.proto
-	@echo "✅ Dubbo code generated successfully!"
-
-tars_idl:
-	tars2go  -outdir=tars-protocol ./internal/tars_idl/*.tars
-	@echo "✅ TarsGo code generated successfully!"
-
-tars_generate:
-	@echo "Generating TarsGo code..."
-	protoc --proto_path=./internal/tars_idl \
-		   --go_out=./internal/tars_generated \
-		   --go_opt=paths=source_relative \
-		   --go-tarsrpc_out=./internal/tars_generated \
-		   --go-tarsrpc_opt=paths=source_relative \
-		   ./internal/tars_idl/*.proto
-	@echo "✅ TarsGo code generated successfully!"
 
 # 二进制文件名
 BINARY_NAME=ip_vibe
@@ -323,6 +290,10 @@ clean:
 	@rm -f $(BUILD_DIR)/$(BINARY_NAME_BACKEND)-*
 	@rm -f $(BUILD_DIR)/$(BINARY_NAME_REPORTER)-*
 	@rm -f $(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-*
+
+build-frontend:
+	@echo "编译 $(BINARY_NAME_FRONTEND) 为 静态文件... (version: $(VERSION))"
+	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm build
 
 build-linux-amd64:
 # 	@echo "编译 $(BINARY_NAME_CLI) 为 linux/amd64... (version: $(VERSION))"

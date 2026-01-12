@@ -51,6 +51,7 @@
 
             # 3. 清理并构建所有平台
             echo "清理并构建所有平台..."
+            VERSION=${INTERIOR_VERSION} make build-frontend
             VERSION=${INTERIOR_VERSION} make build-all
 
             echo "=============================="
@@ -89,4 +90,3 @@
 
         - name: 输出 Release 附件
           script: echo $FILES
-
