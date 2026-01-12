@@ -16,7 +16,6 @@
 
         - name: 输出基本信息
           script: |
-            echo "原始 goproxy: $goproxy"
             echo "原始 version: $version"
 
             # 1. 如果输入没有 v 前缀，自动加上
@@ -24,14 +23,11 @@
               version="v${version}"
             fi
 
-            echo "处理 goproxy: $goproxy"
             echo "处理 version: $version"
 
             # 2 .通过 set-output 输出到 result
-            echo "##[set-output interior_goproxy=$goproxy]"
             echo "##[set-output interior_version=$version]"
           exports:
-            interior_goproxy: INTERIOR_GOPROXY
             interior_version: INTERIOR_VERSION
 
         - name: 构建并打包 Go 项目
@@ -40,16 +36,11 @@
             echo "🔧 开始处理 web_trigger_build_go_project"
             echo "=============================="
 
-            # 1. 配置 GOPROXY
-            echo "配置 GOPROXY..."
-            go env -w GO111MODULE=on
-            go env -w GOPROXY="$INTERIOR_GOPROXY"
-
-            # 2. 下载 依赖
+            # 1. 下载 依赖
             echo "下载 依赖..."
             make mod
 
-            # 3. 清理并构建所有平台
+            # 2. 清理并构建所有平台
             echo "清理并构建所有平台..."
             VERSION=${INTERIOR_VERSION} make build-frontend
             VERSION=${INTERIOR_VERSION} make build-all

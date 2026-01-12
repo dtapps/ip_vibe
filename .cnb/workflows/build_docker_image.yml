@@ -19,7 +19,6 @@
 
         - name: 输出基本信息
           script: |
-            echo "原始 goproxy: $goproxy"
             echo "原始 version: $version"
             echo "CNB_DOCKER_REGISTRY: ${CNB_DOCKER_REGISTRY}"
             echo "CNB_REPO_SLUG_LOWERCASE: ${CNB_REPO_SLUG_LOWERCASE}"
@@ -29,14 +28,11 @@
               version="v${version}"
             fi
 
-            echo "处理 goproxy: $goproxy"
             echo "处理 version: $version"
 
             # 2 .通过 set-output 输出到 result
-            echo "##[set-output interior_goproxy=$goproxy]"
             echo "##[set-output interior_version=$version]"
           exports:
-            interior_goproxy: INTERIOR_GOPROXY
             interior_version: INTERIOR_VERSION
 
         - name: 构建并推送 Docker 镜像
@@ -45,23 +41,18 @@
             echo "🔧 开始处理 web_trigger_build_docker_image"
             echo "=============================="
 
-            # 1. 配置 GOPROXY
-            echo "配置 GOPROXY: ${INTERIOR_GOPROXY}"
-            go env -w GO111MODULE=on
-            go env -w GOPROXY="$INTERIOR_GOPROXY"
-
-            # 2. 下载 依赖
+            # 1. 下载 依赖
             echo "下载 依赖..."
             make pnpm_update
             make mod
 
-            # 3. 清理并构建
+            # 2. 清理并构建
             echo "清理并构建..."
             make clean
             VERSION=${INTERIOR_VERSION} make build-frontend
             VERSION=${INTERIOR_VERSION} make build-linux-amd64
 
-            # 4. 登录 Docker Registry
+            # 3. 登录 Docker Registry
             echo "登录 Docker Registry: ${CNB_DOCKER_REGISTRY}"
             docker login -u "${CNB_TOKEN_USER_NAME}" -p "${CNB_TOKEN}" "${CNB_DOCKER_REGISTRY}"
 
@@ -77,7 +68,7 @@
             FORWARDER_DOCKER_IMAGE_FULL="${CNB_DOCKER_REGISTRY}/${FORWARDER_IMAGE_NAME}:${INTERIOR_VERSION}" # 版本镜像地址
             FORWARDER_DOCKER_IMAGE_LATEST="${CNB_DOCKER_REGISTRY}/${FORWARDER_IMAGE_NAME}:latest" # latest镜像地址
 
-            # 5. 构建 Docker 镜像
+            # 4. 构建 Docker 镜像
             echo "构建 Docker 镜像: ${BACKEND_DOCKER_IMAGE_FULL} ${BACKEND_DOCKER_IMAGE_LATEST} ${REPORTER_DOCKER_IMAGE_FULL} ${REPORTER_DOCKER_IMAGE_LATEST} ${FORWARDER_DOCKER_IMAGE_FULL} ${FORWARDER_DOCKER_IMAGE_LATEST}"
             docker build \
               -f "./cmd/backend/Dockerfile" \
@@ -92,7 +83,7 @@
               -t "${FORWARDER_DOCKER_IMAGE_FULL}" \
               -t "${FORWARDER_DOCKER_IMAGE_LATEST}" .
 
-            # 6. 推送 Docker 镜像
+            # 5. 推送 Docker 镜像
             echo "推送 Docker 镜像: ${BACKEND_DOCKER_IMAGE_FULL} ${BACKEND_DOCKER_IMAGE_LATEST} ${REPORTER_DOCKER_IMAGE_FULL} ${REPORTER_DOCKER_IMAGE_LATEST} ${FORWARDER_DOCKER_IMAGE_FULL} ${FORWARDER_DOCKER_IMAGE_LATEST}"
             docker push "${BACKEND_DOCKER_IMAGE_FULL}"
             docker push "${BACKEND_DOCKER_IMAGE_LATEST}"

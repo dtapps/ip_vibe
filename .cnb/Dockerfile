@@ -5,7 +5,11 @@ FROM golang:1.25.5-trixie
 RUN sed -i 's|deb.debian.org|mirrors.cloud.tencent.com|g' /etc/apt/sources.list.d/debian.sources 2>/dev/null || \
     sed -i 's|deb.debian.org|mirrors.cloud.tencent.com|g' /etc/apt/sources.list
 
-# 2. 安装 Node.js 和基础工具
+# 2. 设置 Go 环境变量
+export GO111MODULE=on
+export GOPROXY=https://mirrors.cloud.tencent.com/go,direct
+
+# 3. 安装 Node.js 和基础工具
 RUN apt-get update && apt-get install -y curl gnupg && \
     export NODEJS_ORG_MIRROR=https://mirrors.cloud.tencent.com/nodejs-release/ && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
