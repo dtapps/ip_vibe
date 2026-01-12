@@ -25,23 +25,29 @@ type DomainCheck struct {
 	logger        *slog.Logger                  // 日志记录器
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
 	debug         bool                          // 是否开启调试模式
+	httpClient    *http.Client                  // HTTP 客户端
 	restyClient   *resty.Client                 // Resty 客户端
 	reqClient     *req.Client                   // Req 客户端
 }
 
 func NewDomainCheck(logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) *DomainCheck {
+	httpClient := &http.Client{}
+	if global.GvaHttpClientWithLog != nil {
+		httpClient = global.GvaHttpClientWithLog
+	}
 	restyClient := resty.New()
-	if global.GvaRestyClient != nil {
-		restyClient = global.GvaRestyClient
+	if global.GvaRestyClientWithLog != nil {
+		restyClient = global.GvaRestyClientWithLog
 	}
 	reqClient := req.NewClient()
-	if global.GvaReqClient != nil {
-		reqClient = global.GvaReqClient
+	if global.GvaReqClientWithLog != nil {
+		reqClient = global.GvaReqClientWithLog
 	}
 	return &DomainCheck{
 		logger:        logger,
 		httpTransport: httpTransport,
 		debug:         debug,
+		httpClient:    httpClient,
 		restyClient:   restyClient,
 		reqClient:     reqClient,
 	}
@@ -189,14 +195,15 @@ func (s *DomainCheck) fetchHTTP(ctx context.Context, u *url.URL, httpHeaders map
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeStandard
 
 	// 创建 HTTP 客户端
-	client := &http.Client{
-		Timeout: 60 * time.Second,
-	}
+	client := s.httpClient
+
+	// 设置超时
+	client.Timeout = 60 * time.Second
 
 	// 添加 HTTP 日志记录器
-	if s.httpTransport != nil {
-		client.Transport = s.httpTransport.Instance(nil)
-	}
+	// if s.httpTransport != nil {
+	// 	client.Transport = s.httpTransport.Instance(nil)
+	// }
 
 	// 创建请求
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
@@ -244,7 +251,6 @@ func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, u *url.URL, httpHe
 
 	// 复制 Resty 客户端
 	client := s.restyClient.Clone(ctx)
-	defer client.Close()
 
 	// 设置超时
 	client.SetTimeout(60 * time.Second)

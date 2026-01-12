@@ -2,6 +2,7 @@ package global
 
 import (
 	"log/slog"
+	"net/http"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent_log"
 
@@ -66,8 +67,9 @@ var (
 	GvaGoCron        gocron.Scheduler // 定时任务
 	GvaGoCronRunning int32            // 定时任务状态 0=停 1=运行
 
-	GvaRestyClient *resty.Client // Resty 客户端
-	GvaReqClient   *req.Client   // Req 客户端
+	GvaHttpClientWithLog  *http.Client  // HTTP 客户端，并带日志记录
+	GvaRestyClientWithLog *resty.Client // Resty 客户端，并带日志记录
+	GvaReqClientWithLog   *req.Client   // Req 客户端，并带日志记录
 
 	GvaHttpLog  *http_log.LoggingRoundTripper // HTTP框架日志
 	GvaRestyLog *resty_log.LoggerMiddleware   // Resty框架日志

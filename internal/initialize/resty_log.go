@@ -119,16 +119,16 @@ func InitEntRestyLog(logger *slog.Logger) {
 	// 初始化 Logger，传入回调和接口（回调优先）
 	global.GvaRestyLog = resty_log.NewLoggerMiddleware(saver, callbackFunc)
 
-	// 创建 Resty 客户端
-	global.GvaRestyClient = resty.New()
+	// 创建 Resty 客户端，并带日志记录
+	global.GvaRestyClientWithLog = resty.New()
 	// 请求中间件
-	global.GvaRestyClient.SetRequestMiddlewares(
+	global.GvaRestyClientWithLog.SetRequestMiddlewares(
 		global.GvaRestyLog.IntrusionRequest,
 		resty.PrepareRequestMiddleware,
 		global.GvaRestyLog.BeforeRequest,
 	)
 	// 响应中间件
-	global.GvaRestyClient.SetResponseMiddlewares(
+	global.GvaRestyClientWithLog.SetResponseMiddlewares(
 		global.GvaRestyLog.CopyResponseBodyMiddleware,
 		resty.AutoParseResponseMiddleware,
 		global.GvaRestyLog.AfterResponse,

@@ -117,10 +117,10 @@ func InitEntReqLog(logger *slog.Logger) {
 	// 初始化 Logger，传入回调和接口（回调优先）
 	global.GvaReqLog = req_log.NewLoggerMiddleware(saver, callbackFunc)
 
-	// 创建 Req 客户端
-	global.GvaReqClient = req.NewClient()
+	// 创建 Req 客户端，并带日志记录
+	global.GvaReqClientWithLog = req.NewClient()
 	// 请求中间件
-	global.GvaReqClient.OnBeforeRequest(global.GvaReqLog.OnBeforeRequest)
+	global.GvaReqClientWithLog.OnBeforeRequest(global.GvaReqLog.OnBeforeRequest)
 	// 响应中间件
-	global.GvaReqClient.OnAfterResponse(global.GvaReqLog.OnAfterResponse)
+	global.GvaReqClientWithLog.OnAfterResponse(global.GvaReqLog.OnAfterResponse)
 }

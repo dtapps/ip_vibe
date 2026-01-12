@@ -130,5 +130,10 @@ func InitEntHttpLog(logger *slog.Logger) {
 		http.DefaultClient = &http.Client{
 			Transport: global.GvaHttpLog,
 		}
+
+		// 创建 Http 客户端，并带日志记录
+		global.GvaHttpClientWithLog = &http.Client{
+			Transport: global.GvaHttpLog,
+		}
 	})
 }
