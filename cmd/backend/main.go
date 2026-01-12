@@ -283,19 +283,16 @@ func gracefulShutdown() {
 		// 7. 关闭数据库连接和其他资源（现有的 defer 逻辑）
 		slog.Info("开始关闭数据库连接...")
 
-		// 8. 关闭 第三方服务
-		initialize.CloseThirdParty()
-
-		// 9. 关闭 GoCron 调度器
+		// 8. 关闭 GoCron 调度器
 		initialize.CloseGoCron(ctx, global.GvaGocronSlog)
 
-		// 10. 等待一段时间让 goroutine 完成
+		// 9. 等待一段时间让 goroutine 完成
 		time.Sleep(1 * time.Second)
 
-		// 11. 关闭 业务数据库
+		// 10. 关闭 业务数据库
 		initialize.CloseEntDb(ctx, global.GvaEntSlog)
 
-		// 12. 关闭 日志数据库
+		// 11. 关闭 日志数据库
 		initialize.CloseEntLogDb(ctx, global.GvaEntLogSlog)
 
 		slog.Info("所有资源已优雅关闭")

@@ -97,25 +97,3 @@ func InitThirdParty(ctx context.Context, logger *slog.Logger) {
 	}
 
 }
-
-// CloseThirdParty 关闭 第三方
-func CloseThirdParty() {
-	if global.GvaWechatWork != nil {
-		_ = global.GvaWechatWork.Close()
-	}
-	if global.GvaDingTalk != nil {
-		_ = global.GvaDingTalk.Close()
-	}
-	if global.GvaFeishu != nil {
-		_ = global.GvaFeishu.Close()
-	}
-	if global.GvaBark != nil {
-		_ = global.GvaBark.Close()
-	}
-	if global.GvaFt07 != nil {
-		_ = global.GvaFt07.Close()
-	}
-	if global.GvaPushDeer != nil {
-		_ = global.GvaPushDeer.Close()
-	}
-}

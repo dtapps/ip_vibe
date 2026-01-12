@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 	"vibe_ip/internal/ent_log/httplog"
+	"vibe_ip/internal/ent_log/reqlog"
 	"vibe_ip/internal/ent_log/restylog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
@@ -33,7 +34,7 @@ func LogContent(c *gin.Context) {
 	switch requestParams.Type {
 	case "http_log":
 
-		// 查询全部操作日志
+		// 查询全部日志
 		allHttpLog, err := global.GvaEntLogDb.HttpLog.Query().
 			WhereIf(requestParams.Hostname != "", httplog.HostnameEQ(requestParams.Hostname)).
 			WhereIf(requestParams.Method != "", httplog.MethodEQ(requestParams.Method)).
@@ -52,7 +53,7 @@ func LogContent(c *gin.Context) {
 
 	case "resty_log":
 
-		// 查询全部操作日志
+		// 查询全部日志
 		allRestyLog, err := global.GvaEntLogDb.RestyLog.Query().
 			WhereIf(requestParams.Hostname != "", restylog.HostnameEQ(requestParams.Hostname)).
 			WhereIf(requestParams.Method != "", restylog.MethodEQ(requestParams.Method)).
@@ -68,6 +69,25 @@ func LogContent(c *gin.Context) {
 		pageData.Page = allRestyLog.Page
 		pageData.PageSize = allRestyLog.Size
 		pageData.Total = allRestyLog.Total
+
+	case "req_log":
+
+		// 查询全部日志
+		allReqLog, err := global.GvaEntLogDb.ReqLog.Query().
+			WhereIf(requestParams.Hostname != "", reqlog.HostnameEQ(requestParams.Hostname)).
+			WhereIf(requestParams.Method != "", reqlog.MethodEQ(requestParams.Method)).
+			WhereIf(requestParams.StatusCode != 0, reqlog.StatusCodeEQ(requestParams.StatusCode)).
+			OrderByCreatedAtDesc().
+			Paginate(c, requestParams.Page, requestParams.PageSize)
+		if err == nil {
+			for _, item := range allReqLog.Items {
+				pageData.List = append(pageData.List, &item)
+			}
+		}
+
+		pageData.Page = allReqLog.Page
+		pageData.PageSize = allReqLog.Size
+		pageData.Total = allReqLog.Total
 
 	default:
 

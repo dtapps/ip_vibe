@@ -19,11 +19,15 @@
         <div role="tablist" class="tabs tabs-lifted tabs-lg">
             <a href="?type=http_log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "http_log" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
-                HTTP 请求
+                Http 请求
             </a>
             <a href="?type=resty_log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "resty_log" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
-                RESTY 请求
+                Resty 请求
+            </a>
+            <a href="?type=req_log" role="tab"
+                class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "req_log" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
+                Req 请求
             </a>
             <a href="?type=slog_file&file_name=slog_backend.log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "slog_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
@@ -31,15 +35,15 @@
             </a>
             <a href="?type=ent_file&file_name=ent_backend.log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "ent_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
-                ENT 语句
+                Ent 语句
             </a>
             <a href="?type=ent_log_file&file_name=ent_log_backend.log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "ent_log_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
-                ENT LOG 语句
+                Ent Log 语句
             </a>
             <a href="?type=gin_file&file_name=gin_backend.log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "gin_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
-                GIN 流水
+                Gin 流水
             </a>
             <a href="?type=gocron_file&file_name=gocron_backend.log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "gocron_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
@@ -55,17 +59,21 @@
             </a>
             <a href="?type=http_file&file_name=http_backend.log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "http_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
-                HTTP 流水
+                Http 流水
             </a>
             <a href="?type=resty_file&file_name=resty_backend.log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "resty_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
-                RESTY 流水
+                Resty 流水
+            </a>
+            <a href="?type=req_file&file_name=req_backend.log" role="tab"
+                class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "req_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
+                Req 流水
             </a>
         </div>
     </div>
 
     <div class="p-8">
-        {{ if or (eq $filter.Type "http_log") (eq $filter.Type "resty_log") }}
+        {{ if or (eq $filter.Type "http_log") (eq $filter.Type "resty_log") (eq $filter.Type "req_log") }}
         <div class="ui-table-container border border-base-200 rounded-2xl overflow-hidden">
             <table class="ui-table">
                 <thead>
