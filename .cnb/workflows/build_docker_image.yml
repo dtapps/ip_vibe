@@ -13,21 +13,24 @@
           - /go:copy-on-write # 挂载项目依赖目录（可选，根据需要）
       imports: https://cnb.cool/dtapp/envs/-/blob/main/docker.yml # 导入外部环境变量/配置
       stages:
-        - name: 自动安装前端依赖环境
+        - name: 1. 安装环境
           script: |
-            # 使用速安装脚本
-            curl -fsSL https://get.pnpm.io/install.sh | SHELL="$(which bash)" bash -
-            # 将 pnpm 加入路径
-            export PNPM_HOME="/root/.local/share/pnpm"
-            export PATH="$PNPM_HOME:$PATH"
+            # 设置腾讯云镜像
+            npm config set registry https://mirrors.cloud.tencent.com/npm/
+            npm install -g pnpm
 
-            # 如果没有 node，还需要安装 node
-            apt-get update && apt-get install -y nodejs npm
+            # 找到 pnpm 到底装哪了，并存入变量
+            PNPM_PATH=$(npm prefix -g)/bin
+            echo "##[set-output pnpm_path=$PNPM_PATH]"
+          exports:
+            pnpm_path: GLOBAL_PNPM_PATH
 
-            # 验证
+        - name: 2. 检查环境
+          script: |
+            # 把路径加回来
+            export PATH="$GLOBAL_PNPM_PATH:$PATH"
+            which pnpm
             pnpm -v
-            node -v
-            npm -v
 
         - name: 验证 make 工具
           script: make --version
@@ -59,6 +62,9 @@
             echo "=============================="
             echo "🔧 开始处理 web_trigger_build_docker_image"
             echo "=============================="
+
+            # 必须再次 export，否则 make 还是找不到
+            export PATH="$GLOBAL_PNPM_PATH:$PATH"
 
             # 1. 配置 GOPROXY
             echo "配置 GOPROXY: ${INTERIOR_GOPROXY}"
