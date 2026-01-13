@@ -137,7 +137,7 @@ func (ReqLog) Fields() []ent.Field {
 
 // Edges of the ReqLog.
 func (ReqLog) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{}
 }
 
 // Indexes of the ReqLog.

@@ -75,7 +75,7 @@ func (DeviceIpReport) Fields() []ent.Field {
 
 // Edges of the DeviceIpReport.
 func (DeviceIpReport) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{}
 }
 
 // Indexes of the DeviceIpReport.

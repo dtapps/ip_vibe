@@ -119,7 +119,7 @@ func (HttpLog) Fields() []ent.Field {
 
 // Edges of the HttpLog.
 func (HttpLog) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{}
 }
 
 // Indexes of the HttpLog.

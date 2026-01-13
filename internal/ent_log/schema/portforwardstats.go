@@ -104,7 +104,7 @@ func (PortForwardStats) Fields() []ent.Field {
 
 // Edges of the PortForwardStats.
 func (PortForwardStats) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{}
 }
 
 // Indexes of the PortForwardStats.

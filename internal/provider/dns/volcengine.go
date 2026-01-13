@@ -1,0 +1,213 @@
+package dns
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"strings"
+	"vibe_ip/internal/provider"
+	"vibe_ip/internal/utils"
+
+	"github.com/volcengine/volcengine-go-sdk/service/dns"
+	"github.com/volcengine/volcengine-go-sdk/volcengine"
+	"github.com/volcengine/volcengine-go-sdk/volcengine/credentials"
+	"github.com/volcengine/volcengine-go-sdk/volcengine/session"
+)
+
+// VolcengineDnsConfig 火山引擎DNS配置
+type VolcengineDnsConfig struct {
+	Region     string `json:"region,omitempty"` // 区域
+	SecretID   string `json:"secret_id"`        // 密钥ID
+	SecretKey  string `json:"secret_key"`       // 密钥Key
+	ZoneID     int64  `json:"zone_id"`          // 域名ID
+	DomainName string `json:"domain_name"`      // 主域名
+}
+
+// Validate 验证火山引擎DNS配置
+func (cfg *VolcengineDnsConfig) Validate() error {
+	if cfg.Region == "" {
+		return fmt.Errorf("区域不能为空")
+	}
+	if cfg.SecretID == "" {
+		return fmt.Errorf("密钥ID不能为空")
+	}
+	if cfg.SecretKey == "" {
+		return fmt.Errorf("密钥Key不能为空")
+	}
+	return nil
+}
+
+// NewDefaultVolcengineDnsConfig 创建默认的火山引擎DNS配置
+func NewDefaultVolcengineDnsConfig() *VolcengineDnsConfig {
+	return &VolcengineDnsConfig{
+		Region: "cn-beijing",
+	}
+}
+
+// VolcengineDnsProvider 火山引擎DNS提供程序
+type VolcengineDnsProvider struct {
+	cfg  *VolcengineDnsConfig
+	opts *dnsOptions
+
+	Provider struct {
+		Auth   *credentials.Credentials
+		Cfg    *volcengine.Config
+		Sess   *session.Session
+		Client *dns.DNS
+	}
+}
+
+// NewVolcengineDnsProvider 创建火山引擎DNS提供程序
+func NewVolcengineDnsProvider(ctx context.Context, cfg *VolcengineDnsConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+
+	var err error
+
+	if cfg == nil {
+		return nil, fmt.Errorf("配置不能为空")
+	}
+
+	// 验证配置
+	if err := cfg.Validate(); err != nil {
+		return nil, fmt.Errorf("配置无效: %w", err)
+	}
+
+	p := &VolcengineDnsProvider{
+		cfg:  cfg,
+		opts: &dnsOptions{},
+	}
+
+	// 应用选项
+	for _, opt := range opts {
+		opt(p.opts)
+	}
+
+	// 认证
+	p.Provider.Auth = credentials.NewStaticCredentials(p.cfg.SecretID, p.cfg.SecretKey, "")
+
+	// 配置
+	p.Provider.Cfg = volcengine.NewConfig().
+		WithRegion(p.cfg.Region).
+		WithCredentials(p.Provider.Auth)
+
+	// 会话
+	p.Provider.Sess, err = session.NewSession(p.Provider.Cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	// 实例化client对象
+	p.Provider.Client = dns.New(p.Provider.Sess)
+
+	// 如果提供了日志传输器，则设置HTTP客户端
+	if p.opts.httpTransport != nil {
+		// 配置
+		p.Provider.Cfg = volcengine.NewConfig().
+			WithRegion(p.cfg.Region).
+			WithCredentials(p.Provider.Auth).
+			WithHTTPClient(&http.Client{
+				Transport: p.opts.httpTransport,
+			})
+
+		// 会话
+		p.Provider.Sess, err = session.NewSession(p.Provider.Cfg)
+		if err != nil {
+			return nil, err
+		}
+
+		// 实例化client对象
+		p.Provider.Client = dns.New(p.Provider.Sess)
+
+	}
+
+	return p, nil
+}
+
+// Check 检查子域名是否存在
+// https://api.volcengine.com/api-explorer?action=ListRecords
+func (p *VolcengineDnsProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
+
+	// 完整域名
+	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+
+	// 请求参数
+	request := &dns.ListRecordsInput{}
+	request.Host = volcengine.String(fullDomain)    // 主机记录
+	request.PageNumber = volcengine.Int32(1)        // 页码
+	request.PageSize = volcengine.Int32(500)        // 每页包含的解析记录的数量
+	request.SearchMode = volcengine.String("exact") // Host 匹配模式
+	if recordType != "" {
+		request.Type = volcengine.String(recordType) // 记录类型
+	}
+	request.ZID = volcengine.Int64(p.cfg.ZoneID) // 域名ID
+	// 请求
+	response, err := p.Provider.Client.ListRecordsWithContext(ctx, request)
+	printJSON("查询域名记录", request, response)
+	if err != nil {
+		return
+	}
+	// 响应参数
+	for _, item := range response.Records {
+		if strings.EqualFold(utils.TrimDots(volcengine.StringValue(item.PQDN)), utils.TrimDots(fullDomain)) {
+			if recordType != "" && utils.PtrToString(item.Type) != recordType {
+				continue
+			}
+			recordID = volcengine.StringValue(item.RecordID)
+			value = utils.PtrToString(item.Value)
+			return recordID, value, nil
+		}
+	}
+
+	return "", "", fmt.Errorf("未找到记录")
+}
+
+// Update 更新 DNS 记录
+// https://api.volcengine.com/api-explorer?action=CreateRecord
+// https://api.volcengine.com/api-explorer?action=UpdateRecord
+func (p *VolcengineDnsProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
+
+	// 完整域名
+	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+
+	if recordID == "" {
+		// 请求参数
+		request := &dns.CreateRecordInput{}
+		request.Host = volcengine.String(fullDomain) // 主机记录
+		request.Type = volcengine.String(recordType) // 记录类型
+		request.Value = volcengine.String(value)     // 解析记录的记录值
+		request.ZID = volcengine.Int64(p.cfg.ZoneID) // 域名ID
+		// 请求
+		response, err := p.Provider.Client.CreateRecordWithContext(ctx, request)
+		printJSON("创建域名记录", request, response)
+		if err != nil {
+			return err
+		}
+	}
+
+	if recordID != "" {
+		// 请求参数
+		request := &dns.UpdateRecordInput{}
+		request.Host = volcengine.String(fullDomain)   // 主机记录
+		request.Line = volcengine.String("default")    // 解析线路
+		request.RecordID = volcengine.String(recordID) // 需要更新的解析记录的 ID
+		request.Type = volcengine.String(recordType)   // 记录类型
+		request.Value = volcengine.String(value)       // 解析记录的记录值
+		// 请求
+		response, err := p.Provider.Client.UpdateRecordWithContext(ctx, request)
+		printJSON("更新域名记录", request, response)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Save 保存 DNS 记录
+func (p *VolcengineDnsProvider) Save(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
+	return nil
+}
+
+// Name 返回 DNS 提供程序的名称
+func (p *VolcengineDnsProvider) Name() string {
+	return "腾讯云 DNS"
+}

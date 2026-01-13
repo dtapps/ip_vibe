@@ -97,7 +97,7 @@ func (OperationLog) Fields() []ent.Field {
 
 // Edges of the OperationLog.
 func (OperationLog) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{}
 }
 
 // Indexes of the OperationLog.

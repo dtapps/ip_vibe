@@ -145,7 +145,7 @@ func (RestyLog) Fields() []ent.Field {
 
 // Edges of the RestyLog.
 func (RestyLog) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{}
 }
 
 // Indexes of the RestyLog.
