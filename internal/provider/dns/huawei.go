@@ -64,8 +64,8 @@ func (p *HuaweiDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err er
 
 // HuaweiDNSProvider 华为云 DNS 提供程序
 type HuaweiDNSProvider struct {
-	config *HuaweiDNSConfig
-	opts   *dnsOptions
+	cfg  *HuaweiDNSConfig
+	opts *dnsOptions
 
 	CustomConfig *HuaweiDNSCustomConfig
 	Provider     struct {
@@ -91,7 +91,7 @@ func NewHuaweiDNSProvider(ctx context.Context, cfg *HuaweiDNSConfig, opts ...Dns
 
 	var err error
 	p := &HuaweiDNSProvider{
-		config:       cfg,
+		cfg:          cfg,
 		opts:         &dnsOptions{},
 		CustomConfig: &HuaweiDNSCustomConfig{},
 	}
@@ -103,15 +103,15 @@ func NewHuaweiDNSProvider(ctx context.Context, cfg *HuaweiDNSConfig, opts ...Dns
 
 	// 认证
 	p.Provider.Auth, err = basic.NewCredentialsBuilder().
-		WithAk(p.config.AccessKeyID).
-		WithSk(p.config.SecretAccessKey).
+		WithAk(p.cfg.AccessKeyID).
+		WithSk(p.cfg.SecretAccessKey).
 		SafeBuild()
 	if err != nil {
 		return nil, err
 	}
 
 	// 区域
-	p.Provider.Region, err = regionDns.SafeValueOf(p.config.Region)
+	p.Provider.Region, err = regionDns.SafeValueOf(p.cfg.Region)
 	if err != nil {
 		return nil, err
 	}
@@ -153,7 +153,7 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 	}
 	request.Name = utils.StringToPtr(fullDomain)    // 待查询的记录集的域名中包含此name
 	request.SearchMode = utils.StringToPtr("equal") // 查询条件搜索模式
-	request.ZoneId = p.config.ZoneID                // 域名ID
+	request.ZoneId = p.cfg.ZoneID                   // 域名ID
 	// 请求
 	response, err := p.Provider.Client.ShowRecordSetByZone(request)
 	printJSON("查询域名记录", request, response)
@@ -186,7 +186,7 @@ func (p *HuaweiDNSProvider) Update(ctx context.Context, recordID string, domain 
 	if recordID == "" {
 		// 请求参数
 		request := &model.CreateRecordSetWithLineRequest{}
-		request.ZoneId = p.config.ZoneID // 域名ID
+		request.ZoneId = p.cfg.ZoneID // 域名ID
 		request.Body = &model.CreateRecordSetWithLineRequestBody{
 			Records:     utils.StringsToPtr([]string{value}),           // 解析记录的值
 			Type:        recordType,                                    // 记录集的类型
@@ -204,8 +204,8 @@ func (p *HuaweiDNSProvider) Update(ctx context.Context, recordID string, domain 
 	if recordID != "" {
 		// 请求参数
 		request := &model.UpdateRecordSetsRequest{}
-		request.ZoneId = p.config.ZoneID // 域名ID
-		request.RecordsetId = recordID   // 记录集ID
+		request.ZoneId = p.cfg.ZoneID  // 域名ID
+		request.RecordsetId = recordID // 记录集ID
 		request.Body = &model.UpdateRecordSetsReq{
 			Records:     utils.StringsToPtr([]string{value}),           // 解析记录的值
 			Type:        recordType,                                    // 记录集的类型

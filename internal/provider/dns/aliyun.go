@@ -57,8 +57,8 @@ func (p *AliyunDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err er
 
 // AliyunDNSProvider 阿里云 DNS 提供程序
 type AliyunDNSProvider struct {
-	config *AliyunDNSConfig
-	opts   *dnsOptions
+	cfg  *AliyunDNSConfig
+	opts *dnsOptions
 
 	CustomConfig *AliyunDNSCustomConfig
 	Provider     struct {
@@ -82,7 +82,7 @@ func NewAliyunDNSProvider(ctx context.Context, cfg *AliyunDNSConfig, opts ...Dns
 
 	var err error
 	p := &AliyunDNSProvider{
-		config:       cfg,
+		cfg:          cfg,
 		opts:         &dnsOptions{},
 		CustomConfig: &AliyunDNSCustomConfig{},
 	}
@@ -95,8 +95,8 @@ func NewAliyunDNSProvider(ctx context.Context, cfg *AliyunDNSConfig, opts ...Dns
 	// 密钥信息
 	p.Provider.Auth, err = credential.NewCredential(&credential.Config{
 		Type:            tea.String("access_key"),
-		AccessKeyId:     tea.String(p.config.AccessKeyID),
-		AccessKeySecret: tea.String(p.config.AccessKeySecret),
+		AccessKeyId:     tea.String(p.cfg.AccessKeyID),
+		AccessKeySecret: tea.String(p.cfg.AccessKeySecret),
 	})
 	if err != nil {
 		return nil, err
@@ -105,7 +105,7 @@ func NewAliyunDNSProvider(ctx context.Context, cfg *AliyunDNSConfig, opts ...Dns
 	// 实例化client选项
 	p.Provider.Cfg = &openapi.Config{
 		Credential: p.Provider.Auth,
-		Endpoint:   tea.String(p.config.Endpoint),
+		Endpoint:   tea.String(p.cfg.Endpoint),
 	}
 
 	// 如果提供了日志传输器，则设置HTTP客户端

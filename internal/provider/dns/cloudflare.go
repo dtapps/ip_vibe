@@ -50,8 +50,8 @@ func (p *CloudfareDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err
 
 // CloudfareDNSProvider Cloudfare DNS 提供程序
 type CloudfareDNSProvider struct {
-	config *CloudfareDNSConfig
-	opts   *dnsOptions
+	cfg  *CloudfareDNSConfig
+	opts *dnsOptions
 
 	CustomConfig *CloudfareDNSCustomConfig
 	Provider     struct {
@@ -73,7 +73,7 @@ func NewCloudfareDNSProvider(ctx context.Context, cfg *CloudfareDNSConfig, opts 
 	}
 
 	p := &CloudfareDNSProvider{
-		config:       cfg,
+		cfg:          cfg,
 		opts:         &dnsOptions{},
 		CustomConfig: &CloudfareDNSCustomConfig{},
 	}
@@ -84,7 +84,7 @@ func NewCloudfareDNSProvider(ctx context.Context, cfg *CloudfareDNSConfig, opts 
 	}
 
 	// 实例化client选项
-	p.Provider.Opts = append(p.Provider.Opts, option.WithAPIKey(p.config.ApiKey))
+	p.Provider.Opts = append(p.Provider.Opts, option.WithAPIKey(p.cfg.ApiKey))
 
 	// 如果提供了日志传输器，则设置HTTP客户端
 	if p.opts.httpTransport != nil {
@@ -108,7 +108,7 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 
 	// 请求参数
 	request := dns.RecordListParams{}
-	request.ZoneID = cloudflare.String(p.config.ZoneID)
+	request.ZoneID = cloudflare.String(p.cfg.ZoneID)
 	request.Name = cloudflare.F(dns.RecordListParamsName{
 		Exact: cloudflare.String(fullDomain),
 	})
@@ -152,7 +152,7 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, recordID string, doma
 		requestBody.Content = cloudflare.String(value)
 		requestBody.Comment = cloudflare.String(p.CustomConfig.Comment)
 		request := dns.RecordNewParams{
-			ZoneID: cloudflare.String(p.config.ZoneID),
+			ZoneID: cloudflare.String(p.cfg.ZoneID),
 			Body:   requestBody,
 		}
 		// 请求
@@ -171,7 +171,7 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, recordID string, doma
 		requestBody.Content = cloudflare.String(value)
 		requestBody.Comment = cloudflare.String(p.CustomConfig.Comment)
 		request := dns.RecordEditParams{
-			ZoneID: cloudflare.String(p.config.ZoneID),
+			ZoneID: cloudflare.String(p.cfg.ZoneID),
 			Body:   requestBody,
 		}
 		// 请求

@@ -56,8 +56,8 @@ func (p *TencentDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err e
 
 // TencentDNSProvider 腾讯云 DNS 提供程序
 type TencentDNSProvider struct {
-	config *TencentDNSConfig
-	opts   *dnsOptions
+	cfg  *TencentDNSConfig
+	opts *dnsOptions
 
 	CustomConfig *TencentDNSCustomConfig
 	Provider     struct {
@@ -81,7 +81,7 @@ func NewTencentDNSProvider(ctx context.Context, cfg *TencentDNSConfig, opts ...D
 
 	var err error
 	p := &TencentDNSProvider{
-		config:       cfg,
+		cfg:          cfg,
 		opts:         &dnsOptions{},
 		CustomConfig: &TencentDNSCustomConfig{},
 	}
@@ -93,13 +93,13 @@ func NewTencentDNSProvider(ctx context.Context, cfg *TencentDNSConfig, opts ...D
 
 	// 密钥信息
 	p.Provider.Auth = common.NewCredential(
-		p.config.SecretID,
-		p.config.SecretKey,
+		p.cfg.SecretID,
+		p.cfg.SecretKey,
 	)
 
 	// 实例化client选项
 	p.Provider.Cfg = profile.NewClientProfile()
-	p.Provider.Cfg.HttpProfile.Endpoint = p.config.Endpoint
+	p.Provider.Cfg.HttpProfile.Endpoint = p.cfg.Endpoint
 
 	// 实例化client对象
 	p.Provider.Client, err = dnspod.NewClient(p.Provider.Auth, "", p.Provider.Cfg)

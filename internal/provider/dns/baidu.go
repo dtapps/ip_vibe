@@ -55,8 +55,8 @@ func (p *BaiduDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err err
 
 // BaiduDNSProvider 百度云 DNS 提供程序
 type BaiduDNSProvider struct {
-	config *BaiduDNSConfig
-	opts   *dnsOptions
+	cfg  *BaiduDNSConfig
+	opts *dnsOptions
 
 	CustomConfig *BaiduDNSCustomConfig
 	Provider     struct {
@@ -78,7 +78,7 @@ func NewBaiduDNSProvider(ctx context.Context, cfg *BaiduDNSConfig, opts ...DnsOp
 
 	var err error
 	p := &BaiduDNSProvider{
-		config:       cfg,
+		cfg:          cfg,
 		opts:         &dnsOptions{},
 		CustomConfig: &BaiduDNSCustomConfig{},
 	}
@@ -89,7 +89,11 @@ func NewBaiduDNSProvider(ctx context.Context, cfg *BaiduDNSConfig, opts ...DnsOp
 	}
 
 	// 实例化client对象
-	p.Provider.Client, err = dns.NewClient(p.config.AccessKeyID, p.config.SecretAccessKey, p.config.Endpoint)
+	p.Provider.Client, err = dns.NewClient(
+		p.cfg.AccessKeyID,
+		p.cfg.SecretAccessKey,
+		p.cfg.Endpoint,
+	)
 	if err != nil {
 		return nil, err
 	}
