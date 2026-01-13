@@ -164,10 +164,11 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, recordID string, domain 
 	if recordID == "" {
 		// 请求参数
 		request := &alidns20150109.AddDomainRecordRequest{}
-		request.DomainName = tea.String(domain) // 域名名称
-		request.RR = tea.String(subdomain)      // 主机记录
-		request.Type = tea.String(recordType)   // 解析记录类型
-		request.Value = tea.String(value)       // 记录值
+		request.DomainName = tea.String(domain)        // 域名名称
+		request.RR = tea.String(subdomain)             // 主机记录
+		request.Type = tea.String(recordType)          // 解析记录类型
+		request.Value = tea.String(value)              // 记录值
+		request.Line = tea.String(p.CustomConfig.Line) // 解析线路
 		// 请求
 		response, err := p.Provider.Client.AddDomainRecordWithContext(ctx, request, &dara.RuntimeOptions{})
 		printJSON("创建域名记录", request, response)
@@ -179,10 +180,11 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, recordID string, domain 
 	if recordID != "" {
 		// 请求参数
 		request := &alidns20150109.UpdateDomainRecordRequest{}
-		request.RecordId = tea.String(recordID) // 解析记录的ID
-		request.RR = tea.String(subdomain)      // 主机记录
-		request.Type = tea.String(recordType)   // 解析记录类型
-		request.Value = tea.String(value)       // 记录值
+		request.RecordId = tea.String(recordID)        // 解析记录的ID
+		request.RR = tea.String(subdomain)             // 主机记录
+		request.Type = tea.String(recordType)          // 解析记录类型
+		request.Value = tea.String(value)              // 记录值
+		request.Line = tea.String(p.CustomConfig.Line) // 解析线路
 		// 请求
 		response, err := p.Provider.Client.UpdateDomainRecordWithContext(ctx, request, &dara.RuntimeOptions{})
 		printJSON("更新域名记录", request, response)
@@ -206,9 +208,13 @@ func (p *AliyunDNSProvider) Name() string {
 
 // 阿里云 DNS 自定义配置
 type AliyunDNSCustomConfig struct {
+	Line string `json:"line"` // 解析记录的线路类型
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置
 func (p *AliyunDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
+		return err
+	}
 	return nil
 }

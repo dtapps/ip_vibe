@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 	"vibe_ip/internal/provider"
+	"vibe_ip/internal/utils"
 
 	"github.com/baidubce/bce-sdk-go/services/dns"
 	"github.com/baidubce/bce-sdk-go/util"
@@ -140,9 +141,11 @@ func (p *BaiduDNSProvider) Update(ctx context.Context, recordID string, domain s
 	if recordID == "" {
 		// 请求参数
 		request := &dns.CreateRecordRequest{}
-		request.Rr = subdomain    // 主机记录
-		request.Type = recordType // 解析记录类型
-		request.Value = value     // 记录值
+		request.Rr = subdomain                                              // 主机记录
+		request.Type = recordType                                           // 解析记录类型
+		request.Value = value                                               // 记录值
+		request.Line = utils.StringToPtr(p.CustomConfig.Line)               // 解析线路
+		request.Description = utils.StringToPtr(p.CustomConfig.Description) // 解析记录描述
 		// 请求
 		err = p.Provider.Client.CreateRecord(domain, request, util.NewUUID())
 		printJSON("创建域名记录", request, nil)
@@ -154,9 +157,10 @@ func (p *BaiduDNSProvider) Update(ctx context.Context, recordID string, domain s
 	if recordID != "" {
 		// 请求参数
 		request := &dns.UpdateRecordRequest{}
-		request.Rr = subdomain    // 主机记录
-		request.Type = recordType // 解析记录类型
-		request.Value = value     // 记录值
+		request.Rr = subdomain                                              // 主机记录
+		request.Type = recordType                                           // 解析记录类型
+		request.Value = value                                               // 记录值
+		request.Description = utils.StringToPtr(p.CustomConfig.Description) // 解析记录描述
 		// 请求
 		err = p.Provider.Client.UpdateRecord(domain, recordID, request, util.NewUUID())
 		printJSON("更新域名记录", request, nil)
@@ -180,9 +184,14 @@ func (p *BaiduDNSProvider) Name() string {
 
 // 百度云 DNS 自定义配置
 type BaiduDNSCustomConfig struct {
+	Line        string `json:"line"`                  // 解析线路
+	Description string `json:"description,omitempty"` // 解析记录描述
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置
 func (p *BaiduDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
+		return err
+	}
 	return nil
 }

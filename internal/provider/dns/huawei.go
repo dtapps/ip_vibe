@@ -188,9 +188,10 @@ func (p *HuaweiDNSProvider) Update(ctx context.Context, recordID string, domain 
 		request := &model.CreateRecordSetWithLineRequest{}
 		request.ZoneId = p.config.ZoneID // 域名ID
 		request.Body = &model.CreateRecordSetWithLineRequestBody{
-			Records: utils.StringsToPtr([]string{value}), // 解析记录的值
-			Type:    recordType,                          // 记录集的类型
-			Name:    fullDomain,                          // 域名
+			Records:     utils.StringsToPtr([]string{value}),           // 解析记录的值
+			Type:        recordType,                                    // 记录集的类型
+			Name:        fullDomain,                                    // 域名
+			Description: utils.StringToPtr(p.CustomConfig.Description), // 记录集的描述信息
 		}
 		// 请求
 		response, err := p.Provider.Client.CreateRecordSetWithLine(request)
@@ -206,9 +207,10 @@ func (p *HuaweiDNSProvider) Update(ctx context.Context, recordID string, domain 
 		request.ZoneId = p.config.ZoneID // 域名ID
 		request.RecordsetId = recordID   // 记录集ID
 		request.Body = &model.UpdateRecordSetsReq{
-			Records: utils.StringsToPtr([]string{value}), // 解析记录的值
-			Type:    recordType,                          // 记录集的类型
-			Name:    fullDomain,                          // 域名
+			Records:     utils.StringsToPtr([]string{value}),           // 解析记录的值
+			Type:        recordType,                                    // 记录集的类型
+			Name:        fullDomain,                                    // 域名
+			Description: utils.StringToPtr(p.CustomConfig.Description), // 记录集的描述信息
 		}
 		// 请求
 		response, err := p.Provider.Client.UpdateRecordSets(request)
@@ -233,9 +235,13 @@ func (p *HuaweiDNSProvider) Name() string {
 
 // 华为云 DNS 自定义配置
 type HuaweiDNSCustomConfig struct {
+	Description string `json:"description"` // 记录集的描述信息
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置
 func (p *HuaweiDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
+		return err
+	}
 	return nil
 }

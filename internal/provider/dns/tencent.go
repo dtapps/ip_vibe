@@ -155,11 +155,12 @@ func (p *TencentDNSProvider) Update(ctx context.Context, recordID string, domain
 	if recordID == "" {
 		// 请求参数
 		request := dnspod.NewCreateRecordRequest()
-		request.Domain = common.StringPtr(domain)         // 域名
-		request.RecordType = common.StringPtr(recordType) // 记录类型
-		request.RecordLine = common.StringPtr("默认")       // 记录线路
-		request.Value = common.StringPtr(value)           // 记录值
-		request.SubDomain = common.StringPtr(subdomain)   // 主机记录
+		request.Domain = common.StringPtr(domain)                        // 域名
+		request.RecordType = common.StringPtr(recordType)                // 记录类型
+		request.Value = common.StringPtr(value)                          // 记录值
+		request.SubDomain = common.StringPtr(subdomain)                  // 主机记录
+		request.RecordLine = common.StringPtr(p.CustomConfig.RecordLine) // 记录线路
+		request.Remark = common.StringPtr(p.CustomConfig.Remark)         // 备注
 		// 请求
 		response, err := p.Provider.Client.CreateRecordWithContext(ctx, request)
 		printJSON("创建域名记录", request, response)
@@ -171,12 +172,13 @@ func (p *TencentDNSProvider) Update(ctx context.Context, recordID string, domain
 	if recordID != "" {
 		// 请求参数
 		request := dnspod.NewModifyRecordRequest()
-		request.Domain = common.StringPtr(domain)                    // 域名
-		request.RecordType = common.StringPtr(recordType)            // 记录类型
-		request.RecordLine = common.StringPtr("默认")                  // 记录线路
-		request.Value = common.StringPtr(value)                      // 记录值
-		request.RecordId = common.Uint64Ptr(cast.ToUint64(recordID)) // 记录 ID
-		request.SubDomain = common.StringPtr(subdomain)              // 主机记录
+		request.Domain = common.StringPtr(domain)                        // 域名
+		request.RecordType = common.StringPtr(recordType)                // 记录类型
+		request.Value = common.StringPtr(value)                          // 记录值
+		request.RecordId = common.Uint64Ptr(cast.ToUint64(recordID))     // 记录 ID
+		request.SubDomain = common.StringPtr(subdomain)                  // 主机记录
+		request.RecordLine = common.StringPtr(p.CustomConfig.RecordLine) // 记录线路
+		request.Remark = common.StringPtr(p.CustomConfig.Remark)         // 备注
 		// 请求
 		response, err := p.Provider.Client.ModifyRecordWithContext(ctx, request)
 		printJSON("更新域名记录", request, response)
@@ -200,7 +202,8 @@ func (p *TencentDNSProvider) Name() string {
 
 // 腾讯云 DNS 自定义配置
 type TencentDNSCustomConfig struct {
-	// RecordLine string `json:"record_line"` // 记录线路
+	RecordLine string `json:"record_line"`      // 记录线路
+	Remark     string `json:"remark,omitempty"` // 备注
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置

@@ -150,6 +150,7 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, recordID string, doma
 		requestBody.Name = cloudflare.String(fullDomain)
 		requestBody.Type = cloudflare.F(dns.ARecordType(recordType))
 		requestBody.Content = cloudflare.String(value)
+		requestBody.Comment = cloudflare.String(p.CustomConfig.Comment)
 		request := dns.RecordNewParams{
 			ZoneID: cloudflare.String(p.config.ZoneID),
 			Body:   requestBody,
@@ -168,6 +169,7 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, recordID string, doma
 		requestBody.Name = cloudflare.String(fullDomain)
 		requestBody.Type = cloudflare.F(dns.ARecordType(recordType))
 		requestBody.Content = cloudflare.String(value)
+		requestBody.Comment = cloudflare.String(p.CustomConfig.Comment)
 		request := dns.RecordEditParams{
 			ZoneID: cloudflare.String(p.config.ZoneID),
 			Body:   requestBody,
@@ -195,9 +197,13 @@ func (p *CloudfareDNSProvider) Name() string {
 
 // Cloudfare DNS 自定义配置
 type CloudfareDNSCustomConfig struct {
+	Comment string `json:"comment"` // 记录集的描述信息
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置
 func (p *CloudfareDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
+		return err
+	}
 	return nil
 }

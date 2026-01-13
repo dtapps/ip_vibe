@@ -1,7 +1,46 @@
 // 定义字段 Schema
 const DNS_SCHEMA = {
-  volcengine_dns: {
-    label: "火山引擎 DNS",
+  cloudflare: {
+    label: "CloudFlare",
+    fields: [
+      {
+        id: "comment",
+        label: "描述",
+        type: "text",
+        placeholder: "请输入描述",
+        required: false,
+      },
+    ],
+  },
+  tencent_dns: {
+    label: "腾讯云 DNS",
+    fields: [
+      [
+        {
+          id: "record_line",
+          label: "线路",
+          type: "select",
+          placeholder: "请选择线路",
+          required: true,
+          options: [
+            {
+              value: "默认",
+              label: "默认",
+            },
+          ],
+        },
+        {
+          id: "remark",
+          label: "备注",
+          type: "text",
+          placeholder: "请输入备注",
+          required: false,
+        },
+      ],
+    ],
+  },
+  aliyun_dns: {
+    label: "阿里云 DNS",
     fields: [
       {
         id: "line",
@@ -14,24 +53,110 @@ const DNS_SCHEMA = {
             value: "default",
             label: "默认",
           },
-          {
-            value: "domestic",
-            label: "中国内地",
-          },
-          {
-            value: "oversea",
-            label: "全球(不含中国内地)",
-          },
-          {
-            value: "unicom",
-            label: "中国_联通",
-          },
-          {
-            value: "telecom",
-            label: "中国_电信",
-          },
         ],
       },
+    ],
+  },
+  baidu_dns: {
+    label: "百度云 DNS",
+    fields: [
+      [
+        {
+          id: "line",
+          label: "线路",
+          type: "select",
+          placeholder: "请选择线路",
+          required: true,
+          options: [
+            {
+              value: "default",
+              label: "默认",
+            },
+            {
+              value: "ct",
+              label: "电信",
+            },
+            {
+              value: "cmnet",
+              label: "移动",
+            },
+            {
+              value: "cnc",
+              label: "联通",
+            },
+            {
+              value: "edu",
+              label: "教育网",
+            },
+            {
+              value: "search",
+              label: "搜索引擎(百度)",
+            },
+          ],
+        },
+        {
+          id: "description",
+          label: "描述",
+          type: "text",
+          placeholder: "请输入描述",
+          required: false,
+        },
+      ],
+    ],
+  },
+  huawei_dns: {
+    label: "华为云 DNS",
+    fields: [
+      {
+        id: "description",
+        label: "描述",
+        type: "text",
+        placeholder: "请输入描述",
+        required: false,
+      },
+    ],
+  },
+  volcengine_dns: {
+    label: "火山引擎 DNS",
+    fields: [
+      [
+        {
+          id: "line",
+          label: "线路",
+          type: "select",
+          placeholder: "请选择线路",
+          required: true,
+          options: [
+            {
+              value: "default",
+              label: "默认",
+            },
+            {
+              value: "domestic",
+              label: "中国内地",
+            },
+            {
+              value: "oversea",
+              label: "全球(不含中国内地)",
+            },
+            {
+              value: "unicom",
+              label: "中国_联通",
+            },
+            {
+              value: "telecom",
+              label: "中国_电信",
+            },
+          ],
+        },
+        {
+          id: "remark",
+          label: "备注",
+          type: "text",
+          placeholder: "请输入备注",
+          required: false,
+        },
+      ],
     ],
   },
 };

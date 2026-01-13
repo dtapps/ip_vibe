@@ -187,11 +187,12 @@ func (p *VolcengineDNSProvider) Update(ctx context.Context, recordID string, dom
 	if recordID == "" {
 		// 请求参数
 		request := &dns.CreateRecordInput{}
-		request.Host = volcengine.String(fullDomain)          // 主机记录
-		request.Line = volcengine.String(p.CustomConfig.Line) // 解析线路
-		request.Type = volcengine.String(recordType)          // 记录类型
-		request.Value = volcengine.String(value)              // 解析记录的记录值
-		request.ZID = volcengine.Int64(p.cfg.ZoneID)          // 域名ID
+		request.Host = volcengine.String(fullDomain)              // 主机记录
+		request.Type = volcengine.String(recordType)              // 记录类型
+		request.Value = volcengine.String(value)                  // 解析记录的记录值
+		request.ZID = volcengine.Int64(p.cfg.ZoneID)              // 域名ID
+		request.Line = volcengine.String(p.CustomConfig.Line)     // 解析记录对应的线路
+		request.Remark = volcengine.String(p.CustomConfig.Remark) // 解析记录的备注
 		// 请求
 		response, err := p.Provider.Client.CreateRecordWithContext(ctx, request)
 		printJSON("创建域名记录", request, response)
@@ -203,11 +204,12 @@ func (p *VolcengineDNSProvider) Update(ctx context.Context, recordID string, dom
 	if recordID != "" {
 		// 请求参数
 		request := &dns.UpdateRecordInput{}
-		request.Host = volcengine.String(fullDomain)          // 主机记录
-		request.Line = volcengine.String(p.CustomConfig.Line) // 解析线路
-		request.RecordID = volcengine.String(recordID)        // 需要更新的解析记录的 ID
-		request.Type = volcengine.String(recordType)          // 记录类型
-		request.Value = volcengine.String(value)              // 解析记录的记录值
+		request.Host = volcengine.String(fullDomain)              // 主机记录
+		request.RecordID = volcengine.String(recordID)            // 需要更新的解析记录的 ID
+		request.Type = volcengine.String(recordType)              // 记录类型
+		request.Value = volcengine.String(value)                  // 解析记录的记录值
+		request.Line = volcengine.String(p.CustomConfig.Line)     // 解析记录对应的线路
+		request.Remark = volcengine.String(p.CustomConfig.Remark) // 解析记录的备注
 		// 请求
 		response, err := p.Provider.Client.UpdateRecordWithContext(ctx, request)
 		printJSON("更新域名记录", request, response)
@@ -231,7 +233,8 @@ func (p *VolcengineDNSProvider) Name() string {
 
 // 火山引擎 DNS 自定义配置
 type VolcengineDNSCustomConfig struct {
-	Line string `json:"line"` // 解析记录对应的线路
+	Line   string `json:"line"`             // 解析记录对应的线路
+	Remark string `json:"remark,omitempty"` // 备注
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置

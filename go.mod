@@ -49,7 +49,7 @@ require (
 	github.com/kingsoftcloud/sdk-go/v2 v2.2.58
 	github.com/miekg/dns v1.1.70
 	github.com/modelcontextprotocol/go-sdk v1.2.0
-	github.com/qiniu/go-sdk/v7 v7.25.5
+	github.com/qiniu/go-sdk/v7 v7.25.6
 	github.com/spf13/cast v1.10.0
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.1
