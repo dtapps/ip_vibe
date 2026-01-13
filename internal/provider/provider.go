@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"log/slog"
 )
 
@@ -17,23 +18,27 @@ type DNSProvider interface {
 	Save(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error)
 	// Name 返回 DNS 提供程序的名称
 	Name() (name string)
+	// ParseCustomConfig 解析 DNS 自定义配置
+	ParseCustomConfig(config_json json.RawMessage) (err error)
 }
 
 // DNSTask 定义了 DNS 更新任务
 type DNSTask struct {
-	logger    *slog.Logger // 日志记录器
-	provider  DNSProvider  // DNS 提供程序
-	domain    string       // 域名
-	subdomain string       // 子域名
+	logger      *slog.Logger    // 日志记录器
+	provider    DNSProvider     // DNS 提供程序
+	domain      string          // 域名
+	subdomain   string          // 子域名
+	config_json json.RawMessage // 扩展配置
 }
 
 // NewDNSTask 创建一个新的 DNS 更新任务
-func NewDNSTask(logger *slog.Logger, provider DNSProvider, domain, subdomain string) *DNSTask {
+func NewDNSTask(logger *slog.Logger, provider DNSProvider, domain string, subdomain string, config_json json.RawMessage) *DNSTask {
 	return &DNSTask{
-		logger:    logger,
-		provider:  provider,
-		domain:    domain,
-		subdomain: subdomain,
+		logger:      logger,
+		provider:    provider,
+		domain:      domain,
+		subdomain:   subdomain,
+		config_json: config_json,
 	}
 }
 
@@ -47,7 +52,17 @@ func (t *DNSTask) Execute(ctx context.Context, recordType string, newValue strin
 		slog.String("subdomain", t.subdomain),
 		slog.String("recordType", recordType),
 		slog.String("newValue", newValue),
+		slog.String("config_json", string(t.config_json)),
 	)
+
+	if len(t.config_json) > 0 {
+		if err := t.provider.ParseCustomConfig(t.config_json); err != nil {
+			t.logger.Error("【DNS】解析自定义配置失败",
+				slog.Any("err", err),
+			)
+			return err
+		}
+	}
 
 	recordID, oldValue, err := t.provider.Check(ctx, t.domain, t.subdomain, recordType)
 	if err != nil {

@@ -2,6 +2,7 @@ package dns
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -12,6 +13,10 @@ import (
 	"github.com/cloudflare/cloudflare-go/v6/option"
 	"github.com/spf13/cast"
 )
+
+// Cloudfare DNS 自定义配置
+type CloudfareDNSCustomConfig struct {
+}
 
 // CloudfareDNSConfig CloudfareDNS配置
 type CloudfareDNSConfig struct {
@@ -169,4 +174,9 @@ func (p *CloudfareDNSProvider) Save(ctx context.Context, recordID string, domain
 // Name 返回 DNS 提供程序的名称
 func (p *CloudfareDNSProvider) Name() string {
 	return "Cloudflare DNS"
+}
+
+// ParseCustomConfig 解析 DNS 自定义配置
+func (p *CloudfareDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	return nil
 }

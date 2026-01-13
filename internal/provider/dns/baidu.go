@@ -2,6 +2,7 @@ package dns
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -10,6 +11,10 @@ import (
 	"github.com/baidubce/bce-sdk-go/services/dns"
 	"github.com/baidubce/bce-sdk-go/util"
 )
+
+// 百度云 DNS 自定义配置
+type BaiduDNSCustomConfig struct {
+}
 
 // BaiduDNSConfig 百度云DNS配置
 type BaiduDNSConfig struct {
@@ -157,4 +162,9 @@ func (p *BaiduDNSProvider) Save(ctx context.Context, recordID string, domain str
 // Name 返回 DNS 提供程序的名称
 func (p *BaiduDNSProvider) Name() string {
 	return "百度云 DNS"
+}
+
+// ParseCustomConfig 解析 DNS 自定义配置
+func (p *BaiduDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	return nil
 }

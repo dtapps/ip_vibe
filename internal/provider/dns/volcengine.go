@@ -2,6 +2,7 @@ package dns
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -14,8 +15,13 @@ import (
 	"github.com/volcengine/volcengine-go-sdk/volcengine/session"
 )
 
-// VolcengineDnsConfig 火山引擎DNS配置
-type VolcengineDnsConfig struct {
+// 火山引擎 DNS 自定义配置
+type VolcengineDNSCustomConfig struct {
+	Line string `json:"line"` // 解析记录对应的线路
+}
+
+// VolcengineDNSConfig 火山引擎 DNS 配置
+type VolcengineDNSConfig struct {
 	Region     string `json:"region,omitempty"` // 区域
 	SecretID   string `json:"secret_id"`        // 密钥ID
 	SecretKey  string `json:"secret_key"`       // 密钥Key
@@ -23,8 +29,8 @@ type VolcengineDnsConfig struct {
 	DomainName string `json:"domain_name"`      // 主域名
 }
 
-// Validate 验证火山引擎DNS配置
-func (cfg *VolcengineDnsConfig) Validate() error {
+// Validate 验证火山引擎 DNS 配置
+func (cfg *VolcengineDNSConfig) Validate() error {
 	if cfg.Region == "" {
 		return fmt.Errorf("区域不能为空")
 	}
@@ -37,17 +43,19 @@ func (cfg *VolcengineDnsConfig) Validate() error {
 	return nil
 }
 
-// NewDefaultVolcengineDnsConfig 创建默认的火山引擎DNS配置
-func NewDefaultVolcengineDnsConfig() *VolcengineDnsConfig {
-	return &VolcengineDnsConfig{
+// NewDefaultVolcengineDNSConfig 创建默认的火山引擎 DNS 配置
+func NewDefaultVolcengineDNSConfig() *VolcengineDNSConfig {
+	return &VolcengineDNSConfig{
 		Region: "cn-beijing",
 	}
 }
 
-// VolcengineDnsProvider 火山引擎DNS提供程序
-type VolcengineDnsProvider struct {
-	cfg  *VolcengineDnsConfig
+// VolcengineDNSProvider 火山引擎 DNS 提供程序
+type VolcengineDNSProvider struct {
+	cfg  *VolcengineDNSConfig
 	opts *dnsOptions
+
+	CustomConfig *VolcengineDNSCustomConfig
 
 	Provider struct {
 		Auth   *credentials.Credentials
@@ -57,8 +65,8 @@ type VolcengineDnsProvider struct {
 	}
 }
 
-// NewVolcengineDnsProvider 创建火山引擎DNS提供程序
-func NewVolcengineDnsProvider(ctx context.Context, cfg *VolcengineDnsConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+// NewVolcengineDNSProvider 创建火山引擎 DNS 提供程序
+func NewVolcengineDNSProvider(ctx context.Context, cfg *VolcengineDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
 
 	var err error
 
@@ -71,9 +79,10 @@ func NewVolcengineDnsProvider(ctx context.Context, cfg *VolcengineDnsConfig, opt
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
-	p := &VolcengineDnsProvider{
-		cfg:  cfg,
-		opts: &dnsOptions{},
+	p := &VolcengineDNSProvider{
+		cfg:          cfg,
+		opts:         &dnsOptions{},
+		CustomConfig: &VolcengineDNSCustomConfig{},
 	}
 
 	// 应用选项
@@ -124,7 +133,7 @@ func NewVolcengineDnsProvider(ctx context.Context, cfg *VolcengineDnsConfig, opt
 
 // Check 检查子域名是否存在
 // https://api.volcengine.com/api-explorer?action=ListRecords
-func (p *VolcengineDnsProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
+func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -163,7 +172,7 @@ func (p *VolcengineDnsProvider) Check(ctx context.Context, domain string, subdom
 // Update 更新 DNS 记录
 // https://api.volcengine.com/api-explorer?action=CreateRecord
 // https://api.volcengine.com/api-explorer?action=UpdateRecord
-func (p *VolcengineDnsProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
+func (p *VolcengineDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -171,10 +180,11 @@ func (p *VolcengineDnsProvider) Update(ctx context.Context, recordID string, dom
 	if recordID == "" {
 		// 请求参数
 		request := &dns.CreateRecordInput{}
-		request.Host = volcengine.String(fullDomain) // 主机记录
-		request.Type = volcengine.String(recordType) // 记录类型
-		request.Value = volcengine.String(value)     // 解析记录的记录值
-		request.ZID = volcengine.Int64(p.cfg.ZoneID) // 域名ID
+		request.Host = volcengine.String(fullDomain)          // 主机记录
+		request.Line = volcengine.String(p.CustomConfig.Line) // 解析线路
+		request.Type = volcengine.String(recordType)          // 记录类型
+		request.Value = volcengine.String(value)              // 解析记录的记录值
+		request.ZID = volcengine.Int64(p.cfg.ZoneID)          // 域名ID
 		// 请求
 		response, err := p.Provider.Client.CreateRecordWithContext(ctx, request)
 		printJSON("创建域名记录", request, response)
@@ -186,11 +196,11 @@ func (p *VolcengineDnsProvider) Update(ctx context.Context, recordID string, dom
 	if recordID != "" {
 		// 请求参数
 		request := &dns.UpdateRecordInput{}
-		request.Host = volcengine.String(fullDomain)   // 主机记录
-		request.Line = volcengine.String("default")    // 解析线路
-		request.RecordID = volcengine.String(recordID) // 需要更新的解析记录的 ID
-		request.Type = volcengine.String(recordType)   // 记录类型
-		request.Value = volcengine.String(value)       // 解析记录的记录值
+		request.Host = volcengine.String(fullDomain)          // 主机记录
+		request.Line = volcengine.String(p.CustomConfig.Line) // 解析线路
+		request.RecordID = volcengine.String(recordID)        // 需要更新的解析记录的 ID
+		request.Type = volcengine.String(recordType)          // 记录类型
+		request.Value = volcengine.String(value)              // 解析记录的记录值
 		// 请求
 		response, err := p.Provider.Client.UpdateRecordWithContext(ctx, request)
 		printJSON("更新域名记录", request, response)
@@ -203,11 +213,19 @@ func (p *VolcengineDnsProvider) Update(ctx context.Context, recordID string, dom
 }
 
 // Save 保存 DNS 记录
-func (p *VolcengineDnsProvider) Save(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
+func (p *VolcengineDNSProvider) Save(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
 	return nil
 }
 
 // Name 返回 DNS 提供程序的名称
-func (p *VolcengineDnsProvider) Name() string {
-	return "腾讯云 DNS"
+func (p *VolcengineDNSProvider) Name() string {
+	return "火山引擎 DNS"
+}
+
+// ParseCustomConfig 解析 DNS 自定义配置
+func (p *VolcengineDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
+		return err
+	}
+	return nil
 }

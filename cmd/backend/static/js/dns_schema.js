@@ -1,5 +1,40 @@
 // 定义字段 Schema
-const DNS_SCHEMA = {};
+const DNS_SCHEMA = {
+  volcengine_dns: {
+    label: "火山引擎 DNS",
+    fields: [
+      {
+        id: "line",
+        label: "线路",
+        type: "select",
+        placeholder: "请选择线路",
+        required: true,
+        options: [
+          {
+            value: "default",
+            label: "默认",
+          },
+          {
+            value: "domestic",
+            label: "中国内地",
+          },
+          {
+            value: "oversea",
+            label: "全球(不含中国内地)",
+          },
+          {
+            value: "unicom",
+            label: "中国_联通",
+          },
+          {
+            value: "telecom",
+            label: "中国_电信",
+          },
+        ],
+      },
+    ],
+  },
+};
 
 /**
  * 动态渲染字段

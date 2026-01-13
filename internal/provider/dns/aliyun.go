@@ -2,6 +2,7 @@ package dns
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"vibe_ip/internal/helper/aliyun_helper"
@@ -12,6 +13,10 @@ import (
 	"github.com/alibabacloud-go/tea/tea"
 	credential "github.com/aliyun/credentials-go/credentials"
 )
+
+// 阿里云 DNS 自定义配置
+type AliyunDNSCustomConfig struct {
+}
 
 // AliyunDNSConfig 阿里云DNS配置
 type AliyunDNSConfig struct {
@@ -180,4 +185,9 @@ func (p *AliyunDNSProvider) Save(ctx context.Context, recordID string, domain st
 // Name 返回 DNS 提供程序的名称
 func (p *AliyunDNSProvider) Name() string {
 	return "阿里云 DNS"
+}
+
+// ParseCustomConfig 解析 DNS 自定义配置
+func (p *AliyunDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	return nil
 }

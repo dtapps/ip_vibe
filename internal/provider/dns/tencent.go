@@ -2,6 +2,7 @@ package dns
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"vibe_ip/internal/provider"
@@ -12,6 +13,10 @@ import (
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	dnspod "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323"
 )
+
+// 腾讯云 DNS 自定义配置
+type TencentDNSCustomConfig struct {
+}
 
 // TencentDNSConfig 腾讯云DNS配置
 type TencentDNSConfig struct {
@@ -175,4 +180,9 @@ func (p *TencentDNSProvider) Save(ctx context.Context, recordID string, domain s
 // Name 返回 DNS 提供程序的名称
 func (p *TencentDNSProvider) Name() string {
 	return "腾讯云 DNS"
+}
+
+// ParseCustomConfig 解析 DNS 自定义配置
+func (p *TencentDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	return nil
 }

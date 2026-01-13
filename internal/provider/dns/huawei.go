@@ -2,6 +2,7 @@ package dns
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"vibe_ip/internal/provider"
@@ -13,6 +14,10 @@ import (
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/dns/v2/model"
 	regionDns "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/dns/v2/region"
 )
+
+// 华为云 DNS 自定义配置
+type HuaweiDNSCustomConfig struct {
+}
 
 // HuaweiDNSConfig 华为云DNS配置
 type HuaweiDNSConfig struct {
@@ -201,4 +206,9 @@ func (p *HuaweiDNSProvider) Save(ctx context.Context, recordID string, domain st
 // Name 返回 DNS 提供程序的名称
 func (p *HuaweiDNSProvider) Name() string {
 	return "华为云 DNS"
+}
+
+// ParseCustomConfig 解析 DNS 自定义配置
+func (p *HuaweiDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	return nil
 }
