@@ -11,8 +11,6 @@ import (
 	"go.dtapp.net/library/contrib/http_log"
 )
 
-var httpLogMutex sync.Once
-
 // 实现 LogSaver 接口
 type EntHttpLogSaver struct {
 	logger *slog.Logger
@@ -61,6 +59,8 @@ func (s *EntHttpLogSaver) HandleLog(ctx context.Context, data *http_log.LogData)
 
 	return nil
 }
+
+var httpLogMutex sync.Once
 
 // InitEntHttpLog 初始化 ent http 日志
 func InitEntHttpLog(logger *slog.Logger) {

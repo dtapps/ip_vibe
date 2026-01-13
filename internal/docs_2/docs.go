@@ -4522,10 +4522,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "config_id",
-                "http_port",
-                "https_port",
                 "ip_group_id",
-                "origin_protocol",
                 "sub_domain",
                 "type"
             ],
@@ -4534,21 +4531,13 @@ const docTemplate = `{
                     "description": "平台配置序号",
                     "type": "integer"
                 },
-                "http_port": {
-                    "description": "HTTP 回源端口",
-                    "type": "integer"
-                },
-                "https_port": {
-                    "description": "HTTPS 回源端口",
-                    "type": "integer"
+                "config_json": {
+                    "description": "CDN记录配置（JSON）",
+                    "type": "string"
                 },
                 "ip_group_id": {
                     "description": "IP 组序号",
                     "type": "integer"
-                },
-                "origin_protocol": {
-                    "description": "回源协议（http、https、follow）",
-                    "type": "string"
                 },
                 "sub_domain": {
                     "description": "子域名（如 www, blog, api）",
@@ -4618,6 +4607,10 @@ const docTemplate = `{
                 "config_id": {
                     "description": "平台配置序号",
                     "type": "integer"
+                },
+                "config_json": {
+                    "description": "DNS记录配置（JSON）",
+                    "type": "string"
                 },
                 "ip_group_id": {
                     "description": "IP 组序号（与 cdn_record_id 二选一）",
@@ -4946,6 +4939,13 @@ const docTemplate = `{
                     "description": "平台配置序号",
                     "type": "integer"
                 },
+                "config_json": {
+                    "description": "CDN记录配置（JSON）",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "config_name": {
                     "description": "平台配置名称",
                     "type": "string"
@@ -4953,14 +4953,6 @@ const docTemplate = `{
                 "domain_name": {
                     "description": "域名（如 www.example.com）",
                     "type": "string"
-                },
-                "http_port": {
-                    "description": "HTTP 回源端口",
-                    "type": "integer"
-                },
-                "https_port": {
-                    "description": "HTTPS 回源端口",
-                    "type": "integer"
                 },
                 "id": {
                     "description": "CDN记录序号",
@@ -4980,10 +4972,6 @@ const docTemplate = `{
                 },
                 "last_refresh_at": {
                     "description": "最后一次刷新成功时间",
-                    "type": "string"
-                },
-                "origin_protocol": {
-                    "description": "回源协议（http、https、follow）",
                     "type": "string"
                 },
                 "platform": {
@@ -5109,6 +5097,13 @@ const docTemplate = `{
                 "config_id": {
                     "description": "平台配置序号",
                     "type": "integer"
+                },
+                "config_json": {
+                    "description": "DNS记录配置（JSON）",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "config_name": {
                     "description": "平台配置名称",
@@ -5300,7 +5295,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "config_json": {
-                    "description": "配置平台密钥等敏感信息（JSON）",
+                    "description": "平台密钥等敏感信息（JSON）",
                     "type": "array",
                     "items": {
                         "type": "integer"
@@ -5718,21 +5713,14 @@ const docTemplate = `{
         "vibe_ip_internal_types.UpdateCdnRecordRequest": {
             "type": "object",
             "required": [
-                "http_port",
-                "https_port",
                 "id",
                 "ip_group_id",
-                "origin_protocol",
                 "type"
             ],
             "properties": {
-                "http_port": {
-                    "description": "HTTP 回源端口",
-                    "type": "integer"
-                },
-                "https_port": {
-                    "description": "HTTPS 回源端口",
-                    "type": "integer"
+                "config_json": {
+                    "description": "CDN记录配置（JSON）",
+                    "type": "string"
                 },
                 "id": {
                     "description": "CDN记录序号",
@@ -5741,10 +5729,6 @@ const docTemplate = `{
                 "ip_group_id": {
                     "description": "IP 组序号",
                     "type": "integer"
-                },
-                "origin_protocol": {
-                    "description": "回源协议（http、https、follow）",
-                    "type": "string"
                 },
                 "type": {
                     "description": "记录类型（A、AAAA）",
@@ -5821,6 +5805,10 @@ const docTemplate = `{
                 "cdn_record_id": {
                     "description": "CDN 记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）",
                     "type": "integer"
+                },
+                "config_json": {
+                    "description": "DNS记录配置（JSON）",
+                    "type": "string"
                 },
                 "id": {
                     "description": "DNS记录序号",

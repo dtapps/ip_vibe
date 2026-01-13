@@ -3,6 +3,7 @@ package initialize
 import (
 	"context"
 	"log/slog"
+	"sync"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/global"
 
@@ -41,6 +42,9 @@ func (s *EntRestyLogSaver) HandleLog(ctx context.Context, data *resty_log.LogDat
 			SetURL(syncData.URL).
 			SetRequestHeaders(syncData.RequestHeaders).
 			SetRequestBody(syncData.RequestBody).
+			SetRequestQueryParams(syncData.RequestQueryParams).
+			SetRequestFormData(syncData.RequestFormData).
+			SetRequestPathParams(syncData.RequestPathParams).
 			SetStatusCode(syncData.StatusCode).
 			SetResponseHeaders(syncData.ResponseHeaders).
 			SetResponseBody(syncData.ResponseBody).
@@ -60,77 +64,86 @@ func (s *EntRestyLogSaver) HandleLog(ctx context.Context, data *resty_log.LogDat
 	return nil
 }
 
+var restyLogMutex sync.Once
+
 // InitEntRestyLog 初始化 ent resty 日志
 func InitEntRestyLog(logger *slog.Logger) {
 
-	// 定义回调函数
-	callbackFunc := func(ctx context.Context, data *resty_log.LogData) error {
-		logger.DebugContext(ctx, "[回调方式]准备保存日志",
-			slog.String("Hostname", data.Hostname),
-			slog.String("Method", data.Method),
-			slog.String("URL", data.URL),
-		)
-		if global.GvaEntLogDb == nil || data == nil {
+	restyLogMutex.Do(func() {
+
+		// 定义回调函数
+		callbackFunc := func(ctx context.Context, data *resty_log.LogData) error {
+			logger.DebugContext(ctx, "[回调方式]准备保存日志",
+				slog.String("Hostname", data.Hostname),
+				slog.String("Method", data.Method),
+				slog.String("URL", data.URL),
+			)
+			if global.GvaEntLogDb == nil || data == nil {
+				return nil
+			}
+			logger.DebugContext(ctx, "[回调方式]执行保存日志",
+				slog.String("Hostname", data.Hostname),
+				slog.String("Method", data.Method),
+				slog.String("URL", data.URL),
+				slog.Int("StatusCode", data.StatusCode),
+				slog.Int64("ElapseTime", data.ElapseTime),
+				slog.Bool("IsError", data.IsError),
+			)
+
+			go func(asyncCtx context.Context, asyncDb *ent_log.Client, syncData *resty_log.LogData) {
+				err := asyncDb.RestyLog.Create().
+					SetHostname(syncData.Hostname).
+					SetMethod(syncData.Method).
+					SetURL(syncData.URL).
+					SetRequestHeaders(syncData.RequestHeaders).
+					SetRequestBody(syncData.RequestBody).
+					SetRequestQueryParams(syncData.RequestQueryParams).
+					SetRequestFormData(syncData.RequestFormData).
+					SetRequestPathParams(syncData.RequestPathParams).
+					SetStatusCode(syncData.StatusCode).
+					SetResponseHeaders(syncData.ResponseHeaders).
+					SetResponseBody(syncData.ResponseBody).
+					SetElapseTime(syncData.ElapseTime).
+					SetIsError(syncData.IsError).
+					SetGoVersion(syncData.GoVersion).
+					SetPluginVersion(syncData.PluginVersion).
+					SetRestyVersion(syncData.RestyVersion).
+					Exec(asyncCtx)
+				if err != nil {
+					logger.ErrorContext(asyncCtx, "[回调方式]执行保存日志失败",
+						slog.Any("err", err),
+					)
+				}
+			}(context.WithoutCancel(ctx), global.GvaEntLogDb, data)
+
 			return nil
 		}
-		logger.DebugContext(ctx, "[回调方式]执行保存日志",
-			slog.String("Hostname", data.Hostname),
-			slog.String("Method", data.Method),
-			slog.String("URL", data.URL),
-			slog.Int("StatusCode", data.StatusCode),
-			slog.Int64("ElapseTime", data.ElapseTime),
-			slog.Bool("IsError", data.IsError),
+
+		// 创建 LogSaver 实现
+		saver := &EntRestyLogSaver{
+			logger: logger,
+		}
+		if global.GvaEntLogDb != nil {
+			saver.db = global.GvaEntLogDb
+		}
+
+		// 初始化 Logger，传入回调和接口（回调优先）
+		global.GvaRestyLog = resty_log.NewLoggerMiddleware(saver, callbackFunc)
+
+		// 创建 Resty 客户端，并带日志记录
+		global.GvaRestyClientWithLog = resty.New()
+		// 请求中间件
+		global.GvaRestyClientWithLog.SetRequestMiddlewares(
+			global.GvaRestyLog.IntrusionRequest,
+			resty.PrepareRequestMiddleware,
+			global.GvaRestyLog.BeforeRequest,
+		)
+		// 响应中间件
+		global.GvaRestyClientWithLog.SetResponseMiddlewares(
+			global.GvaRestyLog.CopyResponseBodyMiddleware,
+			resty.AutoParseResponseMiddleware,
+			global.GvaRestyLog.AfterResponse,
 		)
 
-		go func(asyncCtx context.Context, asyncDb *ent_log.Client, syncData *resty_log.LogData) {
-			err := asyncDb.RestyLog.Create().
-				SetHostname(syncData.Hostname).
-				SetMethod(syncData.Method).
-				SetURL(syncData.URL).
-				SetRequestHeaders(syncData.RequestHeaders).
-				SetRequestBody(syncData.RequestBody).
-				SetStatusCode(syncData.StatusCode).
-				SetResponseHeaders(syncData.ResponseHeaders).
-				SetResponseBody(syncData.ResponseBody).
-				SetElapseTime(syncData.ElapseTime).
-				SetIsError(syncData.IsError).
-				SetGoVersion(syncData.GoVersion).
-				SetPluginVersion(syncData.PluginVersion).
-				SetRestyVersion(syncData.RestyVersion).
-				Exec(asyncCtx)
-			if err != nil {
-				logger.ErrorContext(asyncCtx, "[回调方式]执行保存日志失败",
-					slog.Any("err", err),
-				)
-			}
-		}(context.WithoutCancel(ctx), global.GvaEntLogDb, data)
-
-		return nil
-	}
-
-	// 创建 LogSaver 实现
-	saver := &EntRestyLogSaver{
-		logger: logger,
-	}
-	if global.GvaEntLogDb != nil {
-		saver.db = global.GvaEntLogDb
-	}
-
-	// 初始化 Logger，传入回调和接口（回调优先）
-	global.GvaRestyLog = resty_log.NewLoggerMiddleware(saver, callbackFunc)
-
-	// 创建 Resty 客户端，并带日志记录
-	global.GvaRestyClientWithLog = resty.New()
-	// 请求中间件
-	global.GvaRestyClientWithLog.SetRequestMiddlewares(
-		global.GvaRestyLog.IntrusionRequest,
-		resty.PrepareRequestMiddleware,
-		global.GvaRestyLog.BeforeRequest,
-	)
-	// 响应中间件
-	global.GvaRestyClientWithLog.SetResponseMiddlewares(
-		global.GvaRestyLog.CopyResponseBodyMiddleware,
-		resty.AutoParseResponseMiddleware,
-		global.GvaRestyLog.AfterResponse,
-	)
+	})
 }

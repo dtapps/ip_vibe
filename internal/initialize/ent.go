@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"log/slog"
+	"sync"
 	"vibe_ip/internal/ent"
 	_ "vibe_ip/internal/ent/runtime"
 	"vibe_ip/internal/ent_log"
@@ -20,60 +21,65 @@ func init() {
 	sql.Register(dialect.SQLite, &sqlite.Driver{})
 }
 
+var entMutex sync.Once
+
 // InitEntDb 初始化 业务数据库
 func InitEntDb(ctx context.Context, logger *slog.Logger) {
 
-	logger.InfoContext(ctx, "Ent 服务正在启动")
+	entMutex.Do(func() {
 
-	var err error
+		logger.InfoContext(ctx, "Ent 服务正在启动")
 
-	// SQLite DSN，启用 WAL + 外键 + 超时
-	dsn := "file:data/ent.db?_pragma=foreign_keys(1)&_pragma=journal_mode(WAL)&_pragma=busy_timeout=5000"
+		var err error
 
-	// 1. 先打开原生 *sql.DB
-	sqlDB, err := sql.Open("sqlite", dsn)
-	if err != nil {
-		logger.ErrorContext(ctx, "[初始化 业务数据库] 打开数据库失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
+		// SQLite DSN，启用 WAL + 外键 + 超时
+		dsn := "file:data/ent.db?_pragma=foreign_keys(1)&_pragma=journal_mode(WAL)&_pragma=busy_timeout=5000"
 
-	// 2. 设置连接池（防止并发写冲突）
-	sqlDB.SetMaxOpenConns(1) // 串行写，防止 database is locked
-	sqlDB.SetMaxIdleConns(1)
+		// 1. 先打开原生 *sql.DB
+		sqlDB, err := sql.Open("sqlite", dsn)
+		if err != nil {
+			logger.ErrorContext(ctx, "[初始化 业务数据库] 打开数据库失败",
+				slog.Any("err", err),
+			)
+			panic(err)
+		}
 
-	// 3. 使用 entsql.OpenDB 包装为 ent 驱动
-	driver := entSql.OpenDB(dialect.SQLite, sqlDB)
+		// 2. 设置连接池（防止并发写冲突）
+		sqlDB.SetMaxOpenConns(1) // 串行写，防止 database is locked
+		sqlDB.SetMaxIdleConns(1)
 
-	// 3. 让 Ent 使用这个 DB  dialect.SQLite,
-	opts := make([]ent.Option, 0)
-	opts = append(
-		opts,
-		ent.Driver(driver),
-	)
-	opts = append(
-		opts,
-		ent.Log(ent_slog.NewSlogLogger(logger, "ent").Log),
-	)
-	if global.GvaEnv.DEBUG {
+		// 3. 使用 entsql.OpenDB 包装为 ent 驱动
+		driver := entSql.OpenDB(dialect.SQLite, sqlDB)
+
+		// 3. 让 Ent 使用这个 DB  dialect.SQLite,
+		opts := make([]ent.Option, 0)
 		opts = append(
 			opts,
-			ent.Debug(),
+			ent.Driver(driver),
 		)
-	}
-	global.GvaEntDb = ent.NewClient(opts...)
-
-	// 4. 自动迁移
-	if err := global.GvaEntDb.Schema.Create(ctx); err != nil {
-		logger.ErrorContext(ctx, "[初始化 业务数据库] 自动迁移失败",
-			slog.Any("err", err),
+		opts = append(
+			opts,
+			ent.Log(ent_slog.NewSlogLogger(logger, "ent").Log),
 		)
-		panic(err)
-	}
+		if global.GvaEnv.DEBUG {
+			opts = append(
+				opts,
+				ent.Debug(),
+			)
+		}
+		global.GvaEntDb = ent.NewClient(opts...)
 
-	logger.InfoContext(ctx, "Ent 服务启动成功")
+		// 4. 自动迁移
+		if err := global.GvaEntDb.Schema.Create(ctx); err != nil {
+			logger.ErrorContext(ctx, "[初始化 业务数据库] 自动迁移失败",
+				slog.Any("err", err),
+			)
+			panic(err)
+		}
 
+		logger.InfoContext(ctx, "Ent 服务启动成功")
+
+	})
 }
 
 // CloseEntDb 关闭 业务数据库
@@ -88,60 +94,65 @@ func CloseEntDb(ctx context.Context, logger *slog.Logger) {
 	}
 }
 
+var entLogMutex sync.Once
+
 // InitEntLogDb 初始化 日志数据库
 func InitEntLogDb(ctx context.Context, logger *slog.Logger) {
 
-	logger.InfoContext(ctx, "Ent Log 服务正在启动")
+	entLogMutex.Do(func() {
 
-	var err error
+		logger.InfoContext(ctx, "Ent Log 服务正在启动")
 
-	// SQLite DSN，启用 WAL + 外键 + 超时
-	dsn := "file:data/ent_log.db?_pragma=foreign_keys(1)&_pragma=journal_mode(WAL)&_pragma=busy_timeout=5000"
+		var err error
 
-	// 1. 先打开原生 *sql.DB
-	sqlDB, err := sql.Open("sqlite", dsn)
-	if err != nil {
-		logger.ErrorContext(ctx, "[初始化 日志数据库] 打开数据库失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
+		// SQLite DSN，启用 WAL + 外键 + 超时
+		dsn := "file:data/ent_log.db?_pragma=foreign_keys(1)&_pragma=journal_mode(WAL)&_pragma=busy_timeout=5000"
 
-	// 2. 设置连接池（防止并发写冲突）
-	sqlDB.SetMaxOpenConns(1) // 串行写，防止 database is locked
-	sqlDB.SetMaxIdleConns(1)
+		// 1. 先打开原生 *sql.DB
+		sqlDB, err := sql.Open("sqlite", dsn)
+		if err != nil {
+			logger.ErrorContext(ctx, "[初始化 日志数据库] 打开数据库失败",
+				slog.Any("err", err),
+			)
+			panic(err)
+		}
 
-	// 3. 使用 entsql.OpenDB 包装为 ent 驱动
-	driver := entSql.OpenDB(dialect.SQLite, sqlDB)
+		// 2. 设置连接池（防止并发写冲突）
+		sqlDB.SetMaxOpenConns(1) // 串行写，防止 database is locked
+		sqlDB.SetMaxIdleConns(1)
 
-	// 3. 让 Ent 使用这个 DB  dialect.SQLite,
-	opts := make([]ent_log.Option, 0)
-	opts = append(
-		opts,
-		ent_log.Driver(driver),
-	)
-	opts = append(
-		opts,
-		ent_log.Log(ent_slog.NewSlogLogger(logger, "ent_log").Log),
-	)
-	if global.GvaEnv.DEBUG {
+		// 3. 使用 entsql.OpenDB 包装为 ent 驱动
+		driver := entSql.OpenDB(dialect.SQLite, sqlDB)
+
+		// 3. 让 Ent 使用这个 DB  dialect.SQLite,
+		opts := make([]ent_log.Option, 0)
 		opts = append(
 			opts,
-			ent_log.Debug(),
+			ent_log.Driver(driver),
 		)
-	}
-	global.GvaEntLogDb = ent_log.NewClient(opts...)
-
-	// 4. 自动迁移
-	if err := global.GvaEntLogDb.Schema.Create(ctx); err != nil {
-		logger.ErrorContext(ctx, "[初始化 日志数据库] 自动迁移失败",
-			slog.Any("err", err),
+		opts = append(
+			opts,
+			ent_log.Log(ent_slog.NewSlogLogger(logger, "ent_log").Log),
 		)
-		panic(err)
-	}
+		if global.GvaEnv.DEBUG {
+			opts = append(
+				opts,
+				ent_log.Debug(),
+			)
+		}
+		global.GvaEntLogDb = ent_log.NewClient(opts...)
 
-	logger.InfoContext(ctx, "Ent Log 服务启动成功")
+		// 4. 自动迁移
+		if err := global.GvaEntLogDb.Schema.Create(ctx); err != nil {
+			logger.ErrorContext(ctx, "[初始化 日志数据库] 自动迁移失败",
+				slog.Any("err", err),
+			)
+			panic(err)
+		}
 
+		logger.InfoContext(ctx, "Ent Log 服务启动成功")
+
+	})
 }
 
 // CloseEntLogDb 关闭 日志数据库
