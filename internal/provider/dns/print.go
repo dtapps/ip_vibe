@@ -3,6 +3,7 @@ package dns
 import (
 	"encoding/json"
 	"fmt"
+	"vibe_ip/internal/global"
 )
 
 func indentJSON(v any) string {
@@ -11,6 +12,9 @@ func indentJSON(v any) string {
 }
 
 func printJSON(name string, request any, response any) {
+	if !global.GvaEnv.DEBUG {
+		return
+	}
 	if request != nil {
 		fmt.Printf("%s 请求参数:\n%s\n", name, indentJSON(request))
 	}
