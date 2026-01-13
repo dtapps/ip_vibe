@@ -61,14 +61,14 @@ type TencentDNSProvider struct {
 
 	CustomConfig *TencentDNSCustomConfig
 	Provider     struct {
+		Auth   *common.Credential
+		Cfg    *profile.ClientProfile
 		Client *dnspod.Client
 	}
 }
 
 // NewTencentDNSProvider 创建腾讯云 DNS 提供程序
 func NewTencentDNSProvider(ctx context.Context, cfg *TencentDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
-
-	var err error
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -79,6 +79,7 @@ func NewTencentDNSProvider(ctx context.Context, cfg *TencentDNSConfig, opts ...D
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
+	var err error
 	p := &TencentDNSProvider{
 		config:       cfg,
 		opts:         &dnsOptions{},
@@ -91,24 +92,24 @@ func NewTencentDNSProvider(ctx context.Context, cfg *TencentDNSConfig, opts ...D
 	}
 
 	// 密钥信息
-	credential := common.NewCredential(
+	p.Provider.Auth = common.NewCredential(
 		p.config.SecretID,
 		p.config.SecretKey,
 	)
 
 	// 实例化client选项
-	clientConfig := profile.NewClientProfile()
-	clientConfig.HttpProfile.Endpoint = p.config.Endpoint
+	p.Provider.Cfg = profile.NewClientProfile()
+	p.Provider.Cfg.HttpProfile.Endpoint = p.config.Endpoint
 
 	// 实例化client对象
-	p.Provider.Client, err = dnspod.NewClient(credential, "", clientConfig)
+	p.Provider.Client, err = dnspod.NewClient(p.Provider.Auth, "", p.Provider.Cfg)
 	if err != nil {
 		return nil, err
 	}
 
 	// 如果提供了日志传输器，则设置HTTP客户端
 	if p.opts.httpTransport != nil {
-		p.Provider.Client.WithHttpTransport(p.opts.httpTransport)
+		p.Provider.Client.WithHttpTransport(p.opts.httpTransport.Instance(nil))
 	}
 
 	return p, nil
@@ -199,6 +200,7 @@ func (p *TencentDNSProvider) Name() string {
 
 // 腾讯云 DNS 自定义配置
 type TencentDNSCustomConfig struct {
+	// RecordLine string `json:"record_line"` // 记录线路
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置

@@ -121,7 +121,7 @@ func NewVolcengineDNSProvider(ctx context.Context, cfg *VolcengineDNSConfig, opt
 			WithRegion(p.cfg.Region).
 			WithCredentials(p.Provider.Auth).
 			WithHTTPClient(&http.Client{
-				Transport: p.opts.httpTransport,
+				Transport: p.opts.httpTransport.Instance(nil),
 			})
 
 		// 会话

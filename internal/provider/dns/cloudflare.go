@@ -52,7 +52,12 @@ func (p *CloudfareDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err
 type CloudfareDNSProvider struct {
 	config *CloudfareDNSConfig
 	opts   *dnsOptions
-	client *cloudflare.Client
+
+	CustomConfig *CloudfareDNSCustomConfig
+	Provider     struct {
+		Opts   []option.RequestOption
+		Client *cloudflare.Client
+	}
 }
 
 // NewCloudfareDNSProvider 创建Cloudfare DNS 提供程序
@@ -68,8 +73,9 @@ func NewCloudfareDNSProvider(ctx context.Context, cfg *CloudfareDNSConfig, opts 
 	}
 
 	p := &CloudfareDNSProvider{
-		config: cfg,
-		opts:   &dnsOptions{},
+		config:       cfg,
+		opts:         &dnsOptions{},
+		CustomConfig: &CloudfareDNSCustomConfig{},
 	}
 
 	// 应用选项
@@ -78,23 +84,23 @@ func NewCloudfareDNSProvider(ctx context.Context, cfg *CloudfareDNSConfig, opts 
 	}
 
 	// 实例化client选项
-	clientOpts := make([]option.RequestOption, 0)
-	clientOpts = append(clientOpts, option.WithAPIKey(p.config.ApiKey))
+	p.Provider.Opts = append(p.Provider.Opts, option.WithAPIKey(p.config.ApiKey))
 
 	// 如果提供了日志传输器，则设置HTTP客户端
 	if p.opts.httpTransport != nil {
-		clientOpts = append(clientOpts, option.WithHTTPClient(&http.Client{
-			Transport: p.opts.httpTransport,
+		p.Provider.Opts = append(p.Provider.Opts, option.WithHTTPClient(&http.Client{
+			Transport: p.opts.httpTransport.Instance(nil),
 		}))
 	}
 
 	// 实例化client对象
-	p.client = cloudflare.NewClient(clientOpts...)
+	p.Provider.Client = cloudflare.NewClient(p.Provider.Opts...)
 
 	return p, nil
 }
 
 // Check 检查子域名是否存在
+// https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/list/
 func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
 
 	// 完整域名
@@ -108,7 +114,7 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 		request.Type = cloudflare.F(dns.RecordListParamsType(recordType))
 	}
 	// 请求
-	response, err := p.client.DNS.Records.List(ctx, request)
+	response, err := p.Provider.Client.DNS.Records.List(ctx, request)
 	printJSON("查询域名记录", request, response)
 	if err != nil {
 		return
@@ -125,10 +131,12 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 		}
 	}
 
-	return "", "", fmt.Errorf("未找到记录")
+	return "", "", provider.ErrRecordNotFound
 }
 
 // Update 更新 DNS 记录
+// https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/create/
+// https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/edit/
 func (p *CloudfareDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
 
 	// 完整域名
@@ -145,7 +153,7 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, recordID string, doma
 			Body:   requestBody,
 		}
 		// 请求
-		response, err := p.client.DNS.Records.New(ctx, request)
+		response, err := p.Provider.Client.DNS.Records.New(ctx, request)
 		printJSON("创建域名记录", request, response)
 		if err != nil {
 			return err
@@ -163,7 +171,7 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, recordID string, doma
 			Body:   requestBody,
 		}
 		// 请求
-		response, err := p.client.DNS.Records.Edit(ctx, recordID, request)
+		response, err := p.Provider.Client.DNS.Records.Edit(ctx, recordID, request)
 		printJSON("更新域名记录", request, response)
 		if err != nil {
 			return err

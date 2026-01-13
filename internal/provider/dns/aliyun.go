@@ -58,13 +58,17 @@ func (p *AliyunDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err er
 type AliyunDNSProvider struct {
 	config *AliyunDNSConfig
 	opts   *dnsOptions
-	client *alidns20150109.Client
+
+	CustomConfig *AliyunDNSCustomConfig
+	Provider     struct {
+		Auth   credential.Credential
+		Cfg    *openapi.Config
+		Client *alidns20150109.Client
+	}
 }
 
 // NewAliyunDNSProvider 创建阿里云 DNS 提供程序
 func NewAliyunDNSProvider(ctx context.Context, cfg *AliyunDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
-
-	var err error
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -75,9 +79,11 @@ func NewAliyunDNSProvider(ctx context.Context, cfg *AliyunDNSConfig, opts ...Dns
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
+	var err error
 	p := &AliyunDNSProvider{
-		config: cfg,
-		opts:   &dnsOptions{},
+		config:       cfg,
+		opts:         &dnsOptions{},
+		CustomConfig: &AliyunDNSCustomConfig{},
 	}
 
 	// 应用选项
@@ -86,7 +92,7 @@ func NewAliyunDNSProvider(ctx context.Context, cfg *AliyunDNSConfig, opts ...Dns
 	}
 
 	// 密钥信息
-	credential, err := credential.NewCredential(&credential.Config{
+	p.Provider.Auth, err = credential.NewCredential(&credential.Config{
 		Type:            tea.String("access_key"),
 		AccessKeyId:     tea.String(p.config.AccessKeyID),
 		AccessKeySecret: tea.String(p.config.AccessKeySecret),
@@ -96,19 +102,19 @@ func NewAliyunDNSProvider(ctx context.Context, cfg *AliyunDNSConfig, opts ...Dns
 	}
 
 	// 实例化client选项
-	clientConfig := &openapi.Config{
-		Credential: credential,
+	p.Provider.Cfg = &openapi.Config{
+		Credential: p.Provider.Auth,
 		Endpoint:   tea.String(p.config.Endpoint),
 	}
 
 	// 如果提供了日志传输器，则设置HTTP客户端
 	if p.opts.httpTransport != nil {
 		httpHandler := aliyun_helper.NewHttpHandler(p.opts.httpTransport)
-		clientConfig.HttpClient = httpHandler
+		p.Provider.Cfg.HttpClient = httpHandler
 	}
 
 	// 实例化client对象
-	p.client, err = alidns20150109.NewClient(clientConfig)
+	p.Provider.Client, err = alidns20150109.NewClient(p.Provider.Cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -117,6 +123,7 @@ func NewAliyunDNSProvider(ctx context.Context, cfg *AliyunDNSConfig, opts ...Dns
 }
 
 // Check 检查子域名是否存在
+// https://next.api.aliyun.com/api/Alidns/2015-01-09/DescribeDomainRecords
 func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
 
 	// 请求参数
@@ -128,7 +135,7 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 		request.TypeKeyWord = tea.String(recordType) // 解析类型的关键字
 	}
 	// 请求
-	response, err := p.client.DescribeDomainRecordsWithContext(ctx, request, nil)
+	response, err := p.Provider.Client.DescribeDomainRecordsWithContext(ctx, request, nil)
 	printJSON("查询域名记录", request, response)
 	if err != nil {
 		return
@@ -145,10 +152,12 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 		}
 	}
 
-	return "", "", fmt.Errorf("未找到记录")
+	return "", "", provider.ErrRecordNotFound
 }
 
 // Update 更新 DNS 记录
+// https://next.api.aliyun.com/api/Alidns/2015-01-09/AddDomainRecord
+// https://next.api.aliyun.com/api/Alidns/2015-01-09/UpdateDomainRecord
 func (p *AliyunDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
 
 	if recordID == "" {
@@ -159,7 +168,7 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, recordID string, domain 
 		request.Type = tea.String(recordType)   // 解析记录类型
 		request.Value = tea.String(value)       // 记录值
 		// 请求
-		response, err := p.client.AddDomainRecordWithContext(ctx, request, nil)
+		response, err := p.Provider.Client.AddDomainRecordWithContext(ctx, request, nil)
 		printJSON("创建域名记录", request, response)
 		if err != nil {
 			return err
@@ -174,7 +183,7 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, recordID string, domain 
 		request.Type = tea.String(recordType)   // 解析记录类型
 		request.Value = tea.String(value)       // 记录值
 		// 请求
-		response, err := p.client.UpdateDomainRecordWithContext(ctx, request, nil)
+		response, err := p.Provider.Client.UpdateDomainRecordWithContext(ctx, request, nil)
 		printJSON("更新域名记录", request, response)
 		if err != nil {
 			return err

@@ -15,7 +15,7 @@ type HttpHandler struct {
 func NewHttpHandler(httpTransport *http_log.LoggingRoundTripper) *HttpHandler {
 	return &HttpHandler{
 		httpClient: &http.Client{
-			Transport: httpTransport,
+			Transport: httpTransport.Instance(nil),
 		},
 	}
 }

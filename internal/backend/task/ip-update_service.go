@@ -254,7 +254,7 @@ func (s *IPUpdateTask) RunDnsTask() {
 						slog.String("处理方式", "并发"),
 					)
 
-					if err = s.DnsUpdateNew(egCtx, sonLogger, item); err != nil {
+					if err = s.DnsUpdate(egCtx, sonLogger, item); err != nil {
 						logger.ErrorContext(egCtx, "处理失败",
 							slog.Any("error", err),
 						)
@@ -279,7 +279,7 @@ func (s *IPUpdateTask) RunDnsTask() {
 				slog.String("处理方式", "串行"),
 			)
 
-			if err = s.DnsUpdateNew(ctx, sonLogger, item); err != nil {
+			if err = s.DnsUpdate(ctx, sonLogger, item); err != nil {
 				logger.ErrorContext(ctx, "处理失败",
 					slog.Any("error", err),
 				)
@@ -542,75 +542,75 @@ type PendingDnsRecord struct {
 }
 
 // 更新DNS记录
-func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingDnsRecord) (err error) {
+// func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingDnsRecord) (err error) {
 
-	// 日志
-	logger = logger.With(
-		slog.String("处理编号", gorandom.Alphanumeric(10)),
-		slog.String("记录", pendingRecord.params.DNSRecordID),
-		slog.String("提供商", pendingRecord.record.Type.String()),
-		slog.String("平台", pendingRecord.platform.Platform.String()),
-		slog.String("子域名", pendingRecord.record.SubDomain),
-	)
-	logger.InfoContext(ctx, "开始处理")
-	defer logger.InfoContext(ctx, "处理完成")
+// 	// 日志
+// 	logger = logger.With(
+// 		slog.String("处理编号", gorandom.Alphanumeric(10)),
+// 		slog.String("记录", pendingRecord.params.DNSRecordID),
+// 		slog.String("提供商", pendingRecord.record.Type.String()),
+// 		slog.String("平台", pendingRecord.platform.Platform.String()),
+// 		slog.String("子域名", pendingRecord.record.SubDomain),
+// 	)
+// 	logger.InfoContext(ctx, "开始处理")
+// 	defer logger.InfoContext(ctx, "处理完成")
 
-	var dnsProcess dns_helper.DNSProcess
+// 	var dnsProcess dns_helper.DNSProcess
 
-	switch pendingRecord.platform.Platform {
-	case platformconfig.PlatformCloudflare:
-		dnsProcess = dns_helper.NewDNSProcessCloudflare(
-			s.db,
-			logger,
-			s.httpTransport,
-			s.debug,
-		)
-	case platformconfig.PlatformTencentDNS:
-		dnsProcess = dns_helper.NewDNSProcessTencentDns(
-			s.db,
-			logger,
-			s.httpTransport,
-			s.debug,
-		)
-	case platformconfig.PlatformAliyunDNS:
-		dnsProcess = dns_helper.NewDNSProcessAliyunDns(
-			s.db,
-			logger,
-			s.httpTransport,
-			s.debug,
-		)
-	case platformconfig.PlatformBaiduDNS:
-		dnsProcess = dns_helper.NewDNSProcessBaiduDns(
-			s.db,
-			logger,
-			s.httpTransport,
-			s.debug,
-		)
-	case platformconfig.PlatformHuaweiDNS:
-		dnsProcess = dns_helper.NewDNSProcessHuaweiDns(
-			s.db,
-			logger,
-			s.httpTransport,
-			s.debug,
-		)
-	default:
-		err = fmt.Errorf("暂不支持该平台: %s", pendingRecord.platform.String())
-		_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
-		return err
-	}
+// 	switch pendingRecord.platform.Platform {
+// 	case platformconfig.PlatformCloudflare:
+// 		dnsProcess = dns_helper.NewDNSProcessCloudflare(
+// 			s.db,
+// 			logger,
+// 			s.httpTransport,
+// 			s.debug,
+// 		)
+// 	case platformconfig.PlatformTencentDNS:
+// 		dnsProcess = dns_helper.NewDNSProcessTencentDns(
+// 			s.db,
+// 			logger,
+// 			s.httpTransport,
+// 			s.debug,
+// 		)
+// 	case platformconfig.PlatformAliyunDNS:
+// 		dnsProcess = dns_helper.NewDNSProcessAliyunDns(
+// 			s.db,
+// 			logger,
+// 			s.httpTransport,
+// 			s.debug,
+// 		)
+// 	case platformconfig.PlatformBaiduDNS:
+// 		dnsProcess = dns_helper.NewDNSProcessBaiduDns(
+// 			s.db,
+// 			logger,
+// 			s.httpTransport,
+// 			s.debug,
+// 		)
+// 	case platformconfig.PlatformHuaweiDNS:
+// 		dnsProcess = dns_helper.NewDNSProcessHuaweiDns(
+// 			s.db,
+// 			logger,
+// 			s.httpTransport,
+// 			s.debug,
+// 		)
+// 	default:
+// 		err = fmt.Errorf("暂不支持该平台: %s", pendingRecord.platform.String())
+// 		_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+// 		return err
+// 	}
 
-	// 更新DNS记录
-	err = dnsProcess.UpsertRecord(ctx, pendingRecord.params)
-	if err != nil {
-		_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
-		return err
-	}
-	_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, "ok")
-	return nil
-}
+// 	// 更新DNS记录
+// 	err = dnsProcess.UpsertRecord(ctx, pendingRecord.params)
+// 	if err != nil {
+// 		_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+// 		return err
+// 	}
+// 	_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, "ok")
+// 	return nil
+// }
 
 // 更新DNS记录
-func (s *IPUpdateTask) DnsUpdateNew(ctx context.Context, logger *slog.Logger, pendingRecord *PendingDnsRecord) (err error) {
+func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingDnsRecord) (err error) {
 
 	// 日志
 	logger = logger.With(
@@ -627,6 +627,19 @@ func (s *IPUpdateTask) DnsUpdateNew(ctx context.Context, logger *slog.Logger, pe
 
 	switch pendingRecord.platform.Platform {
 	case platformconfig.PlatformCloudflare:
+		dnsProviderCfg := dns.NewDefaultCloudfareDNSConfig()
+		err = dnsProviderCfg.ParseCustomConfig(pendingRecord.platform.ConfigJSON)
+		if err != nil {
+			err = fmt.Errorf("解析自定义配置失败: %w", err)
+			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+			return err
+		}
+		dnsProvider, err = dns.NewCloudfareDNSProvider(ctx, dnsProviderCfg)
+		if err != nil {
+			err = fmt.Errorf("初始提供程序失败: %w", err)
+			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+			return err
+		}
 	case platformconfig.PlatformTencentDNS:
 		dnsProviderCfg := dns.NewDefaultTencentDNSConfig()
 		err = dnsProviderCfg.ParseCustomConfig(pendingRecord.platform.ConfigJSON)
@@ -642,8 +655,47 @@ func (s *IPUpdateTask) DnsUpdateNew(ctx context.Context, logger *slog.Logger, pe
 			return err
 		}
 	case platformconfig.PlatformAliyunDNS:
+		dnsProviderCfg := dns.NewDefaultAliyunDNSConfig()
+		err = dnsProviderCfg.ParseCustomConfig(pendingRecord.platform.ConfigJSON)
+		if err != nil {
+			err = fmt.Errorf("解析自定义配置失败: %w", err)
+			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+			return err
+		}
+		dnsProvider, err = dns.NewAliyunDNSProvider(ctx, dnsProviderCfg)
+		if err != nil {
+			err = fmt.Errorf("初始提供程序失败: %w", err)
+			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+			return err
+		}
 	case platformconfig.PlatformBaiduDNS:
+		dnsProviderCfg := dns.NewDefaultBaiduDNSConfig()
+		err = dnsProviderCfg.ParseCustomConfig(pendingRecord.platform.ConfigJSON)
+		if err != nil {
+			err = fmt.Errorf("解析自定义配置失败: %w", err)
+			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+			return err
+		}
+		dnsProvider, err = dns.NewBaiduDNSProvider(ctx, dnsProviderCfg)
+		if err != nil {
+			err = fmt.Errorf("初始提供程序失败: %w", err)
+			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+			return err
+		}
 	case platformconfig.PlatformHuaweiDNS:
+		dnsProviderCfg := dns.NewDefaultHuaweiDNSConfig()
+		err = dnsProviderCfg.ParseCustomConfig(pendingRecord.platform.ConfigJSON)
+		if err != nil {
+			err = fmt.Errorf("解析自定义配置失败: %w", err)
+			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+			return err
+		}
+		dnsProvider, err = dns.NewHuaweiDNSProvider(ctx, dnsProviderCfg)
+		if err != nil {
+			err = fmt.Errorf("初始提供程序失败: %w", err)
+			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+			return err
+		}
 	case platformconfig.PlatformVolcengineDNS:
 		dnsProviderCfg := dns.NewDefaultVolcengineDNSConfig()
 		err = dnsProviderCfg.ParseCustomConfig(pendingRecord.platform.ConfigJSON)

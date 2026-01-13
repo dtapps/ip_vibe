@@ -8,8 +8,11 @@ import (
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
+	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core"
+	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/basic"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/config"
+	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/region"
 	dns "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/dns/v2"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/dns/v2/model"
 	regionDns "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/dns/v2/region"
@@ -63,13 +66,19 @@ func (p *HuaweiDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err er
 type HuaweiDNSProvider struct {
 	config *HuaweiDNSConfig
 	opts   *dnsOptions
-	client *dns.DnsClient
+
+	CustomConfig *HuaweiDNSCustomConfig
+	Provider     struct {
+		Auth          *auth.BasicCredentials
+		Region        *region.Region
+		ClientBuilder *core.HcHttpClientBuilder
+		Builder       *core.HcHttpClient
+		Client        *dns.DnsClient
+	}
 }
 
 // NewHuaweiDNSProvider 创建华为云 DNS 提供程序
 func NewHuaweiDNSProvider(ctx context.Context, cfg *HuaweiDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
-
-	var err error
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -80,9 +89,11 @@ func NewHuaweiDNSProvider(ctx context.Context, cfg *HuaweiDNSConfig, opts ...Dns
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
+	var err error
 	p := &HuaweiDNSProvider{
-		config: cfg,
-		opts:   &dnsOptions{},
+		config:       cfg,
+		opts:         &dnsOptions{},
+		CustomConfig: &HuaweiDNSCustomConfig{},
 	}
 
 	// 应用选项
@@ -91,7 +102,7 @@ func NewHuaweiDNSProvider(ctx context.Context, cfg *HuaweiDNSConfig, opts ...Dns
 	}
 
 	// 认证
-	auth, err := basic.NewCredentialsBuilder().
+	p.Provider.Auth, err = basic.NewCredentialsBuilder().
 		WithAk(p.config.AccessKeyID).
 		WithSk(p.config.SecretAccessKey).
 		SafeBuild()
@@ -100,31 +111,34 @@ func NewHuaweiDNSProvider(ctx context.Context, cfg *HuaweiDNSConfig, opts ...Dns
 	}
 
 	// 区域
-	region, err := regionDns.SafeValueOf(p.config.Region)
+	p.Provider.Region, err = regionDns.SafeValueOf(p.config.Region)
 	if err != nil {
 		return nil, err
 	}
 
-	clientBuilder := dns.DnsClientBuilder().
-		WithRegion(region).
-		WithCredential(auth)
+	p.Provider.ClientBuilder = dns.DnsClientBuilder().
+		WithRegion(p.Provider.Region).
+		WithCredential(p.Provider.Auth)
 
 	// 如果提供了日志传输器，则设置HTTP客户端
 	if p.opts.httpTransport != nil {
-		clientBuilder.WithHttpConfig(config.DefaultHttpConfig().WithHttpRoundTripper(p.opts.httpTransport))
+		p.Provider.ClientBuilder.WithHttpConfig(config.DefaultHttpConfig().
+			WithHttpRoundTripper(p.opts.httpTransport.Instance(nil)))
 	}
 
-	// 实例化client对象
-	builder, err := clientBuilder.SafeBuild()
+	p.Provider.Builder, err = p.Provider.ClientBuilder.SafeBuild()
 	if err != nil {
 		return nil, err
 	}
-	p.client = dns.NewDnsClient(builder)
+
+	// 实例化client对象
+	p.Provider.Client = dns.NewDnsClient(p.Provider.Builder)
 
 	return p, nil
 }
 
 // Check 检查子域名是否存在
+// https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/debug?api=ShowRecordSetByZone
 func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
 
 	// 完整域名
@@ -141,7 +155,7 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 	request.SearchMode = utils.StringToPtr("equal") // 查询条件搜索模式
 	request.ZoneId = p.config.ZoneID                // 域名ID
 	// 请求
-	response, err := p.client.ShowRecordSetByZone(request)
+	response, err := p.Provider.Client.ShowRecordSetByZone(request)
 	printJSON("查询域名记录", request, response)
 	if err != nil {
 		return
@@ -158,10 +172,12 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 		}
 	}
 
-	return "", "", fmt.Errorf("未找到记录")
+	return "", "", provider.ErrRecordNotFound
 }
 
 // Update 更新 DNS 记录
+// https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/debug?api=CreateRecordSetWithLine
+// https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/sdk?api=UpdateRecordSets
 func (p *HuaweiDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
 
 	// 完整域名
@@ -177,7 +193,7 @@ func (p *HuaweiDNSProvider) Update(ctx context.Context, recordID string, domain 
 			Name:    fullDomain,                          // 域名
 		}
 		// 请求
-		response, err := p.client.CreateRecordSetWithLine(request)
+		response, err := p.Provider.Client.CreateRecordSetWithLine(request)
 		printJSON("创建域名记录", request, response)
 		if err != nil {
 			return err
@@ -195,7 +211,7 @@ func (p *HuaweiDNSProvider) Update(ctx context.Context, recordID string, domain 
 			Name:    fullDomain,                          // 域名
 		}
 		// 请求
-		response, err := p.client.UpdateRecordSets(request)
+		response, err := p.Provider.Client.UpdateRecordSets(request)
 		printJSON("更新域名记录", request, response)
 		if err != nil {
 			return err

@@ -56,13 +56,15 @@ func (p *BaiduDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err err
 type BaiduDNSProvider struct {
 	config *BaiduDNSConfig
 	opts   *dnsOptions
-	client *dns.Client
+
+	CustomConfig *BaiduDNSCustomConfig
+	Provider     struct {
+		Client *dns.Client
+	}
 }
 
 // NewBaiduDNSProvider 创建百度云 DNS 提供程序
 func NewBaiduDNSProvider(ctx context.Context, cfg *BaiduDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
-
-	var err error
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -73,9 +75,11 @@ func NewBaiduDNSProvider(ctx context.Context, cfg *BaiduDNSConfig, opts ...DnsOp
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
+	var err error
 	p := &BaiduDNSProvider{
-		config: cfg,
-		opts:   &dnsOptions{},
+		config:       cfg,
+		opts:         &dnsOptions{},
+		CustomConfig: &BaiduDNSCustomConfig{},
 	}
 
 	// 应用选项
@@ -84,15 +88,15 @@ func NewBaiduDNSProvider(ctx context.Context, cfg *BaiduDNSConfig, opts ...DnsOp
 	}
 
 	// 实例化client对象
-	p.client, err = dns.NewClient(p.config.AccessKeyID, p.config.SecretAccessKey, p.config.Endpoint)
+	p.Provider.Client, err = dns.NewClient(p.config.AccessKeyID, p.config.SecretAccessKey, p.config.Endpoint)
 	if err != nil {
 		return nil, err
 	}
 
 	// 如果提供了日志传输器，则设置HTTP客户端
 	if p.opts.httpTransport != nil {
-		p.client.HTTPClient = &http.Client{
-			Transport: p.opts.httpTransport,
+		p.Provider.Client.HTTPClient = &http.Client{
+			Transport: p.opts.httpTransport.Instance(nil),
 		}
 	}
 
@@ -100,6 +104,7 @@ func NewBaiduDNSProvider(ctx context.Context, cfg *BaiduDNSConfig, opts ...DnsOp
 }
 
 // Check 检查子域名是否存在
+// https://cloud.baidu.com/doc/DNS/s/El4s7lssr#查询解析记录列表
 func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
 
 	// 请求参数
@@ -107,7 +112,7 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 	request.Rr = subdomain // 主机记录
 	request.MaxKeys = 1000 // 每页包含的最大数量，最大数量通常不超过1000，缺省值为1000
 	// 请求
-	response, err := p.client.ListRecord(domain, request)
+	response, err := p.Provider.Client.ListRecord(domain, request)
 	printJSON("查询域名记录", request, response)
 	if err != nil {
 		return
@@ -124,10 +129,12 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 		}
 	}
 
-	return "", "", fmt.Errorf("未找到记录")
+	return "", "", provider.ErrRecordNotFound
 }
 
 // Update 更新 DNS 记录
+// https://cloud.baidu.com/doc/DNS/s/El4s7lssr#添加解析记录
+// https://cloud.baidu.com/doc/DNS/s/El4s7lssr#修改解析记录
 func (p *BaiduDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
 
 	if recordID == "" {
@@ -137,7 +144,7 @@ func (p *BaiduDNSProvider) Update(ctx context.Context, recordID string, domain s
 		request.Type = recordType // 解析记录类型
 		request.Value = value     // 记录值
 		// 请求
-		err = p.client.CreateRecord(domain, request, util.NewUUID())
+		err = p.Provider.Client.CreateRecord(domain, request, util.NewUUID())
 		printJSON("创建域名记录", request, nil)
 		if err != nil {
 			return err
@@ -151,7 +158,7 @@ func (p *BaiduDNSProvider) Update(ctx context.Context, recordID string, domain s
 		request.Type = recordType // 解析记录类型
 		request.Value = value     // 记录值
 		// 请求
-		err = p.client.UpdateRecord(domain, recordID, request, util.NewUUID())
+		err = p.Provider.Client.UpdateRecord(domain, recordID, request, util.NewUUID())
 		printJSON("更新域名记录", request, nil)
 		if err != nil {
 			return err
