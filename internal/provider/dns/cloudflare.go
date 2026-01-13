@@ -84,7 +84,7 @@ func NewCloudfareDNSProvider(ctx context.Context, cfg *CloudfareDNSConfig, opts 
 	}
 
 	// 实例化client选项
-	p.Provider.Opts = append(p.Provider.Opts, option.WithAPIKey(p.cfg.ApiKey))
+	p.Provider.Opts = append(p.Provider.Opts, option.WithAPIToken(p.cfg.ApiKey))
 
 	// 如果提供了日志传输器，则设置HTTP客户端
 	if p.opts.httpTransport != nil {
