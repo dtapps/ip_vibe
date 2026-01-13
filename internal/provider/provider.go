@@ -3,8 +3,12 @@ package provider
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"log/slog"
 )
+
+// 未找到记录错误
+var ErrRecordNotFound = errors.New("记录不存在")
 
 // PlatformConfigJson 平台配置
 type PlatformConfigJson struct {
@@ -52,6 +56,7 @@ func NewDNSTask(logger *slog.Logger, provider DNSProvider, subdomain string, pla
 		var platformConfig PlatformConfigJson
 		if err := json.Unmarshal(t.platform_config_json, &platformConfig); err != nil {
 			t.logger.Error("【DNS】解析平台配置失败",
+				slog.String("name", t.provider.Name()),
 				slog.Any("err", err),
 			)
 			return nil, err
@@ -78,6 +83,7 @@ func (t *DNSTask) Execute(ctx context.Context, recordType string, newValue strin
 	if len(t.record_config_json) > 0 {
 		if err := t.provider.ParseCustomConfig(t.record_config_json); err != nil {
 			t.logger.Error("【DNS】解析自定义配置失败",
+				slog.String("name", t.provider.Name()),
 				slog.Any("err", err),
 			)
 			return err
@@ -85,9 +91,10 @@ func (t *DNSTask) Execute(ctx context.Context, recordType string, newValue strin
 	}
 
 	recordID, oldValue, err := t.provider.Check(ctx, t.domain, t.subdomain, recordType)
-	if err != nil {
+	if err != nil && !errors.Is(err, ErrRecordNotFound) {
 		t.logger.Error("【DNS】检查失败",
 			slog.String("recordID", recordID),
+			slog.String("name", t.provider.Name()),
 			slog.Any("err", err),
 		)
 		return err
@@ -99,6 +106,7 @@ func (t *DNSTask) Execute(ctx context.Context, recordType string, newValue strin
 
 	if err := t.provider.Update(ctx, recordID, t.domain, t.subdomain, newValue, recordType); err != nil {
 		t.logger.Error("【DNS】更新失败",
+			slog.String("name", t.provider.Name()),
 			slog.Any("err", err),
 		)
 		return err
@@ -106,6 +114,7 @@ func (t *DNSTask) Execute(ctx context.Context, recordType string, newValue strin
 
 	if err := t.provider.Save(ctx, recordID, t.domain, t.subdomain, newValue, recordType); err != nil {
 		t.logger.Error("【DNS】保存失败",
+			slog.String("name", t.provider.Name()),
 			slog.Any("err", err),
 		)
 		return err

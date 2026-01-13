@@ -15,16 +15,11 @@ import (
 	"github.com/volcengine/volcengine-go-sdk/volcengine/session"
 )
 
-// 火山引擎 DNS 自定义配置
-type VolcengineDNSCustomConfig struct {
-	Line string `json:"line"` // 解析记录对应的线路
-}
-
 // VolcengineDNSConfig 火山引擎 DNS 配置
 type VolcengineDNSConfig struct {
 	Region     string `json:"region,omitempty"` // 区域
-	SecretID   string `json:"secret_id"`        // 密钥ID
-	SecretKey  string `json:"secret_key"`       // 密钥Key
+	AccessKey  string `json:"access_key"`       // 密钥ID
+	SecretKey  string `json:"secret_key"`       // 密钥密钥
 	ZoneID     int64  `json:"zone_id"`          // 域名ID
 	DomainName string `json:"domain_name"`      // 主域名
 }
@@ -32,13 +27,13 @@ type VolcengineDNSConfig struct {
 // Validate 验证火山引擎 DNS 配置
 func (cfg *VolcengineDNSConfig) Validate() error {
 	if cfg.Region == "" {
-		return fmt.Errorf("区域不能为空")
+		return fmt.Errorf("Region 不能为空")
 	}
-	if cfg.SecretID == "" {
-		return fmt.Errorf("密钥ID不能为空")
+	if cfg.AccessKey == "" {
+		return fmt.Errorf("AccessKey 不能为空")
 	}
 	if cfg.SecretKey == "" {
-		return fmt.Errorf("密钥Key不能为空")
+		return fmt.Errorf("SecretKey 不能为空")
 	}
 	return nil
 }
@@ -50,14 +45,21 @@ func NewDefaultVolcengineDNSConfig() *VolcengineDNSConfig {
 	}
 }
 
+// ParseCustomConfig 解析 火山引擎 DNS 自定义配置
+func (p *VolcengineDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if err := json.Unmarshal(config_json, p); err != nil {
+		return err
+	}
+	return nil
+}
+
 // VolcengineDNSProvider 火山引擎 DNS 提供程序
 type VolcengineDNSProvider struct {
 	cfg  *VolcengineDNSConfig
 	opts *dnsOptions
 
 	CustomConfig *VolcengineDNSCustomConfig
-
-	Provider struct {
+	Provider     struct {
 		Auth   *credentials.Credentials
 		Cfg    *volcengine.Config
 		Sess   *session.Session
@@ -68,8 +70,6 @@ type VolcengineDNSProvider struct {
 // NewVolcengineDNSProvider 创建火山引擎 DNS 提供程序
 func NewVolcengineDNSProvider(ctx context.Context, cfg *VolcengineDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
 
-	var err error
-
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
 	}
@@ -79,6 +79,7 @@ func NewVolcengineDNSProvider(ctx context.Context, cfg *VolcengineDNSConfig, opt
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
+	var err error
 	p := &VolcengineDNSProvider{
 		cfg:          cfg,
 		opts:         &dnsOptions{},
@@ -91,7 +92,7 @@ func NewVolcengineDNSProvider(ctx context.Context, cfg *VolcengineDNSConfig, opt
 	}
 
 	// 认证
-	p.Provider.Auth = credentials.NewStaticCredentials(p.cfg.SecretID, p.cfg.SecretKey, "")
+	p.Provider.Auth = credentials.NewStaticCredentials(p.cfg.AccessKey, p.cfg.SecretKey, "")
 
 	// 配置
 	p.Provider.Cfg = volcengine.NewConfig().
@@ -166,7 +167,7 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 		}
 	}
 
-	return "", "", fmt.Errorf("未找到记录")
+	return "", "", provider.ErrRecordNotFound
 }
 
 // Update 更新 DNS 记录
@@ -220,6 +221,11 @@ func (p *VolcengineDNSProvider) Save(ctx context.Context, recordID string, domai
 // Name 返回 DNS 提供程序的名称
 func (p *VolcengineDNSProvider) Name() string {
 	return "火山引擎 DNS"
+}
+
+// 火山引擎 DNS 自定义配置
+type VolcengineDNSCustomConfig struct {
+	Line string `json:"line"` // 解析记录对应的线路
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置

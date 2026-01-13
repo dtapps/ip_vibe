@@ -633,9 +633,15 @@ func (s *IPUpdateTask) DnsUpdateNew(ctx context.Context, logger *slog.Logger, pe
 	case platformconfig.PlatformHuaweiDNS:
 	case platformconfig.PlatformVolcengineDNS:
 		dnsProviderCfg := dns.NewDefaultVolcengineDNSConfig()
+		err = dnsProviderCfg.ParseCustomConfig(pendingRecord.platform.ConfigJSON)
+		if err != nil {
+			err = fmt.Errorf("解析自定义配置失败: %w", err)
+			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+			return err
+		}
 		dnsProvider, err = dns.NewVolcengineDNSProvider(ctx, dnsProviderCfg)
 		if err != nil {
-			err = fmt.Errorf("始初提供程序失败: %w", err)
+			err = fmt.Errorf("初始提供程序失败: %w", err)
 			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
 			return err
 		}
