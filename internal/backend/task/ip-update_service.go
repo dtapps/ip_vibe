@@ -624,6 +624,10 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, pendi
 	defer logger.InfoContext(ctx, "处理完成")
 
 	var dnsProvider provider.DNSProvider
+	var dnsProviderOpts = make([]dns.DnsOption, 0)
+	if s.httpTransport != nil {
+		dnsProviderOpts = append(dnsProviderOpts, dns.WithHttpTransport(s.httpTransport))
+	}
 
 	switch pendingRecord.platform.Platform {
 	case platformconfig.PlatformCloudflare:
@@ -634,7 +638,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, pendi
 			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
 			return err
 		}
-		dnsProvider, err = dns.NewCloudfareDNSProvider(ctx, dnsProviderCfg)
+		dnsProvider, err = dns.NewCloudfareDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
 			err = fmt.Errorf("初始提供程序失败: %w", err)
 			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
@@ -648,7 +652,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, pendi
 			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
 			return err
 		}
-		dnsProvider, err = dns.NewTencentDNSProvider(ctx, dnsProviderCfg)
+		dnsProvider, err = dns.NewTencentDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
 			err = fmt.Errorf("初始提供程序失败: %w", err)
 			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
@@ -662,7 +666,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, pendi
 			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
 			return err
 		}
-		dnsProvider, err = dns.NewAliyunDNSProvider(ctx, dnsProviderCfg)
+		dnsProvider, err = dns.NewAliyunDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
 			err = fmt.Errorf("初始提供程序失败: %w", err)
 			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
@@ -676,7 +680,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, pendi
 			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
 			return err
 		}
-		dnsProvider, err = dns.NewBaiduDNSProvider(ctx, dnsProviderCfg)
+		dnsProvider, err = dns.NewBaiduDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
 			err = fmt.Errorf("初始提供程序失败: %w", err)
 			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
@@ -690,7 +694,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, pendi
 			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
 			return err
 		}
-		dnsProvider, err = dns.NewHuaweiDNSProvider(ctx, dnsProviderCfg)
+		dnsProvider, err = dns.NewHuaweiDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
 			err = fmt.Errorf("初始提供程序失败: %w", err)
 			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
@@ -704,7 +708,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, pendi
 			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
 			return err
 		}
-		dnsProvider, err = dns.NewVolcengineDNSProvider(ctx, dnsProviderCfg)
+		dnsProvider, err = dns.NewVolcengineDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
 			err = fmt.Errorf("初始提供程序失败: %w", err)
 			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())

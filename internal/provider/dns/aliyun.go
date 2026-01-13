@@ -10,6 +10,7 @@ import (
 
 	alidns20150109 "github.com/alibabacloud-go/alidns-20150109/v5/client"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
+	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	credential "github.com/aliyun/credentials-go/credentials"
 )
@@ -135,7 +136,7 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 		request.TypeKeyWord = tea.String(recordType) // 解析类型的关键字
 	}
 	// 请求
-	response, err := p.Provider.Client.DescribeDomainRecordsWithContext(ctx, request, nil)
+	response, err := p.Provider.Client.DescribeDomainRecordsWithContext(ctx, request, &dara.RuntimeOptions{})
 	printJSON("查询域名记录", request, response)
 	if err != nil {
 		return
@@ -168,7 +169,7 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, recordID string, domain 
 		request.Type = tea.String(recordType)   // 解析记录类型
 		request.Value = tea.String(value)       // 记录值
 		// 请求
-		response, err := p.Provider.Client.AddDomainRecordWithContext(ctx, request, nil)
+		response, err := p.Provider.Client.AddDomainRecordWithContext(ctx, request, &dara.RuntimeOptions{})
 		printJSON("创建域名记录", request, response)
 		if err != nil {
 			return err
@@ -183,7 +184,7 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, recordID string, domain 
 		request.Type = tea.String(recordType)   // 解析记录类型
 		request.Value = tea.String(value)       // 记录值
 		// 请求
-		response, err := p.Provider.Client.UpdateDomainRecordWithContext(ctx, request, nil)
+		response, err := p.Provider.Client.UpdateDomainRecordWithContext(ctx, request, &dara.RuntimeOptions{})
 		printJSON("更新域名记录", request, response)
 		if err != nil {
 			return err
