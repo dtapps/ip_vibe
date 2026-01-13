@@ -15,11 +15,7 @@ import (
 	regionDns "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/dns/v2/region"
 )
 
-// 华为云 DNS 自定义配置
-type HuaweiDNSCustomConfig struct {
-}
-
-// HuaweiDNSConfig 华为云DNS配置
+// HuaweiDNSConfig 华为云 DNS 配置
 type HuaweiDNSConfig struct {
 	Region          string `json:"region,omitempty"`  // 区域
 	AccessKeyID     string `json:"access_key_id"`     // 密钥ID
@@ -28,38 +24,49 @@ type HuaweiDNSConfig struct {
 	DomainName      string `json:"domain_name"`       // 主域名
 }
 
-// Validate 验证华为云DNS配置
+// Validate 验证华为云 DNS 配置
 func (cfg *HuaweiDNSConfig) Validate() error {
 	if cfg.Region == "" {
-		return fmt.Errorf("区域不能为空")
+		return fmt.Errorf("Region 不能为空")
 	}
 	if cfg.AccessKeyID == "" {
-		return fmt.Errorf("密钥ID不能为空")
+		return fmt.Errorf("AccessKeyID 不能为空")
 	}
 	if cfg.SecretAccessKey == "" {
-		return fmt.Errorf("密钥密钥不能为空")
+		return fmt.Errorf("SecretAccessKey 不能为空")
 	}
 	if cfg.ZoneID == "" {
-		return fmt.Errorf("域名ID不能为空")
+		return fmt.Errorf("ZoneID 不能为空")
+	}
+	if cfg.DomainName == "" {
+		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
 
-// NewDefaultHuaweiDNSConfig 创建默认的华为云DNS配置
+// NewDefaultHuaweiDNSConfig 创建默认的华为云 DNS 配置
 func NewDefaultHuaweiDNSConfig() *HuaweiDNSConfig {
 	return &HuaweiDNSConfig{
 		Region: "cn-south-1",
 	}
 }
 
-// HuaweiDNSProvider 华为云DNS提供程序
+// ParseCustomConfig 解析 华为云 DNS 自定义配置
+func (p *HuaweiDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if err := json.Unmarshal(config_json, p); err != nil {
+		return err
+	}
+	return nil
+}
+
+// HuaweiDNSProvider 华为云 DNS 提供程序
 type HuaweiDNSProvider struct {
 	config *HuaweiDNSConfig
 	opts   *dnsOptions
 	client *dns.DnsClient
 }
 
-// NewHuaweiDNSProvider 创建华为云DNS提供程序
+// NewHuaweiDNSProvider 创建华为云 DNS 提供程序
 func NewHuaweiDNSProvider(ctx context.Context, cfg *HuaweiDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
 
 	var err error
@@ -206,6 +213,10 @@ func (p *HuaweiDNSProvider) Save(ctx context.Context, recordID string, domain st
 // Name 返回 DNS 提供程序的名称
 func (p *HuaweiDNSProvider) Name() string {
 	return "华为云 DNS"
+}
+
+// 华为云 DNS 自定义配置
+type HuaweiDNSCustomConfig struct {
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置

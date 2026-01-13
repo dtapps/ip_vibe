@@ -14,47 +14,58 @@ import (
 	dnspod "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323"
 )
 
-// 腾讯云 DNS 自定义配置
-type TencentDNSCustomConfig struct {
-}
-
-// TencentDNSConfig 腾讯云DNS配置
+// TencentDNSConfig 腾讯云 DNS 配置
 type TencentDNSConfig struct {
-	Endpoint   string `json:"endpoint,omitempty"` // 域名地址
+	Endpoint   string `json:"endpoint,omitempty"` // 接口地址
 	SecretID   string `json:"secret_id"`          // 密钥ID
 	SecretKey  string `json:"secret_key"`         // 密钥Key
 	DomainName string `json:"domain_name"`        // 主域名
 }
 
-// Validate 验证腾讯云DNS配置
+// Validate 验证腾讯云 DNS 配置
 func (cfg *TencentDNSConfig) Validate() error {
 	if cfg.Endpoint == "" {
-		return fmt.Errorf("域名地址不能为空")
+		return fmt.Errorf("Endpoint 不能为空")
 	}
 	if cfg.SecretID == "" {
-		return fmt.Errorf("密钥ID不能为空")
+		return fmt.Errorf("SecretID 不能为空")
 	}
 	if cfg.SecretKey == "" {
-		return fmt.Errorf("密钥Key不能为空")
+		return fmt.Errorf("SecretKey 不能为空")
+	}
+	if cfg.DomainName == "" {
+		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
 
-// NewDefaultTencentDNSConfig 创建默认的腾讯云DNS配置
+// NewDefaultTencentDNSConfig 创建默认的腾讯云 DNS 配置
 func NewDefaultTencentDNSConfig() *TencentDNSConfig {
 	return &TencentDNSConfig{
 		Endpoint: "dnspod.tencentcloudapi.com",
 	}
 }
 
-// TencentDNSProvider 腾讯云DNS提供程序
+// ParseCustomConfig 解析 腾讯云 DNS 自定义配置
+func (p *TencentDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if err := json.Unmarshal(config_json, p); err != nil {
+		return err
+	}
+	return nil
+}
+
+// TencentDNSProvider 腾讯云 DNS 提供程序
 type TencentDNSProvider struct {
 	config *TencentDNSConfig
 	opts   *dnsOptions
-	client *dnspod.Client
+
+	CustomConfig *TencentDNSCustomConfig
+	Provider     struct {
+		Client *dnspod.Client
+	}
 }
 
-// NewTencentDNSProvider 创建腾讯云DNS提供程序
+// NewTencentDNSProvider 创建腾讯云 DNS 提供程序
 func NewTencentDNSProvider(ctx context.Context, cfg *TencentDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
 
 	var err error
@@ -69,8 +80,9 @@ func NewTencentDNSProvider(ctx context.Context, cfg *TencentDNSConfig, opts ...D
 	}
 
 	p := &TencentDNSProvider{
-		config: cfg,
-		opts:   &dnsOptions{},
+		config:       cfg,
+		opts:         &dnsOptions{},
+		CustomConfig: &TencentDNSCustomConfig{},
 	}
 
 	// 应用选项
@@ -89,20 +101,21 @@ func NewTencentDNSProvider(ctx context.Context, cfg *TencentDNSConfig, opts ...D
 	clientConfig.HttpProfile.Endpoint = p.config.Endpoint
 
 	// 实例化client对象
-	p.client, err = dnspod.NewClient(credential, "", clientConfig)
+	p.Provider.Client, err = dnspod.NewClient(credential, "", clientConfig)
 	if err != nil {
 		return nil, err
 	}
 
 	// 如果提供了日志传输器，则设置HTTP客户端
 	if p.opts.httpTransport != nil {
-		p.client.WithHttpTransport(p.opts.httpTransport)
+		p.Provider.Client.WithHttpTransport(p.opts.httpTransport)
 	}
 
 	return p, nil
 }
 
 // Check 检查子域名是否存在
+// https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=DescribeRecordList
 func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
 
 	// 请求参数
@@ -113,7 +126,7 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 		request.RecordType = common.StringPtr(recordType) // 获取某种类型的解析记录
 	}
 	// 请求
-	response, err := p.client.DescribeRecordListWithContext(ctx, request)
+	response, err := p.Provider.Client.DescribeRecordListWithContext(ctx, request)
 	printJSON("查询域名记录", request, response)
 	if err != nil {
 		return
@@ -130,10 +143,12 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 		}
 	}
 
-	return "", "", fmt.Errorf("未找到记录")
+	return "", "", provider.ErrRecordNotFound
 }
 
 // Update 更新 DNS 记录
+// https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=CreateRecord
+// https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=ModifyRecord
 func (p *TencentDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
 
 	if recordID == "" {
@@ -145,7 +160,7 @@ func (p *TencentDNSProvider) Update(ctx context.Context, recordID string, domain
 		request.Value = common.StringPtr(value)           // 记录值
 		request.SubDomain = common.StringPtr(subdomain)   // 主机记录
 		// 请求
-		response, err := p.client.CreateRecordWithContext(ctx, request)
+		response, err := p.Provider.Client.CreateRecordWithContext(ctx, request)
 		printJSON("创建域名记录", request, response)
 		if err != nil {
 			return err
@@ -162,7 +177,7 @@ func (p *TencentDNSProvider) Update(ctx context.Context, recordID string, domain
 		request.RecordId = common.Uint64Ptr(cast.ToUint64(recordID)) // 记录 ID
 		request.SubDomain = common.StringPtr(subdomain)              // 主机记录
 		// 请求
-		response, err := p.client.ModifyRecordWithContext(ctx, request)
+		response, err := p.Provider.Client.ModifyRecordWithContext(ctx, request)
 		printJSON("更新域名记录", request, response)
 		if err != nil {
 			return err
@@ -182,7 +197,14 @@ func (p *TencentDNSProvider) Name() string {
 	return "腾讯云 DNS"
 }
 
+// 腾讯云 DNS 自定义配置
+type TencentDNSCustomConfig struct {
+}
+
 // ParseCustomConfig 解析 DNS 自定义配置
 func (p *TencentDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
+		return err
+	}
 	return nil
 }

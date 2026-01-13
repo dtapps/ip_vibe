@@ -628,6 +628,19 @@ func (s *IPUpdateTask) DnsUpdateNew(ctx context.Context, logger *slog.Logger, pe
 	switch pendingRecord.platform.Platform {
 	case platformconfig.PlatformCloudflare:
 	case platformconfig.PlatformTencentDNS:
+		dnsProviderCfg := dns.NewDefaultTencentDNSConfig()
+		err = dnsProviderCfg.ParseCustomConfig(pendingRecord.platform.ConfigJSON)
+		if err != nil {
+			err = fmt.Errorf("解析自定义配置失败: %w", err)
+			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+			return err
+		}
+		dnsProvider, err = dns.NewTencentDNSProvider(ctx, dnsProviderCfg)
+		if err != nil {
+			err = fmt.Errorf("初始提供程序失败: %w", err)
+			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+			return err
+		}
 	case platformconfig.PlatformAliyunDNS:
 	case platformconfig.PlatformBaiduDNS:
 	case platformconfig.PlatformHuaweiDNS:

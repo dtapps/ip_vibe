@@ -14,41 +14,48 @@ import (
 	"github.com/spf13/cast"
 )
 
-// Cloudfare DNS 自定义配置
-type CloudfareDNSCustomConfig struct {
-}
-
-// CloudfareDNSConfig CloudfareDNS配置
+// CloudfareDNSConfig Cloudfare DNS 配置
 type CloudfareDNSConfig struct {
 	ApiKey     string `json:"api_key"`     // API密钥
-	ZoneID     string `json:"zone_id"`     // 区域ID
+	ZoneID     string `json:"zone_id"`     // 域名ID
 	DomainName string `json:"domain_name"` // 主域名
 }
 
-// Validate 验证CloudfareDNS配置
+// Validate 验证Cloudfare DNS 配置
 func (cfg *CloudfareDNSConfig) Validate() error {
 	if cfg.ApiKey == "" {
-		return fmt.Errorf("API密钥不能为空")
+		return fmt.Errorf("ApiKey 不能为空")
 	}
 	if cfg.ZoneID == "" {
-		return fmt.Errorf("区域ID不能为空")
+		return fmt.Errorf("ZoneID 不能为空")
+	}
+	if cfg.DomainName == "" {
+		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
 
-// NewDefaultCloudfareDNSConfig 创建默认的CloudfareDNS配置
+// NewDefaultCloudfareDNSConfig 创建默认的Cloudfare DNS 配置
 func NewDefaultCloudfareDNSConfig() *CloudfareDNSConfig {
 	return &CloudfareDNSConfig{}
 }
 
-// CloudfareDNSProvider CloudfareDNS提供程序
+// ParseCustomConfig 解析 Cloudfare DNS 自定义配置
+func (p *CloudfareDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if err := json.Unmarshal(config_json, p); err != nil {
+		return err
+	}
+	return nil
+}
+
+// CloudfareDNSProvider Cloudfare DNS 提供程序
 type CloudfareDNSProvider struct {
 	config *CloudfareDNSConfig
 	opts   *dnsOptions
 	client *cloudflare.Client
 }
 
-// NewCloudfareDNSProvider 创建CloudfareDNS提供程序
+// NewCloudfareDNSProvider 创建Cloudfare DNS 提供程序
 func NewCloudfareDNSProvider(ctx context.Context, cfg *CloudfareDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
 
 	if cfg == nil {
@@ -174,6 +181,10 @@ func (p *CloudfareDNSProvider) Save(ctx context.Context, recordID string, domain
 // Name 返回 DNS 提供程序的名称
 func (p *CloudfareDNSProvider) Name() string {
 	return "Cloudflare DNS"
+}
+
+// Cloudfare DNS 自定义配置
+type CloudfareDNSCustomConfig struct {
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置

@@ -12,47 +12,54 @@ import (
 	"github.com/baidubce/bce-sdk-go/util"
 )
 
-// 百度云 DNS 自定义配置
-type BaiduDNSCustomConfig struct {
-}
-
-// BaiduDNSConfig 百度云DNS配置
+// BaiduDNSConfig 百度云 DNS 配置
 type BaiduDNSConfig struct {
-	Endpoint        string `json:"endpoint,omitempty"` // 域名
+	Endpoint        string `json:"endpoint,omitempty"` // 接口地址
 	AccessKeyID     string `json:"access_key_id"`      // 密钥ID
 	SecretAccessKey string `json:"secret_access_key"`  // 密钥Key
 	DomainName      string `json:"domain_name"`        // 主域名
 }
 
-// Validate 验证百度云DNS配置
+// Validate 验证百度云 DNS 配置
 func (cfg *BaiduDNSConfig) Validate() error {
 	if cfg.Endpoint == "" {
-		return fmt.Errorf("域名不能为空")
+		return fmt.Errorf("Endpoint 不能为空")
 	}
 	if cfg.AccessKeyID == "" {
-		return fmt.Errorf("密钥ID不能为空")
+		return fmt.Errorf("AccessKeyID 不能为空")
 	}
 	if cfg.SecretAccessKey == "" {
-		return fmt.Errorf("密钥Key不能为空")
+		return fmt.Errorf("SecretAccessKey 不能为空")
+	}
+	if cfg.DomainName == "" {
+		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
 
-// NewDefaultBaiduDNSConfig 创建默认的百度云DNS配置
+// NewDefaultBaiduDNSConfig 创建默认的百度云 DNS 配置
 func NewDefaultBaiduDNSConfig() *BaiduDNSConfig {
 	return &BaiduDNSConfig{
 		Endpoint: "dns.baidubce.com",
 	}
 }
 
-// BaiduDNSProvider 百度云DNS提供程序
+// ParseCustomConfig 解析 百度云 DNS 自定义配置
+func (p *BaiduDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if err := json.Unmarshal(config_json, p); err != nil {
+		return err
+	}
+	return nil
+}
+
+// BaiduDNSProvider 百度云 DNS 提供程序
 type BaiduDNSProvider struct {
 	config *BaiduDNSConfig
 	opts   *dnsOptions
 	client *dns.Client
 }
 
-// NewBaiduDNSProvider 创建百度云DNS提供程序
+// NewBaiduDNSProvider 创建百度云 DNS 提供程序
 func NewBaiduDNSProvider(ctx context.Context, cfg *BaiduDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
 
 	var err error
@@ -162,6 +169,10 @@ func (p *BaiduDNSProvider) Save(ctx context.Context, recordID string, domain str
 // Name 返回 DNS 提供程序的名称
 func (p *BaiduDNSProvider) Name() string {
 	return "百度云 DNS"
+}
+
+// 百度云 DNS 自定义配置
+type BaiduDNSCustomConfig struct {
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置

@@ -35,6 +35,12 @@ func (cfg *VolcengineDNSConfig) Validate() error {
 	if cfg.SecretKey == "" {
 		return fmt.Errorf("SecretKey 不能为空")
 	}
+	if cfg.ZoneID == 0 {
+		return fmt.Errorf("ZoneID 不能为空")
+	}
+	if cfg.DomainName == "" {
+		return fmt.Errorf("DomainName 不能为空")
+	}
 	return nil
 }
 

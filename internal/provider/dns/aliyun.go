@@ -14,47 +14,54 @@ import (
 	credential "github.com/aliyun/credentials-go/credentials"
 )
 
-// 阿里云 DNS 自定义配置
-type AliyunDNSCustomConfig struct {
-}
-
-// AliyunDNSConfig 阿里云DNS配置
+// AliyunDNSConfig 阿里云 DNS 配置
 type AliyunDNSConfig struct {
-	Endpoint        string `json:"endpoint,omitempty"` // 域名地址
+	Endpoint        string `json:"endpoint,omitempty"` // 接口地址
 	AccessKeyID     string `json:"access_key_id"`      // 密钥ID
 	AccessKeySecret string `json:"access_key_secret"`  // 密钥Key
 	DomainName      string `json:"domain_name"`        // 主域名
 }
 
-// Validate 验证阿里云DNS配置
+// Validate 验证阿里云 DNS 配置
 func (cfg *AliyunDNSConfig) Validate() error {
 	if cfg.Endpoint == "" {
-		return fmt.Errorf("域名地址不能为空")
+		return fmt.Errorf("Endpoint 不能为空")
 	}
 	if cfg.AccessKeyID == "" {
-		return fmt.Errorf("密钥ID不能为空")
+		return fmt.Errorf("AccessKeyID 不能为空")
 	}
 	if cfg.AccessKeySecret == "" {
-		return fmt.Errorf("密钥Key不能为空")
+		return fmt.Errorf("AccessKeySecret 不能为空")
+	}
+	if cfg.DomainName == "" {
+		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
 
-// NewDefaultAliyunDNSConfig 创建默认的阿里云DNS配置
+// NewDefaultAliyunDNSConfig 创建默认的阿里云 DNS 配置
 func NewDefaultAliyunDNSConfig() *AliyunDNSConfig {
 	return &AliyunDNSConfig{
 		Endpoint: "alidns.aliyuncs.com",
 	}
 }
 
-// AliyunDNSProvider 阿里云DNS提供程序
+// ParseCustomConfig 解析 阿里云 DNS 自定义配置
+func (p *AliyunDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if err := json.Unmarshal(config_json, p); err != nil {
+		return err
+	}
+	return nil
+}
+
+// AliyunDNSProvider 阿里云 DNS 提供程序
 type AliyunDNSProvider struct {
 	config *AliyunDNSConfig
 	opts   *dnsOptions
 	client *alidns20150109.Client
 }
 
-// NewAliyunDNSProvider 创建阿里云DNS提供程序
+// NewAliyunDNSProvider 创建阿里云 DNS 提供程序
 func NewAliyunDNSProvider(ctx context.Context, cfg *AliyunDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
 
 	var err error
@@ -185,6 +192,10 @@ func (p *AliyunDNSProvider) Save(ctx context.Context, recordID string, domain st
 // Name 返回 DNS 提供程序的名称
 func (p *AliyunDNSProvider) Name() string {
 	return "阿里云 DNS"
+}
+
+// 阿里云 DNS 自定义配置
+type AliyunDNSCustomConfig struct {
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置
