@@ -109,7 +109,9 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 	// 请求参数
 	request := dns.RecordListParams{}
 	request.ZoneID = cloudflare.String(p.config.ZoneID)
-	request.Name = cloudflare.F(dns.RecordListParamsName{Exact: cloudflare.String(fullDomain)})
+	request.Name = cloudflare.F(dns.RecordListParamsName{
+		Exact: cloudflare.String(fullDomain),
+	})
 	if recordType != "" {
 		request.Type = cloudflare.F(dns.RecordListParamsType(recordType))
 	}

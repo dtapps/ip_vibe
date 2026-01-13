@@ -163,7 +163,7 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 	}
 	// 响应参数
 	for _, item := range response.Records {
-		if strings.EqualFold(utils.TrimDots(volcengine.StringValue(item.PQDN)), utils.TrimDots(fullDomain)) {
+		if strings.EqualFold(utils.TrimDots(volcengine.StringValue(item.Host)), utils.TrimDots(fullDomain)) {
 			if recordType != "" && utils.PtrToString(item.Type) != recordType {
 				continue
 			}
