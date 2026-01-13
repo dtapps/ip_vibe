@@ -19,6 +19,8 @@ import (
 	"vibe_ip/internal/helper/cdn_helper"
 	"vibe_ip/internal/helper/dns_helper"
 	"vibe_ip/internal/helper/gocron_helper"
+	"vibe_ip/internal/provider"
+	"vibe_ip/internal/provider/dns"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
@@ -172,8 +174,8 @@ func (s *IPUpdateTask) RunDnsTask() {
 
 			// 创建待处理记录
 			pendingRecord := &PendingDnsRecord{
-				item:     dnsRecord,
-				platform: dnsRecord.Edges.Config.Platform,
+				platform: dnsRecord.Edges.Config,
+				record:   dnsRecord,
 				params: &dns_helper.DNSProcessParams{
 					DNSRecordID: cast.ToString(dnsRecord.ID),
 
@@ -252,7 +254,7 @@ func (s *IPUpdateTask) RunDnsTask() {
 						slog.String("处理方式", "并发"),
 					)
 
-					if err = s.DnsUpdate(egCtx, sonLogger, item); err != nil {
+					if err = s.DnsUpdateNew(egCtx, sonLogger, item); err != nil {
 						logger.ErrorContext(egCtx, "处理失败",
 							slog.Any("error", err),
 						)
@@ -277,7 +279,7 @@ func (s *IPUpdateTask) RunDnsTask() {
 				slog.String("处理方式", "串行"),
 			)
 
-			if err = s.DnsUpdate(ctx, sonLogger, item); err != nil {
+			if err = s.DnsUpdateNew(ctx, sonLogger, item); err != nil {
 				logger.ErrorContext(ctx, "处理失败",
 					slog.Any("error", err),
 				)
@@ -534,8 +536,8 @@ func (s *IPUpdateTask) CdnUpdate(ctx context.Context, logger *slog.Logger, pendi
 
 // 待处理
 type PendingDnsRecord struct {
-	item     *ent.DNSRecord               // DNS记录
-	platform platformconfig.Platform      // 平台
+	platform *ent.PlatformConfig          // 平台信息
+	record   *ent.DNSRecord               // DNS信息
 	params   *dns_helper.DNSProcessParams // 处理参数
 }
 
@@ -546,16 +548,16 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, pendi
 	logger = logger.With(
 		slog.String("处理编号", gorandom.Alphanumeric(10)),
 		slog.String("记录", pendingRecord.params.DNSRecordID),
-		slog.String("提供商", pendingRecord.item.Type.String()),
-		slog.String("平台", pendingRecord.platform.String()),
-		slog.String("子域名", pendingRecord.item.SubDomain),
+		slog.String("提供商", pendingRecord.record.Type.String()),
+		slog.String("平台", pendingRecord.platform.Platform.String()),
+		slog.String("子域名", pendingRecord.record.SubDomain),
 	)
 	logger.InfoContext(ctx, "开始处理")
 	defer logger.InfoContext(ctx, "处理完成")
 
 	var dnsProcess dns_helper.DNSProcess
 
-	switch pendingRecord.platform {
+	switch pendingRecord.platform.Platform {
 	case platformconfig.PlatformCloudflare:
 		dnsProcess = dns_helper.NewDNSProcessCloudflare(
 			s.db,
@@ -593,17 +595,77 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, pendi
 		)
 	default:
 		err = fmt.Errorf("暂不支持该平台: %s", pendingRecord.platform.String())
-		_ = s.updateDbOfDnsResponse(ctx, pendingRecord.item.ID, err.Error())
+		_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
 		return err
 	}
 
 	// 更新DNS记录
 	err = dnsProcess.UpsertRecord(ctx, pendingRecord.params)
 	if err != nil {
-		_ = s.updateDbOfDnsResponse(ctx, pendingRecord.item.ID, err.Error())
+		_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
 		return err
 	}
-	_ = s.updateDbOfDnsResponse(ctx, pendingRecord.item.ID, "ok")
+	_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, "ok")
+	return nil
+}
+
+// 更新DNS记录
+func (s *IPUpdateTask) DnsUpdateNew(ctx context.Context, logger *slog.Logger, pendingRecord *PendingDnsRecord) (err error) {
+
+	// 日志
+	logger = logger.With(
+		slog.String("处理编号", gorandom.Alphanumeric(10)),
+		slog.String("记录", pendingRecord.params.DNSRecordID),
+		slog.String("提供商", pendingRecord.record.Type.String()),
+		slog.String("平台", pendingRecord.platform.Platform.String()),
+		slog.String("子域名", pendingRecord.record.SubDomain),
+	)
+	logger.InfoContext(ctx, "开始处理")
+	defer logger.InfoContext(ctx, "处理完成")
+
+	var dnsProvider provider.DNSProvider
+
+	switch pendingRecord.platform.Platform {
+	case platformconfig.PlatformCloudflare:
+	case platformconfig.PlatformTencentDNS:
+	case platformconfig.PlatformAliyunDNS:
+	case platformconfig.PlatformBaiduDNS:
+	case platformconfig.PlatformHuaweiDNS:
+	case platformconfig.PlatformVolcengineDNS:
+		dnsProviderCfg := dns.NewDefaultVolcengineDNSConfig()
+		dnsProvider, err = dns.NewVolcengineDNSProvider(ctx, dnsProviderCfg)
+		if err != nil {
+			err = fmt.Errorf("始初提供程序失败: %w", err)
+			_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+			return err
+		}
+	default:
+		err = fmt.Errorf("暂不支持该平台: %s", pendingRecord.platform.String())
+		_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+		return err
+	}
+
+	// 创建 DNS 更新任务
+	dnsTask, err := provider.NewDNSTask(
+		logger,
+		dnsProvider,
+		pendingRecord.record.SubDomain,
+		pendingRecord.platform.ConfigJSON,
+		pendingRecord.record.ConfigJSON,
+	)
+	if err != nil {
+		err = fmt.Errorf("创建DNS任务失败: %w", err)
+		_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+		return err
+	}
+
+	// 执行 DNS 更新任务
+	err = dnsTask.Execute(ctx, pendingRecord.record.Type.String(), pendingRecord.params.OriginValue)
+	if err != nil {
+		_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, err.Error())
+		return err
+	}
+	_ = s.updateDbOfDnsResponse(ctx, pendingRecord.record.ID, "ok")
 	return nil
 }
 

@@ -6,6 +6,12 @@ import (
 	"log/slog"
 )
 
+// PlatformConfigJson 平台配置
+type PlatformConfigJson struct {
+	DomainName string `json:"domain_name,omitempty"`
+	Email      string `json:"email,omitempty"`
+}
+
 // ---------- DNS 模块 ----------
 
 // DNSProvider 定义了 DNS 操作的接口
@@ -24,24 +30,38 @@ type DNSProvider interface {
 
 // DNSTask 定义了 DNS 更新任务
 type DNSTask struct {
-	logger      *slog.Logger    // 日志记录器
-	provider    DNSProvider     // DNS 提供程序
-	domain      string          // 域名
-	subdomain   string          // 子域名
-	config_json json.RawMessage // 扩展配置
+	logger    *slog.Logger // 日志记录器
+	provider  DNSProvider  // DNS 提供程序
+	domain    string       // 域名
+	subdomain string       // 子域名
+
+	platform_config_json json.RawMessage // 平台配置
+	record_config_json   json.RawMessage // 记录配置
 }
 
-// NewDNSTask 创建一个新的 DNS 更新任务
-func NewDNSTask(logger *slog.Logger, provider DNSProvider, domain string, subdomain string, config_json json.RawMessage) *DNSTask {
-	return &DNSTask{
-		logger:      logger,
-		provider:    provider,
-		domain:      domain,
-		subdomain:   subdomain,
-		config_json: config_json,
+// NewDNSTask 创建 DNS 更新任务
+func NewDNSTask(logger *slog.Logger, provider DNSProvider, subdomain string, platform_config_json json.RawMessage, record_config_json json.RawMessage) (t *DNSTask, err error) {
+	t = &DNSTask{
+		logger:               logger,
+		provider:             provider,
+		subdomain:            subdomain,
+		platform_config_json: platform_config_json,
+		record_config_json:   record_config_json,
 	}
+	if len(t.platform_config_json) > 0 {
+		var platformConfig PlatformConfigJson
+		if err := json.Unmarshal(t.platform_config_json, &platformConfig); err != nil {
+			t.logger.Error("【DNS】解析平台配置失败",
+				slog.Any("err", err),
+			)
+			return nil, err
+		}
+		t.domain = platformConfig.DomainName
+	}
+	return t, nil
 }
 
+// Execute 执行 DNS 更新任务
 func (t *DNSTask) Execute(ctx context.Context, recordType string, newValue string) error {
 	if t.provider == nil {
 		return nil
@@ -52,11 +72,11 @@ func (t *DNSTask) Execute(ctx context.Context, recordType string, newValue strin
 		slog.String("subdomain", t.subdomain),
 		slog.String("recordType", recordType),
 		slog.String("newValue", newValue),
-		slog.String("config_json", string(t.config_json)),
+		slog.String("config_json", string(t.record_config_json)),
 	)
 
-	if len(t.config_json) > 0 {
-		if err := t.provider.ParseCustomConfig(t.config_json); err != nil {
+	if len(t.record_config_json) > 0 {
+		if err := t.provider.ParseCustomConfig(t.record_config_json); err != nil {
 			t.logger.Error("【DNS】解析自定义配置失败",
 				slog.Any("err", err),
 			)
