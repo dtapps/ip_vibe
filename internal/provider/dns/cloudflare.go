@@ -50,6 +50,8 @@ func (p *CloudfareDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err
 
 // CloudfareDNSProvider Cloudfare DNS 提供程序
 type CloudfareDNSProvider struct {
+	provider.UnimplementedDNSProvider // 嵌入未实现的
+
 	cfg  *CloudfareDNSConfig
 	opts *dnsOptions
 
@@ -62,6 +64,11 @@ type CloudfareDNSProvider struct {
 
 // NewCloudfareDNSProvider 创建Cloudfare DNS 提供程序
 func NewCloudfareDNSProvider(ctx context.Context, cfg *CloudfareDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+	return NewCloudfareDNSProviderRaw(ctx, cfg, opts...)
+}
+
+// NewCloudfareDNSProviderRaw 创建Cloudfare DNS 提供程序
+func NewCloudfareDNSProviderRaw(ctx context.Context, cfg *CloudfareDNSConfig, opts ...DnsOption) (*CloudfareDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")

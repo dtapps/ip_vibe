@@ -64,6 +64,8 @@ func (p *HuaweiDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err er
 
 // HuaweiDNSProvider 华为云 DNS 提供程序
 type HuaweiDNSProvider struct {
+	provider.UnimplementedDNSProvider // 嵌入未实现的
+
 	cfg  *HuaweiDNSConfig
 	opts *dnsOptions
 
@@ -79,6 +81,11 @@ type HuaweiDNSProvider struct {
 
 // NewHuaweiDNSProvider 创建华为云 DNS 提供程序
 func NewHuaweiDNSProvider(ctx context.Context, cfg *HuaweiDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+	return NewHuaweiDNSProviderRaw(ctx, cfg, opts...)
+}
+
+// NewHuaweiDNSProviderRaw 创建华为云 DNS 提供程序
+func NewHuaweiDNSProviderRaw(ctx context.Context, cfg *HuaweiDNSConfig, opts ...DnsOption) (*HuaweiDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")

@@ -131,22 +131,6 @@ const DNS_SCHEMA = {
               value: "default",
               label: "默认",
             },
-            {
-              value: "domestic",
-              label: "中国内地",
-            },
-            {
-              value: "oversea",
-              label: "全球(不含中国内地)",
-            },
-            {
-              value: "unicom",
-              label: "中国_联通",
-            },
-            {
-              value: "telecom",
-              label: "中国_电信",
-            },
           ],
         },
         {

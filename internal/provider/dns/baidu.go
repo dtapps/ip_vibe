@@ -55,6 +55,8 @@ func (p *BaiduDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err err
 
 // BaiduDNSProvider 百度云 DNS 提供程序
 type BaiduDNSProvider struct {
+	provider.UnimplementedDNSProvider // 嵌入未实现的
+
 	cfg  *BaiduDNSConfig
 	opts *dnsOptions
 
@@ -66,6 +68,11 @@ type BaiduDNSProvider struct {
 
 // NewBaiduDNSProvider 创建百度云 DNS 提供程序
 func NewBaiduDNSProvider(ctx context.Context, cfg *BaiduDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+	return NewBaiduDNSProviderRaw(ctx, cfg, opts...)
+}
+
+// NewBaiduDNSProviderRaw 创建百度云 DNS 提供程序
+func NewBaiduDNSProviderRaw(ctx context.Context, cfg *BaiduDNSConfig, opts ...DnsOption) (*BaiduDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")

@@ -61,6 +61,8 @@ func (p *VolcengineDNSConfig) ParseCustomConfig(config_json json.RawMessage) (er
 
 // VolcengineDNSProvider 火山引擎 DNS 提供程序
 type VolcengineDNSProvider struct {
+	provider.UnimplementedDNSProvider // 嵌入未实现的
+
 	cfg  *VolcengineDNSConfig
 	opts *dnsOptions
 
@@ -75,6 +77,11 @@ type VolcengineDNSProvider struct {
 
 // NewVolcengineDNSProvider 创建火山引擎 DNS 提供程序
 func NewVolcengineDNSProvider(ctx context.Context, cfg *VolcengineDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+	return NewVolcengineDNSProviderRaw(ctx, cfg, opts...)
+}
+
+// NewVolcengineDNSProviderRaw 创建火山引擎 DNS 提供程序
+func NewVolcengineDNSProviderRaw(ctx context.Context, cfg *VolcengineDNSConfig, opts ...DnsOption) (*VolcengineDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -243,4 +250,31 @@ func (p *VolcengineDNSProvider) ParseCustomConfig(config_json json.RawMessage) (
 		return err
 	}
 	return nil
+}
+
+type VolcengineDNSLine struct {
+	LineID   string `json:"line_id"`   // 线路ID
+	LineName string `json:"line_name"` // 线路名称
+}
+
+// 获取云解析 DNS 提供的线路列表
+// https://api.volcengine.com/api-explorer?action=ListLines
+func (p *VolcengineDNSProvider) ListLines(ctx context.Context) (lines []*VolcengineDNSLine, err error) {
+	// 请求参数
+	request := &dns.ListLinesInput{}
+	request.ZID = volcengine.Int64(p.cfg.ZoneID) // 域名ID
+	// 请求
+	response, err := p.Provider.Client.ListLinesWithContext(ctx, request)
+	printJSON("查询线路", request, response)
+	if err != nil {
+		return
+	}
+	// 响应参数
+	for _, item := range response.Lines {
+		lines = append(lines, &VolcengineDNSLine{
+			LineID:   volcengine.StringValue(item.Value),
+			LineName: volcengine.StringValue(item.Name),
+		})
+	}
+	return
 }

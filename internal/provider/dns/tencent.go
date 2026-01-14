@@ -56,6 +56,8 @@ func (p *TencentDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err e
 
 // TencentDNSProvider 腾讯云 DNS 提供程序
 type TencentDNSProvider struct {
+	provider.UnimplementedDNSProvider // 嵌入未实现的
+
 	cfg  *TencentDNSConfig
 	opts *dnsOptions
 
@@ -69,6 +71,11 @@ type TencentDNSProvider struct {
 
 // NewTencentDNSProvider 创建腾讯云 DNS 提供程序
 func NewTencentDNSProvider(ctx context.Context, cfg *TencentDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+	return NewTencentDNSProviderRaw(ctx, cfg, opts...)
+}
+
+// NewTencentDNSProviderRaw 创建腾讯云 DNS 提供程序
+func NewTencentDNSProviderRaw(ctx context.Context, cfg *TencentDNSConfig, opts ...DnsOption) (*TencentDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")

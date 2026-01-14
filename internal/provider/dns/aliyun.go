@@ -57,6 +57,8 @@ func (p *AliyunDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err er
 
 // AliyunDNSProvider 阿里云 DNS 提供程序
 type AliyunDNSProvider struct {
+	provider.UnimplementedDNSProvider // 嵌入未实现的
+
 	cfg  *AliyunDNSConfig
 	opts *dnsOptions
 
@@ -70,6 +72,11 @@ type AliyunDNSProvider struct {
 
 // NewAliyunDNSProvider 创建阿里云 DNS 提供程序
 func NewAliyunDNSProvider(ctx context.Context, cfg *AliyunDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+	return NewAliyunDNSProviderRaw(ctx, cfg, opts...)
+}
+
+// NewAliyunDNSProviderRaw 创建阿里云 DNS 提供程序
+func NewAliyunDNSProviderRaw(ctx context.Context, cfg *AliyunDNSConfig, opts ...DnsOption) (*AliyunDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
