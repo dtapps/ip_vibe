@@ -26,7 +26,7 @@ require (
 	github.com/alibabacloud-go/tea v1.4.0
 	github.com/aliyun/credentials-go v1.4.10
 	github.com/apache/thrift v0.22.0
-	github.com/baidubce/bce-sdk-go v0.9.256
+	github.com/baidubce/bce-sdk-go v0.9.257
 	github.com/cloudflare/cloudflare-go/v6 v6.5.0
 	github.com/corazawaf/coraza-coreruleset v0.0.0-20240226094324-415b1017abdc
 	github.com/corazawaf/coraza/v3 v3.3.3
@@ -56,9 +56,9 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc5
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.22
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.31
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.32
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.30
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.32
 	github.com/volcengine/volcengine-go-sdk v1.2.6
 	github.com/wdcbot/qingfeng v1.6.3
 	go.dtapp.net/library/contrib/http_log v1.0.7
@@ -85,7 +85,7 @@ require (
 	google.golang.org/grpc v1.78.0
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
-	modernc.org/sqlite v1.43.0
+	modernc.org/sqlite v1.44.0
 	resty.dev/v3 v3.0.0-beta.6
 )
 
@@ -160,7 +160,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
 	github.com/quic-go/quic-go v0.59.0 // indirect
-	github.com/refraction-networking/utls v1.8.1 // indirect
+	github.com/refraction-networking/utls v1.8.2 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
