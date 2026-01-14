@@ -49,9 +49,16 @@
       }
     });
 
-    loadJQuery();
-    loadSelect2();
-    loadClipboard();
+    (async () => {
+      try {
+        await loadJQuery();      // 先jQuery
+        await loadSelect2();     // 然后Select2（自动等jQuery）
+        await loadClipboard();   // 最后Clipboard（独立）
+        console.log('所有所需库加载完成，可以初始化UI');
+      } catch (error) {
+        console.error('库加载失败:', error.message);
+      }
+    })();
   </script>
   <script src="/static/js/index.js"></script>
   {{ end }}

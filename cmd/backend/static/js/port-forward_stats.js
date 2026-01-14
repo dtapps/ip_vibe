@@ -179,15 +179,24 @@ function formatBytes(bytes) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 }
 
-// 确保 DOM 加载后运行
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => {
-    initCharts();
-    loadStats();
-  });
-} else {
-  initCharts();
-  loadStats();
-}
+// 确保 DOM 加载后运行（优化版：统一await）
+(async () => {
+  // 如果DOM未加载，等待它
+  if (document.readyState === "loading") {
+    await new Promise((resolve) => {
+      document.addEventListener("DOMContentLoaded", resolve, { once: true });
+    });
+  }
+
+  // 现在DOM已就绪，加载并初始化
+  try {
+    await loadECharts(); // 等待ECharts加载
+    initCharts(); // 初始化图表
+    loadStats(); // 加载统计数据
+    console.log("ECharts 初始化完成");
+  } catch (error) {
+    console.error("ECharts 加载/初始化失败:", error);
+  }
+})();
 
 setInterval(loadStats, 30000); // 30s 自动刷新
