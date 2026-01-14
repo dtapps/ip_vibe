@@ -215,8 +215,9 @@ func (s *WebhookServiceImpl) DeleteWebhook(ctx context.Context, id int64) (*type
 // TestWebhook 测试通知
 func (s *WebhookServiceImpl) TestWebhook(ctx context.Context, id int64) (*types.GetWebhookRequest, error) {
 
-	// 通知模板数据 (保持原始结构)
+	// 通知模板数据
 	notifyData := utils.TemplateData{
+		EventTitle: "测试事件标题",
 		EventType:  "TEST",
 		EventTime:  time.Now().Format("2006-01-02 15:04:05"),
 		EventBody:  "测试通知事件",
