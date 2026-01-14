@@ -564,23 +564,17 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 		dnsProviderCfg := dns.NewDefaultCloudfareDNSConfig()
 		err = dnsProviderCfg.ParseCustomConfig(params.platform.ConfigJSON)
 		if err != nil {
-			err = fmt.Errorf("解析自定义配置失败: %w", err)
-			_ = s.updateDbOfDnsResponse(ctx, params.record.ID, err.Error())
-			return err
+			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
 		dnsProvider, err = dns.NewCloudfareDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
-			err = fmt.Errorf("初始提供程序失败: %w", err)
-			_ = s.updateDbOfDnsResponse(ctx, params.record.ID, err.Error())
-			return err
+			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
 	case platformconfig.PlatformTencentDNS:
 		dnsProviderCfg := dns.NewDefaultTencentDNSConfig()
 		err = dnsProviderCfg.ParseCustomConfig(params.platform.ConfigJSON)
 		if err != nil {
-			err = fmt.Errorf("解析自定义配置失败: %w", err)
-			_ = s.updateDbOfDnsResponse(ctx, params.record.ID, err.Error())
-			return err
+			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
 		dnsProvider, err = dns.NewTencentDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
@@ -592,23 +586,17 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 		dnsProviderCfg := dns.NewDefaultAliyunDNSConfig()
 		err = dnsProviderCfg.ParseCustomConfig(params.platform.ConfigJSON)
 		if err != nil {
-			err = fmt.Errorf("解析自定义配置失败: %w", err)
-			_ = s.updateDbOfDnsResponse(ctx, params.record.ID, err.Error())
-			return err
+			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
 		dnsProvider, err = dns.NewAliyunDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
-			err = fmt.Errorf("初始提供程序失败: %w", err)
-			_ = s.updateDbOfDnsResponse(ctx, params.record.ID, err.Error())
-			return err
+			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
 	case platformconfig.PlatformBaiduDNS:
 		dnsProviderCfg := dns.NewDefaultBaiduDNSConfig()
 		err = dnsProviderCfg.ParseCustomConfig(params.platform.ConfigJSON)
 		if err != nil {
-			err = fmt.Errorf("解析自定义配置失败: %w", err)
-			_ = s.updateDbOfDnsResponse(ctx, params.record.ID, err.Error())
-			return err
+			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
 		dnsProvider, err = dns.NewBaiduDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
@@ -620,34 +608,24 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 		dnsProviderCfg := dns.NewDefaultHuaweiDNSConfig()
 		err = dnsProviderCfg.ParseCustomConfig(params.platform.ConfigJSON)
 		if err != nil {
-			err = fmt.Errorf("解析自定义配置失败: %w", err)
-			_ = s.updateDbOfDnsResponse(ctx, params.record.ID, err.Error())
-			return err
+			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
 		dnsProvider, err = dns.NewHuaweiDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
-			err = fmt.Errorf("初始提供程序失败: %w", err)
-			_ = s.updateDbOfDnsResponse(ctx, params.record.ID, err.Error())
-			return err
+			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
 	case platformconfig.PlatformVolcengineDNS:
 		dnsProviderCfg := dns.NewDefaultVolcengineDNSConfig()
 		err = dnsProviderCfg.ParseCustomConfig(params.platform.ConfigJSON)
 		if err != nil {
-			err = fmt.Errorf("解析自定义配置失败: %w", err)
-			_ = s.updateDbOfDnsResponse(ctx, params.record.ID, err.Error())
-			return err
+			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
 		dnsProvider, err = dns.NewVolcengineDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
-			err = fmt.Errorf("初始提供程序失败: %w", err)
-			_ = s.updateDbOfDnsResponse(ctx, params.record.ID, err.Error())
-			return err
+			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
 	default:
-		err = fmt.Errorf("暂不支持该平台: %s", params.platform.String())
-		_ = s.updateDbOfDnsResponse(ctx, params.record.ID, err.Error())
-		return err
+		return fmt.Errorf("暂不支持该平台: %s", params.platform.String())
 	}
 
 	// 创建 DNS 更新任务
@@ -659,9 +637,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 		params.record.ConfigJSON,
 	)
 	if err != nil {
-		err = fmt.Errorf("创建DNS任务失败: %w", err)
-		_ = s.updateDbOfDnsResponse(ctx, params.record.ID, err.Error())
-		return err
+		return fmt.Errorf("创建DNS任务失败: %w", err)
 	}
 
 	// 执行 DNS 更新任务
