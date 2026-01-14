@@ -1,31 +1,44 @@
 // CDN配置（同之前，保持不变）
 const CDN_CONFIG = {
   clipboard: [
-    "https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js",
+    "https://cdn.staticfile.net/clipboard.js/2.0.11/clipboard.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js",
-  ],
-  echarts: [
-    "https://cdn.jsdelivr.net/npm/echarts@6.0.0/dist/echarts.min.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/echarts/6.0.0/echarts.min.js",
+    "https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.11/clipboard.min.js",
+    "https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js",
   ],
   jquery: [
-    "https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js",
+    "https://cdn.staticfile.net/jquery/3.7.1/jquery.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js",
+    "https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js",
+    "https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js",
+  ],
+  echarts: [
+    "https://cdn.staticfile.net/echarts/6.0.0/echarts.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/echarts/6.0.0/echarts.min.js",
+    "https://cdn.bootcdn.net/ajax/libs/echarts/6.0.0/echarts.min.js",
+    "https://cdn.jsdelivr.net/npm/echarts@6.0.0/dist/echarts.min.js",
   ],
   "select2-js": [
-    "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js",
+    "https://cdn.staticfile.net/select2/4.1.0-rc.0/js/select2.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js",
+    "https://cdn.bootcdn.net/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js",
+    "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js",
   ],
   "select2-css": [
-    "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css",
+    "https://cdn.staticfile.net/select2/4.1.0-rc.0/css/select2.min.css",
     "https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css",
+    "https://cdn.bootcdn.net/ajax/libs/select2/4.1.0-rc.0/css/select2.css",
+    "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css",
   ],
 };
 
-// 通用加载函数（同之前，支持fallback，返回Promise）
+// 通用加载函数（添加超时支持）
 function loadLibrary(libName, urls, options = {}) {
+  const { timeout = 5000 } = options; // 默认超时5秒，可在调用时覆盖，如 { timeout: 3000 }
+
   return new Promise((resolve, reject) => {
     let currentIndex = 0;
+    let loadPromise; // 保存当前加载的Promise
 
     function tryLoad() {
       if (currentIndex >= urls.length) {
@@ -36,18 +49,47 @@ function loadLibrary(libName, urls, options = {}) {
       const url = urls[currentIndex];
       console.log(`尝试加载 ${libName} 从: ${url}`);
 
-      loadjs(url, {
-        ...options,
-        success: () => {
-          console.log(`${libName} 加载成功 (CDN: ${currentIndex + 1})`);
-          resolve();
-        },
-        error: (pathsNotFound) => {
-          console.warn(`${libName} 从 ${url} 加载失败，切换下一个CDN`);
-          currentIndex++;
-          tryLoad();
-        },
+      // 创建loadjs的Promise（使用returnPromise: true）
+      const jsLoadPromise = new Promise((jsResolve, jsReject) => {
+        loadjs(url, {
+          ...options,
+          returnPromise: true, // 启用Promise模式
+          success: () => {
+            console.log(`${libName} 加载成功 (CDN: ${currentIndex + 1})`);
+            jsResolve();
+          },
+          error: (pathsNotFound) => {
+            console.warn(
+              `${libName} 从 ${url} 加载失败（非超时原因），切换下一个CDN`
+            );
+            jsReject(new Error(`Load error: ${pathsNotFound}`));
+          },
+        });
       });
+
+      // 超时Promise
+      const timeoutPromise = new Promise((_, timeoutReject) => {
+        setTimeout(() => {
+          console.warn(
+            `${libName} 从 ${url} 超时（${timeout}ms），切换下一个CDN`
+          );
+          timeoutReject(new Error(`Timeout after ${timeout}ms`));
+        }, timeout);
+      });
+
+      // 竞争：loadjs成功/失败 vs 超时
+      loadPromise = Promise.race([jsLoadPromise, timeoutPromise])
+        .then(() => {
+          // 成功：取消任何pending超时（如果有）
+          if (loadPromise && loadPromise.cancel) loadPromise.cancel();
+          resolve();
+        })
+        .catch((error) => {
+          // 失败：取消pending loadjs（可选，浏览器级）
+          if (loadPromise && loadPromise.cancel) loadPromise.cancel();
+          currentIndex++;
+          tryLoad(); // 切换下一个
+        });
     }
 
     tryLoad();
@@ -63,20 +105,20 @@ async function loadClipboard() {
   return loadLibrary("clipboard", CDN_CONFIG.clipboard);
 }
 
-async function loadECharts() {
-  if (typeof echarts !== "undefined") {
-    console.log("ECharts 已加载");
-    return Promise.resolve();
-  }
-  return loadLibrary("echarts", CDN_CONFIG.echarts);
-}
-
 async function loadJQuery() {
   if (typeof $ !== "undefined") {
     console.log("jQuery 已加载");
     return Promise.resolve();
   }
   return loadLibrary("jquery", CDN_CONFIG.jquery);
+}
+
+async function loadECharts() {
+  if (typeof echarts !== "undefined") {
+    console.log("ECharts 已加载");
+    return Promise.resolve();
+  }
+  return loadLibrary("echarts", CDN_CONFIG.echarts);
 }
 
 async function loadSelect2() {
