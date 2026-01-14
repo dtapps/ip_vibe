@@ -32,15 +32,15 @@ type DeviceService interface {
 // DeviceServiceImpl 设备服务实现
 type DeviceServiceImpl struct {
 	db    *ent.Client     // 数据库客户端
-	dbLog *ent_log.Client // 日志数据库客户端
+	logDb *ent_log.Client // 日志数据库客户端
 	debug bool            // 调试模式
 }
 
 // NewDeviceService 创建设备服务实例
-func NewDeviceService(db *ent.Client, dbLog *ent_log.Client, debug bool) DeviceService {
+func NewDeviceService(db *ent.Client, logDb *ent_log.Client, debug bool) DeviceService {
 	return &DeviceServiceImpl{
 		db:    db,
-		dbLog: dbLog,
+		logDb: logDb,
 		debug: debug,
 	}
 }
@@ -229,7 +229,7 @@ func (s *DeviceServiceImpl) GetDeviceIpHistory(ctx context.Context, id int64) ([
 		return nil, fmt.Errorf("查询设备失败: %w", err)
 	}
 	// 查询设备IP历史记录
-	firstDeviceReports, err := s.dbLog.DeviceIpReport.Query().
+	firstDeviceReports, err := s.logDb.DeviceIpReport.Query().
 		Where(deviceipreport.DeviceIDEQ(firstDevice.ID)).
 		OrderByCreatedAtDesc().
 		All(ctx)
@@ -322,7 +322,7 @@ func (s *DeviceServiceImpl) GetDevicePortForwardStats(ctx context.Context, id in
 	}
 
 	// 查询端口转发统计记录
-	allStats, err := s.dbLog.PortForwardStats.Query().
+	allStats, err := s.logDb.PortForwardStats.Query().
 		Where(portforwardstats.DeviceIDEQ(firstDevice.ID)).
 		Where(portforwardstats.CreatedAtGTE(startTime)).
 		OrderByCreatedAtDesc().

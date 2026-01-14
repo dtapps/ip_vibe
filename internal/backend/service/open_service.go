@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"time"
-	"vibe_ip/internal/backend/webhook"
 	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/device"
@@ -30,18 +29,18 @@ type DeviceOpenService interface {
 
 // DeviceOpenServiceImpl 设备服务实现
 type DeviceOpenServiceImpl struct {
-	db             *ent.Client     // 数据库客户端
-	dbLog          *ent_log.Client // 日志数据库客户端
-	webhookService *webhook.Send   // Webhook服务
-	debug          bool            // 调试模式
+	db             *ent.Client          // 数据库客户端
+	logDb          *ent_log.Client      // 日志数据库客户端
+	webhookService *webhookService.Send // Webhook服务
+	debug          bool                 // 调试模式
 }
 
 // NewDeviceOpenService 创建设备服务实例
-func NewDeviceOpenService(db *ent.Client, dbLog *ent_log.Client, debug bool) DeviceOpenService {
-	webhookService := webhookService.NewSend(db, dbLog)
+func NewDeviceOpenService(db *ent.Client, logDb *ent_log.Client, debug bool) DeviceOpenService {
+	webhookService := webhookService.NewSend(db, logDb)
 	return &DeviceOpenServiceImpl{
 		db:             db,
-		dbLog:          dbLog,
+		logDb:          logDb,
 		webhookService: webhookService,
 		debug:          debug,
 	}
@@ -58,7 +57,7 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 	isNotify := false
 	var deviceID int64
 
-	// 通知模板数据 (保持原始结构)
+	// 通知模板数据
 	notifyData := utils.TemplateData{
 		EventType:  "IP_UPDATE",
 		EventTime:  time.Now().Format("2006-01-02 15:04:05"),
@@ -184,7 +183,7 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 		// 记录 IP 报告并发送通知 (保持原始逻辑)
 		if isNotify {
 			// 创建设备IP报告
-			err := s.dbLog.DeviceIpReport.Create().
+			err := s.logDb.DeviceIpReport.Create().
 				SetDeviceID(deviceID).
 				SetIPV4(request.IPV4Addr).
 				SetIPV6(request.IPV6Addr).
@@ -272,7 +271,7 @@ func (s *DeviceOpenServiceImpl) CreatePortForwardStats(ctx context.Context, devi
 	}
 
 	// 创建端口转发统计信息
-	err = s.dbLog.PortForwardStats.Create().
+	err = s.logDb.PortForwardStats.Create().
 		SetDeviceID(firstDevice.ID).
 		SetPortForwardID(firstPortForward.ID).
 		SetStartTime(gotime.SetCurrentUnix(request.StartTime).Time).

@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"strings"
 	"time"
+	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
@@ -32,19 +33,21 @@ import (
 
 // IP更新任务
 type IPUpdateTask struct {
-	db            *ent.Client                   // 数据库客户端
-	logDb         *ent_log.Client               // 日志数据库客户端
-	cron          gocron.Scheduler              // 定时任务调度器
-	dnsJob        gocron.Job                    // DNS刷新任务
-	cdnJob        gocron.Job                    // CDN刷新任务
-	jobHelper     *gocron_helper.JobHelper      // 任务助手
-	logger        *slog.Logger                  // 日志记录器
-	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
-	debug         bool                          // 是否开启调试模式
+	db             *ent.Client                   // 数据库客户端
+	logDb          *ent_log.Client               // 日志数据库客户端
+	cron           gocron.Scheduler              // 定时任务调度器
+	dnsJob         gocron.Job                    // DNS刷新任务
+	cdnJob         gocron.Job                    // CDN刷新任务
+	jobHelper      *gocron_helper.JobHelper      // 任务助手
+	logger         *slog.Logger                  // 日志记录器
+	httpTransport  *http_log.LoggingRoundTripper // HTTP日志记录器
+	webhookService *webhookService.Send          // Webhook服务
+	debug          bool                          // 是否开启调试模式
 }
 
 // 创建实例
 func NewIPUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) *IPUpdateTask {
+	webhookService := webhookService.NewSend(db, logDb)
 	return &IPUpdateTask{
 		db:        db,
 		logDb:     logDb,
@@ -53,8 +56,9 @@ func NewIPUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Schedule
 		logger: logger.With(
 			slog.String("任务", "IP更新"),
 		),
-		httpTransport: httpTransport,
-		debug:         debug,
+		httpTransport:  httpTransport,
+		webhookService: webhookService,
+		debug:          debug,
 	}
 }
 
@@ -640,12 +644,17 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 		return fmt.Errorf("创建DNS任务失败: %w", err)
 	}
 
-	// 执行 DNS 更新任务
-	err = dnsTask.Execute(ctx, params.record.Type.String(), params.OriginValue)
-	if err != nil {
+	// 执行 DNS 更新
+	if err = dnsTask.Execute(ctx, params.record.Type.String(), params.OriginValue); err != nil {
 		_ = s.updateDbOfDnsResponse(ctx, params.record.ID, err.Error())
 		return err
 	}
+
+	// 执行 DNS 通知
+	if err := dnsTask.Notify(ctx, params.record.ID, params.record.Type.String(), s.webhookService); err != nil {
+		return fmt.Errorf("通知DNS记录更新失败: %w", err)
+	}
+
 	_ = s.updateDbOfDnsResponse(ctx, params.record.ID, "ok")
 	return nil
 }

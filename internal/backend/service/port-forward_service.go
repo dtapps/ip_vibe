@@ -31,15 +31,15 @@ type PortForwardService interface {
 // PortForwardServiceImpl 端口转发服务实现
 type PortForwardServiceImpl struct {
 	db    *ent.Client     // 数据库客户端
-	dbLog *ent_log.Client // 日志数据库客户端
+	logDb *ent_log.Client // 日志数据库客户端
 	debug bool            // 调试模式
 }
 
 // NewPortForwardService 创建端口转发服务实例
-func NewPortForwardService(db *ent.Client, dbLog *ent_log.Client, debug bool) PortForwardService {
+func NewPortForwardService(db *ent.Client, logDb *ent_log.Client, debug bool) PortForwardService {
 	return &PortForwardServiceImpl{
 		db:    db,
-		dbLog: dbLog,
+		logDb: logDb,
 		debug: debug,
 	}
 }
@@ -334,7 +334,7 @@ func (s *PortForwardServiceImpl) GetPortForwardStats(ctx context.Context, id int
 	}
 
 	// 查询端口转发统计记录
-	allStats, err := s.dbLog.PortForwardStats.Query().
+	allStats, err := s.logDb.PortForwardStats.Query().
 		Where(portforwardstats.DeviceIDEQ(firstPortForward.Edges.Device.ID)).
 		Where(portforwardstats.PortForwardIDEQ(firstPortForward.ID)).
 		Where(portforwardstats.CreatedAtGTE(startTime)).

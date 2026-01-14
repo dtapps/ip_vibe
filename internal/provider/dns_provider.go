@@ -4,7 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log/slog"
+	"time"
+	webhookService "vibe_ip/internal/backend/webhook"
+	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent/webhooksubscription"
+	"vibe_ip/internal/utils"
 )
 
 // ---------- DNS 模块 ----------
@@ -57,7 +63,7 @@ func NewDNSTask(logger *slog.Logger, provider DNSProvider, subdomain string, pla
 	return t, nil
 }
 
-// Execute 执行 DNS 更新任务
+// Execute 执行 DNS 更新
 func (t *DNSTask) Execute(ctx context.Context, recordType string, newValue string) error {
 	if t.provider == nil {
 		return nil
@@ -112,5 +118,41 @@ func (t *DNSTask) Execute(ctx context.Context, recordType string, newValue strin
 	}
 
 	t.logger.Info("【DNS】更新成功")
+	return nil
+}
+
+// Save 保存 DNS 记录
+func (t *DNSTask) Save(ctx context.Context, db *ent.Client) (err error) {
+	return nil
+}
+
+// Notify 执行 DNS 通知
+func (t *DNSTask) Notify(ctx context.Context, id int64, recordType string, webhookService *webhookService.Send) (err error) {
+	if webhookService == nil {
+		return nil
+	}
+
+	// 通知模板数据
+	notifyData := utils.TemplateData{
+		EventType:    "DNS_UPDATE",
+		EventTime:    time.Now().Format("2006-01-02 15:04:05"),
+		EventBody:    "DNS记录更新事件",
+		RecordDomain: fmt.Sprintf("%s.%s", t.subdomain, t.domain),
+		RecordType:   recordType,
+	}
+
+	// 发送通知
+	if err := webhookService.Send(
+		ctx,
+		webhooksubscription.ObjTypeDNSRecord,
+		id,
+		notifyData,
+	); err != nil {
+		t.logger.Error("【DNS】通知失败",
+			slog.String("name", t.provider.Name()),
+			slog.Any("err", err),
+		)
+	}
+
 	return nil
 }

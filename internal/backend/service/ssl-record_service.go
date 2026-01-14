@@ -34,16 +34,16 @@ type SSLRecordService interface {
 // SSLRecordServiceImpl SSL 记录服务实现
 type SSLRecordServiceImpl struct {
 	db            *ent.Client         // 数据库客户端
-	dbLog         *ent_log.Client     // 日志数据库客户端
+	logDb         *ent_log.Client     // 日志数据库客户端
 	sslUpdateTask *task.SSLUpdateTask // SSL刷新任务
 	debug         bool                // 调试模式
 }
 
 // NewSSLRecordService 创建 SSL 记录服务实例
-func NewSSLRecordService(db *ent.Client, dbLog *ent_log.Client, sslUpdateTask *task.SSLUpdateTask, debug bool) SSLRecordService {
+func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, sslUpdateTask *task.SSLUpdateTask, debug bool) SSLRecordService {
 	return &SSLRecordServiceImpl{
 		db:            db,
-		dbLog:         dbLog,
+		logDb:         logDb,
 		sslUpdateTask: sslUpdateTask,
 		debug:         debug,
 	}
@@ -342,7 +342,7 @@ func (s *SSLRecordServiceImpl) GetSSLRecordHistoryDetail(ctx context.Context, id
 	}
 
 	// 查询SSL记录历史
-	firstSSLRecordHistory, err := s.dbLog.SSLCertificateHistory.Query().
+	firstSSLRecordHistory, err := s.logDb.SSLCertificateHistory.Query().
 		Where(sslcertificatehistory.SslRecordIDEQ(firstSSLRecord.ID)).
 		Where(sslcertificatehistory.IDEQ(historyID)).
 		First(ctx)

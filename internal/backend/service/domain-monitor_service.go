@@ -32,7 +32,7 @@ type DomainMonitorService interface {
 // DomainMonitorServiceImpl 域名监控服务实现
 type DomainMonitorServiceImpl struct {
 	db            *ent.Client                   // 数据库客户端
-	dbLog         *ent_log.Client               // 日志数据库客户端
+	logDb         *ent_log.Client               // 日志数据库客户端
 	cron          gocron.Scheduler              // 定时任务调度器
 	logger        *slog.Logger                  // 日志记录器
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
@@ -40,10 +40,10 @@ type DomainMonitorServiceImpl struct {
 }
 
 // NewDomainMonitorService 创建域名监控服务实例
-func NewDomainMonitorService(db *ent.Client, dbLog *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) DomainMonitorService {
+func NewDomainMonitorService(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) DomainMonitorService {
 	return &DomainMonitorServiceImpl{
 		db:            db,
-		dbLog:         dbLog,
+		logDb:         logDb,
 		cron:          cron,
 		logger:        logger,
 		httpTransport: httpTransport,
@@ -270,7 +270,7 @@ func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id in
 	// 域名监控任务 (保持 Handler 中创建依赖的原始逻辑，但使用 Service 内部的注入依赖)
 	domainMonitorService := task.NewDomainMonitorTask(
 		s.db,
-		s.dbLog,
+		s.logDb,
 		s.cron,
 		s.logger,
 		s.httpTransport,
