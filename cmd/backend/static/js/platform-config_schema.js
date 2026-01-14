@@ -4,7 +4,7 @@ const PLATFORM_SCHEMA = {
     label: "CloudFlare",
     fields: [
       {
-        id: "api_key",
+        id: "api_token",
         label: "API Token",
         type: "password",
         placeholder: "your-api-token",

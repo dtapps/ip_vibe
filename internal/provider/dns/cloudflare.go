@@ -16,15 +16,15 @@ import (
 
 // CloudfareDNSConfig Cloudfare DNS 配置
 type CloudfareDNSConfig struct {
-	ApiKey     string `json:"api_key"`     // API密钥
+	ApiToken   string `json:"api_token"`   // API令牌
 	ZoneID     string `json:"zone_id"`     // 域名ID
 	DomainName string `json:"domain_name"` // 主域名
 }
 
 // Validate 验证Cloudfare DNS 配置
 func (cfg *CloudfareDNSConfig) Validate() error {
-	if cfg.ApiKey == "" {
-		return fmt.Errorf("ApiKey 不能为空")
+	if cfg.ApiToken == "" {
+		return fmt.Errorf("ApiToken 不能为空")
 	}
 	if cfg.ZoneID == "" {
 		return fmt.Errorf("ZoneID 不能为空")
@@ -91,7 +91,7 @@ func NewCloudfareDNSProviderRaw(ctx context.Context, cfg *CloudfareDNSConfig, op
 	}
 
 	// 实例化client选项
-	p.Provider.Opts = append(p.Provider.Opts, option.WithAPIToken(p.cfg.ApiKey))
+	p.Provider.Opts = append(p.Provider.Opts, option.WithAPIToken(p.cfg.ApiToken))
 
 	// 如果提供了日志传输器，则设置HTTP客户端
 	if p.opts.httpTransport != nil {
