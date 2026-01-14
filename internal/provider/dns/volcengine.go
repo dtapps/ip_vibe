@@ -252,12 +252,13 @@ func (p *VolcengineDNSProvider) ParseCustomConfig(config_json json.RawMessage) (
 	return nil
 }
 
+// VolcengineDNSLine 火山引擎 DNS 线路
 type VolcengineDNSLine struct {
 	LineID   string `json:"line_id"`   // 线路ID
 	LineName string `json:"line_name"` // 线路名称
 }
 
-// 获取云解析 DNS 提供的线路列表
+// 获取火山引擎 DNS 线路列表
 // https://api.volcengine.com/api-explorer?action=ListLines
 func (p *VolcengineDNSProvider) ListLines(ctx context.Context) (lines []*VolcengineDNSLine, err error) {
 	// 请求参数

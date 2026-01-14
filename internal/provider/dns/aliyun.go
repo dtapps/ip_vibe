@@ -225,3 +225,31 @@ func (p *AliyunDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err 
 	}
 	return nil
 }
+
+// AliyunDNSLine 阿里云 DNS 线路
+type AliyunDNSLine struct {
+	LineID   string `json:"line_id"`   // 线路ID
+	LineName string `json:"line_name"` // 线路名称
+}
+
+// 获取阿里云 DNS 线路列表
+// https://next.api.aliyun.com/api/Alidns/2015-01-09/DescribeSupportLines
+func (p *AliyunDNSProvider) ListLines(ctx context.Context) (lines []*AliyunDNSLine, err error) {
+	// 请求参数
+	request := &alidns20150109.DescribeSupportLinesRequest{}
+	request.DomainName = tea.String(p.cfg.DomainName) // 域名名称
+	// 请求
+	response, err := p.Provider.Client.DescribeSupportLinesWithContext(ctx, request, &dara.RuntimeOptions{})
+	printJSON("查询线路", request, response)
+	if err != nil {
+		return
+	}
+	// 响应参数
+	for _, item := range response.Body.RecordLines.RecordLine {
+		lines = append(lines, &AliyunDNSLine{
+			LineID:   tea.StringValue(item.LineCode),
+			LineName: tea.StringValue(item.LineDisplayName),
+		})
+	}
+	return
+}

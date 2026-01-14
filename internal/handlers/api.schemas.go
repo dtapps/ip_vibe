@@ -111,7 +111,8 @@ func GetDnsRecordSchema(c *gin.Context) {
 		return
 	}
 
-	var fieldGroup []types.SCHEMAField
+	// 准备字段组
+	var fieldGroup any
 
 	var dnsProviderOpts = make([]dns.DnsOption, 0)
 	if global.GvaHttpLog != nil {
@@ -119,6 +120,41 @@ func GetDnsRecordSchema(c *gin.Context) {
 	}
 
 	switch firstConfig.Platform {
+	case platformconfig.PlatformAliyunDNS:
+		dnsProviderCfg := dns.NewDefaultAliyunDNSConfig()
+		err = dnsProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		dnsProvider, err := dns.NewAliyunDNSProviderRaw(c, dnsProviderCfg, dnsProviderOpts...)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		// 查询线路
+		lines, err := dnsProvider.ListLines(c)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		// 准备 options
+		options := make([]types.SCHEMAFieldOption, len(lines))
+		for i, line := range lines {
+			options[i] = types.SCHEMAFieldOption{
+				Value: line.LineID,
+				Label: line.LineName,
+			}
+		}
+		// 构造字段组
+		fieldGroup = types.SCHEMAField{
+			ID:          "line",
+			Label:       "线路",
+			Type:        "select",
+			Placeholder: "请选择线路",
+			Required:    true,
+			Options:     options,
+		}
 	case platformconfig.PlatformVolcengineDNS:
 		dnsProviderCfg := dns.NewDefaultVolcengineDNSConfig()
 		err = dnsProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
