@@ -34,20 +34,18 @@ type DNSTask struct {
 	logger   *slog.Logger // 日志记录器
 	provider DNSProvider  // DNS 提供程序
 
-	recordID  string // 域名ID
-	domain    string // 域名名称
-	subdomain string // 子域名
+	config *DNSConfigParams // 配置
 
 	platform_config_json json.RawMessage // 平台配置
 	record_config_json   json.RawMessage // 记录配置
 }
 
 // NewDNSTask 创建 DNS 更新任务
-func NewDNSTask(logger *slog.Logger, provider DNSProvider, subdomain string, platform_config_json json.RawMessage, record_config_json json.RawMessage) (t *DNSTask, err error) {
+func NewDNSTask(logger *slog.Logger, provider DNSProvider, platform_config_json json.RawMessage, record_config_json json.RawMessage) (t *DNSTask, err error) {
 	t = &DNSTask{
 		logger:               logger,
 		provider:             provider,
-		subdomain:            subdomain,
+		config:               &DNSConfigParams{},
 		platform_config_json: platform_config_json,
 		record_config_json:   record_config_json,
 	}
@@ -60,22 +58,67 @@ func NewDNSTask(logger *slog.Logger, provider DNSProvider, subdomain string, pla
 			)
 			return nil, err
 		}
-		t.domain = platformConfig.DomainName
+		t.config.domain = platformConfig.DomainName
 	}
 	return t, nil
 }
 
+type DNSConfigParams struct {
+	domain    string // 域名名称
+	subdomain string // 子域名
+
+	recordID   string // 域名ID
+	recordType string // 记录类型
+	oldValue   string // 旧记录值
+	newValue   string // 新记录值
+}
+
+// Config 配置 DNS 参数
+func (t *DNSTask) Config(subdomain string, recordType string, newValue string) *DNSTask {
+	t.config.subdomain = subdomain
+	t.config.recordType = recordType
+	t.config.newValue = newValue
+	return t
+}
+
+// Validate 验证 DNS 更新任务配置
+func (t *DNSTask) Validate() error {
+	if t.config.domain == "" {
+		return fmt.Errorf("domain 不能为空")
+	}
+	if t.config.subdomain == "" {
+		return fmt.Errorf("subdomain 不能为空")
+	}
+	if t.config.recordType == "" {
+		return fmt.Errorf("recordType 不能为空")
+	}
+	if t.config.newValue == "" {
+		return fmt.Errorf("newValue 不能为空")
+	}
+	return nil
+}
+
 // Execute 执行 DNS 更新
-func (t *DNSTask) Execute(ctx context.Context, recordType string, newValue string) error {
+func (t *DNSTask) Execute(ctx context.Context) (err error) {
 	if t.provider == nil {
 		return nil
 	}
+
+	// 验证配置
+	if err := t.Validate(); err != nil {
+		t.logger.Error("【DNS】配置验证失败",
+			slog.String("name", t.provider.Name()),
+			slog.Any("err", err),
+		)
+		return err
+	}
+
 	t.logger.Info("【DNS】开始更新",
 		slog.String("provider", t.provider.Name()),
-		slog.String("domain", t.domain),
-		slog.String("subdomain", t.subdomain),
-		slog.String("recordType", recordType),
-		slog.String("newValue", newValue),
+		slog.String("domain", t.config.domain),
+		slog.String("subdomain", t.config.subdomain),
+		slog.String("recordType", t.config.recordType),
+		slog.String("newValue", t.config.newValue),
 		slog.String("config_json", string(t.record_config_json)),
 	)
 
@@ -89,22 +132,33 @@ func (t *DNSTask) Execute(ctx context.Context, recordType string, newValue strin
 		}
 	}
 
-	recordID, oldValue, err := t.provider.Check(ctx, t.domain, t.subdomain, recordType)
+	t.config.recordID, t.config.oldValue, err = t.provider.Check(
+		ctx,
+		t.config.domain,
+		t.config.subdomain,
+		t.config.recordType,
+	)
 	if err != nil && !errors.Is(err, ErrRecordNotFound) {
 		t.logger.Error("【DNS】检查失败",
-			slog.String("recordID", recordID),
+			slog.String("recordID", t.config.recordID),
 			slog.String("name", t.provider.Name()),
 			slog.Any("err", err),
 		)
 		return err
 	}
-	t.recordID = recordID
-	if oldValue == newValue {
+	if t.config.oldValue == t.config.newValue {
 		t.logger.Info("【DNS】IP 未改变，无需更新")
 		return nil
 	}
 
-	if err := t.provider.Update(ctx, recordID, t.domain, t.subdomain, newValue, recordType); err != nil {
+	if err := t.provider.Update(
+		ctx,
+		t.config.recordID,
+		t.config.domain,
+		t.config.subdomain,
+		t.config.newValue,
+		t.config.recordType,
+	); err != nil {
 		t.logger.Error("【DNS】更新失败",
 			slog.String("name", t.provider.Name()),
 			slog.Any("err", err),
@@ -112,7 +166,14 @@ func (t *DNSTask) Execute(ctx context.Context, recordType string, newValue strin
 		return err
 	}
 
-	if err := t.provider.Save(ctx, recordID, t.domain, t.subdomain, newValue, recordType); err != nil {
+	if err := t.provider.Save(
+		ctx,
+		t.config.recordID,
+		t.config.domain,
+		t.config.subdomain,
+		t.config.newValue,
+		t.config.recordType,
+	); err != nil {
 		t.logger.Error("【DNS】保存失败",
 			slog.String("name", t.provider.Name()),
 			slog.Any("err", err),
@@ -130,25 +191,28 @@ func (t *DNSTask) SaveResponse(ctx context.Context, db *ent.Client, id int64, la
 		return nil
 	}
 	return db.DNSRecord.UpdateOneID(id).
-		SetRecordID(t.recordID).
+		SetRecordID(t.config.recordID).
 		SetLastAPIResponse(last_api_response).
 		SetLastAPIResponseAt(time.Now()).
 		Exec(ctx)
 }
 
 // Notify 执行 DNS 通知
-func (t *DNSTask) Notify(ctx context.Context, id int64, recordType string, webhookService *webhookService.Send) (err error) {
-	if webhookService == nil {
+func (t *DNSTask) Notify(ctx context.Context, webhookService *webhookService.Send, id int64) (err error) {
+	if webhookService == nil || id == 0 {
 		return nil
 	}
 
 	// 通知模板数据
 	notifyData := utils.TemplateData{
-		EventType:    "DNS_UPDATE",
-		EventTime:    time.Now().Format("2006-01-02 15:04:05"),
-		EventBody:    "DNS记录更新事件",
-		RecordDomain: fmt.Sprintf("%s.%s", t.subdomain, t.domain),
-		RecordType:   recordType,
+		EventTitle:     "DNS记录更新",
+		EventType:      "DNS_UPDATE",
+		EventTime:      time.Now().Format("2006-01-02 15:04:05"),
+		EventBody:      "DNS记录更新事件",
+		RecordDomain:   fmt.Sprintf("%s.%s", t.config.subdomain, t.config.domain),
+		RecordType:     t.config.recordType,
+		RecordOldValue: t.config.oldValue,
+		RecordNewValue: t.config.newValue,
 	}
 
 	// 发送通知

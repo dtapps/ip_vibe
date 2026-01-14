@@ -632,7 +632,6 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 	dnsTask, err := provider.NewDNSTask(
 		logger,
 		dnsProvider,
-		params.record.SubDomain,
 		params.platform.ConfigJSON,
 		params.record.ConfigJSON,
 	)
@@ -640,14 +639,17 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 		return fmt.Errorf("创建DNS任务失败: %w", err)
 	}
 
+	// 配置 DNS 参数
+	dnsTask.Config(params.record.SubDomain, params.record.Type.String(), params.OriginValue)
+
 	// 执行 DNS 更新
-	if err = dnsTask.Execute(ctx, params.record.Type.String(), params.OriginValue); err != nil {
+	if err = dnsTask.Execute(ctx); err != nil {
 		_ = dnsTask.SaveResponse(ctx, s.db, params.record.ID, err.Error())
 		return err
 	}
 
 	// 执行 DNS 通知
-	if err := dnsTask.Notify(ctx, params.record.ID, params.record.Type.String(), s.webhookService); err != nil {
+	if err := dnsTask.Notify(ctx, s.webhookService, params.record.ID); err != nil {
 		return err
 	}
 

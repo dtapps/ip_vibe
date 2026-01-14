@@ -59,6 +59,7 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 
 	// 通知模板数据
 	notifyData := utils.TemplateData{
+		EventTitle: "IP地址更新",
 		EventType:  "IP_UPDATE",
 		EventTime:  time.Now().Format("2006-01-02 15:04:05"),
 		EventBody:  "IP地址更新事件",
