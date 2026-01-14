@@ -582,9 +582,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 		}
 		dnsProvider, err = dns.NewTencentDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
-			err = fmt.Errorf("初始提供程序失败: %w", err)
-			_ = s.updateDbOfDnsResponse(ctx, params.record.ID, err.Error())
-			return err
+			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
 	case platformconfig.PlatformAliyunDNS:
 		dnsProviderCfg := dns.NewDefaultAliyunDNSConfig()
@@ -604,9 +602,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 		}
 		dnsProvider, err = dns.NewBaiduDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
-			err = fmt.Errorf("初始提供程序失败: %w", err)
-			_ = s.updateDbOfDnsResponse(ctx, params.record.ID, err.Error())
-			return err
+			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
 	case platformconfig.PlatformHuaweiDNS:
 		dnsProviderCfg := dns.NewDefaultHuaweiDNSConfig()
@@ -646,16 +642,16 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 
 	// 执行 DNS 更新
 	if err = dnsTask.Execute(ctx, params.record.Type.String(), params.OriginValue); err != nil {
-		_ = s.updateDbOfDnsResponse(ctx, params.record.ID, err.Error())
+		_ = dnsTask.SaveResponse(ctx, s.db, params.record.ID, err.Error())
 		return err
 	}
 
 	// 执行 DNS 通知
 	if err := dnsTask.Notify(ctx, params.record.ID, params.record.Type.String(), s.webhookService); err != nil {
-		return fmt.Errorf("通知DNS记录更新失败: %w", err)
+		return err
 	}
 
-	_ = s.updateDbOfDnsResponse(ctx, params.record.ID, "ok")
+	_ = dnsTask.SaveResponse(ctx, s.db, params.record.ID, "ok")
 	return nil
 }
 
@@ -663,17 +659,6 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 func (s *IPUpdateTask) updateDbOfCdnResponse(ctx context.Context, id int64, last_api_response string) error {
 	if s.db != nil && id != 0 {
 		return s.db.CDNRecord.UpdateOneID(id).
-			SetLastAPIResponse(last_api_response).
-			SetLastAPIResponseAt(time.Now()).
-			Exec(ctx)
-	}
-	return nil
-}
-
-// 更新DNS记录的LastAPIResponse
-func (s *IPUpdateTask) updateDbOfDnsResponse(ctx context.Context, id int64, last_api_response string) error {
-	if s.db != nil && id != 0 {
-		return s.db.DNSRecord.UpdateOneID(id).
 			SetLastAPIResponse(last_api_response).
 			SetLastAPIResponseAt(time.Now()).
 			Exec(ctx)

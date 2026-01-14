@@ -31,10 +31,12 @@ type DNSProvider interface {
 
 // DNSTask 定义了 DNS 更新任务
 type DNSTask struct {
-	logger    *slog.Logger // 日志记录器
-	provider  DNSProvider  // DNS 提供程序
-	domain    string       // 域名
-	subdomain string       // 子域名
+	logger   *slog.Logger // 日志记录器
+	provider DNSProvider  // DNS 提供程序
+
+	recordID  string // 域名ID
+	domain    string // 域名名称
+	subdomain string // 子域名
 
 	platform_config_json json.RawMessage // 平台配置
 	record_config_json   json.RawMessage // 记录配置
@@ -96,6 +98,7 @@ func (t *DNSTask) Execute(ctx context.Context, recordType string, newValue strin
 		)
 		return err
 	}
+	t.recordID = recordID
 	if oldValue == newValue {
 		t.logger.Info("【DNS】IP 未改变，无需更新")
 		return nil
@@ -121,9 +124,16 @@ func (t *DNSTask) Execute(ctx context.Context, recordType string, newValue strin
 	return nil
 }
 
-// Save 保存 DNS 记录
-func (t *DNSTask) Save(ctx context.Context, db *ent.Client) (err error) {
-	return nil
+// SaveResponse 保存 DNS 记录响应
+func (t *DNSTask) SaveResponse(ctx context.Context, db *ent.Client, id int64, last_api_response string) (err error) {
+	if db == nil || id == 0 {
+		return nil
+	}
+	return db.DNSRecord.UpdateOneID(id).
+		SetRecordID(t.recordID).
+		SetLastAPIResponse(last_api_response).
+		SetLastAPIResponseAt(time.Now()).
+		Exec(ctx)
 }
 
 // Notify 执行 DNS 通知
