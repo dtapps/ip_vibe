@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
@@ -34,7 +35,8 @@ type DNSTask struct {
 	logger   *slog.Logger // 日志记录器
 	provider DNSProvider  // DNS 提供程序
 
-	config *DNSConfigParams // 配置
+	config         *DNSConfigParams // 配置
+	isNotification bool             // 是否通知
 
 	platform_config_json json.RawMessage // 平台配置
 	record_config_json   json.RawMessage // 记录配置
@@ -146,7 +148,8 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 		)
 		return err
 	}
-	if t.config.oldValue == t.config.newValue {
+
+	if strings.EqualFold(t.config.oldValue, t.config.newValue) {
 		t.logger.Info("【DNS】IP 未改变，无需更新")
 		return nil
 	}
@@ -165,6 +168,9 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 		)
 		return err
 	}
+
+	// 可以下发通知
+	t.isNotification = true
 
 	if err := t.provider.Save(
 		ctx,
@@ -199,7 +205,7 @@ func (t *DNSTask) SaveResponse(ctx context.Context, db *ent.Client, id int64, la
 
 // Notify 执行 DNS 通知
 func (t *DNSTask) Notify(ctx context.Context, webhookService *webhookService.Send, id int64) (err error) {
-	if webhookService == nil || id == 0 {
+	if webhookService == nil || id == 0 || !t.isNotification {
 		return nil
 	}
 
