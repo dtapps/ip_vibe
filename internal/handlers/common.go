@@ -86,7 +86,7 @@ func renderHTML[T any](c *gin.Context, templateName string, data types.BasePageD
 	)
 
 	// 推送
-	pusher(c, logger)
+	// pusher(c, logger)
 
 	// 渲染HTML
 	c.HTML(http.StatusOK, templateName, baseData)
@@ -113,7 +113,7 @@ func renderHTMLWithMenu[T any](c *gin.Context, templateName string, data types.B
 	)
 
 	// 推送
-	pusher(c, logger)
+	// pusher(c, logger)
 
 	// 渲染HTML
 	c.HTML(http.StatusOK, templateName, baseData)

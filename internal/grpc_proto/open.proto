@@ -26,8 +26,7 @@ service OpenService {
   }
 
   // 获取设备端口转发
-  rpc GetDevicePortForwards(GetDevicePortForwardsRequest)
-      returns (GetDevicePortForwardsResponse) {
+  rpc GetDevicePortForwards(GetDevicePortForwardsRequest) returns (GetDevicePortForwardsResponse) {
     option (google.api.http) = {
       get: "/device/{device_code}/port-forwards"
     };
