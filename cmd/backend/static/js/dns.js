@@ -1,9 +1,10 @@
 // 选择配置 config_id
-function onConfigSelect(el) {
+async function onConfigSelect(el) {
   console.log("onConfigSelect", el);
 
   const opt = el.options[el.selectedIndex];
 
+  const id = opt.value || 0;
   const platform = opt.dataset.platform || "";
   const domain_name = opt.dataset.domain_name || "";
 
@@ -12,6 +13,16 @@ function onConfigSelect(el) {
   }
   if (domain_name) {
     document.getElementById("domain_name").innerHTML = "." + domain_name;
+  }
+
+  // 从后端接口获取指定平台的动态 Schema，并更新 DNS_SCHEMA
+  switch (platform) {
+    case "aliyun_dns":
+      await fetchAndReplaceDnsSchema(platform, id);
+      break;
+    case "volcengine_dns":
+      await fetchAndReplaceDnsSchema(platform, id);
+      break;
   }
 
   // 重新渲染字段
@@ -182,6 +193,22 @@ async function openFormModal(id) {
         // 清空已选
         console.log("select2 清空已选", dnsRecord.webhooks);
         selectId2.val(null).trigger("change");
+      }
+
+      // 从后端接口获取指定平台的动态 Schema，并更新 DNS_SCHEMA
+      switch (dnsRecord.platform) {
+        case "aliyun_dns":
+          await fetchAndReplaceDnsSchema(
+            dnsRecord.platform,
+            dnsRecord.config_id
+          );
+          break;
+        case "volcengine_dns":
+          await fetchAndReplaceDnsSchema(
+            dnsRecord.platform,
+            dnsRecord.config_id
+          );
+          break;
       }
 
       // 渲染字段，回填数据

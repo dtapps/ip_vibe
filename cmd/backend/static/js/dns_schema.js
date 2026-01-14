@@ -146,6 +146,39 @@ const DNS_SCHEMA = {
 };
 
 /**
+ * 从后端接口获取指定平台的动态 Schema，并更新 DNS_SCHEMA
+ * @param {string} platform - 平台类型
+ * @param {number} configId - 配置 ID
+ * @returns {Promise<void>}
+ */
+async function fetchAndReplaceDnsSchema(platform, configId) {
+  try {
+    // 确保 DNS_SCHEMA[platform] 存在
+    if (!DNS_SCHEMA[platform]) {
+      console.warn(`未知平台: ${platform}`);
+      return;
+    }
+
+    // 从后端获取动态字段
+    const { data: resp } = await API.get(
+      `/api/schemas/${platform}/dns-record/${configId}`
+    );
+    console.log("resp", resp);
+
+    // 判断 resp 是否为空
+    if (!resp || !resp.fields || resp.fields.length === 0) {
+      console.warn(`平台 ${platform} 动态字段为空`);
+      return;
+    }
+
+    // 只替换 fields，保留 label 等静态信息
+    DNS_SCHEMA[platform].fields = resp.fields;
+  } catch (error) {
+    console.error("加载动态 Schema 失败:", error);
+  }
+}
+
+/**
  * 动态渲染字段
  * @param {string} platform - 平台 key (如 cloudflare)
  * @param {Object} initialData - 编辑模式下的初始数据 (可选)
