@@ -109,7 +109,7 @@ func NewTencentDNSProviderRaw(ctx context.Context, cfg *TencentDNSConfig, opts .
 	p.Provider.Cfg = profile.NewClientProfile()
 	p.Provider.Cfg.HttpProfile.Endpoint = p.cfg.Endpoint
 
-	// 实例化client对象
+	// 实例化
 	p.Provider.Client, err = dnspod.NewClient(p.Provider.Auth, "", p.Provider.Cfg)
 	if err != nil {
 		return nil, err

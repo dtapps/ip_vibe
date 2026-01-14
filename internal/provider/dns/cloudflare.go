@@ -100,7 +100,7 @@ func NewCloudfareDNSProviderRaw(ctx context.Context, cfg *CloudfareDNSConfig, op
 		}))
 	}
 
-	// 实例化client对象
+	// 实例化
 	p.Provider.Client = cloudflare.NewClient(p.Provider.Opts...)
 
 	return p, nil

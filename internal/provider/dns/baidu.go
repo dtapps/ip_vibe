@@ -95,7 +95,7 @@ func NewBaiduDNSProviderRaw(ctx context.Context, cfg *BaiduDNSConfig, opts ...Dn
 		opt(p.opts)
 	}
 
-	// 实例化client对象
+	// 实例化
 	p.Provider.Client, err = dns.NewClient(
 		p.cfg.AccessKeyID,
 		p.cfg.SecretAccessKey,

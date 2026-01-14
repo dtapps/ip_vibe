@@ -121,7 +121,7 @@ func NewAliyunDNSProviderRaw(ctx context.Context, cfg *AliyunDNSConfig, opts ...
 		p.Provider.Cfg.HttpClient = httpHandler
 	}
 
-	// 实例化client对象
+	// 实例化
 	p.Provider.Client, err = alidns20150109.NewClient(p.Provider.Cfg)
 	if err != nil {
 		return nil, err

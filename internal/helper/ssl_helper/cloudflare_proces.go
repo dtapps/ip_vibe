@@ -19,8 +19,8 @@ import (
 
 // 客户端配置
 type CloudflareConfigure struct {
-	ApiKey string `json:"api_key"` // API密钥
-	Email  string `json:"email"`   // 邮箱
+	ApiToken string `json:"api_token"` // API令牌
+	Email    string `json:"email"`     // 邮箱
 }
 
 // 实现 SSLProcess 接口
@@ -97,7 +97,7 @@ func (d *SSLProcessCloudflareImpl) Apply(ctx context.Context, domains []string) 
 
 	// 设置 DNS-01 提供者
 	dnsProviderConfig := cloudflare.NewDefaultConfig()
-	dnsProviderConfig.AuthToken = d.platformConfig.ApiKey
+	dnsProviderConfig.AuthToken = d.platformConfig.ApiToken
 	if d.httpTransport != nil {
 		dnsProviderConfig.HTTPClient.Transport = d.httpTransport
 	}

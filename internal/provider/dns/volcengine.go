@@ -118,7 +118,7 @@ func NewVolcengineDNSProviderRaw(ctx context.Context, cfg *VolcengineDNSConfig, 
 		return nil, err
 	}
 
-	// 实例化client对象
+	// 实例化
 	p.Provider.Client = dns.New(p.Provider.Sess)
 
 	// 如果提供了日志传输器，则设置HTTP客户端
@@ -137,7 +137,7 @@ func NewVolcengineDNSProviderRaw(ctx context.Context, cfg *VolcengineDNSConfig, 
 			return nil, err
 		}
 
-		// 实例化client对象
+		// 实例化
 		p.Provider.Client = dns.New(p.Provider.Sess)
 
 	}

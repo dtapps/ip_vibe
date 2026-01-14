@@ -138,7 +138,7 @@ func NewHuaweiDNSProviderRaw(ctx context.Context, cfg *HuaweiDNSConfig, opts ...
 		return nil, err
 	}
 
-	// 实例化client对象
+	// 实例化
 	p.Provider.Client = dns.NewDnsClient(p.Provider.Builder)
 
 	return p, nil
