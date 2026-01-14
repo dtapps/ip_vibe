@@ -68,21 +68,25 @@ function changePlatform(platform) {
 
 // 选择平台类型 platform
 function onPlatformSelect(sel) {
+  console.log("onPlatformSelect", sel);
+
   const opt = sel.options[sel.selectedIndex];
-  console.log("onPlatformSelect", opt);
-  const id = document.getElementById("id").value.trim();
-  console.log("onPlatformSelect id", id);
+  const platform = opt.value;
 
-  changePlatform(opt.value);
+  if (!platform) {
+    return;
+  }
+  changePlatform(platform);
 
-  if (!id) {
-    document.getElementById("template_title").value =
-      "[IPVibe] [[.DeviceName]] IP 更新";
-    switch (opt.value) {
+  const template_title_el = document.getElementById("template_title");
+  const template_content_el = document.getElementById("template_content");
+  const id = document.getElementById("id").value.trim() || 0;
+
+  if (id == 0) {
+    template_title_el.value = "[IPVibe] [[.DeviceName]] [[.EventTitle]] 更新";
+    switch (platform) {
       case "wechat_work":
-        document.getElementById(
-          "template_content"
-        ).value = `事件标题: [[.EventTitle]]
+        template_content_el.value = `事件标题: [[.EventTitle]]
 事件类型: [[.EventType]]
 事件时间: [[.EventTime]]
 事件内容: [[.EventBody]]
@@ -98,9 +102,7 @@ IPV6地址: [[.IPv6Addr]]
 平台类型: [[.PlatformType]]`;
         break;
       case "dingtalk":
-        document.getElementById(
-          "template_content"
-        ).value = `事件标题: [[.EventTitle]]
+        template_content_el.value = `事件标题: [[.EventTitle]]
 事件类型: [[.EventType]]
 事件时间: [[.EventTime]]
 事件内容: [[.EventBody]]
@@ -116,9 +118,7 @@ IPV6地址: [[.IPv6Addr]]
 平台类型: [[.PlatformType]]`;
         break;
       case "feishu":
-        document.getElementById(
-          "template_content"
-        ).value = `事件标题: [[.EventTitle]]
+        template_content_el.value = `事件标题: [[.EventTitle]]
 事件类型: [[.EventType]]
 事件时间: [[.EventTime]]
 事件内容: [[.EventBody]]
@@ -134,9 +134,7 @@ IPV6地址: [[.IPv6Addr]]
 平台类型: [[.PlatformType]]`;
         break;
       case "bark":
-        document.getElementById(
-          "template_content"
-        ).value = `事件标题: [[.EventTitle]]
+        template_content_el.value = `事件标题: [[.EventTitle]]
 事件类型: [[.EventType]]
 事件时间: [[.EventTime]]
 事件内容: [[.EventBody]]
@@ -152,9 +150,7 @@ IPV6地址: [[.IPv6Addr]]
 平台类型: [[.PlatformType]]`;
         break;
       case "ft07":
-        document.getElementById(
-          "template_content"
-        ).value = `事件标题: [[.EventTitle]]
+        template_content_el.value = `事件标题: [[.EventTitle]]
 
 事件类型: [[.EventType]]
         
@@ -183,9 +179,7 @@ IPV6地址: [[.IPv6Addr]]
 平台类型: [[.PlatformType]]`;
         break;
       case "push_deer":
-        document.getElementById(
-          "template_content"
-        ).value = `事件标题: [[.EventTitle]]
+        template_content_el.value = `事件标题: [[.EventTitle]]
 事件类型: [[.EventType]]
 事件时间: [[.EventTime]]
 事件内容: [[.EventBody]]
@@ -201,9 +195,7 @@ IPV6地址: [[.IPv6Addr]]
 平台类型: [[.PlatformType]]`;
         break;
       case "custom_http":
-        document.getElementById(
-          "template_content"
-        ).value = `事件标题: [[.EventTitle]]
+        template_content_el.value = `事件标题: [[.EventTitle]]
 事件类型: [[.EventType]]
 事件时间: [[.EventTime]]
 事件内容: [[.EventBody]]
