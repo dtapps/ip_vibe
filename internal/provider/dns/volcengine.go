@@ -145,6 +145,11 @@ func NewVolcengineDNSProviderRaw(ctx context.Context, cfg *VolcengineDNSConfig, 
 	return p, nil
 }
 
+// Name 返回 DNS 提供程序的名称
+func (p *VolcengineDNSProvider) Name() string {
+	return "火山引擎 DNS"
+}
+
 // Check 检查子域名是否存在
 // https://api.volcengine.com/api-explorer?action=ListRecords
 func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
@@ -226,16 +231,6 @@ func (p *VolcengineDNSProvider) Update(ctx context.Context, recordID string, dom
 	}
 
 	return nil
-}
-
-// Save 保存 DNS 记录
-func (p *VolcengineDNSProvider) Save(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
-	return nil
-}
-
-// Name 返回 DNS 提供程序的名称
-func (p *VolcengineDNSProvider) Name() string {
-	return "火山引擎 DNS"
 }
 
 // 火山引擎 DNS 自定义配置

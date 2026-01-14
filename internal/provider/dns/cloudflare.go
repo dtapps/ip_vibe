@@ -106,6 +106,11 @@ func NewCloudfareDNSProviderRaw(ctx context.Context, cfg *CloudfareDNSConfig, op
 	return p, nil
 }
 
+// Name 返回 DNS 提供程序的名称
+func (p *CloudfareDNSProvider) Name() string {
+	return "Cloudflare DNS"
+}
+
 // Check 检查子域名是否存在
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/list/
 func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
@@ -190,16 +195,6 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, recordID string, doma
 	}
 
 	return nil
-}
-
-// Save 保存 DNS 记录
-func (p *CloudfareDNSProvider) Save(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
-	return nil
-}
-
-// Name 返回 DNS 提供程序的名称
-func (p *CloudfareDNSProvider) Name() string {
-	return "Cloudflare DNS"
 }
 
 // Cloudfare DNS 自定义配置

@@ -117,6 +117,11 @@ func NewJdcloudDNSProviderRaw(ctx context.Context, cfg *JdcloudDNSConfig, opts .
 	return p, nil
 }
 
+// Name 返回 DNS 提供程序的名称
+func (p *JdcloudDNSProvider) Name() string {
+	return "京东云 DNS"
+}
+
 // Check 检查子域名是否存在
 // https://docs.jdcloud.com/cn/jd-cloud-dns/api/describeresourcerecord
 func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
@@ -201,16 +206,6 @@ func (p *JdcloudDNSProvider) Update(ctx context.Context, recordID string, domain
 	}
 
 	return nil
-}
-
-// Save 保存 DNS 记录
-func (p *JdcloudDNSProvider) Save(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
-	return nil
-}
-
-// Name 返回 DNS 提供程序的名称
-func (p *JdcloudDNSProvider) Name() string {
-	return "京东云 DNS"
 }
 
 // 京东云 DNS 自定义配置

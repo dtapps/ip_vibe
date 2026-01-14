@@ -130,6 +130,11 @@ func NewAliyunDNSProviderRaw(ctx context.Context, cfg *AliyunDNSConfig, opts ...
 	return p, nil
 }
 
+// Name 返回 DNS 提供程序的名称
+func (p *AliyunDNSProvider) Name() string {
+	return "阿里云 DNS"
+}
+
 // Check 检查子域名是否存在
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/DescribeDomainRecords
 func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
@@ -201,16 +206,6 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, recordID string, domain 
 	}
 
 	return nil
-}
-
-// Save 保存 DNS 记录
-func (p *AliyunDNSProvider) Save(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
-	return nil
-}
-
-// Name 返回 DNS 提供程序的名称
-func (p *AliyunDNSProvider) Name() string {
-	return "阿里云 DNS"
 }
 
 // 阿里云 DNS 自定义配置

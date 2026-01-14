@@ -17,7 +17,6 @@ import (
 	"vibe_ip/internal/gin_middleware"
 	"vibe_ip/internal/gin_server"
 	"vibe_ip/internal/global"
-	"vibe_ip/internal/grpc_gateway_client"
 	"vibe_ip/internal/grpc_server"
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/mcp_server"
@@ -156,12 +155,12 @@ func main() {
 	go grpcMgr.Run(ctx)
 
 	// 连接 gRPC-Gateway 服务
-	grpcGwMgr := grpc_gateway_client.NewManager(global.GvaGrpcSlog, grpc_gateway_client.Config{
-		Addr:     global.GvaEnv.GRPC_ADDR,
-		Username: global.GvaEnv.BASIC_AUTH_USERNAME,
-		Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
-	}, router)
-	go grpcGwMgr.Conn(ctx)
+	// grpcGwMgr := grpc_gateway_client.NewManager(global.GvaGrpcSlog, grpc_gateway_client.Config{
+	// 	Addr:     global.GvaEnv.GRPC_ADDR,
+	// 	Username: global.GvaEnv.BASIC_AUTH_USERNAME,
+	// 	Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
+	// }, router)
+	// go grpcGwMgr.Conn(ctx)
 
 	// Thrift 启动
 	thriftMgr := thrift_server.NewManager(global.GvaThriftSlog, thrift_server.Config{
@@ -272,7 +271,7 @@ func gracefulShutdown() {
 		mcp_server.NewManager(global.GvaMcpSlog, mcp_server.Config{}, nil).Stop(ctx)
 
 		// 4. 优雅关闭 gRPC-Gateway 服务
-		grpc_gateway_client.NewManager(global.GvaGrpcSlog, grpc_gateway_client.Config{}, nil).Stop(ctx)
+		// grpc_gateway_client.NewManager(global.GvaGrpcSlog, grpc_gateway_client.Config{}, nil).Stop(ctx)
 
 		// 5. 优雅关闭 gRPC 服务
 		grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{}).Stop(ctx)

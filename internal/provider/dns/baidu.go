@@ -115,6 +115,11 @@ func NewBaiduDNSProviderRaw(ctx context.Context, cfg *BaiduDNSConfig, opts ...Dn
 	return p, nil
 }
 
+// Name 返回 DNS 提供程序的名称
+func (p *BaiduDNSProvider) Name() string {
+	return "百度云 DNS"
+}
+
 // Check 检查子域名是否存在
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#查询解析记录列表
 func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
@@ -181,16 +186,6 @@ func (p *BaiduDNSProvider) Update(ctx context.Context, recordID string, domain s
 	}
 
 	return nil
-}
-
-// Save 保存 DNS 记录
-func (p *BaiduDNSProvider) Save(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
-	return nil
-}
-
-// Name 返回 DNS 提供程序的名称
-func (p *BaiduDNSProvider) Name() string {
-	return "百度云 DNS"
 }
 
 // 百度云 DNS 自定义配置

@@ -17,7 +17,6 @@ replace github.com/quic-go/quic-go => github.com/quic-go/quic-go v0.58.0
 replace github.com/imroc/req/v3 => github.com/imroc/req/v3 v3.57.0
 
 require (
-	connectrpc.com/connect v1.19.1
 	entgo.io/ent v0.14.5
 	github.com/alibabacloud-go/alidns-20150109/v5 v5.1.0
 	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0

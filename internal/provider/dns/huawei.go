@@ -144,6 +144,11 @@ func NewHuaweiDNSProviderRaw(ctx context.Context, cfg *HuaweiDNSConfig, opts ...
 	return p, nil
 }
 
+// Name 返回 DNS 提供程序的名称
+func (p *HuaweiDNSProvider) Name() string {
+	return "华为云 DNS"
+}
+
 // Check 检查子域名是否存在
 // https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/debug?api=ShowRecordSetByZone
 func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
@@ -228,16 +233,6 @@ func (p *HuaweiDNSProvider) Update(ctx context.Context, recordID string, domain 
 	}
 
 	return nil
-}
-
-// Save 保存 DNS 记录
-func (p *HuaweiDNSProvider) Save(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
-	return nil
-}
-
-// Name 返回 DNS 提供程序的名称
-func (p *HuaweiDNSProvider) Name() string {
-	return "华为云 DNS"
 }
 
 // 华为云 DNS 自定义配置

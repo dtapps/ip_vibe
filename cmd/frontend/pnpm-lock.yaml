@@ -12,8 +12,8 @@ importers:
         specifier: ^1.9.0
         version: 1.9.0(tailwindcss@4.1.18)
       '@iconify-json/lucide':
-        specifier: ^1.2.84
-        version: 1.2.84
+        specifier: ^1.2.85
+        version: 1.2.85
       '@tailwindcss/cli':
         specifier: ^4.1.18
         version: 4.1.18
@@ -52,8 +52,8 @@ packages:
     peerDependencies:
       tailwindcss: '*'
 
-  '@iconify-json/lucide@1.2.84':
-    resolution: {integrity: sha512-m45MY1aW2swSK6Neb3J2qdZ+BxZ1VTdN7UeoXENwyMACG9bqGHWYJYxWoFzwoSnCfYLyKWTcBhesBgMd5IrUzQ==}
+  '@iconify-json/lucide@1.2.85':
+    resolution: {integrity: sha512-VXUWT6KRDiVK4Ty/7Ypu+U0KnSbHzDAOOiSgLLPhU8u3ES5IusP1X7ahZb1iwiVKGWRG6gkKywaRUIZLgYWXyA==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -483,7 +483,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@iconify-json/lucide@1.2.84':
+  '@iconify-json/lucide@1.2.85':
     dependencies:
       '@iconify/types': 2.0.0
 

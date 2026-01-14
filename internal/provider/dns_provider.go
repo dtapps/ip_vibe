@@ -18,14 +18,12 @@ import (
 
 // DNSProvider 定义了 DNS 操作的接口
 type DNSProvider interface {
+	// Name 返回 DNS 提供程序的名称
+	Name() (name string)
 	// Check 检查 DNS 记录是否存在
 	Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error)
 	// Update 更新 DNS 记录
 	Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error)
-	// Save 保存 DNS 记录
-	Save(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error)
-	// Name 返回 DNS 提供程序的名称
-	Name() (name string)
 	// ParseCustomConfig 解析 DNS 自定义配置
 	ParseCustomConfig(config_json json.RawMessage) (err error)
 }
@@ -171,21 +169,6 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 
 	// 可以下发通知
 	t.isNotification = true
-
-	if err := t.provider.Save(
-		ctx,
-		t.config.recordID,
-		t.config.domain,
-		t.config.subdomain,
-		t.config.newValue,
-		t.config.recordType,
-	); err != nil {
-		t.logger.Error("【DNS】保存失败",
-			slog.String("name", t.provider.Name()),
-			slog.Any("err", err),
-		)
-		return err
-	}
 
 	t.logger.Info("【DNS】更新成功")
 	return nil
