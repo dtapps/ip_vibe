@@ -16,10 +16,11 @@ import (
 
 // TencentDNSConfig 腾讯云 DNS 配置
 type TencentDNSConfig struct {
-	Endpoint   string `json:"endpoint,omitempty"` // 接口地址
-	SecretID   string `json:"secret_id"`          // 密钥ID
-	SecretKey  string `json:"secret_key"`         // 密钥Key
-	DomainName string `json:"domain_name"`        // 主域名
+	Endpoint    string `json:"endpoint,omitempty"`     // 接口地址
+	SecretID    string `json:"secret_id"`              // 密钥ID
+	SecretKey   string `json:"secret_key"`             // 密钥Key
+	DomainName  string `json:"domain_name"`            // 主域名
+	DomainGrade string `json:"domain_grade,omitempty"` // 域名套餐等级
 }
 
 // Validate 验证腾讯云 DNS 配置
@@ -219,4 +220,37 @@ func (p *TencentDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err
 		return err
 	}
 	return nil
+}
+
+// TencentDNSLine 腾讯云 DNS 线路
+type TencentDNSLine struct {
+	LineID   string `json:"line_id"`   // 线路ID
+	LineName string `json:"line_name"` // 线路名称
+}
+
+// 获取腾讯云 DNS 线路列表
+// https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=DescribeRecordLineList
+func (p *TencentDNSProvider) ListLines(ctx context.Context) (lines []*TencentDNSLine, err error) {
+	// 判断是否配置了域名等级
+	if p.cfg.DomainGrade == "" {
+		return nil, nil
+	}
+	// 请求参数
+	request := dnspod.NewDescribeRecordLineListRequest()
+	request.Domain = common.StringPtr(p.cfg.DomainName)
+	request.DomainGrade = common.StringPtr(p.cfg.DomainGrade)
+	// 请求
+	response, err := p.Provider.Client.DescribeRecordLineListWithContext(ctx, request)
+	printJSON("查询线路", request, response)
+	if err != nil {
+		return
+	}
+	// 响应参数
+	for _, item := range response.Response.LineList {
+		lines = append(lines, &TencentDNSLine{
+			LineID:   utils.PtrToString(item.Name),
+			LineName: utils.PtrToString(item.Name),
+		})
+	}
+	return
 }

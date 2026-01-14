@@ -17,6 +17,9 @@ async function onConfigSelect(el) {
 
   // 从后端接口获取指定平台的动态 Schema，并更新 DNS_SCHEMA
   switch (platform) {
+    case "tencent_dns":
+      await fetchAndReplaceDnsSchema(platform, id);
+      break;
     case "aliyun_dns":
       await fetchAndReplaceDnsSchema(platform, id);
       break;
@@ -197,6 +200,12 @@ async function openFormModal(id) {
 
       // 从后端接口获取指定平台的动态 Schema，并更新 DNS_SCHEMA
       switch (dnsRecord.platform) {
+        case "tencent_dns":
+          await fetchAndReplaceDnsSchema(
+            dnsRecord.platform,
+            dnsRecord.config_id
+          );
+          break;
         case "aliyun_dns":
           await fetchAndReplaceDnsSchema(
             dnsRecord.platform,

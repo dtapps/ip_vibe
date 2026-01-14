@@ -120,6 +120,54 @@ func GetDnsRecordSchema(c *gin.Context) {
 	}
 
 	switch firstConfig.Platform {
+	case platformconfig.PlatformTencentDNS:
+		dnsProviderCfg := dns.NewDefaultTencentDNSConfig()
+		err = dnsProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		dnsProvider, err := dns.NewTencentDNSProviderRaw(c, dnsProviderCfg, dnsProviderOpts...)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		// 查询线路
+		lines, err := dnsProvider.ListLines(c)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		if len(lines) == 0 {
+			errorResponse(c, http.StatusNotFound, "未查询到线路")
+			return
+		}
+		// 准备 options
+		options := make([]types.SCHEMAFieldOption, len(lines))
+		for i, line := range lines {
+			options[i] = types.SCHEMAFieldOption{
+				Value: line.LineID,
+				Label: line.LineName,
+			}
+		}
+		// 构造字段组（内层数组）
+		fieldGroup = []types.SCHEMAField{
+			{
+				ID:          "line",
+				Label:       "线路",
+				Type:        "select",
+				Placeholder: "请选择线路",
+				Required:    true,
+				Options:     options,
+			},
+			{
+				ID:          "remark",
+				Label:       "备注",
+				Type:        "text",
+				Placeholder: "请输入备注",
+				Required:    false,
+			},
+		}
 	case platformconfig.PlatformAliyunDNS:
 		dnsProviderCfg := dns.NewDefaultAliyunDNSConfig()
 		err = dnsProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
@@ -136,6 +184,10 @@ func GetDnsRecordSchema(c *gin.Context) {
 		lines, err := dnsProvider.ListLines(c)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		if len(lines) == 0 {
+			errorResponse(c, http.StatusNotFound, "未查询到线路")
 			return
 		}
 		// 准备 options
@@ -171,6 +223,10 @@ func GetDnsRecordSchema(c *gin.Context) {
 		lines, err := dnsProvider.ListLines(c)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		if len(lines) == 0 {
+			errorResponse(c, http.StatusNotFound, "未查询到线路")
 			return
 		}
 		// 准备 options

@@ -12,7 +12,7 @@ const PLATFORM_SCHEMA = {
       },
       {
         id: "zone_id",
-        label: "Zone ID",
+        label: "域名ID",
         type: "text",
         placeholder: "your-zone-id",
         required: true,
@@ -20,7 +20,7 @@ const PLATFORM_SCHEMA = {
       [
         {
           id: "domain_name",
-          label: "Domain Name",
+          label: "域名名称",
           type: "text",
           placeholder: "example.com",
           required: true,
@@ -29,7 +29,7 @@ const PLATFORM_SCHEMA = {
         },
         {
           id: "email",
-          label: "Email",
+          label: "邮箱",
           type: "email",
           placeholder: "your@email.com",
           required: true,
@@ -57,7 +57,7 @@ const PLATFORM_SCHEMA = {
       [
         {
           id: "domain_name",
-          label: "Domain Name",
+          label: "域名名称",
           type: "text",
           placeholder: "example.com",
           required: true,
@@ -66,12 +66,61 @@ const PLATFORM_SCHEMA = {
         },
         {
           id: "email",
-          label: "Email",
+          label: "邮箱",
           type: "email",
           placeholder: "your@email.com",
           required: true,
         },
       ],
+      {
+        id: "domain_grade",
+        label: "域名套餐（配置即可获取线路）",
+        type: "select",
+        placeholder: "请选择域名套餐等级",
+        required: false,
+        options: [
+          {
+            value: "D_FREE",
+            label: "免费套餐",
+          },
+          {
+            value: "D_PLUS",
+            label: "个人豪华",
+          },
+          {
+            value: "D_EXTRA",
+            label: "企业 I",
+          },
+          {
+            value: "D_EXPERT",
+            label: "企业 II",
+          },
+          {
+            value: "D_ULTRA",
+            label: "企业 III",
+          },
+          {
+            value: "DP_EXTRA",
+            label: "企业基础版",
+          },
+          {
+            value: "DP_FREE",
+            label: "新免费",
+          },
+          {
+            value: "DP_PLUS",
+            label: "专业版",
+          },
+          {
+            value: "DP_EXPERT",
+            label: "企业版",
+          },
+          {
+            value: "DP_ULTRA",
+            label: "尊享版",
+          },
+        ],
+      },
     ],
   },
   tencent_eo: {
@@ -93,7 +142,7 @@ const PLATFORM_SCHEMA = {
       },
       {
         id: "zone_id",
-        label: "Zone ID",
+        label: "域名ID",
         type: "text",
         placeholder: "zone-...",
         required: true,
@@ -101,7 +150,7 @@ const PLATFORM_SCHEMA = {
       [
         {
           id: "domain_name",
-          label: "Domain Name",
+          label: "域名名称",
           type: "text",
           placeholder: "example.com",
           required: true,
@@ -110,7 +159,7 @@ const PLATFORM_SCHEMA = {
         },
         {
           id: "email",
-          label: "Email",
+          label: "邮箱",
           type: "email",
           placeholder: "your@email.com",
           required: true,
@@ -138,7 +187,7 @@ const PLATFORM_SCHEMA = {
       [
         {
           id: "domain_name",
-          label: "Domain Name",
+          label: "域名名称",
           type: "text",
           placeholder: "example.com",
           required: true,
@@ -147,7 +196,7 @@ const PLATFORM_SCHEMA = {
         },
         {
           id: "email",
-          label: "Email",
+          label: "邮箱",
           type: "email",
           placeholder: "your@email.com",
           required: true,
@@ -174,15 +223,15 @@ const PLATFORM_SCHEMA = {
       },
       {
         id: "site_id",
-        label: "Site ID",
+        label: "域名ID",
         type: "number",
-        placeholder: "Site ID",
+        placeholder: "请输入域名ID",
         required: true,
       },
       [
         {
           id: "domain_name",
-          label: "Domain Name",
+          label: "域名名称",
           type: "text",
           placeholder: "example.com",
           required: true,
@@ -191,7 +240,7 @@ const PLATFORM_SCHEMA = {
         },
         {
           id: "email",
-          label: "Email",
+          label: "邮箱",
           type: "email",
           placeholder: "your@email.com",
           required: true,
@@ -219,7 +268,7 @@ const PLATFORM_SCHEMA = {
       [
         {
           id: "domain_name",
-          label: "Domain Name",
+          label: "域名名称",
           type: "text",
           placeholder: "example.com",
           required: true,
@@ -228,7 +277,7 @@ const PLATFORM_SCHEMA = {
         },
         {
           id: "email",
-          label: "Email",
+          label: "邮箱",
           type: "email",
           placeholder: "your@email.com",
           required: true,
@@ -255,7 +304,7 @@ const PLATFORM_SCHEMA = {
       },
       {
         id: "zone_id",
-        label: "Zone ID",
+        label: "域名ID",
         type: "text",
         placeholder: "zone-...",
         required: true,
@@ -263,7 +312,7 @@ const PLATFORM_SCHEMA = {
       [
         {
           id: "domain_name",
-          label: "Domain Name",
+          label: "域名名称",
           type: "text",
           placeholder: "example.com",
           required: true,
@@ -272,7 +321,7 @@ const PLATFORM_SCHEMA = {
         },
         {
           id: "email",
-          label: "Email",
+          label: "邮箱",
           type: "email",
           placeholder: "your@email.com",
           required: true,
@@ -299,7 +348,7 @@ const PLATFORM_SCHEMA = {
       },
       {
         id: "zone_id",
-        label: "Zone ID",
+        label: "域名ID",
         type: "number",
         placeholder: "Zone ID",
         required: true,
@@ -307,7 +356,7 @@ const PLATFORM_SCHEMA = {
       [
         {
           id: "domain_name",
-          label: "Domain Name",
+          label: "域名名称",
           type: "text",
           placeholder: "example.com",
           required: true,
@@ -317,7 +366,7 @@ const PLATFORM_SCHEMA = {
         },
         {
           id: "email",
-          label: "Email",
+          label: "邮箱",
           type: "email",
           placeholder: "your@email.com",
           required: true,
