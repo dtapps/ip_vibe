@@ -118,24 +118,58 @@
 </div>
 
 <script>
-    // 统一初始化 ClipboardJS (支持 target 复制 textarea 和 text 复制 Header JSON)
-    (function initLogClipboard() {
-        if (typeof ClipboardJS === 'undefined') {
-            setTimeout(initLogClipboard, 200);
-            return;
+    // 确保 DOM 加载后初始化 ClipboardJS
+    (async () => {
+        if (document.readyState === 'loading') {
+            await new Promise(resolve => {
+                document.addEventListener('DOMContentLoaded', resolve, { once: true });
+            });
         }
-        const cb = new ClipboardJS('.log-copy-btn');
-        cb.on('success', function (e) {
-            const btn = e.trigger;
-            const oldText = btn.innerText;
-            btn.innerText = '✅ 已复制';
-            btn.classList.add("text-success");
-            setTimeout(() => {
-                btn.innerText = oldText;
-                btn.classList.remove("text-success");
-            }, 1500);
-            e.clearSelection();
-        });
+
+        try {
+            // 加载 ClipboardJS 库
+            await loadClipboardJS();
+
+            // 初始化 ClipboardJS 实例
+            const clipboard = new ClipboardJS('.log-copy-btn');
+
+            clipboard.on('success', function (e) {
+                const btn = e.trigger;
+                const oldText = btn.innerText;
+                const icon = btn.querySelector('span');
+
+                btn.innerText = "";
+                btn.appendChild(document.createTextNode(' ✅ 已复制'));
+                btn.classList.add("text-success");
+
+                setTimeout(() => {
+                    btn.innerText = "";
+                    if (icon) {
+                        btn.appendChild(icon)
+                    };
+                    btn.appendChild(document.createTextNode(oldText));
+                    btn.classList.remove("text-success");
+                }, 1500);
+                e.clearSelection();
+            });
+
+            clipboard.on('error', function (e) {
+                console.error('clipboard error', e);
+                alert('复制失败，请手动选择复制');
+            });
+        } catch (error) {
+            console.error('ClipboardJS 加载失败:', error.message);
+            // 增强fallback：禁用按钮 + 提示
+            document.querySelectorAll('.log-copy-btn').forEach(btn => {
+                btn.disabled = true;
+                btn.innerHTML = '<span>⚠️</span> 复制功能暂不可用（网络问题）';
+                btn.classList.add('text-warning');
+            });
+            // 可选：提示用户刷新或检查网络
+            if (confirm('复制功能加载失败，是否重试？')) {
+                location.reload();
+            }
+        }
     })();
 </script>
 {{ end }}

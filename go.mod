@@ -55,7 +55,7 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc5
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.22
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.32
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.33
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.32
 	github.com/volcengine/volcengine-go-sdk v1.2.6
@@ -79,8 +79,8 @@ require (
 	go.dtapp.net/library/utils/gotime v1.0.17
 	golang.org/x/net v0.49.0
 	golang.org/x/sync v0.19.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20260112192933-99fd39fd28a9
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260112192933-99fd39fd28a9
+	google.golang.org/genproto/googleapis/api v0.0.0-20260114163908-3f89685c29c3
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260114163908-3f89685c29c3
 	google.golang.org/grpc v1.78.0
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1

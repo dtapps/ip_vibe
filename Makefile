@@ -6,6 +6,7 @@ setup: install-tools verify-tools mod pnpm_update
 	@echo "🎉 Project setup completed!"
 
 # 安装
+# 	go install connectrpc.com/connect/cmd/protoc-gen-connect-go@latest
 install-tools:
 	go install entgo.io/ent/cmd/ent@latest && \
 	go install github.com/swaggo/swag/cmd/swag@latest && mv $(shell go env GOPATH)/bin/swag $(shell go env GOPATH)/bin/swag_v1 && \
@@ -17,13 +18,13 @@ install-tools:
 	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest && \
 	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest && \
 	go install github.com/envoyproxy/protoc-gen-validate@latest && \
-	go install connectrpc.com/connect/cmd/protoc-gen-connect-go@latest && \
 	go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest && \
 	go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest && \
 	go install github.com/cloudwego/thriftgo@latest
 	@echo "🎉 All tools installed successfully!"
 
 # 验证安装
+# 	@test -f $(shell go env GOPATH)/bin/protoc-gen-connect-go && echo "✅ protoc-gen-connect-go found" || echo "❌ protoc-gen-connect-go not found"
 verify-tools:
 	@test -f $(shell go env GOPATH)/bin/ent && echo "✅ ent found" || echo "❌ ent not found"
 	@test -f $(shell go env GOPATH)/bin/swag_v1 && echo "✅ swag_v1 found" || echo "❌ swag_v1 not found"
@@ -35,7 +36,6 @@ verify-tools:
 	@test -f $(shell go env GOPATH)/bin/protoc-gen-grpc-gateway && echo "✅ protoc-gen-grpc-gateway found" || echo "❌ protoc-gen-grpc-gateway not found"
 	@test -f $(shell go env GOPATH)/bin/protoc-gen-openapiv2 && echo "✅ protoc-gen-openapiv2 found" || echo "❌ protoc-gen-openapiv2 not found"
 	@test -f $(shell go env GOPATH)/bin/protoc-gen-validate && echo "✅ protoc-gen-validate found" || echo "❌ protoc-gen-validate not found"
-	@test -f $(shell go env GOPATH)/bin/protoc-gen-connect-go && echo "✅ protoc-gen-connect-go found" || echo "❌ protoc-gen-connect-go not found"
 	@test -f $(shell go env GOPATH)/bin/grpcurl && echo "✅ grpcurl found" || echo "❌ grpcurl not found"
 	@test -f $(shell go env GOPATH)/bin/protoc-gen-doc && echo "✅ protoc-gen-doc found" || echo "❌ protoc-gen-doc not found"
 	@test -f $(shell go env GOPATH)/bin/thriftgo && echo "✅ thriftgo found" || echo "❌ thriftgo not found"
@@ -96,13 +96,13 @@ pnpm_update:
 	cd cmd/$(BINARY_NAME_FRONTEND) && \
 	pnpm update
 
+# 	make grpc_generate_connect
 grpc_generate_all:
 	make grpc_generate_pb
-	make grpc_generate_connect
 	make grpc_generate_gateway
 	make grpc_generate_openapi
 
-# 生成 gRPC 核心代码（包括 protobuf、gRPC、Validate 和 Connect）
+# 生成 gRPC 核心代码（包括 protobuf、gRPC、Validate）
 grpc_generate_pb:
 	@echo "Generating gRPC core code..."
 	protoc --proto_path=./internal/grpc_proto \
@@ -115,7 +115,7 @@ grpc_generate_pb:
 	       --validate_out="lang=go:./internal/grpc_generated" \
 	       --validate_opt=paths=source_relative \
 	       ./internal/grpc_proto/*.proto
-	@echo "✅ gRPC core code (incl. Validate & Connect) generated successfully!"
+	@echo "✅ gRPC core code (incl. Validate) generated successfully!"
 
 # 生成 Connect HTTP 处理函数
 grpc_generate_connect:

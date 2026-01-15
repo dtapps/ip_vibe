@@ -32,40 +32,58 @@
 </div>
 
 <script>
-  // 使用监听器确保 ClipboardJS 已经加载
-  (function initClipboard() {
-    if (typeof ClipboardJS === 'undefined') {
-      // 如果还没加载完，等 200ms 再试
-      setTimeout(initClipboard, 200);
-      return;
+  // 确保 DOM 加载后初始化 ClipboardJS
+  (async () => {
+    if (document.readyState === 'loading') {
+      await new Promise(resolve => {
+        document.addEventListener('DOMContentLoaded', resolve, { once: true });
+      });
     }
 
-    const clipboard = new ClipboardJS('.copy-btn',);
+    try {
+      // 加载 ClipboardJS 库
+      await loadClipboardJS();
 
-    clipboard.on('success', function (e) {
-      const btn = e.trigger;
-      const oldText = btn.innerText;
-      const icon = btn.querySelector('span');
+      // 初始化
+      const clipboard = new ClipboardJS('.copy-btn');
 
-      btn.innerText = "";
-      btn.appendChild(document.createTextNode(' ✅ 已复制'));
-      btn.classList.add("text-success");
+      clipboard.on('success', function (e) {
+        const btn = e.trigger;
+        const oldText = btn.innerText;
+        const icon = btn.querySelector('span');
 
-      setTimeout(() => {
         btn.innerText = "";
-        if (icon) {
-          btn.appendChild(icon)
-        };
-        btn.appendChild(document.createTextNode(oldText));
-        btn.classList.remove("text-success");
-      }, 1500);
-      e.clearSelection();
-    });
+        btn.appendChild(document.createTextNode(' ✅ 已复制'));
+        btn.classList.add("text-success");
 
-    clipboard.on('error', function (e) {
-      console.error('popup clipboard error', e);
-      alert('复制失败，请手动选择复制');
-    });
+        setTimeout(() => {
+          btn.innerText = "";
+          if (icon) {
+            btn.appendChild(icon)
+          };
+          btn.appendChild(document.createTextNode(oldText));
+          btn.classList.remove("text-success");
+        }, 1500);
+        e.clearSelection();
+      });
+
+      clipboard.on('error', function (e) {
+        console.error('clipboard error', e);
+        alert('复制失败，请手动选择复制');
+      });
+    } catch (error) {
+      console.error('ClipboardJS 加载失败:', error.message);
+      // 增强fallback：禁用按钮 + 提示
+      document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⚠️</span> 复制功能暂不可用（网络问题）';
+        btn.classList.add('text-warning');
+      });
+      // 可选：提示用户刷新或检查网络
+      if (confirm('复制功能加载失败，是否重试？')) {
+        location.reload();
+      }
+    }
   })();
 </script>
 {{ end }}
