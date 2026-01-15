@@ -16,6 +16,8 @@ type Tx struct {
 	config
 	// CDNRecord is the client for interacting with the CDNRecord builders.
 	CDNRecord *CDNRecordClient
+	// Cache is the client for interacting with the Cache builders.
+	Cache *CacheClient
 	// DNSRecord is the client for interacting with the DNSRecord builders.
 	DNSRecord *DNSRecordClient
 	// Device is the client for interacting with the Device builders.
@@ -168,6 +170,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.CDNRecord = NewCDNRecordClient(tx.config)
+	tx.Cache = NewCacheClient(tx.config)
 	tx.DNSRecord = NewDNSRecordClient(tx.config)
 	tx.Device = NewDeviceClient(tx.config)
 	tx.DevicePortForward = NewDevicePortForwardClient(tx.config)

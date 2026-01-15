@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"vibe_ip/internal/helper/aliyun_helper"
 	"vibe_ip/internal/provider"
+	"vibe_ip/internal/utils"
 
 	alidns20150109 "github.com/alibabacloud-go/alidns-20150109/v5/client"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
@@ -140,7 +140,7 @@ func (p *AliyunDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/DescribeDomainRecords
-func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
+func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, originValue string, err error) {
 
 	// 请求参数
 	request := &alidns20150109.DescribeDomainRecordsRequest{}
@@ -158,13 +158,13 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 	}
 	// 响应参数
 	for _, item := range response.Body.DomainRecords.Record {
-		if strings.EqualFold(tea.StringValue(item.RR), subdomain) && strings.EqualFold(tea.StringValue(item.DomainName), domain) {
-			if recordType != "" && !strings.EqualFold(tea.StringValue(item.Type), recordType) {
+		if utils.EqualStringIgnoreCase(tea.StringValue(item.RR), subdomain) && utils.EqualStringIgnoreCase(tea.StringValue(item.DomainName), domain) {
+			if recordType != "" && !utils.EqualStringIgnoreCase(tea.StringValue(item.Type), recordType) {
 				continue
 			}
 			recordID = tea.StringValue(item.RecordId)
-			value = tea.StringValue(item.Value)
-			return recordID, value, nil
+			originValue = tea.StringValue(item.Value)
+			return recordID, originValue, nil
 		}
 	}
 
@@ -174,7 +174,7 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 // Update 更新 DNS 记录
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/AddDomainRecord
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/UpdateDomainRecord
-func (p *AliyunDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
+func (p *AliyunDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValue string, recordType string) (err error) {
 
 	if recordID == "" {
 		// 请求参数
@@ -182,7 +182,7 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, recordID string, domain 
 		request.DomainName = tea.String(domain)        // 域名名称
 		request.RR = tea.String(subdomain)             // 主机记录
 		request.Type = tea.String(recordType)          // 解析记录类型
-		request.Value = tea.String(value)              // 记录值
+		request.Value = tea.String(originValue)        // 记录值
 		request.Line = tea.String(p.CustomConfig.Line) // 解析线路
 		// 请求
 		response, err := p.Provider.Client.AddDomainRecordWithContext(ctx, request, &dara.RuntimeOptions{})
@@ -198,7 +198,7 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, recordID string, domain 
 		request.RecordId = tea.String(recordID)        // 解析记录的ID
 		request.RR = tea.String(subdomain)             // 主机记录
 		request.Type = tea.String(recordType)          // 解析记录类型
-		request.Value = tea.String(value)              // 记录值
+		request.Value = tea.String(originValue)        // 记录值
 		request.Line = tea.String(p.CustomConfig.Line) // 解析线路
 		// 请求
 		response, err := p.Provider.Client.UpdateDomainRecordWithContext(ctx, request, &dara.RuntimeOptions{})

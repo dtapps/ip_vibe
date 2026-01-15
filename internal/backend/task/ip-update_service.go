@@ -17,17 +17,19 @@ import (
 	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/operationlog"
+	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/cdn_helper"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/provider"
+	"vibe_ip/internal/provider/cdn"
 	"vibe_ip/internal/provider/dns"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
 	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/utils/goarray"
-	"go.dtapp.net/library/utils/gomd5"
 	"go.dtapp.net/library/utils/gorandom"
+	"go.dtapp.net/library/utils/gostring"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -86,13 +88,26 @@ func (s *IPUpdateTask) StartDnsJob(ctx context.Context) (err error) {
 	}
 	// 延时1分钟
 	time.Sleep(1 * time.Minute)
+	// 解析设置的时间
+	var jobDuratio gocron.JobDefinition
+	taskTime := global.GvaSetting.DNSRefreshTaskTime
+	if strings.Contains(taskTime, "-") {
+		// 解析时间范围
+		times := gostring.Split(taskTime, "-")
+		if len(times) != 2 {
+			return fmt.Errorf("DNS刷新任务时间格式错误：%s", taskTime)
+		}
+		jobDuratio = gocron.DurationRandomJob(
+			time.Duration(cast.ToInt64(times[0]))*time.Minute, // 最小间隔
+			time.Duration(cast.ToInt64(times[1]))*time.Minute, // 最大间隔
+		)
+	} else {
+		jobDuratio = gocron.DurationJob(time.Duration(cast.ToInt64(taskTime)) * time.Minute)
+	}
 	// 创建周期任务
 	s.dnsJob, err = s.cron.NewJob(
-		gocron.DurationRandomJob(
-			10*time.Minute, // 最小间隔 10 分钟
-			12*time.Minute, // 最大间隔 12 分钟
-		),
-		gocron.NewTask(s.RunDnsTask),                         // 执行任务
+		jobDuratio,
+		gocron.NewTask(s.RunDnsTask), // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName("DNS记录刷新"),                           // 任务名称
@@ -116,13 +131,26 @@ func (s *IPUpdateTask) StartCdnJob(ctx context.Context) (err error) {
 	}
 	// 延时1分钟
 	// time.Sleep(1 * time.Minute)
+	// 解析设置的时间
+	var jobDuratio gocron.JobDefinition
+	taskTime := global.GvaSetting.CDNRefreshTaskTime
+	if strings.Contains(taskTime, "-") {
+		// 解析时间范围
+		times := gostring.Split(taskTime, "-")
+		if len(times) != 2 {
+			return fmt.Errorf("CDN刷新任务时间格式错误：%s", taskTime)
+		}
+		jobDuratio = gocron.DurationRandomJob(
+			time.Duration(cast.ToInt64(times[0]))*time.Minute, // 最小间隔
+			time.Duration(cast.ToInt64(times[1]))*time.Minute, // 最大间隔
+		)
+	} else {
+		jobDuratio = gocron.DurationJob(time.Duration(cast.ToInt64(taskTime)) * time.Minute)
+	}
 	// 创建周期任务
 	s.cdnJob, err = s.cron.NewJob(
-		gocron.DurationRandomJob(
-			10*time.Minute, // 最小间隔 10 分钟
-			12*time.Minute, // 最大间隔 12 分钟
-		),
-		gocron.NewTask(s.RunCdnTask),                         // 执行任务
+		jobDuratio,
+		gocron.NewTask(s.RunCdnTask), // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 		gocron.WithName("CDN记录刷新"),                           // 任务名称
@@ -320,7 +348,7 @@ func (s *IPUpdateTask) RunCdnTask() {
 	logger.InfoContext(ctx, "开始执行")
 
 	// 分组记录
-	var concurrentRecords, serialRecords []*PendingCdnRecord
+	var concurrentRecords, serialRecords []*CdnUpdateParams
 
 	// 查询全部CDN记录
 	allCdnRecord, err := s.db.CDNRecord.Query().
@@ -353,18 +381,11 @@ func (s *IPUpdateTask) RunCdnTask() {
 			}
 
 			// 创建待处理记录
-			pendingRecord := &PendingCdnRecord{
-				item:     cdnRecord,
-				platform: cdnRecord.Edges.Config.Platform,
-				params: &cdn_helper.CDNProcessParams{
-					CDNRecordID: cast.ToString(cdnRecord.ID),
+			pendingRecord := &CdnUpdateParams{
+				platform: cdnRecord.Edges.Config,
+				record:   cdnRecord,
 
-					ConfigJSON:     cdnRecord.Edges.Config.ConfigJSON,
-					SubDomain:      cdnRecord.SubDomain,
-					OriginProtocol: strings.ToUpper(cdnRecordConfigJson.OriginProtocol),
-					HttpPort:       cdnRecordConfigJson.HTTPPort,
-					HttpsPort:      cdnRecordConfigJson.HTTPSPort,
-				},
+				CDNRecordID: cast.ToString(cdnRecord.ID),
 			}
 
 			// 获取关联的 IPGroup
@@ -374,8 +395,8 @@ func (s *IPUpdateTask) RunCdnTask() {
 				// _ = s.updateDbOfCdnResponse(ctx, cdnRecord.ID, err.Error())
 				continue
 			}
-			pendingRecord.params.GroupRecordID = cast.ToString(ipGroup.ID)
-			pendingRecord.params.GroupName = gomd5.Get16MD5Encode(pendingRecord.params.GroupRecordID)
+			pendingRecord.GroupRecordID = cast.ToString(ipGroup.ID)
+			// pendingRecord.GroupName = gomd5.Get16MD5Encode(pendingRecord.params.GroupRecordID)
 
 			// 获取关联的设备列表
 			devices := ipGroup.Edges.Devices
@@ -388,16 +409,16 @@ func (s *IPUpdateTask) RunCdnTask() {
 			// 收集该记录的源IP
 			for _, device := range devices {
 				if device.IPV4 != "" && cdnRecord.Type == cdnrecord.TypeA {
-					pendingRecord.params.OriginValues = append(pendingRecord.params.OriginValues, device.IPV4)
+					pendingRecord.OriginValues = append(pendingRecord.OriginValues, device.IPV4)
 				}
 				if device.IPV6 != "" && cdnRecord.Type == cdnrecord.TypeAAAA {
-					pendingRecord.params.OriginValues = append(pendingRecord.params.OriginValues, device.IPV6)
+					pendingRecord.OriginValues = append(pendingRecord.OriginValues, device.IPV6)
 				}
 			}
 
 			// 去重
-			pendingRecord.params.OriginValues = goarray.RemoveDuplicateElement(pendingRecord.params.OriginValues)
-			if len(pendingRecord.params.OriginValues) == 0 {
+			pendingRecord.OriginValues = goarray.RemoveDuplicateElement(pendingRecord.OriginValues)
+			if len(pendingRecord.OriginValues) == 0 {
 				// err = fmt.Errorf("记录 %d 需要更新的源为空", cdnRecord.ID)
 				// _ = s.updateDbOfCdnResponse(ctx, cdnRecord.ID, err.Error())
 				continue
@@ -425,7 +446,7 @@ func (s *IPUpdateTask) RunCdnTask() {
 						slog.String("处理方式", "并发"),
 					)
 
-					if err = s.CdnUpdate(egCtx, sonLogger, item); err != nil {
+					if err = s.CdnUpdateNew(egCtx, sonLogger, item); err != nil {
 						logger.ErrorContext(egCtx, "处理失败",
 							slog.Any("error", err),
 						)
@@ -450,7 +471,7 @@ func (s *IPUpdateTask) RunCdnTask() {
 				slog.String("处理方式", "串行"),
 			)
 
-			if err = s.CdnUpdate(ctx, sonLogger, item); err != nil {
+			if err = s.CdnUpdateNew(ctx, sonLogger, item); err != nil {
 				logger.ErrorContext(ctx, "处理失败",
 					slog.Any("error", err),
 				)
@@ -533,7 +554,81 @@ func (s *IPUpdateTask) CdnUpdate(ctx context.Context, logger *slog.Logger, pendi
 	return nil
 }
 
-// 更新DNS记录 参数
+// 更新 CDN 记录 参数
+type CdnUpdateParams struct {
+	platform *ent.PlatformConfig // 平台信息
+	record   *ent.CDNRecord      // CDN信息
+
+	CDNRecordID   string   // CDN记录ID
+	GroupRecordID string   // 源站组记录ID
+	OriginValues  []string // 源站值列表
+}
+
+// 更新 CDN 记录
+func (s *IPUpdateTask) CdnUpdateNew(ctx context.Context, logger *slog.Logger, params *CdnUpdateParams) (err error) {
+
+	// 日志
+	logger = logger.With(
+		slog.String("处理编号", gorandom.Alphanumeric(10)),
+		slog.String("记录", params.CDNRecordID),
+		slog.String("提供商", params.record.Type.String()),
+		slog.String("平台", params.platform.Platform.String()),
+		slog.String("子域名", params.record.SubDomain),
+	)
+	logger.InfoContext(ctx, "开始处理")
+	defer logger.InfoContext(ctx, "处理完成")
+
+	var cdnProvider provider.CDNProvider
+	var cdnProviderOpts = make([]cdn.CdnOption, 0)
+	if s.httpTransport != nil {
+		cdnProviderOpts = append(cdnProviderOpts, cdn.WithHttpTransport(s.httpTransport))
+	}
+
+	switch params.platform.Platform {
+	case platformconfig.PlatformAliyunCdn:
+		cdnProviderCfg := cdn.NewDefaultAliyunCDNConfig()
+		err = cdnProviderCfg.ParseCustomConfig(params.platform.ConfigJSON)
+		if err != nil {
+			return fmt.Errorf("解析自定义配置失败: %w", err)
+		}
+		cdnProvider, err = cdn.NewAliyunCDNProvider(ctx, cdnProviderCfg, cdnProviderOpts...)
+		if err != nil {
+			return fmt.Errorf("初始提供程序失败: %w", err)
+		}
+	default:
+		return fmt.Errorf("暂不支持该平台: %s", params.platform.String())
+	}
+
+	// 创建 CDN 更新任务
+	cdnTask, err := provider.NewCDNTask(
+		logger,
+		cdnProvider,
+		params.platform.ConfigJSON,
+		params.record.ConfigJSON,
+	)
+	if err != nil {
+		return fmt.Errorf("创建CDN任务失败: %w", err)
+	}
+
+	// 配置 CDN 参数
+	cdnTask.Config(params.record.SubDomain, params.record.Type.String(), params.OriginValues)
+
+	// 执行 DNS 更新
+	if err = cdnTask.Execute(ctx); err != nil {
+		_ = cdnTask.SaveResponse(ctx, s.db, params.record.ID, err.Error())
+		return err
+	}
+
+	// 执行 DNS 通知
+	if err := cdnTask.Notify(ctx, s.webhookService, params.record.ID); err != nil {
+		return err
+	}
+
+	_ = cdnTask.SaveResponse(ctx, s.db, params.record.ID, "ok")
+	return nil
+}
+
+// 更新 DNS 记录 参数
 type DnsUpdateParams struct {
 	platform *ent.PlatformConfig // 平台信息
 	record   *ent.DNSRecord      // DNS信息
@@ -543,7 +638,7 @@ type DnsUpdateParams struct {
 	OriginValue   string // 源站值
 }
 
-// 更新DNS记录
+// 更新 DNS 记录
 func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, params *DnsUpdateParams) (err error) {
 
 	// 日志

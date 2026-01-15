@@ -18,6 +18,8 @@ type GetDeviceResponse struct {
 	LastHeartbeatAt time.Time `json:"last_heartbeat_at" jsonschema:"设备最后心跳时间"` // 最后心跳时间
 
 	Webhooks []int64 `json:"webhooks" jsonschema:"关联的Webhook ID列表"` // 关联的 Webhook 列表
+
+	OfflineInvalid bool `json:"offline_invalid" jsonschema:"设备是否离线失效"` // 设备是否离线失效
 }
 
 // 获取设备 请求结构

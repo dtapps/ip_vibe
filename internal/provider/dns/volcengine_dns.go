@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
@@ -155,7 +154,7 @@ func (p *VolcengineDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://api.volcengine.com/api-explorer?action=ListRecords
-func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
+func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, originValue string, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -178,13 +177,13 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 	}
 	// 响应参数
 	for _, item := range response.Records {
-		if strings.EqualFold(utils.TrimDots(volcengine.StringValue(item.Host)), utils.TrimDots(fullDomain)) {
-			if recordType != "" && utils.PtrToString(item.Type) != recordType {
+		if utils.EqualStringIgnoreCase(utils.TrimDots(volcengine.StringValue(item.Host)), utils.TrimDots(fullDomain)) {
+			if recordType != "" && !utils.EqualStringIgnoreCase(utils.PtrToString(item.Type), recordType) {
 				continue
 			}
 			recordID = volcengine.StringValue(item.RecordID)
-			value = utils.PtrToString(item.Value)
-			return recordID, value, nil
+			originValue = utils.PtrToString(item.Value)
+			return recordID, originValue, nil
 		}
 	}
 
@@ -194,7 +193,7 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 // Update 更新 DNS 记录
 // https://api.volcengine.com/api-explorer?action=CreateRecord
 // https://api.volcengine.com/api-explorer?action=UpdateRecord
-func (p *VolcengineDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
+func (p *VolcengineDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValue string, recordType string) (err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -204,7 +203,7 @@ func (p *VolcengineDNSProvider) Update(ctx context.Context, recordID string, dom
 		request := &dns.CreateRecordInput{}
 		request.Host = volcengine.String(fullDomain)              // 主机记录
 		request.Type = volcengine.String(recordType)              // 记录类型
-		request.Value = volcengine.String(value)                  // 解析记录的记录值
+		request.Value = volcengine.String(originValue)            // 解析记录的记录值
 		request.ZID = volcengine.Int64(p.cfg.ZoneID)              // 域名ID
 		request.Line = volcengine.String(p.CustomConfig.Line)     // 解析记录对应的线路
 		request.Remark = volcengine.String(p.CustomConfig.Remark) // 解析记录的备注
@@ -222,7 +221,7 @@ func (p *VolcengineDNSProvider) Update(ctx context.Context, recordID string, dom
 		request.Host = volcengine.String(fullDomain)              // 主机记录
 		request.RecordID = volcengine.String(recordID)            // 需要更新的解析记录的 ID
 		request.Type = volcengine.String(recordType)              // 记录类型
-		request.Value = volcengine.String(value)                  // 解析记录的记录值
+		request.Value = volcengine.String(originValue)            // 解析记录的记录值
 		request.Line = volcengine.String(p.CustomConfig.Line)     // 解析记录对应的线路
 		request.Remark = volcengine.String(p.CustomConfig.Remark) // 解析记录的备注
 		// 请求

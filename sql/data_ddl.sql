@@ -1,3 +1,12 @@
+-- cache definition
+
+CREATE TABLE `cache` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `key` text NOT NULL, `value` blob NULL);
+
+CREATE UNIQUE INDEX `cache_key_key` ON `cache` (`key`);
+CREATE INDEX `cache_created_at` ON `cache` (`created_at` DESC);
+CREATE INDEX `cache_key` ON `cache` (`key`);
+
+
 -- device definition
 
 CREATE TABLE "device" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `code` text NOT NULL, `name` text NOT NULL, `description` text NULL, `ip_v4` text NULL, `ip_v6` text NULL, `last_reported_at` datetime NULL, `last_heartbeat_at` datetime NULL);
@@ -10,7 +19,7 @@ CREATE INDEX `device_created_at` ON `device` (`created_at` DESC);
 
 -- domain_monitor definition
 
-CREATE TABLE "domain_monitor" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `name` text NOT NULL, `domain` text NOT NULL, `check_interval` integer NOT NULL DEFAULT (60), `check_protocol` text NOT NULL, `is_active` bool NOT NULL DEFAULT (false), `current_status` text NOT NULL DEFAULT ('unknown'), `last_success_at` datetime NULL, `last_failure_at` datetime NULL, `description` text NULL);
+CREATE TABLE "domain_monitor" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `name` text NOT NULL, `domain` text NOT NULL, `check_interval` integer NOT NULL DEFAULT (60), `check_protocol` text NOT NULL, `is_active` bool NOT NULL DEFAULT (false), `current_status` text NOT NULL DEFAULT ('unknown'), `last_success_at` datetime NULL, `last_failure_at` datetime NULL, `description` text NULL, `request_headers` json NULL);
 
 CREATE INDEX `domainmonitor_domain` ON `domain_monitor` (`domain`);
 CREATE UNIQUE INDEX `domainmonitor_domain_check_protocol` ON `domain_monitor` (`domain`, `check_protocol`);
@@ -45,7 +54,7 @@ CREATE INDEX `webhook_created_at` ON `webhook` (`created_at` DESC);
 
 -- cdn_record definition
 
-CREATE TABLE "cdn_record" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `record_id` text NULL, `sub_domain` text NOT NULL, `type` text NOT NULL, `origin_protocol` text NOT NULL DEFAULT ('follow'), `http_port` integer NOT NULL DEFAULT (80), `https_port` integer NOT NULL DEFAULT (443), `cdn_domain` text NULL, `is_active` bool NOT NULL DEFAULT (false), `last_refresh_at` datetime NULL, `ip_group_id` integer NOT NULL, `config_id` integer NOT NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL, CONSTRAINT `cdn_record_ip_group_cdn_records` FOREIGN KEY (`ip_group_id`) REFERENCES `ip_group` (`id`) ON DELETE NO ACTION, CONSTRAINT `cdn_record_platform_config_cdn_records` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
+CREATE TABLE "cdn_record" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `record_id` text NULL, `sub_domain` text NOT NULL, `type` text NOT NULL, `origin_protocol` text NOT NULL DEFAULT ('follow'), `http_port` integer NOT NULL DEFAULT (80), `https_port` integer NOT NULL DEFAULT (443), `cdn_domain` text NULL, `is_active` bool NOT NULL DEFAULT (false), `last_refresh_at` datetime NULL, `ip_group_id` integer NOT NULL, `config_id` integer NOT NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL, `config_json` json NULL, CONSTRAINT `cdn_record_ip_group_cdn_records` FOREIGN KEY (`ip_group_id`) REFERENCES `ip_group` (`id`) ON DELETE NO ACTION, CONSTRAINT `cdn_record_platform_config_cdn_records` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
 
 CREATE INDEX `cdnrecord_sub_domain` ON `cdn_record` (`sub_domain`);
 CREATE INDEX `cdnrecord_type` ON `cdn_record` (`type`);
@@ -66,7 +75,7 @@ CREATE INDEX `deviceportforward_created_at` ON `device_port_forward` (`created_a
 
 -- dns_record definition
 
-CREATE TABLE "dns_record" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `record_id` text NULL, `sub_domain` text NOT NULL, `type` text NOT NULL, `is_active` bool NOT NULL DEFAULT (false), `last_refresh_at` datetime NULL, `cdn_record_id` integer NULL, `ip_group_id` integer NULL, `config_id` integer NOT NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL, CONSTRAINT `dns_record_cdn_record_dns_records` FOREIGN KEY (`cdn_record_id`) REFERENCES `cdn_record` (`id`) ON DELETE SET NULL, CONSTRAINT `dns_record_ip_group_dns_records` FOREIGN KEY (`ip_group_id`) REFERENCES `ip_group` (`id`) ON DELETE SET NULL, CONSTRAINT `dns_record_platform_config_dns_records` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
+CREATE TABLE "dns_record" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `record_id` text NULL, `sub_domain` text NOT NULL, `type` text NOT NULL, `is_active` bool NOT NULL DEFAULT (false), `last_refresh_at` datetime NULL, `cdn_record_id` integer NULL, `ip_group_id` integer NULL, `config_id` integer NOT NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL, `config_json` json NULL, CONSTRAINT `dns_record_cdn_record_dns_records` FOREIGN KEY (`cdn_record_id`) REFERENCES `cdn_record` (`id`) ON DELETE SET NULL, CONSTRAINT `dns_record_ip_group_dns_records` FOREIGN KEY (`ip_group_id`) REFERENCES `ip_group` (`id`) ON DELETE SET NULL, CONSTRAINT `dns_record_platform_config_dns_records` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
 
 CREATE INDEX `dnsrecord_sub_domain` ON `dns_record` (`sub_domain`);
 CREATE INDEX `dnsrecord_type` ON `dns_record` (`type`);

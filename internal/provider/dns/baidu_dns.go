@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
@@ -125,7 +124,7 @@ func (p *BaiduDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#查询解析记录列表
-func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
+func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, originValue string, err error) {
 
 	// 请求参数
 	request := &dns.ListRecordRequest{}
@@ -139,13 +138,13 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 	}
 	// 响应参数
 	for _, item := range response.Records {
-		if strings.EqualFold(item.Rr, subdomain) {
-			if recordType != "" && !strings.EqualFold(item.Type, recordType) {
+		if utils.EqualStringIgnoreCase(item.Rr, subdomain) {
+			if recordType != "" && !utils.EqualStringIgnoreCase(item.Type, recordType) {
 				continue
 			}
 			recordID = item.Id
-			value = item.Value
-			return recordID, value, nil
+			originValue = item.Value
+			return recordID, originValue, nil
 		}
 	}
 
@@ -155,14 +154,14 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 // Update 更新 DNS 记录
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#添加解析记录
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#修改解析记录
-func (p *BaiduDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
+func (p *BaiduDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValue string, recordType string) (err error) {
 
 	if recordID == "" {
 		// 请求参数
 		request := &dns.CreateRecordRequest{}
 		request.Rr = subdomain                                              // 主机记录
 		request.Type = recordType                                           // 解析记录类型
-		request.Value = value                                               // 记录值
+		request.Value = originValue                                         // 记录值
 		request.Line = utils.StringToPtr(p.CustomConfig.Line)               // 解析线路
 		request.Description = utils.StringToPtr(p.CustomConfig.Description) // 解析记录描述
 		// 请求
@@ -178,7 +177,7 @@ func (p *BaiduDNSProvider) Update(ctx context.Context, recordID string, domain s
 		request := &dns.UpdateRecordRequest{}
 		request.Rr = subdomain                                              // 主机记录
 		request.Type = recordType                                           // 解析记录类型
-		request.Value = value                                               // 记录值
+		request.Value = originValue                                         // 记录值
 		request.Description = utils.StringToPtr(p.CustomConfig.Description) // 解析记录描述
 		// 请求
 		err = p.Provider.Client.UpdateRecord(domain, recordID, request, util.NewUUID())

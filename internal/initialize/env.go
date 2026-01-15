@@ -7,6 +7,7 @@ import (
 )
 
 func init() {
+
 	// 从环境变量获取 [backend][reporter][forwarder] 是否开启调试模式
 	global.GvaEnv.DEBUG = os.Getenv("DEBUG") == "true"
 

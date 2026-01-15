@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"strings"
 	"time"
 	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
@@ -21,9 +20,9 @@ type DNSProvider interface {
 	// Name 返回 DNS 提供程序的名称
 	Name() (name string)
 	// Check 检查 DNS 记录是否存在
-	Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error)
+	Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, originValue string, err error)
 	// Update 更新 DNS 记录
-	Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error)
+	Update(ctx context.Context, recordID string, domain string, subdomain string, originValue string, recordType string) (err error)
 	// ParseCustomConfig 解析 DNS 自定义配置
 	ParseCustomConfig(config_json json.RawMessage) (err error)
 }
@@ -67,17 +66,17 @@ type DNSConfigParams struct {
 	domain    string // 域名名称
 	subdomain string // 子域名
 
-	recordID   string // 域名ID
-	recordType string // 记录类型
-	oldValue   string // 旧记录值
-	newValue   string // 新记录值
+	recordID       string // 域名ID
+	recordType     string // 记录类型
+	oldOriginValue string // 旧记录值
+	newOriginValue string // 新记录值
 }
 
 // Config 配置 DNS 参数
-func (t *DNSTask) Config(subdomain string, recordType string, newValue string) *DNSTask {
+func (t *DNSTask) Config(subdomain string, recordType string, newOriginValue string) *DNSTask {
 	t.config.subdomain = subdomain
 	t.config.recordType = recordType
-	t.config.newValue = newValue
+	t.config.newOriginValue = newOriginValue
 	return t
 }
 
@@ -92,8 +91,8 @@ func (t *DNSTask) Validate() error {
 	if t.config.recordType == "" {
 		return fmt.Errorf("recordType 不能为空")
 	}
-	if t.config.newValue == "" {
-		return fmt.Errorf("newValue 不能为空")
+	if t.config.newOriginValue == "" {
+		return fmt.Errorf("newOriginValue 不能为空")
 	}
 	return nil
 }
@@ -118,7 +117,7 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 		slog.String("domain", t.config.domain),
 		slog.String("subdomain", t.config.subdomain),
 		slog.String("recordType", t.config.recordType),
-		slog.String("newValue", t.config.newValue),
+		slog.String("newOriginValue", t.config.newOriginValue),
 		slog.String("config_json", string(t.record_config_json)),
 	)
 
@@ -132,7 +131,7 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 		}
 	}
 
-	t.config.recordID, t.config.oldValue, err = t.provider.Check(
+	t.config.recordID, t.config.oldOriginValue, err = t.provider.Check(
 		ctx,
 		t.config.domain,
 		t.config.subdomain,
@@ -147,7 +146,7 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 		return err
 	}
 
-	if strings.EqualFold(t.config.oldValue, t.config.newValue) {
+	if utils.EqualStringIgnoreCase(t.config.oldOriginValue, t.config.newOriginValue) {
 		t.logger.Info("【DNS】未改变，无需更新")
 		return nil
 	}
@@ -157,7 +156,7 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 		t.config.recordID,
 		t.config.domain,
 		t.config.subdomain,
-		t.config.newValue,
+		t.config.newOriginValue,
 		t.config.recordType,
 	); err != nil {
 		t.logger.Error("【DNS】更新失败",
@@ -209,8 +208,8 @@ func (t *DNSTask) Notify(ctx context.Context, webhookService *webhookService.Sen
 		EventBody:      "DNS记录更新事件",
 		RecordDomain:   fmt.Sprintf("%s.%s", t.config.subdomain, t.config.domain),
 		RecordType:     t.config.recordType,
-		RecordOldValue: t.config.oldValue,
-		RecordNewValue: t.config.newValue,
+		RecordOldValue: t.config.oldOriginValue,
+		RecordNewValue: t.config.newOriginValue,
 	}
 
 	// 发送通知

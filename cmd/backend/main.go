@@ -90,6 +90,7 @@ func main() {
 
 	initialize.InitEntDb(ctx, global.GvaEntSlog)       // 初始化 业务数据库
 	initialize.InitEntLogDb(ctx, global.GvaEntLogSlog) // 初始化 日志数据库
+	initialize.InitSetting(ctx, global.GvaEntDb)       // 初始化 设置
 	initialize.InitGoCron(ctx, global.GvaGocronSlog)   // 初始化 GoCron 调度器
 
 	initialize.InitEntHttpLog(global.GvaHttpSlog)   // 初始化 HTTP 日志

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
@@ -133,7 +132,7 @@ func (p *TencentDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=DescribeRecordList
-func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
+func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, originValue string, err error) {
 
 	// 请求参数
 	request := dnspod.NewDescribeRecordListRequest()
@@ -150,13 +149,13 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 	}
 	// 响应参数
 	for _, item := range response.Response.RecordList {
-		if strings.EqualFold(utils.PtrToString(item.Name), subdomain) {
-			if recordType != "" && !strings.EqualFold(utils.PtrToString(item.Type), recordType) {
+		if utils.EqualStringIgnoreCase(utils.PtrToString(item.Name), subdomain) {
+			if recordType != "" && !utils.EqualStringIgnoreCase(utils.PtrToString(item.Type), recordType) {
 				continue
 			}
 			recordID = cast.ToString(*item.RecordId)
-			value = utils.PtrToString(item.Value)
-			return recordID, value, nil
+			originValue = utils.PtrToString(item.Value)
+			return recordID, originValue, nil
 		}
 	}
 
@@ -166,14 +165,14 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 // Update 更新 DNS 记录
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=CreateRecord
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=ModifyRecord
-func (p *TencentDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
+func (p *TencentDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValue string, recordType string) (err error) {
 
 	if recordID == "" {
 		// 请求参数
 		request := dnspod.NewCreateRecordRequest()
 		request.Domain = common.StringPtr(domain)                        // 域名
 		request.RecordType = common.StringPtr(recordType)                // 记录类型
-		request.Value = common.StringPtr(value)                          // 记录值
+		request.Value = common.StringPtr(originValue)                    // 记录值
 		request.SubDomain = common.StringPtr(subdomain)                  // 主机记录
 		request.RecordLine = common.StringPtr(p.CustomConfig.RecordLine) // 记录线路
 		request.Remark = common.StringPtr(p.CustomConfig.Remark)         // 备注
@@ -190,7 +189,7 @@ func (p *TencentDNSProvider) Update(ctx context.Context, recordID string, domain
 		request := dnspod.NewModifyRecordRequest()
 		request.Domain = common.StringPtr(domain)                        // 域名
 		request.RecordType = common.StringPtr(recordType)                // 记录类型
-		request.Value = common.StringPtr(value)                          // 记录值
+		request.Value = common.StringPtr(originValue)                    // 记录值
 		request.RecordId = common.Uint64Ptr(cast.ToUint64(recordID))     // 记录 ID
 		request.SubDomain = common.StringPtr(subdomain)                  // 主机记录
 		request.RecordLine = common.StringPtr(p.CustomConfig.RecordLine) // 记录线路

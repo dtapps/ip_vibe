@@ -87,6 +87,36 @@ var (
 			},
 		},
 	}
+	// CacheColumns holds the columns for the "cache" table.
+	CacheColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "缓存记录序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "key", Type: field.TypeString, Unique: true, Comment: "缓存键"},
+		{Name: "value", Type: field.TypeBytes, Nullable: true, Comment: "缓存值"},
+	}
+	// CacheTable holds the schema information for the "cache" table.
+	CacheTable = &schema.Table{
+		Name:       "cache",
+		Comment:    "缓存数据",
+		Columns:    CacheColumns,
+		PrimaryKey: []*schema.Column{CacheColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "cache_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CacheColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "cache_key",
+				Unique:  true,
+				Columns: []*schema.Column{CacheColumns[3]},
+			},
+		},
+	}
 	// DNSRecordColumns holds the columns for the "dns_record" table.
 	DNSRecordColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "DNS记录序号"},
@@ -392,7 +422,7 @@ var (
 		{Name: "capability", Type: field.TypeEnum, Comment: "平台支持的服务能力：all（全部）dns（仅DNS）、cdn（仅CDN）、ssl（仅SSL）", Enums: []string{"all", "dns", "cdn", "ssl"}, Default: "all"},
 		{Name: "name", Type: field.TypeString, Comment: "平台配置名称"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "平台配置描述"},
-		{Name: "platform", Type: field.TypeEnum, Comment: "平台类型", Enums: []string{"cloudflare", "tencent_dns", "tencent_eo", "aliyun_dns", "aliyun_cdn", "aliyun_esa", "baidu_dns", "huawei_dns", "volcengine_dns"}},
+		{Name: "platform", Type: field.TypeEnum, Comment: "平台类型", Enums: []string{"cloudflare", "tencent_dns", "tencent_cdn", "tencent_eo", "aliyun_dns", "aliyun_cdn", "aliyun_esa", "baidu_dns", "huawei_dns", "volcengine_dns"}},
 		{Name: "config_json", Type: field.TypeJSON, Nullable: true, Comment: "平台密钥等敏感信息（JSON）"},
 	}
 	// PlatformConfigTable holds the schema information for the "platform_config" table.
@@ -635,6 +665,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		CdnRecordTable,
+		CacheTable,
 		DNSRecordTable,
 		DeviceTable,
 		DevicePortForwardTable,
@@ -653,6 +684,9 @@ func init() {
 	CdnRecordTable.ForeignKeys[1].RefTable = PlatformConfigTable
 	CdnRecordTable.Annotation = &entsql.Annotation{
 		Table: "cdn_record",
+	}
+	CacheTable.Annotation = &entsql.Annotation{
+		Table: "cache",
 	}
 	DNSRecordTable.ForeignKeys[0].RefTable = CdnRecordTable
 	DNSRecordTable.ForeignKeys[1].RefTable = IPGroupTable

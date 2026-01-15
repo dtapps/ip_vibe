@@ -42,6 +42,73 @@ const CDN_SCHEMA = {
       ],
     ],
   },
+  aliyun_cdn: {
+    label: "阿里云 CDN",
+    fields: [
+      [
+        {
+          id: "cdn_type",
+          label: "加速类型",
+          type: "select",
+          placeholder: "请选择加速类型",
+          required: true,
+          options: [
+            {
+              value: "web",
+              label: "图片小文件",
+            },
+            {
+              value: "download",
+              label: "大文件下载",
+            },
+            {
+              value: "video",
+              label: "视音频点播",
+            },
+          ],
+        },
+        {
+          id: "scope",
+          label: "加速区域",
+          type: "select",
+          placeholder: "请选择加速区域",
+          required: false,
+          options: [
+            {
+              value: "domestic",
+              label: "仅中国内地",
+            },
+            {
+              value: "overseas",
+              label: "全球（不包含中国内地）",
+            },
+            {
+              value: "global",
+              label: "全球",
+            },
+          ],
+        },
+      ],
+      [
+        {
+          id: "http_port",
+          label: "HTTP 端口",
+          type: "number",
+          placeholder: "如 80",
+          required: false,
+          value: 0,
+        },
+        {
+          id: "https_port",
+          label: "HTTPS 端口",
+          type: "number",
+          placeholder: "如 443",
+          required: false,
+          value: 0,
+        },
+      ],
+    ],
+  },
 };
 
 /**
@@ -173,7 +240,8 @@ function buildConfigFromCdnFields(platform = "") {
     const fieldSchema = flatFields.find((f) => f.id === key);
     let val = el.value.trim();
 
-    if (fieldSchema?.type === "number" && val !== "") {
+    // if (fieldSchema?.type === "number" && val !== "") {
+    if (fieldSchema?.type === "number") {
       val = Number(val);
     }
     config[key] = val;

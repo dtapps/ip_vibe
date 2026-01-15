@@ -20,6 +20,18 @@ func (f CDNRecordFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, e
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CDNRecordMutation", m)
 }
 
+// The CacheFunc type is an adapter to allow the use of ordinary
+// function as Cache mutator.
+type CacheFunc func(context.Context, *ent.CacheMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CacheFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CacheMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CacheMutation", m)
+}
+
 // The DNSRecordFunc type is an adapter to allow the use of ordinary
 // function as DNSRecord mutator.
 type DNSRecordFunc func(context.Context, *ent.DNSRecordMutation) (ent.Value, error)

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log/slog"
 	"math/rand"
+	"strings"
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/platformconfig"
@@ -16,6 +17,7 @@ import (
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
+	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/helper/ssl_helper"
 
@@ -102,12 +104,25 @@ func (s *SSLUpdateTask) StartPeriodicTask(ctx context.Context) (err error) {
 	if s.job != nil {
 		return nil
 	}
+	// 解析设置的时间
+	var jobDuratio gocron.JobDefinition
+	taskTime := global.GvaSetting.SSLRefreshTaskTime
+	if strings.Contains(taskTime, "-") {
+		// 解析时间范围
+		times := gostring.Split(taskTime, "-")
+		if len(times) != 2 {
+			return fmt.Errorf("SSL刷新任务时间格式错误：%s", taskTime)
+		}
+		jobDuratio = gocron.DurationRandomJob(
+			time.Duration(cast.ToInt64(times[0]))*time.Hour, // 最小间隔
+			time.Duration(cast.ToInt64(times[1]))*time.Hour, // 最大间隔
+		)
+	} else {
+		jobDuratio = gocron.DurationJob(time.Duration(cast.ToInt64(taskTime)) * time.Hour)
+	}
 	// 创建周期任务
 	s.job, err = s.cron.NewJob(
-		gocron.DurationRandomJob(
-			8*time.Hour,  // 最小间隔 8 小时
-			10*time.Hour, // 最大间隔 10 小时
-		),
+		jobDuratio,
 		gocron.NewTask(s.RunPeriodicTask),
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithName(s.taskName),                          // 任务名称

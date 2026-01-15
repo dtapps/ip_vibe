@@ -35,13 +35,24 @@ func NewDomainCheck(logger *slog.Logger, httpTransport *http_log.LoggingRoundTri
 	if global.GvaHttpClientWithLog != nil {
 		httpClient = global.GvaHttpClientWithLog
 	}
+	if !debug && global.GvaHttpClientWithLogNoBody != nil {
+		httpClient = global.GvaHttpClientWithLogNoBody
+	}
+
 	restyClient := resty.New()
 	if global.GvaRestyClientWithLog != nil {
 		restyClient = global.GvaRestyClientWithLog
 	}
+	if !debug && global.GvaRestyClientWithLogNoBody != nil {
+		restyClient = global.GvaRestyClientWithLogNoBody
+	}
+
 	reqClient := req.NewClient()
 	if global.GvaReqClientWithLog != nil {
 		reqClient = global.GvaReqClientWithLog
+	}
+	if !debug && global.GvaReqClientWithLogNoBody != nil {
+		reqClient = global.GvaReqClientWithLogNoBody
 	}
 	return &DomainCheck{
 		logger:        logger,

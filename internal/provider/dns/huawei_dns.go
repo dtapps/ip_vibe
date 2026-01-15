@@ -154,7 +154,7 @@ func (p *HuaweiDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/debug?api=ShowRecordSetByZone
-func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
+func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, originValue string, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -177,13 +177,13 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 	}
 	// 响应参数
 	for _, item := range *response.Recordsets {
-		if strings.EqualFold(utils.TrimDots(utils.PtrToString(item.Name)), utils.TrimDots(fullDomain)) {
-			if recordType != "" && utils.PtrToString(item.Type) != recordType {
+		if utils.EqualStringIgnoreCase(utils.TrimDots(utils.PtrToString(item.Name)), utils.TrimDots(fullDomain)) {
+			if recordType != "" && !utils.EqualStringIgnoreCase(utils.PtrToString(item.Type), recordType) {
 				continue
 			}
 			recordID = utils.PtrToString(item.Id)
-			value = strings.Join(utils.PtrToStrings(item.Records), ",")
-			return recordID, value, nil
+			originValue = strings.Join(utils.PtrToStrings(item.Records), ",")
+			return recordID, originValue, nil
 		}
 	}
 
@@ -193,7 +193,7 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 // Update 更新 DNS 记录
 // https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/debug?api=CreateRecordSetWithLine
 // https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/sdk?api=UpdateRecordSets
-func (p *HuaweiDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
+func (p *HuaweiDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValue string, recordType string) (err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -203,7 +203,7 @@ func (p *HuaweiDNSProvider) Update(ctx context.Context, recordID string, domain 
 		request := &model.CreateRecordSetWithLineRequest{}
 		request.ZoneId = p.cfg.ZoneID // 域名ID
 		request.Body = &model.CreateRecordSetWithLineRequestBody{
-			Records:     utils.StringsToPtr([]string{value}),           // 解析记录的值
+			Records:     utils.StringsToPtr([]string{originValue}),     // 解析记录的值
 			Type:        recordType,                                    // 记录集的类型
 			Name:        fullDomain,                                    // 域名
 			Description: utils.StringToPtr(p.CustomConfig.Description), // 记录集的描述信息
@@ -222,7 +222,7 @@ func (p *HuaweiDNSProvider) Update(ctx context.Context, recordID string, domain 
 		request.ZoneId = p.cfg.ZoneID  // 域名ID
 		request.RecordsetId = recordID // 记录集ID
 		request.Body = &model.UpdateRecordSetsReq{
-			Records:     utils.StringsToPtr([]string{value}),           // 解析记录的值
+			Records:     utils.StringsToPtr([]string{originValue}),     // 解析记录的值
 			Type:        recordType,                                    // 记录集的类型
 			Name:        fullDomain,                                    // 域名
 			Description: utils.StringToPtr(p.CustomConfig.Description), // 记录集的描述信息

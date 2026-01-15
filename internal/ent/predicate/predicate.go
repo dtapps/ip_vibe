@@ -9,6 +9,9 @@ import (
 // CDNRecord is the predicate function for cdnrecord builders.
 type CDNRecord func(*sql.Selector)
 
+// Cache is the predicate function for cache builders.
+type Cache func(*sql.Selector)
+
 // DNSRecord is the predicate function for dnsrecord builders.
 type DNSRecord func(*sql.Selector)
 

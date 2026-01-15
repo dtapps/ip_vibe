@@ -20,7 +20,7 @@ require (
 	entgo.io/ent v0.14.5
 	github.com/alibabacloud-go/alidns-20150109/v5 v5.1.0
 	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
-	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.13
+	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.14
 	github.com/alibabacloud-go/esa-20240910/v2 v2.44.0
 	github.com/alibabacloud-go/tea v1.4.0
 	github.com/aliyun/credentials-go v1.4.10
@@ -42,7 +42,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.4
-	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.183
+	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.184
 	github.com/imroc/req/v3 v3.57.0
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
 	github.com/kingsoftcloud/sdk-go/v2 v2.2.59
@@ -58,11 +58,11 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.33
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.32
-	github.com/volcengine/volcengine-go-sdk v1.2.6
+	github.com/volcengine/volcengine-go-sdk v1.2.7
 	github.com/wdcbot/qingfeng v1.6.3
-	go.dtapp.net/library/contrib/http_log v1.0.7
-	go.dtapp.net/library/contrib/req_log v1.0.2
-	go.dtapp.net/library/contrib/resty_log v1.0.13
+	go.dtapp.net/library/contrib/http_log v1.0.8
+	go.dtapp.net/library/contrib/req_log v1.0.3
+	go.dtapp.net/library/contrib/resty_log v1.0.14
 	go.dtapp.net/library/service/bark v1.0.9
 	go.dtapp.net/library/service/dingtalk v1.0.41
 	go.dtapp.net/library/service/feishu v1.0.39
@@ -172,7 +172,7 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.3.1 // indirect
 	github.com/valllabh/ocsf-schema-golang v1.0.3 // indirect
-	github.com/volcengine/volc-sdk-golang v1.0.234 // indirect
+	github.com/volcengine/volc-sdk-golang v1.0.235 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	github.com/zclconf/go-cty v1.17.0 // indirect
 	github.com/zclconf/go-cty-yaml v1.2.0 // indirect
@@ -191,7 +191,7 @@ require (
 	gopkg.in/ini.v1 v1.67.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/libc v1.67.4 // indirect
+	modernc.org/libc v1.67.6 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 	rsc.io/binaryregexp v0.2.0 // indirect

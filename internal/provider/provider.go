@@ -15,45 +15,6 @@ type PlatformConfigJson struct {
 	Email      string `json:"email,omitempty"`
 }
 
-// ---------- CDN 模块 ----------
-
-type CDNProvider interface {
-	PurgeCache(ctx context.Context, domains []string) error
-	Name() string
-}
-
-type CDNTask struct {
-	logger   *slog.Logger
-	provider CDNProvider
-	domains  []string
-}
-
-func NewCDNTask(logger *slog.Logger, provider CDNProvider, domains []string) *CDNTask {
-	return &CDNTask{
-		logger:   logger,
-		provider: provider,
-		domains:  domains,
-	}
-}
-
-func (t *CDNTask) Execute(ctx context.Context) error {
-	if t.provider == nil {
-		return nil
-	}
-	t.logger.Info("【CDN】开始清理缓存",
-		slog.String("provider", t.provider.Name()),
-	)
-
-	if err := t.provider.PurgeCache(ctx, t.domains); err != nil {
-		t.logger.Error("【CDN】清理失败（非致命）",
-			slog.String("err", err.Error()),
-		)
-		return nil // 不中止整体流程
-	}
-	t.logger.Info("【CDN】清理成功")
-	return nil
-}
-
 // ---------- SSL 模块 ----------
 
 type SSLProvider interface {

@@ -242,6 +242,18 @@ func (q *CDNRecordQuery) CountOrZero(ctx context.Context) (int64, error) {
 	return int64(count), nil
 }
 
+// CountOrZero 返回满足当前查询条件的记录总数。
+// 如果查询执行失败（如数据库连接错误），则返回 0 和原始错误。
+// 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
+// 若需严格错误处理，请使用原生 Count 方法。
+func (q *CacheQuery) CountOrZero(ctx context.Context) (int64, error) {
+	count, err := q.Count(ctx)
+	if err != nil {
+		return 0, err
+	}
+	return int64(count), nil
+}
+
 // SumConfigIDOrZero 计算字段 config_id 的总和。
 // 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
 // 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。

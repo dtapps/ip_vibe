@@ -77,6 +77,7 @@ const (
 	ConfigPlatformCloudflare string = "cloudflare" // Cloudflare
 
 	ConfigPlatformTencentDns string = "tencent_dns" // 腾讯云 DNS
+	ConfigPlatformTencentCdn string = "tencent_cdn" // 腾讯云 CDN
 	ConfigPlatformTencentEO  string = "tencent_eo"  // 腾讯云 EdgeOne
 
 	ConfigPlatformAliyunDns string = "aliyun_dns" // 阿里云 DNS
@@ -94,6 +95,7 @@ const (
 var GetConfigPlatformDescriptions = map[string]string{
 	ConfigPlatformCloudflare:    "Cloudflare",
 	ConfigPlatformTencentDns:    "腾讯云 DNS",
+	ConfigPlatformTencentCdn:    "腾讯云 CDN",
 	ConfigPlatformTencentEO:     "腾讯云 EdgeOne",
 	ConfigPlatformAliyunDns:     "阿里云 DNS",
 	ConfigPlatformAliyunCdn:     "阿里云 CDN",
@@ -107,6 +109,7 @@ var GetConfigPlatformDescriptions = map[string]string{
 var GetConfigPlatforms = []string{
 	ConfigPlatformCloudflare,
 	ConfigPlatformTencentDns,
+	ConfigPlatformTencentCdn,
 	ConfigPlatformTencentEO,
 	ConfigPlatformAliyunDns,
 	ConfigPlatformAliyunCdn,

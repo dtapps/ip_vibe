@@ -26,22 +26,9 @@ var (
 
 // GvaConfig 变量
 var (
-	GvaEnv struct {
-		DEBUG bool // [backend][reporter][forwarder] 是否开启调试模式
+	GvaEnv     Env      // 环境变量
+	GvaSetting *Setting // 全局设置
 
-		HTTP_ADDR   string // [backend] HTTP 地址
-		GRPC_ADDR   string // [backend] gRPC 地址
-		THRIFT_ADDR string // [backend] Thrift 地址
-
-		HTTP_URL   string // [reporter][forwarder] HTTP URL
-		GRPC_URL   string // [reporter][forwarder] gRPC URL
-		THRIFT_URL string // [reporter][forwarder] Thrift URL
-
-		BASIC_AUTH_USERNAME string // [backend][reporter][forwarder] 基本认证用户名
-		BASIC_AUTH_PASSWORD string // [backend][reporter][forwarder] 基本认证密码
-		DEVICE_CODE         string // [backend][reporter][forwarder] 设备代码
-		DEVICE_NAME         string // [backend][reporter] 设备名称
-	}
 	GvaVersion   string // 版本号
 	GvaGitCommit string // Git 提交 ID
 	GvaBuildTime string // 构建时间
@@ -67,9 +54,12 @@ var (
 	GvaGoCron        gocron.Scheduler // 定时任务
 	GvaGoCronRunning int32            // 定时任务状态 0=停 1=运行
 
-	GvaHttpClientWithLog  *http.Client  // HTTP 客户端，并带日志记录
-	GvaRestyClientWithLog *resty.Client // Resty 客户端，并带日志记录
-	GvaReqClientWithLog   *req.Client   // Req 客户端，并带日志记录
+	GvaHttpClientWithLog        *http.Client  // HTTP 客户端，并带日志记录
+	GvaHttpClientWithLogNoBody  *http.Client  // HTTP 客户端，并带日志记录不包含请求体/响应体
+	GvaRestyClientWithLog       *resty.Client // Resty 客户端，并带日志记录
+	GvaRestyClientWithLogNoBody *resty.Client // Resty 客户端，并带日志记录不包含请求体/响应体
+	GvaReqClientWithLog         *req.Client   // Req 客户端，并带日志记录
+	GvaReqClientWithLogNoBody   *req.Client   // Req 客户端，并带日志记录不包含请求体/响应体
 
 	GvaHttpLog  *http_log.LoggingRoundTripper // HTTP框架日志
 	GvaRestyLog *resty_log.LoggerMiddleware   // Resty框架日志

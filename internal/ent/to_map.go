@@ -15,6 +15,17 @@ func (t *CDNRecord) ToMap() map[string]any {
 	return m
 }
 
+// ToMap 将 Cache 实体转换为 map[string]any。
+// 键为数据库列名（snake_case），值为字段当前值。
+// 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。
+func (t *Cache) ToMap() map[string]any {
+	if t == nil {
+		return nil
+	}
+	m := make(map[string]any)
+	return m
+}
+
 // ToMap 将 DNSRecord 实体转换为 map[string]any。
 // 键为数据库列名（snake_case），值为字段当前值。
 // 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。

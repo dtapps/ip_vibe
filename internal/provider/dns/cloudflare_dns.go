@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"vibe_ip/internal/provider"
+	"vibe_ip/internal/utils"
 
 	"github.com/cloudflare/cloudflare-go/v6"
 	"github.com/cloudflare/cloudflare-go/v6/dns"
@@ -116,7 +116,7 @@ func (p *CloudfareDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/list/
-func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
+func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, originValue string, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -138,13 +138,13 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 	}
 	// 响应参数
 	for _, item := range response.Result {
-		if strings.EqualFold(item.Name, fullDomain) {
-			if recordType != "" && !strings.EqualFold(cast.ToString(item.Type), recordType) {
+		if utils.EqualStringIgnoreCase(item.Name, fullDomain) {
+			if recordType != "" && !utils.EqualStringIgnoreCase(cast.ToString(item.Type), recordType) {
 				continue
 			}
 			recordID = item.ID
-			value = item.Content
-			return recordID, value, nil
+			originValue = item.Content
+			return recordID, originValue, nil
 		}
 	}
 
@@ -154,7 +154,7 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 // Update 更新 DNS 记录
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/create/
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/edit/
-func (p *CloudfareDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
+func (p *CloudfareDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValue string, recordType string) (err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -164,7 +164,7 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, recordID string, doma
 		requestBody := dns.ARecordParam{}
 		requestBody.Name = cloudflare.String(fullDomain)
 		requestBody.Type = cloudflare.F(dns.ARecordType(recordType))
-		requestBody.Content = cloudflare.String(value)
+		requestBody.Content = cloudflare.String(originValue)
 		requestBody.Comment = cloudflare.String(p.CustomConfig.Comment)
 		request := dns.RecordNewParams{
 			ZoneID: cloudflare.String(p.cfg.ZoneID),
@@ -183,7 +183,7 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, recordID string, doma
 		requestBody := dns.ARecordParam{}
 		requestBody.Name = cloudflare.String(fullDomain)
 		requestBody.Type = cloudflare.F(dns.ARecordType(recordType))
-		requestBody.Content = cloudflare.String(value)
+		requestBody.Content = cloudflare.String(originValue)
 		requestBody.Comment = cloudflare.String(p.CustomConfig.Comment)
 		request := dns.RecordEditParams{
 			ZoneID: cloudflare.String(p.cfg.ZoneID),

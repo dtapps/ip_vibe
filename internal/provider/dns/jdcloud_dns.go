@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
@@ -127,7 +126,7 @@ func (p *JdcloudDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://docs.jdcloud.com/cn/jd-cloud-dns/api/describeresourcerecord
-func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
+func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, originValue string, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -148,13 +147,13 @@ func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain
 	}
 	// 响应参数
 	for _, item := range response.Result.DataList {
-		if strings.EqualFold(utils.TrimDots(item.HostValue), utils.TrimDots(fullDomain)) {
-			if recordType != "" && !strings.EqualFold(item.Type, recordType) {
+		if utils.EqualStringIgnoreCase(utils.TrimDots(item.HostValue), utils.TrimDots(fullDomain)) {
+			if recordType != "" && !utils.EqualStringIgnoreCase(item.Type, recordType) {
 				continue
 			}
 			recordID = cast.ToString(item.Id)
-			value = item.HostValue
-			return recordID, value, nil
+			originValue = item.HostValue
+			return recordID, originValue, nil
 		}
 	}
 
@@ -164,7 +163,7 @@ func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain
 // Update 更新 DNS 记录
 // https://docs.jdcloud.com/cn/jd-cloud-dns/api/createresourcerecord
 // https://docs.jdcloud.com/cn/jd-cloud-dns/api/modifyresourcerecord
-func (p *JdcloudDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
+func (p *JdcloudDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValue string, recordType string) (err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -175,9 +174,9 @@ func (p *JdcloudDNSProvider) Update(ctx context.Context, recordID string, domain
 			p.cfg.Region,
 			p.cfg.ZoneID,
 			&models.AddRR{
-				HostRecord: fullDomain, // 主机记录
-				HostValue:  value,      // 解析记录的值
-				Type:       recordType, // 解析的类型
+				HostRecord: fullDomain,  // 主机记录
+				HostValue:  originValue, // 解析记录的值
+				Type:       recordType,  // 解析的类型
 			},
 		)
 		// 请求
@@ -195,9 +194,9 @@ func (p *JdcloudDNSProvider) Update(ctx context.Context, recordID string, domain
 			p.cfg.ZoneID,
 			recordID,
 			&models.UpdateRR{
-				HostRecord: fullDomain, // 主机记录
-				HostValue:  value,      // 解析记录的值
-				Type:       recordType, // 解析的类型
+				HostRecord: fullDomain,  // 主机记录
+				HostValue:  originValue, // 解析记录的值
+				Type:       recordType,  // 解析的类型
 			},
 		)
 		// 请求

@@ -204,6 +204,43 @@ const PLATFORM_SCHEMA = {
       ],
     ],
   },
+  aliyun_cdn: {
+    label: "阿里云 CDN",
+    fields: [
+      {
+        id: "access_key_id",
+        label: "Access Key ID",
+        type: "text",
+        placeholder: "AK...",
+        required: true,
+      },
+      {
+        id: "access_key_secret",
+        label: "Access Key Secret",
+        type: "password",
+        placeholder: "Secret...",
+        required: true,
+      },
+      [
+        {
+          id: "domain_name",
+          label: "域名名称",
+          type: "text",
+          placeholder: "example.com",
+          required: true,
+          pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
+          title: "格式错误",
+        },
+        {
+          id: "email",
+          label: "邮箱",
+          type: "email",
+          placeholder: "your@email.com",
+          required: true,
+        },
+      ],
+    ],
+  },
   aliyun_esa: {
     label: "阿里云 ESA",
     fields: [

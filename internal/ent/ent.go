@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"reflect"
 	"sync"
+	"vibe_ip/internal/ent/cache"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/deviceportforward"
@@ -84,6 +85,7 @@ func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			cdnrecord.Table:           cdnrecord.ValidColumn,
+			cache.Table:               cache.ValidColumn,
 			dnsrecord.Table:           dnsrecord.ValidColumn,
 			device.Table:              device.ValidColumn,
 			deviceportforward.Table:   deviceportforward.ValidColumn,

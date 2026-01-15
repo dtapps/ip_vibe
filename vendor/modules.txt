@@ -55,7 +55,7 @@ github.com/alibabacloud-go/alidns-20150109/v5/client
 # github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
 ## explicit; go 1.14
 github.com/alibabacloud-go/cdn-20180510/v9/client
-# github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.13
+# github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.14
 ## explicit; go 1.14
 github.com/alibabacloud-go/darabonba-openapi/v2/client
 github.com/alibabacloud-go/darabonba-openapi/v2/models
@@ -582,7 +582,7 @@ github.com/hashicorp/hcl/v2/hclparse
 github.com/hashicorp/hcl/v2/hclsyntax
 github.com/hashicorp/hcl/v2/hclwrite
 github.com/hashicorp/hcl/v2/json
-# github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.183
+# github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.184
 ## explicit; go 1.14
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth
@@ -863,12 +863,12 @@ github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/events/application
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/events/application/enums
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects/enums
-# github.com/volcengine/volc-sdk-golang v1.0.234
+# github.com/volcengine/volc-sdk-golang v1.0.235
 ## explicit; go 1.14
 github.com/volcengine/volc-sdk-golang/base
 github.com/volcengine/volc-sdk-golang/service/dns
 github.com/volcengine/volc-sdk-golang/service/sts
-# github.com/volcengine/volcengine-go-sdk v1.2.6
+# github.com/volcengine/volcengine-go-sdk v1.2.7
 ## explicit; go 1.14
 github.com/volcengine/volcengine-go-sdk/internal/ini
 github.com/volcengine/volcengine-go-sdk/internal/sdkio
@@ -918,13 +918,13 @@ github.com/zclconf/go-cty/cty/set
 # github.com/zclconf/go-cty-yaml v1.2.0
 ## explicit; go 1.17
 github.com/zclconf/go-cty-yaml
-# go.dtapp.net/library/contrib/http_log v1.0.7
+# go.dtapp.net/library/contrib/http_log v1.0.8
 ## explicit; go 1.25.1
 go.dtapp.net/library/contrib/http_log
-# go.dtapp.net/library/contrib/req_log v1.0.2
+# go.dtapp.net/library/contrib/req_log v1.0.3
 ## explicit; go 1.25.1
 go.dtapp.net/library/contrib/req_log
-# go.dtapp.net/library/contrib/resty_log v1.0.13
+# go.dtapp.net/library/contrib/resty_log v1.0.14
 ## explicit; go 1.25.1
 go.dtapp.net/library/contrib/resty_log
 # go.dtapp.net/library/service/bark v1.0.9
@@ -1221,7 +1221,7 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
-# modernc.org/libc v1.67.4
+# modernc.org/libc v1.67.6
 ## explicit; go 1.24.0
 modernc.org/libc
 modernc.org/libc/errno

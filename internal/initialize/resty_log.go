@@ -131,18 +131,35 @@ func InitEntRestyLog(logger *slog.Logger) {
 		global.GvaRestyLog = resty_log.NewLoggerMiddleware(saver, callbackFunc)
 
 		// 创建 Resty 客户端，并带日志记录
+		clone := global.GvaRestyLog.Clone()
 		global.GvaRestyClientWithLog = resty.New()
 		// 请求中间件
 		global.GvaRestyClientWithLog.SetRequestMiddlewares(
-			global.GvaRestyLog.IntrusionRequest,
+			clone.IntrusionRequest,
 			resty.PrepareRequestMiddleware,
-			global.GvaRestyLog.BeforeRequest,
+			clone.BeforeRequest,
 		)
 		// 响应中间件
 		global.GvaRestyClientWithLog.SetResponseMiddlewares(
-			global.GvaRestyLog.CopyResponseBodyMiddleware,
+			clone.CopyResponseBodyMiddleware,
 			resty.AutoParseResponseMiddleware,
-			global.GvaRestyLog.AfterResponse,
+			clone.AfterResponse,
+		)
+
+		// 创建 Resty 客户端，并带日志记录不包含请求体/响应体
+		cloneNoBody := global.GvaRestyLog.CloneNoBody()
+		global.GvaRestyClientWithLogNoBody = resty.New()
+		// 请求中间件
+		global.GvaRestyClientWithLogNoBody.SetRequestMiddlewares(
+			cloneNoBody.IntrusionRequest,
+			resty.PrepareRequestMiddleware,
+			cloneNoBody.BeforeRequest,
+		)
+		// 响应中间件
+		global.GvaRestyClientWithLogNoBody.SetResponseMiddlewares(
+			cloneNoBody.CopyResponseBodyMiddleware,
+			resty.AutoParseResponseMiddleware,
+			cloneNoBody.AfterResponse,
 		)
 
 	})

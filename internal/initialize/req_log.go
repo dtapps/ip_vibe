@@ -123,11 +123,20 @@ func InitEntReqLog(logger *slog.Logger) {
 		global.GvaReqLog = req_log.NewLoggerMiddleware(saver, callbackFunc)
 
 		// 创建 Req 客户端，并带日志记录
+		clone := global.GvaReqLog.Clone()
 		global.GvaReqClientWithLog = req.NewClient()
 		// 请求中间件
-		global.GvaReqClientWithLog.OnBeforeRequest(global.GvaReqLog.OnBeforeRequest)
+		global.GvaReqClientWithLog.OnBeforeRequest(clone.OnBeforeRequest)
 		// 响应中间件
-		global.GvaReqClientWithLog.OnAfterResponse(global.GvaReqLog.OnAfterResponse)
+		global.GvaReqClientWithLog.OnAfterResponse(clone.OnAfterResponse)
+
+		// 创建 Req 客户端，并带日志记录不包含请求体/响应体
+		cloneNoBody := global.GvaReqLog.CloneNoBody()
+		global.GvaReqClientWithLogNoBody = req.NewClient()
+		// 请求中间件
+		global.GvaReqClientWithLogNoBody.OnBeforeRequest(cloneNoBody.OnBeforeRequest)
+		// 响应中间件
+		global.GvaReqClientWithLogNoBody.OnAfterResponse(cloneNoBody.OnAfterResponse)
 
 	})
 }
