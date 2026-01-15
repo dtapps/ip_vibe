@@ -51,10 +51,10 @@
 
     (async () => {
       try {
-        await loadJQuery();      // 先jQuery
-        await loadSelect2();     // 然后Select2（自动等jQuery）
-        await loadClipboard();   // 最后Clipboard（独立）
-        console.log('所有所需库加载完成，可以初始化UI');
+        // await loadJQuery();      // 先 jQuery
+        // await loadSelect2();     // 然后 Select2
+        await loadClipboardJS();   // 最后 ClipboardJS
+        console.log('所有所需库加载完成');
       } catch (error) {
         console.error('库加载失败:', error.message);
       }

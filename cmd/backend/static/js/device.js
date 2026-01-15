@@ -3,6 +3,11 @@ async function openFormModal(id) {
   document.getElementById("form").reset();
 
   try {
+    // 加载 jQuery 库
+    await loadJQuery();
+    // 加载 Select2 库
+    await loadSelect2();
+
     // 选择 Select2 控件
     const selectId2 = $("#webhook_ids");
 

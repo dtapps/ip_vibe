@@ -26,4 +26,6 @@ async function changeStatus(url, dataKey, isNoReload, element) {
 }
 
 window.components = window.components || {};
-if (!window.components.switch) window.components.switch = { changeStatus };
+if (!window.components.switch) {
+  window.components.switch = { changeStatus };
+}

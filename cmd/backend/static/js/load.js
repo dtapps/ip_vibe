@@ -1,6 +1,6 @@
 // CDN配置（同之前，保持不变）
 const CDN_CONFIG = {
-  clipboard: [
+  "clipboard-js": [
     "https://esa-cdnjs.dtapp.net/ajax/libs/clipboard.js/2.0.11/clipboard.min.js",
     "https://esa-jsdelivr.dtapp.net/npm/clipboard@2.0.11/dist/clipboard.min.js",
     "https://eo-cdnjs.dtapp.net/ajax/libs/clipboard.js/2.0.11/clipboard.min.js",
@@ -47,9 +47,10 @@ const CDN_CONFIG = {
   ],
 };
 
-// 通用加载函数（添加超时支持）
+// 通用加载函数
 function loadLibrary(libName, urls, options = {}) {
-  const { timeout = 5000 } = options; // 默认超时5秒，可在调用时覆盖，如 { timeout: 3000 }
+  // 默认超时5秒，可在调用时覆盖，如 { timeout: 3000 }
+  const { timeout = 5000 } = options;
 
   return new Promise((resolve, reject) => {
     let currentIndex = 0;
@@ -57,12 +58,12 @@ function loadLibrary(libName, urls, options = {}) {
 
     function tryLoad() {
       if (currentIndex >= urls.length) {
-        reject(new Error(`${libName} 所有CDN加载失败`));
+        reject(new Error(`${libName} 加载所失败`));
         return;
       }
 
       const url = urls[currentIndex];
-      console.log(`尝试加载 ${libName} 从: ${url}`);
+      console.log(`${libName} 尝试从 ${url} 加载`);
 
       // 创建loadjs的Promise（使用returnPromise: true）
       const jsLoadPromise = new Promise((jsResolve, jsReject) => {
@@ -70,13 +71,13 @@ function loadLibrary(libName, urls, options = {}) {
           ...options,
           returnPromise: true, // 启用Promise模式
           success: () => {
-            console.log(`${libName} 加载成功 (CDN: ${currentIndex + 1})`);
+            // console.log(`${libName} 加载成功 ${url}`);
             jsResolve();
           },
           error: (pathsNotFound) => {
-            console.warn(
-              `${libName} 从 ${url} 加载失败（非超时原因），切换下一个CDN`
-            );
+            // console.warn(
+            //   `${libName} 从 ${url} 加载失败（非超时原因），切换下一个`
+            // );
             jsReject(new Error(`Load error: ${pathsNotFound}`));
           },
         });
@@ -85,9 +86,7 @@ function loadLibrary(libName, urls, options = {}) {
       // 超时Promise
       const timeoutPromise = new Promise((_, timeoutReject) => {
         setTimeout(() => {
-          console.warn(
-            `${libName} 从 ${url} 超时（${timeout}ms），切换下一个CDN`
-          );
+          // console.warn(`${libName} 从 ${url} 超时（${timeout}ms），切换下一个`);
           timeoutReject(new Error(`Timeout after ${timeout}ms`));
         }, timeout);
       });
@@ -111,47 +110,78 @@ function loadLibrary(libName, urls, options = {}) {
   });
 }
 
-// 每个库的专用加载函数（按需调用）
-async function loadClipboard() {
-  if (typeof Clipboard !== "undefined") {
-    console.log("Clipboard 已加载");
-    return Promise.resolve();
-  }
-  return loadLibrary("clipboard", CDN_CONFIG.clipboard);
-}
+// 专用加载 ClipboardJS
+async function loadClipboardJS() {
+  const libName = "clipboard-js";
 
-async function loadJQuery() {
-  if (typeof $ !== "undefined") {
-    console.log("jQuery 已加载");
-    return Promise.resolve();
-  }
-  return loadLibrary("jquery", CDN_CONFIG.jquery);
-}
-
-async function loadECharts() {
-  if (typeof echarts !== "undefined") {
-    console.log("ECharts 已加载");
-    return Promise.resolve();
-  }
-  return loadLibrary("echarts", CDN_CONFIG.echarts);
-}
-
-async function loadSelect2() {
+  console.log(`${libName} 尝试加载`, typeof ClipboardJS !== "undefined");
   try {
-    // 先确保jQuery就绪
-    await loadJQuery();
+    if (typeof ClipboardJS !== "undefined") {
+      console.log(`${libName} 加载已完成`);
+      return Promise.resolve();
+    }
+    await loadLibrary(libName, CDN_CONFIG[libName]);
+    console.log(`${libName} 加载成功`);
+  } catch (error) {
+    console.error(`${libName} 加载失败:`, error);
+    throw error;
+  }
+}
+
+// 专用加载 jQuery
+async function loadJQuery() {
+  const libName = "jquery";
+
+  console.log(`${libName} 尝试加载`, typeof $ !== "undefined");
+  try {
+    if (typeof $ !== "undefined") {
+      console.log(`${libName} 加载已完成`);
+      return Promise.resolve();
+    }
+    await loadLibrary(libName, CDN_CONFIG[libName]);
+    console.log(`${libName} 加载成功`);
+  } catch (error) {
+    console.error(`${libName} 加载失败:`, error);
+    throw error;
+  }
+}
+
+// 专用加载 ECharts
+async function loadECharts() {
+  const libName = "echarts";
+
+  console.log(`${libName} 尝试加载`, typeof echarts !== "undefined");
+  try {
+    if (typeof echarts !== "undefined") {
+      console.log(`${libName} 加载已完成`);
+      return Promise.resolve();
+    }
+    await loadLibrary(libName, CDN_CONFIG[libName]);
+    console.log(`${libName} 加载成功`);
+  } catch (error) {
+    console.error(`${libName} 加载失败:`, error);
+    throw error;
+  }
+}
+
+// 专用加载 Select2
+async function loadSelect2() {
+  const libName = "select2";
+
+  console.log(`${libName} 尝试加载`, typeof $.fn.select2 !== "undefined");
+  try {
     if (typeof $.fn.select2 !== "undefined") {
-      console.log("Select2 已加载");
+      console.log(`${libName} 加载已完成`);
       return Promise.resolve();
     }
     // 并行加载JS和CSS
     await Promise.all([
-      loadLibrary("select2-js", CDN_CONFIG["select2-js"]),
-      loadLibrary("select2-css", CDN_CONFIG["select2-css"]),
+      loadLibrary(`${libName}-js`, CDN_CONFIG[`${libName}-js`]),
+      loadLibrary(`${libName}-css`, CDN_CONFIG[`${libName}-css`]),
     ]);
-    console.log("Select2 加载完成");
+    console.log(`${libName} 加载成功`);
   } catch (error) {
-    console.error("Select2 加载失败:", error);
+    console.error(`${libName} 加载失败:`, error);
     throw error;
   }
 }

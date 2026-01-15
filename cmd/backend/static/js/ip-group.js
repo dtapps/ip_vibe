@@ -8,10 +8,15 @@ function onDevicesSelect(sel) {
 async function openFormModal(id) {
   document.getElementById("form").reset();
 
-  // 选择 Select2 控件
-  const selectId2 = $("#devices");
-
   try {
+    // 加载 jQuery 库
+    await loadJQuery();
+    // 加载 Select2 库
+    await loadSelect2();
+
+    // 选择 Select2 控件
+    const selectId2 = $("#devices");
+
     // 设备列表
     const { data: devices } = await API.get(`/api/devices`);
     console.log("devices", devices);

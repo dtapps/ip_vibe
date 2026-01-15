@@ -11,5 +11,6 @@ function changePage(page, size) {
 }
 
 window.components = window.components || {};
-if (!window.components.pagination)
+if (!window.components.pagination) {
   window.components.pagination = { changePage };
+}
