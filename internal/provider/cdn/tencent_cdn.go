@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
@@ -132,7 +131,7 @@ func (p *TencentCDNProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://console.cloud.tencent.com/api/explorer?Product=cdn&Version=2018-06-06&Action=DescribeDomains
-func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, value string, err error) {
+func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, cdnDomain string, originValues []string, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -155,20 +154,26 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 	}
 	// 响应参数
 	for _, item := range response.Response.Domains {
-		if strings.EqualFold(utils.PtrToString(item.Domain), fullDomain) {
+		if utils.EqualStringIgnoreCase(utils.PtrToString(item.Domain), fullDomain) {
+			// 域名ID
 			recordID = utils.PtrToString(item.ResourceId)
-			value = utils.PtrToString(item.Origin.Origins[0])
-			return recordID, value, nil
+			// CDN域名
+			cdnDomain = utils.TrimDots(utils.PtrToString(item.Cname))
+			// 记录值列表
+			for _, origin := range item.Origin.Origins {
+				originValues = append(originValues, utils.PtrToString(origin))
+			}
+			return recordID, cdnDomain, originValues, nil
 		}
 	}
 
-	return "", "", provider.ErrRecordNotFound
+	return "", "", []string{}, provider.ErrRecordNotFound
 }
 
 // Update 更新 CDN 记录
 // https://console.cloud.tencent.com/api/explorer?Product=cdn&Version=2018-06-06&Action=AddCdnDomain
 // https://console.cloud.tencent.com/api/explorer?Product=cdn&Version=2018-06-06&Action=UpdateDomainConfig
-func (p *TencentCDNProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, value string, recordType string) (err error) {
+func (p *TencentCDNProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValues []string, recordType string) (err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -179,8 +184,8 @@ func (p *TencentCDNProvider) Update(ctx context.Context, recordID string, domain
 		request.Domain = common.StringPtr(fullDomain) // 域名
 		request.ServiceType = common.StringPtr("web") // 加速域名业务类型
 		request.Origin = &cdn.Origin{
-			Origins:    common.StringPtrs([]string{value}), // 源站地址
-			OriginType: common.StringPtr(recordType),       // 源站类型
+			Origins:    common.StringPtrs(originValues), // 源站地址
+			OriginType: common.StringPtr(recordType),    // 源站类型
 		}
 		// 请求
 		response, err := p.Provider.Client.AddCdnDomainWithContext(ctx, request)
@@ -196,8 +201,8 @@ func (p *TencentCDNProvider) Update(ctx context.Context, recordID string, domain
 		request.Domain = common.StringPtr(fullDomain)               // 域名
 		request.ProjectId = common.Int64Ptr(cast.ToInt64(recordID)) // 项目 ID
 		request.Origin = &cdn.Origin{
-			Origins:    common.StringPtrs([]string{value}), // 源站地址
-			OriginType: common.StringPtr(recordType),       // 源站类型
+			Origins:    common.StringPtrs(originValues), // 源站地址
+			OriginType: common.StringPtr(recordType),    // 源站类型
 		}
 		// 请求
 		response, err := p.Provider.Client.UpdateDomainConfigWithContext(ctx, request)
