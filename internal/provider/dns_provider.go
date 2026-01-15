@@ -148,7 +148,7 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 	}
 
 	if strings.EqualFold(t.config.oldValue, t.config.newValue) {
-		t.logger.Info("【DNS】IP 未改变，无需更新")
+		t.logger.Info("【DNS】未改变，无需更新")
 		return nil
 	}
 
@@ -179,11 +179,20 @@ func (t *DNSTask) SaveResponse(ctx context.Context, db *ent.Client, id int64, la
 	if db == nil || id == 0 {
 		return nil
 	}
-	return db.DNSRecord.UpdateOneID(id).
+
+	err = db.DNSRecord.UpdateOneID(id).
 		SetRecordID(t.config.recordID).
 		SetLastAPIResponse(last_api_response).
 		SetLastAPIResponseAt(time.Now()).
 		Exec(ctx)
+	if err != nil {
+		t.logger.Error("【DNS】保存响应失败",
+			slog.String("name", t.provider.Name()),
+			slog.Any("err", err),
+		)
+		return err
+	}
+	return nil
 }
 
 // Notify 执行 DNS 通知

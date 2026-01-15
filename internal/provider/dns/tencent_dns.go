@@ -49,6 +49,9 @@ func NewDefaultTencentDNSConfig() *TencentDNSConfig {
 
 // ParseCustomConfig 解析 腾讯云 DNS 自定义配置
 func (p *TencentDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if len(config_json) == 0 {
+		return nil
+	}
 	if err := json.Unmarshal(config_json, p); err != nil {
 		return err
 	}
@@ -211,6 +214,9 @@ type TencentDNSCustomConfig struct {
 
 // ParseCustomConfig 解析 DNS 自定义配置
 func (p *TencentDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if len(config_json) == 0 {
+		return nil
+	}
 	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
 		return err
 	}

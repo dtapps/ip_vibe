@@ -56,6 +56,9 @@ func NewDefaultHuaweiDNSConfig() *HuaweiDNSConfig {
 
 // ParseCustomConfig 解析 华为云 DNS 自定义配置
 func (p *HuaweiDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if len(config_json) == 0 {
+		return nil
+	}
 	if err := json.Unmarshal(config_json, p); err != nil {
 		return err
 	}
@@ -242,6 +245,9 @@ type HuaweiDNSCustomConfig struct {
 
 // ParseCustomConfig 解析 DNS 自定义配置
 func (p *HuaweiDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if len(config_json) == 0 {
+		return nil
+	}
 	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
 		return err
 	}

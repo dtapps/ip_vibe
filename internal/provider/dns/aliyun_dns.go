@@ -49,6 +49,9 @@ func NewDefaultAliyunDNSConfig() *AliyunDNSConfig {
 
 // ParseCustomConfig 解析 阿里云 DNS 自定义配置
 func (p *AliyunDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if len(config_json) == 0 {
+		return nil
+	}
 	if err := json.Unmarshal(config_json, p); err != nil {
 		return err
 	}
@@ -109,7 +112,7 @@ func NewAliyunDNSProviderRaw(ctx context.Context, cfg *AliyunDNSConfig, opts ...
 		return nil, err
 	}
 
-	// 实例化client选项
+	// 选项
 	p.Provider.Cfg = &openapi.Config{
 		Credential: p.Provider.Auth,
 		Endpoint:   tea.String(p.cfg.Endpoint),
@@ -215,6 +218,9 @@ type AliyunDNSCustomConfig struct {
 
 // ParseCustomConfig 解析 DNS 自定义配置
 func (p *AliyunDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if len(config_json) == 0 {
+		return nil
+	}
 	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
 		return err
 	}

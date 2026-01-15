@@ -53,6 +53,9 @@ func NewDefaultJdcloudDNSConfig() *JdcloudDNSConfig {
 
 // ParseCustomConfig 解析 京东云 DNS 自定义配置
 func (p *JdcloudDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if len(config_json) == 0 {
+		return nil
+	}
 	if err := json.Unmarshal(config_json, p); err != nil {
 		return err
 	}
@@ -214,5 +217,8 @@ type JdcloudDNSCustomConfig struct {
 
 // ParseCustomConfig 解析 DNS 自定义配置
 func (p *JdcloudDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if len(config_json) == 0 {
+		return nil
+	}
 	return nil
 }
