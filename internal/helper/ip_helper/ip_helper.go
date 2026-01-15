@@ -2,6 +2,7 @@ package ip_helper
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"regexp"
 	"time"
@@ -34,40 +35,48 @@ func NewIPHelper() *IPHelper {
 	// 创建一个新的 Resty 客户端
 	client := resty.New()
 
+	// 如果全局 Resty 客户端存在，使用它
+	// if global.GvaRestyClientWithLog != nil {
+	// 	client = global.GvaRestyClientWithLog
+	// }
+
 	// 设置默认超时
 	client.SetTimeout(5 * time.Second)
 
+	// 跳过证书验证
+	client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+
 	return &IPHelper{
 		iPv4URLs: []string{
-			"https://eo-ip.dtapp.net",
+			"http://eo-ip.dtapp.net",
 			// "https://eo-ip.dtapp.top",
 			// "https://eo-ip.liguangchun.cn",
 			// "https://eo-ip.liguangchun.com",
-			"https://cf-ip.dtapp.net",
+			"http://cf-ip.dtapp.net",
 			// "https://cf-ip.dtapp.top",
 			// "https://cf-ip.liguangchun.cn",
 			// "https://cf-ip.liguangchun.com",
-			"https://esa-ip.dtapp.net",
-			"https://ddns.oray.com/checkip",
+			"http://esa-ip.dtapp.net",
+			"http://ddns.oray.com/checkip",
 			"http://v4.66666.host:66/ip",
-			"https://myip.ipip.net",
+			"http://myip.ipip.net",
 			"http://v4.666666.host:66/ip",
-			"https://4.ipw.cn",
-			"https://ip.3322.net",
+			"http://4.ipw.cn",
+			"http://ip.3322.net",
 		},
 		iPv6URLs: []string{
-			"https://eo-ip.dtapp.net",
+			"http://eo-ip.dtapp.net",
 			// "https://eo-ip.dtapp.top",
 			// "https://eo-ip.liguangchun.cn",
 			// "https://eo-ip.liguangchun.com",
-			"https://cf-ip.dtapp.net",
+			"http://cf-ip.dtapp.net",
 			// "https://cf-ip.dtapp.top",
 			// "https://cf-ip.liguangchun.cn",
 			// "https://cf-ip.liguangchun.com",
-			"https://esa-ip.dtapp.net",
+			"http://esa-ip.dtapp.net",
 			"http://v6.66666.host:66/ip",
 			"http://myip6.ipip.net",
-			"https://6.ipw.cn",
+			"http://6.ipw.cn",
 			"http://v6.666666.host:66/ip",
 		},
 		client:  client,
