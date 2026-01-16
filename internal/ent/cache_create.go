@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 	"vibe_ip/internal/ent/cache"
 
 	"entgo.io/ent/dialect/sql"
@@ -20,34 +19,6 @@ type CacheCreate struct {
 	mutation *CacheMutation
 	hooks    []Hook
 	conflict []sql.ConflictOption
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (_c *CacheCreate) SetCreatedAt(v time.Time) *CacheCreate {
-	_c.mutation.SetCreatedAt(v)
-	return _c
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (_c *CacheCreate) SetNillableCreatedAt(v *time.Time) *CacheCreate {
-	if v != nil {
-		_c.SetCreatedAt(*v)
-	}
-	return _c
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_c *CacheCreate) SetUpdatedAt(v time.Time) *CacheCreate {
-	_c.mutation.SetUpdatedAt(v)
-	return _c
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (_c *CacheCreate) SetNillableUpdatedAt(v *time.Time) *CacheCreate {
-	if v != nil {
-		_c.SetUpdatedAt(*v)
-	}
-	return _c
 }
 
 // SetKey sets the "key" field.
@@ -75,9 +46,6 @@ func (_c *CacheCreate) Mutation() *CacheMutation {
 
 // Save creates the Cache in the database.
 func (_c *CacheCreate) Save(ctx context.Context) (*Cache, error) {
-	if err := _c.defaults(); err != nil {
-		return nil, err
-	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -103,33 +71,8 @@ func (_c *CacheCreate) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (_c *CacheCreate) defaults() error {
-	if _, ok := _c.mutation.CreatedAt(); !ok {
-		if cache.DefaultCreatedAt == nil {
-			return fmt.Errorf("ent: uninitialized cache.DefaultCreatedAt (forgotten import ent/runtime?)")
-		}
-		v := cache.DefaultCreatedAt()
-		_c.mutation.SetCreatedAt(v)
-	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		if cache.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized cache.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := cache.DefaultUpdatedAt()
-		_c.mutation.SetUpdatedAt(v)
-	}
-	return nil
-}
-
 // check runs all checks and user-defined validators on the builder.
 func (_c *CacheCreate) check() error {
-	if _, ok := _c.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Cache.created_at"`)}
-	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Cache.updated_at"`)}
-	}
 	if _, ok := _c.mutation.Key(); !ok {
 		return &ValidationError{Name: "key", err: errors.New(`ent: missing required field "Cache.key"`)}
 	}
@@ -171,14 +114,6 @@ func (_c *CacheCreate) createSpec() (*Cache, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
-	if value, ok := _c.mutation.CreatedAt(); ok {
-		_spec.SetField(cache.FieldCreatedAt, field.TypeTime, value)
-		_node.CreatedAt = value
-	}
-	if value, ok := _c.mutation.UpdatedAt(); ok {
-		_spec.SetField(cache.FieldUpdatedAt, field.TypeTime, value)
-		_node.UpdatedAt = value
-	}
 	if value, ok := _c.mutation.Key(); ok {
 		_spec.SetField(cache.FieldKey, field.TypeString, value)
 		_node.Key = value
@@ -194,7 +129,7 @@ func (_c *CacheCreate) createSpec() (*Cache, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.Cache.Create().
-//		SetCreatedAt(v).
+//		SetKey(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -203,7 +138,7 @@ func (_c *CacheCreate) createSpec() (*Cache, *sqlgraph.CreateSpec) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.CacheUpsert) {
-//			SetCreatedAt(v+v).
+//			SetKey(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *CacheCreate) OnConflict(opts ...sql.ConflictOption) *CacheUpsertOne {
@@ -238,18 +173,6 @@ type (
 		*sql.UpdateSet
 	}
 )
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *CacheUpsert) SetUpdatedAt(v time.Time) *CacheUpsert {
-	u.Set(cache.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *CacheUpsert) UpdateUpdatedAt() *CacheUpsert {
-	u.SetExcluded(cache.FieldUpdatedAt)
-	return u
-}
 
 // SetValue sets the "value" field.
 func (u *CacheUpsert) SetValue(v []byte) *CacheUpsert {
@@ -286,9 +209,6 @@ func (u *CacheUpsertOne) UpdateNewValues() *CacheUpsertOne {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(cache.FieldID)
 		}
-		if _, exists := u.create.mutation.CreatedAt(); exists {
-			s.SetIgnore(cache.FieldCreatedAt)
-		}
 		if _, exists := u.create.mutation.Key(); exists {
 			s.SetIgnore(cache.FieldKey)
 		}
@@ -321,20 +241,6 @@ func (u *CacheUpsertOne) Update(set func(*CacheUpsert)) *CacheUpsertOne {
 		set(&CacheUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *CacheUpsertOne) SetUpdatedAt(v time.Time) *CacheUpsertOne {
-	return u.Update(func(s *CacheUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *CacheUpsertOne) UpdateUpdatedAt() *CacheUpsertOne {
-	return u.Update(func(s *CacheUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetValue sets the "value" field.
@@ -410,7 +316,6 @@ func (_c *CacheCreateBulk) Save(ctx context.Context) ([]*Cache, error) {
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
-			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*CacheMutation)
 				if !ok {
@@ -493,7 +398,7 @@ func (_c *CacheCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.CacheUpsert) {
-//			SetCreatedAt(v+v).
+//			SetKey(v+v).
 //		}).
 //		Exec(ctx)
 func (_c *CacheCreateBulk) OnConflict(opts ...sql.ConflictOption) *CacheUpsertBulk {
@@ -540,9 +445,6 @@ func (u *CacheUpsertBulk) UpdateNewValues() *CacheUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(cache.FieldID)
 			}
-			if _, exists := b.mutation.CreatedAt(); exists {
-				s.SetIgnore(cache.FieldCreatedAt)
-			}
 			if _, exists := b.mutation.Key(); exists {
 				s.SetIgnore(cache.FieldKey)
 			}
@@ -576,20 +478,6 @@ func (u *CacheUpsertBulk) Update(set func(*CacheUpsert)) *CacheUpsertBulk {
 		set(&CacheUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *CacheUpsertBulk) SetUpdatedAt(v time.Time) *CacheUpsertBulk {
-	return u.Update(func(s *CacheUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *CacheUpsertBulk) UpdateUpdatedAt() *CacheUpsertBulk {
-	return u.Update(func(s *CacheUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetValue sets the "value" field.

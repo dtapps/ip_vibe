@@ -52,23 +52,10 @@ func init() {
 	cdnrecordDescID := cdnrecordFields[0].Descriptor()
 	// cdnrecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	cdnrecord.IDValidator = cdnrecordDescID.Validators[0].(func(int64) error)
-	cacheMixin := schema.Cache{}.Mixin()
 	cacheHooks := schema.Cache{}.Hooks()
 	cache.Hooks[0] = cacheHooks[0]
-	cacheMixinFields0 := cacheMixin[0].Fields()
-	_ = cacheMixinFields0
 	cacheFields := schema.Cache{}.Fields()
 	_ = cacheFields
-	// cacheDescCreatedAt is the schema descriptor for created_at field.
-	cacheDescCreatedAt := cacheMixinFields0[0].Descriptor()
-	// cache.DefaultCreatedAt holds the default value on creation for the created_at field.
-	cache.DefaultCreatedAt = cacheDescCreatedAt.Default.(func() time.Time)
-	// cacheDescUpdatedAt is the schema descriptor for updated_at field.
-	cacheDescUpdatedAt := cacheMixinFields0[1].Descriptor()
-	// cache.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	cache.DefaultUpdatedAt = cacheDescUpdatedAt.Default.(func() time.Time)
-	// cache.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	cache.UpdateDefaultUpdatedAt = cacheDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// cacheDescID is the schema descriptor for id field.
 	cacheDescID := cacheFields[0].Descriptor()
 	// cache.IDValidator is a validator for the "id" field. It is called by the builders before save.

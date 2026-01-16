@@ -342,56 +342,6 @@ func (q *CacheQuery) OrderByIDAsc() *CacheQuery {
 	return q.Order(Asc(cache.FieldID))
 }
 
-// OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
-// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
-// 返回值类型为 *CacheQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
-// 示例：
-//
-//	records, err := client.Cache.Query().
-//	    OrderByCreatedAtDesc().
-//	    Limit(10).
-//	    All(ctx)
-func (q *CacheQuery) OrderByCreatedAtDesc() *CacheQuery {
-	return q.Order(Desc(cache.FieldCreatedAt))
-}
-
-// OrderByCreatedAtAsc 按字段 created_at 升序排列查询结果。
-// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
-// 返回值类型为 *CacheQuery，支持链式调用其他查询方法。
-// 示例：
-//
-//	records, err := client.Cache.Query().
-//	    OrderByCreatedAtAsc().
-//	    All(ctx)
-func (q *CacheQuery) OrderByCreatedAtAsc() *CacheQuery {
-	return q.Order(Asc(cache.FieldCreatedAt))
-}
-
-// OrderByUpdatedAtDesc 按字段 updated_at 降序排列查询结果。
-// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
-// 返回值类型为 *CacheQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
-// 示例：
-//
-//	records, err := client.Cache.Query().
-//	    OrderByUpdatedAtDesc().
-//	    Limit(10).
-//	    All(ctx)
-func (q *CacheQuery) OrderByUpdatedAtDesc() *CacheQuery {
-	return q.Order(Desc(cache.FieldUpdatedAt))
-}
-
-// OrderByUpdatedAtAsc 按字段 updated_at 升序排列查询结果。
-// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
-// 返回值类型为 *CacheQuery，支持链式调用其他查询方法。
-// 示例：
-//
-//	records, err := client.Cache.Query().
-//	    OrderByUpdatedAtAsc().
-//	    All(ctx)
-func (q *CacheQuery) OrderByUpdatedAtAsc() *CacheQuery {
-	return q.Order(Asc(cache.FieldUpdatedAt))
-}
-
 // OrderByKeyDesc 按字段 key 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *CacheQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。

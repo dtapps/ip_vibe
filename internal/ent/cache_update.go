@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 	"vibe_ip/internal/ent/cache"
 	"vibe_ip/internal/ent/predicate"
 
@@ -29,12 +28,6 @@ func (_u *CacheUpdate) Where(ps ...predicate.Cache) *CacheUpdate {
 	return _u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *CacheUpdate) SetUpdatedAt(v time.Time) *CacheUpdate {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
 // SetValue sets the "value" field.
 func (_u *CacheUpdate) SetValue(v []byte) *CacheUpdate {
 	_u.mutation.SetValue(v)
@@ -54,9 +47,6 @@ func (_u *CacheUpdate) Mutation() *CacheMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *CacheUpdate) Save(ctx context.Context) (int, error) {
-	if err := _u.defaults(); err != nil {
-		return 0, err
-	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -82,18 +72,6 @@ func (_u *CacheUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (_u *CacheUpdate) defaults() error {
-	if _, ok := _u.mutation.UpdatedAt(); !ok {
-		if cache.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized cache.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := cache.UpdateDefaultUpdatedAt()
-		_u.mutation.SetUpdatedAt(v)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *CacheUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *CacheUpdate {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -108,9 +86,6 @@ func (_u *CacheUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(cache.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Value(); ok {
 		_spec.SetField(cache.FieldValue, field.TypeBytes, value)
@@ -138,12 +113,6 @@ type CacheUpdateOne struct {
 	hooks     []Hook
 	mutation  *CacheMutation
 	modifiers []func(*sql.UpdateBuilder)
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *CacheUpdateOne) SetUpdatedAt(v time.Time) *CacheUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
 }
 
 // SetValue sets the "value" field.
@@ -178,9 +147,6 @@ func (_u *CacheUpdateOne) Select(field string, fields ...string) *CacheUpdateOne
 
 // Save executes the query and returns the updated Cache entity.
 func (_u *CacheUpdateOne) Save(ctx context.Context) (*Cache, error) {
-	if err := _u.defaults(); err != nil {
-		return nil, err
-	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -204,18 +170,6 @@ func (_u *CacheUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *CacheUpdateOne) defaults() error {
-	if _, ok := _u.mutation.UpdatedAt(); !ok {
-		if cache.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized cache.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
-		v := cache.UpdateDefaultUpdatedAt()
-		_u.mutation.SetUpdatedAt(v)
-	}
-	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -249,9 +203,6 @@ func (_u *CacheUpdateOne) sqlSave(ctx context.Context) (_node *Cache, err error)
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(cache.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Value(); ok {
 		_spec.SetField(cache.FieldValue, field.TypeBytes, value)

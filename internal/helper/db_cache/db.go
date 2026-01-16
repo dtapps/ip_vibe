@@ -116,13 +116,7 @@ func UpdateSetting(ctx context.Context, db *ent.Client, newSetting *Setting) err
 
 	// 开启 Upsert 模式批量写入 Cache 表
 	for k, v := range updates {
-		err := db.Cache.Create().
-			SetKey(k).
-			SetValue([]byte(cast.ToString(v))).
-			OnConflictColumns(cache.FieldKey). // 依赖你的 Cache Schema 中 Key 字段的 Unique 索引
-			UpdateValue().
-			Exec(ctx)
-
+		err := SaveSingleSetting(ctx, db, k, v)
 		if err != nil {
 			return fmt.Errorf("更新配置项 %s 失败: %w", k, err)
 		}
@@ -138,7 +132,7 @@ func SaveSingleSetting(ctx context.Context, db *ent.Client, key string, value an
 	return db.Cache.Create().
 		SetKey(key).
 		SetValue([]byte(cast.ToString(value))).
-		OnConflictColumns(cache.FieldKey).
+		OnConflictColumns(cache.FieldKey). // 依赖你的 Cache Schema 中 Key 字段的 Unique 索引
 		UpdateValue().
 		Exec(ctx)
 }

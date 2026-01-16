@@ -90,8 +90,6 @@ var (
 	// CacheColumns holds the columns for the "cache" table.
 	CacheColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "缓存记录序号"},
-		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
-		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "key", Type: field.TypeString, Unique: true, Comment: "缓存键"},
 		{Name: "value", Type: field.TypeBytes, Nullable: true, Comment: "缓存值"},
 	}
@@ -103,17 +101,9 @@ var (
 		PrimaryKey: []*schema.Column{CacheColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "cache_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{CacheColumns[1]},
-				Annotation: &entsql.IndexAnnotation{
-					Desc: true,
-				},
-			},
-			{
 				Name:    "cache_key",
 				Unique:  true,
-				Columns: []*schema.Column{CacheColumns[3]},
+				Columns: []*schema.Column{CacheColumns[1]},
 			},
 		},
 	}

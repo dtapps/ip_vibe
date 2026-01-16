@@ -264,12 +264,12 @@ func (_q *CacheQuery) Clone() *CacheQuery {
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		Key string `json:"key,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Cache.Query().
-//		GroupBy(cache.FieldCreatedAt).
+//		GroupBy(cache.FieldKey).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *CacheQuery) GroupBy(field string, fields ...string) *CacheGroupBy {
@@ -287,11 +287,11 @@ func (_q *CacheQuery) GroupBy(field string, fields ...string) *CacheGroupBy {
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		Key string `json:"key,omitempty"`
 //	}
 //
 //	client.Cache.Query().
-//		Select(cache.FieldCreatedAt).
+//		Select(cache.FieldKey).
 //		Scan(ctx, &v)
 func (_q *CacheQuery) Select(fields ...string) *CacheSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)

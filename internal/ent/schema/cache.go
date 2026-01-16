@@ -2,7 +2,6 @@ package schema
 
 import (
 	"vibe_ip/internal/ent/schema/schemahook"
-	"vibe_ip/internal/ent/schema/schemamixin"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -27,9 +26,7 @@ func (Cache) Annotations() []schema.Annotation {
 
 // Mixin of the Cache.
 func (Cache) Mixin() []ent.Mixin {
-	return []ent.Mixin{
-		schemamixin.AtMixin{},
-	}
+	return []ent.Mixin{}
 }
 
 // Fields of the Cache.
@@ -63,10 +60,6 @@ func (Cache) Edges() []ent.Edge {
 // Indexes of the Cache.
 func (Cache) Indexes() []ent.Index {
 	return []ent.Index{
-		// 按创建时间排序
-		index.Fields("created_at").
-			Annotations(entsql.Desc(), entsql.WithComments(true)),
-
 		// 按缓存键排序
 		index.Fields("key").
 			Unique().
