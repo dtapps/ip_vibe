@@ -174,7 +174,7 @@ func (s *IPReportRestyTask) StartPeriodicTask(ctx context.Context) (err error) {
 	}
 
 	s.logger.InfoContext(ctx, s.taskName+"任务已启动",
-		slog.String("执行间隔", "8-12分钟随机"),
+		slog.String("执行间隔", getSetting.IPReportIntervalTime),
 	)
 	return nil
 }

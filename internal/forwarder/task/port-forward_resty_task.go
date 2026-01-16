@@ -178,7 +178,7 @@ func (s *PortForwardRestyTask) StartPeriodicTask(ctx context.Context) (err error
 	}
 
 	s.logger.InfoContext(ctx, s.taskName+"任务已启动",
-		slog.String("interval", "30分钟"),
+		slog.String("执行间隔", getSetting.PortForwardReloadTime),
 	)
 	return nil
 }
