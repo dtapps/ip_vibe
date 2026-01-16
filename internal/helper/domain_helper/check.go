@@ -14,7 +14,6 @@ import (
 	"time"
 	"vibe_ip/internal/core"
 	"vibe_ip/internal/ent/schema/schematype"
-	"vibe_ip/internal/global"
 
 	"github.com/imroc/req/v3"
 	"go.dtapp.net/library/contrib/http_log"
@@ -31,37 +30,47 @@ type DomainCheck struct {
 }
 
 func NewDomainCheck(logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) *DomainCheck {
-	httpClient := &http.Client{}
-	if global.GvaHttpClientWithLog != nil {
-		httpClient = global.GvaHttpClientWithLog
-	}
-	if !debug && global.GvaHttpClientWithLogNoBody != nil {
-		httpClient = global.GvaHttpClientWithLogNoBody
-	}
-
-	restyClient := resty.New()
-	if global.GvaRestyClientWithLog != nil {
-		restyClient = global.GvaRestyClientWithLog
-	}
-	if !debug && global.GvaRestyClientWithLogNoBody != nil {
-		restyClient = global.GvaRestyClientWithLogNoBody
-	}
-
-	reqClient := req.NewClient()
-	if global.GvaReqClientWithLog != nil {
-		reqClient = global.GvaReqClientWithLog
-	}
-	if !debug && global.GvaReqClientWithLogNoBody != nil {
-		reqClient = global.GvaReqClientWithLogNoBody
-	}
-	return &DomainCheck{
+	s := &DomainCheck{
 		logger:        logger,
 		httpTransport: httpTransport,
 		debug:         debug,
-		httpClient:    httpClient,
-		restyClient:   restyClient,
-		reqClient:     reqClient,
 	}
+	s.initHttpClient()
+	return s
+}
+
+func (s *DomainCheck) initHttpClient() {
+
+	// 创建客户端
+	httpClient := &http.Client{}
+	restyClient := resty.New()
+	reqClient := req.NewClient()
+
+	// 添加 HTTP 日志记录器
+	if s.httpTransport != nil {
+		httpClient.Transport = s.httpTransport.Instance(nil)
+		restyClient.SetTransport(s.httpTransport.Instance(restyClient.Transport()))
+		reqClient.GetTransport().WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
+			return s.httpTransport.Instance(rt)
+		})
+	}
+	if !s.debug && s.httpTransport != nil {
+		httpClient.Transport = s.httpTransport.InstanceNoBody(nil)
+		restyClient.SetTransport(s.httpTransport.InstanceNoBody(restyClient.Transport()))
+		reqClient.GetTransport().WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
+			return s.httpTransport.InstanceNoBody(rt)
+		})
+	}
+
+	// 设置超时
+	httpClient.Timeout = 60 * time.Second
+	restyClient.SetTimeout(60 * time.Second)
+	reqClient.SetTimeout(60 * time.Second)
+
+	// 设置 HTTP 客户端
+	s.httpClient = httpClient
+	s.restyClient = restyClient
+	s.reqClient = reqClient
 }
 
 // CheckResult 包含本次检查的所有结果
@@ -205,16 +214,8 @@ func (s *DomainCheck) fetchHTTP(ctx context.Context, u *url.URL, httpHeaders map
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeStandard
 
-	// 创建 HTTP 客户端
+	// 复制 HTTP 客户端
 	client := s.httpClient
-
-	// 设置超时
-	client.Timeout = 60 * time.Second
-
-	// 添加 HTTP 日志记录器
-	// if s.httpTransport != nil {
-	// 	client.Transport = s.httpTransport.Instance(nil)
-	// }
 
 	// 创建请求
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
@@ -263,14 +264,6 @@ func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, u *url.URL, httpHe
 	// 复制 Resty 客户端
 	client := s.restyClient.Clone(ctx)
 
-	// 设置超时
-	client.SetTimeout(60 * time.Second)
-
-	// 添加 HTTP 日志记录器
-	// if s.httpTransport != nil {
-	// 	client.SetTransport(s.httpTransport.Instance(nil))
-	// }
-
 	// 添加自定义 HTTP 请求头
 	for k, v := range httpHeaders {
 		client.SetHeader(k, v)
@@ -308,19 +301,8 @@ func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, u *url.URL, httpHead
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeReq
 
-	// 创建 Req 客户端
+	// 复制 Req 客户端
 	client := s.reqClient.Clone()
-
-	// 设置超时
-	client.SetTimeout(60 * time.Second)
-
-	// 添加 HTTP 日志记录器
-	// if s.httpTransport != nil {
-	// 	transport := client.GetTransport()
-	// 	transport.WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
-	// 		return s.httpTransport.Middleware()(rt)
-	// 	})
-	// }
 
 	// 伪装 HTTP 指纹
 	fetchImpersonates := []fetchImpersonateFunc{

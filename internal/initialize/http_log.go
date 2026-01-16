@@ -131,16 +131,16 @@ func InitEntHttpLog(logger *slog.Logger) {
 			Transport: global.GvaHttpLog,
 		}
 
-		// 创建 Http 客户端，并带日志记录
-		clone := global.GvaHttpLog.Clone()
-		global.GvaHttpClientWithLog = &http.Client{
-			Transport: clone,
-		}
+		// // 创建 Http 客户端，并带日志记录
+		// clone := global.GvaHttpLog.Clone()
+		// global.GvaHttpClientWithLog = &http.Client{
+		// 	Transport: clone,
+		// }
 
-		// 创建 Http 客户端，并带日志记录不包含请求体/响应体
-		cloneNoBody := global.GvaHttpLog.CloneNoBody()
-		global.GvaHttpClientWithLogNoBody = &http.Client{
-			Transport: cloneNoBody,
-		}
+		// // 创建 Http 客户端，并带日志记录不包含请求体/响应体
+		// cloneNoBody := global.GvaHttpLog.CloneNoBody()
+		// global.GvaHttpClientWithLogNoBody = &http.Client{
+		// 	Transport: cloneNoBody,
+		// }
 	})
 }

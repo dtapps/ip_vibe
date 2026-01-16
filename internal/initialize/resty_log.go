@@ -8,7 +8,6 @@ import (
 	"vibe_ip/internal/global"
 
 	"go.dtapp.net/library/contrib/resty_log"
-	"resty.dev/v3"
 )
 
 // 实现 LogSaver 接口
@@ -130,37 +129,37 @@ func InitEntRestyLog(logger *slog.Logger) {
 		// 初始化 Logger，传入回调和接口（回调优先）
 		global.GvaRestyLog = resty_log.NewLoggerMiddleware(saver, callbackFunc)
 
-		// 创建 Resty 客户端，并带日志记录
-		clone := global.GvaRestyLog.Clone()
-		global.GvaRestyClientWithLog = resty.New()
-		// 请求中间件
-		global.GvaRestyClientWithLog.SetRequestMiddlewares(
-			clone.IntrusionRequest,
-			resty.PrepareRequestMiddleware,
-			clone.BeforeRequest,
-		)
-		// 响应中间件
-		global.GvaRestyClientWithLog.SetResponseMiddlewares(
-			clone.CopyResponseBodyMiddleware,
-			resty.AutoParseResponseMiddleware,
-			clone.AfterResponse,
-		)
+		// // 创建 Resty 客户端，并带日志记录
+		// clone := global.GvaRestyLog.Clone()
+		// global.GvaRestyClientWithLog = resty.New()
+		// // 请求中间件
+		// global.GvaRestyClientWithLog.SetRequestMiddlewares(
+		// 	clone.IntrusionRequest,
+		// 	resty.PrepareRequestMiddleware,
+		// 	clone.BeforeRequest,
+		// )
+		// // 响应中间件
+		// global.GvaRestyClientWithLog.SetResponseMiddlewares(
+		// 	clone.CopyResponseBodyMiddleware,
+		// 	resty.AutoParseResponseMiddleware,
+		// 	clone.AfterResponse,
+		// )
 
-		// 创建 Resty 客户端，并带日志记录不包含请求体/响应体
-		cloneNoBody := global.GvaRestyLog.CloneNoBody()
-		global.GvaRestyClientWithLogNoBody = resty.New()
-		// 请求中间件
-		global.GvaRestyClientWithLogNoBody.SetRequestMiddlewares(
-			cloneNoBody.IntrusionRequest,
-			resty.PrepareRequestMiddleware,
-			cloneNoBody.BeforeRequest,
-		)
-		// 响应中间件
-		global.GvaRestyClientWithLogNoBody.SetResponseMiddlewares(
-			cloneNoBody.CopyResponseBodyMiddleware,
-			resty.AutoParseResponseMiddleware,
-			cloneNoBody.AfterResponse,
-		)
+		// // 创建 Resty 客户端，并带日志记录不包含请求体/响应体
+		// cloneNoBody := global.GvaRestyLog.CloneNoBody()
+		// global.GvaRestyClientWithLogNoBody = resty.New()
+		// // 请求中间件
+		// global.GvaRestyClientWithLogNoBody.SetRequestMiddlewares(
+		// 	cloneNoBody.IntrusionRequest,
+		// 	resty.PrepareRequestMiddleware,
+		// 	cloneNoBody.BeforeRequest,
+		// )
+		// // 响应中间件
+		// global.GvaRestyClientWithLogNoBody.SetResponseMiddlewares(
+		// 	cloneNoBody.CopyResponseBodyMiddleware,
+		// 	resty.AutoParseResponseMiddleware,
+		// 	cloneNoBody.AfterResponse,
+		// )
 
 	})
 }

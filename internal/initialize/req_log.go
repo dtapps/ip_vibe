@@ -7,7 +7,6 @@ import (
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/global"
 
-	"github.com/imroc/req/v3"
 	"go.dtapp.net/library/contrib/req_log"
 )
 
@@ -122,21 +121,21 @@ func InitEntReqLog(logger *slog.Logger) {
 		// 初始化 Logger，传入回调和接口（回调优先）
 		global.GvaReqLog = req_log.NewLoggerMiddleware(saver, callbackFunc)
 
-		// 创建 Req 客户端，并带日志记录
-		clone := global.GvaReqLog.Clone()
-		global.GvaReqClientWithLog = req.NewClient()
-		// 请求中间件
-		global.GvaReqClientWithLog.OnBeforeRequest(clone.OnBeforeRequest)
-		// 响应中间件
-		global.GvaReqClientWithLog.OnAfterResponse(clone.OnAfterResponse)
+		// // 创建 Req 客户端，并带日志记录
+		// clone := global.GvaReqLog.Clone()
+		// global.GvaReqClientWithLog = req.NewClient()
+		// // 请求中间件
+		// global.GvaReqClientWithLog.OnBeforeRequest(clone.OnBeforeRequest)
+		// // 响应中间件
+		// global.GvaReqClientWithLog.OnAfterResponse(clone.OnAfterResponse)
 
-		// 创建 Req 客户端，并带日志记录不包含请求体/响应体
-		cloneNoBody := global.GvaReqLog.CloneNoBody()
-		global.GvaReqClientWithLogNoBody = req.NewClient()
-		// 请求中间件
-		global.GvaReqClientWithLogNoBody.OnBeforeRequest(cloneNoBody.OnBeforeRequest)
-		// 响应中间件
-		global.GvaReqClientWithLogNoBody.OnAfterResponse(cloneNoBody.OnAfterResponse)
+		// // 创建 Req 客户端，并带日志记录不包含请求体/响应体
+		// cloneNoBody := global.GvaReqLog.CloneNoBody()
+		// global.GvaReqClientWithLogNoBody = req.NewClient()
+		// // 请求中间件
+		// global.GvaReqClientWithLogNoBody.OnBeforeRequest(cloneNoBody.OnBeforeRequest)
+		// // 响应中间件
+		// global.GvaReqClientWithLogNoBody.OnAfterResponse(cloneNoBody.OnAfterResponse)
 
 	})
 }

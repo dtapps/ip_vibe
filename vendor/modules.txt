@@ -138,7 +138,7 @@ github.com/aws/aws-sdk-go/service/sso/ssoiface
 github.com/aws/aws-sdk-go/service/ssooidc
 github.com/aws/aws-sdk-go/service/sts
 github.com/aws/aws-sdk-go/service/sts/stsiface
-# github.com/baidubce/bce-sdk-go v0.9.257
+# github.com/baidubce/bce-sdk-go v0.9.258
 ## explicit; go 1.11
 github.com/baidubce/bce-sdk-go/auth
 github.com/baidubce/bce-sdk-go/bce
@@ -210,7 +210,7 @@ github.com/cenkalti/backoff/v5
 # github.com/clbanning/mxj/v2 v2.7.0
 ## explicit; go 1.15
 github.com/clbanning/mxj/v2
-# github.com/cloudflare/cloudflare-go/v6 v6.5.0
+# github.com/cloudflare/cloudflare-go/v6 v6.6.0
 ## explicit; go 1.22
 github.com/cloudflare/cloudflare-go/v6
 github.com/cloudflare/cloudflare-go/v6/abuse_reports
@@ -918,7 +918,7 @@ github.com/zclconf/go-cty/cty/set
 # github.com/zclconf/go-cty-yaml v1.2.0
 ## explicit; go 1.17
 github.com/zclconf/go-cty-yaml
-# go.dtapp.net/library/contrib/http_log v1.0.8
+# go.dtapp.net/library/contrib/http_log v1.0.9
 ## explicit; go 1.25.1
 go.dtapp.net/library/contrib/http_log
 # go.dtapp.net/library/contrib/req_log v1.0.3

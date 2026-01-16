@@ -6,27 +6,37 @@ import (
 	"sync"
 	"vibe_ip/internal/global"
 
+	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/service/bark"
 	"go.dtapp.net/library/service/dingtalk"
 	"go.dtapp.net/library/service/feishu"
 	"go.dtapp.net/library/service/ft07"
 	"go.dtapp.net/library/service/pushdeer"
 	"go.dtapp.net/library/service/wechatqy"
+	"resty.dev/v3"
 )
 
 var thirdPartyMutex sync.Once
 
 // InitThirdParty 初始化 第三方
-func InitThirdParty(ctx context.Context, logger *slog.Logger) {
+func InitThirdParty(ctx context.Context, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) {
 
 	thirdPartyMutex.Do(func() {
 
 		var err error
 
+		// 创建客户端
+		restyClient := resty.New()
+
+		// 添加 HTTP 日志记录器
+		if httpTransport != nil {
+			restyClient.SetTransport(httpTransport.Instance(restyClient.Transport()))
+		}
+
 		// 企业微信
 		global.GvaWechatWork, err = wechatqy.NewClient(
 			ctx,
-			wechatqy.WithRestyClient(global.GvaRestyClientWithLog),
+			wechatqy.WithRestyClient(restyClient),
 			wechatqy.WithDebug(global.GvaEnv.DEBUG),
 		)
 		if err != nil {
@@ -39,7 +49,7 @@ func InitThirdParty(ctx context.Context, logger *slog.Logger) {
 		// 钉钉
 		global.GvaDingTalk, err = dingtalk.NewClient(
 			ctx,
-			dingtalk.WithRestyClient(global.GvaRestyClientWithLog),
+			dingtalk.WithRestyClient(restyClient),
 			dingtalk.WithDebug(global.GvaEnv.DEBUG),
 		)
 		if err != nil {
@@ -52,7 +62,7 @@ func InitThirdParty(ctx context.Context, logger *slog.Logger) {
 		// 飞书
 		global.GvaFeishu, err = feishu.NewClient(
 			ctx,
-			feishu.WithRestyClient(global.GvaRestyClientWithLog),
+			feishu.WithRestyClient(restyClient),
 			feishu.WithDebug(global.GvaEnv.DEBUG),
 		)
 		if err != nil {
@@ -65,7 +75,7 @@ func InitThirdParty(ctx context.Context, logger *slog.Logger) {
 		// bark
 		global.GvaBark, err = bark.NewClient(
 			ctx,
-			bark.WithRestyClient(global.GvaRestyClientWithLog),
+			bark.WithRestyClient(restyClient),
 			bark.WithDebug(global.GvaEnv.DEBUG),
 		)
 		if err != nil {
@@ -78,7 +88,7 @@ func InitThirdParty(ctx context.Context, logger *slog.Logger) {
 		// ft07
 		global.GvaFt07, err = ft07.NewClient(
 			ctx,
-			ft07.WithRestyClient(global.GvaRestyClientWithLog),
+			ft07.WithRestyClient(restyClient),
 			ft07.WithDebug(global.GvaEnv.DEBUG),
 		)
 		if err != nil {
@@ -91,7 +101,7 @@ func InitThirdParty(ctx context.Context, logger *slog.Logger) {
 		// pushdeer
 		global.GvaPushDeer, err = pushdeer.NewClient(
 			ctx,
-			pushdeer.WithRestyClient(global.GvaRestyClientWithLog),
+			pushdeer.WithRestyClient(restyClient),
 			pushdeer.WithDebug(global.GvaEnv.DEBUG),
 		)
 		if err != nil {

@@ -25,8 +25,8 @@ require (
 	github.com/alibabacloud-go/tea v1.4.0
 	github.com/aliyun/credentials-go v1.4.10
 	github.com/apache/thrift v0.22.0
-	github.com/baidubce/bce-sdk-go v0.9.257
-	github.com/cloudflare/cloudflare-go/v6 v6.5.0
+	github.com/baidubce/bce-sdk-go v0.9.258
+	github.com/cloudflare/cloudflare-go/v6 v6.6.0
 	github.com/corazawaf/coraza-coreruleset v0.0.0-20240226094324-415b1017abdc
 	github.com/corazawaf/coraza/v3 v3.3.3
 	github.com/denisbrodbeck/machineid v1.0.1
@@ -60,7 +60,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.32
 	github.com/volcengine/volcengine-go-sdk v1.2.7
 	github.com/wdcbot/qingfeng v1.6.3
-	go.dtapp.net/library/contrib/http_log v1.0.8
+	go.dtapp.net/library/contrib/http_log v1.0.9
 	go.dtapp.net/library/contrib/req_log v1.0.3
 	go.dtapp.net/library/contrib/resty_log v1.0.14
 	go.dtapp.net/library/service/bark v1.0.9

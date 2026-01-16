@@ -2,12 +2,10 @@ package global
 
 import (
 	"log/slog"
-	"net/http"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent_log"
 
 	"github.com/go-co-op/gocron/v2"
-	"github.com/imroc/req/v3"
 	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/contrib/req_log"
 	"go.dtapp.net/library/contrib/resty_log"
@@ -17,7 +15,6 @@ import (
 	"go.dtapp.net/library/service/ft07"
 	"go.dtapp.net/library/service/pushdeer"
 	"go.dtapp.net/library/service/wechatqy"
-	"resty.dev/v3"
 )
 
 var (
@@ -53,12 +50,12 @@ var (
 	GvaGoCron        gocron.Scheduler // 定时任务
 	GvaGoCronRunning int32            // 定时任务状态 0=停 1=运行
 
-	GvaHttpClientWithLog        *http.Client  // HTTP 客户端，并带日志记录
-	GvaHttpClientWithLogNoBody  *http.Client  // HTTP 客户端，并带日志记录不包含请求体/响应体
-	GvaRestyClientWithLog       *resty.Client // Resty 客户端，并带日志记录
-	GvaRestyClientWithLogNoBody *resty.Client // Resty 客户端，并带日志记录不包含请求体/响应体
-	GvaReqClientWithLog         *req.Client   // Req 客户端，并带日志记录
-	GvaReqClientWithLogNoBody   *req.Client   // Req 客户端，并带日志记录不包含请求体/响应体
+	// GvaHttpClientWithLog        *http.Client  // HTTP 客户端，并带日志记录
+	// GvaHttpClientWithLogNoBody  *http.Client  // HTTP 客户端，并带日志记录不包含请求体/响应体
+	// GvaRestyClientWithLog       *resty.Client // Resty 客户端，并带日志记录
+	// GvaRestyClientWithLogNoBody *resty.Client // Resty 客户端，并带日志记录不包含请求体/响应体
+	// GvaReqClientWithLog         *req.Client   // Req 客户端，并带日志记录
+	// GvaReqClientWithLogNoBody   *req.Client   // Req 客户端，并带日志记录不包含请求体/响应体
 
 	GvaHttpLog  *http_log.LoggingRoundTripper // HTTP框架日志
 	GvaRestyLog *resty_log.LoggerMiddleware   // Resty框架日志
