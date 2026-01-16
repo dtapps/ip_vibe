@@ -18,7 +18,7 @@ replace github.com/imroc/req/v3 => github.com/imroc/req/v3 v3.57.0
 
 require (
 	entgo.io/ent v0.14.5
-	github.com/alibabacloud-go/alidns-20150109/v5 v5.1.0
+	github.com/alibabacloud-go/alidns-20150109/v5 v5.1.1
 	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.14
 	github.com/alibabacloud-go/esa-20240910/v2 v2.44.0
@@ -84,7 +84,7 @@ require (
 	google.golang.org/grpc v1.78.0
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
-	modernc.org/sqlite v1.44.0
+	modernc.org/sqlite v1.44.1
 	resty.dev/v3 v3.0.0-beta.6
 )
 

@@ -107,6 +107,14 @@ func (m *GinServerManager) setupApiRouter() {
 			})
 		})
 
+		// 设置相关API
+		settings := api.Group("/settings")
+		{
+			settings.GET("/", handlers.GetSetting)      // 获取设置
+			settings.PATCH("/", handlers.UpdateSetting) // 更新设置
+		}
+
+		// 配置Schema相关API
 		schemas := api.Group("/schemas")
 		{
 			schemas.GET("/:config_type/platform-config", handlers.GetPlatformConfigSchema)  // 获取平台配置Schema

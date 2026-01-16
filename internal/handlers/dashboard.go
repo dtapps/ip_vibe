@@ -78,6 +78,19 @@ func Dashboard(c *gin.Context) {
 	// 获取系统内存信息
 	pageData.SystemMemoryInfo = systemHelper.GetMemoryInfo()
 
+	// 获取系统设置
+	// setting := db_cache.GetSetting(c, global.GvaEntDb)
+	setting := global.GvaSetting
+	pageData.Settings = types.GetSettingResponse{
+		DeviceOfflineInvalidTime: setting.DeviceOfflineInvalidTime,
+		IPReportIntervalTime:     setting.IPReportIntervalTime,
+		PortForwardReloadTime:    setting.PortForwardReloadTime,
+		PortForwardReportTime:    setting.PortForwardReportTime,
+		CDNRefreshTaskTime:       setting.CDNRefreshTaskTime,
+		DNSRefreshTaskTime:       setting.DNSRefreshTaskTime,
+		SSLRefreshTaskTime:       setting.SSLRefreshTaskTime,
+	}
+
 	// 渲染模板
 	renderHTML(
 		c,

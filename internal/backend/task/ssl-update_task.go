@@ -137,7 +137,7 @@ func (s *SSLUpdateTask) StartPeriodicTask(ctx context.Context) (err error) {
 	}
 
 	s.logger.InfoContext(ctx, s.taskName+"任务已启动",
-		slog.String("执行间隔", "8-10小时"),
+		slog.String("执行间隔", fmt.Sprintf("%s小时", taskTime)),
 	)
 	return nil
 }

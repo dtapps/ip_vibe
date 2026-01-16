@@ -214,8 +214,63 @@
         </div>
       </div>
     </div>
+
+    <div class="ui-panel mt-6">
+      <div class="ui-header flex justify-between items-center">
+        <h2 class="text-xl font-bold">核心策略</h2>
+        <div class="text-xs opacity-40 hover:text-primary cursor-pointer" onclick="openSettingFormModal()">编辑</div>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="flex justify-between items-center">
+          <span class="text-xs opacity-50">设备离线判定</span>
+          <span class="text-sm font-mono font-bold text-primary">
+            {{ $data.Settings.DeviceOfflineInvalidTime }} 分钟
+          </span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-xs opacity-50">CDN刷新任务</span>
+          <span class="text-sm font-mono">
+            {{ $data.Settings.CDNRefreshTaskTime }} 分钟
+          </span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-xs opacity-50">DNS刷新任务</span>
+          <span class="text-sm font-mono">
+            {{ $data.Settings.DNSRefreshTaskTime }} 分钟
+          </span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-xs opacity-50">SSL刷新任务</span>
+          <span class="text-sm font-mono">
+            {{ $data.Settings.SSLRefreshTaskTime }} 小时
+          </span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-xs opacity-50">IP上报间隔</span>
+          <span class="text-sm font-mono">
+            {{ $data.Settings.IPReportIntervalTime }} 分钟
+          </span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-xs opacity-50">端口转发重载</span>
+          <span class="text-sm font-mono">
+            {{ $data.Settings.PortForwardReloadTime }} 分钟
+          </span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-xs opacity-50">端口转发统计</span>
+          <span class="text-sm font-mono">
+            {{ $data.Settings.PortForwardReportTime }} 分钟
+          </span>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 <!-- </div> -->
 
+<!-- 设置表单 -->
+{{ template "setting_form.html" . }}
+
+<script src="/static/js/dashboard.js"></script>
 {{ end }}

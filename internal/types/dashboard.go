@@ -22,6 +22,8 @@ type DashboardResponse struct {
 	SystemOS         string           `json:"system_os"`
 	SystemArch       string           `json:"system_arch"`
 	SystemMemoryInfo ReturnMemoryInfo `json:"memory_info"`
+
+	Settings GetSettingResponse `json:"settings"`
 }
 
 // ReturnMemoryInfo 内存与 GC 综合信息

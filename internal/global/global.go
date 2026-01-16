@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/helper/db_cache"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/imroc/req/v3"
@@ -26,8 +27,8 @@ var (
 
 // GvaConfig 变量
 var (
-	GvaEnv     Env      // 环境变量
-	GvaSetting *Setting // 全局设置
+	GvaEnv     Env              // 环境变量
+	GvaSetting db_cache.Setting // 全局设置
 
 	GvaVersion   string // 版本号
 	GvaGitCommit string // Git 提交 ID

@@ -1,0 +1,140 @@
+package db_cache
+
+import (
+	"context"
+	"fmt"
+	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent/cache"
+
+	"github.com/spf13/cast"
+)
+
+type Setting struct {
+	// 设备离线失效时间（分，默认 12 分钟）
+	DeviceOfflineInvalidTime int64 `json:"device_offline_invalid_time"`
+	// IP上报间隔时间（分，默认 8-12 分钟，范围时用-分隔）
+	IPReportIntervalTime string `json:"ip_report_interval_time"`
+	// 端口转发重载时间（分，默认 30 分钟，范围时用-分隔）
+	PortForwardReloadTime string `json:"port_forward_reload_time"`
+	// 端口转发统计上报时间（分，默认 8-12 分钟，范围时用-分隔）
+	PortForwardReportTime string `json:"port_forward_report_time"`
+	// CDN刷新任务时间（分，默认 10-12 分钟，范围时用-分隔）
+	CDNRefreshTaskTime string `json:"cdn_refresh_task_time"`
+	// DNS刷新任务时间（分，默认 10-12 分钟，范围时用-分隔）
+	DNSRefreshTaskTime string `json:"dns_refresh_task_time"`
+	// SSL刷新任务时间（时，默认 8-10 小时，范围时用-分隔）
+	SSLRefreshTaskTime string `json:"ssl_refresh_task_time"`
+}
+
+// 统一管理所有 Cache Key
+const (
+	KeyDeviceOfflineTime = "conf:device_offline_invalid_time"
+	KeyIPReportInterval  = "conf:ip_report_interval_time"
+	KeyPortForwardReload = "conf:port_forward_reload_time"
+	KeyPortForwardReport = "conf:port_forward_report_time"
+	KeyCDNRefreshTime    = "conf:cdn_refresh_task_time"
+	KeyDNSRefreshTime    = "conf:dns_refresh_task_time"
+	KeySSLRefreshTime    = "conf:ssl_refresh_task_time"
+)
+
+// 初始化设置
+func InitSetting(ctx context.Context, db *ent.Client, setSetting *Setting) {
+	// 内部辅助函数：查不到就建默认的
+	getVal := func(key string, defaultVal string) string {
+		c, err := db.Cache.Query().
+			Where(cache.KeyEQ(key)).
+			Only(ctx)
+		if err != nil {
+			// 如果数据库里没有，就地初始化一条记录
+			_ = db.Cache.Create().
+				SetKey(key).
+				SetValue([]byte(defaultVal)).
+				Exec(ctx)
+			return defaultVal
+		}
+		return string(c.Value)
+	}
+
+	// 返回变量
+	setSetting.DeviceOfflineInvalidTime = cast.ToInt64(getVal(KeyDeviceOfflineTime, "12"))
+	setSetting.IPReportIntervalTime = getVal(KeyIPReportInterval, "8-12")
+	setSetting.PortForwardReloadTime = getVal(KeyPortForwardReload, "30")
+	setSetting.PortForwardReportTime = getVal(KeyPortForwardReport, "8-12")
+	setSetting.CDNRefreshTaskTime = getVal(KeyCDNRefreshTime, "10-12")
+	setSetting.DNSRefreshTaskTime = getVal(KeyDNSRefreshTime, "10-12")
+	setSetting.SSLRefreshTaskTime = getVal(KeySSLRefreshTime, "8-10")
+
+}
+
+// 获取设置
+func GetSetting(ctx context.Context, db *ent.Client) *Setting {
+	// 内部辅助函数：查不到就建默认的
+	getVal := func(key string, defaultVal string) string {
+		c, err := db.Cache.Query().
+			Where(cache.KeyEQ(key)).
+			Only(ctx)
+		if err != nil {
+			// 如果数据库里没有，就地初始化一条记录
+			_ = db.Cache.Create().
+				SetKey(key).
+				SetValue([]byte(defaultVal)).
+				Exec(ctx)
+			return defaultVal
+		}
+		return string(c.Value)
+	}
+
+	// 返回变量
+	setting := &Setting{}
+	setting.DeviceOfflineInvalidTime = cast.ToInt64(getVal(KeyDeviceOfflineTime, "12"))
+	setting.IPReportIntervalTime = getVal(KeyIPReportInterval, "8-12")
+	setting.PortForwardReloadTime = getVal(KeyPortForwardReload, "30")
+	setting.PortForwardReportTime = getVal(KeyPortForwardReport, "8-12")
+	setting.CDNRefreshTaskTime = getVal(KeyCDNRefreshTime, "10-12")
+	setting.DNSRefreshTaskTime = getVal(KeyDNSRefreshTime, "10-12")
+	setting.SSLRefreshTaskTime = getVal(KeySSLRefreshTime, "8-10")
+
+	return setting
+}
+
+// 批量更新设置
+func UpdateSetting(ctx context.Context, db *ent.Client, newSetting *Setting, setSetting *Setting) error {
+	// 定义 字段 -> Key 的映射关系，循环处理
+	updates := map[string]any{
+		KeyDeviceOfflineTime: newSetting.DeviceOfflineInvalidTime,
+		KeyIPReportInterval:  newSetting.IPReportIntervalTime,
+		KeyPortForwardReload: newSetting.PortForwardReloadTime,
+		KeyPortForwardReport: newSetting.PortForwardReportTime,
+		KeyCDNRefreshTime:    newSetting.CDNRefreshTaskTime,
+		KeyDNSRefreshTime:    newSetting.DNSRefreshTaskTime,
+		KeySSLRefreshTime:    newSetting.SSLRefreshTaskTime,
+	}
+
+	// 开启 Upsert 模式批量写入 Cache 表
+	for k, v := range updates {
+		err := db.Cache.Create().
+			SetKey(k).
+			SetValue([]byte(cast.ToString(v))).
+			OnConflictColumns(cache.FieldKey). // 依赖你的 Cache Schema 中 Key 字段的 Unique 索引
+			UpdateValue().
+			Exec(ctx)
+
+		if err != nil {
+			return fmt.Errorf("更新配置项 %s 失败: %w", k, err)
+		}
+	}
+
+	// 数据库写完后，更新内存中的全局变量，保证即刻生效
+	setSetting = newSetting
+	return nil
+}
+
+// 保存单个配置
+func SaveSingleSetting(ctx context.Context, db *ent.Client, key string, value any) error {
+	return db.Cache.Create().
+		SetKey(key).
+		SetValue([]byte(cast.ToString(value))).
+		OnConflictColumns(cache.FieldKey).
+		UpdateValue().
+		Exec(ctx)
+}
