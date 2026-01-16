@@ -8,31 +8,52 @@ service OpenService {
      * 获取配置
      */
     GetSettingResponse getSetting(
-        255: required Base base // 通用头
+    /**
+     * 通用头
+     */
+        255: required Base base
     )
 
     /**
      * 设备上报IP
      */
     ReportDeviceIPResponse reportDeviceIP(
-        1: required ReportDeviceIPRequest req// 业务请求参数
-        255: required Base base // 通用头
+    /**
+     * 业务请求参数
+     */
+        1: required ReportDeviceIPRequest req
+    /**
+     * 通用头
+     */
+        255: required Base base
     )
 
     /**
      * 获取设备端口转发
      */
     GetDevicePortForwardsResponse getDevicePortForwards(
-        1: required GetDevicePortForwardsRequest req// 业务请求参数
-        255: required Base base // 通用头
+    /**
+     * 业务请求参数
+     */
+        1: required GetDevicePortForwardsRequest req
+    /**
+     * 通用头
+     */
+        255: required Base base
     )
 
     /**
      * 创建端口转发统计信息
      */
     CreatePortForwardStatsResponse createPortForwardStats(
-        1: required CreatePortForwardStatsRequest req // 业务请求参数
-        255: required Base base // 通用头
+    /**
+     * 业务请求参数
+     */
+        1: required CreatePortForwardStatsRequest req
+    /**
+     * 通用头
+     */
+        255: required Base base
     )
 }
 

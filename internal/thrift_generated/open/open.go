@@ -2300,28 +2300,28 @@ type OpenService interface {	//开放
 	// 获取配置
 	// 
 	// Parameters:
-	//  - Base
+	//  - Base: 通用头
 	// 
 	GetSetting(ctx context.Context, base *Base) (_r *GetSettingResponse, _err error)
 	// 设备上报IP
 	// 
 	// Parameters:
-	//  - Req
-	//  - Base
+	//  - Req: 业务请求参数
+	//  - Base: 通用头
 	// 
 	ReportDeviceIP(ctx context.Context, req *ReportDeviceIPRequest, base *Base) (_r *ReportDeviceIPResponse, _err error)
 	// 获取设备端口转发
 	// 
 	// Parameters:
-	//  - Req
-	//  - Base
+	//  - Req: 业务请求参数
+	//  - Base: 通用头
 	// 
 	GetDevicePortForwards(ctx context.Context, req *GetDevicePortForwardsRequest, base *Base) (_r *GetDevicePortForwardsResponse, _err error)
 	// 创建端口转发统计信息
 	// 
 	// Parameters:
-	//  - Req
-	//  - Base
+	//  - Req: 业务请求参数
+	//  - Base: 通用头
 	// 
 	CreatePortForwardStats(ctx context.Context, req *CreatePortForwardStatsRequest, base *Base) (_r *CreatePortForwardStatsResponse, _err error)
 }
@@ -2365,7 +2365,7 @@ func (p *OpenServiceClient) SetLastResponseMeta_(meta thrift.ResponseMeta) {
 // 获取配置
 // 
 // Parameters:
-//  - Base
+//  - Base: 通用头
 // 
 func (p *OpenServiceClient) GetSetting(ctx context.Context, base *Base) (_r *GetSettingResponse, _err error) {
 	var _args7 OpenServiceGetSettingArgs
@@ -2383,8 +2383,8 @@ func (p *OpenServiceClient) GetSetting(ctx context.Context, base *Base) (_r *Get
 // 设备上报IP
 // 
 // Parameters:
-//  - Req
-//  - Base
+//  - Req: 业务请求参数
+//  - Base: 通用头
 // 
 func (p *OpenServiceClient) ReportDeviceIP(ctx context.Context, req *ReportDeviceIPRequest, base *Base) (_r *ReportDeviceIPResponse, _err error) {
 	var _args10 OpenServiceReportDeviceIPArgs
@@ -2403,8 +2403,8 @@ func (p *OpenServiceClient) ReportDeviceIP(ctx context.Context, req *ReportDevic
 // 获取设备端口转发
 // 
 // Parameters:
-//  - Req
-//  - Base
+//  - Req: 业务请求参数
+//  - Base: 通用头
 // 
 func (p *OpenServiceClient) GetDevicePortForwards(ctx context.Context, req *GetDevicePortForwardsRequest, base *Base) (_r *GetDevicePortForwardsResponse, _err error) {
 	var _args13 OpenServiceGetDevicePortForwardsArgs
@@ -2423,8 +2423,8 @@ func (p *OpenServiceClient) GetDevicePortForwards(ctx context.Context, req *GetD
 // 创建端口转发统计信息
 // 
 // Parameters:
-//  - Req
-//  - Base
+//  - Req: 业务请求参数
+//  - Base: 通用头
 // 
 func (p *OpenServiceClient) CreatePortForwardStats(ctx context.Context, req *CreatePortForwardStatsRequest, base *Base) (_r *CreatePortForwardStatsResponse, _err error) {
 	var _args16 OpenServiceCreatePortForwardStatsArgs
@@ -2916,7 +2916,7 @@ func (p *openServiceProcessorCreatePortForwardStats) Process(ctx context.Context
 // HELPER FUNCTIONS AND STRUCTURES
 
 // Attributes:
-//  - Base
+//  - Base: 通用头
 // 
 type OpenServiceGetSettingArgs struct {
 	// unused fields # 1 to 254
@@ -3166,8 +3166,8 @@ func (p *OpenServiceGetSettingResult) LogValue() slog.Value {
 var _ slog.LogValuer = (*OpenServiceGetSettingResult)(nil)
 
 // Attributes:
-//  - Req
-//  - Base
+//  - Req: 业务请求参数
+//  - Base: 通用头
 // 
 type OpenServiceReportDeviceIPArgs struct {
 	Req *ReportDeviceIPRequest `thrift:"req,1,required" db:"req" json:"req"`
@@ -3468,8 +3468,8 @@ func (p *OpenServiceReportDeviceIPResult) LogValue() slog.Value {
 var _ slog.LogValuer = (*OpenServiceReportDeviceIPResult)(nil)
 
 // Attributes:
-//  - Req
-//  - Base
+//  - Req: 业务请求参数
+//  - Base: 通用头
 // 
 type OpenServiceGetDevicePortForwardsArgs struct {
 	Req *GetDevicePortForwardsRequest `thrift:"req,1,required" db:"req" json:"req"`
@@ -3770,8 +3770,8 @@ func (p *OpenServiceGetDevicePortForwardsResult) LogValue() slog.Value {
 var _ slog.LogValuer = (*OpenServiceGetDevicePortForwardsResult)(nil)
 
 // Attributes:
-//  - Req
-//  - Base
+//  - Req: 业务请求参数
+//  - Base: 通用头
 // 
 type OpenServiceCreatePortForwardStatsArgs struct {
 	Req *CreatePortForwardStatsRequest `thrift:"req,1,required" db:"req" json:"req"`
