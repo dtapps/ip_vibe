@@ -607,6 +607,16 @@ func (s *IPUpdateTask) CdnUpdateNew(ctx context.Context, logger *slog.Logger, pa
 		if err != nil {
 			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
+	case platformconfig.PlatformHuaweiCdn:
+		cdnProviderCfg := cdn.NewDefaultHuaweiCDNConfig()
+		err = cdnProviderCfg.ParseCustomConfig(params.platform.ConfigJSON)
+		if err != nil {
+			return fmt.Errorf("解析自定义配置失败: %w", err)
+		}
+		cdnProvider, err = cdn.NewHuaweiCDNProvider(ctx, cdnProviderCfg, cdnProviderOpts...)
+		if err != nil {
+			return fmt.Errorf("初始提供程序失败: %w", err)
+		}
 	default:
 		return fmt.Errorf("暂不支持该平台: %s", params.platform.String())
 	}

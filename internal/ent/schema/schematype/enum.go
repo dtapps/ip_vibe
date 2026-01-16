@@ -87,6 +87,7 @@ const (
 	ConfigPlatformBaiduDns string = "baidu_dns" // 百度云 DNS
 
 	ConfigPlatformHuaweiDns string = "huawei_dns" // 华为云 DNS
+	ConfigPlatformHuaweiCdn string = "huawei_cdn" // 华为云 CDN
 
 	ConfigPlatformvolcengineDns string = "volcengine_dns" // 火山引擎 DNS
 )
@@ -102,6 +103,7 @@ var GetConfigPlatformDescriptions = map[string]string{
 	ConfigPlatformAliyunEsa:     "阿里云 ESA",
 	ConfigPlatformBaiduDns:      "百度云 DNS",
 	ConfigPlatformHuaweiDns:     "华为云 DNS",
+	ConfigPlatformHuaweiCdn:     "华为云 CDN",
 	ConfigPlatformvolcengineDns: "火山引擎 DNS",
 }
 
@@ -116,6 +118,7 @@ var GetConfigPlatforms = []string{
 	ConfigPlatformAliyunEsa,
 	ConfigPlatformBaiduDns,
 	ConfigPlatformHuaweiDns,
+	ConfigPlatformHuaweiCdn,
 	ConfigPlatformvolcengineDns,
 }
 
@@ -191,6 +194,8 @@ const (
 	DeviceIpReportReportTypeAPI     string = "api"     // API
 	DeviceIpReportReportTypeGrpc    string = "grpc"    // gRPC
 	DeviceIpReportReportTypeThrift  string = "thrift"  // Thrift
+	DeviceIpReportReportTypeDubbo   string = "dubbo"   // Dubbo
+	DeviceIpReportReportTypeTars    string = "tars"    // Tars
 )
 
 // GetDeviceIpReportReportTypeDescriptions 设备 IP 上报方式说明映射
@@ -199,6 +204,8 @@ var GetDeviceIpReportReportTypeDescriptions = map[string]string{
 	DeviceIpReportReportTypeAPI:     "API",
 	DeviceIpReportReportTypeGrpc:    "gRPC",
 	DeviceIpReportReportTypeThrift:  "Thrift",
+	DeviceIpReportReportTypeDubbo:   "Dubbo",
+	DeviceIpReportReportTypeTars:    "Tars",
 }
 
 // GetDeviceIpReportReportTypes 返回所有设备 IP 上报方式
@@ -207,6 +214,8 @@ var GetDeviceIpReportReportTypes = []string{
 	DeviceIpReportReportTypeAPI,
 	DeviceIpReportReportTypeGrpc,
 	DeviceIpReportReportTypeThrift,
+	DeviceIpReportReportTypeDubbo,
+	DeviceIpReportReportTypeTars,
 }
 
 // --------

@@ -584,6 +584,7 @@ github.com/hashicorp/hcl/v2/json
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/basic
+github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/global
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/internal
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/provider
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/signer

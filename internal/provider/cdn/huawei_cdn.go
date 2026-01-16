@@ -9,7 +9,7 @@ import (
 
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth"
-	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/basic"
+	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/global"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/config"
 	region "github.com/huaweicloud/huaweicloud-sdk-go-v3/core/region"
 	cdn "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2"
@@ -45,7 +45,7 @@ func (cfg *HuaweiCDNConfig) Validate() error {
 // NewDefaultHuaweiCDNConfig 创建默认的华为云 CDN 配置
 func NewDefaultHuaweiCDNConfig() *HuaweiCDNConfig {
 	return &HuaweiCDNConfig{
-		Region: "cn-south-1",
+		Region: "cn-north-1",
 	}
 }
 
@@ -69,7 +69,7 @@ type HuaweiCDNProvider struct {
 
 	CustomConfig *HuaweiCDNCustomConfig
 	Provider     struct {
-		Auth          *auth.BasicCredentials
+		Auth          *auth.GlobalCredentials
 		Region        *region.Region
 		ClientBuilder *core.HcHttpClientBuilder
 		Builder       *core.HcHttpClient
@@ -107,7 +107,7 @@ func NewHuaweiCDNProviderRaw(ctx context.Context, cfg *HuaweiCDNConfig, opts ...
 	}
 
 	// 密钥信息
-	p.Provider.Auth, err = basic.NewCredentialsBuilder().
+	p.Provider.Auth, err = global.NewCredentialsBuilder().
 		WithAk(p.cfg.AccessKeyID).
 		WithSk(p.cfg.SecretAccessKey).
 		SafeBuild()
@@ -167,6 +167,9 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 		return
 	}
 	// 响应参数
+	if response.Domains == nil || len(*response.Domains) == 0 {
+		return "", "", []string{}, provider.ErrRecordNotFound
+	}
 	for _, item := range *response.Domains {
 		if utils.EqualStringIgnoreCase(utils.TrimDots(utils.PtrToString(item.DomainName)), utils.TrimDots(fullDomain)) {
 			// 域名ID
@@ -193,20 +196,46 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, recordID string, domain 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
+	var business_type = model.DomainBodyBusinessType{}
+	switch p.CustomConfig.BusinessType {
+	case "web":
+		business_type = model.GetDomainBodyBusinessTypeEnum().WEB
+	case "download":
+		business_type = model.GetDomainBodyBusinessTypeEnum().DOWNLOAD
+	case "video":
+		business_type = model.GetDomainBodyBusinessTypeEnum().VIDEO
+	case "wholeSite":
+		business_type = model.GetDomainBodyBusinessTypeEnum().WHOLE_SITE
+	}
+
+	var service_area = model.DomainBodyServiceArea{}
+	switch p.CustomConfig.ServiceArea {
+	case "mainland_china":
+		service_area = model.GetDomainBodyServiceAreaEnum().MAINLAND_CHINA
+	case "outside_mainland_china":
+		service_area = model.GetDomainBodyServiceAreaEnum().OUTSIDE_MAINLAND_CHINA
+	case "global":
+		service_area = model.GetDomainBodyServiceAreaEnum().GLOBAL
+	}
+
 	if recordID == "" {
+		sources := make([]model.SourcesRequestBody, 0)
+		for _, originValue := range originValues {
+			sources = append(sources, model.SourcesRequestBody{
+				IpOrDomain:    originValue,
+				OriginType:    model.GetSourcesRequestBodyOriginTypeEnum().IPADDR,
+				ActiveStandby: int32(1),
+			})
+		}
+
 		// 请求参数
 		request := &model.CreateDomainRequest{}
 		request.Body = &model.CreateDomainRequestBody{
 			Domain: &model.DomainBody{
 				DomainName:   fullDomain,
-				BusinessType: model.GetDomainBodyBusinessTypeEnum().WEB,
-				Sources: []model.SourcesRequestBody{
-					{
-						IpOrDomain:    originValues[0],
-						OriginType:    model.GetSourcesRequestBodyOriginTypeEnum().IPADDR,
-						ActiveStandby: int32(1),
-					},
-				},
+				BusinessType: business_type,
+				Sources:      sources,
+				ServiceArea:  &service_area,
 			},
 		}
 		// 请求
@@ -218,17 +247,23 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, recordID string, domain 
 	}
 
 	if recordID != "" {
+		sources := make([]model.SourcesConfig, 0)
+		for _, originValue := range originValues {
+			sources = append(sources, model.SourcesConfig{
+				OriginType: model.GetSourcesRequestBodyOriginTypeEnum().IPADDR.Value(),
+				OriginAddr: originValue,
+			})
+		}
+
 		// 请求参数
 		request := &model.UpdateDomainFullConfigRequest{}
 		request.DomainName = fullDomain // 加速域名
 		request.Body = &model.ModifyDomainConfigRequestBody{
 			Configs: &model.Configs{
-				Sources: &[]model.SourcesConfig{
-					{
-						OriginType: model.GetSourcesRequestBodyOriginTypeEnum().IPADDR.Value(),
-						OriginAddr: originValues[0],
-					},
-				},
+				BusinessType: utils.StringToPtr(p.CustomConfig.BusinessType),
+				ServiceArea:  utils.StringToPtr(p.CustomConfig.ServiceArea),
+				Remark:       utils.StringToPtr(p.CustomConfig.Remark),
+				Sources:      &sources,
 			},
 		}
 		// 请求
@@ -244,6 +279,11 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, recordID string, domain 
 
 // 华为云 CDN 自定义配置
 type HuaweiCDNCustomConfig struct {
+	BusinessType string `json:"business_type"`        // 域名业务类型
+	ServiceArea  string `json:"service_area"`         // 服务区域
+	HttpPort     int    `json:"http_port,omitempty"`  // HTTP 端口
+	HttpsPort    int    `json:"https_port,omitempty"` // HTTPS 端口
+	Remark       string `json:"remark,omitempty"`     // 备注
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

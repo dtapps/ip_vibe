@@ -203,6 +203,84 @@ const CDN_SCHEMA = {
       ],
     ],
   },
+  huawei_cdn: {
+    label: "华为云 CDN",
+    fields: [
+      [
+        {
+          id: "business_type",
+          label: "加速类型",
+          type: "select",
+          placeholder: "请选择加速类型",
+          required: true,
+          options: [
+            {
+              value: "web",
+              label: "网页加速",
+            },
+            {
+              value: "download",
+              label: "文件下载加速",
+            },
+            {
+              value: "video",
+              label: "点播加速",
+            },
+            {
+              value: "wholeSite",
+              label: "全站加速",
+            },
+          ],
+        },
+        {
+          id: "service_area",
+          label: "服务区域",
+          type: "select",
+          placeholder: "请选择服务区域",
+          required: false,
+          options: [
+            {
+              value: "mainland_china",
+              label: "中国大陆",
+            },
+            {
+              value: "outside_mainland_china",
+              label: "中国大陆境外",
+            },
+            {
+              value: "global",
+              label: "全球",
+            },
+          ],
+        },
+      ],
+      [
+        {
+          id: "http_port",
+          label: "HTTP 端口",
+          type: "number",
+          placeholder: "如 80",
+          required: false,
+          value: 0,
+        },
+        {
+          id: "https_port",
+          label: "HTTPS 端口",
+          type: "number",
+          placeholder: "如 443",
+          required: false,
+          value: 0,
+        },
+      ],
+      {
+        id: "remark",
+        label: "备注",
+        type: "text",
+        placeholder: "请输入备注",
+        required: false,
+      },
+    ],
+  },
 };
 
 /**
