@@ -40,6 +40,29 @@ func (s *OpenServer) RegisterService() *open.OpenServiceProcessor {
 	return open.NewOpenServiceProcessor(s)
 }
 
+// GetSetting 实现 获取配置 方法
+func (s *OpenServer) GetSetting(ctx context.Context, base *open.Base) (*open.GetSettingResponse, error) {
+
+	// 检查认证
+	if _, err := s.authWrapper.check(ctx, base, nil); err != nil {
+		return &open.GetSettingResponse{}, err
+	}
+
+	// 调用服务方法
+	response, err := s.deviceService.GetSetting(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// 转换为 Thrift 响应
+	return &open.GetSettingResponse{
+		DeviceOfflineInvalidTime: response.DeviceOfflineInvalidTime,
+		IPReportIntervalTime:     response.IPReportIntervalTime,
+		PortForwardReloadTime:    response.PortForwardReloadTime,
+		PortForwardReportTime:    response.PortForwardReportTime,
+	}, nil
+}
+
 // ReportDeviceIP 实现 设备上报 IP 方法
 func (s *OpenServer) ReportDeviceIP(ctx context.Context, req *open.ReportDeviceIPRequest, base *open.Base) (*open.ReportDeviceIPResponse, error) {
 

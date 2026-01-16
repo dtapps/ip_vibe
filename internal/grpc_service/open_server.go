@@ -40,6 +40,23 @@ func (s *OpenServer) RegisterService(server *grpc.Server) {
 	grpc_generated.RegisterOpenServiceServer(server, s)
 }
 
+// GetSetting 实现 获取配置 方法
+func (s *OpenServer) GetSetting(ctx context.Context, req *emptypb.Empty) (*grpc_generated.GetSettingResponse, error) {
+	// 调用服务方法
+	response, err := s.deviceService.GetSetting(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// 转换为 gRPC 响应
+	return &grpc_generated.GetSettingResponse{
+		DeviceOfflineInvalidTime: response.DeviceOfflineInvalidTime,
+		IPReportIntervalTime:     response.IPReportIntervalTime,
+		PortForwardReloadTime:    response.PortForwardReloadTime,
+		PortForwardReportTime:    response.PortForwardReportTime,
+	}, nil
+}
+
 // ReportDeviceIP 实现 设备上报 IP 方法
 func (s *OpenServer) ReportDeviceIP(ctx context.Context, req *grpc_generated.ReportDeviceIPRequest) (*grpc_generated.ReportDeviceIPResponse, error) {
 	// 将 gRPC 请求转换为你的 types 结构
