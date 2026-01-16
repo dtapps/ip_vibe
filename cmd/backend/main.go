@@ -21,7 +21,6 @@ import (
 	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/mcp_server"
-	"vibe_ip/internal/thrift_server"
 )
 
 //go:embed templates static
@@ -81,7 +80,6 @@ func main() {
 	initialize.InitEntSLog("backend")    // 初始化 ent 日志
 	initialize.InitGinSLog("backend")    // 初始化 gin 日志
 	initialize.InitGrpcSLog("backend")   // 初始化 gRPC 日志
-	initialize.InitThriftSLog("backend") // 初始化 Thrift 日志
 	initialize.InitGocronSLog("backend") // 初始化 gocron 日志
 	initialize.InitMcpSLog("backend")    // 初始化 mcp 日志
 	initialize.InitHttpSLog("backend")   // 初始化 http 日志
@@ -163,14 +161,6 @@ func main() {
 	// 	Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
 	// }, router)
 	// go grpcGwMgr.Conn(ctx)
-
-	// Thrift 启动
-	thriftMgr := thrift_server.NewManager(global.GvaThriftSlog, thrift_server.Config{
-		Addr:     global.GvaEnv.THRIFT_ADDR,
-		Username: global.GvaEnv.BASIC_AUTH_USERNAME,
-		Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
-	})
-	go thriftMgr.Run(ctx)
 
 	// 启动 GoCron 调度器
 	initialize.StartGoCron(ctx, global.GvaGocronSlog)
@@ -278,22 +268,19 @@ func gracefulShutdown() {
 		// 5. 优雅关闭 gRPC 服务
 		grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{}).Stop(ctx)
 
-		// 6. 优雅关闭 Thrift 服务
-		thrift_server.NewManager(global.GvaThriftSlog, thrift_server.Config{}).Stop(ctx)
-
-		// 7. 关闭数据库连接和其他资源（现有的 defer 逻辑）
+		// 6. 关闭数据库连接和其他资源（
 		slog.Info("开始关闭数据库连接...")
 
-		// 8. 关闭 GoCron 调度器
+		// 7. 关闭 GoCron 调度器
 		initialize.CloseGoCron(ctx, global.GvaGocronSlog)
 
-		// 9. 等待一段时间让 goroutine 完成
+		// 8. 等待一段时间让 goroutine 完成
 		time.Sleep(1 * time.Second)
 
-		// 10. 关闭 业务数据库
+		// 9. 关闭 业务数据库
 		initialize.CloseEntDb(ctx, global.GvaEntSlog)
 
-		// 11. 关闭 日志数据库
+		// 10. 关闭 日志数据库
 		initialize.CloseEntLogDb(ctx, global.GvaEntLogSlog)
 
 		slog.Info("所有资源已优雅关闭")

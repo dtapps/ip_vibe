@@ -11,7 +11,6 @@ type InterfaceResponse struct {
 
 	Token string `json:"token,omitempty"` // 认证 token
 
-	HttpAddr   string `json:"http_addr,omitempty"`   // HTTP 地址
-	GrpcAddr   string `json:"grpc_addr,omitempty"`   // gRPC 地址
-	ThriftAddr string `json:"thrift_addr,omitempty"` // Thrift 地址
+	HttpAddr string `json:"http_addr,omitempty"` // HTTP 地址
+	GrpcAddr string `json:"grpc_addr,omitempty"` // gRPC 地址
 }

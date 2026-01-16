@@ -53,10 +53,6 @@
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "grpc_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
                 Grpc 流水
             </a>
-            <a href="?type=thrift_file&file_name=thrift_backend.log" role="tab"
-                class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "thrift_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
-                Thrift 流水
-            </a>
             <a href="?type=http_file&file_name=http_backend.log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "http_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
                 Http 流水

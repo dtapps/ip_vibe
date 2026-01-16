@@ -68,6 +68,13 @@
         </h2>
       </div>
       <div class="p-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        <a href="/platform-config"
+          class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
+          <div class="mb-2 opacity-70 group-hover:opacity-100">
+            {{ template "icons" (dict "Name" "i-lucide-server-cog") }}
+          </div>
+          <span class="text-xs font-bold">平台配置</span>
+        </a>
         <a href="/cdn"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
           <div class="mb-2 opacity-70 group-hover:opacity-100">
@@ -80,14 +87,21 @@
           <div class="mb-2 opacity-70 group-hover:opacity-100">
             {{ template "icons" (dict "Name" "i-lucide-database-zap") }}
           </div>
-          <span class="text-xs font-bold">DNS 记录</span>
+          <span class="text-xs font-bold">DNS 管理</span>
         </a>
         <a href="/ssl"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
           <div class="mb-2 opacity-70 group-hover:opacity-100">
             {{ template "icons" (dict "Name" "i-lucide-shield-check") }}
           </div>
-          <span class="text-xs font-bold">SSL 记录</span>
+          <span class="text-xs font-bold">SSL 管理</span>
+        </a>
+        <a href="/domain-monitor"
+          class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
+          <div class="mb-2 opacity-70 group-hover:opacity-100">
+            {{ template "icons" (dict "Name" "i-lucide-activity") }}
+          </div>
+          <span class="text-xs font-bold">域名监控</span>
         </a>
         <a href="/device"
           class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
@@ -124,20 +138,6 @@
           </div>
           <span class="text-xs font-bold">任务管理</span>
         </a>
-        <a href="/log"
-          class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70 group-hover:opacity-100">
-            {{ template "icons" (dict "Name" "i-lucide-scroll-text") }}
-          </div>
-          <span class="text-xs font-bold">操作日志</span>
-        </a>
-        <a href="/config"
-          class="flex flex-col items-center p-4 rounded-3xl bg-base-200/50 hover:bg-primary hover:text-primary-content transition-all group">
-          <div class="mb-2 opacity-70 group-hover:opacity-100">
-            {{ template "icons" (dict "Name" "i-lucide-server-cog") }}
-          </div>
-          <span class="text-xs font-bold">平台配置</span>
-        </a>
       </div>
     </div>
 
@@ -146,6 +146,7 @@
         <h2 class="text-xl font-bold flex items-center gap-2">
           {{ template "icons" (dict "Name" "i-lucide-scroll-text") }} 最近动态
         </h2>
+        <a href="/log" class="text-xs font-bold text-primary hover:underline">查看所有</a>
       </div>
       <div class="p-0">
         {{ $recentLogs := .Data.RecentLogs }}

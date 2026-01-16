@@ -23,20 +23,8 @@ func init() {
 	// 	global.GvaEnv.GRPC_ADDR = "0.0.0.0:50051" // grpc默认端口
 	// }
 
-	// 从环境变量获取 [backend] Thrift 地址
-	global.GvaEnv.THRIFT_ADDR = os.Getenv("THRIFT_ADDR")
-	// if global.GvaEnv.THRIFT_ADDR == "" {
-	// global.GvaEnv.THRIFT_ADDR = "0.0.0.0:9090" // thrift默认端口
-	// }
-
-	// 从环境变量获取 [reporter][forwarder] HTTP URL
-	global.GvaEnv.HTTP_URL = os.Getenv("HTTP_URL")
-
 	// 从环境变量获取 [reporter][forwarder] gRPC URL
 	global.GvaEnv.GRPC_URL = os.Getenv("GRPC_URL")
-
-	// 从环境变量获取 [reporter][forwarder] Thrift URL
-	global.GvaEnv.THRIFT_URL = os.Getenv("THRIFT_URL")
 
 	// 从环境变量获取 [backend][reporter][forwarder] 基本认证用户名和密码
 	global.GvaEnv.BASIC_AUTH_USERNAME = os.Getenv("BASIC_AUTH_USERNAME")

@@ -18,13 +18,12 @@ replace github.com/imroc/req/v3 => github.com/imroc/req/v3 v3.57.0
 
 require (
 	entgo.io/ent v0.14.5
-	github.com/alibabacloud-go/alidns-20150109/v5 v5.1.1
+	github.com/alibabacloud-go/alidns-20150109/v5 v5.2.0
 	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.14
 	github.com/alibabacloud-go/esa-20240910/v2 v2.44.0
 	github.com/alibabacloud-go/tea v1.4.0
 	github.com/aliyun/credentials-go v1.4.10
-	github.com/apache/thrift v0.22.0
 	github.com/baidubce/bce-sdk-go v0.9.258
 	github.com/cloudflare/cloudflare-go/v6 v6.6.0
 	github.com/corazawaf/coraza-coreruleset v0.0.0-20240226094324-415b1017abdc
@@ -45,7 +44,7 @@ require (
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.184
 	github.com/imroc/req/v3 v3.57.0
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
-	github.com/kingsoftcloud/sdk-go/v2 v2.2.59
+	github.com/kingsoftcloud/sdk-go/v2 v2.2.60
 	github.com/miekg/dns v1.1.70
 	github.com/modelcontextprotocol/go-sdk v1.2.0
 	github.com/qiniu/go-sdk/v7 v7.25.6
@@ -144,7 +143,7 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12 // indirect
-	github.com/klauspost/compress v1.18.2 // indirect
+	github.com/klauspost/compress v1.18.3 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/magefile/mage v1.15.1-0.20241126214340-bdc92f694516 // indirect

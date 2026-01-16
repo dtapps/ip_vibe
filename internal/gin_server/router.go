@@ -4,8 +4,6 @@ import (
 	"net/http"
 	"vibe_ip/internal/docs_2"
 	"vibe_ip/internal/docs_3"
-	"vibe_ip/internal/ent_log/operationlog"
-	"vibe_ip/internal/gin_middleware"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/handlers"
 
@@ -251,17 +249,6 @@ func (m *GinServerManager) setupApiRouter() {
 			tasks.POST("/clean-all", handlers.CleanAllTask)         // 清理所有任务
 			tasks.POST("/start-scheduler", handlers.StartScheduler) // 启动调度器
 			tasks.POST("/stop-scheduler", handlers.StopScheduler)   // 停止调度器
-		}
-
-		// 开放API
-		opens := api.Group("/open").Use(gin_middleware.AuditContextMiddleware(
-			operationlog.SourceAPI,
-		))
-		{
-			opens.GET("/setting", handlers.OpenGetSetting)                                                           // 获取配置
-			opens.POST("/device/:device_code/ip-report", handlers.DeviceReportDeviceIp)                              // 设备上报IP
-			opens.GET("/device/:device_code/port-forwards", handlers.DevicePortForwards)                             // 获取设备端口转发
-			opens.POST("/device/:device_code/port-forwards-stats/:port_forward_id", handlers.CreatePortForwardStats) // 创建端口转发统计
 		}
 
 		// 分组内兜底：未匹配路径返回 JSON 404（不会与 /api/d 冲突）

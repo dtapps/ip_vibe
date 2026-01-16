@@ -1,7 +1,7 @@
 {{ define "content" }}
 
 {{/* 初始化局部变量 */}}
-{{ $protocols := slice "api" "mcp" "grpc" "thrift" }}
+{{ $protocols := slice "api" "mcp" "grpc" }}
 {{ $data := .Data }}
 
 <h1 class="text-3xl font-black mb-10 pl-4 text-base-content transition-colors">🔌 接口接入说明</h1>
@@ -74,8 +74,6 @@
                                     手动构造 Header：<code>Authorization: Basic {base64(Token)}</code>。
                                     {{ else if eq $data.CurrentProto "grpc" }}
                                     利用 gRPC <b>Metadata</b> 传输鉴权信息，Key 为 <code>authorization</code>。
-                                    {{ else if eq $data.CurrentProto "thrift" }}
-                                    鉴权信息位于结构体 <b>Base.Token</b> 字段中，由 IDL 统一定义。
                                     {{ else }}
                                     通用方式：通过注册中心进行服务发现及 Token 校验。
                                     {{ end }}
@@ -92,7 +90,7 @@
                         {{ if eq $data.CurrentProto "api" }}
 
                         {{ if $data.HttpAddr }}
-                        {{ $data.HttpAddr }}/api/open
+                        {{ $data.HttpAddr }}/api
                         {{ else }}
                         未配置 HTTP 地址
                         {{ end}}
@@ -112,17 +110,6 @@
                         {{ else }}
                         未配置 gRPC 地址
                         {{ end}}
-                        
-                        {{ else if eq $data.CurrentProto "thrift" }}
-
-                        {{ if $data.ThriftAddr }}
-                        {{ $data.ThriftAddr }}
-                        {{ else }}
-                        未配置 Thrift 地址
-                        {{ end}}
-                        
-                        {{ else }}
-                        internal://{{ $data.CurrentProto }}.cluster.local
                         {{ end }}
                     </code>
                 </div>
@@ -198,12 +185,6 @@ req.Header.Add("Authorization", auth)
 // gRPC (Metadata)
 md := metadata.Pairs("authorization", "Basic " + encodedToken)
 ctx := metadata.NewOutgoingContext(context.Background(), md)
-{{- else if eq $data.CurrentProto "thrift" }}
-// Thrift (Request Params)
-req := &SyncRequest{
-    Base: &Base{ Token: "{{ $data.Token }}" },
-    Data: payload,
-}
 {{- else }}
 // Others
 // Please refer to the specific protocol SDK

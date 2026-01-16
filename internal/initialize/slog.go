@@ -109,15 +109,6 @@ func InitGrpcSLog(name string) {
 	).WithLogger()
 }
 
-// InitThriftSLog 初始化 Thrift 日志
-func InitThriftSLog(name string) {
-	prefix := "thrift"
-	global.GvaThriftSlog = golog.NewSlog(
-		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
-		golog.WithSLogSetLevel(getLevel()),
-	).WithLogger()
-}
-
 // InitGocronSLog 初始化 gocron 日志
 func InitGocronSLog(name string) {
 	prefix := "gocron"
@@ -179,9 +170,6 @@ func EnsureDefaultSLog() {
 		}
 		if global.GvaGrpcSlog == nil {
 			global.GvaGrpcSlog = global.GvaSlog
-		}
-		if global.GvaThriftSlog == nil {
-			global.GvaThriftSlog = global.GvaSlog
 		}
 		if global.GvaGocronSlog == nil {
 			global.GvaGocronSlog = global.GvaSlog

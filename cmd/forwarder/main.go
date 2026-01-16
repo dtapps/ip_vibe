@@ -13,7 +13,6 @@ import (
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_client"
 	"vibe_ip/internal/initialize"
-	"vibe_ip/internal/thrift_client"
 )
 
 var (
@@ -61,7 +60,6 @@ func main() {
 
 	initialize.InitSLog("forwarder")       // 初始化 日志
 	initialize.InitGrpcSLog("forwarder")   // 初始化 gRPC 日志
-	initialize.InitThriftSLog("forwarder") // 初始化 Thrift 日志
 	initialize.InitGocronSLog("forwarder") // 初始化 gocron 日志
 	initialize.InitHttpSLog("forwarder")   // 初始化 http 日志
 	initialize.InitRestySLog("forwarder")  // 初始化 resty 日志
@@ -166,113 +164,9 @@ func main() {
 		remoteLogService := service.NewRemoteLogService(global.GvaGocronSlog, grpcClientConn)
 		go remoteLogService.StartTunnel(ctx, config.DeviceCode)
 
-	} else if global.GvaEnv.THRIFT_URL != "" {
-
-		// 连接 Thrift 客户端
-		thriftMgr := thrift_client.NewManager(global.GvaThriftSlog, thrift_client.Config{
-			Addr:     global.GvaEnv.THRIFT_URL,
-			Username: global.GvaEnv.BASIC_AUTH_USERNAME,
-			Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
-		})
-		err := thriftMgr.Conn(ctx)
-		if err != nil {
-			slog.ErrorContext(ctx, "启动 Thrift 客户端失败",
-				slog.Any("err", err),
-			)
-			panic(err)
-		}
-		defer thrift_client.NewManager(global.GvaThriftSlog, thrift_client.Config{}).Stop(ctx)
-
-		// 创建端口转发实例
-		portForwardTask := task.NewPortForwardThriftTask(
-			global.GvaGoCron,
-			global.GvaGocronSlog,
-			portForwardServer,
-			forwardAgent,
-			thriftMgr.GetConn(),
-			thriftMgr.GetAuth(),
-		)
-		portForwardTask.SetConfig(config)
-
-		// 启动端口转发任务
-		err = portForwardTask.StartPeriodicTask(ctx)
-		if err != nil {
-			slog.ErrorContext(ctx, "启动端口转发任务失败",
-				slog.Any("err", err),
-			)
-			panic(err)
-		}
-		defer portForwardTask.Close()
-
-		// 创建统计上报实例
-		statsReportTask := task.NewStatsReportThriftTask(
-			global.GvaGoCron,
-			global.GvaGocronSlog,
-			portForwardServer,
-			forwardAgent,
-			thriftMgr.GetConn(),
-			thriftMgr.GetAuth(),
-		)
-		statsReportTask.SetConfig(config)
-
-		// 启动统计上报任务
-		err = statsReportTask.StartPeriodicTask(ctx)
-		if err != nil {
-			slog.ErrorContext(ctx, "启动统计上报任务失败",
-				slog.Any("err", err),
-			)
-			panic(err)
-		}
-		defer statsReportTask.Close()
-
-	} else if global.GvaEnv.HTTP_URL != "" {
-
-		// 创建端口转发实例
-		portForwardTask := task.NewPortForwardRestyTask(
-			global.GvaGoCron,
-			global.GvaGocronSlog,
-			portForwardServer,
-			forwardAgent,
-		)
-		portForwardTask.SetDebug(global.GvaEnv.DEBUG)
-		portForwardTask.SetConfig(config)
-		portForwardTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
-		portForwardTask.SetBaseURL(global.GvaEnv.HTTP_URL)
-
-		// 启动端口转发任务
-		err := portForwardTask.StartPeriodicTask(ctx)
-		if err != nil {
-			slog.ErrorContext(ctx, "启动端口转发任务失败",
-				slog.Any("err", err),
-			)
-			panic(err)
-		}
-		defer portForwardTask.Close()
-
-		// 创建统计上报实例
-		statsReportTask := task.NewStatsReportRestyTask(
-			global.GvaGoCron,
-			global.GvaGocronSlog,
-			portForwardServer,
-			forwardAgent,
-		)
-		statsReportTask.SetConfig(config)
-		statsReportTask.SetBaseURL(global.GvaEnv.HTTP_URL)
-		statsReportTask.SetBasicAuth(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
-
-		// 启动统计上报任务
-		err = statsReportTask.StartPeriodicTask(ctx)
-		if err != nil {
-			slog.ErrorContext(ctx, "启动统计上报任务失败",
-				slog.Any("err", err),
-			)
-			panic(err)
-		}
-		defer statsReportTask.Close()
-
 	} else {
-		slog.ErrorContext(ctx, "服务启动失败: GRPC_URL / THRIFT_URL / HTTP_URL未配置")
-		panic("GRPC_URL / THRIFT_URL / HTTP_URL未配置")
+		slog.ErrorContext(ctx, "服务启动失败: GRPC_URL 未配置")
+		panic("服务启动失败: GRPC_URL 未配置")
 	}
 
 	// 启动 GoCron 调度器

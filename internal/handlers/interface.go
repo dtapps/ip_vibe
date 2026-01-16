@@ -24,9 +24,8 @@ func Interface(c *gin.Context) {
 	pageData := types.InterfaceResponse{
 		CurrentProto: requestParams.Proto,
 
-		HttpAddr:   global.GvaEnv.HTTP_ADDR,
-		GrpcAddr:   global.GvaEnv.GRPC_ADDR,
-		ThriftAddr: global.GvaEnv.THRIFT_ADDR,
+		HttpAddr: global.GvaEnv.HTTP_ADDR,
+		GrpcAddr: global.GvaEnv.GRPC_ADDR,
 	}
 	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
 		if requestParams.Proto == "api" {

@@ -37,7 +37,6 @@ var (
 	GvaEntLogSlog *slog.Logger // ent log 日志
 	GvaGinSlog    *slog.Logger // gin 日志
 	GvaGrpcSlog   *slog.Logger // gRPC 日志
-	GvaThriftSlog *slog.Logger // Thrift 日志
 	GvaGocronSlog *slog.Logger // gocron 日志
 	GvaMcpSlog    *slog.Logger // mcp 日志
 	GvaHttpSlog   *slog.Logger // http 日志
