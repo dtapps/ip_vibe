@@ -49,7 +49,9 @@
           </td>
 
           <td class="ui-td">
-            {{template "logObjTypeBadge" (dict "ObjType" .ObjType)}}
+            <span class="badge badge-primary badge-outline tooltip" data-tip="{{ .ObjType }}">
+              {{fieldEnumLabel "operation_log_obj_type" .ObjType}}
+            </span>
           </td>
 
           <td class="ui-td">

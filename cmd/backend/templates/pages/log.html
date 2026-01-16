@@ -51,11 +51,13 @@
             <span class="badge badge-ghost font-mono text-xs">
               {{.ObjID}}
             </span>
-            {{template "logObjTypeBadge" (dict "ObjType" .ObjType)}}
+            <span class="badge badge-primary badge-outline tooltip" data-tip="{{ .ObjType }}">
+              {{fieldEnumLabel "operation_log_obj_type" .ObjType}}
+            </span>
           </td>
 
           <td class="ui-td font-bold">
-            {{template "logOpType" (dict "OpType" .OpType)}}
+            {{fieldEnumLabel "operation_log_op_type" .OpType}}
           </td>
 
           <td class="ui-td text-center text-sm max-w-md break-all">

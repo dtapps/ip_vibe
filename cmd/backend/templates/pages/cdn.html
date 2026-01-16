@@ -78,7 +78,9 @@
           </td>
 
           <td class="ui-td text-center">
-            {{template "PlatformBadge" (dict "Platform" .Platform "Tips" .ConfigName )}}
+            <span class="badge badge-primary badge-outline tooltip" data-tip="{{ .ConfigName }}">
+              {{fieldEnumLabel "platform_config_platform" .Platform}}
+            </span>
           </td>
 
           <td class="ui-td text-center">

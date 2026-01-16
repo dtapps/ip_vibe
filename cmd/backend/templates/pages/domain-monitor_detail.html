@@ -328,7 +328,7 @@
                                 </span>
                                 <span
                                     class='badge badge-xs {{ if eq .Status "success" }}badge-ghost opacity-50{{ else }}badge-error{{ end }} font-mono'>
-                                    {{template "logOpType" (dict "OpType" .OpType)}}
+                                    {{fieldEnumLabel "operation_log_op_type" .OpType}}
                                 </span>
                             </div>
                             <span class="text-xs font-medium text-base-content/80">

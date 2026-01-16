@@ -154,7 +154,7 @@
           <div>
             <div class="flex items-center gap-2">
               <span class="text-sm font-bold">
-                {{template "logObjType" (dict "ObjType" .ObjType)}}
+                {{fieldEnumLabel "operation_log_obj_type" .ObjType}}
               </span>
               <span class="text-xs opacity-50">
                 ID: {{ .ObjID }}
