@@ -68,23 +68,30 @@ func (s *DeviceServiceImpl) BuildResponse(ctx context.Context, item *ent.Device)
 
 	resp.Webhooks = webhookIDs
 
-	// 设备是否离线失效
-	resp.OfflineInvalid = false
+	// 默认离线
+	resp.Online = false
 
-	// 1. 先检查配置是否开启 (大于0)
-	// 2. 检查是否有过心跳记录 (非零值)
-	invalidTime := db_cache.GvaSetting.DeviceOfflineInvalidTime
-	if invalidTime > 0 && !item.LastHeartbeatAt.IsZero() {
+	lastHB := item.LastHeartbeatAt
+	invalidTime := db_cache.GvaSetting.DeviceOfflineInvalidTime // 单位：分钟
 
-		// 建议：提前计算出超时阈值，增加代码可读性
-		timeoutThreshold := time.Duration(db_cache.GvaSetting.DeviceOfflineInvalidTime) * time.Minute
+	// 如果从未上报过心跳，保持离线（false）
+	if lastHB.IsZero() {
+		resp.Online = false
+		return resp, nil
+	}
 
-		if time.Since(item.LastHeartbeatAt) > timeoutThreshold {
-			resp.OfflineInvalid = true
-		}
-	} else if item.LastHeartbeatAt.IsZero() {
-		// 如果从未有过心跳，通常业务上也会判定为离线
-		resp.OfflineInvalid = true
+	// 如果未启用离线检测（invalidTime <= 0），则视为始终在线
+	if invalidTime <= 0 {
+		resp.Online = true
+		return resp, nil
+	}
+
+	// 启用了离线检测：判断是否在有效时间窗口内
+	threshold := time.Duration(invalidTime) * time.Minute
+	if time.Since(lastHB) <= threshold {
+		resp.Online = true // 在线
+	} else {
+		resp.Online = false // 离线（超时）
 	}
 
 	return resp, nil

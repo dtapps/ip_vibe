@@ -26,12 +26,13 @@ func Dashboard(c *gin.Context) {
 	pageData.Stats.DeviceCount, _ = global.GvaEntDb.Device.Query().Count(c)
 
 	// 在线设备总数 (心跳时间在 12 分钟内)
-	if db_cache.GvaSetting.DeviceOfflineInvalidTime == 0 {
+	invalidTime := db_cache.GvaSetting.DeviceOfflineInvalidTime // 单位：分钟
+	if invalidTime <= 0 {
 		pageData.Stats.OnlineDeviceCount, _ = global.GvaEntDb.Device.Query().
 			Count(c)
 	} else {
 		pageData.Stats.OnlineDeviceCount, _ = global.GvaEntDb.Device.Query().
-			Where(device.LastHeartbeatAtGTE(time.Now().Add(-time.Duration(db_cache.GvaSetting.DeviceOfflineInvalidTime) * time.Minute))).
+			Where(device.LastHeartbeatAtGTE(time.Now().Add(-time.Duration(invalidTime) * time.Minute))).
 			Count(c)
 	}
 

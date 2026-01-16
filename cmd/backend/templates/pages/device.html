@@ -40,8 +40,8 @@
           <th class="ui-th">名称</th>
           <th class="ui-th">最新 IPv4</th>
           <th class="ui-th">最新 IPv6</th>
-          <th class="ui-th">上次上报时间</th>
-          <th style="width: 320px" class="ui-th">操作</th>
+          <th class="ui-th">状态</th>
+          <th class="ui-th text-center">操作</th>
         </tr>
       </thead>
       <tbody id="table">
@@ -68,10 +68,13 @@
             {{.IPV6}}
           </td>
 
-          <td class="ui-td text-xs">
-            <span class="opacity-60">
-              {{formatTimeOrNil .LastReportedAt}}
-            </span>
+          <td class="ui-td font-bold text-base-content tooltip"
+            data-tip="上次上报时间在 {{ formatTimeOrNil .LastReportedAt }}">
+            {{ if .Online }}
+            <span class="badge badge-success">在线</span>
+            {{ else }}
+            <span class="badge badge-error">离线</span>
+            {{ end }}
           </td>
 
           <td class="ui-td">

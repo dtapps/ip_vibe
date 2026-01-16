@@ -212,11 +212,12 @@ func (s *IPUpdateTask) RunDnsTask() {
 		WithIPGroup(func(withIPGroup *ent.IpGroupQuery) {
 			// 在 IP组 里查询设备
 			withIPGroup.WithDevices(func(withDevices *ent.DeviceQuery) {
-				if db_cache.GvaSetting.DeviceOfflineInvalidTime == 0 {
+				invalidTime := db_cache.GvaSetting.DeviceOfflineInvalidTime // 单位：分钟
+				if invalidTime <= 0 {
 					return
 				}
 				// 设备心跳时间在 12 分钟内
-				withDevices.Where(device.LastHeartbeatAtGTE(time.Now().Add(-time.Duration(db_cache.GvaSetting.DeviceOfflineInvalidTime) * time.Minute)))
+				withDevices.Where(device.LastHeartbeatAtGTE(time.Now().Add(-time.Duration(invalidTime) * time.Minute)))
 				withDevices.OrderByIDAsc()
 			})
 		}).
@@ -382,11 +383,12 @@ func (s *IPUpdateTask) RunCdnTask() {
 		WithIPGroup(func(withIPGroup *ent.IpGroupQuery) {
 			// 在 IP组 里查询设备
 			withIPGroup.WithDevices(func(withDevices *ent.DeviceQuery) {
-				if db_cache.GvaSetting.DeviceOfflineInvalidTime == 0 {
+				invalidTime := db_cache.GvaSetting.DeviceOfflineInvalidTime // 单位：分钟
+				if invalidTime <= 0 {
 					return
 				}
 				// 设备心跳时间在 12 分钟内
-				withDevices.Where(device.LastHeartbeatAtGTE(time.Now().Add(-time.Duration(db_cache.GvaSetting.DeviceOfflineInvalidTime) * time.Minute)))
+				withDevices.Where(device.LastHeartbeatAtGTE(time.Now().Add(-time.Duration(invalidTime) * time.Minute)))
 				withDevices.OrderByIDAsc()
 			})
 		}).

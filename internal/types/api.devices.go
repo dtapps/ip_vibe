@@ -19,7 +19,7 @@ type GetDeviceResponse struct {
 
 	Webhooks []int64 `json:"webhooks" jsonschema:"关联的Webhook ID列表"` // 关联的 Webhook 列表
 
-	OfflineInvalid bool `json:"offline_invalid" jsonschema:"设备是否离线失效"` // 设备是否离线失效
+	Online bool `json:"online" jsonschema:"设备是否在线"` // 设备是否在线
 }
 
 // 获取设备 请求结构
