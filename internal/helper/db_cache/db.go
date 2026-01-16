@@ -58,7 +58,8 @@ func InitSetting(ctx context.Context, db *ent.Client) {
 		return string(c.Value)
 	}
 
-	// 返回变量
+	// 设置变量
+	GvaSetting = new(Setting)
 	GvaSetting.DeviceOfflineInvalidTime = cast.ToInt64(getVal(KeyDeviceOfflineTime, "12"))
 	GvaSetting.IPReportIntervalTime = getVal(KeyIPReportInterval, "8-12")
 	GvaSetting.PortForwardReloadTime = getVal(KeyPortForwardReload, "30")
@@ -88,7 +89,7 @@ func GetSetting(ctx context.Context, db *ent.Client) *Setting {
 	}
 
 	// 返回变量
-	setting := &Setting{}
+	setting := new(Setting)
 	setting.DeviceOfflineInvalidTime = cast.ToInt64(getVal(KeyDeviceOfflineTime, "12"))
 	setting.IPReportIntervalTime = getVal(KeyIPReportInterval, "8-12")
 	setting.PortForwardReloadTime = getVal(KeyPortForwardReload, "30")
