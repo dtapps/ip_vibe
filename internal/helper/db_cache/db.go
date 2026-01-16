@@ -26,6 +26,9 @@ type Setting struct {
 	SSLRefreshTaskTime string `json:"ssl_refresh_task_time"`
 }
 
+// GvaSetting 全局设置
+var GvaSetting *Setting
+
 // 统一管理所有 Cache Key
 const (
 	KeyDeviceOfflineTime = "conf:device_offline_invalid_time"
@@ -38,7 +41,7 @@ const (
 )
 
 // 初始化设置
-func InitSetting(ctx context.Context, db *ent.Client, setSetting *Setting) {
+func InitSetting(ctx context.Context, db *ent.Client) {
 	// 内部辅助函数：查不到就建默认的
 	getVal := func(key string, defaultVal string) string {
 		c, err := db.Cache.Query().
@@ -56,13 +59,13 @@ func InitSetting(ctx context.Context, db *ent.Client, setSetting *Setting) {
 	}
 
 	// 返回变量
-	setSetting.DeviceOfflineInvalidTime = cast.ToInt64(getVal(KeyDeviceOfflineTime, "12"))
-	setSetting.IPReportIntervalTime = getVal(KeyIPReportInterval, "8-12")
-	setSetting.PortForwardReloadTime = getVal(KeyPortForwardReload, "30")
-	setSetting.PortForwardReportTime = getVal(KeyPortForwardReport, "8-12")
-	setSetting.CDNRefreshTaskTime = getVal(KeyCDNRefreshTime, "10-12")
-	setSetting.DNSRefreshTaskTime = getVal(KeyDNSRefreshTime, "10-12")
-	setSetting.SSLRefreshTaskTime = getVal(KeySSLRefreshTime, "8-10")
+	GvaSetting.DeviceOfflineInvalidTime = cast.ToInt64(getVal(KeyDeviceOfflineTime, "12"))
+	GvaSetting.IPReportIntervalTime = getVal(KeyIPReportInterval, "8-12")
+	GvaSetting.PortForwardReloadTime = getVal(KeyPortForwardReload, "30")
+	GvaSetting.PortForwardReportTime = getVal(KeyPortForwardReport, "8-12")
+	GvaSetting.CDNRefreshTaskTime = getVal(KeyCDNRefreshTime, "10-12")
+	GvaSetting.DNSRefreshTaskTime = getVal(KeyDNSRefreshTime, "10-12")
+	GvaSetting.SSLRefreshTaskTime = getVal(KeySSLRefreshTime, "8-10")
 
 }
 
@@ -98,7 +101,7 @@ func GetSetting(ctx context.Context, db *ent.Client) *Setting {
 }
 
 // 批量更新设置
-func UpdateSetting(ctx context.Context, db *ent.Client, newSetting *Setting, setSetting *Setting) error {
+func UpdateSetting(ctx context.Context, db *ent.Client, newSetting *Setting) error {
 	// 定义 字段 -> Key 的映射关系，循环处理
 	updates := map[string]any{
 		KeyDeviceOfflineTime: newSetting.DeviceOfflineInvalidTime,
@@ -125,7 +128,7 @@ func UpdateSetting(ctx context.Context, db *ent.Client, newSetting *Setting, set
 	}
 
 	// 数据库写完后，更新内存中的全局变量，保证即刻生效
-	setSetting = newSetting
+	*GvaSetting = *newSetting
 	return nil
 }
 

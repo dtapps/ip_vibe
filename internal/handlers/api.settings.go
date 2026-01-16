@@ -25,7 +25,7 @@ func GetSetting(c *gin.Context) {
 
 	// 获取设置
 	// setting := db_cache.GetSetting(c, global.GvaEntDb)
-	setting := global.GvaSetting
+	setting := db_cache.GvaSetting
 
 	// 赋值
 	response := types.GetSettingResponse{
@@ -70,7 +70,7 @@ func UpdateSetting(c *gin.Context) {
 		CDNRefreshTaskTime:       requestParams.CDNRefreshTaskTime,
 		DNSRefreshTaskTime:       requestParams.DNSRefreshTaskTime,
 		SSLRefreshTaskTime:       requestParams.SSLRefreshTaskTime,
-	}, &global.GvaSetting)
+	})
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

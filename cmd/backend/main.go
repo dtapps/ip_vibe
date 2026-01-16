@@ -89,10 +89,10 @@ func main() {
 	initialize.InitReqSLog("backend")    // 初始化 req 日志
 	initialize.EnsureDefaultSLog()       // 确保日志不为 nil
 
-	initialize.InitEntDb(ctx, global.GvaEntSlog)                   // 初始化 业务数据库
-	initialize.InitEntLogDb(ctx, global.GvaEntLogSlog)             // 初始化 日志数据库
-	db_cache.InitSetting(ctx, global.GvaEntDb, &global.GvaSetting) // 初始化 设置
-	initialize.InitGoCron(ctx, global.GvaGocronSlog)               // 初始化 GoCron 调度器
+	initialize.InitEntDb(ctx, global.GvaEntSlog)       // 初始化 业务数据库
+	initialize.InitEntLogDb(ctx, global.GvaEntLogSlog) // 初始化 日志数据库
+	db_cache.InitSetting(ctx, global.GvaEntDb)         // 初始化 设置
+	initialize.InitGoCron(ctx, global.GvaGocronSlog)   // 初始化 GoCron 调度器
 
 	initialize.InitEntHttpLog(global.GvaHttpSlog)   // 初始化 HTTP 日志
 	initialize.InitEntRestyLog(global.GvaRestySlog) // 初始化 Resty 日志

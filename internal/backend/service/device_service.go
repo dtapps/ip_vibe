@@ -10,7 +10,7 @@ import (
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/deviceipreport"
 	"vibe_ip/internal/ent_log/portforwardstats"
-	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
@@ -73,11 +73,11 @@ func (s *DeviceServiceImpl) BuildResponse(ctx context.Context, item *ent.Device)
 
 	// 1. 先检查配置是否开启 (大于0)
 	// 2. 检查是否有过心跳记录 (非零值)
-	invalidTime := global.GvaSetting.DeviceOfflineInvalidTime
+	invalidTime := db_cache.GvaSetting.DeviceOfflineInvalidTime
 	if invalidTime > 0 && !item.LastHeartbeatAt.IsZero() {
 
 		// 建议：提前计算出超时阈值，增加代码可读性
-		timeoutThreshold := time.Duration(global.GvaSetting.DeviceOfflineInvalidTime) * time.Minute
+		timeoutThreshold := time.Duration(db_cache.GvaSetting.DeviceOfflineInvalidTime) * time.Minute
 
 		if time.Since(item.LastHeartbeatAt) > timeoutThreshold {
 			resp.OfflineInvalid = true

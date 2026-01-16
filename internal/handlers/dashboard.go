@@ -6,6 +6,7 @@ import (
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/helper/system_helper"
 	"vibe_ip/internal/types"
@@ -25,9 +26,14 @@ func Dashboard(c *gin.Context) {
 	pageData.Stats.DeviceCount, _ = global.GvaEntDb.Device.Query().Count(c)
 
 	// 在线设备总数 (心跳时间在 12 分钟内)
-	pageData.Stats.OnlineDeviceCount, _ = global.GvaEntDb.Device.Query().
-		Where(device.LastHeartbeatAtGTE(time.Now().Add(-12 * time.Minute))).
-		Count(c)
+	if db_cache.GvaSetting.DeviceOfflineInvalidTime == 0 {
+		pageData.Stats.OnlineDeviceCount, _ = global.GvaEntDb.Device.Query().
+			Count(c)
+	} else {
+		pageData.Stats.OnlineDeviceCount, _ = global.GvaEntDb.Device.Query().
+			Where(device.LastHeartbeatAtGTE(time.Now().Add(-time.Duration(db_cache.GvaSetting.DeviceOfflineInvalidTime) * time.Minute))).
+			Count(c)
+	}
 
 	// DNS 记录
 	pageData.Stats.DnsRecordCount, _ = global.GvaEntDb.DNSRecord.Query().Count(c)
@@ -80,7 +86,7 @@ func Dashboard(c *gin.Context) {
 
 	// 获取系统设置
 	// setting := db_cache.GetSetting(c, global.GvaEntDb)
-	setting := global.GvaSetting
+	setting := db_cache.GvaSetting
 	pageData.Settings = types.GetSettingResponse{
 		DeviceOfflineInvalidTime: setting.DeviceOfflineInvalidTime,
 		IPReportIntervalTime:     setting.IPReportIntervalTime,

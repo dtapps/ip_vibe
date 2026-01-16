@@ -17,7 +17,7 @@ import (
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
-	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/helper/ssl_helper"
 
@@ -106,7 +106,11 @@ func (s *SSLUpdateTask) StartPeriodicTask(ctx context.Context) (err error) {
 	}
 	// 解析设置的时间
 	var jobDuratio gocron.JobDefinition
-	taskTime := global.GvaSetting.SSLRefreshTaskTime
+	taskTime := db_cache.GvaSetting.SSLRefreshTaskTime
+	if taskTime == "" {
+		s.logger.ErrorContext(ctx, "SSL刷新任务时间未配置")
+		return nil
+	}
 	if strings.Contains(taskTime, "-") {
 		// 解析时间范围
 		times := gostring.Split(taskTime, "-")
