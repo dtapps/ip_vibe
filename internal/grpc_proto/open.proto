@@ -17,6 +17,13 @@ import "validate/validate.proto";
 
 // 开放
 service OpenService {
+  // 获取配置
+  rpc GetSetting(google.protobuf.Empty) returns (GetSettingResponse) {
+    option (google.api.http) = {
+      get: "/setting"
+    };
+  }
+
   // 设备上报IP
   rpc ReportDeviceIP(ReportDeviceIPRequest) returns (ReportDeviceIPResponse) {
     option (google.api.http) = {
@@ -39,6 +46,14 @@ service OpenService {
       body: "*"
     };
   }
+}
+
+// 获取配置 响应参数
+message GetSettingResponse {
+  int64 DeviceOfflineInvalidTime = 1;                   // 设备离线失效时间
+  string IPReportIntervalTime = 2;                     // IP上报间隔时间
+  string PortForwardReloadTime = 3;                   // 端口转发重载时间
+  string PortForwardReportTime = 4;                   // 端口转发统计上报时间
 }
 
 // 设备上报IP 请求参数

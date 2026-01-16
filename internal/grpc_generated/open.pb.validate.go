@@ -35,6 +35,116 @@ var (
 	_ = sort.Sort
 )
 
+// Validate checks the field values on GetSettingResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetSettingResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetSettingResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetSettingResponseMultiError, or nil if none found.
+func (m *GetSettingResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetSettingResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for DeviceOfflineInvalidTime
+
+	// no validation rules for IPReportIntervalTime
+
+	// no validation rules for PortForwardReloadTime
+
+	// no validation rules for PortForwardReportTime
+
+	if len(errors) > 0 {
+		return GetSettingResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetSettingResponseMultiError is an error wrapping multiple validation errors
+// returned by GetSettingResponse.ValidateAll() if the designated constraints
+// aren't met.
+type GetSettingResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetSettingResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetSettingResponseMultiError) AllErrors() []error { return m }
+
+// GetSettingResponseValidationError is the validation error returned by
+// GetSettingResponse.Validate if the designated constraints aren't met.
+type GetSettingResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetSettingResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetSettingResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetSettingResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetSettingResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetSettingResponseValidationError) ErrorName() string {
+	return "GetSettingResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetSettingResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetSettingResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetSettingResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetSettingResponseValidationError{}
+
 // Validate checks the field values on ReportDeviceIPRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.

@@ -54,7 +54,9 @@ func (_u *CacheUpdate) Mutation() *CacheMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *CacheUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -81,11 +83,15 @@ func (_u *CacheUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *CacheUpdate) defaults() {
+func (_u *CacheUpdate) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if cache.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cache.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cache.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -172,7 +178,9 @@ func (_u *CacheUpdateOne) Select(field string, fields ...string) *CacheUpdateOne
 
 // Save executes the query and returns the updated Cache entity.
 func (_u *CacheUpdateOne) Save(ctx context.Context) (*Cache, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -199,11 +207,15 @@ func (_u *CacheUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *CacheUpdateOne) defaults() {
+func (_u *CacheUpdateOne) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if cache.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cache.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cache.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.

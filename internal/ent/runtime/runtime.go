@@ -53,6 +53,8 @@ func init() {
 	// cdnrecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	cdnrecord.IDValidator = cdnrecordDescID.Validators[0].(func(int64) error)
 	cacheMixin := schema.Cache{}.Mixin()
+	cacheHooks := schema.Cache{}.Hooks()
+	cache.Hooks[0] = cacheHooks[0]
 	cacheMixinFields0 := cacheMixin[0].Fields()
 	_ = cacheMixinFields0
 	cacheFields := schema.Cache{}.Fields()

@@ -18,8 +18,8 @@ import (
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Success		200	{object}	APIResponse{data=types.GetSettingResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}									"参数错误"
-//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Failure		400	{object}	APIResponse{}								"参数错误"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
 //	@Router			/settings [get]
 func GetSetting(c *gin.Context) {
 
@@ -48,10 +48,10 @@ func GetSetting(c *gin.Context) {
 //	@Tags			设置
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.UpdateSettingRequest					true	"请求参数"
-//	@Success		200		{object}	APIResponse{}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}									"参数错误"
-//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Param			request	body		types.UpdateSettingRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}				"成功响应"
+//	@Failure		400		{object}	APIResponse{}				"参数错误"
+//	@Failure		404		{object}	APIResponse{}				"错误响应"
 //	@Router			/settings [patch]
 func UpdateSetting(c *gin.Context) {
 	// 请求参数

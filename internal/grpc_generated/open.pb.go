@@ -26,6 +26,75 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// 获取配置 响应参数
+type GetSettingResponse struct {
+	state                    protoimpl.MessageState `protogen:"open.v1"`
+	DeviceOfflineInvalidTime int64                  `protobuf:"varint,1,opt,name=DeviceOfflineInvalidTime,proto3" json:"DeviceOfflineInvalidTime,omitempty"` // 设备离线失效时间
+	IPReportIntervalTime     string                 `protobuf:"bytes,2,opt,name=IPReportIntervalTime,proto3" json:"IPReportIntervalTime,omitempty"`          // IP上报间隔时间
+	PortForwardReloadTime    string                 `protobuf:"bytes,3,opt,name=PortForwardReloadTime,proto3" json:"PortForwardReloadTime,omitempty"`        // 端口转发重载时间
+	PortForwardReportTime    string                 `protobuf:"bytes,4,opt,name=PortForwardReportTime,proto3" json:"PortForwardReportTime,omitempty"`        // 端口转发统计上报时间
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *GetSettingResponse) Reset() {
+	*x = GetSettingResponse{}
+	mi := &file_open_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSettingResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSettingResponse) ProtoMessage() {}
+
+func (x *GetSettingResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_open_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSettingResponse.ProtoReflect.Descriptor instead.
+func (*GetSettingResponse) Descriptor() ([]byte, []int) {
+	return file_open_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *GetSettingResponse) GetDeviceOfflineInvalidTime() int64 {
+	if x != nil {
+		return x.DeviceOfflineInvalidTime
+	}
+	return 0
+}
+
+func (x *GetSettingResponse) GetIPReportIntervalTime() string {
+	if x != nil {
+		return x.IPReportIntervalTime
+	}
+	return ""
+}
+
+func (x *GetSettingResponse) GetPortForwardReloadTime() string {
+	if x != nil {
+		return x.PortForwardReloadTime
+	}
+	return ""
+}
+
+func (x *GetSettingResponse) GetPortForwardReportTime() string {
+	if x != nil {
+		return x.PortForwardReportTime
+	}
+	return ""
+}
+
 // 设备上报IP 请求参数
 type ReportDeviceIPRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -43,7 +112,7 @@ type ReportDeviceIPRequest struct {
 
 func (x *ReportDeviceIPRequest) Reset() {
 	*x = ReportDeviceIPRequest{}
-	mi := &file_open_proto_msgTypes[0]
+	mi := &file_open_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -55,7 +124,7 @@ func (x *ReportDeviceIPRequest) String() string {
 func (*ReportDeviceIPRequest) ProtoMessage() {}
 
 func (x *ReportDeviceIPRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_open_proto_msgTypes[0]
+	mi := &file_open_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -68,7 +137,7 @@ func (x *ReportDeviceIPRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportDeviceIPRequest.ProtoReflect.Descriptor instead.
 func (*ReportDeviceIPRequest) Descriptor() ([]byte, []int) {
-	return file_open_proto_rawDescGZIP(), []int{0}
+	return file_open_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ReportDeviceIPRequest) GetDeviceCode() string {
@@ -109,7 +178,7 @@ type ReportDeviceIPResponse struct {
 
 func (x *ReportDeviceIPResponse) Reset() {
 	*x = ReportDeviceIPResponse{}
-	mi := &file_open_proto_msgTypes[1]
+	mi := &file_open_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -121,7 +190,7 @@ func (x *ReportDeviceIPResponse) String() string {
 func (*ReportDeviceIPResponse) ProtoMessage() {}
 
 func (x *ReportDeviceIPResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_open_proto_msgTypes[1]
+	mi := &file_open_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -134,7 +203,7 @@ func (x *ReportDeviceIPResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportDeviceIPResponse.ProtoReflect.Descriptor instead.
 func (*ReportDeviceIPResponse) Descriptor() ([]byte, []int) {
-	return file_open_proto_rawDescGZIP(), []int{1}
+	return file_open_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ReportDeviceIPResponse) GetMsg() string {
@@ -155,7 +224,7 @@ type GetDevicePortForwardsRequest struct {
 
 func (x *GetDevicePortForwardsRequest) Reset() {
 	*x = GetDevicePortForwardsRequest{}
-	mi := &file_open_proto_msgTypes[2]
+	mi := &file_open_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -167,7 +236,7 @@ func (x *GetDevicePortForwardsRequest) String() string {
 func (*GetDevicePortForwardsRequest) ProtoMessage() {}
 
 func (x *GetDevicePortForwardsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_open_proto_msgTypes[2]
+	mi := &file_open_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -180,7 +249,7 @@ func (x *GetDevicePortForwardsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDevicePortForwardsRequest.ProtoReflect.Descriptor instead.
 func (*GetDevicePortForwardsRequest) Descriptor() ([]byte, []int) {
-	return file_open_proto_rawDescGZIP(), []int{2}
+	return file_open_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetDevicePortForwardsRequest) GetDeviceCode() string {
@@ -205,7 +274,7 @@ type PortForwardRule struct {
 
 func (x *PortForwardRule) Reset() {
 	*x = PortForwardRule{}
-	mi := &file_open_proto_msgTypes[3]
+	mi := &file_open_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -217,7 +286,7 @@ func (x *PortForwardRule) String() string {
 func (*PortForwardRule) ProtoMessage() {}
 
 func (x *PortForwardRule) ProtoReflect() protoreflect.Message {
-	mi := &file_open_proto_msgTypes[3]
+	mi := &file_open_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -230,7 +299,7 @@ func (x *PortForwardRule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PortForwardRule.ProtoReflect.Descriptor instead.
 func (*PortForwardRule) Descriptor() ([]byte, []int) {
-	return file_open_proto_rawDescGZIP(), []int{3}
+	return file_open_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *PortForwardRule) GetId() int64 {
@@ -285,7 +354,7 @@ type GetDevicePortForwardsResponse struct {
 
 func (x *GetDevicePortForwardsResponse) Reset() {
 	*x = GetDevicePortForwardsResponse{}
-	mi := &file_open_proto_msgTypes[4]
+	mi := &file_open_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -297,7 +366,7 @@ func (x *GetDevicePortForwardsResponse) String() string {
 func (*GetDevicePortForwardsResponse) ProtoMessage() {}
 
 func (x *GetDevicePortForwardsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_open_proto_msgTypes[4]
+	mi := &file_open_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -310,7 +379,7 @@ func (x *GetDevicePortForwardsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDevicePortForwardsResponse.ProtoReflect.Descriptor instead.
 func (*GetDevicePortForwardsResponse) Descriptor() ([]byte, []int) {
-	return file_open_proto_rawDescGZIP(), []int{4}
+	return file_open_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetDevicePortForwardsResponse) GetRules() []*PortForwardRule {
@@ -349,7 +418,7 @@ type CreatePortForwardStatsRequest struct {
 
 func (x *CreatePortForwardStatsRequest) Reset() {
 	*x = CreatePortForwardStatsRequest{}
-	mi := &file_open_proto_msgTypes[5]
+	mi := &file_open_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -361,7 +430,7 @@ func (x *CreatePortForwardStatsRequest) String() string {
 func (*CreatePortForwardStatsRequest) ProtoMessage() {}
 
 func (x *CreatePortForwardStatsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_open_proto_msgTypes[5]
+	mi := &file_open_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -374,7 +443,7 @@ func (x *CreatePortForwardStatsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePortForwardStatsRequest.ProtoReflect.Descriptor instead.
 func (*CreatePortForwardStatsRequest) Descriptor() ([]byte, []int) {
-	return file_open_proto_rawDescGZIP(), []int{5}
+	return file_open_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *CreatePortForwardStatsRequest) GetDeviceCode() string {
@@ -452,7 +521,12 @@ var File_open_proto protoreflect.FileDescriptor
 const file_open_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"open.proto\x12\x04open\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x17validate/validate.proto\"\xb0\x01\n" +
+	"open.proto\x12\x04open\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x17validate/validate.proto\"\xf0\x01\n" +
+	"\x12GetSettingResponse\x12:\n" +
+	"\x18DeviceOfflineInvalidTime\x18\x01 \x01(\x03R\x18DeviceOfflineInvalidTime\x122\n" +
+	"\x14IPReportIntervalTime\x18\x02 \x01(\tR\x14IPReportIntervalTime\x124\n" +
+	"\x15PortForwardReloadTime\x18\x03 \x01(\tR\x15PortForwardReloadTime\x124\n" +
+	"\x15PortForwardReportTime\x18\x04 \x01(\tR\x15PortForwardReportTime\"\xb0\x01\n" +
 	"\x15ReportDeviceIPRequest\x12<\n" +
 	"\vdevice_code\x18\x01 \x01(\tB\x1b\xfaB\x18r\x16\x10\x01\x1822\x10^[a-zA-Z0-9_-]+$R\n" +
 	"deviceCode\x12\x1f\n" +
@@ -492,8 +566,11 @@ const file_open_proto_rawDesc = "" +
 	"\x0eudp_packets_in\x18\b \x01(\x03R\fudpPacketsIn\x12&\n" +
 	"\x0fudp_packets_out\x18\t \x01(\x03R\rudpPacketsOut\x12\x16\n" +
 	"\x06errors\x18\n" +
-	" \x01(\x03R\x06errors2\xa8\x03\n" +
-	"\vOpenService\x12i\n" +
+	" \x01(\x03R\x06errors2\xfa\x03\n" +
+	"\vOpenService\x12P\n" +
+	"\n" +
+	"GetSetting\x12\x16.google.protobuf.Empty\x1a\x18.open.GetSettingResponse\"\x10\x82\xd3\xe4\x93\x02\n" +
+	"\x12\b/setting\x12i\n" +
 	"\x0eReportDeviceIP\x12\x1b.open.ReportDeviceIPRequest\x1a\x1c.open.ReportDeviceIPResponse\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/device/ip-report\x12\x8d\x01\n" +
 	"\x15GetDevicePortForwards\x12\".open.GetDevicePortForwardsRequest\x1a#.open.GetDevicePortForwardsResponse\"+\x82\xd3\xe4\x93\x02%\x12#/device/{device_code}/port-forwards\x12\x9d\x01\n" +
 	"\x16CreatePortForwardStats\x12#.open.CreatePortForwardStatsRequest\x1a\x16.google.protobuf.Empty\"F\x82\xd3\xe4\x93\x02@:\x01*\";/device/{device_code}/port-forwards/{port_forward_id}/statsB!Z\x1fvibe_ip/internal/grpc_generatedb\x06proto3"
@@ -510,26 +587,29 @@ func file_open_proto_rawDescGZIP() []byte {
 	return file_open_proto_rawDescData
 }
 
-var file_open_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_open_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_open_proto_goTypes = []any{
-	(*ReportDeviceIPRequest)(nil),         // 0: open.ReportDeviceIPRequest
-	(*ReportDeviceIPResponse)(nil),        // 1: open.ReportDeviceIPResponse
-	(*GetDevicePortForwardsRequest)(nil),  // 2: open.GetDevicePortForwardsRequest
-	(*PortForwardRule)(nil),               // 3: open.PortForwardRule
-	(*GetDevicePortForwardsResponse)(nil), // 4: open.GetDevicePortForwardsResponse
-	(*CreatePortForwardStatsRequest)(nil), // 5: open.CreatePortForwardStatsRequest
-	(*emptypb.Empty)(nil),                 // 6: google.protobuf.Empty
+	(*GetSettingResponse)(nil),            // 0: open.GetSettingResponse
+	(*ReportDeviceIPRequest)(nil),         // 1: open.ReportDeviceIPRequest
+	(*ReportDeviceIPResponse)(nil),        // 2: open.ReportDeviceIPResponse
+	(*GetDevicePortForwardsRequest)(nil),  // 3: open.GetDevicePortForwardsRequest
+	(*PortForwardRule)(nil),               // 4: open.PortForwardRule
+	(*GetDevicePortForwardsResponse)(nil), // 5: open.GetDevicePortForwardsResponse
+	(*CreatePortForwardStatsRequest)(nil), // 6: open.CreatePortForwardStatsRequest
+	(*emptypb.Empty)(nil),                 // 7: google.protobuf.Empty
 }
 var file_open_proto_depIdxs = []int32{
-	3, // 0: open.GetDevicePortForwardsResponse.rules:type_name -> open.PortForwardRule
-	0, // 1: open.OpenService.ReportDeviceIP:input_type -> open.ReportDeviceIPRequest
-	2, // 2: open.OpenService.GetDevicePortForwards:input_type -> open.GetDevicePortForwardsRequest
-	5, // 3: open.OpenService.CreatePortForwardStats:input_type -> open.CreatePortForwardStatsRequest
-	1, // 4: open.OpenService.ReportDeviceIP:output_type -> open.ReportDeviceIPResponse
-	4, // 5: open.OpenService.GetDevicePortForwards:output_type -> open.GetDevicePortForwardsResponse
-	6, // 6: open.OpenService.CreatePortForwardStats:output_type -> google.protobuf.Empty
-	4, // [4:7] is the sub-list for method output_type
-	1, // [1:4] is the sub-list for method input_type
+	4, // 0: open.GetDevicePortForwardsResponse.rules:type_name -> open.PortForwardRule
+	7, // 1: open.OpenService.GetSetting:input_type -> google.protobuf.Empty
+	1, // 2: open.OpenService.ReportDeviceIP:input_type -> open.ReportDeviceIPRequest
+	3, // 3: open.OpenService.GetDevicePortForwards:input_type -> open.GetDevicePortForwardsRequest
+	6, // 4: open.OpenService.CreatePortForwardStats:input_type -> open.CreatePortForwardStatsRequest
+	0, // 5: open.OpenService.GetSetting:output_type -> open.GetSettingResponse
+	2, // 6: open.OpenService.ReportDeviceIP:output_type -> open.ReportDeviceIPResponse
+	5, // 7: open.OpenService.GetDevicePortForwards:output_type -> open.GetDevicePortForwardsResponse
+	7, // 8: open.OpenService.CreatePortForwardStats:output_type -> google.protobuf.Empty
+	5, // [5:9] is the sub-list for method output_type
+	1, // [1:5] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
@@ -546,7 +626,7 @@ func file_open_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_open_proto_rawDesc), len(file_open_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

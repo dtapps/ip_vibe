@@ -2281,6 +2281,53 @@
                 }
             }
         },
+        "/open/setting": {
+            "get": {
+                "description": "获取配置",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "开放"
+                ],
+                "summary": "获取配置",
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.OpenGetSettingResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/platform-configs": {
             "get": {
                 "description": "获取全部平台配置",
@@ -3078,6 +3125,279 @@
                                     }
                                 }
                             ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/schemas/{config_type}/cdn-record/{config_id}": {
+            "get": {
+                "description": "获取CDN记录Schema",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schema"
+                ],
+                "summary": "获取CDN记录Schema",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "平台类型",
+                        "name": "config_type",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "平台配置ID",
+                        "name": "config_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetCdnRecordSchemaResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/schemas/{config_type}/dns-record/{config_id}": {
+            "get": {
+                "description": "获取DNS记录Schema",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schema"
+                ],
+                "summary": "获取DNS记录Schema",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "平台类型",
+                        "name": "config_type",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "平台配置ID",
+                        "name": "config_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDnsRecordSchemaResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/schemas/{config_type}/platform-config": {
+            "get": {
+                "description": "获取平台配置Schema",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schema"
+                ],
+                "summary": "获取平台配置Schema",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "平台类型",
+                        "name": "config_type",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetPlatformConfigSchemaResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/settings": {
+            "get": {
+                "description": "获取设置",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "获取设置",
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetSettingResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "更新设置",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设置"
+                ],
+                "summary": "更新设置",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.UpdateSettingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -4992,6 +5312,21 @@
                 }
             }
         },
+        "vibe_ip_internal_types.GetCdnRecordSchemaResponse": {
+            "type": "object",
+            "properties": {
+                "fields": {
+                    "description": "字段列表",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
         "vibe_ip_internal_types.GetDeviceIpHistoryResponse": {
             "type": "object",
             "properties": {
@@ -5055,6 +5390,10 @@
                 "name": {
                     "description": "设备名称",
                     "type": "string"
+                },
+                "offline_invalid": {
+                    "description": "设备是否离线失效",
+                    "type": "boolean"
                 },
                 "webhooks": {
                     "description": "关联的 Webhook 列表",
@@ -5147,6 +5486,21 @@
                     "type": "array",
                     "items": {
                         "type": "integer"
+                    }
+                }
+            }
+        },
+        "vibe_ip_internal_types.GetDnsRecordSchemaResponse": {
+            "type": "object",
+            "properties": {
+                "fields": {
+                    "description": "字段列表",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
                     }
                 }
             }
@@ -5318,6 +5672,21 @@
                 "platform": {
                     "description": "配置平台",
                     "type": "string"
+                }
+            }
+        },
+        "vibe_ip_internal_types.GetPlatformConfigSchemaResponse": {
+            "type": "object",
+            "properties": {
+                "fields": {
+                    "description": "字段列表",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
                 }
             }
         },
@@ -5546,6 +5915,39 @@
                 }
             }
         },
+        "vibe_ip_internal_types.GetSettingResponse": {
+            "type": "object",
+            "properties": {
+                "cdn_refresh_task_time": {
+                    "description": "CDN刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）",
+                    "type": "string"
+                },
+                "device_offline_invalid_time": {
+                    "description": "设备离线失效时间（分，默认 12 分钟）",
+                    "type": "integer"
+                },
+                "dns_refresh_task_time": {
+                    "description": "DNS刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）",
+                    "type": "string"
+                },
+                "ip_report_interval_time": {
+                    "description": "IP上报间隔时间（分，默认 8-12 分钟，多个时用-分隔）",
+                    "type": "string"
+                },
+                "port_forward_reload_time": {
+                    "description": "端口转发重载时间（分，默认 30 分钟，多个时用-分隔）",
+                    "type": "string"
+                },
+                "port_forward_report_time": {
+                    "description": "端口转发统计上报时间（分，默认 8-12 分钟，多个时用-分隔）",
+                    "type": "string"
+                },
+                "ssl_refresh_task_time": {
+                    "description": "SSL刷新任务时间（时，默认 8-10 小时，多个时用-分隔）",
+                    "type": "string"
+                }
+            }
+        },
         "vibe_ip_internal_types.GetWebhookRequest": {
             "type": "object",
             "required": [
@@ -5684,6 +6086,27 @@
                 },
                 "schedule_detail": {
                     "description": "任务调度表达式详情",
+                    "type": "string"
+                }
+            }
+        },
+        "vibe_ip_internal_types.OpenGetSettingResponse": {
+            "type": "object",
+            "properties": {
+                "device_offline_invalid_time": {
+                    "description": "设备离线失效时间（分，默认 12 分钟）",
+                    "type": "integer"
+                },
+                "ip_report_interval_time": {
+                    "description": "IP上报间隔时间（分，默认 8-12 分钟，多个时用-分隔）",
+                    "type": "string"
+                },
+                "port_forward_reload_time": {
+                    "description": "端口转发重载时间（分，默认 30 分钟，多个时用-分隔）",
+                    "type": "string"
+                },
+                "port_forward_report_time": {
+                    "description": "端口转发统计上报时间（分，默认 8-12 分钟，多个时用-分隔）",
                     "type": "string"
                 }
             }
@@ -6084,6 +6507,39 @@
                     "items": {
                         "type": "integer"
                     }
+                }
+            }
+        },
+        "vibe_ip_internal_types.UpdateSettingRequest": {
+            "type": "object",
+            "properties": {
+                "cdn_refresh_task_time": {
+                    "description": "CDN刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）",
+                    "type": "string"
+                },
+                "device_offline_invalid_time": {
+                    "description": "设备离线失效时间（分，默认 12 分钟）",
+                    "type": "integer"
+                },
+                "dns_refresh_task_time": {
+                    "description": "DNS刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）",
+                    "type": "string"
+                },
+                "ip_report_interval_time": {
+                    "description": "IP上报间隔时间（分，默认 8-12 分钟，多个时用-分隔）",
+                    "type": "string"
+                },
+                "port_forward_reload_time": {
+                    "description": "端口转发重载时间（分，默认 30 分钟，多个时用-分隔）",
+                    "type": "string"
+                },
+                "port_forward_report_time": {
+                    "description": "端口转发统计上报时间（分，默认 8-12 分钟，多个时用-分隔）",
+                    "type": "string"
+                },
+                "ssl_refresh_task_time": {
+                    "description": "SSL刷新任务时间（时，默认 8-10 小时，多个时用-分隔）",
+                    "type": "string"
                 }
             }
         },

@@ -12,6 +12,35 @@ import (
 	"github.com/spf13/cast"
 )
 
+// 获取配置
+//
+//	@Description	获取配置
+//	@Summary		获取配置
+//	@Tags			开放
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Success		200	{object}	APIResponse{data=types.OpenGetSettingResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}									"参数错误"
+//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Router			/open/setting [get]
+func OpenGetSetting(c *gin.Context) {
+
+	// 创建服务
+	service := service.NewDeviceOpenService(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaEnv.DEBUG,
+	)
+
+	// 调用
+	response, err := service.GetSetting(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, response)
+}
+
 // 设备上报IP
 //
 //	@Description	设备上报IP

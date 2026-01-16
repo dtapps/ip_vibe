@@ -22,6 +22,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	OpenService_GetSetting_FullMethodName             = "/open.OpenService/GetSetting"
 	OpenService_ReportDeviceIP_FullMethodName         = "/open.OpenService/ReportDeviceIP"
 	OpenService_GetDevicePortForwards_FullMethodName  = "/open.OpenService/GetDevicePortForwards"
 	OpenService_CreatePortForwardStats_FullMethodName = "/open.OpenService/CreatePortForwardStats"
@@ -33,6 +34,8 @@ const (
 //
 // 开放
 type OpenServiceClient interface {
+	// 获取配置
+	GetSetting(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetSettingResponse, error)
 	// 设备上报IP
 	ReportDeviceIP(ctx context.Context, in *ReportDeviceIPRequest, opts ...grpc.CallOption) (*ReportDeviceIPResponse, error)
 	// 获取设备端口转发
@@ -47,6 +50,16 @@ type openServiceClient struct {
 
 func NewOpenServiceClient(cc grpc.ClientConnInterface) OpenServiceClient {
 	return &openServiceClient{cc}
+}
+
+func (c *openServiceClient) GetSetting(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetSettingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetSettingResponse)
+	err := c.cc.Invoke(ctx, OpenService_GetSetting_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *openServiceClient) ReportDeviceIP(ctx context.Context, in *ReportDeviceIPRequest, opts ...grpc.CallOption) (*ReportDeviceIPResponse, error) {
@@ -85,6 +98,8 @@ func (c *openServiceClient) CreatePortForwardStats(ctx context.Context, in *Crea
 //
 // 开放
 type OpenServiceServer interface {
+	// 获取配置
+	GetSetting(context.Context, *emptypb.Empty) (*GetSettingResponse, error)
 	// 设备上报IP
 	ReportDeviceIP(context.Context, *ReportDeviceIPRequest) (*ReportDeviceIPResponse, error)
 	// 获取设备端口转发
@@ -101,6 +116,9 @@ type OpenServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedOpenServiceServer struct{}
 
+func (UnimplementedOpenServiceServer) GetSetting(context.Context, *emptypb.Empty) (*GetSettingResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetSetting not implemented")
+}
 func (UnimplementedOpenServiceServer) ReportDeviceIP(context.Context, *ReportDeviceIPRequest) (*ReportDeviceIPResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ReportDeviceIP not implemented")
 }
@@ -129,6 +147,24 @@ func RegisterOpenServiceServer(s grpc.ServiceRegistrar, srv OpenServiceServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&OpenService_ServiceDesc, srv)
+}
+
+func _OpenService_GetSetting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OpenServiceServer).GetSetting(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OpenService_GetSetting_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OpenServiceServer).GetSetting(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _OpenService_ReportDeviceIP_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -192,6 +228,10 @@ var OpenService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "open.OpenService",
 	HandlerType: (*OpenServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetSetting",
+			Handler:    _OpenService_GetSetting_Handler,
+		},
 		{
 			MethodName: "ReportDeviceIP",
 			Handler:    _OpenService_ReportDeviceIP_Handler,

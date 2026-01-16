@@ -5,6 +5,13 @@ namespace go open
  */
 service OpenService {
     /**
+     * 获取配置
+     */
+    GetSettingResponse getSetting(
+        255: required Base base // 通用头
+    )
+
+    /**
      * 设备上报IP
      */
     ReportDeviceIPResponse reportDeviceIP(
@@ -29,10 +36,22 @@ service OpenService {
     )
 }
 
-// 定义通用头
+/**
+ * 通用头
+ */
 struct Base {
     1: required string             token,  // 认证令牌
     3: optional map<string,string> extra,  // 预留扩展
+}
+
+/**
+ * 获取配置 响应参数
+ */
+struct GetSettingResponse {
+    1: required i64    DeviceOfflineInvalidTime; // 设备离线失效时间
+    2: required string IPReportIntervalTime;     // IP上报间隔时间
+    3: required string PortForwardReloadTime;    // 端口转发重载时间
+    4: required string PortForwardReportTime;    // 端口转发统计上报时间
 }
 
 /**

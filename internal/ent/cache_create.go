@@ -75,7 +75,9 @@ func (_c *CacheCreate) Mutation() *CacheMutation {
 
 // Save creates the Cache in the database.
 func (_c *CacheCreate) Save(ctx context.Context) (*Cache, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -102,15 +104,22 @@ func (_c *CacheCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *CacheCreate) defaults() {
+func (_c *CacheCreate) defaults() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
+		if cache.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cache.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := cache.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		if cache.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cache.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cache.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

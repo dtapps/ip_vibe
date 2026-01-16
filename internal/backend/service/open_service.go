@@ -11,6 +11,7 @@ import (
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/deviceipreport"
+	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
@@ -19,6 +20,8 @@ import (
 
 // DeviceOpenService 设备服务接口
 type DeviceOpenService interface {
+	// GetSetting 获取配置
+	GetSetting(ctx context.Context) (*types.OpenGetSettingResponse, error)
 	// DeviceReportDeviceIp 处理设备上报IP的复杂事务和异步逻辑
 	DeviceReportDeviceIp(ctx context.Context, request *types.DeviceReportDeviceIpRequest) (*types.DeviceReportDeviceIpResponse, error)
 	// DevicePortForwards 查询设备的端口转发配置
@@ -44,6 +47,21 @@ func NewDeviceOpenService(db *ent.Client, logDb *ent_log.Client, debug bool) Dev
 		webhookService: webhookService,
 		debug:          debug,
 	}
+}
+
+// GetSetting 获取配置
+func (s *DeviceOpenServiceImpl) GetSetting(ctx context.Context) (*types.OpenGetSettingResponse, error) {
+
+	// 获取设置
+	// setting := db_cache.GetSetting(c, global.GvaEntDb)
+	setting := db_cache.GvaSetting
+
+	return &types.OpenGetSettingResponse{
+		DeviceOfflineInvalidTime: setting.DeviceOfflineInvalidTime,
+		IPReportIntervalTime:     setting.IPReportIntervalTime,
+		PortForwardReloadTime:    setting.PortForwardReloadTime,
+		PortForwardReportTime:    setting.PortForwardReportTime,
+	}, nil
 }
 
 // DeviceReportDeviceIp 处理设备上报IP

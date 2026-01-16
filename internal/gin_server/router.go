@@ -258,6 +258,7 @@ func (m *GinServerManager) setupApiRouter() {
 			operationlog.SourceAPI,
 		))
 		{
+			opens.GET("/setting", handlers.OpenGetSetting)                                                           // 获取配置
 			opens.POST("/device/:device_code/ip-report", handlers.DeviceReportDeviceIp)                              // 设备上报IP
 			opens.GET("/device/:device_code/port-forwards", handlers.DevicePortForwards)                             // 获取设备端口转发
 			opens.POST("/device/:device_code/port-forwards-stats/:port_forward_id", handlers.CreatePortForwardStats) // 创建端口转发统计

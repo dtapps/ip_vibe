@@ -129,6 +129,29 @@
           "OpenService"
         ]
       }
+    },
+    "/setting": {
+      "get": {
+        "summary": "获取配置",
+        "operationId": "OpenService_GetSetting",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/openGetSettingResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "OpenService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -191,6 +214,29 @@
         }
       },
       "title": "获取设备端口转发 响应参数"
+    },
+    "openGetSettingResponse": {
+      "type": "object",
+      "properties": {
+        "DeviceOfflineInvalidTime": {
+          "type": "string",
+          "format": "int64",
+          "title": "设备离线失效时间"
+        },
+        "IPReportIntervalTime": {
+          "type": "string",
+          "title": "IP上报间隔时间"
+        },
+        "PortForwardReloadTime": {
+          "type": "string",
+          "title": "端口转发重载时间"
+        },
+        "PortForwardReportTime": {
+          "type": "string",
+          "title": "端口转发统计上报时间"
+        }
+      },
+      "title": "获取配置 响应参数"
     },
     "openPortForwardRule": {
       "type": "object",

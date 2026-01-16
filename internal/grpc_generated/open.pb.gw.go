@@ -22,6 +22,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // Suppress "imported and not used" errors
@@ -34,6 +35,27 @@ var (
 	_ = utilities.NewDoubleArray
 	_ = metadata.Join
 )
+
+func request_OpenService_GetSetting_0(ctx context.Context, marshaler runtime.Marshaler, client OpenServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq emptypb.Empty
+		metadata runtime.ServerMetadata
+	)
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	msg, err := client.GetSetting(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_OpenService_GetSetting_0(ctx context.Context, marshaler runtime.Marshaler, server OpenServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq emptypb.Empty
+		metadata runtime.ServerMetadata
+	)
+	msg, err := server.GetSetting(ctx, &protoReq)
+	return msg, metadata, err
+}
 
 func request_OpenService_ReportDeviceIP_0(ctx context.Context, marshaler runtime.Marshaler, client OpenServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
@@ -168,6 +190,26 @@ func local_request_OpenService_CreatePortForwardStats_0(ctx context.Context, mar
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterOpenServiceHandlerFromEndpoint instead.
 // GRPC interceptors will not work for this type of registration. To use interceptors, you must use the "runtime.WithMiddlewares" option in the "runtime.NewServeMux" call.
 func RegisterOpenServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server OpenServiceServer) error {
+	mux.Handle(http.MethodGet, pattern_OpenService_GetSetting_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/open.OpenService/GetSetting", runtime.WithHTTPPathPattern("/setting"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_OpenService_GetSetting_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_OpenService_GetSetting_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	mux.Handle(http.MethodPost, pattern_OpenService_ReportDeviceIP_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -268,6 +310,23 @@ func RegisterOpenServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
 // "OpenServiceClient" to call the correct interceptors. This client ignores the HTTP middlewares.
 func RegisterOpenServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client OpenServiceClient) error {
+	mux.Handle(http.MethodGet, pattern_OpenService_GetSetting_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/open.OpenService/GetSetting", runtime.WithHTTPPathPattern("/setting"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_OpenService_GetSetting_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_OpenService_GetSetting_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	mux.Handle(http.MethodPost, pattern_OpenService_ReportDeviceIP_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -323,12 +382,14 @@ func RegisterOpenServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 }
 
 var (
+	pattern_OpenService_GetSetting_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"setting"}, ""))
 	pattern_OpenService_ReportDeviceIP_0         = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"device", "ip-report"}, ""))
 	pattern_OpenService_GetDevicePortForwards_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2}, []string{"device", "device_code", "port-forwards"}, ""))
 	pattern_OpenService_CreatePortForwardStats_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"device", "device_code", "port-forwards", "port_forward_id", "stats"}, ""))
 )
 
 var (
+	forward_OpenService_GetSetting_0             = runtime.ForwardResponseMessage
 	forward_OpenService_ReportDeviceIP_0         = runtime.ForwardResponseMessage
 	forward_OpenService_GetDevicePortForwards_0  = runtime.ForwardResponseMessage
 	forward_OpenService_CreatePortForwardStats_0 = runtime.ForwardResponseMessage

@@ -592,7 +592,8 @@ func (c *CacheClient) GetX(ctx context.Context, id int64) *Cache {
 
 // Hooks returns the client hooks.
 func (c *CacheClient) Hooks() []Hook {
-	return c.hooks.Cache
+	hooks := c.hooks.Cache
+	return append(hooks[:len(hooks):len(hooks)], cache.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.

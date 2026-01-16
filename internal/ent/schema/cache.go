@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 
 	"entgo.io/ent"
@@ -75,5 +76,7 @@ func (Cache) Indexes() []ent.Index {
 
 // Hooks of the Cache.
 func (Cache) Hooks() []ent.Hook {
-	return []ent.Hook{}
+	return []ent.Hook{
+		schemahook.CacheLogHook(),
+	}
 }
