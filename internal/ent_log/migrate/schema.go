@@ -121,7 +121,7 @@ var (
 		{Name: "is_error", Type: field.TypeBool, Nullable: true, Comment: "是否出错（如 5xx、4xx）", Default: false},
 		{Name: "created_at", Type: field.TypeTime, Comment: "请求时间"},
 		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "Go 版本", Default: "go1.26rc1"},
-		{Name: "plugin_version", Type: field.TypeString, Nullable: true, Comment: "插件版本", Default: "1.0.8"},
+		{Name: "plugin_version", Type: field.TypeString, Nullable: true, Comment: "插件版本", Default: "1.0.9"},
 	}
 	// HTTPLogTable holds the schema information for the "http_log" table.
 	HTTPLogTable = &schema.Table{
@@ -166,7 +166,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "source", Type: field.TypeEnum, Comment: "操作来源", Enums: []string{"unknown", "system", "task", "user", "gin", "api", "mcp", "grpc", "thrift", "dubbo", "tars"}, Default: "unknown"},
 		{Name: "op_type", Type: field.TypeEnum, Comment: "操作类型", Enums: []string{"unknown", "data_create", "data_update", "data_delete", "device_report", "ip_refresh"}, Default: "unknown"},
-		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"unknown", "cdn_record", "dns_record", "device", "device_port_forward", "domain_monitor", "ip_group", "ip_group_device", "platform_config", "ssl_record", "webhook", "webhook_subscription", "device_ip_report", "domain_monitor_history", "http_log", "operation_log", "port_forward_stats", "resty_log", "ssl_certificate_history", "webhook_history"}, Default: "unknown"},
+		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"unknown", "cache", "cdn_record", "dns_record", "device", "device_port_forward", "domain_monitor", "ip_group", "ip_group_device", "platform_config", "ssl_record", "webhook", "webhook_subscription", "device_ip_report", "domain_monitor_history", "http_log", "operation_log", "port_forward_stats", "resty_log", "ssl_certificate_history", "webhook_history"}, Default: "unknown"},
 		{Name: "obj_id", Type: field.TypeInt64, Comment: "对象主键"},
 		{Name: "old_value", Type: field.TypeJSON, Nullable: true, Comment: "旧值"},
 		{Name: "new_value", Type: field.TypeJSON, Nullable: true, Comment: "新值"},

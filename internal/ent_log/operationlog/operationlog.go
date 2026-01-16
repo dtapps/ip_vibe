@@ -143,6 +143,7 @@ const DefaultObjType = ObjTypeUnknown
 // ObjType values.
 const (
 	ObjTypeUnknown               ObjType = "unknown"
+	ObjTypeCache                 ObjType = "cache"
 	ObjTypeCdnRecord             ObjType = "cdn_record"
 	ObjTypeDNSRecord             ObjType = "dns_record"
 	ObjTypeDevice                ObjType = "device"
@@ -171,7 +172,7 @@ func (ot ObjType) String() string {
 // ObjTypeValidator is a validator for the "obj_type" field enum values. It is called by the builders before save.
 func ObjTypeValidator(ot ObjType) error {
 	switch ot {
-	case ObjTypeUnknown, ObjTypeCdnRecord, ObjTypeDNSRecord, ObjTypeDevice, ObjTypeDevicePortForward, ObjTypeDomainMonitor, ObjTypeIPGroup, ObjTypeIPGroupDevice, ObjTypePlatformConfig, ObjTypeSslRecord, ObjTypeWebhook, ObjTypeWebhookSubscription, ObjTypeDeviceIPReport, ObjTypeDomainMonitorHistory, ObjTypeHTTPLog, ObjTypeOperationLog, ObjTypePortForwardStats, ObjTypeRestyLog, ObjTypeSslCertificateHistory, ObjTypeWebhookHistory:
+	case ObjTypeUnknown, ObjTypeCache, ObjTypeCdnRecord, ObjTypeDNSRecord, ObjTypeDevice, ObjTypeDevicePortForward, ObjTypeDomainMonitor, ObjTypeIPGroup, ObjTypeIPGroupDevice, ObjTypePlatformConfig, ObjTypeSslRecord, ObjTypeWebhook, ObjTypeWebhookSubscription, ObjTypeDeviceIPReport, ObjTypeDomainMonitorHistory, ObjTypeHTTPLog, ObjTypeOperationLog, ObjTypePortForwardStats, ObjTypeRestyLog, ObjTypeSslCertificateHistory, ObjTypeWebhookHistory:
 		return nil
 	default:
 		return fmt.Errorf("operationlog: invalid enum value for obj_type field: %q", ot)

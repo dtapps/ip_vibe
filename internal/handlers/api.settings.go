@@ -65,12 +65,20 @@ func UpdateSetting(c *gin.Context) {
 
 	// 参数校验：当 DeviceOfflineInvalidTime > 0 时，IPReportIntervalTime 的最大值不能大于它
 	if requestParams.DeviceOfflineInvalidTime > 0 {
-		minInterval, _ := gocron_helper.ParseTaskTimeInterval(requestParams.IPReportIntervalTime)
-		if minInterval != 0 {
-			if minInterval > requestParams.DeviceOfflineInvalidTime {
-				errorResponse(c, http.StatusBadRequest,
-					fmt.Sprintf("设备离线失效时间（%d 分钟）必须大于等于 IP 上报最大间隔（%d 分钟），否则设备会被误判为离线",
-						requestParams.DeviceOfflineInvalidTime, minInterval))
+		minInterval, maxInterval := gocron_helper.ParseTaskTimeInterval(requestParams.IPReportIntervalTime)
+		intervalTime := minInterval
+		if maxInterval != 0 {
+			intervalTime = maxInterval
+		}
+		if intervalTime != 0 {
+			if intervalTime > requestParams.DeviceOfflineInvalidTime {
+				errorResponse(c,
+					http.StatusBadRequest,
+					fmt.Sprintf(
+						"设备离线失效时间（%d 分钟）必须大于等于 IP 上报最大间隔（%d 分钟），否则设备会被误判为离线",
+						requestParams.DeviceOfflineInvalidTime, intervalTime,
+					),
+				)
 				return
 			}
 		}

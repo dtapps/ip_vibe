@@ -72,6 +72,7 @@ func getObjID[M ent.Mutation](ctx context.Context, op ent.Op, m M, result ent.Va
 // 将 ent.Mutation 映射为 operationlog.ObjType 的字符串值
 func getObjType[M ent.Mutation](m M) string {
 	var entityToObjType = map[string]operationlog.ObjType{
+		ent.TypeCache:               operationlog.ObjTypeCache,
 		ent.TypeCDNRecord:           operationlog.ObjTypeCdnRecord,
 		ent.TypeDNSRecord:           operationlog.ObjTypeDNSRecord,
 		ent.TypeDevice:              operationlog.ObjTypeDevice,

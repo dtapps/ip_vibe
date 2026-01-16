@@ -314,6 +314,7 @@ var GetLogOpTypes = []string{
 const (
 	LogObjTypeUnknown string = "unknown" // 未知对象
 
+	LogObjTypeCache               string = "cache"                // 缓存
 	LogObjTypeCDNRecord           string = "cdn_record"           // CDN记录
 	LogObjTypeDNSRecord           string = "dns_record"           // DNS记录
 	LogObjTypeDevice              string = "device"               // 设备
@@ -340,6 +341,7 @@ const (
 var GetLogObjTypeDescriptions = map[string]string{
 	LogObjTypeUnknown: "未知对象",
 
+	LogObjTypeCache:               "缓存",
 	LogObjTypeCDNRecord:           "CDN记录",
 	LogObjTypeDNSRecord:           "DNS记录",
 	LogObjTypeDevice:              "设备",
@@ -366,6 +368,7 @@ var GetLogObjTypeDescriptions = map[string]string{
 var GetLogObjTypes = []string{
 	LogObjTypeUnknown,
 
+	LogObjTypeCache,
 	LogObjTypeCDNRecord,
 	LogObjTypeDNSRecord,
 	LogObjTypeDevice,
