@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log/slog"
 	"math/rand"
-	"strings"
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/platformconfig"
@@ -98,30 +97,6 @@ func (s *SSLUpdateTask) CalculateNextRun(sslRecord *ent.SSLRecord, now time.Time
 	return nextRun
 }
 
-// parseTaskTime 解析任务时间
-func (s *SSLUpdateTask) parseTaskTime(taskTime string, timeUnit time.Duration) (jobDuration gocron.JobDefinition, isStart bool, err error) {
-	if taskTime == "" {
-		return nil, false, fmt.Errorf("时间未配置")
-	}
-	if strings.Contains(taskTime, "-") {
-		// 解析时间范围
-		times := gostring.Split(taskTime, "-")
-		if len(times) != 2 {
-			return nil, false, fmt.Errorf("时间格式错误：%s", taskTime)
-		}
-		jobDuration = gocron.DurationRandomJob(
-			time.Duration(cast.ToInt64(times[0]))*timeUnit, // 最小间隔
-			time.Duration(cast.ToInt64(times[1]))*timeUnit, // 最大间隔
-		)
-	} else {
-		jobDuration = gocron.DurationJob(
-			time.Duration(cast.ToInt64(taskTime)) * timeUnit,
-		)
-	}
-	isStart = true
-	return
-}
-
 // StartPeriodicTask 启动周期任务
 func (s *SSLUpdateTask) StartPeriodicTask(ctx context.Context) (err error) {
 	// 判断是否存在任务
@@ -129,7 +104,7 @@ func (s *SSLUpdateTask) StartPeriodicTask(ctx context.Context) (err error) {
 		return nil
 	}
 	// 解析设置的时间
-	jobDuration, isStart, err := s.parseTaskTime(
+	jobDuration, isStart, err := gocron_helper.ParseTaskTime(
 		db_cache.GvaSetting.SSLRefreshTaskTime,
 		time.Hour,
 	)

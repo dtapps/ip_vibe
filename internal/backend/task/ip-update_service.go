@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
-	"strings"
 	"time"
 	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
@@ -29,7 +28,6 @@ import (
 	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/utils/goarray"
 	"go.dtapp.net/library/utils/gorandom"
-	"go.dtapp.net/library/utils/gostring"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -80,30 +78,6 @@ func (s *IPUpdateTask) setLogger(logger *slog.Logger) *IPUpdateTask {
 	return s
 }
 
-// parseTaskTime 解析任务时间
-func (s *IPUpdateTask) parseTaskTime(taskTime string, timeUnit time.Duration) (jobDuration gocron.JobDefinition, isStart bool, err error) {
-	if taskTime == "" {
-		return nil, false, fmt.Errorf("时间未配置")
-	}
-	if strings.Contains(taskTime, "-") {
-		// 解析时间范围
-		times := gostring.Split(taskTime, "-")
-		if len(times) != 2 {
-			return nil, false, fmt.Errorf("时间格式错误：%s", taskTime)
-		}
-		jobDuration = gocron.DurationRandomJob(
-			time.Duration(cast.ToInt64(times[0]))*timeUnit, // 最小间隔
-			time.Duration(cast.ToInt64(times[1]))*timeUnit, // 最大间隔
-		)
-	} else {
-		jobDuration = gocron.DurationJob(
-			time.Duration(cast.ToInt64(taskTime)) * timeUnit,
-		)
-	}
-	isStart = true
-	return
-}
-
 // 启动DNS任务，延迟 1 分钟添加，确保CDN先跑
 func (s *IPUpdateTask) StartDnsJob(ctx context.Context) (err error) {
 	// 判断是否存在DNS任务
@@ -113,7 +87,7 @@ func (s *IPUpdateTask) StartDnsJob(ctx context.Context) (err error) {
 	// 延时1分钟
 	time.Sleep(1 * time.Minute)
 	// 解析设置的时间
-	jobDuration, isStart, err := s.parseTaskTime(
+	jobDuration, isStart, err := gocron_helper.ParseTaskTime(
 		db_cache.GvaSetting.DNSRefreshTaskTime,
 		time.Minute,
 	)
@@ -154,7 +128,7 @@ func (s *IPUpdateTask) StartCdnJob(ctx context.Context) (err error) {
 	// 延时1分钟
 	// time.Sleep(1 * time.Minute)
 	// 解析设置的时间
-	jobDuration, isStart, err := s.parseTaskTime(
+	jobDuration, isStart, err := gocron_helper.ParseTaskTime(
 		db_cache.GvaSetting.CDNRefreshTaskTime,
 		time.Minute,
 	)

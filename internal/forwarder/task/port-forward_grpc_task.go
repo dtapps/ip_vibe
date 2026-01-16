@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net"
-	"strings"
 	"sync"
 	"time"
 	"vibe_ip/internal/forwarder/forward"
@@ -15,7 +14,6 @@ import (
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
-	"go.dtapp.net/library/utils/gostring"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -75,30 +73,6 @@ func (s *PortForwardGRPCTask) SetConfig(config *PortForwardTaskConfig) *PortForw
 	return s
 }
 
-// parseTaskTime 解析任务时间
-func (s *PortForwardGRPCTask) parseTaskTime(taskTime string, timeUnit time.Duration) (jobDuration gocron.JobDefinition, isStart bool, err error) {
-	if taskTime == "" {
-		return nil, false, fmt.Errorf("时间未配置")
-	}
-	if strings.Contains(taskTime, "-") {
-		// 解析时间范围
-		times := gostring.Split(taskTime, "-")
-		if len(times) != 2 {
-			return nil, false, fmt.Errorf("时间格式错误：%s", taskTime)
-		}
-		jobDuration = gocron.DurationRandomJob(
-			time.Duration(cast.ToInt64(times[0]))*timeUnit, // 最小间隔
-			time.Duration(cast.ToInt64(times[1]))*timeUnit, // 最大间隔
-		)
-	} else {
-		jobDuration = gocron.DurationJob(
-			time.Duration(cast.ToInt64(taskTime)) * timeUnit,
-		)
-	}
-	isStart = true
-	return
-}
-
 // StartPeriodicTask 启动周期任务
 func (s *PortForwardGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
 	// 获取设置
@@ -110,7 +84,7 @@ func (s *PortForwardGRPCTask) StartPeriodicTask(ctx context.Context) (err error)
 		return err
 	}
 	// 解析设置的时间
-	jobDuration, isStart, err := s.parseTaskTime(
+	jobDuration, isStart, err := gocron_helper.ParseTaskTime(
 		getSetting.PortForwardReloadTime,
 		time.Minute,
 	)
