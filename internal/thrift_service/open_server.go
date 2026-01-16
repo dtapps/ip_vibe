@@ -56,10 +56,9 @@ func (s *OpenServer) GetSetting(ctx context.Context, base *open.Base) (*open.Get
 
 	// 转换为 Thrift 响应
 	return &open.GetSettingResponse{
-		DeviceOfflineInvalidTime: response.DeviceOfflineInvalidTime,
-		IPReportIntervalTime:     response.IPReportIntervalTime,
-		PortForwardReloadTime:    response.PortForwardReloadTime,
-		PortForwardReportTime:    response.PortForwardReportTime,
+		IPReportIntervalTime:  response.IPReportIntervalTime,
+		PortForwardReloadTime: response.PortForwardReloadTime,
+		PortForwardReportTime: response.PortForwardReportTime,
 	}, nil
 }
 

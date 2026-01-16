@@ -50,10 +50,9 @@ func (s *OpenServer) GetSetting(ctx context.Context, req *emptypb.Empty) (*grpc_
 
 	// 转换为 gRPC 响应
 	return &grpc_generated.GetSettingResponse{
-		DeviceOfflineInvalidTime: response.DeviceOfflineInvalidTime,
-		IPReportIntervalTime:     response.IPReportIntervalTime,
-		PortForwardReloadTime:    response.PortForwardReloadTime,
-		PortForwardReportTime:    response.PortForwardReportTime,
+		IPReportIntervalTime:  response.IPReportIntervalTime,
+		PortForwardReloadTime: response.PortForwardReloadTime,
+		PortForwardReportTime: response.PortForwardReportTime,
 	}, nil
 }
 

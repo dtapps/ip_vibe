@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 	"sync"
 	"time"
 	"vibe_ip/internal/forwarder/forward"
@@ -13,9 +14,11 @@ import (
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
+	"go.dtapp.net/library/utils/gostring"
 	"go.dtapp.net/library/utils/gotime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // StatsReportGRPCTask 统计上报任务
@@ -72,17 +75,60 @@ func (s *StatsReportGRPCTask) SetConfig(config *PortForwardTaskConfig) *StatsRep
 	return s
 }
 
+// parseTaskTime 解析任务时间
+func (s *StatsReportGRPCTask) parseTaskTime(taskTime string, timeUnit time.Duration) (jobDuration gocron.JobDefinition, isStart bool, err error) {
+	if taskTime == "" {
+		return nil, false, fmt.Errorf("时间未配置")
+	}
+	if strings.Contains(taskTime, "-") {
+		// 解析时间范围
+		times := gostring.Split(taskTime, "-")
+		if len(times) != 2 {
+			return nil, false, fmt.Errorf("时间格式错误：%s", taskTime)
+		}
+		jobDuration = gocron.DurationRandomJob(
+			time.Duration(cast.ToInt64(times[0]))*timeUnit, // 最小间隔
+			time.Duration(cast.ToInt64(times[1]))*timeUnit, // 最大间隔
+		)
+	} else {
+		jobDuration = gocron.DurationJob(
+			time.Duration(cast.ToInt64(taskTime)) * timeUnit,
+		)
+	}
+	isStart = true
+	return
+}
+
 // StartPeriodicTask 启动周期任务
 func (s *StatsReportGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
+	// 获取设置
+	getSetting, err := s.openServiceClient.GetSetting(ctx, &emptypb.Empty{})
+	if err != nil {
+		s.logger.ErrorContext(ctx, "获取设置",
+			slog.Any("err", err),
+		)
+		return err
+	}
+	// 解析设置的时间
+	jobDuration, isStart, err := s.parseTaskTime(
+		getSetting.PortForwardReportTime,
+		time.Minute,
+	)
+	if !isStart {
+		return nil
+	}
+	if err != nil {
+		s.logger.ErrorContext(ctx, "解析设置的时间",
+			slog.Any("err", err),
+		)
+		return err
+	}
 	// 确保只创建一次任务
 	s.jobOne.Do(func() {
 		// 创建周期任务
 		s.job, err = s.cron.NewJob(
-			gocron.DurationRandomJob(
-				8*time.Minute,  // 最小间隔 8 分钟
-				12*time.Minute, // 最大间隔 12 分钟
-			),
-			gocron.NewTask(s.RunPeriodicTask),                                           // 执行任务
+			jobDuration,
+			gocron.NewTask(s.RunPeriodicTask), // 执行任务
 			gocron.WithSingletonMode(gocron.LimitModeReschedule),                        // 单例模式
 			gocron.WithStartAt(gocron.WithStartDateTime(time.Now().Add(1*time.Minute))), // 首次延迟1分钟
 			gocron.WithName(s.taskName),                                                 // 任务名称
@@ -101,7 +147,7 @@ func (s *StatsReportGRPCTask) StartPeriodicTask(ctx context.Context) (err error)
 	}
 
 	s.logger.InfoContext(ctx, s.taskName+"任务已启动",
-		slog.String("执行间隔", "8-12分钟随机"),
+		slog.String("执行间隔", getSetting.PortForwardReportTime),
 	)
 	return nil
 }

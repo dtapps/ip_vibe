@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net"
+	"strings"
 	"sync"
 	"time"
 	"vibe_ip/internal/forwarder/forward"
@@ -15,6 +16,7 @@ import (
 	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
+	"go.dtapp.net/library/utils/gostring"
 )
 
 // PortForwardThriftTask  端口转发任务
@@ -63,16 +65,60 @@ func (s *PortForwardThriftTask) SetConfig(config *PortForwardTaskConfig) *PortFo
 	return s
 }
 
+// parseTaskTime 解析任务时间
+func (s *PortForwardThriftTask) parseTaskTime(taskTime string, timeUnit time.Duration) (jobDuration gocron.JobDefinition, isStart bool, err error) {
+	if taskTime == "" {
+		return nil, false, fmt.Errorf("时间未配置")
+	}
+	if strings.Contains(taskTime, "-") {
+		// 解析时间范围
+		times := gostring.Split(taskTime, "-")
+		if len(times) != 2 {
+			return nil, false, fmt.Errorf("时间格式错误：%s", taskTime)
+		}
+		jobDuration = gocron.DurationRandomJob(
+			time.Duration(cast.ToInt64(times[0]))*timeUnit, // 最小间隔
+			time.Duration(cast.ToInt64(times[1]))*timeUnit, // 最大间隔
+		)
+	} else {
+		jobDuration = gocron.DurationJob(
+			time.Duration(cast.ToInt64(taskTime)) * timeUnit,
+		)
+	}
+	isStart = true
+	return
+}
+
 // StartPeriodicTask 启动周期任务
 func (s *PortForwardThriftTask) StartPeriodicTask(ctx context.Context) (err error) {
+	// 获取设置
+	getSetting, err := s.openServiceClient.GetSetting(ctx, s.clientBase)
+	if err != nil {
+		s.logger.ErrorContext(ctx, "获取设置",
+			slog.Any("err", err),
+		)
+		return err
+	}
+	// 解析设置的时间
+	jobDuration, isStart, err := s.parseTaskTime(
+		getSetting.PortForwardReloadTime,
+		time.Minute,
+	)
+	if !isStart {
+		return nil
+	}
+	if err != nil {
+		s.logger.ErrorContext(ctx, "解析设置的时间",
+			slog.Any("err", err),
+		)
+		return err
+	}
 	// 确保只创建一次任务
 	s.jobOne.Do(func() {
 		// 创建周期任务
 		s.job, err = s.cron.NewJob(
-			gocron.DurationJob(
-				30*time.Minute, // 每30分钟执行一次
-			),
-			gocron.NewTask(s.RunPeriodicTask),                    // 执行任务
+			jobDuration,
+			gocron.NewTask(s.RunPeriodicTask), // 执行任务
 			gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 			gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
 			gocron.WithName(s.taskName),                          // 任务名称
@@ -91,7 +137,7 @@ func (s *PortForwardThriftTask) StartPeriodicTask(ctx context.Context) (err erro
 	}
 
 	s.logger.InfoContext(ctx, s.taskName+"任务已启动",
-		slog.String("执行间隔", "30分钟"),
+		slog.String("执行间隔", getSetting.PortForwardReloadTime),
 	)
 	return nil
 }

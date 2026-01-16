@@ -31,8 +31,8 @@ var _ = regexp.MatchString
 // 通用头
 // 
 // Attributes:
-//  - Token
-//  - Extra
+//  - Token: 认证令牌
+//  - Extra: 预留扩展
 // 
 type Base struct {
 	Token string `thrift:"token,1,required" db:"token" json:"token"`
@@ -251,26 +251,18 @@ func (p *Base) Validate() error {
 // 获取配置 响应参数
 // 
 // Attributes:
-//  - DeviceOfflineInvalidTime
-//  - IPReportIntervalTime
-//  - PortForwardReloadTime
-//  - PortForwardReportTime
+//  - IPReportIntervalTime: IP上报间隔时间
+//  - PortForwardReloadTime: 端口转发重载时间
+//  - PortForwardReportTime: 端口转发统计上报时间
 // 
 type GetSettingResponse struct {
-	DeviceOfflineInvalidTime int64 `thrift:"DeviceOfflineInvalidTime,1,required" db:"DeviceOfflineInvalidTime" json:"DeviceOfflineInvalidTime"`
-	IPReportIntervalTime string `thrift:"IPReportIntervalTime,2,required" db:"IPReportIntervalTime" json:"IPReportIntervalTime"`
-	PortForwardReloadTime string `thrift:"PortForwardReloadTime,3,required" db:"PortForwardReloadTime" json:"PortForwardReloadTime"`
-	PortForwardReportTime string `thrift:"PortForwardReportTime,4,required" db:"PortForwardReportTime" json:"PortForwardReportTime"`
+	IPReportIntervalTime string `thrift:"IPReportIntervalTime,1,required" db:"IPReportIntervalTime" json:"IPReportIntervalTime"`
+	PortForwardReloadTime string `thrift:"PortForwardReloadTime,2,required" db:"PortForwardReloadTime" json:"PortForwardReloadTime"`
+	PortForwardReportTime string `thrift:"PortForwardReportTime,3,required" db:"PortForwardReportTime" json:"PortForwardReportTime"`
 }
 
 func NewGetSettingResponse() *GetSettingResponse {
 	return &GetSettingResponse{}
-}
-
-
-
-func (p *GetSettingResponse) GetDeviceOfflineInvalidTime() int64 {
-	return p.DeviceOfflineInvalidTime
 }
 
 
@@ -296,7 +288,6 @@ func (p *GetSettingResponse) Read(ctx context.Context, iprot thrift.TProtocol) e
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
 
-	var issetDeviceOfflineInvalidTime bool = false;
 	var issetIPReportIntervalTime bool = false;
 	var issetPortForwardReloadTime bool = false;
 	var issetPortForwardReportTime bool = false;
@@ -311,11 +302,11 @@ func (p *GetSettingResponse) Read(ctx context.Context, iprot thrift.TProtocol) e
 		}
 		switch fieldId {
 		case 1:
-			if fieldTypeId == thrift.I64 {
+			if fieldTypeId == thrift.STRING {
 				if err := p.ReadField1(ctx, iprot); err != nil {
 					return err
 				}
-				issetDeviceOfflineInvalidTime = true
+				issetIPReportIntervalTime = true
 			} else {
 				if err := iprot.Skip(ctx, fieldTypeId); err != nil {
 					return err
@@ -326,7 +317,7 @@ func (p *GetSettingResponse) Read(ctx context.Context, iprot thrift.TProtocol) e
 				if err := p.ReadField2(ctx, iprot); err != nil {
 					return err
 				}
-				issetIPReportIntervalTime = true
+				issetPortForwardReloadTime = true
 			} else {
 				if err := iprot.Skip(ctx, fieldTypeId); err != nil {
 					return err
@@ -335,17 +326,6 @@ func (p *GetSettingResponse) Read(ctx context.Context, iprot thrift.TProtocol) e
 		case 3:
 			if fieldTypeId == thrift.STRING {
 				if err := p.ReadField3(ctx, iprot); err != nil {
-					return err
-				}
-				issetPortForwardReloadTime = true
-			} else {
-				if err := iprot.Skip(ctx, fieldTypeId); err != nil {
-					return err
-				}
-			}
-		case 4:
-			if fieldTypeId == thrift.STRING {
-				if err := p.ReadField4(ctx, iprot); err != nil {
 					return err
 				}
 				issetPortForwardReportTime = true
@@ -366,9 +346,6 @@ func (p *GetSettingResponse) Read(ctx context.Context, iprot thrift.TProtocol) e
 	if err := iprot.ReadStructEnd(ctx); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 	}
-	if !issetDeviceOfflineInvalidTime{
-		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field DeviceOfflineInvalidTime is not set"))
-	}
 	if !issetIPReportIntervalTime{
 		return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field IPReportIntervalTime is not set"))
 	}
@@ -382,10 +359,10 @@ func (p *GetSettingResponse) Read(ctx context.Context, iprot thrift.TProtocol) e
 }
 
 func (p *GetSettingResponse) ReadField1(ctx context.Context, iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI64(ctx); err != nil {
+	if v, err := iprot.ReadString(ctx); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
-		p.DeviceOfflineInvalidTime = v
+		p.IPReportIntervalTime = v
 	}
 	return nil
 }
@@ -394,7 +371,7 @@ func (p *GetSettingResponse) ReadField2(ctx context.Context, iprot thrift.TProto
 	if v, err := iprot.ReadString(ctx); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
-		p.IPReportIntervalTime = v
+		p.PortForwardReloadTime = v
 	}
 	return nil
 }
@@ -402,15 +379,6 @@ func (p *GetSettingResponse) ReadField2(ctx context.Context, iprot thrift.TProto
 func (p *GetSettingResponse) ReadField3(ctx context.Context, iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(ctx); err != nil {
 		return thrift.PrependError("error reading field 3: ", err)
-	} else {
-		p.PortForwardReloadTime = v
-	}
-	return nil
-}
-
-func (p *GetSettingResponse) ReadField4(ctx context.Context, iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadString(ctx); err != nil {
-		return thrift.PrependError("error reading field 4: ", err)
 	} else {
 		p.PortForwardReportTime = v
 	}
@@ -425,7 +393,6 @@ func (p *GetSettingResponse) Write(ctx context.Context, oprot thrift.TProtocol) 
 		if err := p.writeField1(ctx, oprot); err != nil { return err }
 		if err := p.writeField2(ctx, oprot); err != nil { return err }
 		if err := p.writeField3(ctx, oprot); err != nil { return err }
-		if err := p.writeField4(ctx, oprot); err != nil { return err }
 	}
 	if err := oprot.WriteFieldStop(ctx); err != nil {
 		return thrift.PrependError("write field stop error: ", err)
@@ -437,53 +404,40 @@ func (p *GetSettingResponse) Write(ctx context.Context, oprot thrift.TProtocol) 
 }
 
 func (p *GetSettingResponse) writeField1(ctx context.Context, oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin(ctx, "DeviceOfflineInvalidTime", thrift.I64, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:DeviceOfflineInvalidTime: ", p), err)
+	if err := oprot.WriteFieldBegin(ctx, "IPReportIntervalTime", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:IPReportIntervalTime: ", p), err)
 	}
-	if err := oprot.WriteI64(ctx, int64(p.DeviceOfflineInvalidTime)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.DeviceOfflineInvalidTime (1) field write error: ", p), err)
+	if err := oprot.WriteString(ctx, string(p.IPReportIntervalTime)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.IPReportIntervalTime (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(ctx); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:DeviceOfflineInvalidTime: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:IPReportIntervalTime: ", p), err)
 	}
 	return err
 }
 
 func (p *GetSettingResponse) writeField2(ctx context.Context, oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin(ctx, "IPReportIntervalTime", thrift.STRING, 2); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:IPReportIntervalTime: ", p), err)
+	if err := oprot.WriteFieldBegin(ctx, "PortForwardReloadTime", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:PortForwardReloadTime: ", p), err)
 	}
-	if err := oprot.WriteString(ctx, string(p.IPReportIntervalTime)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.IPReportIntervalTime (2) field write error: ", p), err)
+	if err := oprot.WriteString(ctx, string(p.PortForwardReloadTime)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.PortForwardReloadTime (2) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(ctx); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:IPReportIntervalTime: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:PortForwardReloadTime: ", p), err)
 	}
 	return err
 }
 
 func (p *GetSettingResponse) writeField3(ctx context.Context, oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin(ctx, "PortForwardReloadTime", thrift.STRING, 3); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:PortForwardReloadTime: ", p), err)
-	}
-	if err := oprot.WriteString(ctx, string(p.PortForwardReloadTime)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.PortForwardReloadTime (3) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(ctx); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:PortForwardReloadTime: ", p), err)
-	}
-	return err
-}
-
-func (p *GetSettingResponse) writeField4(ctx context.Context, oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin(ctx, "PortForwardReportTime", thrift.STRING, 4); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:PortForwardReportTime: ", p), err)
+	if err := oprot.WriteFieldBegin(ctx, "PortForwardReportTime", thrift.STRING, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:PortForwardReportTime: ", p), err)
 	}
 	if err := oprot.WriteString(ctx, string(p.PortForwardReportTime)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.PortForwardReportTime (4) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.PortForwardReportTime (3) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(ctx); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 4:PortForwardReportTime: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:PortForwardReportTime: ", p), err)
 	}
 	return err
 }
@@ -494,7 +448,6 @@ func (p *GetSettingResponse) Equals(other *GetSettingResponse) bool {
 	} else if p == nil || other == nil {
 		return false
 	}
-	if p.DeviceOfflineInvalidTime != other.DeviceOfflineInvalidTime { return false }
 	if p.IPReportIntervalTime != other.IPReportIntervalTime { return false }
 	if p.PortForwardReloadTime != other.PortForwardReloadTime { return false }
 	if p.PortForwardReportTime != other.PortForwardReportTime { return false }
@@ -528,10 +481,10 @@ func (p *GetSettingResponse) Validate() error {
 // 设备上报IP 请求
 // 
 // Attributes:
-//  - DeviceCode
-//  - DeviceName
-//  - Ipv4Addr
-//  - Ipv6Addr
+//  - DeviceCode: 设备编码
+//  - DeviceName: 设备名称
+//  - Ipv4Addr: IP地址V4
+//  - Ipv6Addr: IP地址V6
 // 
 type ReportDeviceIPRequest struct {
 	DeviceCode string `thrift:"device_code,1,required" db:"device_code" json:"device_code"`
@@ -832,7 +785,7 @@ func (p *ReportDeviceIPRequest) Validate() error {
 // 设备上报IP 响应
 // 
 // Attributes:
-//  - Msg
+//  - Msg: 消息
 // 
 type ReportDeviceIPResponse struct {
 	Msg *string `thrift:"msg,1" db:"msg" json:"msg,omitempty"`
@@ -977,7 +930,7 @@ func (p *ReportDeviceIPResponse) Validate() error {
 // 获取设备端口转发 请求
 // 
 // Attributes:
-//  - DeviceCode
+//  - DeviceCode: 设备编码
 // 
 type GetDevicePortForwardsRequest struct {
 	DeviceCode string `thrift:"device_code,1,required" db:"device_code" json:"device_code"`
@@ -1113,12 +1066,12 @@ func (p *GetDevicePortForwardsRequest) Validate() error {
 // 端口转发规则
 // 
 // Attributes:
-//  - ID
-//  - LocalPort
-//  - RemoteHost
-//  - RemotePort
-//  - Protocols
-//  - AutoForward
+//  - ID: 设备端口转发序号
+//  - LocalPort: 本地监听端口
+//  - RemoteHost: 远程目标地址
+//  - RemotePort: 远程目标端口
+//  - Protocols: 协议列表，支持 tcp4, tcp6, udp4, udp6
+//  - AutoForward: 防火墙自动放行
 // 
 type PortForwardRule struct {
 	ID int64 `thrift:"id,1" db:"id" json:"id"`
@@ -1479,7 +1432,7 @@ func (p *PortForwardRule) Validate() error {
 // 获取设备端口转发 响应
 // 
 // Attributes:
-//  - Rules
+//  - Rules: 端口转发规则列表
 // 
 type GetDevicePortForwardsResponse struct {
 	Rules []*PortForwardRule `thrift:"rules,1" db:"rules" json:"rules,omitempty"`
@@ -1640,16 +1593,16 @@ func (p *GetDevicePortForwardsResponse) Validate() error {
 // 创建端口转发统计信息 请求
 // 
 // Attributes:
-//  - DeviceCode
-//  - PortForwardID
-//  - StartTime
-//  - ActiveConn
-//  - TotalConn
-//  - BytesIn
-//  - BytesOut
-//  - UDPPacketsIn
-//  - UDPPacketsOut
-//  - Errors
+//  - DeviceCode: 设备编码
+//  - PortForwardID: 端口转发ID
+//  - StartTime: 转发实例启动时间 (UTC)
+//  - ActiveConn: TCP 活跃连接 / UDP session
+//  - TotalConn: TCP 累计连接
+//  - BytesIn: 入站流量
+//  - BytesOut: 出站流量
+//  - UDPPacketsIn: 入站 UDP 包数
+//  - UDPPacketsOut: 出站 UDP 包数
+//  - Errors: 错误数
 // 
 type CreatePortForwardStatsRequest struct {
 	DeviceCode string `thrift:"device_code,1,required" db:"device_code" json:"device_code"`

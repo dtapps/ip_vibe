@@ -57,10 +57,9 @@ func (s *DeviceOpenServiceImpl) GetSetting(ctx context.Context) (*types.OpenGetS
 	setting := db_cache.GvaSetting
 
 	return &types.OpenGetSettingResponse{
-		DeviceOfflineInvalidTime: setting.DeviceOfflineInvalidTime,
-		IPReportIntervalTime:     setting.IPReportIntervalTime,
-		PortForwardReloadTime:    setting.PortForwardReloadTime,
-		PortForwardReportTime:    setting.PortForwardReportTime,
+		IPReportIntervalTime:  setting.IPReportIntervalTime,
+		PortForwardReloadTime: setting.PortForwardReloadTime,
+		PortForwardReportTime: setting.PortForwardReportTime,
 	}, nil
 }
 

@@ -98,6 +98,30 @@ func (s *SSLUpdateTask) CalculateNextRun(sslRecord *ent.SSLRecord, now time.Time
 	return nextRun
 }
 
+// parseTaskTime 解析任务时间
+func (s *SSLUpdateTask) parseTaskTime(taskTime string, timeUnit time.Duration) (jobDuration gocron.JobDefinition, isStart bool, err error) {
+	if taskTime == "" {
+		return nil, false, fmt.Errorf("时间未配置")
+	}
+	if strings.Contains(taskTime, "-") {
+		// 解析时间范围
+		times := gostring.Split(taskTime, "-")
+		if len(times) != 2 {
+			return nil, false, fmt.Errorf("时间格式错误：%s", taskTime)
+		}
+		jobDuration = gocron.DurationRandomJob(
+			time.Duration(cast.ToInt64(times[0]))*timeUnit, // 最小间隔
+			time.Duration(cast.ToInt64(times[1]))*timeUnit, // 最大间隔
+		)
+	} else {
+		jobDuration = gocron.DurationJob(
+			time.Duration(cast.ToInt64(taskTime)) * timeUnit,
+		)
+	}
+	isStart = true
+	return
+}
+
 // StartPeriodicTask 启动周期任务
 func (s *SSLUpdateTask) StartPeriodicTask(ctx context.Context) (err error) {
 	// 判断是否存在任务
@@ -105,28 +129,22 @@ func (s *SSLUpdateTask) StartPeriodicTask(ctx context.Context) (err error) {
 		return nil
 	}
 	// 解析设置的时间
-	var jobDuratio gocron.JobDefinition
-	taskTime := db_cache.GvaSetting.SSLRefreshTaskTime
-	if taskTime == "" {
-		s.logger.ErrorContext(ctx, "SSL刷新任务时间未配置")
+	jobDuration, isStart, err := s.parseTaskTime(
+		db_cache.GvaSetting.SSLRefreshTaskTime,
+		time.Hour,
+	)
+	if !isStart {
 		return nil
 	}
-	if strings.Contains(taskTime, "-") {
-		// 解析时间范围
-		times := gostring.Split(taskTime, "-")
-		if len(times) != 2 {
-			return fmt.Errorf("SSL刷新任务时间格式错误：%s", taskTime)
-		}
-		jobDuratio = gocron.DurationRandomJob(
-			time.Duration(cast.ToInt64(times[0]))*time.Hour, // 最小间隔
-			time.Duration(cast.ToInt64(times[1]))*time.Hour, // 最大间隔
+	if err != nil {
+		s.logger.ErrorContext(ctx, "解析设置的时间",
+			slog.Any("err", err),
 		)
-	} else {
-		jobDuratio = gocron.DurationJob(time.Duration(cast.ToInt64(taskTime)) * time.Hour)
+		return err
 	}
 	// 创建周期任务
 	s.job, err = s.cron.NewJob(
-		jobDuratio,
+		jobDuration,
 		gocron.NewTask(s.RunPeriodicTask),
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithName(s.taskName),                          // 任务名称
@@ -141,7 +159,7 @@ func (s *SSLUpdateTask) StartPeriodicTask(ctx context.Context) (err error) {
 	}
 
 	s.logger.InfoContext(ctx, s.taskName+"任务已启动",
-		slog.String("执行间隔", fmt.Sprintf("%s小时", taskTime)),
+		slog.String("执行间隔", fmt.Sprintf("%s小时", db_cache.GvaSetting.SSLRefreshTaskTime)),
 	)
 	return nil
 }

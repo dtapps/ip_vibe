@@ -50,10 +50,9 @@ service OpenService {
 
 // 获取配置 响应参数
 message GetSettingResponse {
-  int64 DeviceOfflineInvalidTime = 1;                   // 设备离线失效时间
-  string IPReportIntervalTime = 2;                     // IP上报间隔时间
-  string PortForwardReloadTime = 3;                   // 端口转发重载时间
-  string PortForwardReportTime = 4;                   // 端口转发统计上报时间
+  string IPReportIntervalTime = 1;                     // IP上报间隔时间
+  string PortForwardReloadTime = 2;                   // 端口转发重载时间
+  string PortForwardReportTime = 3;                   // 端口转发统计上报时间
 }
 
 // 设备上报IP 请求参数

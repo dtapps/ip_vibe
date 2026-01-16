@@ -80,6 +80,30 @@ func (s *IPUpdateTask) setLogger(logger *slog.Logger) *IPUpdateTask {
 	return s
 }
 
+// parseTaskTime 解析任务时间
+func (s *IPUpdateTask) parseTaskTime(taskTime string, timeUnit time.Duration) (jobDuration gocron.JobDefinition, isStart bool, err error) {
+	if taskTime == "" {
+		return nil, false, fmt.Errorf("时间未配置")
+	}
+	if strings.Contains(taskTime, "-") {
+		// 解析时间范围
+		times := gostring.Split(taskTime, "-")
+		if len(times) != 2 {
+			return nil, false, fmt.Errorf("时间格式错误：%s", taskTime)
+		}
+		jobDuration = gocron.DurationRandomJob(
+			time.Duration(cast.ToInt64(times[0]))*timeUnit, // 最小间隔
+			time.Duration(cast.ToInt64(times[1]))*timeUnit, // 最大间隔
+		)
+	} else {
+		jobDuration = gocron.DurationJob(
+			time.Duration(cast.ToInt64(taskTime)) * timeUnit,
+		)
+	}
+	isStart = true
+	return
+}
+
 // 启动DNS任务，延迟 1 分钟添加，确保CDN先跑
 func (s *IPUpdateTask) StartDnsJob(ctx context.Context) (err error) {
 	// 判断是否存在DNS任务
@@ -89,28 +113,22 @@ func (s *IPUpdateTask) StartDnsJob(ctx context.Context) (err error) {
 	// 延时1分钟
 	time.Sleep(1 * time.Minute)
 	// 解析设置的时间
-	var jobDuratio gocron.JobDefinition
-	taskTime := db_cache.GvaSetting.DNSRefreshTaskTime
-	if taskTime == "" {
-		s.logger.ErrorContext(ctx, "DNS刷新任务时间未配置")
+	jobDuration, isStart, err := s.parseTaskTime(
+		db_cache.GvaSetting.DNSRefreshTaskTime,
+		time.Minute,
+	)
+	if !isStart {
 		return nil
 	}
-	if strings.Contains(taskTime, "-") {
-		// 解析时间范围
-		times := gostring.Split(taskTime, "-")
-		if len(times) != 2 {
-			return fmt.Errorf("DNS刷新任务时间格式错误：%s", taskTime)
-		}
-		jobDuratio = gocron.DurationRandomJob(
-			time.Duration(cast.ToInt64(times[0]))*time.Minute, // 最小间隔
-			time.Duration(cast.ToInt64(times[1]))*time.Minute, // 最大间隔
+	if err != nil {
+		s.logger.ErrorContext(ctx, "解析设置的时间",
+			slog.Any("err", err),
 		)
-	} else {
-		jobDuratio = gocron.DurationJob(time.Duration(cast.ToInt64(taskTime)) * time.Minute)
+		return err
 	}
 	// 创建周期任务
 	s.dnsJob, err = s.cron.NewJob(
-		jobDuratio,
+		jobDuration,
 		gocron.NewTask(s.RunDnsTask), // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始
@@ -136,28 +154,22 @@ func (s *IPUpdateTask) StartCdnJob(ctx context.Context) (err error) {
 	// 延时1分钟
 	// time.Sleep(1 * time.Minute)
 	// 解析设置的时间
-	var jobDuratio gocron.JobDefinition
-	taskTime := db_cache.GvaSetting.CDNRefreshTaskTime
-	if taskTime == "" {
-		s.logger.ErrorContext(ctx, "CDN刷新任务时间未配置")
+	jobDuration, isStart, err := s.parseTaskTime(
+		db_cache.GvaSetting.CDNRefreshTaskTime,
+		time.Minute,
+	)
+	if !isStart {
 		return nil
 	}
-	if strings.Contains(taskTime, "-") {
-		// 解析时间范围
-		times := gostring.Split(taskTime, "-")
-		if len(times) != 2 {
-			return fmt.Errorf("CDN刷新任务时间格式错误：%s", taskTime)
-		}
-		jobDuratio = gocron.DurationRandomJob(
-			time.Duration(cast.ToInt64(times[0]))*time.Minute, // 最小间隔
-			time.Duration(cast.ToInt64(times[1]))*time.Minute, // 最大间隔
+	if err != nil {
+		s.logger.ErrorContext(ctx, "解析设置的时间",
+			slog.Any("err", err),
 		)
-	} else {
-		jobDuratio = gocron.DurationJob(time.Duration(cast.ToInt64(taskTime)) * time.Minute)
+		return err
 	}
 	// 创建周期任务
 	s.cdnJob, err = s.cron.NewJob(
-		jobDuratio,
+		jobDuration,
 		gocron.NewTask(s.RunCdnTask), // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithStartAt(gocron.WithStartImmediately()),    // 立即开始

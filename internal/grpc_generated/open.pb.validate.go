@@ -57,8 +57,6 @@ func (m *GetSettingResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for DeviceOfflineInvalidTime
-
 	// no validation rules for IPReportIntervalTime
 
 	// no validation rules for PortForwardReloadTime

@@ -28,13 +28,12 @@ const (
 
 // 获取配置 响应参数
 type GetSettingResponse struct {
-	state                    protoimpl.MessageState `protogen:"open.v1"`
-	DeviceOfflineInvalidTime int64                  `protobuf:"varint,1,opt,name=DeviceOfflineInvalidTime,proto3" json:"DeviceOfflineInvalidTime,omitempty"` // 设备离线失效时间
-	IPReportIntervalTime     string                 `protobuf:"bytes,2,opt,name=IPReportIntervalTime,proto3" json:"IPReportIntervalTime,omitempty"`          // IP上报间隔时间
-	PortForwardReloadTime    string                 `protobuf:"bytes,3,opt,name=PortForwardReloadTime,proto3" json:"PortForwardReloadTime,omitempty"`        // 端口转发重载时间
-	PortForwardReportTime    string                 `protobuf:"bytes,4,opt,name=PortForwardReportTime,proto3" json:"PortForwardReportTime,omitempty"`        // 端口转发统计上报时间
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	IPReportIntervalTime  string                 `protobuf:"bytes,1,opt,name=IPReportIntervalTime,proto3" json:"IPReportIntervalTime,omitempty"`   // IP上报间隔时间
+	PortForwardReloadTime string                 `protobuf:"bytes,2,opt,name=PortForwardReloadTime,proto3" json:"PortForwardReloadTime,omitempty"` // 端口转发重载时间
+	PortForwardReportTime string                 `protobuf:"bytes,3,opt,name=PortForwardReportTime,proto3" json:"PortForwardReportTime,omitempty"` // 端口转发统计上报时间
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *GetSettingResponse) Reset() {
@@ -65,13 +64,6 @@ func (x *GetSettingResponse) ProtoReflect() protoreflect.Message {
 // Deprecated: Use GetSettingResponse.ProtoReflect.Descriptor instead.
 func (*GetSettingResponse) Descriptor() ([]byte, []int) {
 	return file_open_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *GetSettingResponse) GetDeviceOfflineInvalidTime() int64 {
-	if x != nil {
-		return x.DeviceOfflineInvalidTime
-	}
-	return 0
 }
 
 func (x *GetSettingResponse) GetIPReportIntervalTime() string {
@@ -521,12 +513,11 @@ var File_open_proto protoreflect.FileDescriptor
 const file_open_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"open.proto\x12\x04open\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x17validate/validate.proto\"\xf0\x01\n" +
-	"\x12GetSettingResponse\x12:\n" +
-	"\x18DeviceOfflineInvalidTime\x18\x01 \x01(\x03R\x18DeviceOfflineInvalidTime\x122\n" +
-	"\x14IPReportIntervalTime\x18\x02 \x01(\tR\x14IPReportIntervalTime\x124\n" +
-	"\x15PortForwardReloadTime\x18\x03 \x01(\tR\x15PortForwardReloadTime\x124\n" +
-	"\x15PortForwardReportTime\x18\x04 \x01(\tR\x15PortForwardReportTime\"\xb0\x01\n" +
+	"open.proto\x12\x04open\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x17validate/validate.proto\"\xb4\x01\n" +
+	"\x12GetSettingResponse\x122\n" +
+	"\x14IPReportIntervalTime\x18\x01 \x01(\tR\x14IPReportIntervalTime\x124\n" +
+	"\x15PortForwardReloadTime\x18\x02 \x01(\tR\x15PortForwardReloadTime\x124\n" +
+	"\x15PortForwardReportTime\x18\x03 \x01(\tR\x15PortForwardReportTime\"\xb0\x01\n" +
 	"\x15ReportDeviceIPRequest\x12<\n" +
 	"\vdevice_code\x18\x01 \x01(\tB\x1b\xfaB\x18r\x16\x10\x01\x1822\x10^[a-zA-Z0-9_-]+$R\n" +
 	"deviceCode\x12\x1f\n" +

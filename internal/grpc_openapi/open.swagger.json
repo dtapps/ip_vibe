@@ -218,11 +218,6 @@
     "openGetSettingResponse": {
       "type": "object",
       "properties": {
-        "DeviceOfflineInvalidTime": {
-          "type": "string",
-          "format": "int64",
-          "title": "设备离线失效时间"
-        },
         "IPReportIntervalTime": {
           "type": "string",
           "title": "IP上报间隔时间"

@@ -6099,10 +6099,6 @@ const docTemplate = `{
         "vibe_ip_internal_types.OpenGetSettingResponse": {
             "type": "object",
             "properties": {
-                "device_offline_invalid_time": {
-                    "description": "设备离线失效时间（分，默认 12 分钟）",
-                    "type": "integer"
-                },
                 "ip_report_interval_time": {
                     "description": "IP上报间隔时间（分，默认 8-12 分钟，多个时用-分隔）",
                     "type": "string"
