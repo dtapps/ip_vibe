@@ -123,6 +123,43 @@ const PLATFORM_SCHEMA = {
       },
     ],
   },
+  tencent_cdn: {
+    label: "腾讯云 CDN",
+    fields: [
+      {
+        id: "secret_id",
+        label: "Secret ID",
+        type: "text",
+        placeholder: "AKID...",
+        required: true,
+      },
+      {
+        id: "secret_key",
+        label: "Secret Key",
+        type: "password",
+        placeholder: "Secret Key...",
+        required: true,
+      },
+      [
+        {
+          id: "domain_name",
+          label: "域名名称",
+          type: "text",
+          placeholder: "example.com",
+          required: true,
+          pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
+          title: "格式错误",
+        },
+        {
+          id: "email",
+          label: "邮箱",
+          type: "email",
+          placeholder: "your@email.com",
+          required: true,
+        },
+      ],
+    ],
+  },
   tencent_eo: {
     label: "腾讯云 EdgeOne",
     fields: [

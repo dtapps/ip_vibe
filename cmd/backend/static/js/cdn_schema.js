@@ -42,6 +42,100 @@ const CDN_SCHEMA = {
       ],
     ],
   },
+  tencent_cdn: {
+    label: "腾讯云 CDN",
+    fields: [
+      [
+        {
+          id: "service_type",
+          label: "加速类型",
+          type: "select",
+          placeholder: "请选择加速类型",
+          required: true,
+          options: [
+            {
+              value: "web",
+              label: "网页小文件",
+            },
+            {
+              value: "download",
+              label: "下载大文件",
+            },
+            {
+              value: "media",
+              label: "音视频点播",
+            },
+            {
+              value: "hybrid",
+              label: "动静加速",
+            },
+            {
+              value: "dynamic",
+              label: "动态加速",
+            },
+          ],
+        },
+        {
+          id: "area",
+          label: "加速区域",
+          type: "select",
+          placeholder: "请选择加速区域",
+          required: false,
+          options: [
+            {
+              value: "mainland",
+              label: "中国境内",
+            },
+            {
+              value: "overseas",
+              label: "中国境外",
+            },
+            {
+              value: "global",
+              label: "全球",
+            },
+          ],
+        },
+      ],
+      {
+        id: "origin_pull_protocol",
+        label: "回源协议",
+        type: "select",
+        placeholder: "请选择回源协议",
+        required: true,
+        options: [
+          {
+            value: "follow",
+            label: "协议跟随",
+          },
+          {
+            value: "http",
+            label: "HTTP协议回源",
+          },
+          {
+            value: "https",
+            label: "HTTPS协议回源",
+          },
+        ],
+      },
+      [
+        {
+          id: "http_port",
+          label: "HTTP 端口",
+          type: "number",
+          placeholder: "如 80",
+          required: false,
+        },
+        {
+          id: "https_port",
+          label: "HTTPS 端口",
+          type: "number",
+          placeholder: "如 443",
+          required: false,
+        },
+      ],
+    ],
+  },
   aliyun_cdn: {
     label: "阿里云 CDN",
     fields: [

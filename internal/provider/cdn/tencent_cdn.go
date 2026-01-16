@@ -11,6 +11,7 @@ import (
 	cdn "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
+	"go.dtapp.net/library/utils/gostring"
 )
 
 // TencentCDNConfig 腾讯云 CDN 配置
@@ -178,15 +179,33 @@ func (p *TencentCDNProvider) Update(ctx context.Context, recordID string, domain
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
+	// 转大写
+	recordType = gostring.ToUpper(recordType)
+
+	// 主源站类型
+	originType := recordType
+	if len(originValues) > 1 {
+		originType = "ip_ipv6"
+	} else {
+		if recordType == "AAAA" {
+			originType = "ipv6"
+		}
+		if recordType == "A" {
+			originType = "ip"
+		}
+	}
+
 	if recordID == "" {
 		// 请求参数
 		request := cdn.NewAddCdnDomainRequest()
 		request.Domain = common.StringPtr(fullDomain) // 域名
-		request.ServiceType = common.StringPtr("web") // 加速域名业务类型
 		request.Origin = &cdn.Origin{
-			Origins:    common.StringPtrs(originValues), // 源站地址
-			OriginType: common.StringPtr(recordType),    // 源站类型
+			Origins:            common.StringPtrs(originValues),                     // 源站地址
+			OriginType:         common.StringPtr(originType),                        // 源站类型
+			OriginPullProtocol: common.StringPtr(p.CustomConfig.OriginPullProtocol), // 回源协议
 		}
+		request.ServiceType = common.StringPtr(p.CustomConfig.ServiceType) // 加速域名业务类型
+		request.Area = common.StringPtr(p.CustomConfig.Area)               // 区域
 		// 请求
 		response, err := p.Provider.Client.AddCdnDomainWithContext(ctx, request)
 		printJSON("创建加速域名", request, response)
@@ -202,7 +221,7 @@ func (p *TencentCDNProvider) Update(ctx context.Context, recordID string, domain
 		request.ProjectId = common.Int64Ptr(cast.ToInt64(recordID)) // 项目 ID
 		request.Origin = &cdn.Origin{
 			Origins:    common.StringPtrs(originValues), // 源站地址
-			OriginType: common.StringPtr(recordType),    // 源站类型
+			OriginType: common.StringPtr(originType),    // 源站类型
 		}
 		// 请求
 		response, err := p.Provider.Client.UpdateDomainConfigWithContext(ctx, request)
@@ -217,6 +236,9 @@ func (p *TencentCDNProvider) Update(ctx context.Context, recordID string, domain
 
 // 腾讯云 CDN 自定义配置
 type TencentCDNCustomConfig struct {
+	ServiceType        string `json:"service_type"`         // 加速域名业务类型
+	Area               string `json:"area"`                 // 区域
+	OriginPullProtocol string `json:"origin_pull_protocol"` // 回源协议
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"vibe_ip/internal/helper/aliyun_helper"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
@@ -16,6 +15,7 @@ import (
 	credential "github.com/aliyun/credentials-go/credentials"
 	"github.com/spf13/cast"
 	"go.dtapp.net/library/utils/gojson"
+	"go.dtapp.net/library/utils/gostring"
 )
 
 // AliyunCDNConfig 阿里云 CDN 配置
@@ -217,7 +217,7 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, recordID string, domain 
 
 	for i, addr := range originValues {
 		// 跳过空地址
-		if strings.TrimSpace(addr) == "" {
+		if gostring.TrimSpace(addr) == "" {
 			continue
 		}
 
