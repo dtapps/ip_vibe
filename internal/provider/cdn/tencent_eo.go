@@ -133,7 +133,7 @@ func (p *TencentEOProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeAccelerationDomains
-func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, cdnDomain string, originValues []string, err error) {
+func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (recordID string, cdnDomain string, isContinue bool, err error) {
 
 	// // 完整域名
 	// fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -164,7 +164,7 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 	// 	}
 	// }
 
-	return "", "", []string{}, provider.ErrRecordNotFound
+	return "", "", true, nil
 }
 
 // Update 更新 CDN 记录

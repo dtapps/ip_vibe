@@ -137,17 +137,22 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 		return
 	}
 	// 响应参数
+	if response.Result == nil || len(response.Result) == 0 {
+		return "", true, nil
+	}
 	for _, item := range response.Result {
+
 		// 查找域名
 		itemFullDomain := item.Name
-		// 查找记录类型
-		itemRecordType := cast.ToString(item.Type)
-		// 查找记录值
-		itemOriginValue := item.Content
-		// 记录集的描述信息
-		itemComment := item.Comment
 
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
+
+			// 查找记录类型
+			itemRecordType := cast.ToString(item.Type)
+			// 查找记录值
+			itemOriginValue := item.Content
+			// 查找记录集的描述信息
+			itemComment := item.Comment
 
 			// 检查记录类型
 			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {

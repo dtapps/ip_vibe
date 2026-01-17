@@ -176,17 +176,22 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 		return
 	}
 	// 响应参数
+	if response.Recordsets == nil || len(*response.Recordsets) == 0 {
+		return "", true, nil
+	}
 	for _, item := range *response.Recordsets {
+
 		// 查找域名
 		itemFullDomain := utils.PtrToString(item.Name)
-		// 查找记录类型
-		itemRecordType := utils.PtrToString(item.Type)
-		// 查找记录值
-		itemOriginValue := strings.Join(utils.PtrToStrings(item.Records), ",")
-		// 记录集的描述信息
-		itemDescription := utils.PtrToString(item.Description)
 
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
+
+			// 查找记录类型
+			itemRecordType := utils.PtrToString(item.Type)
+			// 查找记录值
+			itemOriginValue := strings.Join(utils.PtrToStrings(item.Records), ",")
+			// 查找记录集的描述信息
+			itemDescription := utils.PtrToString(item.Description)
 
 			// 检查记录类型
 			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {

@@ -137,17 +137,21 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 		return
 	}
 	// 响应参数
+	if response.Records == nil || len(response.Records) == 0 {
+		return "", true, nil
+	}
 	for _, item := range response.Records {
-		// 查找记录类型
-		itemRecordType := item.Type
-		// 查找记录值
-		itemOriginValue := item.Value
-		// 解析线路
-		itemLine := item.Line
-		// 解析记录描述
-		itemDescription := item.Description
 
 		if utils.EqualDomainIgnoreCase(item.Rr, subdomain) {
+
+			// 查找记录类型
+			itemRecordType := item.Type
+			// 查找记录值
+			itemOriginValue := item.Value
+			// 查找解析线路
+			itemLine := item.Line
+			// 查找解析记录描述
+			itemDescription := item.Description
 
 			// 检查记录类型
 			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {

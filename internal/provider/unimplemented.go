@@ -24,8 +24,8 @@ func (UnimplementedDNSProvider) Name() string {
 }
 
 // Check 检查 DNS 记录是否存在
-func (UnimplementedDNSProvider) Check(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (recordID string, err error) {
-	return "", ErrUnimplemented("DNSProvider", "Check")
+func (UnimplementedDNSProvider) Check(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (recordID string, isContinue bool, err error) {
+	return "", false, ErrUnimplemented("DNSProvider", "Check")
 }
 
 // Update 更新 DNS 记录
@@ -51,8 +51,8 @@ func (UnimplementedCDNProvider) Name() string {
 }
 
 // Check 检查 CDN 记录是否存在
-func (UnimplementedCDNProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, cdnDomain string, originValues []string, err error) {
-	return "", "", nil, ErrUnimplemented("CDNProvider", "Check")
+func (UnimplementedCDNProvider) Check(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (recordID string, cdnDomain string, isContinue bool, err error) {
+	return "", "", false, ErrUnimplemented("CDNProvider", "Check")
 }
 
 // Update 更新 CDN 记录

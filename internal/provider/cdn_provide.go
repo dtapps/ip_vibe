@@ -3,7 +3,6 @@ package provider
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -21,7 +20,7 @@ type CDNProvider interface {
 	// Name 返回 CDN 提供程序的名称
 	Name() string
 	// Check 检查 CDN 记录是否存在
-	Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, cdnDomain string, originValues []string, err error)
+	Check(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (recordID string, cdnDomain string, isContinue bool, err error)
 	// Update 更新 CDN 记录
 	Update(ctx context.Context, recordID string, domain string, subdomain string, originValues []string, recordType string) (err error)
 	// ParseCustomConfig 解析 CDN 自定义配置
@@ -135,13 +134,15 @@ func (t *CDNTask) Execute(ctx context.Context) (err error) {
 	}
 
 	t.logger.DebugContext(ctx, "执行检查")
-	t.config.recordID, t.config.cdnDomain, t.config.oldOriginValues, err = t.provider.Check(
+	var isContinue = true
+	t.config.recordID, t.config.cdnDomain, isContinue, err = t.provider.Check(
 		ctx,
 		t.config.domain,
 		t.config.subdomain,
+		t.config.newOriginValues,
 		t.config.recordType,
 	)
-	if err != nil && !errors.Is(err, ErrRecordNotFound) {
+	if err != nil {
 		t.logger.ErrorContext(ctx, "检查失败",
 			slog.String("提供商", t.provider.Name()),
 			slog.String("域名ID", t.config.recordID),
@@ -150,7 +151,7 @@ func (t *CDNTask) Execute(ctx context.Context) (err error) {
 		return err
 	}
 
-	if utils.EqualStringSliceUnordered(t.config.oldOriginValues, t.config.newOriginValues) {
+	if !isContinue {
 		t.logger.WarnContext(ctx, "没有变化无需更新")
 		return nil
 	}

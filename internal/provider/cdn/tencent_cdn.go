@@ -132,7 +132,7 @@ func (p *TencentCDNProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://console.cloud.tencent.com/api/explorer?Product=cdn&Version=2018-06-06&Action=DescribeDomains
-func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, cdnDomain string, originValues []string, err error) {
+func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (recordID string, cdnDomain string, isContinue bool, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -154,23 +154,38 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 		return
 	}
 	// 响应参数
+	if response.Response.Domains == nil || len(response.Response.Domains) == 0 {
+		return "", "", true, nil
+	}
 	for _, item := range response.Response.Domains {
+
 		// 查找域名
 		itemFullDomain := utils.PtrToString(item.Domain)
+
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
+
+			// 查找记录值列表
+			itemOriginValues := make([]string, 0)
+			for _, origin := range item.Origin.Origins {
+				itemOriginValues = append(itemOriginValues, utils.PtrToString(origin))
+			}
+
 			// 域名ID
 			recordID = utils.PtrToString(item.ResourceId)
+
 			// CDN域名
 			cdnDomain = utils.TrimDotsPrt(item.Cname)
-			// 记录值列表
-			for _, origin := range item.Origin.Origins {
-				originValues = append(originValues, utils.PtrToString(origin))
+
+			// 判断记录值列表
+			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
+				return recordID, cdnDomain, true, nil
 			}
-			return recordID, cdnDomain, originValues, nil
+
+			return recordID, cdnDomain, false, nil
 		}
 	}
 
-	return "", "", []string{}, provider.ErrRecordNotFound
+	return "", "", true, nil
 }
 
 // Update 更新 CDN 记录

@@ -149,7 +149,7 @@ func (p *HuaweiCDNProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://console.huaweicloud.com/apiexplorer/#/openapi/CDN/sdk?version=v2&api=ListDomains
-func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, cdnDomain string, originValues []string, err error) {
+func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (recordID string, cdnDomain string, isContinue bool, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -168,26 +168,38 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 	}
 	// 响应参数
 	if response.Domains == nil || len(*response.Domains) == 0 {
-		return "", "", []string{}, provider.ErrRecordNotFound
+		return "", "", true, nil
 	}
 	for _, item := range *response.Domains {
+
 		// 查找域名
 		itemFullDomain := utils.PtrToString(item.DomainName)
+
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
-			// 域名ID
-			recordID = utils.PtrToString(item.Id)
-			// CDN域名
-			cdnDomain = utils.TrimDotsPrt(item.Cname)
-			// 记录值列表
+
+			// 查找记录值列表
+			itemOriginValues := make([]string, 0)
 			sources := *item.Sources
 			for _, source := range sources {
-				originValues = append(originValues, source.IpOrDomain)
+				itemOriginValues = append(itemOriginValues, source.IpOrDomain)
 			}
-			return recordID, cdnDomain, originValues, nil
+
+			// 域名ID
+			recordID = utils.PtrToString(item.Id)
+
+			// CDN域名
+			cdnDomain = utils.TrimDotsPrt(item.Cname)
+
+			// 判断记录值列表
+			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
+				return recordID, cdnDomain, true, nil
+			}
+
+			return recordID, cdnDomain, false, nil
 		}
 	}
 
-	return "", "", []string{}, provider.ErrRecordNotFound
+	return "", "", true, nil
 }
 
 // Update 更新 CDN 记录

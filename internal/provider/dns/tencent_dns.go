@@ -148,17 +148,21 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 		return
 	}
 	// 响应参数
+	if response.Response.RecordList == nil || len(response.Response.RecordList) == 0 {
+		return "", true, nil
+	}
 	for _, item := range response.Response.RecordList {
-		// 查找记录类型
-		itemRecordType := utils.PtrToString(item.Type)
-		// 查找记录值
-		itemOriginValue := utils.PtrToString(item.Value)
-		// 记录线路
-		itemRecordLine := utils.PtrToString(item.Line)
-		// 备注
-		itemRemark := utils.PtrToString(item.Remark)
 
 		if utils.EqualDomainIgnoreCase(utils.PtrToString(item.Name), subdomain) {
+
+			// 查找记录类型
+			itemRecordType := utils.PtrToString(item.Type)
+			// 查找记录值
+			itemOriginValue := utils.PtrToString(item.Value)
+			// 查找记录线路
+			itemRecordLine := utils.PtrToString(item.Line)
+			// 查找备注
+			itemRemark := utils.PtrToString(item.Remark)
 
 			// 检查记录类型
 			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {

@@ -157,15 +157,19 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 		return
 	}
 	// 响应参数
+	if response.Body.DomainRecords == nil || len(response.Body.DomainRecords.Record) == 0 {
+		return "", true, nil
+	}
 	for _, item := range response.Body.DomainRecords.Record {
-		// 查找记录类型
-		itemRecordType := tea.StringValue(item.Type)
-		// 查找记录值
-		itemOriginValue := tea.StringValue(item.Value)
-		// 解析记录的线路类型
-		itemLine := tea.StringValue(item.Line)
 
 		if utils.EqualDomainIgnoreCase(tea.StringValue(item.RR), subdomain) && utils.EqualDomainIgnoreCase(tea.StringValue(item.DomainName), domain) {
+
+			// 查找记录类型
+			itemRecordType := tea.StringValue(item.Type)
+			// 查找记录值
+			itemOriginValue := tea.StringValue(item.Value)
+			// 查找解析记录的线路类型
+			itemLine := tea.StringValue(item.Line)
 
 			// 检查记录类型
 			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {

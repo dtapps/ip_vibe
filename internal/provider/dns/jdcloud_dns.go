@@ -146,15 +146,20 @@ func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain
 		return
 	}
 	// 响应参数
+	if len(response.Result.DataList) == 0 {
+		return "", true, nil
+	}
 	for _, item := range response.Result.DataList {
-		// 查找记录类型
-		itemRecordType := item.Type
+
 		// 查找域名
 		itemFullDomain := item.HostValue
-		// 查找记录值
-		itemOriginValue := item.HostValue
 
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
+
+			// 查找记录类型
+			itemRecordType := item.Type
+			// 查找记录值
+			itemOriginValue := item.HostValue
 
 			// 检查记录类型
 			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {

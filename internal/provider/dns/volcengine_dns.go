@@ -176,19 +176,24 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 		return
 	}
 	// 响应参数
+	if response.Records == nil || len(response.Records) == 0 {
+		return "", true, nil
+	}
 	for _, item := range response.Records {
+
 		// 查找域名
 		itemFullDomain := volcengine.StringValue(item.Host)
 		// 查找记录类型
-		itemRecordType := utils.PtrToString(item.Type)
-		// 查找记录值
-		itemOriginValue := utils.PtrToString(item.Value)
-		// 解析记录对应的线路
-		itemLine := utils.PtrToString(item.Line)
-		// 备注
-		itemRemark := utils.PtrToString(item.Remark)
 
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
+
+			itemRecordType := utils.PtrToString(item.Type)
+			// 查找记录值
+			itemOriginValue := utils.PtrToString(item.Value)
+			// 查找解析记录对应的线路
+			itemLine := utils.PtrToString(item.Line)
+			// 查找备注
+			itemRemark := utils.PtrToString(item.Remark)
 
 			// 检查记录类型
 			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {

@@ -143,7 +143,7 @@ func (p *AliyunCDNProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://next.api.aliyun.com/api/ESA/2024-09-10/ListRecords
-func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, cdnDomain string, originValues []string, err error) {
+func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (recordID string, cdnDomain string, isContinue bool, err error) {
 
 	defaultIP := "192.0.2.0"
 
@@ -162,27 +162,41 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 		return
 	}
 	// 响应参数
+	if response.Body.Domains == nil || len(response.Body.Domains.PageData) == 0 {
+		return "", "", true, nil
+	}
 	for _, item := range response.Body.Domains.PageData {
+
 		// 查找域名
 		itemFullDomain := tea.StringValue(item.DomainName)
+
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
+
+			// 查找记录值列表
+			itemOriginValues := make([]string, 0)
+			for _, source := range item.Sources.Source {
+				if tea.StringValue(source.Content) == defaultIP {
+					continue // 跳过默认测试地址
+				}
+				itemOriginValues = append(itemOriginValues, tea.StringValue(source.Content))
+			}
+
 			// 域名ID
 			recordID = cast.ToString(tea.Int64Value(item.DomainId))
+
 			// CDN域名
 			cdnDomain = tea.StringValue(item.Cname)
-			// 记录值列表
-			for _, source := range item.Sources.Source {
-				// 跳过默认测试地址
-				if tea.StringValue(source.Content) == defaultIP {
-					continue
-				}
-				originValues = append(originValues, tea.StringValue(source.Content))
+
+			// 判断记录值列表
+			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
+				return recordID, cdnDomain, true, nil
 			}
-			return recordID, cdnDomain, originValues, nil
+
+			return recordID, cdnDomain, false, nil
 		}
 	}
 
-	return "", "", []string{}, provider.ErrRecordNotFound
+	return "", "", true, nil
 }
 
 // Update 更新 CDN 记录
