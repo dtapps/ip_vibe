@@ -14,14 +14,20 @@ import (
 
 // ---------- DNS 模块 ----------
 
+// DNSProviderInternalData 定义了 DNS 提供程序的内部数据
+type DNSProviderInternalData struct {
+	RecordID   string // 域名ID
+	IsContinue bool   // 是否继续
+}
+
 // DNSProvider 定义了 DNS 操作的接口
 type DNSProvider interface {
 	// Name 返回 DNS 提供程序的名称
 	Name() (name string)
 	// Check 检查 DNS 记录是否存在
-	Check(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (recordID string, isContinue bool, err error)
+	Check(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (data *DNSProviderInternalData, err error)
 	// Update 更新 DNS 记录
-	Update(ctx context.Context, recordID string, domain string, subdomain string, originValue string, recordType string) (err error)
+	Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error)
 	// ParseCustomConfig 解析 DNS 自定义配置
 	ParseCustomConfig(config_json json.RawMessage) (err error)
 }
@@ -141,8 +147,7 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 	t.logger.DebugContext(ctx, "执行检查",
 		slog.String("提供商", t.provider.Name()),
 	)
-	var isContinue = true
-	t.config.recordID, isContinue, err = t.provider.Check(
+	checkData, err := t.provider.Check(
 		ctx,
 		t.config.domain,
 		t.config.subdomain,
@@ -152,13 +157,13 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 	if err != nil {
 		t.logger.ErrorContext(ctx, "检查失败",
 			slog.String("提供商", t.provider.Name()),
-			slog.String("域名ID", t.config.recordID),
 			slog.Any("err", err),
 		)
 		return err
 	}
+	t.config.recordID = checkData.RecordID
 
-	if !isContinue {
+	if !checkData.IsContinue {
 		t.logger.WarnContext(ctx, "没有变化无需更新",
 			slog.String("提供商", t.provider.Name()),
 		)
@@ -171,7 +176,6 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 	)
 	if err := t.provider.Update(
 		ctx,
-		t.config.recordID,
 		t.config.domain,
 		t.config.subdomain,
 		t.config.newOriginValue,

@@ -75,6 +75,9 @@ type HuaweiCDNProvider struct {
 		Builder       *core.HcHttpClient
 		Client        *cdn.CdnClient
 	}
+
+	// 内部数据
+	InternalData *provider.CDNProviderInternalData
 }
 
 // NewHuaweiCDNProvider 创建华为云 CDN 提供程序
@@ -99,6 +102,7 @@ func NewHuaweiCDNProviderRaw(ctx context.Context, cfg *HuaweiCDNConfig, opts ...
 		cfg:          cfg,
 		opts:         &cdnOptions{},
 		CustomConfig: &HuaweiCDNCustomConfig{},
+		InternalData: &provider.CDNProviderInternalData{},
 	}
 
 	// 应用选项
@@ -149,7 +153,7 @@ func (p *HuaweiCDNProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://console.huaweicloud.com/apiexplorer/#/openapi/CDN/sdk?version=v2&api=ListDomains
-func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (recordID string, cdnDomain string, isContinue bool, err error) {
+func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -168,7 +172,8 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 	}
 	// 响应参数
 	if response.Domains == nil || len(*response.Domains) == 0 {
-		return "", "", true, nil
+		p.InternalData.IsContinue = true
+		return p.InternalData, nil
 	}
 	for _, item := range *response.Domains {
 
@@ -185,27 +190,31 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 			}
 
 			// 域名ID
-			recordID = utils.PtrToString(item.Id)
+			p.InternalData.RecordID = utils.PtrToString(item.Id)
 
 			// CDN域名
-			cdnDomain = utils.TrimDotsPrt(item.Cname)
+			p.InternalData.CdnDomain = utils.TrimDotsPrt(item.Cname)
 
 			// 判断记录值列表
 			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
-				return recordID, cdnDomain, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
-			return recordID, cdnDomain, false, nil
+			p.InternalData.IsContinue = false
+			return p.InternalData, nil
 		}
 	}
 
-	return "", "", true, nil
+	// 未找到记录
+	p.InternalData.IsContinue = true
+	return p.InternalData, nil
 }
 
 // Update 更新 CDN 记录
 // https://console.huaweicloud.com/apiexplorer/#/openapi/CDN/debug?version=v2&api=CreateDomain
 // https://console.huaweicloud.com/apiexplorer/#/openapi/CDN/sdk?version=v2&api=UpdateDomainFullConfig
-func (p *HuaweiCDNProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValues []string, recordType string) (err error) {
+func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -232,7 +241,7 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, recordID string, domain 
 		service_area = model.GetDomainBodyServiceAreaEnum().GLOBAL
 	}
 
-	if recordID == "" {
+	if p.InternalData.RecordID == "" {
 		sources := make([]model.SourcesRequestBody, 0)
 		for _, originValue := range originValues {
 			sources = append(sources, model.SourcesRequestBody{
@@ -260,7 +269,7 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, recordID string, domain 
 		}
 	}
 
-	if recordID != "" {
+	if p.InternalData.RecordID != "" {
 		sources := make([]model.SourcesConfig, 0)
 		for _, originValue := range originValues {
 			sources = append(sources, model.SourcesConfig{

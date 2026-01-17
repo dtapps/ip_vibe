@@ -74,6 +74,9 @@ type AliyunCDNProvider struct {
 		Cfg    *openapi.Config
 		Client *cdn20180510.Client
 	}
+
+	// 内部数据
+	InternalData *provider.CDNProviderInternalData
 }
 
 // NewAliyunCDNProvider 创建阿里云 CDN 提供程序
@@ -98,6 +101,7 @@ func NewAliyunCDNProviderRaw(ctx context.Context, cfg *AliyunCDNConfig, opts ...
 		cfg:          cfg,
 		opts:         &cdnOptions{},
 		CustomConfig: &AliyunCDNCustomConfig{},
+		InternalData: &provider.CDNProviderInternalData{},
 	}
 
 	// 应用选项
@@ -143,7 +147,7 @@ func (p *AliyunCDNProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://next.api.aliyun.com/api/ESA/2024-09-10/ListRecords
-func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (recordID string, cdnDomain string, isContinue bool, err error) {
+func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
 
 	defaultIP := "192.0.2.0"
 
@@ -163,7 +167,8 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 	}
 	// 响应参数
 	if response.Body.Domains == nil || len(response.Body.Domains.PageData) == 0 {
-		return "", "", true, nil
+		p.InternalData.IsContinue = true
+		return p.InternalData, nil
 	}
 	for _, item := range response.Body.Domains.PageData {
 
@@ -182,27 +187,31 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 			}
 
 			// 域名ID
-			recordID = cast.ToString(tea.Int64Value(item.DomainId))
+			p.InternalData.RecordID = cast.ToString(tea.Int64Value(item.DomainId))
 
 			// CDN域名
-			cdnDomain = tea.StringValue(item.Cname)
+			p.InternalData.CdnDomain = tea.StringValue(item.Cname)
 
 			// 判断记录值列表
 			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
-				return recordID, cdnDomain, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
-			return recordID, cdnDomain, false, nil
+			p.InternalData.IsContinue = false
+			return p.InternalData, nil
 		}
 	}
 
-	return "", "", true, nil
+	// 未找到记录
+	p.InternalData.IsContinue = true
+	return p.InternalData, nil
 }
 
 // Update 更新 CDN 记录
 // https://next.api.aliyun.com/api/Cdn/2018-05-10/AddCdnDomain
 // https://next.api.aliyun.com/api/Cdn/2018-05-10/ModifyCdnDomain
-func (p *AliyunCDNProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValues []string, recordType string) (err error) {
+func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
 
 	type SourceItem struct {
 		Content  string `json:"content"`  // 回源地址
@@ -272,7 +281,7 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, recordID string, domain 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
-	if recordID == "" {
+	if p.InternalData.RecordID == "" {
 		// 请求参数
 		request := &cdn20180510.AddCdnDomainRequest{}
 		request.CdnType = tea.String(p.CustomConfig.CdnType)            // 加速域名的业务类型
@@ -287,7 +296,7 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, recordID string, domain 
 		}
 	}
 
-	if recordID != "" {
+	if p.InternalData.RecordID != "" {
 		// 请求参数
 		request := &cdn20180510.ModifyCdnDomainRequest{}
 		request.DomainName = tea.String(fullDomain)                     // 需要接入CDN的加速域名

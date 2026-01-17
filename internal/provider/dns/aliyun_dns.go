@@ -71,6 +71,9 @@ type AliyunDNSProvider struct {
 		Cfg    *openapi.Config
 		Client *alidns20150109.Client
 	}
+
+	// 内部数据
+	InternalData *provider.DNSProviderInternalData
 }
 
 // NewAliyunDNSProvider 创建阿里云 DNS 提供程序
@@ -95,6 +98,7 @@ func NewAliyunDNSProviderRaw(ctx context.Context, cfg *AliyunDNSConfig, opts ...
 		cfg:          cfg,
 		opts:         &dnsOptions{},
 		CustomConfig: &AliyunDNSCustomConfig{},
+		InternalData: &provider.DNSProviderInternalData{},
 	}
 
 	// 应用选项
@@ -140,7 +144,7 @@ func (p *AliyunDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/DescribeDomainRecords
-func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (recordID string, isContinue bool, err error) {
+func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
 
 	// 请求参数
 	request := &alidns20150109.DescribeDomainRecordsRequest{}
@@ -158,7 +162,8 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 	}
 	// 响应参数
 	if response.Body.DomainRecords == nil || len(response.Body.DomainRecords.Record) == 0 {
-		return "", true, nil
+		p.InternalData.IsContinue = true
+		return p.InternalData, nil
 	}
 	for _, item := range response.Body.DomainRecords.Record {
 
@@ -177,32 +182,36 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 			}
 
 			// 域名ID
-			recordID = tea.StringValue(item.RecordId)
+			p.InternalData.RecordID = tea.StringValue(item.RecordId)
 
 			// 判断记录值
 			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
-				return recordID, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
 			// 判断解析记录对应的线路
 			if !utils.EqualDomainIgnoreCase(itemLine, p.CustomConfig.Line) {
-				return recordID, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
-			return recordID, false, nil
+			p.InternalData.IsContinue = false
+			return p.InternalData, nil
 		}
 	}
 
 	// 未找到记录
-	return "", true, nil
+	p.InternalData.IsContinue = true
+	return p.InternalData, nil
 }
 
 // Update 更新 DNS 记录
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/AddDomainRecord
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/UpdateDomainRecord
-func (p *AliyunDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValue string, recordType string) (err error) {
+func (p *AliyunDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
 
-	if recordID == "" {
+	if p.InternalData.RecordID == "" {
 		// 请求参数
 		request := &alidns20150109.AddDomainRecordRequest{}
 		request.DomainName = tea.String(domain)        // 域名名称
@@ -218,14 +227,14 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, recordID string, domain 
 		}
 	}
 
-	if recordID != "" {
+	if p.InternalData.RecordID != "" {
 		// 请求参数
 		request := &alidns20150109.UpdateDomainRecordRequest{}
-		request.RecordId = tea.String(recordID)        // 解析记录的ID
-		request.RR = tea.String(subdomain)             // 主机记录
-		request.Type = tea.String(recordType)          // 解析记录类型
-		request.Value = tea.String(originValue)        // 记录值
-		request.Line = tea.String(p.CustomConfig.Line) // 解析线路
+		request.RecordId = tea.String(p.InternalData.RecordID) // 解析记录的ID
+		request.RR = tea.String(subdomain)                     // 主机记录
+		request.Type = tea.String(recordType)                  // 解析记录类型
+		request.Value = tea.String(originValue)                // 记录值
+		request.Line = tea.String(p.CustomConfig.Line)         // 解析线路
 		// 请求
 		response, err := p.Provider.Client.UpdateDomainRecordWithContext(ctx, request, &dara.RuntimeOptions{})
 		printJSON("更新域名记录", request, response)

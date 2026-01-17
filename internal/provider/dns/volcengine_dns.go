@@ -75,6 +75,9 @@ type VolcengineDNSProvider struct {
 		Sess   *session.Session
 		Client *dns.DNS
 	}
+
+	// 内部数据
+	InternalData *provider.DNSProviderInternalData
 }
 
 // NewVolcengineDNSProvider 创建火山引擎 DNS 提供程序
@@ -99,6 +102,7 @@ func NewVolcengineDNSProviderRaw(ctx context.Context, cfg *VolcengineDNSConfig, 
 		cfg:          cfg,
 		opts:         &dnsOptions{},
 		CustomConfig: &VolcengineDNSCustomConfig{},
+		InternalData: &provider.DNSProviderInternalData{},
 	}
 
 	// 应用选项
@@ -154,7 +158,7 @@ func (p *VolcengineDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://api.volcengine.com/api-explorer?action=ListRecords
-func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (recordID string, isContinue bool, err error) {
+func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -177,7 +181,8 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 	}
 	// 响应参数
 	if response.Records == nil || len(response.Records) == 0 {
-		return "", true, nil
+		p.InternalData.IsContinue = true
+		return p.InternalData, nil
 	}
 	for _, item := range response.Records {
 
@@ -201,40 +206,45 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 			}
 
 			// 域名ID
-			recordID = volcengine.StringValue(item.RecordID)
+			p.InternalData.RecordID = volcengine.StringValue(item.RecordID)
 
 			// 判断记录值
 			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
-				return recordID, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
 			// 判断解析记录对应的线路
 			if !utils.EqualDomainIgnoreCase(itemLine, p.CustomConfig.Line) {
-				return recordID, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
 			// 判断备注
 			if !utils.EqualDomainIgnoreCase(itemRemark, p.CustomConfig.Remark) {
-				return recordID, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
-			return recordID, false, nil
+			p.InternalData.IsContinue = false
+			return p.InternalData, nil
 		}
 	}
 
 	// 未找到记录
-	return "", true, nil
+	p.InternalData.IsContinue = true
+	return p.InternalData, nil
 }
 
 // Update 更新 DNS 记录
 // https://api.volcengine.com/api-explorer?action=CreateRecord
 // https://api.volcengine.com/api-explorer?action=UpdateRecord
-func (p *VolcengineDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValue string, recordType string) (err error) {
+func (p *VolcengineDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
-	if recordID == "" {
+	if p.InternalData.RecordID == "" {
 		// 请求参数
 		request := &dns.CreateRecordInput{}
 		request.Host = volcengine.String(fullDomain)              // 主机记录
@@ -251,15 +261,15 @@ func (p *VolcengineDNSProvider) Update(ctx context.Context, recordID string, dom
 		}
 	}
 
-	if recordID != "" {
+	if p.InternalData.RecordID != "" {
 		// 请求参数
 		request := &dns.UpdateRecordInput{}
-		request.Host = volcengine.String(fullDomain)              // 主机记录
-		request.RecordID = volcengine.String(recordID)            // 需要更新的解析记录的 ID
-		request.Type = volcengine.String(recordType)              // 记录类型
-		request.Value = volcengine.String(originValue)            // 解析记录的记录值
-		request.Line = volcengine.String(p.CustomConfig.Line)     // 解析记录对应的线路
-		request.Remark = volcengine.String(p.CustomConfig.Remark) // 解析记录的备注
+		request.Host = volcengine.String(fullDomain)                  // 主机记录
+		request.RecordID = volcengine.String(p.InternalData.RecordID) // 需要更新的解析记录的 ID
+		request.Type = volcengine.String(recordType)                  // 记录类型
+		request.Value = volcengine.String(originValue)                // 解析记录的记录值
+		request.Line = volcengine.String(p.CustomConfig.Line)         // 解析记录对应的线路
+		request.Remark = volcengine.String(p.CustomConfig.Remark)     // 解析记录的备注
 		// 请求
 		response, err := p.Provider.Client.UpdateRecordWithContext(ctx, request)
 		printJSON("更新域名记录", request, response)

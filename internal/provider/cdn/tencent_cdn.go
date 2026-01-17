@@ -70,6 +70,9 @@ type TencentCDNProvider struct {
 		Cfg    *profile.ClientProfile
 		Client *cdn.Client
 	}
+
+	// 内部数据
+	InternalData *provider.CDNProviderInternalData
 }
 
 // NewTencentCDNProvider 创建腾讯云 CDN 提供程序
@@ -94,6 +97,7 @@ func NewTencentCDNProviderRaw(ctx context.Context, cfg *TencentCDNConfig, opts .
 		cfg:          cfg,
 		opts:         &cdnOptions{},
 		CustomConfig: &TencentCDNCustomConfig{},
+		InternalData: &provider.CDNProviderInternalData{},
 	}
 
 	// 应用选项
@@ -132,7 +136,7 @@ func (p *TencentCDNProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://console.cloud.tencent.com/api/explorer?Product=cdn&Version=2018-06-06&Action=DescribeDomains
-func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (recordID string, cdnDomain string, isContinue bool, err error) {
+func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -155,7 +159,8 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 	}
 	// 响应参数
 	if response.Response.Domains == nil || len(response.Response.Domains) == 0 {
-		return "", "", true, nil
+		p.InternalData.IsContinue = true
+		return p.InternalData, nil
 	}
 	for _, item := range response.Response.Domains {
 
@@ -171,27 +176,31 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 			}
 
 			// 域名ID
-			recordID = utils.PtrToString(item.ResourceId)
+			p.InternalData.RecordID = utils.PtrToString(item.ResourceId)
 
 			// CDN域名
-			cdnDomain = utils.TrimDotsPrt(item.Cname)
+			p.InternalData.CdnDomain = utils.TrimDotsPrt(item.Cname)
 
 			// 判断记录值列表
 			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
-				return recordID, cdnDomain, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
-			return recordID, cdnDomain, false, nil
+			p.InternalData.IsContinue = false
+			return p.InternalData, nil
 		}
 	}
 
-	return "", "", true, nil
+	// 未找到记录
+	p.InternalData.IsContinue = true
+	return p.InternalData, nil
 }
 
 // Update 更新 CDN 记录
 // https://console.cloud.tencent.com/api/explorer?Product=cdn&Version=2018-06-06&Action=AddCdnDomain
 // https://console.cloud.tencent.com/api/explorer?Product=cdn&Version=2018-06-06&Action=UpdateDomainConfig
-func (p *TencentCDNProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValues []string, recordType string) (err error) {
+func (p *TencentCDNProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -212,7 +221,7 @@ func (p *TencentCDNProvider) Update(ctx context.Context, recordID string, domain
 		}
 	}
 
-	if recordID == "" {
+	if p.InternalData.RecordID == "" {
 		// 请求参数
 		request := cdn.NewAddCdnDomainRequest()
 		request.Domain = common.StringPtr(fullDomain) // 域名
@@ -231,11 +240,11 @@ func (p *TencentCDNProvider) Update(ctx context.Context, recordID string, domain
 		}
 	}
 
-	if recordID != "" {
+	if p.InternalData.RecordID != "" {
 		// 请求参数
 		request := cdn.NewUpdateDomainConfigRequest()
-		request.Domain = common.StringPtr(fullDomain)               // 域名
-		request.ProjectId = common.Int64Ptr(cast.ToInt64(recordID)) // 项目 ID
+		request.Domain = common.StringPtr(fullDomain)                              // 域名
+		request.ProjectId = common.Int64Ptr(cast.ToInt64(p.InternalData.RecordID)) // 项目 ID
 		request.Origin = &cdn.Origin{
 			Origins:    common.StringPtrs(originValues), // 源站地址
 			OriginType: common.StringPtr(originType),    // 源站类型

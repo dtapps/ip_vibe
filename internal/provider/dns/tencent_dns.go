@@ -70,6 +70,9 @@ type TencentDNSProvider struct {
 		Cfg    *profile.ClientProfile
 		Client *dnspod.Client
 	}
+
+	// 内部数据
+	InternalData *provider.DNSProviderInternalData
 }
 
 // NewTencentDNSProvider 创建腾讯云 DNS 提供程序
@@ -94,6 +97,7 @@ func NewTencentDNSProviderRaw(ctx context.Context, cfg *TencentDNSConfig, opts .
 		cfg:          cfg,
 		opts:         &dnsOptions{},
 		CustomConfig: &TencentDNSCustomConfig{},
+		InternalData: &provider.DNSProviderInternalData{},
 	}
 
 	// 应用选项
@@ -132,7 +136,7 @@ func (p *TencentDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=DescribeRecordList
-func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (recordID string, isContinue bool, err error) {
+func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
 
 	// 请求参数
 	request := dnspod.NewDescribeRecordListRequest()
@@ -149,7 +153,8 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 	}
 	// 响应参数
 	if response.Response.RecordList == nil || len(response.Response.RecordList) == 0 {
-		return "", true, nil
+		p.InternalData.IsContinue = true
+		return p.InternalData, nil
 	}
 	for _, item := range response.Response.RecordList {
 
@@ -170,37 +175,42 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 			}
 
 			// 域名ID
-			recordID = cast.ToString(*item.RecordId)
+			p.InternalData.RecordID = cast.ToString(*item.RecordId)
 
 			// 判断记录值
 			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
-				return recordID, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
 			// 判断解析记录对应的线路
 			if !utils.EqualDomainIgnoreCase(itemRecordLine, p.CustomConfig.RecordLine) {
-				return recordID, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
 			// 判断备注
 			if !utils.EqualDomainIgnoreCase(itemRemark, p.CustomConfig.Remark) {
-				return recordID, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
-			return recordID, false, nil
+			p.InternalData.IsContinue = false
+			return p.InternalData, nil
 		}
 	}
 
 	// 未找到记录
-	return "", true, nil
+	p.InternalData.IsContinue = true
+	return p.InternalData, nil
 }
 
 // Update 更新 DNS 记录
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=CreateRecord
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=ModifyRecord
-func (p *TencentDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValue string, recordType string) (err error) {
+func (p *TencentDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
 
-	if recordID == "" {
+	if p.InternalData.RecordID == "" {
 		// 请求参数
 		request := dnspod.NewCreateRecordRequest()
 		request.Domain = common.StringPtr(domain)                        // 域名
@@ -217,16 +227,16 @@ func (p *TencentDNSProvider) Update(ctx context.Context, recordID string, domain
 		}
 	}
 
-	if recordID != "" {
+	if p.InternalData.RecordID != "" {
 		// 请求参数
 		request := dnspod.NewModifyRecordRequest()
-		request.Domain = common.StringPtr(domain)                        // 域名
-		request.RecordType = common.StringPtr(recordType)                // 记录类型
-		request.Value = common.StringPtr(originValue)                    // 记录值
-		request.RecordId = common.Uint64Ptr(cast.ToUint64(recordID))     // 记录 ID
-		request.SubDomain = common.StringPtr(subdomain)                  // 主机记录
-		request.RecordLine = common.StringPtr(p.CustomConfig.RecordLine) // 记录线路
-		request.Remark = common.StringPtr(p.CustomConfig.Remark)         // 备注
+		request.Domain = common.StringPtr(domain)                                   // 域名
+		request.RecordType = common.StringPtr(recordType)                           // 记录类型
+		request.Value = common.StringPtr(originValue)                               // 记录值
+		request.RecordId = common.Uint64Ptr(cast.ToUint64(p.InternalData.RecordID)) // 记录 ID
+		request.SubDomain = common.StringPtr(subdomain)                             // 主机记录
+		request.RecordLine = common.StringPtr(p.CustomConfig.RecordLine)            // 记录线路
+		request.Remark = common.StringPtr(p.CustomConfig.Remark)                    // 备注
 		// 请求
 		response, err := p.Provider.Client.ModifyRecordWithContext(ctx, request)
 		printJSON("更新域名记录", request, response)

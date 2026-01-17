@@ -76,6 +76,9 @@ type AliyunESAProvider struct {
 		Cfg    *openapi.Config
 		Client *esa20240910.Client
 	}
+
+	// 内部数据
+	InternalData *provider.CDNProviderInternalData
 }
 
 // NewAliyunESAProvider 创建阿里云 ESA 提供程序
@@ -100,6 +103,7 @@ func NewAliyunESAProviderRaw(ctx context.Context, cfg *AliyunESAConfig, opts ...
 		cfg:          cfg,
 		opts:         &cdnOptions{},
 		CustomConfig: &AliyunESACustomConfig{},
+		InternalData: &provider.CDNProviderInternalData{},
 	}
 
 	// 应用选项
@@ -145,7 +149,7 @@ func (p *AliyunESAProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://next.api.aliyun.com/api/ESA/2024-09-10/ListRecords
-func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (recordID string, cdnDomain string, isContinue bool, err error) {
+func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -164,7 +168,8 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 	}
 	// 响应参数
 	if response.Body.Records == nil || len(response.Body.Records) == 0 {
-		return "", "", true, nil
+		p.InternalData.IsContinue = true
+		return p.InternalData, nil
 	}
 	for _, item := range response.Body.Records {
 
@@ -178,32 +183,36 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 			itemOriginValues = append(itemOriginValues, tea.StringValue(item.Data.Value))
 
 			// 域名ID
-			recordID = cast.ToString(tea.Int64Value(item.RecordId))
+			p.InternalData.RecordID = cast.ToString(tea.Int64Value(item.RecordId))
 
 			// CDN域名
-			cdnDomain = tea.StringValue(item.RecordCname)
+			p.InternalData.CdnDomain = tea.StringValue(item.RecordCname)
 
 			// 判断记录值列表
 			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
-				return recordID, cdnDomain, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
-			return recordID, cdnDomain, false, nil
+			p.InternalData.IsContinue = false
+			return p.InternalData, nil
 		}
 	}
 
-	return "", "", true, nil
+	// 未找到记录
+	p.InternalData.IsContinue = true
+	return p.InternalData, nil
 }
 
 // Update 更新 CDN 记录
 // https://next.api.aliyun.com/api/ESA/2024-09-10/CreateRecord
 // https://next.api.aliyun.com/api/ESA/2024-09-10/UpdateRecord
-func (p *AliyunESAProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValues []string, recordType string) (err error) {
+func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
-	if recordID == "" {
+	if p.InternalData.RecordID == "" {
 		// 请求参数
 		request := &esa20240910.CreateRecordRequest{}
 		request.SiteId = tea.Int64(p.cfg.SiteID)    // 站点ID
@@ -223,10 +232,10 @@ func (p *AliyunESAProvider) Update(ctx context.Context, recordID string, domain 
 		}
 	}
 
-	if recordID != "" {
+	if p.InternalData.RecordID != "" {
 		// 请求参数
 		request := &esa20240910.UpdateRecordRequest{}
-		request.RecordId = tea.Int64(cast.ToInt64(recordID)) // 站点ID
+		request.RecordId = tea.Int64(cast.ToInt64(p.InternalData.RecordID)) // 站点ID
 		request.Data = &esa20240910.UpdateRecordRequestData{
 			Value: tea.String(originValues[0]), // 记录值或部分内容
 		}

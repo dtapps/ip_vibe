@@ -73,6 +73,9 @@ type TencentEOProvider struct {
 		Cfg    *profile.ClientProfile
 		Client *teo.Client
 	}
+
+	// 内部数据
+	InternalData *provider.CDNProviderInternalData
 }
 
 // NewTencentEOProvider 创建腾讯云 EO 提供程序
@@ -97,6 +100,7 @@ func NewTencentEOProviderRaw(ctx context.Context, cfg *TencentEOConfig, opts ...
 		cfg:          cfg,
 		opts:         &cdnOptions{},
 		CustomConfig: &TencentEOCustomConfig{},
+		InternalData: &provider.CDNProviderInternalData{},
 	}
 
 	// 应用选项
@@ -135,7 +139,7 @@ func (p *TencentEOProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeAccelerationDomains
-func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (recordID string, cdnDomain string, isContinue bool, err error) {
+func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -158,22 +162,11 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 	}
 	// 响应参数
 	if response.Response == nil || len(response.Response.AccelerationDomains) == 0 {
-		return "", "", true, nil
+		p.InternalData.IsContinue = true
+		return p.InternalData, nil
 	}
 
-	// 自定义一个结构体，获取域名ID
-	var customResponse struct {
-		Response struct {
-			AccelerationDomains []struct {
-				DomainId string `json:"DomainId,omitempty"`
-			} `json:"AccelerationDomains,omitempty"`
-		} `json:"Response,omitempty"`
-	}
-	if err := json.Unmarshal([]byte(response.ToJsonString()), &customResponse); err != nil {
-		return "", "", true, err
-	}
-
-	for key, item := range response.Response.AccelerationDomains {
+	for _, item := range response.Response.AccelerationDomains {
 
 		// 查找域名
 		itemFullDomain := utils.PtrToString(item.DomainName)
@@ -193,47 +186,55 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 			itemIPv6Status := utils.PtrToString(item.IPv6Status)
 
 			// 域名ID
-			recordID = customResponse.Response.AccelerationDomains[key].DomainId
+			// p.InternalData.RecordID = utils.TrimDotsPrt(item.DomainId)
 
 			// CDN域名
-			cdnDomain = utils.TrimDotsPrt(item.Cname)
+			p.InternalData.CdnDomain = utils.TrimDotsPrt(item.Cname)
 
 			// 判断记录值列表
 			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
-				return recordID, cdnDomain, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
 			// 判断回源协议
 			if p.CustomConfig.OriginProtocol != itemOriginProtocol {
-				return recordID, cdnDomain, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
 			// 判断HTTP回源端口
 			if p.CustomConfig.HttpPort != itemHttpPort {
-				return recordID, cdnDomain, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
 			// 判断HTTPS回源端口
 			if p.CustomConfig.HttpsPort != itemHttpsPort {
-				return recordID, cdnDomain, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
 			// 判断IPv6状态
 			if p.CustomConfig.IPv6Status != itemIPv6Status {
-				return recordID, cdnDomain, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
-			return recordID, cdnDomain, false, nil
+			p.InternalData.IsContinue = false
+			return p.InternalData, nil
 		}
 	}
 
-	return "", "", true, nil
+	// 未找到记录
+	p.InternalData.IsContinue = true
+	return p.InternalData, nil
 }
 
 // Update 更新 CDN 记录
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=CreateAccelerationDomain
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=ModifyAccelerationDomain
-func (p *TencentEOProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValues []string, recordType string) (err error) {
+func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -260,7 +261,7 @@ func (p *TencentEOProvider) Update(ctx context.Context, recordID string, domain 
 		p.CustomConfig.HttpsPort = 443
 	}
 
-	if recordID == "" {
+	if p.InternalData.CdnDomain == "" {
 		// 请求参数
 		request := teo.NewCreateAccelerationDomainRequest()
 		request.ZoneId = common.StringPtr(p.cfg.ZoneID)                              // 加速域名所属站点 ID
@@ -278,7 +279,7 @@ func (p *TencentEOProvider) Update(ctx context.Context, recordID string, domain 
 		}
 	}
 
-	if recordID != "" {
+	if p.InternalData.CdnDomain != "" {
 		// 请求参数
 		request := teo.NewModifyAccelerationDomainRequest()
 		request.ZoneId = common.StringPtr(p.cfg.ZoneID)                              // 加速域名所属站点 ID

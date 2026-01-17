@@ -80,6 +80,9 @@ type HuaweiDNSProvider struct {
 		Builder       *core.HcHttpClient
 		Client        *dns.DnsClient
 	}
+
+	// 内部数据
+	InternalData *provider.DNSProviderInternalData
 }
 
 // NewHuaweiDNSProvider 创建华为云 DNS 提供程序
@@ -104,6 +107,7 @@ func NewHuaweiDNSProviderRaw(ctx context.Context, cfg *HuaweiDNSConfig, opts ...
 		cfg:          cfg,
 		opts:         &dnsOptions{},
 		CustomConfig: &HuaweiDNSCustomConfig{},
+		InternalData: &provider.DNSProviderInternalData{},
 	}
 
 	// 应用选项
@@ -154,7 +158,7 @@ func (p *HuaweiDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/debug?api=ShowRecordSetByZone
-func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (recordID string, isContinue bool, err error) {
+func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -177,7 +181,8 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 	}
 	// 响应参数
 	if response.Recordsets == nil || len(*response.Recordsets) == 0 {
-		return "", true, nil
+		p.InternalData.IsContinue = true
+		return p.InternalData, nil
 	}
 	for _, item := range *response.Recordsets {
 
@@ -199,35 +204,39 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 			}
 
 			// 域名ID
-			recordID = utils.PtrToString(item.Id)
+			p.InternalData.RecordID = utils.PtrToString(item.Id)
 
 			// 判断记录值
 			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
-				return recordID, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
 			// 判断解析记录描述
 			if !utils.EqualDomainIgnoreCase(itemDescription, p.CustomConfig.Description) {
-				return recordID, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
-			return recordID, false, nil
+			p.InternalData.IsContinue = false
+			return p.InternalData, nil
 		}
 	}
 
 	// 未找到记录
-	return "", true, nil
+	p.InternalData.IsContinue = true
+	return p.InternalData, nil
 }
 
 // Update 更新 DNS 记录
 // https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/debug?api=CreateRecordSetWithLine
 // https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/sdk?api=UpdateRecordSets
-func (p *HuaweiDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValue string, recordType string) (err error) {
+func (p *HuaweiDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
-	if recordID == "" {
+	if p.InternalData.RecordID == "" {
 		// 请求参数
 		request := &model.CreateRecordSetWithLineRequest{}
 		request.ZoneId = p.cfg.ZoneID // 域名ID
@@ -245,11 +254,11 @@ func (p *HuaweiDNSProvider) Update(ctx context.Context, recordID string, domain 
 		}
 	}
 
-	if recordID != "" {
+	if p.InternalData.RecordID != "" {
 		// 请求参数
 		request := &model.UpdateRecordSetsRequest{}
-		request.ZoneId = p.cfg.ZoneID  // 域名ID
-		request.RecordsetId = recordID // 记录集ID
+		request.ZoneId = p.cfg.ZoneID                 // 域名ID
+		request.RecordsetId = p.InternalData.RecordID // 记录集ID
 		request.Body = &model.UpdateRecordSetsReq{
 			Records:     utils.StringsToPtr([]string{originValue}),     // 解析记录的值
 			Type:        recordType,                                    // 记录集的类型

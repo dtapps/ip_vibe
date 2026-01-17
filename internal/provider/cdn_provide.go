@@ -15,14 +15,21 @@ import (
 
 // ---------- CDN 模块 ----------
 
+// CDNProviderInternalData 定义了 CDN 提供程序的内部数据
+type CDNProviderInternalData struct {
+	RecordID   string // 域名ID
+	CdnDomain  string // CDN域名
+	IsContinue bool   // 是否继续
+}
+
 // CDNProvider 定义 CDN 提供程序接口
 type CDNProvider interface {
 	// Name 返回 CDN 提供程序的名称
 	Name() string
 	// Check 检查 CDN 记录是否存在
-	Check(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (recordID string, cdnDomain string, isContinue bool, err error)
+	Check(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (data *CDNProviderInternalData, err error)
 	// Update 更新 CDN 记录
-	Update(ctx context.Context, recordID string, domain string, subdomain string, originValues []string, recordType string) (err error)
+	Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error)
 	// ParseCustomConfig 解析 CDN 自定义配置
 	ParseCustomConfig(config_json json.RawMessage) (err error)
 }
@@ -142,8 +149,7 @@ func (t *CDNTask) Execute(ctx context.Context) (err error) {
 	t.logger.DebugContext(ctx, "执行检查",
 		slog.String("提供商", t.provider.Name()),
 	)
-	var isContinue = true
-	t.config.recordID, t.config.cdnDomain, isContinue, err = t.provider.Check(
+	checkData, err := t.provider.Check(
 		ctx,
 		t.config.domain,
 		t.config.subdomain,
@@ -153,13 +159,14 @@ func (t *CDNTask) Execute(ctx context.Context) (err error) {
 	if err != nil {
 		t.logger.ErrorContext(ctx, "检查失败",
 			slog.String("提供商", t.provider.Name()),
-			slog.String("域名ID", t.config.recordID),
 			slog.Any("err", err),
 		)
 		return err
 	}
+	t.config.recordID = checkData.RecordID
+	t.config.cdnDomain = checkData.CdnDomain
 
-	if !isContinue {
+	if !checkData.IsContinue {
 		t.logger.WarnContext(ctx, "没有变化无需更新",
 			slog.String("提供商", t.provider.Name()),
 		)
@@ -173,7 +180,6 @@ func (t *CDNTask) Execute(ctx context.Context) (err error) {
 	)
 	if err := t.provider.Update(
 		ctx,
-		t.config.recordID,
 		t.config.domain,
 		t.config.subdomain,
 		t.config.newOriginValues,

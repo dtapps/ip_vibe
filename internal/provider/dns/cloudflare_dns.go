@@ -63,6 +63,9 @@ type CloudfareDNSProvider struct {
 		Opts   []option.RequestOption
 		Client *cloudflare.Client
 	}
+
+	// 内部数据
+	InternalData *provider.DNSProviderInternalData
 }
 
 // NewCloudfareDNSProvider 创建Cloudfare DNS 提供程序
@@ -86,6 +89,7 @@ func NewCloudfareDNSProviderRaw(ctx context.Context, cfg *CloudfareDNSConfig, op
 		cfg:          cfg,
 		opts:         &dnsOptions{},
 		CustomConfig: &CloudfareDNSCustomConfig{},
+		InternalData: &provider.DNSProviderInternalData{},
 	}
 
 	// 应用选项
@@ -116,7 +120,7 @@ func (p *CloudfareDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/list/
-func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (recordID string, isContinue bool, err error) {
+func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -138,7 +142,8 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 	}
 	// 响应参数
 	if response.Result == nil || len(response.Result) == 0 {
-		return "", true, nil
+		p.InternalData.IsContinue = true
+		return p.InternalData, nil
 	}
 	for _, item := range response.Result {
 
@@ -160,35 +165,39 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 			}
 
 			// 域名ID
-			recordID = item.ID
+			p.InternalData.RecordID = item.ID
 
 			// 判断记录值
 			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
-				return recordID, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
 			// 判断解析记录描述
 			if !utils.EqualDomainIgnoreCase(itemComment, p.CustomConfig.Comment) {
-				return recordID, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
-			return recordID, false, nil
+			p.InternalData.IsContinue = false
+			return p.InternalData, nil
 		}
 	}
 
 	// 未找到记录
-	return "", true, nil
+	p.InternalData.IsContinue = true
+	return p.InternalData, nil
 }
 
 // Update 更新 DNS 记录
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/create/
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/edit/
-func (p *CloudfareDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValue string, recordType string) (err error) {
+func (p *CloudfareDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
-	if recordID == "" {
+	if p.InternalData.RecordID == "" {
 		// 请求参数
 		requestBody := dns.ARecordParam{}
 		requestBody.Name = cloudflare.String(fullDomain)
@@ -207,7 +216,7 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, recordID string, doma
 		}
 	}
 
-	if recordID != "" {
+	if p.InternalData.RecordID != "" {
 		// 请求参数
 		requestBody := dns.ARecordParam{}
 		requestBody.Name = cloudflare.String(fullDomain)
@@ -219,7 +228,7 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, recordID string, doma
 			Body:   requestBody,
 		}
 		// 请求
-		response, err := p.Provider.Client.DNS.Records.Edit(ctx, recordID, request)
+		response, err := p.Provider.Client.DNS.Records.Edit(ctx, p.InternalData.RecordID, request)
 		printJSON("更新域名记录", request, response)
 		if err != nil {
 			return err

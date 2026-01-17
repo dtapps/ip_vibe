@@ -66,6 +66,9 @@ type BaiduDNSProvider struct {
 	Provider     struct {
 		Client *dns.Client
 	}
+
+	// 内部数据
+	InternalData *provider.DNSProviderInternalData
 }
 
 // NewBaiduDNSProvider 创建百度云 DNS 提供程序
@@ -90,6 +93,7 @@ func NewBaiduDNSProviderRaw(ctx context.Context, cfg *BaiduDNSConfig, opts ...Dn
 		cfg:          cfg,
 		opts:         &dnsOptions{},
 		CustomConfig: &BaiduDNSCustomConfig{},
+		InternalData: &provider.DNSProviderInternalData{},
 	}
 
 	// 应用选项
@@ -124,7 +128,7 @@ func (p *BaiduDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#查询解析记录列表
-func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (recordID string, isContinue bool, err error) {
+func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
 
 	// 请求参数
 	request := &dns.ListRecordRequest{}
@@ -138,7 +142,8 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 	}
 	// 响应参数
 	if response.Records == nil || len(response.Records) == 0 {
-		return "", true, nil
+		p.InternalData.IsContinue = true
+		return p.InternalData, nil
 	}
 	for _, item := range response.Records {
 
@@ -159,37 +164,42 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 			}
 
 			// 域名ID
-			recordID = item.Id
+			p.InternalData.RecordID = item.Id
 
 			// 判断记录值
 			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
-				return recordID, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
 			// 判断解析记录对应的线路
 			if !utils.EqualDomainIgnoreCase(itemLine, p.CustomConfig.Line) {
-				return recordID, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
 			// 判断解析记录描述
 			if !utils.EqualDomainIgnoreCase(itemDescription, p.CustomConfig.Description) {
-				return recordID, true, nil
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
 			}
 
-			return recordID, false, nil
+			p.InternalData.IsContinue = false
+			return p.InternalData, nil
 		}
 	}
 
 	// 未找到记录
-	return "", true, nil
+	p.InternalData.IsContinue = true
+	return p.InternalData, nil
 }
 
 // Update 更新 DNS 记录
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#添加解析记录
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#修改解析记录
-func (p *BaiduDNSProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValue string, recordType string) (err error) {
+func (p *BaiduDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
 
-	if recordID == "" {
+	if p.InternalData.RecordID == "" {
 		// 请求参数
 		request := &dns.CreateRecordRequest{}
 		request.Rr = subdomain                                              // 主机记录
@@ -205,7 +215,7 @@ func (p *BaiduDNSProvider) Update(ctx context.Context, recordID string, domain s
 		}
 	}
 
-	if recordID != "" {
+	if p.InternalData.RecordID != "" {
 		// 请求参数
 		request := &dns.UpdateRecordRequest{}
 		request.Rr = subdomain                                              // 主机记录
@@ -213,7 +223,7 @@ func (p *BaiduDNSProvider) Update(ctx context.Context, recordID string, domain s
 		request.Value = originValue                                         // 记录值
 		request.Description = utils.StringToPtr(p.CustomConfig.Description) // 解析记录描述
 		// 请求
-		err = p.Provider.Client.UpdateRecord(domain, recordID, request, util.NewUUID())
+		err = p.Provider.Client.UpdateRecord(domain, p.InternalData.RecordID, request, util.NewUUID())
 		printJSON("更新域名记录", request, nil)
 		if err != nil {
 			return err
