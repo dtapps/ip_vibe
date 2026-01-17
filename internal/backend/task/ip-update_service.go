@@ -49,13 +49,11 @@ type IPUpdateTask struct {
 func NewIPUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) *IPUpdateTask {
 	webhookService := webhookService.NewSend(db, logDb)
 	return &IPUpdateTask{
-		db:        db,
-		logDb:     logDb,
-		cron:      cron,
-		jobHelper: gocron_helper.NewJobHelper(cron, logger),
-		logger: logger.With(
-			slog.String("任务", "IP更新"),
-		),
+		db:             db,
+		logDb:          logDb,
+		cron:           cron,
+		jobHelper:      gocron_helper.NewJobHelper(cron, logger),
+		logger:         logger,
 		httpTransport:  httpTransport,
 		webhookService: webhookService,
 		debug:          debug,
@@ -167,9 +165,7 @@ func (s *IPUpdateTask) RunDnsTask() {
 	ctx := schemahook.WithSource(context.Background(), operationlog.SourceTask.String())
 
 	// 日志
-	logger := s.jobHelper.SlogWith(s.logger.With(
-		slog.String("类型", "DNS"),
-	), s.dnsJob.ID().String(), s.dnsJob.Name())
+	logger := s.jobHelper.SlogWith(s.logger, s.dnsJob.ID().String(), s.dnsJob.Name())
 	logger.InfoContext(ctx, "开始执行")
 
 	// 分组记录
@@ -265,6 +261,11 @@ func (s *IPUpdateTask) RunDnsTask() {
 			}
 		}
 
+		logger.InfoContext(ctx, "数量",
+			slog.Int("并发记录数", len(concurrentRecords)),
+			slog.Int("串行记录数", len(serialRecords)),
+		)
+
 		// 1. 并发处理支持并发的记录
 		if len(concurrentRecords) > 0 {
 
@@ -314,23 +315,6 @@ func (s *IPUpdateTask) RunDnsTask() {
 
 	}
 
-	nextRun, err := s.dnsJob.NextRun()
-	if err == nil {
-		logger.InfoContext(ctx, "执行完成",
-			slog.Int("并发记录数", len(concurrentRecords)),
-			slog.Int("串行记录数", len(serialRecords)),
-			slog.String("下次运行时间", nextRun.Format(time.DateTime)),
-		)
-		// 判断CDN任务是否存在
-		// if s.cdnJob == nil {
-		// 	go s.StartCdnJob(context.Background())
-		// }
-	} else {
-		logger.InfoContext(ctx, "执行完成",
-			slog.Int("并发记录数", len(concurrentRecords)),
-			slog.Int("串行记录数", len(serialRecords)),
-		)
-	}
 }
 
 // 运行CDN任务
@@ -340,9 +324,7 @@ func (s *IPUpdateTask) RunCdnTask() {
 	ctx := schemahook.WithSource(context.Background(), operationlog.SourceTask.String())
 
 	// 日志
-	logger := s.jobHelper.SlogWith(s.logger.With(
-		slog.String("类型", "CDN"),
-	), s.cdnJob.ID().String(), s.cdnJob.Name())
+	logger := s.jobHelper.SlogWith(s.logger, s.cdnJob.ID().String(), s.cdnJob.Name())
 	logger.InfoContext(ctx, "开始执行")
 
 	// 分组记录
@@ -434,6 +416,11 @@ func (s *IPUpdateTask) RunCdnTask() {
 			}
 		}
 
+		logger.InfoContext(ctx, "数量",
+			slog.Int("并发记录数", len(concurrentRecords)),
+			slog.Int("串行记录数", len(serialRecords)),
+		)
+
 		// 1. 并发处理支持并发的记录
 		if len(concurrentRecords) > 0 {
 
@@ -483,22 +470,9 @@ func (s *IPUpdateTask) RunCdnTask() {
 
 	}
 
-	nextRun, err := s.cdnJob.NextRun()
-	if err == nil {
-		logger.InfoContext(ctx, "执行完成",
-			slog.Int("并发记录数", len(concurrentRecords)),
-			slog.Int("串行记录数", len(serialRecords)),
-			slog.String("下次运行时间", nextRun.Format(time.DateTime)),
-		)
-		// 判断DNS任务是否存在
-		if s.dnsJob == nil {
-			go s.StartDnsJob(context.Background())
-		}
-	} else {
-		logger.InfoContext(ctx, "执行完成",
-			slog.Int("并发记录数", len(concurrentRecords)),
-			slog.Int("串行记录数", len(serialRecords)),
-		)
+	// 判断DNS任务是否存在
+	if s.dnsJob == nil {
+		go s.StartDnsJob(context.Background())
 	}
 }
 
