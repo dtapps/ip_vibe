@@ -50,8 +50,8 @@ func NewDNSTask(logger *slog.Logger, provider DNSProvider, platform_config_json 
 	if len(t.platform_config_json) > 0 {
 		var platformConfig PlatformConfigJson
 		if err := json.Unmarshal(t.platform_config_json, &platformConfig); err != nil {
-			t.logger.Error("【DNS】解析平台配置失败",
-				slog.String("name", t.provider.Name()),
+			t.logger.Error("解析平台配置失败",
+				slog.String("提供商", t.provider.Name()),
 				slog.Any("err", err),
 			)
 			return nil, err
@@ -101,35 +101,38 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 	if t.provider == nil {
 		return nil
 	}
+	t.logger.InfoContext(ctx, "开始执行",
+		slog.String("提供商", t.provider.Name()),
+		slog.String("域名名称", t.config.domain),
+		slog.String("子域名", t.config.subdomain),
+		slog.String("记录类型", t.config.recordType),
+		slog.String("新记录值", t.config.newOriginValue),
+		slog.String("自定义配置", string(t.record_config_json)),
+	)
+	defer t.logger.InfoContext(ctx, "执行完成")
 
 	// 验证配置
+	t.logger.DebugContext(ctx, "执行验证配置")
 	if err := t.Validate(); err != nil {
-		t.logger.Error("【DNS】配置验证失败",
-			slog.String("name", t.provider.Name()),
+		t.logger.ErrorContext(ctx, "验证配置失败",
+			slog.String("提供商", t.provider.Name()),
 			slog.Any("err", err),
 		)
 		return err
 	}
 
-	t.logger.Info("【DNS】开始更新",
-		slog.String("provider", t.provider.Name()),
-		slog.String("domain", t.config.domain),
-		slog.String("subdomain", t.config.subdomain),
-		slog.String("recordType", t.config.recordType),
-		slog.String("newOriginValue", t.config.newOriginValue),
-		slog.String("config_json", string(t.record_config_json)),
-	)
-
 	if len(t.record_config_json) > 0 {
+		t.logger.DebugContext(ctx, "执行解析自定义配置")
 		if err := t.provider.ParseCustomConfig(t.record_config_json); err != nil {
-			t.logger.Error("【DNS】解析自定义配置失败",
-				slog.String("name", t.provider.Name()),
+			t.logger.ErrorContext(ctx, "解析自定义配置失败",
+				slog.String("提供商", t.provider.Name()),
 				slog.Any("err", err),
 			)
 			return err
 		}
 	}
 
+	t.logger.DebugContext(ctx, "执行检查")
 	var isContinue = true
 	t.config.recordID, isContinue, err = t.provider.Check(
 		ctx,
@@ -139,19 +142,20 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 		t.config.recordType,
 	)
 	if err != nil {
-		t.logger.Error("【DNS】检查失败",
-			slog.String("recordID", t.config.recordID),
-			slog.String("name", t.provider.Name()),
+		t.logger.ErrorContext(ctx, "检查失败",
+			slog.String("提供商", t.provider.Name()),
+			slog.String("域名ID", t.config.recordID),
 			slog.Any("err", err),
 		)
 		return err
 	}
 
 	if !isContinue {
-		t.logger.Info("【DNS】未改变，无需更新")
+		t.logger.WarnContext(ctx, "没有变化无需更新")
 		return nil
 	}
 
+	t.logger.DebugContext(ctx, "执行更新")
 	if err := t.provider.Update(
 		ctx,
 		t.config.recordID,
@@ -160,8 +164,8 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 		t.config.newOriginValue,
 		t.config.recordType,
 	); err != nil {
-		t.logger.Error("【DNS】更新失败",
-			slog.String("name", t.provider.Name()),
+		t.logger.ErrorContext(ctx, "更新失败",
+			slog.String("提供商", t.provider.Name()),
 			slog.Any("err", err),
 		)
 		return err
@@ -170,7 +174,6 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 	// 可以下发通知
 	t.isNotification = true
 
-	t.logger.Info("【DNS】更新成功")
 	return nil
 }
 
@@ -186,8 +189,8 @@ func (t *DNSTask) SaveResponse(ctx context.Context, db *ent.Client, id int64, la
 		SetLastAPIResponseAt(time.Now()).
 		Exec(ctx)
 	if err != nil {
-		t.logger.Error("【DNS】保存响应失败",
-			slog.String("name", t.provider.Name()),
+		t.logger.ErrorContext(ctx, "保存响应失败",
+			slog.String("提供商", t.provider.Name()),
 			slog.Any("err", err),
 		)
 		return err
@@ -220,8 +223,8 @@ func (t *DNSTask) Notify(ctx context.Context, webhookService *webhookService.Sen
 		id,
 		notifyData,
 	); err != nil {
-		t.logger.Error("【DNS】通知失败",
-			slog.String("name", t.provider.Name()),
+		t.logger.ErrorContext(ctx, "通知失败",
+			slog.String("提供商", t.provider.Name()),
 			slog.Any("err", err),
 		)
 	}

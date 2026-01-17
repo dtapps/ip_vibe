@@ -571,11 +571,7 @@ func (s *IPUpdateTask) CdnUpdateNew(ctx context.Context, logger *slog.Logger, pa
 
 	// 日志
 	logger = logger.With(
-		slog.String("处理编号", gorandom.Alphanumeric(10)),
 		slog.String("记录", params.CDNRecordID),
-		slog.String("提供商", params.record.Type.String()),
-		slog.String("平台", params.platform.Platform.String()),
-		slog.String("子域名", params.record.SubDomain),
 	)
 	logger.InfoContext(ctx, "开始处理")
 	defer logger.InfoContext(ctx, "处理完成")
@@ -665,11 +661,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 
 	// 日志
 	logger = logger.With(
-		slog.String("处理编号", gorandom.Alphanumeric(10)),
 		slog.String("记录", params.DNSRecordID),
-		slog.String("提供商", params.record.Type.String()),
-		slog.String("平台", params.platform.Platform.String()),
-		slog.String("子域名", params.record.SubDomain),
 	)
 	logger.InfoContext(ctx, "开始处理")
 	defer logger.InfoContext(ctx, "处理完成")
