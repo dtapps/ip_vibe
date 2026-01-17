@@ -126,7 +126,7 @@ func (p *JdcloudDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://docs.jdcloud.com/cn/jd-cloud-dns/api/describeresourcerecord
-func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, originValue string, err error) {
+func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (recordID string, isContinue bool, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -147,21 +147,33 @@ func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain
 	}
 	// 响应参数
 	for _, item := range response.Result.DataList {
+		// 查找记录类型
+		itemRecordType := item.Type
 		// 查找域名
 		itemFullDomain := item.HostValue
+		// 查找记录值
+		itemOriginValue := item.HostValue
+
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
-			if recordType != "" && !utils.EqualStringIgnoreCase(item.Type, recordType) {
+
+			// 检查记录类型
+			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {
 				continue
 			}
+
 			// 域名ID
 			recordID = cast.ToString(item.Id)
-			// 记录值
-			originValue = item.HostValue
-			return recordID, originValue, nil
+
+			// 判断记录值
+			if utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+				return recordID, false, nil
+			}
+			return recordID, true, nil
 		}
 	}
 
-	return "", "", provider.ErrRecordNotFound
+	// 未找到记录
+	return "", true, nil
 }
 
 // Update 更新 DNS 记录

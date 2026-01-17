@@ -154,7 +154,7 @@ func (p *VolcengineDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://api.volcengine.com/api-explorer?action=ListRecords
-func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, originValue string, err error) {
+func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (recordID string, isContinue bool, err error) {
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -179,19 +179,31 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 	for _, item := range response.Records {
 		// 查找域名
 		itemFullDomain := volcengine.StringValue(item.Host)
+		// 查找记录类型
+		itemRecordType := utils.PtrToString(item.Type)
+		// 查找记录值
+		itemOriginValue := utils.PtrToString(item.Value)
+
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
-			if recordType != "" && !utils.EqualStringIgnoreCase(utils.PtrToString(item.Type), recordType) {
+
+			// 检查记录类型
+			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {
 				continue
 			}
+
 			// 域名ID
 			recordID = volcengine.StringValue(item.RecordID)
-			// 记录值
-			originValue = utils.PtrToString(item.Value)
-			return recordID, originValue, nil
+
+			// 判断记录值
+			if utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+				return recordID, false, nil
+			}
+			return recordID, true, nil
 		}
 	}
 
-	return "", "", provider.ErrRecordNotFound
+	// 未找到记录
+	return "", true, nil
 }
 
 // Update 更新 DNS 记录

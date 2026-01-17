@@ -124,7 +124,7 @@ func (p *BaiduDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#查询解析记录列表
-func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, originValue string, err error) {
+func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (recordID string, isContinue bool, err error) {
 
 	// 请求参数
 	request := &dns.ListRecordRequest{}
@@ -138,19 +138,31 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 	}
 	// 响应参数
 	for _, item := range response.Records {
-		if utils.EqualStringIgnoreCase(item.Rr, subdomain) {
-			if recordType != "" && !utils.EqualStringIgnoreCase(item.Type, recordType) {
+		// 查找记录类型
+		itemRecordType := item.Type
+		// 查找记录值
+		itemOriginValue := item.Value
+
+		if utils.EqualDomainIgnoreCase(item.Rr, subdomain) {
+
+			// 检查记录类型
+			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {
 				continue
 			}
+
 			// 域名ID
 			recordID = item.Id
-			// 记录值
-			originValue = item.Value
-			return recordID, originValue, nil
+
+			// 判断记录值
+			if utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+				return recordID, false, nil
+			}
+			return recordID, true, nil
 		}
 	}
 
-	return "", "", provider.ErrRecordNotFound
+	// 未找到记录
+	return "", true, nil
 }
 
 // Update 更新 DNS 记录

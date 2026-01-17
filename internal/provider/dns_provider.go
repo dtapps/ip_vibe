@@ -3,7 +3,6 @@ package provider
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log/slog"
 	"time"
@@ -20,7 +19,7 @@ type DNSProvider interface {
 	// Name 返回 DNS 提供程序的名称
 	Name() (name string)
 	// Check 检查 DNS 记录是否存在
-	Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, originValue string, err error)
+	Check(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (recordID string, isContinue bool, err error)
 	// Update 更新 DNS 记录
 	Update(ctx context.Context, recordID string, domain string, subdomain string, originValue string, recordType string) (err error)
 	// ParseCustomConfig 解析 DNS 自定义配置
@@ -131,13 +130,15 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 		}
 	}
 
-	t.config.recordID, t.config.oldOriginValue, err = t.provider.Check(
+	var isContinue = true
+	t.config.recordID, isContinue, err = t.provider.Check(
 		ctx,
 		t.config.domain,
 		t.config.subdomain,
+		t.config.newOriginValue,
 		t.config.recordType,
 	)
-	if err != nil && !errors.Is(err, ErrRecordNotFound) {
+	if err != nil {
 		t.logger.Error("【DNS】检查失败",
 			slog.String("recordID", t.config.recordID),
 			slog.String("name", t.provider.Name()),
@@ -146,7 +147,7 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 		return err
 	}
 
-	if utils.EqualStringIgnoreCase(t.config.oldOriginValue, t.config.newOriginValue) {
+	if !isContinue {
 		t.logger.Info("【DNS】未改变，无需更新")
 		return nil
 	}

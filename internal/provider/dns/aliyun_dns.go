@@ -140,7 +140,7 @@ func (p *AliyunDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/DescribeDomainRecords
-func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain string, recordType string) (recordID string, originValue string, err error) {
+func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (recordID string, isContinue bool, err error) {
 
 	// 请求参数
 	request := &alidns20150109.DescribeDomainRecordsRequest{}
@@ -158,19 +158,31 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 	}
 	// 响应参数
 	for _, item := range response.Body.DomainRecords.Record {
-		if utils.EqualStringIgnoreCase(tea.StringValue(item.RR), subdomain) && utils.EqualStringIgnoreCase(tea.StringValue(item.DomainName), domain) {
-			if recordType != "" && !utils.EqualStringIgnoreCase(tea.StringValue(item.Type), recordType) {
+		// 查找记录类型
+		itemRecordType := tea.StringValue(item.Type)
+		// 查找记录值
+		itemOriginValue := tea.StringValue(item.Value)
+
+		if utils.EqualDomainIgnoreCase(tea.StringValue(item.RR), subdomain) && utils.EqualDomainIgnoreCase(tea.StringValue(item.DomainName), domain) {
+
+			// 检查记录类型
+			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {
 				continue
 			}
+
 			// 域名ID
 			recordID = tea.StringValue(item.RecordId)
-			// 记录值
-			originValue = tea.StringValue(item.Value)
-			return recordID, originValue, nil
+
+			// 判断记录值
+			if utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+				return recordID, false, nil
+			}
+			return recordID, true, nil
 		}
 	}
 
-	return "", "", provider.ErrRecordNotFound
+	// 未找到记录
+	return "", true, nil
 }
 
 // Update 更新 DNS 记录
