@@ -40,7 +40,7 @@ func (cfg *BaiduDNSConfig) Validate() error {
 // NewDefaultBaiduDNSConfig 创建默认的百度云 DNS 配置
 func NewDefaultBaiduDNSConfig() *BaiduDNSConfig {
 	return &BaiduDNSConfig{
-		Endpoint: "dns.baidubce.com",
+		Endpoint: "https://dns.baidubce.com",
 	}
 }
 

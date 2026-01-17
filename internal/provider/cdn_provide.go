@@ -103,17 +103,21 @@ func (t *CDNTask) Execute(ctx context.Context) (err error) {
 		return nil
 	}
 	t.logger.InfoContext(ctx, "开始执行",
-		slog.String("provider", t.provider.Name()),
+		slog.String("提供商", t.provider.Name()),
 		slog.String("域名名称", t.config.domain),
 		slog.String("子域名", t.config.subdomain),
 		slog.String("记录类型", t.config.recordType),
 		slog.String("新记录值列表", strings.Join(t.config.newOriginValues, ",")),
 		slog.String("自定义配置", string(t.record_config_json)),
 	)
-	defer t.logger.InfoContext(ctx, "执行完成")
+	defer t.logger.InfoContext(ctx, "执行完成",
+		slog.String("提供商", t.provider.Name()),
+	)
 
 	// 验证配置
-	t.logger.DebugContext(ctx, "执行验证配置")
+	t.logger.DebugContext(ctx, "执行验证配置",
+		slog.String("提供商", t.provider.Name()),
+	)
 	if err := t.Validate(); err != nil {
 		t.logger.ErrorContext(ctx, "验证配置失败",
 			slog.String("提供商", t.provider.Name()),
@@ -123,7 +127,9 @@ func (t *CDNTask) Execute(ctx context.Context) (err error) {
 	}
 
 	if len(t.record_config_json) > 0 {
-		t.logger.DebugContext(ctx, "执行解析自定义配置")
+		t.logger.DebugContext(ctx, "执行解析自定义配置",
+			slog.String("提供商", t.provider.Name()),
+		)
 		if err := t.provider.ParseCustomConfig(t.record_config_json); err != nil {
 			t.logger.ErrorContext(ctx, "解析自定义配置失败",
 				slog.String("提供商", t.provider.Name()),
@@ -133,7 +139,9 @@ func (t *CDNTask) Execute(ctx context.Context) (err error) {
 		}
 	}
 
-	t.logger.DebugContext(ctx, "执行检查")
+	t.logger.DebugContext(ctx, "执行检查",
+		slog.String("提供商", t.provider.Name()),
+	)
 	var isContinue = true
 	t.config.recordID, t.config.cdnDomain, isContinue, err = t.provider.Check(
 		ctx,
@@ -152,11 +160,17 @@ func (t *CDNTask) Execute(ctx context.Context) (err error) {
 	}
 
 	if !isContinue {
-		t.logger.WarnContext(ctx, "没有变化无需更新")
+		t.logger.WarnContext(ctx, "没有变化无需更新",
+			slog.String("提供商", t.provider.Name()),
+		)
 		return nil
 	}
 
-	t.logger.DebugContext(ctx, "执行更新")
+	t.logger.DebugContext(ctx, "执行更新",
+		slog.String("提供商", t.provider.Name()),
+		slog.String("域名ID", t.config.recordID),
+		slog.String("CDN域名", t.config.cdnDomain),
+	)
 	if err := t.provider.Update(
 		ctx,
 		t.config.recordID,

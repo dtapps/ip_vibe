@@ -916,7 +916,7 @@ github.com/zclconf/go-cty/cty/set
 # github.com/zclconf/go-cty-yaml v1.2.0
 ## explicit; go 1.17
 github.com/zclconf/go-cty-yaml
-# go.dtapp.net/library/contrib/http_log v1.0.9
+# go.dtapp.net/library/contrib/http_log v1.0.10
 ## explicit; go 1.25.1
 go.dtapp.net/library/contrib/http_log
 # go.dtapp.net/library/contrib/req_log v1.0.3

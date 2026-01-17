@@ -160,7 +160,20 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 	if response.Response == nil || len(response.Response.AccelerationDomains) == 0 {
 		return "", "", true, nil
 	}
-	for _, item := range response.Response.AccelerationDomains {
+
+	// 自定义一个结构体，获取域名ID
+	var customResponse struct {
+		Response struct {
+			AccelerationDomains []struct {
+				DomainId string `json:"DomainId,omitempty"`
+			} `json:"AccelerationDomains,omitempty"`
+		} `json:"Response,omitempty"`
+	}
+	if err := json.Unmarshal([]byte(response.ToJsonString()), &customResponse); err != nil {
+		return "", "", true, err
+	}
+
+	for key, item := range response.Response.AccelerationDomains {
 
 		// 查找域名
 		itemFullDomain := utils.PtrToString(item.DomainName)
@@ -180,7 +193,7 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 			itemIPv6Status := utils.PtrToString(item.IPv6Status)
 
 			// 域名ID
-			// recordID = utils.PtrToString(item.DomainId)
+			recordID = customResponse.Response.AccelerationDomains[key].DomainId
 
 			// CDN域名
 			cdnDomain = utils.TrimDotsPrt(item.Cname)
@@ -228,6 +241,15 @@ func (p *TencentEOProvider) Update(ctx context.Context, recordID string, domain 
 	// 回源协议，转大写
 	p.CustomConfig.OriginProtocol = strings.ToUpper(p.CustomConfig.OriginProtocol)
 
+	// 源站信息
+	originInfo := new(teo.OriginInfo{})
+	if len(originValues) == 1 {
+		originInfo.OriginType = common.StringPtr("IP_DOMAIN") // 源站类型
+		originInfo.Origin = common.StringPtr(originValues[0]) // 源站地址
+	} else {
+
+	}
+
 	// HTTP回源端口，默认80
 	if p.CustomConfig.HttpPort == 0 {
 		p.CustomConfig.HttpPort = 80
@@ -241,12 +263,9 @@ func (p *TencentEOProvider) Update(ctx context.Context, recordID string, domain 
 	if recordID == "" {
 		// 请求参数
 		request := teo.NewCreateAccelerationDomainRequest()
-		request.ZoneId = common.StringPtr(p.cfg.ZoneID)   // 加速域名所属站点 ID
-		request.DomainName = common.StringPtr(fullDomain) // 加速域名
-		request.OriginInfo = &teo.OriginInfo{
-			OriginType: common.StringPtr("IP_DOMAIN"),     // 源站类型
-			Origin:     common.StringPtr(originValues[0]), // 源站地址
-		}
+		request.ZoneId = common.StringPtr(p.cfg.ZoneID)                              // 加速域名所属站点 ID
+		request.DomainName = common.StringPtr(fullDomain)                            // 加速域名
+		request.OriginInfo = originInfo                                              // 源站信息
 		request.OriginProtocol = common.StringPtr(p.CustomConfig.OriginProtocol)     // 回源协议
 		request.HttpOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpPort))   // HTTP回源端口
 		request.HttpsOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpsPort)) // HTTPS回源端口
@@ -262,12 +281,9 @@ func (p *TencentEOProvider) Update(ctx context.Context, recordID string, domain 
 	if recordID != "" {
 		// 请求参数
 		request := teo.NewModifyAccelerationDomainRequest()
-		request.ZoneId = common.StringPtr(p.cfg.ZoneID)   // 加速域名所属站点 ID
-		request.DomainName = common.StringPtr(fullDomain) // 加速域名
-		request.OriginInfo = &teo.OriginInfo{
-			OriginType: common.StringPtr("IP_DOMAIN"),     // 源站类型
-			Origin:     common.StringPtr(originValues[0]), // 源站地址
-		}
+		request.ZoneId = common.StringPtr(p.cfg.ZoneID)                              // 加速域名所属站点 ID
+		request.DomainName = common.StringPtr(fullDomain)                            // 加速域名
+		request.OriginInfo = originInfo                                              // 源站信息
 		request.OriginProtocol = common.StringPtr(p.CustomConfig.OriginProtocol)     // 回源协议
 		request.HttpOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpPort))   // HTTP回源端口
 		request.HttpsOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpsPort)) // HTTPS回源端口
