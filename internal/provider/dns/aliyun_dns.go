@@ -162,7 +162,9 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 			if recordType != "" && !utils.EqualStringIgnoreCase(tea.StringValue(item.Type), recordType) {
 				continue
 			}
+			// 域名ID
 			recordID = tea.StringValue(item.RecordId)
+			// 记录值
 			originValue = tea.StringValue(item.Value)
 			return recordID, originValue, nil
 		}

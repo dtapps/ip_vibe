@@ -10,6 +10,25 @@ import (
 	"golang.org/x/net/publicsuffix"
 )
 
+// EqualDomainIgnoreCasePtr 忽略大小写比较域名是否相等
+func EqualDomainIgnoreCasePtr(a, b *string) bool {
+	if a == nil || b == nil {
+		return false
+	}
+	return EqualDomainIgnoreCase(*a, *b)
+}
+
+// EqualDomainIgnoreCase 忽略大小写比较域名是否相等
+func EqualDomainIgnoreCase(a, b string) bool {
+	// 去除前后空格
+	a = strings.TrimSpace(a)
+	b = strings.TrimSpace(b)
+	// 去除开头和结尾的 .
+	a = strings.Trim(a, ".")
+	b = strings.Trim(b, ".")
+	return strings.EqualFold(a, b)
+}
+
 // ExtractDomainParts 提取域名中的主域名和子域
 func ExtractDomainParts(input string) (full, sub, main string, err error) {
 	// 清理输入：去除协议、路径、端口等
@@ -145,6 +164,14 @@ func ParseCdnDomainType(platform string, oV []string) (recordType string, origin
 func ParseDnsDomainType(oV string) (recordType string, originValue string, err error) {
 	recordType, err = GetRecordType(oV)
 	return recordType, oV, err
+}
+
+// TrimDots 去除字符串首尾的点号
+func TrimDotsPrt(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return TrimDots(*s)
 }
 
 // TrimDots 去除字符串首尾的点号

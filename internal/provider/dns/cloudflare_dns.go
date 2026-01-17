@@ -138,11 +138,15 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 	}
 	// 响应参数
 	for _, item := range response.Result {
-		if utils.EqualStringIgnoreCase(item.Name, fullDomain) {
+		// 查找域名
+		itemFullDomain := item.Name
+		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 			if recordType != "" && !utils.EqualStringIgnoreCase(cast.ToString(item.Type), recordType) {
 				continue
 			}
+			// 域名ID
 			recordID = item.ID
+			// 记录值
 			originValue = item.Content
 			return recordID, originValue, nil
 		}

@@ -147,11 +147,15 @@ func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain
 	}
 	// 响应参数
 	for _, item := range response.Result.DataList {
-		if utils.EqualStringIgnoreCase(utils.TrimDots(item.HostValue), utils.TrimDots(fullDomain)) {
+		// 查找域名
+		itemFullDomain := item.HostValue
+		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 			if recordType != "" && !utils.EqualStringIgnoreCase(item.Type, recordType) {
 				continue
 			}
+			// 域名ID
 			recordID = cast.ToString(item.Id)
+			// 记录值
 			originValue = item.HostValue
 			return recordID, originValue, nil
 		}

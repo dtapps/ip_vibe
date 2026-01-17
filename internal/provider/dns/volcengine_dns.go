@@ -177,11 +177,15 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 	}
 	// 响应参数
 	for _, item := range response.Records {
-		if utils.EqualStringIgnoreCase(utils.TrimDots(volcengine.StringValue(item.Host)), utils.TrimDots(fullDomain)) {
+		// 查找域名
+		itemFullDomain := volcengine.StringValue(item.Host)
+		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 			if recordType != "" && !utils.EqualStringIgnoreCase(utils.PtrToString(item.Type), recordType) {
 				continue
 			}
+			// 域名ID
 			recordID = volcengine.StringValue(item.RecordID)
+			// 记录值
 			originValue = utils.PtrToString(item.Value)
 			return recordID, originValue, nil
 		}

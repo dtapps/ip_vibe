@@ -142,7 +142,9 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 			if recordType != "" && !utils.EqualStringIgnoreCase(item.Type, recordType) {
 				continue
 			}
+			// 域名ID
 			recordID = item.Id
+			// 记录值
 			originValue = item.Value
 			return recordID, originValue, nil
 		}

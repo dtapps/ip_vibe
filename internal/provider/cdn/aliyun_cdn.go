@@ -163,7 +163,9 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 	}
 	// 响应参数
 	for _, item := range response.Body.Domains.PageData {
-		if utils.EqualStringIgnoreCase(tea.StringValue(item.DomainName), fullDomain) {
+		// 查找域名
+		itemFullDomain := tea.StringValue(item.DomainName)
+		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 			// 域名ID
 			recordID = cast.ToString(tea.Int64Value(item.DomainId))
 			// CDN域名

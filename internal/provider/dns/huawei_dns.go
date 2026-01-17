@@ -177,11 +177,13 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 	}
 	// 响应参数
 	for _, item := range *response.Recordsets {
-		if utils.EqualStringIgnoreCase(utils.TrimDots(utils.PtrToString(item.Name)), utils.TrimDots(fullDomain)) {
+		if utils.EqualStringIgnoreCase(utils.TrimDotsPrt(item.Name), utils.TrimDots(fullDomain)) {
 			if recordType != "" && !utils.EqualStringIgnoreCase(utils.PtrToString(item.Type), recordType) {
 				continue
 			}
+			// 域名ID
 			recordID = utils.PtrToString(item.Id)
+			// 记录值
 			originValue = strings.Join(utils.PtrToStrings(item.Records), ",")
 			return recordID, originValue, nil
 		}

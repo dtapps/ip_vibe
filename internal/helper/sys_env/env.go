@@ -1,7 +1,7 @@
 package sys_env
 
 import (
-	"log/slog"
+	"fmt"
 	"os"
 )
 
@@ -52,5 +52,5 @@ func init() {
 	GvaEnv.DEVICE_CODE = getVal("DEVICE_CODE", "")
 	GvaEnv.DEVICE_NAME = getVal("DEVICE_NAME", "")
 
-	slog.Debug("sys_env", "env", GvaEnv)
+	fmt.Println("sys_env:", GvaEnv)
 }

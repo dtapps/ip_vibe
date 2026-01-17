@@ -153,7 +153,9 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 			if recordType != "" && !utils.EqualStringIgnoreCase(utils.PtrToString(item.Type), recordType) {
 				continue
 			}
+			// 域名ID
 			recordID = cast.ToString(*item.RecordId)
+			// 记录值
 			originValue = utils.PtrToString(item.Value)
 			return recordID, originValue, nil
 		}

@@ -155,11 +155,13 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 	}
 	// 响应参数
 	for _, item := range response.Response.Domains {
-		if utils.EqualStringIgnoreCase(utils.PtrToString(item.Domain), fullDomain) {
+		// 查找域名
+		itemFullDomain := utils.PtrToString(item.Domain)
+		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 			// 域名ID
 			recordID = utils.PtrToString(item.ResourceId)
 			// CDN域名
-			cdnDomain = utils.TrimDots(utils.PtrToString(item.Cname))
+			cdnDomain = utils.TrimDotsPrt(item.Cname)
 			// 记录值列表
 			for _, origin := range item.Origin.Origins {
 				originValues = append(originValues, utils.PtrToString(origin))

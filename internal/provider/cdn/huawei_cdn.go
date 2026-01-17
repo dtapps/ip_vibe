@@ -171,11 +171,13 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 		return "", "", []string{}, provider.ErrRecordNotFound
 	}
 	for _, item := range *response.Domains {
-		if utils.EqualStringIgnoreCase(utils.TrimDots(utils.PtrToString(item.DomainName)), utils.TrimDots(fullDomain)) {
+		// 查找域名
+		itemFullDomain := utils.PtrToString(item.DomainName)
+		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 			// 域名ID
 			recordID = utils.PtrToString(item.Id)
 			// CDN域名
-			cdnDomain = utils.TrimDots(utils.PtrToString(item.DomainName))
+			cdnDomain = utils.TrimDotsPrt(item.Cname)
 			// 记录值列表
 			sources := *item.Sources
 			for _, source := range sources {

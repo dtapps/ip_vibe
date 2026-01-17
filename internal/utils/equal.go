@@ -7,6 +7,9 @@ import (
 
 // EqualStringIgnoreCase 忽略大小写的字符串比较
 func EqualStringIgnoreCase(a, b string) bool {
+	// 去除前后空格
+	a = strings.TrimSpace(a)
+	b = strings.TrimSpace(b)
 	return strings.EqualFold(a, b)
 }
 
