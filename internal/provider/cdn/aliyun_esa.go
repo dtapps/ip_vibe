@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"vibe_ip/internal/helper/aliyun_helper"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
@@ -181,6 +182,10 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 			// 查找记录值列表
 			itemOriginValues := make([]string, 0)
 			itemOriginValues = append(itemOriginValues, tea.StringValue(item.Data.Value))
+			// 查找用于标记DNS记录的业务场景
+			itemBizName := tea.StringValue(item.BizName)
+			// 查找记录的备注信息
+			itemComment := tea.StringValue(item.Comment)
 
 			// 域名ID
 			p.InternalData.RecordID = cast.ToString(tea.Int64Value(item.RecordId))
@@ -190,6 +195,18 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 
 			// 判断记录值列表
 			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
+			}
+
+			// 判断用于标记DNS记录的业务场景
+			if p.CustomConfig.BizName != itemBizName {
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
+			}
+
+			// 判断记录的备注信息
+			if p.CustomConfig.Comment != itemComment {
 				p.InternalData.IsContinue = true
 				return p.InternalData, nil
 			}
@@ -212,18 +229,36 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
+	// 转大写
+	recordType = strings.ToUpper(recordType)
+
+	// 记录的DNS类型
+	Type := ""
+
+	// CNAME记录的源站类型
+	sourceType := ""
+
+	switch recordType {
+	case "A", "AAAA":
+		Type = "A/AAAA"
+	default:
+		Type = recordType
+	}
+
 	if p.InternalData.RecordID == "" {
 		// 请求参数
 		request := &esa20240910.CreateRecordRequest{}
-		request.SiteId = tea.Int64(p.cfg.SiteID)    // 站点ID
-		request.RecordName = tea.String(fullDomain) // 记录名称
+		request.SiteId = tea.Int64(p.cfg.SiteID)             // 站点ID
+		request.RecordName = tea.String(fullDomain)          // 记录名称
+		request.Proxied = tea.Bool(true)                     // 记录是否开启代理加速
+		request.Type = tea.String(Type)                      // 记录的DNS类型
+		request.SourceType = tea.String(sourceType)          // CNAME记录的源站类型
+		request.BizName = tea.String(p.CustomConfig.BizName) // 用于标记DNS记录的业务场景
+		request.Ttl = tea.Int32(1)                           // 记录的过期时间
 		request.Data = &esa20240910.CreateRecordRequestData{
-			Value: tea.String(originValues[0]), // 记录值或部分内容
+			Value: tea.String(strings.Join(originValues, ",")), // 记录值或部分内容
 		}
-		request.Type = tea.String(recordType) // 记录的DNS类型
-		request.Ttl = tea.Int32(1)            // 记录的过期时间
-		request.Proxied = tea.Bool(true)      // 记录是否开启代理加速
-		request.BizName = tea.String("web")   // 用于标记DNS记录的业务场景
+		request.Comment = tea.String(p.CustomConfig.Comment) // 记录的备注信息
 		// 请求
 		response, err := p.Provider.Client.CreateRecordWithContext(ctx, request, &dara.RuntimeOptions{})
 		printJSON("创建加速域名", request, response)
@@ -236,12 +271,15 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 		// 请求参数
 		request := &esa20240910.UpdateRecordRequest{}
 		request.RecordId = tea.Int64(cast.ToInt64(p.InternalData.RecordID)) // 站点ID
+		request.Ttl = tea.Int32(1)                                          // 记录的过期时间
+		request.Proxied = tea.Bool(true)                                    // 记录是否开启代理加速
+		request.Type = tea.String(Type)                                     // 记录的DNS类型
 		request.Data = &esa20240910.UpdateRecordRequestData{
-			Value: tea.String(originValues[0]), // 记录值或部分内容
+			Value: tea.String(strings.Join(originValues, ",")), // 记录值或部分内容
 		}
-		request.Type = tea.String(recordType) // 记录的DNS类型
-		request.Ttl = tea.Int32(1)            // 记录的过期时间
-		request.Proxied = tea.Bool(true)      // 记录是否开启代理加速
+		request.SourceType = tea.String(sourceType)          // CNAME记录的源站类型
+		request.BizName = tea.String(p.CustomConfig.BizName) // 记录加速时的业务场景
+		request.Comment = tea.String(p.CustomConfig.Comment) // 记录的备注信息
 		// 请求
 		response, err := p.Provider.Client.UpdateRecordWithContext(ctx, request, &dara.RuntimeOptions{})
 		printJSON("更新加速域名", request, response)
@@ -255,6 +293,8 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 
 // 阿里云 ESA 自定义配置
 type AliyunESACustomConfig struct {
+	BizName        string `json:"biz_name"`          // 用于标记DNS记录的业务场景
+	Comment        string `json:"comment,omitempty"` // 记录的备注信息
 	OriginProtocol string `json:"origin_protocol"`
 	HttpPort       int    `json:"http_port"`
 	HttpsPort      int    `json:"https_port"`

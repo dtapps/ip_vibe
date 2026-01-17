@@ -586,7 +586,7 @@ function generatePlatformFieldHtml(field, data, capability) {
                 (opt) =>
                   `<option value="${opt.value}" ${
                     opt.value == value ? "selected" : ""
-                  }>${opt.label}</option>`
+                  }>${opt.label}</option>`,
               )
               .join("")}
           </select>`;
@@ -597,8 +597,8 @@ function generatePlatformFieldHtml(field, data, capability) {
       field.id
     }" value="${value}" 
                   placeholder="${field.placeholder}" ${
-      field.pattern ? `pattern="${field.pattern}"` : ""
-    } 
+                    field.pattern ? `pattern="${field.pattern}"` : ""
+                  } 
                   ${
                     field.title ? `title="${field.title}"` : ""
                   } ${requiredAttr} />`;
@@ -607,8 +607,8 @@ function generatePlatformFieldHtml(field, data, capability) {
   return `
     <div class="ui-form-control ${isHidden ? "hidden" : ""}" ${dataTypeAttr}>
       <label class="ui-label-text">${field.label} ${
-    field.required ? '<span class="text-error">*</span>' : ""
-  }</label>
+        field.required ? '<span class="text-error">*</span>' : ""
+      }</label>
       ${inputHtml}
     </div>`;
 }

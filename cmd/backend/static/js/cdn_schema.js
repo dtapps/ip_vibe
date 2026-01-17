@@ -226,6 +226,39 @@ const CDN_SCHEMA = {
       ],
     ],
   },
+  aliyun_esa: {
+    label: "阿里云 ESA",
+    fields: [
+      {
+        id: "biz_name",
+        label: "业务场景",
+        type: "select",
+        placeholder: "请输入业务场景",
+        required: true,
+        options: [
+          {
+            value: "web",
+            label: "web 网页",
+          },
+          {
+            value: "api",
+            label: "api 接口",
+          },
+          {
+            value: "video_image",
+            label: "视频图片",
+          },
+        ],
+      },
+      {
+        id: "comment",
+        label: "备注",
+        type: "text",
+        placeholder: "请输入备注",
+        required: false,
+      },
+    ],
+  },
   huawei_cdn: {
     label: "华为云 CDN",
     fields: [

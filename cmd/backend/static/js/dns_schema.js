@@ -161,7 +161,7 @@ async function fetchAndReplaceDnsSchema(platform, configId) {
 
     // 从后端获取动态字段
     const { data: resp } = await API.get(
-      `/api/schemas/${platform}/dns-record/${configId}`
+      `/api/schemas/${platform}/dns-record/${configId}`,
     );
     console.log("resp", resp);
 
@@ -261,7 +261,7 @@ function generateDnsFieldHtml(field, data) {
                 (opt) =>
                   `<option value="${opt.value}" ${
                     opt.value == value ? "selected" : ""
-                  }>${opt.label}</option>`
+                  }>${opt.label}</option>`,
               )
               .join("")}
           </select>`;
@@ -272,8 +272,8 @@ function generateDnsFieldHtml(field, data) {
       field.id
     }" value="${value}" 
                   placeholder="${field.placeholder}" ${
-      field.pattern ? `pattern="${field.pattern}"` : ""
-    } 
+                    field.pattern ? `pattern="${field.pattern}"` : ""
+                  } 
                   ${
                     field.title ? `title="${field.title}"` : ""
                   } ${requiredAttr} />`;
@@ -282,8 +282,8 @@ function generateDnsFieldHtml(field, data) {
   return `
     <div class="ui-form-control ${isHidden ? "hidden" : ""}" ${dataTypeAttr}>
       <label class="ui-label-text">${field.label} ${
-    field.required ? '<span class="text-error">*</span>' : ""
-  }</label>
+        field.required ? '<span class="text-error">*</span>' : ""
+      }</label>
       ${inputHtml}
     </div>`;
 }
