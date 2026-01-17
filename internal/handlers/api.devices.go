@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +28,7 @@ func GetDevices(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -64,7 +65,7 @@ func GetDeviceDetail(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -100,7 +101,7 @@ func CreateDevice(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -138,8 +139,7 @@ func UpdateDevice(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -176,8 +176,7 @@ func DeleteDevice(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -214,8 +213,7 @@ func GetDeviceIpHistory(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -252,8 +250,7 @@ func HealthCheckDevice(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -290,8 +287,7 @@ func GetDevicePortForwardStats(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

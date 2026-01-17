@@ -4,6 +4,7 @@ import (
 	"context"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -34,7 +35,7 @@ func getTaskList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.ReadRe
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -64,7 +65,7 @@ func getTaskDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.Read
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

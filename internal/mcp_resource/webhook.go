@@ -4,6 +4,7 @@ import (
 	"context"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -32,7 +33,7 @@ func getWebhookList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.Rea
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -59,7 +60,7 @@ func getWebhookDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.R
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

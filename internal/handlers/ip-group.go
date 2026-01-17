@@ -7,6 +7,7 @@ import (
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -31,7 +32,7 @@ func IPGroup(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 查询全部IP组
@@ -62,7 +63,7 @@ func IPGroup(c *gin.Context) {
 		c,
 		filepath.Join("pages", "ip-group.html"),
 		types.BasePageData[types.IPGroupResponse]{
-			Debug: global.GvaEnv.DEBUG,
+			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "IP组记录",
 			Data:  pageData,
 		},

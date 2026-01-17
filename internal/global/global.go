@@ -23,8 +23,6 @@ var (
 
 // GvaConfig 变量
 var (
-	GvaEnv Env // 环境变量
-
 	GvaVersion   string // 版本号
 	GvaGitCommit string // Git 提交 ID
 	GvaBuildTime string // 构建时间

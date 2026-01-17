@@ -7,6 +7,7 @@ import (
 	"vibe_ip/internal/ent_log/deviceipreport"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_generated"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"google.golang.org/grpc"
@@ -26,7 +27,7 @@ func NewOpenServer(logger *slog.Logger) *OpenServer {
 	deviceService := service.NewDeviceOpenService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	return &OpenServer{

@@ -4,6 +4,7 @@ import (
 	"context"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
@@ -44,7 +45,7 @@ func getPlatformConfigList(ctx context.Context, req *mcp.CallToolRequest, params
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -62,7 +63,7 @@ func getPlatformConfigDetail(ctx context.Context, req *mcp.CallToolRequest, para
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -80,7 +81,7 @@ func createPlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -98,7 +99,7 @@ func updatePlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -116,7 +117,7 @@ func deletePlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

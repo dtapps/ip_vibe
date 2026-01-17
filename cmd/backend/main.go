@@ -19,6 +19,7 @@ import (
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_server"
 	"vibe_ip/internal/helper/db_cache"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/mcp_server"
 )
@@ -102,7 +103,7 @@ func main() {
 
 	// 打印
 	slog.InfoContext(ctx, "服务启动",
-		slog.Bool("debug", global.GvaEnv.DEBUG),
+		slog.Bool("debug", sys_env.GvaEnv.DEBUG),
 		slog.String("version", global.GvaVersion),
 		slog.String("git_commit", global.GvaGitCommit),
 		slog.String("build_time", global.GvaBuildTime),
@@ -113,12 +114,11 @@ func main() {
 
 	// 获取 Gin 服务
 	ginMgr := gin_server.NewManager(global.GvaGinSlog, gin_server.Config{
-		Addr:     global.GvaEnv.HTTP_ADDR,
-		Username: global.GvaEnv.BASIC_AUTH_USERNAME,
-		Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
-
-		Debug:   global.GvaEnv.DEBUG,
-		Version: global.GvaVersion,
+		Addr:     sys_env.GvaEnv.HTTP_ADDR,
+		Username: sys_env.GvaEnv.BASIC_AUTH_USERNAME,
+		Password: sys_env.GvaEnv.BASIC_AUTH_PASSWORD,
+		Debug:    sys_env.GvaEnv.DEBUG,
+		Version:  global.GvaVersion,
 	})
 
 	// 初始化 Gin 资源、路由
@@ -128,8 +128,8 @@ func main() {
 	// 配置 BasicAuth 中间件
 	router.Use(gin_middleware.BasicAuthMiddleware(
 		global.GvaGinSlog,
-		global.GvaEnv.BASIC_AUTH_USERNAME,
-		global.GvaEnv.BASIC_AUTH_PASSWORD,
+		sys_env.GvaEnv.BASIC_AUTH_USERNAME,
+		sys_env.GvaEnv.BASIC_AUTH_PASSWORD,
 	))
 
 	// 聚合所有路由注册
@@ -148,17 +148,17 @@ func main() {
 
 	// 启动 gRPC 服务
 	grpcMgr := grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{
-		Addr:     global.GvaEnv.GRPC_ADDR,
-		Username: global.GvaEnv.BASIC_AUTH_USERNAME,
-		Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
+		Addr:     sys_env.GvaEnv.GRPC_ADDR,
+		Username: sys_env.GvaEnv.BASIC_AUTH_USERNAME,
+		Password: sys_env.GvaEnv.BASIC_AUTH_PASSWORD,
 	})
 	go grpcMgr.Run(ctx)
 
 	// 连接 gRPC-Gateway 服务
 	// grpcGwMgr := grpc_gateway_client.NewManager(global.GvaGrpcSlog, grpc_gateway_client.Config{
-	// 	Addr:     global.GvaEnv.GRPC_ADDR,
-	// 	Username: global.GvaEnv.BASIC_AUTH_USERNAME,
-	// 	Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
+	// 	Addr:     sys_env.GvaEnv.GRPC_ADDR,
+	// 	Username: sys_env.GvaEnv.BASIC_AUTH_USERNAME,
+	// 	Password: sys_env.GvaEnv.BASIC_AUTH_PASSWORD,
 	// }, router)
 	// go grpcGwMgr.Conn(ctx)
 
@@ -172,7 +172,7 @@ func main() {
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 	if err := ipUpdate.StartCdnJob(ctx); err != nil {
 		slog.Error("启动CDN、DNS刷新任务失败",
@@ -188,7 +188,7 @@ func main() {
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 	if err := sslUpdate.StartPeriodicTask(ctx); err != nil {
 		slog.Error("启动SSL刷新任务失败",
@@ -204,7 +204,7 @@ func main() {
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 	if err := domainMonitor.StartPeriodicTask(ctx); err != nil {
 		slog.Error("启动域名监控任务失败",
@@ -219,7 +219,7 @@ func main() {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 	if err := clearData.StartPeriodicTask(ctx); err != nil {
 		slog.Error("启动清除数据任务失败",

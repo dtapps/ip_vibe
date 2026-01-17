@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cast"
 )
 
+// Setting 设置
 type Setting struct {
 	// 设备离线失效时间（分，默认 12 分钟）
 	DeviceOfflineInvalidTime int64 `json:"device_offline_invalid_time"`

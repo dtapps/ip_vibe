@@ -12,6 +12,7 @@ import (
 	"vibe_ip/internal/forwarder/task"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_client"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/initialize"
 )
 
@@ -73,7 +74,7 @@ func main() {
 
 	// 打印
 	slog.InfoContext(ctx, "服务启动",
-		slog.Bool("debug", global.GvaEnv.DEBUG),
+		slog.Bool("debug", sys_env.GvaEnv.DEBUG),
 		slog.String("version", global.GvaVersion),
 		slog.String("git_commit", global.GvaGitCommit),
 		slog.String("build_time", global.GvaBuildTime),
@@ -84,8 +85,8 @@ func main() {
 
 	// 配置
 	config := &task.PortForwardTaskConfig{
-		DeviceCode: global.GvaEnv.DEVICE_CODE,
-		DeviceName: global.GvaEnv.DEVICE_NAME,
+		DeviceCode: sys_env.GvaEnv.DEVICE_CODE,
+		DeviceName: sys_env.GvaEnv.DEVICE_NAME,
 		Version:    global.GvaVersion,
 		GitCommit:  global.GvaGitCommit,
 		BuildTime:  global.GvaBuildTime,
@@ -100,13 +101,13 @@ func main() {
 	// 创建端口转发器
 	forwardAgent := forward.NewAgent(global.GvaGocronSlog)
 
-	if global.GvaEnv.GRPC_URL != "" {
+	if sys_env.GvaEnv.GRPC_URL != "" {
 
 		// 连接 gRPC 客户端
 		grpcMgr := grpc_client.NewManager(global.GvaGrpcSlog, grpc_client.Config{
-			Addr:     global.GvaEnv.GRPC_URL,
-			Username: global.GvaEnv.BASIC_AUTH_USERNAME,
-			Password: global.GvaEnv.BASIC_AUTH_PASSWORD,
+			Addr:     sys_env.GvaEnv.GRPC_URL,
+			Username: sys_env.GvaEnv.BASIC_AUTH_USERNAME,
+			Password: sys_env.GvaEnv.BASIC_AUTH_PASSWORD,
 		})
 		err := grpcMgr.Conn(ctx)
 		if err != nil {

@@ -7,6 +7,7 @@ import (
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -31,7 +32,7 @@ func Cdn(c *gin.Context) {
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 查询全部CDN记录
@@ -67,7 +68,7 @@ func Cdn(c *gin.Context) {
 		c,
 		filepath.Join("pages", "cdn.html"),
 		types.BasePageData[types.CdnResponse]{
-			Debug: global.GvaEnv.DEBUG,
+			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "CDN记录",
 			Data:  pageData,
 		},

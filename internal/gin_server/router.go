@@ -6,6 +6,7 @@ import (
 	"vibe_ip/internal/docs_3"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/handlers"
+	"vibe_ip/internal/helper/sys_env"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -299,7 +300,7 @@ func (m *GinServerManager) setupSwaggerRouter() {
 			Version:     docs_2.SwaggerInfo.Version,     // API 版本号
 			BasePath:    "/qingfeng",                    // 文档路由前缀
 			DocJSON:     docs_2.GetSwaggerBytes(),       // 直接传入 swagger JSON 内容
-			EnableDebug: global.GvaEnv.DEBUG,            // 是否启用在线调试
+			EnableDebug: sys_env.GvaEnv.DEBUG,           // 是否启用在线调试
 			Environments: []qingfeng.Environment{
 				{
 					Name:    "本地开发",

@@ -4,6 +4,7 @@ import (
 	"context"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
@@ -34,7 +35,7 @@ func getWebhookSubList(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	// 创建服务
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -52,7 +53,7 @@ func updateWebhookSubActive(ctx context.Context, req *mcp.CallToolRequest, param
 	// 创建服务
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -70,7 +71,7 @@ func deleteWebhookSub(ctx context.Context, req *mcp.CallToolRequest, params *typ
 	// 创建服务
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

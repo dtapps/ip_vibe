@@ -3,7 +3,7 @@ package ssl
 import (
 	"encoding/json"
 	"fmt"
-	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/sys_env"
 )
 
 func indentJSON(v any) string {
@@ -12,7 +12,7 @@ func indentJSON(v any) string {
 }
 
 func printJSON(name string, request any, response any) {
-	if !global.GvaEnv.DEBUG {
+	if !sys_env.GvaEnv.DEBUG {
 		return
 	}
 	if request != nil {

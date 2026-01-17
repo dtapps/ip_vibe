@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"sync"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/sys_env"
 
 	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/service/bark"
@@ -37,7 +38,7 @@ func InitThirdParty(ctx context.Context, logger *slog.Logger, httpTransport *htt
 		global.GvaWechatWork, err = wechatqy.NewClient(
 			ctx,
 			wechatqy.WithRestyClient(restyClient),
-			wechatqy.WithDebug(global.GvaEnv.DEBUG),
+			wechatqy.WithDebug(sys_env.GvaEnv.DEBUG),
 		)
 		if err != nil {
 			logger.ErrorContext(ctx, "[初始化 企业微信] 错误",
@@ -50,7 +51,7 @@ func InitThirdParty(ctx context.Context, logger *slog.Logger, httpTransport *htt
 		global.GvaDingTalk, err = dingtalk.NewClient(
 			ctx,
 			dingtalk.WithRestyClient(restyClient),
-			dingtalk.WithDebug(global.GvaEnv.DEBUG),
+			dingtalk.WithDebug(sys_env.GvaEnv.DEBUG),
 		)
 		if err != nil {
 			logger.ErrorContext(ctx, "[初始化 钉钉] 错误",
@@ -63,7 +64,7 @@ func InitThirdParty(ctx context.Context, logger *slog.Logger, httpTransport *htt
 		global.GvaFeishu, err = feishu.NewClient(
 			ctx,
 			feishu.WithRestyClient(restyClient),
-			feishu.WithDebug(global.GvaEnv.DEBUG),
+			feishu.WithDebug(sys_env.GvaEnv.DEBUG),
 		)
 		if err != nil {
 			logger.ErrorContext(ctx, "[初始化 飞书] 错误",
@@ -76,7 +77,7 @@ func InitThirdParty(ctx context.Context, logger *slog.Logger, httpTransport *htt
 		global.GvaBark, err = bark.NewClient(
 			ctx,
 			bark.WithRestyClient(restyClient),
-			bark.WithDebug(global.GvaEnv.DEBUG),
+			bark.WithDebug(sys_env.GvaEnv.DEBUG),
 		)
 		if err != nil {
 			logger.ErrorContext(ctx, "[初始化 bark] 错误",
@@ -89,7 +90,7 @@ func InitThirdParty(ctx context.Context, logger *slog.Logger, httpTransport *htt
 		global.GvaFt07, err = ft07.NewClient(
 			ctx,
 			ft07.WithRestyClient(restyClient),
-			ft07.WithDebug(global.GvaEnv.DEBUG),
+			ft07.WithDebug(sys_env.GvaEnv.DEBUG),
 		)
 		if err != nil {
 			logger.ErrorContext(ctx, "[初始化 ft07] 错误",
@@ -102,7 +103,7 @@ func InitThirdParty(ctx context.Context, logger *slog.Logger, httpTransport *htt
 		global.GvaPushDeer, err = pushdeer.NewClient(
 			ctx,
 			pushdeer.WithRestyClient(restyClient),
-			pushdeer.WithDebug(global.GvaEnv.DEBUG),
+			pushdeer.WithDebug(sys_env.GvaEnv.DEBUG),
 		)
 		if err != nil {
 			logger.ErrorContext(ctx, "[初始化 pushdeer] 错误",

@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -26,7 +27,7 @@ func GetIPGroups(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -62,7 +63,7 @@ func GetIPGroupDetail(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -97,7 +98,7 @@ func CreateIPGroup(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -134,7 +135,7 @@ func UpdateIPGroup(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -170,7 +171,7 @@ func DeleteIPGroup(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -206,7 +207,7 @@ func GetIPGroupDevices(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -242,7 +243,7 @@ func HealthCheckIPGroup(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

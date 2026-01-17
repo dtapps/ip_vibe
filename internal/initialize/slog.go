@@ -6,6 +6,7 @@ import (
 	"strings"
 	"sync"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/sys_env"
 
 	"go.dtapp.net/library/utils/golog"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -47,7 +48,7 @@ func getLumberjack(prefix string, name string) *lumberjack.Logger {
 
 // getLevel 获取日志级别
 func getLevel() slog.Level {
-	if global.GvaEnv.DEBUG {
+	if sys_env.GvaEnv.DEBUG {
 		return slog.LevelDebug
 	} else {
 		return slog.LevelInfo
@@ -56,7 +57,7 @@ func getLevel() slog.Level {
 
 // getShowLine 获取是否显示行号
 func getShowLine() bool {
-	if global.GvaEnv.DEBUG {
+	if sys_env.GvaEnv.DEBUG {
 		return true
 	} else {
 		return false

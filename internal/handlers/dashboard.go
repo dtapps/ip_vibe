@@ -8,6 +8,7 @@ import (
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/helper/gocron_helper"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/helper/system_helper"
 	"vibe_ip/internal/types"
 
@@ -103,7 +104,7 @@ func Dashboard(c *gin.Context) {
 		c,
 		filepath.Join("pages", "dashboard.html"),
 		types.BasePageData[types.DashboardResponse]{
-			Debug: global.GvaEnv.DEBUG,
+			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "仪表盘",
 			Data:  pageData,
 		},

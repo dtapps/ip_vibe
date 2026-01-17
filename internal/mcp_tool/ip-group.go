@@ -4,6 +4,7 @@ import (
 	"context"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
@@ -53,7 +54,7 @@ func getIPGroupList(ctx context.Context, req *mcp.CallToolRequest, params *types
 
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -71,7 +72,7 @@ func getIPGroupDetail(ctx context.Context, req *mcp.CallToolRequest, params *typ
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -89,7 +90,7 @@ func createIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -107,7 +108,7 @@ func updateIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -125,7 +126,7 @@ func deleteIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -143,7 +144,7 @@ func getIPGroupDevices(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -161,7 +162,7 @@ func healthCheckIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *t
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -35,7 +36,7 @@ func GetWebhooks(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -72,7 +73,7 @@ func GetWebhookDetail(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -108,7 +109,7 @@ func CreateWebhook(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -146,7 +147,7 @@ func UpdateWebhook(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -184,7 +185,7 @@ func UpdateWebhookActive(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -221,7 +222,7 @@ func DeleteWebhook(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -258,7 +259,7 @@ func TestWebhook(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

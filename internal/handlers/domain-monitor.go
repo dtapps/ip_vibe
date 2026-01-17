@@ -11,6 +11,7 @@ import (
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -37,11 +38,10 @@ func DomainMonitor(c *gin.Context) {
 	service := service.NewDomainMonitorService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 查询全部域名监控
@@ -74,7 +74,7 @@ func DomainMonitor(c *gin.Context) {
 		c,
 		filepath.Join("pages", "domain-monitor.html"),
 		types.BasePageData[types.DomainMonitorResponse]{
-			Debug: global.GvaEnv.DEBUG,
+			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "域名监控记录",
 			Data:  pageData,
 		},
@@ -142,7 +142,7 @@ func DomainMonitorDetail(c *gin.Context) {
 		c,
 		filepath.Join("pages", "domain-monitor_detail.html"),
 		types.BasePageData[types.DomainMonitorDetailResponse]{
-			Debug: global.GvaEnv.DEBUG,
+			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "域名监控详情",
 			Data:  pageData,
 		},
@@ -197,7 +197,7 @@ func DomainMonitorHistory(c *gin.Context) {
 		c,
 		filepath.Join("pages", "domain-monitor_history.html"),
 		types.BasePageData[types.DomainMonitorHistoryResponse]{
-			Debug: global.GvaEnv.DEBUG,
+			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "域名监控记录",
 			Data:  pageData,
 		},

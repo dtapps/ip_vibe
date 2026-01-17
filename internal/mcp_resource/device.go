@@ -4,6 +4,7 @@ import (
 	"context"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -38,8 +39,7 @@ func getDeviceList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.Read
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -66,8 +66,7 @@ func getDeviceDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.Re
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -94,8 +93,7 @@ func getDeviceIpHistory(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

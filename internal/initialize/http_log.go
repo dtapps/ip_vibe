@@ -26,14 +26,14 @@ func (s *EntHttpLogSaver) HandleLog(ctx context.Context, data *http_log.LogData)
 	if s.db == nil || data == nil {
 		return nil
 	}
-	s.logger.DebugContext(ctx, "[接口方式]执行保存日志",
-		slog.String("Hostname", data.Hostname),
-		slog.String("Method", data.Method),
-		slog.String("URL", data.URL),
-		slog.Int("StatusCode", data.StatusCode),
-		slog.Int64("ElapseTime", data.ElapseTime),
-		slog.Bool("IsError", data.IsError),
-	)
+	// s.logger.DebugContext(ctx, "[接口方式]执行保存日志",
+	// 	slog.String("Hostname", data.Hostname),
+	// 	slog.String("Method", data.Method),
+	// 	slog.String("URL", data.URL),
+	// 	slog.Int("StatusCode", data.StatusCode),
+	// 	slog.Int64("ElapseTime", data.ElapseTime),
+	// 	slog.Bool("IsError", data.IsError),
+	// )
 
 	go func(asyncCtx context.Context, asyncDb *ent_log.Client, syncData *http_log.LogData) {
 		err := asyncDb.HttpLog.Create().
@@ -51,7 +51,7 @@ func (s *EntHttpLogSaver) HandleLog(ctx context.Context, data *http_log.LogData)
 			SetPluginVersion(syncData.PluginVersion).
 			Exec(asyncCtx)
 		if err != nil {
-			s.logger.ErrorContext(asyncCtx, "[接口方式]执行保存日志失败",
+			s.logger.ErrorContext(asyncCtx, "[接口方式]保存日志失败",
 				slog.Any("err", err),
 			)
 		}
@@ -78,14 +78,14 @@ func InitEntHttpLog(logger *slog.Logger) {
 			if global.GvaEntLogDb == nil || data == nil {
 				return nil
 			}
-			logger.DebugContext(ctx, "[回调方式]执行保存日志",
-				slog.String("Hostname", data.Hostname),
-				slog.String("Method", data.Method),
-				slog.String("URL", data.URL),
-				slog.Int("StatusCode", data.StatusCode),
-				slog.Int64("ElapseTime", data.ElapseTime),
-				slog.Bool("IsError", data.IsError),
-			)
+			// logger.DebugContext(ctx, "[回调方式]执行保存日志",
+			// 	slog.String("Hostname", data.Hostname),
+			// 	slog.String("Method", data.Method),
+			// 	slog.String("URL", data.URL),
+			// 	slog.Int("StatusCode", data.StatusCode),
+			// 	slog.Int64("ElapseTime", data.ElapseTime),
+			// 	slog.Bool("IsError", data.IsError),
+			// )
 
 			go func(asyncCtx context.Context, asyncDb *ent_log.Client, syncData *http_log.LogData) {
 				err := asyncDb.HttpLog.Create().
@@ -103,7 +103,7 @@ func InitEntHttpLog(logger *slog.Logger) {
 					SetPluginVersion(syncData.PluginVersion).
 					Exec(asyncCtx)
 				if err != nil {
-					logger.ErrorContext(asyncCtx, "[回调方式]执行保存日志失败",
+					logger.ErrorContext(asyncCtx, "[回调方式]保存日志失败",
 						slog.Any("err", err),
 					)
 				}

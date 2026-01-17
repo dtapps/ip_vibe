@@ -48,13 +48,13 @@ func (s *DomainCheck) initHttpClient() {
 
 	// 添加 HTTP 日志记录器
 	if s.httpTransport != nil {
-		httpClient.Transport = s.httpTransport.Instance(nil)
-		restyClient.SetTransport(s.httpTransport.Instance(restyClient.Transport()))
-		reqClient.GetTransport().WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
-			return s.httpTransport.Instance(rt)
-		})
-	}
-	if !s.debug && s.httpTransport != nil {
+		// 	httpClient.Transport = s.httpTransport.Instance(nil)
+		// 	restyClient.SetTransport(s.httpTransport.Instance(restyClient.Transport()))
+		// 	reqClient.GetTransport().WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
+		// 		return s.httpTransport.Instance(rt)
+		// 	})
+		// }
+		// if !s.debug && s.httpTransport != nil {
 		httpClient.Transport = s.httpTransport.InstanceNoBody(nil)
 		restyClient.SetTransport(s.httpTransport.InstanceNoBody(restyClient.Transport()))
 		reqClient.GetTransport().WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
@@ -292,7 +292,7 @@ func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, u *url.URL, httpHe
 	return nil
 }
 
-type fetchImpersonateFunc func() *req.Client
+// type fetchImpersonateFunc func() *req.Client
 
 // 发起 HTTP 请求，使用第三方 Req 库
 // https://req.cool/
@@ -305,16 +305,16 @@ func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, u *url.URL, httpHead
 	client := s.reqClient.Clone()
 
 	// 伪装 HTTP 指纹
-	fetchImpersonates := []fetchImpersonateFunc{
-		client.ImpersonateChrome,
-		client.ImpersonateFirefox,
-		client.ImpersonateSafari,
-	}
+	// fetchImpersonates := []fetchImpersonateFunc{
+	// 	client.ImpersonateChrome,
+	// 	client.ImpersonateFirefox,
+	// 	client.ImpersonateSafari,
+	// }
 
 	// 随机选一个
-	selectedImpersonateIndex := rand.Intn(len(fetchImpersonates))
-	selectedImpersonateMethod := fetchImpersonates[selectedImpersonateIndex]
-	selectedImpersonateMethod()
+	// selectedImpersonateIndex := rand.Intn(len(fetchImpersonates))
+	// selectedImpersonateMethod := fetchImpersonates[selectedImpersonateIndex]
+	// selectedImpersonateMethod()
 
 	// 创建 Req 请求
 	req := client.R().SetContext(ctx)

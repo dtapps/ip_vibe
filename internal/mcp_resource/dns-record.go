@@ -4,6 +4,7 @@ import (
 	"context"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -31,7 +32,7 @@ func getDnsRecordList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.R
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -57,7 +58,7 @@ func getDnsRecordDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

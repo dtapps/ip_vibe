@@ -7,6 +7,7 @@ import (
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -33,7 +34,7 @@ func Device(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 查询全部设备
@@ -63,7 +64,7 @@ func Device(c *gin.Context) {
 		c,
 		filepath.Join("pages", "device.html"),
 		types.BasePageData[types.DeviceResponse]{
-			Debug: global.GvaEnv.DEBUG,
+			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "设备列表",
 			Data:  pageData,
 		},
@@ -97,7 +98,7 @@ func DevicePortForwardStats(c *gin.Context) {
 		c,
 		filepath.Join("pages", "device_port-forward_stats.html"),
 		types.BasePageData[types.DevicePortForwardStatsResponse]{
-			Debug: global.GvaEnv.DEBUG,
+			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "设备端口转发统计",
 			Data:  pageData,
 		},

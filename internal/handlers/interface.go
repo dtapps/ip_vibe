@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/core"
-	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -24,14 +24,14 @@ func Interface(c *gin.Context) {
 	pageData := types.InterfaceResponse{
 		CurrentProto: requestParams.Proto,
 
-		HttpAddr: global.GvaEnv.HTTP_ADDR,
-		GrpcAddr: global.GvaEnv.GRPC_ADDR,
+		HttpAddr: sys_env.GvaEnv.HTTP_ADDR,
+		GrpcAddr: sys_env.GvaEnv.GRPC_ADDR,
 	}
-	if global.GvaEnv.BASIC_AUTH_USERNAME != "" && global.GvaEnv.BASIC_AUTH_PASSWORD != "" {
+	if sys_env.GvaEnv.BASIC_AUTH_USERNAME != "" && sys_env.GvaEnv.BASIC_AUTH_PASSWORD != "" {
 		if requestParams.Proto == "api" {
-			pageData.Token = fmt.Sprintf("%s:%s", global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+			pageData.Token = fmt.Sprintf("%s:%s", sys_env.GvaEnv.BASIC_AUTH_USERNAME, sys_env.GvaEnv.BASIC_AUTH_PASSWORD)
 		} else {
-			pageData.Token = core.GetBasicAuthToken(global.GvaEnv.BASIC_AUTH_USERNAME, global.GvaEnv.BASIC_AUTH_PASSWORD)
+			pageData.Token = core.GetBasicAuthToken(sys_env.GvaEnv.BASIC_AUTH_USERNAME, sys_env.GvaEnv.BASIC_AUTH_PASSWORD)
 		}
 	}
 
@@ -40,7 +40,7 @@ func Interface(c *gin.Context) {
 		c,
 		filepath.Join("pages", "interface.html"),
 		types.BasePageData[types.InterfaceResponse]{
-			Debug: global.GvaEnv.DEBUG,
+			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "接口日志",
 			Data:  pageData,
 		},

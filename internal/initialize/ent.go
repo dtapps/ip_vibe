@@ -11,6 +11,7 @@ import (
 	_ "vibe_ip/internal/ent_log/runtime"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/ent_slog"
+	"vibe_ip/internal/helper/sys_env"
 
 	"entgo.io/ent/dialect"
 	entSql "entgo.io/ent/dialect/sql"
@@ -61,7 +62,7 @@ func InitEntDb(ctx context.Context, logger *slog.Logger) {
 			opts,
 			ent.Log(ent_slog.NewSlogLogger(logger, "ent").Log),
 		)
-		if global.GvaEnv.DEBUG {
+		if sys_env.GvaEnv.DEBUG {
 			opts = append(
 				opts,
 				ent.Debug(),
@@ -134,7 +135,7 @@ func InitEntLogDb(ctx context.Context, logger *slog.Logger) {
 			opts,
 			ent_log.Log(ent_slog.NewSlogLogger(logger, "ent_log").Log),
 		)
-		if global.GvaEnv.DEBUG {
+		if sys_env.GvaEnv.DEBUG {
 			opts = append(
 				opts,
 				ent_log.Debug(),

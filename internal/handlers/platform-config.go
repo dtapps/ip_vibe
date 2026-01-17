@@ -7,6 +7,7 @@ import (
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -31,7 +32,7 @@ func PlatformConfig(c *gin.Context) {
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 查询全部配置
@@ -62,7 +63,7 @@ func PlatformConfig(c *gin.Context) {
 		c,
 		filepath.Join("pages", "platform-config.html"),
 		types.BasePageData[types.PlatformConfigResponse]{
-			Debug: global.GvaEnv.DEBUG,
+			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "平台配置",
 			Data:  pageData,
 		},

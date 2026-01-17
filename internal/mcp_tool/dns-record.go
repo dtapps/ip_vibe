@@ -4,6 +4,7 @@ import (
 	"context"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
@@ -54,7 +55,7 @@ func getDnsRecordList(ctx context.Context, req *mcp.CallToolRequest, params *typ
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -72,7 +73,7 @@ func getDnsRecordDetail(ctx context.Context, req *mcp.CallToolRequest, params *t
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -90,7 +91,7 @@ func createDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -108,7 +109,7 @@ func updateDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -126,7 +127,7 @@ func updateDnsRecordActive(ctx context.Context, req *mcp.CallToolRequest, params
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -144,7 +145,7 @@ func deleteDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -162,7 +163,7 @@ func healthCheckDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -26,7 +27,7 @@ func GetPlatformConfigs(c *gin.Context) {
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -62,7 +63,7 @@ func GetPlatformConfigDetail(c *gin.Context) {
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -97,7 +98,7 @@ func CreatePlatformConfig(c *gin.Context) {
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -134,7 +135,7 @@ func UpdatePlatformConfig(c *gin.Context) {
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -170,7 +171,7 @@ func DeletePlatformConfig(c *gin.Context) {
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

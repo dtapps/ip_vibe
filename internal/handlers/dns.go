@@ -7,6 +7,7 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -31,7 +32,7 @@ func Dns(c *gin.Context) {
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
-		global.GvaEnv.DEBUG,
+		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 查询全部DNS记录
@@ -69,7 +70,7 @@ func Dns(c *gin.Context) {
 		c,
 		filepath.Join("pages", "dns.html"),
 		types.BasePageData[types.DnsResponse]{
-			Debug: global.GvaEnv.DEBUG,
+			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "DNS记录",
 			Data:  pageData,
 		},
