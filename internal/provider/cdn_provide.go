@@ -204,6 +204,10 @@ func (t *CDNTask) SaveRefresh(ctx context.Context, db *ent.Client, id int64) (er
 		return nil
 	}
 
+	if !t.isNotification {
+		return nil
+	}
+
 	err = db.CDNRecord.UpdateOneID(id).
 		SetRecordID(t.config.recordID).
 		SetCdnDomain(t.config.cdnDomain).
@@ -241,7 +245,11 @@ func (t *CDNTask) SaveResponse(ctx context.Context, db *ent.Client, id int64, la
 
 // Notify 执行 DNS 通知
 func (t *CDNTask) Notify(ctx context.Context, webhookService *webhookService.Send, id int64) (err error) {
-	if webhookService == nil || id == 0 || !t.isNotification {
+	if webhookService == nil || id == 0 {
+		return nil
+	}
+
+	if !t.isNotification {
 		return nil
 	}
 
