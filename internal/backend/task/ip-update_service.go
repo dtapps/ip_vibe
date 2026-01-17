@@ -567,6 +567,16 @@ func (s *IPUpdateTask) CdnUpdateNew(ctx context.Context, logger *slog.Logger, pa
 		if err != nil {
 			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
+	case platformconfig.PlatformTencentEo:
+		cdnProviderCfg := cdn.NewDefaultTencentEOConfig()
+		err = cdnProviderCfg.ParseCustomConfig(params.platform.ConfigJSON)
+		if err != nil {
+			return fmt.Errorf("解析自定义配置失败: %w", err)
+		}
+		cdnProvider, err = cdn.NewTencentEOProvider(ctx, cdnProviderCfg, cdnProviderOpts...)
+		if err != nil {
+			return fmt.Errorf("初始提供程序失败: %w", err)
+		}
 	case platformconfig.PlatformAliyunCdn:
 		cdnProviderCfg := cdn.NewDefaultAliyunCDNConfig()
 		err = cdnProviderCfg.ParseCustomConfig(params.platform.ConfigJSON)
@@ -607,16 +617,23 @@ func (s *IPUpdateTask) CdnUpdateNew(ctx context.Context, logger *slog.Logger, pa
 
 	// 执行 DNS 更新
 	if err = cdnTask.Execute(ctx); err != nil {
+		// 保存 DNS 记录响应
 		_ = cdnTask.SaveResponse(ctx, s.db, params.record.ID, err.Error())
 		return err
 	}
+	defer func() {
+		// 保存 DNS 记录响应
+		_ = cdnTask.SaveResponse(ctx, s.db, params.record.ID, "ok")
+	}()
+
+	// 保存 DNS 记录刷新
+	_ = cdnTask.SaveRefresh(ctx, s.db, params.record.ID)
 
 	// 执行 DNS 通知
 	if err := cdnTask.Notify(ctx, s.webhookService, params.record.ID); err != nil {
 		return err
 	}
 
-	_ = cdnTask.SaveResponse(ctx, s.db, params.record.ID, "ok")
 	return nil
 }
 
@@ -727,16 +744,23 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 
 	// 执行 DNS 更新
 	if err = dnsTask.Execute(ctx); err != nil {
+		// 保存 DNS 记录响应
 		_ = dnsTask.SaveResponse(ctx, s.db, params.record.ID, err.Error())
 		return err
 	}
+	defer func() {
+		// 保存 DNS 记录响应
+		_ = dnsTask.SaveResponse(ctx, s.db, params.record.ID, "ok")
+	}()
+
+	// 保存 DNS 记录刷新
+	_ = dnsTask.SaveRefresh(ctx, s.db, params.record.ID)
 
 	// 执行 DNS 通知
 	if err := dnsTask.Notify(ctx, s.webhookService, params.record.ID); err != nil {
 		return err
 	}
 
-	_ = dnsTask.SaveResponse(ctx, s.db, params.record.ID, "ok")
 	return nil
 }
 

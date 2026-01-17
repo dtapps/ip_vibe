@@ -3,27 +3,50 @@ const CDN_SCHEMA = {
   tencent_eo: {
     label: "腾讯云 EdgeOne",
     fields: [
-      {
-        id: "origin_protocol",
-        label: "回源协议",
-        type: "select",
-        placeholder: "请选择回源协议",
-        required: true,
-        options: [
-          {
-            value: "follow",
-            label: "协议跟随",
-          },
-          {
-            value: "http",
-            label: "HTTP协议回源",
-          },
-          {
-            value: "https",
-            label: "HTTPS协议回源",
-          },
-        ],
-      },
+      [
+        {
+          id: "ipv6_status",
+          label: "IPv6 状态",
+          type: "select",
+          placeholder: "请选择 IPv6 状态",
+          required: true,
+          options: [
+            {
+              value: "follow",
+              label: "遵循站点",
+            },
+            {
+              value: "on",
+              label: "开启",
+            },
+            {
+              value: "off",
+              label: "关闭",
+            },
+          ],
+        },
+        {
+          id: "origin_protocol",
+          label: "回源协议",
+          type: "select",
+          placeholder: "请选择回源协议",
+          required: true,
+          options: [
+            {
+              value: "FOLLOW",
+              label: "协议跟随",
+            },
+            {
+              value: "HTTP",
+              label: "HTTP协议回源",
+            },
+            {
+              value: "HTTPS",
+              label: "HTTPS协议回源",
+            },
+          ],
+        },
+      ],
       [
         {
           id: "http_port",
@@ -366,7 +389,7 @@ function generateCdnFieldHtml(field, data) {
                 (opt) =>
                   `<option value="${opt.value}" ${
                     opt.value == value ? "selected" : ""
-                  }>${opt.label}</option>`
+                  }>${opt.label}</option>`,
               )
               .join("")}
           </select>`;
@@ -377,8 +400,8 @@ function generateCdnFieldHtml(field, data) {
       field.id
     }" value="${value}" 
                   placeholder="${field.placeholder}" ${
-      field.pattern ? `pattern="${field.pattern}"` : ""
-    } 
+                    field.pattern ? `pattern="${field.pattern}"` : ""
+                  } 
                   ${
                     field.title ? `title="${field.title}"` : ""
                   } ${requiredAttr} />`;
@@ -387,8 +410,8 @@ function generateCdnFieldHtml(field, data) {
   return `
     <div class="ui-form-control ${isHidden ? "hidden" : ""}" ${dataTypeAttr}>
       <label class="ui-label-text">${field.label} ${
-    field.required ? '<span class="text-error">*</span>' : ""
-  }</label>
+        field.required ? '<span class="text-error">*</span>' : ""
+      }</label>
       ${inputHtml}
     </div>`;
 }

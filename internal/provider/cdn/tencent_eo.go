@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"vibe_ip/internal/provider"
+	"vibe_ip/internal/utils"
 
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
@@ -133,36 +135,84 @@ func (p *TencentEOProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeAccelerationDomains
-func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (recordID string, cdnDomain string, isContinue bool, err error) {
+func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (recordID string, cdnDomain string, isContinue bool, err error) {
 
-	// // 完整域名
-	// fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+	// 完整域名
+	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
-	// // 请求参数
-	// request := &alidns20150109.DescribeDomainRecordsRequest{}
-	// request.SearchMode = tea.String("COMBINATION") // 搜索模式
-	// request.DomainName = tea.String(domain)        // 域名名称
-	// request.RRKeyWord = tea.String(subdomain)      // 主机记录的关键字
-	// if recordType != "" {
-	// 	request.TypeKeyWord = tea.String(recordType) // 解析类型的关键字
-	// }
-	// // 请求
-	// response, err := p.Provider.Client.DescribeDomainRecordsWithContext(ctx, request, &dara.RuntimeOptions{})
-	// printJSON("查询加速域名", request, response)
-	// if err != nil {
-	// 	return
-	// }
-	// // 响应参数
-	// for _, item := range response.Body.DomainRecords.Record {
-	// 	if utils.EqualStringIgnoreCase(tea.StringValue(item.RR), subdomain) && utils.EqualStringIgnoreCase(tea.StringValue(item.DomainName), domain) {
-	// 		if recordType != "" && !utils.EqualStringIgnoreCase(tea.StringValue(item.Type), recordType) {
-	// 			continue
-	// 		}
-	// 		recordID = tea.StringValue(item.RecordId)
-	// 		value = tea.StringValue(item.Value)
-	// 		return recordID, value, nil
-	// 	}
-	// }
+	// 请求参数
+	request := teo.NewDescribeAccelerationDomainsRequest()
+	request.ZoneId = common.StringPtr(p.cfg.ZoneID)
+	request.Offset = common.Int64Ptr(0)
+	request.Limit = common.Int64Ptr(200)
+	request.Filters = make([]*teo.AdvancedFilter, 0)
+	request.Filters = append(request.Filters, &teo.AdvancedFilter{
+		Name:   common.StringPtr("domain-name"),
+		Values: common.StringPtrs([]string{fullDomain}),
+	})
+	// 请求
+	response, err := p.Provider.Client.DescribeAccelerationDomainsWithContext(ctx, request)
+	printJSON("查询加速域名", request, response)
+	if err != nil {
+		return
+	}
+	// 响应参数
+	if response.Response == nil || len(response.Response.AccelerationDomains) == 0 {
+		return "", "", true, nil
+	}
+	for _, item := range response.Response.AccelerationDomains {
+
+		// 查找域名
+		itemFullDomain := utils.PtrToString(item.DomainName)
+
+		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
+
+			// 查找记录值列表
+			itemOriginValues := make([]string, 0)
+			itemOriginValues = append(itemOriginValues, utils.PtrToString(item.OriginDetail.Origin))
+			// 查找回源协议
+			itemOriginProtocol := utils.PtrToString(item.OriginProtocol)
+			// 查找HTTP回源端口
+			itemHttpPort := utils.PtrToUint64(item.HttpOriginPort)
+			// 查找HTTPS回源端口
+			itemHttpsPort := utils.PtrToUint64(item.HttpsOriginPort)
+			// 查找IPv6状态
+			itemIPv6Status := utils.PtrToString(item.IPv6Status)
+
+			// 域名ID
+			// recordID = utils.PtrToString(item.DomainId)
+
+			// CDN域名
+			cdnDomain = utils.TrimDotsPrt(item.Cname)
+
+			// 判断记录值列表
+			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
+				return recordID, cdnDomain, true, nil
+			}
+
+			// 判断回源协议
+			if p.CustomConfig.OriginProtocol != itemOriginProtocol {
+				return recordID, cdnDomain, true, nil
+			}
+
+			// 判断HTTP回源端口
+			if p.CustomConfig.HttpPort != itemHttpPort {
+				return recordID, cdnDomain, true, nil
+			}
+
+			// 判断HTTPS回源端口
+			if p.CustomConfig.HttpsPort != itemHttpsPort {
+				return recordID, cdnDomain, true, nil
+			}
+
+			// 判断IPv6状态
+			if p.CustomConfig.IPv6Status != itemIPv6Status {
+				return recordID, cdnDomain, true, nil
+			}
+
+			return recordID, cdnDomain, false, nil
+		}
+	}
 
 	return "", "", true, nil
 }
@@ -172,58 +222,73 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=ModifyAccelerationDomain
 func (p *TencentEOProvider) Update(ctx context.Context, recordID string, domain string, subdomain string, originValues []string, recordType string) (err error) {
 
-	// // 完整域名
-	// fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+	// 完整域名
+	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
-	// // 转大写
-	// recordType = strings.ToUpper(recordType)
-	// originProtocol = strings.ToUpper(originProtocol)
+	// 回源协议，转大写
+	p.CustomConfig.OriginProtocol = strings.ToUpper(p.CustomConfig.OriginProtocol)
 
-	// // 默认值
-	// if httpPort == 0 {
-	// 	httpPort = 80
-	// }
-	// if httpsPort == 0 {
-	// 	httpsPort = 443
-	// }
+	// HTTP回源端口，默认80
+	if p.CustomConfig.HttpPort == 0 {
+		p.CustomConfig.HttpPort = 80
+	}
 
-	// if recordID == "" {
-	// 	// 请求参数
-	// 	request := &alidns20150109.AddDomainRecordRequest{}
-	// 	request.DomainName = tea.String(domain)        // 域名名称
-	// 	request.RR = tea.String(subdomain)             // 主机记录
-	// 	request.Type = tea.String(recordType)          // 解析记录类型
-	// 	request.Value = tea.String(value)              // 记录值
-	// 	request.Line = tea.String(p.CustomConfig.Line) // 解析线路
-	// 	// 请求
-	// 	response, err := p.Provider.Client.AddDomainRecordWithContext(ctx, request, &dara.RuntimeOptions{})
-	// 	printJSON("创建加速域名", request, response)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// }
+	// HTTPS回源端口，默认443
+	if p.CustomConfig.HttpsPort == 0 {
+		p.CustomConfig.HttpsPort = 443
+	}
 
-	// if recordID != "" {
-	// 	// 请求参数
-	// 	request := &alidns20150109.UpdateDomainRecordRequest{}
-	// 	request.RecordId = tea.String(recordID)        // 解析记录的ID
-	// 	request.RR = tea.String(subdomain)             // 主机记录
-	// 	request.Type = tea.String(recordType)          // 解析记录类型
-	// 	request.Value = tea.String(value)              // 记录值
-	// 	request.Line = tea.String(p.CustomConfig.Line) // 解析线路
-	// 	// 请求
-	// 	response, err := p.Provider.Client.UpdateDomainRecordWithContext(ctx, request, &dara.RuntimeOptions{})
-	// 	printJSON("更新加速域名", request, response)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// }
+	if recordID == "" {
+		// 请求参数
+		request := teo.NewCreateAccelerationDomainRequest()
+		request.ZoneId = common.StringPtr(p.cfg.ZoneID)   // 加速域名所属站点 ID
+		request.DomainName = common.StringPtr(fullDomain) // 加速域名
+		request.OriginInfo = &teo.OriginInfo{
+			OriginType: common.StringPtr("IP_DOMAIN"),     // 源站类型
+			Origin:     common.StringPtr(originValues[0]), // 源站地址
+		}
+		request.OriginProtocol = common.StringPtr(p.CustomConfig.OriginProtocol)     // 回源协议
+		request.HttpOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpPort))   // HTTP回源端口
+		request.HttpsOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpsPort)) // HTTPS回源端口
+		request.IPv6Status = common.StringPtr(p.CustomConfig.IPv6Status)             // IPv6状态
+		// 请求
+		response, err := p.Provider.Client.CreateAccelerationDomainWithContext(ctx, request)
+		printJSON("创建加速域名", request, response)
+		if err != nil {
+			return err
+		}
+	}
+
+	if recordID != "" {
+		// 请求参数
+		request := teo.NewModifyAccelerationDomainRequest()
+		request.ZoneId = common.StringPtr(p.cfg.ZoneID)   // 加速域名所属站点 ID
+		request.DomainName = common.StringPtr(fullDomain) // 加速域名
+		request.OriginInfo = &teo.OriginInfo{
+			OriginType: common.StringPtr("IP_DOMAIN"),     // 源站类型
+			Origin:     common.StringPtr(originValues[0]), // 源站地址
+		}
+		request.OriginProtocol = common.StringPtr(p.CustomConfig.OriginProtocol)     // 回源协议
+		request.HttpOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpPort))   // HTTP回源端口
+		request.HttpsOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpsPort)) // HTTPS回源端口
+		request.IPv6Status = common.StringPtr(p.CustomConfig.IPv6Status)             // IPv6状态
+		// 请求
+		response, err := p.Provider.Client.ModifyAccelerationDomainWithContext(ctx, request)
+		printJSON("更新加速域名", request, response)
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
 
 // 腾讯云 EO 自定义配置
 type TencentEOCustomConfig struct {
+	OriginProtocol string `json:"origin_protocol"`       // 回源协议
+	HttpPort       uint64 `json:"http_port,omitempty"`   // HTTP回源端口
+	HttpsPort      uint64 `json:"https_port,omitempty"`  // HTTPS回源端口
+	IPv6Status     string `json:"ipv6_status,omitempty"` // IPv6状态
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

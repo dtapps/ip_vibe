@@ -246,6 +246,9 @@ func (p *AliyunESAProvider) Update(ctx context.Context, recordID string, domain 
 
 // 阿里云 ESA 自定义配置
 type AliyunESACustomConfig struct {
+	OriginProtocol string `json:"origin_protocol"`
+	HttpPort       int    `json:"http_port"`
+	HttpsPort      int    `json:"https_port"`
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

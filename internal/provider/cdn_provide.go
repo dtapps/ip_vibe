@@ -178,8 +178,8 @@ func (t *CDNTask) Execute(ctx context.Context) (err error) {
 	return nil
 }
 
-// SaveResponse 保存 DNS 记录响应
-func (t *CDNTask) SaveResponse(ctx context.Context, db *ent.Client, id int64, last_api_response string) (err error) {
+// SaveRefresh 保存 DNS 记录刷新
+func (t *CDNTask) SaveRefresh(ctx context.Context, db *ent.Client, id int64) (err error) {
 	if db == nil || id == 0 {
 		return nil
 	}
@@ -187,6 +187,25 @@ func (t *CDNTask) SaveResponse(ctx context.Context, db *ent.Client, id int64, la
 	err = db.CDNRecord.UpdateOneID(id).
 		SetRecordID(t.config.recordID).
 		SetCdnDomain(t.config.cdnDomain).
+		SetLastRefreshAt(time.Now()).
+		Exec(ctx)
+	if err != nil {
+		t.logger.ErrorContext(ctx, "保存刷新失败",
+			slog.String("提供商", t.provider.Name()),
+			slog.Any("err", err),
+		)
+		return err
+	}
+	return nil
+}
+
+// SaveResponse 保存 DNS 记录响应
+func (t *CDNTask) SaveResponse(ctx context.Context, db *ent.Client, id int64, last_api_response string) (err error) {
+	if db == nil || id == 0 {
+		return nil
+	}
+
+	err = db.CDNRecord.UpdateOneID(id).
 		SetLastAPIResponse(last_api_response).
 		SetLastAPIResponseAt(time.Now()).
 		Exec(ctx)
