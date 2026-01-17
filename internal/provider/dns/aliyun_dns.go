@@ -162,6 +162,8 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 		itemRecordType := tea.StringValue(item.Type)
 		// 查找记录值
 		itemOriginValue := tea.StringValue(item.Value)
+		// 解析记录的线路类型
+		itemLine := tea.StringValue(item.Line)
 
 		if utils.EqualDomainIgnoreCase(tea.StringValue(item.RR), subdomain) && utils.EqualDomainIgnoreCase(tea.StringValue(item.DomainName), domain) {
 
@@ -174,10 +176,16 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 			recordID = tea.StringValue(item.RecordId)
 
 			// 判断记录值
-			if utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
-				return recordID, false, nil
+			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+				return recordID, true, nil
 			}
-			return recordID, true, nil
+
+			// 判断解析记录对应的线路
+			if !utils.EqualDomainIgnoreCase(itemLine, p.CustomConfig.Line) {
+				return recordID, true, nil
+			}
+
+			return recordID, false, nil
 		}
 	}
 

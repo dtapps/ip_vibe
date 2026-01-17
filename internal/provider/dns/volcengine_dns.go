@@ -183,6 +183,10 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 		itemRecordType := utils.PtrToString(item.Type)
 		// 查找记录值
 		itemOriginValue := utils.PtrToString(item.Value)
+		// 解析记录对应的线路
+		itemLine := utils.PtrToString(item.Line)
+		// 备注
+		itemRemark := utils.PtrToString(item.Remark)
 
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 
@@ -195,10 +199,21 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 			recordID = volcengine.StringValue(item.RecordID)
 
 			// 判断记录值
-			if utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
-				return recordID, false, nil
+			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+				return recordID, true, nil
 			}
-			return recordID, true, nil
+
+			// 判断解析记录对应的线路
+			if !utils.EqualDomainIgnoreCase(itemLine, p.CustomConfig.Line) {
+				return recordID, true, nil
+			}
+
+			// 判断备注
+			if !utils.EqualDomainIgnoreCase(itemRemark, p.CustomConfig.Remark) {
+				return recordID, true, nil
+			}
+
+			return recordID, false, nil
 		}
 	}
 

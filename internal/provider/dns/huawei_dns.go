@@ -183,6 +183,8 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 		itemRecordType := utils.PtrToString(item.Type)
 		// 查找记录值
 		itemOriginValue := strings.Join(utils.PtrToStrings(item.Records), ",")
+		// 记录集的描述信息
+		itemDescription := utils.PtrToString(item.Description)
 
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 
@@ -195,10 +197,16 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 			recordID = utils.PtrToString(item.Id)
 
 			// 判断记录值
-			if utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
-				return recordID, false, nil
+			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+				return recordID, true, nil
 			}
-			return recordID, true, nil
+
+			// 判断解析记录描述
+			if !utils.EqualDomainIgnoreCase(itemDescription, p.CustomConfig.Description) {
+				return recordID, true, nil
+			}
+
+			return recordID, false, nil
 		}
 	}
 

@@ -142,6 +142,10 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 		itemRecordType := item.Type
 		// 查找记录值
 		itemOriginValue := item.Value
+		// 解析线路
+		itemLine := item.Line
+		// 解析记录描述
+		itemDescription := item.Description
 
 		if utils.EqualDomainIgnoreCase(item.Rr, subdomain) {
 
@@ -154,10 +158,21 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 			recordID = item.Id
 
 			// 判断记录值
-			if utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
-				return recordID, false, nil
+			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+				return recordID, true, nil
 			}
-			return recordID, true, nil
+
+			// 判断解析记录对应的线路
+			if !utils.EqualDomainIgnoreCase(itemLine, p.CustomConfig.Line) {
+				return recordID, true, nil
+			}
+
+			// 判断解析记录描述
+			if !utils.EqualDomainIgnoreCase(itemDescription, p.CustomConfig.Description) {
+				return recordID, true, nil
+			}
+
+			return recordID, false, nil
 		}
 	}
 

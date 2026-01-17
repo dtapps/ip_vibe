@@ -165,10 +165,11 @@ func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain
 			recordID = cast.ToString(item.Id)
 
 			// 判断记录值
-			if utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
-				return recordID, false, nil
+			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+				return recordID, true, nil
 			}
-			return recordID, true, nil
+
+			return recordID, false, nil
 		}
 	}
 

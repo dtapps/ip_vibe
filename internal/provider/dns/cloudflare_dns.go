@@ -144,6 +144,8 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 		itemRecordType := cast.ToString(item.Type)
 		// 查找记录值
 		itemOriginValue := item.Content
+		// 记录集的描述信息
+		itemComment := item.Comment
 
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 
@@ -156,10 +158,16 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 			recordID = item.ID
 
 			// 判断记录值
-			if utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
-				return recordID, false, nil
+			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+				return recordID, true, nil
 			}
-			return recordID, true, nil
+
+			// 判断解析记录描述
+			if !utils.EqualDomainIgnoreCase(itemComment, p.CustomConfig.Comment) {
+				return recordID, true, nil
+			}
+
+			return recordID, false, nil
 		}
 	}
 
