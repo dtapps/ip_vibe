@@ -20,6 +20,7 @@ type CDNProviderInternalData struct {
 	RecordID   string // 域名ID
 	CdnDomain  string // CDN域名
 	IsContinue bool   // 是否继续
+	Tips       string // 提示信息
 }
 
 // CDNProvider 定义 CDN 提供程序接口
@@ -177,6 +178,7 @@ func (t *CDNTask) Execute(ctx context.Context) (err error) {
 		slog.String("提供商", t.provider.Name()),
 		slog.String("域名ID", t.config.recordID),
 		slog.String("CDN域名", t.config.cdnDomain),
+		slog.String("提示", checkData.Tips),
 	)
 	if err := t.provider.Update(
 		ctx,

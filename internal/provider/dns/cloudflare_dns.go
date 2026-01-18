@@ -66,6 +66,9 @@ type CloudfareDNSProvider struct {
 
 	// 内部数据
 	InternalData *provider.DNSProviderInternalData
+
+	// 记录数据
+	ItemData dns.RecordResponse
 }
 
 // NewCloudfareDNSProvider 创建Cloudfare DNS 提供程序
@@ -152,6 +155,9 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 
+			// 记录数据
+			p.ItemData = item
+
 			// 查找记录类型
 			itemRecordType := cast.ToString(item.Type)
 			// 查找记录值
@@ -170,12 +176,14 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 			// 判断记录值
 			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %s，实际 %s", newOriginValue, itemOriginValue)
 				return p.InternalData, nil
 			}
 
 			// 判断解析记录描述
 			if !utils.EqualDomainIgnoreCase(itemComment, p.CustomConfig.Comment) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("解析记录描述不匹配，期望 %s，实际 %s", p.CustomConfig.Comment, itemComment)
 				return p.InternalData, nil
 			}
 

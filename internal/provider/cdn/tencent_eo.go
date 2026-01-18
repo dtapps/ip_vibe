@@ -76,6 +76,9 @@ type TencentEOProvider struct {
 
 	// 内部数据
 	InternalData *provider.CDNProviderInternalData
+
+	// 记录数据
+	ItemData teo.AccelerationDomain
 }
 
 // NewTencentEOProvider 创建腾讯云 EO 提供程序
@@ -173,6 +176,9 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 
+			// 记录数据
+			p.ItemData = *item
+
 			// 查找记录值列表
 			itemOriginValues := make([]string, 0)
 			itemOriginValues = append(itemOriginValues, utils.PtrToString(item.OriginDetail.Origin))
@@ -194,30 +200,35 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 			// 判断记录值列表
 			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("记录值列表不匹配，期望 %v，实际 %v", newOriginValues, itemOriginValues)
 				return p.InternalData, nil
 			}
 
 			// 判断回源协议
 			if !utils.EqualDomainIgnoreCase(itemOriginProtocol, p.CustomConfig.OriginProtocol) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("回源协议不匹配，期望 %s，实际 %s", p.CustomConfig.OriginProtocol, itemOriginProtocol)
 				return p.InternalData, nil
 			}
 
 			// 判断HTTP回源端口
 			if !utils.EqualIgnoreCase(itemHttpPort, p.CustomConfig.HttpPort) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("HTTP回源端口不匹配，期望 %d，实际 %d", p.CustomConfig.HttpPort, itemHttpPort)
 				return p.InternalData, nil
 			}
 
 			// 判断HTTPS回源端口
 			if !utils.EqualIgnoreCase(itemHttpsPort, p.CustomConfig.HttpsPort) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("HTTPS回源端口不匹配，期望 %d，实际 %d", p.CustomConfig.HttpsPort, itemHttpsPort)
 				return p.InternalData, nil
 			}
 
 			// 判断IPv6状态
 			if !utils.EqualDomainIgnoreCase(itemIPv6Status, p.CustomConfig.IPv6Status) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("IPv6状态不匹配，期望 %s，实际 %s", p.CustomConfig.IPv6Status, itemIPv6Status)
 				return p.InternalData, nil
 			}
 

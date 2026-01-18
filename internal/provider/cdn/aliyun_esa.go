@@ -80,6 +80,9 @@ type AliyunESAProvider struct {
 
 	// 内部数据
 	InternalData *provider.CDNProviderInternalData
+
+	// 记录数据
+	ItemData esa20240910.ListRecordsResponseBodyRecords
 }
 
 // NewAliyunESAProvider 创建阿里云 ESA 提供程序
@@ -175,39 +178,45 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 	for _, item := range response.Body.Records {
 
 		// 查找域名
-		itemFullDomain := tea.StringValue(item.RecordName)
+		itemFullDomain := tea.StringValue(item.GetRecordName())
 
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 
+			// 记录数据
+			p.ItemData = *item
+
 			// 查找记录值列表
 			itemOriginValues := make([]string, 0)
-			itemOriginValues = append(itemOriginValues, tea.StringValue(item.Data.Value))
+			itemOriginValues = append(itemOriginValues, tea.StringValue(item.GetData().GetValue()))
 			// 查找用于标记DNS记录的业务场景
-			itemBizName := tea.StringValue(item.BizName)
+			itemBizName := tea.StringValue(item.GetBizName())
 			// 查找记录的备注信息
-			itemComment := tea.StringValue(item.Comment)
+			itemComment := tea.StringValue(item.GetComment())
 
 			// 域名ID
-			p.InternalData.RecordID = cast.ToString(tea.Int64Value(item.RecordId))
+			p.InternalData.RecordID = cast.ToString(tea.Int64Value(item.GetRecordId()))
 
 			// CDN域名
-			p.InternalData.CdnDomain = tea.StringValue(item.RecordCname)
+			p.InternalData.CdnDomain = tea.StringValue(item.GetRecordCname())
 
 			// 判断记录值列表
 			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("记录值列表不匹配，期望 %v，实际 %v", newOriginValues, itemOriginValues)
 				return p.InternalData, nil
 			}
 
 			// 判断用于标记DNS记录的业务场景
 			if !utils.EqualDomainIgnoreCase(itemBizName, p.CustomConfig.BizName) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("用于标记DNS记录的业务场景不匹配，期望 %s，实际 %s", p.CustomConfig.BizName, itemBizName)
 				return p.InternalData, nil
 			}
 
 			// 判断记录的备注信息
 			if !utils.EqualDomainIgnoreCase(itemComment, p.CustomConfig.Comment) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("记录的备注信息不匹配，期望 %s，实际 %s", p.CustomConfig.Comment, itemComment)
 				return p.InternalData, nil
 			}
 

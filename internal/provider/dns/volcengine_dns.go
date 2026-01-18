@@ -78,6 +78,9 @@ type VolcengineDNSProvider struct {
 
 	// 内部数据
 	InternalData *provider.DNSProviderInternalData
+
+	// 记录数据
+	ItemData dns.RecordForListRecordsOutput
 }
 
 // NewVolcengineDNSProvider 创建火山引擎 DNS 提供程序
@@ -192,6 +195,9 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 
+			// 记录数据
+			p.ItemData = *item
+
 			itemRecordType := utils.PtrToString(item.Type)
 			// 查找记录值
 			itemOriginValue := utils.PtrToString(item.Value)
@@ -211,18 +217,21 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 			// 判断记录值
 			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %s，实际 %s", newOriginValue, itemOriginValue)
 				return p.InternalData, nil
 			}
 
 			// 判断解析记录对应的线路
 			if !utils.EqualDomainIgnoreCase(itemLine, p.CustomConfig.Line) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("解析记录对应的线路不匹配，期望 %s，实际 %s", p.CustomConfig.Line, itemLine)
 				return p.InternalData, nil
 			}
 
 			// 判断备注
 			if !utils.EqualDomainIgnoreCase(itemRemark, p.CustomConfig.Remark) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("备注不匹配，期望 %s，实际 %s", p.CustomConfig.Remark, itemRemark)
 				return p.InternalData, nil
 			}
 

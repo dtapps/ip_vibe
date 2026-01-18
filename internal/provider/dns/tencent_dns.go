@@ -73,6 +73,9 @@ type TencentDNSProvider struct {
 
 	// 内部数据
 	InternalData *provider.DNSProviderInternalData
+
+	// 记录数据
+	ItemData dnspod.RecordListItem
 }
 
 // NewTencentDNSProvider 创建腾讯云 DNS 提供程序
@@ -160,6 +163,9 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 
 		if utils.EqualDomainIgnoreCase(utils.PtrToString(item.Name), subdomain) {
 
+			// 记录数据
+			p.ItemData = *item
+
 			// 查找记录类型
 			itemRecordType := utils.PtrToString(item.Type)
 			// 查找记录值
@@ -180,18 +186,21 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 			// 判断记录值
 			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %s，实际 %s", newOriginValue, itemOriginValue)
 				return p.InternalData, nil
 			}
 
 			// 判断解析记录对应的线路
 			if !utils.EqualDomainIgnoreCase(itemRecordLine, p.CustomConfig.RecordLine) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("解析记录对应的线路不匹配，期望 %s，实际 %s", p.CustomConfig.RecordLine, itemRecordLine)
 				return p.InternalData, nil
 			}
 
 			// 判断备注
 			if !utils.EqualDomainIgnoreCase(itemRemark, p.CustomConfig.Remark) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("备注不匹配，期望 %s，实际 %s", p.CustomConfig.Remark, itemRemark)
 				return p.InternalData, nil
 			}
 

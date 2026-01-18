@@ -74,6 +74,9 @@ type AliyunDNSProvider struct {
 
 	// 内部数据
 	InternalData *provider.DNSProviderInternalData
+
+	// 记录数据
+	ItemData alidns20150109.DescribeDomainRecordsResponseBodyDomainRecordsRecord
 }
 
 // NewAliyunDNSProvider 创建阿里云 DNS 提供程序
@@ -167,14 +170,17 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 	}
 	for _, item := range response.Body.DomainRecords.Record {
 
-		if utils.EqualDomainIgnoreCase(tea.StringValue(item.RR), subdomain) && utils.EqualDomainIgnoreCase(tea.StringValue(item.DomainName), domain) {
+		if utils.EqualDomainIgnoreCase(tea.StringValue(item.GetRR()), subdomain) && utils.EqualDomainIgnoreCase(tea.StringValue(item.GetDomainName()), domain) {
+
+			// 记录数据
+			p.ItemData = *item
 
 			// 查找记录类型
-			itemRecordType := tea.StringValue(item.Type)
+			itemRecordType := tea.StringValue(item.GetType())
 			// 查找记录值
-			itemOriginValue := tea.StringValue(item.Value)
+			itemOriginValue := tea.StringValue(item.GetValue())
 			// 查找解析记录的线路类型
-			itemLine := tea.StringValue(item.Line)
+			itemLine := tea.StringValue(item.GetLine())
 
 			// 检查记录类型
 			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {
@@ -182,17 +188,19 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 			}
 
 			// 域名ID
-			p.InternalData.RecordID = tea.StringValue(item.RecordId)
+			p.InternalData.RecordID = tea.StringValue(item.GetRecordId())
 
 			// 判断记录值
 			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %s，实际 %s", newOriginValue, itemOriginValue)
 				return p.InternalData, nil
 			}
 
 			// 判断解析记录对应的线路
 			if !utils.EqualDomainIgnoreCase(itemLine, p.CustomConfig.Line) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("解析记录对应的线路不匹配，期望 %s，实际 %s", p.CustomConfig.Line, itemLine)
 				return p.InternalData, nil
 			}
 

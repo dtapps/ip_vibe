@@ -69,6 +69,9 @@ type BaiduDNSProvider struct {
 
 	// 内部数据
 	InternalData *provider.DNSProviderInternalData
+
+	// 记录数据
+	ItemData dns.Record
 }
 
 // NewBaiduDNSProvider 创建百度云 DNS 提供程序
@@ -149,6 +152,9 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 
 		if utils.EqualDomainIgnoreCase(item.Rr, subdomain) {
 
+			// 记录数据
+			p.ItemData = item
+
 			// 查找记录类型
 			itemRecordType := item.Type
 			// 查找记录值
@@ -169,18 +175,21 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 			// 判断记录值
 			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %s，实际 %s", newOriginValue, itemOriginValue)
 				return p.InternalData, nil
 			}
 
 			// 判断解析记录对应的线路
 			if !utils.EqualDomainIgnoreCase(itemLine, p.CustomConfig.Line) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("解析记录对应的线路不匹配，期望 %s，实际 %s", p.CustomConfig.Line, itemLine)
 				return p.InternalData, nil
 			}
 
 			// 判断解析记录描述
 			if !utils.EqualDomainIgnoreCase(itemDescription, p.CustomConfig.Description) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("解析记录描述不匹配，期望 %s，实际 %s", p.CustomConfig.Description, itemDescription)
 				return p.InternalData, nil
 			}
 

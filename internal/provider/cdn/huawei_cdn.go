@@ -15,7 +15,6 @@ import (
 	cdn "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/model"
 	regionCdn "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/region"
-	"github.com/spf13/cast"
 )
 
 // HuaweiCDNConfig 华为云 CDN 配置
@@ -79,6 +78,9 @@ type HuaweiCDNProvider struct {
 
 	// 内部数据
 	InternalData *provider.CDNProviderInternalData
+
+	// 记录数据
+	ItemData model.Domains
 }
 
 // NewHuaweiCDNProvider 创建华为云 CDN 提供程序
@@ -183,6 +185,9 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 
+			// 记录数据
+			p.ItemData = item
+
 			// 查找记录值列表
 			itemOriginValues := make([]string, 0)
 			sources := *item.Sources
@@ -192,7 +197,7 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 			// 查找域名业务类型
 			itemBusinessType := utils.PtrToString(item.BusinessType)
 			// 查找服务区域
-			itemServiceArea := cast.ToString(item.ServiceArea)
+			itemServiceArea := item.ServiceArea.Value()
 
 			// 域名ID
 			p.InternalData.RecordID = utils.PtrToString(item.Id)
@@ -203,18 +208,21 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 			// 判断记录值列表
 			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("记录值列表不匹配，期望 %v，实际 %v", newOriginValues, itemOriginValues)
 				return p.InternalData, nil
 			}
 
 			// 判断域名业务类型
 			if !utils.EqualDomainIgnoreCase(itemBusinessType, p.CustomConfig.BusinessType) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("域名业务类型不匹配，期望 %s，实际 %s", p.CustomConfig.BusinessType, itemBusinessType)
 				return p.InternalData, nil
 			}
 
 			// 判断服务区域
 			if !utils.EqualDomainIgnoreCase(itemServiceArea, p.CustomConfig.ServiceArea) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("服务区域不匹配，期望 %s，实际 %s", p.CustomConfig.ServiceArea, itemServiceArea)
 				return p.InternalData, nil
 			}
 

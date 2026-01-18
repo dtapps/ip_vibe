@@ -83,6 +83,9 @@ type HuaweiDNSProvider struct {
 
 	// 内部数据
 	InternalData *provider.DNSProviderInternalData
+
+	// 记录数据
+	ItemData model.ShowRecordSetByZoneResp
 }
 
 // NewHuaweiDNSProvider 创建华为云 DNS 提供程序
@@ -191,6 +194,9 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 
+			// 记录数据
+			p.ItemData = item
+
 			// 查找记录类型
 			itemRecordType := utils.PtrToString(item.Type)
 			// 查找记录值
@@ -209,12 +215,14 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 			// 判断记录值
 			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %s，实际 %s", newOriginValue, itemOriginValue)
 				return p.InternalData, nil
 			}
 
 			// 判断解析记录描述
 			if !utils.EqualDomainIgnoreCase(itemDescription, p.CustomConfig.Description) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("解析记录描述不匹配，期望 %s，实际 %s", p.CustomConfig.Description, itemDescription)
 				return p.InternalData, nil
 			}
 

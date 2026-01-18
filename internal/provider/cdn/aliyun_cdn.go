@@ -77,6 +77,9 @@ type AliyunCDNProvider struct {
 
 	// 内部数据
 	InternalData *provider.CDNProviderInternalData
+
+	// 记录数据
+	ItemData cdn20180510.DescribeUserDomainsResponseBodyDomainsPageData
 }
 
 // NewAliyunCDNProvider 创建阿里云 CDN 提供程序
@@ -173,36 +176,41 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 	for _, item := range response.Body.Domains.PageData {
 
 		// 查找域名
-		itemFullDomain := tea.StringValue(item.DomainName)
+		itemFullDomain := tea.StringValue(item.GetDomainName())
 
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 
+			// 记录数据
+			p.ItemData = *item
+
 			// 查找记录值列表
 			itemOriginValues := make([]string, 0)
-			for _, source := range item.Sources.Source {
-				if tea.StringValue(source.Content) == defaultIP {
+			for _, source := range item.GetSources().GetSource() {
+				if tea.StringValue(source.GetContent()) == defaultIP {
 					continue // 跳过默认测试地址
 				}
-				itemOriginValues = append(itemOriginValues, tea.StringValue(source.Content))
+				itemOriginValues = append(itemOriginValues, tea.StringValue(source.GetContent()))
 			}
 			// 查找加速域名的业务类型
-			itemCdnType := tea.StringValue(item.CdnType)
+			itemCdnType := tea.StringValue(item.GetCdnType())
 
 			// 域名ID
-			p.InternalData.RecordID = cast.ToString(tea.Int64Value(item.DomainId))
+			p.InternalData.RecordID = cast.ToString(tea.Int64Value(item.GetDomainId()))
 
 			// CDN域名
-			p.InternalData.CdnDomain = tea.StringValue(item.Cname)
+			p.InternalData.CdnDomain = tea.StringValue(item.GetCname())
 
 			// 判断记录值列表
 			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("记录值列表不匹配，期望 %v，实际 %v", newOriginValues, itemOriginValues)
 				return p.InternalData, nil
 			}
 
 			// 判断业务类型
 			if !utils.EqualDomainIgnoreCase(itemCdnType, p.CustomConfig.CdnType) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("业务类型不匹配，期望 %s，实际 %s", p.CustomConfig.CdnType, itemCdnType)
 				return p.InternalData, nil
 			}
 

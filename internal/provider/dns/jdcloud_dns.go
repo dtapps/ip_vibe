@@ -76,6 +76,9 @@ type JdcloudDNSProvider struct {
 
 	// 内部数据
 	InternalData *provider.DNSProviderInternalData
+
+	// 记录数据
+	ItemData models.RRInfo
 }
 
 // NewJdcloudDNSProvider 创建京东云 DNS 提供程序
@@ -161,6 +164,9 @@ func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain
 
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 
+			// 记录数据
+			p.ItemData = item
+
 			// 查找记录类型
 			itemRecordType := item.Type
 			// 查找记录值
@@ -177,6 +183,7 @@ func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain
 			// 判断记录值
 			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %s，实际 %s", newOriginValue, itemOriginValue)
 				return p.InternalData, nil
 			}
 

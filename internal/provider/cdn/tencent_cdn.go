@@ -73,6 +73,9 @@ type TencentCDNProvider struct {
 
 	// 内部数据
 	InternalData *provider.CDNProviderInternalData
+
+	// 记录数据
+	ItemData cdn.BriefDomain
 }
 
 // NewTencentCDNProvider 创建腾讯云 CDN 提供程序
@@ -169,6 +172,9 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
 
+			// 记录数据
+			p.ItemData = *item
+
 			// 查找记录值列表
 			itemOriginValues := make([]string, 0)
 			for _, origin := range item.Origin.Origins {
@@ -188,18 +194,21 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 			// 判断记录值列表
 			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("记录值列表不匹配，期望 %v，实际 %v", newOriginValues, itemOriginValues)
 				return p.InternalData, nil
 			}
 
 			// 判断加速域名业务类型
 			if !utils.EqualDomainIgnoreCase(itemServiceType, p.CustomConfig.ServiceType) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("加速域名业务类型不匹配，期望 %s，实际 %s", p.CustomConfig.ServiceType, itemServiceType)
 				return p.InternalData, nil
 			}
 
 			// 判断区域
 			if !utils.EqualDomainIgnoreCase(itemArea, p.CustomConfig.Area) {
 				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("区域不匹配，期望 %s，实际 %s", p.CustomConfig.Area, itemArea)
 				return p.InternalData, nil
 			}
 

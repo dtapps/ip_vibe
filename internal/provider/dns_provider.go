@@ -18,6 +18,7 @@ import (
 type DNSProviderInternalData struct {
 	RecordID   string // 域名ID
 	IsContinue bool   // 是否继续
+	Tips       string // 提示信息
 }
 
 // DNSProvider 定义了 DNS 操作的接口
@@ -173,6 +174,7 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 	t.logger.DebugContext(ctx, "执行更新",
 		slog.String("提供商", t.provider.Name()),
 		slog.String("域名ID", t.config.recordID),
+		slog.String("提示", checkData.Tips),
 	)
 	if err := t.provider.Update(
 		ctx,
