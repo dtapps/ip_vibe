@@ -198,25 +198,25 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 			}
 
 			// 判断回源协议
-			if p.CustomConfig.OriginProtocol != itemOriginProtocol {
+			if !utils.EqualDomainIgnoreCase(itemOriginProtocol, p.CustomConfig.OriginProtocol) {
 				p.InternalData.IsContinue = true
 				return p.InternalData, nil
 			}
 
 			// 判断HTTP回源端口
-			if p.CustomConfig.HttpPort != itemHttpPort {
+			if !utils.EqualIgnoreCase(itemHttpPort, p.CustomConfig.HttpPort) {
 				p.InternalData.IsContinue = true
 				return p.InternalData, nil
 			}
 
 			// 判断HTTPS回源端口
-			if p.CustomConfig.HttpsPort != itemHttpsPort {
+			if !utils.EqualIgnoreCase(itemHttpsPort, p.CustomConfig.HttpsPort) {
 				p.InternalData.IsContinue = true
 				return p.InternalData, nil
 			}
 
 			// 判断IPv6状态
-			if p.CustomConfig.IPv6Status != itemIPv6Status {
+			if !utils.EqualDomainIgnoreCase(itemIPv6Status, p.CustomConfig.IPv6Status) {
 				p.InternalData.IsContinue = true
 				return p.InternalData, nil
 			}

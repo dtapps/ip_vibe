@@ -207,13 +207,13 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 			}
 
 			// 判断域名业务类型
-			if !utils.EqualStringIgnoreCase(itemBusinessType, p.CustomConfig.BusinessType) {
+			if !utils.EqualDomainIgnoreCase(itemBusinessType, p.CustomConfig.BusinessType) {
 				p.InternalData.IsContinue = true
 				return p.InternalData, nil
 			}
 
 			// 判断服务区域
-			if !utils.EqualStringIgnoreCase(itemServiceArea, p.CustomConfig.ServiceArea) {
+			if !utils.EqualDomainIgnoreCase(itemServiceArea, p.CustomConfig.ServiceArea) {
 				p.InternalData.IsContinue = true
 				return p.InternalData, nil
 			}

@@ -192,13 +192,13 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 			}
 
 			// 判断加速域名业务类型
-			if !utils.EqualStringIgnoreCase(itemServiceType, p.CustomConfig.ServiceType) {
+			if !utils.EqualDomainIgnoreCase(itemServiceType, p.CustomConfig.ServiceType) {
 				p.InternalData.IsContinue = true
 				return p.InternalData, nil
 			}
 
 			// 判断区域
-			if !utils.EqualStringIgnoreCase(itemArea, p.CustomConfig.Area) {
+			if !utils.EqualDomainIgnoreCase(itemArea, p.CustomConfig.Area) {
 				p.InternalData.IsContinue = true
 				return p.InternalData, nil
 			}

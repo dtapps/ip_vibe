@@ -201,7 +201,7 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 			}
 
 			// 判断业务类型
-			if !utils.EqualStringIgnoreCase(itemCdnType, p.CustomConfig.CdnType) {
+			if !utils.EqualDomainIgnoreCase(itemCdnType, p.CustomConfig.CdnType) {
 				p.InternalData.IsContinue = true
 				return p.InternalData, nil
 			}

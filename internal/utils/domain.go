@@ -7,6 +7,7 @@ import (
 	"strings"
 	"vibe_ip/internal/ent/schema/schematype"
 
+	"github.com/spf13/cast"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -16,6 +17,12 @@ func EqualDomainIgnoreCasePtr(a, b *string) bool {
 		return false
 	}
 	return EqualDomainIgnoreCase(*a, *b)
+}
+
+// EqualIgnoreCase 忽略大小写比较两个字符串是否相等
+// 泛型版本，适用于任何可转换为字符串的类型
+func EqualIgnoreCase[T any](a, b T) bool {
+	return EqualDomainIgnoreCase(cast.ToString(a), cast.ToString(b))
 }
 
 // EqualDomainIgnoreCase 忽略大小写比较域名是否相等
