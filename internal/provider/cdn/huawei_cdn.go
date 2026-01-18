@@ -15,6 +15,7 @@ import (
 	cdn "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/model"
 	regionCdn "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/region"
+	"github.com/spf13/cast"
 )
 
 // HuaweiCDNConfig 华为云 CDN 配置
@@ -188,6 +189,10 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 			for _, source := range sources {
 				itemOriginValues = append(itemOriginValues, source.IpOrDomain)
 			}
+			// 查找域名业务类型
+			itemBusinessType := utils.PtrToString(item.BusinessType)
+			// 查找服务区域
+			itemServiceArea := cast.ToString(item.ServiceArea)
 
 			// 域名ID
 			p.InternalData.RecordID = utils.PtrToString(item.Id)
@@ -197,6 +202,18 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 
 			// 判断记录值列表
 			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
+			}
+
+			// 判断域名业务类型
+			if !utils.EqualStringIgnoreCase(itemBusinessType, p.CustomConfig.BusinessType) {
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
+			}
+
+			// 判断服务区域
+			if !utils.EqualStringIgnoreCase(itemServiceArea, p.CustomConfig.ServiceArea) {
 				p.InternalData.IsContinue = true
 				return p.InternalData, nil
 			}

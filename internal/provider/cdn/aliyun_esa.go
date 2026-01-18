@@ -200,13 +200,13 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 			}
 
 			// 判断用于标记DNS记录的业务场景
-			if p.CustomConfig.BizName != itemBizName {
+			if !utils.EqualStringIgnoreCase(itemBizName, p.CustomConfig.BizName) {
 				p.InternalData.IsContinue = true
 				return p.InternalData, nil
 			}
 
 			// 判断记录的备注信息
-			if p.CustomConfig.Comment != itemComment {
+			if !utils.EqualStringIgnoreCase(itemComment, p.CustomConfig.Comment) {
 				p.InternalData.IsContinue = true
 				return p.InternalData, nil
 			}

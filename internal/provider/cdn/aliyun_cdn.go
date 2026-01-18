@@ -185,6 +185,8 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 				}
 				itemOriginValues = append(itemOriginValues, tea.StringValue(source.Content))
 			}
+			// 查找加速域名的业务类型
+			itemCdnType := tea.StringValue(item.CdnType)
 
 			// 域名ID
 			p.InternalData.RecordID = cast.ToString(tea.Int64Value(item.DomainId))
@@ -194,6 +196,12 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 
 			// 判断记录值列表
 			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
+			}
+
+			// 判断业务类型
+			if !utils.EqualStringIgnoreCase(itemCdnType, p.CustomConfig.CdnType) {
 				p.InternalData.IsContinue = true
 				return p.InternalData, nil
 			}

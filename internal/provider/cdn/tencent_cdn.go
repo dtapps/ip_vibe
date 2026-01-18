@@ -174,6 +174,10 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 			for _, origin := range item.Origin.Origins {
 				itemOriginValues = append(itemOriginValues, utils.PtrToString(origin))
 			}
+			// 查找加速域名业务类型
+			itemServiceType := utils.PtrToString(item.ServiceType)
+			// 查找区域
+			itemArea := utils.PtrToString(item.Area)
 
 			// 域名ID
 			p.InternalData.RecordID = utils.PtrToString(item.ResourceId)
@@ -183,6 +187,18 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 
 			// 判断记录值列表
 			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
+			}
+
+			// 判断加速域名业务类型
+			if !utils.EqualStringIgnoreCase(itemServiceType, p.CustomConfig.ServiceType) {
+				p.InternalData.IsContinue = true
+				return p.InternalData, nil
+			}
+
+			// 判断区域
+			if !utils.EqualStringIgnoreCase(itemArea, p.CustomConfig.Area) {
 				p.InternalData.IsContinue = true
 				return p.InternalData, nil
 			}
