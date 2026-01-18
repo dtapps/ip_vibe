@@ -1,0 +1,285 @@
+package cdn
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"vibe_ip/internal/provider"
+	"vibe_ip/internal/utils"
+
+	"github.com/baidubce/bce-sdk-go/services/cdn"
+	"github.com/baidubce/bce-sdk-go/services/cdn/api"
+	"github.com/spf13/cast"
+	"go.dtapp.net/library/utils/gostring"
+)
+
+// BaiduCDNConfig 百度云 CDN 配置
+type BaiduCDNConfig struct {
+	Endpoint        string `json:"endpoint,omitempty"` // 接口地址
+	AccessKeyID     string `json:"access_key_id"`      // 密钥ID
+	SecretAccessKey string `json:"secret_access_key"`  // 密钥Key
+	DomainName      string `json:"domain_name"`        // 主域名
+}
+
+// Validate 验证百度云 CDN 配置
+func (cfg *BaiduCDNConfig) Validate() error {
+	if cfg.Endpoint == "" {
+		return fmt.Errorf("Endpoint 不能为空")
+	}
+	if cfg.AccessKeyID == "" {
+		return fmt.Errorf("AccessKeyID 不能为空")
+	}
+	if cfg.SecretAccessKey == "" {
+		return fmt.Errorf("AccessKeySecret 不能为空")
+	}
+	if cfg.DomainName == "" {
+		return fmt.Errorf("DomainName 不能为空")
+	}
+	return nil
+}
+
+// NewDefaultBaiduCDNConfig 创建默认的百度云 CDN 配置
+func NewDefaultBaiduCDNConfig() *BaiduCDNConfig {
+	return &BaiduCDNConfig{
+		Endpoint: "https://cdn.baidubce.com",
+	}
+}
+
+// ParseCustomConfig 解析 百度云 CDN 自定义配置
+func (p *BaiduCDNConfig) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if len(config_json) == 0 {
+		return nil
+	}
+	if err := json.Unmarshal(config_json, p); err != nil {
+		return err
+	}
+	return nil
+}
+
+// BaiduCDNProvider 百度云 CDN 提供程序
+type BaiduCDNProvider struct {
+	provider.UnimplementedCDNProvider // 嵌入未实现的
+
+	cfg  *BaiduCDNConfig
+	opts *cdnOptions
+
+	CustomConfig *BaiduCDNCustomConfig
+	Provider     struct {
+		Client *cdn.Client
+	}
+
+	// 内部数据
+	InternalData *provider.CDNProviderInternalData
+
+	// 记录数据
+	ItemData api.DomainConfig
+}
+
+// NewBaiduCDNProvider 创建百度云 CDN 提供程序
+func NewBaiduCDNProvider(ctx context.Context, cfg *BaiduCDNConfig, opts ...CdnOption) (provider.CDNProvider, error) {
+	return NewBaiduCDNProviderRaw(ctx, cfg, opts...)
+}
+
+// NewBaiduCDNProviderRaw 创建百度云 CDN 提供程序
+func NewBaiduCDNProviderRaw(ctx context.Context, cfg *BaiduCDNConfig, opts ...CdnOption) (*BaiduCDNProvider, error) {
+
+	if cfg == nil {
+		return nil, fmt.Errorf("配置不能为空")
+	}
+
+	// 验证配置
+	if err := cfg.Validate(); err != nil {
+		return nil, fmt.Errorf("配置无效: %w", err)
+	}
+
+	var err error
+	p := &BaiduCDNProvider{
+		cfg:          cfg,
+		opts:         &cdnOptions{},
+		CustomConfig: &BaiduCDNCustomConfig{},
+		InternalData: &provider.CDNProviderInternalData{},
+	}
+
+	// 应用选项
+	for _, opt := range opts {
+		opt(p.opts)
+	}
+
+	// 实例化
+	p.Provider.Client, err = cdn.NewClient(
+		p.cfg.AccessKeyID,
+		p.cfg.SecretAccessKey,
+		p.cfg.Endpoint,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// 如果提供了日志传输器，则设置HTTP客户端
+	if p.opts.httpTransport != nil {
+		p.Provider.Client.HTTPClient = &http.Client{
+			Transport: p.opts.httpTransport.Instance(nil),
+		}
+	}
+
+	return p, nil
+}
+
+// Name 返回 CDN 提供程序的名称
+func (p *BaiduCDNProvider) Name() string {
+	return "百度云 CDN"
+}
+
+// Check 检查子域名是否存在
+// https://cloud.baidu.com/doc/CDN/s/Fk121xrty#查询用户名下所有域名-getdomainstatus
+// https://cloud.baidu.com/doc/CDN/s/Vk121slzt#查询加速域名详情-getdomainconfig
+func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
+
+	// 完整域名
+	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+
+	// 请求 查询用户名下所有域名
+	responseList, err := p.Provider.Client.GetDomainStatus("ALL", "")
+	if err != nil {
+		return
+	}
+	// 循环 查询用户名下所有域名
+	isExist := false
+	for _, item := range responseList {
+		// 查找域名
+		itemFullDomain := item.Domain
+		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
+			isExist = true
+			break
+		}
+	}
+	// 未找到记录
+	if !isExist {
+		p.InternalData.IsContinue = true
+		return p.InternalData, nil
+	}
+
+	// 请求
+	responseInfo, err := p.Provider.Client.GetDomainConfig(fullDomain)
+	if err != nil {
+		return
+	}
+	// 响应参数
+
+	// 查找域名
+	// itemFullDomain := responseInfo.Domain
+
+	// 记录数据
+	p.ItemData = *responseInfo
+
+	// 查找记录值列表
+	itemOriginValues := make([]string, 0)
+	for _, origin := range responseInfo.Origin {
+		itemOriginValues = append(itemOriginValues, origin.Peer)
+	}
+	// 查找类型
+	itemForm := responseInfo.Form
+	// 查找是否开启了协议跟随回源
+	itemFollowProtocol := responseInfo.FollowProtocol
+
+	// 域名ID
+	// p.InternalData.RecordID = responseInfo.DomainID
+
+	// CDN域名
+	p.InternalData.CdnDomain = responseInfo.Cname
+
+	// 判断记录值列表
+	if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
+		p.InternalData.IsContinue = true
+		p.InternalData.Tips = fmt.Sprintf("记录值列表不匹配，期望 %v，实际 %v", newOriginValues, itemOriginValues)
+		return p.InternalData, nil
+	}
+
+	// 判断类型
+	if !utils.EqualDomainIgnoreCase(itemForm, p.CustomConfig.Form) {
+		p.InternalData.IsContinue = true
+		p.InternalData.Tips = fmt.Sprintf("类型不匹配，期望 %s，实际 %s", p.CustomConfig.Form, itemForm)
+		return p.InternalData, nil
+	}
+
+	// 判断是否开启了协议跟随回源
+	if !utils.EqualIgnoreCase(itemFollowProtocol, cast.ToBool(p.CustomConfig.FollowProtocol)) {
+		p.InternalData.IsContinue = true
+		p.InternalData.Tips = fmt.Sprintf("是否开启了协议跟随回源不匹配，期望 %s，实际 %s", p.CustomConfig.Form, itemForm)
+		return p.InternalData, nil
+	}
+
+	p.InternalData.IsContinue = false
+	return p.InternalData, nil
+
+}
+
+// Update 更新 CDN 记录
+// https://next.api.aliyun.com/api/Cdn/2018-05-10/AddCdnDomain
+// https://next.api.aliyun.com/api/Cdn/2018-05-10/ModifyCdnDomain
+func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
+
+	sources := make([]api.OriginPeer, 0)
+
+	for _, source := range originValues {
+		// 跳过空地址
+		if gostring.TrimSpace(source) == "" {
+			continue
+		}
+
+		src := api.OriginPeer{
+			Peer:   fmt.Sprintf("http://[%s]:80", source),
+			Backup: false,
+		}
+		sources = append(sources, src)
+	}
+
+	// 完整域名
+	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+
+	if p.InternalData.CdnDomain == "" {
+		// 请求参数
+		request := &api.OriginInit{}
+		request.Origin = sources           // 源站配置
+		request.Form = p.CustomConfig.Form // 类型
+		// 请求 创建加速域名接口
+		_, err := p.Provider.Client.CreateDomain(fullDomain, request)
+		if err != nil {
+			return err
+		}
+	}
+
+	if p.InternalData.CdnDomain != "" {
+		// 请求 更新加速域名回源地址
+		err := p.Provider.Client.SetDomainOrigin(fullDomain, sources, p.ItemData.DefaultHost)
+		if err != nil {
+			return err
+		}
+
+		// 请求 设置协议跟随回源
+		err = p.Provider.Client.SetFollowProtocol(fullDomain, cast.ToBool(p.CustomConfig.FollowProtocol))
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// 百度云 CDN 自定义配置
+type BaiduCDNCustomConfig struct {
+	Form           string `json:"form"`            // 类型
+	FollowProtocol string `json:"follow_protocol"` // 是否开启了协议跟随回源
+}
+
+// ParseCustomConfig 解析 CDN 自定义配置
+func (p *BaiduCDNProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
+	if len(config_json) == 0 {
+		return nil
+	}
+	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
+		return err
+	}
+	return nil
+}

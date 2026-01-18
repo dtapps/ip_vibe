@@ -259,6 +259,59 @@ const CDN_SCHEMA = {
       },
     ],
   },
+  baidu_cdn: {
+    label: "百度云 CDN",
+    fields: [
+      [
+        {
+          id: "form",
+          label: "类型",
+          type: "select",
+          placeholder: "请选择类型",
+          required: true,
+          options: [
+            {
+              value: "default",
+              label: "默认",
+            },
+            {
+              value: "image",
+              label: "图片小文件",
+            },
+            {
+              value: "download",
+              label: "大文件下载",
+            },
+            {
+              value: "media",
+              label: "流媒体点播",
+            },
+            {
+              value: "dynamic",
+              label: "动静态加速",
+            },
+          ],
+        },
+        {
+          id: "follow_protocol",
+          label: "协议跟随回源",
+          type: "select",
+          placeholder: "请选择协议跟随回源",
+          required: false,
+          options: [
+            {
+              value: "true",
+              label: "开启",
+            },
+            {
+              value: "false",
+              label: "关闭",
+            },
+          ],
+        },
+      ],
+    ],
+  },
   huawei_cdn: {
     label: "华为云 CDN",
     fields: [

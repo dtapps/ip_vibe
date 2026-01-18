@@ -85,6 +85,7 @@ const (
 	ConfigPlatformAliyunEsa string = "aliyun_esa" // 阿里云 ESA
 
 	ConfigPlatformBaiduDns string = "baidu_dns" // 百度云 DNS
+	ConfigPlatformBaiduCdn string = "baidu_cdn" // 百度云 CDN
 
 	ConfigPlatformHuaweiDns string = "huawei_dns" // 华为云 DNS
 	ConfigPlatformHuaweiCdn string = "huawei_cdn" // 华为云 CDN
@@ -102,6 +103,7 @@ var GetConfigPlatformDescriptions = map[string]string{
 	ConfigPlatformAliyunCdn:     "阿里云 CDN",
 	ConfigPlatformAliyunEsa:     "阿里云 ESA",
 	ConfigPlatformBaiduDns:      "百度云 DNS",
+	ConfigPlatformBaiduCdn:      "百度云 CDN",
 	ConfigPlatformHuaweiDns:     "华为云 DNS",
 	ConfigPlatformHuaweiCdn:     "华为云 CDN",
 	ConfigPlatformvolcengineDns: "火山引擎 DNS",
@@ -117,6 +119,7 @@ var GetConfigPlatforms = []string{
 	ConfigPlatformAliyunCdn,
 	ConfigPlatformAliyunEsa,
 	ConfigPlatformBaiduDns,
+	ConfigPlatformBaiduCdn,
 	ConfigPlatformHuaweiDns,
 	ConfigPlatformHuaweiCdn,
 	ConfigPlatformvolcengineDns,
