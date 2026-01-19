@@ -620,18 +620,6 @@ type (
 	}
 )
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *SSLRecordUpsert) SetUpdatedAt(v time.Time) *SSLRecordUpsert {
-	u.Set(sslrecord.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *SSLRecordUpsert) UpdateUpdatedAt() *SSLRecordUpsert {
-	u.SetExcluded(sslrecord.FieldUpdatedAt)
-	return u
-}
-
 // SetCertDomain sets the "cert_domain" field.
 func (u *SSLRecordUpsert) SetCertDomain(v string) *SSLRecordUpsert {
 	u.Set(sslrecord.FieldCertDomain, v)
@@ -934,6 +922,9 @@ func (u *SSLRecordUpsertOne) UpdateNewValues() *SSLRecordUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(sslrecord.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(sslrecord.FieldUpdatedAt)
+		}
 		if _, exists := u.create.mutation.ConfigID(); exists {
 			s.SetIgnore(sslrecord.FieldConfigID)
 		}
@@ -969,20 +960,6 @@ func (u *SSLRecordUpsertOne) Update(set func(*SSLRecordUpsert)) *SSLRecordUpsert
 		set(&SSLRecordUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *SSLRecordUpsertOne) SetUpdatedAt(v time.Time) *SSLRecordUpsertOne {
-	return u.Update(func(s *SSLRecordUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *SSLRecordUpsertOne) UpdateUpdatedAt() *SSLRecordUpsertOne {
-	return u.Update(func(s *SSLRecordUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetCertDomain sets the "cert_domain" field.
@@ -1499,6 +1476,9 @@ func (u *SSLRecordUpsertBulk) UpdateNewValues() *SSLRecordUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(sslrecord.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(sslrecord.FieldUpdatedAt)
+			}
 			if _, exists := b.mutation.ConfigID(); exists {
 				s.SetIgnore(sslrecord.FieldConfigID)
 			}
@@ -1535,20 +1515,6 @@ func (u *SSLRecordUpsertBulk) Update(set func(*SSLRecordUpsert)) *SSLRecordUpser
 		set(&SSLRecordUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *SSLRecordUpsertBulk) SetUpdatedAt(v time.Time) *SSLRecordUpsertBulk {
-	return u.Update(func(s *SSLRecordUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *SSLRecordUpsertBulk) UpdateUpdatedAt() *SSLRecordUpsertBulk {
-	return u.Update(func(s *SSLRecordUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetCertDomain sets the "cert_domain" field.

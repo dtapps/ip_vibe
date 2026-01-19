@@ -31,12 +31,6 @@ func (_u *DeviceUpdate) Where(ps ...predicate.Device) *DeviceUpdate {
 	return _u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *DeviceUpdate) SetUpdatedAt(v time.Time) *DeviceUpdate {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
 // SetName sets the "name" field.
 func (_u *DeviceUpdate) SetName(v string) *DeviceUpdate {
 	_u.mutation.SetName(v)
@@ -461,12 +455,6 @@ type DeviceUpdateOne struct {
 	hooks     []Hook
 	mutation  *DeviceMutation
 	modifiers []func(*sql.UpdateBuilder)
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *DeviceUpdateOne) SetUpdatedAt(v time.Time) *DeviceUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
 }
 
 // SetName sets the "name" field.

@@ -400,18 +400,6 @@ type (
 	}
 )
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DevicePortForwardUpsert) SetUpdatedAt(v time.Time) *DevicePortForwardUpsert {
-	u.Set(deviceportforward.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DevicePortForwardUpsert) UpdateUpdatedAt() *DevicePortForwardUpsert {
-	u.SetExcluded(deviceportforward.FieldUpdatedAt)
-	return u
-}
-
 // SetName sets the "name" field.
 func (u *DevicePortForwardUpsert) SetName(v string) *DevicePortForwardUpsert {
 	u.Set(deviceportforward.FieldName, v)
@@ -546,6 +534,9 @@ func (u *DevicePortForwardUpsertOne) UpdateNewValues() *DevicePortForwardUpsertO
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(deviceportforward.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(deviceportforward.FieldUpdatedAt)
+		}
 	}))
 	return u
 }
@@ -575,20 +566,6 @@ func (u *DevicePortForwardUpsertOne) Update(set func(*DevicePortForwardUpsert)) 
 		set(&DevicePortForwardUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DevicePortForwardUpsertOne) SetUpdatedAt(v time.Time) *DevicePortForwardUpsertOne {
-	return u.Update(func(s *DevicePortForwardUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DevicePortForwardUpsertOne) UpdateUpdatedAt() *DevicePortForwardUpsertOne {
-	return u.Update(func(s *DevicePortForwardUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetName sets the "name" field.
@@ -909,6 +886,9 @@ func (u *DevicePortForwardUpsertBulk) UpdateNewValues() *DevicePortForwardUpsert
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(deviceportforward.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(deviceportforward.FieldUpdatedAt)
+			}
 		}
 	}))
 	return u
@@ -939,20 +919,6 @@ func (u *DevicePortForwardUpsertBulk) Update(set func(*DevicePortForwardUpsert))
 		set(&DevicePortForwardUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DevicePortForwardUpsertBulk) SetUpdatedAt(v time.Time) *DevicePortForwardUpsertBulk {
-	return u.Update(func(s *DevicePortForwardUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DevicePortForwardUpsertBulk) UpdateUpdatedAt() *DevicePortForwardUpsertBulk {
-	return u.Update(func(s *DevicePortForwardUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetName sets the "name" field.

@@ -29,12 +29,6 @@ func (_u *SSLRecordUpdate) Where(ps ...predicate.SSLRecord) *SSLRecordUpdate {
 	return _u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *SSLRecordUpdate) SetUpdatedAt(v time.Time) *SSLRecordUpdate {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
 // SetCertDomain sets the "cert_domain" field.
 func (_u *SSLRecordUpdate) SetCertDomain(v string) *SSLRecordUpdate {
 	_u.mutation.SetCertDomain(v)
@@ -548,12 +542,6 @@ type SSLRecordUpdateOne struct {
 	hooks     []Hook
 	mutation  *SSLRecordMutation
 	modifiers []func(*sql.UpdateBuilder)
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *SSLRecordUpdateOne) SetUpdatedAt(v time.Time) *SSLRecordUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
 }
 
 // SetCertDomain sets the "cert_domain" field.

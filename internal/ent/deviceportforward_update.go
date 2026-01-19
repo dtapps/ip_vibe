@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/predicate"
@@ -28,12 +27,6 @@ type DevicePortForwardUpdate struct {
 // Where appends a list predicates to the DevicePortForwardUpdate builder.
 func (_u *DevicePortForwardUpdate) Where(ps ...predicate.DevicePortForward) *DevicePortForwardUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *DevicePortForwardUpdate) SetUpdatedAt(v time.Time) *DevicePortForwardUpdate {
-	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
@@ -362,12 +355,6 @@ type DevicePortForwardUpdateOne struct {
 	hooks     []Hook
 	mutation  *DevicePortForwardMutation
 	modifiers []func(*sql.UpdateBuilder)
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *DevicePortForwardUpdateOne) SetUpdatedAt(v time.Time) *DevicePortForwardUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
 }
 
 // SetName sets the "name" field.

@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/platformconfig"
@@ -31,12 +30,6 @@ type PlatformConfigUpdate struct {
 // Where appends a list predicates to the PlatformConfigUpdate builder.
 func (_u *PlatformConfigUpdate) Where(ps ...predicate.PlatformConfig) *PlatformConfigUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *PlatformConfigUpdate) SetUpdatedAt(v time.Time) *PlatformConfigUpdate {
-	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
@@ -470,12 +463,6 @@ type PlatformConfigUpdateOne struct {
 	hooks     []Hook
 	mutation  *PlatformConfigMutation
 	modifiers []func(*sql.UpdateBuilder)
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *PlatformConfigUpdateOne) SetUpdatedAt(v time.Time) *PlatformConfigUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
 }
 
 // SetCapability sets the "capability" field.

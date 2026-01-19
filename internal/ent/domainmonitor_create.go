@@ -404,18 +404,6 @@ type (
 	}
 )
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DomainMonitorUpsert) SetUpdatedAt(v time.Time) *DomainMonitorUpsert {
-	u.Set(domainmonitor.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DomainMonitorUpsert) UpdateUpdatedAt() *DomainMonitorUpsert {
-	u.SetExcluded(domainmonitor.FieldUpdatedAt)
-	return u
-}
-
 // SetName sets the "name" field.
 func (u *DomainMonitorUpsert) SetName(v string) *DomainMonitorUpsert {
 	u.Set(domainmonitor.FieldName, v)
@@ -562,6 +550,9 @@ func (u *DomainMonitorUpsertOne) UpdateNewValues() *DomainMonitorUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(domainmonitor.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(domainmonitor.FieldUpdatedAt)
+		}
 		if _, exists := u.create.mutation.Domain(); exists {
 			s.SetIgnore(domainmonitor.FieldDomain)
 		}
@@ -597,20 +588,6 @@ func (u *DomainMonitorUpsertOne) Update(set func(*DomainMonitorUpsert)) *DomainM
 		set(&DomainMonitorUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DomainMonitorUpsertOne) SetUpdatedAt(v time.Time) *DomainMonitorUpsertOne {
-	return u.Update(func(s *DomainMonitorUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DomainMonitorUpsertOne) UpdateUpdatedAt() *DomainMonitorUpsertOne {
-	return u.Update(func(s *DomainMonitorUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetName sets the "name" field.
@@ -945,6 +922,9 @@ func (u *DomainMonitorUpsertBulk) UpdateNewValues() *DomainMonitorUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(domainmonitor.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(domainmonitor.FieldUpdatedAt)
+			}
 			if _, exists := b.mutation.Domain(); exists {
 				s.SetIgnore(domainmonitor.FieldDomain)
 			}
@@ -981,20 +961,6 @@ func (u *DomainMonitorUpsertBulk) Update(set func(*DomainMonitorUpsert)) *Domain
 		set(&DomainMonitorUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DomainMonitorUpsertBulk) SetUpdatedAt(v time.Time) *DomainMonitorUpsertBulk {
-	return u.Update(func(s *DomainMonitorUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DomainMonitorUpsertBulk) UpdateUpdatedAt() *DomainMonitorUpsertBulk {
-	return u.Update(func(s *DomainMonitorUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetName sets the "name" field.

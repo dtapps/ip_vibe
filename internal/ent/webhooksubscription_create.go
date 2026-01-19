@@ -348,18 +348,6 @@ type (
 	}
 )
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *WebhookSubscriptionUpsert) SetUpdatedAt(v time.Time) *WebhookSubscriptionUpsert {
-	u.Set(webhooksubscription.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *WebhookSubscriptionUpsert) UpdateUpdatedAt() *WebhookSubscriptionUpsert {
-	u.SetExcluded(webhooksubscription.FieldUpdatedAt)
-	return u
-}
-
 // SetName sets the "name" field.
 func (u *WebhookSubscriptionUpsert) SetName(v string) *WebhookSubscriptionUpsert {
 	u.Set(webhooksubscription.FieldName, v)
@@ -422,6 +410,9 @@ func (u *WebhookSubscriptionUpsertOne) UpdateNewValues() *WebhookSubscriptionUps
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(webhooksubscription.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(webhooksubscription.FieldUpdatedAt)
+		}
 		if _, exists := u.create.mutation.WebhookID(); exists {
 			s.SetIgnore(webhooksubscription.FieldWebhookID)
 		}
@@ -460,20 +451,6 @@ func (u *WebhookSubscriptionUpsertOne) Update(set func(*WebhookSubscriptionUpser
 		set(&WebhookSubscriptionUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *WebhookSubscriptionUpsertOne) SetUpdatedAt(v time.Time) *WebhookSubscriptionUpsertOne {
-	return u.Update(func(s *WebhookSubscriptionUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *WebhookSubscriptionUpsertOne) UpdateUpdatedAt() *WebhookSubscriptionUpsertOne {
-	return u.Update(func(s *WebhookSubscriptionUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetName sets the "name" field.
@@ -710,6 +687,9 @@ func (u *WebhookSubscriptionUpsertBulk) UpdateNewValues() *WebhookSubscriptionUp
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(webhooksubscription.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(webhooksubscription.FieldUpdatedAt)
+			}
 			if _, exists := b.mutation.WebhookID(); exists {
 				s.SetIgnore(webhooksubscription.FieldWebhookID)
 			}
@@ -749,20 +729,6 @@ func (u *WebhookSubscriptionUpsertBulk) Update(set func(*WebhookSubscriptionUpse
 		set(&WebhookSubscriptionUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *WebhookSubscriptionUpsertBulk) SetUpdatedAt(v time.Time) *WebhookSubscriptionUpsertBulk {
-	return u.Update(func(s *WebhookSubscriptionUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *WebhookSubscriptionUpsertBulk) UpdateUpdatedAt() *WebhookSubscriptionUpsertBulk {
-	return u.Update(func(s *WebhookSubscriptionUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetName sets the "name" field.

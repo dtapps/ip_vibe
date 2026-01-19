@@ -33,12 +33,6 @@ func (_u *DNSRecordUpdate) Where(ps ...predicate.DNSRecord) *DNSRecordUpdate {
 	return _u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *DNSRecordUpdate) SetUpdatedAt(v time.Time) *DNSRecordUpdate {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
 // SetRecordID sets the "record_id" field.
 func (_u *DNSRecordUpdate) SetRecordID(v string) *DNSRecordUpdate {
 	_u.mutation.SetRecordID(v)
@@ -427,12 +421,6 @@ type DNSRecordUpdateOne struct {
 	hooks     []Hook
 	mutation  *DNSRecordMutation
 	modifiers []func(*sql.UpdateBuilder)
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *DNSRecordUpdateOne) SetUpdatedAt(v time.Time) *DNSRecordUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
 }
 
 // SetRecordID sets the "record_id" field.

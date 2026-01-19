@@ -30,12 +30,6 @@ func (_u *DomainMonitorUpdate) Where(ps ...predicate.DomainMonitor) *DomainMonit
 	return _u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *DomainMonitorUpdate) SetUpdatedAt(v time.Time) *DomainMonitorUpdate {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
 // SetName sets the "name" field.
 func (_u *DomainMonitorUpdate) SetName(v string) *DomainMonitorUpdate {
 	_u.mutation.SetName(v)
@@ -319,12 +313,6 @@ type DomainMonitorUpdateOne struct {
 	hooks     []Hook
 	mutation  *DomainMonitorMutation
 	modifiers []func(*sql.UpdateBuilder)
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *DomainMonitorUpdateOne) SetUpdatedAt(v time.Time) *DomainMonitorUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
 }
 
 // SetName sets the "name" field.

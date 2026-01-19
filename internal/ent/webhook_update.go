@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 	"vibe_ip/internal/ent/predicate"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
@@ -27,12 +26,6 @@ type WebhookUpdate struct {
 // Where appends a list predicates to the WebhookUpdate builder.
 func (_u *WebhookUpdate) Where(ps ...predicate.Webhook) *WebhookUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *WebhookUpdate) SetUpdatedAt(v time.Time) *WebhookUpdate {
-	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
@@ -357,12 +350,6 @@ type WebhookUpdateOne struct {
 	hooks     []Hook
 	mutation  *WebhookMutation
 	modifiers []func(*sql.UpdateBuilder)
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *WebhookUpdateOne) SetUpdatedAt(v time.Time) *WebhookUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
 }
 
 // SetName sets the "name" field.

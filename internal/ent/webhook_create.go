@@ -389,18 +389,6 @@ type (
 	}
 )
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *WebhookUpsert) SetUpdatedAt(v time.Time) *WebhookUpsert {
-	u.Set(webhook.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *WebhookUpsert) UpdateUpdatedAt() *WebhookUpsert {
-	u.SetExcluded(webhook.FieldUpdatedAt)
-	return u
-}
-
 // SetName sets the "name" field.
 func (u *WebhookUpsert) SetName(v string) *WebhookUpsert {
 	u.Set(webhook.FieldName, v)
@@ -529,6 +517,9 @@ func (u *WebhookUpsertOne) UpdateNewValues() *WebhookUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(webhook.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(webhook.FieldUpdatedAt)
+		}
 		if _, exists := u.create.mutation.Platform(); exists {
 			s.SetIgnore(webhook.FieldPlatform)
 		}
@@ -561,20 +552,6 @@ func (u *WebhookUpsertOne) Update(set func(*WebhookUpsert)) *WebhookUpsertOne {
 		set(&WebhookUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *WebhookUpsertOne) SetUpdatedAt(v time.Time) *WebhookUpsertOne {
-	return u.Update(func(s *WebhookUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *WebhookUpsertOne) UpdateUpdatedAt() *WebhookUpsertOne {
-	return u.Update(func(s *WebhookUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetName sets the "name" field.
@@ -888,6 +865,9 @@ func (u *WebhookUpsertBulk) UpdateNewValues() *WebhookUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(webhook.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(webhook.FieldUpdatedAt)
+			}
 			if _, exists := b.mutation.Platform(); exists {
 				s.SetIgnore(webhook.FieldPlatform)
 			}
@@ -921,20 +901,6 @@ func (u *WebhookUpsertBulk) Update(set func(*WebhookUpsert)) *WebhookUpsertBulk 
 		set(&WebhookUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *WebhookUpsertBulk) SetUpdatedAt(v time.Time) *WebhookUpsertBulk {
-	return u.Update(func(s *WebhookUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *WebhookUpsertBulk) UpdateUpdatedAt() *WebhookUpsertBulk {
-	return u.Update(func(s *WebhookUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetName sets the "name" field.

@@ -410,18 +410,6 @@ type (
 	}
 )
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DeviceUpsert) SetUpdatedAt(v time.Time) *DeviceUpsert {
-	u.Set(device.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DeviceUpsert) UpdateUpdatedAt() *DeviceUpsert {
-	u.SetExcluded(device.FieldUpdatedAt)
-	return u
-}
-
 // SetName sets the "name" field.
 func (u *DeviceUpsert) SetName(v string) *DeviceUpsert {
 	u.Set(device.FieldName, v)
@@ -544,6 +532,9 @@ func (u *DeviceUpsertOne) UpdateNewValues() *DeviceUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(device.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(device.FieldUpdatedAt)
+		}
 		if _, exists := u.create.mutation.Code(); exists {
 			s.SetIgnore(device.FieldCode)
 		}
@@ -576,20 +567,6 @@ func (u *DeviceUpsertOne) Update(set func(*DeviceUpsert)) *DeviceUpsertOne {
 		set(&DeviceUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DeviceUpsertOne) SetUpdatedAt(v time.Time) *DeviceUpsertOne {
-	return u.Update(func(s *DeviceUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DeviceUpsertOne) UpdateUpdatedAt() *DeviceUpsertOne {
-	return u.Update(func(s *DeviceUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetName sets the "name" field.
@@ -896,6 +873,9 @@ func (u *DeviceUpsertBulk) UpdateNewValues() *DeviceUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(device.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(device.FieldUpdatedAt)
+			}
 			if _, exists := b.mutation.Code(); exists {
 				s.SetIgnore(device.FieldCode)
 			}
@@ -929,20 +909,6 @@ func (u *DeviceUpsertBulk) Update(set func(*DeviceUpsert)) *DeviceUpsertBulk {
 		set(&DeviceUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DeviceUpsertBulk) SetUpdatedAt(v time.Time) *DeviceUpsertBulk {
-	return u.Update(func(s *DeviceUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DeviceUpsertBulk) UpdateUpdatedAt() *DeviceUpsertBulk {
-	return u.Update(func(s *DeviceUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetName sets the "name" field.

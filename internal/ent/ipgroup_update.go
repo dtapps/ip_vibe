@@ -32,12 +32,6 @@ func (_u *IpGroupUpdate) Where(ps ...predicate.IpGroup) *IpGroupUpdate {
 	return _u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *IpGroupUpdate) SetUpdatedAt(v time.Time) *IpGroupUpdate {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
 // SetRecordID sets the "record_id" field.
 func (_u *IpGroupUpdate) SetRecordID(v string) *IpGroupUpdate {
 	_u.mutation.SetRecordID(v)
@@ -499,12 +493,6 @@ type IpGroupUpdateOne struct {
 	hooks     []Hook
 	mutation  *IpGroupMutation
 	modifiers []func(*sql.UpdateBuilder)
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *IpGroupUpdateOne) SetUpdatedAt(v time.Time) *IpGroupUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
 }
 
 // SetRecordID sets the "record_id" field.

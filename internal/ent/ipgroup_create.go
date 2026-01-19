@@ -401,18 +401,6 @@ type (
 	}
 )
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *IpGroupUpsert) SetUpdatedAt(v time.Time) *IpGroupUpsert {
-	u.Set(ipgroup.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *IpGroupUpsert) UpdateUpdatedAt() *IpGroupUpsert {
-	u.SetExcluded(ipgroup.FieldUpdatedAt)
-	return u
-}
-
 // SetRecordID sets the "record_id" field.
 func (u *IpGroupUpsert) SetRecordID(v string) *IpGroupUpsert {
 	u.Set(ipgroup.FieldRecordID, v)
@@ -517,6 +505,9 @@ func (u *IpGroupUpsertOne) UpdateNewValues() *IpGroupUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(ipgroup.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(ipgroup.FieldUpdatedAt)
+		}
 	}))
 	return u
 }
@@ -546,20 +537,6 @@ func (u *IpGroupUpsertOne) Update(set func(*IpGroupUpsert)) *IpGroupUpsertOne {
 		set(&IpGroupUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *IpGroupUpsertOne) SetUpdatedAt(v time.Time) *IpGroupUpsertOne {
-	return u.Update(func(s *IpGroupUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *IpGroupUpsertOne) UpdateUpdatedAt() *IpGroupUpsertOne {
-	return u.Update(func(s *IpGroupUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetRecordID sets the "record_id" field.
@@ -845,6 +822,9 @@ func (u *IpGroupUpsertBulk) UpdateNewValues() *IpGroupUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(ipgroup.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(ipgroup.FieldUpdatedAt)
+			}
 		}
 	}))
 	return u
@@ -875,20 +855,6 @@ func (u *IpGroupUpsertBulk) Update(set func(*IpGroupUpsert)) *IpGroupUpsertBulk 
 		set(&IpGroupUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *IpGroupUpsertBulk) SetUpdatedAt(v time.Time) *IpGroupUpsertBulk {
-	return u.Update(func(s *IpGroupUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *IpGroupUpsertBulk) UpdateUpdatedAt() *IpGroupUpsertBulk {
-	return u.Update(func(s *IpGroupUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetRecordID sets the "record_id" field.

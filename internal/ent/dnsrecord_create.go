@@ -469,18 +469,6 @@ type (
 	}
 )
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DNSRecordUpsert) SetUpdatedAt(v time.Time) *DNSRecordUpsert {
-	u.Set(dnsrecord.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DNSRecordUpsert) UpdateUpdatedAt() *DNSRecordUpsert {
-	u.SetExcluded(dnsrecord.FieldUpdatedAt)
-	return u
-}
-
 // SetRecordID sets the "record_id" field.
 func (u *DNSRecordUpsert) SetRecordID(v string) *DNSRecordUpsert {
 	u.Set(dnsrecord.FieldRecordID, v)
@@ -651,6 +639,9 @@ func (u *DNSRecordUpsertOne) UpdateNewValues() *DNSRecordUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(dnsrecord.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(dnsrecord.FieldUpdatedAt)
+		}
 		if _, exists := u.create.mutation.ConfigID(); exists {
 			s.SetIgnore(dnsrecord.FieldConfigID)
 		}
@@ -686,20 +677,6 @@ func (u *DNSRecordUpsertOne) Update(set func(*DNSRecordUpsert)) *DNSRecordUpsert
 		set(&DNSRecordUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DNSRecordUpsertOne) SetUpdatedAt(v time.Time) *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DNSRecordUpsertOne) UpdateUpdatedAt() *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetRecordID sets the "record_id" field.
@@ -1062,6 +1039,9 @@ func (u *DNSRecordUpsertBulk) UpdateNewValues() *DNSRecordUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(dnsrecord.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(dnsrecord.FieldUpdatedAt)
+			}
 			if _, exists := b.mutation.ConfigID(); exists {
 				s.SetIgnore(dnsrecord.FieldConfigID)
 			}
@@ -1098,20 +1078,6 @@ func (u *DNSRecordUpsertBulk) Update(set func(*DNSRecordUpsert)) *DNSRecordUpser
 		set(&DNSRecordUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *DNSRecordUpsertBulk) SetUpdatedAt(v time.Time) *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *DNSRecordUpsertBulk) UpdateUpdatedAt() *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetRecordID sets the "record_id" field.

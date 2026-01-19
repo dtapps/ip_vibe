@@ -480,18 +480,6 @@ type (
 	}
 )
 
-// SetUpdatedAt sets the "updated_at" field.
-func (u *CDNRecordUpsert) SetUpdatedAt(v time.Time) *CDNRecordUpsert {
-	u.Set(cdnrecord.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *CDNRecordUpsert) UpdateUpdatedAt() *CDNRecordUpsert {
-	u.SetExcluded(cdnrecord.FieldUpdatedAt)
-	return u
-}
-
 // SetRecordID sets the "record_id" field.
 func (u *CDNRecordUpsert) SetRecordID(v string) *CDNRecordUpsert {
 	u.Set(cdnrecord.FieldRecordID, v)
@@ -656,6 +644,9 @@ func (u *CDNRecordUpsertOne) UpdateNewValues() *CDNRecordUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(cdnrecord.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(cdnrecord.FieldUpdatedAt)
+		}
 		if _, exists := u.create.mutation.ConfigID(); exists {
 			s.SetIgnore(cdnrecord.FieldConfigID)
 		}
@@ -691,20 +682,6 @@ func (u *CDNRecordUpsertOne) Update(set func(*CDNRecordUpsert)) *CDNRecordUpsert
 		set(&CDNRecordUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *CDNRecordUpsertOne) SetUpdatedAt(v time.Time) *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *CDNRecordUpsertOne) UpdateUpdatedAt() *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetRecordID sets the "record_id" field.
@@ -1060,6 +1037,9 @@ func (u *CDNRecordUpsertBulk) UpdateNewValues() *CDNRecordUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(cdnrecord.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(cdnrecord.FieldUpdatedAt)
+			}
 			if _, exists := b.mutation.ConfigID(); exists {
 				s.SetIgnore(cdnrecord.FieldConfigID)
 			}
@@ -1096,20 +1076,6 @@ func (u *CDNRecordUpsertBulk) Update(set func(*CDNRecordUpsert)) *CDNRecordUpser
 		set(&CDNRecordUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *CDNRecordUpsertBulk) SetUpdatedAt(v time.Time) *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *CDNRecordUpsertBulk) UpdateUpdatedAt() *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.UpdateUpdatedAt()
-	})
 }
 
 // SetRecordID sets the "record_id" field.

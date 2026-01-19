@@ -33,12 +33,6 @@ func (_u *CDNRecordUpdate) Where(ps ...predicate.CDNRecord) *CDNRecordUpdate {
 	return _u
 }
 
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *CDNRecordUpdate) SetUpdatedAt(v time.Time) *CDNRecordUpdate {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
 // SetRecordID sets the "record_id" field.
 func (_u *CDNRecordUpdate) SetRecordID(v string) *CDNRecordUpdate {
 	_u.mutation.SetRecordID(v)
@@ -471,12 +465,6 @@ type CDNRecordUpdateOne struct {
 	hooks     []Hook
 	mutation  *CDNRecordMutation
 	modifiers []func(*sql.UpdateBuilder)
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *CDNRecordUpdateOne) SetUpdatedAt(v time.Time) *CDNRecordUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
 }
 
 // SetRecordID sets the "record_id" field.

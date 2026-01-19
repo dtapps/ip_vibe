@@ -24,6 +24,7 @@ func (AtMixin) Fields() []ent.Field {
 		field.Time("updated_at").
 			Default(time.Now).
 			UpdateDefault(time.Now).
+			Immutable().
 			Comment("更新时间").
 			Annotations(entsql.WithComments(true)),
 	}
