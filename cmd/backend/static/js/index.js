@@ -287,24 +287,24 @@ function updateBatchBar() {
   const allRows = document.querySelectorAll(".row-checkbox");
   const checkedRows = document.querySelectorAll(".row-checkbox:checked");
   const checkAll = document.getElementById("check_all");
-  const batchBtn = document.getElementById("batch_delete_btn");
-  const countSpan = document.getElementById("selected_count");
 
   const count = checkedRows.length;
 
-  // 1. 同步全选框的状态 (半选、全选、不选)
+  // 同步全选框的状态 (半选、全选、不选)
   if (checkAll) {
     checkAll.checked = allRows.length === count && allRows.length > 0;
     checkAll.indeterminate = count > 0 && count < allRows.length;
   }
 
-  // 2. 控制批量按钮显示/隐藏
-  if (batchBtn) {
+  // 键控制所有批量按钮
+  document.querySelectorAll(".btn-batch").forEach((btn) => {
     if (count > 0) {
-      countSpan.innerText = count;
-      batchBtn.classList.remove("hidden"); // 显示
+      btn.classList.remove("hidden");
+      // 更新按钮里的数字
+      const countSpan = btn.querySelector("#selected_count");
+      if (countSpan) countSpan.innerText = count;
     } else {
-      batchBtn.classList.add("hidden"); // 隐藏
+      btn.classList.add("hidden");
     }
-  }
+  });
 }

@@ -88,10 +88,15 @@
     @apply btn btn-primary btn-sm rounded-xl font-bold border-none shadow-md px-6;
   }
 
-  /* 只需要加这一行：颜色换成 error(红)，其他完全一样 */
+  /* 红色背景按钮 */
   .btn-ui-error {
     @apply btn btn-error btn-sm rounded-xl font-bold border-none shadow-md px-6;
     color: var(--color-primary-content) !important;
+  }
+
+  /* 按钮 */
+  .btn-ui-info {
+    @apply btn btn-info btn-sm rounded-xl font-bold border-none shadow-md px-6 text-white;
   }
 
   /* --- 统一开关样式 --- */

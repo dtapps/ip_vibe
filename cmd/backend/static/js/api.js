@@ -113,6 +113,41 @@ async function withErrorHandling(asyncFn, options = {}) {
 }
 
 /**
+ * 统一处理批量操作
+ * @param {string} url - 操作接口URL
+ * @param {string} key - 操作键名
+ * @param {boolean} value - 操作值
+ * @returns
+ */
+async function handleBatchAction(url, key, value) {
+  try {
+    const ids = Array.from(
+      document.querySelectorAll(".row-checkbox:checked"),
+    ).map((cb) => parseInt(cb.value));
+    if (!ids.length) {
+      alert("请选择要操作的项");
+      return;
+    }
+
+    const msg = value ? "开启" : "关闭";
+    if (!confirm(`确定要批量${msg}这 ${ids.length} 项吗？`)) {
+      return;
+    }
+
+    // 调用 API
+    await API.post(url, {
+      ids: ids,
+      [key]: value,
+    });
+
+    // 刷新页面
+    window.location.reload();
+  } catch (err) {
+    alert(`操作失败: ${err.message}`);
+  }
+}
+
+/**
  * 批量删除
  * @param {string} url - 删除接口URL
  * @returns
@@ -122,11 +157,18 @@ async function handleBatchDelete(url) {
     const ids = Array.from(
       document.querySelectorAll(".row-checkbox:checked"),
     ).map((cb) => parseInt(cb.value));
-    if (!ids.length || !confirm(`确定删除这 ${ids.length} 项吗？`)) {
+    if (!ids.length) {
+      alert("请选择要删除的项");
       return;
     }
-    // 调用 API 删除
+
+    if (!confirm(`确定删除这 ${ids.length} 项吗？`)) {
+      return;
+    }
+
+    // 调用 API
     await API.delete(url, { ids: ids });
+
     // 刷新页面
     window.location.reload();
   } catch (error) {
@@ -142,11 +184,18 @@ async function handleBatchDelete(url) {
  */
 async function handleDelete(url, id) {
   try {
-    if (!id || !confirm(`确定删除 ${id} 吗？`)) {
+    if (!id) {
+      alert("请选择要删除的项");
       return;
     }
-    // 调用 API 删除
+
+    if (!confirm(`确定删除 ${id} 吗？`)) {
+      return;
+    }
+
+    // 调用 API
     await API.delete(`${url}/${id}`);
+
     // 刷新页面
     window.location.reload();
   } catch (error) {

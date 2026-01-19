@@ -25,8 +25,17 @@
         {{ template "icons" (dict "Name" "i-lucide-plus") }} 添加端口转发
       </button>
 
-      <button id="batch_delete_btn" class="hidden btn-ui-error"
-        onclick="handleBatchDelete('{{$baseApiUrlPath}}/batch')">
+      <button class="btn-batch btn-ui-info hidden"
+        onclick="handleBatchAction('{{$baseApiUrlPath}}/batch/active','is_active', true)">
+        {{ template "icons" (dict "Name" "i-lucide-play") }} 批量开启
+      </button>
+
+      <button class="btn-batch btn-ui-info hidden"
+        onclick="handleBatchAction('{{$baseApiUrlPath}}/batch/active', 'is_active', false)">
+        {{ template "icons" (dict "Name" "i-lucide-pause") }} 批量关闭
+      </button>
+
+      <button class="btn-batch btn-ui-error hidden" onclick="handleBatchDelete('{{$baseApiUrlPath}}/batch')">
         {{ template "icons" (dict "Name" "i-lucide-trash-2") }}
         批量删除 (<span id="selected_count">0</span>)
       </button>
