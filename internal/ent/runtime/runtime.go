@@ -326,6 +326,12 @@ func init() {
 	webhooksubscriptionDescCreatedAt := webhooksubscriptionMixinFields0[0].Descriptor()
 	// webhooksubscription.DefaultCreatedAt holds the default value on creation for the created_at field.
 	webhooksubscription.DefaultCreatedAt = webhooksubscriptionDescCreatedAt.Default.(func() time.Time)
+	// webhooksubscriptionDescUpdatedAt is the schema descriptor for updated_at field.
+	webhooksubscriptionDescUpdatedAt := webhooksubscriptionMixinFields0[1].Descriptor()
+	// webhooksubscription.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	webhooksubscription.DefaultUpdatedAt = webhooksubscriptionDescUpdatedAt.Default.(func() time.Time)
+	// webhooksubscription.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	webhooksubscription.UpdateDefaultUpdatedAt = webhooksubscriptionDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// webhooksubscriptionDescWebhookID is the schema descriptor for webhook_id field.
 	webhooksubscriptionDescWebhookID := webhooksubscriptionFields[3].Descriptor()
 	// webhooksubscription.WebhookIDValidator is a validator for the "webhook_id" field. It is called by the builders before save.

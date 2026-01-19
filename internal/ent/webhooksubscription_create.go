@@ -37,6 +37,20 @@ func (_c *WebhookSubscriptionCreate) SetNillableCreatedAt(v *time.Time) *Webhook
 	return _c
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (_c *WebhookSubscriptionCreate) SetUpdatedAt(v time.Time) *WebhookSubscriptionCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (_c *WebhookSubscriptionCreate) SetNillableUpdatedAt(v *time.Time) *WebhookSubscriptionCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
+	}
+	return _c
+}
+
 // SetName sets the "name" field.
 func (_c *WebhookSubscriptionCreate) SetName(v string) *WebhookSubscriptionCreate {
 	_c.mutation.SetName(v)
@@ -144,6 +158,13 @@ func (_c *WebhookSubscriptionCreate) defaults() error {
 		v := webhooksubscription.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		if webhooksubscription.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized webhooksubscription.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := webhooksubscription.DefaultUpdatedAt()
+		_c.mutation.SetUpdatedAt(v)
+	}
 	if _, ok := _c.mutation.IsActive(); !ok {
 		v := webhooksubscription.DefaultIsActive
 		_c.mutation.SetIsActive(v)
@@ -155,6 +176,9 @@ func (_c *WebhookSubscriptionCreate) defaults() error {
 func (_c *WebhookSubscriptionCreate) check() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "WebhookSubscription.created_at"`)}
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "WebhookSubscription.updated_at"`)}
 	}
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "WebhookSubscription.name"`)}
@@ -230,6 +254,10 @@ func (_c *WebhookSubscriptionCreate) createSpec() (*WebhookSubscription, *sqlgra
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(webhooksubscription.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
+	}
+	if value, ok := _c.mutation.UpdatedAt(); ok {
+		_spec.SetField(webhooksubscription.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
 	}
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(webhooksubscription.FieldName, field.TypeString, value)
@@ -319,6 +347,18 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *WebhookSubscriptionUpsert) SetUpdatedAt(v time.Time) *WebhookSubscriptionUpsert {
+	u.Set(webhooksubscription.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *WebhookSubscriptionUpsert) UpdateUpdatedAt() *WebhookSubscriptionUpsert {
+	u.SetExcluded(webhooksubscription.FieldUpdatedAt)
+	return u
+}
 
 // SetName sets the "name" field.
 func (u *WebhookSubscriptionUpsert) SetName(v string) *WebhookSubscriptionUpsert {
@@ -420,6 +460,20 @@ func (u *WebhookSubscriptionUpsertOne) Update(set func(*WebhookSubscriptionUpser
 		set(&WebhookSubscriptionUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *WebhookSubscriptionUpsertOne) SetUpdatedAt(v time.Time) *WebhookSubscriptionUpsertOne {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *WebhookSubscriptionUpsertOne) UpdateUpdatedAt() *WebhookSubscriptionUpsertOne {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetName sets the "name" field.
@@ -695,6 +749,20 @@ func (u *WebhookSubscriptionUpsertBulk) Update(set func(*WebhookSubscriptionUpse
 		set(&WebhookSubscriptionUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *WebhookSubscriptionUpsertBulk) SetUpdatedAt(v time.Time) *WebhookSubscriptionUpsertBulk {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *WebhookSubscriptionUpsertBulk) UpdateUpdatedAt() *WebhookSubscriptionUpsertBulk {
+	return u.Update(func(s *WebhookSubscriptionUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetName sets the "name" field.

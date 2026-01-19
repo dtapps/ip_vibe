@@ -575,6 +575,7 @@ var (
 	WebhookSubscriptionColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "通知订阅序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "name", Type: field.TypeString, Comment: "通知订阅名称"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "通知订阅描述"},
 		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"cdn_record", "dns_record", "device", "ip_group", "domain_monitor", "ssl_record"}},
@@ -592,13 +593,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "webhook_subscription_webhook_subscriptions",
-				Columns:    []*schema.Column{WebhookSubscriptionColumns[7]},
+				Columns:    []*schema.Column{WebhookSubscriptionColumns[8]},
 				RefColumns: []*schema.Column{WebhookColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
 				Symbol:     "webhook_subscription_webhook_webhook",
-				Columns:    []*schema.Column{WebhookSubscriptionColumns[8]},
+				Columns:    []*schema.Column{WebhookSubscriptionColumns[9]},
 				RefColumns: []*schema.Column{WebhookColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -615,32 +616,32 @@ var (
 			{
 				Name:    "webhooksubscription_webhook_id",
 				Unique:  false,
-				Columns: []*schema.Column{WebhookSubscriptionColumns[8]},
+				Columns: []*schema.Column{WebhookSubscriptionColumns[9]},
 			},
 			{
 				Name:    "webhooksubscription_obj_type",
 				Unique:  false,
-				Columns: []*schema.Column{WebhookSubscriptionColumns[4]},
+				Columns: []*schema.Column{WebhookSubscriptionColumns[5]},
 			},
 			{
 				Name:    "webhooksubscription_obj_id",
 				Unique:  false,
-				Columns: []*schema.Column{WebhookSubscriptionColumns[5]},
+				Columns: []*schema.Column{WebhookSubscriptionColumns[6]},
 			},
 			{
 				Name:    "webhooksubscription_is_active",
 				Unique:  false,
-				Columns: []*schema.Column{WebhookSubscriptionColumns[6]},
+				Columns: []*schema.Column{WebhookSubscriptionColumns[7]},
 			},
 			{
 				Name:    "webhooksubscription_obj_type_obj_id",
 				Unique:  false,
-				Columns: []*schema.Column{WebhookSubscriptionColumns[4], WebhookSubscriptionColumns[5]},
+				Columns: []*schema.Column{WebhookSubscriptionColumns[5], WebhookSubscriptionColumns[6]},
 			},
 			{
 				Name:    "webhooksubscription_obj_type_obj_id_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{WebhookSubscriptionColumns[4], WebhookSubscriptionColumns[5], WebhookSubscriptionColumns[1]},
+				Columns: []*schema.Column{WebhookSubscriptionColumns[5], WebhookSubscriptionColumns[6], WebhookSubscriptionColumns[1]},
 				Annotation: &entsql.IndexAnnotation{
 					Desc: true,
 				},
@@ -648,7 +649,7 @@ var (
 			{
 				Name:    "webhooksubscription_webhook_id_obj_type_obj_id",
 				Unique:  true,
-				Columns: []*schema.Column{WebhookSubscriptionColumns[8], WebhookSubscriptionColumns[4], WebhookSubscriptionColumns[5]},
+				Columns: []*schema.Column{WebhookSubscriptionColumns[9], WebhookSubscriptionColumns[5], WebhookSubscriptionColumns[6]},
 			},
 		},
 	}

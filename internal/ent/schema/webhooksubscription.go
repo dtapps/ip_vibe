@@ -30,7 +30,7 @@ func (WebhookSubscription) Annotations() []schema.Annotation {
 // Mixin of the WebhookSubscription.
 func (WebhookSubscription) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		schemamixin.AtLogMixin{},
+		schemamixin.AtMixin{},
 	}
 }
 

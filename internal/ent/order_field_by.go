@@ -2792,6 +2792,31 @@ func (q *WebhookSubscriptionQuery) OrderByCreatedAtAsc() *WebhookSubscriptionQue
 	return q.Order(Asc(webhooksubscription.FieldCreatedAt))
 }
 
+// OrderByUpdatedAtDesc 按字段 updated_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *WebhookSubscriptionQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.WebhookSubscription.Query().
+//	    OrderByUpdatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *WebhookSubscriptionQuery) OrderByUpdatedAtDesc() *WebhookSubscriptionQuery {
+	return q.Order(Desc(webhooksubscription.FieldUpdatedAt))
+}
+
+// OrderByUpdatedAtAsc 按字段 updated_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *WebhookSubscriptionQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.WebhookSubscription.Query().
+//	    OrderByUpdatedAtAsc().
+//	    All(ctx)
+func (q *WebhookSubscriptionQuery) OrderByUpdatedAtAsc() *WebhookSubscriptionQuery {
+	return q.Order(Asc(webhooksubscription.FieldUpdatedAt))
+}
+
 // OrderByNameDesc 按字段 name 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *WebhookSubscriptionQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。

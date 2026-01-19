@@ -60,6 +60,11 @@ func CreatedAt(v time.Time) predicate.WebhookSubscription {
 	return predicate.WebhookSubscription(sql.FieldEQ(FieldCreatedAt, v))
 }
 
+// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
+func UpdatedAt(v time.Time) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.WebhookSubscription {
 	return predicate.WebhookSubscription(sql.FieldEQ(FieldName, v))
@@ -123,6 +128,46 @@ func CreatedAtLT(v time.Time) predicate.WebhookSubscription {
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.WebhookSubscription {
 	return predicate.WebhookSubscription(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// UpdatedAtEQ applies the EQ predicate on the "updated_at" field.
+func UpdatedAtEQ(v time.Time) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtNEQ applies the NEQ predicate on the "updated_at" field.
+func UpdatedAtNEQ(v time.Time) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldNEQ(FieldUpdatedAt, v))
+}
+
+// UpdatedAtIn applies the In predicate on the "updated_at" field.
+func UpdatedAtIn(vs ...time.Time) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtNotIn applies the NotIn predicate on the "updated_at" field.
+func UpdatedAtNotIn(vs ...time.Time) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldNotIn(FieldUpdatedAt, vs...))
+}
+
+// UpdatedAtGT applies the GT predicate on the "updated_at" field.
+func UpdatedAtGT(v time.Time) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldGT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtGTE applies the GTE predicate on the "updated_at" field.
+func UpdatedAtGTE(v time.Time) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldGTE(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLT applies the LT predicate on the "updated_at" field.
+func UpdatedAtLT(v time.Time) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldLT(FieldUpdatedAt, v))
+}
+
+// UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
+func UpdatedAtLTE(v time.Time) predicate.WebhookSubscription {
+	return predicate.WebhookSubscription(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.

@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 	"vibe_ip/internal/ent/predicate"
 	"vibe_ip/internal/ent/webhooksubscription"
 
@@ -25,6 +26,12 @@ type WebhookSubscriptionUpdate struct {
 // Where appends a list predicates to the WebhookSubscriptionUpdate builder.
 func (_u *WebhookSubscriptionUpdate) Where(ps ...predicate.WebhookSubscription) *WebhookSubscriptionUpdate {
 	_u.mutation.Where(ps...)
+	return _u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *WebhookSubscriptionUpdate) SetUpdatedAt(v time.Time) *WebhookSubscriptionUpdate {
+	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
@@ -83,6 +90,9 @@ func (_u *WebhookSubscriptionUpdate) Mutation() *WebhookSubscriptionMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *WebhookSubscriptionUpdate) Save(ctx context.Context) (int, error) {
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -106,6 +116,18 @@ func (_u *WebhookSubscriptionUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// defaults sets the default values of the builder before save.
+func (_u *WebhookSubscriptionUpdate) defaults() error {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if webhooksubscription.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized webhooksubscription.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := webhooksubscription.UpdateDefaultUpdatedAt()
+		_u.mutation.SetUpdatedAt(v)
+	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -133,6 +155,9 @@ func (_u *WebhookSubscriptionUpdate) sqlSave(ctx context.Context) (_node int, er
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(webhooksubscription.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(webhooksubscription.FieldName, field.TypeString, value)
@@ -166,6 +191,12 @@ type WebhookSubscriptionUpdateOne struct {
 	hooks     []Hook
 	mutation  *WebhookSubscriptionMutation
 	modifiers []func(*sql.UpdateBuilder)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *WebhookSubscriptionUpdateOne) SetUpdatedAt(v time.Time) *WebhookSubscriptionUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetName sets the "name" field.
@@ -236,6 +267,9 @@ func (_u *WebhookSubscriptionUpdateOne) Select(field string, fields ...string) *
 
 // Save executes the query and returns the updated WebhookSubscription entity.
 func (_u *WebhookSubscriptionUpdateOne) Save(ctx context.Context) (*WebhookSubscription, error) {
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -259,6 +293,18 @@ func (_u *WebhookSubscriptionUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// defaults sets the default values of the builder before save.
+func (_u *WebhookSubscriptionUpdateOne) defaults() error {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if webhooksubscription.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized webhooksubscription.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := webhooksubscription.UpdateDefaultUpdatedAt()
+		_u.mutation.SetUpdatedAt(v)
+	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -303,6 +349,9 @@ func (_u *WebhookSubscriptionUpdateOne) sqlSave(ctx context.Context) (_node *Web
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(webhooksubscription.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(webhooksubscription.FieldName, field.TypeString, value)

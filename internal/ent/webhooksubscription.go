@@ -21,6 +21,8 @@ type WebhookSubscription struct {
 	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
+	// 更新时间
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// 通知订阅名称
 	Name string `json:"name,omitempty"`
 	// 通知订阅描述
@@ -71,7 +73,7 @@ func (*WebhookSubscription) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case webhooksubscription.FieldName, webhooksubscription.FieldDescription, webhooksubscription.FieldObjType:
 			values[i] = new(sql.NullString)
-		case webhooksubscription.FieldCreatedAt:
+		case webhooksubscription.FieldCreatedAt, webhooksubscription.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case webhooksubscription.ForeignKeys[0]: // webhook_subscriptions
 			values[i] = new(sql.NullInt64)
@@ -101,6 +103,12 @@ func (_m *WebhookSubscription) assignValues(columns []string, values []any) erro
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				_m.CreatedAt = value.Time
+			}
+		case webhooksubscription.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				_m.UpdatedAt = value.Time
 			}
 		case webhooksubscription.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -188,6 +196,9 @@ func (_m *WebhookSubscription) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
