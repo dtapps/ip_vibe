@@ -14,6 +14,197 @@ definitions:
         type: string
       value: {}
     type: object
+  vibe_ip_internal_types.BatchDeleteCdnRecordRequest:
+    properties:
+      ids:
+        description: CDN记录序号列表
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchDeleteDeviceRequest:
+    properties:
+      ids:
+        description: 设备序号列表
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchDeleteDnsRecordRequest:
+    properties:
+      ids:
+        description: DNS记录序号列表
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchDeleteDomainMonitorRequest:
+    properties:
+      ids:
+        description: 域名监控记录序号列表
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchDeleteIPGroupRequest:
+    properties:
+      ids:
+        description: IP组序号列表
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchDeletePlatformConfigRequest:
+    properties:
+      ids:
+        description: 配置序号列表
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchDeletePortForwardRequest:
+    properties:
+      ids:
+        description: 端口转发记录序号列表
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchDeleteSSLRecordRequest:
+    properties:
+      ids:
+        description: SSL记录序号列表
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchDeleteWebhookRequest:
+    properties:
+      ids:
+        description: 通知序号列表
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchDeleteWebhookSubRequest:
+    properties:
+      ids:
+        description: 通知订阅序号列表
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchUpdateCdnRecordActiveRequest:
+    properties:
+      ids:
+        description: CDN记录序号列表
+        items:
+          type: integer
+        type: array
+      is_active:
+        description: 是否活跃
+        type: boolean
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchUpdateDnsRecordActiveRequest:
+    properties:
+      ids:
+        description: DNS记录序号列表
+        items:
+          type: integer
+        type: array
+      is_active:
+        description: 是否活跃
+        type: boolean
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchUpdateDomainMonitorActiveRequest:
+    properties:
+      ids:
+        description: 域名监控记录序号列表
+        items:
+          type: integer
+        type: array
+      is_active:
+        description: 是否活跃
+        type: boolean
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchUpdatePortForwardActiveRequest:
+    properties:
+      ids:
+        description: 端口转发记录序号列表
+        items:
+          type: integer
+        type: array
+      is_active:
+        description: 是否活跃
+        type: boolean
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchUpdateSSLRecordActiveRequest:
+    properties:
+      ids:
+        description: SSL记录序号列表
+        items:
+          type: integer
+        type: array
+      is_active:
+        description: 是否活跃
+        type: boolean
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchUpdateWebhookActiveRequest:
+    properties:
+      ids:
+        description: 通知序号列表
+        items:
+          type: integer
+        type: array
+      is_active:
+        description: 是否启用
+        type: boolean
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchUpdateWebhookSubActiveRequest:
+    properties:
+      ids:
+        description: 通知订阅序号列表
+        items:
+          type: integer
+        type: array
+      is_active:
+        description: 是否启用
+        type: boolean
+    required:
+    - ids
+    type: object
   vibe_ip_internal_types.CreateCdnRecordRequest:
     properties:
       config_id:
@@ -256,106 +447,6 @@ definitions:
     - platform
     - template_content
     - template_title
-    type: object
-  vibe_ip_internal_types.DeleteCdnRecordBatchRequest:
-    properties:
-      ids:
-        description: CDN记录序号列表
-        items:
-          type: integer
-        type: array
-    required:
-    - ids
-    type: object
-  vibe_ip_internal_types.DeleteDeviceBatchRequest:
-    properties:
-      ids:
-        description: 设备序号列表
-        items:
-          type: integer
-        type: array
-    required:
-    - ids
-    type: object
-  vibe_ip_internal_types.DeleteDnsRecordBatchRequest:
-    properties:
-      ids:
-        description: DNS记录序号列表
-        items:
-          type: integer
-        type: array
-    required:
-    - ids
-    type: object
-  vibe_ip_internal_types.DeleteDomainMonitorBatchRequest:
-    properties:
-      ids:
-        description: 域名监控记录序号列表
-        items:
-          type: integer
-        type: array
-    required:
-    - ids
-    type: object
-  vibe_ip_internal_types.DeleteIPGroupBatchRequest:
-    properties:
-      ids:
-        description: IP组序号列表
-        items:
-          type: integer
-        type: array
-    required:
-    - ids
-    type: object
-  vibe_ip_internal_types.DeletePlatformConfigBatchRequest:
-    properties:
-      ids:
-        description: 配置序号列表
-        items:
-          type: integer
-        type: array
-    required:
-    - ids
-    type: object
-  vibe_ip_internal_types.DeletePortForwardBatchRequest:
-    properties:
-      ids:
-        description: 端口转发记录序号列表
-        items:
-          type: integer
-        type: array
-    required:
-    - ids
-    type: object
-  vibe_ip_internal_types.DeleteSSLRecordBatchRequest:
-    properties:
-      ids:
-        description: SSL记录序号列表
-        items:
-          type: integer
-        type: array
-    required:
-    - ids
-    type: object
-  vibe_ip_internal_types.DeleteWebhookBatchRequest:
-    properties:
-      ids:
-        description: 通知序号列表
-        items:
-          type: integer
-        type: array
-    required:
-    - ids
-    type: object
-  vibe_ip_internal_types.DeleteWebhookSubBatchRequest:
-    properties:
-      ids:
-        description: 通知订阅序号列表
-        items:
-          type: integer
-        type: array
-    required:
-    - ids
     type: object
   vibe_ip_internal_types.GetCdnRecordRequest:
     properties:
@@ -1617,7 +1708,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vibe_ip_internal_types.DeleteCdnRecordBatchRequest'
+          $ref: '#/definitions/vibe_ip_internal_types.BatchDeleteCdnRecordRequest'
       produces:
       - application/json
       responses:
@@ -1634,6 +1725,41 @@ paths:
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 批量删除CDN记录
+      tags:
+      - CDN记录
+  /cdn-records/batch/active:
+    patch:
+      consumes:
+      - application/json
+      description: 批量更新CDN记录启用状态
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.BatchUpdateCdnRecordActiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetCdnRecordRequest'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 批量更新CDN记录启用状态
       tags:
       - CDN记录
   /devices:
@@ -1920,7 +2046,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vibe_ip_internal_types.DeleteDeviceBatchRequest'
+          $ref: '#/definitions/vibe_ip_internal_types.BatchDeleteDeviceRequest'
       produces:
       - application/json
       responses:
@@ -2198,7 +2324,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vibe_ip_internal_types.DeleteDnsRecordBatchRequest'
+          $ref: '#/definitions/vibe_ip_internal_types.BatchDeleteDnsRecordRequest'
       produces:
       - application/json
       responses:
@@ -2215,6 +2341,41 @@ paths:
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 批量删除DNS记录
+      tags:
+      - DNS记录
+  /dns-records/batch/active:
+    patch:
+      consumes:
+      - application/json
+      description: 批量更新DNS记录启用状态
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.BatchUpdateDnsRecordActiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetDnsRecordRequest'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 批量更新DNS记录启用状态
       tags:
       - DNS记录
   /domain-monitors:
@@ -2472,7 +2633,7 @@ paths:
         name: ids
         required: true
         schema:
-          $ref: '#/definitions/vibe_ip_internal_types.DeleteDomainMonitorBatchRequest'
+          $ref: '#/definitions/vibe_ip_internal_types.BatchDeleteDomainMonitorRequest'
       produces:
       - application/json
       responses:
@@ -2489,6 +2650,41 @@ paths:
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 批量删除域名监控
+      tags:
+      - 域名监控
+  /domain-monitors/batch/active:
+    patch:
+      consumes:
+      - application/json
+      description: 批量更新域名监控启用状态
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.BatchUpdateDomainMonitorActiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetDomainMonitorRequest'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 批量更新域名监控启用状态
       tags:
       - 域名监控
   /ip-groups:
@@ -2738,7 +2934,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vibe_ip_internal_types.DeleteIPGroupBatchRequest'
+          $ref: '#/definitions/vibe_ip_internal_types.BatchDeleteIPGroupRequest'
       produces:
       - application/json
       responses:
@@ -2929,7 +3125,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vibe_ip_internal_types.DeletePlatformConfigBatchRequest'
+          $ref: '#/definitions/vibe_ip_internal_types.BatchDeletePlatformConfigRequest'
       produces:
       - application/json
       responses:
@@ -3285,7 +3481,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vibe_ip_internal_types.DeletePortForwardBatchRequest'
+          $ref: '#/definitions/vibe_ip_internal_types.BatchDeletePortForwardRequest'
       produces:
       - application/json
       responses:
@@ -3302,6 +3498,41 @@ paths:
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 批量删除端口转发
+      tags:
+      - 端口转发
+  /port-forwards/batch/active:
+    patch:
+      consumes:
+      - application/json
+      description: 批量更新端口转发启用状态
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.BatchUpdatePortForwardActiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetPortForwardRequest'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 批量更新端口转发启用状态
       tags:
       - 端口转发
   /schemas/{config_type}/cdn-record/{config_id}:
@@ -3807,7 +4038,7 @@ paths:
         name: ids
         required: true
         schema:
-          $ref: '#/definitions/vibe_ip_internal_types.DeleteSSLRecordBatchRequest'
+          $ref: '#/definitions/vibe_ip_internal_types.BatchDeleteSSLRecordRequest'
       produces:
       - application/json
       responses:
@@ -3824,6 +4055,41 @@ paths:
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 批量删除SSL记录
+      tags:
+      - SSL记录
+  /ssl-records/batch/active:
+    patch:
+      consumes:
+      - application/json
+      description: 批量更新SSL记录启用状态
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.BatchUpdateSSLRecordActiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordRequest'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 批量更新SSL记录启用状态
       tags:
       - SSL记录
   /tasks:
@@ -4114,7 +4380,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vibe_ip_internal_types.DeleteWebhookSubBatchRequest'
+          $ref: '#/definitions/vibe_ip_internal_types.BatchDeleteWebhookSubRequest'
       produces:
       - application/json
       responses:
@@ -4131,6 +4397,41 @@ paths:
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 批量删除通知订阅
+      tags:
+      - 通知订阅
+  /webhook-subs/batch/active:
+    patch:
+      consumes:
+      - application/json
+      description: 批量更新通知订阅启用状态
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.BatchUpdateWebhookSubActiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetWebhookSubRequest'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 批量更新通知订阅启用状态
       tags:
       - 通知订阅
   /webhooks:
@@ -4388,7 +4689,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vibe_ip_internal_types.DeleteWebhookBatchRequest'
+          $ref: '#/definitions/vibe_ip_internal_types.BatchDeleteWebhookRequest'
       produces:
       - application/json
       responses:
@@ -4405,6 +4706,41 @@ paths:
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 批量删除通知
+      tags:
+      - 通知
+  /webhooks/batch/active:
+    patch:
+      consumes:
+      - application/json
+      description: 批量更新通知启用状态
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.BatchUpdateWebhookActiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetWebhookRequest'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 批量更新通知启用状态
       tags:
       - 通知
 swagger: "2.0"

@@ -91,7 +91,7 @@ func UpdateWebhookSubActive(c *gin.Context) {
 //	@Tags			通知订阅
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.BatchUpdateWebhookSubActiveRequest				true	"请求参数"
+//	@Param			request	body		types.BatchUpdateWebhookSubActiveRequest		true	"请求参数"
 //	@Success		200		{object}	APIResponse{data=types.GetWebhookSubRequest}	"成功响应"
 //	@Failure		400		{object}	APIResponse{}									"参数错误"
 //	@Failure		404		{object}	APIResponse{}									"错误响应"
