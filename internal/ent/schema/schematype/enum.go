@@ -90,7 +90,15 @@ const (
 	ConfigPlatformHuaweiDns string = "huawei_dns" // 华为云 DNS
 	ConfigPlatformHuaweiCdn string = "huawei_cdn" // 华为云 CDN
 
-	ConfigPlatformvolcengineDns string = "volcengine_dns" // 火山引擎 DNS
+	ConfigPlatformVolcengineDns string = "volcengine_dns" // 火山引擎 DNS
+
+	ConfigPlatformJdcloudCdn string = "jdcloud_cdn" // 京东云 CDN
+
+	ConfigPlatformKsyunCdn string = "ksyun_cdn" // 金山云 CDN
+
+	ConfigPlatformQiniuCdn string = "qiniu_cdn" // 七牛云 CDN
+
+	ConfigPlatformUpyunCdn string = "upyun_cdn" // 又拍云 CDN
 )
 
 // GetConfigPlatformDescriptions 平台类型说明映射
@@ -106,7 +114,11 @@ var GetConfigPlatformDescriptions = map[string]string{
 	ConfigPlatformBaiduCdn:      "百度云 CDN",
 	ConfigPlatformHuaweiDns:     "华为云 DNS",
 	ConfigPlatformHuaweiCdn:     "华为云 CDN",
-	ConfigPlatformvolcengineDns: "火山引擎 DNS",
+	ConfigPlatformVolcengineDns: "火山引擎 DNS",
+	ConfigPlatformJdcloudCdn:    "京东云 CDN",
+	ConfigPlatformKsyunCdn:      "金山云 CDN",
+	ConfigPlatformQiniuCdn:      "七牛云 CDN",
+	ConfigPlatformUpyunCdn:      "又拍云 CDN",
 }
 
 // GetConfigPlatforms 返回所有平台类型
@@ -122,7 +134,11 @@ var GetConfigPlatforms = []string{
 	ConfigPlatformBaiduCdn,
 	ConfigPlatformHuaweiDns,
 	ConfigPlatformHuaweiCdn,
-	ConfigPlatformvolcengineDns,
+	ConfigPlatformVolcengineDns,
+	ConfigPlatformJdcloudCdn,
+	ConfigPlatformKsyunCdn,
+	ConfigPlatformQiniuCdn,
+	ConfigPlatformUpyunCdn,
 }
 
 // --------
