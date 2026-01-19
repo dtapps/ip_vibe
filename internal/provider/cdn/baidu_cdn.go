@@ -241,6 +241,7 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 // Update 更新 CDN 记录
 // https://cloud.baidu.com/doc/CDN/s/Fk121xrty#创建加速域名接口-createdomain
 // https://cloud.baidu.com/doc/CDN/s/Vk121slzt#更新加速域名回源地址-setdomainorigin
+// https://cloud.baidu.com/doc/CDN/s/qkggncsxp
 func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
 
 	// 完整域名
@@ -292,6 +293,18 @@ func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain 
 		if err != nil {
 			return fmt.Errorf("请求 CreateDomain 失败 %w", err)
 		}
+
+		// 请求 设置协议跟随回源
+		err = p.Provider.Client.SetOriginProtocol(fullDomain, p.CustomConfig.FollowProtocol)
+		if err != nil {
+			return fmt.Errorf("请求 SetOriginProtocol 失败 %w", err)
+		}
+
+		// 请求 设置IPv6
+		err = p.Provider.Client.SetIPv6(fullDomain, true)
+		if err != nil {
+			return fmt.Errorf("请求 SetIPv6 失败 %w", err)
+		}
 	}
 
 	if p.InternalData.CdnDomain != "" {
@@ -311,6 +324,12 @@ func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain 
 		err = p.Provider.Client.SetOriginProtocol(fullDomain, p.CustomConfig.FollowProtocol)
 		if err != nil {
 			return fmt.Errorf("请求 SetOriginProtocol 失败 %w", err)
+		}
+
+		// 请求 设置IPv6
+		err = p.Provider.Client.SetIPv6(fullDomain, true)
+		if err != nil {
+			return fmt.Errorf("请求 SetIPv6 失败 %w", err)
 		}
 	}
 
