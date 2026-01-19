@@ -154,10 +154,10 @@ func UpdateIPGroup(c *gin.Context) {
 //	@Tags			IP组
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64										true	"IP组序号"
+//	@Param			id	path		int64			true	"IP组序号"
 //	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数错误"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Failure		400	{object}	APIResponse{}	"参数错误"
+//	@Failure		404	{object}	APIResponse{}	"错误响应"
 //	@Router			/ip-groups/{id} [delete]
 func DeleteIPGroup(c *gin.Context) {
 	// 请求参数
@@ -190,10 +190,10 @@ func DeleteIPGroup(c *gin.Context) {
 //	@Tags			IP组
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.DeleteIPGroupBatchRequest				true	"请求参数"
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数错误"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Param			request	body		types.DeleteIPGroupBatchRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}					"成功响应"
+//	@Failure		400		{object}	APIResponse{}					"参数错误"
+//	@Failure		404		{object}	APIResponse{}					"错误响应"
 //	@Router			/ip-groups/batch [delete]
 func DeleteIPGroupBatch(c *gin.Context) {
 	// 请求参数

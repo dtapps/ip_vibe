@@ -199,10 +199,10 @@ func UpdateDnsRecordActive(c *gin.Context) {
 //	@Tags			DNS记录
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64										true	"DNS记录序号"
+//	@Param			id	path		int64			true	"DNS记录序号"
 //	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数错误"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Failure		400	{object}	APIResponse{}	"参数错误"
+//	@Failure		404	{object}	APIResponse{}	"错误响应"
 //	@Router			/dns-records/{id} [delete]
 func DeleteDnsRecord(c *gin.Context) {
 	// 请求参数
@@ -235,10 +235,10 @@ func DeleteDnsRecord(c *gin.Context) {
 //	@Tags			DNS记录
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.DeleteDnsRecordBatchRequest			true	"请求参数"
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数错误"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Param			request	body		types.DeleteDnsRecordBatchRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}						"成功响应"
+//	@Failure		400		{object}	APIResponse{}						"参数错误"
+//	@Failure		404		{object}	APIResponse{}						"错误响应"
 //	@Router			/dns-records/batch [delete]
 func DeleteDnsRecordBatch(c *gin.Context) {
 	// 请求参数

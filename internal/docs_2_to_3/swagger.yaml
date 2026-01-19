@@ -204,35 +204,6 @@ components:
                 - remote_host
                 - remote_port
             type: object
-        vibe_ip_internal_types.CreatePortForwardStatsRequest:
-            properties:
-                active_conn:
-                    description: TCP 活跃连接 / UDP session
-                    type: integer
-                bytes_in:
-                    description: 入站流量
-                    type: integer
-                bytes_out:
-                    description: 出站流量
-                    type: integer
-                errors:
-                    description: 错误数
-                    type: integer
-                start_time:
-                    description: 转发实例启动时间 (UTC)
-                    type: integer
-                total_conn:
-                    description: TCP 累计连接
-                    type: integer
-                udp_packets_in:
-                    description: 入站 UDP 包数
-                    type: integer
-                udp_packets_out:
-                    description: 出站 UDP 包数
-                    type: integer
-            required:
-                - start_time
-            type: object
         vibe_ip_internal_types.CreateSSLRecordRequest:
             properties:
                 config_id:
@@ -286,23 +257,105 @@ components:
                 - template_content
                 - template_title
             type: object
-        vibe_ip_internal_types.DeviceReportDeviceIpRequest:
+        vibe_ip_internal_types.DeleteCdnRecordBatchRequest:
             properties:
-                device_name:
-                    description: 设备名称
-                    type: string
-                ipv4_addr:
-                    description: IP地址V4
-                    type: string
-                ipv6_addr:
-                    description: IP地址V6
-                    type: string
+                ids:
+                    description: CDN记录序号列表
+                    items:
+                        type: integer
+                    type: array
+            required:
+                - ids
             type: object
-        vibe_ip_internal_types.DeviceReportDeviceIpResponse:
+        vibe_ip_internal_types.DeleteDeviceBatchRequest:
             properties:
-                msg:
-                    description: 消息
-                    type: string
+                ids:
+                    description: 设备序号列表
+                    items:
+                        type: integer
+                    type: array
+            required:
+                - ids
+            type: object
+        vibe_ip_internal_types.DeleteDnsRecordBatchRequest:
+            properties:
+                ids:
+                    description: DNS记录序号列表
+                    items:
+                        type: integer
+                    type: array
+            required:
+                - ids
+            type: object
+        vibe_ip_internal_types.DeleteDomainMonitorBatchRequest:
+            properties:
+                ids:
+                    description: 域名监控记录序号列表
+                    items:
+                        type: integer
+                    type: array
+            required:
+                - ids
+            type: object
+        vibe_ip_internal_types.DeleteIPGroupBatchRequest:
+            properties:
+                ids:
+                    description: IP组序号列表
+                    items:
+                        type: integer
+                    type: array
+            required:
+                - ids
+            type: object
+        vibe_ip_internal_types.DeletePlatformConfigBatchRequest:
+            properties:
+                ids:
+                    description: 配置序号列表
+                    items:
+                        type: integer
+                    type: array
+            required:
+                - ids
+            type: object
+        vibe_ip_internal_types.DeletePortForwardBatchRequest:
+            properties:
+                ids:
+                    description: 端口转发记录序号列表
+                    items:
+                        type: integer
+                    type: array
+            required:
+                - ids
+            type: object
+        vibe_ip_internal_types.DeleteSSLRecordBatchRequest:
+            properties:
+                ids:
+                    description: SSL记录序号列表
+                    items:
+                        type: integer
+                    type: array
+            required:
+                - ids
+            type: object
+        vibe_ip_internal_types.DeleteWebhookBatchRequest:
+            properties:
+                ids:
+                    description: 通知序号列表
+                    items:
+                        type: integer
+                    type: array
+            required:
+                - ids
+            type: object
+        vibe_ip_internal_types.DeleteWebhookSubBatchRequest:
+            properties:
+                ids:
+                    description: 通知订阅序号列表
+                    items:
+                        type: integer
+                    type: array
+            required:
+                - ids
             type: object
         vibe_ip_internal_types.GetCdnRecordRequest:
             properties:
@@ -419,8 +472,8 @@ components:
                 name:
                     description: 设备名称
                     type: string
-                offline_invalid:
-                    description: 设备是否离线失效
+                online:
+                    description: 设备是否在线
                     type: boolean
                 webhooks:
                     description: 关联的 Webhook 列表
@@ -561,6 +614,14 @@ components:
             type: object
         vibe_ip_internal_types.GetIPGroupResponse:
             properties:
+                cdn_record_count:
+                    description: CDN记录数
+                    type: integer
+                cdn_records:
+                    description: CDN记录列表
+                    items:
+                        type: integer
+                    type: array
                 description:
                     description: IP组描述
                     type: string
@@ -569,6 +630,14 @@ components:
                     type: integer
                 devices:
                     description: 设备列表
+                    items:
+                        type: integer
+                    type: array
+                dns_record_count:
+                    description: DNS记录数
+                    type: integer
+                dns_records:
+                    description: DNS记录列表
                     items:
                         type: integer
                     type: array
@@ -801,7 +870,7 @@ components:
                     description: CDN刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）
                     type: string
                 device_offline_invalid_time:
-                    description: 设备离线失效时间（分，默认 12 分钟）
+                    description: 设备离线失效时间（分，默认 12 分钟，0表示不失效）
                     type: integer
                 dns_refresh_task_time:
                     description: DNS刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）
@@ -919,18 +988,6 @@ components:
                     type: string
                 schedule_detail:
                     description: 任务调度表达式详情
-                    type: string
-            type: object
-        vibe_ip_internal_types.OpenGetSettingResponse:
-            properties:
-                ip_report_interval_time:
-                    description: IP上报间隔时间（分，默认 8-12 分钟，多个时用-分隔）
-                    type: string
-                port_forward_reload_time:
-                    description: 端口转发重载时间（分，默认 30 分钟，多个时用-分隔）
-                    type: string
-                port_forward_report_time:
-                    description: 端口转发统计上报时间（分，默认 8-12 分钟，多个时用-分隔）
                     type: string
             type: object
         vibe_ip_internal_types.UpdateCdnRecordActiveRequest:
@@ -1225,7 +1282,7 @@ components:
                     description: CDN刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）
                     type: string
                 device_offline_invalid_time:
-                    description: 设备离线失效时间（分，默认 12 分钟）
+                    description: 设备离线失效时间（分，默认 12 分钟，0表示不失效）
                     type: integer
                 dns_refresh_task_time:
                     description: DNS刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）
@@ -1391,12 +1448,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetCdnRecordRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -1579,6 +1631,39 @@ paths:
             summary: 检查CDN记录健康状态
             tags:
                 - CDN记录
+    /cdn-records/batch:
+        delete:
+            description: 批量删除CDN记录
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/vibe_ip_internal_types.DeleteCdnRecordBatchRequest'
+                description: 请求参数
+                required: true
+                x-originalParamName: request
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 成功响应
+                "400":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 参数错误
+                "404":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 错误响应
+            summary: 批量删除CDN记录
+            tags:
+                - CDN记录
     /devices:
         get:
             description: 获取全部设备
@@ -1657,12 +1742,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetDeviceRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -1880,6 +1960,39 @@ paths:
             summary: 获取设备端口转发统计数据
             tags:
                 - 设备
+    /devices/batch:
+        delete:
+            description: 批量删除设备
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/vibe_ip_internal_types.DeleteDeviceBatchRequest'
+                description: 请求参数
+                required: true
+                x-originalParamName: request
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 成功响应
+                "400":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 参数错误
+                "404":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 错误响应
+            summary: 批量删除设备
+            tags:
+                - 设备
     /dns-records:
         get:
             description: 获取全部DNS记录
@@ -1970,12 +2083,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetDnsRecordRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -2158,6 +2266,39 @@ paths:
             summary: 检查DNS记录健康状态
             tags:
                 - DNS记录
+    /dns-records/batch:
+        delete:
+            description: 批量删除DNS记录
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/vibe_ip_internal_types.DeleteDnsRecordBatchRequest'
+                description: 请求参数
+                required: true
+                x-originalParamName: request
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 成功响应
+                "400":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 参数错误
+                "404":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 错误响应
+            summary: 批量删除DNS记录
+            tags:
+                - DNS记录
     /domain-monitors:
         get:
             description: 获取全部域名监控
@@ -2248,12 +2389,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetDomainMonitorRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -2432,6 +2568,39 @@ paths:
             summary: 检查域名监控健康状态
             tags:
                 - 域名监控
+    /domain-monitors/batch:
+        delete:
+            description: 批量删除域名监控
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/vibe_ip_internal_types.DeleteDomainMonitorBatchRequest'
+                description: 域名监控序号列表
+                required: true
+                x-originalParamName: ids
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 成功响应
+                "400":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 参数错误
+                "404":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 错误响应
+            summary: 批量删除域名监控
+            tags:
+                - 域名监控
     /ip-groups:
         get:
             description: 获取全部IP组
@@ -2510,12 +2679,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetIPGroupRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -2693,111 +2857,14 @@ paths:
             summary: 检查IP组健康状态
             tags:
                 - IP组
-    /open/device/{device_code}/ip-report:
-        post:
-            description: 设备上报IP
-            parameters:
-                - description: 设备编码
-                  in: path
-                  name: device_code
-                  required: true
-                  schema:
-                    type: string
+    /ip-groups/batch:
+        delete:
+            description: 批量删除IP组
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/vibe_ip_internal_types.DeviceReportDeviceIpRequest'
-                description: 请求参数
-                required: true
-                x-originalParamName: request
-            responses:
-                "200":
-                    content:
-                        application/json:
-                            schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.DeviceReportDeviceIpResponse'
-                                      type: object
-                    description: 成功响应
-                "400":
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/internal_handlers.APIResponse'
-                    description: 参数错误
-                "404":
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/internal_handlers.APIResponse'
-                    description: 错误响应
-            summary: 设备上报IP
-            tags:
-                - 开放
-    /open/device/{device_code}/port-forwards:
-        get:
-            description: 获取设备端口转发
-            parameters:
-                - description: 设备编码
-                  in: path
-                  name: device_code
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    content:
-                        application/json:
-                            schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            items:
-                                                $ref: '#/components/schemas/vibe_ip_internal_types.GetPortForwardResponse'
-                                            type: array
-                                      type: object
-                    description: 成功响应
-                "400":
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/internal_handlers.APIResponse'
-                    description: 参数错误
-                "404":
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/internal_handlers.APIResponse'
-                    description: 错误响应
-            summary: 获取设备端口转发
-            tags:
-                - 开放
-    /open/device/{device_code}/port-forwards-stats/{port_forward_id}:
-        post:
-            description: 创建端口转发统计
-            parameters:
-                - description: 设备编码
-                  in: path
-                  name: device_code
-                  required: true
-                  schema:
-                    type: string
-                - description: 端口转发序号
-                  in: path
-                  name: port_forward_id
-                  required: true
-                  schema:
-                    type: integer
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/vibe_ip_internal_types.CreatePortForwardStatsRequest'
+                            $ref: '#/components/schemas/vibe_ip_internal_types.DeleteIPGroupBatchRequest'
                 description: 请求参数
                 required: true
                 x-originalParamName: request
@@ -2820,39 +2887,9 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 错误响应
-            summary: 创建端口转发统计
+            summary: 批量删除IP组
             tags:
-                - 开放
-    /open/setting:
-        get:
-            description: 获取配置
-            responses:
-                "200":
-                    content:
-                        application/json:
-                            schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.OpenGetSettingResponse'
-                                      type: object
-                    description: 成功响应
-                "400":
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/internal_handlers.APIResponse'
-                    description: 参数错误
-                "404":
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/internal_handlers.APIResponse'
-                    description: 错误响应
-            summary: 获取配置
-            tags:
-                - 开放
+                - IP组
     /platform-configs:
         get:
             description: 获取全部平台配置
@@ -2931,12 +2968,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetPlatformConfigRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -3033,6 +3065,39 @@ paths:
             summary: 更新平台配置
             tags:
                 - 平台配置
+    /platform-configs/batch:
+        delete:
+            description: 删除平台配置
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/vibe_ip_internal_types.DeletePlatformConfigBatchRequest'
+                description: 请求参数
+                required: true
+                x-originalParamName: request
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 成功响应
+                "400":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 参数错误
+                "404":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 错误响应
+            summary: 删除平台配置
+            tags:
+                - 平台配置
     /port-forwards:
         get:
             description: 获取全部端口转发
@@ -3123,12 +3188,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetPortForwardRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -3395,6 +3455,39 @@ paths:
                                 $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 错误响应
             summary: 获取端口转发统计数据
+            tags:
+                - 端口转发
+    /port-forwards/batch:
+        delete:
+            description: 批量删除端口转发
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/vibe_ip_internal_types.DeletePortForwardBatchRequest'
+                description: 请求参数
+                required: true
+                x-originalParamName: request
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 成功响应
+                "400":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 参数错误
+                "404":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 错误响应
+            summary: 批量删除端口转发
             tags:
                 - 端口转发
     /schemas/{config_type}/cdn-record/{config_id}:
@@ -3672,12 +3765,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetSSLRecordRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -3944,6 +4032,39 @@ paths:
             summary: 获取SSL记录历史详情
             tags:
                 - SSL记录
+    /ssl-records/batch:
+        delete:
+            description: 批量删除SSL记录
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/vibe_ip_internal_types.DeleteSSLRecordBatchRequest'
+                description: SSL记录序号列表
+                required: true
+                x-originalParamName: ids
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 成功响应
+                "400":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 参数错误
+                "404":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 错误响应
+            summary: 批量删除SSL记录
+            tags:
+                - SSL记录
     /tasks:
         get:
             description: 获取全部任务
@@ -4179,12 +4300,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetWebhookSubRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -4244,6 +4360,39 @@ paths:
                                 $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 错误响应
             summary: 更新通知订阅启用状态
+            tags:
+                - 通知订阅
+    /webhook-subs/batch:
+        delete:
+            description: 批量删除通知订阅
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/vibe_ip_internal_types.DeleteWebhookSubBatchRequest'
+                description: 请求参数
+                required: true
+                x-originalParamName: request
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 成功响应
+                "400":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 参数错误
+                "404":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 错误响应
+            summary: 批量删除通知订阅
             tags:
                 - 通知订阅
     /webhooks:
@@ -4336,12 +4485,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetWebhookRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -4518,6 +4662,39 @@ paths:
                                 $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 错误响应
             summary: 测试通知
+            tags:
+                - 通知
+    /webhooks/batch:
+        delete:
+            description: 批量删除通知
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/vibe_ip_internal_types.DeleteWebhookBatchRequest'
+                description: 请求参数
+                required: true
+                x-originalParamName: request
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 成功响应
+                "400":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 参数错误
+                "404":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
+                    description: 错误响应
+            summary: 批量删除通知
             tags:
                 - 通知
 servers:

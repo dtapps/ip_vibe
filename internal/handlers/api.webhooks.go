@@ -204,10 +204,10 @@ func UpdateWebhookActive(c *gin.Context) {
 //	@Tags			通知
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64										true	"通知序号"
+//	@Param			id	path		int64			true	"通知序号"
 //	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数错误"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Failure		400	{object}	APIResponse{}	"参数错误"
+//	@Failure		404	{object}	APIResponse{}	"错误响应"
 //	@Router			/webhooks/{id} [delete]
 func DeleteWebhook(c *gin.Context) {
 	// 请求参数
@@ -241,10 +241,10 @@ func DeleteWebhook(c *gin.Context) {
 //	@Tags			通知
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.DeleteWebhookBatchRequest				true	"请求参数"
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数错误"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Param			request	body		types.DeleteWebhookBatchRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}					"成功响应"
+//	@Failure		400		{object}	APIResponse{}					"参数错误"
+//	@Failure		404		{object}	APIResponse{}					"错误响应"
 //	@Router			/webhooks/batch [delete]
 func DeleteWebhookBatch(c *gin.Context) {
 	// 请求参数

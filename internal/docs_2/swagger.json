@@ -123,6 +123,52 @@
                 }
             }
         },
+        "/cdn-records/batch": {
+            "delete": {
+                "description": "批量删除CDN记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CDN记录"
+                ],
+                "summary": "批量删除CDN记录",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.DeleteCdnRecordBatchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/cdn-records/{id}": {
             "get": {
                 "description": "获取CDN记录详情",
@@ -203,19 +249,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetCdnRecordRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -523,6 +557,52 @@
                 }
             }
         },
+        "/devices/batch": {
+            "delete": {
+                "description": "批量删除设备",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设备"
+                ],
+                "summary": "批量删除设备",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.DeleteDeviceBatchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/devices/{id}": {
             "get": {
                 "description": "获取设备详情",
@@ -603,19 +683,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDeviceRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -993,6 +1061,52 @@
                 }
             }
         },
+        "/dns-records/batch": {
+            "delete": {
+                "description": "批量删除DNS记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DNS记录"
+                ],
+                "summary": "批量删除DNS记录",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.DeleteDnsRecordBatchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/dns-records/{id}": {
             "get": {
                 "description": "获取DNS记录详情",
@@ -1073,19 +1187,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDnsRecordRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -1407,6 +1509,52 @@
                 }
             }
         },
+        "/domain-monitors/batch": {
+            "delete": {
+                "description": "批量删除域名监控",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "域名监控"
+                ],
+                "summary": "批量删除域名监控",
+                "parameters": [
+                    {
+                        "description": "域名监控序号列表",
+                        "name": "ids",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.DeleteDomainMonitorBatchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/domain-monitors/{id}": {
             "get": {
                 "description": "获取域名监控详情",
@@ -1487,19 +1635,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDomainMonitorRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -1801,6 +1937,52 @@
                 }
             }
         },
+        "/ip-groups/batch": {
+            "delete": {
+                "description": "批量删除IP组",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "IP组"
+                ],
+                "summary": "批量删除IP组",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.DeleteIPGroupBatchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/ip-groups/{id}": {
             "get": {
                 "description": "获取IP组详情",
@@ -1881,19 +2063,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetIPGroupRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -2097,237 +2267,6 @@
                 }
             }
         },
-        "/open/device/{device_code}/ip-report": {
-            "post": {
-                "description": "设备上报IP",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "开放"
-                ],
-                "summary": "设备上报IP",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "设备编码",
-                        "name": "device_code",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/vibe_ip_internal_types.DeviceReportDeviceIpRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功响应",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.DeviceReportDeviceIpResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/open/device/{device_code}/port-forwards": {
-            "get": {
-                "description": "获取设备端口转发",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "开放"
-                ],
-                "summary": "获取设备端口转发",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "设备编码",
-                        "name": "device_code",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功响应",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/vibe_ip_internal_types.GetPortForwardResponse"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/open/device/{device_code}/port-forwards-stats/{port_forward_id}": {
-            "post": {
-                "description": "创建端口转发统计",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "开放"
-                ],
-                "summary": "创建端口转发统计",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "设备编码",
-                        "name": "device_code",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "端口转发序号",
-                        "name": "port_forward_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/vibe_ip_internal_types.CreatePortForwardStatsRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/open/setting": {
-            "get": {
-                "description": "获取配置",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "开放"
-                ],
-                "summary": "获取配置",
-                "responses": {
-                    "200": {
-                        "description": "成功响应",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.OpenGetSettingResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/platform-configs": {
             "get": {
                 "description": "获取全部平台配置",
@@ -2428,6 +2367,52 @@
                 }
             }
         },
+        "/platform-configs/batch": {
+            "delete": {
+                "description": "删除平台配置",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "平台配置"
+                ],
+                "summary": "删除平台配置",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.DeletePlatformConfigBatchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/platform-configs/{id}": {
             "get": {
                 "description": "获取平台配置详情",
@@ -2508,19 +2493,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetPlatformConfigRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -2715,6 +2688,52 @@
                 }
             }
         },
+        "/port-forwards/batch": {
+            "delete": {
+                "description": "批量删除端口转发",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "端口转发"
+                ],
+                "summary": "批量删除端口转发",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.DeletePortForwardBatchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/port-forwards/{id}": {
             "get": {
                 "description": "获取端口转发详情",
@@ -2795,19 +2814,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetPortForwardRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -3529,6 +3536,52 @@
                 }
             }
         },
+        "/ssl-records/batch": {
+            "delete": {
+                "description": "批量删除SSL记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "SSL记录"
+                ],
+                "summary": "批量删除SSL记录",
+                "parameters": [
+                    {
+                        "description": "SSL记录序号列表",
+                        "name": "ids",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.DeleteSSLRecordBatchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/ssl-records/{id}": {
             "get": {
                 "description": "获取SSL记录详情",
@@ -3609,19 +3662,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetSSLRecordRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -4280,6 +4321,52 @@
                 }
             }
         },
+        "/webhook-subs/batch": {
+            "delete": {
+                "description": "批量删除通知订阅",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "通知订阅"
+                ],
+                "summary": "批量删除通知订阅",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.DeleteWebhookSubBatchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/webhook-subs/{id}": {
             "delete": {
                 "description": "删除通知订阅",
@@ -4306,19 +4393,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetWebhookSubRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -4515,6 +4590,52 @@
                 }
             }
         },
+        "/webhooks/batch": {
+            "delete": {
+                "description": "批量删除通知",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "通知"
+                ],
+                "summary": "批量删除通知",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.DeleteWebhookBatchRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/webhooks/{id}": {
             "get": {
                 "description": "获取通知详情",
@@ -4595,19 +4716,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetWebhookRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -5092,46 +5201,6 @@
                 }
             }
         },
-        "vibe_ip_internal_types.CreatePortForwardStatsRequest": {
-            "type": "object",
-            "required": [
-                "start_time"
-            ],
-            "properties": {
-                "active_conn": {
-                    "description": "TCP 活跃连接 / UDP session",
-                    "type": "integer"
-                },
-                "bytes_in": {
-                    "description": "入站流量",
-                    "type": "integer"
-                },
-                "bytes_out": {
-                    "description": "出站流量",
-                    "type": "integer"
-                },
-                "errors": {
-                    "description": "错误数",
-                    "type": "integer"
-                },
-                "start_time": {
-                    "description": "转发实例启动时间 (UTC)",
-                    "type": "integer"
-                },
-                "total_conn": {
-                    "description": "TCP 累计连接",
-                    "type": "integer"
-                },
-                "udp_packets_in": {
-                    "description": "入站 UDP 包数",
-                    "type": "integer"
-                },
-                "udp_packets_out": {
-                    "description": "出站 UDP 包数",
-                    "type": "integer"
-                }
-            }
-        },
         "vibe_ip_internal_types.CreateSSLRecordRequest": {
             "type": "object",
             "required": [
@@ -5204,29 +5273,153 @@
                 }
             }
         },
-        "vibe_ip_internal_types.DeviceReportDeviceIpRequest": {
+        "vibe_ip_internal_types.DeleteCdnRecordBatchRequest": {
             "type": "object",
+            "required": [
+                "ids"
+            ],
             "properties": {
-                "device_name": {
-                    "description": "设备名称",
-                    "type": "string"
-                },
-                "ipv4_addr": {
-                    "description": "IP地址V4",
-                    "type": "string"
-                },
-                "ipv6_addr": {
-                    "description": "IP地址V6",
-                    "type": "string"
+                "ids": {
+                    "description": "CDN记录序号列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
-        "vibe_ip_internal_types.DeviceReportDeviceIpResponse": {
+        "vibe_ip_internal_types.DeleteDeviceBatchRequest": {
             "type": "object",
+            "required": [
+                "ids"
+            ],
             "properties": {
-                "msg": {
-                    "description": "消息",
-                    "type": "string"
+                "ids": {
+                    "description": "设备序号列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "vibe_ip_internal_types.DeleteDnsRecordBatchRequest": {
+            "type": "object",
+            "required": [
+                "ids"
+            ],
+            "properties": {
+                "ids": {
+                    "description": "DNS记录序号列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "vibe_ip_internal_types.DeleteDomainMonitorBatchRequest": {
+            "type": "object",
+            "required": [
+                "ids"
+            ],
+            "properties": {
+                "ids": {
+                    "description": "域名监控记录序号列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "vibe_ip_internal_types.DeleteIPGroupBatchRequest": {
+            "type": "object",
+            "required": [
+                "ids"
+            ],
+            "properties": {
+                "ids": {
+                    "description": "IP组序号列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "vibe_ip_internal_types.DeletePlatformConfigBatchRequest": {
+            "type": "object",
+            "required": [
+                "ids"
+            ],
+            "properties": {
+                "ids": {
+                    "description": "配置序号列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "vibe_ip_internal_types.DeletePortForwardBatchRequest": {
+            "type": "object",
+            "required": [
+                "ids"
+            ],
+            "properties": {
+                "ids": {
+                    "description": "端口转发记录序号列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "vibe_ip_internal_types.DeleteSSLRecordBatchRequest": {
+            "type": "object",
+            "required": [
+                "ids"
+            ],
+            "properties": {
+                "ids": {
+                    "description": "SSL记录序号列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "vibe_ip_internal_types.DeleteWebhookBatchRequest": {
+            "type": "object",
+            "required": [
+                "ids"
+            ],
+            "properties": {
+                "ids": {
+                    "description": "通知序号列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "vibe_ip_internal_types.DeleteWebhookSubBatchRequest": {
+            "type": "object",
+            "required": [
+                "ids"
+            ],
+            "properties": {
+                "ids": {
+                    "description": "通知订阅序号列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
@@ -5391,8 +5584,8 @@
                     "description": "设备名称",
                     "type": "string"
                 },
-                "offline_invalid": {
-                    "description": "设备是否离线失效",
+                "online": {
+                    "description": "设备是否在线",
                     "type": "boolean"
                 },
                 "webhooks": {
@@ -5591,6 +5784,17 @@
         "vibe_ip_internal_types.GetIPGroupResponse": {
             "type": "object",
             "properties": {
+                "cdn_record_count": {
+                    "description": "CDN记录数",
+                    "type": "integer"
+                },
+                "cdn_records": {
+                    "description": "CDN记录列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "description": {
                     "description": "IP组描述",
                     "type": "string"
@@ -5601,6 +5805,17 @@
                 },
                 "devices": {
                     "description": "设备列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "dns_record_count": {
+                    "description": "DNS记录数",
+                    "type": "integer"
+                },
+                "dns_records": {
+                    "description": "DNS记录列表",
                     "type": "array",
                     "items": {
                         "type": "integer"
@@ -5923,7 +6138,7 @@
                     "type": "string"
                 },
                 "device_offline_invalid_time": {
-                    "description": "设备离线失效时间（分，默认 12 分钟）",
+                    "description": "设备离线失效时间（分，默认 12 分钟，0表示不失效）",
                     "type": "integer"
                 },
                 "dns_refresh_task_time": {
@@ -6086,23 +6301,6 @@
                 },
                 "schedule_detail": {
                     "description": "任务调度表达式详情",
-                    "type": "string"
-                }
-            }
-        },
-        "vibe_ip_internal_types.OpenGetSettingResponse": {
-            "type": "object",
-            "properties": {
-                "ip_report_interval_time": {
-                    "description": "IP上报间隔时间（分，默认 8-12 分钟，多个时用-分隔）",
-                    "type": "string"
-                },
-                "port_forward_reload_time": {
-                    "description": "端口转发重载时间（分，默认 30 分钟，多个时用-分隔）",
-                    "type": "string"
-                },
-                "port_forward_report_time": {
-                    "description": "端口转发统计上报时间（分，默认 8-12 分钟，多个时用-分隔）",
                     "type": "string"
                 }
             }
@@ -6514,7 +6712,7 @@
                     "type": "string"
                 },
                 "device_offline_invalid_time": {
-                    "description": "设备离线失效时间（分，默认 12 分钟）",
+                    "description": "设备离线失效时间（分，默认 12 分钟，0表示不失效）",
                     "type": "integer"
                 },
                 "dns_refresh_task_time": {

@@ -158,10 +158,10 @@ func UpdateDevice(c *gin.Context) {
 //	@Tags			设备
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64										true	"设备序号"
+//	@Param			id	path		int64			true	"设备序号"
 //	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数错误"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Failure		400	{object}	APIResponse{}	"参数错误"
+//	@Failure		404	{object}	APIResponse{}	"错误响应"
 //	@Router			/devices/{id} [delete]
 func DeleteDevice(c *gin.Context) {
 	// 请求参数
@@ -195,10 +195,10 @@ func DeleteDevice(c *gin.Context) {
 //	@Tags			设备
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.DeleteDeviceBatchRequest				true	"请求参数"
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数错误"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Param			request	body		types.DeleteDeviceBatchRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}					"成功响应"
+//	@Failure		400		{object}	APIResponse{}					"参数错误"
+//	@Failure		404		{object}	APIResponse{}					"错误响应"
 //	@Router			/devices/batch [delete]
 func DeleteDeviceBatch(c *gin.Context) {
 	// 请求参数

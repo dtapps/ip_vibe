@@ -219,10 +219,10 @@ func UpdateDomainMonitorActive(c *gin.Context) {
 //	@Tags			域名监控
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64											true	"域名监控序号"
+//	@Param			id	path		int64			true	"域名监控序号"
 //	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}									"参数错误"
-//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Failure		400	{object}	APIResponse{}	"参数错误"
+//	@Failure		404	{object}	APIResponse{}	"错误响应"
 //	@Router			/domain-monitors/{id} [delete]
 func DeleteDomainMonitor(c *gin.Context) {
 	// 请求参数
@@ -259,10 +259,10 @@ func DeleteDomainMonitor(c *gin.Context) {
 //	@Tags			域名监控
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			ids	body		types.DeleteDomainMonitorBatchRequest			true	"域名监控序号列表"
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}									"参数错误"
-//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Param			ids	body		types.DeleteDomainMonitorBatchRequest	true	"域名监控序号列表"
+//	@Success		200	{object}	APIResponse{}							"成功响应"
+//	@Failure		400	{object}	APIResponse{}							"参数错误"
+//	@Failure		404	{object}	APIResponse{}							"错误响应"
 //	@Router			/domain-monitors/batch [delete]
 func DeleteDomainMonitorBatch(c *gin.Context) {
 	// 请求参数

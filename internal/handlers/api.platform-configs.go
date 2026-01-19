@@ -154,10 +154,10 @@ func UpdatePlatformConfig(c *gin.Context) {
 //	@Tags			平台配置
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64												true	"配置序号"
+//	@Param			id	path		int64			true	"配置序号"
 //	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}										"参数错误"
-//	@Failure		404	{object}	APIResponse{}										"错误响应"
+//	@Failure		400	{object}	APIResponse{}	"参数错误"
+//	@Failure		404	{object}	APIResponse{}	"错误响应"
 //	@Router			/platform-configs/{id} [delete]
 func DeletePlatformConfig(c *gin.Context) {
 	// 请求参数
@@ -190,10 +190,10 @@ func DeletePlatformConfig(c *gin.Context) {
 //	@Tags			平台配置
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.DeletePlatformConfigBatchRequest					true	"请求参数"
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}										"参数错误"
-//	@Failure		404	{object}	APIResponse{}										"错误响应"
+//	@Param			request	body		types.DeletePlatformConfigBatchRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}							"成功响应"
+//	@Failure		400		{object}	APIResponse{}							"参数错误"
+//	@Failure		404		{object}	APIResponse{}							"错误响应"
 //	@Router			/platform-configs/batch [delete]
 func DeletePlatformConfigBatch(c *gin.Context) {
 	// 请求参数
