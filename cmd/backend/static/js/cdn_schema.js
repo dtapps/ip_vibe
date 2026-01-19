@@ -300,12 +300,16 @@ const CDN_SCHEMA = {
           required: false,
           options: [
             {
-              value: "true",
-              label: "开启",
+              value: "*",
+              label: "协议跟随",
             },
             {
-              value: "false",
-              label: "关闭",
+              value: "http",
+              label: "HTTP协议回源",
+            },
+            {
+              value: "https",
+              label: "HTTPS协议回源",
             },
           ],
         },

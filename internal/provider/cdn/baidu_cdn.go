@@ -10,7 +10,6 @@ import (
 
 	"github.com/baidubce/bce-sdk-go/services/cdn"
 	"github.com/baidubce/bce-sdk-go/services/cdn/api"
-	"github.com/spf13/cast"
 )
 
 // BaiduCDNConfig 百度云 CDN 配置
@@ -158,7 +157,7 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 	// 请求 查询用户名下所有域名
 	responseList, err := p.Provider.Client.GetDomainStatus("ALL", "")
 	if err != nil {
-		return
+		return nil, fmt.Errorf("请求 GetDomainStatus 失败 %w", err)
 	}
 	// 循环 查询用户名下所有域名
 	isExist := false
@@ -176,10 +175,10 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 		return p.InternalData, nil
 	}
 
-	// 请求
+	// 请求 查询用户名下所有域名
 	responseInfo, err := p.Provider.Client.GetDomainConfig(fullDomain)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("请求 GetDomainConfig 失败 %w", err)
 	}
 	// 响应参数
 
@@ -220,10 +219,18 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 	}
 
 	// 判断是否开启了协议跟随回源
-	if !utils.EqualIgnoreCase(itemFollowProtocol, cast.ToBool(p.CustomConfig.FollowProtocol)) {
-		p.InternalData.IsContinue = true
-		p.InternalData.Tips = fmt.Sprintf("是否开启了协议跟随回源不匹配，期望 %v，实际 %v", p.CustomConfig.FollowProtocol, itemFollowProtocol)
-		return p.InternalData, nil
+	if itemFollowProtocol {
+		if !utils.EqualIgnoreCase("*", p.CustomConfig.FollowProtocol) {
+			p.InternalData.IsContinue = true
+			p.InternalData.Tips = fmt.Sprintf("是否开启了协议跟随回源不匹配，期望 %v，实际 %v", p.CustomConfig.FollowProtocol, itemFollowProtocol)
+			return p.InternalData, nil
+		}
+	} else {
+		if utils.EqualIgnoreCase("*", p.CustomConfig.FollowProtocol) {
+			p.InternalData.IsContinue = true
+			p.InternalData.Tips = fmt.Sprintf("是否开启了协议跟随回源不匹配，期望 %v，实际 %v", p.CustomConfig.FollowProtocol, itemFollowProtocol)
+			return p.InternalData, nil
+		}
 	}
 
 	p.InternalData.IsContinue = false
@@ -265,15 +272,25 @@ func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain 
 	}
 
 	if p.InternalData.CdnDomain == "" {
+		// 请求 查询域名是否可添加
+		responseListIsValidDomain, err := p.Provider.Client.IsValidDomain(fullDomain)
+		if err != nil {
+			return fmt.Errorf("请求 IsValidDomain 失败 %w", err)
+		}
+		// 校验域名是否可添加
+		if !responseListIsValidDomain.IsValid {
+			return fmt.Errorf("域名 %v 不可添加", fullDomain)
+		}
+
 		// 请求参数
 		request := &api.OriginInit{}
 		request.Origin = sources           // 源站配置
 		request.DefaultHost = fullDomain   // 域名级别回源host
 		request.Form = p.CustomConfig.Form // 类型
 		// 请求 创建加速域名接口
-		_, err := p.Provider.Client.CreateDomain(fullDomain, request)
+		_, err = p.Provider.Client.CreateDomain(fullDomain, request)
 		if err != nil {
-			return err
+			return fmt.Errorf("请求 CreateDomain 失败 %w", err)
 		}
 	}
 
@@ -287,14 +304,13 @@ func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain 
 		// 请求 更新加速域名回源地址
 		err := p.Provider.Client.SetDomainOrigin(fullDomain, sources, defaultHost)
 		if err != nil {
-			return err
+			return fmt.Errorf("请求 SetDomainOrigin 失败 %w", err)
 		}
 
 		// 请求 设置协议跟随回源
-		// err = p.Provider.Client.SetFollowProtocol(fullDomain, cast.ToBool(p.CustomConfig.FollowProtocol))
 		err = p.Provider.Client.SetOriginProtocol(fullDomain, p.CustomConfig.FollowProtocol)
 		if err != nil {
-			return err
+			return fmt.Errorf("请求 SetOriginProtocol 失败 %w", err)
 		}
 	}
 
