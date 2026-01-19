@@ -15,6 +15,8 @@ import (
 	"time"
 
 	"vibe_ip/internal/ent/schema/schematype"
+	"vibe_ip/internal/helper/db_cache"
+	"vibe_ip/internal/helper/sys_env"
 
 	"github.com/denisbrodbeck/machineid"
 	"github.com/dromara/carbon/v2"
@@ -117,7 +119,14 @@ func (m *GinServerManager) getTemplateFuncMap() template.FuncMap {
 	return template.FuncMap{
 		// 判断是否为调试模式
 		"isDebug": func() bool {
-			return m.config.Debug
+			return sys_env.GvaEnv.DEBUG
+		},
+		// 设备离线开启状态
+		"deviceOfflineEnabled": func() bool {
+			if db_cache.GvaSetting.DeviceOfflineInvalidTime <= 0 {
+				return false
+			}
+			return true
 		},
 		// 格式化时间为字符串，若为空则返回 "—"
 		"formatTimeOrNil": func(t time.Time) string {

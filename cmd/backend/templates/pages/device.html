@@ -40,7 +40,9 @@
           <th class="ui-th">名称</th>
           <th class="ui-th">最新 IPv4</th>
           <th class="ui-th">最新 IPv6</th>
+          {{ if deviceOfflineEnabled }}
           <th class="ui-th">状态</th>
+          {{ end }}
           <th class="ui-th text-center">操作</th>
         </tr>
       </thead>
@@ -68,6 +70,7 @@
             {{.IPV6}}
           </td>
 
+          {{ if deviceOfflineEnabled }}
           <td class="ui-td font-bold text-base-content tooltip"
             data-tip="上次上报时间在 {{ formatTimeOrNil .LastReportedAt }}">
             {{ if .Online }}
@@ -76,6 +79,7 @@
             <span class="badge badge-error">离线</span>
             {{ end }}
           </td>
+          {{ end }}
 
           <td class="ui-td">
             <div class="flex justify-center gap-1">
