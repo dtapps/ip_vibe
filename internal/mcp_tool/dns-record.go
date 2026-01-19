@@ -149,12 +149,12 @@ func deleteDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	)
 
 	// 调用
-	response, err := service.DeleteDnsRecord(ctx, params.ID)
+	err := service.DeleteDnsRecord(ctx, params.ID)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 检查DNS记录健康状态

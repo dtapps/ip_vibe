@@ -22,7 +22,8 @@ type DNSRecordService interface {
 	CreateDnsRecord(ctx context.Context, request *types.CreateDnsRecordRequest) (*types.GetDnsRecordRequest, error)
 	UpdateDnsRecord(ctx context.Context, request *types.UpdateDnsRecordRequest) (*types.GetDnsRecordRequest, error)
 	UpdateDnsRecordActive(ctx context.Context, request *types.UpdateDnsRecordActiveRequest) (*types.GetDnsRecordRequest, error)
-	DeleteDnsRecord(ctx context.Context, id int64) (*types.GetDnsRecordRequest, error)
+	DeleteDnsRecord(ctx context.Context, id int64) error
+	DeleteDnsRecords(ctx context.Context, ids []int64) error
 	HealthcheckDnsRecord(ctx context.Context, id int64) ([][]ToPairsStruct, error)
 }
 
@@ -157,9 +158,6 @@ func (s *DNSRecordServiceImpl) CreateDnsRecord(ctx context.Context, request *typ
 
 	saveDnsRecord, err := createDnsRecord.Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("创建DNS记录: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("创建DNS记录失败: %w", err)
 	}
 
@@ -204,9 +202,6 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *typ
 
 	saveDnsRecord, err := updateDnsRecord.Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新DNS记录: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新DNS记录失败: %w", err)
 	}
 
@@ -240,9 +235,6 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecordActive(ctx context.Context, reques
 		SetIsActive(request.IsActive).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新DNS记录状态: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新DNS记录状态失败: %w", err)
 	}
 
@@ -252,21 +244,21 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecordActive(ctx context.Context, reques
 }
 
 // DeleteDnsRecord 删除DNS记录
-func (s *DNSRecordServiceImpl) DeleteDnsRecord(ctx context.Context, id int64) (*types.GetDnsRecordRequest, error) {
+func (s *DNSRecordServiceImpl) DeleteDnsRecord(ctx context.Context, id int64) error {
 	// 查询DNS记录
 	firstDnsRecord, err := s.db.DNSRecord.Query().
 		Where(dnsrecord.IDEQ(id)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询DNS记录失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询DNS记录失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询DNS记录失败: %w", err)
+		return fmt.Errorf("查询DNS记录失败: %w", err)
 	}
 	// 删除DNS记录
 	err = s.db.DNSRecord.DeleteOne(firstDnsRecord).Exec(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("删除DNS记录失败: %w", err)
+		return fmt.Errorf("删除DNS记录失败: %w", err)
 	}
 
 	// 删除通知订阅
@@ -277,9 +269,56 @@ func (s *DNSRecordServiceImpl) DeleteDnsRecord(ctx context.Context, id int64) (*
 		}
 	}
 
-	return &types.GetDnsRecordRequest{
-		ID: firstDnsRecord.ID,
-	}, nil
+	return nil
+}
+
+// DeleteDnsRecords 批量删除 DNS 记录
+func (s *DNSRecordServiceImpl) DeleteDnsRecords(ctx context.Context, ids []int64) error {
+
+	// 创建事务
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("创建事务失败: %w", err)
+	}
+
+	// 查询DNS记录
+	allDnsRecord, err := tx.DNSRecord.Query().
+		Where(dnsrecord.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("查询DNS记录失败: %w", err)
+	}
+	if len(allDnsRecord) != len(ids) {
+		tx.Rollback()
+		return fmt.Errorf("查询DNS记录失败: 数量 %d 与请求数量 %d 不匹配", len(allDnsRecord), len(ids))
+	}
+
+	// 删除DNS记录
+	_, err = tx.DNSRecord.Delete().
+		Where(dnsrecord.IDIn(ids...)).
+		Exec(ctx)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("删除DNS记录失败: %w", err)
+	}
+
+	// 删除通知订阅
+	for _, item := range allDnsRecord {
+		err = webhook_sub_helper.DeleteTx(ctx, tx, webhooksubscription.ObjTypeDNSRecord, item.ID)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("删除通知订阅失败: %w", err)
+		}
+	}
+
+	// 提交事务
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("提交事务失败: %w", err)
+	}
+
+	return nil
 }
 
 // HealthcheckDnsRecord 检查DNS记录健康状态

@@ -23,7 +23,8 @@ type WebhookService interface {
 	CreateWebhook(ctx context.Context, request *types.CreateWebhookRequest) (*types.GetWebhookRequest, error)
 	UpdateWebhook(ctx context.Context, request *types.UpdateWebhookRequest) (*types.GetWebhookRequest, error)
 	UpdateWebhookActive(ctx context.Context, request *types.UpdateWebhookActiveRequest) (*types.GetWebhookRequest, error)
-	DeleteWebhook(ctx context.Context, id int64) (*types.GetWebhookRequest, error)
+	DeleteWebhook(ctx context.Context, id int64) error
+	DeleteWebhooks(ctx context.Context, ids []int64) error
 	TestWebhook(ctx context.Context, id int64) (*types.GetWebhookRequest, error)
 }
 
@@ -118,9 +119,6 @@ func (s *WebhookServiceImpl) CreateWebhook(ctx context.Context, request *types.C
 		SetTemplateContent(request.TemplateContent).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("创建通知: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("创建通知失败: %w", err)
 	}
 	return &types.GetWebhookRequest{
@@ -150,9 +148,6 @@ func (s *WebhookServiceImpl) UpdateWebhook(ctx context.Context, request *types.U
 		SetTemplateContent(request.TemplateContent).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新通知: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新通知失败: %w", err)
 	}
 	return &types.GetWebhookRequest{
@@ -177,9 +172,6 @@ func (s *WebhookServiceImpl) UpdateWebhookActive(ctx context.Context, request *t
 		SetIsActive(request.IsActive).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新通知状态: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新通知状态失败: %w", err)
 	}
 	return &types.GetWebhookRequest{
@@ -188,28 +180,64 @@ func (s *WebhookServiceImpl) UpdateWebhookActive(ctx context.Context, request *t
 }
 
 // DeleteWebhook 删除通知
-func (s *WebhookServiceImpl) DeleteWebhook(ctx context.Context, id int64) (*types.GetWebhookRequest, error) {
+func (s *WebhookServiceImpl) DeleteWebhook(ctx context.Context, id int64) error {
 	// 查询通知
 	firstWebhook, err := s.db.Webhook.Query().
 		Where(webhook.IDEQ(id)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询通知失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询通知失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询通知失败: %w", err)
+		return fmt.Errorf("查询通知失败: %w", err)
 	}
 	// 删除通知
 	err = s.db.Webhook.DeleteOne(firstWebhook).Exec(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("删除通知: %s\n", err.Error())
-		}
-		return nil, fmt.Errorf("删除通知失败: %w", err)
+		return fmt.Errorf("删除通知失败: %w", err)
 	}
-	return &types.GetWebhookRequest{
-		ID: firstWebhook.ID,
-	}, nil
+
+	return nil
+}
+
+// DeleteWebhooks 批量删除通知
+func (s *WebhookServiceImpl) DeleteWebhooks(ctx context.Context, ids []int64) error {
+
+	// 创建事务
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("创建事务失败: %w", err)
+	}
+
+	// 查询通知
+	allWebhook, err := tx.Webhook.Query().
+		Where(webhook.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		_ = tx.Rollback()
+		return fmt.Errorf("查询通知失败: %w", err)
+	}
+	if len(allWebhook) != len(ids) {
+		tx.Rollback()
+		return fmt.Errorf("查询通知失败: 数量 %d 与请求数量 %d 不匹配", len(allWebhook), len(ids))
+	}
+
+	// 删除通知
+	_, err = tx.Webhook.Delete().
+		Where(webhook.IDIn(ids...)).
+		Exec(ctx)
+	if err != nil {
+		_ = tx.Rollback()
+		return fmt.Errorf("删除通知失败: %w", err)
+	}
+
+	// 提交事务
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("提交事务失败: %w", err)
+	}
+
+	return nil
 }
 
 // TestWebhook 测试通知
@@ -230,9 +258,6 @@ func (s *WebhookServiceImpl) TestWebhook(ctx context.Context, id int64) (*types.
 	// 测试通知
 	err := s.webhookService.Test(ctx, id, notifyData)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("测试通知: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("测试通知失败: %w", err)
 	}
 

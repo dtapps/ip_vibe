@@ -54,3 +54,8 @@ type UpdateWebhookSubActiveRequest struct {
 type DeleteWebhookSubRequest struct {
 	GetWebhookSubRequest
 }
+
+// 批量删除通知订阅 请求结构
+type DeleteWebhookSubBatchRequest struct {
+	IDS []int64 `json:"ids" binding:"required" jsonschema:"通知订阅的唯一标识符列表"` // 通知订阅序号列表
+}

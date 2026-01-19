@@ -8,7 +8,7 @@
 {{ $pageSize := .Data.PageSize }}
 {{ $baseWebUrlPath := .CurrentPath }}
 {{ $baseWebUrlPathWithQuery := .CurrentPathWithQuery }}
-{{ $baseApiUrlPath := printf "/api/%s" $baseWebUrlPath }}
+{{ $baseApiUrlPath := printf "/api%s" $baseWebUrlPath }}
 
 <h1 class="text-3xl font-black mb-10 pl-4 text-base-content flex items-center gap-3 uppercase tracking-tighter">
   {{ template "icons" (dict "Name" "i-lucide-network" "Class" "w-8 h-8 text-primary") }}
@@ -25,8 +25,8 @@
         {{ template "icons" (dict "Name" "i-lucide-plus") }} 添加记录
       </button>
 
-      <button id="batch_delete_btn" class="hidden btn-ui-error"
-        onclick="handleBatchDelete('{{$baseApiUrlPath}}/batch')">
+      <button class="btn-batch btn-ui-error hidden" data-url="{{$baseApiUrlPath}}/batch" data-method="DELETE"
+        data-id-key="ids" onclick="handleBatchAction(this)">
         {{ template "icons" (dict "Name" "i-lucide-trash-2") }}
         批量删除 (<span id="selected_count">0</span>)
       </button>

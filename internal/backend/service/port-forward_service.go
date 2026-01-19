@@ -23,7 +23,8 @@ type PortForwardService interface {
 	UpdatePortForward(ctx context.Context, request *types.UpdatePortForwardRequest) (*types.GetPortForwardRequest, error)
 	UpdatePortForwardForward(ctx context.Context, request *types.UpdatePortForwardForwardRequest) (*types.GetPortForwardRequest, error)
 	UpdatePortForwardActive(ctx context.Context, request *types.UpdatePortForwardActiveRequest) (*types.GetPortForwardRequest, error)
-	DeletePortForward(ctx context.Context, id int64) (*types.GetPortForwardRequest, error)
+	DeletePortForward(ctx context.Context, id int64) error
+	DeletePortForwards(ctx context.Context, ids []int64) error
 	HealthcheckPortForward(ctx context.Context, id int64) ([][]ToPairsStruct, error)
 	GetPortForwardStats(ctx context.Context, id int64, request *types.GetPortForwardStatsRequest) ([]*types.GetPortForwardStatsResponse, error)
 }
@@ -125,9 +126,6 @@ func (s *PortForwardServiceImpl) CreatePortForward(ctx context.Context, request 
 		SetDeviceID(request.DeviceID).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("创建端口转发: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("创建端口转发失败: %w", err)
 	}
 	return &types.GetPortForwardRequest{
@@ -158,9 +156,6 @@ func (s *PortForwardServiceImpl) UpdatePortForward(ctx context.Context, request 
 		SetDeviceID(request.DeviceID).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新端口转发: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新端口转发失败: %w", err)
 	}
 	return &types.GetPortForwardRequest{
@@ -185,9 +180,6 @@ func (s *PortForwardServiceImpl) UpdatePortForwardForward(ctx context.Context, r
 		SetAutoForward(request.AutoForward).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新端口转发防火墙状态: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新端口转发防火墙状态失败: %w", err)
 	}
 	return &types.GetPortForwardRequest{
@@ -212,9 +204,6 @@ func (s *PortForwardServiceImpl) UpdatePortForwardActive(ctx context.Context, re
 		SetIsActive(request.IsActive).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新端口转发启用状态: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新端口转发启用状态失败: %w", err)
 	}
 	return &types.GetPortForwardRequest{
@@ -223,28 +212,64 @@ func (s *PortForwardServiceImpl) UpdatePortForwardActive(ctx context.Context, re
 }
 
 // DeletePortForward 删除端口转发
-func (s *PortForwardServiceImpl) DeletePortForward(ctx context.Context, id int64) (*types.GetPortForwardRequest, error) {
+func (s *PortForwardServiceImpl) DeletePortForward(ctx context.Context, id int64) error {
 	// 查询端口转发
 	firstPortForward, err := s.db.DevicePortForward.Query().
 		Where(deviceportforward.IDEQ(id)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询端口转发失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询端口转发失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询端口转发失败: %w", err)
+		return fmt.Errorf("查询端口转发失败: %w", err)
 	}
 	// 删除端口转发
 	err = s.db.DevicePortForward.DeleteOne(firstPortForward).Exec(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("删除端口转发: %s\n", err.Error())
-		}
-		return nil, fmt.Errorf("删除端口转发失败: %w", err)
+		return fmt.Errorf("删除端口转发失败: %w", err)
 	}
-	return &types.GetPortForwardRequest{
-		ID: firstPortForward.ID,
-	}, nil
+
+	return nil
+}
+
+// DeletePortForwards 删除端口转发
+func (s *PortForwardServiceImpl) DeletePortForwards(ctx context.Context, ids []int64) error {
+
+	// 创建事务
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("创建事务失败: %w", err)
+	}
+
+	// 查询端口转发
+	allPortForward, err := tx.DevicePortForward.Query().
+		Where(deviceportforward.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		_ = tx.Rollback()
+		return fmt.Errorf("查询端口转发失败: %w", err)
+	}
+	if len(allPortForward) != len(ids) {
+		tx.Rollback()
+		return fmt.Errorf("查询端口转发失败: 数量 %d 与请求数量 %d 不匹配", len(allPortForward), len(ids))
+	}
+
+	// 删除端口转发
+	_, err = tx.DevicePortForward.Delete().
+		Where(deviceportforward.IDIn(ids...)).
+		Exec(ctx)
+	if err != nil {
+		_ = tx.Rollback()
+		return fmt.Errorf("删除端口转发失败: %w", err)
+	}
+
+	// 提交事务
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("提交事务失败: %w", err)
+	}
+
+	return nil
 }
 
 // HealthcheckPortForward 检查端口转发健康状态

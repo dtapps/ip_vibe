@@ -121,10 +121,10 @@ func deletePlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 	)
 
 	// 调用
-	response, err := service.DeleteConfig(ctx, params.ID)
+	err := service.DeleteConfig(ctx, params.ID)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }

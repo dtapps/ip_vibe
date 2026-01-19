@@ -27,8 +27,6 @@
     --color-indigo-600: oklch(51.1% 0.262 276.966);
     --color-indigo-800: oklch(39.8% 0.195 277.366);
     --color-indigo-900: oklch(35.9% 0.144 278.697);
-    --color-slate-500: oklch(55.4% 0.046 257.417);
-    --color-slate-600: oklch(44.6% 0.043 257.281);
     --color-gray-50: oklch(98.5% 0.002 247.839);
     --color-gray-100: oklch(96.7% 0.003 264.542);
     --color-gray-200: oklch(92.8% 0.006 264.531);
@@ -2801,9 +2799,6 @@
       border-color: color-mix(in oklab, var(--color-warning) 30%, transparent);
     }
   }
-  .\!bg-slate-500 {
-    background-color: var(--color-slate-500) !important;
-  }
   .bg-base-100 {
     background-color: var(--color-base-100);
   }
@@ -3728,13 +3723,6 @@
     &:hover {
       @media (hover: hover) {
         border-color: var(--color-primary);
-      }
-    }
-  }
-  .hover\:\!bg-slate-600 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-slate-600) !important;
       }
     }
   }

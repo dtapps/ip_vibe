@@ -24,7 +24,8 @@ type DeviceService interface {
 	GetDevice(ctx context.Context, id int64) (*types.GetDeviceResponse, error)
 	CreateDevice(ctx context.Context, request *types.CreateDeviceRequest) (*types.GetDeviceRequest, error)
 	UpdateDevice(ctx context.Context, request *types.UpdateDeviceRequest) (*types.GetDeviceRequest, error)
-	DeleteDevice(ctx context.Context, id int64) (*types.GetDeviceRequest, error)
+	DeleteDevice(ctx context.Context, id int64) error
+	DeleteDevices(ctx context.Context, ids []int64) error
 	GetDeviceIpHistory(ctx context.Context, id int64) ([]*types.GetDeviceIpHistoryResponse, error)
 	HealthcheckDevice(ctx context.Context, id int64) ([][]ToPairsStruct, error)
 	GetDevicePortForwardStats(ctx context.Context, id int64, request *types.GetDevicePortForwardStatsRequest) ([]*types.GetDevicePortForwardStatsResponse, error)
@@ -150,9 +151,6 @@ func (s *DeviceServiceImpl) CreateDevice(ctx context.Context, request *types.Cre
 		SetIPV6(request.IPV6).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("创建设备: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("创建设备失败: %w", err)
 	}
 
@@ -189,9 +187,6 @@ func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.Upd
 		SetIPV6(request.IPV6).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新设备: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新设备失败: %w", err)
 	}
 
@@ -209,25 +204,22 @@ func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.Upd
 }
 
 // DeleteDevice 删除设备
-func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) (*types.GetDeviceRequest, error) {
+func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) error {
 	// 查询设备
 	firstDevice, err := s.db.Device.Query().
 		Where(device.IDEQ(id)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询设备失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询设备失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询设备失败: %w", err)
+		return fmt.Errorf("查询设备失败: %w", err)
 	}
 
 	// 删除设备
 	err = s.db.Device.DeleteOne(firstDevice).Exec(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("删除设备: %s\n", err.Error())
-		}
-		return nil, fmt.Errorf("删除设备失败: %w", err)
+		return fmt.Errorf("删除设备失败: %w", err)
 	}
 
 	// 删除通知订阅 (保持原始逻辑)
@@ -238,9 +230,56 @@ func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) (*types.
 		}
 	}
 
-	return &types.GetDeviceRequest{
-		ID: firstDevice.ID,
-	}, nil
+	return nil
+}
+
+// DeleteDevices 批量删除设备
+func (s *DeviceServiceImpl) DeleteDevices(ctx context.Context, ids []int64) error {
+
+	// 创建事务
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("创建事务失败: %w", err)
+	}
+
+	// 查询设备
+	allDevice, err := tx.Device.Query().
+		Where(device.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("查询设备失败: %w", err)
+	}
+	if len(allDevice) != len(ids) {
+		tx.Rollback()
+		return fmt.Errorf("查询设备失败: 数量 %d 与请求数量 %d 不匹配", len(allDevice), len(ids))
+	}
+
+	// 删除设备
+	_, err = tx.Device.Delete().
+		Where(device.IDIn(ids...)).
+		Exec(ctx)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("删除设备失败: %w", err)
+	}
+
+	// 删除通知订阅
+	for _, item := range allDevice {
+		err = webhook_sub_helper.DeleteTx(ctx, tx, webhooksubscription.ObjTypeDevice, item.ID)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("删除通知订阅失败: %w", err)
+		}
+	}
+
+	// 提交事务
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("提交事务失败: %w", err)
+	}
+
+	return nil
 }
 
 // GetDeviceIpHistory 获取设备的IP历史记录

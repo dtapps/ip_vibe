@@ -270,9 +270,11 @@ function updateFormFields(configs = []) {
 
 /**
  * 表格全选逻辑
+ * @param {HTMLInputElement} el - 全选复选框元素
  */
-function tableSelectAll(master) {
-  const isChecked = master.checked;
+function tableSelectAll(el) {
+  console.log("[tableSelectAll] el", el);
+  const isChecked = el.checked;
   document.querySelectorAll(".row-checkbox").forEach((cb) => {
     cb.checked = isChecked;
   });

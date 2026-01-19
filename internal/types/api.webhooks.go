@@ -56,6 +56,11 @@ type DeleteWebhookRequest struct {
 	GetWebhookRequest
 }
 
+// 批量删除通知 请求结构
+type DeleteWebhookBatchRequest struct {
+	IDS []int64 `json:"ids" binding:"required" jsonschema:"通知的唯一标识符列表"` // 通知序号列表
+}
+
 // 测试通知 请求结构
 type TestWebhookRequest struct {
 	GetWebhookRequest

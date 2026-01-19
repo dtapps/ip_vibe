@@ -65,6 +65,11 @@ type DeleteDomainMonitorRequest struct {
 	GetDomainMonitorRequest
 }
 
+// 批量删除域名监控 请求结构
+type DeleteDomainMonitorBatchRequest struct {
+	IDS []int64 `json:"ids" binding:"required" jsonschema:"域名监控记录的唯一标识符列表"` // 域名监控记录序号列表
+}
+
 // 检查域名监控 请求结构
 type CheckDomainMonitorRequest struct {
 	GetDomainMonitorRequest

@@ -16,7 +16,8 @@ type PlatformConfigService interface {
 	GetConfig(ctx context.Context, id int64) (*types.GetPlatformConfigResponse, error)
 	CreateConfig(ctx context.Context, request *types.CreatePlatformConfigRequest) (*types.GetPlatformConfigRequest, error)
 	UpdateConfig(ctx context.Context, request *types.UpdatePlatformConfigRequest) (*types.GetPlatformConfigRequest, error)
-	DeleteConfig(ctx context.Context, id int64) (*types.GetPlatformConfigRequest, error)
+	DeleteConfig(ctx context.Context, id int64) error
+	DeleteConfigs(ctx context.Context, ids []int64) error
 }
 
 // PlatformConfigServiceImpl 配置服务实现
@@ -107,9 +108,6 @@ func (s *PlatformConfigServiceImpl) CreateConfig(ctx context.Context, request *t
 		SetCapability(platformconfig.Capability(request.Capability)).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("创建配置: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("创建配置失败: %w", err)
 	}
 
@@ -139,9 +137,6 @@ func (s *PlatformConfigServiceImpl) UpdateConfig(ctx context.Context, request *t
 		SetCapability(platformconfig.Capability(request.Capability)).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新配置: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新配置失败: %w", err)
 	}
 
@@ -151,28 +146,63 @@ func (s *PlatformConfigServiceImpl) UpdateConfig(ctx context.Context, request *t
 }
 
 // DeleteConfig 删除配置
-func (s *PlatformConfigServiceImpl) DeleteConfig(ctx context.Context, id int64) (*types.GetPlatformConfigRequest, error) {
+func (s *PlatformConfigServiceImpl) DeleteConfig(ctx context.Context, id int64) error {
 	// 查询配置
 	firstConfig, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(id)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询配置失败: 配置不存在")
+			return fmt.Errorf("查询配置失败: 配置不存在")
 		}
-		return nil, fmt.Errorf("查询配置失败: %w", err)
+		return fmt.Errorf("查询配置失败: %w", err)
 	}
 
 	// 删除配置
 	err = s.db.PlatformConfig.DeleteOne(firstConfig).Exec(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("删除配置: %s\n", err.Error())
-		}
-		return nil, fmt.Errorf("删除配置失败: %w", err)
+		return fmt.Errorf("删除配置失败: %w", err)
 	}
 
-	return &types.GetPlatformConfigRequest{
-		ID: firstConfig.ID,
-	}, nil
+	return nil
+}
+
+// DeleteConfigs 批量删除配置
+func (s *PlatformConfigServiceImpl) DeleteConfigs(ctx context.Context, ids []int64) error {
+
+	// 创建事务
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("创建事务失败: %w", err)
+	}
+
+	// 查询配置
+	allConfig, err := tx.PlatformConfig.Query().
+		Where(platformconfig.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		_ = tx.Rollback()
+		return fmt.Errorf("查询配置失败: %w", err)
+	}
+	if len(allConfig) != len(ids) {
+		tx.Rollback()
+		return fmt.Errorf("查询配置失败: 数量 %d 与请求数量 %d 不匹配", len(allConfig), len(ids))
+	}
+
+	// 删除配置
+	_, err = tx.PlatformConfig.Delete().
+		Where(platformconfig.IDIn(ids...)).
+		Exec(ctx)
+	if err != nil {
+		_ = tx.Rollback()
+		return fmt.Errorf("删除配置失败: %w", err)
+	}
+
+	// 提交事务
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("提交事务失败: %w", err)
+	}
+
+	return nil
 }

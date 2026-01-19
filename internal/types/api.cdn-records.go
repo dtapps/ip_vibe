@@ -68,6 +68,11 @@ type DeleteCdnRecordRequest struct {
 	GetCdnRecordRequest
 }
 
+// 批量删除CDN记录 请求结构
+type DeleteCdnRecordBatchRequest struct {
+	IDS []int64 `json:"ids" binding:"required" jsonschema:"CDN记录的唯一标识符列表"` // CDN记录序号列表
+}
+
 // 检查CDN记录健康状态 请求结构
 type HealthCheckCdnRecordRequest struct {
 	GetCdnRecordRequest

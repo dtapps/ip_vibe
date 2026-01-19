@@ -220,7 +220,7 @@ func UpdateDomainMonitorActive(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id	path		int64											true	"域名监控序号"
-//	@Success		200	{object}	APIResponse{data=types.GetDomainMonitorRequest}	"成功响应"
+//	@Success		200	{object}	APIResponse{}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}									"参数错误"
 //	@Failure		404	{object}	APIResponse{}									"错误响应"
 //	@Router			/domain-monitors/{id} [delete]
@@ -244,12 +244,51 @@ func DeleteDomainMonitor(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.DeleteDomainMonitor(c, requestParams.ID)
+	err := service.DeleteDomainMonitor(c, requestParams.ID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
+}
+
+// 批量删除域名监控
+//
+//	@Description	批量删除域名监控
+//	@Summary		批量删除域名监控
+//	@Tags			域名监控
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			ids	body		types.DeleteDomainMonitorBatchRequest			true	"域名监控序号列表"
+//	@Success		200	{object}	APIResponse{}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}									"参数错误"
+//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Router			/domain-monitors/batch [delete]
+func DeleteDomainMonitorBatch(c *gin.Context) {
+	// 请求参数
+	var requestParams types.DeleteDomainMonitorBatchRequest
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewDomainMonitorService(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog,
+		global.GvaHttpLog,
+		sys_env.GvaEnv.DEBUG,
+	)
+
+	// 调用
+	err := service.DeleteDomainMonitors(c, requestParams.IDS)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, nil)
 }
 
 // 检查域名监控

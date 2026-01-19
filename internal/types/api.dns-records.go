@@ -72,6 +72,11 @@ type DeleteDnsRecordRequest struct {
 	GetDnsRecordRequest
 }
 
+// 批量删除DNS记录 请求结构
+type DeleteDnsRecordBatchRequest struct {
+	IDS []int64 `json:"ids" binding:"required" jsonschema:"DNS记录的唯一标识符列表"` // DNS记录序号列表
+}
+
 // 检查DNS记录健康状态 请求结构
 type HealthCheckDnsRecordRequest struct {
 	GetDnsRecordRequest

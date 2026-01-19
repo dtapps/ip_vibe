@@ -23,7 +23,8 @@ type CDNRecordService interface {
 	CreateCdnRecord(ctx context.Context, request *types.CreateCdnRecordRequest) (*types.GetCdnRecordRequest, error)
 	UpdateCdnRecord(ctx context.Context, request *types.UpdateCdnRecordRequest) (*types.GetCdnRecordRequest, error)
 	UpdateCdnRecordActive(ctx context.Context, request *types.UpdateCdnRecordActiveRequest) (*types.GetCdnRecordRequest, error)
-	DeleteCdnRecord(ctx context.Context, id int64) (*types.GetCdnRecordRequest, error)
+	DeleteCdnRecord(ctx context.Context, id int64) error
+	DeleteCdnRecords(ctx context.Context, ids []int64) error
 	HealthcheckCdnRecord(ctx context.Context, id int64) ([][]ToPairsStruct, error)
 }
 
@@ -145,18 +146,13 @@ func (s *CDNRecordServiceImpl) CreateCdnRecord(ctx context.Context, request *typ
 		SetIPGroupID(request.IPGroupID).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("创建CDN记录: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("创建CDN记录失败: %w", err)
 	}
 
 	// 创建通知订阅
 	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeCdnRecord, saveCdnRecord.ID)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("创建通知订阅失败: %s\n", err.Error())
-		}
+		fmt.Printf("创建通知订阅失败: %s\n", err.Error())
 	}
 
 	return &types.GetCdnRecordRequest{
@@ -184,9 +180,6 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *typ
 		SetIPGroupID(request.IPGroupID).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新CDN记录: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新CDN记录失败: %w", err)
 	}
 
@@ -221,9 +214,6 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecordActive(ctx context.Context, reques
 		SetIsActive(request.IsActive).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新CDN记录状态: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新CDN记录状态失败: %w", err)
 	}
 
@@ -233,22 +223,22 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecordActive(ctx context.Context, reques
 }
 
 // DeleteCdnRecord 删除 CDN 记录
-func (s *CDNRecordServiceImpl) DeleteCdnRecord(ctx context.Context, id int64) (*types.GetCdnRecordRequest, error) {
+func (s *CDNRecordServiceImpl) DeleteCdnRecord(ctx context.Context, id int64) error {
 	// 查询CDN记录
 	firstCdnRecord, err := s.db.CDNRecord.Query().
 		Where(cdnrecord.IDEQ(id)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询CDN记录失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询CDN记录失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询CDN记录失败: %w", err)
+		return fmt.Errorf("查询CDN记录失败: %w", err)
 	}
 
 	// 删除CDN记录
 	err = s.db.CDNRecord.DeleteOne(firstCdnRecord).Exec(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("删除CDN记录失败: %w", err)
+		return fmt.Errorf("删除CDN记录失败: %w", err)
 	}
 
 	// 删除通知订阅
@@ -259,9 +249,56 @@ func (s *CDNRecordServiceImpl) DeleteCdnRecord(ctx context.Context, id int64) (*
 		}
 	}
 
-	return &types.GetCdnRecordRequest{
-		ID: firstCdnRecord.ID,
-	}, nil
+	return nil
+}
+
+// DeleteCdnRecords 批量删除 CDN 记录
+func (s *CDNRecordServiceImpl) DeleteCdnRecords(ctx context.Context, ids []int64) error {
+
+	// 创建事务
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("创建事务失败: %w", err)
+	}
+
+	// 查询CDN记录
+	allCdnRecord, err := tx.CDNRecord.Query().
+		Where(cdnrecord.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("查询CDN记录失败: %w", err)
+	}
+	if len(allCdnRecord) != len(ids) {
+		tx.Rollback()
+		return fmt.Errorf("查询CDN记录失败: 数量 %d 与请求数量 %d 不匹配", len(allCdnRecord), len(ids))
+	}
+
+	// 删除CDN记录
+	_, err = tx.CDNRecord.Delete().
+		Where(cdnrecord.IDIn(ids...)).
+		Exec(ctx)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("删除CDN记录失败: %w", err)
+	}
+
+	// 删除通知订阅
+	for _, item := range allCdnRecord {
+		err = webhook_sub_helper.DeleteTx(ctx, tx, webhooksubscription.ObjTypeCdnRecord, item.ID)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("删除通知订阅失败: %w", err)
+		}
+	}
+
+	// 提交事务
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("提交事务失败: %w", err)
+	}
+
+	return nil
 }
 
 // HealthcheckCdnRecord 检查 CDN 记录健康状态

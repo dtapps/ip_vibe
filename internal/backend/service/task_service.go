@@ -83,13 +83,7 @@ func (s *TaskServiceImpl) RunTask(ctx context.Context, id string) error {
 	// 运行任务
 	err := jobHelper.RunJob(id)
 	if err != nil {
-		if s.debug {
-			slog.ErrorContext(ctx, "运行任务失败",
-				slog.String("id", id),
-				slog.Any("err", err),
-			)
-		}
-		return err
+		return fmt.Errorf("运行任务失败: %w", err)
 	}
 	return nil
 }
@@ -101,13 +95,7 @@ func (s *TaskServiceImpl) DeleteTask(ctx context.Context, id string) error {
 	// 删除任务
 	err := jobHelper.DeleteJob(id)
 	if err != nil {
-		if s.debug {
-			slog.ErrorContext(ctx, "删除任务失败",
-				slog.String("id", id),
-				slog.Any("err", err),
-			)
-		}
-		return err
+		return fmt.Errorf("删除任务失败: %w", err)
 	}
 	return nil
 }
@@ -123,13 +111,7 @@ func (s *TaskServiceImpl) CleanAllTask(ctx context.Context) error {
 	for _, job := range jobs {
 		err := jobHelper.DeleteJob(job.ID)
 		if err != nil {
-			if s.debug {
-				slog.ErrorContext(ctx, "清理全部任务失败",
-					slog.String("id", job.ID),
-					slog.Any("err", err),
-				)
-			}
-			return err
+			return fmt.Errorf("清理全部任务失败: %w", err)
 		}
 	}
 	return nil
@@ -155,11 +137,6 @@ func (s *TaskServiceImpl) StartScheduler(ctx context.Context) error {
 			s.debug,
 		)
 		if err := ipUpdate.StartCdnJob(ctx); err != nil {
-			if s.debug {
-				slog.ErrorContext(ctx, "启动CDN、DNS刷新任务失败",
-					slog.Any("err", err),
-				)
-			}
 			return fmt.Errorf("启动CDN、DNS刷新任务失败: %w", err)
 		}
 	}

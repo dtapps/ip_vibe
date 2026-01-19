@@ -76,6 +76,11 @@ type DeleteSSLRecordRequest struct {
 	GetSSLRecordRequest
 }
 
+// 批量删除 SSL 记录 请求结构
+type DeleteSSLRecordBatchRequest struct {
+	IDS []int64 `json:"ids" binding:"required" jsonschema:"SSL记录的唯一标识符列表"` // SSL记录序号列表
+}
+
 // 申请新的SSL证书 请求结构
 type ApplySSLRecordRequest struct {
 	GetSSLRecordRequest

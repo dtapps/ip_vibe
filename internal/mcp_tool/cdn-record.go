@@ -144,11 +144,12 @@ func deleteCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	)
 
 	// 调用
-	response, err := service.DeleteCdnRecord(ctx, params.ID)
+	err := service.DeleteCdnRecord(ctx, params.ID)
 	if err != nil {
 		return errorResponseErr(err)
 	}
-	return successResponse(response, response)
+
+	return successResponse(nil, nil)
 }
 
 // 检查CDN记录健康状态

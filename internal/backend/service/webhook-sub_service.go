@@ -25,7 +25,8 @@ type WebhookSubService interface {
 	CreateWebhookSub(ctx context.Context, request *types.CreateWebhookSubRequest) (*types.CreateWebhookSubResponse, error)
 	UpdateWebhookSub(ctx context.Context, request *types.UpdateWebhookSubRequest) (*types.GetWebhookSubRequest, error)
 	UpdateWebhookSubActive(ctx context.Context, request *types.UpdateWebhookSubActiveRequest) (*types.GetWebhookSubRequest, error)
-	DeleteWebhookSub(ctx context.Context, id int64) (*types.GetWebhookSubRequest, error)
+	DeleteWebhookSub(ctx context.Context, id int64) error
+	DeleteWebhookSubs(ctx context.Context, ids []int64) error
 }
 
 // WebhookSubServiceImpl 通知订阅服务实现
@@ -182,8 +183,7 @@ func (s *WebhookSubServiceImpl) GetWebhookSub(ctx context.Context, id int64) (*t
 
 // CreateWebhookSub 创建通知订阅
 func (s *WebhookSubServiceImpl) CreateWebhookSub(ctx context.Context, request *types.CreateWebhookSubRequest) (*types.CreateWebhookSubResponse, error) {
-	// 原始 Handler 逻辑是在循环内部处理错误并返回，导致只有第一个错误会被返回。
-	// 这里保持 Handler 的逻辑结构，尽管它会在第一个 ObjID 失败时立即返回。
+	// 循环创建通知订阅
 	for _, objID := range request.ObjIDs {
 		// 创建通知订阅
 		err := s.db.WebhookSubscription.Create().
@@ -194,10 +194,6 @@ func (s *WebhookSubServiceImpl) CreateWebhookSub(ctx context.Context, request *t
 			SetObjID(objID).
 			Exec(ctx)
 		if err != nil {
-			if s.debug {
-				fmt.Printf("创建通知订阅: %s\n", err.Error())
-			}
-			// 立即返回错误
 			return nil, fmt.Errorf("创建通知订阅失败: %w", err)
 		}
 	}
@@ -225,9 +221,6 @@ func (s *WebhookSubServiceImpl) UpdateWebhookSub(ctx context.Context, request *t
 		SetDescription(request.Description).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新通知订阅: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新通知订阅失败: %w", err)
 	}
 	return &types.GetWebhookSubRequest{
@@ -252,9 +245,6 @@ func (s *WebhookSubServiceImpl) UpdateWebhookSubActive(ctx context.Context, requ
 		SetIsActive(request.IsActive).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新通知订阅状态: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新通知订阅状态失败: %w", err)
 	}
 	return &types.GetWebhookSubRequest{
@@ -263,26 +253,62 @@ func (s *WebhookSubServiceImpl) UpdateWebhookSubActive(ctx context.Context, requ
 }
 
 // DeleteWebhookSub 删除通知订阅
-func (s *WebhookSubServiceImpl) DeleteWebhookSub(ctx context.Context, id int64) (*types.GetWebhookSubRequest, error) {
+func (s *WebhookSubServiceImpl) DeleteWebhookSub(ctx context.Context, id int64) error {
 	// 查询通知订阅
 	firstWebhookSubscription, err := s.db.WebhookSubscription.Query().
 		Where(webhooksubscription.IDEQ(id)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询通知订阅失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询通知订阅失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询通知订阅失败: %w", err)
+		return fmt.Errorf("查询通知订阅失败: %w", err)
 	}
 	// 删除通知订阅
 	err = s.db.WebhookSubscription.DeleteOne(firstWebhookSubscription).Exec(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("删除通知订阅: %s\n", err.Error())
-		}
-		return nil, fmt.Errorf("删除通知订阅失败: %w", err)
+		return fmt.Errorf("删除通知订阅失败: %w", err)
 	}
-	return &types.GetWebhookSubRequest{
-		ID: firstWebhookSubscription.ID,
-	}, nil
+
+	return nil
+}
+
+// DeleteWebhookSubs 批量删除通知订阅
+func (s *WebhookSubServiceImpl) DeleteWebhookSubs(ctx context.Context, ids []int64) error {
+
+	// 创建事务
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("创建事务失败: %w", err)
+	}
+
+	// 查询通知订阅
+	allWebhookSubscription, err := tx.WebhookSubscription.Query().
+		Where(webhooksubscription.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		_ = tx.Rollback()
+		return fmt.Errorf("查询通知订阅失败: %w", err)
+	}
+	if len(allWebhookSubscription) != len(ids) {
+		tx.Rollback()
+		return fmt.Errorf("查询通知订阅失败: 数量 %d 与请求数量 %d 不匹配", len(allWebhookSubscription), len(ids))
+	}
+
+	// 删除通知订阅
+	_, err = tx.WebhookSubscription.Delete().
+		Where(webhooksubscription.IDIn(ids...)).
+		Exec(ctx)
+	if err != nil {
+		_ = tx.Rollback()
+		return fmt.Errorf("删除通知订阅失败: %w", err)
+	}
+
+	// 提交事务
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("提交事务失败: %w", err)
+	}
+
+	return nil
 }

@@ -179,12 +179,12 @@ func deletePortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	)
 
 	// 调用
-	response, err := service.DeletePortForward(ctx, params.ID)
+	err := service.DeletePortForward(ctx, params.ID)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 检查端口转发健康状态

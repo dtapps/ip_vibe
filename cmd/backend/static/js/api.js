@@ -113,67 +113,59 @@ async function withErrorHandling(asyncFn, options = {}) {
 }
 
 /**
- * 统一处理批量操作
- * @param {string} url - 操作接口URL
- * @param {string} key - 操作键名
- * @param {boolean} value - 操作值
- * @returns
+ * 批量操作执行器
+ * @param {HTMLButtonElement} el - 触发批量操作的按钮元素
  */
-async function handleBatchAction(url, key, value) {
+async function handleBatchAction(el) {
+  console.log("[handleBatchAction] el.dataset", el.dataset);
   try {
-    const ids = Array.from(
+    // 提取配置
+    const {
+      url,
+      method = "POST",
+      idKey = "ids",
+      key,
+      val,
+      confirm: customMsg,
+    } = el.dataset;
+
+    // 获取选中的 ID 数组
+    const selectedIds = Array.from(
       document.querySelectorAll(".row-checkbox:checked"),
     ).map((cb) => parseInt(cb.value));
-    if (!ids.length) {
-      alert("请选择要操作的项");
+    if (!selectedIds.length) {
+      alert("请先选择要操作的项目");
       return;
     }
 
-    const msg = value ? "开启" : "关闭";
-    if (!confirm(`确定要批量${msg}这 ${ids.length} 项吗？`)) {
+    // 构造确认信息
+    const count = selectedIds.length;
+    let msg = customMsg
+      ? customMsg.replace("{n}", count)
+      : `确认对选中的 ${count} 项执行该操作吗？`;
+    if (!confirm(msg)) {
       return;
     }
 
-    // 调用 API
-    await API.post(url, {
-      ids: ids,
-      [key]: value,
-    });
+    // 动态构造 Payload
+    const payload = { [idKey]: selectedIds };
+    if (key) {
+      // 转换布尔值或保留原始字符串
+      payload[key] = val === "true" ? true : val === "false" ? false : val;
+    }
 
-    // 刷新页面
+    // 根据请求方式调用 API
+    const methodFunc = method.toLowerCase();
+    if (typeof API[methodFunc] !== "function") {
+      throw new Error(`不支持的请求方式: ${method}`);
+    }
+    await API[methodFunc](url, payload);
+
+    // 成功后刷新
     window.location.reload();
   } catch (err) {
-    alert(`操作失败: ${err.message}`);
-  }
-}
-
-/**
- * 批量删除
- * @param {string} url - 删除接口URL
- * @returns
- */
-async function handleBatchDelete(url) {
-  try {
-    const ids = Array.from(
-      document.querySelectorAll(".row-checkbox:checked"),
-    ).map((cb) => parseInt(cb.value));
-    if (!ids.length) {
-      alert("请选择要删除的项");
-      return;
-    }
-
-    if (!confirm(`确定删除这 ${ids.length} 项吗？`)) {
-      return;
-    }
-
-    // 调用 API
-    await API.delete(url, { ids: ids });
-
-    // 刷新页面
-    window.location.reload();
-  } catch (error) {
-    alert(`批量删除失败: ${error.message}`);
-    console.error("批量删除失败", error);
+    alert(`批量操作失败: ${err.message}`);
+    console.error("Batch Action Error:", err);
   }
 }
 

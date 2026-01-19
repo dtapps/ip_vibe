@@ -75,10 +75,10 @@ func deleteWebhookSub(ctx context.Context, req *mcp.CallToolRequest, params *typ
 	)
 
 	// 调用
-	response, err := service.DeleteWebhookSub(ctx, params.ID)
+	err := service.DeleteWebhookSub(ctx, params.ID)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }

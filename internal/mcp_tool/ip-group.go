@@ -130,12 +130,12 @@ func deleteIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	)
 
 	// 调用
-	response, err := service.DeleteIPGroup(ctx, params.ID)
+	err := service.DeleteIPGroup(ctx, params.ID)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 获取IP组的设备列表

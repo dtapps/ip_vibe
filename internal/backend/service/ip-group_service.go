@@ -19,7 +19,8 @@ type IPGroupService interface {
 	GetIPGroup(ctx context.Context, id int64) (*types.GetIPGroupResponse, error)
 	CreateIPGroup(ctx context.Context, request *types.CreateIPGroupRequest) (int64, error)
 	UpdateIPGroup(ctx context.Context, request *types.UpdateIPGroupRequest) (*types.GetIPGroupRequest, error)
-	DeleteIPGroup(ctx context.Context, id int64) (*types.GetIPGroupRequest, error)
+	DeleteIPGroup(ctx context.Context, id int64) error
+	DeleteIPGroups(ctx context.Context, ids []int64) error
 	GetIPGroupDevices(ctx context.Context, id int64) ([]*types.GetDeviceResponse, error)
 	HealthcheckIPGroup(ctx context.Context, id int64) ([][]ToPairsStruct, error)
 }
@@ -137,9 +138,6 @@ func (s *IPGroupServiceImpl) CreateIPGroup(ctx context.Context, request *types.C
 		AddDeviceIDs(request.Devices...).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("创建IP组: %s\n", err.Error())
-		}
 		return 0, fmt.Errorf("创建IP组失败: %w", err)
 	}
 
@@ -174,9 +172,6 @@ func (s *IPGroupServiceImpl) UpdateIPGroup(ctx context.Context, request *types.U
 		AddDeviceIDs(request.Devices...).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新IP组: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新IP组失败: %w", err)
 	}
 
@@ -194,68 +189,144 @@ func (s *IPGroupServiceImpl) UpdateIPGroup(ctx context.Context, request *types.U
 }
 
 // DeleteIPGroup 删除IP组
-func (s *IPGroupServiceImpl) DeleteIPGroup(ctx context.Context, id int64) (*types.GetIPGroupRequest, error) {
+func (s *IPGroupServiceImpl) DeleteIPGroup(ctx context.Context, id int64) error {
+
+	// 创建事务
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("创建事务失败: %w", err)
+	}
+
 	// 查询IP组
-	firstIpGroup, err := s.db.IpGroup.Query().
+	firstIpGroup, err := tx.IpGroup.Query().
 		Where(ipgroup.IDEQ(id)).
 		WithDevices().
 		WithCdnRecords().
 		WithDNSRecords().
 		First(ctx)
 	if err != nil {
+		_ = tx.Rollback()
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询IP组失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询IP组失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询IP组失败: %w", err)
+		return fmt.Errorf("查询IP组失败: %w", err)
 	}
 
 	// 判断是否有关联的CDN记录或DNS记录
 	if records, err := firstIpGroup.Edges.CdnRecordsOrErr(); err == nil && len(records) > 0 {
-		return nil, fmt.Errorf("IP组 %d 有关联的CDN记录，无法删除", firstIpGroup.ID)
+		_ = tx.Rollback()
+		return fmt.Errorf("IP组 %d 有关联的CDN记录，无法删除", firstIpGroup.ID)
 	}
 	if records, err := firstIpGroup.Edges.DNSRecordsOrErr(); err == nil && len(records) > 0 {
-		return nil, fmt.Errorf("IP组 %d 有关联的DNS记录，无法删除", firstIpGroup.ID)
-	}
-
-	// 创建事务
-	tx, err := s.db.Tx(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("创建事务失败: %w", err)
+		_ = tx.Rollback()
+		return fmt.Errorf("IP组 %d 有关联的DNS记录，无法删除", firstIpGroup.ID)
 	}
 
 	// 先删除关联的设备
-	err = tx.IpGroup.UpdateOne(firstIpGroup).ClearDevices().Exec(ctx)
-	if err != nil {
-		_ = tx.Rollback()
-		return nil, fmt.Errorf("删除关联设备失败: %w", err)
+	if devices, err := firstIpGroup.Edges.DevicesOrErr(); err == nil && len(devices) > 0 {
+		err = tx.IpGroup.UpdateOne(firstIpGroup).
+			ClearDevices().
+			Exec(ctx)
+		if err != nil {
+			_ = tx.Rollback()
+			return fmt.Errorf("删除关联设备失败: %w", err)
+		}
 	}
 
 	// 删除IP组
 	err = tx.IpGroup.DeleteOne(firstIpGroup).Exec(ctx)
 	if err != nil {
 		_ = tx.Rollback()
-		return nil, fmt.Errorf("删除IP组失败: %w", err)
+		return fmt.Errorf("删除IP组失败: %w", err)
 	}
 
 	// 删除通知订阅
 	err = webhook_sub_helper.DeleteTx(ctx, tx, webhooksubscription.ObjTypeIPGroup, firstIpGroup.ID)
 	if err != nil {
 		_ = tx.Rollback()
-		if s.debug {
-			fmt.Printf("删除通知订阅失败: %s\n", err.Error())
+		return fmt.Errorf("删除通知订阅失败: %w", err)
+	}
+
+	// 提交事务
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("提交事务失败: %w", err)
+	}
+
+	return nil
+}
+
+// DeleteIPGroups 批量删除IP组
+func (s *IPGroupServiceImpl) DeleteIPGroups(ctx context.Context, ids []int64) error {
+
+	// 创建事务
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("创建事务失败: %w", err)
+	}
+
+	// 查询IP组
+	allIpGroup, err := tx.IpGroup.Query().
+		Where(ipgroup.IDIn(ids...)).
+		WithDevices().
+		WithCdnRecords().
+		WithDNSRecords().
+		All(ctx)
+	if err != nil {
+		_ = tx.Rollback()
+		return fmt.Errorf("查询IP组失败: %w", err)
+	}
+	if len(allIpGroup) != len(ids) {
+		tx.Rollback()
+		return fmt.Errorf("查询IP组失败: 数量 %d 与请求数量 %d 不匹配", len(allIpGroup), len(ids))
+	}
+
+	for _, item := range allIpGroup {
+		// 判断是否有关联的CDN记录或DNS记录
+		if records, err := item.Edges.CdnRecordsOrErr(); err == nil && len(records) > 0 {
+			_ = tx.Rollback()
+			return fmt.Errorf("IP组 %d 有关联的CDN记录，无法删除", item.ID)
+		}
+		if records, err := item.Edges.DNSRecordsOrErr(); err == nil && len(records) > 0 {
+			_ = tx.Rollback()
+			return fmt.Errorf("IP组 %d 有关联的DNS记录，无法删除", item.ID)
+		}
+
+		// 先删除关联的设备
+		if devices, err := item.Edges.DevicesOrErr(); err == nil && len(devices) > 0 {
+			err = tx.IpGroup.UpdateOne(item).ClearDevices().Exec(ctx)
+			if err != nil {
+				_ = tx.Rollback()
+				return fmt.Errorf("删除关联设备失败: %w", err)
+			}
+		}
+	}
+
+	// 删除IP组
+	_, err = tx.IpGroup.Delete().
+		Where(ipgroup.IDIn(ids...)).
+		Exec(ctx)
+	if err != nil {
+		_ = tx.Rollback()
+		return fmt.Errorf("删除IP组失败: %w", err)
+	}
+
+	// 删除通知订阅
+	for _, item := range allIpGroup {
+		err = webhook_sub_helper.DeleteTx(ctx, tx, webhooksubscription.ObjTypeIPGroup, item.ID)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("删除通知订阅失败: %w", err)
 		}
 	}
 
 	// 提交事务
 	err = tx.Commit()
 	if err != nil {
-		tx.Rollback()
-		return nil, fmt.Errorf("提交事务失败: %w", err)
+		return fmt.Errorf("提交事务失败: %w", err)
 	}
 
-	return &types.GetIPGroupRequest{
-		ID: firstIpGroup.ID,
-	}, nil
+	return nil
 }
 
 // GetIPGroupDevices 获取IP组的设备列表

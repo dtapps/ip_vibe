@@ -155,7 +155,7 @@ func UpdatePlatformConfig(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id	path		int64												true	"配置序号"
-//	@Success		200	{object}	APIResponse{data=types.GetPlatformConfigRequest}	"成功响应"
+//	@Success		200	{object}	APIResponse{}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}										"参数错误"
 //	@Failure		404	{object}	APIResponse{}										"错误响应"
 //	@Router			/platform-configs/{id} [delete]
@@ -175,10 +175,45 @@ func DeletePlatformConfig(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.DeleteConfig(c, requestParams.ID)
+	err := service.DeleteConfig(c, requestParams.ID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
+}
+
+// 批量删除平台配置
+//
+//	@Description	删除平台配置
+//	@Summary		删除平台配置
+//	@Tags			平台配置
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.DeletePlatformConfigBatchRequest					true	"请求参数"
+//	@Success		200	{object}	APIResponse{}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}										"参数错误"
+//	@Failure		404	{object}	APIResponse{}										"错误响应"
+//	@Router			/platform-configs/batch [delete]
+func DeletePlatformConfigBatch(c *gin.Context) {
+	// 请求参数
+	var requestParams types.DeletePlatformConfigBatchRequest
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewPlatformConfigService(
+		global.GvaEntDb,
+		sys_env.GvaEnv.DEBUG,
+	)
+
+	// 调用
+	err := service.DeleteConfigs(c, requestParams.IDS)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, nil)
 }

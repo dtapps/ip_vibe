@@ -26,7 +26,8 @@ type SSLRecordService interface {
 	UpdateSSLRecord(ctx context.Context, request *types.UpdateSSLRecordRequest) (*types.GetSSLRecordRequest, error)
 	UpdateSSLRecordAutoRenewal(ctx context.Context, request *types.UpdateSSLRecordAutoRenewalRequest) (*types.GetSSLRecordRequest, error)
 	UpdateSSLRecordActive(ctx context.Context, request *types.UpdateSSLRecordActiveRequest) (*types.GetSSLRecordRequest, error)
-	DeleteSSLRecord(ctx context.Context, id int64) (*types.GetSSLRecordRequest, error)
+	DeleteSSLRecord(ctx context.Context, id int64) error
+	DeleteSSLRecords(ctx context.Context, ids []int64) error
 	ApplySSLRecord(ctx context.Context, id int64) (*types.GetSSLRecordRequest, error)
 	GetSSLRecordHistoryDetail(ctx context.Context, id int64, historyID int64) (*types.GetSSLRecordHistoryDetailResponse, error)
 }
@@ -146,9 +147,6 @@ func (s *SSLRecordServiceImpl) CreateSSLRecord(ctx context.Context, request *typ
 		SetRenewalDays(request.RenewalDays).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("创建SSL记录: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("创建SSL记录失败: %w", err)
 	}
 
@@ -184,9 +182,6 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecord(ctx context.Context, request *typ
 		SetRenewalDays(request.RenewalDays).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新SSL记录: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新CDN记录失败: %w", err)
 	}
 
@@ -221,9 +216,6 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecordAutoRenewal(ctx context.Context, r
 		SetIsAutoRenewal(request.IsAutoRenewal).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新SSL记录状态: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新SSL记录状态失败: %w", err)
 	}
 
@@ -250,9 +242,6 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecordActive(ctx context.Context, reques
 		SetIsActive(request.IsActive).
 		Save(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("更新SSL记录状态: %s\n", err.Error())
-		}
 		return nil, fmt.Errorf("更新SSL记录状态失败: %w", err)
 	}
 
@@ -262,22 +251,22 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecordActive(ctx context.Context, reques
 }
 
 // DeleteSSLRecord 删除 CDN 记录
-func (s *SSLRecordServiceImpl) DeleteSSLRecord(ctx context.Context, id int64) (*types.GetSSLRecordRequest, error) {
+func (s *SSLRecordServiceImpl) DeleteSSLRecord(ctx context.Context, id int64) error {
 	// 查询SSL记录
 	firstSSLRecord, err := s.db.SSLRecord.Query().
 		Where(sslrecord.IDEQ(id)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询SSL记录失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询SSL记录失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询SSL记录失败: %w", err)
+		return fmt.Errorf("查询SSL记录失败: %w", err)
 	}
 
 	// 删除SSL记录
 	err = s.db.SSLRecord.DeleteOne(firstSSLRecord).Exec(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("删除SSL记录失败: %w", err)
+		return fmt.Errorf("删除SSL记录失败: %w", err)
 	}
 
 	// 删除通知订阅
@@ -288,9 +277,56 @@ func (s *SSLRecordServiceImpl) DeleteSSLRecord(ctx context.Context, id int64) (*
 		}
 	}
 
-	return &types.GetSSLRecordRequest{
-		ID: firstSSLRecord.ID,
-	}, nil
+	return nil
+}
+
+// DeleteSSLRecords 批量删除 SSL 记录
+func (s *SSLRecordServiceImpl) DeleteSSLRecords(ctx context.Context, ids []int64) error {
+
+	// 创建事务
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("创建事务失败: %w", err)
+	}
+
+	// 查询SSL记录
+	allSSLRecord, err := tx.SSLRecord.Query().
+		Where(sslrecord.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("查询SSL记录失败: %w", err)
+	}
+	if len(allSSLRecord) != len(ids) {
+		tx.Rollback()
+		return fmt.Errorf("查询SSL记录失败: 数量 %d 与请求数量 %d 不匹配", len(allSSLRecord), len(ids))
+	}
+
+	// 删除SSL记录
+	_, err = tx.SSLRecord.Delete().
+		Where(sslrecord.IDIn(ids...)).
+		Exec(ctx)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("删除SSL记录失败: %w", err)
+	}
+
+	// 删除通知订阅
+	for _, sslRecord := range allSSLRecord {
+		err = webhook_sub_helper.DeleteTx(ctx, tx, webhooksubscription.ObjTypeSslRecord, sslRecord.ID)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("删除通知订阅失败: %w", err)
+		}
+	}
+
+	// 提交事务
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("提交事务失败: %w", err)
+	}
+
+	return nil
 }
 
 // ApplySSLRecord 申请新的SSL证书

@@ -54,6 +54,11 @@ type DeleteDeviceRequest struct {
 	GetDeviceRequest
 }
 
+// 批量删除设备 请求结构
+type DeleteDeviceBatchRequest struct {
+	IDS []int64 `json:"ids" binding:"required" jsonschema:"设备的唯一标识符列表"` // 设备序号列表
+}
+
 // 删除设备 获取设备的IP历史记录
 type GetDeviceIpHistoryRequest struct {
 	GetDeviceRequest

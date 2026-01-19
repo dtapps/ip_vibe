@@ -68,6 +68,11 @@ type DeletePortForwardRequest struct {
 	GetPortForwardRequest
 }
 
+// 批量删除端口转发 请求结构
+type DeletePortForwardBatchRequest struct {
+	IDS []int64 `json:"ids" binding:"required" jsonschema:"端口转发记录的唯一标识符列表"` // 端口转发记录序号列表
+}
+
 // 检查端口转发健康状态 请求结构
 type HealthCheckPortForwardRequest struct {
 	GetPortForwardRequest

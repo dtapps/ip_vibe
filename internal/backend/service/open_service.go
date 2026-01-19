@@ -125,9 +125,6 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 			Save(ctx)
 
 		if err != nil {
-			if s.debug {
-				fmt.Printf("创建设备: %s\n", err.Error())
-			}
 			return rollbackAndError("创建设备失败", err)
 		}
 
@@ -159,9 +156,6 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 
 			err = updateDevice.Exec(ctx)
 			if err != nil {
-				if s.debug {
-					fmt.Printf("更新设备IP: %s\n", err.Error())
-				}
 				return rollbackAndError("更新设备IP失败", err)
 			}
 
@@ -180,9 +174,6 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 
 			err = updateDevice.Exec(ctx)
 			if err != nil {
-				if s.debug {
-					fmt.Printf("更新设备心跳时间: %s\n", err.Error())
-				}
 				return rollbackAndError("更新设备心跳时间失败", err)
 			}
 			msg = "设备IP未改变，不添加IP报告"

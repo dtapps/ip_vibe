@@ -136,12 +136,12 @@ func deleteDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.D
 	)
 
 	// 调用
-	response, err := service.DeleteDevice(ctx, params.ID)
+	err := service.DeleteDevice(ctx, params.ID)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 获取设备的IP历史记录
