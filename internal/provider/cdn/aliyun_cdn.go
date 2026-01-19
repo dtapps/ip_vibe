@@ -209,7 +209,7 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 			// 判断业务类型
 			if !utils.EqualDomainIgnoreCase(itemCdnType, p.CustomConfig.CdnType) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("业务类型不匹配，期望 %s，实际 %s", p.CustomConfig.CdnType, itemCdnType)
+				p.InternalData.Tips = fmt.Sprintf("业务类型不匹配，期望 %v，实际 %v", p.CustomConfig.CdnType, itemCdnType)
 				return p.InternalData, nil
 			}
 

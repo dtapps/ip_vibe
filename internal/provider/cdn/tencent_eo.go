@@ -207,7 +207,7 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 			// 判断回源协议
 			if !utils.EqualDomainIgnoreCase(itemOriginProtocol, p.CustomConfig.OriginProtocol) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("回源协议不匹配，期望 %s，实际 %s", p.CustomConfig.OriginProtocol, itemOriginProtocol)
+				p.InternalData.Tips = fmt.Sprintf("回源协议不匹配，期望 %v，实际 %v", p.CustomConfig.OriginProtocol, itemOriginProtocol)
 				return p.InternalData, nil
 			}
 
@@ -228,7 +228,7 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 			// 判断IPv6状态
 			if !utils.EqualDomainIgnoreCase(itemIPv6Status, p.CustomConfig.IPv6Status) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("IPv6状态不匹配，期望 %s，实际 %s", p.CustomConfig.IPv6Status, itemIPv6Status)
+				p.InternalData.Tips = fmt.Sprintf("IPv6状态不匹配，期望 %v，实际 %v", p.CustomConfig.IPv6Status, itemIPv6Status)
 				return p.InternalData, nil
 			}
 

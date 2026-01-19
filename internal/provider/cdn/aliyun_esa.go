@@ -209,14 +209,14 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 			// 判断用于标记DNS记录的业务场景
 			if !utils.EqualDomainIgnoreCase(itemBizName, p.CustomConfig.BizName) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("用于标记DNS记录的业务场景不匹配，期望 %s，实际 %s", p.CustomConfig.BizName, itemBizName)
+				p.InternalData.Tips = fmt.Sprintf("用于标记DNS记录的业务场景不匹配，期望 %v，实际 %v", p.CustomConfig.BizName, itemBizName)
 				return p.InternalData, nil
 			}
 
 			// 判断记录的备注信息
 			if !utils.EqualDomainIgnoreCase(itemComment, p.CustomConfig.Comment) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("记录的备注信息不匹配，期望 %s，实际 %s", p.CustomConfig.Comment, itemComment)
+				p.InternalData.Tips = fmt.Sprintf("记录的备注信息不匹配，期望 %v，实际 %v", p.CustomConfig.Comment, itemComment)
 				return p.InternalData, nil
 			}
 

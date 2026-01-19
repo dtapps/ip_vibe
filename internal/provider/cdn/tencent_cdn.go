@@ -201,14 +201,14 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 			// 判断加速域名业务类型
 			if !utils.EqualDomainIgnoreCase(itemServiceType, p.CustomConfig.ServiceType) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("加速域名业务类型不匹配，期望 %s，实际 %s", p.CustomConfig.ServiceType, itemServiceType)
+				p.InternalData.Tips = fmt.Sprintf("加速域名业务类型不匹配，期望 %v，实际 %v", p.CustomConfig.ServiceType, itemServiceType)
 				return p.InternalData, nil
 			}
 
 			// 判断区域
 			if !utils.EqualDomainIgnoreCase(itemArea, p.CustomConfig.Area) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("区域不匹配，期望 %s，实际 %s", p.CustomConfig.Area, itemArea)
+				p.InternalData.Tips = fmt.Sprintf("区域不匹配，期望 %v，实际 %v", p.CustomConfig.Area, itemArea)
 				return p.InternalData, nil
 			}
 

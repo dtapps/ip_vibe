@@ -186,21 +186,21 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 			// 判断记录值
 			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %s，实际 %s", newOriginValue, itemOriginValue)
+				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %v，实际 %v", newOriginValue, itemOriginValue)
 				return p.InternalData, nil
 			}
 
 			// 判断解析记录对应的线路
 			if !utils.EqualDomainIgnoreCase(itemRecordLine, p.CustomConfig.RecordLine) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("解析记录对应的线路不匹配，期望 %s，实际 %s", p.CustomConfig.RecordLine, itemRecordLine)
+				p.InternalData.Tips = fmt.Sprintf("解析记录对应的线路不匹配，期望 %v，实际 %v", p.CustomConfig.RecordLine, itemRecordLine)
 				return p.InternalData, nil
 			}
 
 			// 判断备注
 			if !utils.EqualDomainIgnoreCase(itemRemark, p.CustomConfig.Remark) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("备注不匹配，期望 %s，实际 %s", p.CustomConfig.Remark, itemRemark)
+				p.InternalData.Tips = fmt.Sprintf("备注不匹配，期望 %v，实际 %v", p.CustomConfig.Remark, itemRemark)
 				return p.InternalData, nil
 			}
 

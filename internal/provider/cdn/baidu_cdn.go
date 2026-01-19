@@ -138,9 +138,21 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
+	// HTTP回源端口，默认80
+	if p.CustomConfig.HttpPort == 0 {
+		p.CustomConfig.HttpPort = 80
+	}
+
+	// HTTPS回源端口，默认443
+	if p.CustomConfig.HttpsPort == 0 {
+		p.CustomConfig.HttpsPort = 443
+	}
+
 	// 源站配置
-	for i, source := range newOriginValues {
-		newOriginValues[i] = fmt.Sprintf("http://[%s]:80", source)
+	originValues := make([]string, 0)
+	for _, source := range newOriginValues {
+		originValues = append(originValues, fmt.Sprintf("http://[%v]:%v", source, p.CustomConfig.HttpPort))
+		originValues = append(originValues, fmt.Sprintf("https://[%v]:%v", source, p.CustomConfig.HttpsPort))
 	}
 
 	// 请求 查询用户名下所有域名
@@ -194,23 +206,23 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 	p.InternalData.CdnDomain = responseInfo.Cname
 
 	// 判断记录值列表
-	if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
+	if !utils.EqualUrlSliceUnordered(itemOriginValues, originValues) {
 		p.InternalData.IsContinue = true
-		p.InternalData.Tips = fmt.Sprintf("记录值列表不匹配，期望 %v，实际 %v", newOriginValues, itemOriginValues)
+		p.InternalData.Tips = fmt.Sprintf("记录值列表不匹配，期望 %v，实际 %v", originValues, itemOriginValues)
 		return p.InternalData, nil
 	}
 
 	// 判断类型
 	if !utils.EqualDomainIgnoreCase(itemForm, p.CustomConfig.Form) {
 		p.InternalData.IsContinue = true
-		p.InternalData.Tips = fmt.Sprintf("类型不匹配，期望 %s，实际 %s", p.CustomConfig.Form, itemForm)
+		p.InternalData.Tips = fmt.Sprintf("类型不匹配，期望 %v，实际 %v", p.CustomConfig.Form, itemForm)
 		return p.InternalData, nil
 	}
 
 	// 判断是否开启了协议跟随回源
 	if !utils.EqualIgnoreCase(itemFollowProtocol, cast.ToBool(p.CustomConfig.FollowProtocol)) {
 		p.InternalData.IsContinue = true
-		p.InternalData.Tips = fmt.Sprintf("是否开启了协议跟随回源不匹配，期望 %s，实际 %s", p.CustomConfig.Form, itemForm)
+		p.InternalData.Tips = fmt.Sprintf("是否开启了协议跟随回源不匹配，期望 %v，实际 %v", p.CustomConfig.FollowProtocol, itemFollowProtocol)
 		return p.InternalData, nil
 	}
 
@@ -224,23 +236,39 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 // https://cloud.baidu.com/doc/CDN/s/Vk121slzt#更新加速域名回源地址-setdomainorigin
 func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
 
+	// 完整域名
+	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+
+	// HTTP回源端口，默认80
+	if p.CustomConfig.HttpPort == 0 {
+		p.CustomConfig.HttpPort = 80
+	}
+
+	// HTTPS回源端口，默认443
+	if p.CustomConfig.HttpsPort == 0 {
+		p.CustomConfig.HttpsPort = 443
+	}
+
 	// 源站配置
 	sources := make([]api.OriginPeer, 0)
 	for _, source := range originValues {
-		src := api.OriginPeer{
-			Peer:   fmt.Sprintf("http://[%s]:80", source),
+		httpSrc := api.OriginPeer{
+			Peer:   fmt.Sprintf("http://[%v]:%v", source, p.CustomConfig.HttpPort),
 			Backup: false,
 		}
-		sources = append(sources, src)
+		httpsSrc := api.OriginPeer{
+			Peer:   fmt.Sprintf("https://[%v]:%v", source, p.CustomConfig.HttpsPort),
+			Backup: false,
+		}
+		sources = append(sources, httpSrc)
+		sources = append(sources, httpsSrc)
 	}
-
-	// 完整域名
-	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
 	if p.InternalData.CdnDomain == "" {
 		// 请求参数
 		request := &api.OriginInit{}
 		request.Origin = sources           // 源站配置
+		request.DefaultHost = fullDomain   // 域名级别回源host
 		request.Form = p.CustomConfig.Form // 类型
 		// 请求 创建加速域名接口
 		_, err := p.Provider.Client.CreateDomain(fullDomain, request)
@@ -250,8 +278,14 @@ func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain 
 	}
 
 	if p.InternalData.CdnDomain != "" {
+
+		defaultHost := p.ItemData.DefaultHost
+		if defaultHost == "" {
+			defaultHost = fullDomain
+		}
+
 		// 请求 更新加速域名回源地址
-		err := p.Provider.Client.SetDomainOrigin(fullDomain, sources, p.ItemData.DefaultHost)
+		err := p.Provider.Client.SetDomainOrigin(fullDomain, sources, defaultHost)
 		if err != nil {
 			return err
 		}
@@ -269,8 +303,10 @@ func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain 
 
 // 百度云 CDN 自定义配置
 type BaiduCDNCustomConfig struct {
-	Form           string `json:"form"`            // 类型
-	FollowProtocol string `json:"follow_protocol"` // 是否开启了协议跟随回源
+	Form           string `json:"form"`                 // 类型
+	FollowProtocol string `json:"follow_protocol"`      // 是否开启了协议跟随回源
+	HttpPort       int    `json:"http_port,omitempty"`  // HTTP 端口
+	HttpsPort      int    `json:"https_port,omitempty"` // HTTPS 端口
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

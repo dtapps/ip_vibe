@@ -310,6 +310,22 @@ const CDN_SCHEMA = {
           ],
         },
       ],
+      [
+        {
+          id: "http_port",
+          label: "HTTP 端口",
+          type: "number",
+          placeholder: "如 80",
+          required: false,
+        },
+        {
+          id: "https_port",
+          label: "HTTPS 端口",
+          type: "number",
+          placeholder: "如 443",
+          required: false,
+        },
+      ],
     ],
   },
   huawei_cdn: {

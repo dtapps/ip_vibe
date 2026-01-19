@@ -215,14 +215,14 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 			// 判断域名业务类型
 			if !utils.EqualDomainIgnoreCase(itemBusinessType, p.CustomConfig.BusinessType) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("域名业务类型不匹配，期望 %s，实际 %s", p.CustomConfig.BusinessType, itemBusinessType)
+				p.InternalData.Tips = fmt.Sprintf("域名业务类型不匹配，期望 %v，实际 %v", p.CustomConfig.BusinessType, itemBusinessType)
 				return p.InternalData, nil
 			}
 
 			// 判断服务区域
 			if !utils.EqualDomainIgnoreCase(itemServiceArea, p.CustomConfig.ServiceArea) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("服务区域不匹配，期望 %s，实际 %s", p.CustomConfig.ServiceArea, itemServiceArea)
+				p.InternalData.Tips = fmt.Sprintf("服务区域不匹配，期望 %v，实际 %v", p.CustomConfig.ServiceArea, itemServiceArea)
 				return p.InternalData, nil
 			}
 
