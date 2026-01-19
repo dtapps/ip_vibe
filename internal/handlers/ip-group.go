@@ -41,6 +41,8 @@ func IPGroup(c *gin.Context) {
 		WhereIf(requestParams.RecordID != "", ipgroup.RecordIDEQ(requestParams.RecordID)).
 		WhereIf(requestParams.Name != "", ipgroup.NameContains(requestParams.Name)).
 		WithDevices().
+		WithCdnRecords().
+		WithDNSRecords().
 		OrderByCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {

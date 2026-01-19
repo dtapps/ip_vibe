@@ -59,9 +59,9 @@ func (s *PortForwardServiceImpl) BuildResponse(ctx context.Context, item *ent.De
 	}
 
 	// 设备
-	if item.Edges.Device != nil {
-		resp.DeviceID = item.Edges.Device.ID
-		resp.DeviceName = item.Edges.Device.Name
+	if device, err := item.Edges.DeviceOrErr(); err == nil {
+		resp.DeviceID = device.ID
+		resp.DeviceName = device.Name
 	}
 
 	return resp, nil

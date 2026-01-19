@@ -73,9 +73,9 @@ func (s *SSLRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.SSLR
 	}
 
 	// 平台配置
-	if item.Edges.Config != nil {
-		resp.ConfigName = item.Edges.Config.Name
-		resp.Platform = item.Edges.Config.Platform.String()
+	if config, err := item.Edges.ConfigOrErr(); err == nil {
+		resp.ConfigName = config.Name
+		resp.Platform = config.Platform.String()
 	}
 
 	// 查询通知订阅
@@ -307,14 +307,20 @@ func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) (*t
 		return nil, fmt.Errorf("查询SSL记录失败: %w", err)
 	}
 
+	// 平台配置
+	config, err := firstSSLRecord.Edges.ConfigOrErr()
+	if err != nil {
+		return nil, fmt.Errorf("平台配置失败: %w", err)
+	}
+
 	// 添加SSL一次性任务
 	err = s.sslUpdateTask.AddDisposableTask(ctx, &task.PendingSSLRecord{
 		Item:     firstSSLRecord,
-		Platform: firstSSLRecord.Edges.Config.Platform,
+		Platform: config.Platform,
 		Params: &ssl_helper.SSLProcessParams{
 			SSLRecordID: cast.ToString(firstSSLRecord.ID),
 
-			ConfigJSON: firstSSLRecord.Edges.Config.ConfigJSON,
+			ConfigJSON: config.ConfigJSON,
 			Domains:    gostring.Split(firstSSLRecord.Domain, ","),
 		},
 	})

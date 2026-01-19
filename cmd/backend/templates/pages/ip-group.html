@@ -37,7 +37,9 @@
       <thead>
         <tr>
           <th class="ui-th">组名</th>
-          <th class="ui-th">设备数</th>
+          <th class="ui-th">设备关联数</th>
+          <th class="ui-th">CDN关联数</th>
+          <th class="ui-th">DNS关联数</th>
           <th style="width: 350px" class="ui-th text-center">操作</th>
         </tr>
       </thead>
@@ -56,6 +58,18 @@
           <td class="ui-td">
             <span class="badge badge-ghost font-mono">
               {{len .Devices}}
+            </span>
+          </td>
+
+          <td class="ui-td">
+            <span class="badge badge-ghost font-mono">
+              {{len .CdnRecords}}
+            </span>
+          </td>
+
+          <td class="ui-td">
+            <span class="badge badge-ghost font-mono">
+              {{len .DnsRecords}}
             </span>
           </td>
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/global"
 )
@@ -152,6 +153,51 @@ func Delete(ctx context.Context, objType webhooksubscription.ObjType, objID int6
 
 	// 批量删除（更高效）
 	_, err = global.GvaEntDb.WebhookSubscription.Delete().
+		Where(webhooksubscription.ObjTypeEQ(objType)).
+		Where(webhooksubscription.ObjIDEQ(objID)).
+		Where(webhooksubscription.WebhookIDIn(existingWebhookIDs...)).
+		Exec(ctx)
+	if err != nil {
+		slog.ErrorContext(ctx, "[删除通知订阅]删除已存在订阅失败",
+			slog.String("objType", objType.String()),
+			slog.Int64("objID", objID),
+			slog.String("error", err.Error()),
+		)
+		return err
+	}
+
+	return nil
+}
+
+// 删除通知订阅（同步 webhook_ids 列表）
+func DeleteTx(ctx context.Context, tx *ent.Tx, objType webhooksubscription.ObjType, objID int64) (err error) {
+	slog.InfoContext(ctx, "[删除通知订阅]准备",
+		slog.String("objType", objType.String()),
+		slog.Int64("objID", objID),
+	)
+
+	// 查询当前已存在的订阅（基于 objType + objID）
+	existingSubs, err := tx.WebhookSubscription.Query().
+		Where(webhooksubscription.ObjTypeEQ(objType)).
+		Where(webhooksubscription.ObjIDEQ(objID)).
+		All(ctx)
+	if err != nil {
+		slog.ErrorContext(ctx, "[删除通知订阅]查询已存在订阅失败",
+			slog.String("objType", objType.String()),
+			slog.Int64("objID", objID),
+			slog.String("error", err.Error()),
+		)
+		return err
+	}
+
+	// 构建已存在的 webhook_ids 集合
+	var existingWebhookIDs []int64
+	for _, sub := range existingSubs {
+		existingWebhookIDs = append(existingWebhookIDs, sub.WebhookID)
+	}
+
+	// 批量删除（更高效）
+	_, err = tx.WebhookSubscription.Delete().
 		Where(webhooksubscription.ObjTypeEQ(objType)).
 		Where(webhooksubscription.ObjIDEQ(objID)).
 		Where(webhooksubscription.WebhookIDIn(existingWebhookIDs...)).

@@ -47,8 +47,24 @@ func (s *IPGroupServiceImpl) BuildResponse(ctx context.Context, item *ent.IpGrou
 	}
 
 	// 设备列表
-	for _, device := range item.Edges.Devices {
-		resp.Devices = append(resp.Devices, device.ID)
+	if devices, err := item.Edges.DevicesOrErr(); err == nil {
+		for _, device := range devices {
+			resp.Devices = append(resp.Devices, device.ID)
+		}
+	}
+
+	// CDN记录列表
+	if records, err := item.Edges.CdnRecordsOrErr(); err == nil {
+		for _, record := range records {
+			resp.CdnRecords = append(resp.CdnRecords, record.ID)
+		}
+	}
+
+	// DNS记录列表
+	if records, err := item.Edges.DNSRecordsOrErr(); err == nil {
+		for _, record := range records {
+			resp.DnsRecords = append(resp.DnsRecords, record.ID)
+		}
 	}
 
 	// 查询通知订阅
@@ -70,6 +86,8 @@ func (s *IPGroupServiceImpl) GetIPGroups(ctx context.Context) ([]*types.GetIPGro
 	allIpGroup, err := s.db.IpGroup.Query().
 		OrderByCreatedAtDesc().
 		WithDevices().
+		WithCdnRecords().
+		WithDNSRecords().
 		All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("查询IP组失败: %w", err)
@@ -91,6 +109,8 @@ func (s *IPGroupServiceImpl) GetIPGroup(ctx context.Context, id int64) (*types.G
 	firstIpGroup, err := s.db.IpGroup.Query().
 		Where(ipgroup.IDEQ(id)).
 		WithDevices().
+		WithCdnRecords().
+		WithDNSRecords().
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
@@ -178,6 +198,9 @@ func (s *IPGroupServiceImpl) DeleteIPGroup(ctx context.Context, id int64) (*type
 	// 查询IP组
 	firstIpGroup, err := s.db.IpGroup.Query().
 		Where(ipgroup.IDEQ(id)).
+		WithDevices().
+		WithCdnRecords().
+		WithDNSRecords().
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
@@ -185,21 +208,49 @@ func (s *IPGroupServiceImpl) DeleteIPGroup(ctx context.Context, id int64) (*type
 		}
 		return nil, fmt.Errorf("查询IP组失败: %w", err)
 	}
-	// 删除IP组
-	err = s.db.IpGroup.DeleteOne(firstIpGroup).Exec(ctx)
+
+	// 判断是否有关联的CDN记录或DNS记录
+	if records, err := firstIpGroup.Edges.CdnRecordsOrErr(); err == nil && len(records) > 0 {
+		return nil, fmt.Errorf("IP组 %d 有关联的CDN记录，无法删除", firstIpGroup.ID)
+	}
+	if records, err := firstIpGroup.Edges.DNSRecordsOrErr(); err == nil && len(records) > 0 {
+		return nil, fmt.Errorf("IP组 %d 有关联的DNS记录，无法删除", firstIpGroup.ID)
+	}
+
+	// 创建事务
+	tx, err := s.db.Tx(ctx)
 	if err != nil {
-		if s.debug {
-			fmt.Printf("删除IP组: %s\n", err.Error())
-		}
+		return nil, fmt.Errorf("创建事务失败: %w", err)
+	}
+
+	// 先删除关联的设备
+	err = tx.IpGroup.UpdateOne(firstIpGroup).ClearDevices().Exec(ctx)
+	if err != nil {
+		_ = tx.Rollback()
+		return nil, fmt.Errorf("删除关联设备失败: %w", err)
+	}
+
+	// 删除IP组
+	err = tx.IpGroup.DeleteOne(firstIpGroup).Exec(ctx)
+	if err != nil {
+		_ = tx.Rollback()
 		return nil, fmt.Errorf("删除IP组失败: %w", err)
 	}
 
 	// 删除通知订阅
-	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeIPGroup, firstIpGroup.ID)
+	err = webhook_sub_helper.DeleteTx(ctx, tx, webhooksubscription.ObjTypeIPGroup, firstIpGroup.ID)
 	if err != nil {
+		_ = tx.Rollback()
 		if s.debug {
 			fmt.Printf("删除通知订阅失败: %s\n", err.Error())
 		}
+	}
+
+	// 提交事务
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("提交事务失败: %w", err)
 	}
 
 	return &types.GetIPGroupRequest{
@@ -221,20 +272,22 @@ func (s *IPGroupServiceImpl) GetIPGroupDevices(ctx context.Context, id int64) ([
 		return nil, fmt.Errorf("查询IP组失败: %w", err)
 	}
 	// 设备列表
-	devices := make([]*types.GetDeviceResponse, 0)
-	for _, item := range firstIpGroup.Edges.Devices {
-		devices = append(devices, &types.GetDeviceResponse{
-			ID:              item.ID,
-			Code:            item.Code,
-			Name:            item.Name,
-			Description:     item.Description,
-			IPV4:            item.IPV4,
-			IPV6:            item.IPV6,
-			LastReportedAt:  item.LastReportedAt,
-			LastHeartbeatAt: item.LastHeartbeatAt,
-		})
+	ipGroupDevices := make([]*types.GetDeviceResponse, 0)
+	if devices, err := firstIpGroup.Edges.DevicesOrErr(); err == nil {
+		for _, item := range devices {
+			ipGroupDevices = append(ipGroupDevices, &types.GetDeviceResponse{
+				ID:              item.ID,
+				Code:            item.Code,
+				Name:            item.Name,
+				Description:     item.Description,
+				IPV4:            item.IPV4,
+				IPV6:            item.IPV6,
+				LastReportedAt:  item.LastReportedAt,
+				LastHeartbeatAt: item.LastHeartbeatAt,
+			})
+		}
 	}
-	return devices, nil
+	return ipGroupDevices, nil
 }
 
 // HealthcheckIPGroup 检查IP组健康状态

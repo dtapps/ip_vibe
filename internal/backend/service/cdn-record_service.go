@@ -56,12 +56,12 @@ func (s *CDNRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.CDNR
 	}
 
 	// 平台配置
-	if item.Edges.Config != nil {
-		resp.ConfigName = item.Edges.Config.Name
-		resp.Platform = item.Edges.Config.Platform.String()
+	if config, err := item.Edges.ConfigOrErr(); err == nil {
+		resp.ConfigName = config.Name
+		resp.Platform = config.Platform.String()
 		// 从平台配置中获取 ConfigJSON 里的 Domain
-		if item.Edges.Config.ConfigJSON != nil {
-			configJSON, err := schematype.ParsePCJODomainName(item.Edges.Config.ConfigJSON)
+		if len(config.ConfigJSON) > 0 {
+			configJSON, err := schematype.ParsePCJODomainName(config.ConfigJSON)
 			if err == nil {
 				resp.DomainName = configJSON.DomainName
 			}
