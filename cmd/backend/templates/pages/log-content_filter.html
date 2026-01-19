@@ -8,12 +8,6 @@
     <form method="GET" action="{{ $action }}" class="flex items-center gap-6 flex-1">
 
         <div class="flex items-center gap-3">
-            <span class="ui-filter-label">序号</span>
-            <input type="number" name="id" value="{{ if $filter.ID }}{{ $filter.ID }}{{ end }}" placeholder="ID"
-                class="ui-filter-input-compact w-20 font-mono text-center">
-        </div>
-
-        <div class="flex items-center gap-3">
             <span class="ui-filter-label">主机名</span>
             <input type="text" name="hostname" value="{{ if $filter.Hostname }}{{ $filter.Hostname }}{{ end }}"
                 placeholder="主机名" class="ui-filter-input-compact w-40 font-mono text-center">

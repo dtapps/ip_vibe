@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"vibe_ip/internal/helper/aliyun_helper"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
@@ -64,8 +65,9 @@ func (p *AliyunCDNConfig) ParseCustomConfig(config_json json.RawMessage) (err er
 type AliyunCDNProvider struct {
 	provider.UnimplementedCDNProvider // 嵌入未实现的
 
-	cfg  *AliyunCDNConfig
-	opts *cdnOptions
+	cfg    *AliyunCDNConfig
+	opts   *cdnOptions
+	logger *slog.Logger
 
 	CustomConfig *AliyunCDNCustomConfig
 	Provider     struct {
@@ -82,12 +84,12 @@ type AliyunCDNProvider struct {
 }
 
 // NewAliyunCDNProvider 创建阿里云 CDN 提供程序
-func NewAliyunCDNProvider(ctx context.Context, cfg *AliyunCDNConfig, opts ...CdnOption) (provider.CDNProvider, error) {
-	return NewAliyunCDNProviderRaw(ctx, cfg, opts...)
+func NewAliyunCDNProvider(ctx context.Context, logger *slog.Logger, cfg *AliyunCDNConfig, opts ...CdnOption) (provider.CDNProvider, error) {
+	return NewAliyunCDNProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewAliyunCDNProviderRaw 创建阿里云 CDN 提供程序
-func NewAliyunCDNProviderRaw(ctx context.Context, cfg *AliyunCDNConfig, opts ...CdnOption) (*AliyunCDNProvider, error) {
+func NewAliyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *AliyunCDNConfig, opts ...CdnOption) (*AliyunCDNProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -102,6 +104,7 @@ func NewAliyunCDNProviderRaw(ctx context.Context, cfg *AliyunCDNConfig, opts ...
 	p := &AliyunCDNProvider{
 		cfg:          cfg,
 		opts:         &cdnOptions{},
+		logger:       logger,
 		CustomConfig: &AliyunCDNCustomConfig{},
 		InternalData: &provider.CDNProviderInternalData{},
 	}
@@ -145,6 +148,18 @@ func NewAliyunCDNProviderRaw(ctx context.Context, cfg *AliyunCDNConfig, opts ...
 // Name 返回 CDN 提供程序的名称
 func (p *AliyunCDNProvider) Name() string {
 	return "阿里云 CDN"
+}
+
+// printData 打印数据
+func (p *AliyunCDNProvider) printData(ctx context.Context) {
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
+	)
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
+	)
 }
 
 // Check 检查子域名是否存在
@@ -227,6 +242,9 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 // https://next.api.aliyun.com/api/Cdn/2018-05-10/AddCdnDomain
 // https://next.api.aliyun.com/api/Cdn/2018-05-10/ModifyCdnDomain
 func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
+
+	// 打印数据
+	p.printData(ctx)
 
 	type SourceItem struct {
 		Content  string `json:"content"`  // 回源地址

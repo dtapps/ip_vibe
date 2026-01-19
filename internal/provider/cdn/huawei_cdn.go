@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
@@ -15,6 +16,7 @@ import (
 	cdn "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/model"
 	regionCdn "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/region"
+	"go.dtapp.net/library/utils/gojson"
 )
 
 // HuaweiCDNConfig 华为云 CDN 配置
@@ -64,8 +66,9 @@ func (p *HuaweiCDNConfig) ParseCustomConfig(config_json json.RawMessage) (err er
 type HuaweiCDNProvider struct {
 	provider.UnimplementedCDNProvider // 嵌入未实现的
 
-	cfg  *HuaweiCDNConfig
-	opts *cdnOptions
+	cfg    *HuaweiCDNConfig
+	opts   *cdnOptions
+	logger *slog.Logger
 
 	CustomConfig *HuaweiCDNCustomConfig
 	Provider     struct {
@@ -84,12 +87,12 @@ type HuaweiCDNProvider struct {
 }
 
 // NewHuaweiCDNProvider 创建华为云 CDN 提供程序
-func NewHuaweiCDNProvider(ctx context.Context, cfg *HuaweiCDNConfig, opts ...CdnOption) (provider.CDNProvider, error) {
-	return NewHuaweiCDNProviderRaw(ctx, cfg, opts...)
+func NewHuaweiCDNProvider(ctx context.Context, logger *slog.Logger, cfg *HuaweiCDNConfig, opts ...CdnOption) (provider.CDNProvider, error) {
+	return NewHuaweiCDNProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewHuaweiCDNProviderRaw 创建华为云 CDN 提供程序
-func NewHuaweiCDNProviderRaw(ctx context.Context, cfg *HuaweiCDNConfig, opts ...CdnOption) (*HuaweiCDNProvider, error) {
+func NewHuaweiCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *HuaweiCDNConfig, opts ...CdnOption) (*HuaweiCDNProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -104,6 +107,7 @@ func NewHuaweiCDNProviderRaw(ctx context.Context, cfg *HuaweiCDNConfig, opts ...
 	p := &HuaweiCDNProvider{
 		cfg:          cfg,
 		opts:         &cdnOptions{},
+		logger:       logger,
 		CustomConfig: &HuaweiCDNCustomConfig{},
 		InternalData: &provider.CDNProviderInternalData{},
 	}
@@ -152,6 +156,18 @@ func NewHuaweiCDNProviderRaw(ctx context.Context, cfg *HuaweiCDNConfig, opts ...
 // Name 返回 CDN 提供程序的名称
 func (p *HuaweiCDNProvider) Name() string {
 	return "华为云 CDN"
+}
+
+// printData 打印数据
+func (p *HuaweiCDNProvider) printData(ctx context.Context) {
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
+	)
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
+	)
 }
 
 // Check 检查子域名是否存在
@@ -240,6 +256,9 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 // https://console.huaweicloud.com/apiexplorer/#/openapi/CDN/debug?version=v2&api=CreateDomain
 // https://console.huaweicloud.com/apiexplorer/#/openapi/CDN/sdk?version=v2&api=UpdateDomainFullConfig
 func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
+
+	// 打印数据
+	p.printData(ctx)
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

@@ -563,7 +563,7 @@ func (s *IPUpdateTask) CdnUpdateNew(ctx context.Context, logger *slog.Logger, pa
 		if err != nil {
 			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
-		cdnProvider, err = cdn.NewTencentCDNProvider(ctx, cdnProviderCfg, cdnProviderOpts...)
+		cdnProvider, err = cdn.NewTencentCDNProvider(ctx, logger, cdnProviderCfg, cdnProviderOpts...)
 		if err != nil {
 			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
@@ -573,7 +573,7 @@ func (s *IPUpdateTask) CdnUpdateNew(ctx context.Context, logger *slog.Logger, pa
 		if err != nil {
 			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
-		cdnProvider, err = cdn.NewTencentEOProvider(ctx, cdnProviderCfg, cdnProviderOpts...)
+		cdnProvider, err = cdn.NewTencentEOProvider(ctx, logger, cdnProviderCfg, cdnProviderOpts...)
 		if err != nil {
 			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
@@ -583,7 +583,7 @@ func (s *IPUpdateTask) CdnUpdateNew(ctx context.Context, logger *slog.Logger, pa
 		if err != nil {
 			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
-		cdnProvider, err = cdn.NewAliyunCDNProvider(ctx, cdnProviderCfg, cdnProviderOpts...)
+		cdnProvider, err = cdn.NewAliyunCDNProvider(ctx, logger, cdnProviderCfg, cdnProviderOpts...)
 		if err != nil {
 			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
@@ -593,7 +593,7 @@ func (s *IPUpdateTask) CdnUpdateNew(ctx context.Context, logger *slog.Logger, pa
 		if err != nil {
 			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
-		cdnProvider, err = cdn.NewAliyunESAProvider(ctx, cdnProviderCfg, cdnProviderOpts...)
+		cdnProvider, err = cdn.NewAliyunESAProvider(ctx, logger, cdnProviderCfg, cdnProviderOpts...)
 		if err != nil {
 			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
@@ -603,7 +603,7 @@ func (s *IPUpdateTask) CdnUpdateNew(ctx context.Context, logger *slog.Logger, pa
 		if err != nil {
 			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
-		cdnProvider, err = cdn.NewBaiduCDNProvider(ctx, cdnProviderCfg, cdnProviderOpts...)
+		cdnProvider, err = cdn.NewBaiduCDNProvider(ctx, logger, cdnProviderCfg, cdnProviderOpts...)
 		if err != nil {
 			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
@@ -613,7 +613,7 @@ func (s *IPUpdateTask) CdnUpdateNew(ctx context.Context, logger *slog.Logger, pa
 		if err != nil {
 			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
-		cdnProvider, err = cdn.NewHuaweiCDNProvider(ctx, cdnProviderCfg, cdnProviderOpts...)
+		cdnProvider, err = cdn.NewHuaweiCDNProvider(ctx, logger, cdnProviderCfg, cdnProviderOpts...)
 		if err != nil {
 			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
@@ -690,7 +690,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 		if err != nil {
 			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
-		dnsProvider, err = dns.NewCloudfareDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
+		dnsProvider, err = dns.NewCloudfareDNSProvider(ctx, logger, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
 			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
@@ -700,7 +700,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 		if err != nil {
 			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
-		dnsProvider, err = dns.NewTencentDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
+		dnsProvider, err = dns.NewTencentDNSProvider(ctx, logger, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
 			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
@@ -710,7 +710,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 		if err != nil {
 			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
-		dnsProvider, err = dns.NewAliyunDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
+		dnsProvider, err = dns.NewAliyunDNSProvider(ctx, logger, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
 			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
@@ -720,7 +720,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 		if err != nil {
 			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
-		dnsProvider, err = dns.NewBaiduDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
+		dnsProvider, err = dns.NewBaiduDNSProvider(ctx, logger, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
 			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
@@ -730,7 +730,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 		if err != nil {
 			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
-		dnsProvider, err = dns.NewHuaweiDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
+		dnsProvider, err = dns.NewHuaweiDNSProvider(ctx, logger, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
 			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
@@ -740,7 +740,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 		if err != nil {
 			return fmt.Errorf("解析自定义配置失败: %w", err)
 		}
-		dnsProvider, err = dns.NewVolcengineDNSProvider(ctx, dnsProviderCfg, dnsProviderOpts...)
+		dnsProvider, err = dns.NewVolcengineDNSProvider(ctx, logger, dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
 			return fmt.Errorf("初始提供程序失败: %w", err)
 		}

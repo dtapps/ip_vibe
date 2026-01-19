@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"strings"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
@@ -16,6 +17,7 @@ import (
 	dns "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/dns/v2"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/dns/v2/model"
 	regionDns "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/dns/v2/region"
+	"go.dtapp.net/library/utils/gojson"
 )
 
 // HuaweiDNSConfig 华为云 DNS 配置
@@ -69,8 +71,9 @@ func (p *HuaweiDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err er
 type HuaweiDNSProvider struct {
 	provider.UnimplementedDNSProvider // 嵌入未实现的
 
-	cfg  *HuaweiDNSConfig
-	opts *dnsOptions
+	cfg    *HuaweiDNSConfig
+	opts   *dnsOptions
+	logger *slog.Logger
 
 	CustomConfig *HuaweiDNSCustomConfig
 	Provider     struct {
@@ -89,12 +92,12 @@ type HuaweiDNSProvider struct {
 }
 
 // NewHuaweiDNSProvider 创建华为云 DNS 提供程序
-func NewHuaweiDNSProvider(ctx context.Context, cfg *HuaweiDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
-	return NewHuaweiDNSProviderRaw(ctx, cfg, opts...)
+func NewHuaweiDNSProvider(ctx context.Context, logger *slog.Logger, cfg *HuaweiDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+	return NewHuaweiDNSProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewHuaweiDNSProviderRaw 创建华为云 DNS 提供程序
-func NewHuaweiDNSProviderRaw(ctx context.Context, cfg *HuaweiDNSConfig, opts ...DnsOption) (*HuaweiDNSProvider, error) {
+func NewHuaweiDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *HuaweiDNSConfig, opts ...DnsOption) (*HuaweiDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -109,6 +112,7 @@ func NewHuaweiDNSProviderRaw(ctx context.Context, cfg *HuaweiDNSConfig, opts ...
 	p := &HuaweiDNSProvider{
 		cfg:          cfg,
 		opts:         &dnsOptions{},
+		logger:       logger,
 		CustomConfig: &HuaweiDNSCustomConfig{},
 		InternalData: &provider.DNSProviderInternalData{},
 	}
@@ -157,6 +161,18 @@ func NewHuaweiDNSProviderRaw(ctx context.Context, cfg *HuaweiDNSConfig, opts ...
 // Name 返回 DNS 提供程序的名称
 func (p *HuaweiDNSProvider) Name() string {
 	return "华为云 DNS"
+}
+
+// printData 打印数据
+func (p *HuaweiDNSProvider) printData(ctx context.Context) {
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
+	)
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
+	)
 }
 
 // Check 检查子域名是否存在
@@ -240,6 +256,9 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 // https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/debug?api=CreateRecordSetWithLine
 // https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/sdk?api=UpdateRecordSets
 func (p *HuaweiDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+
+	// 打印数据
+	p.printData(ctx)
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

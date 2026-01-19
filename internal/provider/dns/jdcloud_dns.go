@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
@@ -12,6 +13,7 @@ import (
 	"github.com/jdcloud-api/jdcloud-sdk-go/services/domainservice/client"
 	"github.com/jdcloud-api/jdcloud-sdk-go/services/domainservice/models"
 	"github.com/spf13/cast"
+	"go.dtapp.net/library/utils/gojson"
 )
 
 // JdcloudDNSConfig 京东云 DNS 配置
@@ -65,8 +67,9 @@ func (p *JdcloudDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err e
 type JdcloudDNSProvider struct {
 	provider.UnimplementedDNSProvider // 嵌入未实现的
 
-	cfg  *JdcloudDNSConfig
-	opts *dnsOptions
+	cfg    *JdcloudDNSConfig
+	opts   *dnsOptions
+	logger *slog.Logger
 
 	CustomConfig *JdcloudDNSCustomConfig
 	Provider     struct {
@@ -82,12 +85,12 @@ type JdcloudDNSProvider struct {
 }
 
 // NewJdcloudDNSProvider 创建京东云 DNS 提供程序
-func NewJdcloudDNSProvider(ctx context.Context, cfg *JdcloudDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
-	return NewJdcloudDNSProviderRaw(ctx, cfg, opts...)
+func NewJdcloudDNSProvider(ctx context.Context, logger *slog.Logger, cfg *JdcloudDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+	return NewJdcloudDNSProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewJdcloudDNSProviderRaw 创建京东云 DNS 提供程序
-func NewJdcloudDNSProviderRaw(ctx context.Context, cfg *JdcloudDNSConfig, opts ...DnsOption) (*JdcloudDNSProvider, error) {
+func NewJdcloudDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *JdcloudDNSConfig, opts ...DnsOption) (*JdcloudDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -101,6 +104,7 @@ func NewJdcloudDNSProviderRaw(ctx context.Context, cfg *JdcloudDNSConfig, opts .
 	p := &JdcloudDNSProvider{
 		cfg:          cfg,
 		opts:         &dnsOptions{},
+		logger:       logger,
 		CustomConfig: &JdcloudDNSCustomConfig{},
 		InternalData: &provider.DNSProviderInternalData{},
 	}
@@ -129,6 +133,18 @@ func NewJdcloudDNSProviderRaw(ctx context.Context, cfg *JdcloudDNSConfig, opts .
 // Name 返回 DNS 提供程序的名称
 func (p *JdcloudDNSProvider) Name() string {
 	return "京东云 DNS"
+}
+
+// printData 打印数据
+func (p *JdcloudDNSProvider) printData(ctx context.Context) {
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
+	)
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
+	)
 }
 
 // Check 检查子域名是否存在
@@ -201,6 +217,9 @@ func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain
 // https://docs.jdcloud.com/cn/jd-cloud-dns/api/createresourcerecord
 // https://docs.jdcloud.com/cn/jd-cloud-dns/api/modifyresourcerecord
 func (p *JdcloudDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+
+	// 打印数据
+	p.printData(ctx)
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

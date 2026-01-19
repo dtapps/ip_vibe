@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
@@ -12,6 +13,7 @@ import (
 	"github.com/cloudflare/cloudflare-go/v6/dns"
 	"github.com/cloudflare/cloudflare-go/v6/option"
 	"github.com/spf13/cast"
+	"go.dtapp.net/library/utils/gojson"
 )
 
 // CloudfareDNSConfig Cloudfare DNS 配置
@@ -55,8 +57,9 @@ func (p *CloudfareDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err
 type CloudfareDNSProvider struct {
 	provider.UnimplementedDNSProvider // 嵌入未实现的
 
-	cfg  *CloudfareDNSConfig
-	opts *dnsOptions
+	cfg    *CloudfareDNSConfig
+	opts   *dnsOptions
+	logger *slog.Logger
 
 	CustomConfig *CloudfareDNSCustomConfig
 	Provider     struct {
@@ -72,12 +75,12 @@ type CloudfareDNSProvider struct {
 }
 
 // NewCloudfareDNSProvider 创建Cloudfare DNS 提供程序
-func NewCloudfareDNSProvider(ctx context.Context, cfg *CloudfareDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
-	return NewCloudfareDNSProviderRaw(ctx, cfg, opts...)
+func NewCloudfareDNSProvider(ctx context.Context, logger *slog.Logger, cfg *CloudfareDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+	return NewCloudfareDNSProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewCloudfareDNSProviderRaw 创建Cloudfare DNS 提供程序
-func NewCloudfareDNSProviderRaw(ctx context.Context, cfg *CloudfareDNSConfig, opts ...DnsOption) (*CloudfareDNSProvider, error) {
+func NewCloudfareDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *CloudfareDNSConfig, opts ...DnsOption) (*CloudfareDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -91,6 +94,7 @@ func NewCloudfareDNSProviderRaw(ctx context.Context, cfg *CloudfareDNSConfig, op
 	p := &CloudfareDNSProvider{
 		cfg:          cfg,
 		opts:         &dnsOptions{},
+		logger:       logger,
 		CustomConfig: &CloudfareDNSCustomConfig{},
 		InternalData: &provider.DNSProviderInternalData{},
 	}
@@ -119,6 +123,18 @@ func NewCloudfareDNSProviderRaw(ctx context.Context, cfg *CloudfareDNSConfig, op
 // Name 返回 DNS 提供程序的名称
 func (p *CloudfareDNSProvider) Name() string {
 	return "Cloudflare DNS"
+}
+
+// printData 打印数据
+func (p *CloudfareDNSProvider) printData(ctx context.Context) {
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
+	)
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
+	)
 }
 
 // Check 检查子域名是否存在
@@ -201,6 +217,9 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/create/
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/edit/
 func (p *CloudfareDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+
+	// 打印数据
+	p.printData(ctx)
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

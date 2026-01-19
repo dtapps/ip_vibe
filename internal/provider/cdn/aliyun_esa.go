@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"strings"
 	"vibe_ip/internal/helper/aliyun_helper"
 	"vibe_ip/internal/provider"
@@ -15,6 +16,7 @@ import (
 	"github.com/alibabacloud-go/tea/tea"
 	credential "github.com/aliyun/credentials-go/credentials"
 	"github.com/spf13/cast"
+	"go.dtapp.net/library/utils/gojson"
 )
 
 // AliyunESAConfig 阿里云 ESA 配置
@@ -68,8 +70,9 @@ func (p *AliyunESAConfig) ParseCustomConfig(config_json json.RawMessage) (err er
 type AliyunESAProvider struct {
 	provider.UnimplementedCDNProvider // 嵌入未实现的
 
-	cfg  *AliyunESAConfig
-	opts *cdnOptions
+	cfg    *AliyunESAConfig
+	opts   *cdnOptions
+	logger *slog.Logger
 
 	CustomConfig *AliyunESACustomConfig
 	Provider     struct {
@@ -86,12 +89,12 @@ type AliyunESAProvider struct {
 }
 
 // NewAliyunESAProvider 创建阿里云 ESA 提供程序
-func NewAliyunESAProvider(ctx context.Context, cfg *AliyunESAConfig, opts ...CdnOption) (provider.CDNProvider, error) {
-	return NewAliyunESAProviderRaw(ctx, cfg, opts...)
+func NewAliyunESAProvider(ctx context.Context, logger *slog.Logger, cfg *AliyunESAConfig, opts ...CdnOption) (provider.CDNProvider, error) {
+	return NewAliyunESAProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewAliyunESAProviderRaw 创建阿里云 ESA 提供程序
-func NewAliyunESAProviderRaw(ctx context.Context, cfg *AliyunESAConfig, opts ...CdnOption) (*AliyunESAProvider, error) {
+func NewAliyunESAProviderRaw(ctx context.Context, logger *slog.Logger, cfg *AliyunESAConfig, opts ...CdnOption) (*AliyunESAProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -106,6 +109,7 @@ func NewAliyunESAProviderRaw(ctx context.Context, cfg *AliyunESAConfig, opts ...
 	p := &AliyunESAProvider{
 		cfg:          cfg,
 		opts:         &cdnOptions{},
+		logger:       logger,
 		CustomConfig: &AliyunESACustomConfig{},
 		InternalData: &provider.CDNProviderInternalData{},
 	}
@@ -149,6 +153,18 @@ func NewAliyunESAProviderRaw(ctx context.Context, cfg *AliyunESAConfig, opts ...
 // Name 返回 CDN 提供程序的名称
 func (p *AliyunESAProvider) Name() string {
 	return "阿里云 ESA"
+}
+
+// printData 打印数据
+func (p *AliyunESAProvider) printData(ctx context.Context) {
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
+	)
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
+	)
 }
 
 // Check 检查子域名是否存在
@@ -234,6 +250,9 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 // https://next.api.aliyun.com/api/ESA/2024-09-10/CreateRecord
 // https://next.api.aliyun.com/api/ESA/2024-09-10/UpdateRecord
 func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
+
+	// 打印数据
+	p.printData(ctx)
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

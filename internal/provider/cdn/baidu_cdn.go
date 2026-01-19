@@ -4,12 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
 	"github.com/baidubce/bce-sdk-go/services/cdn"
 	"github.com/baidubce/bce-sdk-go/services/cdn/api"
+	"go.dtapp.net/library/utils/gojson"
 )
 
 // BaiduCDNConfig 百度云 CDN 配置
@@ -59,8 +61,9 @@ func (p *BaiduCDNConfig) ParseCustomConfig(config_json json.RawMessage) (err err
 type BaiduCDNProvider struct {
 	provider.UnimplementedCDNProvider // 嵌入未实现的
 
-	cfg  *BaiduCDNConfig
-	opts *cdnOptions
+	cfg    *BaiduCDNConfig
+	opts   *cdnOptions
+	logger *slog.Logger
 
 	CustomConfig *BaiduCDNCustomConfig
 	Provider     struct {
@@ -75,12 +78,12 @@ type BaiduCDNProvider struct {
 }
 
 // NewBaiduCDNProvider 创建百度云 CDN 提供程序
-func NewBaiduCDNProvider(ctx context.Context, cfg *BaiduCDNConfig, opts ...CdnOption) (provider.CDNProvider, error) {
-	return NewBaiduCDNProviderRaw(ctx, cfg, opts...)
+func NewBaiduCDNProvider(ctx context.Context, logger *slog.Logger, cfg *BaiduCDNConfig, opts ...CdnOption) (provider.CDNProvider, error) {
+	return NewBaiduCDNProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewBaiduCDNProviderRaw 创建百度云 CDN 提供程序
-func NewBaiduCDNProviderRaw(ctx context.Context, cfg *BaiduCDNConfig, opts ...CdnOption) (*BaiduCDNProvider, error) {
+func NewBaiduCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *BaiduCDNConfig, opts ...CdnOption) (*BaiduCDNProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -95,6 +98,7 @@ func NewBaiduCDNProviderRaw(ctx context.Context, cfg *BaiduCDNConfig, opts ...Cd
 	p := &BaiduCDNProvider{
 		cfg:          cfg,
 		opts:         &cdnOptions{},
+		logger:       logger,
 		CustomConfig: &BaiduCDNCustomConfig{},
 		InternalData: &provider.CDNProviderInternalData{},
 	}
@@ -127,6 +131,18 @@ func NewBaiduCDNProviderRaw(ctx context.Context, cfg *BaiduCDNConfig, opts ...Cd
 // Name 返回 CDN 提供程序的名称
 func (p *BaiduCDNProvider) Name() string {
 	return "百度云 CDN"
+}
+
+// printData 打印数据
+func (p *BaiduCDNProvider) printData(ctx context.Context) {
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
+	)
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
+	)
 }
 
 // Check 检查子域名是否存在
@@ -195,8 +211,11 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 	}
 	// 查找类型
 	itemForm := responseInfo.Form
-	// 查找是否开启了协议跟随回源
-	itemFollowProtocol := responseInfo.FollowProtocol
+	// 请求 查询协议跟随回源
+	itemFollowProtocol, err := p.Provider.Client.GetOriginProtocol(fullDomain)
+	if err != nil {
+		return nil, fmt.Errorf("请求 GetOriginProtocol 失败 %w", err)
+	}
 
 	// 域名ID
 	// p.InternalData.RecordID = responseInfo.DomainID
@@ -219,18 +238,10 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 	}
 
 	// 判断是否开启了协议跟随回源
-	if itemFollowProtocol {
-		if !utils.EqualIgnoreCase("*", p.CustomConfig.FollowProtocol) {
-			p.InternalData.IsContinue = true
-			p.InternalData.Tips = fmt.Sprintf("是否开启了协议跟随回源不匹配，期望 %v，实际 %v", p.CustomConfig.FollowProtocol, itemFollowProtocol)
-			return p.InternalData, nil
-		}
-	} else {
-		if utils.EqualIgnoreCase("*", p.CustomConfig.FollowProtocol) {
-			p.InternalData.IsContinue = true
-			p.InternalData.Tips = fmt.Sprintf("是否开启了协议跟随回源不匹配，期望 %v，实际 %v", p.CustomConfig.FollowProtocol, itemFollowProtocol)
-			return p.InternalData, nil
-		}
+	if !utils.EqualIgnoreCase(itemFollowProtocol, p.CustomConfig.FollowProtocol) {
+		p.InternalData.IsContinue = true
+		p.InternalData.Tips = fmt.Sprintf("是否开启了协议跟随回源不匹配，期望 %v，实际 %v", p.CustomConfig.FollowProtocol, itemFollowProtocol)
+		return p.InternalData, nil
 	}
 
 	p.InternalData.IsContinue = false
@@ -243,6 +254,9 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 // https://cloud.baidu.com/doc/CDN/s/Vk121slzt#更新加速域名回源地址-setdomainorigin
 // https://cloud.baidu.com/doc/CDN/s/qkggncsxp
 func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
+
+	// 打印数据
+	p.printData(ctx)
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

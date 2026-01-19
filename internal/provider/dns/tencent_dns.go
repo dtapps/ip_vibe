@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	dnspod "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323"
+	"go.dtapp.net/library/utils/gojson"
 )
 
 // TencentDNSConfig 腾讯云 DNS 配置
@@ -61,8 +63,9 @@ func (p *TencentDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err e
 type TencentDNSProvider struct {
 	provider.UnimplementedDNSProvider // 嵌入未实现的
 
-	cfg  *TencentDNSConfig
-	opts *dnsOptions
+	cfg    *TencentDNSConfig
+	opts   *dnsOptions
+	logger *slog.Logger
 
 	CustomConfig *TencentDNSCustomConfig
 	Provider     struct {
@@ -79,12 +82,12 @@ type TencentDNSProvider struct {
 }
 
 // NewTencentDNSProvider 创建腾讯云 DNS 提供程序
-func NewTencentDNSProvider(ctx context.Context, cfg *TencentDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
-	return NewTencentDNSProviderRaw(ctx, cfg, opts...)
+func NewTencentDNSProvider(ctx context.Context, logger *slog.Logger, cfg *TencentDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+	return NewTencentDNSProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewTencentDNSProviderRaw 创建腾讯云 DNS 提供程序
-func NewTencentDNSProviderRaw(ctx context.Context, cfg *TencentDNSConfig, opts ...DnsOption) (*TencentDNSProvider, error) {
+func NewTencentDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *TencentDNSConfig, opts ...DnsOption) (*TencentDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -99,6 +102,7 @@ func NewTencentDNSProviderRaw(ctx context.Context, cfg *TencentDNSConfig, opts .
 	p := &TencentDNSProvider{
 		cfg:          cfg,
 		opts:         &dnsOptions{},
+		logger:       logger,
 		CustomConfig: &TencentDNSCustomConfig{},
 		InternalData: &provider.DNSProviderInternalData{},
 	}
@@ -135,6 +139,18 @@ func NewTencentDNSProviderRaw(ctx context.Context, cfg *TencentDNSConfig, opts .
 // Name 返回 DNS 提供程序的名称
 func (p *TencentDNSProvider) Name() string {
 	return "腾讯云 DNS"
+}
+
+// printData 打印数据
+func (p *TencentDNSProvider) printData(ctx context.Context) {
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
+	)
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
+	)
 }
 
 // Check 检查子域名是否存在
@@ -218,6 +234,9 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=CreateRecord
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=ModifyRecord
 func (p *TencentDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+
+	// 打印数据
+	p.printData(ctx)
 
 	if p.InternalData.RecordID == "" {
 		// 请求参数

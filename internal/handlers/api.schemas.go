@@ -127,7 +127,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
 		}
-		dnsProvider, err := dns.NewTencentDNSProviderRaw(c, dnsProviderCfg, dnsProviderOpts...)
+		dnsProvider, err := dns.NewTencentDNSProviderRaw(c, global.GvaGocronSlog.With(), dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -175,7 +175,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
 		}
-		dnsProvider, err := dns.NewAliyunDNSProviderRaw(c, dnsProviderCfg, dnsProviderOpts...)
+		dnsProvider, err := dns.NewAliyunDNSProviderRaw(c, global.GvaGocronSlog.With(), dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -214,7 +214,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
 		}
-		dnsProvider, err := dns.NewVolcengineDNSProviderRaw(c, dnsProviderCfg, dnsProviderOpts...)
+		dnsProvider, err := dns.NewVolcengineDNSProviderRaw(c, global.GvaGocronSlog.With(), dnsProviderCfg, dnsProviderOpts...)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return

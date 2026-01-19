@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
+	"strings"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
@@ -11,7 +13,7 @@ import (
 	cdn "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-	"go.dtapp.net/library/utils/gostring"
+	"go.dtapp.net/library/utils/gojson"
 )
 
 // TencentCDNConfig 腾讯云 CDN 配置
@@ -61,8 +63,9 @@ func (p *TencentCDNConfig) ParseCustomConfig(config_json json.RawMessage) (err e
 type TencentCDNProvider struct {
 	provider.UnimplementedCDNProvider // 嵌入未实现的
 
-	cfg  *TencentCDNConfig
-	opts *cdnOptions
+	cfg    *TencentCDNConfig
+	opts   *cdnOptions
+	logger *slog.Logger
 
 	CustomConfig *TencentCDNCustomConfig
 	Provider     struct {
@@ -79,12 +82,12 @@ type TencentCDNProvider struct {
 }
 
 // NewTencentCDNProvider 创建腾讯云 CDN 提供程序
-func NewTencentCDNProvider(ctx context.Context, cfg *TencentCDNConfig, opts ...CdnOption) (provider.CDNProvider, error) {
-	return NewTencentCDNProviderRaw(ctx, cfg, opts...)
+func NewTencentCDNProvider(ctx context.Context, logger *slog.Logger, cfg *TencentCDNConfig, opts ...CdnOption) (provider.CDNProvider, error) {
+	return NewTencentCDNProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewTencentCDNProviderRaw 创建腾讯云 CDN 提供程序
-func NewTencentCDNProviderRaw(ctx context.Context, cfg *TencentCDNConfig, opts ...CdnOption) (*TencentCDNProvider, error) {
+func NewTencentCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *TencentCDNConfig, opts ...CdnOption) (*TencentCDNProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -99,6 +102,7 @@ func NewTencentCDNProviderRaw(ctx context.Context, cfg *TencentCDNConfig, opts .
 	p := &TencentCDNProvider{
 		cfg:          cfg,
 		opts:         &cdnOptions{},
+		logger:       logger,
 		CustomConfig: &TencentCDNCustomConfig{},
 		InternalData: &provider.CDNProviderInternalData{},
 	}
@@ -135,6 +139,18 @@ func NewTencentCDNProviderRaw(ctx context.Context, cfg *TencentCDNConfig, opts .
 // Name 返回 CDN 提供程序的名称
 func (p *TencentCDNProvider) Name() string {
 	return "腾讯云 CDN"
+}
+
+// printData 打印数据
+func (p *TencentCDNProvider) printData(ctx context.Context) {
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
+	)
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
+	)
 }
 
 // Check 检查子域名是否存在
@@ -227,11 +243,14 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 // https://console.cloud.tencent.com/api/explorer?Product=cdn&Version=2018-06-06&Action=UpdateDomainConfig
 func (p *TencentCDNProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
 
+	// 打印数据
+	p.printData(ctx)
+
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
 	// 转大写
-	recordType = gostring.ToUpper(recordType)
+	recordType = strings.ToUpper(recordType)
 
 	// 主源站类型
 	originType := recordType

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"vibe_ip/internal/helper/aliyun_helper"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
@@ -13,6 +14,7 @@ import (
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	credential "github.com/aliyun/credentials-go/credentials"
+	"go.dtapp.net/library/utils/gojson"
 )
 
 // AliyunDNSConfig 阿里云 DNS 配置
@@ -62,8 +64,9 @@ func (p *AliyunDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err er
 type AliyunDNSProvider struct {
 	provider.UnimplementedDNSProvider // 嵌入未实现的
 
-	cfg  *AliyunDNSConfig
-	opts *dnsOptions
+	cfg    *AliyunDNSConfig
+	opts   *dnsOptions
+	logger *slog.Logger
 
 	CustomConfig *AliyunDNSCustomConfig
 	Provider     struct {
@@ -80,12 +83,12 @@ type AliyunDNSProvider struct {
 }
 
 // NewAliyunDNSProvider 创建阿里云 DNS 提供程序
-func NewAliyunDNSProvider(ctx context.Context, cfg *AliyunDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
-	return NewAliyunDNSProviderRaw(ctx, cfg, opts...)
+func NewAliyunDNSProvider(ctx context.Context, logger *slog.Logger, cfg *AliyunDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+	return NewAliyunDNSProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewAliyunDNSProviderRaw 创建阿里云 DNS 提供程序
-func NewAliyunDNSProviderRaw(ctx context.Context, cfg *AliyunDNSConfig, opts ...DnsOption) (*AliyunDNSProvider, error) {
+func NewAliyunDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *AliyunDNSConfig, opts ...DnsOption) (*AliyunDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -100,6 +103,7 @@ func NewAliyunDNSProviderRaw(ctx context.Context, cfg *AliyunDNSConfig, opts ...
 	p := &AliyunDNSProvider{
 		cfg:          cfg,
 		opts:         &dnsOptions{},
+		logger:       logger,
 		CustomConfig: &AliyunDNSCustomConfig{},
 		InternalData: &provider.DNSProviderInternalData{},
 	}
@@ -143,6 +147,18 @@ func NewAliyunDNSProviderRaw(ctx context.Context, cfg *AliyunDNSConfig, opts ...
 // Name 返回 DNS 提供程序的名称
 func (p *AliyunDNSProvider) Name() string {
 	return "阿里云 DNS"
+}
+
+// printData 打印数据
+func (p *AliyunDNSProvider) printData(ctx context.Context) {
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
+	)
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
+	)
 }
 
 // Check 检查子域名是否存在
@@ -218,6 +234,9 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/AddDomainRecord
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/UpdateDomainRecord
 func (p *AliyunDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+
+	// 打印数据
+	p.printData(ctx)
 
 	if p.InternalData.RecordID == "" {
 		// 请求参数

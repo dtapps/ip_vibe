@@ -4,7 +4,6 @@ package types
 type LogContentRequest struct {
 	CommonPageRequest
 	Type       string `json:"type,omitempty" form:"type,omitempty" default:"http_log"` // 日志类型
-	ID         int64  `json:"id,omitempty" form:"id,omitempty"`                        // 日志序号
 	Hostname   string `json:"hostname,omitempty" form:"hostname,omitempty"`            // 主机名
 	Method     string `json:"method,omitempty" form:"method,omitempty"`                // 请求方法
 	StatusCode int    `json:"status_code,omitempty" form:"status_code,omitempty"`      // 状态码

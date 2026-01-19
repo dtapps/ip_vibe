@@ -4,12 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
 	"github.com/baidubce/bce-sdk-go/services/dns"
 	"github.com/baidubce/bce-sdk-go/util"
+	"go.dtapp.net/library/utils/gojson"
 )
 
 // BaiduDNSConfig 百度云 DNS 配置
@@ -59,8 +61,9 @@ func (p *BaiduDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err err
 type BaiduDNSProvider struct {
 	provider.UnimplementedDNSProvider // 嵌入未实现的
 
-	cfg  *BaiduDNSConfig
-	opts *dnsOptions
+	cfg    *BaiduDNSConfig
+	opts   *dnsOptions
+	logger *slog.Logger
 
 	CustomConfig *BaiduDNSCustomConfig
 	Provider     struct {
@@ -75,12 +78,12 @@ type BaiduDNSProvider struct {
 }
 
 // NewBaiduDNSProvider 创建百度云 DNS 提供程序
-func NewBaiduDNSProvider(ctx context.Context, cfg *BaiduDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
-	return NewBaiduDNSProviderRaw(ctx, cfg, opts...)
+func NewBaiduDNSProvider(ctx context.Context, logger *slog.Logger, cfg *BaiduDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+	return NewBaiduDNSProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewBaiduDNSProviderRaw 创建百度云 DNS 提供程序
-func NewBaiduDNSProviderRaw(ctx context.Context, cfg *BaiduDNSConfig, opts ...DnsOption) (*BaiduDNSProvider, error) {
+func NewBaiduDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *BaiduDNSConfig, opts ...DnsOption) (*BaiduDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -95,6 +98,7 @@ func NewBaiduDNSProviderRaw(ctx context.Context, cfg *BaiduDNSConfig, opts ...Dn
 	p := &BaiduDNSProvider{
 		cfg:          cfg,
 		opts:         &dnsOptions{},
+		logger:       logger,
 		CustomConfig: &BaiduDNSCustomConfig{},
 		InternalData: &provider.DNSProviderInternalData{},
 	}
@@ -127,6 +131,18 @@ func NewBaiduDNSProviderRaw(ctx context.Context, cfg *BaiduDNSConfig, opts ...Dn
 // Name 返回 DNS 提供程序的名称
 func (p *BaiduDNSProvider) Name() string {
 	return "百度云 DNS"
+}
+
+// printData 打印数据
+func (p *BaiduDNSProvider) printData(ctx context.Context) {
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
+	)
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
+	)
 }
 
 // Check 检查子域名是否存在
@@ -207,6 +223,9 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#添加解析记录
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#修改解析记录
 func (p *BaiduDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+
+	// 打印数据
+	p.printData(ctx)
 
 	if p.InternalData.RecordID == "" {
 		// 请求参数

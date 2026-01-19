@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"strings"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
@@ -11,6 +12,7 @@ import (
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	teo "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901"
+	"go.dtapp.net/library/utils/gojson"
 )
 
 // TencentEOConfig 腾讯云 EO 配置
@@ -64,8 +66,9 @@ func (p *TencentEOConfig) ParseCustomConfig(config_json json.RawMessage) (err er
 type TencentEOProvider struct {
 	provider.UnimplementedCDNProvider // 嵌入未实现的
 
-	cfg  *TencentEOConfig
-	opts *cdnOptions
+	cfg    *TencentEOConfig
+	opts   *cdnOptions
+	logger *slog.Logger
 
 	CustomConfig *TencentEOCustomConfig
 	Provider     struct {
@@ -82,12 +85,12 @@ type TencentEOProvider struct {
 }
 
 // NewTencentEOProvider 创建腾讯云 EO 提供程序
-func NewTencentEOProvider(ctx context.Context, cfg *TencentEOConfig, opts ...CdnOption) (provider.CDNProvider, error) {
-	return NewTencentEOProviderRaw(ctx, cfg, opts...)
+func NewTencentEOProvider(ctx context.Context, logger *slog.Logger, cfg *TencentEOConfig, opts ...CdnOption) (provider.CDNProvider, error) {
+	return NewTencentEOProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewTencentEOProviderRaw 创建腾讯云 EO 提供程序
-func NewTencentEOProviderRaw(ctx context.Context, cfg *TencentEOConfig, opts ...CdnOption) (*TencentEOProvider, error) {
+func NewTencentEOProviderRaw(ctx context.Context, logger *slog.Logger, cfg *TencentEOConfig, opts ...CdnOption) (*TencentEOProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -102,6 +105,7 @@ func NewTencentEOProviderRaw(ctx context.Context, cfg *TencentEOConfig, opts ...
 	p := &TencentEOProvider{
 		cfg:          cfg,
 		opts:         &cdnOptions{},
+		logger:       logger,
 		CustomConfig: &TencentEOCustomConfig{},
 		InternalData: &provider.CDNProviderInternalData{},
 	}
@@ -138,6 +142,18 @@ func NewTencentEOProviderRaw(ctx context.Context, cfg *TencentEOConfig, opts ...
 // Name 返回 CDN 提供程序的名称
 func (p *TencentEOProvider) Name() string {
 	return "腾讯云 EO"
+}
+
+// printData 打印数据
+func (p *TencentEOProvider) printData(ctx context.Context) {
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
+	)
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
+	)
 }
 
 // Check 检查子域名是否存在
@@ -246,6 +262,9 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=CreateAccelerationDomain
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=ModifyAccelerationDomain
 func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
+
+	// 打印数据
+	p.printData(ctx)
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

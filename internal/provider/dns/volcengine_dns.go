@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
@@ -12,6 +13,7 @@ import (
 	"github.com/volcengine/volcengine-go-sdk/volcengine"
 	"github.com/volcengine/volcengine-go-sdk/volcengine/credentials"
 	"github.com/volcengine/volcengine-go-sdk/volcengine/session"
+	"go.dtapp.net/library/utils/gojson"
 )
 
 // VolcengineDNSConfig 火山引擎 DNS 配置
@@ -65,8 +67,9 @@ func (p *VolcengineDNSConfig) ParseCustomConfig(config_json json.RawMessage) (er
 type VolcengineDNSProvider struct {
 	provider.UnimplementedDNSProvider // 嵌入未实现的
 
-	cfg  *VolcengineDNSConfig
-	opts *dnsOptions
+	cfg    *VolcengineDNSConfig
+	opts   *dnsOptions
+	logger *slog.Logger
 
 	CustomConfig *VolcengineDNSCustomConfig
 	Provider     struct {
@@ -84,12 +87,12 @@ type VolcengineDNSProvider struct {
 }
 
 // NewVolcengineDNSProvider 创建火山引擎 DNS 提供程序
-func NewVolcengineDNSProvider(ctx context.Context, cfg *VolcengineDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
-	return NewVolcengineDNSProviderRaw(ctx, cfg, opts...)
+func NewVolcengineDNSProvider(ctx context.Context, logger *slog.Logger, cfg *VolcengineDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+	return NewVolcengineDNSProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewVolcengineDNSProviderRaw 创建火山引擎 DNS 提供程序
-func NewVolcengineDNSProviderRaw(ctx context.Context, cfg *VolcengineDNSConfig, opts ...DnsOption) (*VolcengineDNSProvider, error) {
+func NewVolcengineDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *VolcengineDNSConfig, opts ...DnsOption) (*VolcengineDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -104,6 +107,7 @@ func NewVolcengineDNSProviderRaw(ctx context.Context, cfg *VolcengineDNSConfig, 
 	p := &VolcengineDNSProvider{
 		cfg:          cfg,
 		opts:         &dnsOptions{},
+		logger:       logger,
 		CustomConfig: &VolcengineDNSCustomConfig{},
 		InternalData: &provider.DNSProviderInternalData{},
 	}
@@ -157,6 +161,18 @@ func NewVolcengineDNSProviderRaw(ctx context.Context, cfg *VolcengineDNSConfig, 
 // Name 返回 DNS 提供程序的名称
 func (p *VolcengineDNSProvider) Name() string {
 	return "火山引擎 DNS"
+}
+
+// printData 打印数据
+func (p *VolcengineDNSProvider) printData(ctx context.Context) {
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
+	)
+	p.logger.DebugContext(ctx, "数据",
+		slog.String("提供商", p.Name()),
+		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
+	)
 }
 
 // Check 检查子域名是否存在
@@ -249,6 +265,9 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 // https://api.volcengine.com/api-explorer?action=CreateRecord
 // https://api.volcengine.com/api-explorer?action=UpdateRecord
 func (p *VolcengineDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+
+	// 打印数据
+	p.printData(ctx)
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
