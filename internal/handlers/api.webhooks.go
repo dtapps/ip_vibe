@@ -166,11 +166,11 @@ func UpdateWebhook(c *gin.Context) {
 //	@Tags			通知
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id		path		int64										true	"通知序号"
-//	@Param			request	body		types.UpdateWebhookActiveRequest			true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetWebhookRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								"参数错误"
-//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Param			id		path		int64								true	"通知序号"
+//	@Param			request	body		types.UpdateWebhookActiveRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}						"成功响应"
+//	@Failure		400		{object}	APIResponse{}						"参数错误"
+//	@Failure		404		{object}	APIResponse{}						"错误响应"
 //	@Router			/webhooks/{id}/active [patch]
 func UpdateWebhookActive(c *gin.Context) {
 	// 请求参数
@@ -204,10 +204,10 @@ func UpdateWebhookActive(c *gin.Context) {
 //	@Tags			通知
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.BatchUpdateWebhookActiveRequest		true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetWebhookRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								"参数错误"
-//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Param			request	body		types.BatchUpdateWebhookActiveRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}							"成功响应"
+//	@Failure		400		{object}	APIResponse{}							"参数错误"
+//	@Failure		404		{object}	APIResponse{}							"错误响应"
 //	@Router			/webhooks/batch/active [patch]
 func BatchUpdateWebhookActive(c *gin.Context) {
 	// 请求参数

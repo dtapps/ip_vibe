@@ -203,19 +203,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetCdnRecordRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -429,19 +417,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetCdnRecordRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -1199,19 +1175,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDnsRecordRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -1425,19 +1389,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDnsRecordRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -1705,19 +1657,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDomainMonitorRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -1931,19 +1871,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDomainMonitorRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -2942,19 +2870,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetPortForwardRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -3168,19 +3084,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetPortForwardRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -3848,19 +3752,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetSSLRecordRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -4074,19 +3966,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetSSLRecordRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -4691,19 +4571,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetWebhookSubRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -4800,19 +4668,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetWebhookSubRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -5018,19 +4874,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetWebhookRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -5244,19 +5088,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetWebhookRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -6758,18 +6590,6 @@ const docTemplate = `{
                 "url": {
                     "description": "Webhook URL",
                     "type": "string"
-                }
-            }
-        },
-        "vibe_ip_internal_types.GetWebhookSubRequest": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "description": "通知订阅序号",
-                    "type": "integer"
                 }
             }
         },

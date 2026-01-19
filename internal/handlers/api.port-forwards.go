@@ -205,11 +205,11 @@ func UpdatePortForwardForward(c *gin.Context) {
 //	@Tags			端口转发
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id		path		int64											true	"端口转发序号"
-//	@Param			request	body		types.UpdatePortForwardActiveRequest			true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}									"参数错误"
-//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Param			id		path		int64									true	"端口转发序号"
+//	@Param			request	body		types.UpdatePortForwardActiveRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}							"成功响应"
+//	@Failure		400		{object}	APIResponse{}							"参数错误"
+//	@Failure		404		{object}	APIResponse{}							"错误响应"
 //	@Router			/port-forwards/{id}/active [patch]
 func UpdatePortForwardActive(c *gin.Context) {
 	// 请求参数
@@ -243,10 +243,10 @@ func UpdatePortForwardActive(c *gin.Context) {
 //	@Tags			端口转发
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.BatchUpdatePortForwardActiveRequest		true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}									"参数错误"
-//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Param			request	body		types.BatchUpdatePortForwardActiveRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}								"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数错误"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
 //	@Router			/port-forwards/batch/active [patch]
 func BatchUpdatePortForwardActive(c *gin.Context) {
 	// 请求参数

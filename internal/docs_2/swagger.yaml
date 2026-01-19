@@ -1017,14 +1017,6 @@ definitions:
         description: Webhook URL
         type: string
     type: object
-  vibe_ip_internal_types.GetWebhookSubRequest:
-    properties:
-      id:
-        description: 通知订阅序号
-        type: integer
-    required:
-    - id
-    type: object
   vibe_ip_internal_types.GetWebhookSubResponse:
     properties:
       description:
@@ -1642,12 +1634,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetCdnRecordRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -1745,12 +1732,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetCdnRecordRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -2258,12 +2240,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetDnsRecordRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -2361,12 +2338,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetDnsRecordRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -2571,12 +2543,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetDomainMonitorRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -2670,12 +2637,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetDomainMonitorRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -3337,12 +3299,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetPortForwardRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -3518,12 +3475,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetPortForwardRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -3897,12 +3849,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -4075,12 +4022,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -4352,12 +4294,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetWebhookSubRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -4417,12 +4354,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetWebhookSubRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -4627,12 +4559,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetWebhookRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -4726,12 +4653,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetWebhookRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:

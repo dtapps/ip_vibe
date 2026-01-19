@@ -1017,14 +1017,6 @@ components:
                     description: Webhook URL
                     type: string
             type: object
-        vibe_ip_internal_types.GetWebhookSubRequest:
-            properties:
-                id:
-                    description: 通知订阅序号
-                    type: integer
-            required:
-                - id
-            type: object
         vibe_ip_internal_types.GetWebhookSubResponse:
             properties:
                 description:
@@ -1659,12 +1651,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetCdnRecordRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -1771,12 +1758,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetCdnRecordRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -2332,12 +2314,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetDnsRecordRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -2444,12 +2421,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetDnsRecordRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -2676,12 +2648,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetDomainMonitorRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -2784,12 +2751,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetDomainMonitorRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -3513,12 +3475,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetPortForwardRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -3711,12 +3668,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetPortForwardRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -4128,12 +4080,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetSSLRecordRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -4324,12 +4271,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetSSLRecordRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -4621,12 +4563,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetWebhookSubRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -4692,12 +4629,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetWebhookSubRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -4924,12 +4856,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetWebhookRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
@@ -5032,12 +4959,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                allOf:
-                                    - $ref: '#/components/schemas/internal_handlers.APIResponse'
-                                    - properties:
-                                        data:
-                                            $ref: '#/components/schemas/vibe_ip_internal_types.GetWebhookRequest'
-                                      type: object
+                                $ref: '#/components/schemas/internal_handlers.APIResponse'
                     description: 成功响应
                 "400":
                     content:
