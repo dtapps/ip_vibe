@@ -184,12 +184,47 @@ func UpdateCdnRecordActive(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.UpdateCdnRecordActive(c, &requestParams)
+	err := service.UpdateCdnRecordActive(c, requestParams.ID, requestParams.IsActive)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
+}
+
+// 批量更新CDN记录启用状态
+//
+//	@Description	批量更新CDN记录启用状态
+//	@Summary		批量更新CDN记录启用状态
+//	@Tags			CDN记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.BatchUpdateCdnRecordActiveRequest			true	"请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetCdnRecordRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数错误"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Router			/cdn-records/batch/active [patch]
+func BatchUpdateCdnRecordActive(c *gin.Context) {
+	// 请求参数
+	var requestParams types.BatchUpdateCdnRecordActiveRequest
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewCDNRecordService(
+		global.GvaEntDb,
+		sys_env.GvaEnv.DEBUG,
+	)
+
+	// 调用
+	err := service.BatchUpdateCdnRecordActive(c, requestParams.IDS, requestParams.IsActive)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, nil)
 }
 
 // 删除CDN记录
@@ -235,14 +270,14 @@ func DeleteCdnRecord(c *gin.Context) {
 //	@Tags			CDN记录
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.DeleteCdnRecordBatchRequest	true	"请求参数"
+//	@Param			request	body		types.BatchDeleteCdnRecordRequest	true	"请求参数"
 //	@Success		200		{object}	APIResponse{}						"成功响应"
 //	@Failure		400		{object}	APIResponse{}						"参数错误"
 //	@Failure		404		{object}	APIResponse{}						"错误响应"
 //	@Router			/cdn-records/batch [delete]
-func DeleteCdnRecordBatch(c *gin.Context) {
+func BatchDeleteCdnRecord(c *gin.Context) {
 	// 请求参数
-	var requestParams types.DeleteCdnRecordBatchRequest
+	var requestParams types.BatchDeleteCdnRecordRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
@@ -255,7 +290,7 @@ func DeleteCdnRecordBatch(c *gin.Context) {
 	)
 
 	// 调用
-	err := service.DeleteCdnRecords(c, requestParams.IDS)
+	err := service.BatchDeleteCdnRecord(c, requestParams.IDS)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

@@ -20,7 +20,7 @@ type IPGroupService interface {
 	CreateIPGroup(ctx context.Context, request *types.CreateIPGroupRequest) (int64, error)
 	UpdateIPGroup(ctx context.Context, request *types.UpdateIPGroupRequest) (*types.GetIPGroupRequest, error)
 	DeleteIPGroup(ctx context.Context, id int64) error
-	DeleteIPGroups(ctx context.Context, ids []int64) error
+	BatchDeleteIPGroup(ctx context.Context, ids []int64) error
 	GetIPGroupDevices(ctx context.Context, id int64) ([]*types.GetDeviceResponse, error)
 	HealthcheckIPGroup(ctx context.Context, id int64) ([][]ToPairsStruct, error)
 }
@@ -256,8 +256,8 @@ func (s *IPGroupServiceImpl) DeleteIPGroup(ctx context.Context, id int64) error 
 	return nil
 }
 
-// DeleteIPGroups 批量删除IP组
-func (s *IPGroupServiceImpl) DeleteIPGroups(ctx context.Context, ids []int64) error {
+// BatchDeleteIPGroup 批量删除IP组
+func (s *IPGroupServiceImpl) BatchDeleteIPGroup(ctx context.Context, ids []int64) error {
 
 	// 创建事务
 	tx, err := s.db.Tx(ctx)

@@ -48,6 +48,6 @@ type DeletePlatformConfigRequest struct {
 }
 
 // 批量删除平台配置 请求结构
-type DeletePlatformConfigBatchRequest struct {
+type BatchDeletePlatformConfigRequest struct {
 	IDS []int64 `json:"ids" binding:"required" jsonschema:"配置的唯一标识符列表"` // 配置序号列表
 }

@@ -25,7 +25,7 @@ type DeviceService interface {
 	CreateDevice(ctx context.Context, request *types.CreateDeviceRequest) (*types.GetDeviceRequest, error)
 	UpdateDevice(ctx context.Context, request *types.UpdateDeviceRequest) (*types.GetDeviceRequest, error)
 	DeleteDevice(ctx context.Context, id int64) error
-	DeleteDevices(ctx context.Context, ids []int64) error
+	BatchDeleteDevice(ctx context.Context, ids []int64) error
 	GetDeviceIpHistory(ctx context.Context, id int64) ([]*types.GetDeviceIpHistoryResponse, error)
 	HealthcheckDevice(ctx context.Context, id int64) ([][]ToPairsStruct, error)
 	GetDevicePortForwardStats(ctx context.Context, id int64, request *types.GetDevicePortForwardStatsRequest) ([]*types.GetDevicePortForwardStatsResponse, error)
@@ -233,8 +233,8 @@ func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) error {
 	return nil
 }
 
-// DeleteDevices 批量删除设备
-func (s *DeviceServiceImpl) DeleteDevices(ctx context.Context, ids []int64) error {
+// BatchDeleteDevice 批量删除设备
+func (s *DeviceServiceImpl) BatchDeleteDevice(ctx context.Context, ids []int64) error {
 
 	// 创建事务
 	tx, err := s.db.Tx(ctx)

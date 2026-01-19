@@ -190,14 +190,14 @@ func DeletePlatformConfig(c *gin.Context) {
 //	@Tags			平台配置
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.DeletePlatformConfigBatchRequest	true	"请求参数"
+//	@Param			request	body		types.BatchDeletePlatformConfigRequest	true	"请求参数"
 //	@Success		200		{object}	APIResponse{}							"成功响应"
 //	@Failure		400		{object}	APIResponse{}							"参数错误"
 //	@Failure		404		{object}	APIResponse{}							"错误响应"
 //	@Router			/platform-configs/batch [delete]
-func DeletePlatformConfigBatch(c *gin.Context) {
+func BatchDeletePlatformConfig(c *gin.Context) {
 	// 请求参数
-	var requestParams types.DeletePlatformConfigBatchRequest
+	var requestParams types.BatchDeletePlatformConfigRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
@@ -210,7 +210,7 @@ func DeletePlatformConfigBatch(c *gin.Context) {
 	)
 
 	// 调用
-	err := service.DeleteConfigs(c, requestParams.IDS)
+	err := service.BatchDeleteConfig(c, requestParams.IDS)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

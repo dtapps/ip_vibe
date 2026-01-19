@@ -52,7 +52,7 @@ type DeleteIPGroupRequest struct {
 }
 
 // 批量删除IP组 请求结构
-type DeleteIPGroupBatchRequest struct {
+type BatchDeleteIPGroupRequest struct {
 	IDS []int64 `json:"ids" binding:"required" jsonschema:"IP组的唯一标识符列表"` // IP组序号列表
 }
 

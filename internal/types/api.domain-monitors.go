@@ -60,13 +60,19 @@ type UpdateDomainMonitorActiveRequest struct {
 	IsActive bool `json:"is_active,omitempty" jsonschema:"是否活跃"` // 是否活跃
 }
 
+// 批量更新域名监控启用状态 请求结构
+type BatchUpdateDomainMonitorActiveRequest struct {
+	BatchDeleteDomainMonitorRequest
+	IsActive bool `json:"is_active,omitempty" jsonschema:"是否活跃"` // 是否活跃
+}
+
 // 删除域名监控 请求结构
 type DeleteDomainMonitorRequest struct {
 	GetDomainMonitorRequest
 }
 
 // 批量删除域名监控 请求结构
-type DeleteDomainMonitorBatchRequest struct {
+type BatchDeleteDomainMonitorRequest struct {
 	IDS []int64 `json:"ids" binding:"required" jsonschema:"域名监控记录的唯一标识符列表"` // 域名监控记录序号列表
 }
 

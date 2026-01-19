@@ -22,9 +22,10 @@ type CDNRecordService interface {
 	GetCdnRecord(ctx context.Context, id int64) (*types.GetCdnRecordResponse, error)
 	CreateCdnRecord(ctx context.Context, request *types.CreateCdnRecordRequest) (*types.GetCdnRecordRequest, error)
 	UpdateCdnRecord(ctx context.Context, request *types.UpdateCdnRecordRequest) (*types.GetCdnRecordRequest, error)
-	UpdateCdnRecordActive(ctx context.Context, request *types.UpdateCdnRecordActiveRequest) (*types.GetCdnRecordRequest, error)
+	UpdateCdnRecordActive(ctx context.Context, id int64, isActive bool) error
+	BatchUpdateCdnRecordActive(ctx context.Context, ids []int64, isActive bool) error
 	DeleteCdnRecord(ctx context.Context, id int64) error
-	DeleteCdnRecords(ctx context.Context, ids []int64) error
+	BatchDeleteCdnRecord(ctx context.Context, ids []int64) error
 	HealthcheckCdnRecord(ctx context.Context, id int64) ([][]ToPairsStruct, error)
 }
 
@@ -197,29 +198,55 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *typ
 }
 
 // UpdateCdnRecordActive 更新 CDN 记录启用状态
-func (s *CDNRecordServiceImpl) UpdateCdnRecordActive(ctx context.Context, request *types.UpdateCdnRecordActiveRequest) (*types.GetCdnRecordRequest, error) {
+func (s *CDNRecordServiceImpl) UpdateCdnRecordActive(ctx context.Context, id int64, isActive bool) error {
 	// 查询CDN记录
 	firstCdnRecord, err := s.db.CDNRecord.Query().
-		Where(cdnrecord.IDEQ(request.ID)).
+		Where(cdnrecord.IDEQ(id)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询CDN记录失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询CDN记录失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询CDN记录失败: %w", err)
+		return fmt.Errorf("查询CDN记录失败: %w", err)
 	}
 
 	// 更新CDN记录状态
-	saveCdnRecord, err := s.db.CDNRecord.UpdateOne(firstCdnRecord).
-		SetIsActive(request.IsActive).
-		Save(ctx)
+	err = s.db.CDNRecord.UpdateOne(firstCdnRecord).
+		SetIsActive(isActive).
+		Exec(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("更新CDN记录状态失败: %w", err)
+		return fmt.Errorf("更新CDN记录状态失败: %w", err)
 	}
 
-	return &types.GetCdnRecordRequest{
-		ID: saveCdnRecord.ID,
-	}, nil
+	return nil
+}
+
+// BatchUpdateCdnRecordActive 批量更新 CDN 记录启用状态
+func (s *CDNRecordServiceImpl) BatchUpdateCdnRecordActive(ctx context.Context, ids []int64, isActive bool) error {
+	// 查询CDN记录
+	allCdnRecord, err := s.db.CDNRecord.Query().
+		Where(cdnrecord.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return fmt.Errorf("查询CDN记录失败: 记录不存在或 %w", err)
+		}
+		return fmt.Errorf("查询CDN记录失败: %w", err)
+	}
+	if len(allCdnRecord) != len(ids) {
+		return fmt.Errorf("查询CDN记录失败: 数量 %d 与请求数量 %d 不匹配", len(allCdnRecord), len(ids))
+	}
+
+	// 更新CDN记录状态
+	err = s.db.CDNRecord.Update().
+		Where(cdnrecord.IDIn(ids...)).
+		SetIsActive(isActive).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("更新CDN记录状态失败: %w", err)
+	}
+
+	return nil
 }
 
 // DeleteCdnRecord 删除 CDN 记录
@@ -252,8 +279,8 @@ func (s *CDNRecordServiceImpl) DeleteCdnRecord(ctx context.Context, id int64) er
 	return nil
 }
 
-// DeleteCdnRecords 批量删除 CDN 记录
-func (s *CDNRecordServiceImpl) DeleteCdnRecords(ctx context.Context, ids []int64) error {
+// BatchDeleteCdnRecord 批量删除 CDN 记录
+func (s *CDNRecordServiceImpl) BatchDeleteCdnRecord(ctx context.Context, ids []int64) error {
 
 	// 创建事务
 	tx, err := s.db.Tx(ctx)

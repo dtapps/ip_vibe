@@ -228,12 +228,48 @@ func UpdatePortForwardActive(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.UpdatePortForwardActive(c, &requestParams)
+	err := service.UpdatePortForwardActive(c, requestParams.ID, requestParams.IsActive)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
+}
+
+// 批量更新端口转发启用状态
+//
+//	@Description	批量更新端口转发启用状态
+//	@Summary		批量更新端口转发启用状态
+//	@Tags			端口转发
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.BatchUpdatePortForwardActiveRequest			true	"请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}									"参数错误"
+//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Router			/port-forwards/batch/active [patch]
+func BatchUpdatePortForwardActive(c *gin.Context) {
+	// 请求参数
+	var requestParams types.BatchUpdatePortForwardActiveRequest
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewPortForwardService(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		sys_env.GvaEnv.DEBUG,
+	)
+
+	// 调用
+	err := service.BatchUpdatePortForwardActive(c, requestParams.IDS, requestParams.IsActive)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, nil)
 }
 
 // 删除端口转发
@@ -280,14 +316,14 @@ func DeletePortForward(c *gin.Context) {
 //	@Tags			端口转发
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.DeletePortForwardBatchRequest	true	"请求参数"
+//	@Param			request	body		types.BatchDeletePortForwardRequest	true	"请求参数"
 //	@Success		200		{object}	APIResponse{}						"成功响应"
 //	@Failure		400		{object}	APIResponse{}						"参数错误"
 //	@Failure		404		{object}	APIResponse{}						"错误响应"
 //	@Router			/port-forwards/batch [delete]
-func DeletePortForwardBatch(c *gin.Context) {
+func BatchDeletePortForward(c *gin.Context) {
 	// 请求参数
-	var requestParams types.DeletePortForwardBatchRequest
+	var requestParams types.BatchDeletePortForwardRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
@@ -301,7 +337,7 @@ func DeletePortForwardBatch(c *gin.Context) {
 	)
 
 	// 调用
-	err := service.DeletePortForwards(c, requestParams.IDS)
+	err := service.BatchDeletePortForward(c, requestParams.IDS)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

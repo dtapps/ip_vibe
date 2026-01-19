@@ -131,12 +131,12 @@ func updateWebhookActive(ctx context.Context, req *mcp.CallToolRequest, params *
 	)
 
 	// 调用
-	response, err := service.UpdateWebhookActive(ctx, params)
+	err := service.UpdateWebhookActive(ctx, params.ID, params.IsActive)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 删除通知

@@ -294,12 +294,59 @@ func UpdateSSLRecordActive(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.UpdateSSLRecordActive(c, &requestParams)
+	err := service.UpdateSSLRecordActive(c, requestParams.ID, requestParams.IsActive)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
+}
+
+// 批量更新SSL记录启用状态
+//
+//	@Description	批量更新SSL记录启用状态
+//	@Summary		批量更新SSL记录启用状态
+//	@Tags			SSL记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.BatchUpdateSSLRecordActiveRequest			true	"请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetSSLRecordRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数错误"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Router			/ssl-records/batch/active [patch]
+func BatchUpdateSSLRecordActive(c *gin.Context) {
+	// 请求参数
+	var requestParams types.BatchUpdateSSLRecordActiveRequest
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建SSL更新任务
+	sslUpdateTask := task.NewSSLUpdateTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog,
+		global.GvaHttpLog,
+		sys_env.GvaEnv.DEBUG,
+	)
+
+	// 创建服务
+	service := service.NewSSLRecordService(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		sslUpdateTask,
+		sys_env.GvaEnv.DEBUG,
+	)
+
+	// 调用
+	err := service.BatchUpdateSSLRecordActive(c, requestParams.IDS, requestParams.IsActive)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, nil)
 }
 
 // 删除SSL记录
@@ -357,14 +404,14 @@ func DeleteSSLRecord(c *gin.Context) {
 //	@Tags			SSL记录
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			ids	body		types.DeleteSSLRecordBatchRequest	true	"SSL记录序号列表"
+//	@Param			ids	body		types.BatchDeleteSSLRecordRequest	true	"SSL记录序号列表"
 //	@Success		200	{object}	APIResponse{}						"成功响应"
 //	@Failure		400	{object}	APIResponse{}						"参数错误"
 //	@Failure		404	{object}	APIResponse{}						"错误响应"
 //	@Router			/ssl-records/batch [delete]
-func DeleteSSLRecordBatch(c *gin.Context) {
+func BatchDeleteSSLRecord(c *gin.Context) {
 	// 请求参数
-	var requestParams types.DeleteSSLRecordBatchRequest
+	var requestParams types.BatchDeleteSSLRecordRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
@@ -389,7 +436,7 @@ func DeleteSSLRecordBatch(c *gin.Context) {
 	)
 
 	// 调用
-	err := service.DeleteSSLRecords(c, requestParams.IDS)
+	err := service.BatchDeleteSSLRecord(c, requestParams.IDS)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

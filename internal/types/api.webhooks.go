@@ -51,13 +51,19 @@ type UpdateWebhookActiveRequest struct {
 	IsActive bool `json:"is_active,omitempty" jsonschema:"是否启用该通知"` // 是否启用
 }
 
+// 批量更新通知状态 请求结构
+type BatchUpdateWebhookActiveRequest struct {
+	BatchDeleteWebhookRequest
+	IsActive bool `json:"is_active,omitempty" jsonschema:"是否启用"` // 是否启用
+}
+
 // 删除通知 请求结构
 type DeleteWebhookRequest struct {
 	GetWebhookRequest
 }
 
 // 批量删除通知 请求结构
-type DeleteWebhookBatchRequest struct {
+type BatchDeleteWebhookRequest struct {
 	IDS []int64 `json:"ids" binding:"required" jsonschema:"通知的唯一标识符列表"` // 通知序号列表
 }
 

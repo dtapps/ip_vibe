@@ -67,13 +67,19 @@ type UpdateDnsRecordActiveRequest struct {
 	IsActive bool `json:"is_active,omitempty" jsonschema:"是否活跃该DNS记录"` // 是否活跃
 }
 
+// 批量更新DNS记录状态 请求结构
+type BatchUpdateDnsRecordActiveRequest struct {
+	BatchDeleteDnsRecordRequest
+	IsActive bool `json:"is_active,omitempty" jsonschema:"是否活跃"` // 是否活跃
+}
+
 // 删除DNS记录 请求结构
 type DeleteDnsRecordRequest struct {
 	GetDnsRecordRequest
 }
 
 // 批量删除DNS记录 请求结构
-type DeleteDnsRecordBatchRequest struct {
+type BatchDeleteDnsRecordRequest struct {
 	IDS []int64 `json:"ids" binding:"required" jsonschema:"DNS记录的唯一标识符列表"` // DNS记录序号列表
 }
 

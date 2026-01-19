@@ -190,14 +190,14 @@ func DeleteIPGroup(c *gin.Context) {
 //	@Tags			IP组
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.DeleteIPGroupBatchRequest	true	"请求参数"
+//	@Param			request	body		types.BatchDeleteIPGroupRequest	true	"请求参数"
 //	@Success		200		{object}	APIResponse{}					"成功响应"
 //	@Failure		400		{object}	APIResponse{}					"参数错误"
 //	@Failure		404		{object}	APIResponse{}					"错误响应"
 //	@Router			/ip-groups/batch [delete]
-func DeleteIPGroupBatch(c *gin.Context) {
+func BatchDeleteIPGroup(c *gin.Context) {
 	// 请求参数
-	var requestParams types.DeleteIPGroupBatchRequest
+	var requestParams types.BatchDeleteIPGroupRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
@@ -210,7 +210,7 @@ func DeleteIPGroupBatch(c *gin.Context) {
 	)
 
 	// 调用
-	err := service.DeleteIPGroups(c, requestParams.IDS)
+	err := service.BatchDeleteIPGroup(c, requestParams.IDS)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

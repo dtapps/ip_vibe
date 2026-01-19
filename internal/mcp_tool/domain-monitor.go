@@ -151,12 +151,12 @@ func updateDomainMonitorActive(ctx context.Context, req *mcp.CallToolRequest, pa
 	)
 
 	// 调用
-	response, err := service.UpdateDomainMonitorActive(ctx, params)
+	err := service.UpdateDomainMonitorActive(ctx, params.ID, params.IsActive)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 删除域名监控

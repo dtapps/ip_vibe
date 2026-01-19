@@ -25,9 +25,10 @@ type SSLRecordService interface {
 	CreateSSLRecord(ctx context.Context, request *types.CreateSSLRecordRequest) (*types.GetSSLRecordRequest, error)
 	UpdateSSLRecord(ctx context.Context, request *types.UpdateSSLRecordRequest) (*types.GetSSLRecordRequest, error)
 	UpdateSSLRecordAutoRenewal(ctx context.Context, request *types.UpdateSSLRecordAutoRenewalRequest) (*types.GetSSLRecordRequest, error)
-	UpdateSSLRecordActive(ctx context.Context, request *types.UpdateSSLRecordActiveRequest) (*types.GetSSLRecordRequest, error)
+	UpdateSSLRecordActive(ctx context.Context, id int64, isActive bool) error
+	BatchUpdateSSLRecordActive(ctx context.Context, ids []int64, isActive bool) error
 	DeleteSSLRecord(ctx context.Context, id int64) error
-	DeleteSSLRecords(ctx context.Context, ids []int64) error
+	BatchDeleteSSLRecord(ctx context.Context, ids []int64) error
 	ApplySSLRecord(ctx context.Context, id int64) (*types.GetSSLRecordRequest, error)
 	GetSSLRecordHistoryDetail(ctx context.Context, id int64, historyID int64) (*types.GetSSLRecordHistoryDetailResponse, error)
 }
@@ -225,29 +226,55 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecordAutoRenewal(ctx context.Context, r
 }
 
 // UpdateSSLRecordActive 更新 SSL 记录启用状态
-func (s *SSLRecordServiceImpl) UpdateSSLRecordActive(ctx context.Context, request *types.UpdateSSLRecordActiveRequest) (*types.GetSSLRecordRequest, error) {
+func (s *SSLRecordServiceImpl) UpdateSSLRecordActive(ctx context.Context, id int64, isActive bool) error {
 	// 查询SSL记录
 	firstSSLRecord, err := s.db.SSLRecord.Query().
-		Where(sslrecord.IDEQ(request.ID)).
+		Where(sslrecord.IDEQ(id)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询SSL记录失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询SSL记录失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询SSL记录失败: %w", err)
+		return fmt.Errorf("查询SSL记录失败: %w", err)
 	}
 
 	// 更新SSL记录状态
-	saveSSLRecord, err := s.db.SSLRecord.UpdateOne(firstSSLRecord).
-		SetIsActive(request.IsActive).
-		Save(ctx)
+	err = s.db.SSLRecord.UpdateOne(firstSSLRecord).
+		SetIsActive(isActive).
+		Exec(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("更新SSL记录状态失败: %w", err)
+		return fmt.Errorf("更新SSL记录状态失败: %w", err)
 	}
 
-	return &types.GetSSLRecordRequest{
-		ID: saveSSLRecord.ID,
-	}, nil
+	return nil
+}
+
+// BatchUpdateSSLRecordActive 更新 SSL 记录启用状态
+func (s *SSLRecordServiceImpl) BatchUpdateSSLRecordActive(ctx context.Context, ids []int64, isActive bool) error {
+	// 查询SSL记录
+	allSSLRecord, err := s.db.SSLRecord.Query().
+		Where(sslrecord.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return fmt.Errorf("查询SSL记录失败: 记录不存在或 %w", err)
+		}
+		return fmt.Errorf("查询SSL记录失败: %w", err)
+	}
+	if len(allSSLRecord) != len(ids) {
+		return fmt.Errorf("查询SSL记录失败: 数量 %d 与请求数量 %d 不匹配", len(allSSLRecord), len(ids))
+	}
+
+	// 更新SSL记录状态
+	err = s.db.SSLRecord.Update().
+		Where(sslrecord.IDIn(ids...)).
+		SetIsActive(isActive).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("更新SSL记录状态失败: %w", err)
+	}
+
+	return nil
 }
 
 // DeleteSSLRecord 删除 CDN 记录
@@ -280,8 +307,8 @@ func (s *SSLRecordServiceImpl) DeleteSSLRecord(ctx context.Context, id int64) er
 	return nil
 }
 
-// DeleteSSLRecords 批量删除 SSL 记录
-func (s *SSLRecordServiceImpl) DeleteSSLRecords(ctx context.Context, ids []int64) error {
+// BatchDeleteSSLRecord 批量删除 SSL 记录
+func (s *SSLRecordServiceImpl) BatchDeleteSSLRecord(ctx context.Context, ids []int64) error {
 
 	// 创建事务
 	tx, err := s.db.Tx(ctx)

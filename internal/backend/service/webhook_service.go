@@ -22,9 +22,10 @@ type WebhookService interface {
 	GetWebhook(ctx context.Context, id int64) (*types.GetWebhookResponse, error)
 	CreateWebhook(ctx context.Context, request *types.CreateWebhookRequest) (*types.GetWebhookRequest, error)
 	UpdateWebhook(ctx context.Context, request *types.UpdateWebhookRequest) (*types.GetWebhookRequest, error)
-	UpdateWebhookActive(ctx context.Context, request *types.UpdateWebhookActiveRequest) (*types.GetWebhookRequest, error)
+	UpdateWebhookActive(ctx context.Context, id int64, isActive bool) error
+	BatchUpdateWebhookActive(ctx context.Context, ids []int64, isActive bool) error
 	DeleteWebhook(ctx context.Context, id int64) error
-	DeleteWebhooks(ctx context.Context, ids []int64) error
+	BatchDeleteWebhook(ctx context.Context, ids []int64) error
 	TestWebhook(ctx context.Context, id int64) (*types.GetWebhookRequest, error)
 }
 
@@ -156,27 +157,55 @@ func (s *WebhookServiceImpl) UpdateWebhook(ctx context.Context, request *types.U
 }
 
 // UpdateWebhookActive 更新通知启用状态
-func (s *WebhookServiceImpl) UpdateWebhookActive(ctx context.Context, request *types.UpdateWebhookActiveRequest) (*types.GetWebhookRequest, error) {
+func (s *WebhookServiceImpl) UpdateWebhookActive(ctx context.Context, id int64, isActive bool) error {
 	// 查询通知
 	firstWebhook, err := s.db.Webhook.Query().
-		Where(webhook.IDEQ(request.ID)).
+		Where(webhook.IDEQ(id)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询通知失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询通知失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询通知失败: %w", err)
+		return fmt.Errorf("查询通知失败: %w", err)
 	}
+
 	// 更新通知状态
-	saveWebhook, err := s.db.Webhook.UpdateOne(firstWebhook).
-		SetIsActive(request.IsActive).
-		Save(ctx)
+	err = s.db.Webhook.UpdateOne(firstWebhook).
+		SetIsActive(isActive).
+		Exec(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("更新通知状态失败: %w", err)
+		return fmt.Errorf("更新通知状态失败: %w", err)
 	}
-	return &types.GetWebhookRequest{
-		ID: saveWebhook.ID,
-	}, nil
+
+	return nil
+}
+
+// BatchUpdateWebhookActive 更新通知启用状态
+func (s *WebhookServiceImpl) BatchUpdateWebhookActive(ctx context.Context, ids []int64, isActive bool) error {
+	// 查询通知
+	allWebhook, err := s.db.Webhook.Query().
+		Where(webhook.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return fmt.Errorf("查询通知失败: 记录不存在或 %w", err)
+		}
+		return fmt.Errorf("查询通知失败: %w", err)
+	}
+	if len(allWebhook) != len(ids) {
+		return fmt.Errorf("查询通知失败: 数量 %d 与请求数量 %d 不匹配", len(allWebhook), len(ids))
+	}
+
+	// 更新通知状态
+	err = s.db.Webhook.Update().
+		Where(webhook.IDIn(ids...)).
+		SetIsActive(isActive).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("更新通知状态失败: %w", err)
+	}
+
+	return nil
 }
 
 // DeleteWebhook 删除通知
@@ -200,8 +229,8 @@ func (s *WebhookServiceImpl) DeleteWebhook(ctx context.Context, id int64) error 
 	return nil
 }
 
-// DeleteWebhooks 批量删除通知
-func (s *WebhookServiceImpl) DeleteWebhooks(ctx context.Context, ids []int64) error {
+// BatchDeleteWebhook 批量删除通知
+func (s *WebhookServiceImpl) BatchDeleteWebhook(ctx context.Context, ids []int64) error {
 
 	// 创建事务
 	tx, err := s.db.Tx(ctx)

@@ -184,12 +184,47 @@ func UpdateDnsRecordActive(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.UpdateDnsRecordActive(c, &requestParams)
+	err := service.UpdateDnsRecordActive(c, requestParams.ID, requestParams.IsActive)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
+}
+
+// 批量更新DNS记录启用状态
+//
+//	@Description	批量更新DNS记录启用状态
+//	@Summary		批量更新DNS记录启用状态
+//	@Tags			DNS记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.BatchUpdateDnsRecordActiveRequest		true	"请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}								"参数错误"
+//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Router			/dns-records/batch/active [patch]
+func BatchUpdateDnsRecordActive(c *gin.Context) {
+	// 请求参数
+	var requestParams types.BatchUpdateDnsRecordActiveRequest
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewDNSRecordService(
+		global.GvaEntDb,
+		sys_env.GvaEnv.DEBUG,
+	)
+
+	// 调用
+	err := service.BatchUpdateDnsRecordActive(c, requestParams.IDS, requestParams.IsActive)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, nil)
 }
 
 // 删除DNS记录
@@ -235,14 +270,14 @@ func DeleteDnsRecord(c *gin.Context) {
 //	@Tags			DNS记录
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.DeleteDnsRecordBatchRequest	true	"请求参数"
+//	@Param			request	body		types.BatchDeleteDnsRecordRequest	true	"请求参数"
 //	@Success		200		{object}	APIResponse{}						"成功响应"
 //	@Failure		400		{object}	APIResponse{}						"参数错误"
 //	@Failure		404		{object}	APIResponse{}						"错误响应"
 //	@Router			/dns-records/batch [delete]
-func DeleteDnsRecordBatch(c *gin.Context) {
+func BatchDeleteDnsRecord(c *gin.Context) {
 	// 请求参数
-	var requestParams types.DeleteDnsRecordBatchRequest
+	var requestParams types.BatchDeleteDnsRecordRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
@@ -255,7 +290,7 @@ func DeleteDnsRecordBatch(c *gin.Context) {
 	)
 
 	// 调用
-	err := service.DeleteDnsRecords(c, requestParams.IDS)
+	err := service.BatchDeleteDnsRecord(c, requestParams.IDS)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

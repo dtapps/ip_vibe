@@ -55,7 +55,7 @@ type DeleteDeviceRequest struct {
 }
 
 // 批量删除设备 请求结构
-type DeleteDeviceBatchRequest struct {
+type BatchDeleteDeviceRequest struct {
 	IDS []int64 `json:"ids" binding:"required" jsonschema:"设备的唯一标识符列表"` // 设备序号列表
 }
 

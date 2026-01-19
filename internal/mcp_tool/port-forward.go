@@ -160,12 +160,12 @@ func updatePortForwardActive(ctx context.Context, req *mcp.CallToolRequest, para
 	)
 
 	// 调用
-	response, err := service.UpdatePortForwardActive(ctx, params)
+	err := service.UpdatePortForwardActive(ctx, params.ID, params.IsActive)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 删除端口转发

@@ -22,9 +22,10 @@ type PortForwardService interface {
 	CreatePortForward(ctx context.Context, request *types.CreatePortForwardRequest) (*types.GetPortForwardRequest, error)
 	UpdatePortForward(ctx context.Context, request *types.UpdatePortForwardRequest) (*types.GetPortForwardRequest, error)
 	UpdatePortForwardForward(ctx context.Context, request *types.UpdatePortForwardForwardRequest) (*types.GetPortForwardRequest, error)
-	UpdatePortForwardActive(ctx context.Context, request *types.UpdatePortForwardActiveRequest) (*types.GetPortForwardRequest, error)
+	UpdatePortForwardActive(ctx context.Context, id int64, isActive bool) error
+	BatchUpdatePortForwardActive(ctx context.Context, ids []int64, isActive bool) error
 	DeletePortForward(ctx context.Context, id int64) error
-	DeletePortForwards(ctx context.Context, ids []int64) error
+	BatchDeletePortForward(ctx context.Context, ids []int64) error
 	HealthcheckPortForward(ctx context.Context, id int64) ([][]ToPairsStruct, error)
 	GetPortForwardStats(ctx context.Context, id int64, request *types.GetPortForwardStatsRequest) ([]*types.GetPortForwardStatsResponse, error)
 }
@@ -187,28 +188,56 @@ func (s *PortForwardServiceImpl) UpdatePortForwardForward(ctx context.Context, r
 	}, nil
 }
 
-// UpdatePortForwardActive 更新端口转发启用状态 (IsActive)
-func (s *PortForwardServiceImpl) UpdatePortForwardActive(ctx context.Context, request *types.UpdatePortForwardActiveRequest) (*types.GetPortForwardRequest, error) {
+// UpdatePortForwardActive 更新端口转发启用状态
+func (s *PortForwardServiceImpl) UpdatePortForwardActive(ctx context.Context, id int64, isActive bool) error {
 	// 查询端口转发
 	firstPortForward, err := s.db.DevicePortForward.Query().
-		Where(deviceportforward.IDEQ(request.ID)).
+		Where(deviceportforward.IDEQ(id)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询端口转发失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询端口转发失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询端口转发失败: %w", err)
+		return fmt.Errorf("查询端口转发失败: %w", err)
 	}
+
 	// 更新端口转发状态
-	savePortForward, err := s.db.DevicePortForward.UpdateOne(firstPortForward).
-		SetIsActive(request.IsActive).
-		Save(ctx)
+	err = s.db.DevicePortForward.UpdateOne(firstPortForward).
+		SetIsActive(isActive).
+		Exec(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("更新端口转发启用状态失败: %w", err)
+		return fmt.Errorf("更新端口转发启用状态失败: %w", err)
 	}
-	return &types.GetPortForwardRequest{
-		ID: savePortForward.ID,
-	}, nil
+
+	return nil
+}
+
+// BatchUpdatePortForwardActive 更新端口转发启用状态
+func (s *PortForwardServiceImpl) BatchUpdatePortForwardActive(ctx context.Context, ids []int64, isActive bool) error {
+	// 查询端口转发
+	allPortForward, err := s.db.DevicePortForward.Query().
+		Where(deviceportforward.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return fmt.Errorf("查询端口转发失败: 记录不存在或 %w", err)
+		}
+		return fmt.Errorf("查询端口转发失败: %w", err)
+	}
+	if len(allPortForward) != len(ids) {
+		return fmt.Errorf("查询端口转发失败: 数量 %d 与请求数量 %d 不匹配", len(allPortForward), len(ids))
+	}
+
+	// 更新端口转发状态
+	err = s.db.DevicePortForward.Update().
+		Where(deviceportforward.IDIn(ids...)).
+		SetIsActive(isActive).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("更新端口转发启用状态失败: %w", err)
+	}
+
+	return nil
 }
 
 // DeletePortForward 删除端口转发
@@ -232,8 +261,8 @@ func (s *PortForwardServiceImpl) DeletePortForward(ctx context.Context, id int64
 	return nil
 }
 
-// DeletePortForwards 删除端口转发
-func (s *PortForwardServiceImpl) DeletePortForwards(ctx context.Context, ids []int64) error {
+// BatchDeletePortForward 删除端口转发
+func (s *PortForwardServiceImpl) BatchDeletePortForward(ctx context.Context, ids []int64) error {
 
 	// 创建事务
 	tx, err := s.db.Tx(ctx)

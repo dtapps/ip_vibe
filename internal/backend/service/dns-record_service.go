@@ -21,9 +21,10 @@ type DNSRecordService interface {
 	GetDnsRecord(ctx context.Context, id int64) (*types.GetDnsRecordResponse, error)
 	CreateDnsRecord(ctx context.Context, request *types.CreateDnsRecordRequest) (*types.GetDnsRecordRequest, error)
 	UpdateDnsRecord(ctx context.Context, request *types.UpdateDnsRecordRequest) (*types.GetDnsRecordRequest, error)
-	UpdateDnsRecordActive(ctx context.Context, request *types.UpdateDnsRecordActiveRequest) (*types.GetDnsRecordRequest, error)
+	UpdateDnsRecordActive(ctx context.Context, id int64, isActive bool) error
+	BatchUpdateDnsRecordActive(ctx context.Context, ids []int64, isActive bool) error
 	DeleteDnsRecord(ctx context.Context, id int64) error
-	DeleteDnsRecords(ctx context.Context, ids []int64) error
+	BatchDeleteDnsRecord(ctx context.Context, ids []int64) error
 	HealthcheckDnsRecord(ctx context.Context, id int64) ([][]ToPairsStruct, error)
 }
 
@@ -219,28 +220,55 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *typ
 }
 
 // UpdateDnsRecordActive 更新DNS记录启用状态
-func (s *DNSRecordServiceImpl) UpdateDnsRecordActive(ctx context.Context, request *types.UpdateDnsRecordActiveRequest) (*types.GetDnsRecordRequest, error) {
+func (s *DNSRecordServiceImpl) UpdateDnsRecordActive(ctx context.Context, id int64, isActive bool) error {
 	// 查询DNS记录
 	firstDnsRecord, err := s.db.DNSRecord.Query().
-		Where(dnsrecord.IDEQ(request.ID)).
+		Where(dnsrecord.IDEQ(id)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询DNS记录失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询DNS记录失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询DNS记录失败: %w", err)
-	}
-	// 更新DNS记录状态
-	saveRecord, err := s.db.DNSRecord.UpdateOne(firstDnsRecord).
-		SetIsActive(request.IsActive).
-		Save(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("更新DNS记录状态失败: %w", err)
+		return fmt.Errorf("查询DNS记录失败: %w", err)
 	}
 
-	return &types.GetDnsRecordRequest{
-		ID: saveRecord.ID,
-	}, nil
+	// 更新DNS记录状态
+	err = s.db.DNSRecord.UpdateOne(firstDnsRecord).
+		SetIsActive(isActive).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("更新DNS记录状态失败: %w", err)
+	}
+
+	return nil
+}
+
+// BatchUpdateDnsRecordActive 批量更新DNS记录启用状态
+func (s *DNSRecordServiceImpl) BatchUpdateDnsRecordActive(ctx context.Context, ids []int64, isActive bool) error {
+	// 查询DNS记录
+	allDnsRecord, err := s.db.DNSRecord.Query().
+		Where(dnsrecord.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return fmt.Errorf("查询DNS记录失败: 记录不存在或 %w", err)
+		}
+		return fmt.Errorf("查询DNS记录失败: %w", err)
+	}
+	if len(allDnsRecord) != len(ids) {
+		return fmt.Errorf("查询DNS记录失败: 数量 %d 与请求数量 %d 不匹配", len(allDnsRecord), len(ids))
+	}
+
+	// 更新DNS记录状态
+	err = s.db.DNSRecord.Update().
+		Where(dnsrecord.IDIn(ids...)).
+		SetIsActive(isActive).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("更新DNS记录状态失败: %w", err)
+	}
+
+	return nil
 }
 
 // DeleteDnsRecord 删除DNS记录
@@ -272,8 +300,8 @@ func (s *DNSRecordServiceImpl) DeleteDnsRecord(ctx context.Context, id int64) er
 	return nil
 }
 
-// DeleteDnsRecords 批量删除 DNS 记录
-func (s *DNSRecordServiceImpl) DeleteDnsRecords(ctx context.Context, ids []int64) error {
+// BatchDeleteDnsRecord 批量删除 DNS 记录
+func (s *DNSRecordServiceImpl) BatchDeleteDnsRecord(ctx context.Context, ids []int64) error {
 
 	// 创建事务
 	tx, err := s.db.Tx(ctx)

@@ -76,12 +76,47 @@ func UpdateWebhookSubActive(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.UpdateWebhookSubActive(c, &requestParams)
+	err := service.UpdateWebhookSubActive(c, requestParams.ID, requestParams.IsActive)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
+}
+
+// 批量更新通知订阅启用状态
+//
+//	@Description	批量更新通知订阅启用状态
+//	@Summary		批量更新通知订阅启用状态
+//	@Tags			通知订阅
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.BatchUpdateWebhookSubActiveRequest				true	"请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetWebhookSubRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}									"参数错误"
+//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Router			/webhook-subs/batch/active [patch]
+func BatchUpdateWebhookSubActive(c *gin.Context) {
+	// 请求参数
+	var requestParams types.BatchUpdateWebhookSubActiveRequest
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewWebhookSubService(
+		global.GvaEntDb,
+		sys_env.GvaEnv.DEBUG,
+	)
+
+	// 调用
+	err := service.BatchUpdateWebhookSubActive(c, requestParams.IDS, requestParams.IsActive)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, nil)
 }
 
 // 删除通知订阅
@@ -127,14 +162,14 @@ func DeleteWebhookSub(c *gin.Context) {
 //	@Tags			通知订阅
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.DeleteWebhookSubBatchRequest	true	"请求参数"
+//	@Param			request	body		types.BatchDeleteWebhookSubRequest	true	"请求参数"
 //	@Success		200		{object}	APIResponse{}						"成功响应"
 //	@Failure		400		{object}	APIResponse{}						"参数错误"
 //	@Failure		404		{object}	APIResponse{}						"错误响应"
 //	@Router			/webhook-subs/batch [delete]
-func DeleteWebhookSubBatch(c *gin.Context) {
+func BatchDeleteWebhookSub(c *gin.Context) {
 	// 请求参数
-	var requestParams types.DeleteWebhookSubBatchRequest
+	var requestParams types.BatchDeleteWebhookSubRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
@@ -147,7 +182,7 @@ func DeleteWebhookSubBatch(c *gin.Context) {
 	)
 
 	// 调用
-	err := service.DeleteWebhookSubs(c, requestParams.IDS)
+	err := service.BatchDeleteWebhookSub(c, requestParams.IDS)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

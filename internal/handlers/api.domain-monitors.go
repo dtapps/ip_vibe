@@ -204,12 +204,51 @@ func UpdateDomainMonitorActive(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.UpdateDomainMonitorActive(c, &requestParams)
+	err := service.UpdateDomainMonitorActive(c, requestParams.ID, requestParams.IsActive)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
+}
+
+// 批量更新域名监控启用状态
+//
+//	@Description	批量更新域名监控启用状态
+//	@Summary		批量更新域名监控启用状态
+//	@Tags			域名监控
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.BatchUpdateDomainMonitorActiveRequest			true	"请求参数"
+//	@Success		200		{object}	APIResponse{data=types.GetDomainMonitorRequest}	"成功响应"
+//	@Failure		400		{object}	APIResponse{}									"参数错误"
+//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Router			/domain-monitors/batch/active [patch]
+func BatchUpdateDomainMonitorActive(c *gin.Context) {
+	// 请求参数
+	var requestParams types.BatchUpdateDomainMonitorActiveRequest
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewDomainMonitorService(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog,
+		global.GvaHttpLog,
+		sys_env.GvaEnv.DEBUG,
+	)
+
+	// 调用
+	err := service.BatchUpdateDomainMonitorActive(c, requestParams.IDS, requestParams.IsActive)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, nil)
 }
 
 // 删除域名监控
@@ -259,14 +298,14 @@ func DeleteDomainMonitor(c *gin.Context) {
 //	@Tags			域名监控
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			ids	body		types.DeleteDomainMonitorBatchRequest	true	"域名监控序号列表"
+//	@Param			ids	body		types.BatchDeleteDomainMonitorRequest	true	"域名监控序号列表"
 //	@Success		200	{object}	APIResponse{}							"成功响应"
 //	@Failure		400	{object}	APIResponse{}							"参数错误"
 //	@Failure		404	{object}	APIResponse{}							"错误响应"
 //	@Router			/domain-monitors/batch [delete]
-func DeleteDomainMonitorBatch(c *gin.Context) {
+func BatchDeleteDomainMonitor(c *gin.Context) {
 	// 请求参数
-	var requestParams types.DeleteDomainMonitorBatchRequest
+	var requestParams types.BatchDeleteDomainMonitorRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
@@ -283,7 +322,7 @@ func DeleteDomainMonitorBatch(c *gin.Context) {
 	)
 
 	// 调用
-	err := service.DeleteDomainMonitors(c, requestParams.IDS)
+	err := service.BatchDeleteDomainMonitor(c, requestParams.IDS)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

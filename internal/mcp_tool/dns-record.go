@@ -131,12 +131,12 @@ func updateDnsRecordActive(ctx context.Context, req *mcp.CallToolRequest, params
 	)
 
 	// 调用
-	response, err := service.UpdateDnsRecordActive(ctx, params)
+	err := service.UpdateDnsRecordActive(ctx, params.ID, params.IsActive)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 删除DNS记录

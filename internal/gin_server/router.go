@@ -129,33 +129,35 @@ func (m *GinServerManager) setupApiRouter() {
 			platformConfigs.POST("", handlers.CreatePlatformConfig)              // 创建平台配置
 			platformConfigs.PATCH("/:id", handlers.UpdatePlatformConfig)         // 更新平台配置
 			platformConfigs.DELETE("/:id", handlers.DeletePlatformConfig)        // 删除平台配置
-			platformConfigs.DELETE("/batch", handlers.DeletePlatformConfigBatch) // 批量删除平台配置
+			platformConfigs.DELETE("/batch", handlers.BatchDeletePlatformConfig) // 批量删除平台配置
 		}
 
 		// CDN记录管理相关API
 		cdnRecords := api.Group("/cdn-records")
 		{
-			cdnRecords.GET("", handlers.GetCdnRecords)                         // 获取全部CDN记录
-			cdnRecords.GET("/:id", handlers.GetCdnRecordDetail)                // 获取CDN记录详情
-			cdnRecords.POST("", handlers.CreateCdnRecord)                      // 创建CDN记录
-			cdnRecords.PATCH("/:id", handlers.UpdateCdnRecord)                 // 更新CDN记录
-			cdnRecords.PATCH("/:id/active", handlers.UpdateCdnRecordActive)    // 更新CDN记录启用状态
-			cdnRecords.DELETE("/:id", handlers.DeleteCdnRecord)                // 删除CDN记录
-			cdnRecords.DELETE("/batch", handlers.DeleteCdnRecordBatch)         // 批量删除CDN记录
-			cdnRecords.GET("/:id/health-check", handlers.HealthCheckCdnRecord) // 检查CDN记录健康状态
+			cdnRecords.GET("", handlers.GetCdnRecords)                             // 获取全部CDN记录
+			cdnRecords.GET("/:id", handlers.GetCdnRecordDetail)                    // 获取CDN记录详情
+			cdnRecords.POST("", handlers.CreateCdnRecord)                          // 创建CDN记录
+			cdnRecords.PATCH("/:id", handlers.UpdateCdnRecord)                     // 更新CDN记录
+			cdnRecords.PATCH("/:id/active", handlers.UpdateCdnRecordActive)        // 更新CDN记录启用状态
+			cdnRecords.PATCH("/batch/active", handlers.BatchUpdateCdnRecordActive) // 批量更新CDN记录启用状态
+			cdnRecords.DELETE("/:id", handlers.DeleteCdnRecord)                    // 删除CDN记录
+			cdnRecords.DELETE("/batch", handlers.BatchDeleteCdnRecord)             // 批量删除CDN记录
+			cdnRecords.GET("/:id/health-check", handlers.HealthCheckCdnRecord)     // 检查CDN记录健康状态
 		}
 
 		// DNS记录管理相关API
 		dnsRecords := api.Group("/dns-records")
 		{
-			dnsRecords.GET("", handlers.GetDnsRecords)                         // 获取全部DNS记录
-			dnsRecords.GET("/:id", handlers.GetDnsRecordDetail)                // 获取DNS记录详情
-			dnsRecords.POST("", handlers.CreateDnsRecord)                      // 创建DNS记录
-			dnsRecords.PATCH("/:id", handlers.UpdateDnsRecord)                 // 更新DNS记录
-			dnsRecords.PATCH("/:id/active", handlers.UpdateDnsRecordActive)    // 更新DNS记录启用状态
-			dnsRecords.DELETE("/:id", handlers.DeleteDnsRecord)                // 删除DNS记录
-			dnsRecords.DELETE("/batch", handlers.DeleteDnsRecordBatch)         // 批量删除DNS记录
-			dnsRecords.GET("/:id/health-check", handlers.HealthCheckDnsRecord) // 检查DNS记录健康状态
+			dnsRecords.GET("", handlers.GetDnsRecords)                             // 获取全部DNS记录
+			dnsRecords.GET("/:id", handlers.GetDnsRecordDetail)                    // 获取DNS记录详情
+			dnsRecords.POST("", handlers.CreateDnsRecord)                          // 创建DNS记录
+			dnsRecords.PATCH("/:id", handlers.UpdateDnsRecord)                     // 更新DNS记录
+			dnsRecords.PATCH("/:id/active", handlers.UpdateDnsRecordActive)        // 更新DNS记录启用状态
+			dnsRecords.PATCH("/batch/active", handlers.BatchUpdateDnsRecordActive) // 批量更新DNS记录启用状态
+			dnsRecords.DELETE("/:id", handlers.DeleteDnsRecord)                    // 删除DNS记录
+			dnsRecords.DELETE("/batch", handlers.BatchDeleteDnsRecord)             // 批量删除DNS记录
+			dnsRecords.GET("/:id/health-check", handlers.HealthCheckDnsRecord)     // 检查DNS记录健康状态
 		}
 
 		// 设备相关API
@@ -166,7 +168,7 @@ func (m *GinServerManager) setupApiRouter() {
 			devices.POST("", handlers.CreateDevice)                                    // 创建设备
 			devices.PATCH("/:id", handlers.UpdateDevice)                               // 更新设备
 			devices.DELETE("/:id", handlers.DeleteDevice)                              // 删除设备
-			devices.DELETE("/batch", handlers.DeleteDeviceBatch)                       // 批量删除设备
+			devices.DELETE("/batch", handlers.BatchDeleteDevice)                       // 批量删除设备
 			devices.GET("/:id/ip-history", handlers.GetDeviceIpHistory)                // 获取设备IP历史记录
 			devices.GET("/:id/health-check", handlers.HealthCheckDevice)               // 检查设备健康状态
 			devices.GET("/:id/port-forward/stats", handlers.GetDevicePortForwardStats) // 获取设备端口转发统计数据
@@ -180,7 +182,7 @@ func (m *GinServerManager) setupApiRouter() {
 			ipGroups.POST("", handlers.CreateIPGroup)                      // 创建IP组
 			ipGroups.PATCH("/:id", handlers.UpdateIPGroup)                 // 更新IP组
 			ipGroups.DELETE("/:id", handlers.DeleteIPGroup)                // 删除IP组
-			ipGroups.DELETE("/batch", handlers.DeleteIPGroupBatch)         // 批量删除IP组
+			ipGroups.DELETE("/batch", handlers.BatchDeleteIPGroup)         // 批量删除IP组
 			ipGroups.GET("/:id/devices", handlers.GetIPGroupDevices)       // 获取IP组设备
 			ipGroups.GET("/:id/health-check", handlers.HealthCheckIPGroup) // 检查IP组健康状态
 		}
@@ -188,16 +190,17 @@ func (m *GinServerManager) setupApiRouter() {
 		// 端口转发相关API
 		portForwards := api.Group("/port-forwards")
 		{
-			portForwards.GET("", handlers.GetPortForwards)                         // 获取全部端口转发
-			portForwards.GET("/:id", handlers.GetPortForwardDetail)                // 获取端口转发详情
-			portForwards.POST("", handlers.CreatePortForward)                      // 创建端口转发
-			portForwards.PATCH("/:id", handlers.UpdatePortForward)                 // 更新端口转发
-			portForwards.PATCH("/:id/forward", handlers.UpdatePortForwardForward)  // 更新端口转发防火墙状态
-			portForwards.PATCH("/:id/active", handlers.UpdatePortForwardActive)    // 更新端口转发启用状态
-			portForwards.DELETE("/:id", handlers.DeletePortForward)                // 删除端口转发
-			portForwards.DELETE("/batch", handlers.DeletePortForwardBatch)         // 批量删除端口转发
-			portForwards.GET("/:id/health-check", handlers.HealthCheckPortForward) // 检查端口转发健康状态
-			portForwards.GET("/:id/stats", handlers.GetPortForwardStats)           // 获取端口转发统计数据
+			portForwards.GET("", handlers.GetPortForwards)                             // 获取全部端口转发
+			portForwards.GET("/:id", handlers.GetPortForwardDetail)                    // 获取端口转发详情
+			portForwards.POST("", handlers.CreatePortForward)                          // 创建端口转发
+			portForwards.PATCH("/:id", handlers.UpdatePortForward)                     // 更新端口转发
+			portForwards.PATCH("/:id/forward", handlers.UpdatePortForwardForward)      // 更新端口转发防火墙状态
+			portForwards.PATCH("/:id/active", handlers.UpdatePortForwardActive)        // 更新端口转发启用状态
+			portForwards.PATCH("/batch/active", handlers.BatchUpdatePortForwardActive) // 批量更新端口转发启用状态
+			portForwards.DELETE("/:id", handlers.DeletePortForward)                    // 删除端口转发
+			portForwards.DELETE("/batch", handlers.BatchDeletePortForward)             // 批量删除端口转发
+			portForwards.GET("/:id/health-check", handlers.HealthCheckPortForward)     // 检查端口转发健康状态
+			portForwards.GET("/:id/stats", handlers.GetPortForwardStats)               // 获取端口转发统计数据
 		}
 
 		// SSL记录管理相关API
@@ -209,8 +212,9 @@ func (m *GinServerManager) setupApiRouter() {
 			sslRecords.PATCH("/:id", handlers.UpdateSSLRecord)                             // 更新SSL记录
 			sslRecords.PATCH("/:id/auto-renewal", handlers.UpdateSSLRecordAutoRenewal)     // 更新SSL记录自动续费状态
 			sslRecords.PATCH("/:id/active", handlers.UpdateSSLRecordActive)                // 更新SSL记录启用状态
+			sslRecords.PATCH("/batch/active", handlers.BatchUpdateSSLRecordActive)         // 批量更新SSL记录启用状态
 			sslRecords.DELETE("/:id", handlers.DeleteSSLRecord)                            // 删除SSL记录
-			sslRecords.DELETE("/batch", handlers.DeleteSSLRecordBatch)                     // 批量删除SSL记录
+			sslRecords.DELETE("/batch", handlers.BatchDeleteSSLRecord)                     // 批量删除SSL记录
 			sslRecords.POST("/:id/apply", handlers.ApplySSLRecord)                         // 申请新的SSL证书
 			sslRecords.GET("/:id/history/:history_id", handlers.GetSSLRecordHistoryDetail) // 获取SSL记录历史详情
 		}
@@ -218,36 +222,39 @@ func (m *GinServerManager) setupApiRouter() {
 		// 域名监控相关API
 		domainMonitors := api.Group("/domain-monitors")
 		{
-			domainMonitors.GET("", handlers.GetDomainMonitors)                      // 获取所有域名监控
-			domainMonitors.GET("/:id", handlers.GetDomainMonitorDetail)             // 获取域名监控详情
-			domainMonitors.POST("", handlers.CreateDomainMonitor)                   // 创建域名监控
-			domainMonitors.PATCH("/:id", handlers.UpdateDomainMonitor)              // 更新域名监控
-			domainMonitors.PATCH("/:id/active", handlers.UpdateDomainMonitorActive) // 更新域名监控启用状态
-			domainMonitors.DELETE("/:id", handlers.DeleteDomainMonitor)             // 删除域名监控
-			domainMonitors.DELETE("/batch", handlers.DeleteDomainMonitorBatch)      // 批量删除域名监控
-			domainMonitors.POST("/:id/check", handlers.CheckDomainMonitor)          // 检查域名监控
+			domainMonitors.GET("", handlers.GetDomainMonitors)                             // 获取所有域名监控
+			domainMonitors.GET("/:id", handlers.GetDomainMonitorDetail)                    // 获取域名监控详情
+			domainMonitors.POST("", handlers.CreateDomainMonitor)                          // 创建域名监控
+			domainMonitors.PATCH("/:id", handlers.UpdateDomainMonitor)                     // 更新域名监控
+			domainMonitors.PATCH("/:id/active", handlers.UpdateDomainMonitorActive)        // 更新域名监控启用状态
+			domainMonitors.PATCH("/batch/active", handlers.BatchUpdateDomainMonitorActive) // 批量更新域名监控启用状态
+			domainMonitors.DELETE("/:id", handlers.DeleteDomainMonitor)                    // 删除域名监控
+			domainMonitors.DELETE("/batch", handlers.BatchDeleteDomainMonitor)             // 批量删除域名监控
+			domainMonitors.POST("/:id/check", handlers.CheckDomainMonitor)                 // 检查域名监控
 		}
 
 		// 通知相关API
 		webhooks := api.Group("/webhooks")
 		{
-			webhooks.GET("", handlers.GetWebhooks)                      // 获取全部通知
-			webhooks.GET("/:id", handlers.GetWebhookDetail)             // 获取通知详情
-			webhooks.POST("", handlers.CreateWebhook)                   // 创建通知
-			webhooks.PATCH("/:id", handlers.UpdateWebhook)              // 更新通知
-			webhooks.PATCH("/:id/active", handlers.UpdateWebhookActive) // 更新通知启用状态
-			webhooks.DELETE("/:id", handlers.DeleteWebhook)             // 删除通知
-			webhooks.DELETE("/batch", handlers.DeleteWebhookBatch)      // 批量删除通知
-			webhooks.POST("/:id/test", handlers.TestWebhook)            // 测试通知
+			webhooks.GET("", handlers.GetWebhooks)                             // 获取全部通知
+			webhooks.GET("/:id", handlers.GetWebhookDetail)                    // 获取通知详情
+			webhooks.POST("", handlers.CreateWebhook)                          // 创建通知
+			webhooks.PATCH("/:id", handlers.UpdateWebhook)                     // 更新通知
+			webhooks.PATCH("/:id/active", handlers.UpdateWebhookActive)        // 更新通知启用状态
+			webhooks.PATCH("/batch/active", handlers.BatchUpdateWebhookActive) // 批量更新通知启用状态
+			webhooks.DELETE("/:id", handlers.DeleteWebhook)                    // 删除通知
+			webhooks.DELETE("/batch", handlers.BatchDeleteWebhook)             // 批量删除通知
+			webhooks.POST("/:id/test", handlers.TestWebhook)                   // 测试通知
 		}
 
 		// 通知订阅相关API
 		webhookSubs := api.Group("/webhook-subs")
 		{
-			webhookSubs.GET("", handlers.GetWebhookSubs)                      // 获取全部通知订阅
-			webhookSubs.PATCH("/:id/active", handlers.UpdateWebhookSubActive) // 更新通知订阅启用状态
-			webhookSubs.DELETE("/:id", handlers.DeleteWebhookSub)             // 删除通知订阅
-			webhookSubs.DELETE("/batch", handlers.DeleteWebhookSubBatch)      // 批量删除通知订阅
+			webhookSubs.GET("", handlers.GetWebhookSubs)                             // 获取全部通知订阅
+			webhookSubs.PATCH("/:id/active", handlers.UpdateWebhookSubActive)        // 更新通知订阅启用状态
+			webhookSubs.PATCH("/batch/active", handlers.BatchUpdateWebhookSubActive) // 批量更新通知订阅启用状态
+			webhookSubs.DELETE("/:id", handlers.DeleteWebhookSub)                    // 删除通知订阅
+			webhookSubs.DELETE("/batch", handlers.BatchDeleteWebhookSub)             // 批量删除通知订阅
 		}
 
 		// 任务相关API

@@ -24,9 +24,10 @@ type DomainMonitorService interface {
 	GetDomainMonitor(ctx context.Context, id int64) (*types.GetDomainMonitorResponse, error)
 	CreateDomainMonitor(ctx context.Context, request *types.CreateDomainMonitorRequest) (*types.GetDomainMonitorRequest, error)
 	UpdateDomainMonitor(ctx context.Context, request *types.UpdateDomainMonitorRequest) (*types.GetDomainMonitorRequest, error)
-	UpdateDomainMonitorActive(ctx context.Context, request *types.UpdateDomainMonitorActiveRequest) (*types.GetDomainMonitorRequest, error)
+	UpdateDomainMonitorActive(ctx context.Context, id int64, isActive bool) error
+	BatchUpdateDomainMonitorActive(ctx context.Context, ids []int64, isActive bool) error
 	DeleteDomainMonitor(ctx context.Context, id int64) error
-	DeleteDomainMonitors(ctx context.Context, ids []int64) error
+	BatchDeleteDomainMonitor(ctx context.Context, ids []int64) error
 	CheckDomainMonitor(ctx context.Context, id int64) (*types.GetDomainMonitorRequest, error)
 }
 
@@ -188,28 +189,55 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitor(ctx context.Context, requ
 }
 
 // UpdateDomainMonitorActive 更新域名监控启用状态
-func (s *DomainMonitorServiceImpl) UpdateDomainMonitorActive(ctx context.Context, request *types.UpdateDomainMonitorActiveRequest) (*types.GetDomainMonitorRequest, error) {
+func (s *DomainMonitorServiceImpl) UpdateDomainMonitorActive(ctx context.Context, id int64, isActive bool) error {
 	// 查询域名监控
 	firstDomainMonitor, err := s.db.DomainMonitor.Query().
-		Where(domainmonitor.IDEQ(request.ID)).
+		Where(domainmonitor.IDEQ(id)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询域名监控失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询域名监控失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询域名监控失败: %w", err)
-	}
-	// 更新域名监控状态
-	saveDomainMonitor, err := s.db.DomainMonitor.UpdateOne(firstDomainMonitor).
-		SetIsActive(request.IsActive).
-		Save(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("更新域名监控启用状态失败: %w", err)
+		return fmt.Errorf("查询域名监控失败: %w", err)
 	}
 
-	return &types.GetDomainMonitorRequest{
-		ID: saveDomainMonitor.ID,
-	}, nil
+	// 更新域名监控状态
+	err = s.db.DomainMonitor.UpdateOne(firstDomainMonitor).
+		SetIsActive(isActive).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("更新域名监控启用状态失败: %w", err)
+	}
+
+	return nil
+}
+
+// BatchUpdateDomainMonitorActive 批量更新域名监控启用状态
+func (s *DomainMonitorServiceImpl) BatchUpdateDomainMonitorActive(ctx context.Context, ids []int64, isActive bool) error {
+	// 查询域名监控
+	allDomainMonitor, err := s.db.DomainMonitor.Query().
+		Where(domainmonitor.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return fmt.Errorf("查询域名监控失败: 记录不存在或 %w", err)
+		}
+		return fmt.Errorf("查询域名监控失败: %w", err)
+	}
+	if len(allDomainMonitor) != len(ids) {
+		return fmt.Errorf("查询域名监控失败: 数量 %d 与请求数量 %d 不匹配", len(allDomainMonitor), len(ids))
+	}
+
+	// 更新域名监控状态
+	err = s.db.DomainMonitor.Update().
+		Where(domainmonitor.IDIn(ids...)).
+		SetIsActive(isActive).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("更新域名监控启用状态失败: %w", err)
+	}
+
+	return nil
 }
 
 // DeleteDomainMonitor 删除域名监控
@@ -241,8 +269,8 @@ func (s *DomainMonitorServiceImpl) DeleteDomainMonitor(ctx context.Context, id i
 	return nil
 }
 
-// DeleteDomainMonitors 批量删除域名监控
-func (s *DomainMonitorServiceImpl) DeleteDomainMonitors(ctx context.Context, ids []int64) error {
+// BatchDeleteDomainMonitor 批量删除域名监控
+func (s *DomainMonitorServiceImpl) BatchDeleteDomainMonitor(ctx context.Context, ids []int64) error {
 
 	// 创建事务
 	tx, err := s.db.Tx(ctx)

@@ -71,13 +71,19 @@ type UpdateSSLRecordActiveRequest struct {
 	IsActive bool `json:"is_active,omitempty" jsonschema:"是否活跃"` // 是否活跃
 }
 
+// 批量更新 SSL 记录状态 请求结构
+type BatchUpdateSSLRecordActiveRequest struct {
+	BatchDeleteSSLRecordRequest
+	IsActive bool `json:"is_active,omitempty" jsonschema:"是否活跃"` // 是否活跃
+}
+
 // 删除 SSL 记录 请求结构
 type DeleteSSLRecordRequest struct {
 	GetSSLRecordRequest
 }
 
 // 批量删除 SSL 记录 请求结构
-type DeleteSSLRecordBatchRequest struct {
+type BatchDeleteSSLRecordRequest struct {
 	IDS []int64 `json:"ids" binding:"required" jsonschema:"SSL记录的唯一标识符列表"` // SSL记录序号列表
 }
 

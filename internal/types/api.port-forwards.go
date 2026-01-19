@@ -63,13 +63,19 @@ type UpdatePortForwardActiveRequest struct {
 	IsActive bool `json:"is_active,omitempty" jsonschema:"是否活跃该端口转发记录"` // 是否活跃
 }
 
+// 批量更新端口转发状态 请求结构
+type BatchUpdatePortForwardActiveRequest struct {
+	BatchDeletePortForwardRequest
+	IsActive bool `json:"is_active,omitempty" jsonschema:"是否活跃"` // 是否活跃
+}
+
 // 删除端口转发 请求结构
 type DeletePortForwardRequest struct {
 	GetPortForwardRequest
 }
 
 // 批量删除端口转发 请求结构
-type DeletePortForwardBatchRequest struct {
+type BatchDeletePortForwardRequest struct {
 	IDS []int64 `json:"ids" binding:"required" jsonschema:"端口转发记录的唯一标识符列表"` // 端口转发记录序号列表
 }
 

@@ -17,7 +17,7 @@ type PlatformConfigService interface {
 	CreateConfig(ctx context.Context, request *types.CreatePlatformConfigRequest) (*types.GetPlatformConfigRequest, error)
 	UpdateConfig(ctx context.Context, request *types.UpdatePlatformConfigRequest) (*types.GetPlatformConfigRequest, error)
 	DeleteConfig(ctx context.Context, id int64) error
-	DeleteConfigs(ctx context.Context, ids []int64) error
+	BatchDeleteConfig(ctx context.Context, ids []int64) error
 }
 
 // PlatformConfigServiceImpl 配置服务实现
@@ -167,8 +167,8 @@ func (s *PlatformConfigServiceImpl) DeleteConfig(ctx context.Context, id int64) 
 	return nil
 }
 
-// DeleteConfigs 批量删除配置
-func (s *PlatformConfigServiceImpl) DeleteConfigs(ctx context.Context, ids []int64) error {
+// BatchDeleteConfig 批量删除配置
+func (s *PlatformConfigServiceImpl) BatchDeleteConfig(ctx context.Context, ids []int64) error {
 
 	// 创建事务
 	tx, err := s.db.Tx(ctx)

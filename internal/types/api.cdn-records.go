@@ -63,13 +63,19 @@ type UpdateCdnRecordActiveRequest struct {
 	IsActive bool `json:"is_active,omitempty" jsonschema:"是否活跃"` // 是否活跃
 }
 
+// 批量更新CDN记录状态 请求结构
+type BatchUpdateCdnRecordActiveRequest struct {
+	BatchDeleteCdnRecordRequest
+	IsActive bool `json:"is_active,omitempty" jsonschema:"是否活跃"` // 是否活跃
+}
+
 // 删除CDN记录 请求结构
 type DeleteCdnRecordRequest struct {
 	GetCdnRecordRequest
 }
 
 // 批量删除CDN记录 请求结构
-type DeleteCdnRecordBatchRequest struct {
+type BatchDeleteCdnRecordRequest struct {
 	IDS []int64 `json:"ids" binding:"required" jsonschema:"CDN记录的唯一标识符列表"` // CDN记录序号列表
 }
 
