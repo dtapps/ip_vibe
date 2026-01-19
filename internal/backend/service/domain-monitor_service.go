@@ -263,6 +263,14 @@ func (s *DomainMonitorServiceImpl) DeleteDomainMonitors(ctx context.Context, ids
 		return fmt.Errorf("查询域名监控失败: 数量 %d 与请求数量 %d 不匹配", len(allDomainMonitor), len(ids))
 	}
 
+	// 检查是否存在启用的域名监控
+	for _, item := range allDomainMonitor {
+		if item.IsActive {
+			tx.Rollback()
+			return fmt.Errorf("删除域名监控失败: 存在启用的域名监控")
+		}
+	}
+
 	// 删除域名监控
 	_, err = tx.DomainMonitor.Delete().
 		Where(domainmonitor.IDIn(ids...)).

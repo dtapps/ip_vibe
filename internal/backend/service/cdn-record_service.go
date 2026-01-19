@@ -274,6 +274,14 @@ func (s *CDNRecordServiceImpl) DeleteCdnRecords(ctx context.Context, ids []int64
 		return fmt.Errorf("查询CDN记录失败: 数量 %d 与请求数量 %d 不匹配", len(allCdnRecord), len(ids))
 	}
 
+	// 检查是否存在启用的CDN记录
+	for _, item := range allCdnRecord {
+		if item.IsActive {
+			tx.Rollback()
+			return fmt.Errorf("删除CDN记录失败: 存在启用的CDN记录")
+		}
+	}
+
 	// 删除CDN记录
 	_, err = tx.CDNRecord.Delete().
 		Where(cdnrecord.IDIn(ids...)).

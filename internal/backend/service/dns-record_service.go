@@ -294,6 +294,14 @@ func (s *DNSRecordServiceImpl) DeleteDnsRecords(ctx context.Context, ids []int64
 		return fmt.Errorf("查询DNS记录失败: 数量 %d 与请求数量 %d 不匹配", len(allDnsRecord), len(ids))
 	}
 
+	// 检查是否存在启用的DNS记录
+	for _, item := range allDnsRecord {
+		if item.IsActive {
+			tx.Rollback()
+			return fmt.Errorf("删除DNS记录失败: 存在启用的DNS记录")
+		}
+	}
+
 	// 删除DNS记录
 	_, err = tx.DNSRecord.Delete().
 		Where(dnsrecord.IDIn(ids...)).

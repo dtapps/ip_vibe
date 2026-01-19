@@ -8,7 +8,7 @@
 {{ $pageSize := .Data.PageSize }}
 {{ $baseWebUrlPath := .CurrentPath }}
 {{ $baseWebUrlPathWithQuery := .CurrentPathWithQuery }}
-{{ $baseApiUrlPath := printf "/api%s" $baseWebUrlPath }}
+{{ $baseApiUrlPath := printf "/api%ss" $baseWebUrlPath }}
 
 <h1 class="text-3xl font-black mb-10 pl-4 text-base-content flex items-center gap-3 uppercase tracking-tighter">
   {{ template "icons" (dict "Name" "i-lucide-history" "Class" "w-8 h-8 text-primary") }}

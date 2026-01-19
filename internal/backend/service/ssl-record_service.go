@@ -302,6 +302,14 @@ func (s *SSLRecordServiceImpl) DeleteSSLRecords(ctx context.Context, ids []int64
 		return fmt.Errorf("查询SSL记录失败: 数量 %d 与请求数量 %d 不匹配", len(allSSLRecord), len(ids))
 	}
 
+	// 检查是否存在启用的SSL记录
+	for _, item := range allSSLRecord {
+		if item.IsActive {
+			tx.Rollback()
+			return fmt.Errorf("删除SSL记录失败: 存在启用的SSL记录")
+		}
+	}
+
 	// 删除SSL记录
 	_, err = tx.SSLRecord.Delete().
 		Where(sslrecord.IDIn(ids...)).

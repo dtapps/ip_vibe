@@ -295,6 +295,14 @@ func (s *WebhookSubServiceImpl) DeleteWebhookSubs(ctx context.Context, ids []int
 		return fmt.Errorf("查询通知订阅失败: 数量 %d 与请求数量 %d 不匹配", len(allWebhookSubscription), len(ids))
 	}
 
+	// 检查是否存在启用的通知订阅
+	for _, item := range allWebhookSubscription {
+		if item.IsActive {
+			tx.Rollback()
+			return fmt.Errorf("删除通知订阅失败: 存在启用的通知订阅")
+		}
+	}
+
 	// 删除通知订阅
 	_, err = tx.WebhookSubscription.Delete().
 		Where(webhooksubscription.IDIn(ids...)).
