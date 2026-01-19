@@ -213,7 +213,7 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 			p.InternalData.RecordID = cast.ToString(tea.Int64Value(item.GetRecordId()))
 
 			// CDN域名
-			p.InternalData.CdnDomain = tea.StringValue(item.GetRecordCname())
+			p.InternalData.CdnDomain = utils.TrimDotsPrt(item.GetRecordCname())
 
 			// 判断记录值列表
 			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {

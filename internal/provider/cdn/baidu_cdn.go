@@ -221,7 +221,7 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 	// p.InternalData.RecordID = responseInfo.DomainID
 
 	// CDN域名
-	p.InternalData.CdnDomain = responseInfo.Cname
+	p.InternalData.CdnDomain = utils.TrimDots(responseInfo.Cname)
 
 	// 判断记录值列表
 	if !utils.EqualUrlSliceUnordered(itemOriginValues, originValues) {
