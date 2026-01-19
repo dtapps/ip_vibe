@@ -68,6 +68,14 @@
         </div>
     </div>
 
+    <!-- 表格搜索 -->
+    {{ if or (eq $filter.Type "http_log") (eq $filter.Type "resty_log") (eq $filter.Type "req_log") }}
+    {{ template "pages/log-content_filter.html" (dict
+    "Action" $baseWebUrlPathWithQuery
+    "Filter" $filter
+    )}}
+    {{ end }}
+
     <div class="p-8">
         {{ if or (eq $filter.Type "http_log") (eq $filter.Type "resty_log") (eq $filter.Type "req_log") }}
         <div class="ui-table-container border border-base-200 rounded-2xl overflow-hidden">

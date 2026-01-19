@@ -37,6 +37,7 @@ func LogContent(c *gin.Context) {
 
 		// 查询全部日志
 		allHttpLog, err := global.GvaEntLogDb.HttpLog.Query().
+			WhereIf(requestParams.ID != 0, httplog.IDEQ(requestParams.ID)).
 			WhereIf(requestParams.Hostname != "", httplog.HostnameEQ(requestParams.Hostname)).
 			WhereIf(requestParams.Method != "", httplog.MethodEQ(requestParams.Method)).
 			WhereIf(requestParams.StatusCode != 0, httplog.StatusCodeEQ(requestParams.StatusCode)).
@@ -56,6 +57,7 @@ func LogContent(c *gin.Context) {
 
 		// 查询全部日志
 		allRestyLog, err := global.GvaEntLogDb.RestyLog.Query().
+			WhereIf(requestParams.ID != 0, restylog.IDEQ(requestParams.ID)).
 			WhereIf(requestParams.Hostname != "", restylog.HostnameEQ(requestParams.Hostname)).
 			WhereIf(requestParams.Method != "", restylog.MethodEQ(requestParams.Method)).
 			WhereIf(requestParams.StatusCode != 0, restylog.StatusCodeEQ(requestParams.StatusCode)).
@@ -75,6 +77,7 @@ func LogContent(c *gin.Context) {
 
 		// 查询全部日志
 		allReqLog, err := global.GvaEntLogDb.ReqLog.Query().
+			WhereIf(requestParams.ID != 0, reqlog.IDEQ(requestParams.ID)).
 			WhereIf(requestParams.Hostname != "", reqlog.HostnameEQ(requestParams.Hostname)).
 			WhereIf(requestParams.Method != "", reqlog.MethodEQ(requestParams.Method)).
 			WhereIf(requestParams.StatusCode != 0, reqlog.StatusCodeEQ(requestParams.StatusCode)).
