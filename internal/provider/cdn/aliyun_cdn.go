@@ -15,7 +15,6 @@ import (
 	credential "github.com/aliyun/credentials-go/credentials"
 	"github.com/spf13/cast"
 	"go.dtapp.net/library/utils/gojson"
-	"go.dtapp.net/library/utils/gostring"
 )
 
 // AliyunCDNConfig 阿里云 CDN 配置
@@ -257,11 +256,6 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 	originValues = append(originValues, defaultIP)
 
 	for i, addr := range originValues {
-		// 跳过空地址
-		if gostring.TrimSpace(addr) == "" {
-			continue
-		}
-
 		// 判断是否是默认测试地址
 		isDefaultTestIP := (addr == defaultIP)
 

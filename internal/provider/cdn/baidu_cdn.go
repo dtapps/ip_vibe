@@ -11,7 +11,6 @@ import (
 	"github.com/baidubce/bce-sdk-go/services/cdn"
 	"github.com/baidubce/bce-sdk-go/services/cdn/api"
 	"github.com/spf13/cast"
-	"go.dtapp.net/library/utils/gostring"
 )
 
 // BaiduCDNConfig 百度云 CDN 配置
@@ -139,6 +138,11 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
+	// 源站配置
+	for i, source := range newOriginValues {
+		newOriginValues[i] = fmt.Sprintf("http://[%s]:80", source)
+	}
+
 	// 请求 查询用户名下所有域名
 	responseList, err := p.Provider.Client.GetDomainStatus("ALL", "")
 	if err != nil {
@@ -216,18 +220,13 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 }
 
 // Update 更新 CDN 记录
-// https://next.api.aliyun.com/api/Cdn/2018-05-10/AddCdnDomain
-// https://next.api.aliyun.com/api/Cdn/2018-05-10/ModifyCdnDomain
+// https://cloud.baidu.com/doc/CDN/s/Fk121xrty#创建加速域名接口-createdomain
+// https://cloud.baidu.com/doc/CDN/s/Vk121slzt#更新加速域名回源地址-setdomainorigin
 func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
 
+	// 源站配置
 	sources := make([]api.OriginPeer, 0)
-
 	for _, source := range originValues {
-		// 跳过空地址
-		if gostring.TrimSpace(source) == "" {
-			continue
-		}
-
 		src := api.OriginPeer{
 			Peer:   fmt.Sprintf("http://[%s]:80", source),
 			Backup: false,
@@ -258,7 +257,8 @@ func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain 
 		}
 
 		// 请求 设置协议跟随回源
-		err = p.Provider.Client.SetFollowProtocol(fullDomain, cast.ToBool(p.CustomConfig.FollowProtocol))
+		// err = p.Provider.Client.SetFollowProtocol(fullDomain, cast.ToBool(p.CustomConfig.FollowProtocol))
+		err = p.Provider.Client.SetOriginProtocol(fullDomain, p.CustomConfig.FollowProtocol)
 		if err != nil {
 			return err
 		}
