@@ -64,7 +64,7 @@ async function openFormModal(id) {
       if (portForward.protocols && portForward.protocols.length > 0) {
         const protocolsSelect = document.getElementById("protocols");
         Array.from(protocolsSelect.options).forEach(
-          (opt) => (opt.selected = portForward.protocols.includes(opt.value))
+          (opt) => (opt.selected = portForward.protocols.includes(opt.value)),
         );
       }
 
@@ -104,7 +104,7 @@ if (form) {
       remote_host: document.getElementById("remote_host").value.trim(),
       remote_port: Number(document.getElementById("remote_port").value.trim()),
       protocols: Array.from(
-        document.getElementById("protocols").selectedOptions
+        document.getElementById("protocols").selectedOptions,
       ).map((opt) => opt.value.trim()),
       device_id: Number(document.getElementById("device_id").value.trim()),
     };
@@ -149,20 +149,6 @@ if (form) {
   console.warn("未找到表单，跳过 onsubmit 绑定");
 }
 
-// 删除
-async function onDelete(id) {
-  if (confirm("确定删除此 端口转发？")) {
-    try {
-      await API.delete(`/api/port-forwards/${id}`);
-      // 刷新页面
-      location.reload();
-    } catch (error) {
-      alert(`删除失败: ${error.message}`);
-      console.error("删除端口转发失败", error);
-    }
-  }
-}
-
 // 打开 检测 弹窗
 async function onHealthcheckPopup(id) {
   // 显示 loading 弹窗
@@ -170,7 +156,7 @@ async function onHealthcheckPopup(id) {
 
   try {
     const { data: portForwardHealthcheck } = await API.get(
-      `/api/port-forwards/${id}/health-check`
+      `/api/port-forwards/${id}/health-check`,
     );
     console.log("portForwardHealthcheck", portForwardHealthcheck);
     if (!portForwardHealthcheck) {
@@ -188,7 +174,7 @@ async function onHealthcheckPopup(id) {
       `实时 检测 IP`,
       formatHealthCheckResult(portForwardHealthcheck),
       portForwardHealthcheck.length,
-      { resetClosedState: true }
+      { resetClosedState: true },
     );
   } catch (error) {
     alert(`加载端口转发检测信息失败: ${error.message}`);

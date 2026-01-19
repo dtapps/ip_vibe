@@ -208,19 +208,19 @@ async function openFormModal(id) {
         case "tencent_dns":
           await fetchAndReplaceDnsSchema(
             dnsRecord.platform,
-            dnsRecord.config_id
+            dnsRecord.config_id,
           );
           break;
         case "aliyun_dns":
           await fetchAndReplaceDnsSchema(
             dnsRecord.platform,
-            dnsRecord.config_id
+            dnsRecord.config_id,
           );
           break;
         case "volcengine_dns":
           await fetchAndReplaceDnsSchema(
             dnsRecord.platform,
-            dnsRecord.config_id
+            dnsRecord.config_id,
           );
           break;
       }
@@ -305,7 +305,7 @@ if (form) {
       type: document.getElementById("type").value.trim(),
       ip_group_id: Number(document.getElementById("ip_group_id").value.trim()),
       cdn_record_id: Number(
-        document.getElementById("cdn_record_id").value.trim()
+        document.getElementById("cdn_record_id").value.trim(),
       ),
       webhook_ids: selectedWebhookIDs.map(Number),
       config_json: document.getElementById("config_json").value.trim(),
@@ -351,20 +351,6 @@ if (form) {
   console.warn("未找到表单，跳过 onsubmit 绑定");
 }
 
-// 删除
-async function onDelete(id) {
-  if (confirm("确定删除此记录？")) {
-    try {
-      await API.delete(`/api/dns-records/${id}`);
-      // 刷新页面
-      location.reload();
-    } catch (error) {
-      alert(`删除失败: ${error.message}`);
-      console.error("删除DNS记录失败", error);
-    }
-  }
-}
-
 // 打开 检测 弹窗
 async function onHealthcheckPopup(id) {
   // 显示 loading 弹窗
@@ -372,7 +358,7 @@ async function onHealthcheckPopup(id) {
 
   try {
     const { data: dnsRecordHealthcheck } = await API.get(
-      `/api/dns-records/${id}/health-check`
+      `/api/dns-records/${id}/health-check`,
     );
     console.log("dnsRecordHealthcheck", dnsRecordHealthcheck);
     if (!dnsRecordHealthcheck) {
@@ -390,7 +376,7 @@ async function onHealthcheckPopup(id) {
       `实时 检测 域名/IP`,
       formatHealthCheckResult(dnsRecordHealthcheck),
       dnsRecordHealthcheck.length,
-      { resetClosedState: true }
+      { resetClosedState: true },
     );
   } catch (error) {
     alert(`加载DNS记录检测信息失败: ${error.message}`);
@@ -402,7 +388,7 @@ async function onHealthcheckPopup(id) {
 async function onLiveIPPopup(id, name) {
   try {
     const { data: ipGroupDevices } = await API.get(
-      `/api/ip-groups/${id}/devices`
+      `/api/ip-groups/${id}/devices`,
     );
     console.log("ipGroupDevices", ipGroupDevices);
     if (!ipGroupDevices) {
@@ -416,7 +402,7 @@ async function onLiveIPPopup(id, name) {
 
     // 格式化 IP 列表
     const preList = ipGroupDevices.map(
-      (d) => `${d.name} - ${d.ip_v4 || "-"} / ${d.ip_v6 || "-"}`
+      (d) => `${d.name} - ${d.ip_v4 || "-"} / ${d.ip_v6 || "-"}`,
     );
 
     // 显示弹窗内容
@@ -424,7 +410,7 @@ async function onLiveIPPopup(id, name) {
       "popup",
       `实时 设备 IP 地址 - ${name}`,
       preList.join("\n"),
-      ipGroupDevices.length
+      ipGroupDevices.length,
     );
   } catch (error) {
     alert(`加载IP组设备信息失败: ${error.message}`);

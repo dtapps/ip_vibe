@@ -254,20 +254,6 @@ if (form) {
   console.warn("未找到表单，跳过 onsubmit 绑定");
 }
 
-// 删除
-async function onDelete(id) {
-  if (confirm("确定删除此记录？")) {
-    try {
-      await API.delete(`/api/cdn-records/${id}`);
-      // 刷新页面
-      location.reload();
-    } catch (error) {
-      alert(`删除失败: ${error.message}`);
-      console.error("删除CDN记录失败", error);
-    }
-  }
-}
-
 // 打开 检测 弹窗
 async function onHealthcheckPopup(id) {
   // 显示 loading 弹窗
@@ -275,7 +261,7 @@ async function onHealthcheckPopup(id) {
 
   try {
     const { data: cdnRecordHealthcheck } = await API.get(
-      `/api/cdn-records/${id}/health-check`
+      `/api/cdn-records/${id}/health-check`,
     );
     console.log("cdnRecordHealthcheck", cdnRecordHealthcheck);
     if (!cdnRecordHealthcheck) {
@@ -293,7 +279,7 @@ async function onHealthcheckPopup(id) {
       `实时 检测 域名/IP`,
       formatHealthCheckResult(cdnRecordHealthcheck),
       cdnRecordHealthcheck.length,
-      { resetClosedState: true }
+      { resetClosedState: true },
     );
   } catch (error) {
     alert(`加载CDN记录检测信息失败: ${error.message}`);
@@ -305,7 +291,7 @@ async function onHealthcheckPopup(id) {
 async function onLiveIPPopup(id, name) {
   try {
     const { data: ipGroupDevices } = await API.get(
-      `/api/ip-groups/${id}/devices`
+      `/api/ip-groups/${id}/devices`,
     );
     console.log("ipGroupDevices", ipGroupDevices);
     if (!ipGroupDevices) {
@@ -319,7 +305,7 @@ async function onLiveIPPopup(id, name) {
 
     // 格式化 IP 列表
     const preList = ipGroupDevices.map(
-      (d) => `${d.name} - ${d.ip_v4 || "-"} / ${d.ip_v6 || "-"}`
+      (d) => `${d.name} - ${d.ip_v4 || "-"} / ${d.ip_v6 || "-"}`,
     );
 
     // 显示弹窗内容
@@ -327,7 +313,7 @@ async function onLiveIPPopup(id, name) {
       "popup",
       `实时 设备 IP 地址 - ${name}`,
       preList.join("\n"),
-      ipGroupDevices.length
+      ipGroupDevices.length,
     );
   } catch (error) {
     alert(`加载IP组设备信息失败: ${error.message}`);

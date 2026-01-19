@@ -330,17 +330,3 @@ async function onTest(id) {
     }
   }
 }
-
-// 删除
-async function onDelete(id) {
-  if (confirm("确定删除此通知？")) {
-    try {
-      await API.delete(`/api/webhooks/${id}`);
-      // 刷新页面
-      location.reload();
-    } catch (error) {
-      alert(`删除失败: ${error.message}`);
-      console.error("删除通知失败", error);
-    }
-  }
-}

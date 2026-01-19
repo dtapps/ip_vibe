@@ -44,7 +44,7 @@ async function openFormModal(id) {
     renderPlatformFields(
       config.platform,
       config.capability,
-      config.config_json
+      config.config_json,
     );
 
     showModal("formModal", "modalTitle", "编辑 平台配置");
@@ -68,7 +68,7 @@ async function openFormModal(id) {
     // 默认渲染字段
     renderPlatformFields(
       document.getElementById("platform").value.trim(),
-      "all"
+      "all",
     );
 
     showModal("formModal", "modalTitle", "添加 平台配置");
@@ -83,7 +83,7 @@ if (form) {
 
     // 自动从动态字段中组装 JSON
     buildConfigFromPlatformFields(
-      document.getElementById("platform").value.trim()
+      document.getElementById("platform").value.trim(),
     );
 
     // 表单数据
@@ -124,18 +124,4 @@ if (form) {
   };
 } else {
   console.warn("未找到表单，跳过 onsubmit 绑定");
-}
-
-// 删除
-async function onDelete(id) {
-  if (confirm("确定删除此配置？相关记录也会被删除")) {
-    try {
-      await API.delete(`/api/platform-configs/${id}`);
-      // 刷新页面
-      location.reload();
-    } catch (error) {
-      alert(`删除失败: ${error.message}`);
-      console.error("删除配置失败", error);
-    }
-  }
 }

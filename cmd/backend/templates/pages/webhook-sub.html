@@ -8,6 +8,7 @@
 {{ $pageSize := .Data.PageSize }}
 {{ $baseWebUrlPath := .CurrentPath }}
 {{ $baseWebUrlPathWithQuery := .CurrentPathWithQuery }}
+{{ $baseApiUrlPath := printf "/api/%s" $baseWebUrlPath }}
 
 <h1 class="text-3xl font-black mb-10 pl-4 text-base-content flex items-center gap-3 uppercase tracking-tighter">
   {{ template "icons" (dict "Name" "i-lucide-bell-plus" "Class" "w-8 h-8 text-primary") }}
@@ -19,6 +20,13 @@
     <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
       {{ template "icons" (dict "Name" "i-lucide-bell-plus") }} 通知订阅
     </h2>
+    <div>
+      <button id="batch_delete_btn" class="hidden btn-ui-error"
+        onclick="handleBatchDelete('{{$baseApiUrlPath}}/batch')">
+        {{ template "icons" (dict "Name" "i-lucide-trash-2") }}
+        批量删除 (<span id="selected_count">0</span>)
+      </button>
+    </div>
   </div>
 
   <!-- 表格搜索 -->
@@ -31,6 +39,10 @@
     <table class="ui-table">
       <thead>
         <tr>
+          <th class="ui-th">
+            <input type="checkbox" class="checkbox checkbox-primary checkbox-sm" id="check_all"
+              onclick="tableSelectAll(this)" />
+          </th>
           <th class="ui-th">名称</th>
           <th class="ui-th">类型</th>
           <th class="ui-th">关联通知 (Webhook)</th>
@@ -44,6 +56,11 @@
         {{ $apiUrlPath := printf "/api/webhook-subs/%d" .ID }}
         {{ $webUrlPath := printf "/webhook-sub/%d" .ID }}
         <tr class="hover:bg-base-200/50 transition-colors">
+          <td class="ui-td">
+            <input type="checkbox" class="checkbox checkbox-sm row-checkbox" value="{{.ID}}"
+              onclick="updateBatchBar()" />
+          </td>
+
           <td class="ui-td font-bold text-base-content">
             {{.Name}}
           </td>

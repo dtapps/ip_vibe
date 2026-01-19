@@ -88,6 +88,12 @@
     @apply btn btn-primary btn-sm rounded-xl font-bold border-none shadow-md px-6;
   }
 
+  /* 只需要加这一行：颜色换成 error(红)，其他完全一样 */
+  .btn-ui-error {
+    @apply btn btn-error btn-sm rounded-xl font-bold border-none shadow-md px-6;
+    color: var(--color-primary-content) !important;
+  }
+
   /* --- 统一开关样式 --- */
   .ui-switch {
     @apply toggle toggle-primary transition-all duration-300 active:scale-95;

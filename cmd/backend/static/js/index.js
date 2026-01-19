@@ -76,7 +76,7 @@ function closeModal(id) {
 function formatHealthCheckResult(healthData) {
   return healthData
     .map((group) =>
-      group.map((item) => `${item.key}: ${item.value || "-"}`).join("\n")
+      group.map((item) => `${item.key}: ${item.value || "-"}`).join("\n"),
     )
     .join("\n--------\n");
 }
@@ -113,7 +113,7 @@ function showPopupContent(
   title = "",
   content = "",
   count = 0,
-  options = {}
+  options = {},
 ) {
   const modal = document.getElementById(idEl);
   const titleEl = document.getElementById(`${idEl}Title`);
@@ -266,4 +266,45 @@ function updateFormFields(configs = []) {
       el.disabled = item.disabled;
     }
   });
+}
+
+/**
+ * 表格全选逻辑
+ */
+function tableSelectAll(master) {
+  const isChecked = master.checked;
+  document.querySelectorAll(".row-checkbox").forEach((cb) => {
+    cb.checked = isChecked;
+  });
+  updateBatchBar(); // 同步 UI
+}
+
+/**
+ * 更新批量操作 UI 状态
+ * 只要点击了复选框（不管是全选还是单选），都要跑这个方法
+ */
+function updateBatchBar() {
+  const allRows = document.querySelectorAll(".row-checkbox");
+  const checkedRows = document.querySelectorAll(".row-checkbox:checked");
+  const checkAll = document.getElementById("check_all");
+  const batchBtn = document.getElementById("batch_delete_btn");
+  const countSpan = document.getElementById("selected_count");
+
+  const count = checkedRows.length;
+
+  // 1. 同步全选框的状态 (半选、全选、不选)
+  if (checkAll) {
+    checkAll.checked = allRows.length === count && allRows.length > 0;
+    checkAll.indeterminate = count > 0 && count < allRows.length;
+  }
+
+  // 2. 控制批量按钮显示/隐藏
+  if (batchBtn) {
+    if (count > 0) {
+      countSpan.innerText = count;
+      batchBtn.classList.remove("hidden"); // 显示
+    } else {
+      batchBtn.classList.add("hidden"); // 隐藏
+    }
+  }
 }

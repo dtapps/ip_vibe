@@ -156,20 +156,6 @@ if (form) {
   console.warn("未找到表单，跳过 onsubmit 绑定");
 }
 
-// 删除
-async function onDelete(id) {
-  if (confirm("确定删除此设备？")) {
-    try {
-      await API.delete(`/api/devices/${id}`);
-      // 刷新页面
-      location.reload();
-    } catch (error) {
-      alert(`删除失败: ${error.message}`);
-      console.error("删除设备失败", error);
-    }
-  }
-}
-
 // 打开 检测 弹窗
 async function onHealthcheckPopup(id) {
   // 显示 loading 弹窗
@@ -177,7 +163,7 @@ async function onHealthcheckPopup(id) {
 
   try {
     const { data: deviceHealthcheck } = await API.get(
-      `/api/devices/${id}/health-check`
+      `/api/devices/${id}/health-check`,
     );
     console.log("deviceHealthcheck", deviceHealthcheck);
     if (!deviceHealthcheck) {
@@ -195,7 +181,7 @@ async function onHealthcheckPopup(id) {
       `实时 检测 IP`,
       formatHealthCheckResult(deviceHealthcheck),
       deviceHealthcheck.length,
-      { resetClosedState: true }
+      { resetClosedState: true },
     );
   } catch (error) {
     alert(`加载设备检测信息失败: ${error.message}`);
@@ -207,7 +193,7 @@ async function onHealthcheckPopup(id) {
 async function onHistoryIPPopup(id, name) {
   try {
     const { data: deviceIpHistory } = await API.get(
-      `/api/devices/${id}/ip-history`
+      `/api/devices/${id}/ip-history`,
     );
     console.log("deviceIpHistory", deviceIpHistory);
     if (!deviceIpHistory) {
@@ -221,7 +207,7 @@ async function onHistoryIPPopup(id, name) {
 
     // 格式化 IP 列表
     const preList = deviceIpHistory.map(
-      (d) => `${fmtDate(d.created_at)} - ${d.ip_v4 || "-"} / ${d.ip_v6 || "-"}`
+      (d) => `${fmtDate(d.created_at)} - ${d.ip_v4 || "-"} / ${d.ip_v6 || "-"}`,
     );
 
     // 显示弹窗内容
@@ -229,7 +215,7 @@ async function onHistoryIPPopup(id, name) {
       "popup",
       `实时 设备 IP 历史 - ${name}`,
       preList.join("\n"),
-      deviceIpHistory.length
+      deviceIpHistory.length,
     );
   } catch (error) {
     alert(`加载设备IP历史失败: ${error.message}`);

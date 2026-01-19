@@ -1,3 +1,5 @@
+const ApiContentType = "application/json";
+
 // API请求封装 - 带错误处理
 const API = {
   async get(url, data) {
@@ -8,7 +10,7 @@ const API = {
     try {
       const response = await fetch(fullUrl, {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": ApiContentType },
       });
       return await handleResponse(response);
     } catch (error) {
@@ -17,11 +19,14 @@ const API = {
   },
   async post(url, data) {
     try {
-      const response = await fetch(url, {
+      info = {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+        headers: { "Content-Type": ApiContentType },
+      };
+      if (data) {
+        info.body = JSON.stringify(data);
+      }
+      const response = await fetch(url, info);
       return await handleResponse(response);
     } catch (error) {
       throw handleError(error);
@@ -29,19 +34,29 @@ const API = {
   },
   async patch(url, data) {
     try {
-      const response = await fetch(url, {
+      info = {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+        headers: { "Content-Type": ApiContentType },
+      };
+      if (data) {
+        info.body = JSON.stringify(data);
+      }
+      const response = await fetch(url, info);
       return await handleResponse(response);
     } catch (error) {
       throw handleError(error);
     }
   },
-  async delete(url) {
+  async delete(url, data) {
     try {
-      const response = await fetch(url, { method: "DELETE" });
+      info = {
+        method: "DELETE",
+        headers: { "Content-Type": ApiContentType },
+      };
+      if (data) {
+        info.body = JSON.stringify(data);
+      }
+      const response = await fetch(url, info);
       return await handleResponse(response);
     } catch (error) {
       throw handleError(error);
@@ -94,5 +109,48 @@ async function withErrorHandling(asyncFn, options = {}) {
       options.revertAction();
     }
     return null;
+  }
+}
+
+/**
+ * 批量删除
+ * @param {string} url - 删除接口URL
+ * @returns
+ */
+async function handleBatchDelete(url) {
+  try {
+    const ids = Array.from(
+      document.querySelectorAll(".row-checkbox:checked"),
+    ).map((cb) => parseInt(cb.value));
+    if (!ids.length || !confirm(`确定删除这 ${ids.length} 项吗？`)) {
+      return;
+    }
+    // 调用 API 删除
+    await API.delete(url, { ids: ids });
+    // 刷新页面
+    window.location.reload();
+  } catch (error) {
+    alert(`批量删除失败: ${error.message}`);
+    console.error("批量删除失败", error);
+  }
+}
+
+/**
+ * 删除
+ * @param {string} url - 删除接口URL
+ * @returns
+ */
+async function handleDelete(url, id) {
+  try {
+    if (!id || !confirm(`确定删除 ${id} 吗？`)) {
+      return;
+    }
+    // 调用 API 删除
+    await API.delete(`${url}/${id}`);
+    // 刷新页面
+    window.location.reload();
+  } catch (error) {
+    alert(`删除失败: ${error.message}`);
+    console.error("删除失败", error);
   }
 }
