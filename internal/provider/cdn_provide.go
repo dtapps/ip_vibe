@@ -210,11 +210,11 @@ func (t *CDNTask) SaveRefresh(ctx context.Context, db *ent.Client, id int64) (er
 		return nil
 	}
 
-	err = db.CDNRecord.UpdateOneID(id).
-		SetRecordID(t.config.recordID).
-		SetCdnDomain(t.config.cdnDomain).
-		SetLastRefreshAt(time.Now()).
-		Exec(ctx)
+	updateOne := db.CDNRecord.UpdateOneID(id)
+	updateOne.SetRecordID(t.config.recordID)
+	updateOne.SetCdnDomain(t.config.cdnDomain)
+	updateOne.SetLastRefreshAt(time.Now())
+	err = updateOne.Exec(ctx)
 	if err != nil {
 		t.logger.ErrorContext(ctx, "保存刷新失败",
 			slog.String("提供商", t.provider.Name()),
@@ -231,10 +231,16 @@ func (t *CDNTask) SaveResponse(ctx context.Context, db *ent.Client, id int64, la
 		return nil
 	}
 
-	err = db.CDNRecord.UpdateOneID(id).
-		SetLastAPIResponse(last_api_response).
-		SetLastAPIResponseAt(time.Now()).
-		Exec(ctx)
+	updateOne := db.CDNRecord.UpdateOneID(id)
+	updateOne.SetLastAPIResponse(last_api_response)
+	updateOne.SetLastAPIResponseAt(time.Now())
+	if t.config.recordID != "" {
+		updateOne.SetRecordID(t.config.recordID)
+	}
+	if t.config.cdnDomain != "" {
+		updateOne.SetCdnDomain(t.config.cdnDomain)
+	}
+	err = updateOne.Exec(ctx)
 	if err != nil {
 		t.logger.ErrorContext(ctx, "保存响应失败",
 			slog.String("提供商", t.provider.Name()),

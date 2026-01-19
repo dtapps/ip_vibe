@@ -206,10 +206,10 @@ func (t *DNSTask) SaveRefresh(ctx context.Context, db *ent.Client, id int64) (er
 		return nil
 	}
 
-	err = db.DNSRecord.UpdateOneID(id).
-		SetRecordID(t.config.recordID).
-		SetLastRefreshAt(time.Now()).
-		Exec(ctx)
+	updateOne := db.DNSRecord.UpdateOneID(id)
+	updateOne.SetRecordID(t.config.recordID)
+	updateOne.SetLastRefreshAt(time.Now())
+	err = updateOne.Exec(ctx)
 	if err != nil {
 		t.logger.ErrorContext(ctx, "保存刷新失败",
 			slog.String("提供商", t.provider.Name()),
@@ -226,10 +226,13 @@ func (t *DNSTask) SaveResponse(ctx context.Context, db *ent.Client, id int64, la
 		return nil
 	}
 
-	err = db.DNSRecord.UpdateOneID(id).
-		SetLastAPIResponse(last_api_response).
-		SetLastAPIResponseAt(time.Now()).
-		Exec(ctx)
+	updateOne := db.DNSRecord.UpdateOneID(id)
+	updateOne.SetLastAPIResponse(last_api_response)
+	updateOne.SetLastAPIResponseAt(time.Now())
+	if t.config.recordID != "" {
+		updateOne.SetRecordID(t.config.recordID)
+	}
+	err = updateOne.Exec(ctx)
 	if err != nil {
 		t.logger.ErrorContext(ctx, "保存响应失败",
 			slog.String("提供商", t.provider.Name()),
