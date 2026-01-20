@@ -265,6 +265,7 @@ func (p *TencentCDNProvider) Update(ctx context.Context, domain string, subdomai
 	}
 
 	if p.InternalData.RecordID == "" {
+
 		// 创建加速域名
 		requestCdnCreate := cdn.NewAddCdnDomainRequest()
 		requestCdnCreate.Domain = common.StringPtr(fullDomain) // 域名
@@ -279,9 +280,9 @@ func (p *TencentCDNProvider) Update(ctx context.Context, domain string, subdomai
 		if err != nil {
 			return fmt.Errorf("接口 AddCdnDomainWithContext 失败 %w", err)
 		}
-	}
 
-	if p.InternalData.RecordID != "" {
+	} else if p.InternalData.RecordID != "" {
+
 		// 更新加速域名
 		requestCdnUpdate := cdn.NewUpdateDomainConfigRequest()
 		requestCdnUpdate.Domain = common.StringPtr(fullDomain)                              // 域名
@@ -294,6 +295,7 @@ func (p *TencentCDNProvider) Update(ctx context.Context, domain string, subdomai
 		if err != nil {
 			return fmt.Errorf("接口 UpdateDomainConfigWithContext 失败 %w", err)
 		}
+
 	}
 
 	return nil

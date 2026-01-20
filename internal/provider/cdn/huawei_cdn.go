@@ -285,6 +285,7 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain
 	}
 
 	if p.InternalData.RecordID == "" {
+
 		sources := make([]model.SourcesRequestBody, 0)
 		for _, origin := range newOriginValues {
 			sources = append(sources, model.SourcesRequestBody{
@@ -314,9 +315,9 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain
 
 		// CDN域名
 		p.InternalData.CdnDomain = utils.TrimDotsPrt(responseCdnCreate.Domain.Cname)
-	}
 
-	if p.InternalData.RecordID != "" {
+	} else if p.InternalData.RecordID != "" {
+
 		sources := make([]model.SourcesConfig, 0)
 		for _, origin := range newOriginValues {
 			sources = append(sources, model.SourcesConfig{
@@ -340,6 +341,7 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain
 		if err != nil {
 			return fmt.Errorf("接口 UpdateDomainFullConfig 失败 %w", err)
 		}
+
 	}
 
 	return nil

@@ -291,6 +291,7 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 	}
 
 	if p.InternalData.RecordID == "" {
+
 		// 创建加速域名
 		requestCdnCreate := &esa20240910.CreateRecordRequest{}
 		requestCdnCreate.SiteId = tea.Int64(p.cfg.SiteID)             // 站点ID
@@ -311,9 +312,9 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 
 		// 域名ID
 		p.InternalData.RecordID = cast.ToString(tea.Int64Value(responseCdnCreate.GetBody().GetRecordId()))
-	}
 
-	if p.InternalData.RecordID != "" {
+	} else if p.InternalData.RecordID != "" {
+
 		// 更新加速域名
 		requestCdnUpdate := &esa20240910.UpdateRecordRequest{}
 		requestCdnUpdate.RecordId = tea.Int64(cast.ToInt64(p.InternalData.RecordID)) // 站点ID
@@ -330,6 +331,7 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 		if err != nil {
 			return fmt.Errorf("接口 UpdateRecordWithContext 失败 %w", err)
 		}
+
 	}
 
 	return nil
@@ -393,6 +395,7 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 	}
 
 	if needCreate {
+
 		// 创建源站组
 		requestGroupCreate := &esa20240910.CreateOriginPoolRequest{}
 		requestGroupCreate.Name = tea.String(p.CustomConfig.IPGroupCode)                    // 列表名称
@@ -423,8 +426,9 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 		// 源站组别名
 		originInfo.Cname = tea.StringValue(responseGroupetail.GetBody().GetRecordName())
-	}
-	if needUpdate {
+
+	} else if needUpdate {
+
 		// 更新源站组
 		requestGroupUpdate := &esa20240910.UpdateOriginPoolRequest{}
 		requestGroupUpdate.Id = tea.Int64(cast.ToInt64(p.CustomConfig.IPGroupCode))         // 源站组ID
@@ -443,6 +447,7 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 		if err != nil {
 			return nil, fmt.Errorf("接口 UpdateOriginPoolWithContext 失败 %w", err)
 		}
+
 	}
 
 	return originInfo, nil

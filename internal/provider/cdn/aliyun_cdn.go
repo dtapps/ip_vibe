@@ -308,6 +308,7 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
 	if p.InternalData.RecordID == "" {
+
 		// 创建加速域名
 		requestCdnCreate := &cdn20180510.AddCdnDomainRequest{}
 		requestCdnCreate.CdnType = tea.String(p.CustomConfig.CdnType)            // 加速域名的业务类型
@@ -318,9 +319,9 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 		if err != nil {
 			return fmt.Errorf("接口 AddCdnDomainWithContext 失败 %w", err)
 		}
-	}
 
-	if p.InternalData.RecordID != "" {
+	} else if p.InternalData.RecordID != "" {
+
 		// 更新加速域名
 		requestCdnUpdate := &cdn20180510.ModifyCdnDomainRequest{}
 		requestCdnUpdate.DomainName = tea.String(fullDomain)                     // 需要接入CDN的加速域名
@@ -329,6 +330,7 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 		if err != nil {
 			return fmt.Errorf("接口 ModifyCdnDomainWithContext 失败 %w", err)
 		}
+
 	}
 
 	return nil

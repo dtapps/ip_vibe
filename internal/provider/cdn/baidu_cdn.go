@@ -286,6 +286,7 @@ func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain 
 	}
 
 	if p.InternalData.CdnDomain == "" {
+
 		// 查询域名是否可添加
 		responseCdnValid, err := p.Provider.Client.IsValidDomain(fullDomain)
 		if err != nil {
@@ -320,9 +321,8 @@ func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain 
 		if err != nil {
 			return fmt.Errorf("接口 SetIPv6 失败 %w", err)
 		}
-	}
 
-	if p.InternalData.CdnDomain != "" {
+	} else if p.InternalData.CdnDomain != "" {
 
 		defaultHost := p.ItemData.DefaultHost
 		if defaultHost == "" {
@@ -346,6 +346,7 @@ func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain 
 		if err != nil {
 			return fmt.Errorf("接口 SetIPv6 失败 %w", err)
 		}
+
 	}
 
 	return nil

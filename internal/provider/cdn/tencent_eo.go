@@ -309,6 +309,7 @@ func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain
 	}
 
 	if p.InternalData.CdnDomain == "" {
+
 		// 创建加速域名
 		requestCdnCreate := teo.NewCreateAccelerationDomainRequest()
 		requestCdnCreate.ZoneId = common.StringPtr(p.cfg.ZoneID)                              // 加速域名所属站点 ID
@@ -322,9 +323,9 @@ func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain
 		if err != nil {
 			return fmt.Errorf("接口 CreateAccelerationDomainWithContext 失败 %w", err)
 		}
-	}
 
-	if p.InternalData.CdnDomain != "" {
+	} else if p.InternalData.CdnDomain != "" {
+
 		// 更新加速域名
 		requestCdnUpdate := teo.NewModifyAccelerationDomainRequest()
 		requestCdnUpdate.ZoneId = common.StringPtr(p.cfg.ZoneID)                              // 加速域名所属站点 ID
@@ -338,6 +339,7 @@ func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain
 		if err != nil {
 			return fmt.Errorf("接口 ModifyAccelerationDomainWithContext 失败 %w", err)
 		}
+
 	}
 
 	return nil
@@ -405,6 +407,7 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 	}
 
 	if needCreate {
+
 		// 创建源站组
 		requestGroupCreate := teo.NewCreateOriginGroupRequest()
 		requestGroupCreate.ZoneId = common.StringPtr(p.cfg.ZoneID) // 站点ID
@@ -424,8 +427,9 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 		// 查找源站组ID
 		originInfo.ID = utils.PtrToString(responseGroupCreate.Response.OriginGroupId)
-	}
-	if needUpdate {
+
+	} else if needUpdate {
+
 		// 更新源站组
 		requestGroupUpdate := teo.NewModifyOriginGroupRequest()
 		requestGroupUpdate.ZoneId = common.StringPtr(p.cfg.ZoneID)                // 站点ID
@@ -441,6 +445,7 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 		if err != nil {
 			return nil, fmt.Errorf("接口 ModifyOriginGroupWithContext 失败 %w", err)
 		}
+
 	}
 
 	return originInfo, nil
