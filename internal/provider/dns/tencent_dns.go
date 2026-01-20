@@ -120,7 +120,8 @@ func NewTencentDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Ten
 
 	// 实例化client选项
 	p.Provider.Cfg = profile.NewClientProfile()
-	p.Provider.Cfg.HttpProfile.Endpoint = p.cfg.Endpoint
+	p.Provider.Cfg.HttpProfile.Endpoint = p.cfg.Endpoint // 指定域名
+	p.Provider.Cfg.NetworkFailureMaxRetries = 3          // 定义最大重试次数
 
 	// 实例化
 	p.Provider.Client, err = dnspod.NewClient(p.Provider.Auth, "", p.Provider.Cfg)
