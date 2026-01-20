@@ -58,7 +58,7 @@ func (p *JdcloudDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err e
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }
@@ -154,26 +154,24 @@ func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
-	// 请求参数
-	request := apis.NewDescribeResourceRecordRequestWithAllParams(
+	// 查询域名记录
+	requestDnsQuery := apis.NewDescribeResourceRecordRequestWithAllParams(
 		p.cfg.Region,
 		p.cfg.ZoneID,
 		utils.IntToPtr(1),
 		utils.IntToPtr(500),
 		utils.StringToPtr(fullDomain),
 	)
-	// 请求
-	response, err := p.Provider.Client.DescribeResourceRecord(request)
-	printJSON("查询域名记录", request, response)
+	responseDnsQuery, err := p.Provider.Client.DescribeResourceRecord(requestDnsQuery)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("接口 DescribeResourceRecord 失败 %w", err)
 	}
 	// 响应参数
-	if len(response.Result.DataList) == 0 {
+	if len(responseDnsQuery.Result.DataList) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}
-	for _, item := range response.Result.DataList {
+	for _, item := range responseDnsQuery.Result.DataList {
 
 		// 查找域名
 		itemFullDomain := item.HostValue
@@ -225,8 +223,9 @@ func (p *JdcloudDNSProvider) Update(ctx context.Context, domain string, subdomai
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
 	if p.InternalData.RecordID == "" {
-		// 请求参数
-		request := apis.NewCreateResourceRecordRequest(
+
+		// 创建域名记录
+		requestDnsCreate := apis.NewCreateResourceRecordRequest(
 			p.cfg.Region,
 			p.cfg.ZoneID,
 			&models.AddRR{
@@ -235,17 +234,18 @@ func (p *JdcloudDNSProvider) Update(ctx context.Context, domain string, subdomai
 				Type:       recordType,  // 解析的类型
 			},
 		)
-		// 请求
-		response, err := p.Provider.Client.CreateResourceRecord(request)
-		printJSON("创建域名记录", request, response)
+		responseDnsCreate, err := p.Provider.Client.CreateResourceRecord(requestDnsCreate)
 		if err != nil {
-			return err
+			return fmt.Errorf("接口 CreateResourceRecord 失败 %w", err)
 		}
-	}
 
-	if p.InternalData.RecordID != "" {
-		// 请求参数
-		request := apis.NewModifyResourceRecordRequest(
+		// 域名ID
+		p.InternalData.RecordID = cast.ToString(responseDnsCreate.Result.DataList.Id)
+
+	} else if p.InternalData.RecordID != "" {
+
+		// 更新域名记录
+		requestDnsUpdate := apis.NewModifyResourceRecordRequest(
 			p.cfg.Region,
 			p.cfg.ZoneID,
 			p.InternalData.RecordID,
@@ -255,12 +255,11 @@ func (p *JdcloudDNSProvider) Update(ctx context.Context, domain string, subdomai
 				Type:       recordType,  // 解析的类型
 			},
 		)
-		// 请求
-		response, err := p.Provider.Client.ModifyResourceRecord(request)
-		printJSON("更新域名记录", request, response)
+		_, err = p.Provider.Client.ModifyResourceRecord(requestDnsUpdate)
 		if err != nil {
-			return err
+			return fmt.Errorf("接口 ModifyResourceRecord 失败 %w", err)
 		}
+
 	}
 
 	return nil
@@ -275,6 +274,9 @@ type JdcloudDNSCustomConfig struct {
 func (p *JdcloudDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err error) {
 	if len(config_json) == 0 {
 		return nil
+	}
+	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }

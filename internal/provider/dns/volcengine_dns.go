@@ -58,7 +58,7 @@ func (p *VolcengineDNSConfig) ParseCustomConfig(config_json json.RawMessage) (er
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }
@@ -128,7 +128,7 @@ func NewVolcengineDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *
 	// 会话
 	p.Provider.Sess, err = session.NewSession(p.Provider.Cfg)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("创建会话失败 %w", err)
 	}
 
 	// 实例化
@@ -147,7 +147,7 @@ func NewVolcengineDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *
 		// 会话
 		p.Provider.Sess, err = session.NewSession(p.Provider.Cfg)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("创建会话失败 %w", err)
 		}
 
 		// 实例化
@@ -182,28 +182,26 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
-	// 请求参数
-	request := &dns.ListRecordsInput{}
-	request.Host = volcengine.String(fullDomain)    // 主机记录
-	request.PageNumber = volcengine.Int32(1)        // 页码
-	request.PageSize = volcengine.Int32(500)        // 每页包含的解析记录的数量
-	request.SearchMode = volcengine.String("exact") // Host 匹配模式
+	// 查询域名记录
+	requestDnsQuery := &dns.ListRecordsInput{}
+	requestDnsQuery.Host = volcengine.String(fullDomain)    // 主机记录
+	requestDnsQuery.PageNumber = volcengine.Int32(1)        // 页码
+	requestDnsQuery.PageSize = volcengine.Int32(500)        // 每页包含的解析记录的数量
+	requestDnsQuery.SearchMode = volcengine.String("exact") // Host 匹配模式
 	if recordType != "" {
-		request.Type = volcengine.String(recordType) // 记录类型
+		requestDnsQuery.Type = volcengine.String(recordType) // 记录类型
 	}
-	request.ZID = volcengine.Int64(p.cfg.ZoneID) // 域名ID
-	// 请求
-	response, err := p.Provider.Client.ListRecordsWithContext(ctx, request)
-	printJSON("查询域名记录", request, response)
+	requestDnsQuery.ZID = volcengine.Int64(p.cfg.ZoneID) // 域名ID
+	responseDnsQuery, err := p.Provider.Client.ListRecordsWithContext(ctx, requestDnsQuery)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("接口 ListRecordsWithContext 失败 %w", err)
 	}
 	// 响应参数
-	if response.Records == nil || len(response.Records) == 0 {
+	if responseDnsQuery.Records == nil || len(responseDnsQuery.Records) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}
-	for _, item := range response.Records {
+	for _, item := range responseDnsQuery.Records {
 
 		// 查找域名
 		itemFullDomain := volcengine.StringValue(item.Host)
@@ -273,37 +271,41 @@ func (p *VolcengineDNSProvider) Update(ctx context.Context, domain string, subdo
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
 	if p.InternalData.RecordID == "" {
-		// 请求参数
-		request := &dns.CreateRecordInput{}
-		request.Host = volcengine.String(fullDomain)              // 主机记录
-		request.Type = volcengine.String(recordType)              // 记录类型
-		request.Value = volcengine.String(originValue)            // 解析记录的记录值
-		request.ZID = volcengine.Int64(p.cfg.ZoneID)              // 域名ID
-		request.Line = volcengine.String(p.CustomConfig.Line)     // 解析记录对应的线路
-		request.Remark = volcengine.String(p.CustomConfig.Remark) // 解析记录的备注
-		// 请求
-		response, err := p.Provider.Client.CreateRecordWithContext(ctx, request)
-		printJSON("创建域名记录", request, response)
-		if err != nil {
-			return err
-		}
-	}
 
-	if p.InternalData.RecordID != "" {
-		// 请求参数
-		request := &dns.UpdateRecordInput{}
-		request.Host = volcengine.String(fullDomain)                  // 主机记录
-		request.RecordID = volcengine.String(p.InternalData.RecordID) // 需要更新的解析记录的 ID
-		request.Type = volcengine.String(recordType)                  // 记录类型
-		request.Value = volcengine.String(originValue)                // 解析记录的记录值
-		request.Line = volcengine.String(p.CustomConfig.Line)         // 解析记录对应的线路
-		request.Remark = volcengine.String(p.CustomConfig.Remark)     // 解析记录的备注
-		// 请求
-		response, err := p.Provider.Client.UpdateRecordWithContext(ctx, request)
-		printJSON("更新域名记录", request, response)
+		// 创建域名记录
+		requestDnsCreate := &dns.CreateRecordInput{}
+		requestDnsCreate.Host = volcengine.String(fullDomain)              // 主机记录
+		requestDnsCreate.Type = volcengine.String(recordType)              // 记录类型
+		requestDnsCreate.Value = volcengine.String(originValue)            // 解析记录的记录值
+		requestDnsCreate.ZID = volcengine.Int64(p.cfg.ZoneID)              // 域名ID
+		requestDnsCreate.Line = volcengine.String(p.CustomConfig.Line)     // 解析记录对应的线路
+		requestDnsCreate.Remark = volcengine.String(p.CustomConfig.Remark) // 解析记录的备注
+		responseDnsCreate, err := p.Provider.Client.CreateRecordWithContext(ctx, requestDnsCreate)
 		if err != nil {
-			return err
+			return fmt.Errorf("接口 CreateRecordWithContext 失败 %w", err)
 		}
+
+		// 域名ID
+		p.InternalData.RecordID = volcengine.StringValue(responseDnsCreate.RecordID)
+
+	} else if p.InternalData.RecordID != "" {
+
+		// 更新域名记录
+		requestDnsUpdate := &dns.UpdateRecordInput{}
+		requestDnsUpdate.Host = volcengine.String(fullDomain)                  // 主机记录
+		requestDnsUpdate.RecordID = volcengine.String(p.InternalData.RecordID) // 需要更新的解析记录的 ID
+		requestDnsUpdate.Type = volcengine.String(recordType)                  // 记录类型
+		requestDnsUpdate.Value = volcengine.String(originValue)                // 解析记录的记录值
+		requestDnsUpdate.Line = volcengine.String(p.CustomConfig.Line)         // 解析记录对应的线路
+		requestDnsUpdate.Remark = volcengine.String(p.CustomConfig.Remark)     // 解析记录的备注
+		responseDnsUpdate, err := p.Provider.Client.UpdateRecordWithContext(ctx, requestDnsUpdate)
+		if err != nil {
+			return fmt.Errorf("接口 UpdateRecordWithContext 失败 %w", err)
+		}
+
+		// 域名ID
+		p.InternalData.RecordID = volcengine.StringValue(responseDnsUpdate.RecordID)
+
 	}
 
 	return nil
@@ -322,7 +324,7 @@ func (p *VolcengineDNSProvider) ParseCustomConfig(config_json json.RawMessage) (
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }

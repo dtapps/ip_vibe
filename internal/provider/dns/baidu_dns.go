@@ -52,7 +52,7 @@ func (p *BaiduDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err err
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }
@@ -115,7 +115,7 @@ func NewBaiduDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Baidu
 		p.cfg.Endpoint,
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("创建客户端失败 %w", err)
 	}
 
 	// 如果提供了日志传输器，则设置HTTP客户端
@@ -149,22 +149,20 @@ func (p *BaiduDNSProvider) printData(ctx context.Context) {
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#查询解析记录列表
 func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
 
-	// 请求参数
-	request := &dns.ListRecordRequest{}
-	request.Rr = subdomain // 主机记录
-	request.MaxKeys = 1000 // 每页包含的最大数量，最大数量通常不超过1000，缺省值为1000
-	// 请求
-	response, err := p.Provider.Client.ListRecord(domain, request)
-	printJSON("查询域名记录", request, response)
+	// 查询域名记录
+	requestDnsQuery := &dns.ListRecordRequest{}
+	requestDnsQuery.Rr = subdomain // 主机记录
+	requestDnsQuery.MaxKeys = 1000 // 每页包含的最大数量，最大数量通常不超过1000，缺省值为1000
+	responseDnsQuery, err := p.Provider.Client.ListRecord(domain, requestDnsQuery)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("接口 ListRecord 失败 %w", err)
 	}
 	// 响应参数
-	if response.Records == nil || len(response.Records) == 0 {
+	if responseDnsQuery.Records == nil || len(responseDnsQuery.Records) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}
-	for _, item := range response.Records {
+	for _, item := range responseDnsQuery.Records {
 
 		if utils.EqualDomainIgnoreCase(item.Rr, subdomain) {
 
@@ -228,34 +226,32 @@ func (p *BaiduDNSProvider) Update(ctx context.Context, domain string, subdomain 
 	p.printData(ctx)
 
 	if p.InternalData.RecordID == "" {
-		// 请求参数
-		request := &dns.CreateRecordRequest{}
-		request.Rr = subdomain                                              // 主机记录
-		request.Type = recordType                                           // 解析记录类型
-		request.Value = originValue                                         // 记录值
-		request.Line = utils.StringToPtr(p.CustomConfig.Line)               // 解析线路
-		request.Description = utils.StringToPtr(p.CustomConfig.Description) // 解析记录描述
-		// 请求
-		err = p.Provider.Client.CreateRecord(domain, request, util.NewUUID())
-		printJSON("创建域名记录", request, nil)
-		if err != nil {
-			return err
-		}
-	}
 
-	if p.InternalData.RecordID != "" {
-		// 请求参数
-		request := &dns.UpdateRecordRequest{}
-		request.Rr = subdomain                                              // 主机记录
-		request.Type = recordType                                           // 解析记录类型
-		request.Value = originValue                                         // 记录值
-		request.Description = utils.StringToPtr(p.CustomConfig.Description) // 解析记录描述
-		// 请求
-		err = p.Provider.Client.UpdateRecord(domain, p.InternalData.RecordID, request, util.NewUUID())
-		printJSON("更新域名记录", request, nil)
+		// 创建域名记录
+		requestDnsCreate := &dns.CreateRecordRequest{}
+		requestDnsCreate.Rr = subdomain                                              // 主机记录
+		requestDnsCreate.Type = recordType                                           // 解析记录类型
+		requestDnsCreate.Value = originValue                                         // 记录值
+		requestDnsCreate.Line = utils.StringToPtr(p.CustomConfig.Line)               // 解析线路
+		requestDnsCreate.Description = utils.StringToPtr(p.CustomConfig.Description) // 解析记录描述
+		err = p.Provider.Client.CreateRecord(domain, requestDnsCreate, util.NewUUID())
 		if err != nil {
-			return err
+			return fmt.Errorf("接口 CreateRecord 失败 %w", err)
 		}
+
+	} else if p.InternalData.RecordID != "" {
+
+		// 更新域名记录
+		requestDnsUpdate := &dns.UpdateRecordRequest{}
+		requestDnsUpdate.Rr = subdomain                                              // 主机记录
+		requestDnsUpdate.Type = recordType                                           // 解析记录类型
+		requestDnsUpdate.Value = originValue                                         // 记录值
+		requestDnsUpdate.Description = utils.StringToPtr(p.CustomConfig.Description) // 解析记录描述
+		err = p.Provider.Client.UpdateRecord(domain, p.InternalData.RecordID, requestDnsUpdate, util.NewUUID())
+		if err != nil {
+			return fmt.Errorf("接口 UpdateRecord 失败 %w", err)
+		}
+
 	}
 
 	return nil
@@ -274,7 +270,7 @@ func (p *BaiduDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err e
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }

@@ -62,7 +62,7 @@ func (p *HuaweiDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err er
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }
@@ -128,13 +128,13 @@ func NewHuaweiDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Huaw
 		WithSk(p.cfg.SecretAccessKey).
 		SafeBuild()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("创建凭证失败 %w", err)
 	}
 
 	// 区域
 	p.Provider.Region, err = regionDns.SafeValueOf(p.cfg.Region)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("创建区域失败 %w", err)
 	}
 
 	p.Provider.ClientBuilder = dns.DnsClientBuilder().
@@ -149,7 +149,7 @@ func NewHuaweiDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Huaw
 
 	p.Provider.Builder, err = p.Provider.ClientBuilder.SafeBuild()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("创建客户端失败 %w", err)
 	}
 
 	// 实例化
@@ -182,28 +182,26 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
-	// 请求参数
-	request := &model.ShowRecordSetByZoneRequest{}
-	request.Limit = utils.Int32ToPtr(500) // 分页查询时配置每页返回的资源个数
-	request.Offset = utils.Int32ToPtr(0)  // 分页查询起始偏移量,表示从偏移量的下一个资源开始查询
+	// 查询域名记录
+	requestDnsQuery := &model.ShowRecordSetByZoneRequest{}
+	requestDnsQuery.Limit = utils.Int32ToPtr(500) // 分页查询时配置每页返回的资源个数
+	requestDnsQuery.Offset = utils.Int32ToPtr(0)  // 分页查询起始偏移量,表示从偏移量的下一个资源开始查询
 	if recordType != "" {
-		request.Type = utils.StringToPtr(recordType) // 记录集的类型
+		requestDnsQuery.Type = utils.StringToPtr(recordType) // 记录集的类型
 	}
-	request.Name = utils.StringToPtr(fullDomain)    // 待查询的记录集的域名中包含此name
-	request.SearchMode = utils.StringToPtr("equal") // 查询条件搜索模式
-	request.ZoneId = p.cfg.ZoneID                   // 域名ID
-	// 请求
-	response, err := p.Provider.Client.ShowRecordSetByZone(request)
-	printJSON("查询域名记录", request, response)
+	requestDnsQuery.Name = utils.StringToPtr(fullDomain)    // 待查询的记录集的域名中包含此name
+	requestDnsQuery.SearchMode = utils.StringToPtr("equal") // 查询条件搜索模式
+	requestDnsQuery.ZoneId = p.cfg.ZoneID                   // 域名ID
+	responseDnsQuery, err := p.Provider.Client.ShowRecordSetByZone(requestDnsQuery)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("接口 ShowRecordSetByZone 失败 %w", err)
 	}
 	// 响应参数
-	if response.Recordsets == nil || len(*response.Recordsets) == 0 {
+	if responseDnsQuery.Recordsets == nil || len(*responseDnsQuery.Recordsets) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}
-	for _, item := range *response.Recordsets {
+	for _, item := range *responseDnsQuery.Recordsets {
 
 		// 查找域名
 		itemFullDomain := utils.PtrToString(item.Name)
@@ -264,40 +262,44 @@ func (p *HuaweiDNSProvider) Update(ctx context.Context, domain string, subdomain
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
 	if p.InternalData.RecordID == "" {
-		// 请求参数
-		request := &model.CreateRecordSetWithLineRequest{}
-		request.ZoneId = p.cfg.ZoneID // 域名ID
-		request.Body = &model.CreateRecordSetWithLineRequestBody{
-			Records:     utils.StringsToPtr([]string{originValue}),     // 解析记录的值
-			Type:        recordType,                                    // 记录集的类型
-			Name:        fullDomain,                                    // 域名
-			Description: utils.StringToPtr(p.CustomConfig.Description), // 记录集的描述信息
-		}
-		// 请求
-		response, err := p.Provider.Client.CreateRecordSetWithLine(request)
-		printJSON("创建域名记录", request, response)
-		if err != nil {
-			return err
-		}
-	}
 
-	if p.InternalData.RecordID != "" {
-		// 请求参数
-		request := &model.UpdateRecordSetsRequest{}
-		request.ZoneId = p.cfg.ZoneID                 // 域名ID
-		request.RecordsetId = p.InternalData.RecordID // 记录集ID
-		request.Body = &model.UpdateRecordSetsReq{
+		// 创建域名记录
+		requestDnsCreate := &model.CreateRecordSetWithLineRequest{}
+		requestDnsCreate.ZoneId = p.cfg.ZoneID // 域名ID
+		requestDnsCreate.Body = &model.CreateRecordSetWithLineRequestBody{
 			Records:     utils.StringsToPtr([]string{originValue}),     // 解析记录的值
 			Type:        recordType,                                    // 记录集的类型
 			Name:        fullDomain,                                    // 域名
 			Description: utils.StringToPtr(p.CustomConfig.Description), // 记录集的描述信息
 		}
-		// 请求
-		response, err := p.Provider.Client.UpdateRecordSets(request)
-		printJSON("更新域名记录", request, response)
+		responseDnsCreate, err := p.Provider.Client.CreateRecordSetWithLine(requestDnsCreate)
 		if err != nil {
-			return err
+			return fmt.Errorf("接口 CreateRecordSetWithLine 失败 %w", err)
 		}
+
+		// 域名ID
+		p.InternalData.RecordID = utils.PtrToString(responseDnsCreate.Id)
+
+	} else if p.InternalData.RecordID != "" {
+
+		// 更新域名记录
+		requestDnsUpdate := &model.UpdateRecordSetsRequest{}
+		requestDnsUpdate.ZoneId = p.cfg.ZoneID                 // 域名ID
+		requestDnsUpdate.RecordsetId = p.InternalData.RecordID // 记录集ID
+		requestDnsUpdate.Body = &model.UpdateRecordSetsReq{
+			Records:     utils.StringsToPtr([]string{originValue}),     // 解析记录的值
+			Type:        recordType,                                    // 记录集的类型
+			Name:        fullDomain,                                    // 域名
+			Description: utils.StringToPtr(p.CustomConfig.Description), // 记录集的描述信息
+		}
+		responseDnsUpdate, err := p.Provider.Client.UpdateRecordSets(requestDnsUpdate)
+		if err != nil {
+			return fmt.Errorf("接口 UpdateRecordSets 失败 %w", err)
+		}
+
+		// 域名ID
+		p.InternalData.RecordID = utils.PtrToString(responseDnsUpdate.Id)
+
 	}
 
 	return nil
@@ -315,7 +317,7 @@ func (p *HuaweiDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err 
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }

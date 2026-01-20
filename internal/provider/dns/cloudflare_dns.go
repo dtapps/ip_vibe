@@ -48,7 +48,7 @@ func (p *CloudfareDNSConfig) ParseCustomConfig(config_json json.RawMessage) (err
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }
@@ -144,27 +144,25 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
-	// 请求参数
-	request := dns.RecordListParams{}
-	request.ZoneID = cloudflare.String(p.cfg.ZoneID)
-	request.Name = cloudflare.F(dns.RecordListParamsName{
+	// 查询域名记录
+	requestDnsQuery := dns.RecordListParams{}
+	requestDnsQuery.ZoneID = cloudflare.String(p.cfg.ZoneID)
+	requestDnsQuery.Name = cloudflare.F(dns.RecordListParamsName{
 		Exact: cloudflare.String(fullDomain),
 	})
 	if recordType != "" {
-		request.Type = cloudflare.F(dns.RecordListParamsType(recordType))
+		requestDnsQuery.Type = cloudflare.F(dns.RecordListParamsType(recordType))
 	}
-	// 请求
-	response, err := p.Provider.Client.DNS.Records.List(ctx, request)
-	printJSON("查询域名记录", request, response)
+	responseDnsQuery, err := p.Provider.Client.DNS.Records.List(ctx, requestDnsQuery)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("接口 DNS.Records.List 失败 %w", err)
 	}
 	// 响应参数
-	if response.Result == nil || len(response.Result) == 0 {
+	if responseDnsQuery.Result == nil || len(responseDnsQuery.Result) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}
-	for _, item := range response.Result {
+	for _, item := range responseDnsQuery.Result {
 
 		// 查找域名
 		itemFullDomain := item.Name
@@ -225,41 +223,45 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, domain string, subdom
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
 	if p.InternalData.RecordID == "" {
-		// 请求参数
-		requestBody := dns.ARecordParam{}
-		requestBody.Name = cloudflare.String(fullDomain)
-		requestBody.Type = cloudflare.F(dns.ARecordType(recordType))
-		requestBody.Content = cloudflare.String(originValue)
-		requestBody.Comment = cloudflare.String(p.CustomConfig.Comment)
-		request := dns.RecordNewParams{
-			ZoneID: cloudflare.String(p.cfg.ZoneID),
-			Body:   requestBody,
-		}
-		// 请求
-		response, err := p.Provider.Client.DNS.Records.New(ctx, request)
-		printJSON("创建域名记录", request, response)
-		if err != nil {
-			return err
-		}
-	}
 
-	if p.InternalData.RecordID != "" {
-		// 请求参数
-		requestBody := dns.ARecordParam{}
-		requestBody.Name = cloudflare.String(fullDomain)
-		requestBody.Type = cloudflare.F(dns.ARecordType(recordType))
-		requestBody.Content = cloudflare.String(originValue)
-		requestBody.Comment = cloudflare.String(p.CustomConfig.Comment)
-		request := dns.RecordEditParams{
+		// 创建域名记录
+		requestDnsCreateBody := dns.ARecordParam{}
+		requestDnsCreateBody.Name = cloudflare.String(fullDomain)
+		requestDnsCreateBody.Type = cloudflare.F(dns.ARecordType(recordType))
+		requestDnsCreateBody.Content = cloudflare.String(originValue)
+		requestDnsCreateBody.Comment = cloudflare.String(p.CustomConfig.Comment)
+		requestDnsCreate := dns.RecordNewParams{
 			ZoneID: cloudflare.String(p.cfg.ZoneID),
-			Body:   requestBody,
+			Body:   requestDnsCreateBody,
 		}
-		// 请求
-		response, err := p.Provider.Client.DNS.Records.Edit(ctx, p.InternalData.RecordID, request)
-		printJSON("更新域名记录", request, response)
+		responseDnsCreate, err := p.Provider.Client.DNS.Records.New(ctx, requestDnsCreate)
 		if err != nil {
-			return err
+			return fmt.Errorf("接口 DNS.Records.New 失败 %w", err)
 		}
+
+		// 域名ID
+		p.InternalData.RecordID = responseDnsCreate.ID
+
+	} else if p.InternalData.RecordID != "" {
+
+		// 更新域名记录
+		requestDnsUpdateBody := dns.ARecordParam{}
+		requestDnsUpdateBody.Name = cloudflare.String(fullDomain)
+		requestDnsUpdateBody.Type = cloudflare.F(dns.ARecordType(recordType))
+		requestDnsUpdateBody.Content = cloudflare.String(originValue)
+		requestDnsUpdateBody.Comment = cloudflare.String(p.CustomConfig.Comment)
+		requestDnsUpdate := dns.RecordEditParams{
+			ZoneID: cloudflare.String(p.cfg.ZoneID),
+			Body:   requestDnsUpdateBody,
+		}
+		responseDnsUpdate, err := p.Provider.Client.DNS.Records.Edit(ctx, p.InternalData.RecordID, requestDnsUpdate)
+		if err != nil {
+			return fmt.Errorf("接口 DNS.Records.Edit 失败 %w", err)
+		}
+
+		// 域名ID
+		p.InternalData.RecordID = responseDnsUpdate.ID
+
 	}
 
 	return nil
@@ -277,7 +279,7 @@ func (p *CloudfareDNSProvider) ParseCustomConfig(config_json json.RawMessage) (e
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }
