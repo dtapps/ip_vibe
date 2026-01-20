@@ -6138,6 +6138,7 @@ type IpGroupMutation struct {
 	id                   *int64
 	created_at           *time.Time
 	updated_at           *time.Time
+	code                 *string
 	record_id            *string
 	name                 *string
 	description          *string
@@ -6332,6 +6333,42 @@ func (m *IpGroupMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err er
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *IpGroupMutation) ResetUpdatedAt() {
 	m.updated_at = nil
+}
+
+// SetCode sets the "code" field.
+func (m *IpGroupMutation) SetCode(s string) {
+	m.code = &s
+}
+
+// Code returns the value of the "code" field in the mutation.
+func (m *IpGroupMutation) Code() (r string, exists bool) {
+	v := m.code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCode returns the old "code" field's value of the IpGroup entity.
+// If the IpGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *IpGroupMutation) OldCode(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCode: %w", err)
+	}
+	return oldValue.Code, nil
+}
+
+// ResetCode resets all changes to the "code" field.
+func (m *IpGroupMutation) ResetCode() {
+	m.code = nil
 }
 
 // SetRecordID sets the "record_id" field.
@@ -6762,12 +6799,15 @@ func (m *IpGroupMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *IpGroupMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, ipgroup.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, ipgroup.FieldUpdatedAt)
+	}
+	if m.code != nil {
+		fields = append(fields, ipgroup.FieldCode)
 	}
 	if m.record_id != nil {
 		fields = append(fields, ipgroup.FieldRecordID)
@@ -6796,6 +6836,8 @@ func (m *IpGroupMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case ipgroup.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case ipgroup.FieldCode:
+		return m.Code()
 	case ipgroup.FieldRecordID:
 		return m.RecordID()
 	case ipgroup.FieldName:
@@ -6819,6 +6861,8 @@ func (m *IpGroupMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldCreatedAt(ctx)
 	case ipgroup.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case ipgroup.FieldCode:
+		return m.OldCode(ctx)
 	case ipgroup.FieldRecordID:
 		return m.OldRecordID(ctx)
 	case ipgroup.FieldName:
@@ -6851,6 +6895,13 @@ func (m *IpGroupMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
+		return nil
+	case ipgroup.FieldCode:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCode(v)
 		return nil
 	case ipgroup.FieldRecordID:
 		v, ok := value.(string)
@@ -6968,6 +7019,9 @@ func (m *IpGroupMutation) ResetField(name string) error {
 		return nil
 	case ipgroup.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case ipgroup.FieldCode:
+		m.ResetCode()
 		return nil
 	case ipgroup.FieldRecordID:
 		m.ResetRecordID()

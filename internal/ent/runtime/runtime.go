@@ -209,6 +209,10 @@ func init() {
 	ipgroup.DefaultUpdatedAt = ipgroupDescUpdatedAt.Default.(func() time.Time)
 	// ipgroup.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	ipgroup.UpdateDefaultUpdatedAt = ipgroupDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// ipgroupDescCode is the schema descriptor for code field.
+	ipgroupDescCode := ipgroupFields[1].Descriptor()
+	// ipgroup.DefaultCode holds the default value on creation for the code field.
+	ipgroup.DefaultCode = ipgroupDescCode.Default.(func() string)
 	// ipgroupDescID is the schema descriptor for id field.
 	ipgroupDescID := ipgroupFields[0].Descriptor()
 	// ipgroup.IDValidator is a validator for the "id" field. It is called by the builders before save.

@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"vibe_ip/internal/ent/schema/schemadefault"
 	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 
@@ -41,6 +42,12 @@ func (IpGroup) Fields() []ent.Field {
 			Positive().       // 正数
 			Immutable().
 			Comment("IP组序号").
+			Annotations(entsql.WithComments(true)),
+
+		field.String("code").
+			DefaultFunc(schemadefault.DefaultCode).
+			Immutable().
+			Comment("IP组代码").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("record_id").

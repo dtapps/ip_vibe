@@ -329,6 +329,7 @@ var (
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "IP组序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "code", Type: field.TypeString, Comment: "IP组代码"},
 		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录ID"},
 		{Name: "name", Type: field.TypeString, Comment: "IP组名称"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "IP组描述"},
@@ -353,7 +354,7 @@ var (
 			{
 				Name:    "ipgroup_record_id",
 				Unique:  false,
-				Columns: []*schema.Column{IPGroupColumns[3]},
+				Columns: []*schema.Column{IPGroupColumns[4]},
 			},
 		},
 	}

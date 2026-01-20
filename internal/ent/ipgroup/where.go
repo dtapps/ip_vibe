@@ -65,6 +65,11 @@ func UpdatedAt(v time.Time) predicate.IpGroup {
 	return predicate.IpGroup(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// Code applies equality check predicate on the "code" field. It's identical to CodeEQ.
+func Code(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldEQ(FieldCode, v))
+}
+
 // RecordID applies equality check predicate on the "record_id" field. It's identical to RecordIDEQ.
 func RecordID(v string) predicate.IpGroup {
 	return predicate.IpGroup(sql.FieldEQ(FieldRecordID, v))
@@ -168,6 +173,71 @@ func UpdatedAtLT(v time.Time) predicate.IpGroup {
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.IpGroup {
 	return predicate.IpGroup(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// CodeEQ applies the EQ predicate on the "code" field.
+func CodeEQ(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldEQ(FieldCode, v))
+}
+
+// CodeNEQ applies the NEQ predicate on the "code" field.
+func CodeNEQ(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldNEQ(FieldCode, v))
+}
+
+// CodeIn applies the In predicate on the "code" field.
+func CodeIn(vs ...string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldIn(FieldCode, vs...))
+}
+
+// CodeNotIn applies the NotIn predicate on the "code" field.
+func CodeNotIn(vs ...string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldNotIn(FieldCode, vs...))
+}
+
+// CodeGT applies the GT predicate on the "code" field.
+func CodeGT(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldGT(FieldCode, v))
+}
+
+// CodeGTE applies the GTE predicate on the "code" field.
+func CodeGTE(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldGTE(FieldCode, v))
+}
+
+// CodeLT applies the LT predicate on the "code" field.
+func CodeLT(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldLT(FieldCode, v))
+}
+
+// CodeLTE applies the LTE predicate on the "code" field.
+func CodeLTE(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldLTE(FieldCode, v))
+}
+
+// CodeContains applies the Contains predicate on the "code" field.
+func CodeContains(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldContains(FieldCode, v))
+}
+
+// CodeHasPrefix applies the HasPrefix predicate on the "code" field.
+func CodeHasPrefix(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldHasPrefix(FieldCode, v))
+}
+
+// CodeHasSuffix applies the HasSuffix predicate on the "code" field.
+func CodeHasSuffix(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldHasSuffix(FieldCode, v))
+}
+
+// CodeEqualFold applies the EqualFold predicate on the "code" field.
+func CodeEqualFold(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldEqualFold(FieldCode, v))
+}
+
+// CodeContainsFold applies the ContainsFold predicate on the "code" field.
+func CodeContainsFold(v string) predicate.IpGroup {
+	return predicate.IpGroup(sql.FieldContainsFold(FieldCode, v))
 }
 
 // RecordIDEQ applies the EQ predicate on the "record_id" field.
