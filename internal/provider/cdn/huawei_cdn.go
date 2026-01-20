@@ -57,7 +57,7 @@ func (p *HuaweiCDNConfig) ParseCustomConfig(config_json json.RawMessage) (err er
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }
@@ -123,13 +123,13 @@ func NewHuaweiCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Huaw
 		WithSk(p.cfg.SecretAccessKey).
 		SafeBuild()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("创建凭证失败 %w", err)
 	}
 
 	// 区域
 	p.Provider.Region, err = regionCdn.SafeValueOf(p.cfg.Region)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("创建区域失败 %w", err)
 	}
 
 	p.Provider.ClientBuilder = cdn.CdnClientBuilder().
@@ -144,7 +144,7 @@ func NewHuaweiCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Huaw
 
 	p.Provider.Builder, err = p.Provider.ClientBuilder.SafeBuild()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("创建客户端失败 %w", err)
 	}
 
 	// 实例化
@@ -361,7 +361,7 @@ func (p *HuaweiCDNProvider) ParseCustomConfig(config_json json.RawMessage) (err 
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }

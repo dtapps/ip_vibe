@@ -52,7 +52,7 @@ func (p *BaiduCDNConfig) ParseCustomConfig(config_json json.RawMessage) (err err
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }
@@ -115,7 +115,7 @@ func NewBaiduCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Baidu
 		p.cfg.Endpoint,
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("创建客户端失败 %w", err)
 	}
 
 	// 如果提供了日志传输器，则设置HTTP客户端
@@ -366,7 +366,7 @@ func (p *BaiduCDNProvider) ParseCustomConfig(config_json json.RawMessage) (err e
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }

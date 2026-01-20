@@ -54,7 +54,7 @@ func (p *TencentCDNConfig) ParseCustomConfig(config_json json.RawMessage) (err e
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }
@@ -125,7 +125,7 @@ func NewTencentCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Ten
 	// 实例化
 	p.Provider.Client, err = cdn.NewClient(p.Provider.Auth, "", p.Provider.Cfg)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("创建客户端失败 %w", err)
 	}
 
 	// 如果提供了日志传输器，则设置HTTP客户端
@@ -313,7 +313,7 @@ func (p *TencentCDNProvider) ParseCustomConfig(config_json json.RawMessage) (err
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }

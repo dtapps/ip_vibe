@@ -56,7 +56,7 @@ func (p *AliyunCDNConfig) ParseCustomConfig(config_json json.RawMessage) (err er
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }
@@ -121,7 +121,7 @@ func NewAliyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 		AccessKeySecret: tea.String(p.cfg.AccessKeySecret),
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("创建凭证失败 %w", err)
 	}
 
 	// 选项
@@ -139,7 +139,7 @@ func NewAliyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 	// 实例化
 	p.Provider.Client, err = cdn20180510.NewClient(p.Provider.Cfg)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("创建客户端失败 %w", err)
 	}
 
 	return p, nil
@@ -349,7 +349,7 @@ func (p *AliyunCDNProvider) ParseCustomConfig(config_json json.RawMessage) (err 
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }

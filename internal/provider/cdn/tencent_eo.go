@@ -57,7 +57,7 @@ func (p *TencentEOConfig) ParseCustomConfig(config_json json.RawMessage) (err er
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }
@@ -128,7 +128,7 @@ func NewTencentEOProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Tenc
 	// 实例化
 	p.Provider.Client, err = teo.NewClient(p.Provider.Auth, "", p.Provider.Cfg)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("创建客户端失败 %w", err)
 	}
 
 	// 如果提供了日志传输器，则设置HTTP客户端
@@ -461,7 +461,7 @@ func (p *TencentEOProvider) ParseCustomConfig(config_json json.RawMessage) (err 
 		return nil
 	}
 	if err := json.Unmarshal(config_json, p.CustomConfig); err != nil {
-		return err
+		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
 }
