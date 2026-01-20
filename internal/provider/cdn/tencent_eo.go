@@ -163,6 +163,18 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
+	// 源站信息
+	originValues := make([]string, 0)
+	if len(newOriginValues) == 1 {
+		originValues = newOriginValues
+	} else {
+		originInfo, err := p.getGroupOrigin(ctx, originValues)
+		if err != nil {
+			return nil, fmt.Errorf("查询源站组失败: %w", err)
+		}
+		originValues = append(originValues, utils.PtrToString(originInfo.Origin))
+	}
+
 	// 请求参数
 	request := teo.NewDescribeAccelerationDomainsRequest()
 	request.ZoneId = common.StringPtr(p.cfg.ZoneID)
@@ -214,9 +226,9 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 			p.InternalData.CdnDomain = utils.TrimDotsPrt(item.Cname)
 
 			// 判断记录值列表
-			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
+			if !utils.EqualStringSliceUnordered(itemOriginValues, originValues) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("记录值列表不匹配，期望 %v，实际 %v", newOriginValues, itemOriginValues)
+				p.InternalData.Tips = fmt.Sprintf("记录值列表不匹配，期望 %v，实际 %v", originValues, itemOriginValues)
 				return p.InternalData, nil
 			}
 
@@ -261,7 +273,7 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 // Update 更新 CDN 记录
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=CreateAccelerationDomain
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=ModifyAccelerationDomain
-func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
+func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
 
 	// 打印数据
 	p.printData(ctx)
@@ -274,11 +286,14 @@ func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain
 
 	// 源站信息
 	originInfo := new(teo.OriginInfo{})
-	if len(originValues) == 1 {
-		originInfo.OriginType = common.StringPtr("IP_DOMAIN") // 源站类型
-		originInfo.Origin = common.StringPtr(originValues[0]) // 源站地址
+	if len(newOriginValues) == 1 {
+		originInfo.OriginType = common.StringPtr("IP_DOMAIN")    // 源站类型
+		originInfo.Origin = common.StringPtr(newOriginValues[0]) // 源站地址
 	} else {
-
+		originInfo, err = p.getGroupOrigin(ctx, newOriginValues)
+		if err != nil {
+			return fmt.Errorf("查询源站组失败: %w", err)
+		}
 	}
 
 	// HTTP回源端口，默认80
@@ -328,6 +343,94 @@ func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain
 	}
 
 	return nil
+}
+
+// getGroupOrigin 获取源站组信息
+func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues []string) (originInfo *teo.OriginInfo, err error) {
+	requestGroup := teo.NewDescribeOriginGroupRequest()
+	requestGroup.ZoneId = common.StringPtr(p.cfg.ZoneID) // 站点ID
+	requestGroup.Offset = common.Uint64Ptr(0)            // 分页查询偏移量
+	requestGroup.Limit = common.Uint64Ptr(1000)          // 分页查询限制数目
+	requestGroup.Filters = make([]*teo.AdvancedFilter, 0)
+	requestGroup.Filters = append(requestGroup.Filters, &teo.AdvancedFilter{
+		Name:   common.StringPtr("origin-group-name"), // 按照源站组名称进行过滤
+		Values: common.StringPtrs([]string{p.CustomConfig.IPGroupCode}),
+	})
+	responseGroup, err := p.Provider.Client.DescribeOriginGroupWithContext(ctx, requestGroup)
+	if err != nil {
+		return nil, fmt.Errorf("查询源站组失败: %w", err)
+	}
+
+	// 是否需要创建源站组
+	needCreate := true
+	// 是否需要更新源站组记录值
+	needUpdate := false
+
+	// 检查源站组是否存在和记录值是否匹配
+	for _, item := range responseGroup.Response.OriginGroups {
+		// 查找源站组名称
+		itemGroupName := utils.PtrToString(item.Name)
+		if utils.EqualDomainIgnoreCase(itemGroupName, p.CustomConfig.IPGroupCode) {
+
+			// 查找记录值列表
+			itemOriginValues := make([]string, 0)
+			for _, v := range item.Records {
+				itemOriginValues = append(itemOriginValues, utils.PtrToString(v.Record))
+			}
+
+			// 判断记录值列表
+			if utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
+				return &teo.OriginInfo{
+					OriginType: common.StringPtr("ORIGIN_GROUP"),             // 源站类型
+					Origin:     common.StringPtr(p.CustomConfig.IPGroupCode), // 源站地址
+				}, nil
+			}
+
+			needCreate = false
+			needUpdate = true
+		}
+	}
+
+	if needCreate {
+		// 请求
+		requestCreate := teo.NewCreateOriginGroupRequest()
+		requestCreate.ZoneId = common.StringPtr(p.cfg.ZoneID) // 站点ID
+		requestCreate.Records = make([]*teo.OriginRecord, 0)  // 源站记录信息
+		for _, item := range newOriginValues {
+			requestCreate.Records = append(requestCreate.Records, &teo.OriginRecord{
+				Record: common.StringPtr(item),
+				Type:   common.StringPtr("IP_DOMAIN"),
+			})
+		}
+		requestCreate.Name = common.StringPtr(p.CustomConfig.IPGroupCode) // 源站组名称
+		requestCreate.Type = common.StringPtr("GENERAL")                  // 源站组类型
+		_, err = p.Provider.Client.CreateOriginGroupWithContext(ctx, requestCreate)
+		if err != nil {
+			return nil, fmt.Errorf("创建源站组失败: %w", err)
+		}
+	}
+	if needUpdate {
+		// 请求
+		requestUpdate := teo.NewModifyOriginGroupRequest()
+		requestUpdate.ZoneId = common.StringPtr(p.cfg.ZoneID)                // 站点ID
+		requestUpdate.GroupId = common.StringPtr(p.CustomConfig.IPGroupCode) // 源站组ID
+		requestUpdate.Records = make([]*teo.OriginRecord, 0)                 // 源站记录信息
+		for _, item := range newOriginValues {
+			requestUpdate.Records = append(requestUpdate.Records, &teo.OriginRecord{
+				Record: common.StringPtr(item),
+				Type:   common.StringPtr("IP_DOMAIN"),
+			})
+		}
+		_, err = p.Provider.Client.ModifyOriginGroupWithContext(ctx, requestUpdate)
+		if err != nil {
+			return nil, fmt.Errorf("更新源站组失败: %w", err)
+		}
+	}
+
+	return &teo.OriginInfo{
+		OriginType: common.StringPtr("ORIGIN_GROUP"),             // 源站类型
+		Origin:     common.StringPtr(p.CustomConfig.IPGroupCode), // 源站地址
+	}, nil
 }
 
 // 腾讯云 EO 自定义配置
