@@ -311,8 +311,9 @@ func (p *VolcengineDNSProvider) Update(ctx context.Context, domain string, subdo
 
 // 火山引擎 DNS 自定义配置
 type VolcengineDNSCustomConfig struct {
-	Line   string `json:"line"`             // 解析记录对应的线路
-	Remark string `json:"remark,omitempty"` // 备注
+	Line        string `json:"line"`                    // 解析记录对应的线路
+	Remark      string `json:"remark,omitempty"`        // 备注
+	IPGroupCode string `json:"ip_group_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置

@@ -33,6 +33,7 @@ async function openFormModal(id) {
       configs.forEach((d) => {
         if (d.capability === "ssl" || d.capability === "all") {
           const opt = document.createElement("option");
+          opt.dataset.id = d.id;
           opt.dataset.capability = d.capability;
           opt.dataset.platform = d.platform;
           opt.dataset.email = d.config_json_email || "";
@@ -163,7 +164,7 @@ if (form) {
       domain: document.getElementById("domain").value.trim(),
       provider: document.getElementById("provider").value.trim(),
       renewal_days: Number(
-        document.getElementById("renewal_days").value.trim()
+        document.getElementById("renewal_days").value.trim(),
       ),
       webhook_ids: selectedWebhookIDs.map(Number),
     };
@@ -227,7 +228,7 @@ async function openViewModal(id) {
 async function openHistoryViewModal(id, historyId) {
   try {
     const { data: sslRecord } = await API.get(
-      `/api/ssl-records/${id}/history/${historyId}`
+      `/api/ssl-records/${id}/history/${historyId}`,
     );
     console.log("sslRecord", sslRecord);
     if (!sslRecord) {

@@ -321,11 +321,12 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 
 // 阿里云 ESA 自定义配置
 type AliyunESACustomConfig struct {
-	BizName        string `json:"biz_name"`          // 用于标记DNS记录的业务场景
-	Comment        string `json:"comment,omitempty"` // 记录的备注信息
-	OriginProtocol string `json:"origin_protocol"`
-	HttpPort       int    `json:"http_port"`
-	HttpsPort      int    `json:"https_port"`
+	BizName        string `json:"biz_name"`                // 用于标记DNS记录的业务场景
+	Comment        string `json:"comment,omitempty"`       // 记录的备注信息
+	OriginProtocol string `json:"origin_protocol"`         // 源站协议
+	HttpPort       int    `json:"http_port"`               // HTTP 端口
+	HttpsPort      int    `json:"https_port"`              // HTTPS 端口
+	IPGroupCode    string `json:"ip_group_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

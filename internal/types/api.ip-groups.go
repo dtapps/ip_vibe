@@ -7,6 +7,7 @@ type GetIPGroupsRequest struct {
 // 获取IP组 响应结构
 type GetIPGroupResponse struct {
 	ID          int64  `json:"id" jsonschema:"IP组的唯一标识符"`         // IP组序号
+	Code        string `json:"code" jsonschema:"IP组的代码"`          // IP组代码（gomd5.Get16MD5Encode(id)）
 	Name        string `json:"name" jsonschema:"IP组的名称"`          // IP组名称
 	Description string `json:"description" jsonschema:"IP组的描述信息"` // IP组描述
 

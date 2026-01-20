@@ -9,6 +9,8 @@ import (
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
+	"github.com/spf13/cast"
+	"go.dtapp.net/library/utils/gomd5"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -43,6 +45,7 @@ func NewIPGroupService(db *ent.Client, debug bool) IPGroupService {
 func (s *IPGroupServiceImpl) BuildResponse(ctx context.Context, item *ent.IpGroup) (*types.GetIPGroupResponse, error) {
 	resp := &types.GetIPGroupResponse{
 		ID:          item.ID,
+		Code:        gomd5.Get16MD5Encode(cast.ToString(item.ID)),
 		Name:        item.Name,
 		Description: item.Description,
 	}

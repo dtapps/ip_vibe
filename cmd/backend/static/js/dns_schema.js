@@ -313,5 +313,13 @@ function buildConfigFromDnsFields(platform = "") {
     config[key] = val;
   });
 
+  // 判断 document 是否有 ip_group_code 字段，如存在就加上
+  ip_group_code_el = document.getElementById("ip_group_code");
+  if (ip_group_code_el) {
+    config.ip_group_code = document
+      .getElementById("ip_group_code")
+      .value.trim();
+  }
+
   document.getElementById("config_json").value = JSON.stringify(config);
 }

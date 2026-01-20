@@ -275,7 +275,8 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, domain string, subdomain
 
 // 阿里云 DNS 自定义配置
 type AliyunDNSCustomConfig struct {
-	Line string `json:"line"` // 解析记录的线路类型
+	Line        string `json:"line"`                    // 解析记录的线路类型
+	IPGroupCode string `json:"ip_group_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置

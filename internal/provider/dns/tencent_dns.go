@@ -278,8 +278,9 @@ func (p *TencentDNSProvider) Update(ctx context.Context, domain string, subdomai
 
 // 腾讯云 DNS 自定义配置
 type TencentDNSCustomConfig struct {
-	RecordLine string `json:"record_line"`      // 记录线路
-	Remark     string `json:"remark,omitempty"` // 备注
+	RecordLine  string `json:"record_line"`             // 记录线路
+	Remark      string `json:"remark,omitempty"`        // 备注
+	IPGroupCode string `json:"ip_group_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置

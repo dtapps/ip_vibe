@@ -332,10 +332,11 @@ func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain
 
 // 腾讯云 EO 自定义配置
 type TencentEOCustomConfig struct {
-	OriginProtocol string `json:"origin_protocol"`       // 回源协议
-	HttpPort       uint64 `json:"http_port,omitempty"`   // HTTP回源端口
-	HttpsPort      uint64 `json:"https_port,omitempty"`  // HTTPS回源端口
-	IPv6Status     string `json:"ipv6_status,omitempty"` // IPv6状态
+	OriginProtocol string `json:"origin_protocol"`         // 回源协议
+	HttpPort       uint64 `json:"http_port,omitempty"`     // HTTP回源端口
+	HttpsPort      uint64 `json:"https_port,omitempty"`    // HTTPS回源端口
+	IPv6Status     string `json:"ipv6_status,omitempty"`   // IPv6状态
+	IPGroupCode    string `json:"ip_group_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

@@ -53,6 +53,11 @@ function onIpGroupSelect(el) {
   console.log("onIpGroupSelect", el);
 
   const opt = el.options[sel.selectedIndex];
+
+  const code = opt.dataset.code || "";
+  if (code) {
+    document.getElementById("ip_group_code").value = code;
+  }
 }
 
 // 选择CDN记录 cdn_record_id
@@ -85,6 +90,7 @@ async function openFormModal(id) {
       configs.forEach((d) => {
         if (d.capability === "dns" || d.capability === "all") {
           const opt = document.createElement("option");
+          opt.dataset.id = d.id;
           opt.dataset.capability = d.capability;
           opt.dataset.platform = d.platform;
           opt.dataset.domain_name = d.config_json.domain_name || "";
@@ -104,6 +110,9 @@ async function openFormModal(id) {
       addPlaceholder(ipGroupSelect, "请选择IP组");
       ipGroups.forEach((d) => {
         const opt = document.createElement("option");
+        opt.dataset.id = d.id;
+        opt.dataset.code = d.code;
+        opt.dataset.name = d.name;
         opt.value = d.id;
         opt.text = `${d.name}`;
         ipGroupSelect.appendChild(opt);
@@ -176,6 +185,11 @@ async function openFormModal(id) {
       document.getElementById("id").disabled = true;
       document.getElementById("platform").value = dnsRecord.platform;
       document.getElementById("platform").disabled = true;
+      document.getElementById("ip_group_code").value = dnsRecord.config_json
+        .ip_group_code
+        ? dnsRecord.config_json.ip_group_code
+        : "";
+      document.getElementById("ip_group_code").disabled = true;
       document.getElementById("config_id").value = dnsRecord.config_id;
       document.getElementById("config_id").disabled = true;
       document.getElementById("sub_domain").value = dnsRecord.sub_domain;
@@ -241,6 +255,11 @@ async function openFormModal(id) {
         },
         {
           id: "platform",
+          value: "",
+          disabled: true,
+        },
+        {
+          id: "ip_group_code",
           value: "",
           disabled: true,
         },

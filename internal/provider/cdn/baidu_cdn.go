@@ -352,10 +352,11 @@ func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain 
 
 // 百度云 CDN 自定义配置
 type BaiduCDNCustomConfig struct {
-	Form           string `json:"form"`                 // 类型
-	FollowProtocol string `json:"follow_protocol"`      // 是否开启了协议跟随回源
-	HttpPort       int    `json:"http_port,omitempty"`  // HTTP 端口
-	HttpsPort      int    `json:"https_port,omitempty"` // HTTPS 端口
+	Form           string `json:"form"`                    // 类型
+	FollowProtocol string `json:"follow_protocol"`         // 是否开启了协议跟随回源
+	HttpPort       int    `json:"http_port,omitempty"`     // HTTP 端口
+	HttpsPort      int    `json:"https_port,omitempty"`    // HTTPS 端口
+	IPGroupCode    string `json:"ip_group_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

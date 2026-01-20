@@ -30,6 +30,11 @@ function onIpGroupSelect(el) {
   console.log("onIpGroupSelect", el);
 
   const opt = el.options[el.selectedIndex];
+
+  const code = opt.dataset.code || "";
+  if (code) {
+    document.getElementById("ip_group_code").value = code;
+  }
 }
 
 // 打开 表单 弹窗
@@ -55,6 +60,7 @@ async function openFormModal(id) {
       configs.forEach((d) => {
         if (d.capability === "cdn" || d.capability === "all") {
           const opt = document.createElement("option");
+          opt.dataset.id = d.id;
           opt.dataset.capability = d.capability;
           opt.dataset.platform = d.platform;
           opt.dataset.domain_name = d.config_json_domain_name || "";
@@ -73,6 +79,9 @@ async function openFormModal(id) {
       ipGroupSelect.innerHTML = "";
       ipGroups.forEach((d) => {
         const opt = document.createElement("option");
+        opt.dataset.id = d.id;
+        opt.dataset.code = d.code;
+        opt.dataset.name = d.name;
         opt.value = d.id;
         opt.text = `${d.name}`;
         ipGroupSelect.appendChild(opt);
@@ -128,6 +137,11 @@ async function openFormModal(id) {
       document.getElementById("id").disabled = true;
       document.getElementById("platform").value = cdnRecord.platform;
       document.getElementById("platform").disabled = true;
+      document.getElementById("ip_group_code").value = cdnRecord.config_json
+        .ip_group_code
+        ? cdnRecord.config_json.ip_group_code
+        : "";
+      document.getElementById("ip_group_code").disabled = true;
       document.getElementById("config_id").value = cdnRecord.config_id;
       document.getElementById("config_id").disabled = true;
       document.getElementById("sub_domain").value = cdnRecord.sub_domain;
@@ -163,6 +177,11 @@ async function openFormModal(id) {
         },
         {
           id: "platform",
+          value: "",
+          disabled: true,
+        },
+        {
+          id: "ip_group_code",
           value: "",
           disabled: true,
         },

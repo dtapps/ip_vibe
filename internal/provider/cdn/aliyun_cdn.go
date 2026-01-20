@@ -342,10 +342,11 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 
 // 阿里云 CDN 自定义配置
 type AliyunCDNCustomConfig struct {
-	CdnType   string `json:"cdn_type"`             // 加速域名的业务类型
-	Scope     string `json:"scope,omitempty"`      // 加速区域
-	HttpPort  int    `json:"http_port,omitempty"`  // HTTP 端口
-	HttpsPort int    `json:"https_port,omitempty"` // HTTPS 端口
+	CdnType     string `json:"cdn_type"`                // 加速域名的业务类型
+	Scope       string `json:"scope,omitempty"`         // 加速区域
+	HttpPort    int    `json:"http_port,omitempty"`     // HTTP 端口
+	HttpsPort   int    `json:"https_port,omitempty"`    // HTTPS 端口
+	IPGroupCode string `json:"ip_group_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置
