@@ -178,14 +178,14 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 	requestCdnQuery.PageSize = tea.Int32(500)           // 分页大小
 	responseCdnQuery, err := p.Provider.Client.DescribeUserDomainsWithContext(ctx, requestCdnQuery, &dara.RuntimeOptions{})
 	if err != nil {
-		return nil, fmt.Errorf("接口 DescribeUserDomains 失败 %w", err)
+		return nil, fmt.Errorf("接口 DescribeUserDomainsWithContext 失败 %w", err)
 	}
 	// 响应参数
-	if responseCdnQuery.Body.Domains == nil || len(responseCdnQuery.Body.Domains.PageData) == 0 {
+	if responseCdnQuery.GetBody().GetDomains().GetPageData() == nil || len(responseCdnQuery.GetBody().GetDomains().GetPageData()) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}
-	for _, item := range responseCdnQuery.Body.Domains.PageData {
+	for _, item := range responseCdnQuery.GetBody().GetDomains().GetPageData() {
 
 		// 查找域名
 		itemFullDomain := tea.StringValue(item.GetDomainName())
@@ -239,7 +239,7 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 // Update 更新 CDN 记录
 // https://next.api.aliyun.com/api/Cdn/2018-05-10/AddCdnDomain
 // https://next.api.aliyun.com/api/Cdn/2018-05-10/ModifyCdnDomain
-func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
+func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
 
 	// 打印数据
 	p.printData(ctx)
@@ -254,7 +254,7 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 	sources := make([]SourceItem, 0)
 
 	// 计算平均权重
-	n := len(originValues)
+	n := len(newOriginValues)
 	weights := make([]int, n)
 	if n > 0 {
 		base := 100 / n
@@ -269,9 +269,9 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 
 	// TODO: 默认加一个addr
 	defaultIP := "192.0.2.0"
-	originValues = append(originValues, defaultIP)
+	newOriginValues = append(newOriginValues, defaultIP)
 
-	for i, addr := range originValues {
+	for i, addr := range newOriginValues {
 		// 判断是否是默认测试地址
 		isDefaultTestIP := (addr == defaultIP)
 
@@ -316,7 +316,7 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 		requestCdnCreate.Scope = tea.String(p.CustomConfig.Scope)                // 加速区域
 		_, err = p.Provider.Client.AddCdnDomainWithContext(ctx, requestCdnCreate, &dara.RuntimeOptions{})
 		if err != nil {
-			return fmt.Errorf("接口 AddCdnDomain 失败 %w", err)
+			return fmt.Errorf("接口 AddCdnDomainWithContext 失败 %w", err)
 		}
 	}
 
@@ -327,7 +327,7 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 		requestCdnUpdate.Sources = tea.String(gojson.JsonEncodeNoError(sources)) // 回源地址列表
 		_, err = p.Provider.Client.ModifyCdnDomainWithContext(ctx, requestCdnUpdate, &dara.RuntimeOptions{})
 		if err != nil {
-			return fmt.Errorf("接口 ModifyCdnDomain 失败 %w", err)
+			return fmt.Errorf("接口 ModifyCdnDomainWithContext 失败 %w", err)
 		}
 	}
 

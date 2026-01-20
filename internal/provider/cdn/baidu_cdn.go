@@ -252,7 +252,7 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 // https://cloud.baidu.com/doc/CDN/s/Fk121xrty#创建加速域名接口-createdomain
 // https://cloud.baidu.com/doc/CDN/s/Vk121slzt#更新加速域名回源地址-setdomainorigin
 // https://cloud.baidu.com/doc/CDN/s/qkggncsxp
-func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
+func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
 
 	// 打印数据
 	p.printData(ctx)
@@ -272,13 +272,13 @@ func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain 
 
 	// 源站配置
 	sources := make([]api.OriginPeer, 0)
-	for _, source := range originValues {
+	for _, origin := range newOriginValues {
 		httpSrc := api.OriginPeer{
-			Peer:   fmt.Sprintf("http://[%v]:%v", source, p.CustomConfig.HttpPort),
+			Peer:   fmt.Sprintf("http://[%v]:%v", origin, p.CustomConfig.HttpPort),
 			Backup: false,
 		}
 		httpsSrc := api.OriginPeer{
-			Peer:   fmt.Sprintf("https://[%v]:%v", source, p.CustomConfig.HttpsPort),
+			Peer:   fmt.Sprintf("https://[%v]:%v", origin, p.CustomConfig.HttpsPort),
 			Backup: false,
 		}
 		sources = append(sources, httpSrc)

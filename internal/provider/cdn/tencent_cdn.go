@@ -240,7 +240,7 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 // Update 更新 CDN 记录
 // https://console.cloud.tencent.com/api/explorer?Product=cdn&Version=2018-06-06&Action=AddCdnDomain
 // https://console.cloud.tencent.com/api/explorer?Product=cdn&Version=2018-06-06&Action=UpdateDomainConfig
-func (p *TencentCDNProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
+func (p *TencentCDNProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
 
 	// 打印数据
 	p.printData(ctx)
@@ -253,7 +253,7 @@ func (p *TencentCDNProvider) Update(ctx context.Context, domain string, subdomai
 
 	// 主源站类型
 	originType := recordType
-	if len(originValues) > 1 {
+	if len(newOriginValues) > 1 {
 		originType = "ip_ipv6"
 	} else {
 		if recordType == "AAAA" {
@@ -269,7 +269,7 @@ func (p *TencentCDNProvider) Update(ctx context.Context, domain string, subdomai
 		requestCdnCreate := cdn.NewAddCdnDomainRequest()
 		requestCdnCreate.Domain = common.StringPtr(fullDomain) // 域名
 		requestCdnCreate.Origin = &cdn.Origin{
-			Origins:            common.StringPtrs(originValues),                     // 源站地址
+			Origins:            common.StringPtrs(newOriginValues),                  // 源站地址
 			OriginType:         common.StringPtr(originType),                        // 源站类型
 			OriginPullProtocol: common.StringPtr(p.CustomConfig.OriginPullProtocol), // 回源协议
 		}
@@ -287,8 +287,8 @@ func (p *TencentCDNProvider) Update(ctx context.Context, domain string, subdomai
 		requestCdnUpdate.Domain = common.StringPtr(fullDomain)                              // 域名
 		requestCdnUpdate.ProjectId = common.Int64Ptr(cast.ToInt64(p.InternalData.RecordID)) // 项目 ID
 		requestCdnUpdate.Origin = &cdn.Origin{
-			Origins:    common.StringPtrs(originValues), // 源站地址
-			OriginType: common.StringPtr(originType),    // 源站类型
+			Origins:    common.StringPtrs(newOriginValues), // 源站地址
+			OriginType: common.StringPtr(originType),       // 源站类型
 		}
 		_, err = p.Provider.Client.UpdateDomainConfigWithContext(ctx, requestCdnUpdate)
 		if err != nil {

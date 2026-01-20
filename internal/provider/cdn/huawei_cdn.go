@@ -254,7 +254,7 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 // Update 更新 CDN 记录
 // https://console.huaweicloud.com/apiexplorer/#/openapi/CDN/debug?version=v2&api=CreateDomain
 // https://console.huaweicloud.com/apiexplorer/#/openapi/CDN/sdk?version=v2&api=UpdateDomainFullConfig
-func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
+func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
 
 	// 打印数据
 	p.printData(ctx)
@@ -286,9 +286,9 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain
 
 	if p.InternalData.RecordID == "" {
 		sources := make([]model.SourcesRequestBody, 0)
-		for _, originValue := range originValues {
+		for _, origin := range newOriginValues {
 			sources = append(sources, model.SourcesRequestBody{
-				IpOrDomain:    originValue,
+				IpOrDomain:    origin,
 				OriginType:    model.GetSourcesRequestBodyOriginTypeEnum().IPADDR,
 				ActiveStandby: int32(1),
 			})
@@ -318,10 +318,10 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain
 
 	if p.InternalData.RecordID != "" {
 		sources := make([]model.SourcesConfig, 0)
-		for _, originValue := range originValues {
+		for _, origin := range newOriginValues {
 			sources = append(sources, model.SourcesConfig{
 				OriginType: model.GetSourcesRequestBodyOriginTypeEnum().IPADDR.Value(),
-				OriginAddr: originValue,
+				OriginAddr: origin,
 			})
 		}
 

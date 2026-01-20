@@ -168,11 +168,12 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 	if len(newOriginValues) == 1 {
 		originValues = newOriginValues
 	} else {
-		originInfo, err := p.getGroupOrigin(ctx, newOriginValues)
+		// 获取源站组信息
+		responseOriginInfo, err := p.getGroupOrigin(ctx, newOriginValues)
 		if err != nil {
 			return nil, fmt.Errorf("查询源站组失败: %w", err)
 		}
-		originValues = append(originValues, utils.PtrToString(originInfo.Origin))
+		originValues = append(originValues, responseOriginInfo.ID)
 	}
 
 	// 查询加速域名
@@ -288,10 +289,13 @@ func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain
 		originInfo.OriginType = common.StringPtr("IP_DOMAIN")    // 源站类型
 		originInfo.Origin = common.StringPtr(newOriginValues[0]) // 源站地址
 	} else {
-		originInfo, err = p.getGroupOrigin(ctx, newOriginValues)
+		// 获取源站组信息
+		responseOriginInfo, err := p.getGroupOrigin(ctx, newOriginValues)
 		if err != nil {
 			return fmt.Errorf("查询源站组失败: %w", err)
 		}
+		originInfo.OriginType = common.StringPtr(responseOriginInfo.OriginType) // 源站类型
+		originInfo.Origin = common.StringPtr(responseOriginInfo.ID)             // 源站地址
 	}
 
 	// HTTP回源端口，默认80
@@ -339,12 +343,21 @@ func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain
 	return nil
 }
 
+// TencentEOProviderGroupOriginInfo 腾讯云 EO 源站组信息
+type TencentEOProviderGroupOriginInfo struct {
+	OriginType string
+	ID         string
+}
+
 // getGroupOrigin 获取源站组信息
-func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues []string) (originInfo *teo.OriginInfo, err error) {
+// https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeOriginGroup
+// https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=CreateOriginGroup
+// https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=ModifyOriginGroup
+func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues []string) (originInfo *TencentEOProviderGroupOriginInfo, err error) {
 
 	const originType = "ORIGIN_GROUP"
-	originInfo = new(teo.OriginInfo{})
-	originInfo.OriginType = common.StringPtr(originType)
+	originInfo = new(TencentEOProviderGroupOriginInfo)
+	originInfo.OriginType = originType
 
 	// 查询源站组
 	requestGroupQuery := teo.NewDescribeOriginGroupRequest()
@@ -378,11 +391,11 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 				itemOriginValues = append(itemOriginValues, utils.PtrToString(v.Record))
 			}
 			// 查找源站组ID
-			itemGroupId := item.GroupId // 源站地址
+			itemGroupId := utils.PtrToString(item.GroupId)
 
 			// 判断记录值列表
 			if utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
-				originInfo.Origin = itemGroupId // 源站地址
+				originInfo.ID = itemGroupId
 				return originInfo, nil
 			}
 
@@ -408,7 +421,9 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 		if err != nil {
 			return nil, fmt.Errorf("接口 CreateOriginGroupWithContext 失败 %w", err)
 		}
-		originInfo.Origin = responseGroupCreate.Response.OriginGroupId // 源站地址
+
+		// 查找源站组ID
+		originInfo.ID = utils.PtrToString(responseGroupCreate.Response.OriginGroupId)
 	}
 	if needUpdate {
 		// 更新源站组

@@ -27,7 +27,6 @@ import (
 	"github.com/spf13/cast"
 	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/utils/goarray"
-	"go.dtapp.net/library/utils/gorandom"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -435,7 +434,7 @@ func (s *IPUpdateTask) RunCdnTask() {
 						slog.String("处理方式", "并发"),
 					)
 
-					if err = s.CdnUpdateNew(egCtx, sonLogger, item); err != nil {
+					if err = s.CdnUpdate(egCtx, sonLogger, item); err != nil {
 						logger.ErrorContext(egCtx, "处理失败",
 							slog.Any("error", err),
 						)
@@ -460,7 +459,7 @@ func (s *IPUpdateTask) RunCdnTask() {
 				slog.String("处理方式", "串行"),
 			)
 
-			if err = s.CdnUpdateNew(ctx, sonLogger, item); err != nil {
+			if err = s.CdnUpdate(ctx, sonLogger, item); err != nil {
 				logger.ErrorContext(ctx, "处理失败",
 					slog.Any("error", err),
 				)
@@ -483,53 +482,6 @@ type PendingCdnRecord struct {
 	params   *cdn_helper.CDNProcessParams // 处理参数
 }
 
-// 更新 CDN 记录
-func (s *IPUpdateTask) CdnUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingCdnRecord) (err error) {
-
-	// 日志
-	logger = logger.With(
-		slog.String("处理编号", gorandom.Alphanumeric(10)),
-		slog.String("记录", pendingRecord.params.CDNRecordID),
-		slog.String("提供商", pendingRecord.item.Type.String()),
-		slog.String("平台", pendingRecord.platform.String()),
-		slog.String("子域名", pendingRecord.item.SubDomain),
-	)
-	logger.InfoContext(ctx, "开始处理")
-	defer logger.InfoContext(ctx, "处理完成")
-
-	var cdnProcess cdn_helper.CDNProcess
-
-	switch pendingRecord.platform {
-	case platformconfig.PlatformTencentEo:
-		cdnProcess = cdn_helper.NewCDNProcessTencentEO(
-			s.db,
-			logger,
-			s.httpTransport,
-			s.debug,
-		)
-	case platformconfig.PlatformAliyunEsa:
-		cdnProcess = cdn_helper.NewCDNProcessAliyunEsa(
-			s.db,
-			logger,
-			s.httpTransport,
-			s.debug,
-		)
-	default:
-		err = fmt.Errorf("暂不支持该平台: %s", pendingRecord.platform.String())
-		_ = s.updateDbOfCdnResponse(ctx, pendingRecord.item.ID, err.Error())
-		return err
-	}
-
-	// 更新CDN记录
-	err = cdnProcess.UpsertRecord(ctx, pendingRecord.params)
-	if err != nil {
-		_ = s.updateDbOfCdnResponse(ctx, pendingRecord.item.ID, err.Error())
-		return err
-	}
-	_ = s.updateDbOfCdnResponse(ctx, pendingRecord.item.ID, "ok")
-	return nil
-}
-
 // 更新 CDN 记录 参数
 type CdnUpdateParams struct {
 	platform *ent.PlatformConfig // 平台信息
@@ -541,7 +493,7 @@ type CdnUpdateParams struct {
 }
 
 // 更新 CDN 记录
-func (s *IPUpdateTask) CdnUpdateNew(ctx context.Context, logger *slog.Logger, params *CdnUpdateParams) (err error) {
+func (s *IPUpdateTask) CdnUpdate(ctx context.Context, logger *slog.Logger, params *CdnUpdateParams) (err error) {
 
 	// 日志
 	logger = logger.With(
