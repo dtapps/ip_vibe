@@ -45,9 +45,13 @@ func NewIPGroupService(db *ent.Client, debug bool) IPGroupService {
 func (s *IPGroupServiceImpl) BuildResponse(ctx context.Context, item *ent.IpGroup) (*types.GetIPGroupResponse, error) {
 	resp := &types.GetIPGroupResponse{
 		ID:          item.ID,
-		Code:        gomd5.Get16MD5Encode(cast.ToString(item.ID)),
+		Code:        item.Code,
 		Name:        item.Name,
 		Description: item.Description,
+	}
+
+	if item.Code == "" {
+		resp.Code = gomd5.Get16MD5Encode(cast.ToString(item.ID))
 	}
 
 	// 设备列表

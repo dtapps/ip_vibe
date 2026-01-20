@@ -153,7 +153,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 		// 构造字段组（内层数组）
 		fieldGroup = []types.SCHEMAField{
 			{
-				ID:          "line",
+				ID:          "record_line",
 				Label:       "线路",
 				Type:        "select",
 				Placeholder: "请选择线路",
