@@ -171,23 +171,21 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
-	// 请求参数
-	request := &cdn20180510.DescribeUserDomainsRequest{}
-	request.DomainName = tea.String(fullDomain) // 加速域名
-	request.PageNumber = tea.Int32(1)           // 取得第几页
-	request.PageSize = tea.Int32(500)           // 分页大小
-	// 请求
-	response, err := p.Provider.Client.DescribeUserDomainsWithContext(ctx, request, &dara.RuntimeOptions{})
-	printJSON("查询加速域名", request, response)
+	// 查询加速域名
+	requestCdnQuery := &cdn20180510.DescribeUserDomainsRequest{}
+	requestCdnQuery.DomainName = tea.String(fullDomain) // 加速域名
+	requestCdnQuery.PageNumber = tea.Int32(1)           // 取得第几页
+	requestCdnQuery.PageSize = tea.Int32(500)           // 分页大小
+	responseCdnQuery, err := p.Provider.Client.DescribeUserDomainsWithContext(ctx, requestCdnQuery, &dara.RuntimeOptions{})
 	if err != nil {
-		return
+		return nil, fmt.Errorf("接口 DescribeUserDomains 失败 %w", err)
 	}
 	// 响应参数
-	if response.Body.Domains == nil || len(response.Body.Domains.PageData) == 0 {
+	if responseCdnQuery.Body.Domains == nil || len(responseCdnQuery.Body.Domains.PageData) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}
-	for _, item := range response.Body.Domains.PageData {
+	for _, item := range responseCdnQuery.Body.Domains.PageData {
 
 		// 查找域名
 		itemFullDomain := tea.StringValue(item.GetDomainName())
@@ -310,30 +308,26 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
 	if p.InternalData.RecordID == "" {
-		// 请求参数
-		request := &cdn20180510.AddCdnDomainRequest{}
-		request.CdnType = tea.String(p.CustomConfig.CdnType)            // 加速域名的业务类型
-		request.DomainName = tea.String(fullDomain)                     // 需要接入CDN的加速域名
-		request.Sources = tea.String(gojson.JsonEncodeNoError(sources)) // 回源地址列表
-		request.Scope = tea.String(p.CustomConfig.Scope)                // 加速区域
-		// 请求
-		response, err := p.Provider.Client.AddCdnDomainWithContext(ctx, request, &dara.RuntimeOptions{})
-		printJSON("创建加速域名", request, response)
+		// 创建加速域名
+		requestCdnCreate := &cdn20180510.AddCdnDomainRequest{}
+		requestCdnCreate.CdnType = tea.String(p.CustomConfig.CdnType)            // 加速域名的业务类型
+		requestCdnCreate.DomainName = tea.String(fullDomain)                     // 需要接入CDN的加速域名
+		requestCdnCreate.Sources = tea.String(gojson.JsonEncodeNoError(sources)) // 回源地址列表
+		requestCdnCreate.Scope = tea.String(p.CustomConfig.Scope)                // 加速区域
+		_, err = p.Provider.Client.AddCdnDomainWithContext(ctx, requestCdnCreate, &dara.RuntimeOptions{})
 		if err != nil {
-			return err
+			return fmt.Errorf("接口 AddCdnDomain 失败 %w", err)
 		}
 	}
 
 	if p.InternalData.RecordID != "" {
-		// 请求参数
-		request := &cdn20180510.ModifyCdnDomainRequest{}
-		request.DomainName = tea.String(fullDomain)                     // 需要接入CDN的加速域名
-		request.Sources = tea.String(gojson.JsonEncodeNoError(sources)) // 回源地址列表
-		// 请求
-		response, err := p.Provider.Client.ModifyCdnDomainWithContext(ctx, request, &dara.RuntimeOptions{})
-		printJSON("更新加速域名", request, response)
+		// 更新加速域名
+		requestCdnUpdate := &cdn20180510.ModifyCdnDomainRequest{}
+		requestCdnUpdate.DomainName = tea.String(fullDomain)                     // 需要接入CDN的加速域名
+		requestCdnUpdate.Sources = tea.String(gojson.JsonEncodeNoError(sources)) // 回源地址列表
+		_, err = p.Provider.Client.ModifyCdnDomainWithContext(ctx, requestCdnUpdate, &dara.RuntimeOptions{})
 		if err != nil {
-			return err
+			return fmt.Errorf("接口 ModifyCdnDomain 失败 %w", err)
 		}
 	}
 

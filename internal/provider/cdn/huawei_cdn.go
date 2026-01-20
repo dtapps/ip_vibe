@@ -178,23 +178,22 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
 	// 请求参数
-	request := &model.ListDomainsRequest{}
-	request.DomainName = utils.StringToPtr(fullDomain) // 加速域名
-	request.PageSize = utils.Int32ToPtr(10000)         // 每页加速域名的数量
-	request.PageNumber = utils.Int32ToPtr(1)           // 查询的页码
-	request.ExactMatch = utils.BoolToPtr(true)         // 精准匹配
+	requestCdnQuery := &model.ListDomainsRequest{}
+	requestCdnQuery.DomainName = utils.StringToPtr(fullDomain) // 加速域名
+	requestCdnQuery.PageSize = utils.Int32ToPtr(10000)         // 每页加速域名的数量
+	requestCdnQuery.PageNumber = utils.Int32ToPtr(1)           // 查询的页码
+	requestCdnQuery.ExactMatch = utils.BoolToPtr(true)         // 精准匹配
 	// 请求
-	response, err := p.Provider.Client.ListDomains(request)
-	printJSON("查询加速域名", request, response)
+	responseCdnQuery, err := p.Provider.Client.ListDomains(requestCdnQuery)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("接口 ListDomains 失败 %w", err)
 	}
 	// 响应参数
-	if response.Domains == nil || len(*response.Domains) == 0 {
+	if responseCdnQuery.Domains == nil || len(*responseCdnQuery.Domains) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}
-	for _, item := range *response.Domains {
+	for _, item := range *responseCdnQuery.Domains {
 
 		// 查找域名
 		itemFullDomain := utils.PtrToString(item.DomainName)
@@ -295,9 +294,9 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain
 			})
 		}
 
-		// 请求参数
-		request := &model.CreateDomainRequest{}
-		request.Body = &model.CreateDomainRequestBody{
+		// 创建加速域名
+		requestCdnCreate := &model.CreateDomainRequest{}
+		requestCdnCreate.Body = &model.CreateDomainRequestBody{
 			Domain: &model.DomainBody{
 				DomainName:   fullDomain,
 				BusinessType: business_type,
@@ -305,12 +304,16 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain
 				ServiceArea:  &service_area,
 			},
 		}
-		// 请求
-		response, err := p.Provider.Client.CreateDomain(request)
-		printJSON("创建加速域名", request, response)
+		responseCdnCreate, err := p.Provider.Client.CreateDomain(requestCdnCreate)
 		if err != nil {
-			return err
+			return fmt.Errorf("接口 CreateDomain 失败 %w", err)
 		}
+
+		// 域名ID
+		p.InternalData.RecordID = utils.PtrToString(responseCdnCreate.Domain.Id)
+
+		// CDN域名
+		p.InternalData.CdnDomain = utils.TrimDotsPrt(responseCdnCreate.Domain.Cname)
 	}
 
 	if p.InternalData.RecordID != "" {
@@ -322,10 +325,10 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain
 			})
 		}
 
-		// 请求参数
-		request := &model.UpdateDomainFullConfigRequest{}
-		request.DomainName = fullDomain // 加速域名
-		request.Body = &model.ModifyDomainConfigRequestBody{
+		// 更新加速域名
+		requestCdnUpdate := &model.UpdateDomainFullConfigRequest{}
+		requestCdnUpdate.DomainName = fullDomain // 加速域名
+		requestCdnUpdate.Body = &model.ModifyDomainConfigRequestBody{
 			Configs: &model.Configs{
 				BusinessType: utils.StringToPtr(p.CustomConfig.BusinessType),
 				ServiceArea:  utils.StringToPtr(p.CustomConfig.ServiceArea),
@@ -333,11 +336,9 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain
 				Sources:      &sources,
 			},
 		}
-		// 请求
-		response, err := p.Provider.Client.UpdateDomainFullConfig(request)
-		printJSON("更新加速域名", request, response)
+		_, err = p.Provider.Client.UpdateDomainFullConfig(requestCdnUpdate)
 		if err != nil {
-			return err
+			return fmt.Errorf("接口 UpdateDomainFullConfig 失败 %w", err)
 		}
 	}
 

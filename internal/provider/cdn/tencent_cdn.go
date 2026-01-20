@@ -161,27 +161,26 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
 	// 请求参数
-	request := cdn.NewDescribeDomainsRequest()
-	request.Offset = common.Int64Ptr(0)
-	request.Limit = common.Int64Ptr(1000)
-	request.Filters = make([]*cdn.DomainFilter, 0)
-	request.Filters = append(request.Filters, &cdn.DomainFilter{
+	requestCdnQuery := cdn.NewDescribeDomainsRequest()
+	requestCdnQuery.Offset = common.Int64Ptr(0)
+	requestCdnQuery.Limit = common.Int64Ptr(1000)
+	requestCdnQuery.Filters = make([]*cdn.DomainFilter, 0)
+	requestCdnQuery.Filters = append(requestCdnQuery.Filters, &cdn.DomainFilter{
 		Name:  common.StringPtr("domain"),
 		Value: common.StringPtrs([]string{fullDomain}),
 		Fuzzy: common.BoolPtr(false),
 	})
 	// 请求
-	response, err := p.Provider.Client.DescribeDomainsWithContext(ctx, request)
-	printJSON("查询加速域名", request, response)
+	responseCdnQuery, err := p.Provider.Client.DescribeDomainsWithContext(ctx, requestCdnQuery)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("接口 DescribeDomainsWithContext 失败 %w", err)
 	}
 	// 响应参数
-	if response.Response.Domains == nil || len(response.Response.Domains) == 0 {
+	if responseCdnQuery.Response.Domains == nil || len(responseCdnQuery.Response.Domains) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}
-	for _, item := range response.Response.Domains {
+	for _, item := range responseCdnQuery.Response.Domains {
 
 		// 查找域名
 		itemFullDomain := utils.PtrToString(item.Domain)
@@ -266,38 +265,34 @@ func (p *TencentCDNProvider) Update(ctx context.Context, domain string, subdomai
 	}
 
 	if p.InternalData.RecordID == "" {
-		// 请求参数
-		request := cdn.NewAddCdnDomainRequest()
-		request.Domain = common.StringPtr(fullDomain) // 域名
-		request.Origin = &cdn.Origin{
+		// 创建加速域名
+		requestCdnCreate := cdn.NewAddCdnDomainRequest()
+		requestCdnCreate.Domain = common.StringPtr(fullDomain) // 域名
+		requestCdnCreate.Origin = &cdn.Origin{
 			Origins:            common.StringPtrs(originValues),                     // 源站地址
 			OriginType:         common.StringPtr(originType),                        // 源站类型
 			OriginPullProtocol: common.StringPtr(p.CustomConfig.OriginPullProtocol), // 回源协议
 		}
-		request.ServiceType = common.StringPtr(p.CustomConfig.ServiceType) // 加速域名业务类型
-		request.Area = common.StringPtr(p.CustomConfig.Area)               // 区域
-		// 请求
-		response, err := p.Provider.Client.AddCdnDomainWithContext(ctx, request)
-		printJSON("创建加速域名", request, response)
+		requestCdnCreate.ServiceType = common.StringPtr(p.CustomConfig.ServiceType) // 加速域名业务类型
+		requestCdnCreate.Area = common.StringPtr(p.CustomConfig.Area)               // 区域
+		_, err = p.Provider.Client.AddCdnDomainWithContext(ctx, requestCdnCreate)
 		if err != nil {
-			return err
+			return fmt.Errorf("接口 AddCdnDomainWithContext 失败 %w", err)
 		}
 	}
 
 	if p.InternalData.RecordID != "" {
-		// 请求参数
-		request := cdn.NewUpdateDomainConfigRequest()
-		request.Domain = common.StringPtr(fullDomain)                              // 域名
-		request.ProjectId = common.Int64Ptr(cast.ToInt64(p.InternalData.RecordID)) // 项目 ID
-		request.Origin = &cdn.Origin{
+		// 更新加速域名
+		requestCdnUpdate := cdn.NewUpdateDomainConfigRequest()
+		requestCdnUpdate.Domain = common.StringPtr(fullDomain)                              // 域名
+		requestCdnUpdate.ProjectId = common.Int64Ptr(cast.ToInt64(p.InternalData.RecordID)) // 项目 ID
+		requestCdnUpdate.Origin = &cdn.Origin{
 			Origins:    common.StringPtrs(originValues), // 源站地址
 			OriginType: common.StringPtr(originType),    // 源站类型
 		}
-		// 请求
-		response, err := p.Provider.Client.UpdateDomainConfigWithContext(ctx, request)
-		printJSON("更新加速域名", request, response)
+		_, err = p.Provider.Client.UpdateDomainConfigWithContext(ctx, requestCdnUpdate)
 		if err != nil {
-			return err
+			return fmt.Errorf("接口 UpdateDomainConfigWithContext 失败 %w", err)
 		}
 	}
 

@@ -174,24 +174,22 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
-	// 请求参数
-	request := &esa20240910.ListRecordsRequest{}
-	request.SiteId = tea.Int64(p.cfg.SiteID) // 站点ID
-	request.RecordName = tea.String(fullDomain)
-	request.PageNumber = tea.Int32(1)
-	request.PageSize = tea.Int32(500)
-	// 请求
-	response, err := p.Provider.Client.ListRecordsWithContext(ctx, request, &dara.RuntimeOptions{})
-	printJSON("查询加速域名", request, response)
+	// 查询加速域名
+	requestCdnQuery := &esa20240910.ListRecordsRequest{}
+	requestCdnQuery.SiteId = tea.Int64(p.cfg.SiteID) // 站点ID
+	requestCdnQuery.RecordName = tea.String(fullDomain)
+	requestCdnQuery.PageNumber = tea.Int32(1)
+	requestCdnQuery.PageSize = tea.Int32(500)
+	responseCdnQuery, err := p.Provider.Client.ListRecordsWithContext(ctx, requestCdnQuery, &dara.RuntimeOptions{})
 	if err != nil {
 		return
 	}
 	// 响应参数
-	if response.Body.Records == nil || len(response.Body.Records) == 0 {
+	if responseCdnQuery.Body.Records == nil || len(responseCdnQuery.Body.Records) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}
-	for _, item := range response.Body.Records {
+	for _, item := range responseCdnQuery.Body.Records {
 
 		// 查找域名
 		itemFullDomain := tea.StringValue(item.GetRecordName())
@@ -274,43 +272,42 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 	}
 
 	if p.InternalData.RecordID == "" {
-		// 请求参数
-		request := &esa20240910.CreateRecordRequest{}
-		request.SiteId = tea.Int64(p.cfg.SiteID)             // 站点ID
-		request.RecordName = tea.String(fullDomain)          // 记录名称
-		request.Proxied = tea.Bool(true)                     // 记录是否开启代理加速
-		request.Type = tea.String(Type)                      // 记录的DNS类型
-		request.SourceType = tea.String(sourceType)          // CNAME记录的源站类型
-		request.BizName = tea.String(p.CustomConfig.BizName) // 用于标记DNS记录的业务场景
-		request.Ttl = tea.Int32(1)                           // 记录的过期时间
-		request.Data = &esa20240910.CreateRecordRequestData{
+		// 创建加速域名
+		requestCdnCreate := &esa20240910.CreateRecordRequest{}
+		requestCdnCreate.SiteId = tea.Int64(p.cfg.SiteID)             // 站点ID
+		requestCdnCreate.RecordName = tea.String(fullDomain)          // 记录名称
+		requestCdnCreate.Proxied = tea.Bool(true)                     // 记录是否开启代理加速
+		requestCdnCreate.Type = tea.String(Type)                      // 记录的DNS类型
+		requestCdnCreate.SourceType = tea.String(sourceType)          // CNAME记录的源站类型
+		requestCdnCreate.BizName = tea.String(p.CustomConfig.BizName) // 用于标记DNS记录的业务场景
+		requestCdnCreate.Ttl = tea.Int32(1)                           // 记录的过期时间
+		requestCdnCreate.Data = &esa20240910.CreateRecordRequestData{
 			Value: tea.String(strings.Join(originValues, ",")), // 记录值或部分内容
 		}
-		request.Comment = tea.String(p.CustomConfig.Comment) // 记录的备注信息
-		// 请求
-		response, err := p.Provider.Client.CreateRecordWithContext(ctx, request, &dara.RuntimeOptions{})
-		printJSON("创建加速域名", request, response)
+		requestCdnCreate.Comment = tea.String(p.CustomConfig.Comment) // 记录的备注信息
+		responseCdnCreate, err := p.Provider.Client.CreateRecordWithContext(ctx, requestCdnCreate, &dara.RuntimeOptions{})
 		if err != nil {
 			return err
 		}
+
+		// 域名ID
+		p.InternalData.RecordID = cast.ToString(tea.Int64Value(responseCdnCreate.Body.RecordId))
 	}
 
 	if p.InternalData.RecordID != "" {
-		// 请求参数
-		request := &esa20240910.UpdateRecordRequest{}
-		request.RecordId = tea.Int64(cast.ToInt64(p.InternalData.RecordID)) // 站点ID
-		request.Ttl = tea.Int32(1)                                          // 记录的过期时间
-		request.Proxied = tea.Bool(true)                                    // 记录是否开启代理加速
-		request.Type = tea.String(Type)                                     // 记录的DNS类型
-		request.Data = &esa20240910.UpdateRecordRequestData{
+		// 更新加速域名
+		requestCdnUpdate := &esa20240910.UpdateRecordRequest{}
+		requestCdnUpdate.RecordId = tea.Int64(cast.ToInt64(p.InternalData.RecordID)) // 站点ID
+		requestCdnUpdate.Ttl = tea.Int32(1)                                          // 记录的过期时间
+		requestCdnUpdate.Proxied = tea.Bool(true)                                    // 记录是否开启代理加速
+		requestCdnUpdate.Type = tea.String(Type)                                     // 记录的DNS类型
+		requestCdnUpdate.Data = &esa20240910.UpdateRecordRequestData{
 			Value: tea.String(strings.Join(originValues, ",")), // 记录值或部分内容
 		}
-		request.SourceType = tea.String(sourceType)          // CNAME记录的源站类型
-		request.BizName = tea.String(p.CustomConfig.BizName) // 记录加速时的业务场景
-		request.Comment = tea.String(p.CustomConfig.Comment) // 记录的备注信息
-		// 请求
-		response, err := p.Provider.Client.UpdateRecordWithContext(ctx, request, &dara.RuntimeOptions{})
-		printJSON("更新加速域名", request, response)
+		requestCdnUpdate.SourceType = tea.String(sourceType)          // CNAME记录的源站类型
+		requestCdnUpdate.BizName = tea.String(p.CustomConfig.BizName) // 记录加速时的业务场景
+		requestCdnUpdate.Comment = tea.String(p.CustomConfig.Comment) // 记录的备注信息
+		_, err = p.Provider.Client.UpdateRecordWithContext(ctx, requestCdnUpdate, &dara.RuntimeOptions{})
 		if err != nil {
 			return err
 		}

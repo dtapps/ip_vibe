@@ -170,14 +170,13 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 		originValues = append(originValues, fmt.Sprintf("https://[%v]:%v", source, p.CustomConfig.HttpsPort))
 	}
 
-	// 请求 查询用户名下所有域名
-	responseList, err := p.Provider.Client.GetDomainStatus("ALL", "")
+	// 查询用户名下所有域名
+	responseCdnList, err := p.Provider.Client.GetDomainStatus("ALL", "")
 	if err != nil {
 		return nil, fmt.Errorf("请求 GetDomainStatus 失败 %w", err)
 	}
-	// 循环 查询用户名下所有域名
 	isExist := false
-	for _, item := range responseList {
+	for _, item := range responseCdnList {
 		// 查找域名
 		itemFullDomain := item.Domain
 		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
@@ -191,10 +190,10 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 		return p.InternalData, nil
 	}
 
-	// 请求 查询用户名下所有域名
-	responseInfo, err := p.Provider.Client.GetDomainConfig(fullDomain)
+	// 查询用户名下所有域名
+	responseCdnInfo, err := p.Provider.Client.GetDomainConfig(fullDomain)
 	if err != nil {
-		return nil, fmt.Errorf("请求 GetDomainConfig 失败 %w", err)
+		return nil, fmt.Errorf("接口 GetDomainConfig 失败 %w", err)
 	}
 	// 响应参数
 
@@ -202,26 +201,26 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 	// itemFullDomain := responseInfo.Domain
 
 	// 记录数据
-	p.ItemData = *responseInfo
+	p.ItemData = *responseCdnInfo
 
 	// 查找记录值列表
 	itemOriginValues := make([]string, 0)
-	for _, origin := range responseInfo.Origin {
+	for _, origin := range responseCdnInfo.Origin {
 		itemOriginValues = append(itemOriginValues, origin.Peer)
 	}
 	// 查找类型
-	itemForm := responseInfo.Form
-	// 请求 查询协议跟随回源
+	itemForm := responseCdnInfo.Form
+	// 查询协议跟随回源
 	itemFollowProtocol, err := p.Provider.Client.GetOriginProtocol(fullDomain)
 	if err != nil {
-		return nil, fmt.Errorf("请求 GetOriginProtocol 失败 %w", err)
+		return nil, fmt.Errorf("接口 GetOriginProtocol 失败 %w", err)
 	}
 
 	// 域名ID
-	// p.InternalData.RecordID = responseInfo.DomainID
+	// p.InternalData.RecordID = responseCdnInfo.DomainID
 
 	// CDN域名
-	p.InternalData.CdnDomain = utils.TrimDots(responseInfo.Cname)
+	p.InternalData.CdnDomain = utils.TrimDots(responseCdnInfo.Cname)
 
 	// 判断记录值列表
 	if !utils.EqualUrlSliceUnordered(itemOriginValues, originValues) {
@@ -287,37 +286,39 @@ func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain 
 	}
 
 	if p.InternalData.CdnDomain == "" {
-		// 请求 查询域名是否可添加
-		responseListIsValidDomain, err := p.Provider.Client.IsValidDomain(fullDomain)
+		// 查询域名是否可添加
+		responseCdnValid, err := p.Provider.Client.IsValidDomain(fullDomain)
 		if err != nil {
-			return fmt.Errorf("请求 IsValidDomain 失败 %w", err)
+			return fmt.Errorf("接口 IsValidDomain 失败 %w", err)
 		}
 		// 校验域名是否可添加
-		if !responseListIsValidDomain.IsValid {
+		if !responseCdnValid.IsValid {
 			return fmt.Errorf("域名 %v 不可添加", fullDomain)
 		}
 
-		// 请求参数
-		request := &api.OriginInit{}
-		request.Origin = sources           // 源站配置
-		request.DefaultHost = fullDomain   // 域名级别回源host
-		request.Form = p.CustomConfig.Form // 类型
-		// 请求 创建加速域名接口
-		_, err = p.Provider.Client.CreateDomain(fullDomain, request)
+		// 创建加速域名
+		requestCdnCreate := &api.OriginInit{}
+		requestCdnCreate.Origin = sources           // 源站配置
+		requestCdnCreate.DefaultHost = fullDomain   // 域名级别回源host
+		requestCdnCreate.Form = p.CustomConfig.Form // 类型
+		responseCreate, err := p.Provider.Client.CreateDomain(fullDomain, requestCdnCreate)
 		if err != nil {
-			return fmt.Errorf("请求 CreateDomain 失败 %w", err)
+			return fmt.Errorf("接口 CreateDomain 失败 %w", err)
 		}
 
-		// 请求 设置协议跟随回源
+		// CDN域名
+		p.InternalData.CdnDomain = utils.TrimDots(responseCreate.Cname)
+
+		// 设置协议跟随回源
 		err = p.Provider.Client.SetOriginProtocol(fullDomain, p.CustomConfig.FollowProtocol)
 		if err != nil {
-			return fmt.Errorf("请求 SetOriginProtocol 失败 %w", err)
+			return fmt.Errorf("接口 SetOriginProtocol 失败 %w", err)
 		}
 
-		// 请求 设置IPv6
+		// 设置IPv6
 		err = p.Provider.Client.SetIPv6(fullDomain, true)
 		if err != nil {
-			return fmt.Errorf("请求 SetIPv6 失败 %w", err)
+			return fmt.Errorf("接口 SetIPv6 失败 %w", err)
 		}
 	}
 
@@ -328,22 +329,22 @@ func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain 
 			defaultHost = fullDomain
 		}
 
-		// 请求 更新加速域名回源地址
+		// 更新加速域名回源地址
 		err := p.Provider.Client.SetDomainOrigin(fullDomain, sources, defaultHost)
 		if err != nil {
-			return fmt.Errorf("请求 SetDomainOrigin 失败 %w", err)
+			return fmt.Errorf("接口 SetDomainOrigin 失败 %w", err)
 		}
 
-		// 请求 设置协议跟随回源
+		// 设置协议跟随回源
 		err = p.Provider.Client.SetOriginProtocol(fullDomain, p.CustomConfig.FollowProtocol)
 		if err != nil {
-			return fmt.Errorf("请求 SetOriginProtocol 失败 %w", err)
+			return fmt.Errorf("接口 SetOriginProtocol 失败 %w", err)
 		}
 
-		// 请求 设置IPv6
+		// 设置IPv6
 		err = p.Provider.Client.SetIPv6(fullDomain, true)
 		if err != nil {
-			return fmt.Errorf("请求 SetIPv6 失败 %w", err)
+			return fmt.Errorf("接口 SetIPv6 失败 %w", err)
 		}
 	}
 

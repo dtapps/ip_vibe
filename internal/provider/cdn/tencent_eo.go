@@ -187,7 +187,7 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 	})
 	responseCdnQuery, err := p.Provider.Client.DescribeAccelerationDomainsWithContext(ctx, requestCdnQuery)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("接口 DescribeAccelerationDomainsWithContext 失败 %w", err)
 	}
 	// 响应参数
 	if responseCdnQuery.Response == nil || len(responseCdnQuery.Response.AccelerationDomains) == 0 {
@@ -314,9 +314,9 @@ func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain
 		requestCdnCreate.HttpOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpPort))   // HTTP回源端口
 		requestCdnCreate.HttpsOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpsPort)) // HTTPS回源端口
 		requestCdnCreate.IPv6Status = common.StringPtr(p.CustomConfig.IPv6Status)             // IPv6状态
-		_, err := p.Provider.Client.CreateAccelerationDomainWithContext(ctx, requestCdnCreate)
+		_, err = p.Provider.Client.CreateAccelerationDomainWithContext(ctx, requestCdnCreate)
 		if err != nil {
-			return err
+			return fmt.Errorf("接口 CreateAccelerationDomainWithContext 失败 %w", err)
 		}
 	}
 
@@ -330,10 +330,9 @@ func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain
 		requestCdnUpdate.HttpOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpPort))   // HTTP回源端口
 		requestCdnUpdate.HttpsOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpsPort)) // HTTPS回源端口
 		requestCdnUpdate.IPv6Status = common.StringPtr(p.CustomConfig.IPv6Status)             // IPv6状态
-		// 请求
-		_, err := p.Provider.Client.ModifyAccelerationDomainWithContext(ctx, requestCdnUpdate)
+		_, err = p.Provider.Client.ModifyAccelerationDomainWithContext(ctx, requestCdnUpdate)
 		if err != nil {
-			return err
+			return fmt.Errorf("接口 ModifyAccelerationDomainWithContext 失败 %w", err)
 		}
 	}
 
@@ -359,7 +358,7 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 	})
 	responseGroupQuery, err := p.Provider.Client.DescribeOriginGroupWithContext(ctx, requestGroupQuery)
 	if err != nil {
-		return nil, fmt.Errorf("查询源站组失败: %w", err)
+		return nil, fmt.Errorf("接口 DescribeOriginGroupWithContext 失败 %w", err)
 	}
 
 	// 是否需要创建源站组
@@ -407,7 +406,7 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 		requestGroupCreate.Type = common.StringPtr("GENERAL")                  // 源站组类型
 		responseGroupCreate, err := p.Provider.Client.CreateOriginGroupWithContext(ctx, requestGroupCreate)
 		if err != nil {
-			return nil, fmt.Errorf("创建源站组失败: %w", err)
+			return nil, fmt.Errorf("接口 CreateOriginGroupWithContext 失败 %w", err)
 		}
 		originInfo.Origin = responseGroupCreate.Response.OriginGroupId // 源站地址
 	}
@@ -425,7 +424,7 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 		}
 		_, err = p.Provider.Client.ModifyOriginGroupWithContext(ctx, requestGroupUpdate)
 		if err != nil {
-			return nil, fmt.Errorf("更新源站组失败: %w", err)
+			return nil, fmt.Errorf("接口 ModifyOriginGroupWithContext 失败 %w", err)
 		}
 	}
 
