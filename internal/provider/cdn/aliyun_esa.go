@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"regexp"
 	"strings"
 	"vibe_ip/internal/helper/aliyun_helper"
 	"vibe_ip/internal/provider"
@@ -256,6 +257,13 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 				return p.InternalData, nil
 			}
 
+			// 查询回源规则
+			err = p.getRuleInfo(ctx, domain, subdomain)
+			if err != nil {
+				p.InternalData.IsContinue = true
+				return p.InternalData, fmt.Errorf("查询回源规则失败: %w", err)
+			}
+
 			p.InternalData.IsContinue = false
 			return p.InternalData, nil
 		}
@@ -333,6 +341,12 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 		// 域名ID
 		p.InternalData.RecordID = cast.ToString(tea.Int64Value(responseCdnCreate.GetBody().GetRecordId()))
 
+		// 查询回源规则
+		err = p.getRuleInfo(ctx, domain, subdomain)
+		if err != nil {
+			return fmt.Errorf("查询回源规则失败: %w", err)
+		}
+
 	} else if p.InternalData.RecordID != "" {
 
 		// 更新加速域名
@@ -350,6 +364,12 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 		_, err = p.Provider.Client.UpdateRecordWithContext(ctx, requestCdnUpdate, p.Provider.Runtime)
 		if err != nil {
 			return fmt.Errorf("接口 UpdateRecordWithContext 失败 %w", err)
+		}
+
+		// 查询回源规则
+		err = p.getRuleInfo(ctx, domain, subdomain)
+		if err != nil {
+			return fmt.Errorf("查询回源规则失败: %w", err)
 		}
 
 	}
@@ -473,6 +493,179 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 	}
 
 	return originInfo, nil
+}
+
+// getGroupOrigin 获取回源规则信息
+// https://next.api.aliyun.com/api/ESA/2024-09-10/ListOriginRules
+// https://next.api.aliyun.com/api/ESA/2024-09-10/CreateOriginRule
+// https://next.api.aliyun.com/api/ESA/2024-09-10/UpdateOriginRule
+func (p *AliyunESAProvider) getRuleInfo(ctx context.Context, domain string, subdomain string) (err error) {
+
+	// 完整域名
+	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+
+	// 配置类型
+	const configType = "rule"
+
+	//配置ID
+	var configID int64
+
+	// 规则名称
+	var ruleName = fmt.Sprintf("%v_%v", p.CustomConfig.OriginHttpPort, p.CustomConfig.OriginHttpsPort)
+
+	// 查询回源规则
+	requestRuleQuery := &esa20240910.ListOriginRulesRequest{}
+	requestRuleQuery.SiteId = tea.Int64(p.cfg.SiteID)    // 站点ID
+	requestRuleQuery.ConfigType = tea.String(configType) // 配置类型
+	requestRuleQuery.PageNumber = tea.Int32(1)           // 第几页
+	requestRuleQuery.PageSize = tea.Int32(500)           // 每页几条
+	requestRuleQuery.RuleName = tea.String(ruleName)     // 回源规则名称
+	responseRuleQuery, err := p.Provider.Client.ListOriginRulesWithContext(ctx, requestRuleQuery, p.Provider.Runtime)
+	if err != nil {
+		return fmt.Errorf("接口 ListOriginRulesWithContext 失败 %w", err)
+	}
+
+	// 是否需要创建回源规则
+	needCreate := true
+	// 是否需要更新回源规则配置
+	needUpdate := false
+
+	// 检查源站组是否存在和记录值是否匹配
+	for _, item := range responseRuleQuery.GetBody().GetConfigs() {
+		// 查找规则名称
+		itemRuleName := tea.StringValue(item.GetRuleName())
+		if utils.EqualDomainIgnoreCase(itemRuleName, ruleName) {
+
+			// 查找配置ID
+			itemConfigID := tea.Int64Value(item.GetConfigId())
+			// 查找HTTP端口
+			itemHttpPort := tea.StringValue(item.GetOriginHttpPort())
+			// 查找HTTPS端口
+			itemHttpsPort := tea.StringValue(item.GetOriginHttpsPort())
+			// 查找回源规则配置
+			itemRule := tea.StringValue(item.GetRule())
+			// 解析出所有域名
+			itemDomains := ExtractDomainsFromRule(itemRule)
+
+			// 配置ID
+			configID = itemConfigID
+
+			// 检查HTTP端口是否匹配
+			if !utils.EqualStringIgnoreCase(itemHttpPort, cast.ToString(p.CustomConfig.OriginHttpPort)) {
+				needCreate = false
+				needUpdate = true
+				continue
+			}
+
+			// 检查HTTPS端口是否匹配
+			if !utils.EqualStringIgnoreCase(itemHttpsPort, cast.ToString(p.CustomConfig.OriginHttpsPort)) {
+				needCreate = false
+				needUpdate = true
+				continue
+			}
+
+			// 判断是否包含域名
+			for _, itemDomain := range itemDomains {
+				if utils.EqualDomainIgnoreCase(itemDomain, fullDomain) {
+					return nil
+				} else {
+					needCreate = false
+					needUpdate = true
+				}
+			}
+
+			needCreate = false
+			needUpdate = true
+		}
+	}
+
+	if needCreate {
+
+		// 创建回源规则
+		requestRuleCreate := &esa20240910.CreateOriginRuleRequest{}
+		requestRuleCreate.RuleName = tea.String(ruleName)                                             // 规则名称
+		requestRuleCreate.SiteId = tea.Int64(p.cfg.SiteID)                                            // 站点ID
+		requestRuleCreate.RuleEnable = tea.String("on")                                               // 规则开关
+		requestRuleCreate.Rule = tea.String(AddDomainToRule("", fullDomain))                          // 规则内容
+		requestRuleCreate.OriginScheme = tea.String(p.CustomConfig.OriginScheme)                      // 回源请求使用的协议
+		requestRuleCreate.OriginHttpPort = tea.String(cast.ToString(p.CustomConfig.OriginHttpsPort))  // 使用HTTP协议回源时访问的源站端口
+		requestRuleCreate.OriginHttpsPort = tea.String(cast.ToString(p.CustomConfig.OriginHttpsPort)) // 使用HTTPS协议回源时访问的源站端口
+		_, err = p.Provider.Client.CreateOriginRuleWithContext(ctx, requestRuleCreate, p.Provider.Runtime)
+		if err != nil {
+			return fmt.Errorf("接口 CreateOriginRuleWithContext 失败 %w", err)
+		}
+
+	} else if needUpdate {
+
+		// 更新回源规则
+		requestRuleUpdate := &esa20240910.UpdateOriginRuleRequest{}
+		requestRuleUpdate.ConfigId = tea.Int64(configID)                                              // 配置ID
+		requestRuleUpdate.SiteId = tea.Int64(p.cfg.SiteID)                                            // 站点ID
+		requestRuleUpdate.RuleEnable = tea.String("on")                                               // 规则开关
+		requestRuleUpdate.Rule = tea.String(AddDomainToRule("", fullDomain))                          // 规则内容
+		requestRuleUpdate.OriginScheme = tea.String(p.CustomConfig.OriginScheme)                      // 回源请求使用的协议
+		requestRuleUpdate.OriginHttpPort = tea.String(cast.ToString(p.CustomConfig.OriginHttpsPort))  // 使用HTTP协议回源时访问的源站端口
+		requestRuleUpdate.OriginHttpsPort = tea.String(cast.ToString(p.CustomConfig.OriginHttpsPort)) // 使用HTTPS协议回源时访问的源站端口
+		requestRuleUpdate.RuleName = tea.String(ruleName)                                             // 规则名称
+		_, err = p.Provider.Client.UpdateOriginRuleWithContext(ctx, requestRuleUpdate, p.Provider.Runtime)
+		if err != nil {
+			return fmt.Errorf("接口 UpdateOriginRuleWithContext 失败 %w", err)
+		}
+
+	}
+
+	return nil
+}
+
+// ExtractDomainsFromRule 从 Rule 字符串中提取所有域名
+func ExtractDomainsFromRule(rule string) []string {
+	// 匹配 {"..."} 中的内容
+	re := regexp.MustCompile(`\{([^}]*)\}`)
+	matches := re.FindStringSubmatch(rule)
+	if len(matches) < 2 {
+		return nil
+	}
+
+	// 提取引号内的内容（支持 \" 转义，但你的例子中是普通双引号）
+	content := matches[1]
+	// 使用正则匹配所有被双引号包围的字符串
+	domainRe := regexp.MustCompile(`"([^"]+)"`)
+	allMatches := domainRe.FindAllStringSubmatch(content, -1)
+
+	var domains []string
+	for _, m := range allMatches {
+		if len(m) > 1 {
+			domains = append(domains, m[1])
+		}
+	}
+	return domains
+}
+
+// AddDomainToRule 向 Rule 中添加域名（如果不存在）
+func AddDomainToRule(rule, newDomain string) string {
+	domains := ExtractDomainsFromRule(rule)
+	if domains == nil {
+		// 如果无法解析，保守返回原 rule
+		return rule
+	}
+
+	// 检查是否已存在
+	for _, d := range domains {
+		if d == newDomain {
+			return rule // 已存在，无需修改
+		}
+	}
+
+	// 添加新域名
+	domains = append(domains, newDomain)
+
+	// 重新构建 Rule
+	var quotedDomains []string
+	for _, d := range domains {
+		quotedDomains = append(quotedDomains, fmt.Sprintf(`"%s"`, d))
+	}
+	newList := strings.Join(quotedDomains, " ")
+	return fmt.Sprintf("(http.host in {%s})", newList)
 }
 
 // 阿里云 ESA 自定义配置

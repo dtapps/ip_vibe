@@ -229,27 +229,66 @@ const CDN_SCHEMA = {
   aliyun_esa: {
     label: "阿里云 ESA",
     fields: [
-      {
-        id: "biz_name",
-        label: "业务场景",
-        type: "select",
-        placeholder: "请输入业务场景",
-        required: true,
-        options: [
-          {
-            value: "web",
-            label: "web 网页",
-          },
-          {
-            value: "api",
-            label: "api 接口",
-          },
-          {
-            value: "video_image",
-            label: "视频图片",
-          },
-        ],
-      },
+      [
+        {
+          id: "biz_name",
+          label: "业务场景",
+          type: "select",
+          placeholder: "请输入业务场景",
+          required: true,
+          options: [
+            {
+              value: "web",
+              label: "web 网页",
+            },
+            {
+              value: "api",
+              label: "api 接口",
+            },
+            {
+              value: "video_image",
+              label: "视频图片",
+            },
+          ],
+        },
+        {
+          id: "origin_scheme",
+          label: "回源协议",
+          type: "select",
+          placeholder: "请选择回源协议",
+          required: true,
+          options: [
+            {
+              value: "follow",
+              label: "协议跟随",
+            },
+            {
+              value: "http",
+              label: "HTTP协议回源",
+            },
+            {
+              value: "https",
+              label: "HTTPS协议回源",
+            },
+          ],
+        },
+      ],
+      [
+        {
+          id: "origin_http_port",
+          label: "HTTP 端口",
+          type: "number",
+          placeholder: "如 80",
+          required: true,
+        },
+        {
+          id: "origin_https_port",
+          label: "HTTPS 端口",
+          type: "number",
+          placeholder: "如 443",
+          required: true,
+        },
+      ],
       {
         id: "comment",
         label: "备注",
