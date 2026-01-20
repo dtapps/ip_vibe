@@ -347,8 +347,9 @@ func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain
 
 // TencentEOProviderGroupOriginInfo 腾讯云 EO 源站组信息
 type TencentEOProviderGroupOriginInfo struct {
-	OriginType string
-	ID         string
+	ID         string   // 源站组ID
+	List       []string // 源站组记录值列表
+	OriginType string   // 类型
 }
 
 // getGroupOrigin 获取源站组信息
@@ -359,6 +360,7 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 	const originType = "ORIGIN_GROUP"
 	originInfo = new(TencentEOProviderGroupOriginInfo)
+	originInfo.List = newOriginValues
 	originInfo.OriginType = originType
 
 	// 查询源站组

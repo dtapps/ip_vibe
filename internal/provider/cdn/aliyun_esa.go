@@ -176,6 +176,19 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
+	// 源站信息
+	originValues := make([]string, 0)
+	if len(newOriginValues) == 1 {
+		originValues = newOriginValues
+	} else {
+		// 获取源站组信息
+		responseOriginInfo, err := p.getGroupOrigin(ctx, newOriginValues)
+		if err != nil {
+			return nil, fmt.Errorf("查询源站组失败: %w", err)
+		}
+		originValues = append(originValues, responseOriginInfo.Cname)
+	}
+
 	// 查询加速域名
 	requestCdnQuery := &esa20240910.ListRecordsRequest{}
 	requestCdnQuery.SiteId = tea.Int64(p.cfg.SiteID) // 站点ID
@@ -216,9 +229,9 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 			p.InternalData.CdnDomain = utils.TrimDots(tea.StringValue(item.GetRecordCname()))
 
 			// 判断记录值列表
-			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
+			if !utils.EqualStringSliceUnordered(itemOriginValues, originValues) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("记录值列表不匹配，期望 %v，实际 %v", newOriginValues, itemOriginValues)
+				p.InternalData.Tips = fmt.Sprintf("记录值列表不匹配，期望 %v，实际 %v", originValues, itemOriginValues)
 				return p.InternalData, nil
 			}
 
@@ -339,8 +352,9 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 
 // AliyunESAProviderGroupOriginInfo 阿里云 ESA 源站组信息
 type AliyunESAProviderGroupOriginInfo struct {
-	SourceType string // CNAME 记录的源站类型
-	Cname      string // 别名
+	Cname      string   // 源站组别名
+	List       []string // 源站组记录值列表
+	SourceType string   // 类型
 }
 
 // getGroupOrigin 获取源站组信息
@@ -352,6 +366,7 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 	const sourceType = "OP"
 	originInfo = new(AliyunESAProviderGroupOriginInfo)
+	originInfo.List = newOriginValues
 	originInfo.SourceType = sourceType
 
 	// 查询源站组
