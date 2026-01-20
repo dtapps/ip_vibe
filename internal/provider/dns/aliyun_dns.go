@@ -180,11 +180,11 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 		return
 	}
 	// 响应参数
-	if response.Body.DomainRecords == nil || len(response.Body.DomainRecords.Record) == 0 {
+	if response.GetBody().GetDomainRecords().GetRecord() == nil || len(response.GetBody().GetDomainRecords().GetRecord()) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}
-	for _, item := range response.Body.DomainRecords.Record {
+	for _, item := range response.GetBody().GetDomainRecords().GetRecord() {
 
 		if utils.EqualDomainIgnoreCase(tea.StringValue(item.GetRR()), subdomain) && utils.EqualDomainIgnoreCase(tea.StringValue(item.GetDomainName()), domain) {
 
@@ -309,10 +309,10 @@ func (p *AliyunDNSProvider) ListLines(ctx context.Context) (lines []*AliyunDNSLi
 		return
 	}
 	// 响应参数
-	for _, item := range response.Body.RecordLines.RecordLine {
+	for _, item := range response.GetBody().GetRecordLines().GetRecordLine() {
 		lines = append(lines, &AliyunDNSLine{
-			LineID:   tea.StringValue(item.LineCode),
-			LineName: tea.StringValue(item.LineDisplayName),
+			LineID:   tea.StringValue(item.GetLineCode()),
+			LineName: tea.StringValue(item.GetLineDisplayName()),
 		})
 	}
 	return

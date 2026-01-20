@@ -310,7 +310,7 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 		}
 
 		// 域名ID
-		p.InternalData.RecordID = cast.ToString(tea.Int64Value(responseCdnCreate.Body.RecordId))
+		p.InternalData.RecordID = cast.ToString(tea.Int64Value(responseCdnCreate.GetBody().GetRecordId()))
 	}
 
 	if p.InternalData.RecordID != "" {
