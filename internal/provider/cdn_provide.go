@@ -55,23 +55,23 @@ func NewCDNTask(logger *slog.Logger, provider CDNProvider, platform_config_json 
 		platform_config_json: platform_config_json,
 		record_config_json:   record_config_json,
 	}
-	if len(t.platform_config_json) > 0 {
-		var platformConfig PlatformConfigJson
-		if err := json.Unmarshal(t.platform_config_json, &platformConfig); err != nil {
-			t.logger.Error("解析平台配置失败",
-				slog.String("提供商", t.provider.Name()),
-				slog.Any("err", err),
-			)
-			return nil, err
-		}
-		t.config.domain = platformConfig.DomainName
-	}
 
 	// 优化日志
 	t.logger = t.logger.With(
 		slog.String("模块", "CDN"),
 		slog.String("提供商", t.provider.Name()),
 	)
+
+	if len(t.platform_config_json) > 0 {
+		var platformConfig PlatformConfigJson
+		if err := json.Unmarshal(t.platform_config_json, &platformConfig); err != nil {
+			t.logger.Error("解析平台配置失败",
+				slog.Any("err", err),
+			)
+			return nil, err
+		}
+		t.config.domain = platformConfig.DomainName
+	}
 
 	return t, nil
 }
@@ -118,45 +118,34 @@ func (t *CDNTask) Execute(ctx context.Context) (err error) {
 		return nil
 	}
 	t.logger.InfoContext(ctx, "开始执行",
-		slog.String("提供商", t.provider.Name()),
 		slog.String("域名名称", t.config.domain),
 		slog.String("子域名", t.config.subdomain),
 		slog.String("记录类型", t.config.recordType),
 		slog.String("新记录值列表", strings.Join(t.config.newOriginValues, ",")),
 		slog.String("自定义配置", string(t.record_config_json)),
 	)
-	defer t.logger.InfoContext(ctx, "执行完成",
-		slog.String("提供商", t.provider.Name()),
-	)
+	defer t.logger.InfoContext(ctx, "执行完成")
 
 	// 验证配置
-	t.logger.DebugContext(ctx, "执行验证配置",
-		slog.String("提供商", t.provider.Name()),
-	)
+	t.logger.DebugContext(ctx, "执行验证配置")
 	if err := t.Validate(); err != nil {
 		t.logger.ErrorContext(ctx, "验证配置失败",
-			slog.String("提供商", t.provider.Name()),
 			slog.Any("err", err),
 		)
 		return err
 	}
 
 	if len(t.record_config_json) > 0 {
-		t.logger.DebugContext(ctx, "执行解析自定义配置",
-			slog.String("提供商", t.provider.Name()),
-		)
+		t.logger.DebugContext(ctx, "执行解析自定义配置")
 		if err := t.provider.ParseCustomConfig(t.record_config_json); err != nil {
 			t.logger.ErrorContext(ctx, "解析自定义配置失败",
-				slog.String("提供商", t.provider.Name()),
 				slog.Any("err", err),
 			)
 			return err
 		}
 	}
 
-	t.logger.DebugContext(ctx, "执行检查",
-		slog.String("提供商", t.provider.Name()),
-	)
+	t.logger.DebugContext(ctx, "执行检查")
 	checkData, err := t.provider.Check(
 		ctx,
 		t.config.domain,
@@ -166,7 +155,6 @@ func (t *CDNTask) Execute(ctx context.Context) (err error) {
 	)
 	if err != nil {
 		t.logger.ErrorContext(ctx, "检查失败",
-			slog.String("提供商", t.provider.Name()),
 			slog.Any("err", err),
 		)
 		return err
@@ -175,14 +163,11 @@ func (t *CDNTask) Execute(ctx context.Context) (err error) {
 	t.config.cdnDomain = checkData.CdnDomain
 
 	if !checkData.IsContinue {
-		t.logger.WarnContext(ctx, "没有变化无需更新",
-			slog.String("提供商", t.provider.Name()),
-		)
+		t.logger.WarnContext(ctx, "没有变化无需更新")
 		return nil
 	}
 
 	t.logger.DebugContext(ctx, "执行更新",
-		slog.String("提供商", t.provider.Name()),
 		slog.String("域名ID", t.config.recordID),
 		slog.String("CDN域名", t.config.cdnDomain),
 		slog.String("提示", checkData.Tips),
@@ -195,7 +180,6 @@ func (t *CDNTask) Execute(ctx context.Context) (err error) {
 		t.config.recordType,
 	); err != nil {
 		t.logger.ErrorContext(ctx, "更新失败",
-			slog.String("提供商", t.provider.Name()),
 			slog.Any("err", err),
 		)
 		return err
@@ -224,7 +208,6 @@ func (t *CDNTask) SaveRefresh(ctx context.Context, db *ent.Client, id int64) (er
 	err = updateOne.Exec(ctx)
 	if err != nil {
 		t.logger.ErrorContext(ctx, "保存刷新失败",
-			slog.String("提供商", t.provider.Name()),
 			slog.Any("err", err),
 		)
 		return err
@@ -250,7 +233,6 @@ func (t *CDNTask) SaveResponse(ctx context.Context, db *ent.Client, id int64, la
 	err = updateOne.Exec(ctx)
 	if err != nil {
 		t.logger.ErrorContext(ctx, "保存响应失败",
-			slog.String("提供商", t.provider.Name()),
 			slog.Any("err", err),
 		)
 		return err
@@ -288,7 +270,6 @@ func (t *CDNTask) Notify(ctx context.Context, webhookService *webhookService.Sen
 		notifyData,
 	); err != nil {
 		t.logger.ErrorContext(ctx, "通知失败",
-			slog.String("提供商", t.provider.Name()),
 			slog.Any("err", err),
 		)
 	}

@@ -153,11 +153,9 @@ func (p *TencentEOProvider) Name() string {
 // printData 打印数据
 func (p *TencentEOProvider) printData(ctx context.Context) {
 	p.logger.DebugContext(ctx, "数据",
-		slog.String("提供商", p.Name()),
 		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
 	)
 	p.logger.DebugContext(ctx, "数据",
-		slog.String("提供商", p.Name()),
 		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
 	)
 }
@@ -409,7 +407,6 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 				return originInfo, nil
 			} else {
 				p.logger.ErrorContext(ctx, "源站组记录值列表不匹配",
-					slog.String("提供商", p.Name()),
 					slog.String("期望", strings.Join(newOriginValues, ",")),
 					slog.String("实际", strings.Join(itemOriginValues, ",")),
 				)

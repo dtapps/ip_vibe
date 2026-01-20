@@ -173,11 +173,9 @@ func (p *AliyunESAProvider) Name() string {
 // printData 打印数据
 func (p *AliyunESAProvider) printData(ctx context.Context) {
 	p.logger.DebugContext(ctx, "数据",
-		slog.String("提供商", p.Name()),
 		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
 	)
 	p.logger.DebugContext(ctx, "数据",
-		slog.String("提供商", p.Name()),
 		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
 	)
 }
@@ -436,7 +434,6 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 				return originInfo, nil
 			} else {
 				p.logger.ErrorContext(ctx, "源站组记录值列表不匹配",
-					slog.String("提供商", p.Name()),
 					slog.String("期望", strings.Join(newOriginValues, ",")),
 					slog.String("实际", strings.Join(itemOriginValues, ",")),
 				)
@@ -572,7 +569,6 @@ func (p *AliyunESAProvider) getRuleInfo(ctx context.Context, domain string, subd
 				needCreate = false
 				needUpdate = true
 				p.logger.ErrorContext(ctx, "回源规则HTTP端口不匹配",
-					slog.String("提供商", p.Name()),
 					slog.Int("期望", p.CustomConfig.OriginHttpPort),
 					slog.String("实际", itemHttpPort),
 				)
@@ -584,7 +580,6 @@ func (p *AliyunESAProvider) getRuleInfo(ctx context.Context, domain string, subd
 				needCreate = false
 				needUpdate = true
 				p.logger.ErrorContext(ctx, "回源规则HTTPS端口不匹配",
-					slog.String("提供商", p.Name()),
 					slog.Int("期望", p.CustomConfig.OriginHttpsPort),
 					slog.String("实际", itemHttpsPort),
 				)
@@ -596,7 +591,6 @@ func (p *AliyunESAProvider) getRuleInfo(ctx context.Context, domain string, subd
 				needCreate = false
 				needUpdate = true
 				p.logger.ErrorContext(ctx, "回源规则域名不匹配",
-					slog.String("提供商", p.Name()),
 					slog.String("期望", fullDomain),
 					slog.String("实际", strings.Join(itemDomains, ",")),
 				)
