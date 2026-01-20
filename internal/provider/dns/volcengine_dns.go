@@ -329,30 +329,27 @@ func (p *VolcengineDNSProvider) ParseCustomConfig(config_json json.RawMessage) (
 	return nil
 }
 
-// VolcengineDNSLine 火山引擎 DNS 线路
-type VolcengineDNSLine struct {
+// VolcengineDNSProviderLine 火山引擎 DNS 线路
+type VolcengineDNSProviderLine struct {
 	LineID   string `json:"line_id"`   // 线路ID
 	LineName string `json:"line_name"` // 线路名称
 }
 
 // 获取火山引擎 DNS 线路列表
 // https://api.volcengine.com/api-explorer?action=ListLines
-func (p *VolcengineDNSProvider) ListLines(ctx context.Context) (lines []*VolcengineDNSLine, err error) {
-	// 请求参数
-	request := &dns.ListLinesInput{}
-	request.ZID = volcengine.Int64(p.cfg.ZoneID) // 域名ID
-	// 请求
-	response, err := p.Provider.Client.ListLinesWithContext(ctx, request)
-	printJSON("查询线路", request, response)
+func (p *VolcengineDNSProvider) ListLines(ctx context.Context) (lines []*VolcengineDNSProviderLine, err error) {
+	// 查询线路列表
+	requestQueryLine := &dns.ListLinesInput{}
+	requestQueryLine.ZID = volcengine.Int64(p.cfg.ZoneID) // 域名ID
+	responseQueryLine, err := p.Provider.Client.ListLinesWithContext(ctx, requestQueryLine)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("接口 ListLinesWithContext 失败 %w", err)
 	}
-	// 响应参数
-	for _, item := range response.Lines {
-		lines = append(lines, &VolcengineDNSLine{
+	for _, item := range responseQueryLine.Lines {
+		lines = append(lines, &VolcengineDNSProviderLine{
 			LineID:   volcengine.StringValue(item.Value),
 			LineName: volcengine.StringValue(item.Name),
 		})
 	}
-	return
+	return lines, nil
 }

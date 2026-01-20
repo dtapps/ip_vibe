@@ -292,30 +292,27 @@ func (p *AliyunDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err 
 	return nil
 }
 
-// AliyunDNSLine 阿里云 DNS 线路
-type AliyunDNSLine struct {
+// AliyunDNSProviderLine 阿里云 DNS 线路
+type AliyunDNSProviderLine struct {
 	LineID   string `json:"line_id"`   // 线路ID
 	LineName string `json:"line_name"` // 线路名称
 }
 
 // 获取阿里云 DNS 线路列表
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/DescribeSupportLines
-func (p *AliyunDNSProvider) ListLines(ctx context.Context) (lines []*AliyunDNSLine, err error) {
-	// 请求参数
-	request := &alidns20150109.DescribeSupportLinesRequest{}
-	request.DomainName = tea.String(p.cfg.DomainName) // 域名名称
-	// 请求
-	response, err := p.Provider.Client.DescribeSupportLinesWithContext(ctx, request, &dara.RuntimeOptions{})
-	printJSON("查询线路", request, response)
+func (p *AliyunDNSProvider) ListLines(ctx context.Context) (lines []*AliyunDNSProviderLine, err error) {
+	// 查询线路列表
+	requestQueryLine := &alidns20150109.DescribeSupportLinesRequest{}
+	requestQueryLine.DomainName = tea.String(p.cfg.DomainName) // 域名名称
+	responseQueryLine, err := p.Provider.Client.DescribeSupportLinesWithContext(ctx, requestQueryLine, &dara.RuntimeOptions{})
 	if err != nil {
-		return
+		return nil, fmt.Errorf("接口 DescribeSupportLinesWithContext 失败 %w", err)
 	}
-	// 响应参数
-	for _, item := range response.GetBody().GetRecordLines().GetRecordLine() {
-		lines = append(lines, &AliyunDNSLine{
+	for _, item := range responseQueryLine.GetBody().GetRecordLines().GetRecordLine() {
+		lines = append(lines, &AliyunDNSProviderLine{
 			LineID:   tea.StringValue(item.GetLineCode()),
 			LineName: tea.StringValue(item.GetLineDisplayName()),
 		})
 	}
-	return
+	return lines, nil
 }

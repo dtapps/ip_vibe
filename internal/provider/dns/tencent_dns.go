@@ -296,35 +296,32 @@ func (p *TencentDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err
 	return nil
 }
 
-// TencentDNSLine 腾讯云 DNS 线路
-type TencentDNSLine struct {
+// TencentDNSProviderLine 腾讯云 DNS 线路
+type TencentDNSProviderLine struct {
 	LineID   string `json:"line_id"`   // 线路ID
 	LineName string `json:"line_name"` // 线路名称
 }
 
 // 获取腾讯云 DNS 线路列表
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=DescribeRecordLineList
-func (p *TencentDNSProvider) ListLines(ctx context.Context) (lines []*TencentDNSLine, err error) {
+func (p *TencentDNSProvider) ListLines(ctx context.Context) (lines []*TencentDNSProviderLine, err error) {
 	// 判断是否配置了域名等级
 	if p.cfg.DomainGrade == "" {
 		return nil, nil
 	}
-	// 请求参数
-	request := dnspod.NewDescribeRecordLineListRequest()
-	request.Domain = common.StringPtr(p.cfg.DomainName)
-	request.DomainGrade = common.StringPtr(p.cfg.DomainGrade)
-	// 请求
-	response, err := p.Provider.Client.DescribeRecordLineListWithContext(ctx, request)
-	printJSON("查询线路", request, response)
+	// 查询线路列表
+	requestQueryLine := dnspod.NewDescribeRecordLineListRequest()
+	requestQueryLine.Domain = common.StringPtr(p.cfg.DomainName)
+	requestQueryLine.DomainGrade = common.StringPtr(p.cfg.DomainGrade)
+	responseQueryLine, err := p.Provider.Client.DescribeRecordLineListWithContext(ctx, requestQueryLine)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("接口 DescribeRecordLineListWithContext 失败 %w", err)
 	}
-	// 响应参数
-	for _, item := range response.Response.LineList {
-		lines = append(lines, &TencentDNSLine{
+	for _, item := range responseQueryLine.Response.LineList {
+		lines = append(lines, &TencentDNSProviderLine{
 			LineID:   utils.PtrToString(item.Name),
 			LineName: utils.PtrToString(item.Name),
 		})
 	}
-	return
+	return lines, nil
 }
