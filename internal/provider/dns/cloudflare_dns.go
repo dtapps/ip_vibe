@@ -117,6 +117,11 @@ func NewCloudfareDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *C
 	// 实例化
 	p.Provider.Client = cloudflare.NewClient(p.Provider.Opts...)
 
+	// 优化日志
+	p.logger = p.logger.With(
+		slog.String("提供商", p.Name()),
+	)
+
 	return p, nil
 }
 

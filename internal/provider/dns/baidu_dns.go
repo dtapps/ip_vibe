@@ -125,6 +125,11 @@ func NewBaiduDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Baidu
 		}
 	}
 
+	// 优化日志
+	p.logger = p.logger.With(
+		slog.String("提供商", p.Name()),
+	)
+
 	return p, nil
 }
 

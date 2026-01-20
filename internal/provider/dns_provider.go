@@ -65,6 +65,13 @@ func NewDNSTask(logger *slog.Logger, provider DNSProvider, platform_config_json 
 		}
 		t.config.domain = platformConfig.DomainName
 	}
+
+	// 优化日志
+	t.logger = t.logger.With(
+		slog.String("模块", "DNS"),
+		slog.String("提供商", t.provider.Name()),
+	)
+
 	return t, nil
 }
 
