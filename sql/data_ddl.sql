@@ -1,10 +1,9 @@
 -- cache definition
 
-CREATE TABLE `cache` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `key` text NOT NULL, `value` blob NULL);
+CREATE TABLE `cache` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `key` text NOT NULL, `value` blob NULL);
 
 CREATE UNIQUE INDEX `cache_key_key` ON `cache` (`key`);
-CREATE INDEX `cache_created_at` ON `cache` (`created_at` DESC);
-CREATE INDEX `cache_key` ON `cache` (`key`);
+CREATE UNIQUE INDEX `cache_key` ON `cache` (`key`);
 
 
 -- device definition
@@ -28,7 +27,7 @@ CREATE INDEX `domainmonitor_created_at` ON `domain_monitor` (`created_at` DESC);
 
 -- ip_group definition
 
-CREATE TABLE "ip_group" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `record_id` text NULL, `name` text NOT NULL, `description` text NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL);
+CREATE TABLE "ip_group" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `code` text NOT NULL, `record_id` text NULL, `name` text NOT NULL, `description` text NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL);
 
 CREATE INDEX `ipgroup_created_at` ON `ip_group` (`created_at` DESC);
 CREATE INDEX `ipgroup_record_id` ON `ip_group` (`record_id`);
@@ -54,15 +53,15 @@ CREATE INDEX `webhook_created_at` ON `webhook` (`created_at` DESC);
 
 -- cdn_record definition
 
-CREATE TABLE "cdn_record" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `record_id` text NULL, `sub_domain` text NOT NULL, `type` text NOT NULL, `origin_protocol` text NOT NULL DEFAULT ('follow'), `http_port` integer NOT NULL DEFAULT (80), `https_port` integer NOT NULL DEFAULT (443), `cdn_domain` text NULL, `is_active` bool NOT NULL DEFAULT (false), `last_refresh_at` datetime NULL, `ip_group_id` integer NOT NULL, `config_id` integer NOT NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL, `config_json` json NULL, CONSTRAINT `cdn_record_ip_group_cdn_records` FOREIGN KEY (`ip_group_id`) REFERENCES `ip_group` (`id`) ON DELETE NO ACTION, CONSTRAINT `cdn_record_platform_config_cdn_records` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
+CREATE TABLE `cdn_record` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `record_id` text NULL, `sub_domain` text NOT NULL, `type` text NOT NULL, `config_json` json NULL, `cdn_domain` text NULL, `is_active` bool NOT NULL DEFAULT (false), `last_refresh_at` datetime NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL, `ip_group_id` integer NOT NULL, `config_id` integer NOT NULL, CONSTRAINT `cdn_record_ip_group_cdn_records` FOREIGN KEY (`ip_group_id`) REFERENCES `ip_group` (`id`) ON DELETE NO ACTION, CONSTRAINT `cdn_record_platform_config_cdn_records` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
 
-CREATE INDEX `cdnrecord_sub_domain` ON `cdn_record` (`sub_domain`);
-CREATE INDEX `cdnrecord_type` ON `cdn_record` (`type`);
-CREATE INDEX `cdnrecord_is_active` ON `cdn_record` (`is_active`);
 CREATE INDEX `cdnrecord_created_at` ON `cdn_record` (`created_at` DESC);
 CREATE INDEX `cdnrecord_config_id` ON `cdn_record` (`config_id`);
-CREATE INDEX `cdnrecord_ip_group_id` ON `cdn_record` (`ip_group_id`);
 CREATE INDEX `cdnrecord_record_id` ON `cdn_record` (`record_id`);
+CREATE INDEX `cdnrecord_sub_domain` ON `cdn_record` (`sub_domain`);
+CREATE INDEX `cdnrecord_type` ON `cdn_record` (`type`);
+CREATE INDEX `cdnrecord_ip_group_id` ON `cdn_record` (`ip_group_id`);
+CREATE INDEX `cdnrecord_is_active` ON `cdn_record` (`is_active`);
 
 
 -- device_port_forward definition
@@ -112,13 +111,13 @@ CREATE INDEX `sslrecord_is_auto_renewal` ON `ssl_record` (`is_auto_renewal`);
 
 -- webhook_subscription definition
 
-CREATE TABLE "webhook_subscription" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `name` text NOT NULL, `description` text NULL, `obj_type` text NOT NULL, `obj_id` integer NOT NULL, `is_active` bool NOT NULL DEFAULT (false), `webhook_subscriptions` integer NULL, `webhook_id` integer NOT NULL, CONSTRAINT `webhook_subscription_webhook_subscriptions` FOREIGN KEY (`webhook_subscriptions`) REFERENCES `webhook` (`id`) ON DELETE CASCADE, CONSTRAINT `webhook_subscription_webhook_webhook` FOREIGN KEY (`webhook_id`) REFERENCES `webhook` (`id`) ON DELETE NO ACTION);
+CREATE TABLE "webhook_subscription" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `name` text NOT NULL, `description` text NULL, `obj_type` text NOT NULL, `obj_id` integer NOT NULL, `is_active` bool NOT NULL DEFAULT (false), `webhook_subscriptions` integer NULL, `webhook_id` integer NOT NULL, CONSTRAINT `webhook_subscription_webhook_subscriptions` FOREIGN KEY (`webhook_subscriptions`) REFERENCES `webhook` (`id`) ON DELETE CASCADE, CONSTRAINT `webhook_subscription_webhook_webhook` FOREIGN KEY (`webhook_id`) REFERENCES `webhook` (`id`) ON DELETE NO ACTION);
 
-CREATE UNIQUE INDEX `webhooksubscription_webhook_id_obj_type_obj_id` ON `webhook_subscription` (`webhook_id`, `obj_type`, `obj_id`);
 CREATE INDEX `webhooksubscription_created_at` ON `webhook_subscription` (`created_at` DESC);
 CREATE INDEX `webhooksubscription_webhook_id` ON `webhook_subscription` (`webhook_id`);
-CREATE INDEX `webhooksubscription_obj_type_obj_id` ON `webhook_subscription` (`obj_type`, `obj_id`);
 CREATE INDEX `webhooksubscription_obj_type` ON `webhook_subscription` (`obj_type`);
 CREATE INDEX `webhooksubscription_obj_id` ON `webhook_subscription` (`obj_id`);
 CREATE INDEX `webhooksubscription_is_active` ON `webhook_subscription` (`is_active`);
+CREATE INDEX `webhooksubscription_obj_type_obj_id` ON `webhook_subscription` (`obj_type`, `obj_id`);
 CREATE INDEX `webhooksubscription_obj_type_obj_id_created_at` ON `webhook_subscription` (`obj_type`, `obj_id`, `created_at`);
+CREATE UNIQUE INDEX `webhooksubscription_webhook_id_obj_type_obj_id` ON `webhook_subscription` (`webhook_id`, `obj_type`, `obj_id`);

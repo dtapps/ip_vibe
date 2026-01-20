@@ -19,7 +19,7 @@ CREATE INDEX `domainmonitorhistory_monitor_id_check_time` ON `domain_monitor_his
 
 -- http_log definition
 
-CREATE TABLE "http_log" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `hostname` text NOT NULL, `method` text NOT NULL, `url` text NOT NULL, `request_headers` json NULL, `request_body` json NULL, `status_code` integer NULL, `response_headers` json NULL, `response_body` json NULL, `elapse_time` integer NULL, `is_error` bool NULL DEFAULT (false), `created_at` datetime NOT NULL, `go_version` text NULL DEFAULT ('go1.26rc1'), `plugin_version` text NULL DEFAULT ('1.0.8'));
+CREATE TABLE "http_log" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `hostname` text NOT NULL, `method` text NOT NULL, `url` text NOT NULL, `request_headers` json NULL, `request_body` json NULL, `status_code` integer NULL, `response_headers` json NULL, `response_body` json NULL, `elapse_time` integer NULL, `is_error` bool NULL DEFAULT (false), `created_at` datetime NOT NULL, `go_version` text NULL DEFAULT ('go1.26rc2'), `plugin_version` text NULL DEFAULT ('1.0.11'));
 
 CREATE INDEX `httplog_hostname` ON `http_log` (`hostname`);
 CREATE INDEX `httplog_method` ON `http_log` (`method`);
@@ -54,7 +54,7 @@ CREATE INDEX `portforwardstats_device_id_port_forward_id_created_at` ON `port_fo
 
 -- req_log definition
 
-CREATE TABLE "req_log" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `hostname` text NOT NULL, `method` text NOT NULL, `url` text NOT NULL, `request_headers` json NULL, `request_body` json NULL, `request_query_params` json NULL, `request_form_data` json NULL, `request_path_params` json NULL, `status_code` integer NULL, `response_headers` json NULL, `response_body` json NULL, `elapse_time` integer NULL, `is_error` bool NULL DEFAULT (false), `created_at` datetime NOT NULL, `go_version` text NULL DEFAULT ('go1.26rc1'), `plugin_version` text NULL DEFAULT ('1.0.3'));
+CREATE TABLE "req_log" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `hostname` text NOT NULL, `method` text NOT NULL, `url` text NOT NULL, `request_headers` json NULL, `request_body` json NULL, `request_query_params` json NULL, `request_form_data` json NULL, `request_path_params` json NULL, `status_code` integer NULL, `response_headers` json NULL, `response_body` json NULL, `elapse_time` integer NULL, `is_error` bool NULL DEFAULT (false), `created_at` datetime NOT NULL, `go_version` text NULL DEFAULT ('go1.26rc2'), `plugin_version` text NULL DEFAULT ('1.0.4'));
 
 CREATE INDEX `reqlog_hostname` ON `req_log` (`hostname`);
 CREATE INDEX `reqlog_method` ON `req_log` (`method`);
@@ -65,7 +65,7 @@ CREATE INDEX `reqlog_created_at` ON `req_log` (`created_at` DESC);
 
 -- resty_log definition
 
-CREATE TABLE "resty_log" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `hostname` text NOT NULL, `method` text NOT NULL, `url` text NOT NULL, `request_headers` json NULL, `request_body` json NULL, `request_query_params` json NULL, `request_form_data` json NULL, `request_path_params` json NULL, `status_code` integer NULL, `response_headers` json NULL, `response_body` json NULL, `elapse_time` integer NULL, `is_error` bool NULL DEFAULT (false), `created_at` datetime NOT NULL, `go_version` text NULL DEFAULT ('go1.26rc1'), `plugin_version` text NULL DEFAULT ('1.0.14'), `resty_version` text NULL DEFAULT ('3.0.0-beta.6'));
+CREATE TABLE "resty_log" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `hostname` text NOT NULL, `method` text NOT NULL, `url` text NOT NULL, `request_headers` json NULL, `request_body` json NULL, `request_query_params` json NULL, `request_form_data` json NULL, `request_path_params` json NULL, `status_code` integer NULL, `response_headers` json NULL, `response_body` json NULL, `elapse_time` integer NULL, `is_error` bool NULL DEFAULT (false), `created_at` datetime NOT NULL, `go_version` text NULL DEFAULT ('go1.26rc2'), `plugin_version` text NULL DEFAULT ('1.0.15'), `resty_version` text NULL DEFAULT ('3.0.0-beta.6'));
 
 CREATE INDEX `restylog_hostname` ON `resty_log` (`hostname`);
 CREATE INDEX `restylog_method` ON `resty_log` (`method`);

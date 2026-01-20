@@ -916,13 +916,13 @@ github.com/zclconf/go-cty/cty/set
 # github.com/zclconf/go-cty-yaml v1.2.0
 ## explicit; go 1.17
 github.com/zclconf/go-cty-yaml
-# go.dtapp.net/library/contrib/http_log v1.0.10
+# go.dtapp.net/library/contrib/http_log v1.0.11
 ## explicit; go 1.25.1
 go.dtapp.net/library/contrib/http_log
-# go.dtapp.net/library/contrib/req_log v1.0.3
+# go.dtapp.net/library/contrib/req_log v1.0.4
 ## explicit; go 1.25.1
 go.dtapp.net/library/contrib/req_log
-# go.dtapp.net/library/contrib/resty_log v1.0.14
+# go.dtapp.net/library/contrib/resty_log v1.0.15
 ## explicit; go 1.25.1
 go.dtapp.net/library/contrib/resty_log
 # go.dtapp.net/library/service/bark v1.0.9

@@ -59,9 +59,9 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.32
 	github.com/volcengine/volcengine-go-sdk v1.2.7
 	github.com/wdcbot/qingfeng v1.6.3
-	go.dtapp.net/library/contrib/http_log v1.0.10
-	go.dtapp.net/library/contrib/req_log v1.0.3
-	go.dtapp.net/library/contrib/resty_log v1.0.14
+	go.dtapp.net/library/contrib/http_log v1.0.11
+	go.dtapp.net/library/contrib/req_log v1.0.4
+	go.dtapp.net/library/contrib/resty_log v1.0.15
 	go.dtapp.net/library/service/bark v1.0.9
 	go.dtapp.net/library/service/dingtalk v1.0.41
 	go.dtapp.net/library/service/feishu v1.0.39
