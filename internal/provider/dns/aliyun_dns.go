@@ -11,6 +11,7 @@ import (
 
 	alidns20150109 "github.com/alibabacloud-go/alidns-20150109/v5/client"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
+	util "github.com/alibabacloud-go/tea-utils/v2/service"
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	credential "github.com/aliyun/credentials-go/credentials"
@@ -70,9 +71,10 @@ type AliyunDNSProvider struct {
 
 	CustomConfig *AliyunDNSCustomConfig
 	Provider     struct {
-		Auth   credential.Credential
-		Cfg    *openapi.Config
-		Client *alidns20150109.Client
+		Auth    credential.Credential
+		Cfg     *openapi.Config
+		Client  *alidns20150109.Client
+		Runtime *util.RuntimeOptions
 	}
 
 	// 内部数据
@@ -141,6 +143,12 @@ func NewAliyunDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 		return nil, fmt.Errorf("创建客户端失败 %w", err)
 	}
 
+	// 运行时
+	p.Provider.Runtime = &dara.RuntimeOptions{
+		Autoretry:   tea.Bool(true),
+		MaxAttempts: tea.Int(3),
+	}
+
 	return p, nil
 }
 
@@ -173,7 +181,7 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 	if recordType != "" {
 		requestDnsQuery.TypeKeyWord = tea.String(recordType) // 解析类型的关键字
 	}
-	responseDnsQuery, err := p.Provider.Client.DescribeDomainRecordsWithContext(ctx, requestDnsQuery, &dara.RuntimeOptions{})
+	responseDnsQuery, err := p.Provider.Client.DescribeDomainRecordsWithContext(ctx, requestDnsQuery, p.Provider.Runtime)
 	if err != nil {
 		return nil, fmt.Errorf("接口 DescribeDomainRecordsWithContext 失败 %w", err)
 	}
@@ -245,7 +253,7 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, domain string, subdomain
 		requestDnsCreate.Type = tea.String(recordType)          // 解析记录类型
 		requestDnsCreate.Value = tea.String(originValue)        // 记录值
 		requestDnsCreate.Line = tea.String(p.CustomConfig.Line) // 解析线路
-		responseDnsCreate, err := p.Provider.Client.AddDomainRecordWithContext(ctx, requestDnsCreate, &dara.RuntimeOptions{})
+		responseDnsCreate, err := p.Provider.Client.AddDomainRecordWithContext(ctx, requestDnsCreate, p.Provider.Runtime)
 		if err != nil {
 			return fmt.Errorf("接口 AddDomainRecordWithContext 失败 %w", err)
 		}
@@ -262,7 +270,7 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, domain string, subdomain
 		requestDnsUpdate.Type = tea.String(recordType)                  // 解析记录类型
 		requestDnsUpdate.Value = tea.String(originValue)                // 记录值
 		requestDnsUpdate.Line = tea.String(p.CustomConfig.Line)         // 解析线路
-		responseDnsUpdate, err := p.Provider.Client.UpdateDomainRecordWithContext(ctx, requestDnsUpdate, &dara.RuntimeOptions{})
+		responseDnsUpdate, err := p.Provider.Client.UpdateDomainRecordWithContext(ctx, requestDnsUpdate, p.Provider.Runtime)
 		if err != nil {
 			return fmt.Errorf("接口 UpdateDomainRecordWithContext 失败 %w", err)
 		}
@@ -304,7 +312,7 @@ func (p *AliyunDNSProvider) ListLines(ctx context.Context) (lines []*AliyunDNSPr
 	// 查询线路列表
 	requestQueryLine := &alidns20150109.DescribeSupportLinesRequest{}
 	requestQueryLine.DomainName = tea.String(p.cfg.DomainName) // 域名名称
-	responseQueryLine, err := p.Provider.Client.DescribeSupportLinesWithContext(ctx, requestQueryLine, &dara.RuntimeOptions{})
+	responseQueryLine, err := p.Provider.Client.DescribeSupportLinesWithContext(ctx, requestQueryLine, p.Provider.Runtime)
 	if err != nil {
 		return nil, fmt.Errorf("接口 DescribeSupportLinesWithContext 失败 %w", err)
 	}

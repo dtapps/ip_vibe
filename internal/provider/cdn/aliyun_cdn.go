@@ -11,6 +11,7 @@ import (
 
 	cdn20180510 "github.com/alibabacloud-go/cdn-20180510/v9/client"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
+	util "github.com/alibabacloud-go/tea-utils/v2/service"
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	credential "github.com/aliyun/credentials-go/credentials"
@@ -71,9 +72,10 @@ type AliyunCDNProvider struct {
 
 	CustomConfig *AliyunCDNCustomConfig
 	Provider     struct {
-		Auth   credential.Credential
-		Cfg    *openapi.Config
-		Client *cdn20180510.Client
+		Auth    credential.Credential
+		Cfg     *openapi.Config
+		Client  *cdn20180510.Client
+		Runtime *util.RuntimeOptions
 	}
 
 	// 内部数据
@@ -142,6 +144,12 @@ func NewAliyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 		return nil, fmt.Errorf("创建客户端失败 %w", err)
 	}
 
+	// 运行时
+	p.Provider.Runtime = &dara.RuntimeOptions{
+		Autoretry:   tea.Bool(true),
+		MaxAttempts: tea.Int(3),
+	}
+
 	return p, nil
 }
 
@@ -176,7 +184,7 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 	requestCdnQuery.DomainName = tea.String(fullDomain) // 加速域名
 	requestCdnQuery.PageNumber = tea.Int32(1)           // 取得第几页
 	requestCdnQuery.PageSize = tea.Int32(500)           // 分页大小
-	responseCdnQuery, err := p.Provider.Client.DescribeUserDomainsWithContext(ctx, requestCdnQuery, &dara.RuntimeOptions{})
+	responseCdnQuery, err := p.Provider.Client.DescribeUserDomainsWithContext(ctx, requestCdnQuery, p.Provider.Runtime)
 	if err != nil {
 		return nil, fmt.Errorf("接口 DescribeUserDomainsWithContext 失败 %w", err)
 	}
@@ -315,7 +323,7 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 		requestCdnCreate.DomainName = tea.String(fullDomain)                     // 需要接入CDN的加速域名
 		requestCdnCreate.Sources = tea.String(gojson.JsonEncodeNoError(sources)) // 回源地址列表
 		requestCdnCreate.Scope = tea.String(p.CustomConfig.Scope)                // 加速区域
-		_, err = p.Provider.Client.AddCdnDomainWithContext(ctx, requestCdnCreate, &dara.RuntimeOptions{})
+		_, err = p.Provider.Client.AddCdnDomainWithContext(ctx, requestCdnCreate, p.Provider.Runtime)
 		if err != nil {
 			return fmt.Errorf("接口 AddCdnDomainWithContext 失败 %w", err)
 		}
@@ -326,7 +334,7 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 		requestCdnUpdate := &cdn20180510.ModifyCdnDomainRequest{}
 		requestCdnUpdate.DomainName = tea.String(fullDomain)                     // 需要接入CDN的加速域名
 		requestCdnUpdate.Sources = tea.String(gojson.JsonEncodeNoError(sources)) // 回源地址列表
-		_, err = p.Provider.Client.ModifyCdnDomainWithContext(ctx, requestCdnUpdate, &dara.RuntimeOptions{})
+		_, err = p.Provider.Client.ModifyCdnDomainWithContext(ctx, requestCdnUpdate, p.Provider.Runtime)
 		if err != nil {
 			return fmt.Errorf("接口 ModifyCdnDomainWithContext 失败 %w", err)
 		}

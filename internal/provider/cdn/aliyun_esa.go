@@ -12,7 +12,7 @@ import (
 
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	esa20240910 "github.com/alibabacloud-go/esa-20240910/v2/client"
-	"github.com/alibabacloud-go/tea-utils/v2/service"
+	util "github.com/alibabacloud-go/tea-utils/v2/service"
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	credential "github.com/aliyun/credentials-go/credentials"
@@ -78,9 +78,10 @@ type AliyunESAProvider struct {
 
 	CustomConfig *AliyunESACustomConfig
 	Provider     struct {
-		Auth   credential.Credential
-		Cfg    *openapi.Config
-		Client *esa20240910.Client
+		Auth    credential.Credential
+		Cfg     *openapi.Config
+		Client  *esa20240910.Client
+		Runtime *util.RuntimeOptions
 	}
 
 	// 内部数据
@@ -149,6 +150,12 @@ func NewAliyunESAProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 		return nil, fmt.Errorf("创建客户端失败 %w", err)
 	}
 
+	// 运行时
+	p.Provider.Runtime = &dara.RuntimeOptions{
+		Autoretry:   tea.Bool(true),
+		MaxAttempts: tea.Int(3),
+	}
+
 	return p, nil
 }
 
@@ -195,7 +202,7 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 	requestCdnQuery.RecordName = tea.String(fullDomain)
 	requestCdnQuery.PageNumber = tea.Int32(1)
 	requestCdnQuery.PageSize = tea.Int32(500)
-	responseCdnQuery, err := p.Provider.Client.ListRecordsWithContext(ctx, requestCdnQuery, &dara.RuntimeOptions{})
+	responseCdnQuery, err := p.Provider.Client.ListRecordsWithContext(ctx, requestCdnQuery, p.Provider.Runtime)
 	if err != nil {
 		return
 	}
@@ -318,7 +325,7 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 			Value: tea.String(strings.Join(originValues, ",")), // 记录值或部分内容
 		}
 		requestCdnCreate.Comment = tea.String(p.CustomConfig.Comment) // 记录的备注信息
-		responseCdnCreate, err := p.Provider.Client.CreateRecordWithContext(ctx, requestCdnCreate, &dara.RuntimeOptions{})
+		responseCdnCreate, err := p.Provider.Client.CreateRecordWithContext(ctx, requestCdnCreate, p.Provider.Runtime)
 		if err != nil {
 			return fmt.Errorf("接口 CreateRecordWithContext 失败 %w", err)
 		}
@@ -340,7 +347,7 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 		requestCdnUpdate.SourceType = tea.String(sourceType)          // CNAME记录的源站类型
 		requestCdnUpdate.BizName = tea.String(p.CustomConfig.BizName) // 记录加速时的业务场景
 		requestCdnUpdate.Comment = tea.String(p.CustomConfig.Comment) // 记录的备注信息
-		_, err = p.Provider.Client.UpdateRecordWithContext(ctx, requestCdnUpdate, &dara.RuntimeOptions{})
+		_, err = p.Provider.Client.UpdateRecordWithContext(ctx, requestCdnUpdate, p.Provider.Runtime)
 		if err != nil {
 			return fmt.Errorf("接口 UpdateRecordWithContext 失败 %w", err)
 		}
@@ -374,7 +381,7 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 	requestGroupQuery.SiteId = tea.Int64(p.cfg.SiteID)              // 站点ID
 	requestGroupQuery.Name = tea.String(p.CustomConfig.IPGroupCode) // 源地址池名称
 	requestGroupQuery.MatchType = tea.String("exact")               // 按名称匹配查询类型
-	responseGroupQuery, err := p.Provider.Client.ListOriginPoolsWithContext(ctx, requestGroupQuery, &dara.RuntimeOptions{})
+	responseGroupQuery, err := p.Provider.Client.ListOriginPoolsWithContext(ctx, requestGroupQuery, p.Provider.Runtime)
 	if err != nil {
 		return nil, fmt.Errorf("接口 ListOriginPoolsWithContext 失败 %w", err)
 	}
@@ -425,7 +432,7 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 				Enabled: tea.Bool(true),
 			})
 		}
-		responseGroupCreate, err := p.Provider.Client.CreateOriginPoolWithContext(ctx, requestGroupCreate, &service.RuntimeOptions{})
+		responseGroupCreate, err := p.Provider.Client.CreateOriginPoolWithContext(ctx, requestGroupCreate, p.Provider.Runtime)
 		if err != nil {
 			return nil, fmt.Errorf("接口 CreateOriginPoolWithContext 失败 %w", err)
 		}
@@ -434,7 +441,7 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 		requestGroupDetail := &esa20240910.GetOriginPoolRequest{}
 		requestGroupDetail.Id = responseGroupCreate.GetBody().GetId() // 源地址池ID
 		requestGroupDetail.SiteId = tea.Int64(p.cfg.SiteID)           // 站点ID
-		responseGroupetail, err := p.Provider.Client.GetOriginPoolWithContext(ctx, requestGroupDetail, &dara.RuntimeOptions{})
+		responseGroupetail, err := p.Provider.Client.GetOriginPoolWithContext(ctx, requestGroupDetail, p.Provider.Runtime)
 		if err != nil {
 			return nil, fmt.Errorf("接口 GetOriginPoolWithContext 失败 %w", err)
 		}
@@ -458,7 +465,7 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 			})
 		}
 		requestGroupUpdate.SiteId = tea.Int64(p.cfg.SiteID) // 站点ID
-		_, err = p.Provider.Client.UpdateOriginPoolWithContext(ctx, requestGroupUpdate, &dara.RuntimeOptions{})
+		_, err = p.Provider.Client.UpdateOriginPoolWithContext(ctx, requestGroupUpdate, p.Provider.Runtime)
 		if err != nil {
 			return nil, fmt.Errorf("接口 UpdateOriginPoolWithContext 失败 %w", err)
 		}
@@ -470,12 +477,12 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 // 阿里云 ESA 自定义配置
 type AliyunESACustomConfig struct {
-	BizName        string `json:"biz_name"`                // 用于标记DNS记录的业务场景
-	Comment        string `json:"comment,omitempty"`       // 记录的备注信息
-	OriginProtocol string `json:"origin_protocol"`         // 源站协议
-	HttpPort       int    `json:"http_port"`               // HTTP 端口
-	HttpsPort      int    `json:"https_port"`              // HTTPS 端口
-	IPGroupCode    string `json:"ip_group_code,omitempty"` // IP 分组代码
+	BizName         string `json:"biz_name"`                // 用于标记DNS记录的业务场景
+	Comment         string `json:"comment,omitempty"`       // 记录的备注信息
+	OriginScheme    string `json:"origin_scheme"`           // 回源请求使用的协议
+	OriginHttpPort  int    `json:"origin_http_port"`        // 使用HTTP协议回源时访问的源站端口
+	OriginHttpsPort int    `json:"origin_https_port"`       // 使用HTTPS协议回源时访问的源站端口
+	IPGroupCode     string `json:"ip_group_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置
