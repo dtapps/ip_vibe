@@ -23,6 +23,7 @@ require (
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.14
 	github.com/alibabacloud-go/esa-20240910/v2 v2.45.0
 	github.com/alibabacloud-go/tea v1.4.0
+	github.com/alibabacloud-go/tea-utils/v2 v2.0.9
 	github.com/aliyun/credentials-go v1.4.10
 	github.com/baidubce/bce-sdk-go v0.9.258
 	github.com/cloudflare/cloudflare-go/v6 v6.6.0
@@ -95,7 +96,6 @@ require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.5 // indirect
 	github.com/alibabacloud-go/debug v1.0.1 // indirect
-	github.com/alibabacloud-go/tea-utils/v2 v2.0.9 // indirect
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/aws/aws-sdk-go v1.55.8 // indirect

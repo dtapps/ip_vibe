@@ -402,6 +402,12 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 			if utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
 				originInfo.ID = itemGroupId
 				return originInfo, nil
+			} else {
+				p.logger.ErrorContext(ctx, "源站组记录值列表不匹配",
+					slog.String("提供商", p.Name()),
+					slog.String("期望", strings.Join(newOriginValues, ",")),
+					slog.String("实际", strings.Join(itemOriginValues, ",")),
+				)
 			}
 
 			needCreate = false
