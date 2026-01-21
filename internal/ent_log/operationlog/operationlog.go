@@ -112,12 +112,12 @@ const DefaultOpType = OpTypeUnknown
 
 // OpType values.
 const (
-	OpTypeUnknown      OpType = "unknown"
-	OpTypeDataCreate   OpType = "data_create"
-	OpTypeDataUpdate   OpType = "data_update"
-	OpTypeDataDelete   OpType = "data_delete"
-	OpTypeDeviceReport OpType = "device_report"
-	OpTypeIPRefresh    OpType = "ip_refresh"
+	OpTypeUnknown     OpType = "Unknown"
+	OpTypeOpCreate    OpType = "OpCreate"
+	OpTypeOpUpdate    OpType = "OpUpdate"
+	OpTypeOpUpdateOne OpType = "OpUpdateOne"
+	OpTypeOpDelete    OpType = "OpDelete"
+	OpTypeOpDeleteOne OpType = "OpDeleteOne"
 )
 
 func (ot OpType) String() string {
@@ -127,7 +127,7 @@ func (ot OpType) String() string {
 // OpTypeValidator is a validator for the "op_type" field enum values. It is called by the builders before save.
 func OpTypeValidator(ot OpType) error {
 	switch ot {
-	case OpTypeUnknown, OpTypeDataCreate, OpTypeDataUpdate, OpTypeDataDelete, OpTypeDeviceReport, OpTypeIPRefresh:
+	case OpTypeUnknown, OpTypeOpCreate, OpTypeOpUpdate, OpTypeOpUpdateOne, OpTypeOpDelete, OpTypeOpDeleteOne:
 		return nil
 	default:
 		return fmt.Errorf("operationlog: invalid enum value for op_type field: %q", ot)
@@ -142,27 +142,27 @@ const DefaultObjType = ObjTypeUnknown
 
 // ObjType values.
 const (
-	ObjTypeUnknown               ObjType = "unknown"
-	ObjTypeCache                 ObjType = "cache"
-	ObjTypeCdnRecord             ObjType = "cdn_record"
-	ObjTypeDNSRecord             ObjType = "dns_record"
-	ObjTypeDevice                ObjType = "device"
-	ObjTypeDevicePortForward     ObjType = "device_port_forward"
-	ObjTypeDomainMonitor         ObjType = "domain_monitor"
-	ObjTypeIPGroup               ObjType = "ip_group"
-	ObjTypeIPGroupDevice         ObjType = "ip_group_device"
-	ObjTypePlatformConfig        ObjType = "platform_config"
-	ObjTypeSslRecord             ObjType = "ssl_record"
-	ObjTypeWebhook               ObjType = "webhook"
-	ObjTypeWebhookSubscription   ObjType = "webhook_subscription"
-	ObjTypeDeviceIPReport        ObjType = "device_ip_report"
-	ObjTypeDomainMonitorHistory  ObjType = "domain_monitor_history"
-	ObjTypeHTTPLog               ObjType = "http_log"
-	ObjTypeOperationLog          ObjType = "operation_log"
-	ObjTypePortForwardStats      ObjType = "port_forward_stats"
-	ObjTypeRestyLog              ObjType = "resty_log"
-	ObjTypeSslCertificateHistory ObjType = "ssl_certificate_history"
-	ObjTypeWebhookHistory        ObjType = "webhook_history"
+	ObjTypeUnknown               ObjType = "Unknown"
+	ObjTypeCache                 ObjType = "Cache"
+	ObjTypeCDNRecord             ObjType = "CDNRecord"
+	ObjTypeDNSRecord             ObjType = "DNSRecord"
+	ObjTypeDevice                ObjType = "Device"
+	ObjTypeDevicePortForward     ObjType = "DevicePortForward"
+	ObjTypeDomainMonitor         ObjType = "DomainMonitor"
+	ObjTypeIpGroup               ObjType = "IpGroup"
+	ObjTypeIpGroupDevice         ObjType = "IpGroupDevice"
+	ObjTypePlatformConfig        ObjType = "PlatformConfig"
+	ObjTypeSSLRecord             ObjType = "SSLRecord"
+	ObjTypeWebhook               ObjType = "Webhook"
+	ObjTypeWebhookSubscription   ObjType = "WebhookSubscription"
+	ObjTypeDeviceIpReport        ObjType = "DeviceIpReport"
+	ObjTypeDomainMonitorHistory  ObjType = "DomainMonitorHistory"
+	ObjTypeHttpLog               ObjType = "HttpLog"
+	ObjTypeOperationLog          ObjType = "OperationLog"
+	ObjTypePortForwardStats      ObjType = "PortForwardStats"
+	ObjTypeRestyLog              ObjType = "RestyLog"
+	ObjTypeSSLCertificateHistory ObjType = "SSLCertificateHistory"
+	ObjTypeWebhookHistory        ObjType = "WebhookHistory"
 )
 
 func (ot ObjType) String() string {
@@ -172,7 +172,7 @@ func (ot ObjType) String() string {
 // ObjTypeValidator is a validator for the "obj_type" field enum values. It is called by the builders before save.
 func ObjTypeValidator(ot ObjType) error {
 	switch ot {
-	case ObjTypeUnknown, ObjTypeCache, ObjTypeCdnRecord, ObjTypeDNSRecord, ObjTypeDevice, ObjTypeDevicePortForward, ObjTypeDomainMonitor, ObjTypeIPGroup, ObjTypeIPGroupDevice, ObjTypePlatformConfig, ObjTypeSslRecord, ObjTypeWebhook, ObjTypeWebhookSubscription, ObjTypeDeviceIPReport, ObjTypeDomainMonitorHistory, ObjTypeHTTPLog, ObjTypeOperationLog, ObjTypePortForwardStats, ObjTypeRestyLog, ObjTypeSslCertificateHistory, ObjTypeWebhookHistory:
+	case ObjTypeUnknown, ObjTypeCache, ObjTypeCDNRecord, ObjTypeDNSRecord, ObjTypeDevice, ObjTypeDevicePortForward, ObjTypeDomainMonitor, ObjTypeIpGroup, ObjTypeIpGroupDevice, ObjTypePlatformConfig, ObjTypeSSLRecord, ObjTypeWebhook, ObjTypeWebhookSubscription, ObjTypeDeviceIpReport, ObjTypeDomainMonitorHistory, ObjTypeHttpLog, ObjTypeOperationLog, ObjTypePortForwardStats, ObjTypeRestyLog, ObjTypeSSLCertificateHistory, ObjTypeWebhookHistory:
 		return nil
 	default:
 		return fmt.Errorf("operationlog: invalid enum value for obj_type field: %q", ot)

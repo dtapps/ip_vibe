@@ -309,60 +309,64 @@ var GetLogSources = []string{
 }
 
 const (
-	LogOpTypeUnknown      string = "unknown"       // 未知操作
-	LogOpTypeDataCreate   string = "data_create"   // 数据创建
-	LogOpTypeDataUpdate   string = "data_update"   // 数据更新
-	LogOpTypeDataDelete   string = "data_delete"   // 数据删除
-	LogOpTypeDeviceReport string = "device_report" // 设备上报
-	LogOpTypeIPRefresh    string = "ip_refresh"    // IP刷新
+	LogOpTypeUnknown string = "Unknown" // 未知操作
+
+	LogOpTypeOpCreate    string = "OpCreate"    // 创建单条
+	LogOpTypeOpUpdate    string = "OpUpdate"    // 更新多条
+	LogOpTypeOpUpdateOne string = "OpUpdateOne" // 更新单条
+	LogOpTypeOpDelete    string = "OpDelete"    // 删除多条
+	LogOpTypeOpDeleteOne string = "OpDeleteOne" // 删除单条
 )
 
 // GetLogOpTypeDescriptions 操作类型说明映射
 var GetLogOpTypeDescriptions = map[string]string{
-	LogOpTypeUnknown:      "未知操作",
-	LogOpTypeDataCreate:   "数据创建",
-	LogOpTypeDataUpdate:   "数据更新",
-	LogOpTypeDataDelete:   "数据删除",
-	LogOpTypeDeviceReport: "设备上报",
-	LogOpTypeIPRefresh:    "IP刷新",
+	LogOpTypeUnknown: "未知操作",
+
+	LogOpTypeOpCreate:    "创建单条",
+	LogOpTypeOpUpdate:    "更新多条",
+	LogOpTypeOpUpdateOne: "更新单条",
+	LogOpTypeOpDelete:    "删除多条",
+	LogOpTypeOpDeleteOne: "删除单条",
 }
 
 // GetLogOpTypes 返回所有操作类型
 var GetLogOpTypes = []string{
 	LogOpTypeUnknown,
-	LogOpTypeDataCreate,
-	LogOpTypeDataUpdate,
-	LogOpTypeDataDelete,
-	LogOpTypeDeviceReport,
-	LogOpTypeIPRefresh,
+
+	LogOpTypeOpCreate,
+	LogOpTypeOpUpdate,
+	LogOpTypeOpUpdateOne,
+	LogOpTypeOpDelete,
+	LogOpTypeOpDeleteOne,
 }
 
 // --------
 
 const (
-	LogObjTypeUnknown string = "unknown" // 未知对象
+	LogObjTypeUnknown string = "Unknown" // 未知对象
 
-	LogObjTypeCache               string = "cache"                // 缓存
-	LogObjTypeCDNRecord           string = "cdn_record"           // CDN记录
-	LogObjTypeDNSRecord           string = "dns_record"           // DNS记录
-	LogObjTypeDevice              string = "device"               // 设备
-	LogObjTypeDevicePortForward   string = "device_port_forward"  // 端口转发
-	LogObjTypeDomainMonitor       string = "domain_monitor"       // 域名监控
-	LogObjTypeIPGroup             string = "ip_group"             // IP组
-	LogObjTypeIPGroupDevice       string = "ip_group_device"      // IP组设备
-	LogObjTypePlatformConfig      string = "platform_config"      // 平台配置
-	LogObjTypeSSLRecord           string = "ssl_record"           // SSL记录
-	LogObjTypeWebhook             string = "webhook"              // 通知
-	LogObjTypeWebhookSubscription string = "webhook_subscription" // 通知订阅
+	LogObjTypeCDNRecord           string = "CDNRecord"           // CDN记录
+	LogObjTypeCache               string = "Cache"               // 缓存
+	LogObjTypeDNSRecord           string = "DNSRecord"           // DNS记录
+	LogObjTypeDevice              string = "Device"              // 设备
+	LogObjTypeDevicePortForward   string = "DevicePortForward"   // 端口转发
+	LogObjTypeDomainMonitor       string = "DomainMonitor"       // 域名监控
+	LogObjTypeIpGroup             string = "IpGroup"             // IP组
+	LogObjTypeIpGroupDevice       string = "IpGroupDevice"       // IP组设备
+	LogObjTypePlatformConfig      string = "PlatformConfig"      // 平台配置
+	LogObjTypeSSLRecord           string = "SSLRecord"           // SSL记录
+	LogObjTypeWebhook             string = "Webhook"             // 通知
+	LogObjTypeWebhookSubscription string = "WebhookSubscription" // 通知订阅
 
-	LogObjTypeDeviceIPRecord        string = "device_ip_report"        // 设备IP记录
-	LogObjTypeDomainMonitorHistory  string = "domain_monitor_history"  // 域名监控历史记录
-	LogObjTypeHttpLog               string = "http_log"                // http请求日志
-	LogObjTypeOperationLog          string = "operation_log"           // 操作日志
-	LogObjTypePortForwardStats      string = "port_forward_stats"      // 端口转发统计快照记录
-	LogObjTypeRestyLog              string = "resty_log"               // resty请求日志
-	LogObjTypeSSLCertificateHistory string = "ssl_certificate_history" // SSL证书申请历史记录
-	LogObjTypeWebhookHistory        string = "webhook_history"         // 通知历史记录
+	LogObjTypeDeviceIpReport        string = "DeviceIpReport"        // 设备IP记录
+	LogObjTypeDomainMonitorHistory  string = "DomainMonitorHistory"  // 域名监控历史记录
+	LogObjTypeHttpLog               string = "HttpLog"               // http请求日志
+	LogObjTypeOperationLog          string = "OperationLog"          // 操作日志
+	LogObjTypePortForwardStats      string = "PortForwardStats"      // 端口转发统计快照记录
+	LogObjTypeReqLog                string = "ReqLog"                // req请求日志
+	LogObjTypeRestyLog              string = "RestyLog"              // resty请求日志
+	LogObjTypeSSLCertificateHistory string = "SSLCertificateHistory" // SSL证书申请历史记录
+	LogObjTypeWebhookHistory        string = "WebhookHistory"        // 通知历史记录
 )
 
 // GetLogObjTypeDescriptions 对象类型说明映射
@@ -375,14 +379,14 @@ var GetLogObjTypeDescriptions = map[string]string{
 	LogObjTypeDevice:              "设备",
 	LogObjTypeDevicePortForward:   "端口转发",
 	LogObjTypeDomainMonitor:       "域名监控",
-	LogObjTypeIPGroup:             "IP组",
-	LogObjTypeIPGroupDevice:       "IP组设备",
+	LogObjTypeIpGroup:             "IP组",
+	LogObjTypeIpGroupDevice:       "IP组设备",
 	LogObjTypePlatformConfig:      "平台配置",
 	LogObjTypeSSLRecord:           "SSL记录",
 	LogObjTypeWebhook:             "通知",
 	LogObjTypeWebhookSubscription: "通知订阅",
 
-	LogObjTypeDeviceIPRecord:        "设备IP记录",
+	LogObjTypeDeviceIpReport:        "设备IP记录",
 	LogObjTypeDomainMonitorHistory:  "域名监控历史记录",
 	LogObjTypeHttpLog:               "http请求日志",
 	LogObjTypeOperationLog:          "操作日志",
@@ -402,14 +406,14 @@ var GetLogObjTypes = []string{
 	LogObjTypeDevice,
 	LogObjTypeDevicePortForward,
 	LogObjTypeDomainMonitor,
-	LogObjTypeIPGroup,
-	LogObjTypeIPGroupDevice,
+	LogObjTypeIpGroup,
+	LogObjTypeIpGroupDevice,
 	LogObjTypePlatformConfig,
 	LogObjTypeSSLRecord,
 	LogObjTypeWebhook,
 	LogObjTypeWebhookSubscription,
 
-	LogObjTypeDeviceIPRecord,
+	LogObjTypeDeviceIpReport,
 	LogObjTypeDomainMonitorHistory,
 	LogObjTypeHttpLog,
 	LogObjTypeOperationLog,
