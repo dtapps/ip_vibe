@@ -232,11 +232,6 @@ func ByObjType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldObjType, opts...).ToFunc()
 }
 
-// ByObjID orders the results by the obj_id field.
-func ByObjID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldObjID, opts...).ToFunc()
-}
-
 // ByStatus orders the results by the status field.
 func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()

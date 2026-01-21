@@ -148,7 +148,8 @@ func SslDetail(c *gin.Context) {
 	allOperationLogs, err := global.GvaEntLogDb.OperationLog.Query().
 		Where(operationlog.SourceIn(operationlog.SourceUser)).
 		Where(operationlog.ObjTypeEQ(operationlog.ObjTypeSSLRecord)).
-		Where(operationlog.ObjIDEQ(firstSSLRecord.ID)).
+		// Where(operationlog.ObjIDEQ(cast.ToString(firstSSLRecord.ID))).
+		WhereObjIDContains(firstSSLRecord.ID).
 		OrderByCreatedAtDesc().
 		Limit(5).
 		All(c)

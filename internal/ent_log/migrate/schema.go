@@ -167,7 +167,7 @@ var (
 		{Name: "source", Type: field.TypeEnum, Nullable: true, Comment: "操作来源", Enums: []string{"unknown", "system", "task", "user", "gin", "api", "mcp", "grpc", "thrift", "dubbo", "tars"}, Default: "unknown"},
 		{Name: "op_type", Type: field.TypeEnum, Nullable: true, Comment: "操作类型", Enums: []string{"Unknown", "OpCreate", "OpUpdate", "OpUpdateOne", "OpDelete", "OpDeleteOne"}, Default: "Unknown"},
 		{Name: "obj_type", Type: field.TypeEnum, Nullable: true, Comment: "对象类型", Enums: []string{"Unknown", "Cache", "CDNRecord", "DNSRecord", "Device", "DevicePortForward", "DomainMonitor", "IpGroup", "IpGroupDevice", "PlatformConfig", "SSLRecord", "Webhook", "WebhookSubscription", "DeviceIpReport", "DomainMonitorHistory", "HttpLog", "OperationLog", "PortForwardStats", "RestyLog", "SSLCertificateHistory", "WebhookHistory"}, Default: "Unknown"},
-		{Name: "obj_id", Type: field.TypeString, Nullable: true, Comment: "对象主键"},
+		{Name: "obj_id", Type: field.TypeJSON, Nullable: true, Comment: "对象主键"},
 		{Name: "old_value", Type: field.TypeJSON, Nullable: true, Comment: "旧值"},
 		{Name: "new_value", Type: field.TypeJSON, Nullable: true, Comment: "新值"},
 		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "状态", Enums: []string{"unknown", "success", "failed"}, Default: "unknown"},

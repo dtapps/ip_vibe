@@ -7,7 +7,6 @@ import (
     "context"
     "fmt"
 	"log/slog"
-    "strings"
 
     "vibe_ip/internal/ent"
     "vibe_ip/internal/ent/hook"
@@ -15,6 +14,7 @@ import (
 
 	"github.com/spf13/cast"
 )
+
 // CDNRecordLogHook 为 CDNRecord 自动生成的审计日志钩子
 func CDNRecordLogHook() ent.Hook {
     return hook.On(
@@ -28,13 +28,13 @@ func CDNRecordLogHook() ent.Hook {
 				source := GetSource(ctx)
 
                 // 2. 获取 ID (变更前抓取)
-                var objID string
+				var objIDS []int64
                 if op.Is(ent.OpUpdate | ent.OpDelete) {
                     if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-                        objID = strings.Join(cast.ToStringSlice(ids), ",")
+                        objIDS = cast.ToInt64Slice(ids)
                     }
                 } else if id, exists := m.ID(); exists {
-                    objID = cast.ToString(id)
+                    objIDS = []int64{id}
                 }
 
                 // 3. 捕获变更字段 (New Value)
@@ -59,12 +59,12 @@ func CDNRecordLogHook() ent.Hook {
                 // 6. 补偿获取 Create 后的 ID
                 if op.Is(ent.OpCreate) && err == nil && result != nil {
                     if id, ok := m.ID(); ok {
-                        objID = cast.ToString(id)
+                        objIDS = []int64{id}
                     }
                 }
 
                 // 7. 异步入库记录日志
-                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncID string, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
+                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
                     // 状态判断
                     status := operationlog.StatusSuccess
                     msg := "操作成功"
@@ -78,7 +78,7 @@ func CDNRecordLogHook() ent.Hook {
                         SetSource(operationlog.Source(asyncSource)).
                         SetOpType(operationlog.OpType(asyncOpType)).
                         SetObjType(operationlog.ObjType(asyncObjType)).
-                        SetObjID(asyncID).
+                        SetObjID(asyncIDS).
                         SetOldValue(asyncOv).
                         SetNewValue(asyncNv).
                         SetStatus(status).
@@ -89,12 +89,12 @@ func CDNRecordLogHook() ent.Hook {
 							slog.Any("err", logErr),
 						)
 					}
-                }(context.WithoutCancel(ctx), source, opType, objType, objID, oldV, newV, err)
+                }(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
 				// 8. 本地打印
 				if err != nil {
 					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
-						slog.String("id", objID),
+						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
 				}
@@ -105,6 +105,7 @@ func CDNRecordLogHook() ent.Hook {
         ent.OpCreate|ent.OpUpdate|ent.OpUpdateOne|ent.OpDelete|ent.OpDeleteOne,
     )
 }
+
 
 
 // CacheLogHook 为 Cache 自动生成的审计日志钩子
@@ -120,13 +121,13 @@ func CacheLogHook() ent.Hook {
 				source := GetSource(ctx)
 
                 // 2. 获取 ID (变更前抓取)
-                var objID string
+				var objIDS []int64
                 if op.Is(ent.OpUpdate | ent.OpDelete) {
                     if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-                        objID = strings.Join(cast.ToStringSlice(ids), ",")
+                        objIDS = cast.ToInt64Slice(ids)
                     }
                 } else if id, exists := m.ID(); exists {
-                    objID = cast.ToString(id)
+                    objIDS = []int64{id}
                 }
 
                 // 3. 捕获变更字段 (New Value)
@@ -151,12 +152,12 @@ func CacheLogHook() ent.Hook {
                 // 6. 补偿获取 Create 后的 ID
                 if op.Is(ent.OpCreate) && err == nil && result != nil {
                     if id, ok := m.ID(); ok {
-                        objID = cast.ToString(id)
+                        objIDS = []int64{id}
                     }
                 }
 
                 // 7. 异步入库记录日志
-                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncID string, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
+                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
                     // 状态判断
                     status := operationlog.StatusSuccess
                     msg := "操作成功"
@@ -170,7 +171,7 @@ func CacheLogHook() ent.Hook {
                         SetSource(operationlog.Source(asyncSource)).
                         SetOpType(operationlog.OpType(asyncOpType)).
                         SetObjType(operationlog.ObjType(asyncObjType)).
-                        SetObjID(asyncID).
+                        SetObjID(asyncIDS).
                         SetOldValue(asyncOv).
                         SetNewValue(asyncNv).
                         SetStatus(status).
@@ -181,12 +182,12 @@ func CacheLogHook() ent.Hook {
 							slog.Any("err", logErr),
 						)
 					}
-                }(context.WithoutCancel(ctx), source, opType, objType, objID, oldV, newV, err)
+                }(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
 				// 8. 本地打印
 				if err != nil {
 					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
-						slog.String("id", objID),
+						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
 				}
@@ -197,6 +198,7 @@ func CacheLogHook() ent.Hook {
         ent.OpCreate|ent.OpUpdate|ent.OpUpdateOne|ent.OpDelete|ent.OpDeleteOne,
     )
 }
+
 
 
 // DNSRecordLogHook 为 DNSRecord 自动生成的审计日志钩子
@@ -212,13 +214,13 @@ func DNSRecordLogHook() ent.Hook {
 				source := GetSource(ctx)
 
                 // 2. 获取 ID (变更前抓取)
-                var objID string
+				var objIDS []int64
                 if op.Is(ent.OpUpdate | ent.OpDelete) {
                     if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-                        objID = strings.Join(cast.ToStringSlice(ids), ",")
+                        objIDS = cast.ToInt64Slice(ids)
                     }
                 } else if id, exists := m.ID(); exists {
-                    objID = cast.ToString(id)
+                    objIDS = []int64{id}
                 }
 
                 // 3. 捕获变更字段 (New Value)
@@ -243,12 +245,12 @@ func DNSRecordLogHook() ent.Hook {
                 // 6. 补偿获取 Create 后的 ID
                 if op.Is(ent.OpCreate) && err == nil && result != nil {
                     if id, ok := m.ID(); ok {
-                        objID = cast.ToString(id)
+                        objIDS = []int64{id}
                     }
                 }
 
                 // 7. 异步入库记录日志
-                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncID string, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
+                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
                     // 状态判断
                     status := operationlog.StatusSuccess
                     msg := "操作成功"
@@ -262,7 +264,7 @@ func DNSRecordLogHook() ent.Hook {
                         SetSource(operationlog.Source(asyncSource)).
                         SetOpType(operationlog.OpType(asyncOpType)).
                         SetObjType(operationlog.ObjType(asyncObjType)).
-                        SetObjID(asyncID).
+                        SetObjID(asyncIDS).
                         SetOldValue(asyncOv).
                         SetNewValue(asyncNv).
                         SetStatus(status).
@@ -273,12 +275,12 @@ func DNSRecordLogHook() ent.Hook {
 							slog.Any("err", logErr),
 						)
 					}
-                }(context.WithoutCancel(ctx), source, opType, objType, objID, oldV, newV, err)
+                }(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
 				// 8. 本地打印
 				if err != nil {
 					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
-						slog.String("id", objID),
+						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
 				}
@@ -289,6 +291,7 @@ func DNSRecordLogHook() ent.Hook {
         ent.OpCreate|ent.OpUpdate|ent.OpUpdateOne|ent.OpDelete|ent.OpDeleteOne,
     )
 }
+
 
 
 // DeviceLogHook 为 Device 自动生成的审计日志钩子
@@ -304,13 +307,13 @@ func DeviceLogHook() ent.Hook {
 				source := GetSource(ctx)
 
                 // 2. 获取 ID (变更前抓取)
-                var objID string
+				var objIDS []int64
                 if op.Is(ent.OpUpdate | ent.OpDelete) {
                     if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-                        objID = strings.Join(cast.ToStringSlice(ids), ",")
+                        objIDS = cast.ToInt64Slice(ids)
                     }
                 } else if id, exists := m.ID(); exists {
-                    objID = cast.ToString(id)
+                    objIDS = []int64{id}
                 }
 
                 // 3. 捕获变更字段 (New Value)
@@ -335,12 +338,12 @@ func DeviceLogHook() ent.Hook {
                 // 6. 补偿获取 Create 后的 ID
                 if op.Is(ent.OpCreate) && err == nil && result != nil {
                     if id, ok := m.ID(); ok {
-                        objID = cast.ToString(id)
+                        objIDS = []int64{id}
                     }
                 }
 
                 // 7. 异步入库记录日志
-                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncID string, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
+                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
                     // 状态判断
                     status := operationlog.StatusSuccess
                     msg := "操作成功"
@@ -354,7 +357,7 @@ func DeviceLogHook() ent.Hook {
                         SetSource(operationlog.Source(asyncSource)).
                         SetOpType(operationlog.OpType(asyncOpType)).
                         SetObjType(operationlog.ObjType(asyncObjType)).
-                        SetObjID(asyncID).
+                        SetObjID(asyncIDS).
                         SetOldValue(asyncOv).
                         SetNewValue(asyncNv).
                         SetStatus(status).
@@ -365,12 +368,12 @@ func DeviceLogHook() ent.Hook {
 							slog.Any("err", logErr),
 						)
 					}
-                }(context.WithoutCancel(ctx), source, opType, objType, objID, oldV, newV, err)
+                }(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
 				// 8. 本地打印
 				if err != nil {
 					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
-						slog.String("id", objID),
+						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
 				}
@@ -381,6 +384,7 @@ func DeviceLogHook() ent.Hook {
         ent.OpCreate|ent.OpUpdate|ent.OpUpdateOne|ent.OpDelete|ent.OpDeleteOne,
     )
 }
+
 
 
 // DevicePortForwardLogHook 为 DevicePortForward 自动生成的审计日志钩子
@@ -396,13 +400,13 @@ func DevicePortForwardLogHook() ent.Hook {
 				source := GetSource(ctx)
 
                 // 2. 获取 ID (变更前抓取)
-                var objID string
+				var objIDS []int64
                 if op.Is(ent.OpUpdate | ent.OpDelete) {
                     if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-                        objID = strings.Join(cast.ToStringSlice(ids), ",")
+                        objIDS = cast.ToInt64Slice(ids)
                     }
                 } else if id, exists := m.ID(); exists {
-                    objID = cast.ToString(id)
+                    objIDS = []int64{id}
                 }
 
                 // 3. 捕获变更字段 (New Value)
@@ -427,12 +431,12 @@ func DevicePortForwardLogHook() ent.Hook {
                 // 6. 补偿获取 Create 后的 ID
                 if op.Is(ent.OpCreate) && err == nil && result != nil {
                     if id, ok := m.ID(); ok {
-                        objID = cast.ToString(id)
+                        objIDS = []int64{id}
                     }
                 }
 
                 // 7. 异步入库记录日志
-                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncID string, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
+                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
                     // 状态判断
                     status := operationlog.StatusSuccess
                     msg := "操作成功"
@@ -446,7 +450,7 @@ func DevicePortForwardLogHook() ent.Hook {
                         SetSource(operationlog.Source(asyncSource)).
                         SetOpType(operationlog.OpType(asyncOpType)).
                         SetObjType(operationlog.ObjType(asyncObjType)).
-                        SetObjID(asyncID).
+                        SetObjID(asyncIDS).
                         SetOldValue(asyncOv).
                         SetNewValue(asyncNv).
                         SetStatus(status).
@@ -457,12 +461,12 @@ func DevicePortForwardLogHook() ent.Hook {
 							slog.Any("err", logErr),
 						)
 					}
-                }(context.WithoutCancel(ctx), source, opType, objType, objID, oldV, newV, err)
+                }(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
 				// 8. 本地打印
 				if err != nil {
 					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
-						slog.String("id", objID),
+						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
 				}
@@ -473,6 +477,7 @@ func DevicePortForwardLogHook() ent.Hook {
         ent.OpCreate|ent.OpUpdate|ent.OpUpdateOne|ent.OpDelete|ent.OpDeleteOne,
     )
 }
+
 
 
 // DomainMonitorLogHook 为 DomainMonitor 自动生成的审计日志钩子
@@ -488,13 +493,13 @@ func DomainMonitorLogHook() ent.Hook {
 				source := GetSource(ctx)
 
                 // 2. 获取 ID (变更前抓取)
-                var objID string
+				var objIDS []int64
                 if op.Is(ent.OpUpdate | ent.OpDelete) {
                     if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-                        objID = strings.Join(cast.ToStringSlice(ids), ",")
+                        objIDS = cast.ToInt64Slice(ids)
                     }
                 } else if id, exists := m.ID(); exists {
-                    objID = cast.ToString(id)
+                    objIDS = []int64{id}
                 }
 
                 // 3. 捕获变更字段 (New Value)
@@ -519,12 +524,12 @@ func DomainMonitorLogHook() ent.Hook {
                 // 6. 补偿获取 Create 后的 ID
                 if op.Is(ent.OpCreate) && err == nil && result != nil {
                     if id, ok := m.ID(); ok {
-                        objID = cast.ToString(id)
+                        objIDS = []int64{id}
                     }
                 }
 
                 // 7. 异步入库记录日志
-                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncID string, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
+                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
                     // 状态判断
                     status := operationlog.StatusSuccess
                     msg := "操作成功"
@@ -538,7 +543,7 @@ func DomainMonitorLogHook() ent.Hook {
                         SetSource(operationlog.Source(asyncSource)).
                         SetOpType(operationlog.OpType(asyncOpType)).
                         SetObjType(operationlog.ObjType(asyncObjType)).
-                        SetObjID(asyncID).
+                        SetObjID(asyncIDS).
                         SetOldValue(asyncOv).
                         SetNewValue(asyncNv).
                         SetStatus(status).
@@ -549,12 +554,12 @@ func DomainMonitorLogHook() ent.Hook {
 							slog.Any("err", logErr),
 						)
 					}
-                }(context.WithoutCancel(ctx), source, opType, objType, objID, oldV, newV, err)
+                }(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
 				// 8. 本地打印
 				if err != nil {
 					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
-						slog.String("id", objID),
+						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
 				}
@@ -565,6 +570,7 @@ func DomainMonitorLogHook() ent.Hook {
         ent.OpCreate|ent.OpUpdate|ent.OpUpdateOne|ent.OpDelete|ent.OpDeleteOne,
     )
 }
+
 
 
 // IpGroupLogHook 为 IpGroup 自动生成的审计日志钩子
@@ -580,13 +586,13 @@ func IpGroupLogHook() ent.Hook {
 				source := GetSource(ctx)
 
                 // 2. 获取 ID (变更前抓取)
-                var objID string
+				var objIDS []int64
                 if op.Is(ent.OpUpdate | ent.OpDelete) {
                     if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-                        objID = strings.Join(cast.ToStringSlice(ids), ",")
+                        objIDS = cast.ToInt64Slice(ids)
                     }
                 } else if id, exists := m.ID(); exists {
-                    objID = cast.ToString(id)
+                    objIDS = []int64{id}
                 }
 
                 // 3. 捕获变更字段 (New Value)
@@ -611,12 +617,12 @@ func IpGroupLogHook() ent.Hook {
                 // 6. 补偿获取 Create 后的 ID
                 if op.Is(ent.OpCreate) && err == nil && result != nil {
                     if id, ok := m.ID(); ok {
-                        objID = cast.ToString(id)
+                        objIDS = []int64{id}
                     }
                 }
 
                 // 7. 异步入库记录日志
-                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncID string, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
+                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
                     // 状态判断
                     status := operationlog.StatusSuccess
                     msg := "操作成功"
@@ -630,7 +636,7 @@ func IpGroupLogHook() ent.Hook {
                         SetSource(operationlog.Source(asyncSource)).
                         SetOpType(operationlog.OpType(asyncOpType)).
                         SetObjType(operationlog.ObjType(asyncObjType)).
-                        SetObjID(asyncID).
+                        SetObjID(asyncIDS).
                         SetOldValue(asyncOv).
                         SetNewValue(asyncNv).
                         SetStatus(status).
@@ -641,12 +647,12 @@ func IpGroupLogHook() ent.Hook {
 							slog.Any("err", logErr),
 						)
 					}
-                }(context.WithoutCancel(ctx), source, opType, objType, objID, oldV, newV, err)
+                }(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
 				// 8. 本地打印
 				if err != nil {
 					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
-						slog.String("id", objID),
+						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
 				}
@@ -657,6 +663,7 @@ func IpGroupLogHook() ent.Hook {
         ent.OpCreate|ent.OpUpdate|ent.OpUpdateOne|ent.OpDelete|ent.OpDeleteOne,
     )
 }
+
 
 
 
@@ -674,13 +681,13 @@ func PlatformConfigLogHook() ent.Hook {
 				source := GetSource(ctx)
 
                 // 2. 获取 ID (变更前抓取)
-                var objID string
+				var objIDS []int64
                 if op.Is(ent.OpUpdate | ent.OpDelete) {
                     if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-                        objID = strings.Join(cast.ToStringSlice(ids), ",")
+                        objIDS = cast.ToInt64Slice(ids)
                     }
                 } else if id, exists := m.ID(); exists {
-                    objID = cast.ToString(id)
+                    objIDS = []int64{id}
                 }
 
                 // 3. 捕获变更字段 (New Value)
@@ -705,12 +712,12 @@ func PlatformConfigLogHook() ent.Hook {
                 // 6. 补偿获取 Create 后的 ID
                 if op.Is(ent.OpCreate) && err == nil && result != nil {
                     if id, ok := m.ID(); ok {
-                        objID = cast.ToString(id)
+                        objIDS = []int64{id}
                     }
                 }
 
                 // 7. 异步入库记录日志
-                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncID string, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
+                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
                     // 状态判断
                     status := operationlog.StatusSuccess
                     msg := "操作成功"
@@ -724,7 +731,7 @@ func PlatformConfigLogHook() ent.Hook {
                         SetSource(operationlog.Source(asyncSource)).
                         SetOpType(operationlog.OpType(asyncOpType)).
                         SetObjType(operationlog.ObjType(asyncObjType)).
-                        SetObjID(asyncID).
+                        SetObjID(asyncIDS).
                         SetOldValue(asyncOv).
                         SetNewValue(asyncNv).
                         SetStatus(status).
@@ -735,12 +742,12 @@ func PlatformConfigLogHook() ent.Hook {
 							slog.Any("err", logErr),
 						)
 					}
-                }(context.WithoutCancel(ctx), source, opType, objType, objID, oldV, newV, err)
+                }(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
 				// 8. 本地打印
 				if err != nil {
 					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
-						slog.String("id", objID),
+						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
 				}
@@ -751,6 +758,7 @@ func PlatformConfigLogHook() ent.Hook {
         ent.OpCreate|ent.OpUpdate|ent.OpUpdateOne|ent.OpDelete|ent.OpDeleteOne,
     )
 }
+
 
 
 // SSLRecordLogHook 为 SSLRecord 自动生成的审计日志钩子
@@ -766,13 +774,13 @@ func SSLRecordLogHook() ent.Hook {
 				source := GetSource(ctx)
 
                 // 2. 获取 ID (变更前抓取)
-                var objID string
+				var objIDS []int64
                 if op.Is(ent.OpUpdate | ent.OpDelete) {
                     if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-                        objID = strings.Join(cast.ToStringSlice(ids), ",")
+                        objIDS = cast.ToInt64Slice(ids)
                     }
                 } else if id, exists := m.ID(); exists {
-                    objID = cast.ToString(id)
+                    objIDS = []int64{id}
                 }
 
                 // 3. 捕获变更字段 (New Value)
@@ -797,12 +805,12 @@ func SSLRecordLogHook() ent.Hook {
                 // 6. 补偿获取 Create 后的 ID
                 if op.Is(ent.OpCreate) && err == nil && result != nil {
                     if id, ok := m.ID(); ok {
-                        objID = cast.ToString(id)
+                        objIDS = []int64{id}
                     }
                 }
 
                 // 7. 异步入库记录日志
-                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncID string, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
+                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
                     // 状态判断
                     status := operationlog.StatusSuccess
                     msg := "操作成功"
@@ -816,7 +824,7 @@ func SSLRecordLogHook() ent.Hook {
                         SetSource(operationlog.Source(asyncSource)).
                         SetOpType(operationlog.OpType(asyncOpType)).
                         SetObjType(operationlog.ObjType(asyncObjType)).
-                        SetObjID(asyncID).
+                        SetObjID(asyncIDS).
                         SetOldValue(asyncOv).
                         SetNewValue(asyncNv).
                         SetStatus(status).
@@ -827,12 +835,12 @@ func SSLRecordLogHook() ent.Hook {
 							slog.Any("err", logErr),
 						)
 					}
-                }(context.WithoutCancel(ctx), source, opType, objType, objID, oldV, newV, err)
+                }(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
 				// 8. 本地打印
 				if err != nil {
 					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
-						slog.String("id", objID),
+						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
 				}
@@ -843,6 +851,7 @@ func SSLRecordLogHook() ent.Hook {
         ent.OpCreate|ent.OpUpdate|ent.OpUpdateOne|ent.OpDelete|ent.OpDeleteOne,
     )
 }
+
 
 
 // WebhookLogHook 为 Webhook 自动生成的审计日志钩子
@@ -858,13 +867,13 @@ func WebhookLogHook() ent.Hook {
 				source := GetSource(ctx)
 
                 // 2. 获取 ID (变更前抓取)
-                var objID string
+				var objIDS []int64
                 if op.Is(ent.OpUpdate | ent.OpDelete) {
                     if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-                        objID = strings.Join(cast.ToStringSlice(ids), ",")
+                        objIDS = cast.ToInt64Slice(ids)
                     }
                 } else if id, exists := m.ID(); exists {
-                    objID = cast.ToString(id)
+                    objIDS = []int64{id}
                 }
 
                 // 3. 捕获变更字段 (New Value)
@@ -889,12 +898,12 @@ func WebhookLogHook() ent.Hook {
                 // 6. 补偿获取 Create 后的 ID
                 if op.Is(ent.OpCreate) && err == nil && result != nil {
                     if id, ok := m.ID(); ok {
-                        objID = cast.ToString(id)
+                        objIDS = []int64{id}
                     }
                 }
 
                 // 7. 异步入库记录日志
-                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncID string, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
+                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
                     // 状态判断
                     status := operationlog.StatusSuccess
                     msg := "操作成功"
@@ -908,7 +917,7 @@ func WebhookLogHook() ent.Hook {
                         SetSource(operationlog.Source(asyncSource)).
                         SetOpType(operationlog.OpType(asyncOpType)).
                         SetObjType(operationlog.ObjType(asyncObjType)).
-                        SetObjID(asyncID).
+                        SetObjID(asyncIDS).
                         SetOldValue(asyncOv).
                         SetNewValue(asyncNv).
                         SetStatus(status).
@@ -919,12 +928,12 @@ func WebhookLogHook() ent.Hook {
 							slog.Any("err", logErr),
 						)
 					}
-                }(context.WithoutCancel(ctx), source, opType, objType, objID, oldV, newV, err)
+                }(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
 				// 8. 本地打印
 				if err != nil {
 					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
-						slog.String("id", objID),
+						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
 				}
@@ -935,6 +944,7 @@ func WebhookLogHook() ent.Hook {
         ent.OpCreate|ent.OpUpdate|ent.OpUpdateOne|ent.OpDelete|ent.OpDeleteOne,
     )
 }
+
 
 
 // WebhookSubscriptionLogHook 为 WebhookSubscription 自动生成的审计日志钩子
@@ -950,13 +960,13 @@ func WebhookSubscriptionLogHook() ent.Hook {
 				source := GetSource(ctx)
 
                 // 2. 获取 ID (变更前抓取)
-                var objID string
+				var objIDS []int64
                 if op.Is(ent.OpUpdate | ent.OpDelete) {
                     if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-                        objID = strings.Join(cast.ToStringSlice(ids), ",")
+                        objIDS = cast.ToInt64Slice(ids)
                     }
                 } else if id, exists := m.ID(); exists {
-                    objID = cast.ToString(id)
+                    objIDS = []int64{id}
                 }
 
                 // 3. 捕获变更字段 (New Value)
@@ -981,12 +991,12 @@ func WebhookSubscriptionLogHook() ent.Hook {
                 // 6. 补偿获取 Create 后的 ID
                 if op.Is(ent.OpCreate) && err == nil && result != nil {
                     if id, ok := m.ID(); ok {
-                        objID = cast.ToString(id)
+                        objIDS = []int64{id}
                     }
                 }
 
                 // 7. 异步入库记录日志
-                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncID string, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
+                go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
                     // 状态判断
                     status := operationlog.StatusSuccess
                     msg := "操作成功"
@@ -1000,7 +1010,7 @@ func WebhookSubscriptionLogHook() ent.Hook {
                         SetSource(operationlog.Source(asyncSource)).
                         SetOpType(operationlog.OpType(asyncOpType)).
                         SetObjType(operationlog.ObjType(asyncObjType)).
-                        SetObjID(asyncID).
+                        SetObjID(asyncIDS).
                         SetOldValue(asyncOv).
                         SetNewValue(asyncNv).
                         SetStatus(status).
@@ -1011,12 +1021,12 @@ func WebhookSubscriptionLogHook() ent.Hook {
 							slog.Any("err", logErr),
 						)
 					}
-                }(context.WithoutCancel(ctx), source, opType, objType, objID, oldV, newV, err)
+                }(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
 				// 8. 本地打印
 				if err != nil {
 					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
-						slog.String("id", objID),
+						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
 				}

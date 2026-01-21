@@ -3761,7 +3761,8 @@ type OperationLogMutation struct {
 	source        *operationlog.Source
 	op_type       *operationlog.OpType
 	obj_type      *operationlog.ObjType
-	obj_id        *string
+	obj_id        *[]int64
+	appendobj_id  []int64
 	old_value     *map[string]interface{}
 	new_value     *map[string]interface{}
 	status        *operationlog.Status
@@ -4060,12 +4061,13 @@ func (m *OperationLogMutation) ResetObjType() {
 }
 
 // SetObjID sets the "obj_id" field.
-func (m *OperationLogMutation) SetObjID(s string) {
-	m.obj_id = &s
+func (m *OperationLogMutation) SetObjID(i []int64) {
+	m.obj_id = &i
+	m.appendobj_id = nil
 }
 
 // ObjID returns the value of the "obj_id" field in the mutation.
-func (m *OperationLogMutation) ObjID() (r string, exists bool) {
+func (m *OperationLogMutation) ObjID() (r []int64, exists bool) {
 	v := m.obj_id
 	if v == nil {
 		return
@@ -4076,7 +4078,7 @@ func (m *OperationLogMutation) ObjID() (r string, exists bool) {
 // OldObjID returns the old "obj_id" field's value of the OperationLog entity.
 // If the OperationLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OperationLogMutation) OldObjID(ctx context.Context) (v string, err error) {
+func (m *OperationLogMutation) OldObjID(ctx context.Context) (v []int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldObjID is only allowed on UpdateOne operations")
 	}
@@ -4090,9 +4092,23 @@ func (m *OperationLogMutation) OldObjID(ctx context.Context) (v string, err erro
 	return oldValue.ObjID, nil
 }
 
+// AppendObjID adds i to the "obj_id" field.
+func (m *OperationLogMutation) AppendObjID(i []int64) {
+	m.appendobj_id = append(m.appendobj_id, i...)
+}
+
+// AppendedObjID returns the list of values that were appended to the "obj_id" field in this mutation.
+func (m *OperationLogMutation) AppendedObjID() ([]int64, bool) {
+	if len(m.appendobj_id) == 0 {
+		return nil, false
+	}
+	return m.appendobj_id, true
+}
+
 // ClearObjID clears the value of the "obj_id" field.
 func (m *OperationLogMutation) ClearObjID() {
 	m.obj_id = nil
+	m.appendobj_id = nil
 	m.clearedFields[operationlog.FieldObjID] = struct{}{}
 }
 
@@ -4105,6 +4121,7 @@ func (m *OperationLogMutation) ObjIDCleared() bool {
 // ResetObjID resets all changes to the "obj_id" field.
 func (m *OperationLogMutation) ResetObjID() {
 	m.obj_id = nil
+	m.appendobj_id = nil
 	delete(m.clearedFields, operationlog.FieldObjID)
 }
 
@@ -4457,7 +4474,7 @@ func (m *OperationLogMutation) SetField(name string, value ent.Value) error {
 		m.SetObjType(v)
 		return nil
 	case operationlog.FieldObjID:
-		v, ok := value.(string)
+		v, ok := value.([]int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

@@ -54,6 +54,8 @@ func (t *OperationLog) ToMap() map[string]any {
 	}
 	m := make(map[string]any)
 	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["obj_id"] = t.ObjID
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
 	m["old_value"] = t.OldValue
 	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
 	m["new_value"] = t.NewValue

@@ -57,6 +57,7 @@ func main() {
 			"./internal/ent/template/query_gorm_compat.tmpl",
 			"./internal/ent/template/where_if.tmpl",
 			"./internal/ent/template/order_if.tmpl",
+			"./internal/ent/template/json_query.tmpl",
 		),
 	}
 	if err := entc.Generate(schemaPath, graph.Config, opts...); err != nil {
