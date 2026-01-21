@@ -15,10 +15,11 @@ import (
 	"github.com/spf13/cast"
 )
 
-{{ range $n := $.Nodes }}
+{{- range $n := $.Nodes }}
 {{- /* 跳过日志表本身，防止死循环 */ -}}
-{{- if ne $n.Name "OperationLog" }}
-{{ $mutation := print $n.Name "Mutation" }}
+{{- /* 必须存在 ID 字段才生成 Hook */ -}}
+{{- if and (ne $n.Name "OperationLog") ($n.ID) }}
+{{- $mutation := print $n.Name "Mutation" }}
 
 // {{ $n.Name }}LogHook 为 {{ $n.Name }} 自动生成的审计日志钩子
 func {{ $n.Name }}LogHook() ent.Hook {

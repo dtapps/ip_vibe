@@ -1555,8 +1555,7 @@ func (c *IpGroupDeviceClient) QueryIPGroup(_m *IpGroupDevice) *IpGroupQuery {
 
 // Hooks returns the client hooks.
 func (c *IpGroupDeviceClient) Hooks() []Hook {
-	hooks := c.hooks.IpGroupDevice
-	return append(hooks[:len(hooks):len(hooks)], ipgroupdevice.Hooks[:]...)
+	return c.hooks.IpGroupDevice
 }
 
 // Interceptors returns the client interceptors.

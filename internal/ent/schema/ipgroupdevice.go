@@ -1,7 +1,6 @@
 package schema
 
 import (
-	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 
 	"entgo.io/ent"
@@ -94,7 +93,5 @@ func (IpGroupDevice) Indexes() []ent.Index {
 
 // Hooks of the IpGroupDevice.
 func (IpGroupDevice) Hooks() []ent.Hook {
-	return []ent.Hook{
-		schemahook.IpGroupDeviceLogHook(),
-	}
+	return []ent.Hook{}
 }

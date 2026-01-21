@@ -337,7 +337,7 @@ func (_c *DeviceCreate) createSpec() (*Device, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		createE := &IpGroupDeviceCreate{config: _c.config, mutation: newIpGroupDeviceMutation(_c.config, OpCreate)}
-		_ = createE.defaults()
+		createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields
 		_spec.Edges = append(_spec.Edges, edge)

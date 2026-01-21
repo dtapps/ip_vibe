@@ -218,8 +218,6 @@ func init() {
 	// ipgroup.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	ipgroup.IDValidator = ipgroupDescID.Validators[0].(func(int64) error)
 	ipgroupdeviceMixin := schema.IpGroupDevice{}.Mixin()
-	ipgroupdeviceHooks := schema.IpGroupDevice{}.Hooks()
-	ipgroupdevice.Hooks[0] = ipgroupdeviceHooks[0]
 	ipgroupdeviceMixinFields0 := ipgroupdeviceMixin[0].Fields()
 	_ = ipgroupdeviceMixinFields0
 	ipgroupdeviceFields := schema.IpGroupDevice{}.Fields()

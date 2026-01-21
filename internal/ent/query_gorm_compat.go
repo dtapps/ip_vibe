@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"fmt"
 	"vibe_ip/internal/ent/cache"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
@@ -157,13 +156,6 @@ func (q *IpGroupQuery) Find(ctx context.Context) ([]*IpGroup, error) {
 // 行为与 GORM 的 Take(ctx) 一致：不添加 ORDER，仅限制结果为 1 行。
 func (q *IpGroupDeviceQuery) Take(ctx context.Context) (*IpGroupDevice, error) {
 	return q.Limit(1).First(ctx)
-}
-
-// Last 获取最后一条记录，按主键降序排列（ORDER BY id DESC LIMIT 1）。
-// 行为与 GORM 的 Last(ctx) 一致。
-// 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
-func (q *IpGroupDeviceQuery) Last(ctx context.Context) (*IpGroupDevice, error) {
-	return nil, fmt.Errorf("IpGroupDevice has no default 'id' primary key; Last() is unsupported")
 }
 
 // Find 获取所有匹配的记录。
