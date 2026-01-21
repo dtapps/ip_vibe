@@ -75,34 +75,10 @@ func getObjID[M ent.Mutation](ctx context.Context, op ent.Op, m M, result ent.Va
 
 // 将 ent.Mutation 映射为 operationlog.ObjType 的字符串值
 func getObjType[M ent.Mutation](m M) string {
-	// var entityToObjType = map[string]operationlog.ObjType{
-	// 	ent.TypeCache:               operationlog.ObjTypeCache,
-	// 	ent.TypeCDNRecord:           operationlog.ObjTypeCdnRecord,
-	// 	ent.TypeDNSRecord:           operationlog.ObjTypeDNSRecord,
-	// 	ent.TypeDevice:              operationlog.ObjTypeDevice,
-	// 	ent.TypeDevicePortForward:   operationlog.ObjTypeDevicePortForward,
-	// 	ent.TypeDomainMonitor:       operationlog.ObjTypeDomainMonitor,
-	// 	ent.TypeIpGroup:             operationlog.ObjTypeIPGroup,
-	// 	ent.TypeIpGroupDevice:       operationlog.ObjTypeIPGroupDevice,
-	// 	ent.TypePlatformConfig:      operationlog.ObjTypePlatformConfig,
-	// 	ent.TypeSSLRecord:           operationlog.ObjTypeSslRecord,
-	// 	ent.TypeWebhook:             operationlog.ObjTypeWebhook,
-	// 	ent.TypeWebhookSubscription: operationlog.ObjTypeWebhookSubscription,
-
-	// 	ent_log.TypeDeviceIpReport:        operationlog.ObjTypeDeviceIPReport,
-	// 	ent_log.TypeDomainMonitorHistory:  operationlog.ObjTypeDomainMonitorHistory,
-	// 	ent_log.TypeHttpLog:               operationlog.ObjTypeHTTPLog,
-	// 	ent_log.TypeOperationLog:          operationlog.ObjTypeOperationLog,
-	// 	ent_log.TypePortForwardStats:      operationlog.ObjTypePortForwardStats,
-	// 	ent_log.TypeRestyLog:              operationlog.ObjTypeRestyLog,
-	// 	ent_log.TypeSSLCertificateHistory: operationlog.ObjTypeSslCertificateHistory,
-	// 	ent_log.TypeWebhookHistory:        operationlog.ObjTypeWebhookHistory,
-	// }
-	typeName := m.Type()
-	// if val, ok := entityToObjType[typeName]; ok {
-	// 	return val.String()
-	// }
-	return typeName
+	if m.Type() == "" {
+		return operationlog.ObjTypeUnknown.String()
+	}
+	return m.Type()
 }
 
 // getChangedFields: 返回 JSON 字符串以适配你的 Schema
