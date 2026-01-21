@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
@@ -125,6 +126,9 @@ func NewTencentEOProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Tenc
 	p.Provider.Cfg = profile.NewClientProfile()
 	p.Provider.Cfg.HttpProfile.Endpoint = p.cfg.Endpoint // 指定域名
 	p.Provider.Cfg.NetworkFailureMaxRetries = 3          // 定义最大重试次数
+
+	// 开启日志
+	p.Provider.Cfg.Debug = sys_env.GvaEnv.DEBUG
 
 	// 实例化
 	p.Provider.Client, err = teo.NewClient(p.Provider.Auth, "", p.Provider.Cfg)

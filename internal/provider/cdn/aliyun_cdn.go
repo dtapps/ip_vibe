@@ -144,7 +144,7 @@ func NewAliyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 		return nil, fmt.Errorf("创建客户端失败 %w", err)
 	}
 
-	// 运行时
+	// 定义最大重试次数
 	p.Provider.Runtime = &dara.RuntimeOptions{
 		Autoretry:   tea.Bool(true),
 		MaxAttempts: tea.Int(3),

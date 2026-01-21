@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
@@ -125,6 +126,19 @@ func NewVolcengineDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *
 		WithRegion(p.cfg.Region).
 		WithCredentials(p.Provider.Auth)
 
+	// 如果提供了日志传输器，则设置HTTP客户端
+	if p.opts.httpTransport != nil {
+		p.Provider.Cfg.WithHTTPClient(&http.Client{
+			Transport: p.opts.httpTransport.Instance(nil),
+		})
+	}
+
+	// 定义最大重试次数
+	p.Provider.Cfg.WithMaxRetries(3)
+
+	// 开启日志
+	p.Provider.Cfg.WithDebug(sys_env.GvaEnv.DEBUG)
+
 	// 会话
 	p.Provider.Sess, err = session.NewSession(p.Provider.Cfg)
 	if err != nil {
@@ -133,27 +147,6 @@ func NewVolcengineDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *
 
 	// 实例化
 	p.Provider.Client = dns.New(p.Provider.Sess)
-
-	// 如果提供了日志传输器，则设置HTTP客户端
-	if p.opts.httpTransport != nil {
-		// 配置
-		p.Provider.Cfg = volcengine.NewConfig().
-			WithRegion(p.cfg.Region).
-			WithCredentials(p.Provider.Auth).
-			WithHTTPClient(&http.Client{
-				Transport: p.opts.httpTransport.Instance(nil),
-			})
-
-		// 会话
-		p.Provider.Sess, err = session.NewSession(p.Provider.Cfg)
-		if err != nil {
-			return nil, fmt.Errorf("创建会话失败 %w", err)
-		}
-
-		// 实例化
-		p.Provider.Client = dns.New(p.Provider.Sess)
-
-	}
 
 	return p, nil
 }

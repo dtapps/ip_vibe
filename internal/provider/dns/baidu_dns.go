@@ -9,6 +9,7 @@ import (
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
+	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/services/dns"
 	"github.com/baidubce/bce-sdk-go/util"
 	"go.dtapp.net/library/utils/gojson"
@@ -124,6 +125,9 @@ func NewBaiduDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Baidu
 			Transport: p.opts.httpTransport.Instance(nil),
 		}
 	}
+
+	// 定义最大重试次数
+	p.Provider.Client.Config.Retry = bce.NewBackOffRetryPolicy(3, 20000, 300)
 
 	return p, nil
 }

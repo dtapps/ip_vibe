@@ -9,6 +9,7 @@ import (
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
+	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/services/cdn"
 	"github.com/baidubce/bce-sdk-go/services/cdn/api"
 	"go.dtapp.net/library/utils/gojson"
@@ -125,6 +126,9 @@ func NewBaiduCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Baidu
 		}
 	}
 
+	// 定义最大重试次数
+	p.Provider.Client.Config.Retry = bce.NewBackOffRetryPolicy(3, 20000, 300)
+
 	return p, nil
 }
 
@@ -146,8 +150,8 @@ func (p *BaiduCDNProvider) printData(ctx context.Context) {
 }
 
 // Check 检查子域名是否存在
-// https://cloud.baidu.com/doc/CDN/s/Fk121xrty#查询用户名下所有域名-getdomainstatus
-// https://cloud.baidu.com/doc/CDN/s/Vk121slzt#查询加速域名详情-getdomainconfig
+// https://console.bce.baidu.com/support/#/api?product=CDN&project=CDN&parent=查询用户名下所有域名
+// https://console.bce.baidu.com/support/#/api?product=CDN&project=CDN&parent=查询加速域名详情
 func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
 
 	// 完整域名

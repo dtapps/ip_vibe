@@ -107,6 +107,9 @@ func NewCloudfareDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *C
 	// 实例化client选项
 	p.Provider.Opts = append(p.Provider.Opts, option.WithAPIToken(p.cfg.ApiToken))
 
+	// 定义最大重试次数
+	p.Provider.Opts = append(p.Provider.Opts, option.WithMaxRetries(3))
+
 	// 如果提供了日志传输器，则设置HTTP客户端
 	if p.opts.httpTransport != nil {
 		p.Provider.Opts = append(p.Provider.Opts, option.WithHTTPClient(&http.Client{
