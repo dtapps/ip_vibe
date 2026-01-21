@@ -36,6 +36,14 @@ func (q *CDNRecordQuery) WhereConfigJSONContains(val any) *CDNRecordQuery {
 	}))
 }
 
+// WhereConfigJSONContainsIf 只有在 condition 为 true 时才调用 WhereConfigJSONContains。
+func (q *CDNRecordQuery) WhereConfigJSONContainsIf(condition bool, val any) *CDNRecordQuery {
+	if condition {
+		return q.WhereConfigJSONContains(val)
+	}
+	return q
+}
+
 // WhereConfigJSONContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *DNSRecordQuery) WhereConfigJSONContains(val any) *DNSRecordQuery {
@@ -55,6 +63,14 @@ func (q *DNSRecordQuery) WhereConfigJSONContains(val any) *DNSRecordQuery {
 			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
 		}
 	}))
+}
+
+// WhereConfigJSONContainsIf 只有在 condition 为 true 时才调用 WhereConfigJSONContains。
+func (q *DNSRecordQuery) WhereConfigJSONContainsIf(condition bool, val any) *DNSRecordQuery {
+	if condition {
+		return q.WhereConfigJSONContains(val)
+	}
+	return q
 }
 
 // WhereProtocolsContains 扩展了查询构建器，支持 JSON 数组的包含查询。
@@ -78,6 +94,14 @@ func (q *DevicePortForwardQuery) WhereProtocolsContains(val any) *DevicePortForw
 	}))
 }
 
+// WhereProtocolsContainsIf 只有在 condition 为 true 时才调用 WhereProtocolsContains。
+func (q *DevicePortForwardQuery) WhereProtocolsContainsIf(condition bool, val any) *DevicePortForwardQuery {
+	if condition {
+		return q.WhereProtocolsContains(val)
+	}
+	return q
+}
+
 // WhereRequestHeadersContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *DomainMonitorQuery) WhereRequestHeadersContains(val any) *DomainMonitorQuery {
@@ -99,6 +123,14 @@ func (q *DomainMonitorQuery) WhereRequestHeadersContains(val any) *DomainMonitor
 	}))
 }
 
+// WhereRequestHeadersContainsIf 只有在 condition 为 true 时才调用 WhereRequestHeadersContains。
+func (q *DomainMonitorQuery) WhereRequestHeadersContainsIf(condition bool, val any) *DomainMonitorQuery {
+	if condition {
+		return q.WhereRequestHeadersContains(val)
+	}
+	return q
+}
+
 // WhereConfigJSONContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *PlatformConfigQuery) WhereConfigJSONContains(val any) *PlatformConfigQuery {
@@ -118,4 +150,12 @@ func (q *PlatformConfigQuery) WhereConfigJSONContains(val any) *PlatformConfigQu
 			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
 		}
 	}))
+}
+
+// WhereConfigJSONContainsIf 只有在 condition 为 true 时才调用 WhereConfigJSONContains。
+func (q *PlatformConfigQuery) WhereConfigJSONContainsIf(condition bool, val any) *PlatformConfigQuery {
+	if condition {
+		return q.WhereConfigJSONContains(val)
+	}
+	return q
 }

@@ -16,15 +16,15 @@ import (
 {{ range $n := $.Nodes }}
     {{ range $f := $n.Fields }}
         {{ if $f.IsJSON }}
-            {{- $funcName := print "Where" $f.StructField "Contains" }}
+            {{- $baseFuncName := print "Where" $f.StructField "Contains" }}
             
-            // {{ $funcName }} 扩展了查询构建器，支持 JSON 数组的包含查询。
+            // {{ $baseFuncName }} 扩展了查询构建器，支持 JSON 数组的包含查询。
             // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
-            func (q *{{ $n.Name }}Query) {{ $funcName }}(val any) *{{ $n.Name }}Query {
+            func (q *{{ $n.Name }}Query) {{ $baseFuncName }}(val any) *{{ $n.Name }}Query {
                 return q.Where(predicate.{{ $n.Name }}(func(s *sql.Selector) {
                     {{- /* 获取当前字段在数据库中的列名 */ -}}
                     column := {{ $n.Package }}.Field{{ $f.StructField }}
-                    
+
                     switch s.Dialect() {
                     case dialect.MySQL:
                         s.Where(sql.ExprP("JSON_CONTAINS(" + column + ", ?)", val))
@@ -38,6 +38,14 @@ import (
                         s.Where(sql.ExprP(column + " LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
                     }
                 }))
+            }
+
+            // {{ $baseFuncName }}If 只有在 condition 为 true 时才调用 {{ $baseFuncName }}。
+            func (q *{{ $n.Name }}Query) {{ $baseFuncName }}If(condition bool, val any) *{{ $n.Name }}Query {
+                if condition {
+                    return q.{{ $baseFuncName }}(val)
+                }
+                return q
             }
         {{ end }}
     {{ end }}

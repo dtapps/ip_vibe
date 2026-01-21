@@ -37,6 +37,14 @@ func (q *DomainMonitorHistoryQuery) WhereIPResolvedContains(val any) *DomainMoni
 	}))
 }
 
+// WhereIPResolvedContainsIf 只有在 condition 为 true 时才调用 WhereIPResolvedContains。
+func (q *DomainMonitorHistoryQuery) WhereIPResolvedContainsIf(condition bool, val any) *DomainMonitorHistoryQuery {
+	if condition {
+		return q.WhereIPResolvedContains(val)
+	}
+	return q
+}
+
 // WhereRequestHeadersContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *HttpLogQuery) WhereRequestHeadersContains(val any) *HttpLogQuery {
@@ -56,6 +64,14 @@ func (q *HttpLogQuery) WhereRequestHeadersContains(val any) *HttpLogQuery {
 			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
 		}
 	}))
+}
+
+// WhereRequestHeadersContainsIf 只有在 condition 为 true 时才调用 WhereRequestHeadersContains。
+func (q *HttpLogQuery) WhereRequestHeadersContainsIf(condition bool, val any) *HttpLogQuery {
+	if condition {
+		return q.WhereRequestHeadersContains(val)
+	}
+	return q
 }
 
 // WhereRequestBodyContains 扩展了查询构建器，支持 JSON 数组的包含查询。
@@ -79,6 +95,14 @@ func (q *HttpLogQuery) WhereRequestBodyContains(val any) *HttpLogQuery {
 	}))
 }
 
+// WhereRequestBodyContainsIf 只有在 condition 为 true 时才调用 WhereRequestBodyContains。
+func (q *HttpLogQuery) WhereRequestBodyContainsIf(condition bool, val any) *HttpLogQuery {
+	if condition {
+		return q.WhereRequestBodyContains(val)
+	}
+	return q
+}
+
 // WhereResponseHeadersContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *HttpLogQuery) WhereResponseHeadersContains(val any) *HttpLogQuery {
@@ -98,6 +122,14 @@ func (q *HttpLogQuery) WhereResponseHeadersContains(val any) *HttpLogQuery {
 			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
 		}
 	}))
+}
+
+// WhereResponseHeadersContainsIf 只有在 condition 为 true 时才调用 WhereResponseHeadersContains。
+func (q *HttpLogQuery) WhereResponseHeadersContainsIf(condition bool, val any) *HttpLogQuery {
+	if condition {
+		return q.WhereResponseHeadersContains(val)
+	}
+	return q
 }
 
 // WhereResponseBodyContains 扩展了查询构建器，支持 JSON 数组的包含查询。
@@ -121,6 +153,14 @@ func (q *HttpLogQuery) WhereResponseBodyContains(val any) *HttpLogQuery {
 	}))
 }
 
+// WhereResponseBodyContainsIf 只有在 condition 为 true 时才调用 WhereResponseBodyContains。
+func (q *HttpLogQuery) WhereResponseBodyContainsIf(condition bool, val any) *HttpLogQuery {
+	if condition {
+		return q.WhereResponseBodyContains(val)
+	}
+	return q
+}
+
 // WhereObjIDContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *OperationLogQuery) WhereObjIDContains(val any) *OperationLogQuery {
@@ -140,6 +180,14 @@ func (q *OperationLogQuery) WhereObjIDContains(val any) *OperationLogQuery {
 			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
 		}
 	}))
+}
+
+// WhereObjIDContainsIf 只有在 condition 为 true 时才调用 WhereObjIDContains。
+func (q *OperationLogQuery) WhereObjIDContainsIf(condition bool, val any) *OperationLogQuery {
+	if condition {
+		return q.WhereObjIDContains(val)
+	}
+	return q
 }
 
 // WhereOldValueContains 扩展了查询构建器，支持 JSON 数组的包含查询。
@@ -163,6 +211,14 @@ func (q *OperationLogQuery) WhereOldValueContains(val any) *OperationLogQuery {
 	}))
 }
 
+// WhereOldValueContainsIf 只有在 condition 为 true 时才调用 WhereOldValueContains。
+func (q *OperationLogQuery) WhereOldValueContainsIf(condition bool, val any) *OperationLogQuery {
+	if condition {
+		return q.WhereOldValueContains(val)
+	}
+	return q
+}
+
 // WhereNewValueContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *OperationLogQuery) WhereNewValueContains(val any) *OperationLogQuery {
@@ -182,6 +238,14 @@ func (q *OperationLogQuery) WhereNewValueContains(val any) *OperationLogQuery {
 			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
 		}
 	}))
+}
+
+// WhereNewValueContainsIf 只有在 condition 为 true 时才调用 WhereNewValueContains。
+func (q *OperationLogQuery) WhereNewValueContainsIf(condition bool, val any) *OperationLogQuery {
+	if condition {
+		return q.WhereNewValueContains(val)
+	}
+	return q
 }
 
 // WhereRequestHeadersContains 扩展了查询构建器，支持 JSON 数组的包含查询。
@@ -205,6 +269,14 @@ func (q *ReqLogQuery) WhereRequestHeadersContains(val any) *ReqLogQuery {
 	}))
 }
 
+// WhereRequestHeadersContainsIf 只有在 condition 为 true 时才调用 WhereRequestHeadersContains。
+func (q *ReqLogQuery) WhereRequestHeadersContainsIf(condition bool, val any) *ReqLogQuery {
+	if condition {
+		return q.WhereRequestHeadersContains(val)
+	}
+	return q
+}
+
 // WhereRequestBodyContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *ReqLogQuery) WhereRequestBodyContains(val any) *ReqLogQuery {
@@ -224,6 +296,14 @@ func (q *ReqLogQuery) WhereRequestBodyContains(val any) *ReqLogQuery {
 			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
 		}
 	}))
+}
+
+// WhereRequestBodyContainsIf 只有在 condition 为 true 时才调用 WhereRequestBodyContains。
+func (q *ReqLogQuery) WhereRequestBodyContainsIf(condition bool, val any) *ReqLogQuery {
+	if condition {
+		return q.WhereRequestBodyContains(val)
+	}
+	return q
 }
 
 // WhereRequestQueryParamsContains 扩展了查询构建器，支持 JSON 数组的包含查询。
@@ -247,6 +327,14 @@ func (q *ReqLogQuery) WhereRequestQueryParamsContains(val any) *ReqLogQuery {
 	}))
 }
 
+// WhereRequestQueryParamsContainsIf 只有在 condition 为 true 时才调用 WhereRequestQueryParamsContains。
+func (q *ReqLogQuery) WhereRequestQueryParamsContainsIf(condition bool, val any) *ReqLogQuery {
+	if condition {
+		return q.WhereRequestQueryParamsContains(val)
+	}
+	return q
+}
+
 // WhereRequestFormDataContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *ReqLogQuery) WhereRequestFormDataContains(val any) *ReqLogQuery {
@@ -266,6 +354,14 @@ func (q *ReqLogQuery) WhereRequestFormDataContains(val any) *ReqLogQuery {
 			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
 		}
 	}))
+}
+
+// WhereRequestFormDataContainsIf 只有在 condition 为 true 时才调用 WhereRequestFormDataContains。
+func (q *ReqLogQuery) WhereRequestFormDataContainsIf(condition bool, val any) *ReqLogQuery {
+	if condition {
+		return q.WhereRequestFormDataContains(val)
+	}
+	return q
 }
 
 // WhereRequestPathParamsContains 扩展了查询构建器，支持 JSON 数组的包含查询。
@@ -289,6 +385,14 @@ func (q *ReqLogQuery) WhereRequestPathParamsContains(val any) *ReqLogQuery {
 	}))
 }
 
+// WhereRequestPathParamsContainsIf 只有在 condition 为 true 时才调用 WhereRequestPathParamsContains。
+func (q *ReqLogQuery) WhereRequestPathParamsContainsIf(condition bool, val any) *ReqLogQuery {
+	if condition {
+		return q.WhereRequestPathParamsContains(val)
+	}
+	return q
+}
+
 // WhereResponseHeadersContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *ReqLogQuery) WhereResponseHeadersContains(val any) *ReqLogQuery {
@@ -308,6 +412,14 @@ func (q *ReqLogQuery) WhereResponseHeadersContains(val any) *ReqLogQuery {
 			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
 		}
 	}))
+}
+
+// WhereResponseHeadersContainsIf 只有在 condition 为 true 时才调用 WhereResponseHeadersContains。
+func (q *ReqLogQuery) WhereResponseHeadersContainsIf(condition bool, val any) *ReqLogQuery {
+	if condition {
+		return q.WhereResponseHeadersContains(val)
+	}
+	return q
 }
 
 // WhereResponseBodyContains 扩展了查询构建器，支持 JSON 数组的包含查询。
@@ -331,6 +443,14 @@ func (q *ReqLogQuery) WhereResponseBodyContains(val any) *ReqLogQuery {
 	}))
 }
 
+// WhereResponseBodyContainsIf 只有在 condition 为 true 时才调用 WhereResponseBodyContains。
+func (q *ReqLogQuery) WhereResponseBodyContainsIf(condition bool, val any) *ReqLogQuery {
+	if condition {
+		return q.WhereResponseBodyContains(val)
+	}
+	return q
+}
+
 // WhereRequestHeadersContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *RestyLogQuery) WhereRequestHeadersContains(val any) *RestyLogQuery {
@@ -350,6 +470,14 @@ func (q *RestyLogQuery) WhereRequestHeadersContains(val any) *RestyLogQuery {
 			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
 		}
 	}))
+}
+
+// WhereRequestHeadersContainsIf 只有在 condition 为 true 时才调用 WhereRequestHeadersContains。
+func (q *RestyLogQuery) WhereRequestHeadersContainsIf(condition bool, val any) *RestyLogQuery {
+	if condition {
+		return q.WhereRequestHeadersContains(val)
+	}
+	return q
 }
 
 // WhereRequestBodyContains 扩展了查询构建器，支持 JSON 数组的包含查询。
@@ -373,6 +501,14 @@ func (q *RestyLogQuery) WhereRequestBodyContains(val any) *RestyLogQuery {
 	}))
 }
 
+// WhereRequestBodyContainsIf 只有在 condition 为 true 时才调用 WhereRequestBodyContains。
+func (q *RestyLogQuery) WhereRequestBodyContainsIf(condition bool, val any) *RestyLogQuery {
+	if condition {
+		return q.WhereRequestBodyContains(val)
+	}
+	return q
+}
+
 // WhereRequestQueryParamsContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *RestyLogQuery) WhereRequestQueryParamsContains(val any) *RestyLogQuery {
@@ -392,6 +528,14 @@ func (q *RestyLogQuery) WhereRequestQueryParamsContains(val any) *RestyLogQuery 
 			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
 		}
 	}))
+}
+
+// WhereRequestQueryParamsContainsIf 只有在 condition 为 true 时才调用 WhereRequestQueryParamsContains。
+func (q *RestyLogQuery) WhereRequestQueryParamsContainsIf(condition bool, val any) *RestyLogQuery {
+	if condition {
+		return q.WhereRequestQueryParamsContains(val)
+	}
+	return q
 }
 
 // WhereRequestFormDataContains 扩展了查询构建器，支持 JSON 数组的包含查询。
@@ -415,6 +559,14 @@ func (q *RestyLogQuery) WhereRequestFormDataContains(val any) *RestyLogQuery {
 	}))
 }
 
+// WhereRequestFormDataContainsIf 只有在 condition 为 true 时才调用 WhereRequestFormDataContains。
+func (q *RestyLogQuery) WhereRequestFormDataContainsIf(condition bool, val any) *RestyLogQuery {
+	if condition {
+		return q.WhereRequestFormDataContains(val)
+	}
+	return q
+}
+
 // WhereRequestPathParamsContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *RestyLogQuery) WhereRequestPathParamsContains(val any) *RestyLogQuery {
@@ -434,6 +586,14 @@ func (q *RestyLogQuery) WhereRequestPathParamsContains(val any) *RestyLogQuery {
 			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
 		}
 	}))
+}
+
+// WhereRequestPathParamsContainsIf 只有在 condition 为 true 时才调用 WhereRequestPathParamsContains。
+func (q *RestyLogQuery) WhereRequestPathParamsContainsIf(condition bool, val any) *RestyLogQuery {
+	if condition {
+		return q.WhereRequestPathParamsContains(val)
+	}
+	return q
 }
 
 // WhereResponseHeadersContains 扩展了查询构建器，支持 JSON 数组的包含查询。
@@ -457,6 +617,14 @@ func (q *RestyLogQuery) WhereResponseHeadersContains(val any) *RestyLogQuery {
 	}))
 }
 
+// WhereResponseHeadersContainsIf 只有在 condition 为 true 时才调用 WhereResponseHeadersContains。
+func (q *RestyLogQuery) WhereResponseHeadersContainsIf(condition bool, val any) *RestyLogQuery {
+	if condition {
+		return q.WhereResponseHeadersContains(val)
+	}
+	return q
+}
+
 // WhereResponseBodyContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *RestyLogQuery) WhereResponseBodyContains(val any) *RestyLogQuery {
@@ -478,6 +646,14 @@ func (q *RestyLogQuery) WhereResponseBodyContains(val any) *RestyLogQuery {
 	}))
 }
 
+// WhereResponseBodyContainsIf 只有在 condition 为 true 时才调用 WhereResponseBodyContains。
+func (q *RestyLogQuery) WhereResponseBodyContainsIf(condition bool, val any) *RestyLogQuery {
+	if condition {
+		return q.WhereResponseBodyContains(val)
+	}
+	return q
+}
+
 // WhereResponseContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *WebhookHistoryQuery) WhereResponseContains(val any) *WebhookHistoryQuery {
@@ -497,4 +673,12 @@ func (q *WebhookHistoryQuery) WhereResponseContains(val any) *WebhookHistoryQuer
 			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
 		}
 	}))
+}
+
+// WhereResponseContainsIf 只有在 condition 为 true 时才调用 WhereResponseContains。
+func (q *WebhookHistoryQuery) WhereResponseContainsIf(condition bool, val any) *WebhookHistoryQuery {
+	if condition {
+		return q.WhereResponseContains(val)
+	}
+	return q
 }

@@ -40,7 +40,7 @@ func Log(c *gin.Context) {
 		WhereIf(requestParams.Source != "", operationlog.SourceEQ(operationlog.Source(requestParams.Source))).
 		WhereIf(requestParams.OpType != "", operationlog.OpTypeEQ(operationlog.OpType(requestParams.OpType))).
 		WhereIf(requestParams.ObjType != "", operationlog.ObjTypeEQ(operationlog.ObjType(requestParams.ObjType))).
-		WhereIf(requestParams.ObjID > 0, operationlog.ObjIDEQ(requestParams.ObjID)).
+		WhereObjIDContainsIf(requestParams.ObjID > 0, requestParams.ObjID).
 		WhereIf(requestParams.Status != "", operationlog.StatusEQ(operationlog.Status(requestParams.Status))).
 		WhereIf(requestParams.Message != "", operationlog.MessageContains(requestParams.Message)).
 		OrderByCreatedAtDesc().

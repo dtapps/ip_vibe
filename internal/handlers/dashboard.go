@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log/slog"
 	"path/filepath"
 	"time"
 	"vibe_ip/internal/ent/device"
@@ -69,6 +70,10 @@ func Dashboard(c *gin.Context) {
 				CreatedAt: item.CreatedAt,
 			})
 		}
+	} else {
+		slog.ErrorContext(c, "查询操作日志失败",
+			slog.Any("err", err),
+		)
 	}
 
 	// 获取自身设备ID
