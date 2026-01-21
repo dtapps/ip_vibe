@@ -129,6 +129,16 @@ func SourceNotIn(vs ...Source) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldNotIn(FieldSource, vs...))
 }
 
+// SourceIsNil applies the IsNil predicate on the "source" field.
+func SourceIsNil() predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldIsNull(FieldSource))
+}
+
+// SourceNotNil applies the NotNil predicate on the "source" field.
+func SourceNotNil() predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldNotNull(FieldSource))
+}
+
 // OpTypeEQ applies the EQ predicate on the "op_type" field.
 func OpTypeEQ(v OpType) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldEQ(FieldOpType, v))
@@ -149,6 +159,16 @@ func OpTypeNotIn(vs ...OpType) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldNotIn(FieldOpType, vs...))
 }
 
+// OpTypeIsNil applies the IsNil predicate on the "op_type" field.
+func OpTypeIsNil() predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldIsNull(FieldOpType))
+}
+
+// OpTypeNotNil applies the NotNil predicate on the "op_type" field.
+func OpTypeNotNil() predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldNotNull(FieldOpType))
+}
+
 // ObjTypeEQ applies the EQ predicate on the "obj_type" field.
 func ObjTypeEQ(v ObjType) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldEQ(FieldObjType, v))
@@ -167,6 +187,16 @@ func ObjTypeIn(vs ...ObjType) predicate.OperationLog {
 // ObjTypeNotIn applies the NotIn predicate on the "obj_type" field.
 func ObjTypeNotIn(vs ...ObjType) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldNotIn(FieldObjType, vs...))
+}
+
+// ObjTypeIsNil applies the IsNil predicate on the "obj_type" field.
+func ObjTypeIsNil() predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldIsNull(FieldObjType))
+}
+
+// ObjTypeNotNil applies the NotNil predicate on the "obj_type" field.
+func ObjTypeNotNil() predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldNotNull(FieldObjType))
 }
 
 // ObjIDEQ applies the EQ predicate on the "obj_id" field.
@@ -209,6 +239,16 @@ func ObjIDLTE(v int64) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldLTE(FieldObjID, v))
 }
 
+// ObjIDIsNil applies the IsNil predicate on the "obj_id" field.
+func ObjIDIsNil() predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldIsNull(FieldObjID))
+}
+
+// ObjIDNotNil applies the NotNil predicate on the "obj_id" field.
+func ObjIDNotNil() predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldNotNull(FieldObjID))
+}
+
 // OldValueIsNil applies the IsNil predicate on the "old_value" field.
 func OldValueIsNil() predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldIsNull(FieldOldValue))
@@ -247,6 +287,16 @@ func StatusIn(vs ...Status) predicate.OperationLog {
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...Status) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldNotIn(FieldStatus, vs...))
+}
+
+// StatusIsNil applies the IsNil predicate on the "status" field.
+func StatusIsNil() predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldIsNull(FieldStatus))
+}
+
+// StatusNotNil applies the NotNil predicate on the "status" field.
+func StatusNotNil() predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldNotNull(FieldStatus))
 }
 
 // MessageEQ applies the EQ predicate on the "message" field.
@@ -302,6 +352,16 @@ func MessageHasPrefix(v string) predicate.OperationLog {
 // MessageHasSuffix applies the HasSuffix predicate on the "message" field.
 func MessageHasSuffix(v string) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldHasSuffix(FieldMessage, v))
+}
+
+// MessageIsNil applies the IsNil predicate on the "message" field.
+func MessageIsNil() predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldIsNull(FieldMessage))
+}
+
+// MessageNotNil applies the NotNil predicate on the "message" field.
+func MessageNotNil() predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldNotNull(FieldMessage))
 }
 
 // MessageEqualFold applies the EqualFold predicate on the "message" field.

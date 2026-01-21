@@ -75,11 +75,29 @@ func (_u *OperationLogUpdate) sqlSave(ctx context.Context) (_node int, err error
 			}
 		}
 	}
+	if _u.mutation.SourceCleared() {
+		_spec.ClearField(operationlog.FieldSource, field.TypeEnum)
+	}
+	if _u.mutation.OpTypeCleared() {
+		_spec.ClearField(operationlog.FieldOpType, field.TypeEnum)
+	}
+	if _u.mutation.ObjTypeCleared() {
+		_spec.ClearField(operationlog.FieldObjType, field.TypeEnum)
+	}
+	if _u.mutation.ObjIDCleared() {
+		_spec.ClearField(operationlog.FieldObjID, field.TypeInt64)
+	}
 	if _u.mutation.OldValueCleared() {
 		_spec.ClearField(operationlog.FieldOldValue, field.TypeJSON)
 	}
 	if _u.mutation.NewValueCleared() {
 		_spec.ClearField(operationlog.FieldNewValue, field.TypeJSON)
+	}
+	if _u.mutation.StatusCleared() {
+		_spec.ClearField(operationlog.FieldStatus, field.TypeEnum)
+	}
+	if _u.mutation.MessageCleared() {
+		_spec.ClearField(operationlog.FieldMessage, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -180,11 +198,29 @@ func (_u *OperationLogUpdateOne) sqlSave(ctx context.Context) (_node *OperationL
 			}
 		}
 	}
+	if _u.mutation.SourceCleared() {
+		_spec.ClearField(operationlog.FieldSource, field.TypeEnum)
+	}
+	if _u.mutation.OpTypeCleared() {
+		_spec.ClearField(operationlog.FieldOpType, field.TypeEnum)
+	}
+	if _u.mutation.ObjTypeCleared() {
+		_spec.ClearField(operationlog.FieldObjType, field.TypeEnum)
+	}
+	if _u.mutation.ObjIDCleared() {
+		_spec.ClearField(operationlog.FieldObjID, field.TypeInt64)
+	}
 	if _u.mutation.OldValueCleared() {
 		_spec.ClearField(operationlog.FieldOldValue, field.TypeJSON)
 	}
 	if _u.mutation.NewValueCleared() {
 		_spec.ClearField(operationlog.FieldNewValue, field.TypeJSON)
+	}
+	if _u.mutation.StatusCleared() {
+		_spec.ClearField(operationlog.FieldStatus, field.TypeEnum)
+	}
+	if _u.mutation.MessageCleared() {
+		_spec.ClearField(operationlog.FieldMessage, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &OperationLog{config: _u.config}

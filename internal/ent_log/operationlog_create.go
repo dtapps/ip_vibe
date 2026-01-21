@@ -84,6 +84,14 @@ func (_c *OperationLogCreate) SetObjID(v int64) *OperationLogCreate {
 	return _c
 }
 
+// SetNillableObjID sets the "obj_id" field if the given value is not nil.
+func (_c *OperationLogCreate) SetNillableObjID(v *int64) *OperationLogCreate {
+	if v != nil {
+		_c.SetObjID(*v)
+	}
+	return _c
+}
+
 // SetOldValue sets the "old_value" field.
 func (_c *OperationLogCreate) SetOldValue(v map[string]interface{}) *OperationLogCreate {
 	_c.mutation.SetOldValue(v)
@@ -113,6 +121,14 @@ func (_c *OperationLogCreate) SetNillableStatus(v *operationlog.Status) *Operati
 // SetMessage sets the "message" field.
 func (_c *OperationLogCreate) SetMessage(v string) *OperationLogCreate {
 	_c.mutation.SetMessage(v)
+	return _c
+}
+
+// SetNillableMessage sets the "message" field if the given value is not nil.
+func (_c *OperationLogCreate) SetNillableMessage(v *string) *OperationLogCreate {
+	if v != nil {
+		_c.SetMessage(*v)
+	}
 	return _c
 }
 
@@ -184,48 +200,25 @@ func (_c *OperationLogCreate) check() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent_log: missing required field "OperationLog.created_at"`)}
 	}
-	if _, ok := _c.mutation.Source(); !ok {
-		return &ValidationError{Name: "source", err: errors.New(`ent_log: missing required field "OperationLog.source"`)}
-	}
 	if v, ok := _c.mutation.Source(); ok {
 		if err := operationlog.SourceValidator(v); err != nil {
 			return &ValidationError{Name: "source", err: fmt.Errorf(`ent_log: validator failed for field "OperationLog.source": %w`, err)}
 		}
-	}
-	if _, ok := _c.mutation.OpType(); !ok {
-		return &ValidationError{Name: "op_type", err: errors.New(`ent_log: missing required field "OperationLog.op_type"`)}
 	}
 	if v, ok := _c.mutation.OpType(); ok {
 		if err := operationlog.OpTypeValidator(v); err != nil {
 			return &ValidationError{Name: "op_type", err: fmt.Errorf(`ent_log: validator failed for field "OperationLog.op_type": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.ObjType(); !ok {
-		return &ValidationError{Name: "obj_type", err: errors.New(`ent_log: missing required field "OperationLog.obj_type"`)}
-	}
 	if v, ok := _c.mutation.ObjType(); ok {
 		if err := operationlog.ObjTypeValidator(v); err != nil {
 			return &ValidationError{Name: "obj_type", err: fmt.Errorf(`ent_log: validator failed for field "OperationLog.obj_type": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.ObjID(); !ok {
-		return &ValidationError{Name: "obj_id", err: errors.New(`ent_log: missing required field "OperationLog.obj_id"`)}
-	}
-	if v, ok := _c.mutation.ObjID(); ok {
-		if err := operationlog.ObjIDValidator(v); err != nil {
-			return &ValidationError{Name: "obj_id", err: fmt.Errorf(`ent_log: validator failed for field "OperationLog.obj_id": %w`, err)}
-		}
-	}
-	if _, ok := _c.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent_log: missing required field "OperationLog.status"`)}
-	}
 	if v, ok := _c.mutation.Status(); ok {
 		if err := operationlog.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent_log: validator failed for field "OperationLog.status": %w`, err)}
 		}
-	}
-	if _, ok := _c.mutation.Message(); !ok {
-		return &ValidationError{Name: "message", err: errors.New(`ent_log: missing required field "OperationLog.message"`)}
 	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := operationlog.IDValidator(v); err != nil {

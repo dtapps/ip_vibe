@@ -45,6 +45,7 @@ func (OperationLog) Fields() []ent.Field {
 		field.Enum("source").
 			Values(schematype.GetLogSources...).
 			Default(schematype.LogSourceUnknown).
+			Optional().
 			Immutable().
 			Comment("操作来源").
 			Annotations(entsql.WithComments(true)),
@@ -52,6 +53,7 @@ func (OperationLog) Fields() []ent.Field {
 		field.Enum("op_type").
 			Values(schematype.GetLogOpTypes...).
 			Default(schematype.LogOpTypeUnknown).
+			Optional().
 			Immutable().
 			Comment("操作类型").
 			Annotations(entsql.WithComments(true)),
@@ -59,12 +61,13 @@ func (OperationLog) Fields() []ent.Field {
 		field.Enum("obj_type").
 			Values(schematype.GetLogObjTypes...).
 			Default(schematype.LogObjTypeUnknown).
+			Optional().
 			Immutable().
 			Comment("对象类型").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("obj_id").
-			Positive(). // 正数
+			Optional().
 			Immutable().
 			Comment("对象主键").
 			Annotations(entsql.WithComments(true)),
@@ -84,11 +87,13 @@ func (OperationLog) Fields() []ent.Field {
 		field.Enum("status").
 			Values(schematype.GetLogStatuss...).
 			Default(schematype.LogStatusUnknown).
+			Optional().
 			Immutable().
 			Comment("状态").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("message").
+			Optional().
 			Immutable().
 			Comment("详情").
 			Annotations(entsql.WithComments(true)),

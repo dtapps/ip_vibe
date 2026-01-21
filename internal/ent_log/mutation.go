@@ -3887,9 +3887,22 @@ func (m *OperationLogMutation) OldSource(ctx context.Context) (v operationlog.So
 	return oldValue.Source, nil
 }
 
+// ClearSource clears the value of the "source" field.
+func (m *OperationLogMutation) ClearSource() {
+	m.source = nil
+	m.clearedFields[operationlog.FieldSource] = struct{}{}
+}
+
+// SourceCleared returns if the "source" field was cleared in this mutation.
+func (m *OperationLogMutation) SourceCleared() bool {
+	_, ok := m.clearedFields[operationlog.FieldSource]
+	return ok
+}
+
 // ResetSource resets all changes to the "source" field.
 func (m *OperationLogMutation) ResetSource() {
 	m.source = nil
+	delete(m.clearedFields, operationlog.FieldSource)
 }
 
 // SetOpType sets the "op_type" field.
@@ -3923,9 +3936,22 @@ func (m *OperationLogMutation) OldOpType(ctx context.Context) (v operationlog.Op
 	return oldValue.OpType, nil
 }
 
+// ClearOpType clears the value of the "op_type" field.
+func (m *OperationLogMutation) ClearOpType() {
+	m.op_type = nil
+	m.clearedFields[operationlog.FieldOpType] = struct{}{}
+}
+
+// OpTypeCleared returns if the "op_type" field was cleared in this mutation.
+func (m *OperationLogMutation) OpTypeCleared() bool {
+	_, ok := m.clearedFields[operationlog.FieldOpType]
+	return ok
+}
+
 // ResetOpType resets all changes to the "op_type" field.
 func (m *OperationLogMutation) ResetOpType() {
 	m.op_type = nil
+	delete(m.clearedFields, operationlog.FieldOpType)
 }
 
 // SetObjType sets the "obj_type" field.
@@ -3959,9 +3985,22 @@ func (m *OperationLogMutation) OldObjType(ctx context.Context) (v operationlog.O
 	return oldValue.ObjType, nil
 }
 
+// ClearObjType clears the value of the "obj_type" field.
+func (m *OperationLogMutation) ClearObjType() {
+	m.obj_type = nil
+	m.clearedFields[operationlog.FieldObjType] = struct{}{}
+}
+
+// ObjTypeCleared returns if the "obj_type" field was cleared in this mutation.
+func (m *OperationLogMutation) ObjTypeCleared() bool {
+	_, ok := m.clearedFields[operationlog.FieldObjType]
+	return ok
+}
+
 // ResetObjType resets all changes to the "obj_type" field.
 func (m *OperationLogMutation) ResetObjType() {
 	m.obj_type = nil
+	delete(m.clearedFields, operationlog.FieldObjType)
 }
 
 // SetObjID sets the "obj_id" field.
@@ -4014,10 +4053,24 @@ func (m *OperationLogMutation) AddedObjID() (r int64, exists bool) {
 	return *v, true
 }
 
+// ClearObjID clears the value of the "obj_id" field.
+func (m *OperationLogMutation) ClearObjID() {
+	m.obj_id = nil
+	m.addobj_id = nil
+	m.clearedFields[operationlog.FieldObjID] = struct{}{}
+}
+
+// ObjIDCleared returns if the "obj_id" field was cleared in this mutation.
+func (m *OperationLogMutation) ObjIDCleared() bool {
+	_, ok := m.clearedFields[operationlog.FieldObjID]
+	return ok
+}
+
 // ResetObjID resets all changes to the "obj_id" field.
 func (m *OperationLogMutation) ResetObjID() {
 	m.obj_id = nil
 	m.addobj_id = nil
+	delete(m.clearedFields, operationlog.FieldObjID)
 }
 
 // SetOldValue sets the "old_value" field.
@@ -4149,9 +4202,22 @@ func (m *OperationLogMutation) OldStatus(ctx context.Context) (v operationlog.St
 	return oldValue.Status, nil
 }
 
+// ClearStatus clears the value of the "status" field.
+func (m *OperationLogMutation) ClearStatus() {
+	m.status = nil
+	m.clearedFields[operationlog.FieldStatus] = struct{}{}
+}
+
+// StatusCleared returns if the "status" field was cleared in this mutation.
+func (m *OperationLogMutation) StatusCleared() bool {
+	_, ok := m.clearedFields[operationlog.FieldStatus]
+	return ok
+}
+
 // ResetStatus resets all changes to the "status" field.
 func (m *OperationLogMutation) ResetStatus() {
 	m.status = nil
+	delete(m.clearedFields, operationlog.FieldStatus)
 }
 
 // SetMessage sets the "message" field.
@@ -4185,9 +4251,22 @@ func (m *OperationLogMutation) OldMessage(ctx context.Context) (v string, err er
 	return oldValue.Message, nil
 }
 
+// ClearMessage clears the value of the "message" field.
+func (m *OperationLogMutation) ClearMessage() {
+	m.message = nil
+	m.clearedFields[operationlog.FieldMessage] = struct{}{}
+}
+
+// MessageCleared returns if the "message" field was cleared in this mutation.
+func (m *OperationLogMutation) MessageCleared() bool {
+	_, ok := m.clearedFields[operationlog.FieldMessage]
+	return ok
+}
+
 // ResetMessage resets all changes to the "message" field.
 func (m *OperationLogMutation) ResetMessage() {
 	m.message = nil
+	delete(m.clearedFields, operationlog.FieldMessage)
 }
 
 // Where appends a list predicates to the OperationLogMutation builder.
@@ -4422,11 +4501,29 @@ func (m *OperationLogMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *OperationLogMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(operationlog.FieldSource) {
+		fields = append(fields, operationlog.FieldSource)
+	}
+	if m.FieldCleared(operationlog.FieldOpType) {
+		fields = append(fields, operationlog.FieldOpType)
+	}
+	if m.FieldCleared(operationlog.FieldObjType) {
+		fields = append(fields, operationlog.FieldObjType)
+	}
+	if m.FieldCleared(operationlog.FieldObjID) {
+		fields = append(fields, operationlog.FieldObjID)
+	}
 	if m.FieldCleared(operationlog.FieldOldValue) {
 		fields = append(fields, operationlog.FieldOldValue)
 	}
 	if m.FieldCleared(operationlog.FieldNewValue) {
 		fields = append(fields, operationlog.FieldNewValue)
+	}
+	if m.FieldCleared(operationlog.FieldStatus) {
+		fields = append(fields, operationlog.FieldStatus)
+	}
+	if m.FieldCleared(operationlog.FieldMessage) {
+		fields = append(fields, operationlog.FieldMessage)
 	}
 	return fields
 }
@@ -4442,11 +4539,29 @@ func (m *OperationLogMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *OperationLogMutation) ClearField(name string) error {
 	switch name {
+	case operationlog.FieldSource:
+		m.ClearSource()
+		return nil
+	case operationlog.FieldOpType:
+		m.ClearOpType()
+		return nil
+	case operationlog.FieldObjType:
+		m.ClearObjType()
+		return nil
+	case operationlog.FieldObjID:
+		m.ClearObjID()
+		return nil
 	case operationlog.FieldOldValue:
 		m.ClearOldValue()
 		return nil
 	case operationlog.FieldNewValue:
 		m.ClearNewValue()
+		return nil
+	case operationlog.FieldStatus:
+		m.ClearStatus()
+		return nil
+	case operationlog.FieldMessage:
+		m.ClearMessage()
 		return nil
 	}
 	return fmt.Errorf("unknown OperationLog nullable field %s", name)
