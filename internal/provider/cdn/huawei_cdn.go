@@ -150,11 +150,6 @@ func NewHuaweiCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Huaw
 	// 实例化
 	p.Provider.Client = cdn.NewCdnClient(p.Provider.Builder)
 
-	// 优化日志
-	p.logger = p.logger.With(
-		slog.String("提供商", p.Name()),
-	)
-
 	return p, nil
 }
 

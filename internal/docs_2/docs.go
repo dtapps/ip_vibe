@@ -6172,6 +6172,10 @@ const docTemplate = `{
                         "type": "integer"
                     }
                 },
+                "code": {
+                    "description": "IP组代码",
+                    "type": "string"
+                },
                 "description": {
                     "description": "IP组描述",
                     "type": "string"

@@ -134,11 +134,6 @@ func NewTencentDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Ten
 		p.Provider.Client.WithHttpTransport(p.opts.httpTransport.Instance(nil))
 	}
 
-	// 优化日志
-	p.logger = p.logger.With(
-		slog.String("提供商", p.Name()),
-	)
-
 	return p, nil
 }
 

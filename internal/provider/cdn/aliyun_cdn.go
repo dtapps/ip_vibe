@@ -150,11 +150,6 @@ func NewAliyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 		MaxAttempts: tea.Int(3),
 	}
 
-	// 优化日志
-	p.logger = p.logger.With(
-		slog.String("提供商", p.Name()),
-	)
-
 	return p, nil
 }
 
