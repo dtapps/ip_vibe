@@ -28,7 +28,7 @@ type OperationLog struct {
 	// 对象类型
 	ObjType operationlog.ObjType `json:"obj_type,omitempty"`
 	// 对象主键
-	ObjID int64 `json:"obj_id,omitempty"`
+	ObjID string `json:"obj_id,omitempty"`
 	// 旧值
 	OldValue map[string]interface{} `json:"old_value,omitempty"`
 	// 新值
@@ -47,9 +47,9 @@ func (*OperationLog) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case operationlog.FieldOldValue, operationlog.FieldNewValue:
 			values[i] = new([]byte)
-		case operationlog.FieldID, operationlog.FieldObjID:
+		case operationlog.FieldID:
 			values[i] = new(sql.NullInt64)
-		case operationlog.FieldSource, operationlog.FieldOpType, operationlog.FieldObjType, operationlog.FieldStatus, operationlog.FieldMessage:
+		case operationlog.FieldSource, operationlog.FieldOpType, operationlog.FieldObjType, operationlog.FieldObjID, operationlog.FieldStatus, operationlog.FieldMessage:
 			values[i] = new(sql.NullString)
 		case operationlog.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -99,10 +99,10 @@ func (_m *OperationLog) assignValues(columns []string, values []any) error {
 				_m.ObjType = operationlog.ObjType(value.String)
 			}
 		case operationlog.FieldObjID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field obj_id", values[i])
 			} else if value.Valid {
-				_m.ObjID = value.Int64
+				_m.ObjID = value.String
 			}
 		case operationlog.FieldOldValue:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -181,7 +181,7 @@ func (_m *OperationLog) String() string {
 	builder.WriteString(fmt.Sprintf("%v", _m.ObjType))
 	builder.WriteString(", ")
 	builder.WriteString("obj_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.ObjID))
+	builder.WriteString(_m.ObjID)
 	builder.WriteString(", ")
 	builder.WriteString("old_value=")
 	builder.WriteString(fmt.Sprintf("%v", _m.OldValue))

@@ -79,13 +79,13 @@ func (_c *OperationLogCreate) SetNillableObjType(v *operationlog.ObjType) *Opera
 }
 
 // SetObjID sets the "obj_id" field.
-func (_c *OperationLogCreate) SetObjID(v int64) *OperationLogCreate {
+func (_c *OperationLogCreate) SetObjID(v string) *OperationLogCreate {
 	_c.mutation.SetObjID(v)
 	return _c
 }
 
 // SetNillableObjID sets the "obj_id" field if the given value is not nil.
-func (_c *OperationLogCreate) SetNillableObjID(v *int64) *OperationLogCreate {
+func (_c *OperationLogCreate) SetNillableObjID(v *string) *OperationLogCreate {
 	if v != nil {
 		_c.SetObjID(*v)
 	}
@@ -275,7 +275,7 @@ func (_c *OperationLogCreate) createSpec() (*OperationLog, *sqlgraph.CreateSpec)
 		_node.ObjType = value
 	}
 	if value, ok := _c.mutation.ObjID(); ok {
-		_spec.SetField(operationlog.FieldObjID, field.TypeInt64, value)
+		_spec.SetField(operationlog.FieldObjID, field.TypeString, value)
 		_node.ObjID = value
 	}
 	if value, ok := _c.mutation.OldValue(); ok {

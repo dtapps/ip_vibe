@@ -75,6 +75,15 @@ func (_u *RestyLogUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
+	if _u.mutation.HostnameCleared() {
+		_spec.ClearField(restylog.FieldHostname, field.TypeString)
+	}
+	if _u.mutation.MethodCleared() {
+		_spec.ClearField(restylog.FieldMethod, field.TypeString)
+	}
+	if _u.mutation.URLCleared() {
+		_spec.ClearField(restylog.FieldURL, field.TypeString)
+	}
 	if _u.mutation.RequestHeadersCleared() {
 		_spec.ClearField(restylog.FieldRequestHeaders, field.TypeJSON)
 	}
@@ -212,6 +221,15 @@ func (_u *RestyLogUpdateOne) sqlSave(ctx context.Context) (_node *RestyLog, err 
 				ps[i](selector)
 			}
 		}
+	}
+	if _u.mutation.HostnameCleared() {
+		_spec.ClearField(restylog.FieldHostname, field.TypeString)
+	}
+	if _u.mutation.MethodCleared() {
+		_spec.ClearField(restylog.FieldMethod, field.TypeString)
+	}
+	if _u.mutation.URLCleared() {
+		_spec.ClearField(restylog.FieldURL, field.TypeString)
 	}
 	if _u.mutation.RequestHeadersCleared() {
 		_spec.ClearField(restylog.FieldRequestHeaders, field.TypeJSON)

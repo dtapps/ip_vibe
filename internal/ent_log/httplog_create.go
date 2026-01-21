@@ -29,15 +29,39 @@ func (_c *HttpLogCreate) SetHostname(v string) *HttpLogCreate {
 	return _c
 }
 
+// SetNillableHostname sets the "hostname" field if the given value is not nil.
+func (_c *HttpLogCreate) SetNillableHostname(v *string) *HttpLogCreate {
+	if v != nil {
+		_c.SetHostname(*v)
+	}
+	return _c
+}
+
 // SetMethod sets the "method" field.
 func (_c *HttpLogCreate) SetMethod(v string) *HttpLogCreate {
 	_c.mutation.SetMethod(v)
 	return _c
 }
 
+// SetNillableMethod sets the "method" field if the given value is not nil.
+func (_c *HttpLogCreate) SetNillableMethod(v *string) *HttpLogCreate {
+	if v != nil {
+		_c.SetMethod(*v)
+	}
+	return _c
+}
+
 // SetURL sets the "url" field.
 func (_c *HttpLogCreate) SetURL(v string) *HttpLogCreate {
 	_c.mutation.SetURL(v)
+	return _c
+}
+
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (_c *HttpLogCreate) SetNillableURL(v *string) *HttpLogCreate {
+	if v != nil {
+		_c.SetURL(*v)
+	}
 	return _c
 }
 
@@ -210,15 +234,6 @@ func (_c *HttpLogCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *HttpLogCreate) check() error {
-	if _, ok := _c.mutation.Hostname(); !ok {
-		return &ValidationError{Name: "hostname", err: errors.New(`ent_log: missing required field "HttpLog.hostname"`)}
-	}
-	if _, ok := _c.mutation.Method(); !ok {
-		return &ValidationError{Name: "method", err: errors.New(`ent_log: missing required field "HttpLog.method"`)}
-	}
-	if _, ok := _c.mutation.URL(); !ok {
-		return &ValidationError{Name: "url", err: errors.New(`ent_log: missing required field "HttpLog.url"`)}
-	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent_log: missing required field "HttpLog.created_at"`)}
 	}

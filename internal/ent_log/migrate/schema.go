@@ -109,9 +109,9 @@ var (
 	// HTTPLogColumns holds the columns for the "http_log" table.
 	HTTPLogColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "请求日志序号"},
-		{Name: "hostname", Type: field.TypeString, Comment: "主机名"},
-		{Name: "method", Type: field.TypeString, Comment: "请求方法"},
-		{Name: "url", Type: field.TypeString, Comment: "请求 URL"},
+		{Name: "hostname", Type: field.TypeString, Nullable: true, Comment: "主机名"},
+		{Name: "method", Type: field.TypeString, Nullable: true, Comment: "请求方法"},
+		{Name: "url", Type: field.TypeString, Nullable: true, Comment: "请求 URL"},
 		{Name: "request_headers", Type: field.TypeJSON, Nullable: true, Comment: "请求头"},
 		{Name: "request_body", Type: field.TypeJSON, Nullable: true, Comment: "请求体"},
 		{Name: "status_code", Type: field.TypeInt, Nullable: true, Comment: "状态码"},
@@ -167,7 +167,7 @@ var (
 		{Name: "source", Type: field.TypeEnum, Nullable: true, Comment: "操作来源", Enums: []string{"unknown", "system", "task", "user", "gin", "api", "mcp", "grpc", "thrift", "dubbo", "tars"}, Default: "unknown"},
 		{Name: "op_type", Type: field.TypeEnum, Nullable: true, Comment: "操作类型", Enums: []string{"Unknown", "OpCreate", "OpUpdate", "OpUpdateOne", "OpDelete", "OpDeleteOne"}, Default: "Unknown"},
 		{Name: "obj_type", Type: field.TypeEnum, Nullable: true, Comment: "对象类型", Enums: []string{"Unknown", "Cache", "CDNRecord", "DNSRecord", "Device", "DevicePortForward", "DomainMonitor", "IpGroup", "IpGroupDevice", "PlatformConfig", "SSLRecord", "Webhook", "WebhookSubscription", "DeviceIpReport", "DomainMonitorHistory", "HttpLog", "OperationLog", "PortForwardStats", "RestyLog", "SSLCertificateHistory", "WebhookHistory"}, Default: "Unknown"},
-		{Name: "obj_id", Type: field.TypeInt64, Nullable: true, Comment: "对象主键"},
+		{Name: "obj_id", Type: field.TypeString, Nullable: true, Comment: "对象主键"},
 		{Name: "old_value", Type: field.TypeJSON, Nullable: true, Comment: "旧值"},
 		{Name: "new_value", Type: field.TypeJSON, Nullable: true, Comment: "新值"},
 		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "状态", Enums: []string{"unknown", "success", "failed"}, Default: "unknown"},
@@ -278,9 +278,9 @@ var (
 	// ReqLogColumns holds the columns for the "req_log" table.
 	ReqLogColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "请求日志序号"},
-		{Name: "hostname", Type: field.TypeString, Comment: "主机名"},
-		{Name: "method", Type: field.TypeString, Comment: "请求方法"},
-		{Name: "url", Type: field.TypeString, Comment: "请求 URL"},
+		{Name: "hostname", Type: field.TypeString, Nullable: true, Comment: "主机名"},
+		{Name: "method", Type: field.TypeString, Nullable: true, Comment: "请求方法"},
+		{Name: "url", Type: field.TypeString, Nullable: true, Comment: "请求 URL"},
 		{Name: "request_headers", Type: field.TypeJSON, Nullable: true, Comment: "请求头"},
 		{Name: "request_body", Type: field.TypeJSON, Nullable: true, Comment: "请求体"},
 		{Name: "request_query_params", Type: field.TypeJSON, Nullable: true, Comment: "请求参数"},
@@ -335,9 +335,9 @@ var (
 	// RestyLogColumns holds the columns for the "resty_log" table.
 	RestyLogColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "请求日志序号"},
-		{Name: "hostname", Type: field.TypeString, Comment: "主机名"},
-		{Name: "method", Type: field.TypeString, Comment: "请求方法"},
-		{Name: "url", Type: field.TypeString, Comment: "请求 URL"},
+		{Name: "hostname", Type: field.TypeString, Nullable: true, Comment: "主机名"},
+		{Name: "method", Type: field.TypeString, Nullable: true, Comment: "请求方法"},
+		{Name: "url", Type: field.TypeString, Nullable: true, Comment: "请求 URL"},
 		{Name: "request_headers", Type: field.TypeJSON, Nullable: true, Comment: "请求头"},
 		{Name: "request_body", Type: field.TypeJSON, Nullable: true, Comment: "请求体"},
 		{Name: "request_query_params", Type: field.TypeJSON, Nullable: true, Comment: "请求参数"},

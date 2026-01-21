@@ -16,8 +16,8 @@ func IpGroupLogHook() ent.Hook {
 			return hook.IpGroupFunc(func(ctx context.Context, m *ent.IpGroupMutation) (ent.Value, error) {
 				start := time.Now()
 				op := m.Op()
-				opType := getOpType(op)
-				objType := getObjType(m)
+				opType := op.String()
+				objType := m.Type()
 
 				// 1. Mutate 前：抓取变更字段和旧值快照
 				oldV, _ := getChangedFields(ctx, m)
@@ -43,7 +43,7 @@ func IpGroupLogHook() ent.Hook {
 				_, newV := getChangedFields(ctx, m)
 
 				// 7. 异步记录审计日志
-				go func(asyncCtx context.Context, source string, id int64, ot string, oType string, ov map[string]any, nv map[string]any, stat string, message string, cost int64) {
+				go func(asyncCtx context.Context, source string, id string, ot string, oType string, ov map[string]any, nv map[string]any, stat string, message string, cost int64) {
 					// 使用独立的 context 保证写入
 					logErr := getLogDb().OperationLog.Create().
 						SetSource(operationlog.Source(source)).
@@ -65,7 +65,7 @@ func IpGroupLogHook() ent.Hook {
 				// 8. 本地打印
 				if err != nil {
 					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", m.Type()),
-						slog.Int64("id", objID),
+						slog.String("id", objID),
 						slog.Any("err", err),
 					)
 				}

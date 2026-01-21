@@ -66,7 +66,7 @@ func (OperationLog) Fields() []ent.Field {
 			Comment("对象类型").
 			Annotations(entsql.WithComments(true)),
 
-		field.Int64("obj_id").
+		field.String("obj_id").
 			Optional().
 			Immutable().
 			Comment("对象主键").

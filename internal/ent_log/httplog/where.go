@@ -154,6 +154,16 @@ func HostnameHasSuffix(v string) predicate.HttpLog {
 	return predicate.HttpLog(sql.FieldHasSuffix(FieldHostname, v))
 }
 
+// HostnameIsNil applies the IsNil predicate on the "hostname" field.
+func HostnameIsNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldIsNull(FieldHostname))
+}
+
+// HostnameNotNil applies the NotNil predicate on the "hostname" field.
+func HostnameNotNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldNotNull(FieldHostname))
+}
+
 // HostnameEqualFold applies the EqualFold predicate on the "hostname" field.
 func HostnameEqualFold(v string) predicate.HttpLog {
 	return predicate.HttpLog(sql.FieldEqualFold(FieldHostname, v))
@@ -219,6 +229,16 @@ func MethodHasSuffix(v string) predicate.HttpLog {
 	return predicate.HttpLog(sql.FieldHasSuffix(FieldMethod, v))
 }
 
+// MethodIsNil applies the IsNil predicate on the "method" field.
+func MethodIsNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldIsNull(FieldMethod))
+}
+
+// MethodNotNil applies the NotNil predicate on the "method" field.
+func MethodNotNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldNotNull(FieldMethod))
+}
+
 // MethodEqualFold applies the EqualFold predicate on the "method" field.
 func MethodEqualFold(v string) predicate.HttpLog {
 	return predicate.HttpLog(sql.FieldEqualFold(FieldMethod, v))
@@ -282,6 +302,16 @@ func URLHasPrefix(v string) predicate.HttpLog {
 // URLHasSuffix applies the HasSuffix predicate on the "url" field.
 func URLHasSuffix(v string) predicate.HttpLog {
 	return predicate.HttpLog(sql.FieldHasSuffix(FieldURL, v))
+}
+
+// URLIsNil applies the IsNil predicate on the "url" field.
+func URLIsNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldIsNull(FieldURL))
+}
+
+// URLNotNil applies the NotNil predicate on the "url" field.
+func URLNotNil() predicate.HttpLog {
+	return predicate.HttpLog(sql.FieldNotNull(FieldURL))
 }
 
 // URLEqualFold applies the EqualFold predicate on the "url" field.

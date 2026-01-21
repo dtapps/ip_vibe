@@ -75,6 +75,15 @@ func (_u *ReqLogUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
+	if _u.mutation.HostnameCleared() {
+		_spec.ClearField(reqlog.FieldHostname, field.TypeString)
+	}
+	if _u.mutation.MethodCleared() {
+		_spec.ClearField(reqlog.FieldMethod, field.TypeString)
+	}
+	if _u.mutation.URLCleared() {
+		_spec.ClearField(reqlog.FieldURL, field.TypeString)
+	}
 	if _u.mutation.RequestHeadersCleared() {
 		_spec.ClearField(reqlog.FieldRequestHeaders, field.TypeJSON)
 	}
@@ -209,6 +218,15 @@ func (_u *ReqLogUpdateOne) sqlSave(ctx context.Context) (_node *ReqLog, err erro
 				ps[i](selector)
 			}
 		}
+	}
+	if _u.mutation.HostnameCleared() {
+		_spec.ClearField(reqlog.FieldHostname, field.TypeString)
+	}
+	if _u.mutation.MethodCleared() {
+		_spec.ClearField(reqlog.FieldMethod, field.TypeString)
+	}
+	if _u.mutation.URLCleared() {
+		_spec.ClearField(reqlog.FieldURL, field.TypeString)
 	}
 	if _u.mutation.RequestHeadersCleared() {
 		_spec.ClearField(reqlog.FieldRequestHeaders, field.TypeJSON)

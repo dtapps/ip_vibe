@@ -38,16 +38,19 @@ func (ReqLog) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)), // 用 id 覆盖 框架的 id
 
 		field.String("hostname").
+			Optional().
 			Immutable().
 			Comment("主机名").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("method").
+			Optional().
 			Immutable().
 			Comment("请求方法").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("url").
+			Optional().
 			Immutable().
 			Comment("请求 URL").
 			Annotations(entsql.WithComments(true)),

@@ -85,7 +85,7 @@ func (_u *OperationLogUpdate) sqlSave(ctx context.Context) (_node int, err error
 		_spec.ClearField(operationlog.FieldObjType, field.TypeEnum)
 	}
 	if _u.mutation.ObjIDCleared() {
-		_spec.ClearField(operationlog.FieldObjID, field.TypeInt64)
+		_spec.ClearField(operationlog.FieldObjID, field.TypeString)
 	}
 	if _u.mutation.OldValueCleared() {
 		_spec.ClearField(operationlog.FieldOldValue, field.TypeJSON)
@@ -208,7 +208,7 @@ func (_u *OperationLogUpdateOne) sqlSave(ctx context.Context) (_node *OperationL
 		_spec.ClearField(operationlog.FieldObjType, field.TypeEnum)
 	}
 	if _u.mutation.ObjIDCleared() {
-		_spec.ClearField(operationlog.FieldObjID, field.TypeInt64)
+		_spec.ClearField(operationlog.FieldObjID, field.TypeString)
 	}
 	if _u.mutation.OldValueCleared() {
 		_spec.ClearField(operationlog.FieldOldValue, field.TypeJSON)

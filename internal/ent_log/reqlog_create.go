@@ -29,15 +29,39 @@ func (_c *ReqLogCreate) SetHostname(v string) *ReqLogCreate {
 	return _c
 }
 
+// SetNillableHostname sets the "hostname" field if the given value is not nil.
+func (_c *ReqLogCreate) SetNillableHostname(v *string) *ReqLogCreate {
+	if v != nil {
+		_c.SetHostname(*v)
+	}
+	return _c
+}
+
 // SetMethod sets the "method" field.
 func (_c *ReqLogCreate) SetMethod(v string) *ReqLogCreate {
 	_c.mutation.SetMethod(v)
 	return _c
 }
 
+// SetNillableMethod sets the "method" field if the given value is not nil.
+func (_c *ReqLogCreate) SetNillableMethod(v *string) *ReqLogCreate {
+	if v != nil {
+		_c.SetMethod(*v)
+	}
+	return _c
+}
+
 // SetURL sets the "url" field.
 func (_c *ReqLogCreate) SetURL(v string) *ReqLogCreate {
 	_c.mutation.SetURL(v)
+	return _c
+}
+
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (_c *ReqLogCreate) SetNillableURL(v *string) *ReqLogCreate {
+	if v != nil {
+		_c.SetURL(*v)
+	}
 	return _c
 }
 
@@ -228,15 +252,6 @@ func (_c *ReqLogCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *ReqLogCreate) check() error {
-	if _, ok := _c.mutation.Hostname(); !ok {
-		return &ValidationError{Name: "hostname", err: errors.New(`ent_log: missing required field "ReqLog.hostname"`)}
-	}
-	if _, ok := _c.mutation.Method(); !ok {
-		return &ValidationError{Name: "method", err: errors.New(`ent_log: missing required field "ReqLog.method"`)}
-	}
-	if _, ok := _c.mutation.URL(); !ok {
-		return &ValidationError{Name: "url", err: errors.New(`ent_log: missing required field "ReqLog.url"`)}
-	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent_log: missing required field "ReqLog.created_at"`)}
 	}

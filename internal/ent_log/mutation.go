@@ -2599,9 +2599,22 @@ func (m *HttpLogMutation) OldHostname(ctx context.Context) (v string, err error)
 	return oldValue.Hostname, nil
 }
 
+// ClearHostname clears the value of the "hostname" field.
+func (m *HttpLogMutation) ClearHostname() {
+	m.hostname = nil
+	m.clearedFields[httplog.FieldHostname] = struct{}{}
+}
+
+// HostnameCleared returns if the "hostname" field was cleared in this mutation.
+func (m *HttpLogMutation) HostnameCleared() bool {
+	_, ok := m.clearedFields[httplog.FieldHostname]
+	return ok
+}
+
 // ResetHostname resets all changes to the "hostname" field.
 func (m *HttpLogMutation) ResetHostname() {
 	m.hostname = nil
+	delete(m.clearedFields, httplog.FieldHostname)
 }
 
 // SetMethod sets the "method" field.
@@ -2635,9 +2648,22 @@ func (m *HttpLogMutation) OldMethod(ctx context.Context) (v string, err error) {
 	return oldValue.Method, nil
 }
 
+// ClearMethod clears the value of the "method" field.
+func (m *HttpLogMutation) ClearMethod() {
+	m.method = nil
+	m.clearedFields[httplog.FieldMethod] = struct{}{}
+}
+
+// MethodCleared returns if the "method" field was cleared in this mutation.
+func (m *HttpLogMutation) MethodCleared() bool {
+	_, ok := m.clearedFields[httplog.FieldMethod]
+	return ok
+}
+
 // ResetMethod resets all changes to the "method" field.
 func (m *HttpLogMutation) ResetMethod() {
 	m.method = nil
+	delete(m.clearedFields, httplog.FieldMethod)
 }
 
 // SetURL sets the "url" field.
@@ -2671,9 +2697,22 @@ func (m *HttpLogMutation) OldURL(ctx context.Context) (v string, err error) {
 	return oldValue.URL, nil
 }
 
+// ClearURL clears the value of the "url" field.
+func (m *HttpLogMutation) ClearURL() {
+	m.url = nil
+	m.clearedFields[httplog.FieldURL] = struct{}{}
+}
+
+// URLCleared returns if the "url" field was cleared in this mutation.
+func (m *HttpLogMutation) URLCleared() bool {
+	_, ok := m.clearedFields[httplog.FieldURL]
+	return ok
+}
+
 // ResetURL resets all changes to the "url" field.
 func (m *HttpLogMutation) ResetURL() {
 	m.url = nil
+	delete(m.clearedFields, httplog.FieldURL)
 }
 
 // SetRequestHeaders sets the "request_headers" field.
@@ -3527,6 +3566,15 @@ func (m *HttpLogMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *HttpLogMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(httplog.FieldHostname) {
+		fields = append(fields, httplog.FieldHostname)
+	}
+	if m.FieldCleared(httplog.FieldMethod) {
+		fields = append(fields, httplog.FieldMethod)
+	}
+	if m.FieldCleared(httplog.FieldURL) {
+		fields = append(fields, httplog.FieldURL)
+	}
 	if m.FieldCleared(httplog.FieldRequestHeaders) {
 		fields = append(fields, httplog.FieldRequestHeaders)
 	}
@@ -3568,6 +3616,15 @@ func (m *HttpLogMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *HttpLogMutation) ClearField(name string) error {
 	switch name {
+	case httplog.FieldHostname:
+		m.ClearHostname()
+		return nil
+	case httplog.FieldMethod:
+		m.ClearMethod()
+		return nil
+	case httplog.FieldURL:
+		m.ClearURL()
+		return nil
 	case httplog.FieldRequestHeaders:
 		m.ClearRequestHeaders()
 		return nil
@@ -3704,8 +3761,7 @@ type OperationLogMutation struct {
 	source        *operationlog.Source
 	op_type       *operationlog.OpType
 	obj_type      *operationlog.ObjType
-	obj_id        *int64
-	addobj_id     *int64
+	obj_id        *string
 	old_value     *map[string]interface{}
 	new_value     *map[string]interface{}
 	status        *operationlog.Status
@@ -4004,13 +4060,12 @@ func (m *OperationLogMutation) ResetObjType() {
 }
 
 // SetObjID sets the "obj_id" field.
-func (m *OperationLogMutation) SetObjID(i int64) {
-	m.obj_id = &i
-	m.addobj_id = nil
+func (m *OperationLogMutation) SetObjID(s string) {
+	m.obj_id = &s
 }
 
 // ObjID returns the value of the "obj_id" field in the mutation.
-func (m *OperationLogMutation) ObjID() (r int64, exists bool) {
+func (m *OperationLogMutation) ObjID() (r string, exists bool) {
 	v := m.obj_id
 	if v == nil {
 		return
@@ -4021,7 +4076,7 @@ func (m *OperationLogMutation) ObjID() (r int64, exists bool) {
 // OldObjID returns the old "obj_id" field's value of the OperationLog entity.
 // If the OperationLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OperationLogMutation) OldObjID(ctx context.Context) (v int64, err error) {
+func (m *OperationLogMutation) OldObjID(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldObjID is only allowed on UpdateOne operations")
 	}
@@ -4035,28 +4090,9 @@ func (m *OperationLogMutation) OldObjID(ctx context.Context) (v int64, err error
 	return oldValue.ObjID, nil
 }
 
-// AddObjID adds i to the "obj_id" field.
-func (m *OperationLogMutation) AddObjID(i int64) {
-	if m.addobj_id != nil {
-		*m.addobj_id += i
-	} else {
-		m.addobj_id = &i
-	}
-}
-
-// AddedObjID returns the value that was added to the "obj_id" field in this mutation.
-func (m *OperationLogMutation) AddedObjID() (r int64, exists bool) {
-	v := m.addobj_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ClearObjID clears the value of the "obj_id" field.
 func (m *OperationLogMutation) ClearObjID() {
 	m.obj_id = nil
-	m.addobj_id = nil
 	m.clearedFields[operationlog.FieldObjID] = struct{}{}
 }
 
@@ -4069,7 +4105,6 @@ func (m *OperationLogMutation) ObjIDCleared() bool {
 // ResetObjID resets all changes to the "obj_id" field.
 func (m *OperationLogMutation) ResetObjID() {
 	m.obj_id = nil
-	m.addobj_id = nil
 	delete(m.clearedFields, operationlog.FieldObjID)
 }
 
@@ -4422,7 +4457,7 @@ func (m *OperationLogMutation) SetField(name string, value ent.Value) error {
 		m.SetObjType(v)
 		return nil
 	case operationlog.FieldObjID:
-		v, ok := value.(int64)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -4463,21 +4498,13 @@ func (m *OperationLogMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *OperationLogMutation) AddedFields() []string {
-	var fields []string
-	if m.addobj_id != nil {
-		fields = append(fields, operationlog.FieldObjID)
-	}
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *OperationLogMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case operationlog.FieldObjID:
-		return m.AddedObjID()
-	}
 	return nil, false
 }
 
@@ -4486,13 +4513,6 @@ func (m *OperationLogMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *OperationLogMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case operationlog.FieldObjID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddObjID(v)
-		return nil
 	}
 	return fmt.Errorf("unknown OperationLog numeric field %s", name)
 }
@@ -6132,9 +6152,22 @@ func (m *ReqLogMutation) OldHostname(ctx context.Context) (v string, err error) 
 	return oldValue.Hostname, nil
 }
 
+// ClearHostname clears the value of the "hostname" field.
+func (m *ReqLogMutation) ClearHostname() {
+	m.hostname = nil
+	m.clearedFields[reqlog.FieldHostname] = struct{}{}
+}
+
+// HostnameCleared returns if the "hostname" field was cleared in this mutation.
+func (m *ReqLogMutation) HostnameCleared() bool {
+	_, ok := m.clearedFields[reqlog.FieldHostname]
+	return ok
+}
+
 // ResetHostname resets all changes to the "hostname" field.
 func (m *ReqLogMutation) ResetHostname() {
 	m.hostname = nil
+	delete(m.clearedFields, reqlog.FieldHostname)
 }
 
 // SetMethod sets the "method" field.
@@ -6168,9 +6201,22 @@ func (m *ReqLogMutation) OldMethod(ctx context.Context) (v string, err error) {
 	return oldValue.Method, nil
 }
 
+// ClearMethod clears the value of the "method" field.
+func (m *ReqLogMutation) ClearMethod() {
+	m.method = nil
+	m.clearedFields[reqlog.FieldMethod] = struct{}{}
+}
+
+// MethodCleared returns if the "method" field was cleared in this mutation.
+func (m *ReqLogMutation) MethodCleared() bool {
+	_, ok := m.clearedFields[reqlog.FieldMethod]
+	return ok
+}
+
 // ResetMethod resets all changes to the "method" field.
 func (m *ReqLogMutation) ResetMethod() {
 	m.method = nil
+	delete(m.clearedFields, reqlog.FieldMethod)
 }
 
 // SetURL sets the "url" field.
@@ -6204,9 +6250,22 @@ func (m *ReqLogMutation) OldURL(ctx context.Context) (v string, err error) {
 	return oldValue.URL, nil
 }
 
+// ClearURL clears the value of the "url" field.
+func (m *ReqLogMutation) ClearURL() {
+	m.url = nil
+	m.clearedFields[reqlog.FieldURL] = struct{}{}
+}
+
+// URLCleared returns if the "url" field was cleared in this mutation.
+func (m *ReqLogMutation) URLCleared() bool {
+	_, ok := m.clearedFields[reqlog.FieldURL]
+	return ok
+}
+
 // ResetURL resets all changes to the "url" field.
 func (m *ReqLogMutation) ResetURL() {
 	m.url = nil
+	delete(m.clearedFields, reqlog.FieldURL)
 }
 
 // SetRequestHeaders sets the "request_headers" field.
@@ -7249,6 +7308,15 @@ func (m *ReqLogMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *ReqLogMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(reqlog.FieldHostname) {
+		fields = append(fields, reqlog.FieldHostname)
+	}
+	if m.FieldCleared(reqlog.FieldMethod) {
+		fields = append(fields, reqlog.FieldMethod)
+	}
+	if m.FieldCleared(reqlog.FieldURL) {
+		fields = append(fields, reqlog.FieldURL)
+	}
 	if m.FieldCleared(reqlog.FieldRequestHeaders) {
 		fields = append(fields, reqlog.FieldRequestHeaders)
 	}
@@ -7299,6 +7367,15 @@ func (m *ReqLogMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *ReqLogMutation) ClearField(name string) error {
 	switch name {
+	case reqlog.FieldHostname:
+		m.ClearHostname()
+		return nil
+	case reqlog.FieldMethod:
+		m.ClearMethod()
+		return nil
+	case reqlog.FieldURL:
+		m.ClearURL()
+		return nil
 	case reqlog.FieldRequestHeaders:
 		m.ClearRequestHeaders()
 		return nil
@@ -7611,9 +7688,22 @@ func (m *RestyLogMutation) OldHostname(ctx context.Context) (v string, err error
 	return oldValue.Hostname, nil
 }
 
+// ClearHostname clears the value of the "hostname" field.
+func (m *RestyLogMutation) ClearHostname() {
+	m.hostname = nil
+	m.clearedFields[restylog.FieldHostname] = struct{}{}
+}
+
+// HostnameCleared returns if the "hostname" field was cleared in this mutation.
+func (m *RestyLogMutation) HostnameCleared() bool {
+	_, ok := m.clearedFields[restylog.FieldHostname]
+	return ok
+}
+
 // ResetHostname resets all changes to the "hostname" field.
 func (m *RestyLogMutation) ResetHostname() {
 	m.hostname = nil
+	delete(m.clearedFields, restylog.FieldHostname)
 }
 
 // SetMethod sets the "method" field.
@@ -7647,9 +7737,22 @@ func (m *RestyLogMutation) OldMethod(ctx context.Context) (v string, err error) 
 	return oldValue.Method, nil
 }
 
+// ClearMethod clears the value of the "method" field.
+func (m *RestyLogMutation) ClearMethod() {
+	m.method = nil
+	m.clearedFields[restylog.FieldMethod] = struct{}{}
+}
+
+// MethodCleared returns if the "method" field was cleared in this mutation.
+func (m *RestyLogMutation) MethodCleared() bool {
+	_, ok := m.clearedFields[restylog.FieldMethod]
+	return ok
+}
+
 // ResetMethod resets all changes to the "method" field.
 func (m *RestyLogMutation) ResetMethod() {
 	m.method = nil
+	delete(m.clearedFields, restylog.FieldMethod)
 }
 
 // SetURL sets the "url" field.
@@ -7683,9 +7786,22 @@ func (m *RestyLogMutation) OldURL(ctx context.Context) (v string, err error) {
 	return oldValue.URL, nil
 }
 
+// ClearURL clears the value of the "url" field.
+func (m *RestyLogMutation) ClearURL() {
+	m.url = nil
+	m.clearedFields[restylog.FieldURL] = struct{}{}
+}
+
+// URLCleared returns if the "url" field was cleared in this mutation.
+func (m *RestyLogMutation) URLCleared() bool {
+	_, ok := m.clearedFields[restylog.FieldURL]
+	return ok
+}
+
 // ResetURL resets all changes to the "url" field.
 func (m *RestyLogMutation) ResetURL() {
 	m.url = nil
+	delete(m.clearedFields, restylog.FieldURL)
 }
 
 // SetRequestHeaders sets the "request_headers" field.
@@ -8791,6 +8907,15 @@ func (m *RestyLogMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *RestyLogMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(restylog.FieldHostname) {
+		fields = append(fields, restylog.FieldHostname)
+	}
+	if m.FieldCleared(restylog.FieldMethod) {
+		fields = append(fields, restylog.FieldMethod)
+	}
+	if m.FieldCleared(restylog.FieldURL) {
+		fields = append(fields, restylog.FieldURL)
+	}
 	if m.FieldCleared(restylog.FieldRequestHeaders) {
 		fields = append(fields, restylog.FieldRequestHeaders)
 	}
@@ -8844,6 +8969,15 @@ func (m *RestyLogMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *RestyLogMutation) ClearField(name string) error {
 	switch name {
+	case restylog.FieldHostname:
+		m.ClearHostname()
+		return nil
+	case restylog.FieldMethod:
+		m.ClearMethod()
+		return nil
+	case restylog.FieldURL:
+		m.ClearURL()
+		return nil
 	case restylog.FieldRequestHeaders:
 		m.ClearRequestHeaders()
 		return nil

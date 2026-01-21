@@ -60,7 +60,7 @@ func CreatedAt(v time.Time) predicate.OperationLog {
 }
 
 // ObjID applies equality check predicate on the "obj_id" field. It's identical to ObjIDEQ.
-func ObjID(v int64) predicate.OperationLog {
+func ObjID(v string) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldEQ(FieldObjID, v))
 }
 
@@ -200,43 +200,58 @@ func ObjTypeNotNil() predicate.OperationLog {
 }
 
 // ObjIDEQ applies the EQ predicate on the "obj_id" field.
-func ObjIDEQ(v int64) predicate.OperationLog {
+func ObjIDEQ(v string) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldEQ(FieldObjID, v))
 }
 
 // ObjIDNEQ applies the NEQ predicate on the "obj_id" field.
-func ObjIDNEQ(v int64) predicate.OperationLog {
+func ObjIDNEQ(v string) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldNEQ(FieldObjID, v))
 }
 
 // ObjIDIn applies the In predicate on the "obj_id" field.
-func ObjIDIn(vs ...int64) predicate.OperationLog {
+func ObjIDIn(vs ...string) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldIn(FieldObjID, vs...))
 }
 
 // ObjIDNotIn applies the NotIn predicate on the "obj_id" field.
-func ObjIDNotIn(vs ...int64) predicate.OperationLog {
+func ObjIDNotIn(vs ...string) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldNotIn(FieldObjID, vs...))
 }
 
 // ObjIDGT applies the GT predicate on the "obj_id" field.
-func ObjIDGT(v int64) predicate.OperationLog {
+func ObjIDGT(v string) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldGT(FieldObjID, v))
 }
 
 // ObjIDGTE applies the GTE predicate on the "obj_id" field.
-func ObjIDGTE(v int64) predicate.OperationLog {
+func ObjIDGTE(v string) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldGTE(FieldObjID, v))
 }
 
 // ObjIDLT applies the LT predicate on the "obj_id" field.
-func ObjIDLT(v int64) predicate.OperationLog {
+func ObjIDLT(v string) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldLT(FieldObjID, v))
 }
 
 // ObjIDLTE applies the LTE predicate on the "obj_id" field.
-func ObjIDLTE(v int64) predicate.OperationLog {
+func ObjIDLTE(v string) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldLTE(FieldObjID, v))
+}
+
+// ObjIDContains applies the Contains predicate on the "obj_id" field.
+func ObjIDContains(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldContains(FieldObjID, v))
+}
+
+// ObjIDHasPrefix applies the HasPrefix predicate on the "obj_id" field.
+func ObjIDHasPrefix(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldHasPrefix(FieldObjID, v))
+}
+
+// ObjIDHasSuffix applies the HasSuffix predicate on the "obj_id" field.
+func ObjIDHasSuffix(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldHasSuffix(FieldObjID, v))
 }
 
 // ObjIDIsNil applies the IsNil predicate on the "obj_id" field.
@@ -247,6 +262,16 @@ func ObjIDIsNil() predicate.OperationLog {
 // ObjIDNotNil applies the NotNil predicate on the "obj_id" field.
 func ObjIDNotNil() predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldNotNull(FieldObjID))
+}
+
+// ObjIDEqualFold applies the EqualFold predicate on the "obj_id" field.
+func ObjIDEqualFold(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldEqualFold(FieldObjID, v))
+}
+
+// ObjIDContainsFold applies the ContainsFold predicate on the "obj_id" field.
+func ObjIDContainsFold(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldContainsFold(FieldObjID, v))
 }
 
 // OldValueIsNil applies the IsNil predicate on the "old_value" field.

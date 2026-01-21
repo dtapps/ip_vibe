@@ -4,12 +4,15 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent_log"
-	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
+
+	"github.com/spf13/cast"
 )
 
+// getEntSlog: 获取业务数据库日志实例
 func getEntSlog() *slog.Logger {
 	logger := slog.Default()
 	if global.GvaEntSlog != nil {
@@ -18,6 +21,7 @@ func getEntSlog() *slog.Logger {
 	return logger
 }
 
+// getEntLogSlog: 获取操作日志数据库日志实例
 func getEntLogSlog() *slog.Logger {
 	logger := slog.Default()
 	if global.GvaEntLogSlog != nil {
@@ -26,59 +30,54 @@ func getEntLogSlog() *slog.Logger {
 	return logger
 }
 
+// getDb: 获取业务数据库客户端
 func getDb() (db *ent.Client) {
 	return global.GvaEntDb
 }
 
+// getLogDb: 获取操作日志数据库客户端
 func getLogDb() (db *ent_log.Client) {
 	return global.GvaEntLogDb
 }
 
-// 将 ent.Op 映射为 operationlog.OpType 的字符串值
-func getOpType(op ent.Op) string {
-	switch op {
-	case ent.OpCreate:
-		return operationlog.OpTypeOpCreate.String()
-	case ent.OpUpdate:
-		return operationlog.OpTypeOpUpdate.String()
-	case ent.OpUpdateOne:
-		return operationlog.OpTypeOpUpdateOne.String()
-	case ent.OpDelete:
-		return operationlog.OpTypeOpDelete.String()
-	case ent.OpDeleteOne:
-		return operationlog.OpTypeOpDeleteOne.String()
-	default:
-		return operationlog.OpTypeUnknown.String()
-	}
-}
+// getObjID: 从 ent.Mutation 或 ent.Value 中获取对象 ID
+func getObjID[M ent.Mutation](ctx context.Context, op ent.Op, m M, result ent.Value) (string, error) {
 
-// 适配 Int64 的通用 ID 获取
-func getObjID[M ent.Mutation](ctx context.Context, op ent.Op, m M, result ent.Value) (int64, error) {
-	// 1. 处理 Create 场景：从返回的 result 中获取 ID
+	getEntSlog().DebugContext(ctx, "从 ent.Mutation 或 ent.Value 中获取对象 ID",
+		slog.String("op", op.String()),
+		slog.Any("m", m),
+		slog.Any("result", result),
+	)
+
+	// 1. 处理 Create 场景 (从 result 获取)
 	if op.Is(ent.OpCreate) && result != nil {
 		// 先转为 any 再断言
 		if v, ok := any(result).(interface{ GetID() int64 }); ok {
-			return v.GetID(), nil
+			return cast.ToString(v.GetID()), nil
 		}
 	}
 
-	// 2. 处理 Update/Delete 场景：从 Mutation 中获取 ID
-	// 同样，必须先 any(m) 转换
-	if v, ok := any(m).(interface{ ID() (int64, bool) }); ok {
-		if val, exists := v.ID(); exists {
-			return val, nil
+	// 2. 处理单体操作 UpdateOne / DeleteOne (直接从 Mutation 获取)
+	if op.Is(ent.OpUpdateOne | ent.OpDeleteOne) {
+		if v, ok := any(m).(interface{ ID() (int64, bool) }); ok {
+			if val, exists := v.ID(); exists {
+				return cast.ToString(val), nil
+			}
 		}
 	}
 
-	return 0, fmt.Errorf("无法获取对象 ID, Op: %s", op.String())
-}
-
-// 将 ent.Mutation 映射为 operationlog.ObjType 的字符串值
-func getObjType[M ent.Mutation](m M) string {
-	if m.Type() == "" {
-		return operationlog.ObjTypeUnknown.String()
+	// 3. 处理批量操作 Update / Delete (通过条件反查所有 ID)
+	if op.Is(ent.OpUpdate | ent.OpDelete) {
+		if v, ok := any(m).(interface {
+			IDs(ctx context.Context) ([]int64, error)
+		}); ok {
+			if vals, err := v.IDs(ctx); err == nil {
+				return strings.Join(cast.ToStringSlice(vals), ","), nil
+			}
+		}
 	}
-	return m.Type()
+
+	return "", fmt.Errorf("无法获取对象 ID, Op: %s", op.String())
 }
 
 // getChangedFields: 返回 JSON 字符串以适配你的 Schema
