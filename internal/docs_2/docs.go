@@ -6173,7 +6173,7 @@ const docTemplate = `{
                     }
                 },
                 "code": {
-                    "description": "IP组代码",
+                    "description": "IP组编码",
                     "type": "string"
                 },
                 "description": {

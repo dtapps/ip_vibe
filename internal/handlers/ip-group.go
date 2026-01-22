@@ -38,7 +38,7 @@ func IPGroup(c *gin.Context) {
 	// 查询全部IP组
 	allIpGroup, err := global.GvaEntDb.IpGroup.Query().
 		WhereIf(requestParams.ID > 0, ipgroup.IDEQ(requestParams.ID)).
-		WhereIf(requestParams.RecordID != "", ipgroup.RecordIDEQ(requestParams.RecordID)).
+		WhereIf(requestParams.Code != "", ipgroup.CodeEQ(requestParams.Code)).
 		WhereIf(requestParams.Name != "", ipgroup.NameContains(requestParams.Name)).
 		WithDevices().
 		WithCdnRecords().

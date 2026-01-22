@@ -70,11 +70,6 @@ func Code(v string) predicate.IpGroup {
 	return predicate.IpGroup(sql.FieldEQ(FieldCode, v))
 }
 
-// RecordID applies equality check predicate on the "record_id" field. It's identical to RecordIDEQ.
-func RecordID(v string) predicate.IpGroup {
-	return predicate.IpGroup(sql.FieldEQ(FieldRecordID, v))
-}
-
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.IpGroup {
 	return predicate.IpGroup(sql.FieldEQ(FieldName, v))
@@ -238,81 +233,6 @@ func CodeEqualFold(v string) predicate.IpGroup {
 // CodeContainsFold applies the ContainsFold predicate on the "code" field.
 func CodeContainsFold(v string) predicate.IpGroup {
 	return predicate.IpGroup(sql.FieldContainsFold(FieldCode, v))
-}
-
-// RecordIDEQ applies the EQ predicate on the "record_id" field.
-func RecordIDEQ(v string) predicate.IpGroup {
-	return predicate.IpGroup(sql.FieldEQ(FieldRecordID, v))
-}
-
-// RecordIDNEQ applies the NEQ predicate on the "record_id" field.
-func RecordIDNEQ(v string) predicate.IpGroup {
-	return predicate.IpGroup(sql.FieldNEQ(FieldRecordID, v))
-}
-
-// RecordIDIn applies the In predicate on the "record_id" field.
-func RecordIDIn(vs ...string) predicate.IpGroup {
-	return predicate.IpGroup(sql.FieldIn(FieldRecordID, vs...))
-}
-
-// RecordIDNotIn applies the NotIn predicate on the "record_id" field.
-func RecordIDNotIn(vs ...string) predicate.IpGroup {
-	return predicate.IpGroup(sql.FieldNotIn(FieldRecordID, vs...))
-}
-
-// RecordIDGT applies the GT predicate on the "record_id" field.
-func RecordIDGT(v string) predicate.IpGroup {
-	return predicate.IpGroup(sql.FieldGT(FieldRecordID, v))
-}
-
-// RecordIDGTE applies the GTE predicate on the "record_id" field.
-func RecordIDGTE(v string) predicate.IpGroup {
-	return predicate.IpGroup(sql.FieldGTE(FieldRecordID, v))
-}
-
-// RecordIDLT applies the LT predicate on the "record_id" field.
-func RecordIDLT(v string) predicate.IpGroup {
-	return predicate.IpGroup(sql.FieldLT(FieldRecordID, v))
-}
-
-// RecordIDLTE applies the LTE predicate on the "record_id" field.
-func RecordIDLTE(v string) predicate.IpGroup {
-	return predicate.IpGroup(sql.FieldLTE(FieldRecordID, v))
-}
-
-// RecordIDContains applies the Contains predicate on the "record_id" field.
-func RecordIDContains(v string) predicate.IpGroup {
-	return predicate.IpGroup(sql.FieldContains(FieldRecordID, v))
-}
-
-// RecordIDHasPrefix applies the HasPrefix predicate on the "record_id" field.
-func RecordIDHasPrefix(v string) predicate.IpGroup {
-	return predicate.IpGroup(sql.FieldHasPrefix(FieldRecordID, v))
-}
-
-// RecordIDHasSuffix applies the HasSuffix predicate on the "record_id" field.
-func RecordIDHasSuffix(v string) predicate.IpGroup {
-	return predicate.IpGroup(sql.FieldHasSuffix(FieldRecordID, v))
-}
-
-// RecordIDIsNil applies the IsNil predicate on the "record_id" field.
-func RecordIDIsNil() predicate.IpGroup {
-	return predicate.IpGroup(sql.FieldIsNull(FieldRecordID))
-}
-
-// RecordIDNotNil applies the NotNil predicate on the "record_id" field.
-func RecordIDNotNil() predicate.IpGroup {
-	return predicate.IpGroup(sql.FieldNotNull(FieldRecordID))
-}
-
-// RecordIDEqualFold applies the EqualFold predicate on the "record_id" field.
-func RecordIDEqualFold(v string) predicate.IpGroup {
-	return predicate.IpGroup(sql.FieldEqualFold(FieldRecordID, v))
-}
-
-// RecordIDContainsFold applies the ContainsFold predicate on the "record_id" field.
-func RecordIDContainsFold(v string) predicate.IpGroup {
-	return predicate.IpGroup(sql.FieldContainsFold(FieldRecordID, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.

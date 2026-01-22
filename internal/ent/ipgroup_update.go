@@ -32,26 +32,6 @@ func (_u *IpGroupUpdate) Where(ps ...predicate.IpGroup) *IpGroupUpdate {
 	return _u
 }
 
-// SetRecordID sets the "record_id" field.
-func (_u *IpGroupUpdate) SetRecordID(v string) *IpGroupUpdate {
-	_u.mutation.SetRecordID(v)
-	return _u
-}
-
-// SetNillableRecordID sets the "record_id" field if the given value is not nil.
-func (_u *IpGroupUpdate) SetNillableRecordID(v *string) *IpGroupUpdate {
-	if v != nil {
-		_u.SetRecordID(*v)
-	}
-	return _u
-}
-
-// ClearRecordID clears the value of the "record_id" field.
-func (_u *IpGroupUpdate) ClearRecordID() *IpGroupUpdate {
-	_u.mutation.ClearRecordID()
-	return _u
-}
-
 // SetName sets the "name" field.
 func (_u *IpGroupUpdate) SetName(v string) *IpGroupUpdate {
 	_u.mutation.SetName(v)
@@ -299,12 +279,6 @@ func (_u *IpGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(ipgroup.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.RecordID(); ok {
-		_spec.SetField(ipgroup.FieldRecordID, field.TypeString, value)
-	}
-	if _u.mutation.RecordIDCleared() {
-		_spec.ClearField(ipgroup.FieldRecordID, field.TypeString)
-	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(ipgroup.FieldName, field.TypeString, value)
 	}
@@ -493,26 +467,6 @@ type IpGroupUpdateOne struct {
 	hooks     []Hook
 	mutation  *IpGroupMutation
 	modifiers []func(*sql.UpdateBuilder)
-}
-
-// SetRecordID sets the "record_id" field.
-func (_u *IpGroupUpdateOne) SetRecordID(v string) *IpGroupUpdateOne {
-	_u.mutation.SetRecordID(v)
-	return _u
-}
-
-// SetNillableRecordID sets the "record_id" field if the given value is not nil.
-func (_u *IpGroupUpdateOne) SetNillableRecordID(v *string) *IpGroupUpdateOne {
-	if v != nil {
-		_u.SetRecordID(*v)
-	}
-	return _u
-}
-
-// ClearRecordID clears the value of the "record_id" field.
-func (_u *IpGroupUpdateOne) ClearRecordID() *IpGroupUpdateOne {
-	_u.mutation.ClearRecordID()
-	return _u
 }
 
 // SetName sets the "name" field.
@@ -791,12 +745,6 @@ func (_u *IpGroupUpdateOne) sqlSave(ctx context.Context) (_node *IpGroup, err er
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(ipgroup.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.RecordID(); ok {
-		_spec.SetField(ipgroup.FieldRecordID, field.TypeString, value)
-	}
-	if _u.mutation.RecordIDCleared() {
-		_spec.ClearField(ipgroup.FieldRecordID, field.TypeString)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(ipgroup.FieldName, field.TypeString, value)

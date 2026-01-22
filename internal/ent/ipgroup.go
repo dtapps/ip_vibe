@@ -22,10 +22,8 @@ type IpGroup struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 更新时间
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// IP组代码
+	// IP组编码
 	Code string `json:"code,omitempty"`
-	// 平台侧记录ID
-	RecordID string `json:"record_id,omitempty"`
 	// IP组名称
 	Name string `json:"name,omitempty"`
 	// IP组描述
@@ -102,7 +100,7 @@ func (*IpGroup) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case ipgroup.FieldID:
 			values[i] = new(sql.NullInt64)
-		case ipgroup.FieldCode, ipgroup.FieldRecordID, ipgroup.FieldName, ipgroup.FieldDescription, ipgroup.FieldLastAPIResponse:
+		case ipgroup.FieldCode, ipgroup.FieldName, ipgroup.FieldDescription, ipgroup.FieldLastAPIResponse:
 			values[i] = new(sql.NullString)
 		case ipgroup.FieldCreatedAt, ipgroup.FieldUpdatedAt, ipgroup.FieldLastAPIResponseAt:
 			values[i] = new(sql.NullTime)
@@ -144,12 +142,6 @@ func (_m *IpGroup) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field code", values[i])
 			} else if value.Valid {
 				_m.Code = value.String
-			}
-		case ipgroup.FieldRecordID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field record_id", values[i])
-			} else if value.Valid {
-				_m.RecordID = value.String
 			}
 		case ipgroup.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -239,9 +231,6 @@ func (_m *IpGroup) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("code=")
 	builder.WriteString(_m.Code)
-	builder.WriteString(", ")
-	builder.WriteString("record_id=")
-	builder.WriteString(_m.RecordID)
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)

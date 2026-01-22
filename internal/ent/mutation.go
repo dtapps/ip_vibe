@@ -6139,7 +6139,6 @@ type IpGroupMutation struct {
 	created_at           *time.Time
 	updated_at           *time.Time
 	code                 *string
-	record_id            *string
 	name                 *string
 	description          *string
 	last_api_response    *string
@@ -6369,55 +6368,6 @@ func (m *IpGroupMutation) OldCode(ctx context.Context) (v string, err error) {
 // ResetCode resets all changes to the "code" field.
 func (m *IpGroupMutation) ResetCode() {
 	m.code = nil
-}
-
-// SetRecordID sets the "record_id" field.
-func (m *IpGroupMutation) SetRecordID(s string) {
-	m.record_id = &s
-}
-
-// RecordID returns the value of the "record_id" field in the mutation.
-func (m *IpGroupMutation) RecordID() (r string, exists bool) {
-	v := m.record_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRecordID returns the old "record_id" field's value of the IpGroup entity.
-// If the IpGroup object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *IpGroupMutation) OldRecordID(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRecordID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRecordID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRecordID: %w", err)
-	}
-	return oldValue.RecordID, nil
-}
-
-// ClearRecordID clears the value of the "record_id" field.
-func (m *IpGroupMutation) ClearRecordID() {
-	m.record_id = nil
-	m.clearedFields[ipgroup.FieldRecordID] = struct{}{}
-}
-
-// RecordIDCleared returns if the "record_id" field was cleared in this mutation.
-func (m *IpGroupMutation) RecordIDCleared() bool {
-	_, ok := m.clearedFields[ipgroup.FieldRecordID]
-	return ok
-}
-
-// ResetRecordID resets all changes to the "record_id" field.
-func (m *IpGroupMutation) ResetRecordID() {
-	m.record_id = nil
-	delete(m.clearedFields, ipgroup.FieldRecordID)
 }
 
 // SetName sets the "name" field.
@@ -6799,7 +6749,7 @@ func (m *IpGroupMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *IpGroupMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, ipgroup.FieldCreatedAt)
 	}
@@ -6808,9 +6758,6 @@ func (m *IpGroupMutation) Fields() []string {
 	}
 	if m.code != nil {
 		fields = append(fields, ipgroup.FieldCode)
-	}
-	if m.record_id != nil {
-		fields = append(fields, ipgroup.FieldRecordID)
 	}
 	if m.name != nil {
 		fields = append(fields, ipgroup.FieldName)
@@ -6838,8 +6785,6 @@ func (m *IpGroupMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case ipgroup.FieldCode:
 		return m.Code()
-	case ipgroup.FieldRecordID:
-		return m.RecordID()
 	case ipgroup.FieldName:
 		return m.Name()
 	case ipgroup.FieldDescription:
@@ -6863,8 +6808,6 @@ func (m *IpGroupMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldUpdatedAt(ctx)
 	case ipgroup.FieldCode:
 		return m.OldCode(ctx)
-	case ipgroup.FieldRecordID:
-		return m.OldRecordID(ctx)
 	case ipgroup.FieldName:
 		return m.OldName(ctx)
 	case ipgroup.FieldDescription:
@@ -6902,13 +6845,6 @@ func (m *IpGroupMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCode(v)
-		return nil
-	case ipgroup.FieldRecordID:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRecordID(v)
 		return nil
 	case ipgroup.FieldName:
 		v, ok := value.(string)
@@ -6968,9 +6904,6 @@ func (m *IpGroupMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *IpGroupMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(ipgroup.FieldRecordID) {
-		fields = append(fields, ipgroup.FieldRecordID)
-	}
 	if m.FieldCleared(ipgroup.FieldDescription) {
 		fields = append(fields, ipgroup.FieldDescription)
 	}
@@ -6994,9 +6927,6 @@ func (m *IpGroupMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *IpGroupMutation) ClearField(name string) error {
 	switch name {
-	case ipgroup.FieldRecordID:
-		m.ClearRecordID()
-		return nil
 	case ipgroup.FieldDescription:
 		m.ClearDescription()
 		return nil
@@ -7022,9 +6952,6 @@ func (m *IpGroupMutation) ResetField(name string) error {
 		return nil
 	case ipgroup.FieldCode:
 		m.ResetCode()
-		return nil
-	case ipgroup.FieldRecordID:
-		m.ResetRecordID()
 		return nil
 	case ipgroup.FieldName:
 		m.ResetName()

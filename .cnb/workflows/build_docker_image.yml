@@ -96,9 +96,6 @@
             echo "🎉 处理结束 web_trigger_build_docker_image"
             echo "=============================="
 
-        - name: 拉取 Git Tags（确保 changelog 能工作）
-          script: git fetch --tags --unshallow 2>/dev/null || git fetch --tags
-
         # https://cnb.cool/cnb/plugins/cnbcool/changelog
         - name: 生成 changelog
           image: cnbcool/changelog

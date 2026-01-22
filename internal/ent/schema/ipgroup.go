@@ -47,12 +47,7 @@ func (IpGroup) Fields() []ent.Field {
 		field.String("code").
 			DefaultFunc(schemadefault.DefaultCode).
 			Immutable().
-			Comment("IP组代码").
-			Annotations(entsql.WithComments(true)),
-
-		field.String("record_id").
-			Optional().
-			Comment("平台侧记录ID").
+			Comment("IP组编码").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
@@ -105,10 +100,6 @@ func (IpGroup) Indexes() []ent.Index {
 		// 按创建时间排序
 		index.Fields("created_at").
 			Annotations(entsql.Desc(), entsql.WithComments(true)),
-
-		// 按平台侧记录ID排序
-		index.Fields("record_id").
-			Annotations(entsql.WithComments(true)),
 	}
 }
 

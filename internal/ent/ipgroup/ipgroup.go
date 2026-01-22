@@ -21,8 +21,6 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldCode holds the string denoting the code field in the database.
 	FieldCode = "code"
-	// FieldRecordID holds the string denoting the record_id field in the database.
-	FieldRecordID = "record_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldDescription holds the string denoting the description field in the database.
@@ -75,7 +73,6 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldCode,
-	FieldRecordID,
 	FieldName,
 	FieldDescription,
 	FieldLastAPIResponse,
@@ -138,11 +135,6 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByCode orders the results by the code field.
 func ByCode(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCode, opts...).ToFunc()
-}
-
-// ByRecordID orders the results by the record_id field.
-func ByRecordID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRecordID, opts...).ToFunc()
 }
 
 // ByName orders the results by the name field.

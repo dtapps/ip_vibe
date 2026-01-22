@@ -1617,31 +1617,6 @@ func (q *IpGroupQuery) OrderByCodeAsc() *IpGroupQuery {
 	return q.Order(Asc(ipgroup.FieldCode))
 }
 
-// OrderByRecordIDDesc 按字段 record_id 降序排列查询结果。
-// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
-// 返回值类型为 *IpGroupQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
-// 示例：
-//
-//	records, err := client.IpGroup.Query().
-//	    OrderByRecordIDDesc().
-//	    Limit(10).
-//	    All(ctx)
-func (q *IpGroupQuery) OrderByRecordIDDesc() *IpGroupQuery {
-	return q.Order(Desc(ipgroup.FieldRecordID))
-}
-
-// OrderByRecordIDAsc 按字段 record_id 升序排列查询结果。
-// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
-// 返回值类型为 *IpGroupQuery，支持链式调用其他查询方法。
-// 示例：
-//
-//	records, err := client.IpGroup.Query().
-//	    OrderByRecordIDAsc().
-//	    All(ctx)
-func (q *IpGroupQuery) OrderByRecordIDAsc() *IpGroupQuery {
-	return q.Order(Asc(ipgroup.FieldRecordID))
-}
-
 // OrderByNameDesc 按字段 name 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *IpGroupQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。

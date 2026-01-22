@@ -67,20 +67,6 @@ func (_c *IpGroupCreate) SetNillableCode(v *string) *IpGroupCreate {
 	return _c
 }
 
-// SetRecordID sets the "record_id" field.
-func (_c *IpGroupCreate) SetRecordID(v string) *IpGroupCreate {
-	_c.mutation.SetRecordID(v)
-	return _c
-}
-
-// SetNillableRecordID sets the "record_id" field if the given value is not nil.
-func (_c *IpGroupCreate) SetNillableRecordID(v *string) *IpGroupCreate {
-	if v != nil {
-		_c.SetRecordID(*v)
-	}
-	return _c
-}
-
 // SetName sets the "name" field.
 func (_c *IpGroupCreate) SetName(v string) *IpGroupCreate {
 	_c.mutation.SetName(v)
@@ -305,10 +291,6 @@ func (_c *IpGroupCreate) createSpec() (*IpGroup, *sqlgraph.CreateSpec) {
 		_spec.SetField(ipgroup.FieldCode, field.TypeString, value)
 		_node.Code = value
 	}
-	if value, ok := _c.mutation.RecordID(); ok {
-		_spec.SetField(ipgroup.FieldRecordID, field.TypeString, value)
-		_node.RecordID = value
-	}
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(ipgroup.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -428,24 +410,6 @@ type (
 		*sql.UpdateSet
 	}
 )
-
-// SetRecordID sets the "record_id" field.
-func (u *IpGroupUpsert) SetRecordID(v string) *IpGroupUpsert {
-	u.Set(ipgroup.FieldRecordID, v)
-	return u
-}
-
-// UpdateRecordID sets the "record_id" field to the value that was provided on create.
-func (u *IpGroupUpsert) UpdateRecordID() *IpGroupUpsert {
-	u.SetExcluded(ipgroup.FieldRecordID)
-	return u
-}
-
-// ClearRecordID clears the value of the "record_id" field.
-func (u *IpGroupUpsert) ClearRecordID() *IpGroupUpsert {
-	u.SetNull(ipgroup.FieldRecordID)
-	return u
-}
 
 // SetName sets the "name" field.
 func (u *IpGroupUpsert) SetName(v string) *IpGroupUpsert {
@@ -568,27 +532,6 @@ func (u *IpGroupUpsertOne) Update(set func(*IpGroupUpsert)) *IpGroupUpsertOne {
 		set(&IpGroupUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetRecordID sets the "record_id" field.
-func (u *IpGroupUpsertOne) SetRecordID(v string) *IpGroupUpsertOne {
-	return u.Update(func(s *IpGroupUpsert) {
-		s.SetRecordID(v)
-	})
-}
-
-// UpdateRecordID sets the "record_id" field to the value that was provided on create.
-func (u *IpGroupUpsertOne) UpdateRecordID() *IpGroupUpsertOne {
-	return u.Update(func(s *IpGroupUpsert) {
-		s.UpdateRecordID()
-	})
-}
-
-// ClearRecordID clears the value of the "record_id" field.
-func (u *IpGroupUpsertOne) ClearRecordID() *IpGroupUpsertOne {
-	return u.Update(func(s *IpGroupUpsert) {
-		s.ClearRecordID()
-	})
 }
 
 // SetName sets the "name" field.
@@ -889,27 +832,6 @@ func (u *IpGroupUpsertBulk) Update(set func(*IpGroupUpsert)) *IpGroupUpsertBulk 
 		set(&IpGroupUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetRecordID sets the "record_id" field.
-func (u *IpGroupUpsertBulk) SetRecordID(v string) *IpGroupUpsertBulk {
-	return u.Update(func(s *IpGroupUpsert) {
-		s.SetRecordID(v)
-	})
-}
-
-// UpdateRecordID sets the "record_id" field to the value that was provided on create.
-func (u *IpGroupUpsertBulk) UpdateRecordID() *IpGroupUpsertBulk {
-	return u.Update(func(s *IpGroupUpsert) {
-		s.UpdateRecordID()
-	})
-}
-
-// ClearRecordID clears the value of the "record_id" field.
-func (u *IpGroupUpsertBulk) ClearRecordID() *IpGroupUpsertBulk {
-	return u.Update(func(s *IpGroupUpsert) {
-		s.ClearRecordID()
-	})
 }
 
 // SetName sets the "name" field.
