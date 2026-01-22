@@ -6245,14 +6245,6 @@ const docTemplate = `{
                         "type": "integer"
                     }
                 },
-                "config_json_domain_name": {
-                    "description": "配置平台域名",
-                    "type": "string"
-                },
-                "config_json_email": {
-                    "description": "配置平台邮箱",
-                    "type": "string"
-                },
                 "description": {
                     "description": "配置描述",
                     "type": "string"

@@ -44,7 +44,7 @@ async function openFormModal(id) {
     renderPlatformFields(
       config.platform,
       config.capability,
-      config.config_json,
+      config.config_json || {},
     );
 
     showModal("formModal", "modalTitle", "编辑 平台配置");

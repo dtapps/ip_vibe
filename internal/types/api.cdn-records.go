@@ -12,18 +12,18 @@ type GetCdnRecordsRequest struct {
 
 // 获取CDN记录 响应结构
 type GetCdnRecordResponse struct {
-	ID            int64           `json:"id" jsonschema:"CDN记录序号"`                          // CDN记录序号
-	ConfigID      int64           `json:"config_id" jsonschema:"平台配置序号"`                    // 平台配置序号
-	ConfigName    string          `json:"config_name" jsonschema:"平台配置名称"`                  // 平台配置名称
-	Platform      string          `json:"platform" jsonschema:"平台平台名称"`                     // 平台平台名称
-	RecordID      any             `json:"record_id,omitempty" jsonschema:"平台侧记录ID"`         // 平台侧记录ID
-	DomainName    string          `json:"domain_name" jsonschema:"域名（如 www.example.com）"`   // 域名（如 www.example.com）
-	SubDomain     string          `json:"sub_domain" jsonschema:"子域名（如 www, blog, api）"`    // 子域名（如 www, blog, api）
-	Type          string          `json:"type" jsonschema:"记录类型（A、AAAA）"`                   // 记录类型（A、AAAA）
-	ConfigJSON    json.RawMessage `json:"config_json,omitempty" jsonschema:"CDN记录配置（JSON）"` // CDN记录配置（JSON）
-	CdnDomain     string          `json:"cdn_domain" jsonschema:"CDN边缘域名（平台提供）"`            // CDN 边缘域名（平台提供）
-	IsActive      bool            `json:"is_active" jsonschema:"是否活跃"`                      // 是否活跃
-	LastRefreshAt time.Time       `json:"last_refresh_at" jsonschema:"最后一次刷新成功时间"`          // 最后一次刷新成功时间
+	ID            int64           `json:"id" jsonschema:"CDN记录序号"`                        // CDN记录序号
+	ConfigID      int64           `json:"config_id" jsonschema:"平台配置序号"`                  // 平台配置序号
+	ConfigName    string          `json:"config_name" jsonschema:"平台配置名称"`                // 平台配置名称
+	Platform      string          `json:"platform" jsonschema:"平台平台名称"`                   // 平台平台名称
+	RecordID      any             `json:"record_id" jsonschema:"平台侧记录ID"`                 // 平台侧记录ID
+	DomainName    string          `json:"domain_name" jsonschema:"域名（如 www.example.com）"` // 域名（如 www.example.com）
+	SubDomain     string          `json:"sub_domain" jsonschema:"子域名（如 www, blog, api）"`  // 子域名（如 www, blog, api）
+	Type          string          `json:"type" jsonschema:"记录类型（A、AAAA）"`                 // 记录类型（A、AAAA）
+	ConfigJSON    json.RawMessage `json:"config_json" jsonschema:"CDN记录配置（JSON）"`         // CDN记录配置（JSON）
+	CdnDomain     string          `json:"cdn_domain" jsonschema:"CDN边缘域名（平台提供）"`          // CDN 边缘域名（平台提供）
+	IsActive      bool            `json:"is_active" jsonschema:"是否活跃"`                    // 是否活跃
+	LastRefreshAt time.Time       `json:"last_refresh_at" jsonschema:"最后一次刷新成功时间"`        // 最后一次刷新成功时间
 
 	IPGroupID   int64  `json:"ip_group_id" jsonschema:"关联的IP组序号"` // IP 组序号
 	IPGroupName string `json:"ip_group_name" jsonschema:"IP组名称"`  // IP 组名称

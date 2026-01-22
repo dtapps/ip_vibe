@@ -93,7 +93,8 @@ async function openFormModal(id) {
           opt.dataset.id = d.id;
           opt.dataset.capability = d.capability;
           opt.dataset.platform = d.platform;
-          opt.dataset.domain_name = d.config_json.domain_name || "";
+          opt.dataset.domain_name = d.config_json?.domain_name ?? "";
+          opt.dataset.email = d.config_json?.email ?? "";
           opt.value = d.id;
           opt.text = `${d.name}（${opt.dataset.domain_name}）`;
           configSelect.appendChild(opt);
@@ -185,10 +186,8 @@ async function openFormModal(id) {
       document.getElementById("id").disabled = true;
       document.getElementById("platform").value = dnsRecord.platform;
       document.getElementById("platform").disabled = true;
-      document.getElementById("ip_group_code").value = dnsRecord.config_json
-        .ip_group_code
-        ? dnsRecord.config_json.ip_group_code
-        : "";
+      document.getElementById("ip_group_code").value =
+        dnsRecord.config_json?.ip_group_code ?? "";
       document.getElementById("ip_group_code").disabled = true;
       document.getElementById("config_id").value = dnsRecord.config_id;
       document.getElementById("config_id").disabled = true;
@@ -240,7 +239,7 @@ async function openFormModal(id) {
       }
 
       // 渲染字段，回填数据
-      renderDnsFields(dnsRecord.platform, dnsRecord.config_json);
+      renderDnsFields(dnsRecord.platform, dnsRecord.config_json || {});
 
       showModal("formModal", "modalTitle", "编辑 DNS记录");
     }
