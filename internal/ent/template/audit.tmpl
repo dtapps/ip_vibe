@@ -7,6 +7,7 @@ import (
     "context"
     "fmt"
 	"log/slog"
+	"runtime"
 
     "{{ $.Config.Package }}"
     "{{ $.Config.Package }}/hook"
@@ -89,6 +90,7 @@ func {{ $n.Name }}LogHook() ent.Hook {
                         SetNewValue(asyncNv).
                         SetStatus(status).
                         SetMessage(msg).
+						SetGoVersion(runtime.Version()).
                         Exec(asyncCtx)
 					if logErr != nil {
 						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),

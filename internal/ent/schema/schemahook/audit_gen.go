@@ -7,6 +7,7 @@ import (
     "context"
     "fmt"
 	"log/slog"
+	"runtime"
 
     "vibe_ip/internal/ent"
     "vibe_ip/internal/ent/hook"
@@ -83,6 +84,7 @@ func CDNRecordLogHook() ent.Hook {
                         SetNewValue(asyncNv).
                         SetStatus(status).
                         SetMessage(msg).
+						SetGoVersion(runtime.Version()).
                         Exec(asyncCtx)
 					if logErr != nil {
 						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
@@ -176,6 +178,7 @@ func CacheLogHook() ent.Hook {
                         SetNewValue(asyncNv).
                         SetStatus(status).
                         SetMessage(msg).
+						SetGoVersion(runtime.Version()).
                         Exec(asyncCtx)
 					if logErr != nil {
 						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
@@ -269,6 +272,7 @@ func DNSRecordLogHook() ent.Hook {
                         SetNewValue(asyncNv).
                         SetStatus(status).
                         SetMessage(msg).
+						SetGoVersion(runtime.Version()).
                         Exec(asyncCtx)
 					if logErr != nil {
 						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
@@ -362,6 +366,7 @@ func DeviceLogHook() ent.Hook {
                         SetNewValue(asyncNv).
                         SetStatus(status).
                         SetMessage(msg).
+						SetGoVersion(runtime.Version()).
                         Exec(asyncCtx)
 					if logErr != nil {
 						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
@@ -455,6 +460,7 @@ func DevicePortForwardLogHook() ent.Hook {
                         SetNewValue(asyncNv).
                         SetStatus(status).
                         SetMessage(msg).
+						SetGoVersion(runtime.Version()).
                         Exec(asyncCtx)
 					if logErr != nil {
 						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
@@ -548,6 +554,7 @@ func DomainMonitorLogHook() ent.Hook {
                         SetNewValue(asyncNv).
                         SetStatus(status).
                         SetMessage(msg).
+						SetGoVersion(runtime.Version()).
                         Exec(asyncCtx)
 					if logErr != nil {
 						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
@@ -641,6 +648,7 @@ func IpGroupLogHook() ent.Hook {
                         SetNewValue(asyncNv).
                         SetStatus(status).
                         SetMessage(msg).
+						SetGoVersion(runtime.Version()).
                         Exec(asyncCtx)
 					if logErr != nil {
 						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
@@ -736,6 +744,7 @@ func PlatformConfigLogHook() ent.Hook {
                         SetNewValue(asyncNv).
                         SetStatus(status).
                         SetMessage(msg).
+						SetGoVersion(runtime.Version()).
                         Exec(asyncCtx)
 					if logErr != nil {
 						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
@@ -829,6 +838,7 @@ func SSLRecordLogHook() ent.Hook {
                         SetNewValue(asyncNv).
                         SetStatus(status).
                         SetMessage(msg).
+						SetGoVersion(runtime.Version()).
                         Exec(asyncCtx)
 					if logErr != nil {
 						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
@@ -922,6 +932,7 @@ func WebhookLogHook() ent.Hook {
                         SetNewValue(asyncNv).
                         SetStatus(status).
                         SetMessage(msg).
+						SetGoVersion(runtime.Version()).
                         Exec(asyncCtx)
 					if logErr != nil {
 						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
@@ -1015,6 +1026,7 @@ func WebhookSubscriptionLogHook() ent.Hook {
                         SetNewValue(asyncNv).
                         SetStatus(status).
                         SetMessage(msg).
+						SetGoVersion(runtime.Version()).
                         Exec(asyncCtx)
 					if logErr != nil {
 						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
