@@ -63,13 +63,13 @@ require (
 	go.dtapp.net/library/contrib/http_log v1.0.11
 	go.dtapp.net/library/contrib/req_log v1.0.4
 	go.dtapp.net/library/contrib/resty_log v1.0.15
-	go.dtapp.net/library/service/bark v1.0.9
-	go.dtapp.net/library/service/dingtalk v1.0.41
-	go.dtapp.net/library/service/feishu v1.0.39
-	go.dtapp.net/library/service/ft07 v1.0.10
-	go.dtapp.net/library/service/pushdeer v1.0.10
+	go.dtapp.net/library/service/bark v1.0.10
+	go.dtapp.net/library/service/dingtalk v1.0.42
+	go.dtapp.net/library/service/feishu v1.0.40
+	go.dtapp.net/library/service/ft07 v1.0.11
+	go.dtapp.net/library/service/pushdeer v1.0.11
 	go.dtapp.net/library/service/qiniu v1.0.0
-	go.dtapp.net/library/service/wechatqy v1.0.40
+	go.dtapp.net/library/service/wechatqy v1.0.41
 	go.dtapp.net/library/utils/goarray v1.0.4
 	go.dtapp.net/library/utils/gojson v1.0.13
 	go.dtapp.net/library/utils/golog v1.0.180
