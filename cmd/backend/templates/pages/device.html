@@ -88,7 +88,7 @@
 
           {{ if deviceOfflineEnabled }}
           <td class="ui-td font-bold text-base-content tooltip"
-            data-tip="上次上报时间在 {{ formatTimeOrNil .LastReportedAt }}">
+            data-tip="上次心跳时间：{{ formatTimeOrNil .LastHeartbeatAt }}，上次上报时间：{{ formatTimeOrNil .LastReportedAt }}">
             {{ if .Online }}
             <span class="badge badge-success">在线</span>
             {{ else }}
