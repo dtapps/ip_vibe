@@ -12,7 +12,6 @@ import (
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/services/dns"
 	"github.com/baidubce/bce-sdk-go/util"
-	"go.dtapp.net/library/utils/gojson"
 )
 
 // BaiduDNSConfig 百度云 DNS 配置
@@ -137,18 +136,6 @@ func (p *BaiduDNSProvider) Name() string {
 	return "百度云 DNS"
 }
 
-// printData 打印数据
-func (p *BaiduDNSProvider) printData(ctx context.Context) {
-	p.logger.DebugContext(ctx, "数据",
-		slog.String("提供商", p.Name()),
-		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
-	)
-	p.logger.DebugContext(ctx, "数据",
-		slog.String("提供商", p.Name()),
-		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
-	)
-}
-
 // Check 检查子域名是否存在
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#查询解析记录列表
 func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
@@ -225,9 +212,6 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#添加解析记录
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#修改解析记录
 func (p *BaiduDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
-
-	// 打印数据
-	p.printData(ctx)
 
 	if p.InternalData.RecordID == "" {
 

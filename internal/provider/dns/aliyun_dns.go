@@ -15,7 +15,6 @@ import (
 	"github.com/alibabacloud-go/tea/dara"
 	"github.com/alibabacloud-go/tea/tea"
 	credential "github.com/aliyun/credentials-go/credentials"
-	"go.dtapp.net/library/utils/gojson"
 )
 
 // AliyunDNSConfig 阿里云 DNS 配置
@@ -157,18 +156,6 @@ func (p *AliyunDNSProvider) Name() string {
 	return "阿里云 DNS"
 }
 
-// printData 打印数据
-func (p *AliyunDNSProvider) printData(ctx context.Context) {
-	p.logger.DebugContext(ctx, "数据",
-		slog.String("提供商", p.Name()),
-		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
-	)
-	p.logger.DebugContext(ctx, "数据",
-		slog.String("提供商", p.Name()),
-		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
-	)
-}
-
 // Check 检查子域名是否存在
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/DescribeDomainRecords
 func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
@@ -240,9 +227,6 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/AddDomainRecord
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/UpdateDomainRecord
 func (p *AliyunDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
-
-	// 打印数据
-	p.printData(ctx)
 
 	if p.InternalData.RecordID == "" {
 

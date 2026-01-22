@@ -16,7 +16,6 @@ import (
 	cdn "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/model"
 	regionCdn "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/region"
-	"go.dtapp.net/library/utils/gojson"
 )
 
 // HuaweiCDNConfig 华为云 CDN 配置
@@ -158,18 +157,6 @@ func (p *HuaweiCDNProvider) Name() string {
 	return "华为云 CDN"
 }
 
-// printData 打印数据
-func (p *HuaweiCDNProvider) printData(ctx context.Context) {
-	p.logger.DebugContext(ctx, "数据",
-		slog.String("提供商", p.Name()),
-		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
-	)
-	p.logger.DebugContext(ctx, "数据",
-		slog.String("提供商", p.Name()),
-		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
-	)
-}
-
 // Check 检查子域名是否存在
 // https://console.huaweicloud.com/apiexplorer/#/openapi/CDN/sdk?version=v2&api=ListDomains
 func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
@@ -255,9 +242,6 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 // https://console.huaweicloud.com/apiexplorer/#/openapi/CDN/debug?version=v2&api=CreateDomain
 // https://console.huaweicloud.com/apiexplorer/#/openapi/CDN/sdk?version=v2&api=UpdateDomainFullConfig
 func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
-
-	// 打印数据
-	p.printData(ctx)
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

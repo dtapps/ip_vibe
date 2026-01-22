@@ -13,7 +13,6 @@ import (
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	dnspod "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323"
-	"go.dtapp.net/library/utils/gojson"
 )
 
 // TencentDNSConfig 腾讯云 DNS 配置
@@ -146,18 +145,6 @@ func (p *TencentDNSProvider) Name() string {
 	return "腾讯云 DNS"
 }
 
-// printData 打印数据
-func (p *TencentDNSProvider) printData(ctx context.Context) {
-	p.logger.DebugContext(ctx, "数据",
-		slog.String("提供商", p.Name()),
-		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
-	)
-	p.logger.DebugContext(ctx, "数据",
-		slog.String("提供商", p.Name()),
-		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
-	)
-}
-
 // Check 检查子域名是否存在
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=DescribeRecordList
 func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
@@ -237,9 +224,6 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=CreateRecord
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=ModifyRecord
 func (p *TencentDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
-
-	// 打印数据
-	p.printData(ctx)
 
 	if p.InternalData.RecordID == "" {
 

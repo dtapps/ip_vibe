@@ -12,7 +12,6 @@ import (
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/services/cdn"
 	"github.com/baidubce/bce-sdk-go/services/cdn/api"
-	"go.dtapp.net/library/utils/gojson"
 )
 
 // BaiduCDNConfig 百度云 CDN 配置
@@ -137,18 +136,6 @@ func (p *BaiduCDNProvider) Name() string {
 	return "百度云 CDN"
 }
 
-// printData 打印数据
-func (p *BaiduCDNProvider) printData(ctx context.Context) {
-	p.logger.DebugContext(ctx, "数据",
-		slog.String("提供商", p.Name()),
-		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
-	)
-	p.logger.DebugContext(ctx, "数据",
-		slog.String("提供商", p.Name()),
-		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
-	)
-}
-
 // Check 检查子域名是否存在
 // https://console.bce.baidu.com/support/#/api?product=CDN&project=CDN&parent=查询用户名下所有域名
 // https://console.bce.baidu.com/support/#/api?product=CDN&project=CDN&parent=查询加速域名详情
@@ -257,9 +244,6 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 // https://cloud.baidu.com/doc/CDN/s/Vk121slzt#更新加速域名回源地址-setdomainorigin
 // https://cloud.baidu.com/doc/CDN/s/qkggncsxp
 func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
-
-	// 打印数据
-	p.printData(ctx)
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

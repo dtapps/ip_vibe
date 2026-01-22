@@ -13,7 +13,6 @@ import (
 	"github.com/jdcloud-api/jdcloud-sdk-go/services/domainservice/client"
 	"github.com/jdcloud-api/jdcloud-sdk-go/services/domainservice/models"
 	"github.com/spf13/cast"
-	"go.dtapp.net/library/utils/gojson"
 )
 
 // JdcloudDNSConfig 京东云 DNS 配置
@@ -135,18 +134,6 @@ func (p *JdcloudDNSProvider) Name() string {
 	return "京东云 DNS"
 }
 
-// printData 打印数据
-func (p *JdcloudDNSProvider) printData(ctx context.Context) {
-	p.logger.DebugContext(ctx, "数据",
-		slog.String("提供商", p.Name()),
-		slog.String("内部", gojson.JsonEncodeNoError(p.InternalData)),
-	)
-	p.logger.DebugContext(ctx, "数据",
-		slog.String("提供商", p.Name()),
-		slog.String("记录", gojson.JsonEncodeNoError(p.ItemData)),
-	)
-}
-
 // Check 检查子域名是否存在
 // https://docs.jdcloud.com/cn/jd-cloud-dns/api/describeresourcerecord
 func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
@@ -215,9 +202,6 @@ func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain
 // https://docs.jdcloud.com/cn/jd-cloud-dns/api/createresourcerecord
 // https://docs.jdcloud.com/cn/jd-cloud-dns/api/modifyresourcerecord
 func (p *JdcloudDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
-
-	// 打印数据
-	p.printData(ctx)
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

@@ -16,7 +16,6 @@ import (
 	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/operationlog"
-	"vibe_ip/internal/helper/cdn_helper"
 	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/provider"
@@ -473,13 +472,6 @@ func (s *IPUpdateTask) RunCdnTask() {
 	if s.dnsJob == nil {
 		go s.StartDnsJob(context.Background())
 	}
-}
-
-// 待处理
-type PendingCdnRecord struct {
-	item     *ent.CDNRecord               // CDN记录
-	platform platformconfig.Platform      // 平台
-	params   *cdn_helper.CDNProcessParams // 处理参数
 }
 
 // 更新 CDN 记录 参数
