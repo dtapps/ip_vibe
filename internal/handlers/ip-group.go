@@ -11,6 +11,7 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 )
 
 func IPGroup(c *gin.Context) {
@@ -32,6 +33,7 @@ func IPGroup(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -69,5 +71,40 @@ func IPGroup(c *gin.Context) {
 			Title: "IP组记录",
 			Data:  pageData,
 		},
+	)
+}
+
+func IPGroupPortForwardStats(c *gin.Context) {
+	// 请求参数
+	var requestParams types.IPGroupPortForwardStatsRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 准备页面数据
+	pageData := types.IPGroupPortForwardStatsResponse{}
+
+	// 查询规则和关联设备
+	firstRule, err := global.GvaEntDb.IpGroup.Query().
+		Where(ipgroup.IDEQ(requestParams.ID)).
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	pageData.Item = *firstRule
+
+	// 渲染模板
+	renderHTMLWithMenu(
+		c,
+		filepath.Join("pages", "ip-group_port-forward_stats.html"),
+		types.BasePageData[types.IPGroupPortForwardStatsResponse]{
+			Debug: sys_env.GvaEnv.DEBUG,
+			Title: "IP组端口转发统计",
+			Data:  pageData,
+		},
+		"device",
 	)
 }

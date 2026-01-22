@@ -1,0 +1,112 @@
+{{ define "content" }}
+
+{{/* 初始化局部变量 */}}
+{{ $item := .Data.Item }}
+{{ $baseWebUrlPath := "/ip-group" }}
+{{ $apiUrlPath := printf "/api/ip-groups/%d" $item.ID }}
+{{ $webUrlPath := printf "/ip-group/%d" $item.ID }}
+
+<div class="flex justify-between items-center mb-8">
+    <div class="flex items-center gap-4">
+        <div
+            class="w-14 h-14 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-600 shadow-inner">
+            {{ template "icons" (dict "Name" "i-lucide-boxes" "Class" "w-8 h-8") }}
+        </div>
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight">IP组流量汇总</h1>
+            <p class="opacity-60 text-sm mt-1 flex items-center gap-2">
+                <span class="font-medium text-indigo-600">{{ $item.Name }}</span>
+                <span class="opacity-30">|</span>
+                <span>IP组下全部设备端口转发数据实时监控</span>
+            </p>
+        </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+        <div class="bg-base-100 p-1 rounded-xl shadow-sm border border-base-300 flex items-center">
+            <select id="timeRange" onchange="loadStats()"
+                class="select select-sm border-none focus:ring-0 text-sm font-medium bg-transparent cursor-pointer">
+                <option value="1h">最近 1 小时</option>
+                <option value="6h" selected>最近 6 小时</option>
+                <option value="24h">最近 24 小时</option>
+                <option value="7d">最近 7 天</option>
+            </select>
+        </div>
+        <a href="{{ $baseWebUrlPath }}"
+            class="btn btn-sm btn-ghost hover:bg-base-100 rounded-xl px-4 flex items-center gap-2 transition-all">
+            {{ template "icons" (dict "Name" "i-lucide-arrow-left" "Class" "w-4 h-4") }} 返回列表
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="ui-stat-card">
+        <div class="flex items-center justify-between mb-4">
+            <span class="ui-stat-label">总活跃连接</span>
+            <div class="ui-stat-icon bg-orange-500/10 text-orange-500">
+                {{ template "icons" (dict "Name" "i-lucide-activity" "Class" "w-5 h-5") }}
+            </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+            <span class="ui-stat-value" id="stat-conn">0</span>
+            <span class="ui-stat-label uppercase text-[10px]">Conn</span>
+        </div>
+    </div>
+
+    <div class="ui-stat-card">
+        <div class="flex items-center justify-between mb-4">
+            <span class="ui-stat-label">总入站流量</span>
+            <div class="ui-stat-icon bg-green-500/10 text-green-500">
+                {{ template "icons" (dict "Name" "i-lucide-arrow-down" "Class" "w-5 h-5") }}
+            </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+            <span class="ui-stat-value !text-2xl" id="stat-bytes-in">0 B</span>
+        </div>
+    </div>
+
+    <div class="ui-stat-card">
+        <div class="flex items-center justify-between mb-4">
+            <span class="ui-stat-label">总出站流量</span>
+            <div class="ui-stat-icon bg-blue-500/10 text-blue-500">
+                {{ template "icons" (dict "Name" "i-lucide-arrow-up" "Class" "w-5 h-5") }}
+            </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+            <span class="ui-stat-value !text-2xl" id="stat-bytes-out">0 B</span>
+        </div>
+    </div>
+
+    <div class="ui-stat-card">
+        <div class="flex items-center justify-between mb-4">
+            <span class="ui-stat-label">总错误数</span>
+            <div class="ui-stat-icon bg-red-500/10 text-red-500">
+                {{ template "icons" (dict "Name" "i-lucide-alert-circle" "Class" "w-5 h-5") }}
+            </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+            <span class="ui-stat-value" id="stat-errors">0</span>
+        </div>
+    </div>
+</div>
+
+<div id="stats-container" data-ip-group-id="{{ $item.ID }}" class="space-y-6">
+    <div class="ui-chart-panel">
+        <div class="ui-chart-header">
+            <div class="ui-chart-decorator bg-primary"></div>
+            <h3 class="text-xl font-bold tracking-tight">IP组总带宽 (KB/s)</h3>
+        </div>
+        <div id="trafficChart" class="w-full h-[400px]"></div>
+    </div>
+
+    <div class="ui-chart-panel">
+        <div class="ui-chart-header">
+            <div class="ui-chart-decorator bg-orange-400"></div>
+            <h3 class="text-xl font-bold tracking-tight">全规则并发连接汇总</h3>
+        </div>
+        <div id="connChart" class="w-full h-[300px]"></div>
+    </div>
+</div>
+
+<script src="/static/js/ip-group_port-forward_stats.js"></script>
+{{ end }}

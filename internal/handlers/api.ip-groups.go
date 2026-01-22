@@ -27,6 +27,7 @@ func GetIPGroups(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -63,6 +64,7 @@ func GetIPGroupDetail(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -98,6 +100,7 @@ func CreateIPGroup(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -135,6 +138,7 @@ func UpdateIPGroup(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -171,6 +175,7 @@ func DeleteIPGroup(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -206,6 +211,7 @@ func BatchDeleteIPGroup(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -242,6 +248,7 @@ func GetIPGroupDevices(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -278,11 +285,49 @@ func HealthCheckIPGroup(c *gin.Context) {
 	// 创建服务
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
 		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
 	response, err := service.HealthcheckIPGroup(c, requestParams.ID)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, response)
+}
+
+// 获取IP组设备端口转发统计数据
+//
+//	@Description	获取IP组设备端口转发统计数据
+//	@Summary		获取IP组设备端口转发统计数据
+//	@Tags			IP组
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64										true	"IP组序号"
+//	@Success		200	{object}	APIResponse{data=types.GetIPGroupPortForwardStatsResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}								"参数错误"
+//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Router			/ip-groups/{id}/port-forward/stats [get]
+func GetIPGroupDevicePortForwardStats(c *gin.Context) {
+	// 请求参数
+	var requestParams types.GetIPGroupDevicePortForwardStatsRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewIPGroupService(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		sys_env.GvaEnv.DEBUG,
+	)
+
+	// 调用
+	response, err := service.GetIPGroupDevicePortForwardStats(c, requestParams.ID, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

@@ -44,6 +44,7 @@ func (m *GinServerManager) setupWebRouter() {
 
 	// IP组页面 - 提供HTML页面并渲染数据
 	r.GET("/ip-group", handlers.IPGroup)
+	r.GET("/ip-group/:id/port-forward/stats", handlers.IPGroupPortForwardStats)
 
 	// 端口转发页面 - 提供HTML页面并渲染数据
 	r.GET("/port-forward", handlers.PortForward)
@@ -177,14 +178,15 @@ func (m *GinServerManager) setupApiRouter() {
 		// IP组相关API
 		ipGroups := api.Group("/ip-groups")
 		{
-			ipGroups.GET("", handlers.GetIPGroups)                         // 获取全部IP组
-			ipGroups.GET("/:id", handlers.GetIPGroupDetail)                // 获取IP组详情
-			ipGroups.POST("", handlers.CreateIPGroup)                      // 创建IP组
-			ipGroups.PATCH("/:id", handlers.UpdateIPGroup)                 // 更新IP组
-			ipGroups.DELETE("/:id", handlers.DeleteIPGroup)                // 删除IP组
-			ipGroups.DELETE("/batch", handlers.BatchDeleteIPGroup)         // 批量删除IP组
-			ipGroups.GET("/:id/devices", handlers.GetIPGroupDevices)       // 获取IP组设备
-			ipGroups.GET("/:id/health-check", handlers.HealthCheckIPGroup) // 检查IP组健康状态
+			ipGroups.GET("", handlers.GetIPGroups)                                             // 获取全部IP组
+			ipGroups.GET("/:id", handlers.GetIPGroupDetail)                                    // 获取IP组详情
+			ipGroups.POST("", handlers.CreateIPGroup)                                          // 创建IP组
+			ipGroups.PATCH("/:id", handlers.UpdateIPGroup)                                     // 更新IP组
+			ipGroups.DELETE("/:id", handlers.DeleteIPGroup)                                    // 删除IP组
+			ipGroups.DELETE("/batch", handlers.BatchDeleteIPGroup)                             // 批量删除IP组
+			ipGroups.GET("/:id/devices", handlers.GetIPGroupDevices)                           // 获取IP组设备
+			ipGroups.GET("/:id/health-check", handlers.HealthCheckIPGroup)                     // 检查IP组健康状态
+			ipGroups.GET("/:id/port-forward/stats", handlers.GetIPGroupDevicePortForwardStats) // 获取IP组设备端口转发统计数据
 		}
 
 		// 端口转发相关API

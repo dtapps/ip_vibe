@@ -162,7 +162,7 @@
               </span>
             </div>
             <p class="text-sm opacity-80 mt-1">
-              {{ .Message }}
+              {{fieldEnumLabel "operation_log_op_type" .OpType}} / {{ .Message }}
             </p>
           </div>
           <div class="text-right">
@@ -225,7 +225,11 @@
         <div class="flex justify-between items-center">
           <span class="text-xs opacity-50">设备离线判定</span>
           <span class="text-sm font-mono font-bold text-primary">
+            {{ if ne $data.Settings.DeviceOfflineInvalidTime 0 }}
             {{ $data.Settings.DeviceOfflineInvalidTime }} 分钟
+            {{ else }}
+            不判定
+            {{ end }}
           </span>
         </div>
         <div class="flex justify-between items-center">

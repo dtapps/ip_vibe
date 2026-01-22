@@ -3,9 +3,12 @@ package service
 import (
 	"context"
 	"fmt"
+	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/webhooksubscription"
+	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/ent_log/portforwardstats"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
@@ -25,18 +28,21 @@ type IPGroupService interface {
 	BatchDeleteIPGroup(ctx context.Context, ids []int64) error
 	GetIPGroupDevices(ctx context.Context, id int64) ([]*types.GetDeviceResponse, error)
 	HealthcheckIPGroup(ctx context.Context, id int64) ([][]ToPairsStruct, error)
+	GetIPGroupDevicePortForwardStats(ctx context.Context, id int64, request *types.GetIPGroupDevicePortForwardStatsRequest) ([]*types.GetIPGroupDevicePortForwardStatsResponse, error)
 }
 
 // IPGroupServiceImpl IP组服务实现
 type IPGroupServiceImpl struct {
-	db    *ent.Client // 数据库客户端
-	debug bool        // 调试模式
+	db    *ent.Client     // 数据库客户端
+	logDb *ent_log.Client // 日志数据库客户端
+	debug bool            // 调试模式
 }
 
 // NewIPGroupService 创建 IP 组服务实例
-func NewIPGroupService(db *ent.Client, debug bool) IPGroupService {
+func NewIPGroupService(db *ent.Client, logDb *ent_log.Client, debug bool) IPGroupService {
 	return &IPGroupServiceImpl{
 		db:    db,
+		logDb: logDb,
 		debug: debug,
 	}
 }
@@ -415,4 +421,68 @@ func (s *IPGroupServiceImpl) HealthcheckIPGroup(ctx context.Context, id int64) (
 	}
 
 	return results, nil
+}
+
+// GetIPGroupDevicePortForwardStats 获取IP组设备端口转发统计数据
+func (s *IPGroupServiceImpl) GetIPGroupDevicePortForwardStats(ctx context.Context, id int64, request *types.GetIPGroupDevicePortForwardStatsRequest) ([]*types.GetIPGroupDevicePortForwardStatsResponse, error) {
+	// 查询IP组
+	firstIpGroup, err := s.db.IpGroup.Query().
+		Where(ipgroup.IDEQ(id)).
+		WithDevices().
+		First(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("查询IP组失败: 记录不存在或 %w", err)
+		}
+		return nil, fmt.Errorf("查询IP组失败: %w", err)
+	}
+
+	// 根据时间范围计算起始时间
+	startTime := time.Now().Add(-6 * time.Hour) // 默认 6 小时
+	if request.Range == "1h" {
+		startTime = time.Now().Add(-1 * time.Hour)
+	} else if request.Range == "6h" {
+		startTime = time.Now().Add(-6 * time.Hour)
+	} else if request.Range == "24h" {
+		startTime = time.Now().Add(-24 * time.Hour)
+	} else if request.Range == "7d" {
+		startTime = time.Now().AddDate(0, 0, -7)
+	}
+
+	if s.debug {
+		fmt.Printf("查询端口转发统计数据: ID=%d, Range=%s, StartTime=%s\n", id, request.Range, startTime.Format(time.DateTime))
+	}
+
+	lists := make([]*types.GetIPGroupDevicePortForwardStatsResponse, 0)
+	for _, item := range firstIpGroup.Edges.Devices {
+		// 查询端口转发统计记录
+		allStats, err := s.logDb.PortForwardStats.Query().
+			Where(portforwardstats.DeviceIDEQ(item.ID)).
+			Where(portforwardstats.CreatedAtGTE(startTime)).
+			OrderByCreatedAtDesc().
+			All(ctx)
+
+		if err != nil {
+			return nil, fmt.Errorf("查询统计记录失败: %w", err)
+		}
+
+		for _, stat := range allStats {
+			lists = append(lists, &types.GetIPGroupDevicePortForwardStatsResponse{
+				ID:            stat.ID,
+				CreatedAt:     stat.CreatedAt,
+				DeviceID:      stat.DeviceID,
+				PortForwardID: stat.PortForwardID,
+				StartTime:     stat.StartTime,
+				ActiveConn:    stat.ActiveConn,
+				TotalConn:     stat.TotalConn,
+				BytesIn:       stat.BytesIn,
+				BytesOut:      stat.BytesOut,
+				UDPPacketsIn:  stat.UDPPacketsIn,
+				UDPPacketsOut: stat.UDPPacketsOut,
+				Errors:        stat.Errors,
+			})
+		}
+	}
+
+	return lists, nil
 }

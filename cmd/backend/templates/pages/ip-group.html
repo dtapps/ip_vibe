@@ -51,7 +51,7 @@
           <th class="ui-th">设备关联数</th>
           <th class="ui-th">CDN关联数</th>
           <th class="ui-th">DNS关联数</th>
-          <th style="width: 350px" class="ui-th text-center">操作</th>
+          <th class="ui-th text-center">操作</th>
         </tr>
       </thead>
       <tbody id="table">
@@ -98,6 +98,12 @@
               <button class="btn btn-sm btn-outline btn-info rounded-lg px-3"
                 onclick="onLiveIPPopup('{{.ID}}','{{.Name}}')">
                 {{ template "icons" (dict "Name" "i-lucide-eye") }} 实时IP
+              </button>
+
+              {{ $portForwardStatsWebUrlPath := join $webUrlPath "/port-forward/stats" }}
+              <button class="btn btn-sm btn-outline btn-info rounded-lg px-3"
+                onclick="location.href='{{$portForwardStatsWebUrlPath}}'">
+                {{ template "icons" (dict "Name" "i-lucide-chart-line") }} 端口转发统计
               </button>
 
               <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}')">
