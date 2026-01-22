@@ -124,6 +124,20 @@ func (_c *OperationLogCreate) SetNillableMessage(v *string) *OperationLogCreate 
 	return _c
 }
 
+// SetGoVersion sets the "go_version" field.
+func (_c *OperationLogCreate) SetGoVersion(v string) *OperationLogCreate {
+	_c.mutation.SetGoVersion(v)
+	return _c
+}
+
+// SetNillableGoVersion sets the "go_version" field if the given value is not nil.
+func (_c *OperationLogCreate) SetNillableGoVersion(v *string) *OperationLogCreate {
+	if v != nil {
+		_c.SetGoVersion(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *OperationLogCreate) SetID(v int64) *OperationLogCreate {
 	_c.mutation.SetID(v)
@@ -184,6 +198,10 @@ func (_c *OperationLogCreate) defaults() {
 	if _, ok := _c.mutation.Status(); !ok {
 		v := operationlog.DefaultStatus
 		_c.mutation.SetStatus(v)
+	}
+	if _, ok := _c.mutation.GoVersion(); !ok {
+		v := operationlog.DefaultGoVersion
+		_c.mutation.SetGoVersion(v)
 	}
 }
 
@@ -286,6 +304,10 @@ func (_c *OperationLogCreate) createSpec() (*OperationLog, *sqlgraph.CreateSpec)
 		_spec.SetField(operationlog.FieldMessage, field.TypeString, value)
 		_node.Message = value
 	}
+	if value, ok := _c.mutation.GoVersion(); ok {
+		_spec.SetField(operationlog.FieldGoVersion, field.TypeString, value)
+		_node.GoVersion = value
+	}
 	return _node, _spec
 }
 
@@ -381,6 +403,9 @@ func (u *OperationLogUpsertOne) UpdateNewValues() *OperationLogUpsertOne {
 		}
 		if _, exists := u.create.mutation.Message(); exists {
 			s.SetIgnore(operationlog.FieldMessage)
+		}
+		if _, exists := u.create.mutation.GoVersion(); exists {
+			s.SetIgnore(operationlog.FieldGoVersion)
 		}
 	}))
 	return u
@@ -621,6 +646,9 @@ func (u *OperationLogUpsertBulk) UpdateNewValues() *OperationLogUpsertBulk {
 			}
 			if _, exists := b.mutation.Message(); exists {
 				s.SetIgnore(operationlog.FieldMessage)
+			}
+			if _, exists := b.mutation.GoVersion(); exists {
+				s.SetIgnore(operationlog.FieldGoVersion)
 			}
 		}
 	}))

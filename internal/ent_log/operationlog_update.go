@@ -99,6 +99,9 @@ func (_u *OperationLogUpdate) sqlSave(ctx context.Context) (_node int, err error
 	if _u.mutation.MessageCleared() {
 		_spec.ClearField(operationlog.FieldMessage, field.TypeString)
 	}
+	if _u.mutation.GoVersionCleared() {
+		_spec.ClearField(operationlog.FieldGoVersion, field.TypeString)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -221,6 +224,9 @@ func (_u *OperationLogUpdateOne) sqlSave(ctx context.Context) (_node *OperationL
 	}
 	if _u.mutation.MessageCleared() {
 		_spec.ClearField(operationlog.FieldMessage, field.TypeString)
+	}
+	if _u.mutation.GoVersionCleared() {
+		_spec.ClearField(operationlog.FieldGoVersion, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &OperationLog{config: _u.config}

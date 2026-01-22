@@ -36,7 +36,9 @@ type OperationLog struct {
 	// 状态
 	Status operationlog.Status `json:"status,omitempty"`
 	// 详情
-	Message      string `json:"message,omitempty"`
+	Message string `json:"message,omitempty"`
+	// Go 版本
+	GoVersion    string `json:"go_version,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -49,7 +51,7 @@ func (*OperationLog) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case operationlog.FieldID:
 			values[i] = new(sql.NullInt64)
-		case operationlog.FieldSource, operationlog.FieldOpType, operationlog.FieldObjType, operationlog.FieldStatus, operationlog.FieldMessage:
+		case operationlog.FieldSource, operationlog.FieldOpType, operationlog.FieldObjType, operationlog.FieldStatus, operationlog.FieldMessage, operationlog.FieldGoVersion:
 			values[i] = new(sql.NullString)
 		case operationlog.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -134,6 +136,12 @@ func (_m *OperationLog) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Message = value.String
 			}
+		case operationlog.FieldGoVersion:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field go_version", values[i])
+			} else if value.Valid {
+				_m.GoVersion = value.String
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -196,6 +204,9 @@ func (_m *OperationLog) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("message=")
 	builder.WriteString(_m.Message)
+	builder.WriteString(", ")
+	builder.WriteString("go_version=")
+	builder.WriteString(_m.GoVersion)
 	builder.WriteByte(')')
 	return builder.String()
 }

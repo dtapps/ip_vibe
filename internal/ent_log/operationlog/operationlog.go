@@ -32,6 +32,8 @@ const (
 	FieldStatus = "status"
 	// FieldMessage holds the string denoting the message field in the database.
 	FieldMessage = "message"
+	// FieldGoVersion holds the string denoting the go_version field in the database.
+	FieldGoVersion = "go_version"
 	// Table holds the table name of the operationlog in the database.
 	Table = "operation_log"
 )
@@ -48,6 +50,7 @@ var Columns = []string{
 	FieldNewValue,
 	FieldStatus,
 	FieldMessage,
+	FieldGoVersion,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -63,6 +66,8 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// DefaultGoVersion holds the default value on creation for the "go_version" field.
+	DefaultGoVersion string
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(int64) error
 )
@@ -240,4 +245,9 @@ func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 // ByMessage orders the results by the message field.
 func ByMessage(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldMessage, opts...).ToFunc()
+}
+
+// ByGoVersion orders the results by the go_version field.
+func ByGoVersion(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldGoVersion, opts...).ToFunc()
 }

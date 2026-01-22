@@ -32,11 +32,11 @@
     <table class="ui-table">
       <thead>
         <tr>
-          <th class="ui-th">序号</th>
-          <th class="ui-th">对象类型</th>
-          <th class="ui-th">操作类型</th>
-          <th class="ui-th text-center">详情描述</th>
-          <th class="ui-th">操作时间</th>
+          <th class="ui-th text-left">时间</th>
+          <th class="ui-th text-center">操作</th>
+          <th class="ui-th text-center">对象</th>
+          <th class="ui-th text-center">描述</th>
+          <th class="ui-th text-center">操作</th>
         </tr>
       </thead>
       <tbody id="table">
@@ -44,11 +44,15 @@
         {{ $apiUrlPath := printf "/api/logs/%d" .ID }}
         {{ $webUrlPath := printf "/logs/%d" .ID }}
         <tr class="hover:bg-base-200/50 transition-colors">
-          <td class="ui-td font-mono text-xs opacity-40">
-            {{.ID}}
+          <td class="ui-td text-left text-xs opacity-50 whitespace-nowrap">
+            {{formatTimeOrNil .CreatedAt}}
           </td>
 
-          <td class="ui-td">
+          <td class="ui-td text-center font-bold">
+            {{fieldEnumLabel "operation_log_op_type" .OpType}}
+          </td>
+
+          <td class="ui-td text-center">
             <span class="badge badge-ghost font-mono text-xs">
               {{.ObjID}}
             </span>
@@ -57,16 +61,15 @@
             </span>
           </td>
 
-          <td class="ui-td font-bold">
-            {{fieldEnumLabel "operation_log_op_type" .OpType}}
-          </td>
-
           <td class="ui-td text-center text-sm max-w-md break-all">
             {{.Message}}
           </td>
 
-          <td class="ui-td text-xs opacity-50 whitespace-nowrap">
-            {{formatTimeOrNil .CreatedAt}}
+          <td class="ui-td text-center">
+            <button class="btn btn-ghost btn-xs font-black hover:text-primary" data-detail='{{ marshalJSON . }}'
+              onclick="viewDetailFromData(this)">
+              详情
+            </button>
           </td>
         </tr>
         {{ end }}
@@ -79,6 +82,9 @@
     {{ template "pagination" (dict "Page" $page "Total" $total "PageSize" $pageSize) }}
   </div>
 </div>
+
+<!-- 查看 -->
+{{ template "pages/log_view.html" . }}
 
 <script src="/static/js/log.js"></script>
 {{ end }}

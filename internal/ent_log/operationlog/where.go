@@ -64,6 +64,11 @@ func Message(v string) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldEQ(FieldMessage, v))
 }
 
+// GoVersion applies equality check predicate on the "go_version" field. It's identical to GoVersionEQ.
+func GoVersion(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldEQ(FieldGoVersion, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldEQ(FieldCreatedAt, v))
@@ -327,6 +332,81 @@ func MessageEqualFold(v string) predicate.OperationLog {
 // MessageContainsFold applies the ContainsFold predicate on the "message" field.
 func MessageContainsFold(v string) predicate.OperationLog {
 	return predicate.OperationLog(sql.FieldContainsFold(FieldMessage, v))
+}
+
+// GoVersionEQ applies the EQ predicate on the "go_version" field.
+func GoVersionEQ(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldEQ(FieldGoVersion, v))
+}
+
+// GoVersionNEQ applies the NEQ predicate on the "go_version" field.
+func GoVersionNEQ(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldNEQ(FieldGoVersion, v))
+}
+
+// GoVersionIn applies the In predicate on the "go_version" field.
+func GoVersionIn(vs ...string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldIn(FieldGoVersion, vs...))
+}
+
+// GoVersionNotIn applies the NotIn predicate on the "go_version" field.
+func GoVersionNotIn(vs ...string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldNotIn(FieldGoVersion, vs...))
+}
+
+// GoVersionGT applies the GT predicate on the "go_version" field.
+func GoVersionGT(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldGT(FieldGoVersion, v))
+}
+
+// GoVersionGTE applies the GTE predicate on the "go_version" field.
+func GoVersionGTE(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldGTE(FieldGoVersion, v))
+}
+
+// GoVersionLT applies the LT predicate on the "go_version" field.
+func GoVersionLT(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldLT(FieldGoVersion, v))
+}
+
+// GoVersionLTE applies the LTE predicate on the "go_version" field.
+func GoVersionLTE(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldLTE(FieldGoVersion, v))
+}
+
+// GoVersionContains applies the Contains predicate on the "go_version" field.
+func GoVersionContains(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldContains(FieldGoVersion, v))
+}
+
+// GoVersionHasPrefix applies the HasPrefix predicate on the "go_version" field.
+func GoVersionHasPrefix(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldHasPrefix(FieldGoVersion, v))
+}
+
+// GoVersionHasSuffix applies the HasSuffix predicate on the "go_version" field.
+func GoVersionHasSuffix(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldHasSuffix(FieldGoVersion, v))
+}
+
+// GoVersionIsNil applies the IsNil predicate on the "go_version" field.
+func GoVersionIsNil() predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldIsNull(FieldGoVersion))
+}
+
+// GoVersionNotNil applies the NotNil predicate on the "go_version" field.
+func GoVersionNotNil() predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldNotNull(FieldGoVersion))
+}
+
+// GoVersionEqualFold applies the EqualFold predicate on the "go_version" field.
+func GoVersionEqualFold(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldEqualFold(FieldGoVersion, v))
+}
+
+// GoVersionContainsFold applies the ContainsFold predicate on the "go_version" field.
+func GoVersionContainsFold(v string) predicate.OperationLog {
+	return predicate.OperationLog(sql.FieldContainsFold(FieldGoVersion, v))
 }
 
 // And groups predicates with the AND operator between them.

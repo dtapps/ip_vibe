@@ -1264,6 +1264,31 @@ func (q *OperationLogQuery) OrderByMessageAsc() *OperationLogQuery {
 	return q.Order(Asc(operationlog.FieldMessage))
 }
 
+// OrderByGoVersionDesc 按字段 go_version 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *OperationLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.OperationLog.Query().
+//	    OrderByGoVersionDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *OperationLogQuery) OrderByGoVersionDesc() *OperationLogQuery {
+	return q.Order(Desc(operationlog.FieldGoVersion))
+}
+
+// OrderByGoVersionAsc 按字段 go_version 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *OperationLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.OperationLog.Query().
+//	    OrderByGoVersionAsc().
+//	    All(ctx)
+func (q *OperationLogQuery) OrderByGoVersionAsc() *OperationLogQuery {
+	return q.Order(Asc(operationlog.FieldGoVersion))
+}
+
 // OrderByIDDesc 按主键 ID 降序排列查询结果。
 // 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
 // 返回值类型为 *PortForwardStatsQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。

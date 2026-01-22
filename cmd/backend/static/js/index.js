@@ -1,4 +1,8 @@
-// 统一给 select 插「请选择」占位
+/**
+ * 统一给 select 插「请选择」占位
+ * @param {*} select select 元素
+ * @param {*} text 占位文本
+ */
 function addPlaceholder(select, text = "请选择") {
   const ph = document.createElement("option");
   ph.value = "";
@@ -9,7 +13,11 @@ function addPlaceholder(select, text = "请选择") {
   select.insertBefore(ph, select.firstChild);
 }
 
-// 辅助：ISO → MM-DD HH:mm
+/**
+ * ISO → MM-DD HH:mm
+ * @param {*} iso 时间字符串
+ * @returns 格式化后的时间字符串
+ */
 const fmtDate = (iso) => {
   const d = new Date(iso);
   const MM = String(d.getMonth() + 1).padStart(2, "0");
@@ -18,6 +26,21 @@ const fmtDate = (iso) => {
   const mm = String(d.getMinutes()).padStart(2, "0");
   return `${MM}-${DD} ${HH}:${mm}`;
 };
+
+/**
+ * 格式化 JSON 数据
+ * @param {*} val JSON 字符串或对象
+ * @returns 格式化后的 JSON 字符串
+ */
+function formatJSON(val) {
+  if (!val) return "// 无数据内容";
+  try {
+    const obj = typeof val === "string" ? JSON.parse(val) : val;
+    return JSON.stringify(obj, null, 4);
+  } catch (e) {
+    return val;
+  }
+}
 
 // 打开配置模态框
 function showModal(id, titleID, titleName) {

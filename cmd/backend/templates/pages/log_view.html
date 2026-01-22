@@ -1,0 +1,139 @@
+{{ define "pages/log_view.html" }}
+<div id="viewModal" class="modal">
+    <div class="ui-modal-box !max-w-6xl">
+        <div class="ui-header">
+            <h3 class="text-xl font-bold flex items-center gap-2 uppercase tracking-tighter">
+                {{ template "icons" (dict "Name" "i-lucide-braces" "Class" "w-6 h-6 text-primary") }}
+                <span>操作日志详情</span>
+            </h3>
+            <button class="btn btn-sm btn-circle btn-ghost" onclick="closeModal('viewModal')">
+                {{ template "icons" (dict "Name" "i-lucide-x") }}
+            </button>
+        </div>
+
+        <div
+            class="px-8 py-4 bg-base-200/30 border-b border-base-200 flex flex-wrap gap-x-8 gap-y-2 items-center text-[11px]">
+            <div class="flex items-center gap-2">
+                <span class="font-black opacity-30 uppercase">序号</span>
+                <span id="detailId" class="font-mono font-bold"></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="font-black opacity-30 uppercase">Source</span>
+                <span id="detailSource" class="text-primary font-bold"></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="font-black opacity-30 uppercase">OpType</span>
+                <span id="detailOpType" class="badge badge-outline badge-sm font-black italic"></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="font-black opacity-30 uppercase">ObjType</span>
+                <span id="detailObjType" class="badge badge-success badge-sm font-bold"></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="font-black opacity-30 uppercase">ObjID</span>
+                <span id="detailObjID" class="opacity-60"></span>
+            </div>
+        </div>
+
+        <div
+            class="px-8 py-2 bg-base-200/10 border-b border-base-200 flex gap-6 text-[9px] font-mono opacity-40 uppercase">
+            <div id="verGo">GO: -</div>
+        </div>
+
+        <div class="p-8 space-y-6">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center px-1">
+                        <label class="text-[10px] font-black opacity-40 uppercase tracking-widest">
+                            Old Value
+                        </label>
+                        <button class="btn btn-xs btn-ghost text-primary log-copy-btn"
+                            data-clipboard-target="#detailOldValue">
+                            复制
+                        </button>
+                    </div>
+                    <textarea id="detailOldValue" readonly
+                        class="w-full h-80 p-4 bg-neutral text-neutral-content rounded-2xl font-mono text-[11px] leading-relaxed border-none focus:outline-none resize-none shadow-inner"></textarea>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center px-1">
+                        <label class="text-[10px] font-black opacity-40 uppercase tracking-widest">
+                            New Value
+                        </label>
+                        <button class="btn btn-xs btn-ghost text-primary log-copy-btn"
+                            data-clipboard-target="#detailNewValue">
+                            复制
+                        </button>
+                    </div>
+                    <textarea id="detailNewValue" readonly
+                        class="w-full h-80 p-4 bg-neutral text-neutral-content rounded-2xl font-mono text-[11px] leading-relaxed border-none focus:outline-none resize-none shadow-inner"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-action p-8 pt-0">
+            <button class="btn btn-sm btn-ghost rounded-xl font-black uppercase" onclick="closeModal('viewModal')">
+                关闭
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 确保 DOM 加载后初始化 ClipboardJS
+    (async () => {
+        if (document.readyState === 'loading') {
+            await new Promise(resolve => {
+                document.addEventListener('DOMContentLoaded', resolve, { once: true });
+            });
+        }
+
+        try {
+            // 加载 ClipboardJS 库
+            await loadClipboardJS();
+
+            // 初始化 ClipboardJS 实例
+            const clipboard = new ClipboardJS('.log-copy-btn');
+
+            clipboard.on('success', function (e) {
+                const btn = e.trigger;
+                const oldText = btn.innerText;
+                const icon = btn.querySelector('span');
+
+                btn.innerText = "";
+                btn.appendChild(document.createTextNode(' ✅ 已复制'));
+                btn.classList.add("text-success");
+
+                setTimeout(() => {
+                    btn.innerText = "";
+                    if (icon) {
+                        btn.appendChild(icon)
+                    };
+                    btn.appendChild(document.createTextNode(oldText));
+                    btn.classList.remove("text-success");
+                }, 1500);
+                e.clearSelection();
+            });
+
+            clipboard.on('error', function (e) {
+                console.error('clipboard error', e);
+                alert('复制失败，请手动选择复制');
+            });
+        } catch (error) {
+            console.error('ClipboardJS 加载失败:', error.message);
+            // 增强fallback：禁用按钮 + 提示
+            document.querySelectorAll('.log-copy-btn').forEach(btn => {
+                btn.disabled = true;
+                btn.innerHTML = '<span>⚠️</span> 复制功能暂不可用（网络问题）';
+                btn.classList.add('text-warning');
+            });
+            // 可选：提示用户刷新或检查网络
+            if (confirm('复制功能加载失败，是否重试？')) {
+                location.reload();
+            }
+        }
+    })();
+</script>
+{{ end }}

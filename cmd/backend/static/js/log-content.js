@@ -2,6 +2,7 @@ const consoleBox = document.getElementById("logConsole");
 if (consoleBox && document.getElementById("autoScroll").checked) {
   consoleBox.scrollTop = consoleBox.scrollHeight;
 }
+
 /**
  * 从按钮绑定的 dataset 中解析并展示详情
  * @param {HTMLElement} btn 触发详情的按钮对象
@@ -47,10 +48,10 @@ function viewDetailFromData(btn) {
     const resHeadersJson = JSON.stringify(d.response_headers || {}, null, 4);
 
     document.getElementById("detailReqHeaders").innerHTML = renderHeaders(
-      d.request_headers
+      d.request_headers,
     );
     document.getElementById("detailResHeaders").innerHTML = renderHeaders(
-      d.response_headers
+      d.response_headers,
     );
 
     // 注入复制属性
@@ -64,7 +65,7 @@ function viewDetailFromData(btn) {
     // 6. 填充 Body Textarea
     document.getElementById("detailReqBody").value = formatJSON(d.request_body);
     document.getElementById("detailResBody").value = formatJSON(
-      d.response_body
+      d.response_body,
     );
 
     // 7. 打开 Modal (调用通用方法)
@@ -77,6 +78,8 @@ function viewDetailFromData(btn) {
 
 /**
  * 格式化 Header Map 为 HTML 列表
+ * @param {*} headers Header Map 对象
+ * @returns 格式化后的 HTML 字符串
  */
 function renderHeaders(headers) {
   if (!headers || Object.keys(headers).length === 0)
@@ -84,21 +87,8 @@ function renderHeaders(headers) {
   let html = "";
   for (const [key, values] of Object.entries(headers)) {
     html += `<div class="mb-1.5 leading-tight"><span class="text-primary/80 font-bold select-all">${key}:</span> <span class="opacity-70 break-all font-sans">${values.join(
-      ", "
+      ", ",
     )}</span></div>`;
   }
   return html;
-}
-
-/**
- * 格式化 JSON 数据
- */
-function formatJSON(val) {
-  if (!val) return "// 无数据内容";
-  try {
-    const obj = typeof val === "string" ? JSON.parse(val) : val;
-    return JSON.stringify(obj, null, 4);
-  } catch (e) {
-    return val;
-  }
 }

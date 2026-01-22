@@ -96,20 +96,24 @@
                         <td class="ui-td text-xs opacity-50 font-mono">
                             {{ formatTimeOrNil .CreatedAt }}
                         </td>
+
                         <td class="ui-td">
                             <span class="badge badge-ghost font-mono text-[10px] font-bold uppercase">
                                 {{ .Method }}
                             </span>
                         </td>
+
                         <td class="ui-td font-mono text-xs max-w-md truncate text-primary/80">
                             {{ .URL }}
                         </td>
+
                         <td class="ui-td">
                             <span
                                 class="badge {{ if lt .StatusCode 400 }}badge-success{{ else }}badge-error{{ end }} badge-sm font-bold">
                                 {{ .StatusCode }}
                             </span>
                         </td>
+
                         <td class="ui-td text-right">
                             <button class="btn btn-ghost btn-xs font-black hover:text-primary"
                                 data-detail='{{ marshalJSON . }}' onclick="viewDetailFromData(this)">

@@ -14,7 +14,7 @@ import (
 
 func main() {
 
-	// run_ent()
+	run_ent()
 	run_ent_log()
 
 }
@@ -23,7 +23,6 @@ func run_ent() {
 
 	target := "./ent"
 	target = "./internal/ent"
-	// target = "./internal/ent_log"
 	schemaPath := target + "/schema"
 	outputHookDir := filepath.Join(target, "schema/schemahook")
 
@@ -95,7 +94,6 @@ func run_ent() {
 func run_ent_log() {
 
 	target := "./ent"
-	// target = "./internal/ent"
 	target = "./internal/ent_log"
 	schemaPath := target + "/schema"
 

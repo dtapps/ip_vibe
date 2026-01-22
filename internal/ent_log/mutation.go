@@ -3767,6 +3767,7 @@ type OperationLogMutation struct {
 	new_value     *map[string]interface{}
 	status        *operationlog.Status
 	message       *string
+	go_version    *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*OperationLog, error)
@@ -4321,6 +4322,55 @@ func (m *OperationLogMutation) ResetMessage() {
 	delete(m.clearedFields, operationlog.FieldMessage)
 }
 
+// SetGoVersion sets the "go_version" field.
+func (m *OperationLogMutation) SetGoVersion(s string) {
+	m.go_version = &s
+}
+
+// GoVersion returns the value of the "go_version" field in the mutation.
+func (m *OperationLogMutation) GoVersion() (r string, exists bool) {
+	v := m.go_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGoVersion returns the old "go_version" field's value of the OperationLog entity.
+// If the OperationLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationLogMutation) OldGoVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGoVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGoVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGoVersion: %w", err)
+	}
+	return oldValue.GoVersion, nil
+}
+
+// ClearGoVersion clears the value of the "go_version" field.
+func (m *OperationLogMutation) ClearGoVersion() {
+	m.go_version = nil
+	m.clearedFields[operationlog.FieldGoVersion] = struct{}{}
+}
+
+// GoVersionCleared returns if the "go_version" field was cleared in this mutation.
+func (m *OperationLogMutation) GoVersionCleared() bool {
+	_, ok := m.clearedFields[operationlog.FieldGoVersion]
+	return ok
+}
+
+// ResetGoVersion resets all changes to the "go_version" field.
+func (m *OperationLogMutation) ResetGoVersion() {
+	m.go_version = nil
+	delete(m.clearedFields, operationlog.FieldGoVersion)
+}
+
 // Where appends a list predicates to the OperationLogMutation builder.
 func (m *OperationLogMutation) Where(ps ...predicate.OperationLog) {
 	m.predicates = append(m.predicates, ps...)
@@ -4355,7 +4405,7 @@ func (m *OperationLogMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OperationLogMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, operationlog.FieldCreatedAt)
 	}
@@ -4383,6 +4433,9 @@ func (m *OperationLogMutation) Fields() []string {
 	if m.message != nil {
 		fields = append(fields, operationlog.FieldMessage)
 	}
+	if m.go_version != nil {
+		fields = append(fields, operationlog.FieldGoVersion)
+	}
 	return fields
 }
 
@@ -4409,6 +4462,8 @@ func (m *OperationLogMutation) Field(name string) (ent.Value, bool) {
 		return m.Status()
 	case operationlog.FieldMessage:
 		return m.Message()
+	case operationlog.FieldGoVersion:
+		return m.GoVersion()
 	}
 	return nil, false
 }
@@ -4436,6 +4491,8 @@ func (m *OperationLogMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldStatus(ctx)
 	case operationlog.FieldMessage:
 		return m.OldMessage(ctx)
+	case operationlog.FieldGoVersion:
+		return m.OldGoVersion(ctx)
 	}
 	return nil, fmt.Errorf("unknown OperationLog field %s", name)
 }
@@ -4508,6 +4565,13 @@ func (m *OperationLogMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetMessage(v)
 		return nil
+	case operationlog.FieldGoVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGoVersion(v)
+		return nil
 	}
 	return fmt.Errorf("unknown OperationLog field %s", name)
 }
@@ -4562,6 +4626,9 @@ func (m *OperationLogMutation) ClearedFields() []string {
 	if m.FieldCleared(operationlog.FieldMessage) {
 		fields = append(fields, operationlog.FieldMessage)
 	}
+	if m.FieldCleared(operationlog.FieldGoVersion) {
+		fields = append(fields, operationlog.FieldGoVersion)
+	}
 	return fields
 }
 
@@ -4600,6 +4667,9 @@ func (m *OperationLogMutation) ClearField(name string) error {
 	case operationlog.FieldMessage:
 		m.ClearMessage()
 		return nil
+	case operationlog.FieldGoVersion:
+		m.ClearGoVersion()
+		return nil
 	}
 	return fmt.Errorf("unknown OperationLog nullable field %s", name)
 }
@@ -4634,6 +4704,9 @@ func (m *OperationLogMutation) ResetField(name string) error {
 		return nil
 	case operationlog.FieldMessage:
 		m.ResetMessage()
+		return nil
+	case operationlog.FieldGoVersion:
+		m.ResetGoVersion()
 		return nil
 	}
 	return fmt.Errorf("unknown OperationLog field %s", name)
