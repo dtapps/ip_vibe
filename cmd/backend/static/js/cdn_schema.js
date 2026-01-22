@@ -213,7 +213,6 @@ const CDN_SCHEMA = {
           type: "number",
           placeholder: "如 80",
           required: false,
-          value: 0,
         },
         {
           id: "https_port",
@@ -221,7 +220,6 @@ const CDN_SCHEMA = {
           type: "number",
           placeholder: "如 443",
           required: false,
-          value: 0,
         },
       ],
     ],
@@ -429,7 +427,6 @@ const CDN_SCHEMA = {
           type: "number",
           placeholder: "如 80",
           required: false,
-          value: 0,
         },
         {
           id: "https_port",
@@ -437,7 +434,6 @@ const CDN_SCHEMA = {
           type: "number",
           placeholder: "如 443",
           required: false,
-          value: 0,
         },
       ],
       {
@@ -447,6 +443,96 @@ const CDN_SCHEMA = {
         placeholder: "请输入备注",
         required: false,
       },
+    ],
+  },
+  qiniu_cdn: {
+    label: "七牛云 CDN",
+    fields: [
+      [
+        {
+          id: "platform",
+          label: "平台类型",
+          type: "select",
+          placeholder: "请选择平台类型",
+          required: true,
+          options: [
+            {
+              value: "web",
+              label: "网页",
+            },
+            {
+              value: "download",
+              label: "下载",
+            },
+            {
+              value: "vod",
+              label: "点播",
+            },
+            {
+              value: "dynamic",
+              label: "动态加速",
+            },
+          ],
+        },
+        {
+          id: "geo_cover",
+          label: "地域",
+          type: "select",
+          placeholder: "请选择地域",
+          required: false,
+          options: [
+            {
+              value: "china",
+              label: "中国大陆",
+            },
+            {
+              value: "foreign",
+              label: "海外",
+            },
+            {
+              value: "global",
+              label: "全球",
+            },
+          ],
+        },
+      ],
+      {
+        id: "source_url_scheme",
+        label: "回源协议",
+        type: "select",
+        placeholder: "请选择回源协议",
+        required: false,
+        options: [
+          {
+            value: "follow",
+            label: "协议跟随",
+          },
+          {
+            value: "http",
+            label: "HTTP协议回源",
+          },
+          {
+            value: "https",
+            label: "HTTPS协议回源",
+          },
+        ],
+      },
+      [
+        {
+          id: "http_port",
+          label: "HTTP 端口",
+          type: "number",
+          placeholder: "如 80",
+          required: false,
+        },
+        {
+          id: "https_port",
+          label: "HTTPS 端口",
+          type: "number",
+          placeholder: "如 443",
+          required: false,
+        },
+      ],
     ],
   },
 };

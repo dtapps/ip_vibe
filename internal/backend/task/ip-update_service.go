@@ -569,6 +569,16 @@ func (s *IPUpdateTask) CdnUpdate(ctx context.Context, logger *slog.Logger, param
 		if err != nil {
 			return fmt.Errorf("初始提供程序失败: %w", err)
 		}
+	case platformconfig.PlatformQiniuCdn:
+		cdnProviderCfg := cdn.NewDefaultQiniuCDNConfig()
+		err = cdnProviderCfg.ParseCustomConfig(params.platform.ConfigJSON)
+		if err != nil {
+			return fmt.Errorf("解析自定义配置失败: %w", err)
+		}
+		cdnProvider, err = cdn.NewQiniuCDNProvider(ctx, logger, cdnProviderCfg, cdnProviderOpts...)
+		if err != nil {
+			return fmt.Errorf("初始提供程序失败: %w", err)
+		}
 	default:
 		return fmt.Errorf("暂不支持该平台: %s", params.platform.String())
 	}
