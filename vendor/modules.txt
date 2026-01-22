@@ -156,7 +156,7 @@ github.com/bmatcuk/doublestar
 # github.com/bytedance/gopkg v0.1.3
 ## explicit; go 1.18
 github.com/bytedance/gopkg/lang/dirtmake
-# github.com/bytedance/sonic v1.14.2
+# github.com/bytedance/sonic v1.15.0
 ## explicit; go 1.18
 github.com/bytedance/sonic
 github.com/bytedance/sonic/ast
@@ -191,7 +191,7 @@ github.com/bytedance/sonic/internal/utils
 github.com/bytedance/sonic/option
 github.com/bytedance/sonic/unquote
 github.com/bytedance/sonic/utf8
-# github.com/bytedance/sonic/loader v0.4.0
+# github.com/bytedance/sonic/loader v0.5.0
 ## explicit; go 1.16
 github.com/bytedance/sonic/loader
 github.com/bytedance/sonic/loader/internal/abi
@@ -579,7 +579,7 @@ github.com/hashicorp/hcl/v2/hclparse
 github.com/hashicorp/hcl/v2/hclsyntax
 github.com/hashicorp/hcl/v2/hclwrite
 github.com/hashicorp/hcl/v2/json
-# github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.184
+# github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.185
 ## explicit; go 1.14
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth
@@ -686,7 +686,7 @@ github.com/magefile/mage/sh
 # github.com/mattn/go-isatty v0.0.20
 ## explicit; go 1.15
 github.com/mattn/go-isatty
-# github.com/miekg/dns v1.1.70
+# github.com/miekg/dns v1.1.72
 ## explicit; go 1.24.0
 github.com/miekg/dns
 # github.com/mitchellh/go-wordwrap v1.0.1
@@ -866,7 +866,7 @@ github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects/enums
 github.com/volcengine/volc-sdk-golang/base
 github.com/volcengine/volc-sdk-golang/service/dns
 github.com/volcengine/volc-sdk-golang/service/sts
-# github.com/volcengine/volcengine-go-sdk v1.2.7
+# github.com/volcengine/volcengine-go-sdk v1.2.8
 ## explicit; go 1.14
 github.com/volcengine/volcengine-go-sdk/internal/ini
 github.com/volcengine/volcengine-go-sdk/internal/sdkio

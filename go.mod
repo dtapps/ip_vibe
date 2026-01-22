@@ -42,11 +42,11 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.5
-	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.184
+	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.185
 	github.com/imroc/req/v3 v3.57.0
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
 	github.com/kingsoftcloud/sdk-go/v2 v2.2.63
-	github.com/miekg/dns v1.1.70
+	github.com/miekg/dns v1.1.72
 	github.com/modelcontextprotocol/go-sdk v1.2.0
 	github.com/qiniu/go-sdk/v7 v7.25.6
 	github.com/spf13/cast v1.10.0
@@ -58,7 +58,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.36
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.32
-	github.com/volcengine/volcengine-go-sdk v1.2.7
+	github.com/volcengine/volcengine-go-sdk v1.2.8
 	github.com/wdcbot/qingfeng v1.6.3
 	go.dtapp.net/library/contrib/http_log v1.0.11
 	go.dtapp.net/library/contrib/req_log v1.0.4
@@ -103,8 +103,8 @@ require (
 	github.com/basgys/goxml2json v1.1.0 // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
 	github.com/bytedance/gopkg v0.1.3 // indirect
-	github.com/bytedance/sonic v1.14.2 // indirect
-	github.com/bytedance/sonic/loader v0.4.0 // indirect
+	github.com/bytedance/sonic v1.15.0 // indirect
+	github.com/bytedance/sonic/loader v0.5.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
