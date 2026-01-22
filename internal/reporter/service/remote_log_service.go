@@ -48,8 +48,8 @@ func (s *RemoteLogService) StartTunnel(ctx context.Context, deviceID string) {
 		return
 	}
 
-	// 打印你最喜欢的日志，代表初始化成功
-	fmt.Println("远程日志隧道连接成功，傻逼玩意准备就绪")
+	// 初始化成功
+	fmt.Println("远程日志隧道连接成功，准备就绪")
 
 	// 3. 开启循环，死等服务端的“文件名”指令
 	for {
