@@ -87,13 +87,18 @@
           </td>
 
           {{ if deviceOfflineEnabled }}
-          <td class="ui-td font-bold text-base-content tooltip"
-            data-tip="上次心跳时间：{{ formatTimeOrNil .LastHeartbeatAt }}，上次上报时间：{{ formatTimeOrNil .LastReportedAt }}">
-            {{ if .Online }}
-            <span class="badge badge-success">在线</span>
-            {{ else }}
-            <span class="badge badge-error">离线</span>
-            {{ end }}
+          <td class="ui-td font-bold text-base-content">
+            <div class="tooltip tooltip-top">
+              <div class="tooltip-content">
+                上次心跳时间：{{ formatTimeOrNil .LastHeartbeatAt }}<br>
+                上次上报时间：{{ formatTimeOrNil .LastReportedAt }}
+              </div>
+              {{ if .Online }}
+              <span class="badge badge-success">在线</span>
+              {{ else }}
+              <span class="badge badge-error">离线</span>
+              {{ end }}
+            </div>
           </td>
           {{ end }}
 

@@ -22,7 +22,7 @@ func Dashboard(c *gin.Context) {
 	pageData := types.DashboardResponse{
 		RecentLogs: []types.GetLogResponse{},
 	}
-	pageData.Stats.LogLimit = 15
+	pageData.Stats.LogLimit = 10
 
 	// 设备总数
 	pageData.Stats.DeviceCount, _ = global.GvaEntDb.Device.Query().Count(c)

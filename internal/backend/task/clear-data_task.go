@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent_log"
@@ -13,11 +12,14 @@ import (
 	"vibe_ip/internal/ent_log/httplog"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/ent_log/portforwardstats"
+	"vibe_ip/internal/ent_log/reqlog"
 	"vibe_ip/internal/ent_log/restylog"
 	"vibe_ip/internal/ent_log/webhookhistory"
+	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/helper/gocron_helper"
 
 	"github.com/go-co-op/gocron/v2"
+	"go.dtapp.net/library/utils/gotime"
 )
 
 // 清除数据任务
@@ -108,60 +110,16 @@ func (s *ClearDataTask) executeDomainMonitorCheck(ctx context.Context, logger *s
 	logger.InfoContext(ctx, "开始处理")
 	defer logger.InfoContext(ctx, "处理完成")
 
-	// 保留最近一年的数据时间
-	var deviceIpReportTime = time.Now().AddDate(-1, 0, 0)
-
-	// 保留最近半年的数据时间
-	var domainMonitorHistoryTime = time.Now().AddDate(0, -6, 0)
-
-	// 保留最近一个季度的数据时间
-	var httpLogTime = time.Now().AddDate(0, -3, 0)
-
-	// 保留最近一年的数据时间
-	var operationLogTime = time.Now().AddDate(-1, 0, 0)
-
-	// 保留最近半年的数据时间
-	var portForwardStatsTime = time.Now().AddDate(0, -6, 0)
-
-	// 保留最近一个季度的数据时间
-	var restyLogTime = time.Now().AddDate(0, -3, 0)
-
-	// 保留最近一年的数据时间
-	var webhookHistoryTime = time.Now().AddDate(-1, 0, 0)
-
-	_, err = s.logDb.DeviceIpReport.Delete().
-		Where(deviceipreport.CreatedAtLT(deviceIpReportTime)).
-		Exec(ctx)
-	if err != nil {
-		return fmt.Errorf("删除设备IP报告失败: %w", err)
-	}
-
-	_, err = s.logDb.DomainMonitorHistory.Delete().
-		Where(domainmonitorhistory.CreatedAtLT(domainMonitorHistoryTime)).
-		Exec(ctx)
-	if err != nil {
-		return fmt.Errorf("删除域名监控历史记录失败: %w", err)
-	}
+	// HTTP请求日志
+	var httpLogTime = gotime.Current().BeforeDay(int(db_cache.GvaSetting.HTTPRequestLogRecordTime)).Time
+	var restyLogTime = gotime.Current().BeforeDay(int(db_cache.GvaSetting.HTTPRequestLogRecordTime)).Time
+	var reqLogTime = gotime.Current().BeforeDay(int(db_cache.GvaSetting.HTTPRequestLogRecordTime)).Time
 
 	_, err = s.logDb.HttpLog.Delete().
 		Where(httplog.CreatedAtLT(httpLogTime)).
 		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("删除HTTP日志失败: %w", err)
-	}
-
-	_, err = s.logDb.OperationLog.Delete().
-		Where(operationlog.CreatedAtLT(operationLogTime)).
-		Exec(ctx)
-	if err != nil {
-		return fmt.Errorf("删除操作日志失败: %w", err)
-	}
-
-	_, err = s.logDb.PortForwardStats.Delete().
-		Where(portforwardstats.CreatedAtLT(portForwardStatsTime)).
-		Exec(ctx)
-	if err != nil {
-		return fmt.Errorf("删除端口转发统计记录失败: %w", err)
 	}
 
 	_, err = s.logDb.RestyLog.Delete().
@@ -171,11 +129,55 @@ func (s *ClearDataTask) executeDomainMonitorCheck(ctx context.Context, logger *s
 		return fmt.Errorf("删除Resty日志失败: %w", err)
 	}
 
+	_, err = s.logDb.ReqLog.Delete().
+		Where(reqlog.CreatedAtLT(reqLogTime)).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("删除Req日志失败: %w", err)
+	}
+
+	// 历史数据保留时间
+	var domainMonitorHistoryTime = gotime.Current().BeforeDay(int(db_cache.GvaSetting.HistoryDataRetainTime)).Time
+	var operationLogTime = gotime.Current().BeforeDay(int(db_cache.GvaSetting.HistoryDataRetainTime)).Time
+	var webhookHistoryTime = gotime.Current().BeforeDay(int(db_cache.GvaSetting.HistoryDataRetainTime)).Time
+
+	_, err = s.logDb.DomainMonitorHistory.Delete().
+		Where(domainmonitorhistory.CreatedAtLT(domainMonitorHistoryTime)).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("删除域名监控历史记录失败: %w", err)
+	}
+
+	_, err = s.logDb.OperationLog.Delete().
+		Where(operationlog.CreatedAtLT(operationLogTime)).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("删除操作日志失败: %w", err)
+	}
+
 	_, err = s.logDb.WebhookHistory.Delete().
 		Where(webhookhistory.CreatedAtLT(webhookHistoryTime)).
 		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("删除Webhook历史记录失败: %w", err)
+	}
+
+	// 统计数据保留时间
+	var deviceIpReportTime = gotime.Current().BeforeDay(int(db_cache.GvaSetting.StatisticDataRetainTime)).Time
+	var portForwardStatsTime = gotime.Current().BeforeDay(int(db_cache.GvaSetting.StatisticDataRetainTime)).Time
+
+	_, err = s.logDb.DeviceIpReport.Delete().
+		Where(deviceipreport.CreatedAtLT(deviceIpReportTime)).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("删除设备IP报告失败: %w", err)
+	}
+
+	_, err = s.logDb.PortForwardStats.Delete().
+		Where(portforwardstats.CreatedAtLT(portForwardStatsTime)).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("删除端口转发统计记录失败: %w", err)
 	}
 
 	return nil

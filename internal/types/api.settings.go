@@ -9,6 +9,9 @@ type GetSettingResponse struct {
 	CDNRefreshTaskTime       string `json:"cdn_refresh_task_time" jsonschema:"description=CDN刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）"`    // CDN刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）
 	DNSRefreshTaskTime       string `json:"dns_refresh_task_time" jsonschema:"description=DNS刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）"`    // DNS刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）
 	SSLRefreshTaskTime       string `json:"ssl_refresh_task_time" jsonschema:"description=SSL刷新任务时间（时，默认 8-10 小时，多个时用-分隔）"`     // SSL刷新任务时间（时，默认 8-10 小时，多个时用-分隔）
+	HTTPRequestLogRecordTime int64  `json:"http_request_log_record_time" jsonschema:"description=HTTP请求日志记录时间（天，默认 90 天）"`      // HTTP请求日志记录时间（天，默认 90 天）
+	HistoryDataRetainTime    int64  `json:"history_data_retain_time" jsonschema:"description=历史数据保留时间（天，默认 365 天）"`             // 历史数据保留时间（天，默认 365 天）
+	StatisticDataRetainTime  int64  `json:"statistic_data_retain_time" jsonschema:"description=统计数据保留时间（天，默认 365 天）"`           // 统计数据保留时间（天，默认 365 天）
 }
 
 // 更新设置 请求结构

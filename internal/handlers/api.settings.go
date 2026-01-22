@@ -38,6 +38,9 @@ func GetSetting(c *gin.Context) {
 		CDNRefreshTaskTime:       setting.CDNRefreshTaskTime,
 		DNSRefreshTaskTime:       setting.DNSRefreshTaskTime,
 		SSLRefreshTaskTime:       setting.SSLRefreshTaskTime,
+		HTTPRequestLogRecordTime: setting.HTTPRequestLogRecordTime,
+		HistoryDataRetainTime:    setting.HistoryDataRetainTime,
+		StatisticDataRetainTime:  setting.StatisticDataRetainTime,
 	}
 
 	successResponse(c, response)
@@ -93,6 +96,9 @@ func UpdateSetting(c *gin.Context) {
 		CDNRefreshTaskTime:       requestParams.CDNRefreshTaskTime,
 		DNSRefreshTaskTime:       requestParams.DNSRefreshTaskTime,
 		SSLRefreshTaskTime:       requestParams.SSLRefreshTaskTime,
+		HTTPRequestLogRecordTime: requestParams.HTTPRequestLogRecordTime,
+		HistoryDataRetainTime:    requestParams.HistoryDataRetainTime,
+		StatisticDataRetainTime:  requestParams.StatisticDataRetainTime,
 	})
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())

@@ -25,6 +25,13 @@ type Setting struct {
 	DNSRefreshTaskTime string `json:"dns_refresh_task_time"`
 	// SSL刷新任务时间（时，默认 8-10 小时，范围时用-分隔）
 	SSLRefreshTaskTime string `json:"ssl_refresh_task_time"`
+
+	// HTTP请求日志记录时间（天，默认 90 天）
+	HTTPRequestLogRecordTime int64 `json:"http_request_log_record_time"`
+	// 历史数据保留时间（天，默认 365 天）
+	HistoryDataRetainTime int64 `json:"history_data_retain_time"`
+	// 统计数据保留时间（天，默认 365 天）
+	StatisticDataRetainTime int64 `json:"statistic_data_retain_time"`
 }
 
 // GvaSetting 全局设置
@@ -32,13 +39,16 @@ var GvaSetting *Setting
 
 // 统一管理所有 Cache Key
 const (
-	KeyDeviceOfflineTime = "conf:device_offline_invalid_time"
-	KeyIPReportInterval  = "conf:ip_report_interval_time"
-	KeyPortForwardReload = "conf:port_forward_reload_time"
-	KeyPortForwardReport = "conf:port_forward_report_time"
-	KeyCDNRefreshTime    = "conf:cdn_refresh_task_time"
-	KeyDNSRefreshTime    = "conf:dns_refresh_task_time"
-	KeySSLRefreshTime    = "conf:ssl_refresh_task_time"
+	KeyDeviceOfflineTime        = "conf:device_offline_invalid_time"
+	KeyIPReportInterval         = "conf:ip_report_interval_time"
+	KeyPortForwardReload        = "conf:port_forward_reload_time"
+	KeyPortForwardReport        = "conf:port_forward_report_time"
+	KeyCDNRefreshTime           = "conf:cdn_refresh_task_time"
+	KeyDNSRefreshTime           = "conf:dns_refresh_task_time"
+	KeySSLRefreshTime           = "conf:ssl_refresh_task_time"
+	KeyHTTPRequestLogRecordTime = "conf:http_request_log_record_time"
+	KeyHistoryDataRetainTime    = "conf:history_data_retain_time"
+	KeyStatisticDataRetainTime  = "conf:statistic_data_retain_time"
 )
 
 // 初始化设置
@@ -68,6 +78,9 @@ func InitSetting(ctx context.Context, db *ent.Client) {
 	GvaSetting.CDNRefreshTaskTime = getVal(KeyCDNRefreshTime, "10-12")
 	GvaSetting.DNSRefreshTaskTime = getVal(KeyDNSRefreshTime, "10-12")
 	GvaSetting.SSLRefreshTaskTime = getVal(KeySSLRefreshTime, "8-10")
+	GvaSetting.HTTPRequestLogRecordTime = cast.ToInt64(getVal(KeyHTTPRequestLogRecordTime, "90"))
+	GvaSetting.HistoryDataRetainTime = cast.ToInt64(getVal(KeyHistoryDataRetainTime, "365"))
+	GvaSetting.StatisticDataRetainTime = cast.ToInt64(getVal(KeyStatisticDataRetainTime, "365"))
 
 }
 
@@ -98,6 +111,9 @@ func GetSetting(ctx context.Context, db *ent.Client) *Setting {
 	setting.CDNRefreshTaskTime = getVal(KeyCDNRefreshTime, "10-12")
 	setting.DNSRefreshTaskTime = getVal(KeyDNSRefreshTime, "10-12")
 	setting.SSLRefreshTaskTime = getVal(KeySSLRefreshTime, "8-10")
+	setting.HTTPRequestLogRecordTime = cast.ToInt64(getVal(KeyHTTPRequestLogRecordTime, "90"))
+	setting.HistoryDataRetainTime = cast.ToInt64(getVal(KeyHistoryDataRetainTime, "365"))
+	setting.StatisticDataRetainTime = cast.ToInt64(getVal(KeyStatisticDataRetainTime, "365"))
 
 	return setting
 }
@@ -106,13 +122,16 @@ func GetSetting(ctx context.Context, db *ent.Client) *Setting {
 func UpdateSetting(ctx context.Context, db *ent.Client, newSetting *Setting) error {
 	// 定义 字段 -> Key 的映射关系，循环处理
 	updates := map[string]any{
-		KeyDeviceOfflineTime: newSetting.DeviceOfflineInvalidTime,
-		KeyIPReportInterval:  newSetting.IPReportIntervalTime,
-		KeyPortForwardReload: newSetting.PortForwardReloadTime,
-		KeyPortForwardReport: newSetting.PortForwardReportTime,
-		KeyCDNRefreshTime:    newSetting.CDNRefreshTaskTime,
-		KeyDNSRefreshTime:    newSetting.DNSRefreshTaskTime,
-		KeySSLRefreshTime:    newSetting.SSLRefreshTaskTime,
+		KeyDeviceOfflineTime:        newSetting.DeviceOfflineInvalidTime,
+		KeyIPReportInterval:         newSetting.IPReportIntervalTime,
+		KeyPortForwardReload:        newSetting.PortForwardReloadTime,
+		KeyPortForwardReport:        newSetting.PortForwardReportTime,
+		KeyCDNRefreshTime:           newSetting.CDNRefreshTaskTime,
+		KeyDNSRefreshTime:           newSetting.DNSRefreshTaskTime,
+		KeySSLRefreshTime:           newSetting.SSLRefreshTaskTime,
+		KeyHTTPRequestLogRecordTime: newSetting.HTTPRequestLogRecordTime,
+		KeyHistoryDataRetainTime:    newSetting.HistoryDataRetainTime,
+		KeyStatisticDataRetainTime:  newSetting.StatisticDataRetainTime,
 	}
 
 	// 开启 Upsert 模式批量写入 Cache 表

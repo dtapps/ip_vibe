@@ -62,25 +62,51 @@
                 </div>
             </div>
 
-            <div class="ui-form-control">
-                <label class="ui-label-text">CDN刷新任务时间 <span class="text-error">*</span></label>
-                <input type="text" name="cdn_refresh_task_time" id="cdn_refresh_task_time" class="ui-input" required
-                    placeholder="如: 10-12" />
-                <div class="ui-hint">注意: 单位：赋值，默认：10-12分钟，范围时用-分隔</div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="ui-form-control">
+                    <label class="ui-label-text">CDN刷新任务时间 <span class="text-error">*</span></label>
+                    <input type="text" name="cdn_refresh_task_time" id="cdn_refresh_task_time" class="ui-input" required
+                        placeholder="如: 10-12" />
+                    <div class="ui-hint">注意: 单位：赋值，默认：10-12分钟，范围时用-分隔</div>
+                </div>
+                <div class="ui-form-control">
+                    <label class="ui-label-text">DNS刷新任务时间 <span class="text-error">*</span></label>
+                    <input type="text" name="dns_refresh_task_time" id="dns_refresh_task_time" class="ui-input" required
+                        placeholder="如: 10-12" />
+                    <div class="ui-hint">注意: 单位：赋值，默认：10-12分钟，范围时用-分隔</div>
+                </div>
             </div>
 
-            <div class="ui-form-control">
-                <label class="ui-label-text">DNS刷新任务时间 <span class="text-error">*</span></label>
-                <input type="text" name="dns_refresh_task_time" id="dns_refresh_task_time" class="ui-input" required
-                    placeholder="如: 10-12" />
-                <div class="ui-hint">注意: 单位：赋值，默认：10-12分钟，范围时用-分隔</div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="ui-form-control">
+                    <label class="ui-label-text">SSL刷新任务时间 </label>
+                    <input type="text" name="ssl_refresh_task_time" id="ssl_refresh_task_time" class="ui-input"
+                        placeholder="如: 8-10" />
+                    <div class="ui-hint">注意: 留空表示不开启，单位：小时，默认：8-10小时，范围时用-分隔</div>
+                </div>
+
+                <div class="ui-form-control">
+                    <label class="ui-label-text">HTTP请求日志记录时间 </label>
+                    <input type="number" name="http_request_log_record_time" id="http_request_log_record_time"
+                        class="ui-input" placeholder="如: 90" />
+                    <div class="ui-hint">注意: 单位：天，默认：90天</div>
+                </div>
             </div>
 
-            <div class="ui-form-control">
-                <label class="ui-label-text">SSL刷新任务时间 </label>
-                <input type="text" name="ssl_refresh_task_time" id="ssl_refresh_task_time" class="ui-input"
-                    placeholder="如: 8-10" />
-                <div class="ui-hint">注意: 留空表示不开启，单位：小时，默认：8-10小时，范围时用-分隔</div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="ui-form-control">
+                    <label class="ui-label-text">历史数据保留时间 </label>
+                    <input type="number" name="history_data_retain_time" id="history_data_retain_time" class="ui-input"
+                        placeholder="如: 365" />
+                    <div class="ui-hint">注意: 单位：天，默认：365天</div>
+                </div>
+
+                <div class="ui-form-control">
+                    <label class="ui-label-text">统计数据保留时间 </label>
+                    <input type="number" name="statistic_data_retain_time" id="statistic_data_retain_time"
+                        class="ui-input" placeholder="如: 365" />
+                    <div class="ui-hint">注意: 单位：天，默认：365天</div>
+                </div>
             </div>
 
             <div class="modal-action gap-3">

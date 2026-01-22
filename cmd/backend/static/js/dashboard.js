@@ -25,6 +25,12 @@ async function openSettingFormModal() {
       setting.dns_refresh_task_time;
     document.getElementById("ssl_refresh_task_time").value =
       setting.ssl_refresh_task_time;
+    document.getElementById("http_request_log_record_time").value =
+      setting.http_request_log_record_time;
+    document.getElementById("history_data_retain_time").value =
+      setting.history_data_retain_time;
+    document.getElementById("statistic_data_retain_time").value =
+      setting.statistic_data_retain_time;
 
     showModal("settingFormModal", "modalTitle", "编辑 设置");
   } catch (error) {
@@ -42,7 +48,7 @@ if (form) {
     // 表单数据
     const form_data = {
       device_offline_invalid_time: Number(
-        document.getElementById("device_offline_invalid_time").value.trim()
+        document.getElementById("device_offline_invalid_time").value.trim(),
       ),
       ip_report_interval_time: document
         .getElementById("ip_report_interval_time")
@@ -62,6 +68,15 @@ if (form) {
       ssl_refresh_task_time: document
         .getElementById("ssl_refresh_task_time")
         .value.trim(),
+      http_request_log_record_time: Number(
+        document.getElementById("http_request_log_record_time").value.trim(),
+      ),
+      history_data_retain_time: Number(
+        document.getElementById("history_data_retain_time").value.trim(),
+      ),
+      statistic_data_retain_time: Number(
+        document.getElementById("statistic_data_retain_time").value.trim(),
+      ),
     };
     console.log(" form_data", form_data);
 
