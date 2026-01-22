@@ -393,7 +393,6 @@ func (s *DeviceServiceImpl) GetDevicePortForwardStats(ctx context.Context, id in
 		Where(portforwardstats.CreatedAtGTE(startTime)).
 		OrderByCreatedAtDesc().
 		All(ctx)
-
 	if err != nil {
 		return nil, fmt.Errorf("查询统计记录失败: %w", err)
 	}

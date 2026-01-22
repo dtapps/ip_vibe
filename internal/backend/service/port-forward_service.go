@@ -402,7 +402,6 @@ func (s *PortForwardServiceImpl) GetPortForwardStats(ctx context.Context, id int
 		Where(portforwardstats.CreatedAtGTE(startTime)).
 		OrderByCreatedAtDesc().
 		All(ctx)
-
 	if err != nil {
 		return nil, fmt.Errorf("查询统计记录失败: %w", err)
 	}

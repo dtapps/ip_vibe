@@ -437,6 +437,14 @@ func (s *IPGroupServiceImpl) GetIPGroupDevicePortForwardStats(ctx context.Contex
 		return nil, fmt.Errorf("查询IP组失败: %w", err)
 	}
 
+	// 设备列表
+	devices := make([]int64, 0)
+	if devs, err := firstIpGroup.Edges.DevicesOrErr(); err == nil {
+		for _, item := range devs {
+			devices = append(devices, item.ID)
+		}
+	}
+
 	// 根据时间范围计算起始时间
 	startTime := time.Now().Add(-6 * time.Hour) // 默认 6 小时
 	if request.Range == "1h" {
@@ -453,35 +461,32 @@ func (s *IPGroupServiceImpl) GetIPGroupDevicePortForwardStats(ctx context.Contex
 		fmt.Printf("查询端口转发统计数据: ID=%d, Range=%s, StartTime=%s\n", id, request.Range, startTime.Format(time.DateTime))
 	}
 
+	// 查询端口转发统计记录
+	allStats, err := s.logDb.PortForwardStats.Query().
+		Where(portforwardstats.DeviceIDIn(devices...)).
+		Where(portforwardstats.CreatedAtGTE(startTime)).
+		OrderByCreatedAtDesc().
+		All(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("查询统计记录失败: %w", err)
+	}
+
 	lists := make([]*types.GetIPGroupDevicePortForwardStatsResponse, 0)
-	for _, item := range firstIpGroup.Edges.Devices {
-		// 查询端口转发统计记录
-		allStats, err := s.logDb.PortForwardStats.Query().
-			Where(portforwardstats.DeviceIDEQ(item.ID)).
-			Where(portforwardstats.CreatedAtGTE(startTime)).
-			OrderByCreatedAtDesc().
-			All(ctx)
-
-		if err != nil {
-			return nil, fmt.Errorf("查询统计记录失败: %w", err)
-		}
-
-		for _, stat := range allStats {
-			lists = append(lists, &types.GetIPGroupDevicePortForwardStatsResponse{
-				ID:            stat.ID,
-				CreatedAt:     stat.CreatedAt,
-				DeviceID:      stat.DeviceID,
-				PortForwardID: stat.PortForwardID,
-				StartTime:     stat.StartTime,
-				ActiveConn:    stat.ActiveConn,
-				TotalConn:     stat.TotalConn,
-				BytesIn:       stat.BytesIn,
-				BytesOut:      stat.BytesOut,
-				UDPPacketsIn:  stat.UDPPacketsIn,
-				UDPPacketsOut: stat.UDPPacketsOut,
-				Errors:        stat.Errors,
-			})
-		}
+	for _, stat := range allStats {
+		lists = append(lists, &types.GetIPGroupDevicePortForwardStatsResponse{
+			ID:            stat.ID,
+			CreatedAt:     stat.CreatedAt,
+			DeviceID:      stat.DeviceID,
+			PortForwardID: stat.PortForwardID,
+			StartTime:     stat.StartTime,
+			ActiveConn:    stat.ActiveConn,
+			TotalConn:     stat.TotalConn,
+			BytesIn:       stat.BytesIn,
+			BytesOut:      stat.BytesOut,
+			UDPPacketsIn:  stat.UDPPacketsIn,
+			UDPPacketsOut: stat.UDPPacketsOut,
+			Errors:        stat.Errors,
+		})
 	}
 
 	return lists, nil
