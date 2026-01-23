@@ -7,6 +7,7 @@ setup: install-tools verify-tools mod pnpm_update
 
 # 安装
 # 	go install connectrpc.com/connect/cmd/protoc-gen-connect-go@latest
+# 	go install github.com/cloudwego/thriftgo@latest
 install-tools:
 	go install entgo.io/ent/cmd/ent@latest && \
 	go install github.com/swaggo/swag/cmd/swag@latest && mv $(shell go env GOPATH)/bin/swag $(shell go env GOPATH)/bin/swag_v1 && \
@@ -19,12 +20,13 @@ install-tools:
 	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest && \
 	go install github.com/envoyproxy/protoc-gen-validate@latest && \
 	go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest && \
-	go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest && \
-	go install github.com/cloudwego/thriftgo@latest
+	go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
 	@echo "🎉 All tools installed successfully!"
 
 # 验证安装
 # 	@test -f $(shell go env GOPATH)/bin/protoc-gen-connect-go && echo "✅ protoc-gen-connect-go found" || echo "❌ protoc-gen-connect-go not found"
+# 	@test -f $(shell go env GOPATH)/bin/thriftgo && echo "✅ thriftgo found" || echo "❌ thriftgo not found"
+# 	@test -f $(shell go env GOPATH)/bin/protoc-gen-go-triple && echo "✅ protoc-gen-go-triple found" || echo "❌ protoc-gen-go-triple not found"
 verify-tools:
 	@test -f $(shell go env GOPATH)/bin/ent && echo "✅ ent found" || echo "❌ ent not found"
 	@test -f $(shell go env GOPATH)/bin/swag_v1 && echo "✅ swag_v1 found" || echo "❌ swag_v1 not found"
@@ -38,8 +40,6 @@ verify-tools:
 	@test -f $(shell go env GOPATH)/bin/protoc-gen-validate && echo "✅ protoc-gen-validate found" || echo "❌ protoc-gen-validate not found"
 	@test -f $(shell go env GOPATH)/bin/grpcurl && echo "✅ grpcurl found" || echo "❌ grpcurl not found"
 	@test -f $(shell go env GOPATH)/bin/protoc-gen-doc && echo "✅ protoc-gen-doc found" || echo "❌ protoc-gen-doc not found"
-	@test -f $(shell go env GOPATH)/bin/thriftgo && echo "✅ thriftgo found" || echo "❌ thriftgo not found"
-	@test -f $(shell go env GOPATH)/bin/protoc-gen-go-triple && echo "✅ protoc-gen-go-triple found" || echo "❌ protoc-gen-go-triple not found"
 	@echo "🎉 Verification complete!"
 
 # 项目目录
@@ -50,7 +50,8 @@ mod:
 	go mod tidy
 	go mod vendor
 
-generate: swag_v1_all swag_v2_all swag2op_all grpc_generate_all thrift_generate
+# generate: swag_v1_all swag_v2_all swag2op_all grpc_generate_all thrift_generate
+generate: swag_v1_all swag_v2_all swag2op_all grpc_generate_all
 
 generate_ent:
 # 	ent generate --feature schema/snapshot,privacy,entql,namedges,bidiedges,sql/schemaconfig,sql/lock,sql/modifier,sql/execquery,sql/upsert ./ent/schema
@@ -162,18 +163,18 @@ grpc_generate_old:
 	echo "✅ gRPC code generated successfully!"
 
 # https://thrift.apache.org/lib/go.html
-thrift_generate:
-	thrift \
-		   --gen go:package_prefix=vibe_ip/internal/thrift_generated/ \
-	       -out ./internal/thrift_generated \
-	       ./internal/thrift_idl/*.thrift 
-	rm -rf ./internal/thrift_generated/*/*-remote
+# thrift_generate:
+# 	thrift \
+# 		   --gen go:package_prefix=vibe_ip/internal/thrift_generated/ \
+# 	       -out ./internal/thrift_generated \
+# 	       ./internal/thrift_idl/*.thrift 
+# 	rm -rf ./internal/thrift_generated/*/*-remote
 
-thriftgo_generate:
-	thriftgo \
-		   --gen go:package_prefix=vibe_ip/internal/thriftgo_generated/,gen_setter,gen_db_tag,omitempty_for_optional,use_type_alias,validate_set,scan_value_for_enum,reserve_comments \
-	       --out ./internal/thriftgo_generated \
-	       ./internal/thrift_idl/*.thrift
+# thriftgo_generate:
+# 	thriftgo \
+# 		   --gen go:package_prefix=vibe_ip/internal/thriftgo_generated/,gen_setter,gen_db_tag,omitempty_for_optional,use_type_alias,validate_set,scan_value_for_enum,reserve_comments \
+# 	       --out ./internal/thriftgo_generated \
+# 	       ./internal/thrift_idl/*.thrift
 
 # 二进制文件名
 BINARY_NAME=ip_vibe
@@ -191,14 +192,17 @@ ENV_DEBUG=true
 
 ENV_HTTP_ADDR=0.0.0.0:9999
 ENV_GRPC_ADDR=0.0.0.0:9998
-ENV_THRIFT_ADDR=0.0.0.0:9997
 
-ENV_HTTP_URL=http://localhost:9999
 ENV_GRPC_URL=localhost:9998
-ENV_THRIFT_URL=localhost:9997
 
 ENV_BASIC_AUTH_USERNAME=admin
 ENV_BASIC_AUTH_PASSWORD=123456
+
+# ENV_GRPC_URL=192.168.101.4:9997
+# ENV_GRPC_URL=100.113.15.21:9997
+
+# ENV_BASIC_AUTH_USERNAME=asw
+# ENV_BASIC_AUTH_PASSWORD=235235235
 
 # dev_cli:
 # 	export DEBUG=$(ENV_DEBUG) && \
@@ -216,7 +220,6 @@ dev_backend:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_ADDR=$(ENV_HTTP_ADDR) && \
 	export GRPC_ADDR=$(ENV_GRPC_ADDR) && \
-	export THRIFT_ADDR=$(ENV_THRIFT_ADDR) && \
 	go run cmd/$(BINARY_NAME_BACKEND)/main.go
 
 # 启动后端服务（启用 Basic Auth）
@@ -224,7 +227,6 @@ dev_backend_basic_auth:
 	export DEBUG=$(ENV_DEBUG) && \
 	export HTTP_ADDR=$(ENV_HTTP_ADDR) && \
 	export GRPC_ADDR=$(ENV_GRPC_ADDR) && \
-	export THRIFT_ADDR=$(ENV_THRIFT_ADDR) && \
 	export BASIC_AUTH_USERNAME=$(ENV_BASIC_AUTH_USERNAME) && \
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_BACKEND)/main.go
@@ -232,17 +234,13 @@ dev_backend_basic_auth:
 # 启动IP上报服务
 dev_reporter:
 	export DEBUG=$(ENV_DEBUG) && \
-	export HTTP_URL=$(ENV_HTTP_URL) && \
 	export GRPC_URL=$(ENV_GRPC_URL) && \
-	export THRIFT_URL=$(ENV_THRIFT_URL) && \
 	go run cmd/$(BINARY_NAME_REPORTER)/main.go
 
 # 启动IP上报服务（启用 Basic Auth）
 dev_reporter_basic_auth:
 	export DEBUG=$(ENV_DEBUG) && \
-	export HTTP_URL=$(ENV_HTTP_URL) && \
 	export GRPC_URL=$(ENV_GRPC_URL) && \
-	export THRIFT_URL=$(ENV_THRIFT_URL) && \
 	export BASIC_AUTH_USERNAME=$(ENV_BASIC_AUTH_USERNAME) && \
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_REPORTER)/main.go
@@ -250,17 +248,13 @@ dev_reporter_basic_auth:
 # 启动端口转发服务
 dev_forwarder:
 	export DEBUG=$(ENV_DEBUG) && \
-	export HTTP_URL=$(ENV_HTTP_URL) && \
 	export GRPC_URL=$(ENV_GRPC_URL) && \
-	export THRIFT_URL=$(ENV_THRIFT_URL) && \
 	go run cmd/$(BINARY_NAME_FORWARDER)/main.go
 
 # 启动端口转发服务（启用 Basic Auth）
 dev_forwarder_basic_auth:
 	export DEBUG=$(ENV_DEBUG) && \
-	export HTTP_URL=$(ENV_HTTP_URL) && \
 	export GRPC_URL=$(ENV_GRPC_URL) && \
-	export THRIFT_URL=$(ENV_THRIFT_URL) && \
 	export BASIC_AUTH_USERNAME=$(ENV_BASIC_AUTH_USERNAME) && \
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_FORWARDER)/main.go

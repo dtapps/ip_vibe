@@ -15,14 +15,21 @@ function viewDetailFromData(btn) {
     document.getElementById("detailObjType").innerText = d.obj_type;
     document.getElementById("detailObjID").innerText = d.obj_id;
 
-    // 3. 环境与版本
+    // 3. 状态码样式映射
+    const statusEl = document.getElementById("detailStatus");
+    statusEl.innerText = d.status;
+    statusEl.className = `badge badge-sm font-bold ${
+      d.status === "success" ? "badge-success" : "badge-error"
+    }`;
+
+    // 4. 环境与版本
     document.getElementById("verGo").innerText = `GO: ${d.go_version || "-"}`;
 
-    // 4. 填充 Body Textarea
+    // 5. 填充 Body Textarea
     document.getElementById("detailOldValue").value = formatJSON(d.old_value);
     document.getElementById("detailNewValue").value = formatJSON(d.new_value);
 
-    // 5. 打开 Modal (调用通用方法)
+    // 6. 打开 Modal (调用通用方法)
     showModal("viewModal");
   } catch (err) {
     console.error("View detail failed:", err);
