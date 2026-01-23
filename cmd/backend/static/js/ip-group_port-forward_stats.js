@@ -47,9 +47,9 @@ async function loadStats() {
 
 function render(rawData) {
   // 1. 获取数据源
-  const rates = data.rates || [];
-  const latest = data.latest || {};
-  const delta = data.delta || {};
+  const rates = rawData.rates || [];
+  const latest = rawData.latest || {};
+  const delta = rawData.delta || {};
 
   // 2. 更新卡片数值
   document.getElementById("stat-conn").innerText = latest.active_conn || 0;
