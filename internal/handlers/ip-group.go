@@ -106,6 +106,6 @@ func IPGroupPortForwardStats(c *gin.Context) {
 			Title: "IP组端口转发统计",
 			Data:  pageData,
 		},
-		"device",
+		"ip-group",
 	)
 }
