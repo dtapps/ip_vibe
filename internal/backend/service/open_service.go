@@ -135,7 +135,9 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 	} else {
 		// 设备存在：检查 IP 是否变化 (保持原始逻辑)
 		deviceID = firstDevice.ID
-		request.DeviceName = firstDevice.Name // 使用数据库中的设备名进行通知
+		if request.DeviceName == "" {
+			request.DeviceName = firstDevice.Name // 使用数据库中的设备名进行通知
+		}
 
 		if firstDevice.IPV4 != request.IPV4Addr || firstDevice.IPV6 != request.IPV6Addr {
 			// IP 发生变化
