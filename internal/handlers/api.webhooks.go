@@ -36,6 +36,7 @@ func GetWebhooks(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -73,6 +74,7 @@ func GetWebhookDetail(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -109,6 +111,7 @@ func CreateWebhook(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -147,6 +150,7 @@ func UpdateWebhook(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -185,6 +189,7 @@ func UpdateWebhookActive(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -221,6 +226,7 @@ func BatchUpdateWebhookActive(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -258,6 +264,7 @@ func DeleteWebhook(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -294,6 +301,7 @@ func BatchDeleteWebhook(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -331,6 +339,7 @@ func TestWebhook(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"time"
 	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
@@ -33,16 +34,18 @@ type WebhookService interface {
 type WebhookServiceImpl struct {
 	db             *ent.Client          // 数据库客户端
 	logDb          *ent_log.Client      // 日志数据库客户端
+	logger         *slog.Logger         // 日志记录器
 	webhookService *webhookService.Send // Webhook服务
 	debug          bool                 // 调试模式
 }
 
 // NewWebhookService 创建通知服务实例
-func NewWebhookService(db *ent.Client, logDb *ent_log.Client, debug bool) WebhookService {
+func NewWebhookService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, debug bool) WebhookService {
 	webhookService := webhookService.NewSend(db, global.GvaEntLogDb)
 	return &WebhookServiceImpl{
 		db:             db,
 		logDb:          logDb,
+		logger:         logger,
 		webhookService: webhookService,
 		debug:          debug,
 	}

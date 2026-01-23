@@ -34,6 +34,7 @@ func IPGroup(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

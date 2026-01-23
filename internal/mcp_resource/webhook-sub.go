@@ -32,6 +32,8 @@ func getWebhookSubList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.
 	// 创建服务
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -58,6 +60,8 @@ func getWebhookSubDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mc
 	// 创建服务
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

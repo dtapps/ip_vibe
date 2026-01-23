@@ -33,6 +33,7 @@ func Webhook(c *gin.Context) {
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

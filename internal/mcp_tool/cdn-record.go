@@ -55,6 +55,8 @@ func getCdnRecordList(ctx context.Context, req *mcp.CallToolRequest, params *typ
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -72,6 +74,8 @@ func getCdnRecordDetail(ctx context.Context, req *mcp.CallToolRequest, params *t
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -89,6 +93,8 @@ func createCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -106,6 +112,8 @@ func updateCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -123,6 +131,8 @@ func updateCdnRecordActive(ctx context.Context, req *mcp.CallToolRequest, params
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -140,6 +150,8 @@ func deleteCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -158,6 +170,8 @@ func healthCheckCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

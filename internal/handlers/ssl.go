@@ -55,6 +55,7 @@ func Ssl(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sslUpdateTask,
 		sys_env.GvaEnv.DEBUG,
 	)

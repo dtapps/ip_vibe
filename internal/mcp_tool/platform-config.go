@@ -45,6 +45,8 @@ func getPlatformConfigList(ctx context.Context, req *mcp.CallToolRequest, params
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -63,6 +65,8 @@ func getPlatformConfigDetail(ctx context.Context, req *mcp.CallToolRequest, para
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -81,6 +85,8 @@ func createPlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -99,6 +105,8 @@ func updatePlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -117,6 +125,8 @@ func deletePlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

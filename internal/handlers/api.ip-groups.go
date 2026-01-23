@@ -28,6 +28,7 @@ func GetIPGroups(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -65,6 +66,7 @@ func GetIPGroupDetail(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -101,6 +103,7 @@ func CreateIPGroup(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -139,6 +142,7 @@ func UpdateIPGroup(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -176,6 +180,7 @@ func DeleteIPGroup(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -212,6 +217,7 @@ func BatchDeleteIPGroup(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -249,6 +255,7 @@ func GetIPGroupDevices(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -286,6 +293,7 @@ func HealthCheckIPGroup(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -323,6 +331,7 @@ func GetIPGroupDevicePortForwardStats(c *gin.Context) {
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

@@ -35,6 +35,8 @@ func GetDnsRecords(c *gin.Context) {
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -71,6 +73,8 @@ func GetDnsRecordDetail(c *gin.Context) {
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -106,6 +110,8 @@ func CreateDnsRecord(c *gin.Context) {
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -143,6 +149,8 @@ func UpdateDnsRecord(c *gin.Context) {
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -180,6 +188,8 @@ func UpdateDnsRecordActive(c *gin.Context) {
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -215,6 +225,8 @@ func BatchUpdateDnsRecordActive(c *gin.Context) {
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -251,6 +263,8 @@ func DeleteDnsRecord(c *gin.Context) {
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -286,6 +300,8 @@ func BatchDeleteDnsRecord(c *gin.Context) {
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -322,6 +338,8 @@ func HealthCheckDnsRecord(c *gin.Context) {
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

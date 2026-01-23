@@ -38,6 +38,7 @@ func getIPGroupList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.Rea
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -65,6 +66,7 @@ func getIPGroupDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.R
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -92,6 +94,7 @@ func getIPGroupDevices(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

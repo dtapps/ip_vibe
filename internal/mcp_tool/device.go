@@ -56,6 +56,7 @@ func getDeviceList(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -75,6 +76,7 @@ func getDeviceDetail(ctx context.Context, req *mcp.CallToolRequest, params *type
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -94,6 +96,7 @@ func createDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.C
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -113,6 +116,7 @@ func updateDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.U
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -132,6 +136,7 @@ func deleteDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.D
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -151,6 +156,7 @@ func getDeviceIpHistory(ctx context.Context, req *mcp.CallToolRequest, params *t
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -170,6 +176,7 @@ func healthCheckDevice(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

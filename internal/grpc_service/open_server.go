@@ -27,6 +27,7 @@ func NewOpenServer(logger *slog.Logger) *OpenServer {
 	deviceService := service.NewDeviceOpenService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		logger,
 		sys_env.GvaEnv.DEBUG,
 	)
 

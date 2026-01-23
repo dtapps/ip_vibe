@@ -35,6 +35,8 @@ func getWebhookSubList(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	// 创建服务
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -53,6 +55,8 @@ func updateWebhookSubActive(ctx context.Context, req *mcp.CallToolRequest, param
 	// 创建服务
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -71,6 +75,8 @@ func deleteWebhookSub(ctx context.Context, req *mcp.CallToolRequest, params *typ
 	// 创建服务
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

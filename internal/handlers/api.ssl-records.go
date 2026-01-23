@@ -47,6 +47,7 @@ func GetSSLRecords(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sslUpdateTask,
 		sys_env.GvaEnv.DEBUG,
 	)
@@ -95,6 +96,7 @@ func GetSSLRecordDetail(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sslUpdateTask,
 		sys_env.GvaEnv.DEBUG,
 	)
@@ -142,6 +144,7 @@ func CreateSSLRecord(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sslUpdateTask,
 		sys_env.GvaEnv.DEBUG,
 	)
@@ -191,6 +194,7 @@ func UpdateSSLRecord(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sslUpdateTask,
 		sys_env.GvaEnv.DEBUG,
 	)
@@ -240,6 +244,7 @@ func UpdateSSLRecordAutoRenewal(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sslUpdateTask,
 		sys_env.GvaEnv.DEBUG,
 	)
@@ -289,6 +294,7 @@ func UpdateSSLRecordActive(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sslUpdateTask,
 		sys_env.GvaEnv.DEBUG,
 	)
@@ -336,6 +342,7 @@ func BatchUpdateSSLRecordActive(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sslUpdateTask,
 		sys_env.GvaEnv.DEBUG,
 	)
@@ -384,6 +391,7 @@ func DeleteSSLRecord(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sslUpdateTask,
 		sys_env.GvaEnv.DEBUG,
 	)
@@ -431,6 +439,7 @@ func BatchDeleteSSLRecord(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sslUpdateTask,
 		sys_env.GvaEnv.DEBUG,
 	)
@@ -479,6 +488,7 @@ func ApplySSLRecord(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sslUpdateTask,
 		sys_env.GvaEnv.DEBUG,
 	)
@@ -529,6 +539,7 @@ func GetSSLRecordHistoryDetail(c *gin.Context) {
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sslUpdateTask,
 		sys_env.GvaEnv.DEBUG,
 	)

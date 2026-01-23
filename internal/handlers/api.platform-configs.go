@@ -27,6 +27,8 @@ func GetPlatformConfigs(c *gin.Context) {
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -63,6 +65,8 @@ func GetPlatformConfigDetail(c *gin.Context) {
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -98,6 +102,8 @@ func CreatePlatformConfig(c *gin.Context) {
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -135,6 +141,8 @@ func UpdatePlatformConfig(c *gin.Context) {
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -171,6 +179,8 @@ func DeletePlatformConfig(c *gin.Context) {
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -206,6 +216,8 @@ func BatchDeletePlatformConfig(c *gin.Context) {
 	// 创建服务
 	service := service.NewPlatformConfigService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

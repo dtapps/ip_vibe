@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/sslrecord"
@@ -37,15 +38,17 @@ type SSLRecordService interface {
 type SSLRecordServiceImpl struct {
 	db            *ent.Client         // 数据库客户端
 	logDb         *ent_log.Client     // 日志数据库客户端
+	logger        *slog.Logger        // 日志记录器
 	sslUpdateTask *task.SSLUpdateTask // SSL刷新任务
 	debug         bool                // 调试模式
 }
 
 // NewSSLRecordService 创建 SSL 记录服务实例
-func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, sslUpdateTask *task.SSLUpdateTask, debug bool) SSLRecordService {
+func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, sslUpdateTask *task.SSLUpdateTask, debug bool) SSLRecordService {
 	return &SSLRecordServiceImpl{
 		db:            db,
 		logDb:         logDb,
+		logger:        logger,
 		sslUpdateTask: sslUpdateTask,
 		debug:         debug,
 	}

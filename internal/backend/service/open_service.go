@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"time"
 	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
@@ -34,16 +35,18 @@ type DeviceOpenService interface {
 type DeviceOpenServiceImpl struct {
 	db             *ent.Client          // 数据库客户端
 	logDb          *ent_log.Client      // 日志数据库客户端
+	logger         *slog.Logger         // 日志记录器
 	webhookService *webhookService.Send // Webhook服务
 	debug          bool                 // 调试模式
 }
 
 // NewDeviceOpenService 创建设备服务实例
-func NewDeviceOpenService(db *ent.Client, logDb *ent_log.Client, debug bool) DeviceOpenService {
+func NewDeviceOpenService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, debug bool) DeviceOpenService {
 	webhookService := webhookService.NewSend(db, logDb)
 	return &DeviceOpenServiceImpl{
 		db:             db,
 		logDb:          logDb,
+		logger:         logger,
 		webhookService: webhookService,
 		debug:          debug,
 	}

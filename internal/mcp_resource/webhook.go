@@ -33,6 +33,7 @@ func getWebhookList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.Rea
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -60,6 +61,7 @@ func getWebhookDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.R
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

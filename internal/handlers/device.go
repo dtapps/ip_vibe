@@ -34,6 +34,7 @@ func Device(c *gin.Context) {
 	service := service.NewDeviceService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

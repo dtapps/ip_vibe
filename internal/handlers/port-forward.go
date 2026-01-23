@@ -34,7 +34,7 @@ func PortForward(c *gin.Context) {
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

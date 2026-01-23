@@ -51,6 +51,7 @@ func getWebhookList(ctx context.Context, req *mcp.CallToolRequest, params *types
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -70,6 +71,7 @@ func getWebhookDetail(ctx context.Context, req *mcp.CallToolRequest, params *typ
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -89,6 +91,7 @@ func createWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -108,6 +111,7 @@ func updateWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -127,6 +131,7 @@ func updateWebhookActive(ctx context.Context, req *mcp.CallToolRequest, params *
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -146,6 +151,7 @@ func deleteWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	service := service.NewWebhookService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

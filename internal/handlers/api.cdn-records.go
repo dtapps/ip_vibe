@@ -35,6 +35,8 @@ func GetCdnRecords(c *gin.Context) {
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -71,6 +73,8 @@ func GetCdnRecordDetail(c *gin.Context) {
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -106,6 +110,8 @@ func CreateCdnRecord(c *gin.Context) {
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -143,6 +149,8 @@ func UpdateCdnRecord(c *gin.Context) {
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -180,6 +188,8 @@ func UpdateCdnRecordActive(c *gin.Context) {
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -215,6 +225,8 @@ func BatchUpdateCdnRecordActive(c *gin.Context) {
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -251,6 +263,8 @@ func DeleteCdnRecord(c *gin.Context) {
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -286,6 +300,8 @@ func BatchDeleteCdnRecord(c *gin.Context) {
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -322,6 +338,8 @@ func HealthCheckCdnRecord(c *gin.Context) {
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

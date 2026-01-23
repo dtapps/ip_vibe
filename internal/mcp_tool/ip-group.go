@@ -55,6 +55,7 @@ func getIPGroupList(ctx context.Context, req *mcp.CallToolRequest, params *types
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -74,6 +75,7 @@ func getIPGroupDetail(ctx context.Context, req *mcp.CallToolRequest, params *typ
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -93,6 +95,7 @@ func createIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -112,6 +115,7 @@ func updateIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -131,6 +135,7 @@ func deleteIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -150,6 +155,7 @@ func getIPGroupDevices(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -169,6 +175,7 @@ func healthCheckIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *t
 	service := service.NewIPGroupService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

@@ -32,6 +32,8 @@ func getCdnRecordList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.R
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -58,6 +60,8 @@ func getCdnRecordDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp
 	// 创建服务
 	service := service.NewCDNRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

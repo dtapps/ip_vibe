@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
@@ -12,6 +13,7 @@ import (
 	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
+	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/types"
 
 	"github.com/spf13/cast"
@@ -32,15 +34,19 @@ type WebhookSubService interface {
 
 // WebhookSubServiceImpl 通知订阅服务实现
 type WebhookSubServiceImpl struct {
-	db    *ent.Client // 数据库客户端
-	debug bool        // 调试模式
+	db     *ent.Client     // 数据库客户端
+	logDb  *ent_log.Client // 日志数据库客户端
+	logger *slog.Logger    // 日志记录器
+	debug  bool            // 调试模式
 }
 
 // NewWebhookSubService 创建通知订阅服务实例
-func NewWebhookSubService(db *ent.Client, debug bool) WebhookSubService {
+func NewWebhookSubService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, debug bool) WebhookSubService {
 	return &WebhookSubServiceImpl{
-		db:    db,
-		debug: debug,
+		db:     db,
+		logDb:  logDb,
+		logger: logger,
+		debug:  debug,
 	}
 }
 

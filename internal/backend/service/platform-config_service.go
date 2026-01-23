@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/platformconfig"
+	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/types"
 )
 
@@ -22,15 +24,19 @@ type PlatformConfigService interface {
 
 // PlatformConfigServiceImpl 配置服务实现
 type PlatformConfigServiceImpl struct {
-	db    *ent.Client // 数据库客户端
-	debug bool        // 调试模式
+	db     *ent.Client     // 数据库客户端
+	logDb  *ent_log.Client // 日志数据库客户端
+	logger *slog.Logger    // 日志记录器
+	debug  bool            // 调试模式
 }
 
 // NewPlatformConfigService 创建配置服务实例
-func NewPlatformConfigService(db *ent.Client, debug bool) PlatformConfigService {
+func NewPlatformConfigService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, debug bool) PlatformConfigService {
 	return &PlatformConfigServiceImpl{
-		db:    db,
-		debug: debug,
+		db:     db,
+		logDb:  logDb,
+		logger: logger,
+		debug:  debug,
 	}
 }
 

@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent/webhooksubscription"
+	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
@@ -31,15 +33,19 @@ type CDNRecordService interface {
 
 // CDNRecordServiceImpl CDN 记录服务实现
 type CDNRecordServiceImpl struct {
-	db    *ent.Client // 数据库客户端
-	debug bool        // 调试模式
+	db     *ent.Client     // 数据库客户端
+	logDb  *ent_log.Client // 日志数据库客户端
+	logger *slog.Logger    // 日志记录器
+	debug  bool            // 调试模式
 }
 
 // NewCDNRecordService 创建 CDN 记录服务实例
-func NewCDNRecordService(db *ent.Client, debug bool) CDNRecordService {
+func NewCDNRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, debug bool) CDNRecordService {
 	return &CDNRecordServiceImpl{
-		db:    db,
-		debug: debug,
+		db:     db,
+		logDb:  logDb,
+		logger: logger,
+		debug:  debug,
 	}
 }
 

@@ -35,6 +35,8 @@ func GetWebhookSubs(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -72,6 +74,8 @@ func UpdateWebhookSubActive(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -107,6 +111,8 @@ func BatchUpdateWebhookSubActive(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -143,6 +149,8 @@ func DeleteWebhookSub(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -178,6 +186,8 @@ func BatchDeleteWebhookSub(c *gin.Context) {
 	// 创建服务
 	service := service.NewWebhookSubService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

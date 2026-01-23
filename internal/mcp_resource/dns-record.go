@@ -32,6 +32,8 @@ func getDnsRecordList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.R
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -58,6 +60,8 @@ func getDnsRecordDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp
 	// 创建服务
 	service := service.NewDNSRecordService(
 		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaMcpSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

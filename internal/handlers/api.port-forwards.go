@@ -36,7 +36,7 @@ func GetPortForwards(c *gin.Context) {
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
-
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -74,6 +74,7 @@ func GetPortForwardDetail(c *gin.Context) {
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -110,6 +111,7 @@ func CreatePortForward(c *gin.Context) {
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -148,6 +150,7 @@ func UpdatePortForward(c *gin.Context) {
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -186,6 +189,7 @@ func UpdatePortForwardForward(c *gin.Context) {
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -224,6 +228,7 @@ func UpdatePortForwardActive(c *gin.Context) {
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -260,6 +265,7 @@ func BatchUpdatePortForwardActive(c *gin.Context) {
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -297,6 +303,7 @@ func DeletePortForward(c *gin.Context) {
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -333,6 +340,7 @@ func BatchDeletePortForward(c *gin.Context) {
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -370,6 +378,7 @@ func HealthCheckPortForward(c *gin.Context) {
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 
@@ -407,6 +416,7 @@ func GetPortForwardStats(c *gin.Context) {
 	service := service.NewPortForwardService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGinSlog,
 		sys_env.GvaEnv.DEBUG,
 	)
 

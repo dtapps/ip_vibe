@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/deviceportforward"
@@ -32,17 +33,19 @@ type PortForwardService interface {
 
 // PortForwardServiceImpl 端口转发服务实现
 type PortForwardServiceImpl struct {
-	db    *ent.Client     // 数据库客户端
-	logDb *ent_log.Client // 日志数据库客户端
-	debug bool            // 调试模式
+	db     *ent.Client     // 数据库客户端
+	logDb  *ent_log.Client // 日志数据库客户端
+	logger *slog.Logger    // 日志记录器
+	debug  bool            // 调试模式
 }
 
 // NewPortForwardService 创建端口转发服务实例
-func NewPortForwardService(db *ent.Client, logDb *ent_log.Client, debug bool) PortForwardService {
+func NewPortForwardService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, debug bool) PortForwardService {
 	return &PortForwardServiceImpl{
-		db:    db,
-		logDb: logDb,
-		debug: debug,
+		db:     db,
+		logDb:  logDb,
+		logger: logger,
+		debug:  debug,
 	}
 }
 
@@ -391,9 +394,11 @@ func (s *PortForwardServiceImpl) GetPortForwardStats(ctx context.Context, id int
 		startTime = time.Now().AddDate(0, 0, -7)
 	}
 
-	if s.debug {
-		fmt.Printf("查询端口转发统计数据: ID=%d, Range=%s, StartTime=%s\n", id, request.Range, startTime.Format(time.DateTime))
-	}
+	slog.InfoContext(ctx, "获取端口转发统计数据",
+		slog.Int64("ID", id),
+		slog.String("Range", request.Range),
+		slog.String("StartTime", startTime.Format(time.DateTime)),
+	)
 
 	// 查询端口转发统计记录
 	allStats, err := s.logDb.PortForwardStats.Query().
@@ -423,5 +428,6 @@ func (s *PortForwardServiceImpl) GetPortForwardStats(ctx context.Context, id int
 			Errors:        stat.Errors,
 		})
 	}
+
 	return lists, nil
 }
