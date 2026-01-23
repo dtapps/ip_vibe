@@ -30,7 +30,7 @@ func GetPlatformConfigSchema(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetPlatformConfigSchemaRequest
 	requestParams.ConfigType = c.Param("config_type")
-	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
@@ -59,7 +59,7 @@ func GetCdnRecordSchema(c *gin.Context) {
 	var requestParams types.GetCdnRecordSchemaRequest
 	requestParams.ConfigType = c.Param("config_type")
 	requestParams.ConfigID = cast.ToInt64(c.Param("config_id"))
-	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
@@ -88,7 +88,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 	var requestParams types.GetDnsRecordSchemaRequest
 	requestParams.ConfigType = c.Param("config_type")
 	requestParams.ConfigID = cast.ToInt64(c.Param("config_id"))
-	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}

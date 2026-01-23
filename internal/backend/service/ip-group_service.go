@@ -460,7 +460,7 @@ func (s *IPGroupServiceImpl) GetIPGroupDevicePortForwardStats(ctx context.Contex
 		startTime = time.Now().AddDate(0, 0, -7)
 	}
 
-	slog.InfoContext(ctx, "获取IP组设备端口转发统计数据",
+	s.logger.InfoContext(ctx, "获取IP组设备端口转发统计数据",
 		slog.Int64("ID", id),
 		slog.String("Range", request.Range),
 		slog.String("StartTime", startTime.Format(time.DateTime)),

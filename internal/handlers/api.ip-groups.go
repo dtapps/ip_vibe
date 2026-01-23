@@ -57,7 +57,7 @@ func GetIPGroupDetail(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetIPGroupRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
-	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
@@ -246,7 +246,7 @@ func GetIPGroupDevices(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetIPGroupDevicesRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
-	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
@@ -284,7 +284,7 @@ func HealthCheckIPGroup(c *gin.Context) {
 	// 请求参数
 	var requestParams types.HealthCheckIPGroupRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
-	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
@@ -322,7 +322,7 @@ func GetIPGroupDevicePortForwardStats(c *gin.Context) {
 	// 请求参数
 	var requestParams types.GetIPGroupDevicePortForwardStatsRequest
 	requestParams.ID = cast.ToInt64(c.Param("id"))
-	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
