@@ -4,8 +4,13 @@ function onCheckProtocolSelect(sel) {
   console.log("onCheckProtocolSelect", opt);
 }
 
-// 打开 表单 弹窗
-async function openFormModal(id) {
+/**
+ * 打开 表单 弹窗
+ * @param {*} id 平台配置ID
+ * @param {string} action 操作类型，add / edit / copy
+ * @returns
+ */
+async function openFormModal(id, action = "") {
   document.getElementById("form").reset();
 
   try {
@@ -56,7 +61,7 @@ async function openFormModal(id) {
     // 编辑
     if (id) {
       const { data: domainMonitor } = await API.get(
-        `/api/domain-monitors/${id}`
+        `/api/domain-monitors/${id}`,
       );
       console.log("domainMonitor", domainMonitor);
       if (!domainMonitor) {
@@ -91,7 +96,17 @@ async function openFormModal(id) {
         selectId2.val(null).trigger("change");
       }
 
-      showModal("formModal", "modalTitle", "编辑 域名监控");
+      // 如果是复制操作，清空 id 字段，取消 domain 、check_protocol 禁用
+      if (action === "copy") {
+        document.getElementById("id").value = "";
+        document.getElementById("id").disabled = false;
+        document.getElementById("domain").disabled = false;
+        document.getElementById("check_protocol").disabled = false;
+
+        showModal("formModal", "modalTitle", "复制 域名监控");
+      } else {
+        showModal("formModal", "modalTitle", "编辑 域名监控");
+      }
     }
 
     // 创建
@@ -149,7 +164,7 @@ if (form) {
         .value.trim()
         .split("\n"),
       check_interval: Number(
-        document.getElementById("check_interval").value.trim()
+        document.getElementById("check_interval").value.trim(),
       ),
       check_protocol: document.getElementById("check_protocol").value.trim(),
       webhook_ids: selectedWebhookIDs.map(Number),

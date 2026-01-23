@@ -214,8 +214,13 @@ IPV6地址: [[.IPv6Addr]]
   }
 }
 
-// 打开 表单 弹窗
-async function openFormModal(id) {
+/**
+ * 打开 表单 弹窗
+ * @param {*} id 平台配置ID
+ * @param {string} action 操作类型，add / edit / copy
+ * @returns
+ */
+async function openFormModal(id, action = "") {
   document.getElementById("form").reset();
 
   try {
@@ -242,7 +247,15 @@ async function openFormModal(id) {
 
       changePlatform(webhook.platform);
 
-      showModal("formModal", "modalTitle", "编辑 通知");
+      // 如果是复制操作，清空 id 字段
+      if (action === "copy") {
+        document.getElementById("id").value = "";
+        document.getElementById("id").disabled = false;
+
+        showModal("formModal", "modalTitle", "复制 通知");
+      } else {
+        showModal("formModal", "modalTitle", "编辑 通知");
+      }
     }
 
     // 创建

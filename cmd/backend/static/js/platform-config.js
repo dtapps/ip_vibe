@@ -20,8 +20,13 @@ function changePlatform(el) {
   renderPlatformFields(platform, capability);
 }
 
-// 打开 表单 弹窗
-async function openFormModal(id) {
+/**
+ * 打开 表单 弹窗
+ * @param {*} id 平台配置ID
+ * @param {string} action 操作类型，add / edit / copy
+ * @returns
+ */
+async function openFormModal(id, action = "") {
   document.getElementById("form").reset();
 
   // 编辑
@@ -47,7 +52,15 @@ async function openFormModal(id) {
       config.config_json || {},
     );
 
-    showModal("formModal", "modalTitle", "编辑 平台配置");
+    // 如果是复制操作，清空 id 字段
+    if (action === "copy") {
+      document.getElementById("id").value = "";
+      document.getElementById("id").disabled = false;
+
+      showModal("formModal", "modalTitle", "复制 平台配置");
+    } else {
+      showModal("formModal", "modalTitle", "编辑 平台配置");
+    }
   }
 
   // 创建

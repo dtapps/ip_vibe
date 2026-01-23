@@ -21,7 +21,7 @@
       {{ template "icons" (dict "Name" "i-lucide-route") }} 端口转发（设备维度）
     </h2>
     <div>
-      <button class="btn-ui-primary" onclick="openFormModal()">
+      <button class="btn-ui-primary" onclick="openFormModal('', 'add')">
         {{ template "icons" (dict "Name" "i-lucide-plus") }} 添加端口转发
       </button>
 
@@ -61,7 +61,7 @@
           <th class="ui-th">远程目标</th>
           <th class="ui-th text-center">防火墙</th>
           <th class="ui-th text-center">启用</th>
-          <th style="width: 350px" class="ui-th text-center">操作</th>
+          <th class="ui-th text-center">操作</th>
         </tr>
       </thead>
       <tbody id="table">
@@ -133,8 +133,12 @@
                 {{ template "icons" (dict "Name" "i-lucide-chart-line") }} 统计
               </button>
 
-              <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}')">
+              <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}', 'edit')">
                 {{ template "icons" (dict "Name" "i-lucide-pencil") }} 编辑
+              </button>
+
+              <button class="btn btn-primary btn-sm rounded-lg px-4" onclick="openFormModal('{{.ID}}', 'copy')">
+                {{ template "icons" (dict "Name" "i-lucide-copy") }} 复制
               </button>
 
               {{ template "button" (dict

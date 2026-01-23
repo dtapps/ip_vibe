@@ -21,7 +21,7 @@
       {{ template "icons" (dict "Name" "i-lucide-shield-check") }} SSL 记录管理（平台维度）
     </h2>
     <div>
-      <button class="btn-ui-primary" onclick="openFormModal()">
+      <button class="btn-ui-primary" onclick="openFormModal('', 'add')">
         {{ template "icons" (dict "Name" "i-lucide-plus") }} 添加记录
       </button>
 
@@ -148,8 +148,12 @@
                 {{ template "icons" (dict "Name" "i-lucide-eye") }} 详情
               </button>
 
-              <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}')">
+              <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}', 'edit')">
                 {{ template "icons" (dict "Name" "i-lucide-pencil") }} 编辑
+              </button>
+
+              <button class="btn btn-primary btn-sm rounded-lg px-4" onclick="openFormModal('{{.ID}}', 'copy')">
+                {{ template "icons" (dict "Name" "i-lucide-copy") }} 复制
               </button>
 
               {{ template "button" (dict
