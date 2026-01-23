@@ -866,7 +866,7 @@ github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects/enums
 github.com/volcengine/volc-sdk-golang/base
 github.com/volcengine/volc-sdk-golang/service/dns
 github.com/volcengine/volc-sdk-golang/service/sts
-# github.com/volcengine/volcengine-go-sdk v1.2.8
+# github.com/volcengine/volcengine-go-sdk v1.2.9
 ## explicit; go 1.14
 github.com/volcengine/volcengine-go-sdk/internal/ini
 github.com/volcengine/volcengine-go-sdk/internal/sdkio

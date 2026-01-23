@@ -50,8 +50,8 @@
             </div>
         </div>
         <div class="flex items-baseline gap-2">
-            <span class="ui-stat-value" id="stat-conn">0 </span>
-            <span class="ui-stat-label uppercase text-[10px]">Conn</span>
+            <span class="ui-stat-value" id="stat-conn">0</span>
+            <span class="ui-stat-label uppercase text-[10px]">Active</span>
         </div>
     </div>
 
@@ -62,9 +62,15 @@
                 {{ template "icons" (dict "Name" "i-lucide-arrow-down-to-line" "Class" "w-5 h-5") }}
             </div>
         </div>
-        <div class="flex items-baseline gap-2">
-            <span class="ui-stat-value !text-2xl" id="stat-bytes-in">0</span>
-            <span class="ui-stat-label uppercase text-[10px]">Bytes</span>
+        <div class="flex flex-col">
+            <div class="flex items-baseline gap-2">
+                <span class="ui-stat-value !text-2xl" id="stat-bytes-in">0 B</span>
+            </div>
+            <div class="mt-2 flex items-center gap-1">
+                <span
+                    class="text-[10px] font-medium text-green-600 bg-green-500/10 px-1.5 py-0.5 rounded border border-green-500/20"
+                    id="delta-bytes-in">本时段: 0 B</span>
+            </div>
         </div>
     </div>
 
@@ -75,9 +81,15 @@
                 {{ template "icons" (dict "Name" "i-lucide-arrow-up-from-line" "Class" "w-5 h-5") }}
             </div>
         </div>
-        <div class="flex items-baseline gap-2">
-            <span class="ui-stat-value !text-2xl" id="stat-bytes-out">0</span>
-            <span class="ui-stat-label uppercase text-[10px]">Bytes</span>
+        <div class="flex flex-col">
+            <div class="flex items-baseline gap-2">
+                <span class="ui-stat-value !text-2xl" id="stat-bytes-out">0 B</span>
+            </div>
+            <div class="mt-2 flex items-center gap-1">
+                <span
+                    class="text-[10px] font-medium text-blue-600 bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20"
+                    id="delta-bytes-out">本时段: 0 B</span>
+            </div>
         </div>
     </div>
 
@@ -88,9 +100,15 @@
                 {{ template "icons" (dict "Name" "i-lucide-alert-triangle" "Class" "w-5 h-5") }}
             </div>
         </div>
-        <div class="flex items-baseline gap-2">
-            <span class="ui-stat-value" id="stat-errors">0</span>
-            <span class="ui-stat-label uppercase text-[10px]">Err</span>
+        <div class="flex flex-col">
+            <div class="flex items-baseline gap-2">
+                <span class="ui-stat-value" id="stat-errors">0</span>
+            </div>
+            <div class="mt-2 flex items-center gap-1">
+                <span
+                    class="text-[10px] font-medium text-red-600 bg-red-500/10 px-1.5 py-0.5 rounded border border-red-500/20"
+                    id="delta-errors">本时段: +0 错误</span>
+            </div>
         </div>
     </div>
 </div>
