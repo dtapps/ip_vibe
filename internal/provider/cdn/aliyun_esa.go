@@ -407,11 +407,10 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 				itemOriginValues = append(itemOriginValues, tea.StringValue(origin.GetAddress()))
 			}
 			// 查找源站组别名
-			itemCname := tea.StringValue(item.GetRecordName())
+			originInfo.Cname = tea.StringValue(item.GetRecordName())
 
 			// 判断记录值列表
 			if utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
-				originInfo.Cname = itemCname
 				return originInfo, nil
 			} else {
 				p.logger.ErrorContext(ctx, "源站组记录值列表不匹配",
@@ -484,7 +483,7 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 	return originInfo, nil
 }
 
-// getGroupOrigin 获取回源规则信息
+// getRuleInfo 获取回源规则信息
 // https://next.api.aliyun.com/api/ESA/2024-09-10/ListOriginRules
 // https://next.api.aliyun.com/api/ESA/2024-09-10/CreateOriginRule
 // https://next.api.aliyun.com/api/ESA/2024-09-10/UpdateOriginRule
