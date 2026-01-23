@@ -384,11 +384,10 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 				itemOriginValues = append(itemOriginValues, utils.PtrToString(v.Record))
 			}
 			// 查找源站组ID
-			itemGroupId := utils.PtrToString(item.GroupId)
+			originInfo.ID = utils.PtrToString(item.GroupId)
 
 			// 判断记录值列表
 			if utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
-				originInfo.ID = itemGroupId
 				return originInfo, nil
 			} else {
 				p.logger.ErrorContext(ctx, "源站组记录值列表不匹配",
@@ -428,9 +427,9 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 		// 更新源站组
 		requestGroupUpdate := teo.NewModifyOriginGroupRequest()
-		requestGroupUpdate.ZoneId = common.StringPtr(p.cfg.ZoneID)                // 站点ID
-		requestGroupUpdate.GroupId = common.StringPtr(p.CustomConfig.IPGroupCode) // 源站组ID
-		requestGroupUpdate.Records = make([]*teo.OriginRecord, 0)                 // 源站记录信息
+		requestGroupUpdate.ZoneId = common.StringPtr(p.cfg.ZoneID)   // 站点ID
+		requestGroupUpdate.GroupId = common.StringPtr(originInfo.ID) // 源站组ID
+		requestGroupUpdate.Records = make([]*teo.OriginRecord, 0)    // 源站记录信息
 		for _, item := range newOriginValues {
 			requestGroupUpdate.Records = append(requestGroupUpdate.Records, &teo.OriginRecord{
 				Record: common.StringPtr(item),
