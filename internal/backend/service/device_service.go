@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"math"
+	"sort"
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/device"
@@ -429,68 +430,99 @@ func (s *DeviceServiceImpl) getStartTimeFromRange(rangeStr string) time.Time {
 
 // 计算端口转发统计数据
 func (s *DeviceServiceImpl) calculatePortForwardStats(raw []*ent_log.PortForwardStats) *types.GetDevicePortForwardStatsResponse {
-
 	count := len(raw)
 	if count == 0 {
 		return &types.GetDevicePortForwardStatsResponse{}
 	}
 
-	var res types.GetDevicePortForwardStatsResponse
-
-	// 最新快照
-	latest := raw[count-1]
-	res.Latest = types.GetDevicePortForwardStatsLatest{
-		ActiveConn: latest.ActiveConn,
-		BytesIn:    latest.BytesIn,
-		BytesOut:   latest.BytesOut,
-		Errors:     latest.Errors,
+	// 1. 按时间戳聚合：将同一秒内所有端口的数据相加
+	type aggregatePoint struct {
+		ActiveConn int64
+		BytesIn    int64
+		BytesOut   int64
+		Errors     int64
+		CreatedAt  time.Time
 	}
 
-	// 计算 Rates 和 Delta
-	var totalIn, totalOut, totalErr int64
-	rates := make([]types.GetDevicePortForwardStatsRates, 0, count)
+	// 使用 Map 按 CreatedAt 分组聚合
+	timeMap := make(map[int64]*aggregatePoint)
+	for _, item := range raw {
+		ts := item.CreatedAt.Unix() // 按秒聚合
+		if _, ok := timeMap[ts]; !ok {
+			timeMap[ts] = &aggregatePoint{CreatedAt: item.CreatedAt}
+		}
+		timeMap[ts].ActiveConn += item.ActiveConn
+		timeMap[ts].BytesIn += item.BytesIn
+		timeMap[ts].BytesOut += item.BytesOut
+		timeMap[ts].Errors += item.Errors
+	}
 
-	for i := 0; i < count; i++ {
-		curr := raw[i]
+	// 2. 将聚合后的数据转为有序切片（升序）
+	sortedPoints := make([]*aggregatePoint, 0, len(timeMap))
+	for _, p := range timeMap {
+		sortedPoints = append(sortedPoints, p)
+	}
+	sort.Slice(sortedPoints, func(i, j int) bool {
+		return sortedPoints[i].CreatedAt.Before(sortedPoints[j].CreatedAt)
+	})
+
+	// 3. 开始计算速率和增量
+	var res types.GetDevicePortForwardStatsResponse
+	aggCount := len(sortedPoints)
+
+	// 最新快照即为最后一个点
+	lastPoint := sortedPoints[aggCount-1]
+	res.Latest = types.GetDevicePortForwardStatsLatest{
+		ActiveConn: lastPoint.ActiveConn,
+		BytesIn:    lastPoint.BytesIn,
+		BytesOut:   lastPoint.BytesOut,
+		Errors:     lastPoint.Errors,
+	}
+
+	rates := make([]types.GetDevicePortForwardStatsRates, 0, aggCount)
+	var totalIn, totalOut, totalErr int64
+
+	for i := 0; i < aggCount; i++ {
+		curr := sortedPoints[i]
 		var inKbps, outKbps float64
 
-		// 从第二个点开始计算速率（因为需要和前一个点对比）
 		if i > 0 {
-			prev := raw[i-1]
+			prev := sortedPoints[i-1]
+			duration := curr.CreatedAt.Sub(prev.CreatedAt).Seconds()
 
-			// 只有在同一个启动周期内才计算差值
-			if curr.StartTime.Equal(prev.StartTime) {
-				duration := curr.CreatedAt.Sub(prev.CreatedAt).Seconds()
-				if duration > 0 {
-					diffIn := curr.BytesIn - prev.BytesIn
-					diffOut := curr.BytesOut - prev.BytesOut
-					diffErr := curr.Errors - prev.Errors
+			if duration > 0 {
+				// 注意：在设备维度，由于多个端口重启时间不同，
+				// 简单的 BytesIn 相减如果出现负数，说明有端口重启了。
+				diffIn := curr.BytesIn - prev.BytesIn
+				diffOut := curr.BytesOut - prev.BytesOut
+				diffErr := curr.Errors - prev.Errors
 
-					if diffIn >= 0 {
-						inKbps = float64(diffIn) / 1024.0 / duration
-						totalIn += diffIn
-					}
-					if diffOut >= 0 {
-						outKbps = float64(diffOut) / 1024.0 / duration
-						totalOut += diffOut
-					}
-					if diffErr >= 0 {
-						totalErr += diffErr
-					}
+				if diffIn >= 0 {
+					inKbps = float64(diffIn) / 1024.0 / duration
+					totalIn += diffIn
+				} else {
+					// 如果差值为负，说明本时段内至少有一个大流量端口重启了
+					// 此时保守做法是直接累加当前值（代表从0开始的新增）
+					totalIn += curr.BytesIn
 				}
-			} else {
-				// 如果发现 StartTime 变了，说明发生了重启
-				// 重启后的第一个点，其增量就是它本身（因为从0开始计）
-				totalIn += curr.BytesIn
-				totalOut += curr.BytesOut
-				totalErr += curr.Errors
+
+				if diffOut >= 0 {
+					outKbps = float64(diffOut) / 1024.0 / duration
+					totalOut += diffOut
+				} else {
+					totalOut += curr.BytesOut
+				}
+
+				if diffErr >= 0 {
+					totalErr += diffErr
+				}
 			}
 		}
 
 		rates = append(rates, types.GetDevicePortForwardStatsRates{
 			Timestamp:  curr.CreatedAt.UnixMilli(),
-			InKBps:     math.Round(inKbps*1000) / 1000,  // 保留三位
-			OutKBps:    math.Round(outKbps*1000) / 1000, // 保留三位
+			InKBps:     math.Round(inKbps*1000) / 1000,
+			OutKBps:    math.Round(outKbps*1000) / 1000,
 			ActiveConn: curr.ActiveConn,
 		})
 	}
