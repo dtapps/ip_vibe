@@ -21,7 +21,7 @@ require (
 	github.com/alibabacloud-go/alidns-20150109/v5 v5.3.0
 	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.14
-	github.com/alibabacloud-go/esa-20240910/v2 v2.46.0
+	github.com/alibabacloud-go/esa-20240910/v2 v2.46.1
 	github.com/alibabacloud-go/tea v1.4.0
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.9
 	github.com/aliyun/credentials-go v1.4.10
@@ -55,7 +55,7 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc5
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.36
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.36
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.37
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.32
 	github.com/volcengine/volcengine-go-sdk v1.2.8
@@ -80,8 +80,8 @@ require (
 	go.dtapp.net/library/utils/gotime v1.0.17
 	golang.org/x/net v0.49.0
 	golang.org/x/sync v0.19.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20260120221211-b8f7ae30c516
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260120221211-b8f7ae30c516
+	google.golang.org/genproto/googleapis/api v0.0.0-20260122232226-8e98ce8d340d
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260122232226-8e98ce8d340d
 	google.golang.org/grpc v1.78.0
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
@@ -114,7 +114,7 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.12 // indirect
 	github.com/gin-contrib/sse v1.1.0 // indirect
 	github.com/go-acme/alidns-20150109/v4 v4.7.0 // indirect
-	github.com/go-acme/esa-20240910/v2 v2.46.0 // indirect
+	github.com/go-acme/esa-20240910/v2 v2.46.1 // indirect
 	github.com/go-acme/tencentclouddnspod v1.1.25 // indirect
 	github.com/go-acme/tencentedgdeone v1.1.48 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.3 // indirect
