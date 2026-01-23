@@ -46,109 +46,113 @@ async function loadStats() {
 }
 
 function render(rawData) {
-  if (!rawData || rawData.length === 0) {
-    console.warn("数据量不足，无法计算速率");
+  // 1. 获取数据源
+  const rates = data.rates || [];
+  const latest = data.latest || {};
+  const delta = data.delta || {};
+
+  // 2. 更新卡片数值
+  document.getElementById("stat-conn").innerText = latest.active_conn || 0;
+  document.getElementById("stat-bytes-in").innerText = formatBytes(
+    latest.bytes_in || 0,
+  );
+  document.getElementById("stat-bytes-out").innerText = formatBytes(
+    latest.bytes_out || 0,
+  );
+  document.getElementById("stat-errors").innerText = latest.errors || 0;
+
+  // 3. 更新 Delta 增量文字
+  const updateDelta = (id, text) => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = text;
+  };
+  updateDelta(
+    "delta-bytes-in",
+    `本时段: ${formatBytes(delta.bytes_in_incr || 0)}`,
+  );
+  updateDelta(
+    "delta-bytes-out",
+    `本时段: ${formatBytes(delta.bytes_out_incr || 0)}`,
+  );
+  updateDelta("delta-errors", `本时段: +${delta.errors_incr || 0} 错误`);
+
+  // 4. 处理图表展示逻辑
+  if (rates.length === 0) {
+    // 【直接提示方案】：直接在图表中心显示文字
+    const noDataOption = {
+      title: {
+        text: "暂无统计数据",
+        left: "center",
+        top: "middle",
+        textStyle: {
+          color: "#9ca3af", // daisyUI 风格的浅灰色
+          fontSize: 14,
+          fontWeight: "normal",
+        },
+      },
+      xAxis: { show: false }, // 没数据时隐藏轴线
+      yAxis: { show: false },
+      series: [],
+    };
+
+    tChart.setOption(noDataOption, true); // true 表示完全重置
+    cChart.setOption(noDataOption, true);
     return;
   }
 
-  // 1. 数据聚合：按 created_at 分组累加所有规则的数据
-  const grouped = {};
-  rawData.forEach((item) => {
-    const time = item.created_at;
-    if (!grouped[time]) {
-      grouped[time] = {
-        created_at: time,
-        active_conn: 0,
-        bytes_in: 0,
-        bytes_out: 0,
-        errors: 0,
-      };
-    }
-    grouped[time].active_conn += item.active_conn;
-    grouped[time].bytes_in += item.bytes_in;
-    grouped[time].bytes_out += item.bytes_out;
-    grouped[time].errors += item.errors;
-  });
-
-  // 2. 转换为有序数组并按时间正序排列
-  const data = Object.values(grouped).sort(
-    (a, b) => new Date(a.created_at) - new Date(b.created_at),
-  );
-
-  const xAxisData = data.map((i) =>
-    new Date(i.created_at).toLocaleTimeString([], {
+  // 5. 处理时间轴
+  const xAxisData = rates.map((r) => {
+    return new Date(r.timestamp).toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
-    }),
-  );
-
-  // 3. 计算速率
-  const inSpeed = [];
-  const outSpeed = [];
-  data.forEach((curr, i) => {
-    if (i === 0) {
-      inSpeed.push(0);
-      outSpeed.push(0);
-    } else {
-      const prev = data[i - 1];
-      const sec =
-        (new Date(curr.created_at) - new Date(prev.created_at)) / 1000;
-      if (sec <= 0) {
-        inSpeed.push(0);
-        outSpeed.push(0);
-      } else {
-        let dIn = curr.bytes_in - prev.bytes_in;
-        let dOut = curr.bytes_out - prev.bytes_out;
-        inSpeed.push(((dIn < 0 ? 0 : dIn) / 1024 / sec).toFixed(2));
-        outSpeed.push(((dOut < 0 ? 0 : dOut) / 1024 / sec).toFixed(2));
-      }
-    }
+    });
   });
 
-  // 4. 更新卡片 (取聚合后的最后一条数据)
-  const last = data[data.length - 1];
-  document.getElementById("stat-conn").innerText = last.active_conn;
-  document.getElementById("stat-bytes-in").innerText = formatBytes(
-    last.bytes_in,
-  );
-  document.getElementById("stat-bytes-out").innerText = formatBytes(
-    last.bytes_out,
-  );
-  document.getElementById("stat-errors").innerText = last.errors;
-
-  // 5. 渲染图表
+  // 6. 渲染流量速率图
   tChart.setOption({
-    tooltip: { trigger: "axis" },
-    legend: { data: ["入站总速率", "出站总速率"], bottom: 0 },
+    tooltip: {
+      trigger: "axis",
+      formatter: (params) => {
+        let res = `${params[0].name}<br/>`;
+        params.forEach((p) => {
+          res += `${p.marker}${p.seriesName}: <b>${p.value.toFixed(3)} KB/s</b><br/>`;
+        });
+        return res;
+      },
+    },
     xAxis: { type: "category", data: xAxisData, boundaryGap: false },
-    yAxis: { type: "value", name: "KB/s" },
+    yAxis: { type: "value", name: "KB/s", scale: true },
     series: [
       {
-        name: "入站总速率",
-        data: inSpeed,
+        name: "入站速率",
+        data: rates.map((r) => r.in_kbps), // 对应后端 InKBps
         type: "line",
         smooth: true,
-        itemStyle: { color: "#10b981" },
+        showSymbol: false,
         areaStyle: { opacity: 0.1 },
+        itemStyle: { color: "#10b981" },
       },
       {
-        name: "出站总速率",
-        data: outSpeed,
+        name: "出站速率",
+        data: rates.map((r) => r.out_kbps), // 对应后端 OutKBps
         type: "line",
         smooth: true,
-        itemStyle: { color: "#3b82f6" },
+        showSymbol: false,
         areaStyle: { opacity: 0.1 },
+        itemStyle: { color: "#3b82f6" },
       },
     ],
   });
 
+  // 7. 渲染连接数图
   cChart.setOption({
+    tooltip: { trigger: "axis" },
     xAxis: { type: "category", data: xAxisData },
     yAxis: { type: "value" },
     series: [
       {
-        name: "并发汇总",
-        data: data.map((i) => i.active_conn),
+        name: "活跃连接",
+        data: rates.map((r) => r.active_conn),
         type: "bar",
         itemStyle: { color: "#f59e0b" },
       },

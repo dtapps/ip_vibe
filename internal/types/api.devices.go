@@ -82,18 +82,33 @@ type GetDevicePortForwardStatsRequest struct {
 	Range string `json:"range" form:"range" binding:"required" jsonschema:"查询时间范围，支持 1h, 6h, 24h, 7d"` // 查询时间范围，支持 1h, 6h, 24h, 7d
 }
 
-// 获取设备端口转发统计数据 响应结构
+// 获取设备所有端口转发统计数据 最新状态快照
+type GetDevicePortForwardStatsLatest struct {
+	ActiveConn int64 `json:"active_conn"` // 当前活跃连接数
+	BytesIn    int64 `json:"bytes_in"`    // 累计入站流量 (bytes)
+	BytesOut   int64 `json:"bytes_out"`   // 累计出站流量 (bytes)
+	Errors     int64 `json:"errors"`      // 累计错误数
+}
+
+// 获取设备所有端口转发统计数据 时间范围内的增量统计
+type GetDevicePortForwardStatsDelta struct {
+	BytesInIncr  int64 `json:"bytes_in_incr"`  // 本时段新增入站流量 (bytes)
+	BytesOutIncr int64 `json:"bytes_out_incr"` // 本时段新增出站流量 (bytes)
+	ErrorsIncr   int64 `json:"errors_incr"`    // 本时段新增错误数
+}
+
+// 获取设备所有端口转发统计数据 单个时间点的速率数据
+type GetDevicePortForwardStatsRates struct {
+	Timestamp  int64   `json:"timestamp"`   // 数据采样时间戳（UTC）
+	InKBps     float64 `json:"in_kbps"`     // 入站速率（KB/s，保留3位小数）
+	OutKBps    float64 `json:"out_kbps"`    // 出站速率（KB/s，保留3位小数）
+	ActiveConn int64   `json:"active_conn"` // 该时刻的活跃连接数
+}
+
+// 获取设备所有端口转发统计数据 响应结构
 type GetDevicePortForwardStatsResponse struct {
-	ID            int64     `json:"id"`              // 端口转发统计记录序号
-	CreatedAt     time.Time `json:"created_at"`      // 创建时间
-	DeviceID      int64     `json:"device_id"`       // 关联 Device 序号
-	PortForwardID int64     `json:"port_forward_id"` // 关联 DevicePortForward 序号
-	StartTime     time.Time `json:"start_time"`      // 转发启动时间 (UTC)
-	ActiveConn    int64     `json:"active_conn"`     // 瞬时活跃连接数
-	TotalConn     int64     `json:"total_conn"`      // 累计连接数
-	BytesIn       int64     `json:"bytes_in"`        // 累计入站流量 (bytes)
-	BytesOut      int64     `json:"bytes_out"`       // 累计出站流量 (bytes)
-	UDPPacketsIn  int64     `json:"udp_packets_in"`  // 累计入站 UDP 包数
-	UDPPacketsOut int64     `json:"udp_packets_out"` // 累计出站 UDP 包数
-	Errors        int64     `json:"errors"`          // 累计错误数
+	PortIDs []int64                          `json:"port_ids"` // 关联端口ID列表
+	Latest  GetDevicePortForwardStatsLatest  `json:"latest"`   // 最新状态快照
+	Delta   GetDevicePortForwardStatsDelta   `json:"delta"`    // 所选时间范围内的增量
+	Rates   []GetDevicePortForwardStatsRates `json:"rates"`    // 速率趋势数据
 }

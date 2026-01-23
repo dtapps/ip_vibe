@@ -404,7 +404,10 @@ func (s *PortForwardServiceImpl) GetPortForwardStats(ctx context.Context, id int
 		return nil, fmt.Errorf("查询统计记录失败: %w", err)
 	}
 
-	return s.calculatePortForwardStats(allStats), nil
+	// 计算统计数据
+	result := s.calculatePortForwardStats(allStats)
+
+	return result, nil
 }
 
 // 根据时间范围计算起始时间

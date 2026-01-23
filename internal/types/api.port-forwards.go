@@ -113,7 +113,7 @@ type GetPortForwardStatsRates struct {
 
 // 获取端口转发统计数据 响应结构
 type GetPortForwardStatsResponse struct {
-	Latest GetPortForwardStatsLatest  `json:"latest"` // 最新状态快照（用于顶部卡片显示）
+	Latest GetPortForwardStatsLatest  `json:"latest"` // 最新状态快照
 	Delta  GetPortForwardStatsDelta   `json:"delta"`  // 所选时间范围内的增量
-	Rates  []GetPortForwardStatsRates `json:"rates"`  // 速率趋势数据（用于图表渲染）
+	Rates  []GetPortForwardStatsRates `json:"rates"`  // 速率趋势数据
 }

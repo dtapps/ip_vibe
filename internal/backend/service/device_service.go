@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"math"
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/device"
@@ -29,7 +30,7 @@ type DeviceService interface {
 	BatchDeleteDevice(ctx context.Context, ids []int64) error
 	GetDeviceIpHistory(ctx context.Context, id int64) ([]*types.GetDeviceIpHistoryResponse, error)
 	HealthcheckDevice(ctx context.Context, id int64) ([][]ToPairsStruct, error)
-	GetDevicePortForwardStats(ctx context.Context, id int64, request *types.GetDevicePortForwardStatsRequest) ([]*types.GetDevicePortForwardStatsResponse, error)
+	GetDevicePortForwardStats(ctx context.Context, id int64, request *types.GetDevicePortForwardStatsRequest) (*types.GetDevicePortForwardStatsResponse, error)
 }
 
 // DeviceServiceImpl 设备服务实现
@@ -362,10 +363,11 @@ func (s *DeviceServiceImpl) HealthcheckDevice(ctx context.Context, id int64) ([]
 }
 
 // GetDevicePortForwardStats 获取设备端口转发统计数据
-func (s *DeviceServiceImpl) GetDevicePortForwardStats(ctx context.Context, id int64, request *types.GetDevicePortForwardStatsRequest) ([]*types.GetDevicePortForwardStatsResponse, error) {
+func (s *DeviceServiceImpl) GetDevicePortForwardStats(ctx context.Context, id int64, request *types.GetDevicePortForwardStatsRequest) (*types.GetDevicePortForwardStatsResponse, error) {
 	// 查询设备
 	firstDevice, err := s.db.Device.Query().
 		Where(device.IDEQ(id)).
+		WithPortForwards().
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
@@ -374,22 +376,22 @@ func (s *DeviceServiceImpl) GetDevicePortForwardStats(ctx context.Context, id in
 		return nil, fmt.Errorf("查询设备失败: %w", err)
 	}
 
-	// 根据时间范围计算起始时间
-	startTime := time.Now().Add(-6 * time.Hour) // 默认 6 小时
-	if request.Range == "1h" {
-		startTime = time.Now().Add(-1 * time.Hour)
-	} else if request.Range == "6h" {
-		startTime = time.Now().Add(-6 * time.Hour)
-	} else if request.Range == "24h" {
-		startTime = time.Now().Add(-24 * time.Hour)
-	} else if request.Range == "7d" {
-		startTime = time.Now().AddDate(0, 0, -7)
+	// 端口列表
+	portIDs := make([]int64, 0)
+	if portForwards, err := firstDevice.Edges.PortForwardsOrErr(); err == nil {
+		for _, item := range portForwards {
+			portIDs = append(portIDs, int64(item.ID))
+		}
 	}
+
+	// 计算时间范围
+	startTime := s.getStartTimeFromRange(request.Range)
 
 	s.logger.InfoContext(ctx, "获取设备端口转发统计数据",
 		slog.Int64("ID", id),
 		slog.String("Range", request.Range),
 		slog.String("StartTime", startTime.Format(time.DateTime)),
+		slog.Any("PortIDs", portIDs),
 	)
 
 	// 查询端口转发统计记录
@@ -402,23 +404,103 @@ func (s *DeviceServiceImpl) GetDevicePortForwardStats(ctx context.Context, id in
 		return nil, fmt.Errorf("查询统计记录失败: %w", err)
 	}
 
-	lists := make([]*types.GetDevicePortForwardStatsResponse, 0)
-	for _, stat := range allStats {
-		lists = append(lists, &types.GetDevicePortForwardStatsResponse{
-			ID:            stat.ID,
-			CreatedAt:     stat.CreatedAt,
-			DeviceID:      stat.DeviceID,
-			PortForwardID: stat.PortForwardID,
-			StartTime:     stat.StartTime,
-			ActiveConn:    stat.ActiveConn,
-			TotalConn:     stat.TotalConn,
-			BytesIn:       stat.BytesIn,
-			BytesOut:      stat.BytesOut,
-			UDPPacketsIn:  stat.UDPPacketsIn,
-			UDPPacketsOut: stat.UDPPacketsOut,
-			Errors:        stat.Errors,
+	// 计算统计数据
+	result := s.calculatePortForwardStats(allStats)
+
+	result.PortIDs = portIDs
+
+	return result, nil
+}
+
+// 根据时间范围计算起始时间
+func (s *DeviceServiceImpl) getStartTimeFromRange(rangeStr string) time.Time {
+	startTime := time.Now().Add(-6 * time.Hour) // 默认 6 小时
+	if rangeStr == "1h" {
+		startTime = time.Now().Add(-1 * time.Hour)
+	} else if rangeStr == "6h" {
+		startTime = time.Now().Add(-6 * time.Hour)
+	} else if rangeStr == "24h" {
+		startTime = time.Now().Add(-24 * time.Hour)
+	} else if rangeStr == "7d" {
+		startTime = time.Now().AddDate(0, 0, -7)
+	}
+	return startTime
+}
+
+// 计算端口转发统计数据
+func (s *DeviceServiceImpl) calculatePortForwardStats(raw []*ent_log.PortForwardStats) *types.GetDevicePortForwardStatsResponse {
+
+	count := len(raw)
+	if count == 0 {
+		return &types.GetDevicePortForwardStatsResponse{}
+	}
+
+	var res types.GetDevicePortForwardStatsResponse
+
+	// 最新快照
+	latest := raw[count-1]
+	res.Latest = types.GetDevicePortForwardStatsLatest{
+		ActiveConn: latest.ActiveConn,
+		BytesIn:    latest.BytesIn,
+		BytesOut:   latest.BytesOut,
+		Errors:     latest.Errors,
+	}
+
+	// 计算 Rates 和 Delta
+	var totalIn, totalOut, totalErr int64
+	rates := make([]types.GetDevicePortForwardStatsRates, 0, count)
+
+	for i := 0; i < count; i++ {
+		curr := raw[i]
+		var inKbps, outKbps float64
+
+		// 从第二个点开始计算速率（因为需要和前一个点对比）
+		if i > 0 {
+			prev := raw[i-1]
+
+			// 只有在同一个启动周期内才计算差值
+			if curr.StartTime.Equal(prev.StartTime) {
+				duration := curr.CreatedAt.Sub(prev.CreatedAt).Seconds()
+				if duration > 0 {
+					diffIn := curr.BytesIn - prev.BytesIn
+					diffOut := curr.BytesOut - prev.BytesOut
+					diffErr := curr.Errors - prev.Errors
+
+					if diffIn >= 0 {
+						inKbps = float64(diffIn) / 1024.0 / duration
+						totalIn += diffIn
+					}
+					if diffOut >= 0 {
+						outKbps = float64(diffOut) / 1024.0 / duration
+						totalOut += diffOut
+					}
+					if diffErr >= 0 {
+						totalErr += diffErr
+					}
+				}
+			} else {
+				// 如果发现 StartTime 变了，说明发生了重启
+				// 重启后的第一个点，其增量就是它本身（因为从0开始计）
+				totalIn += curr.BytesIn
+				totalOut += curr.BytesOut
+				totalErr += curr.Errors
+			}
+		}
+
+		rates = append(rates, types.GetDevicePortForwardStatsRates{
+			Timestamp:  curr.CreatedAt.UnixMilli(),
+			InKBps:     math.Round(inKbps*1000) / 1000,  // 保留三位
+			OutKBps:    math.Round(outKbps*1000) / 1000, // 保留三位
+			ActiveConn: curr.ActiveConn,
 		})
 	}
 
-	return lists, nil
+	res.Rates = rates
+	res.Delta = types.GetDevicePortForwardStatsDelta{
+		BytesInIncr:  totalIn,
+		BytesOutIncr: totalOut,
+		ErrorsIncr:   totalErr,
+	}
+
+	return &res
 }
