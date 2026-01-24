@@ -183,7 +183,7 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 			p.ItemData = *item
 
 			// 查找记录值列表
-			itemOriginValues := make([]string, 0)
+			itemOriginValues := make([]string, 0, len(item.Origin.Origins))
 			for _, origin := range item.Origin.Origins {
 				itemOriginValues = append(itemOriginValues, utils.PtrToString(origin))
 			}

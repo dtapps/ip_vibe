@@ -60,12 +60,13 @@ func EqualUrlIgnoreCase(s1, s2 string) bool {
 
 // EqualUrlSliceUnordered 比较两个URL切片是否包含相同的唯一元素（忽略顺序和重复）
 func EqualUrlSliceUnordered(sm1, sm2 []string) bool {
-	um1 := make([]string, 0)
+	um1 := make([]string, 0, len(sm1))
 	for _, s1 := range sm1 {
 		u1, _ := url.Parse(s1)
 		um1 = append(um1, u1.String())
 	}
-	um2 := make([]string, 0)
+
+	um2 := make([]string, 0, len(sm2))
 	for _, s2 := range sm2 {
 		u2, _ := url.Parse(s2)
 		um2 = append(um2, u2.String())

@@ -15,7 +15,7 @@ import (
 // getLumberjack 获取 lumberjack 日志
 func getLumberjack(prefix string, name string) *lumberjack.Logger {
 	// 使用 -拼接 转字符串
-	elems := make([]string, 0)
+	elems := make([]string, 0, 2)
 	if prefix != "" {
 		elems = append(elems, prefix)
 	}

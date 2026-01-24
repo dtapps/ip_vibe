@@ -144,7 +144,7 @@ func (s *WebhookSubServiceImpl) BuildResponse(ctx context.Context, item *ent.Web
 
 // GetWebhookSubs 获取全部通知订阅
 func (s *WebhookSubServiceImpl) GetWebhookSubs(ctx context.Context, request *types.GetWebhookSubsRequest) ([]*types.GetWebhookSubResponse, error) {
-	lists := make([]*types.GetWebhookSubResponse, 0)
+
 	// 查询全部通知订阅
 	allWebhookSubscription, err := s.db.WebhookSubscription.Query().
 		WhereIf(request.IsActive != nil, webhooksubscription.IsActiveEQ(cast.ToBool(request.IsActive))).
@@ -155,6 +155,7 @@ func (s *WebhookSubServiceImpl) GetWebhookSubs(ctx context.Context, request *typ
 		return nil, fmt.Errorf("查询通知订阅失败: %w", err)
 	}
 
+	lists := make([]*types.GetWebhookSubResponse, 0, len(allWebhookSubscription))
 	for _, item := range allWebhookSubscription {
 		// 将实体转换为响应
 		list, err := s.BuildResponse(ctx, item)

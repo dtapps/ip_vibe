@@ -97,7 +97,7 @@ func (s *SSLRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.SSLR
 
 // GetSSLRecords 获取全部 SSL 记录
 func (s *SSLRecordServiceImpl) GetSSLRecords(ctx context.Context, request *types.GetSSLRecordsRequest) ([]*types.GetSSLRecordResponse, error) {
-	lists := make([]*types.GetSSLRecordResponse, 0)
+
 	// 查询全部SSL记录
 	allSSLRecord, err := s.db.SSLRecord.Query().
 		WhereIf(request.IsActive != nil, sslrecord.IsActiveEQ(cast.ToBool(request.IsActive))).
@@ -108,6 +108,7 @@ func (s *SSLRecordServiceImpl) GetSSLRecords(ctx context.Context, request *types
 		return nil, fmt.Errorf("查询SSL记录失败: %w", err)
 	}
 
+	lists := make([]*types.GetSSLRecordResponse, 0, len(allSSLRecord))
 	for _, item := range allSSLRecord {
 		// 将实体转换为响应
 		list, err := s.BuildResponse(ctx, item)

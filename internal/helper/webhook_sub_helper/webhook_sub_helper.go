@@ -36,7 +36,7 @@ func Create(ctx context.Context, webhookIDs []int64, objType webhooksubscription
 	)
 
 	// 批量创建
-	createList := make([]*ent.WebhookSubscriptionCreate, 0)
+	createList := make([]*ent.WebhookSubscriptionCreate, 0, len(webhookIDs))
 	for _, item := range webhookIDs {
 		createList = append(createList,
 			global.GvaEntDb.WebhookSubscription.Create().
@@ -102,7 +102,7 @@ func Update(ctx context.Context, webhookIDs []int64, objType webhooksubscription
 	}
 
 	// 新增：webhook_ids 中有，但数据库中没有的
-	createList := make([]*ent.WebhookSubscriptionCreate, 0)
+	createList := make([]*ent.WebhookSubscriptionCreate, 0, len(webhookIDs))
 	for _, id := range webhookIDs {
 		if !existingWebhookIDMap[id] {
 			createList = append(createList,

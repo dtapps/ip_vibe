@@ -53,7 +53,7 @@ func InitEntDb(ctx context.Context, logger *slog.Logger) {
 		driver := entSql.OpenDB(dialect.SQLite, sqlDB)
 
 		// 3. 让 Ent 使用这个 DB  dialect.SQLite,
-		opts := make([]ent.Option, 0)
+		opts := make([]ent.Option, 0, 4)
 		opts = append(
 			opts,
 			ent.Driver(driver),
@@ -126,7 +126,7 @@ func InitEntLogDb(ctx context.Context, logger *slog.Logger) {
 		driver := entSql.OpenDB(dialect.SQLite, sqlDB)
 
 		// 3. 让 Ent 使用这个 DB  dialect.SQLite,
-		opts := make([]ent_log.Option, 0)
+		opts := make([]ent_log.Option, 0, 4)
 		opts = append(
 			opts,
 			ent_log.Driver(driver),

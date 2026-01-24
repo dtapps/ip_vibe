@@ -92,7 +92,7 @@ func LogContent(c *gin.Context) {
 
 	default:
 
-		lists := make([]string, 0)
+		lists := make([]string, 0, 200)
 		if requestParams.FileName != "" {
 			// 强制提取纯文件名，防止 ../.. 攻击
 			safeFileName := filepath.Base(requestParams.FileName)

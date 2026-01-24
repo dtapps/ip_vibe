@@ -96,7 +96,6 @@ func (s *CDNRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.CDNR
 
 // GetCdnRecords 获取全部 CDN 记录
 func (s *CDNRecordServiceImpl) GetCdnRecords(ctx context.Context, request *types.GetCdnRecordsRequest) ([]*types.GetCdnRecordResponse, error) {
-	lists := make([]*types.GetCdnRecordResponse, 0)
 	// 查询全部CDN记录
 	allCdnRecord, err := s.db.CDNRecord.Query().
 		WhereIf(request.IsActive != nil, cdnrecord.IsActiveEQ(cast.ToBool(request.IsActive))).
@@ -108,6 +107,7 @@ func (s *CDNRecordServiceImpl) GetCdnRecords(ctx context.Context, request *types
 		return nil, fmt.Errorf("查询记录失败: %w", err)
 	}
 
+	lists := make([]*types.GetCdnRecordResponse, 0, len(allCdnRecord))
 	for _, item := range allCdnRecord {
 		// 将实体转换为响应
 		list, err := s.BuildResponse(ctx, item)
@@ -369,7 +369,9 @@ func (s *CDNRecordServiceImpl) HealthcheckCdnRecord(ctx context.Context, id int6
 		cdnRecordConfigJson.HTTPPort = 0
 	}
 
+	// 检查健康状态
 	results := make([][]ToPairsStruct, 0)
+
 	// 并发检查 (使用 context.Context)
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(10) // 最多 10 个并发

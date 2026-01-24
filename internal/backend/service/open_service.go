@@ -231,8 +231,6 @@ func (s *DeviceOpenServiceImpl) DevicePortForwards(ctx context.Context, deviceCo
 		return nil, fmt.Errorf("查询设备失败: %w", err)
 	}
 
-	portForwards := make([]types.GetPortForwardResponse, 0)
-
 	// 查询端口转发
 	allPortForward, err := firstDevice.QueryPortForwards().
 		Where(deviceportforward.IsActiveEQ(true)).
@@ -243,6 +241,7 @@ func (s *DeviceOpenServiceImpl) DevicePortForwards(ctx context.Context, deviceCo
 	}
 
 	// 组装响应数据
+	portForwards := make([]types.GetPortForwardResponse, 0, len(allPortForward))
 	for _, item := range allPortForward {
 		portForwards = append(portForwards, types.GetPortForwardResponse{
 			ID:          item.ID,

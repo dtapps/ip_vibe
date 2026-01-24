@@ -20,7 +20,7 @@ func InitGoCron(ctx context.Context, logger *slog.Logger) {
 
 		logger.InfoContext(ctx, "GoCron 服务正在启动")
 
-		options := make([]gocron.SchedulerOption, 0)
+		options := make([]gocron.SchedulerOption, 0, 4)
 		// 日志
 		options = append(options, gocron.WithLogger(gocron_slog.NewSlogLogger(logger)))
 		// 设置时区

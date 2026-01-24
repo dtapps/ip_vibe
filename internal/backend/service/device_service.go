@@ -105,7 +105,7 @@ func (s *DeviceServiceImpl) BuildResponse(ctx context.Context, item *ent.Device)
 
 // GetDevices 获取全部设备
 func (s *DeviceServiceImpl) GetDevices(ctx context.Context) ([]*types.GetDeviceResponse, error) {
-	lists := make([]*types.GetDeviceResponse, 0)
+
 	// 查询全部设备
 	allDevice, err := s.db.Device.Query().
 		OrderByCreatedAtDesc().
@@ -113,6 +113,8 @@ func (s *DeviceServiceImpl) GetDevices(ctx context.Context) ([]*types.GetDeviceR
 	if err != nil {
 		return nil, fmt.Errorf("查询设备失败: %w", err)
 	}
+
+	lists := make([]*types.GetDeviceResponse, 0, len(allDevice))
 	for _, item := range allDevice {
 		// 将实体转换为响应
 		list, err := s.BuildResponse(ctx, item)
@@ -289,7 +291,7 @@ func (s *DeviceServiceImpl) BatchDeleteDevice(ctx context.Context, ids []int64) 
 
 // GetDeviceIpHistory 获取设备的IP历史记录
 func (s *DeviceServiceImpl) GetDeviceIpHistory(ctx context.Context, id int64) ([]*types.GetDeviceIpHistoryResponse, error) {
-	// 查询设备 (保持原始逻辑)
+	// 查询设备
 	firstDevice, err := s.db.Device.Query().
 		Where(device.IDEQ(id)).
 		First(ctx)
@@ -299,6 +301,7 @@ func (s *DeviceServiceImpl) GetDeviceIpHistory(ctx context.Context, id int64) ([
 		}
 		return nil, fmt.Errorf("查询设备失败: %w", err)
 	}
+
 	// 查询设备IP历史记录
 	firstDeviceReports, err := s.logDb.DeviceIpReport.Query().
 		Where(deviceipreport.DeviceIDEQ(firstDevice.ID)).
@@ -307,8 +310,9 @@ func (s *DeviceServiceImpl) GetDeviceIpHistory(ctx context.Context, id int64) ([
 	if err != nil {
 		return nil, fmt.Errorf("查询设备IP历史记录失败: %w", err)
 	}
+
 	// 设备列表
-	ips := make([]*types.GetDeviceIpHistoryResponse, 0)
+	ips := make([]*types.GetDeviceIpHistoryResponse, 0, len(firstDeviceReports))
 	for _, item := range firstDeviceReports {
 		ips = append(ips, &types.GetDeviceIpHistoryResponse{
 			IPV4:      item.IPV4,
@@ -378,7 +382,7 @@ func (s *DeviceServiceImpl) GetDevicePortForwardStats(ctx context.Context, id in
 	}
 
 	// 端口列表
-	portIDs := make([]int64, 0)
+	portIDs := make([]int64, 0, len(firstDevice.Edges.PortForwards))
 	if portForwards, err := firstDevice.Edges.PortForwardsOrErr(); err == nil {
 		for _, item := range portForwards {
 			portIDs = append(portIDs, int64(item.ID))

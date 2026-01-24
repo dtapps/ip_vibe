@@ -69,7 +69,7 @@ func (s *WebhookServiceImpl) BuildResponse(ctx context.Context, item *ent.Webhoo
 
 // GetWebhooks 获取全部通知
 func (s *WebhookServiceImpl) GetWebhooks(ctx context.Context, request *types.GetWebhooksRequest) ([]*types.GetWebhookResponse, error) {
-	lists := make([]*types.GetWebhookResponse, 0)
+
 	// 查询全部通知
 	allWebhook, err := s.db.Webhook.Query().
 		WhereIf(request.IsActive != nil, webhook.IsActiveEQ(cast.ToBool(request.IsActive))).
@@ -78,6 +78,8 @@ func (s *WebhookServiceImpl) GetWebhooks(ctx context.Context, request *types.Get
 	if err != nil {
 		return nil, fmt.Errorf("查询通知失败: %w", err)
 	}
+
+	lists := make([]*types.GetWebhookResponse, 0, len(allWebhook))
 	for _, item := range allWebhook {
 		// 将实体转换为响应
 		list, err := s.BuildResponse(ctx, item)

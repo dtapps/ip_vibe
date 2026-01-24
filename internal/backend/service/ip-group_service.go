@@ -100,7 +100,7 @@ func (s *IPGroupServiceImpl) BuildResponse(ctx context.Context, item *ent.IpGrou
 
 // GetIPGroups 获取全部IP组
 func (s *IPGroupServiceImpl) GetIPGroups(ctx context.Context) ([]*types.GetIPGroupResponse, error) {
-	lists := make([]*types.GetIPGroupResponse, 0)
+
 	// 查询全部IP组
 	allIpGroup, err := s.db.IpGroup.Query().
 		OrderByCreatedAtDesc().
@@ -111,6 +111,8 @@ func (s *IPGroupServiceImpl) GetIPGroups(ctx context.Context) ([]*types.GetIPGro
 	if err != nil {
 		return nil, fmt.Errorf("查询IP组失败: %w", err)
 	}
+
+	lists := make([]*types.GetIPGroupResponse, 0, len(allIpGroup))
 	for _, item := range allIpGroup {
 		// 将实体转换为响应
 		list, err := s.BuildResponse(ctx, item)
@@ -361,7 +363,7 @@ func (s *IPGroupServiceImpl) GetIPGroupDevices(ctx context.Context, id int64) ([
 		return nil, fmt.Errorf("查询IP组失败: %w", err)
 	}
 	// 设备列表
-	ipGroupDevices := make([]*types.GetDeviceResponse, 0)
+	ipGroupDevices := make([]*types.GetDeviceResponse, 0, len(firstIpGroup.Edges.Devices))
 	if devices, err := firstIpGroup.Edges.DevicesOrErr(); err == nil {
 		for _, item := range devices {
 			ipGroupDevices = append(ipGroupDevices, &types.GetDeviceResponse{
@@ -443,7 +445,7 @@ func (s *IPGroupServiceImpl) GetIPGroupDevicePortForwardStats(ctx context.Contex
 	}
 
 	// 设备列表
-	deviceIDs := make([]int64, 0)
+	deviceIDs := make([]int64, 0, len(firstIpGroup.Edges.Devices))
 	if devices, err := firstIpGroup.Edges.DevicesOrErr(); err == nil {
 		for _, item := range devices {
 			deviceIDs = append(deviceIDs, item.ID)

@@ -101,7 +101,7 @@ func (s *DNSRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.DNSR
 
 // GetDnsRecords 获取全部DNS记录
 func (s *DNSRecordServiceImpl) GetDnsRecords(ctx context.Context, request *types.GetDnsRecordsRequest) ([]*types.GetDnsRecordResponse, error) {
-	lists := make([]*types.GetDnsRecordResponse, 0)
+
 	// 查询全部DNS记录
 	allDnsRecord, err := s.db.DNSRecord.Query().
 		WhereIf(request.IsActive != nil, dnsrecord.IsActiveEQ(cast.ToBool(request.IsActive))).
@@ -113,6 +113,8 @@ func (s *DNSRecordServiceImpl) GetDnsRecords(ctx context.Context, request *types
 	if err != nil {
 		return nil, fmt.Errorf("查询DNS记录失败: %w", err)
 	}
+
+	lists := make([]*types.GetDnsRecordResponse, 0, len(allDnsRecord))
 	for _, item := range allDnsRecord {
 		// 将实体转换为响应
 		list, err := s.BuildResponse(ctx, item)

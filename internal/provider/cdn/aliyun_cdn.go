@@ -192,7 +192,7 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 			p.ItemData = *item
 
 			// 查找记录值列表
-			itemOriginValues := make([]string, 0)
+			itemOriginValues := make([]string, 0, len(item.GetSources().GetSource()))
 			for _, source := range item.GetSources().GetSource() {
 				if tea.StringValue(source.GetContent()) == defaultIP {
 					continue // 跳过默认测试地址
@@ -244,7 +244,7 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 		Port     int    `json:"port"`     // 端口
 		Weight   string `json:"weight"`   // 权重
 	}
-	sources := make([]SourceItem, 0)
+	sources := make([]SourceItem, 0, len(newOriginValues)*2)
 
 	// 计算平均权重
 	n := len(newOriginValues)

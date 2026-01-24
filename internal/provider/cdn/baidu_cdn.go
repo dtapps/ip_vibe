@@ -155,7 +155,7 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 	}
 
 	// 源站配置
-	originValues := make([]string, 0)
+	originValues := make([]string, 0, len(newOriginValues)*2)
 	for _, source := range newOriginValues {
 		originValues = append(originValues, fmt.Sprintf("http://[%v]:%v", source, p.CustomConfig.HttpPort))
 		originValues = append(originValues, fmt.Sprintf("https://[%v]:%v", source, p.CustomConfig.HttpsPort))
@@ -195,7 +195,7 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 	p.ItemData = *responseCdnInfo
 
 	// 查找记录值列表
-	itemOriginValues := make([]string, 0)
+	itemOriginValues := make([]string, 0, len(responseCdnInfo.Origin))
 	for _, origin := range responseCdnInfo.Origin {
 		itemOriginValues = append(itemOriginValues, origin.Peer)
 	}
@@ -259,7 +259,7 @@ func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain 
 	}
 
 	// 源站配置
-	sources := make([]api.OriginPeer, 0)
+	sources := make([]api.OriginPeer, 0, len(newOriginValues)*2)
 	for _, origin := range newOriginValues {
 		httpSrc := api.OriginPeer{
 			Peer:   fmt.Sprintf("http://[%v]:%v", origin, p.CustomConfig.HttpPort),

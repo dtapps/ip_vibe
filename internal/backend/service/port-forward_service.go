@@ -75,7 +75,7 @@ func (s *PortForwardServiceImpl) BuildResponse(ctx context.Context, item *ent.De
 
 // GetPortForwards 获取全部端口转发
 func (s *PortForwardServiceImpl) GetPortForwards(ctx context.Context, request *types.GetPortForwardsRequest) ([]*types.GetPortForwardResponse, error) {
-	lists := make([]*types.GetPortForwardResponse, 0)
+
 	// 查询全部端口转发
 	allPortForward, err := s.db.DevicePortForward.Query().
 		WhereIf(request.IsActive != nil, deviceportforward.IsActiveEQ(cast.ToBool(request.IsActive))).
@@ -85,6 +85,8 @@ func (s *PortForwardServiceImpl) GetPortForwards(ctx context.Context, request *t
 	if err != nil {
 		return nil, fmt.Errorf("查询端口转发失败: %w", err)
 	}
+
+	lists := make([]*types.GetPortForwardResponse, 0, len(allPortForward))
 	for _, item := range allPortForward {
 		// 将实体转换为响应
 		list, err := s.BuildResponse(ctx, item)

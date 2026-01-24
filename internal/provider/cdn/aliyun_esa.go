@@ -172,7 +172,7 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
 	// 源站信息
-	originValues := make([]string, 0)
+	originValues := make([]string, 0, len(newOriginValues))
 	if len(newOriginValues) == 1 {
 		originValues = newOriginValues
 	} else {
@@ -402,7 +402,7 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 		if utils.EqualDomainIgnoreCase(itemGroupName, p.CustomConfig.IPGroupCode) {
 
 			// 查找记录值列表
-			itemOriginValues := make([]string, 0)
+			itemOriginValues := make([]string, 0, len(item.GetOrigins()))
 			for _, origin := range item.GetOrigins() {
 				itemOriginValues = append(itemOriginValues, tea.StringValue(origin.GetAddress()))
 			}

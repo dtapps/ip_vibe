@@ -191,8 +191,8 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 			p.ItemData = item
 
 			// 查找记录值列表
-			itemOriginValues := make([]string, 0)
 			sources := *item.Sources
+			itemOriginValues := make([]string, 0, len(sources))
 			for _, source := range sources {
 				itemOriginValues = append(itemOriginValues, source.IpOrDomain)
 			}
@@ -270,7 +270,7 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain
 
 	if p.InternalData.RecordID == "" {
 
-		sources := make([]model.SourcesRequestBody, 0)
+		sources := make([]model.SourcesRequestBody, 0, len(newOriginValues))
 		for _, origin := range newOriginValues {
 			sources = append(sources, model.SourcesRequestBody{
 				IpOrDomain:    origin,
@@ -302,7 +302,7 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain
 
 	} else if p.InternalData.RecordID != "" {
 
-		sources := make([]model.SourcesConfig, 0)
+		sources := make([]model.SourcesConfig, 0, len(newOriginValues))
 		for _, origin := range newOriginValues {
 			sources = append(sources, model.SourcesConfig{
 				OriginType: model.GetSourcesRequestBodyOriginTypeEnum().IPADDR.Value(),

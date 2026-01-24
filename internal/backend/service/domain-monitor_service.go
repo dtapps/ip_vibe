@@ -83,7 +83,7 @@ func (s *DomainMonitorServiceImpl) BuildResponse(ctx context.Context, item *ent.
 
 // GetDomainMonitors 获取全部域名监控
 func (s *DomainMonitorServiceImpl) GetDomainMonitors(ctx context.Context, request *types.GetDomainMonitorsRequest) ([]*types.GetDomainMonitorResponse, error) {
-	lists := make([]*types.GetDomainMonitorResponse, 0)
+
 	// 查询全部域名监控
 	allDomainMonitor, err := s.db.DomainMonitor.Query().
 		WhereIf(request.IsActive != nil, domainmonitor.IsActiveEQ(cast.ToBool(request.IsActive))).
@@ -92,6 +92,8 @@ func (s *DomainMonitorServiceImpl) GetDomainMonitors(ctx context.Context, reques
 	if err != nil {
 		return nil, fmt.Errorf("查询域名监控失败: %w", err)
 	}
+
+	lists := make([]*types.GetDomainMonitorResponse, 0, len(allDomainMonitor))
 	for _, item := range allDomainMonitor {
 		// 将实体转换为响应
 		list, err := s.BuildResponse(ctx, item)

@@ -63,7 +63,7 @@ func (s *RemoteLogService) StartTunnel(ctx context.Context, deviceID string) {
 		}
 
 		// 4. 收到服务端传来的文件名
-		lines := make([]string, 0)
+		lines := make([]string, 0, 200)
 		if req.FileName != "" {
 			// 强制提取纯文件名，防止 ../.. 攻击
 			safeFileName := filepath.Base(req.FileName)

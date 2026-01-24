@@ -114,7 +114,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 	// 准备字段组
 	var fieldGroup any
 
-	var dnsProviderOpts = make([]dns.DnsOption, 0)
+	var dnsProviderOpts = make([]dns.DnsOption, 0, 1)
 	if global.GvaHttpLog != nil {
 		dnsProviderOpts = append(dnsProviderOpts, dns.WithHttpTransport(global.GvaHttpLog))
 	}
@@ -143,7 +143,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 			return
 		}
 		// 准备 options
-		options := make([]types.SCHEMAFieldOption, len(lines))
+		options := make([]types.SCHEMAFieldOption, 0, len(lines))
 		for i, line := range lines {
 			options[i] = types.SCHEMAFieldOption{
 				Value: line.LineID,
@@ -191,7 +191,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 			return
 		}
 		// 准备 options
-		options := make([]types.SCHEMAFieldOption, len(lines))
+		options := make([]types.SCHEMAFieldOption, 0, len(lines))
 		for i, line := range lines {
 			options[i] = types.SCHEMAFieldOption{
 				Value: line.LineID,
@@ -230,7 +230,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 			return
 		}
 		// 准备 options
-		options := make([]types.SCHEMAFieldOption, len(lines))
+		options := make([]types.SCHEMAFieldOption, 0, len(lines))
 		for i, line := range lines {
 			options[i] = types.SCHEMAFieldOption{
 				Value: line.LineID,
