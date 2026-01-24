@@ -127,6 +127,7 @@ async function handleBatchAction(el) {
       key,
       val,
       confirm: customMsg,
+      isReload = true,
     } = el.dataset;
 
     // 获取选中的 ID 数组
@@ -161,8 +162,10 @@ async function handleBatchAction(el) {
     }
     await API[methodFunc](url, payload);
 
-    // 成功后刷新
-    window.location.reload();
+    // 刷新页面
+    if (isReload) {
+      window.location.reload();
+    }
   } catch (err) {
     alert(`批量操作失败: ${err.message}`);
     console.error("Batch Action Error:", err);
@@ -170,28 +173,44 @@ async function handleBatchAction(el) {
 }
 
 /**
- * 删除
- * @param {string} url - 删除接口URL
+ * 处理操作
+ * @param {HTMLButtonElement} el - 删除按钮元素
  * @returns
  */
-async function handleDelete(url, id) {
+async function handleAction(el) {
+  console.log("[handleAction] el.dataset", el.dataset);
   try {
-    if (!id) {
-      alert("请选择要删除的项");
+    // 提取配置
+    const {
+      id,
+      url,
+      method = "POST",
+      confirm: customMsg,
+      isReload = true,
+    } = el.dataset;
+
+    if (id && !confirm(customMsg || `确定对 ${id} 执行该操作吗？`)) {
       return;
     }
 
-    if (!confirm(`确定删除 ${id} 吗？`)) {
-      return;
-    }
+    // 如果存在 id 就添加到 URL 中
+    // if (id) {
+    //   url += `/${id}`;
+    // }
 
-    // 调用 API
-    await API.delete(`${url}/${id}`);
+    // 根据请求方式调用 API
+    const methodFunc = method.toLowerCase();
+    if (typeof API[methodFunc] !== "function") {
+      throw new Error(`不支持的请求方式: ${method}`);
+    }
+    await API[methodFunc](url);
 
     // 刷新页面
-    window.location.reload();
-  } catch (error) {
-    alert(`删除失败: ${error.message}`);
-    console.error("删除失败", error);
+    if (isReload) {
+      window.location.reload();
+    }
+  } catch (err) {
+    alert(`操作失败: ${err.message}`);
+    console.error("Action Error:", err);
   }
 }
