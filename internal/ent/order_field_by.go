@@ -12,6 +12,7 @@ import (
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
+	"vibe_ip/internal/ent/sslimport"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
@@ -1940,6 +1941,181 @@ func (q *PlatformConfigQuery) OrderByConfigJSONDesc() *PlatformConfigQuery {
 //	    All(ctx)
 func (q *PlatformConfigQuery) OrderByConfigJSONAsc() *PlatformConfigQuery {
 	return q.Order(Asc(platformconfig.FieldConfigJSON))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *SSLImportQuery) OrderByIDDesc() *SSLImportQuery {
+	return q.Order(Desc(sslimport.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *SSLImportQuery) OrderByIDAsc() *SSLImportQuery {
+	return q.Order(Asc(sslimport.FieldID))
+}
+
+// OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderByCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *SSLImportQuery) OrderByCreatedAtDesc() *SSLImportQuery {
+	return q.Order(Desc(sslimport.FieldCreatedAt))
+}
+
+// OrderByCreatedAtAsc 按字段 created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderByCreatedAtAsc().
+//	    All(ctx)
+func (q *SSLImportQuery) OrderByCreatedAtAsc() *SSLImportQuery {
+	return q.Order(Asc(sslimport.FieldCreatedAt))
+}
+
+// OrderByUpdatedAtDesc 按字段 updated_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderByUpdatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *SSLImportQuery) OrderByUpdatedAtDesc() *SSLImportQuery {
+	return q.Order(Desc(sslimport.FieldUpdatedAt))
+}
+
+// OrderByUpdatedAtAsc 按字段 updated_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderByUpdatedAtAsc().
+//	    All(ctx)
+func (q *SSLImportQuery) OrderByUpdatedAtAsc() *SSLImportQuery {
+	return q.Order(Asc(sslimport.FieldUpdatedAt))
+}
+
+// OrderBySourceDesc 按字段 source 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderBySourceDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *SSLImportQuery) OrderBySourceDesc() *SSLImportQuery {
+	return q.Order(Desc(sslimport.FieldSource))
+}
+
+// OrderBySourceAsc 按字段 source 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderBySourceAsc().
+//	    All(ctx)
+func (q *SSLImportQuery) OrderBySourceAsc() *SSLImportQuery {
+	return q.Order(Asc(sslimport.FieldSource))
+}
+
+// OrderByDomainDesc 按字段 domain 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderByDomainDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *SSLImportQuery) OrderByDomainDesc() *SSLImportQuery {
+	return q.Order(Desc(sslimport.FieldDomain))
+}
+
+// OrderByDomainAsc 按字段 domain 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderByDomainAsc().
+//	    All(ctx)
+func (q *SSLImportQuery) OrderByDomainAsc() *SSLImportQuery {
+	return q.Order(Asc(sslimport.FieldDomain))
+}
+
+// OrderByCertificateDesc 按字段 certificate 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderByCertificateDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *SSLImportQuery) OrderByCertificateDesc() *SSLImportQuery {
+	return q.Order(Desc(sslimport.FieldCertificate))
+}
+
+// OrderByCertificateAsc 按字段 certificate 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderByCertificateAsc().
+//	    All(ctx)
+func (q *SSLImportQuery) OrderByCertificateAsc() *SSLImportQuery {
+	return q.Order(Asc(sslimport.FieldCertificate))
+}
+
+// OrderByPrivateKeyDesc 按字段 private_key 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderByPrivateKeyDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *SSLImportQuery) OrderByPrivateKeyDesc() *SSLImportQuery {
+	return q.Order(Desc(sslimport.FieldPrivateKey))
+}
+
+// OrderByPrivateKeyAsc 按字段 private_key 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderByPrivateKeyAsc().
+//	    All(ctx)
+func (q *SSLImportQuery) OrderByPrivateKeyAsc() *SSLImportQuery {
+	return q.Order(Asc(sslimport.FieldPrivateKey))
 }
 
 // OrderByIDDesc 按主键 ID 降序排列查询结果。

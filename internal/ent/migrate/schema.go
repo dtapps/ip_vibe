@@ -437,6 +437,38 @@ var (
 			},
 		},
 	}
+	// SslImportColumns holds the columns for the "ssl_import" table.
+	SslImportColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "SSL导入序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "source", Type: field.TypeEnum, Comment: "来源", Enums: []string{"unknown", "webhook", "manual"}, Default: "unknown"},
+		{Name: "domain", Type: field.TypeString, Nullable: true, Comment: "域名（支持通配符 *.example.com 或精确域名，多个域名之间用逗号分隔）"},
+		{Name: "certificate", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "证书(PEM格式)"},
+		{Name: "private_key", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "私钥(PEM格式)"},
+	}
+	// SslImportTable holds the schema information for the "ssl_import" table.
+	SslImportTable = &schema.Table{
+		Name:       "ssl_import",
+		Comment:    "SSL导入",
+		Columns:    SslImportColumns,
+		PrimaryKey: []*schema.Column{SslImportColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "sslimport_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SslImportColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "sslimport_domain",
+				Unique:  false,
+				Columns: []*schema.Column{SslImportColumns[4]},
+			},
+		},
+	}
 	// SslRecordColumns holds the columns for the "ssl_record" table.
 	SslRecordColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "SSL记录序号"},
@@ -659,6 +691,7 @@ var (
 		IPGroupTable,
 		IPGroupDeviceTable,
 		PlatformConfigTable,
+		SslImportTable,
 		SslRecordTable,
 		WebhookTable,
 		WebhookSubscriptionTable,
@@ -700,6 +733,9 @@ func init() {
 	}
 	PlatformConfigTable.Annotation = &entsql.Annotation{
 		Table: "platform_config",
+	}
+	SslImportTable.Annotation = &entsql.Annotation{
+		Table: "ssl_import",
 	}
 	SslRecordTable.ForeignKeys[0].RefTable = PlatformConfigTable
 	SslRecordTable.Annotation = &entsql.Annotation{

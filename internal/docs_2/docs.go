@@ -2375,6 +2375,62 @@ const docTemplate = `{
                 }
             }
         },
+        "/ip-groups/{id}/port-forward/stats": {
+            "get": {
+                "description": "获取IP组设备端口转发统计数据",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "IP组"
+                ],
+                "summary": "获取IP组设备端口转发统计数据",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "IP组序号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetIPGroupDevicePortForwardStatsResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/platform-configs": {
             "get": {
                 "description": "获取全部平台配置",
@@ -3648,19 +3704,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetSSLRecordRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -3745,6 +3789,52 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/vibe_ip_internal_types.BatchUpdateSSLRecordActiveRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ssl-records/import": {
+            "post": {
+                "description": "导入SSL记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "SSL记录"
+                ],
+                "summary": "导入SSL记录",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.ImportSSLRecordRequest"
                         }
                     }
                 ],
@@ -3901,19 +3991,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetSSLRecordRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -4075,19 +4153,7 @@ const docTemplate = `{
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetSSLRecordRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -5965,6 +6031,10 @@ const docTemplate = `{
                     "description": "设备是否在线",
                     "type": "boolean"
                 },
+                "status": {
+                    "description": "设备状态",
+                    "type": "string"
+                },
                 "webhooks": {
                     "description": "关联的 Webhook 列表",
                     "type": "array",
@@ -6142,6 +6212,100 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "type": "integer"
+                    }
+                }
+            }
+        },
+        "vibe_ip_internal_types.GetIPGroupDevicePortForwardStatsDelta": {
+            "type": "object",
+            "properties": {
+                "bytes_in_incr": {
+                    "description": "本时段新增入站流量 (bytes)",
+                    "type": "integer"
+                },
+                "bytes_out_incr": {
+                    "description": "本时段新增出站流量 (bytes)",
+                    "type": "integer"
+                },
+                "errors_incr": {
+                    "description": "本时段新增错误数",
+                    "type": "integer"
+                }
+            }
+        },
+        "vibe_ip_internal_types.GetIPGroupDevicePortForwardStatsLatest": {
+            "type": "object",
+            "properties": {
+                "active_conn": {
+                    "description": "当前活跃连接数",
+                    "type": "integer"
+                },
+                "bytes_in": {
+                    "description": "累计入站流量 (bytes)",
+                    "type": "integer"
+                },
+                "bytes_out": {
+                    "description": "累计出站流量 (bytes)",
+                    "type": "integer"
+                },
+                "errors": {
+                    "description": "累计错误数",
+                    "type": "integer"
+                }
+            }
+        },
+        "vibe_ip_internal_types.GetIPGroupDevicePortForwardStatsRates": {
+            "type": "object",
+            "properties": {
+                "active_conn": {
+                    "description": "该时刻的活跃连接数",
+                    "type": "integer"
+                },
+                "in_kbps": {
+                    "description": "入站速率（KB/s，保留3位小数）",
+                    "type": "number"
+                },
+                "out_kbps": {
+                    "description": "出站速率（KB/s，保留3位小数）",
+                    "type": "number"
+                },
+                "timestamp": {
+                    "description": "数据采样时间戳（UTC）",
+                    "type": "integer"
+                }
+            }
+        },
+        "vibe_ip_internal_types.GetIPGroupDevicePortForwardStatsResponse": {
+            "type": "object",
+            "properties": {
+                "delta": {
+                    "description": "所选时间范围内的增量",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/vibe_ip_internal_types.GetIPGroupDevicePortForwardStatsDelta"
+                        }
+                    ]
+                },
+                "device_ids": {
+                    "description": "关联的设备ID列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "latest": {
+                    "description": "最新状态快照",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/vibe_ip_internal_types.GetIPGroupDevicePortForwardStatsLatest"
+                        }
+                    ]
+                },
+                "rates": {
+                    "description": "速率趋势数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/vibe_ip_internal_types.GetIPGroupDevicePortForwardStatsRates"
                     }
                 }
             }
@@ -6518,6 +6682,14 @@ const docTemplate = `{
                     "description": "DNS刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）",
                     "type": "string"
                 },
+                "history_data_retain_time": {
+                    "description": "历史数据保留时间（天，默认 365 天）",
+                    "type": "integer"
+                },
+                "http_request_log_record_time": {
+                    "description": "HTTP请求日志记录时间（天，默认 90 天）",
+                    "type": "integer"
+                },
                 "ip_report_interval_time": {
                     "description": "IP上报间隔时间（分，默认 8-12 分钟，多个时用-分隔）",
                     "type": "string"
@@ -6533,6 +6705,10 @@ const docTemplate = `{
                 "ssl_refresh_task_time": {
                     "description": "SSL刷新任务时间（时，默认 8-10 小时，多个时用-分隔）",
                     "type": "string"
+                },
+                "statistic_data_retain_time": {
+                    "description": "统计数据保留时间（天，默认 365 天）",
+                    "type": "integer"
                 }
             }
         },
@@ -6626,6 +6802,27 @@ const docTemplate = `{
                 },
                 "webhook_name": {
                     "description": "通知渠道名称",
+                    "type": "string"
+                }
+            }
+        },
+        "vibe_ip_internal_types.ImportSSLRecordRequest": {
+            "type": "object",
+            "required": [
+                "certificate",
+                "private_key"
+            ],
+            "properties": {
+                "certificate": {
+                    "description": "证书(PEM格式)",
+                    "type": "string"
+                },
+                "domain": {
+                    "description": "域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名",
+                    "type": "string"
+                },
+                "private_key": {
+                    "description": "私钥(PEM格式)",
                     "type": "string"
                 }
             }
@@ -7080,6 +7277,14 @@ const docTemplate = `{
                     "description": "DNS刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）",
                     "type": "string"
                 },
+                "history_data_retain_time": {
+                    "description": "历史数据保留时间（天，默认 365 天）",
+                    "type": "integer"
+                },
+                "http_request_log_record_time": {
+                    "description": "HTTP请求日志记录时间（天，默认 90 天）",
+                    "type": "integer"
+                },
                 "ip_report_interval_time": {
                     "description": "IP上报间隔时间（分，默认 8-12 分钟，多个时用-分隔）",
                     "type": "string"
@@ -7095,6 +7300,10 @@ const docTemplate = `{
                 "ssl_refresh_task_time": {
                     "description": "SSL刷新任务时间（时，默认 8-10 小时，多个时用-分隔）",
                     "type": "string"
+                },
+                "statistic_data_retain_time": {
+                    "description": "统计数据保留时间（天，默认 365 天）",
+                    "type": "integer"
                 }
             }
         },

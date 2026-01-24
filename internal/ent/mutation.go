@@ -19,6 +19,7 @@ import (
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
+	"vibe_ip/internal/ent/sslimport"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
@@ -45,6 +46,7 @@ const (
 	TypeIpGroup             = "IpGroup"
 	TypeIpGroupDevice       = "IpGroupDevice"
 	TypePlatformConfig      = "PlatformConfig"
+	TypeSSLImport           = "SSLImport"
 	TypeSSLRecord           = "SSLRecord"
 	TypeWebhook             = "Webhook"
 	TypeWebhookSubscription = "WebhookSubscription"
@@ -8493,6 +8495,668 @@ func (m *PlatformConfigMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown PlatformConfig edge %s", name)
+}
+
+// SSLImportMutation represents an operation that mutates the SSLImport nodes in the graph.
+type SSLImportMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int64
+	created_at    *time.Time
+	updated_at    *time.Time
+	source        *sslimport.Source
+	domain        *string
+	certificate   *string
+	private_key   *string
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*SSLImport, error)
+	predicates    []predicate.SSLImport
+}
+
+var _ ent.Mutation = (*SSLImportMutation)(nil)
+
+// sslimportOption allows management of the mutation configuration using functional options.
+type sslimportOption func(*SSLImportMutation)
+
+// newSSLImportMutation creates new mutation for the SSLImport entity.
+func newSSLImportMutation(c config, op Op, opts ...sslimportOption) *SSLImportMutation {
+	m := &SSLImportMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeSSLImport,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withSSLImportID sets the ID field of the mutation.
+func withSSLImportID(id int64) sslimportOption {
+	return func(m *SSLImportMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *SSLImport
+		)
+		m.oldValue = func(ctx context.Context) (*SSLImport, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().SSLImport.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withSSLImport sets the old SSLImport of the mutation.
+func withSSLImport(node *SSLImport) sslimportOption {
+	return func(m *SSLImportMutation) {
+		m.oldValue = func(context.Context) (*SSLImport, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m SSLImportMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m SSLImportMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of SSLImport entities.
+func (m *SSLImportMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *SSLImportMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *SSLImportMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().SSLImport.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *SSLImportMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *SSLImportMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the SSLImport entity.
+// If the SSLImport object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLImportMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *SSLImportMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *SSLImportMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *SSLImportMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the SSLImport entity.
+// If the SSLImport object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLImportMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *SSLImportMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetSource sets the "source" field.
+func (m *SSLImportMutation) SetSource(s sslimport.Source) {
+	m.source = &s
+}
+
+// Source returns the value of the "source" field in the mutation.
+func (m *SSLImportMutation) Source() (r sslimport.Source, exists bool) {
+	v := m.source
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSource returns the old "source" field's value of the SSLImport entity.
+// If the SSLImport object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLImportMutation) OldSource(ctx context.Context) (v sslimport.Source, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSource is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSource requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSource: %w", err)
+	}
+	return oldValue.Source, nil
+}
+
+// ResetSource resets all changes to the "source" field.
+func (m *SSLImportMutation) ResetSource() {
+	m.source = nil
+}
+
+// SetDomain sets the "domain" field.
+func (m *SSLImportMutation) SetDomain(s string) {
+	m.domain = &s
+}
+
+// Domain returns the value of the "domain" field in the mutation.
+func (m *SSLImportMutation) Domain() (r string, exists bool) {
+	v := m.domain
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDomain returns the old "domain" field's value of the SSLImport entity.
+// If the SSLImport object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLImportMutation) OldDomain(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDomain is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDomain requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDomain: %w", err)
+	}
+	return oldValue.Domain, nil
+}
+
+// ClearDomain clears the value of the "domain" field.
+func (m *SSLImportMutation) ClearDomain() {
+	m.domain = nil
+	m.clearedFields[sslimport.FieldDomain] = struct{}{}
+}
+
+// DomainCleared returns if the "domain" field was cleared in this mutation.
+func (m *SSLImportMutation) DomainCleared() bool {
+	_, ok := m.clearedFields[sslimport.FieldDomain]
+	return ok
+}
+
+// ResetDomain resets all changes to the "domain" field.
+func (m *SSLImportMutation) ResetDomain() {
+	m.domain = nil
+	delete(m.clearedFields, sslimport.FieldDomain)
+}
+
+// SetCertificate sets the "certificate" field.
+func (m *SSLImportMutation) SetCertificate(s string) {
+	m.certificate = &s
+}
+
+// Certificate returns the value of the "certificate" field in the mutation.
+func (m *SSLImportMutation) Certificate() (r string, exists bool) {
+	v := m.certificate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCertificate returns the old "certificate" field's value of the SSLImport entity.
+// If the SSLImport object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLImportMutation) OldCertificate(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCertificate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCertificate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCertificate: %w", err)
+	}
+	return oldValue.Certificate, nil
+}
+
+// ClearCertificate clears the value of the "certificate" field.
+func (m *SSLImportMutation) ClearCertificate() {
+	m.certificate = nil
+	m.clearedFields[sslimport.FieldCertificate] = struct{}{}
+}
+
+// CertificateCleared returns if the "certificate" field was cleared in this mutation.
+func (m *SSLImportMutation) CertificateCleared() bool {
+	_, ok := m.clearedFields[sslimport.FieldCertificate]
+	return ok
+}
+
+// ResetCertificate resets all changes to the "certificate" field.
+func (m *SSLImportMutation) ResetCertificate() {
+	m.certificate = nil
+	delete(m.clearedFields, sslimport.FieldCertificate)
+}
+
+// SetPrivateKey sets the "private_key" field.
+func (m *SSLImportMutation) SetPrivateKey(s string) {
+	m.private_key = &s
+}
+
+// PrivateKey returns the value of the "private_key" field in the mutation.
+func (m *SSLImportMutation) PrivateKey() (r string, exists bool) {
+	v := m.private_key
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPrivateKey returns the old "private_key" field's value of the SSLImport entity.
+// If the SSLImport object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLImportMutation) OldPrivateKey(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPrivateKey is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPrivateKey requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPrivateKey: %w", err)
+	}
+	return oldValue.PrivateKey, nil
+}
+
+// ClearPrivateKey clears the value of the "private_key" field.
+func (m *SSLImportMutation) ClearPrivateKey() {
+	m.private_key = nil
+	m.clearedFields[sslimport.FieldPrivateKey] = struct{}{}
+}
+
+// PrivateKeyCleared returns if the "private_key" field was cleared in this mutation.
+func (m *SSLImportMutation) PrivateKeyCleared() bool {
+	_, ok := m.clearedFields[sslimport.FieldPrivateKey]
+	return ok
+}
+
+// ResetPrivateKey resets all changes to the "private_key" field.
+func (m *SSLImportMutation) ResetPrivateKey() {
+	m.private_key = nil
+	delete(m.clearedFields, sslimport.FieldPrivateKey)
+}
+
+// Where appends a list predicates to the SSLImportMutation builder.
+func (m *SSLImportMutation) Where(ps ...predicate.SSLImport) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the SSLImportMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *SSLImportMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.SSLImport, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *SSLImportMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *SSLImportMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (SSLImport).
+func (m *SSLImportMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *SSLImportMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.created_at != nil {
+		fields = append(fields, sslimport.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, sslimport.FieldUpdatedAt)
+	}
+	if m.source != nil {
+		fields = append(fields, sslimport.FieldSource)
+	}
+	if m.domain != nil {
+		fields = append(fields, sslimport.FieldDomain)
+	}
+	if m.certificate != nil {
+		fields = append(fields, sslimport.FieldCertificate)
+	}
+	if m.private_key != nil {
+		fields = append(fields, sslimport.FieldPrivateKey)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *SSLImportMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case sslimport.FieldCreatedAt:
+		return m.CreatedAt()
+	case sslimport.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case sslimport.FieldSource:
+		return m.Source()
+	case sslimport.FieldDomain:
+		return m.Domain()
+	case sslimport.FieldCertificate:
+		return m.Certificate()
+	case sslimport.FieldPrivateKey:
+		return m.PrivateKey()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *SSLImportMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case sslimport.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case sslimport.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case sslimport.FieldSource:
+		return m.OldSource(ctx)
+	case sslimport.FieldDomain:
+		return m.OldDomain(ctx)
+	case sslimport.FieldCertificate:
+		return m.OldCertificate(ctx)
+	case sslimport.FieldPrivateKey:
+		return m.OldPrivateKey(ctx)
+	}
+	return nil, fmt.Errorf("unknown SSLImport field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SSLImportMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case sslimport.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case sslimport.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case sslimport.FieldSource:
+		v, ok := value.(sslimport.Source)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSource(v)
+		return nil
+	case sslimport.FieldDomain:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDomain(v)
+		return nil
+	case sslimport.FieldCertificate:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCertificate(v)
+		return nil
+	case sslimport.FieldPrivateKey:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPrivateKey(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SSLImport field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *SSLImportMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *SSLImportMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SSLImportMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown SSLImport numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *SSLImportMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(sslimport.FieldDomain) {
+		fields = append(fields, sslimport.FieldDomain)
+	}
+	if m.FieldCleared(sslimport.FieldCertificate) {
+		fields = append(fields, sslimport.FieldCertificate)
+	}
+	if m.FieldCleared(sslimport.FieldPrivateKey) {
+		fields = append(fields, sslimport.FieldPrivateKey)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *SSLImportMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *SSLImportMutation) ClearField(name string) error {
+	switch name {
+	case sslimport.FieldDomain:
+		m.ClearDomain()
+		return nil
+	case sslimport.FieldCertificate:
+		m.ClearCertificate()
+		return nil
+	case sslimport.FieldPrivateKey:
+		m.ClearPrivateKey()
+		return nil
+	}
+	return fmt.Errorf("unknown SSLImport nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *SSLImportMutation) ResetField(name string) error {
+	switch name {
+	case sslimport.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case sslimport.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case sslimport.FieldSource:
+		m.ResetSource()
+		return nil
+	case sslimport.FieldDomain:
+		m.ResetDomain()
+		return nil
+	case sslimport.FieldCertificate:
+		m.ResetCertificate()
+		return nil
+	case sslimport.FieldPrivateKey:
+		m.ResetPrivateKey()
+		return nil
+	}
+	return fmt.Errorf("unknown SSLImport field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *SSLImportMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *SSLImportMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *SSLImportMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *SSLImportMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *SSLImportMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *SSLImportMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *SSLImportMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown SSLImport unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *SSLImportMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown SSLImport edge %s", name)
 }
 
 // SSLRecordMutation represents an operation that mutates the SSLRecord nodes in the graph.

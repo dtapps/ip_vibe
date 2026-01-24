@@ -12,6 +12,7 @@ import (
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/platformconfig"
+	"vibe_ip/internal/ent/sslimport"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
@@ -180,6 +181,25 @@ func (q *PlatformConfigQuery) Last(ctx context.Context) (*PlatformConfig, error)
 // Find 获取所有匹配的记录。
 // 行为类比 GORM 的 Find(ctx, &dest)，此处直接返回 []*T。
 func (q *PlatformConfigQuery) Find(ctx context.Context) ([]*PlatformConfig, error) {
+	return q.All(ctx)
+}
+
+// Take 获取任意一条记录（不保证顺序），等价于 LIMIT 1。
+// 行为与 GORM 的 Take(ctx) 一致：不添加 ORDER，仅限制结果为 1 行。
+func (q *SSLImportQuery) Take(ctx context.Context) (*SSLImport, error) {
+	return q.Limit(1).First(ctx)
+}
+
+// Last 获取最后一条记录，按主键降序排列（ORDER BY id DESC LIMIT 1）。
+// 行为与 GORM 的 Last(ctx) 一致。
+// 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
+func (q *SSLImportQuery) Last(ctx context.Context) (*SSLImport, error) {
+	return q.Order(sslimport.ByID(sql.OrderDesc())).First(ctx)
+}
+
+// Find 获取所有匹配的记录。
+// 行为类比 GORM 的 Find(ctx, &dest)，此处直接返回 []*T。
+func (q *SSLImportQuery) Find(ctx context.Context) ([]*SSLImport, error) {
 	return q.All(ctx)
 }
 

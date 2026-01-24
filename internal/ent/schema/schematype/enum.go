@@ -546,3 +546,25 @@ var GetSSLRecordProviderDescriptions = map[string]string{
 var GetSSLRecordProviders = []string{
 	SSLRecordProviderLetsencrypt,
 }
+
+// --------
+
+const (
+	SSLImportSourceUnknown string = "unknown" // 未知
+	SSLImportSourceWebhook string = "webhook" // Webhook 导入
+	SSLImportSourceManual  string = "manual"  // 手动导入
+)
+
+// GetSSLImportSourceDescriptions SSL导入来源说明映射
+var GetSSLImportSourceDescriptions = map[string]string{
+	SSLImportSourceUnknown: "未知",
+	SSLImportSourceWebhook: "Webhook导入",
+	SSLImportSourceManual:  "手动导入",
+}
+
+// GetSSLImportSources 返回所有SSL导入来源
+var GetSSLImportSources = []string{
+	SSLImportSourceUnknown,
+	SSLImportSourceWebhook,
+	SSLImportSourceManual,
+}

@@ -210,6 +210,7 @@ func (m *GinServerManager) setupApiRouter() {
 		{
 			sslRecords.GET("", handlers.GetSSLRecords)                                     // 获取全部SSL记录
 			sslRecords.GET("/:id", handlers.GetSSLRecordDetail)                            // 获取SSL记录详情
+			sslRecords.POST("/import", handlers.ImportSSLRecord)                           // 导入SSL记录
 			sslRecords.POST("", handlers.CreateSSLRecord)                                  // 创建SSL记录
 			sslRecords.PATCH("/:id", handlers.UpdateSSLRecord)                             // 更新SSL记录
 			sslRecords.PATCH("/:id/auto-renewal", handlers.UpdateSSLRecordAutoRenewal)     // 更新SSL记录自动续费状态

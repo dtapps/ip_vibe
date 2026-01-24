@@ -20,6 +20,7 @@ import (
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
+	"vibe_ip/internal/ent/sslimport"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
@@ -55,6 +56,8 @@ type Client struct {
 	IpGroupDevice *IpGroupDeviceClient
 	// PlatformConfig is the client for interacting with the PlatformConfig builders.
 	PlatformConfig *PlatformConfigClient
+	// SSLImport is the client for interacting with the SSLImport builders.
+	SSLImport *SSLImportClient
 	// SSLRecord is the client for interacting with the SSLRecord builders.
 	SSLRecord *SSLRecordClient
 	// Webhook is the client for interacting with the Webhook builders.
@@ -81,6 +84,7 @@ func (c *Client) init() {
 	c.IpGroup = NewIpGroupClient(c.config)
 	c.IpGroupDevice = NewIpGroupDeviceClient(c.config)
 	c.PlatformConfig = NewPlatformConfigClient(c.config)
+	c.SSLImport = NewSSLImportClient(c.config)
 	c.SSLRecord = NewSSLRecordClient(c.config)
 	c.Webhook = NewWebhookClient(c.config)
 	c.WebhookSubscription = NewWebhookSubscriptionClient(c.config)
@@ -185,6 +189,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		IpGroup:             NewIpGroupClient(cfg),
 		IpGroupDevice:       NewIpGroupDeviceClient(cfg),
 		PlatformConfig:      NewPlatformConfigClient(cfg),
+		SSLImport:           NewSSLImportClient(cfg),
 		SSLRecord:           NewSSLRecordClient(cfg),
 		Webhook:             NewWebhookClient(cfg),
 		WebhookSubscription: NewWebhookSubscriptionClient(cfg),
@@ -216,6 +221,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		IpGroup:             NewIpGroupClient(cfg),
 		IpGroupDevice:       NewIpGroupDeviceClient(cfg),
 		PlatformConfig:      NewPlatformConfigClient(cfg),
+		SSLImport:           NewSSLImportClient(cfg),
 		SSLRecord:           NewSSLRecordClient(cfg),
 		Webhook:             NewWebhookClient(cfg),
 		WebhookSubscription: NewWebhookSubscriptionClient(cfg),
@@ -249,8 +255,8 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.CDNRecord, c.Cache, c.DNSRecord, c.Device, c.DevicePortForward,
-		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLRecord,
-		c.Webhook, c.WebhookSubscription,
+		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLImport,
+		c.SSLRecord, c.Webhook, c.WebhookSubscription,
 	} {
 		n.Use(hooks...)
 	}
@@ -261,8 +267,8 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.CDNRecord, c.Cache, c.DNSRecord, c.Device, c.DevicePortForward,
-		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLRecord,
-		c.Webhook, c.WebhookSubscription,
+		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLImport,
+		c.SSLRecord, c.Webhook, c.WebhookSubscription,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -289,6 +295,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.IpGroupDevice.mutate(ctx, m)
 	case *PlatformConfigMutation:
 		return c.PlatformConfig.mutate(ctx, m)
+	case *SSLImportMutation:
+		return c.SSLImport.mutate(ctx, m)
 	case *SSLRecordMutation:
 		return c.SSLRecord.mutate(ctx, m)
 	case *WebhookMutation:
@@ -1760,6 +1768,140 @@ func (c *PlatformConfigClient) mutate(ctx context.Context, m *PlatformConfigMuta
 	}
 }
 
+// SSLImportClient is a client for the SSLImport schema.
+type SSLImportClient struct {
+	config
+}
+
+// NewSSLImportClient returns a client for the SSLImport from the given config.
+func NewSSLImportClient(c config) *SSLImportClient {
+	return &SSLImportClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `sslimport.Hooks(f(g(h())))`.
+func (c *SSLImportClient) Use(hooks ...Hook) {
+	c.hooks.SSLImport = append(c.hooks.SSLImport, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `sslimport.Intercept(f(g(h())))`.
+func (c *SSLImportClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SSLImport = append(c.inters.SSLImport, interceptors...)
+}
+
+// Create returns a builder for creating a SSLImport entity.
+func (c *SSLImportClient) Create() *SSLImportCreate {
+	mutation := newSSLImportMutation(c.config, OpCreate)
+	return &SSLImportCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SSLImport entities.
+func (c *SSLImportClient) CreateBulk(builders ...*SSLImportCreate) *SSLImportCreateBulk {
+	return &SSLImportCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SSLImportClient) MapCreateBulk(slice any, setFunc func(*SSLImportCreate, int)) *SSLImportCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SSLImportCreateBulk{err: fmt.Errorf("calling to SSLImportClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SSLImportCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SSLImportCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SSLImport.
+func (c *SSLImportClient) Update() *SSLImportUpdate {
+	mutation := newSSLImportMutation(c.config, OpUpdate)
+	return &SSLImportUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SSLImportClient) UpdateOne(_m *SSLImport) *SSLImportUpdateOne {
+	mutation := newSSLImportMutation(c.config, OpUpdateOne, withSSLImport(_m))
+	return &SSLImportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SSLImportClient) UpdateOneID(id int64) *SSLImportUpdateOne {
+	mutation := newSSLImportMutation(c.config, OpUpdateOne, withSSLImportID(id))
+	return &SSLImportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SSLImport.
+func (c *SSLImportClient) Delete() *SSLImportDelete {
+	mutation := newSSLImportMutation(c.config, OpDelete)
+	return &SSLImportDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SSLImportClient) DeleteOne(_m *SSLImport) *SSLImportDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SSLImportClient) DeleteOneID(id int64) *SSLImportDeleteOne {
+	builder := c.Delete().Where(sslimport.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SSLImportDeleteOne{builder}
+}
+
+// Query returns a query builder for SSLImport.
+func (c *SSLImportClient) Query() *SSLImportQuery {
+	return &SSLImportQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSSLImport},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SSLImport entity by its id.
+func (c *SSLImportClient) Get(ctx context.Context, id int64) (*SSLImport, error) {
+	return c.Query().Where(sslimport.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SSLImportClient) GetX(ctx context.Context, id int64) *SSLImport {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SSLImportClient) Hooks() []Hook {
+	hooks := c.hooks.SSLImport
+	return append(hooks[:len(hooks):len(hooks)], sslimport.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *SSLImportClient) Interceptors() []Interceptor {
+	return c.inters.SSLImport
+}
+
+func (c *SSLImportClient) mutate(ctx context.Context, m *SSLImportMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SSLImportCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SSLImportUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SSLImportUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SSLImportDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SSLImport mutation op: %q", m.Op())
+	}
+}
+
 // SSLRecordClient is a client for the SSLRecord schema.
 type SSLRecordClient struct {
 	config
@@ -2214,12 +2356,12 @@ func (c *WebhookSubscriptionClient) mutate(ctx context.Context, m *WebhookSubscr
 type (
 	hooks struct {
 		CDNRecord, Cache, DNSRecord, Device, DevicePortForward, DomainMonitor, IpGroup,
-		IpGroupDevice, PlatformConfig, SSLRecord, Webhook,
+		IpGroupDevice, PlatformConfig, SSLImport, SSLRecord, Webhook,
 		WebhookSubscription []ent.Hook
 	}
 	inters struct {
 		CDNRecord, Cache, DNSRecord, Device, DevicePortForward, DomainMonitor, IpGroup,
-		IpGroupDevice, PlatformConfig, SSLRecord, Webhook,
+		IpGroupDevice, PlatformConfig, SSLImport, SSLRecord, Webhook,
 		WebhookSubscription []ent.Interceptor
 	}
 )

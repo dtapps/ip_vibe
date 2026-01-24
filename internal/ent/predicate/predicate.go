@@ -33,6 +33,9 @@ type IpGroupDevice func(*sql.Selector)
 // PlatformConfig is the predicate function for platformconfig builders.
 type PlatformConfig func(*sql.Selector)
 
+// SSLImport is the predicate function for sslimport builders.
+type SSLImport func(*sql.Selector)
+
 // SSLRecord is the predicate function for sslrecord builders.
 type SSLRecord func(*sql.Selector)
 

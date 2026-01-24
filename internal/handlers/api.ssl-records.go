@@ -110,6 +110,54 @@ func GetSSLRecordDetail(c *gin.Context) {
 	successResponse(c, response)
 }
 
+// 导入SSL记录
+//
+//	@Description	导入SSL记录
+//	@Summary		导入SSL记录
+//	@Tags			SSL记录
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			request	body		types.ImportSSLRecordRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}					"成功响应"
+//	@Failure		400		{object}	APIResponse{}					"参数错误"
+//	@Failure		404		{object}	APIResponse{}					"错误响应"
+//	@Router			/ssl-records/import [post]
+func ImportSSLRecord(c *gin.Context) {
+	// 请求参数
+	var requestParams types.ImportSSLRecordRequest
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建SSL更新任务
+	sslUpdateTask := task.NewSSLUpdateTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog,
+		global.GvaHttpLog,
+		sys_env.GvaEnv.DEBUG,
+	)
+
+	// 创建服务
+	service := service.NewSSLRecordService(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
+		sslUpdateTask,
+		sys_env.GvaEnv.DEBUG,
+	)
+
+	// 调用
+	err := service.ImportSSLRecord(c, &requestParams)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, nil)
+}
+
 // 创建SSL记录
 //
 //	@Description	创建SSL记录
@@ -117,10 +165,10 @@ func GetSSLRecordDetail(c *gin.Context) {
 //	@Tags			SSL记录
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.CreateSSLRecordRequest				true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetSSLRecordRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								"参数错误"
-//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Param			request	body		types.CreateSSLRecordRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}					"成功响应"
+//	@Failure		400		{object}	APIResponse{}					"参数错误"
+//	@Failure		404		{object}	APIResponse{}					"错误响应"
 //	@Router			/ssl-records [post]
 func CreateSSLRecord(c *gin.Context) {
 	// 请求参数
@@ -150,12 +198,12 @@ func CreateSSLRecord(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.CreateSSLRecord(c, &requestParams)
+	err := service.CreateSSLRecord(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
 }
 
 // 更新SSL记录
@@ -165,11 +213,11 @@ func CreateSSLRecord(c *gin.Context) {
 //	@Tags			SSL记录
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id		path		int64										true	"SSL记录序号"
-//	@Param			request	body		types.UpdateSSLRecordRequest				true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetSSLRecordRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								"参数错误"
-//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Param			id		path		int64							true	"SSL记录序号"
+//	@Param			request	body		types.UpdateSSLRecordRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}					"成功响应"
+//	@Failure		400		{object}	APIResponse{}					"参数错误"
+//	@Failure		404		{object}	APIResponse{}					"错误响应"
 //	@Router			/ssl-records/{id} [patch]
 func UpdateSSLRecord(c *gin.Context) {
 	// 请求参数
@@ -200,12 +248,12 @@ func UpdateSSLRecord(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.UpdateSSLRecord(c, &requestParams)
+	err := service.UpdateSSLRecord(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
 }
 
 // 更新SSL记录自动续费状态
@@ -215,11 +263,11 @@ func UpdateSSLRecord(c *gin.Context) {
 //	@Tags			SSL记录
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id		path		int64										true	"SSL记录序号"
-//	@Param			request	body		types.UpdateSSLRecordAutoRenewalRequest		true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetSSLRecordRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								"参数错误"
-//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Param			id		path		int64									true	"SSL记录序号"
+//	@Param			request	body		types.UpdateSSLRecordAutoRenewalRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}							"成功响应"
+//	@Failure		400		{object}	APIResponse{}							"参数错误"
+//	@Failure		404		{object}	APIResponse{}							"错误响应"
 //	@Router			/ssl-records/{id}/auto-renewal [patch]
 func UpdateSSLRecordAutoRenewal(c *gin.Context) {
 	// 请求参数
@@ -250,12 +298,12 @@ func UpdateSSLRecordAutoRenewal(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.UpdateSSLRecordAutoRenewal(c, &requestParams)
+	err := service.UpdateSSLRecordAutoRenewal(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
 }
 
 // 更新SSL记录启用状态
@@ -494,12 +542,12 @@ func ApplySSLRecord(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.ApplySSLRecord(c, requestParams.ID)
+	err := service.ApplySSLRecord(c, requestParams.ID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
 }
 
 // 获取SSL记录历史详情

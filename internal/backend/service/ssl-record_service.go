@@ -2,10 +2,13 @@ package service
 
 import (
 	"context"
+	"crypto/x509"
+	"encoding/pem"
 	"fmt"
 	"log/slog"
 	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent/sslimport"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
@@ -23,14 +26,15 @@ type SSLRecordService interface {
 	BuildResponse(ctx context.Context, item *ent.SSLRecord) (*types.GetSSLRecordResponse, error)
 	GetSSLRecords(ctx context.Context, request *types.GetSSLRecordsRequest) ([]*types.GetSSLRecordResponse, error)
 	GetSSLRecord(ctx context.Context, id int64) (*types.GetSSLRecordResponse, error)
-	CreateSSLRecord(ctx context.Context, request *types.CreateSSLRecordRequest) (*types.GetSSLRecordRequest, error)
-	UpdateSSLRecord(ctx context.Context, request *types.UpdateSSLRecordRequest) (*types.GetSSLRecordRequest, error)
-	UpdateSSLRecordAutoRenewal(ctx context.Context, request *types.UpdateSSLRecordAutoRenewalRequest) (*types.GetSSLRecordRequest, error)
+	ImportSSLRecord(ctx context.Context, request *types.ImportSSLRecordRequest) error
+	CreateSSLRecord(ctx context.Context, request *types.CreateSSLRecordRequest) error
+	UpdateSSLRecord(ctx context.Context, request *types.UpdateSSLRecordRequest) error
+	UpdateSSLRecordAutoRenewal(ctx context.Context, request *types.UpdateSSLRecordAutoRenewalRequest) error
 	UpdateSSLRecordActive(ctx context.Context, id int64, isActive bool) error
 	BatchUpdateSSLRecordActive(ctx context.Context, ids []int64, isActive bool) error
 	DeleteSSLRecord(ctx context.Context, id int64) error
 	BatchDeleteSSLRecord(ctx context.Context, ids []int64) error
-	ApplySSLRecord(ctx context.Context, id int64) (*types.GetSSLRecordRequest, error)
+	ApplySSLRecord(ctx context.Context, id int64) error
 	GetSSLRecordHistoryDetail(ctx context.Context, id int64, historyID int64) (*types.GetSSLRecordHistoryDetailResponse, error)
 }
 
@@ -142,8 +146,37 @@ func (s *SSLRecordServiceImpl) GetSSLRecord(ctx context.Context, id int64) (*typ
 	return list, nil
 }
 
+// ImportSSLRecord 导入 SSL 记录
+func (s *SSLRecordServiceImpl) ImportSSLRecord(ctx context.Context, request *types.ImportSSLRecordRequest) error {
+	// 如果没有包含域名就从证书中解析
+	if request.Domain == "" {
+		block, _ := pem.Decode([]byte(request.Certificate))
+		if block == nil {
+			return fmt.Errorf("解析证书失败: 证书格式错误")
+		}
+		cert, err := x509.ParseCertificate(block.Bytes)
+		if err != nil {
+			return fmt.Errorf("解析证书失败: %w", err)
+		}
+		request.Domain = cert.Subject.CommonName
+	}
+
+	// 创建SSL导入记录
+	err := s.db.SSLImport.Create().
+		SetSource(sslimport.SourceWebhook).
+		SetDomain(request.Domain).
+		SetCertificate(request.Certificate).
+		SetPrivateKey(request.PrivateKey).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("创建SSL导入记录失败: %w", err)
+	}
+
+	return nil
+}
+
 // CreateSSLRecord 创建 SSL 记录
-func (s *SSLRecordServiceImpl) CreateSSLRecord(ctx context.Context, request *types.CreateSSLRecordRequest) (*types.GetSSLRecordRequest, error) {
+func (s *SSLRecordServiceImpl) CreateSSLRecord(ctx context.Context, request *types.CreateSSLRecordRequest) error {
 	// 创建SSL记录
 	saveSSLRecord, err := s.db.SSLRecord.Create().
 		SetConfigID(request.ConfigID).
@@ -152,7 +185,7 @@ func (s *SSLRecordServiceImpl) CreateSSLRecord(ctx context.Context, request *typ
 		SetRenewalDays(request.RenewalDays).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("创建SSL记录失败: %w", err)
+		return fmt.Errorf("创建SSL记录失败: %w", err)
 	}
 
 	// 创建通知订阅
@@ -163,22 +196,20 @@ func (s *SSLRecordServiceImpl) CreateSSLRecord(ctx context.Context, request *typ
 		}
 	}
 
-	return &types.GetSSLRecordRequest{
-		ID: saveSSLRecord.ID,
-	}, nil
+	return nil
 }
 
 // UpdateSSLRecord 更新 SSL 记录
-func (s *SSLRecordServiceImpl) UpdateSSLRecord(ctx context.Context, request *types.UpdateSSLRecordRequest) (*types.GetSSLRecordRequest, error) {
+func (s *SSLRecordServiceImpl) UpdateSSLRecord(ctx context.Context, request *types.UpdateSSLRecordRequest) error {
 	// 查询SSL记录
 	firstSSLRecord, err := s.db.SSLRecord.Query().
 		Where(sslrecord.IDEQ(request.ID)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询SSL记录失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询SSL记录失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询SSL记录失败: %w", err)
+		return fmt.Errorf("查询SSL记录失败: %w", err)
 	}
 
 	// 更新SSL记录
@@ -187,7 +218,7 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecord(ctx context.Context, request *typ
 		SetRenewalDays(request.RenewalDays).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("更新CDN记录失败: %w", err)
+		return fmt.Errorf("更新CDN记录失败: %w", err)
 	}
 
 	// 更新通知订阅
@@ -198,35 +229,31 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecord(ctx context.Context, request *typ
 		}
 	}
 
-	return &types.GetSSLRecordRequest{
-		ID: saveSSLRecord.ID,
-	}, nil
+	return nil
 }
 
 // UpdateSSLRecordAutoRenewal 更新 SSL 记录自动续期状态
-func (s *SSLRecordServiceImpl) UpdateSSLRecordAutoRenewal(ctx context.Context, request *types.UpdateSSLRecordAutoRenewalRequest) (*types.GetSSLRecordRequest, error) {
+func (s *SSLRecordServiceImpl) UpdateSSLRecordAutoRenewal(ctx context.Context, request *types.UpdateSSLRecordAutoRenewalRequest) error {
 	// 查询SSL记录
 	firstSSLRecord, err := s.db.SSLRecord.Query().
 		Where(sslrecord.IDEQ(request.ID)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询SSL记录失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询SSL记录失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询SSL记录失败: %w", err)
+		return fmt.Errorf("查询SSL记录失败: %w", err)
 	}
 
 	// 更新SSL记录状态
-	saveSSLRecord, err := s.db.SSLRecord.UpdateOne(firstSSLRecord).
+	err = s.db.SSLRecord.UpdateOne(firstSSLRecord).
 		SetIsAutoRenewal(request.IsAutoRenewal).
-		Save(ctx)
+		Exec(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("更新SSL记录状态失败: %w", err)
+		return fmt.Errorf("更新SSL记录状态失败: %w", err)
 	}
 
-	return &types.GetSSLRecordRequest{
-		ID: saveSSLRecord.ID,
-	}, nil
+	return nil
 }
 
 // UpdateSSLRecordActive 更新 SSL 记录启用状态
@@ -369,7 +396,7 @@ func (s *SSLRecordServiceImpl) BatchDeleteSSLRecord(ctx context.Context, ids []i
 }
 
 // ApplySSLRecord 申请新的SSL证书
-func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) (*types.GetSSLRecordRequest, error) {
+func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) error {
 	// 查询SSL记录
 	firstSSLRecord, err := s.db.SSLRecord.Query().
 		Where(sslrecord.IDEQ(id)).
@@ -377,15 +404,15 @@ func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) (*t
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询SSL记录失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询SSL记录失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询SSL记录失败: %w", err)
+		return fmt.Errorf("查询SSL记录失败: %w", err)
 	}
 
 	// 平台配置
 	config, err := firstSSLRecord.Edges.ConfigOrErr()
 	if err != nil {
-		return nil, fmt.Errorf("平台配置失败: %w", err)
+		return fmt.Errorf("平台配置失败: %w", err)
 	}
 
 	// 添加SSL一次性任务
@@ -400,12 +427,10 @@ func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) (*t
 		},
 	})
 	if err != nil {
-		return nil, fmt.Errorf("添加SSL一次性任务失败: %w", err)
+		return fmt.Errorf("添加SSL一次性任务失败: %w", err)
 	}
 
-	return &types.GetSSLRecordRequest{
-		ID: firstSSLRecord.ID,
-	}, nil
+	return nil
 }
 
 // GetSSLRecordHistoryDetail 获取SSL记录历史详情

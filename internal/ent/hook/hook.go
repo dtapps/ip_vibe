@@ -116,6 +116,18 @@ func (f PlatformConfigFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlatformConfigMutation", m)
 }
 
+// The SSLImportFunc type is an adapter to allow the use of ordinary
+// function as SSLImport mutator.
+type SSLImportFunc func(context.Context, *ent.SSLImportMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SSLImportFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SSLImportMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SSLImportMutation", m)
+}
+
 // The SSLRecordFunc type is an adapter to allow the use of ordinary
 // function as SSLRecord mutator.
 type SSLRecordFunc func(context.Context, *ent.SSLRecordMutation) (ent.Value, error)

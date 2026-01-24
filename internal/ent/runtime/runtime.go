@@ -14,6 +14,7 @@ import (
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/schema"
+	"vibe_ip/internal/ent/sslimport"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
@@ -255,6 +256,27 @@ func init() {
 	platformconfigDescID := platformconfigFields[0].Descriptor()
 	// platformconfig.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	platformconfig.IDValidator = platformconfigDescID.Validators[0].(func(int64) error)
+	sslimportMixin := schema.SSLImport{}.Mixin()
+	sslimportHooks := schema.SSLImport{}.Hooks()
+	sslimport.Hooks[0] = sslimportHooks[0]
+	sslimportMixinFields0 := sslimportMixin[0].Fields()
+	_ = sslimportMixinFields0
+	sslimportFields := schema.SSLImport{}.Fields()
+	_ = sslimportFields
+	// sslimportDescCreatedAt is the schema descriptor for created_at field.
+	sslimportDescCreatedAt := sslimportMixinFields0[0].Descriptor()
+	// sslimport.DefaultCreatedAt holds the default value on creation for the created_at field.
+	sslimport.DefaultCreatedAt = sslimportDescCreatedAt.Default.(func() time.Time)
+	// sslimportDescUpdatedAt is the schema descriptor for updated_at field.
+	sslimportDescUpdatedAt := sslimportMixinFields0[1].Descriptor()
+	// sslimport.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	sslimport.DefaultUpdatedAt = sslimportDescUpdatedAt.Default.(func() time.Time)
+	// sslimport.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	sslimport.UpdateDefaultUpdatedAt = sslimportDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// sslimportDescID is the schema descriptor for id field.
+	sslimportDescID := sslimportFields[0].Descriptor()
+	// sslimport.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	sslimport.IDValidator = sslimportDescID.Validators[0].(func(int64) error)
 	sslrecordMixin := schema.SSLRecord{}.Mixin()
 	sslrecordHooks := schema.SSLRecord{}.Hooks()
 	sslrecord.Hooks[0] = sslrecordHooks[0]
