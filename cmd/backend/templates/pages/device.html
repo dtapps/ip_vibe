@@ -103,22 +103,22 @@
 
           <td class="ui-td">
             <div class="flex justify-center gap-1">
-              <button class="btn btn-sm" onclick="onHealthcheckPopup('{{.ID}}')">
+              <button class="btn btn-sm px-4" onclick="onHealthcheckPopup('{{.ID}}')">
                 {{ template "icons" (dict "Name" "i-lucide-heart-pulse") }} 检测
               </button>
 
-              <button class="btn btn-sm btn-outline btn-info rounded-lg px-3"
+              <button class="btn btn-sm btn-outline btn-info rounded-lg px-4"
                 onclick="onHistoryIPPopup('{{.ID}}','{{.Name}}')">
                 {{ template "icons" (dict "Name" "i-lucide-eye") }} 历史IP
               </button>
 
               {{ $portForwardStatsWebUrlPath := join $webUrlPath "/port-forward/stats" }}
-              <button class="btn btn-sm btn-outline btn-info rounded-lg px-3"
+              <button class="btn btn-sm btn-outline btn-info rounded-lg px-4"
                 onclick="location.href='{{$portForwardStatsWebUrlPath}}'">
                 {{ template "icons" (dict "Name" "i-lucide-chart-line") }} 端口转发统计
               </button>
 
-              <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}')">
+              <button class="btn btn-primary btn-sm rounded-lg px-4" onclick="openFormModal('{{.ID}}')">
                 {{ template "icons" (dict "Name" "i-lucide-pencil") }} 编辑
               </button>
 

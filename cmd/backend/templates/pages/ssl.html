@@ -21,7 +21,7 @@
       {{ template "icons" (dict "Name" "i-lucide-shield-check") }} SSL 记录管理（平台维度）
     </h2>
     <div>
-      <button class="btn-ui-primary" onclick="openFormModal('', 'add')">
+      <button class="btn-ui-primary" data-id="" data-action="add" onclick="openFormModal('', 'add')">
         {{ template "icons" (dict "Name" "i-lucide-plus") }} 添加记录
       </button>
 
@@ -92,7 +92,7 @@
           </td>
 
           <td class="ui-td">
-            {{ $statusCss := "badge font-bold px-3 py-2 tooltip" }}
+            {{ $statusCss := "badge font-bold px-4 py-2 tooltip" }}
             {{if eq .Status "valid"}}
             <span class="badge-success {{ $statusCss }}" data-tip="{{ .Status }}">有效</span>
             {{else if eq .Status "expired"}}
@@ -134,25 +134,27 @@
 
           <td class="ui-td">
             <div class="flex justify-center gap-1">
-              <button class="btn btn-secondary btn-sm rounded-lg px-3" onclick="applySSL('{{.ID}}')">
+              <button class="btn btn-secondary btn-sm rounded-lg px-4" onclick="applySSL('{{.ID}}')">
                 {{ template "icons" (dict "Name" "i-lucide-file-plus") }} 申请
               </button>
 
-              <button class="btn btn-sm rounded-lg px-3" onclick="openViewModal('{{.ID}}')">
+              <button class="btn btn-sm rounded-lg px-4" onclick="openViewModal('{{.ID}}')">
                 {{ template "icons" (dict "Name" "i-lucide-eye") }} 查看
               </button>
 
               {{ $detailWebUrlPath := join $webUrlPath "/detail" }}
-              <button class="btn btn-sm btn-outline btn-info rounded-lg px-3"
+              <button class="btn btn-sm btn-outline btn-info rounded-lg px-4"
                 onclick="location.href='{{$detailWebUrlPath}}'">
                 {{ template "icons" (dict "Name" "i-lucide-eye") }} 详情
               </button>
 
-              <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}', 'edit')">
+              <button class="btn btn-primary btn-sm rounded-lg px-4" data-id="{{.ID}}" data-action="edit"
+                onclick="openFormModal('{{.ID}}', 'edit')">
                 {{ template "icons" (dict "Name" "i-lucide-pencil") }} 编辑
               </button>
 
-              <button class="btn btn-primary btn-sm rounded-lg px-4" onclick="openFormModal('{{.ID}}', 'copy')">
+              <button class="btn btn-primary btn-sm rounded-lg px-4" data-id="{{.ID}}" data-action="copy"
+                onclick="openFormModal('{{.ID}}', 'copy')">
                 {{ template "icons" (dict "Name" "i-lucide-copy") }} 复制
               </button>
 

@@ -81,11 +81,11 @@
 
           <td class="ui-td">
             <div class="flex justify-center gap-2">
-              <button class="btn btn-sm btn-outline btn-info rounded-lg px-3"
+              <button class="btn btn-sm btn-outline btn-info rounded-lg px-4"
                 onclick="onNextRunPopup('{{.ID}}','{{.Name}}')">
                 {{ template "icons" (dict "Name" "i-lucide-eye") }} 下次时间
               </button>
-              <button class="btn btn-success btn-sm rounded-lg px-3 text-white" onclick="runTask('{{.ID}}')">
+              <button class="btn btn-success btn-sm rounded-lg px-4 text-white" onclick="runTask('{{.ID}}')">
                 {{ template "icons" (dict "Name" "i-lucide-zap") }} 立即运行
               </button>
             </div>

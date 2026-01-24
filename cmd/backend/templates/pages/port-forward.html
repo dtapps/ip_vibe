@@ -21,7 +21,7 @@
       {{ template "icons" (dict "Name" "i-lucide-route") }} 端口转发（设备维度）
     </h2>
     <div>
-      <button class="btn-ui-primary" onclick="openFormModal('', 'add')">
+      <button class="btn-ui-primary" data-id="" data-action="add" onclick="openFormModal('', 'add')">
         {{ template "icons" (dict "Name" "i-lucide-plus") }} 添加端口转发
       </button>
 
@@ -122,21 +122,23 @@
 
           <td class="ui-td">
             <div class="flex justify-center gap-1">
-              <button class="btn btn-sm" onclick="onHealthcheckPopup('{{.ID}}')">
+              <button class="btn btn-sm px-4" onclick="onHealthcheckPopup('{{.ID}}')">
                 {{ template "icons" (dict "Name" "i-lucide-heart-pulse") }} 检测
               </button>
 
               {{ $statsWebUrlPath := join $webUrlPath "/stats" }}
-              <button class="btn btn-sm btn-outline btn-info rounded-lg px-3"
+              <button class="btn btn-sm btn-outline btn-info rounded-lg px-4"
                 onclick="location.href='{{$statsWebUrlPath}}'">
                 {{ template "icons" (dict "Name" "i-lucide-chart-line") }} 统计
               </button>
 
-              <button class="btn btn-primary btn-sm rounded-lg px-3" onclick="openFormModal('{{.ID}}', 'edit')">
+              <button class="btn btn-primary btn-sm rounded-lg px-4" data-id="{{.ID}}" data-action="edit"
+                onclick="openFormModal('{{.ID}}', 'edit')">
                 {{ template "icons" (dict "Name" "i-lucide-pencil") }} 编辑
               </button>
 
-              <button class="btn btn-primary btn-sm rounded-lg px-4" onclick="openFormModal('{{.ID}}', 'copy')">
+              <button class="btn btn-primary btn-sm rounded-lg px-4" data-id="{{.ID}}" data-action="copy"
+                onclick="openFormModal('{{.ID}}', 'copy')">
                 {{ template "icons" (dict "Name" "i-lucide-copy") }} 复制
               </button>
 
