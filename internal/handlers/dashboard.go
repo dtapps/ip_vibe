@@ -20,41 +20,121 @@ import (
 func Dashboard(c *gin.Context) {
 	// 准备页面数据
 	pageData := types.DashboardResponse{
+		Stats:      []types.DashboardStat{},
+		Entrances:  []types.DashboardEntrance{},
 		RecentLogs: []types.GetLogResponse{},
 	}
-	pageData.Stats.LogLimit = 10
 
 	// 设备总数
-	pageData.Stats.DeviceCount, _ = global.GvaEntDb.Device.Query().Count(c)
+	deviceCount, _ := global.GvaEntDb.Device.Query().Count(c)
+	pageData.Stats = append(pageData.Stats, types.DashboardStat{
+		Label: "设备总数",
+		Value: deviceCount,
+	})
 
 	// 在线设备总数 (心跳时间在 12 分钟内)
 	invalidTime := db_cache.GvaSetting.DeviceOfflineInvalidTime // 单位：分钟
+	onlineDeviceCount := 0
 	if invalidTime <= 0 {
-		pageData.Stats.OnlineDeviceCount, _ = global.GvaEntDb.Device.Query().
+		onlineDeviceCount, _ = global.GvaEntDb.Device.Query().
 			Count(c)
 	} else {
-		pageData.Stats.OnlineDeviceCount, _ = global.GvaEntDb.Device.Query().
+		onlineDeviceCount, _ = global.GvaEntDb.Device.Query().
 			Where(device.LastHeartbeatAtGTE(time.Now().Add(-time.Duration(invalidTime) * time.Minute))).
 			Count(c)
 	}
+	pageData.Stats = append(pageData.Stats, types.DashboardStat{
+		Label: "在线设备",
+		Value: onlineDeviceCount,
+	})
 
 	// DNS 记录
-	pageData.Stats.DnsRecordCount, _ = global.GvaEntDb.DNSRecord.Query().Count(c)
+	dnsRecordCount, _ := global.GvaEntDb.DNSRecord.Query().Count(c)
+	pageData.Stats = append(pageData.Stats, types.DashboardStat{
+		Label: "DNS 记录",
+		Value: dnsRecordCount,
+	})
 
 	// CDN 记录
-	pageData.Stats.CdnRecordCount, _ = global.GvaEntDb.CDNRecord.Query().Count(c)
+	cdnRecordCount, _ := global.GvaEntDb.CDNRecord.Query().Count(c)
+	pageData.Stats = append(pageData.Stats, types.DashboardStat{
+		Label: "CDN 记录",
+		Value: cdnRecordCount,
+	})
 
 	// 通知渠道
-	pageData.Stats.WebhookCount, _ = global.GvaEntDb.Webhook.Query().Count(c)
+	webhookCount, _ := global.GvaEntDb.Webhook.Query().Count(c)
+	pageData.Stats = append(pageData.Stats, types.DashboardStat{
+		Label: "通知渠道",
+		Value: webhookCount,
+	})
 
 	// 运行任务
-	pageData.Stats.ActiveTaskCount = len(gocron_helper.NewJobHelper(global.GvaGoCron, global.GvaGocronSlog).GetJobsData(5))
+	activeTaskCount := len(gocron_helper.NewJobHelper(global.GvaGoCron, global.GvaGocronSlog).GetJobsData(5))
+	pageData.Stats = append(pageData.Stats, types.DashboardStat{
+		Label: "运行任务",
+		Value: activeTaskCount,
+	})
+
+	// 快速入口
+	pageData.Entrances = []types.DashboardEntrance{
+		{
+			Title: "平台配置",
+			Icon:  "i-lucide-server-cog",
+			Href:  "/platform-config",
+		},
+		{
+			Title: "CDN 管理",
+			Icon:  "i-lucide-layers",
+			Href:  "/cdn",
+		},
+		{
+			Title: "DNS 管理",
+			Icon:  "i-lucide-database-zap",
+			Href:  "/dns",
+		},
+		{
+			Title: "SSL 管理",
+			Icon:  "i-lucide-shield-check",
+			Href:  "/ssl",
+		},
+		{
+			Title: "域名监控",
+			Icon:  "i-lucide-activity",
+			Href:  "/domain-monitor",
+		},
+		{
+			Title: "设备管理",
+			Icon:  "i-lucide-smartphone",
+			Href:  "/device",
+		},
+		{
+			Title: "IP 组",
+			Icon:  "i-lucide-folder-plus",
+			Href:  "/ip-group",
+		},
+		{
+			Title: "端口转发",
+			Icon:  "i-lucide-route",
+			Href:  "/port-forward",
+		},
+		{
+			Title: "通知管理",
+			Icon:  "i-lucide-bell",
+			Href:  "/webhook",
+		},
+		{
+			Title: "任务管理",
+			Icon:  "i-lucide-list-todo",
+			Href:  "/task",
+		},
+	}
 
 	// 最新操作日志
 	allOperationLog, err := global.GvaEntLogDb.OperationLog.Query().
 		Where(operationlog.SourceEQ(operationlog.SourceUser)).
 		OrderByCreatedAtDesc().
-		Limit(pageData.Stats.LogLimit).
+		Limit(10).
 		All(c)
 	if err == nil {
 		for _, item := range allOperationLog {

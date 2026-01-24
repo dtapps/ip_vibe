@@ -93,9 +93,21 @@
                 上次上报时间：{{ formatTimeOrNil .LastReportedAt }}
               </div>
               {{ if .Online }}
-              <span class="badge badge-success">在线</span>
+              <span class="badge">
+                <div class="inline-grid *:[grid-area:1/1]">
+                  <div class="status status-success animate-ping"></div>
+                  <div class="status status-success"></div>
+                </div>
+                {{ .Status }}
+              </span>
               {{ else }}
-              <span class="badge badge-error">离线</span>
+              <span class="badge">
+                <div class="inline-grid *:[grid-area:1/1]">
+                  <div class="status status-error animate-ping"></div>
+                  <div class="status status-error"></div>
+                </div>
+                {{ .Status }}
+              </span>
               {{ end }}
             </div>
           </td>

@@ -1,17 +1,23 @@
 package types
 
+// 仪表盘 统计
+type DashboardStat struct {
+	Label string `json:"label"` // 标题
+	Value int    `json:"value"` // 数值
+}
+
+// 仪表盘 快速入口
+type DashboardEntrance struct {
+	Title string `json:"title"` // 标题
+	Icon  string `json:"icon"`  // 图标
+	Href  string `json:"href"`  // 跳转链接
+}
+
 // 仪表盘 响应结构
 type DashboardResponse struct {
-	Stats struct {
-		DeviceCount       int
-		OnlineDeviceCount int
-		DnsRecordCount    int
-		CdnRecordCount    int
-		WebhookCount      int
-		ActiveTaskCount   int
-		LogLimit          int
-	}
-	RecentLogs []GetLogResponse
+	Stats      []DashboardStat     `json:"stats"`
+	Entrances  []DashboardEntrance `json:"entrances"`
+	RecentLogs []GetLogResponse    `json:"recent_logs"`
 
 	DeviceCode string `json:"device_code"`
 

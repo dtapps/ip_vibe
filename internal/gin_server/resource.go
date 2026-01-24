@@ -142,6 +142,23 @@ func (m *GinServerManager) getTemplateFuncMap() template.FuncMap {
 			}
 			return carbon.NewCarbon(t).DiffForHumans()
 		},
+		// 字符串去空格
+		"trim": strings.TrimSpace,
+		// 字符串转换为大写
+		"upper": strings.ToUpper,
+		// 字符串替换
+		"replace": strings.ReplaceAll,
+		// JSON 人性化
+		"jsonify": func(v any) template.HTML {
+			jsonStr, err := json.Marshal(v)
+			if err != nil {
+				m.logger.Error("[jsonify] 序列化 JSON 失败",
+					slog.Any("err", err),
+				)
+				return template.HTML("—")
+			}
+			return template.HTML(strings.ReplaceAll(string(jsonStr), "\n", ""))
+		},
 		// 获取当前设备 Code
 		"selfDeviceCode": func() string {
 			code, err := machineid.ID()

@@ -22,9 +22,16 @@
             </p>
         </div>
     </div>
-    <a href="{{$baseWebUrlPath}}" class="btn btn-sm btn-ghost rounded-xl">
-        {{ template "icons" (dict "Name" "i-lucide-arrow-left") }} 返回列表
-    </a>
+    <div class="flex gap-2">
+        {{ $checkApiUrlPath := join $apiUrlPath "/check" }}
+        <button class="btn btn-sm btn-outline btn-warning rounded-xl px-4"
+            onclick="apiPost('{{$checkApiUrlPath}}', {},{reload: true})">
+            {{ template "icons" (dict "Name" "i-lucide-refresh-ccw") }} 立即检查
+        </button>
+        <a href="{{$baseWebUrlPath}}" class="btn btn-sm btn-ghost rounded-xl px-4">
+            {{ template "icons" (dict "Name" "i-lucide-arrow-left") }} 返回列表
+        </a>
+    </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -35,12 +42,7 @@
                     {{ template "icons" (dict "Name" "i-lucide-activity") }} 实时状态
                 </h2>
                 <div class="flex gap-2">
-                    {{ $checkApiUrlPath := join $apiUrlPath "/check" }}
-                    <button class="btn btn-sm btn-outline btn-warning rounded-xl"
-                        onclick="apiPost('{{$checkApiUrlPath}}', {},{reload: true})">
-                        {{ template "icons" (dict "Name" "i-lucide-refresh-ccw") }} 立即检查
-                    </button>
-                    <button class="btn-ui-primary" onclick="openFormModal('{{$item.ID}}')">
+                    <button class="btn-ui-primary px-4" onclick="openFormModal('{{$item.ID}}')">
                         {{ template "icons" (dict "Name" "i-lucide-pencil") }} 编辑
                     </button>
                 </div>
@@ -275,7 +277,7 @@
                 <h2 class="text-lg font-bold flex items-center gap-2">
                     {{ template "icons" (dict "Name" "i-lucide-bell" "Class" "w-4 h-4 text-orange-500") }} 通知订阅
                 </h2>
-                <button class="btn btn-xs btn-ghost text-primary" onclick="openFormModal('{{$item.ID}}')">配置</button>
+                <!-- <button class="btn btn-xs btn-ghost text-primary" onclick="openFormModal('{{$item.ID}}')">配置</button> -->
             </div>
             <div class="p-6 pt-0 space-y-4">
                 {{ if $webhookSubs }}
@@ -335,8 +337,9 @@
                                 {{ .Message }}
                             </span>
                             {{ if .NewValue }}
-                            <div class="text-[9px] bg-base-200/80 px-2 py-1 rounded mt-1 font-mono truncate opacity-60">
-                                Value: {{ .NewValue }}
+                            <div class="text-[9px] bg-base-200/80 px-2 py-1 rounded mt-1 font-mono truncate opacity-60 tooltip tooltip-top"
+                                data-tip="{{ jsonify .NewValue }}">
+                                {{ .NewValue }}
                             </div>
                             {{ end }}
                         </div>

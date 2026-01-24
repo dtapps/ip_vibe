@@ -42,10 +42,10 @@
         </div>
     </div>
     <div class="flex gap-2">
-        <button class="btn btn-primary btn-sm rounded-xl px-6" onclick="triggerRenewal('{{$item.ID}}')">
+        <button class="btn btn-primary btn-sm rounded-xl px-4" onclick="triggerRenewal('{{$item.ID}}')">
             {{ template "icons" (dict "Name" "i-lucide-refresh-cw") }} 立即续期
         </button>
-        <a href="{{$baseWebUrlPath}}" class="btn btn-ghost btn-sm rounded-xl">
+        <a href="{{$baseWebUrlPath}}" class="btn btn-ghost btn-sm rounded-xl px-4">
             {{ template "icons" (dict "Name" "i-lucide-arrow-left") }} 返回列表
         </a>
     </div>
@@ -161,15 +161,27 @@
                     {{ range $operationLogs }}
                     <div class="relative pl-6 pb-6 border-l border-base-300 last:pb-0 last:border-none">
                         <div
-                            class='absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full {{ if eq .Status "success" }}bg-green-500{{ else }}bg-red-500{{ end }} border-2 border-base-100'>
+                            class='absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full {{ if eq .Status "success"}}bg-green-500{{ else }}bg-red-500{{ end }} border-2 border-base-100 shadow-sm'>
                         </div>
-                        <div class="flex flex-col">
-                            <span class="text-[10px] font-mono opacity-40 leading-none mb-1">
-                                {{ diffForHumans .CreatedAt }}
-                            </span>
-                            <span class="text-xs font-medium text-base-content/80 leading-tight">
+                        <div class="flex flex-col gap-1">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[10px] font-mono opacity-40 leading-none">
+                                    {{ diffForHumans .CreatedAt }}
+                                </span>
+                                <span
+                                    class='badge badge-xs {{ if eq .Status "success" }}badge-ghost opacity-50{{ else }}badge-error{{ end }} font-mono'>
+                                    {{fieldEnumLabel "operation_log_op_type" .OpType}}
+                                </span>
+                            </div>
+                            <span class="text-xs font-medium text-base-content/80">
                                 {{ .Message }}
                             </span>
+                            {{ if .NewValue }}
+                            <div class="text-[9px] bg-base-200/80 px-2 py-1 rounded mt-1 font-mono truncate opacity-60 tooltip tooltip-top"
+                                data-tip="{{ jsonify .NewValue }}">
+                                {{ .NewValue }}
+                            </div>
+                            {{ end }}
                         </div>
                     </div>
                     {{ end }}
@@ -287,7 +299,7 @@
             <div class="p-6">
                 <pre
                     class="text-xs bg-base-300/30 p-5 rounded-2xl overflow-x-auto border border-base-300/10 text-base-content/70 font-mono leading-relaxed">
-                    {{ $item.LastAPIResponse }}
+                    {{ trim $item.LastAPIResponse }}
                 </pre>
             </div>
         </div>
