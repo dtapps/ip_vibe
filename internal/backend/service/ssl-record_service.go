@@ -156,8 +156,9 @@ func (s *SSLRecordServiceImpl) ImportSSLRecord(ctx context.Context, request *typ
 
 	// 创建SSL记录
 	err = s.db.SSLRecord.Create().
+		SetConfigID(request.ConfigID).
 		SetDomain(request.Domain).
-		SetCertDomain(request.CertDomain).
+		SetCertDomain(parsedSsl.Domain).
 		SetCertPrivateKey(request.CertPrivateKey).
 		SetCertCertificate(request.CertCertificate).
 		SetNotBefore(parsedSsl.NotBefore).
@@ -246,6 +247,10 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecordAutoRenewal(ctx context.Context, r
 		return fmt.Errorf("查询SSL记录失败: %w", err)
 	}
 
+	if firstSSLRecord.Provider == sslrecord.ProviderUnknown {
+		return fmt.Errorf("未配置提供方, 无法更新自动续期状态")
+	}
+
 	// 更新SSL记录状态
 	err = s.db.SSLRecord.UpdateOne(firstSSLRecord).
 		SetIsAutoRenewal(request.IsAutoRenewal).
@@ -270,6 +275,10 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecordActive(ctx context.Context, id int
 		return fmt.Errorf("查询SSL记录失败: %w", err)
 	}
 
+	if firstSSLRecord.Provider == sslrecord.ProviderUnknown {
+		return fmt.Errorf("未配置提供方, 无法更新启用状态")
+	}
+
 	// 更新SSL记录状态
 	err = s.db.SSLRecord.UpdateOne(firstSSLRecord).
 		SetIsActive(isActive).
@@ -286,6 +295,7 @@ func (s *SSLRecordServiceImpl) BatchUpdateSSLRecordActive(ctx context.Context, i
 	// 查询SSL记录
 	allSSLRecord, err := s.db.SSLRecord.Query().
 		Where(sslrecord.IDIn(ids...)).
+		Where(sslrecord.ProviderNEQ(sslrecord.ProviderUnknown)).
 		All(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {

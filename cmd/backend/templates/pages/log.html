@@ -8,7 +8,7 @@
 {{ $pageSize := .Data.PageSize }}
 {{ $baseWebUrlPath := .CurrentPath }}
 {{ $baseWebUrlPathWithQuery := .CurrentPathWithQuery }}
-{{ $baseApiUrlPath := printf "/api%ss" $baseWebUrlPath }}
+{{ $baseApiUrlPath := "/api/logs" }}
 
 <h1 class="text-3xl font-black mb-10 pl-4 text-base-content flex items-center gap-3 uppercase tracking-tighter">
   {{ template "icons" (dict "Name" "i-lucide-history" "Class" "w-8 h-8 text-primary") }}
@@ -41,8 +41,8 @@
       </thead>
       <tbody id="table">
         {{ range $list }}
-        {{ $apiUrlPath := printf "/api/logs/%d" .ID }}
-        {{ $webUrlPath := printf "/logs/%d" .ID }}
+        {{ $apiUrlPath := printf "%s/%d" $baseApiUrlPath .ID }}
+        {{ $webUrlPath := printf "%s/%d" $baseWebUrlPath .ID }}
         <tr class="hover:bg-base-200/50 transition-colors">
           <td class="ui-td text-left text-xs opacity-50 whitespace-nowrap">
             {{formatTimeOrNil .CreatedAt}}

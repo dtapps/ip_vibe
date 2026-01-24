@@ -44,7 +44,6 @@ type GetSSLRecordRequest struct {
 type ImportSSLRecordRequest struct {
 	ConfigID        int64  `json:"config_id" binding:"required" jsonschema:"平台配置序号"`                      // 平台配置序号
 	Domain          string `json:"domain,omitempty" jsonschema:"域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名"` // 域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名
-	CertDomain      string `json:"cert_domain" binding:"required" jsonschema:"证书域名"`                      // 证书域名
 	CertPrivateKey  string `json:"cert_private_key" binding:"required" jsonschema:"证书(PEM格式)"`            // 证书(PEM格式)
 	CertCertificate string `json:"cert_certificate" binding:"required" jsonschema:"证书(PEM格式)"`            // 证书(PEM格式)
 }

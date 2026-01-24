@@ -155,7 +155,7 @@ func (s *SSLUpdateTask) RunPeriodicTask() {
 	allSSLRecords, err := s.db.SSLRecord.Query().
 		Where(sslrecord.IsActiveEQ(true)).
 		Where(sslrecord.IsAutoRenewalEQ(true)).
-		Where(sslrecord.ProviderEQ(sslrecord.ProviderLetsencrypt)).
+		Where(sslrecord.ProviderNEQ(sslrecord.ProviderUnknown)).
 		// 预加载 配置
 		WithConfig().
 		All(ctx)

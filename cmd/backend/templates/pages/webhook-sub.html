@@ -8,7 +8,7 @@
 {{ $pageSize := .Data.PageSize }}
 {{ $baseWebUrlPath := .CurrentPath }}
 {{ $baseWebUrlPathWithQuery := .CurrentPathWithQuery }}
-{{ $baseApiUrlPath := printf "/api%ss" $baseWebUrlPath }}
+{{ $baseApiUrlPath := "/api/webhook-subs" }}
 
 <h1 class="text-3xl font-black mb-10 pl-4 text-base-content flex items-center gap-3 uppercase tracking-tighter">
   {{ template "icons" (dict "Name" "i-lucide-bell-plus" "Class" "w-8 h-8 text-primary") }}
@@ -61,8 +61,8 @@
       </thead>
       <tbody id="table">
         {{ range $list }}
-        {{ $apiUrlPath := printf "/api/webhook-subs/%d" .ID }}
-        {{ $webUrlPath := printf "/webhook-sub/%d" .ID }}
+        {{ $apiUrlPath := printf "%s/%d" $baseApiUrlPath .ID }}
+        {{ $webUrlPath := printf "%s/%d" $baseWebUrlPath .ID }}
         <tr class="hover:bg-base-200/50 transition-colors">
           <td class="ui-td tooltip" data-tip="{{ .ID }}">
             <input type="checkbox" class="checkbox checkbox-sm row-checkbox" value="{{.ID}}" onclick="updateBatchBar()">
