@@ -18,6 +18,42 @@ import (
 //	@Tags			SSL导入
 //	@Accept			application/json
 //	@Produce		application/json
+//	@Param			request	body		types.ImportSSLImportRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}					"成功响应"
+//	@Failure		400		{object}	APIResponse{}					"参数错误"
+//	@Failure		404		{object}	APIResponse{}					"错误响应"
+//	@Router			/ssl-imports/import [post]
+func ImportSSLImport(c *gin.Context) {
+	// 请求参数
+	var requestParams types.ImportSSLImportRequest
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewSSLImportService(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
+	)
+
+	// 调用
+	err := service.ImportSSLImport(c, &requestParams)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	successResponse(c, nil)
+}
+
+// 创建SSL导入记录
+//
+//	@Description	创建SSL导入记录
+//	@Summary		创建SSL导入记录
+//	@Tags			SSL导入
+//	@Accept			application/json
+//	@Produce		application/json
 //	@Param			request	body		types.CreateSSLImportRequest	true	"请求参数"
 //	@Success		200		{object}	APIResponse{}					"成功响应"
 //	@Failure		400		{object}	APIResponse{}					"参数错误"

@@ -147,6 +147,22 @@
                 ],
                 "type": "object"
             },
+            "vibe_ip_internal_types.BatchDeleteSSLImportRequest": {
+                "properties": {
+                    "ids": {
+                        "description": "SSL记录序号列表",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                    }
+                },
+                "required": [
+                    "ids"
+                ],
+                "type": "object"
+            },
             "vibe_ip_internal_types.BatchDeleteSSLRecordRequest": {
                 "properties": {
                     "ids": {
@@ -600,6 +616,28 @@
                     "protocols",
                     "remote_host",
                     "remote_port"
+                ],
+                "type": "object"
+            },
+            "vibe_ip_internal_types.CreateSSLImportRequest": {
+                "properties": {
+                    "certificate": {
+                        "description": "证书(PEM格式)",
+                        "type": "string"
+                    },
+                    "domain": {
+                        "description": "域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名",
+                        "type": "string"
+                    },
+                    "private_key": {
+                        "description": "私钥(PEM格式)",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "certificate",
+                    "domain",
+                    "private_key"
                 ],
                 "type": "object"
             },
@@ -1627,14 +1665,10 @@
                 },
                 "type": "object"
             },
-            "vibe_ip_internal_types.ImportSSLRecordRequest": {
+            "vibe_ip_internal_types.ImportSSLImportRequest": {
                 "properties": {
                     "certificate": {
                         "description": "证书(PEM格式)",
-                        "type": "string"
-                    },
-                    "domain": {
-                        "description": "域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名",
                         "type": "string"
                     },
                     "private_key": {
@@ -1645,6 +1679,32 @@
                 "required": [
                     "certificate",
                     "private_key"
+                ],
+                "type": "object"
+            },
+            "vibe_ip_internal_types.ImportSSLRecordRequest": {
+                "properties": {
+                    "cert_certificate": {
+                        "description": "证书(PEM格式)",
+                        "type": "string"
+                    },
+                    "cert_private_key": {
+                        "description": "证书(PEM格式)",
+                        "type": "string"
+                    },
+                    "config_id": {
+                        "description": "平台配置序号",
+                        "type": "integer"
+                    },
+                    "domain": {
+                        "description": "域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "cert_certificate",
+                    "cert_private_key",
+                    "config_id"
                 ],
                 "type": "object"
             },
@@ -6959,6 +7019,250 @@
                 "summary": "更新设置",
                 "tags": [
                     "设置"
+                ]
+            }
+        },
+        "/ssl-imports": {
+            "post": {
+                "description": "创建SSL导入记录",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/vibe_ip_internal_types.CreateSSLImportRequest",
+                                        "summary": "request",
+                                        "description": "请求参数"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "description": "请求参数",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "成功响应"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "参数错误"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "错误响应"
+                    }
+                },
+                "summary": "创建SSL导入记录",
+                "tags": [
+                    "SSL导入"
+                ]
+            }
+        },
+        "/ssl-imports/batch": {
+            "delete": {
+                "description": "批量删除SSL导入记录",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/vibe_ip_internal_types.BatchDeleteSSLImportRequest",
+                                        "summary": "ids",
+                                        "description": "SSL导入序号列表"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "description": "SSL导入序号列表",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "成功响应"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "参数错误"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "错误响应"
+                    }
+                },
+                "summary": "批量删除SSL导入记录",
+                "tags": [
+                    "SSL导入"
+                ]
+            }
+        },
+        "/ssl-imports/import": {
+            "post": {
+                "description": "创建SSL导入记录",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/vibe_ip_internal_types.ImportSSLImportRequest",
+                                        "summary": "request",
+                                        "description": "请求参数"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "description": "请求参数",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "成功响应"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "参数错误"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "错误响应"
+                    }
+                },
+                "summary": "创建SSL导入记录",
+                "tags": [
+                    "SSL导入"
+                ]
+            }
+        },
+        "/ssl-imports/{id}": {
+            "delete": {
+                "description": "删除SSL导入记录",
+                "parameters": [
+                    {
+                        "description": "SSL导入序号",
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "成功响应"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "参数错误"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "错误响应"
+                    }
+                },
+                "summary": "删除SSL导入记录",
+                "tags": [
+                    "SSL导入"
                 ]
             }
         },

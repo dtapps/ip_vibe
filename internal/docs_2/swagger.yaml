@@ -84,6 +84,16 @@ definitions:
     required:
     - ids
     type: object
+  vibe_ip_internal_types.BatchDeleteSSLImportRequest:
+    properties:
+      ids:
+        description: SSL记录序号列表
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
   vibe_ip_internal_types.BatchDeleteSSLRecordRequest:
     properties:
       ids:
@@ -394,6 +404,22 @@ definitions:
     - protocols
     - remote_host
     - remote_port
+    type: object
+  vibe_ip_internal_types.CreateSSLImportRequest:
+    properties:
+      certificate:
+        description: 证书(PEM格式)
+        type: string
+      domain:
+        description: 域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名
+        type: string
+      private_key:
+        description: 私钥(PEM格式)
+        type: string
+    required:
+    - certificate
+    - domain
+    - private_key
     type: object
   vibe_ip_internal_types.CreateSSLRecordRequest:
     properties:
@@ -1119,13 +1145,10 @@ definitions:
         description: 通知渠道名称
         type: string
     type: object
-  vibe_ip_internal_types.ImportSSLRecordRequest:
+  vibe_ip_internal_types.ImportSSLImportRequest:
     properties:
       certificate:
         description: 证书(PEM格式)
-        type: string
-      domain:
-        description: 域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名
         type: string
       private_key:
         description: 私钥(PEM格式)
@@ -1133,6 +1156,25 @@ definitions:
     required:
     - certificate
     - private_key
+    type: object
+  vibe_ip_internal_types.ImportSSLRecordRequest:
+    properties:
+      cert_certificate:
+        description: 证书(PEM格式)
+        type: string
+      cert_private_key:
+        description: 证书(PEM格式)
+        type: string
+      config_id:
+        description: 平台配置序号
+        type: integer
+      domain:
+        description: 域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名
+        type: string
+    required:
+    - cert_certificate
+    - cert_private_key
+    - config_id
     type: object
   vibe_ip_internal_types.JobData:
     properties:
@@ -3786,6 +3828,125 @@ paths:
       summary: 更新设置
       tags:
       - 设置
+  /ssl-imports:
+    post:
+      consumes:
+      - application/json
+      description: 创建SSL导入记录
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.CreateSSLImportRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 创建SSL导入记录
+      tags:
+      - SSL导入
+  /ssl-imports/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除SSL导入记录
+      parameters:
+      - description: SSL导入序号
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 删除SSL导入记录
+      tags:
+      - SSL导入
+  /ssl-imports/batch:
+    delete:
+      consumes:
+      - application/json
+      description: 批量删除SSL导入记录
+      parameters:
+      - description: SSL导入序号列表
+        in: body
+        name: ids
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.BatchDeleteSSLImportRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 批量删除SSL导入记录
+      tags:
+      - SSL导入
+  /ssl-imports/import:
+    post:
+      consumes:
+      - application/json
+      description: 创建SSL导入记录
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.ImportSSLImportRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 创建SSL导入记录
+      tags:
+      - SSL导入
   /ssl-records:
     get:
       consumes:

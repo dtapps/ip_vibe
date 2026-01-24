@@ -226,6 +226,7 @@ func (m *GinServerManager) setupApiRouter() {
 		// SSL记录管理相关API
 		sslImports := api.Group("/ssl-imports")
 		{
+			sslImports.POST("/import", handlers.ImportSSLImport)       // 导入SSL导入记录
 			sslImports.POST("", handlers.CreateSSLImport)              // 创建SSL导入记录
 			sslImports.DELETE("/:id", handlers.DeleteSSLImport)        // 删除SSL导入记录
 			sslImports.DELETE("/batch", handlers.BatchDeleteSSLImport) // 批量删除SSL导入记录
