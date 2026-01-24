@@ -2,13 +2,10 @@ package service
 
 import (
 	"context"
-	"crypto/x509"
-	"encoding/pem"
 	"fmt"
 	"log/slog"
 	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/sslimport"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
@@ -17,6 +14,7 @@ import (
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
+	"vibe_ip/internal/utils"
 
 	"github.com/spf13/cast"
 	"go.dtapp.net/library/utils/gostring"
@@ -149,28 +147,29 @@ func (s *SSLRecordServiceImpl) GetSSLRecord(ctx context.Context, id int64) (*typ
 
 // ImportSSLRecord 导入 SSL 记录
 func (s *SSLRecordServiceImpl) ImportSSLRecord(ctx context.Context, request *types.ImportSSLRecordRequest) error {
-	// 如果没有包含域名就从证书中解析
-	if request.Domain == "" {
-		block, _ := pem.Decode([]byte(request.Certificate))
-		if block == nil {
-			return fmt.Errorf("解析证书失败: 证书格式错误")
-		}
-		cert, err := x509.ParseCertificate(block.Bytes)
-		if err != nil {
-			return fmt.Errorf("解析证书失败: %w", err)
-		}
-		request.Domain = cert.Subject.CommonName
+
+	// 解析证书
+	parsedSsl, err := utils.ParseCertificate(request.CertCertificate)
+	if err != nil {
+		return fmt.Errorf("解析证书失败: %w", err)
 	}
 
-	// 创建SSL导入记录
-	err := s.db.SSLImport.Create().
-		SetSource(sslimport.SourceWebhook).
+	// 创建SSL记录
+	err = s.db.SSLRecord.Create().
 		SetDomain(request.Domain).
-		SetCertificate(request.Certificate).
-		SetPrivateKey(request.PrivateKey).
+		SetCertDomain(request.CertDomain).
+		SetCertPrivateKey(request.CertPrivateKey).
+		SetCertCertificate(request.CertCertificate).
+		SetNotBefore(parsedSsl.NotBefore).
+		SetNotAfter(parsedSsl.NotAfter).
+		SetStatus(sslrecord.StatusUnknown).
+		SetProvider(sslrecord.ProviderUnknown).
+		SetIsActive(false).
+		SetRenewalDays(0).
+		SetIsAutoRenewal(false).
 		Exec(ctx)
 	if err != nil {
-		return fmt.Errorf("创建SSL导入记录失败: %w", err)
+		return fmt.Errorf("创建SSL记录失败: %w", err)
 	}
 
 	return nil
@@ -182,6 +181,7 @@ func (s *SSLRecordServiceImpl) CreateSSLRecord(ctx context.Context, request *typ
 	saveSSLRecord, err := s.db.SSLRecord.Create().
 		SetConfigID(request.ConfigID).
 		SetDomain(request.Domain).
+		SetStatus(sslrecord.StatusPending).
 		SetProvider(sslrecord.Provider(request.Provider)).
 		SetRenewalDays(request.RenewalDays).
 		Save(ctx)

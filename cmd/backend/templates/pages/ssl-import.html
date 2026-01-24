@@ -26,7 +26,7 @@
             {{ template "icons" (dict "Name" "i-lucide-shield-check") }} SSL 记录管理（平台维度）
         </h2>
         <div>
-            <button class="btn-ui-primary" data-id="" data-action="add" onclick="openFormModal('', 'add')">
+            <button class="btn-ui-primary" data-id="" data-action="add" onclick="openAddFormModal()">
                 {{ template "icons" (dict "Name" "i-lucide-plus") }} 添加记录
             </button>
 
@@ -87,6 +87,11 @@
                             <button class="btn btn-sm rounded-lg px-4" data-detail='{{ marshalJSON . }}'
                                 onclick="openViewModal(this)">
                                 {{ template "icons" (dict "Name" "i-lucide-eye") }} 查看
+                            </button>
+
+                            <button class="btn btn-primary btn-sm rounded-lg px-4" data-detail='{{ marshalJSON . }}'
+                                onclick="openImportFormModal(this)">
+                                {{ template "icons" (dict "Name" "i-lucide-copy") }} 复制
                             </button>
 
                             <button class="btn btn-danger btn-sm rounded-lg px-4" data-id="{{.ID}}"

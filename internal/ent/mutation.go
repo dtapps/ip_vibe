@@ -10187,10 +10187,24 @@ func (m *SSLRecordMutation) AddedRenewalDays() (r int, exists bool) {
 	return *v, true
 }
 
+// ClearRenewalDays clears the value of the "renewal_days" field.
+func (m *SSLRecordMutation) ClearRenewalDays() {
+	m.renewal_days = nil
+	m.addrenewal_days = nil
+	m.clearedFields[sslrecord.FieldRenewalDays] = struct{}{}
+}
+
+// RenewalDaysCleared returns if the "renewal_days" field was cleared in this mutation.
+func (m *SSLRecordMutation) RenewalDaysCleared() bool {
+	_, ok := m.clearedFields[sslrecord.FieldRenewalDays]
+	return ok
+}
+
 // ResetRenewalDays resets all changes to the "renewal_days" field.
 func (m *SSLRecordMutation) ResetRenewalDays() {
 	m.renewal_days = nil
 	m.addrenewal_days = nil
+	delete(m.clearedFields, sslrecord.FieldRenewalDays)
 }
 
 // SetIsAutoRenewal sets the "is_auto_renewal" field.
@@ -10224,9 +10238,22 @@ func (m *SSLRecordMutation) OldIsAutoRenewal(ctx context.Context) (v bool, err e
 	return oldValue.IsAutoRenewal, nil
 }
 
+// ClearIsAutoRenewal clears the value of the "is_auto_renewal" field.
+func (m *SSLRecordMutation) ClearIsAutoRenewal() {
+	m.is_auto_renewal = nil
+	m.clearedFields[sslrecord.FieldIsAutoRenewal] = struct{}{}
+}
+
+// IsAutoRenewalCleared returns if the "is_auto_renewal" field was cleared in this mutation.
+func (m *SSLRecordMutation) IsAutoRenewalCleared() bool {
+	_, ok := m.clearedFields[sslrecord.FieldIsAutoRenewal]
+	return ok
+}
+
 // ResetIsAutoRenewal resets all changes to the "is_auto_renewal" field.
 func (m *SSLRecordMutation) ResetIsAutoRenewal() {
 	m.is_auto_renewal = nil
+	delete(m.clearedFields, sslrecord.FieldIsAutoRenewal)
 }
 
 // SetLastRefreshAt sets the "last_refresh_at" field.
@@ -10830,6 +10857,12 @@ func (m *SSLRecordMutation) ClearedFields() []string {
 	if m.FieldCleared(sslrecord.FieldNotAfter) {
 		fields = append(fields, sslrecord.FieldNotAfter)
 	}
+	if m.FieldCleared(sslrecord.FieldRenewalDays) {
+		fields = append(fields, sslrecord.FieldRenewalDays)
+	}
+	if m.FieldCleared(sslrecord.FieldIsAutoRenewal) {
+		fields = append(fields, sslrecord.FieldIsAutoRenewal)
+	}
 	if m.FieldCleared(sslrecord.FieldLastRefreshAt) {
 		fields = append(fields, sslrecord.FieldLastRefreshAt)
 	}
@@ -10879,6 +10912,12 @@ func (m *SSLRecordMutation) ClearField(name string) error {
 		return nil
 	case sslrecord.FieldNotAfter:
 		m.ClearNotAfter()
+		return nil
+	case sslrecord.FieldRenewalDays:
+		m.ClearRenewalDays()
+		return nil
+	case sslrecord.FieldIsAutoRenewal:
+		m.ClearIsAutoRenewal()
 		return nil
 	case sslrecord.FieldLastRefreshAt:
 		m.ClearLastRefreshAt()

@@ -135,11 +135,12 @@ var (
 // Status defines the type for the "status" enum field.
 type Status string
 
-// StatusPending is the default value of the Status enum.
-const DefaultStatus = StatusPending
+// StatusUnknown is the default value of the Status enum.
+const DefaultStatus = StatusUnknown
 
 // Status values.
 const (
+	StatusUnknown Status = "unknown"
 	StatusValid   Status = "valid"
 	StatusExpired Status = "expired"
 	StatusRevoked Status = "revoked"
@@ -153,7 +154,7 @@ func (s Status) String() string {
 // StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
 func StatusValidator(s Status) error {
 	switch s {
-	case StatusValid, StatusExpired, StatusRevoked, StatusPending:
+	case StatusUnknown, StatusValid, StatusExpired, StatusRevoked, StatusPending:
 		return nil
 	default:
 		return fmt.Errorf("sslrecord: invalid enum value for status field: %q", s)

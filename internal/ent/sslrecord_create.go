@@ -424,12 +424,6 @@ func (_c *SSLRecordCreate) check() error {
 	if _, ok := _c.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "SSLRecord.is_active"`)}
 	}
-	if _, ok := _c.mutation.RenewalDays(); !ok {
-		return &ValidationError{Name: "renewal_days", err: errors.New(`ent: missing required field "SSLRecord.renewal_days"`)}
-	}
-	if _, ok := _c.mutation.IsAutoRenewal(); !ok {
-		return &ValidationError{Name: "is_auto_renewal", err: errors.New(`ent: missing required field "SSLRecord.is_auto_renewal"`)}
-	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := sslrecord.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "SSLRecord.id": %w`, err)}
@@ -836,6 +830,12 @@ func (u *SSLRecordUpsert) AddRenewalDays(v int) *SSLRecordUpsert {
 	return u
 }
 
+// ClearRenewalDays clears the value of the "renewal_days" field.
+func (u *SSLRecordUpsert) ClearRenewalDays() *SSLRecordUpsert {
+	u.SetNull(sslrecord.FieldRenewalDays)
+	return u
+}
+
 // SetIsAutoRenewal sets the "is_auto_renewal" field.
 func (u *SSLRecordUpsert) SetIsAutoRenewal(v bool) *SSLRecordUpsert {
 	u.Set(sslrecord.FieldIsAutoRenewal, v)
@@ -845,6 +845,12 @@ func (u *SSLRecordUpsert) SetIsAutoRenewal(v bool) *SSLRecordUpsert {
 // UpdateIsAutoRenewal sets the "is_auto_renewal" field to the value that was provided on create.
 func (u *SSLRecordUpsert) UpdateIsAutoRenewal() *SSLRecordUpsert {
 	u.SetExcluded(sslrecord.FieldIsAutoRenewal)
+	return u
+}
+
+// ClearIsAutoRenewal clears the value of the "is_auto_renewal" field.
+func (u *SSLRecordUpsert) ClearIsAutoRenewal() *SSLRecordUpsert {
+	u.SetNull(sslrecord.FieldIsAutoRenewal)
 	return u
 }
 
@@ -1214,6 +1220,13 @@ func (u *SSLRecordUpsertOne) UpdateRenewalDays() *SSLRecordUpsertOne {
 	})
 }
 
+// ClearRenewalDays clears the value of the "renewal_days" field.
+func (u *SSLRecordUpsertOne) ClearRenewalDays() *SSLRecordUpsertOne {
+	return u.Update(func(s *SSLRecordUpsert) {
+		s.ClearRenewalDays()
+	})
+}
+
 // SetIsAutoRenewal sets the "is_auto_renewal" field.
 func (u *SSLRecordUpsertOne) SetIsAutoRenewal(v bool) *SSLRecordUpsertOne {
 	return u.Update(func(s *SSLRecordUpsert) {
@@ -1225,6 +1238,13 @@ func (u *SSLRecordUpsertOne) SetIsAutoRenewal(v bool) *SSLRecordUpsertOne {
 func (u *SSLRecordUpsertOne) UpdateIsAutoRenewal() *SSLRecordUpsertOne {
 	return u.Update(func(s *SSLRecordUpsert) {
 		s.UpdateIsAutoRenewal()
+	})
+}
+
+// ClearIsAutoRenewal clears the value of the "is_auto_renewal" field.
+func (u *SSLRecordUpsertOne) ClearIsAutoRenewal() *SSLRecordUpsertOne {
+	return u.Update(func(s *SSLRecordUpsert) {
+		s.ClearIsAutoRenewal()
 	})
 }
 
@@ -1769,6 +1789,13 @@ func (u *SSLRecordUpsertBulk) UpdateRenewalDays() *SSLRecordUpsertBulk {
 	})
 }
 
+// ClearRenewalDays clears the value of the "renewal_days" field.
+func (u *SSLRecordUpsertBulk) ClearRenewalDays() *SSLRecordUpsertBulk {
+	return u.Update(func(s *SSLRecordUpsert) {
+		s.ClearRenewalDays()
+	})
+}
+
 // SetIsAutoRenewal sets the "is_auto_renewal" field.
 func (u *SSLRecordUpsertBulk) SetIsAutoRenewal(v bool) *SSLRecordUpsertBulk {
 	return u.Update(func(s *SSLRecordUpsert) {
@@ -1780,6 +1807,13 @@ func (u *SSLRecordUpsertBulk) SetIsAutoRenewal(v bool) *SSLRecordUpsertBulk {
 func (u *SSLRecordUpsertBulk) UpdateIsAutoRenewal() *SSLRecordUpsertBulk {
 	return u.Update(func(s *SSLRecordUpsert) {
 		s.UpdateIsAutoRenewal()
+	})
+}
+
+// ClearIsAutoRenewal clears the value of the "is_auto_renewal" field.
+func (u *SSLRecordUpsertBulk) ClearIsAutoRenewal() *SSLRecordUpsertBulk {
+	return u.Update(func(s *SSLRecordUpsert) {
+		s.ClearIsAutoRenewal()
 	})
 }
 

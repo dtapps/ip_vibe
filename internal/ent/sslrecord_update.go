@@ -272,6 +272,12 @@ func (_u *SSLRecordUpdate) AddRenewalDays(v int) *SSLRecordUpdate {
 	return _u
 }
 
+// ClearRenewalDays clears the value of the "renewal_days" field.
+func (_u *SSLRecordUpdate) ClearRenewalDays() *SSLRecordUpdate {
+	_u.mutation.ClearRenewalDays()
+	return _u
+}
+
 // SetIsAutoRenewal sets the "is_auto_renewal" field.
 func (_u *SSLRecordUpdate) SetIsAutoRenewal(v bool) *SSLRecordUpdate {
 	_u.mutation.SetIsAutoRenewal(v)
@@ -283,6 +289,12 @@ func (_u *SSLRecordUpdate) SetNillableIsAutoRenewal(v *bool) *SSLRecordUpdate {
 	if v != nil {
 		_u.SetIsAutoRenewal(*v)
 	}
+	return _u
+}
+
+// ClearIsAutoRenewal clears the value of the "is_auto_renewal" field.
+func (_u *SSLRecordUpdate) ClearIsAutoRenewal() *SSLRecordUpdate {
+	_u.mutation.ClearIsAutoRenewal()
 	return _u
 }
 
@@ -501,8 +513,14 @@ func (_u *SSLRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.AddedRenewalDays(); ok {
 		_spec.AddField(sslrecord.FieldRenewalDays, field.TypeInt, value)
 	}
+	if _u.mutation.RenewalDaysCleared() {
+		_spec.ClearField(sslrecord.FieldRenewalDays, field.TypeInt)
+	}
 	if value, ok := _u.mutation.IsAutoRenewal(); ok {
 		_spec.SetField(sslrecord.FieldIsAutoRenewal, field.TypeBool, value)
+	}
+	if _u.mutation.IsAutoRenewalCleared() {
+		_spec.ClearField(sslrecord.FieldIsAutoRenewal, field.TypeBool)
 	}
 	if value, ok := _u.mutation.LastRefreshAt(); ok {
 		_spec.SetField(sslrecord.FieldLastRefreshAt, field.TypeTime, value)
@@ -787,6 +805,12 @@ func (_u *SSLRecordUpdateOne) AddRenewalDays(v int) *SSLRecordUpdateOne {
 	return _u
 }
 
+// ClearRenewalDays clears the value of the "renewal_days" field.
+func (_u *SSLRecordUpdateOne) ClearRenewalDays() *SSLRecordUpdateOne {
+	_u.mutation.ClearRenewalDays()
+	return _u
+}
+
 // SetIsAutoRenewal sets the "is_auto_renewal" field.
 func (_u *SSLRecordUpdateOne) SetIsAutoRenewal(v bool) *SSLRecordUpdateOne {
 	_u.mutation.SetIsAutoRenewal(v)
@@ -798,6 +822,12 @@ func (_u *SSLRecordUpdateOne) SetNillableIsAutoRenewal(v *bool) *SSLRecordUpdate
 	if v != nil {
 		_u.SetIsAutoRenewal(*v)
 	}
+	return _u
+}
+
+// ClearIsAutoRenewal clears the value of the "is_auto_renewal" field.
+func (_u *SSLRecordUpdateOne) ClearIsAutoRenewal() *SSLRecordUpdateOne {
+	_u.mutation.ClearIsAutoRenewal()
 	return _u
 }
 
@@ -1046,8 +1076,14 @@ func (_u *SSLRecordUpdateOne) sqlSave(ctx context.Context) (_node *SSLRecord, er
 	if value, ok := _u.mutation.AddedRenewalDays(); ok {
 		_spec.AddField(sslrecord.FieldRenewalDays, field.TypeInt, value)
 	}
+	if _u.mutation.RenewalDaysCleared() {
+		_spec.ClearField(sslrecord.FieldRenewalDays, field.TypeInt)
+	}
 	if value, ok := _u.mutation.IsAutoRenewal(); ok {
 		_spec.SetField(sslrecord.FieldIsAutoRenewal, field.TypeBool, value)
+	}
+	if _u.mutation.IsAutoRenewalCleared() {
+		_spec.ClearField(sslrecord.FieldIsAutoRenewal, field.TypeBool)
 	}
 	if value, ok := _u.mutation.LastRefreshAt(); ok {
 		_spec.SetField(sslrecord.FieldLastRefreshAt, field.TypeTime, value)

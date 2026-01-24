@@ -511,6 +511,7 @@ var GetDevicePortForwardProtocols = []string{
 }
 
 const (
+	SSLRecordStatusUnknown string = "unknown" // 未知
 	SSLRecordStatusValid   string = "valid"   // 有效
 	SSLRecordStatusExpired string = "expired" // 过期
 	SSLRecordStatusRevoked string = "revoked" // 吊销
@@ -519,6 +520,7 @@ const (
 
 // GetSSLRecordStatusDescriptions SSL记录状态说明映射
 var GetSSLRecordStatusDescriptions = map[string]string{
+	SSLRecordStatusUnknown: "未知",
 	SSLRecordStatusValid:   "有效",
 	SSLRecordStatusExpired: "过期",
 	SSLRecordStatusRevoked: "吊销",
@@ -527,6 +529,7 @@ var GetSSLRecordStatusDescriptions = map[string]string{
 
 // GetSSLRecordStatuss 返回所有SSL记录状态
 var GetSSLRecordStatuss = []string{
+	SSLRecordStatusUnknown,
 	SSLRecordStatusValid,
 	SSLRecordStatusExpired,
 	SSLRecordStatusRevoked,

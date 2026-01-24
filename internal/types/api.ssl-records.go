@@ -42,9 +42,11 @@ type GetSSLRecordRequest struct {
 
 // 导入 SSL 记录 请求结构
 type ImportSSLRecordRequest struct {
-	Domain      string `json:"domain,omitempty" jsonschema:"域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名"` // 域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名
-	Certificate string `json:"certificate" binding:"required" jsonschema:"证书(PEM格式)"`                 // 证书(PEM格式)
-	PrivateKey  string `json:"private_key" binding:"required" jsonschema:"私钥(PEM格式)"`                 // 私钥(PEM格式)
+	ConfigID        int64  `json:"config_id" binding:"required" jsonschema:"平台配置序号"`                      // 平台配置序号
+	Domain          string `json:"domain,omitempty" jsonschema:"域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名"` // 域名（支持通配符 *.example.com 或精确域名）使用逗号分隔多个域名
+	CertDomain      string `json:"cert_domain" binding:"required" jsonschema:"证书域名"`                      // 证书域名
+	CertPrivateKey  string `json:"cert_private_key" binding:"required" jsonschema:"证书(PEM格式)"`            // 证书(PEM格式)
+	CertCertificate string `json:"cert_certificate" binding:"required" jsonschema:"证书(PEM格式)"`            // 证书(PEM格式)
 }
 
 // 创建 SSL 记录 请求结构

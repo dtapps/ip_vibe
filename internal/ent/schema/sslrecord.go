@@ -103,7 +103,7 @@ func (SSLRecord) Fields() []ent.Field {
 
 		field.Enum("status").
 			Values(schematype.GetSSLRecordStatuss...).
-			Default(schematype.SSLRecordStatusPending).
+			Default(schematype.SSLRecordStatusUnknown).
 			Comment("证书状态").
 			Annotations(entsql.WithComments(true)),
 
@@ -119,11 +119,13 @@ func (SSLRecord) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Int("renewal_days").
+			Optional().
 			Default(30).
 			Comment("过期前多少天开始续期").
 			Annotations(entsql.WithComments(true)),
 
 		field.Bool("is_auto_renewal").
+			Optional().
 			Default(false).
 			Comment("是否自动续期").
 			Annotations(entsql.WithComments(true)),

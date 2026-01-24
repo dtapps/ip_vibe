@@ -1030,6 +1030,16 @@ func RenewalDaysLTE(v int) predicate.SSLRecord {
 	return predicate.SSLRecord(sql.FieldLTE(FieldRenewalDays, v))
 }
 
+// RenewalDaysIsNil applies the IsNil predicate on the "renewal_days" field.
+func RenewalDaysIsNil() predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldIsNull(FieldRenewalDays))
+}
+
+// RenewalDaysNotNil applies the NotNil predicate on the "renewal_days" field.
+func RenewalDaysNotNil() predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldNotNull(FieldRenewalDays))
+}
+
 // IsAutoRenewalEQ applies the EQ predicate on the "is_auto_renewal" field.
 func IsAutoRenewalEQ(v bool) predicate.SSLRecord {
 	return predicate.SSLRecord(sql.FieldEQ(FieldIsAutoRenewal, v))
@@ -1038,6 +1048,16 @@ func IsAutoRenewalEQ(v bool) predicate.SSLRecord {
 // IsAutoRenewalNEQ applies the NEQ predicate on the "is_auto_renewal" field.
 func IsAutoRenewalNEQ(v bool) predicate.SSLRecord {
 	return predicate.SSLRecord(sql.FieldNEQ(FieldIsAutoRenewal, v))
+}
+
+// IsAutoRenewalIsNil applies the IsNil predicate on the "is_auto_renewal" field.
+func IsAutoRenewalIsNil() predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldIsNull(FieldIsAutoRenewal))
+}
+
+// IsAutoRenewalNotNil applies the NotNil predicate on the "is_auto_renewal" field.
+func IsAutoRenewalNotNil() predicate.SSLRecord {
+	return predicate.SSLRecord(sql.FieldNotNull(FieldIsAutoRenewal))
 }
 
 // LastRefreshAtEQ applies the EQ predicate on the "last_refresh_at" field.
