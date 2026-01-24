@@ -18,17 +18,16 @@
 <div class="ui-panel">
   <div class="ui-header">
     <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
-      {{ template "icons" (dict "Name" "i-lucide-server-cog") }} 平台配置
+      {{ template "icons" (dict "Name" "i-lucide-server-cog") }} 平台配置 (<span id="selected_count">0</span>)
     </h2>
     <div>
       <button class="btn-ui-primary" onclick="openFormModal('', 'add')">
-        {{ template "icons" (dict "Name" "i-lucide-plus") }} 添加配置
+        {{ template "icons" (dict "Name" "i-lucide-plus") }} 添加配置 (<span id="selected_count">0</span>)
       </button>
 
       <button class="btn-batch btn-ui-error hidden" data-url="{{$baseApiUrlPath}}/batch" data-method="DELETE"
         data-id-key="ids" onclick="handleBatchAction(this)">
-        {{ template "icons" (dict "Name" "i-lucide-trash-2") }}
-        批量删除 (<span id="selected_count">0</span>)
+        {{ template "icons" (dict "Name" "i-lucide-trash-2") }} 批量删除 (<span id="selected_count">0</span>)
       </button>
     </div>
   </div>
@@ -58,9 +57,9 @@
         {{ $apiUrlPath := printf "/api/platform-configs/%d" .ID }}
         {{ $webUrlPath := printf "/platform-config/%d" .ID }}
         <tr class="hover:bg-base-200/50 transition-colors">
-          <td class="ui-td">
-            <input type="checkbox" class="checkbox checkbox-sm row-checkbox" value="{{.ID}}"
-              onclick="updateBatchBar()" />
+          <td class="ui-td tooltip" data-tip="{{ .ID }}">
+            <input type="checkbox" class="checkbox checkbox-sm row-checkbox" value="{{.ID}}" onclick="updateBatchBar()">
+            </input>
           </td>
 
           <td class="ui-td">
@@ -99,16 +98,17 @@
           </td>
 
           <td class="ui-td font-bold">
+            {{ $capabilityCss := "tooltip" }}
             {{if eq .Capability "all"}}
-            <span class="text-primary">全部</span>
+            <span class="text-primary {{ $capabilityCss }}" data-tip="{{ .Capability }}">全部</span>
             {{else if eq .Capability "cdn"}}
-            <span class="text-secondary">仅 CDN</span>
+            <span class="text-secondary {{ $capabilityCss }}" data-tip="{{ .Capability }}">仅 CDN</span>
             {{else if eq .Capability "dns"}}
-            <span class="text-accent">仅 DNS</span>
+            <span class="text-accent {{ $capabilityCss }}" data-tip="{{ .Capability }}">仅 DNS</span>
             {{else if eq .Capability "ssl"}}
-            <span class="text-info">仅 SSL</span>
+            <span class="text-info {{ $capabilityCss }}" data-tip="{{ .Capability }}">仅 SSL</span>
             {{else}}
-            <span class="text-warning">{{.Capability}}</span>
+            <span class="text-warning {{ $capabilityCss }}">{{.Capability}}</span>
             {{end}}
           </td>
 

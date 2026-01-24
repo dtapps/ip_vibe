@@ -27,16 +27,15 @@
 
       <button class="btn-batch btn-ui-info hidden" data-url="{{$baseApiUrlPath}}/batch/active" data-method="PATCH"
         data-id-key="ids" data-key="is_active" data-val="true" onclick="handleBatchAction(this)">
-        {{ template "icons" (dict "Name" "i-lucide-play") }} 批量开启
+        {{ template "icons" (dict "Name" "i-lucide-play") }} 批量开启 (<span id="selected_count">0</span>)
       </button>
       <button class="btn-batch btn-ui-info hidden" data-url="{{$baseApiUrlPath}}/batch/active" data-method="PATCH"
         data-id-key="ids" data-key="is_active" data-val="false" onclick="handleBatchAction(this)">
-        {{ template "icons" (dict "Name" "i-lucide-pause") }} 批量关闭
+        {{ template "icons" (dict "Name" "i-lucide-pause") }} 批量关闭 (<span id="selected_count">0</span>)
       </button>
       <button class="btn-batch btn-ui-error hidden" data-url="{{$baseApiUrlPath}}/batch" data-method="DELETE"
         data-id-key="ids" onclick="handleBatchAction(this)">
-        {{ template "icons" (dict "Name" "i-lucide-trash-2") }}
-        批量删除 (<span id="selected_count">0</span>)
+        {{ template "icons" (dict "Name" "i-lucide-trash-2") }} 批量删除 (<span id="selected_count">0</span>)
       </button>
     </div>
   </div>
@@ -71,9 +70,9 @@
         {{ $apiUrlPath := printf "/api/ssl-records/%d" .ID }}
         {{ $webUrlPath := printf "/ssl/%d" .ID }}
         <tr class="hover:bg-base-200/50 transition-colors">
-          <td class="ui-td">
-            <input type="checkbox" class="checkbox checkbox-sm row-checkbox" value="{{.ID}}"
-              onclick="updateBatchBar()" />
+          <td class="ui-td tooltip" data-tip="{{ .ID }}">
+            <input type="checkbox" class="checkbox checkbox-sm row-checkbox" value="{{.ID}}" onclick="updateBatchBar()">
+            </input>
           </td>
 
           <td class="ui-td font-bold text-base-content">
@@ -93,16 +92,17 @@
           </td>
 
           <td class="ui-td">
+            {{ $statusCss := "badge font-bold px-3 py-2 tooltip" }}
             {{if eq .Status "valid"}}
-            <span class="badge badge-success font-bold px-3 py-2">有效</span>
+            <span class="badge-success {{ $statusCss }}" data-tip="{{ .Status }}">有效</span>
             {{else if eq .Status "expired"}}
-            <span class="badge badge-error font-bold px-3 py-2 text-white">过期</span>
+            <span class="badge-error {{ $statusCss }} text-white" data-tip="{{ .Status }}">过期</span>
             {{else if eq .Status "revoked"}}
-            <span class="badge badge-warning font-bold px-3 py-2 text-warning-content">已撤销</span>
+            <span class="badge-warning {{ $statusCss }} text-warning-content" data-tip="{{ .Status }}">已撤销</span>
             {{else if eq .Status "pending"}}
-            <span class="badge badge-ghost font-bold px-3 py-2">待处理</span>
+            <span class="badge-ghost {{ $statusCss }}" data-tip="{{ .Status }}">待处理</span>
             {{else}}
-            <span class="badge badge-ghost font-bold px-3 py-2">{{.Status}}</span>
+            <span class="badge-ghost {{ $statusCss }}">{{.Status}}</span>
             {{end}}
           </td>
 

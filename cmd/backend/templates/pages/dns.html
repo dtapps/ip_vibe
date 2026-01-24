@@ -27,16 +27,15 @@
 
       <button class="btn-batch btn-ui-info hidden" data-url="{{$baseApiUrlPath}}/batch/active" data-method="PATCH"
         data-id-key="ids" data-key="is_active" data-val="true" onclick="handleBatchAction(this)">
-        {{ template "icons" (dict "Name" "i-lucide-play") }} 批量开启
+        {{ template "icons" (dict "Name" "i-lucide-play") }} 批量开启 (<span id="selected_count">0</span>)
       </button>
       <button class="btn-batch btn-ui-info hidden" data-url="{{$baseApiUrlPath}}/batch/active" data-method="PATCH"
         data-id-key="ids" data-key="is_active" data-val="false" onclick="handleBatchAction(this)">
-        {{ template "icons" (dict "Name" "i-lucide-pause") }} 批量关闭
+        {{ template "icons" (dict "Name" "i-lucide-pause") }} 批量关闭 (<span id="selected_count">0</span>)
       </button>
       <button class="btn-batch btn-ui-error hidden" data-url="{{$baseApiUrlPath}}/batch" data-method="DELETE"
         data-id-key="ids" onclick="handleBatchAction(this)">
-        {{ template "icons" (dict "Name" "i-lucide-trash-2") }}
-        批量删除 (<span id="selected_count">0</span>)
+        {{ template "icons" (dict "Name" "i-lucide-trash-2") }} 批量删除 (<span id="selected_count">0</span>)
       </button>
     </div>
   </div>
@@ -68,9 +67,9 @@
         {{ $apiUrlPath := printf "/api/dns-records/%d" .ID }}
         {{ $webUrlPath := printf "/dns/%d" .ID }}
         <tr class="hover:bg-base-200/50 transition-colors">
-          <td class="ui-td">
-            <input type="checkbox" class="checkbox checkbox-sm row-checkbox" value="{{.ID}}"
-              onclick="updateBatchBar()" />
+          <td class="ui-td tooltip" data-tip="{{ .ID }}">
+            <input type="checkbox" class="checkbox checkbox-sm row-checkbox" value="{{.ID}}" onclick="updateBatchBar()">
+            </input>
           </td>
 
           <td class="ui-td font-bold text-base-content">

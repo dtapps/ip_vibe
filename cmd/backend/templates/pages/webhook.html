@@ -27,16 +27,15 @@
 
       <button class="btn-batch btn-ui-info hidden" data-url="{{$baseApiUrlPath}}/batch/active" data-method="PATCH"
         data-id-key="ids" data-key="is_active" data-val="true" onclick="handleBatchAction(this)">
-        {{ template "icons" (dict "Name" "i-lucide-play") }} 批量开启
+        {{ template "icons" (dict "Name" "i-lucide-play") }} 批量开启 (<span id="selected_count">0</span>)
       </button>
       <button class="btn-batch btn-ui-info hidden" data-url="{{$baseApiUrlPath}}/batch/active" data-method="PATCH"
         data-id-key="ids" data-key="is_active" data-val="false" onclick="handleBatchAction(this)">
-        {{ template "icons" (dict "Name" "i-lucide-pause") }} 批量关闭
+        {{ template "icons" (dict "Name" "i-lucide-pause") }} 批量关闭 (<span id="selected_count">0</span>)
       </button>
       <button class="btn-batch btn-ui-error hidden" data-url="{{$baseApiUrlPath}}/batch" data-method="DELETE"
         data-id-key="ids" onclick="handleBatchAction(this)">
-        {{ template "icons" (dict "Name" "i-lucide-trash-2") }}
-        批量删除 (<span id="selected_count">0</span>)
+        {{ template "icons" (dict "Name" "i-lucide-trash-2") }} 批量删除 (<span id="selected_count">0</span>)
       </button>
     </div>
   </div>
@@ -66,9 +65,9 @@
         {{ $apiUrlPath := printf "/api/webhooks/%d" .ID }}
         {{ $webUrlPath := printf "//%d" .ID }}
         <tr class="hover:bg-base-200/50 transition-colors">
-          <td class="ui-td">
-            <input type="checkbox" class="checkbox checkbox-sm row-checkbox" value="{{.ID}}"
-              onclick="updateBatchBar()" />
+          <td class="ui-td tooltip" data-tip="{{ .ID }}">
+            <input type="checkbox" class="checkbox checkbox-sm row-checkbox" value="{{.ID}}" onclick="updateBatchBar()">
+            </input>
           </td>
 
           <td class="ui-td font-bold text-base-content">
@@ -79,20 +78,21 @@
           </td>
 
           <td class="ui-td">
+            {{ $platformCss := "badge font-bold tooltip" }}
             {{if eq .Platform "wechat_work"}}
-            <span class="badge badge-success badge-outline font-bold">企业微信</span>
+            <span class="badge-success badge-outline {{ $platformCss }}" data-tip="{{ .Platform }}">企业微信</span>
             {{else if eq .Platform "dingtalk"}}
-            <span class="badge badge-info badge-outline font-bold">钉钉</span>
+            <span class="badge-info badge-outline {{ $platformCss }}" data-tip="{{ .Platform }}">钉钉</span>
             {{else if eq .Platform "feishu"}}
-            <span class="badge badge-primary badge-outline font-bold">飞书</span>
+            <span class="badge-primary badge-outline {{ $platformCss }}" data-tip="{{ .Platform }}">飞书</span>
             {{else if eq .Platform "bark"}}
-            <span class="badge badge-secondary badge-outline font-bold">Bark</span>
+            <span class="badge-secondary badge-outline {{ $platformCss }}" data-tip="{{ .Platform }}">Bark</span>
             {{else if eq .Platform "ft07"}}
-            <span class="badge badge-warning badge-outline font-bold">Server酱</span>
-            {{else if eq .Platform "push_deer" "PushDeer"}}
-            <span class="badge badge-accent badge-outline font-bold">PushDeer</span>
+            <span class="badge-warning badge-outline {{ $platformCss }}" data-tip="{{ .Platform }}">Server酱</span>
+            {{else if eq .Platform "push_deer"}}
+            <span class="badge-accent badge-outline {{ $platformCss }}" data-tip="{{ .Platform }}">PushDeer</span>
             {{else}}
-            <span class="badge badge-ghost font-bold">{{.Platform}}</span>
+            <span class="badge-ghost {{ $platformCss }}">{{.Platform}}</span>
             {{end}}
           </td>
 
