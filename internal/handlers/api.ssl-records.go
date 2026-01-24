@@ -49,7 +49,6 @@ func GetSSLRecords(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
 		sslUpdateTask,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -98,7 +97,6 @@ func GetSSLRecordDetail(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
 		sslUpdateTask,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -146,7 +144,6 @@ func ImportSSLRecord(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
 		sslUpdateTask,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -194,7 +191,6 @@ func CreateSSLRecord(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
 		sslUpdateTask,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -244,7 +240,6 @@ func UpdateSSLRecord(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
 		sslUpdateTask,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -294,7 +289,6 @@ func UpdateSSLRecordAutoRenewal(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
 		sslUpdateTask,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -344,7 +338,6 @@ func UpdateSSLRecordActive(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
 		sslUpdateTask,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -392,7 +385,6 @@ func BatchUpdateSSLRecordActive(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
 		sslUpdateTask,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -441,7 +433,6 @@ func DeleteSSLRecord(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
 		sslUpdateTask,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -489,7 +480,6 @@ func BatchDeleteSSLRecord(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
 		sslUpdateTask,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -538,7 +528,6 @@ func ApplySSLRecord(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
 		sslUpdateTask,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -589,7 +578,6 @@ func GetSSLRecordHistoryDetail(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
 		sslUpdateTask,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

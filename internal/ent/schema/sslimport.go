@@ -53,7 +53,7 @@ func (SSLImport) Fields() []ent.Field {
 		field.String("domain").
 			Optional().
 			Immutable().
-			Comment("域名（支持通配符 *.example.com 或精确域名，多个域名之间用逗号分隔）").
+			Comment("域名").
 			Annotations(entsql.WithComments(true)),
 
 		field.Text("certificate").
@@ -67,6 +67,18 @@ func (SSLImport) Fields() []ent.Field {
 			Sensitive(). // 敏感
 			Immutable().
 			Comment("私钥(PEM格式)").
+			Annotations(entsql.WithComments(true)),
+
+		field.Time("not_before").
+			Optional().
+			Immutable().
+			Comment("证书生效时间").
+			Annotations(entsql.WithComments(true)),
+
+		field.Time("not_after").
+			Optional().
+			Immutable().
+			Comment("证书过期时间").
 			Annotations(entsql.WithComments(true)),
 	}
 }

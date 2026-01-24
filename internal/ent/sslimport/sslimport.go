@@ -27,6 +27,10 @@ const (
 	FieldCertificate = "certificate"
 	// FieldPrivateKey holds the string denoting the private_key field in the database.
 	FieldPrivateKey = "private_key"
+	// FieldNotBefore holds the string denoting the not_before field in the database.
+	FieldNotBefore = "not_before"
+	// FieldNotAfter holds the string denoting the not_after field in the database.
+	FieldNotAfter = "not_after"
 	// Table holds the table name of the sslimport in the database.
 	Table = "ssl_import"
 )
@@ -40,6 +44,8 @@ var Columns = []string{
 	FieldDomain,
 	FieldCertificate,
 	FieldPrivateKey,
+	FieldNotBefore,
+	FieldNotAfter,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -132,4 +138,14 @@ func ByCertificate(opts ...sql.OrderTermOption) OrderOption {
 // ByPrivateKey orders the results by the private_key field.
 func ByPrivateKey(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPrivateKey, opts...).ToFunc()
+}
+
+// ByNotBefore orders the results by the not_before field.
+func ByNotBefore(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNotBefore, opts...).ToFunc()
+}
+
+// ByNotAfter orders the results by the not_after field.
+func ByNotAfter(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNotAfter, opts...).ToFunc()
 }

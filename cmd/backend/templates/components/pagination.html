@@ -20,6 +20,9 @@
 
 {{ if gt $total 0 }}
 <div class="ui-pagination">
+
+  <a class="ui-page-btn" onclick="window.components.pagination.changePage(`1`, `{{ $size }}`)">首页</a>
+
   {{ $totalPages := div (add $total (sub $size 1)) $size }} {{ if gt $page 1 }}
   <a class="ui-page-btn" onclick="window.components.pagination.changePage(`{{ sub $page 1 }}`, `{{ $size }}`)">上一页</a>
   {{ end }}
@@ -31,6 +34,8 @@
   {{ if lt $page $totalPages }}
   <a class="ui-page-btn" onclick="window.components.pagination.changePage(`{{ add $page 1 }}`, `{{ $size }}`)">下一页</a>
   {{ end }}
+
+  <a class="ui-page-btn" onclick="window.components.pagination.changePage(`{{ $totalPages }}`, `{{ $size }}`)">尾页</a>
 </div>
 {{ end }}
 

@@ -102,6 +102,12 @@ func (_u *SSLImportUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.PrivateKeyCleared() {
 		_spec.ClearField(sslimport.FieldPrivateKey, field.TypeString)
 	}
+	if _u.mutation.NotBeforeCleared() {
+		_spec.ClearField(sslimport.FieldNotBefore, field.TypeTime)
+	}
+	if _u.mutation.NotAfterCleared() {
+		_spec.ClearField(sslimport.FieldNotAfter, field.TypeTime)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -227,6 +233,12 @@ func (_u *SSLImportUpdateOne) sqlSave(ctx context.Context) (_node *SSLImport, er
 	}
 	if _u.mutation.PrivateKeyCleared() {
 		_spec.ClearField(sslimport.FieldPrivateKey, field.TypeString)
+	}
+	if _u.mutation.NotBeforeCleared() {
+		_spec.ClearField(sslimport.FieldNotBefore, field.TypeTime)
+	}
+	if _u.mutation.NotAfterCleared() {
+		_spec.ClearField(sslimport.FieldNotAfter, field.TypeTime)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &SSLImport{config: _u.config}

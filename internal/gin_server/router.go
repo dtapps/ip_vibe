@@ -54,6 +54,7 @@ func (m *GinServerManager) setupWebRouter() {
 	r.GET("/ssl", handlers.Ssl)
 	r.GET("/ssl/:id/detail", handlers.SslDetail)
 	r.GET("/ssl/:id/history", handlers.SslHistory)
+	r.GET("/ssl/import", handlers.SslImport)
 
 	// 域名监控页面 - 提供HTML页面并渲染数据
 	r.GET("/domain-monitor", handlers.DomainMonitor)
@@ -220,6 +221,14 @@ func (m *GinServerManager) setupApiRouter() {
 			sslRecords.DELETE("/batch", handlers.BatchDeleteSSLRecord)                     // 批量删除SSL记录
 			sslRecords.POST("/:id/apply", handlers.ApplySSLRecord)                         // 申请新的SSL证书
 			sslRecords.GET("/:id/history/:history_id", handlers.GetSSLRecordHistoryDetail) // 获取SSL记录历史详情
+		}
+
+		// SSL记录管理相关API
+		sslImports := api.Group("/ssl-imports")
+		{
+			sslImports.POST("", handlers.CreateSSLImport)              // 创建SSL导入记录
+			sslImports.DELETE("/:id", handlers.DeleteSSLImport)        // 删除SSL导入记录
+			sslImports.DELETE("/batch", handlers.BatchDeleteSSLImport) // 批量删除SSL导入记录
 		}
 
 		// 域名监控相关API

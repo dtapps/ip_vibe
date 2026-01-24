@@ -8509,6 +8509,8 @@ type SSLImportMutation struct {
 	domain        *string
 	certificate   *string
 	private_key   *string
+	not_before    *time.Time
+	not_after     *time.Time
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*SSLImport, error)
@@ -8874,6 +8876,104 @@ func (m *SSLImportMutation) ResetPrivateKey() {
 	delete(m.clearedFields, sslimport.FieldPrivateKey)
 }
 
+// SetNotBefore sets the "not_before" field.
+func (m *SSLImportMutation) SetNotBefore(t time.Time) {
+	m.not_before = &t
+}
+
+// NotBefore returns the value of the "not_before" field in the mutation.
+func (m *SSLImportMutation) NotBefore() (r time.Time, exists bool) {
+	v := m.not_before
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNotBefore returns the old "not_before" field's value of the SSLImport entity.
+// If the SSLImport object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLImportMutation) OldNotBefore(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNotBefore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNotBefore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNotBefore: %w", err)
+	}
+	return oldValue.NotBefore, nil
+}
+
+// ClearNotBefore clears the value of the "not_before" field.
+func (m *SSLImportMutation) ClearNotBefore() {
+	m.not_before = nil
+	m.clearedFields[sslimport.FieldNotBefore] = struct{}{}
+}
+
+// NotBeforeCleared returns if the "not_before" field was cleared in this mutation.
+func (m *SSLImportMutation) NotBeforeCleared() bool {
+	_, ok := m.clearedFields[sslimport.FieldNotBefore]
+	return ok
+}
+
+// ResetNotBefore resets all changes to the "not_before" field.
+func (m *SSLImportMutation) ResetNotBefore() {
+	m.not_before = nil
+	delete(m.clearedFields, sslimport.FieldNotBefore)
+}
+
+// SetNotAfter sets the "not_after" field.
+func (m *SSLImportMutation) SetNotAfter(t time.Time) {
+	m.not_after = &t
+}
+
+// NotAfter returns the value of the "not_after" field in the mutation.
+func (m *SSLImportMutation) NotAfter() (r time.Time, exists bool) {
+	v := m.not_after
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNotAfter returns the old "not_after" field's value of the SSLImport entity.
+// If the SSLImport object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLImportMutation) OldNotAfter(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNotAfter is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNotAfter requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNotAfter: %w", err)
+	}
+	return oldValue.NotAfter, nil
+}
+
+// ClearNotAfter clears the value of the "not_after" field.
+func (m *SSLImportMutation) ClearNotAfter() {
+	m.not_after = nil
+	m.clearedFields[sslimport.FieldNotAfter] = struct{}{}
+}
+
+// NotAfterCleared returns if the "not_after" field was cleared in this mutation.
+func (m *SSLImportMutation) NotAfterCleared() bool {
+	_, ok := m.clearedFields[sslimport.FieldNotAfter]
+	return ok
+}
+
+// ResetNotAfter resets all changes to the "not_after" field.
+func (m *SSLImportMutation) ResetNotAfter() {
+	m.not_after = nil
+	delete(m.clearedFields, sslimport.FieldNotAfter)
+}
+
 // Where appends a list predicates to the SSLImportMutation builder.
 func (m *SSLImportMutation) Where(ps ...predicate.SSLImport) {
 	m.predicates = append(m.predicates, ps...)
@@ -8908,7 +9008,7 @@ func (m *SSLImportMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SSLImportMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, sslimport.FieldCreatedAt)
 	}
@@ -8926,6 +9026,12 @@ func (m *SSLImportMutation) Fields() []string {
 	}
 	if m.private_key != nil {
 		fields = append(fields, sslimport.FieldPrivateKey)
+	}
+	if m.not_before != nil {
+		fields = append(fields, sslimport.FieldNotBefore)
+	}
+	if m.not_after != nil {
+		fields = append(fields, sslimport.FieldNotAfter)
 	}
 	return fields
 }
@@ -8947,6 +9053,10 @@ func (m *SSLImportMutation) Field(name string) (ent.Value, bool) {
 		return m.Certificate()
 	case sslimport.FieldPrivateKey:
 		return m.PrivateKey()
+	case sslimport.FieldNotBefore:
+		return m.NotBefore()
+	case sslimport.FieldNotAfter:
+		return m.NotAfter()
 	}
 	return nil, false
 }
@@ -8968,6 +9078,10 @@ func (m *SSLImportMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldCertificate(ctx)
 	case sslimport.FieldPrivateKey:
 		return m.OldPrivateKey(ctx)
+	case sslimport.FieldNotBefore:
+		return m.OldNotBefore(ctx)
+	case sslimport.FieldNotAfter:
+		return m.OldNotAfter(ctx)
 	}
 	return nil, fmt.Errorf("unknown SSLImport field %s", name)
 }
@@ -9019,6 +9133,20 @@ func (m *SSLImportMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPrivateKey(v)
 		return nil
+	case sslimport.FieldNotBefore:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNotBefore(v)
+		return nil
+	case sslimport.FieldNotAfter:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNotAfter(v)
+		return nil
 	}
 	return fmt.Errorf("unknown SSLImport field %s", name)
 }
@@ -9058,6 +9186,12 @@ func (m *SSLImportMutation) ClearedFields() []string {
 	if m.FieldCleared(sslimport.FieldPrivateKey) {
 		fields = append(fields, sslimport.FieldPrivateKey)
 	}
+	if m.FieldCleared(sslimport.FieldNotBefore) {
+		fields = append(fields, sslimport.FieldNotBefore)
+	}
+	if m.FieldCleared(sslimport.FieldNotAfter) {
+		fields = append(fields, sslimport.FieldNotAfter)
+	}
 	return fields
 }
 
@@ -9080,6 +9214,12 @@ func (m *SSLImportMutation) ClearField(name string) error {
 		return nil
 	case sslimport.FieldPrivateKey:
 		m.ClearPrivateKey()
+		return nil
+	case sslimport.FieldNotBefore:
+		m.ClearNotBefore()
+		return nil
+	case sslimport.FieldNotAfter:
+		m.ClearNotAfter()
 		return nil
 	}
 	return fmt.Errorf("unknown SSLImport nullable field %s", name)
@@ -9106,6 +9246,12 @@ func (m *SSLImportMutation) ResetField(name string) error {
 		return nil
 	case sslimport.FieldPrivateKey:
 		m.ResetPrivateKey()
+		return nil
+	case sslimport.FieldNotBefore:
+		m.ResetNotBefore()
+		return nil
+	case sslimport.FieldNotAfter:
+		m.ResetNotAfter()
 		return nil
 	}
 	return fmt.Errorf("unknown SSLImport field %s", name)

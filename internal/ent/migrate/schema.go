@@ -443,9 +443,11 @@ var (
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "source", Type: field.TypeEnum, Comment: "来源", Enums: []string{"unknown", "webhook", "manual"}, Default: "unknown"},
-		{Name: "domain", Type: field.TypeString, Nullable: true, Comment: "域名（支持通配符 *.example.com 或精确域名，多个域名之间用逗号分隔）"},
+		{Name: "domain", Type: field.TypeString, Nullable: true, Comment: "域名"},
 		{Name: "certificate", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "证书(PEM格式)"},
 		{Name: "private_key", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "私钥(PEM格式)"},
+		{Name: "not_before", Type: field.TypeTime, Nullable: true, Comment: "证书生效时间"},
+		{Name: "not_after", Type: field.TypeTime, Nullable: true, Comment: "证书过期时间"},
 	}
 	// SslImportTable holds the schema information for the "ssl_import" table.
 	SslImportTable = &schema.Table{
@@ -485,7 +487,7 @@ var (
 		{Name: "not_before", Type: field.TypeTime, Nullable: true, Comment: "证书生效时间"},
 		{Name: "not_after", Type: field.TypeTime, Nullable: true, Comment: "证书过期时间"},
 		{Name: "status", Type: field.TypeEnum, Comment: "证书状态", Enums: []string{"valid", "expired", "revoked", "pending"}, Default: "pending"},
-		{Name: "provider", Type: field.TypeEnum, Comment: "CA提供商", Enums: []string{"letsencrypt"}, Default: "letsencrypt"},
+		{Name: "provider", Type: field.TypeEnum, Comment: "CA提供商", Enums: []string{"unknown", "letsencrypt"}, Default: "unknown"},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
 		{Name: "renewal_days", Type: field.TypeInt, Comment: "过期前多少天开始续期", Default: 30},
 		{Name: "is_auto_renewal", Type: field.TypeBool, Comment: "是否自动续期", Default: false},

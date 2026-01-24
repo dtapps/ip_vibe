@@ -109,7 +109,7 @@ func (SSLRecord) Fields() []ent.Field {
 
 		field.Enum("provider").
 			Values(schematype.GetSSLRecordProviders...).
-			Default(schematype.SSLRecordProviderLetsencrypt).
+			Default(schematype.SSLRecordProviderUnknown).
 			Comment("CA提供商").
 			Annotations(entsql.WithComments(true)),
 

@@ -14,6 +14,7 @@ import (
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/helper/ssl_helper"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
@@ -48,13 +49,13 @@ type SSLRecordServiceImpl struct {
 }
 
 // NewSSLRecordService 创建 SSL 记录服务实例
-func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, sslUpdateTask *task.SSLUpdateTask, debug bool) SSLRecordService {
+func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, sslUpdateTask *task.SSLUpdateTask) SSLRecordService {
 	return &SSLRecordServiceImpl{
 		db:            db,
 		logDb:         logDb,
 		logger:        logger,
 		sslUpdateTask: sslUpdateTask,
-		debug:         debug,
+		debug:         sys_env.GvaEnv.DEBUG,
 	}
 }
 

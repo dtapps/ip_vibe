@@ -1,0 +1,118 @@
+{{ define "content" }}
+
+{{/* 初始化局部变量 */}}
+{{ $filter := .Data.Filter }}
+{{ $list := .Data.List }}
+{{ $page := .Data.Page }}
+{{ $total := .Data.Total }}
+{{ $pageSize := .Data.PageSize }}
+{{ $baseWebUrlPath := .CurrentPath }}
+{{ $baseWebUrlPathWithQuery := .CurrentPathWithQuery }}
+{{ $baseApiUrlPath := printf "/api%ss" $baseWebUrlPath }}
+
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content flex items-center gap-3 uppercase tracking-tighter">
+    {{ template "icons" (dict "Name" "i-lucide-shield-check" "Class" "w-8 h-8 text-primary") }}
+    SSL 证书管理
+</h1>
+
+<div class="ui-panel">
+    <div class="tabs tabs-lifted px-6 pt-4">
+        <a href="/ssl" class="tab">SSL 记录 (自动化)</a>
+        <a class="tab tab-active font-bold">SSL 导入 (第三方/外部)</a>
+    </div>
+
+    <div class="ui-header">
+        <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
+            {{ template "icons" (dict "Name" "i-lucide-shield-check") }} SSL 记录管理（平台维度）
+        </h2>
+        <div>
+            <button class="btn-ui-primary" data-id="" data-action="add" onclick="openFormModal('', 'add')">
+                {{ template "icons" (dict "Name" "i-lucide-plus") }} 添加记录
+            </button>
+
+            <button class="btn-batch btn-ui-info hidden" data-url="{{$baseApiUrlPath}}/batch/active" data-method="PATCH"
+                data-id-key="ids" data-key="is_active" data-val="true" onclick="handleBatchAction(this)">
+                {{ template "icons" (dict "Name" "i-lucide-play") }} 批量开启 (<span id="selected_count">0</span>)
+            </button>
+            <button class="btn-batch btn-ui-info hidden" data-url="{{$baseApiUrlPath}}/batch/active" data-method="PATCH"
+                data-id-key="ids" data-key="is_active" data-val="false" onclick="handleBatchAction(this)">
+                {{ template "icons" (dict "Name" "i-lucide-pause") }} 批量关闭 (<span id="selected_count">0</span>)
+            </button>
+            <button class="btn-batch btn-ui-error hidden" data-url="{{$baseApiUrlPath}}/batch" data-method="DELETE"
+                data-id-key="ids" onclick="handleBatchAction(this)">
+                {{ template "icons" (dict "Name" "i-lucide-trash-2") }} 批量删除 (<span id="selected_count">0</span>)
+            </button>
+        </div>
+    </div>
+
+    <div class="ui-table-container">
+        <table class="ui-table">
+            <thead>
+                <tr>
+                    <th class="ui-th">
+                        <input type="checkbox" class="checkbox checkbox-primary checkbox-sm" id="check_all"
+                            onclick="tableSelectAll(this)" />
+                    </th>
+                    <th class="ui-th">域名</th>
+                    <th class="ui-th">证书开始时间</th>
+                    <th class="ui-th">证书结束时间</th>
+                    <th class="ui-th text-center">操作</th>
+                </tr>
+            </thead>
+            <tbody id="table">
+                {{ range $list }}
+                {{ $apiUrlPath := printf "/api/ssl-imports/%d" .ID }}
+                <tr class="hover:bg-base-200/50 transition-colors">
+                    <td class="ui-td tooltip" data-tip="{{ .ID }}">
+                        <input type="checkbox" class="checkbox checkbox-sm row-checkbox" value="{{.ID}}"
+                            onclick="updateBatchBar()">
+                        </input>
+                    </td>
+
+                    <td class="ui-td font-bold text-base-content">
+                        {{.Domain}}
+                    </td>
+
+                    <td class="ui-td">
+                        {{formatTimeOrNil .NotBefore}}
+                    </td>
+
+                    <td class="ui-td">
+                        {{formatTimeOrNil .NotAfter}}
+                    </td>
+
+                    <td class="ui-td">
+                        <div class="flex justify-center gap-1">
+
+                            <button class="btn btn-sm rounded-lg px-4" data-detail='{{ marshalJSON . }}'
+                                onclick="openViewModal(this)">
+                                {{ template "icons" (dict "Name" "i-lucide-eye") }} 查看
+                            </button>
+
+                            <button class="btn btn-danger btn-sm rounded-lg px-4" data-id="{{.ID}}"
+                                data-url="{{$apiUrlPath}}" data-method="DELETE" onclick="handleAction(this)">
+                                {{ template "icons" (dict "Name" "i-lucide-trash-2") }} 删除
+                            </button>
+
+                        </div>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="p-8 border-t border-base-200 bg-base-100/30">
+        <!-- 分页 -->
+        {{ template "pagination" (dict "Page" $page "Total" $total "PageSize" $pageSize) }}
+    </div>
+</div>
+
+<!-- 表单 -->
+{{ template "pages/ssl-import_form.html" . }}
+
+<!-- 查看 -->
+{{ template "pages/ssl-import_view.html" . }}
+
+<script src="/static/js/ssl-import.js"></script>
+{{ end }}

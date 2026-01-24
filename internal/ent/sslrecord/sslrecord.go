@@ -163,11 +163,12 @@ func StatusValidator(s Status) error {
 // Provider defines the type for the "provider" enum field.
 type Provider string
 
-// ProviderLetsencrypt is the default value of the Provider enum.
-const DefaultProvider = ProviderLetsencrypt
+// ProviderUnknown is the default value of the Provider enum.
+const DefaultProvider = ProviderUnknown
 
 // Provider values.
 const (
+	ProviderUnknown     Provider = "unknown"
 	ProviderLetsencrypt Provider = "letsencrypt"
 )
 
@@ -178,7 +179,7 @@ func (pr Provider) String() string {
 // ProviderValidator is a validator for the "provider" field enum values. It is called by the builders before save.
 func ProviderValidator(pr Provider) error {
 	switch pr {
-	case ProviderLetsencrypt:
+	case ProviderUnknown, ProviderLetsencrypt:
 		return nil
 	default:
 		return fmt.Errorf("sslrecord: invalid enum value for provider field: %q", pr)

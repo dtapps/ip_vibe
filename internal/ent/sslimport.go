@@ -24,12 +24,16 @@ type SSLImport struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// 来源
 	Source sslimport.Source `json:"source,omitempty"`
-	// 域名（支持通配符 *.example.com 或精确域名，多个域名之间用逗号分隔）
+	// 域名
 	Domain string `json:"domain,omitempty"`
 	// 证书(PEM格式)
 	Certificate string `json:"certificate,omitempty"`
 	// 私钥(PEM格式)
-	PrivateKey   string `json:"-"`
+	PrivateKey string `json:"-"`
+	// 证书生效时间
+	NotBefore time.Time `json:"not_before,omitempty"`
+	// 证书过期时间
+	NotAfter     time.Time `json:"not_after,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -42,7 +46,7 @@ func (*SSLImport) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case sslimport.FieldSource, sslimport.FieldDomain, sslimport.FieldCertificate, sslimport.FieldPrivateKey:
 			values[i] = new(sql.NullString)
-		case sslimport.FieldCreatedAt, sslimport.FieldUpdatedAt:
+		case sslimport.FieldCreatedAt, sslimport.FieldUpdatedAt, sslimport.FieldNotBefore, sslimport.FieldNotAfter:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -101,6 +105,18 @@ func (_m *SSLImport) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.PrivateKey = value.String
 			}
+		case sslimport.FieldNotBefore:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field not_before", values[i])
+			} else if value.Valid {
+				_m.NotBefore = value.Time
+			}
+		case sslimport.FieldNotAfter:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field not_after", values[i])
+			} else if value.Valid {
+				_m.NotAfter = value.Time
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -153,6 +169,12 @@ func (_m *SSLImport) String() string {
 	builder.WriteString(_m.Certificate)
 	builder.WriteString(", ")
 	builder.WriteString("private_key=<sensitive>")
+	builder.WriteString(", ")
+	builder.WriteString("not_before=")
+	builder.WriteString(_m.NotBefore.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("not_after=")
+	builder.WriteString(_m.NotAfter.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -405,7 +405,7 @@ var (
 		{Name: "cert_csr", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "证书签名请求(PEM格式)"},
 		{Name: "not_before", Type: field.TypeTime, Nullable: true, Comment: "证书生效时间"},
 		{Name: "not_after", Type: field.TypeTime, Nullable: true, Comment: "证书过期时间"},
-		{Name: "provider", Type: field.TypeEnum, Comment: "CA提供商", Enums: []string{"letsencrypt"}, Default: "letsencrypt"},
+		{Name: "provider", Type: field.TypeEnum, Comment: "CA提供商", Enums: []string{"unknown", "letsencrypt"}, Default: "letsencrypt"},
 	}
 	// SslCertificateHistoryTable holds the schema information for the "ssl_certificate_history" table.
 	SslCertificateHistoryTable = &schema.Table{

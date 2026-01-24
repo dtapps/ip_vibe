@@ -2118,6 +2118,56 @@ func (q *SSLImportQuery) OrderByPrivateKeyAsc() *SSLImportQuery {
 	return q.Order(Asc(sslimport.FieldPrivateKey))
 }
 
+// OrderByNotBeforeDesc 按字段 not_before 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderByNotBeforeDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *SSLImportQuery) OrderByNotBeforeDesc() *SSLImportQuery {
+	return q.Order(Desc(sslimport.FieldNotBefore))
+}
+
+// OrderByNotBeforeAsc 按字段 not_before 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderByNotBeforeAsc().
+//	    All(ctx)
+func (q *SSLImportQuery) OrderByNotBeforeAsc() *SSLImportQuery {
+	return q.Order(Asc(sslimport.FieldNotBefore))
+}
+
+// OrderByNotAfterDesc 按字段 not_after 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderByNotAfterDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *SSLImportQuery) OrderByNotAfterDesc() *SSLImportQuery {
+	return q.Order(Desc(sslimport.FieldNotAfter))
+}
+
+// OrderByNotAfterAsc 按字段 not_after 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderByNotAfterAsc().
+//	    All(ctx)
+func (q *SSLImportQuery) OrderByNotAfterAsc() *SSLImportQuery {
+	return q.Order(Asc(sslimport.FieldNotAfter))
+}
+
 // OrderByIDDesc 按主键 ID 降序排列查询结果。
 // 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
 // 返回值类型为 *SSLRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。

@@ -135,7 +135,7 @@
               </button>
 
               <button class="btn btn-danger btn-sm rounded-lg px-4" data-id="{{.ID}}" data-url="{{$apiUrlPath}}"
-                data-method="DELETE" onclick="handleAction()">
+                data-method="DELETE" onclick="handleAction(this)">
                 {{ template "icons" (dict "Name" "i-lucide-trash-2") }} 删除
               </button>
             </div>

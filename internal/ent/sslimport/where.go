@@ -79,6 +79,16 @@ func PrivateKey(v string) predicate.SSLImport {
 	return predicate.SSLImport(sql.FieldEQ(FieldPrivateKey, v))
 }
 
+// NotBefore applies equality check predicate on the "not_before" field. It's identical to NotBeforeEQ.
+func NotBefore(v time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldEQ(FieldNotBefore, v))
+}
+
+// NotAfter applies equality check predicate on the "not_after" field. It's identical to NotAfterEQ.
+func NotAfter(v time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldEQ(FieldNotAfter, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.SSLImport {
 	return predicate.SSLImport(sql.FieldEQ(FieldCreatedAt, v))
@@ -402,6 +412,106 @@ func PrivateKeyEqualFold(v string) predicate.SSLImport {
 // PrivateKeyContainsFold applies the ContainsFold predicate on the "private_key" field.
 func PrivateKeyContainsFold(v string) predicate.SSLImport {
 	return predicate.SSLImport(sql.FieldContainsFold(FieldPrivateKey, v))
+}
+
+// NotBeforeEQ applies the EQ predicate on the "not_before" field.
+func NotBeforeEQ(v time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldEQ(FieldNotBefore, v))
+}
+
+// NotBeforeNEQ applies the NEQ predicate on the "not_before" field.
+func NotBeforeNEQ(v time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldNEQ(FieldNotBefore, v))
+}
+
+// NotBeforeIn applies the In predicate on the "not_before" field.
+func NotBeforeIn(vs ...time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldIn(FieldNotBefore, vs...))
+}
+
+// NotBeforeNotIn applies the NotIn predicate on the "not_before" field.
+func NotBeforeNotIn(vs ...time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldNotIn(FieldNotBefore, vs...))
+}
+
+// NotBeforeGT applies the GT predicate on the "not_before" field.
+func NotBeforeGT(v time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldGT(FieldNotBefore, v))
+}
+
+// NotBeforeGTE applies the GTE predicate on the "not_before" field.
+func NotBeforeGTE(v time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldGTE(FieldNotBefore, v))
+}
+
+// NotBeforeLT applies the LT predicate on the "not_before" field.
+func NotBeforeLT(v time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldLT(FieldNotBefore, v))
+}
+
+// NotBeforeLTE applies the LTE predicate on the "not_before" field.
+func NotBeforeLTE(v time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldLTE(FieldNotBefore, v))
+}
+
+// NotBeforeIsNil applies the IsNil predicate on the "not_before" field.
+func NotBeforeIsNil() predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldIsNull(FieldNotBefore))
+}
+
+// NotBeforeNotNil applies the NotNil predicate on the "not_before" field.
+func NotBeforeNotNil() predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldNotNull(FieldNotBefore))
+}
+
+// NotAfterEQ applies the EQ predicate on the "not_after" field.
+func NotAfterEQ(v time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldEQ(FieldNotAfter, v))
+}
+
+// NotAfterNEQ applies the NEQ predicate on the "not_after" field.
+func NotAfterNEQ(v time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldNEQ(FieldNotAfter, v))
+}
+
+// NotAfterIn applies the In predicate on the "not_after" field.
+func NotAfterIn(vs ...time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldIn(FieldNotAfter, vs...))
+}
+
+// NotAfterNotIn applies the NotIn predicate on the "not_after" field.
+func NotAfterNotIn(vs ...time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldNotIn(FieldNotAfter, vs...))
+}
+
+// NotAfterGT applies the GT predicate on the "not_after" field.
+func NotAfterGT(v time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldGT(FieldNotAfter, v))
+}
+
+// NotAfterGTE applies the GTE predicate on the "not_after" field.
+func NotAfterGTE(v time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldGTE(FieldNotAfter, v))
+}
+
+// NotAfterLT applies the LT predicate on the "not_after" field.
+func NotAfterLT(v time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldLT(FieldNotAfter, v))
+}
+
+// NotAfterLTE applies the LTE predicate on the "not_after" field.
+func NotAfterLTE(v time.Time) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldLTE(FieldNotAfter, v))
+}
+
+// NotAfterIsNil applies the IsNil predicate on the "not_after" field.
+func NotAfterIsNil() predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldIsNull(FieldNotAfter))
+}
+
+// NotAfterNotNil applies the NotNil predicate on the "not_after" field.
+func NotAfterNotNil() predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldNotNull(FieldNotAfter))
 }
 
 // And groups predicates with the AND operator between them.

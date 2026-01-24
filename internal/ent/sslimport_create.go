@@ -106,6 +106,34 @@ func (_c *SSLImportCreate) SetNillablePrivateKey(v *string) *SSLImportCreate {
 	return _c
 }
 
+// SetNotBefore sets the "not_before" field.
+func (_c *SSLImportCreate) SetNotBefore(v time.Time) *SSLImportCreate {
+	_c.mutation.SetNotBefore(v)
+	return _c
+}
+
+// SetNillableNotBefore sets the "not_before" field if the given value is not nil.
+func (_c *SSLImportCreate) SetNillableNotBefore(v *time.Time) *SSLImportCreate {
+	if v != nil {
+		_c.SetNotBefore(*v)
+	}
+	return _c
+}
+
+// SetNotAfter sets the "not_after" field.
+func (_c *SSLImportCreate) SetNotAfter(v time.Time) *SSLImportCreate {
+	_c.mutation.SetNotAfter(v)
+	return _c
+}
+
+// SetNillableNotAfter sets the "not_after" field if the given value is not nil.
+func (_c *SSLImportCreate) SetNillableNotAfter(v *time.Time) *SSLImportCreate {
+	if v != nil {
+		_c.SetNotAfter(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *SSLImportCreate) SetID(v int64) *SSLImportCreate {
 	_c.mutation.SetID(v)
@@ -248,6 +276,14 @@ func (_c *SSLImportCreate) createSpec() (*SSLImport, *sqlgraph.CreateSpec) {
 		_spec.SetField(sslimport.FieldPrivateKey, field.TypeString, value)
 		_node.PrivateKey = value
 	}
+	if value, ok := _c.mutation.NotBefore(); ok {
+		_spec.SetField(sslimport.FieldNotBefore, field.TypeTime, value)
+		_node.NotBefore = value
+	}
+	if value, ok := _c.mutation.NotAfter(); ok {
+		_spec.SetField(sslimport.FieldNotAfter, field.TypeTime, value)
+		_node.NotAfter = value
+	}
 	return _node, _spec
 }
 
@@ -334,6 +370,12 @@ func (u *SSLImportUpsertOne) UpdateNewValues() *SSLImportUpsertOne {
 		}
 		if _, exists := u.create.mutation.PrivateKey(); exists {
 			s.SetIgnore(sslimport.FieldPrivateKey)
+		}
+		if _, exists := u.create.mutation.NotBefore(); exists {
+			s.SetIgnore(sslimport.FieldNotBefore)
+		}
+		if _, exists := u.create.mutation.NotAfter(); exists {
+			s.SetIgnore(sslimport.FieldNotAfter)
 		}
 	}))
 	return u
@@ -565,6 +607,12 @@ func (u *SSLImportUpsertBulk) UpdateNewValues() *SSLImportUpsertBulk {
 			}
 			if _, exists := b.mutation.PrivateKey(); exists {
 				s.SetIgnore(sslimport.FieldPrivateKey)
+			}
+			if _, exists := b.mutation.NotBefore(); exists {
+				s.SetIgnore(sslimport.FieldNotBefore)
+			}
+			if _, exists := b.mutation.NotAfter(); exists {
+				s.SetIgnore(sslimport.FieldNotAfter)
 			}
 		}
 	}))

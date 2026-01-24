@@ -57,7 +57,6 @@ func Ssl(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
 		sslUpdateTask,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 查询全部SSL记录

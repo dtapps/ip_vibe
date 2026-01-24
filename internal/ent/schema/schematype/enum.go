@@ -534,16 +534,19 @@ var GetSSLRecordStatuss = []string{
 }
 
 const (
+	SSLRecordProviderUnknown     string = "unknown"     // 未知
 	SSLRecordProviderLetsencrypt string = "letsencrypt" // Letsencrypt 提供商
 )
 
 // GetSSLRecordProviderDescriptions SSL记录提供商说明映射
 var GetSSLRecordProviderDescriptions = map[string]string{
+	SSLRecordProviderUnknown:     "未知",
 	SSLRecordProviderLetsencrypt: "Letsencrypt提供商",
 }
 
 // GetSSLRecordProviders 返回所有SSL记录提供商
 var GetSSLRecordProviders = []string{
+	SSLRecordProviderUnknown,
 	SSLRecordProviderLetsencrypt,
 }
 

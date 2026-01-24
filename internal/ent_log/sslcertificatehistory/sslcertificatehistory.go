@@ -84,6 +84,7 @@ const DefaultProvider = ProviderLetsencrypt
 
 // Provider values.
 const (
+	ProviderUnknown     Provider = "unknown"
 	ProviderLetsencrypt Provider = "letsencrypt"
 )
 
@@ -94,7 +95,7 @@ func (pr Provider) String() string {
 // ProviderValidator is a validator for the "provider" field enum values. It is called by the builders before save.
 func ProviderValidator(pr Provider) error {
 	switch pr {
-	case ProviderLetsencrypt:
+	case ProviderUnknown, ProviderLetsencrypt:
 		return nil
 	default:
 		return fmt.Errorf("sslcertificatehistory: invalid enum value for provider field: %q", pr)

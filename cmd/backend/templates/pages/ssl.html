@@ -16,6 +16,11 @@
 </h1>
 
 <div class="ui-panel">
+  <div class="tabs tabs-lifted px-6 pt-4">
+    <a class="tab tab-active font-bold">SSL 记录 (自动化)</a>
+    <a href="/ssl/import" class="tab">SSL 导入 (第三方/外部)</a>
+  </div>
+
   <div class="ui-header">
     <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
       {{ template "icons" (dict "Name" "i-lucide-shield-check") }} SSL 记录管理（平台维度）
@@ -166,7 +171,7 @@
               </span>
               {{ else }}
               <button class="btn btn-danger btn-sm rounded-lg px-4" data-id="{{.ID}}" data-url="{{$apiUrlPath}}"
-                data-method="DELETE" onclick="handleAction()">
+                data-method="DELETE" onclick="handleAction(this)">
                 {{ template "icons" (dict "Name" "i-lucide-trash-2") }} 删除
               </button>
               {{ end }}
