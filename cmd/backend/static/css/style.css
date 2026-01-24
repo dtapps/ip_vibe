@@ -1330,6 +1330,18 @@
   .relative {
     position: relative;
   }
+  .tooltip-left {
+    @layer daisyui.l1.l2 {
+      > .tooltip-content, &[data-tip]:before {
+        transform: translateX(calc(var(--tt-pos, 0.25rem) - 0.25rem)) translateY(-50%);
+        inset: 50% var(--tt-off) auto auto;
+      }
+      &:after {
+        transform: translateX(var(--tt-pos, 0.25rem)) translateY(-50%) rotate(-90deg);
+        inset: 50% calc(var(--tt-tail) + 1px) auto auto;
+      }
+    }
+  }
   .tooltip-top {
     @layer daisyui.l1.l2 {
       > .tooltip-content, &[data-tip]:before {
@@ -3290,6 +3302,14 @@
       --tt-bg: var(--color-primary);
       > .tooltip-content, &[data-tip]:before {
         color: var(--color-primary-content);
+      }
+    }
+  }
+  .tooltip-warning {
+    @layer daisyui.l1.l2 {
+      --tt-bg: var(--color-warning);
+      > .tooltip-content, &[data-tip]:before {
+        color: var(--color-warning-content);
       }
     }
   }

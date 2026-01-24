@@ -142,7 +142,7 @@
               </button>
 
               {{ if .IsActive }}
-              <span class="tooltip" data-tip="启用状态时不允许删除，请先禁止后操作再删除">
+              <span class="tooltip tooltip-left tooltip-warning" data-tip="启用状态时不允许删除，请先禁止后操作再删除">
                 <button class="btn btn-danger btn-sm rounded-lg px-4" disabled>
                   {{ template "icons" (dict "Name" "i-lucide-trash-2") }} 删除
                 </button>
