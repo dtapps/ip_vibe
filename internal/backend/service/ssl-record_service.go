@@ -295,7 +295,6 @@ func (s *SSLRecordServiceImpl) BatchUpdateSSLRecordActive(ctx context.Context, i
 	// 查询SSL记录
 	allSSLRecord, err := s.db.SSLRecord.Query().
 		Where(sslrecord.IDIn(ids...)).
-		Where(sslrecord.ProviderNEQ(sslrecord.ProviderUnknown)).
 		All(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
@@ -305,6 +304,12 @@ func (s *SSLRecordServiceImpl) BatchUpdateSSLRecordActive(ctx context.Context, i
 	}
 	if len(allSSLRecord) != len(ids) {
 		return fmt.Errorf("查询SSL记录失败: 数量 %d 与请求数量 %d 不匹配", len(allSSLRecord), len(ids))
+	}
+
+	for _, item := range allSSLRecord {
+		if item.Provider == sslrecord.ProviderUnknown {
+			return fmt.Errorf("未配置提供方, 无法更新启用状态")
+		}
 	}
 
 	// 更新SSL记录状态
