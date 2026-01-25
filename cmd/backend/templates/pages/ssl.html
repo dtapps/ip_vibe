@@ -97,7 +97,6 @@
           </td>
 
           <td class="ui-td">
-            {{if ne .Provider "unknown"}}
             {{ $statusCss := "badge font-bold px-4 py-2 tooltip" }}
             {{if eq .Status "valid"}}
             <span class="badge-success {{ $statusCss }}" data-tip="{{ .Status }}">有效</span>
@@ -109,7 +108,6 @@
             <span class="badge-ghost {{ $statusCss }}" data-tip="{{ .Status }}">待处理</span>
             {{else}}
             <span class="badge-ghost {{ $statusCss }}">{{.Status}}</span>
-            {{end}}
             {{end}}
           </td>
 
@@ -128,6 +126,14 @@
             "DataKey" "is_auto_renewal"
             "NoReload" true
             )}}
+            {{else}}
+            <label class="switch items-center tooltip tooltip-warning" data-tip="通过导入的证书不能编辑">
+              {{if .IsAutoRenewal}}
+              <input type="checkbox" class="toggle toggle-primary" checked disabled />
+              {{else}}
+              <input type="checkbox" class="toggle toggle-primary" disabled />
+              {{end}}
+            </label>
             {{end}}
           </td>
 
@@ -140,14 +146,30 @@
             "DataKey" "is_active"
             "NoReload" true
             )}}
+            {{else}}
+            <label class="switch items-center tooltip tooltip-warning" data-tip="通过导入的证书不能编辑">
+              {{if .IsActive}}
+              <input type="checkbox" class="toggle toggle-primary" checked disabled />
+              {{else}}
+              <input type="checkbox" class="toggle toggle-primary" disabled />
+              {{end}}
+            </label>
             {{end}}
           </td>
 
           <td class="ui-td">
             <div class="flex justify-center gap-1">
+              {{if ne .Provider "unknown"}}
               <button class="btn btn-secondary btn-sm rounded-lg px-4" onclick="applySSL('{{.ID}}')">
                 {{ template "icons" (dict "Name" "i-lucide-file-plus") }} 申请
               </button>
+              {{else}}
+              <span class="tooltip tooltip-warning" data-tip="通过导入的证书不能申请">
+                <button class="btn btn-secondary btn-sm rounded-lg px-4" disabled>
+                  {{ template "icons" (dict "Name" "i-lucide-file-plus") }} 申请
+                </button>
+              </span>
+              {{end}}
 
               <button class="btn btn-sm rounded-lg px-4" onclick="openViewModal('{{.ID}}')">
                 {{ template "icons" (dict "Name" "i-lucide-eye") }} 查看
@@ -159,15 +181,31 @@
                 {{ template "icons" (dict "Name" "i-lucide-eye") }} 详情
               </button>
 
+              {{if ne .Provider "unknown"}}
               <button class="btn btn-primary btn-sm rounded-lg px-4" data-id="{{.ID}}" data-action="edit"
                 onclick="openFormModal('{{.ID}}', 'edit')">
                 {{ template "icons" (dict "Name" "i-lucide-pencil") }} 编辑
               </button>
+              {{else}}
+              <span class="tooltip tooltip-warning" data-tip="通过导入的证书不能编辑">
+                <button class="btn btn-primary btn-sm rounded-lg px-4" disabled>
+                  {{ template "icons" (dict "Name" "i-lucide-pencil") }} 编辑
+                </button>
+              </span>
+              {{end}}
 
+              {{if ne .Provider "unknown"}}
               <button class="btn btn-primary btn-sm rounded-lg px-4" data-id="{{.ID}}" data-action="copy"
                 onclick="openFormModal('{{.ID}}', 'copy')">
                 {{ template "icons" (dict "Name" "i-lucide-copy") }} 复制
               </button>
+              {{else}}
+              <span class="tooltip tooltip-warning" data-tip="通过导入的证书不能复制">
+                <button class="btn btn-primary btn-sm rounded-lg px-4" disabled>
+                  {{ template "icons" (dict "Name" "i-lucide-copy") }} 复制
+                </button>
+              </span>
+              {{end}}
 
               {{ if .IsActive }}
               <span class="tooltip tooltip-left tooltip-warning" data-tip="启用状态时不允许删除，请先禁止后操作再删除">

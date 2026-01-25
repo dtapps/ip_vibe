@@ -6568,6 +6568,12 @@
       grid-template-columns: repeat(1, minmax(0, 1fr));
     }
   }
+  .tooltip {
+    display: inline-flex !important;
+  }
+  .tooltip .btn {
+    white-space: nowrap !important;
+  }
 }
 @layer base {
   :where(:root),:root:has(input.theme-controller[value=light]:checked),[data-theme=light] {

@@ -262,4 +262,13 @@
       @apply grid-cols-1;
     }
   }
+
+  /* 修复 Tooltip 导致内部按钮文字换行的问题 */
+  .tooltip {
+    @apply !inline-flex;
+  }
+
+  .tooltip .btn {
+    @apply !whitespace-nowrap;
+  }
 }
