@@ -122,9 +122,9 @@ const DefaultCurrentStatus = CurrentStatusUnknown
 
 // CurrentStatus values.
 const (
+	CurrentStatusUnknown CurrentStatus = "unknown"
 	CurrentStatusSuccess CurrentStatus = "success"
 	CurrentStatusFailure CurrentStatus = "failure"
-	CurrentStatusUnknown CurrentStatus = "unknown"
 )
 
 func (cs CurrentStatus) String() string {
@@ -134,7 +134,7 @@ func (cs CurrentStatus) String() string {
 // CurrentStatusValidator is a validator for the "current_status" field enum values. It is called by the builders before save.
 func CurrentStatusValidator(cs CurrentStatus) error {
 	switch cs {
-	case CurrentStatusSuccess, CurrentStatusFailure, CurrentStatusUnknown:
+	case CurrentStatusUnknown, CurrentStatusSuccess, CurrentStatusFailure:
 		return nil
 	default:
 		return fmt.Errorf("domainmonitor: invalid enum value for current_status field: %q", cs)

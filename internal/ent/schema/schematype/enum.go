@@ -265,7 +265,7 @@ var GetDomainMonitorHistoryCheckTypes = []string{
 // --------
 
 const (
-	LogSourceUnknown string = "unknown" // 未知来源
+	LogSourceUnknown string = "unknown" // 未知
 	LogSourceSystem  string = "system"  // 系统自动
 	LogSourceTask    string = "task"    // 定时任务
 	LogSourceUser    string = "user"    // 用户手动
@@ -280,7 +280,7 @@ const (
 
 // GetLogSourceDescriptions 操作来源说明映射
 var GetLogSourceDescriptions = map[string]string{
-	LogSourceUnknown: "未知来源",
+	LogSourceUnknown: "未知",
 	LogSourceSystem:  "系统自动",
 	LogSourceTask:    "定时任务",
 	LogSourceUser:    "用户手动",
@@ -309,7 +309,7 @@ var GetLogSources = []string{
 }
 
 const (
-	LogOpTypeUnknown string = "Unknown" // 未知操作
+	LogOpTypeUnknown string = "Unknown" // 未知
 
 	LogOpTypeOpCreate    string = "OpCreate"    // 创建单条
 	LogOpTypeOpUpdate    string = "OpUpdate"    // 更新多条
@@ -320,7 +320,7 @@ const (
 
 // GetLogOpTypeDescriptions 操作类型说明映射
 var GetLogOpTypeDescriptions = map[string]string{
-	LogOpTypeUnknown: "未知操作",
+	LogOpTypeUnknown: "未知",
 
 	LogOpTypeOpCreate:    "创建单条",
 	LogOpTypeOpUpdate:    "更新多条",
@@ -343,7 +343,9 @@ var GetLogOpTypes = []string{
 // --------
 
 const (
-	LogObjTypeUnknown string = "Unknown" // 未知对象
+	LogObjTypeUnknown string = "Unknown" // 未知
+
+	// ent/mutation.go
 
 	LogObjTypeCDNRecord           string = "CDNRecord"           // CDN记录
 	LogObjTypeCache               string = "Cache"               // 缓存
@@ -354,9 +356,12 @@ const (
 	LogObjTypeIpGroup             string = "IpGroup"             // IP组
 	LogObjTypeIpGroupDevice       string = "IpGroupDevice"       // IP组设备
 	LogObjTypePlatformConfig      string = "PlatformConfig"      // 平台配置
+	LogObjTypeSSLImport           string = "SSLImport"           // SSL导入
 	LogObjTypeSSLRecord           string = "SSLRecord"           // SSL记录
 	LogObjTypeWebhook             string = "Webhook"             // 通知
 	LogObjTypeWebhookSubscription string = "WebhookSubscription" // 通知订阅
+
+	// ent_log/mutation.go
 
 	LogObjTypeDeviceIpReport        string = "DeviceIpReport"        // 设备IP记录
 	LogObjTypeDomainMonitorHistory  string = "DomainMonitorHistory"  // 域名监控历史记录
@@ -371,7 +376,7 @@ const (
 
 // GetLogObjTypeDescriptions 对象类型说明映射
 var GetLogObjTypeDescriptions = map[string]string{
-	LogObjTypeUnknown: "未知对象",
+	LogObjTypeUnknown: "未知",
 
 	LogObjTypeCache:               "缓存",
 	LogObjTypeCDNRecord:           "CDN记录",
@@ -382,6 +387,7 @@ var GetLogObjTypeDescriptions = map[string]string{
 	LogObjTypeIpGroup:             "IP组",
 	LogObjTypeIpGroupDevice:       "IP组设备",
 	LogObjTypePlatformConfig:      "平台配置",
+	LogObjTypeSSLImport:           "SSL导入",
 	LogObjTypeSSLRecord:           "SSL记录",
 	LogObjTypeWebhook:             "通知",
 	LogObjTypeWebhookSubscription: "通知订阅",
@@ -409,6 +415,7 @@ var GetLogObjTypes = []string{
 	LogObjTypeIpGroup,
 	LogObjTypeIpGroupDevice,
 	LogObjTypePlatformConfig,
+	LogObjTypeSSLImport,
 	LogObjTypeSSLRecord,
 	LogObjTypeWebhook,
 	LogObjTypeWebhookSubscription,
@@ -426,14 +433,14 @@ var GetLogObjTypes = []string{
 // --------
 
 const (
-	LogStatusUnknown string = "unknown" // 未知状态
+	LogStatusUnknown string = "unknown" // 未知
 	LogStatusSuccess string = "success" // 成功
 	LogStatusFailed  string = "failed"  // 失败
 )
 
 // GetLogStatusDescriptions 状态说明映射
 var GetLogStatusDescriptions = map[string]string{
-	LogStatusUnknown: "未知状态",
+	LogStatusUnknown: "未知",
 	LogStatusSuccess: "成功",
 	LogStatusFailed:  "失败",
 }
@@ -466,23 +473,23 @@ var GetDomainMonitorCheckProtocols = []string{
 // --------
 
 const (
+	DomainMonitorStatusUnknown string = "unknown" // 未知
 	DomainMonitorStatusSuccess string = "success" // 成功运行
 	DomainMonitorStatusFailure string = "failure" // 检查失败
-	DomainMonitorStatusUnknown string = "unknown" // 未知状态
 )
 
 // GetDomainMonitorStatusDescriptions 运行状态说明映射
 var GetDomainMonitorStatusDescriptions = map[string]string{
+	DomainMonitorStatusUnknown: "未知",
 	DomainMonitorStatusSuccess: "成功运行",
 	DomainMonitorStatusFailure: "检查失败",
-	DomainMonitorStatusUnknown: "未知状态",
 }
 
 // GetDomainMonitorStatuss 返回所有运行状态
 var GetDomainMonitorStatuss = []string{
+	DomainMonitorStatusUnknown,
 	DomainMonitorStatusSuccess,
 	DomainMonitorStatusFailure,
-	DomainMonitorStatusUnknown,
 }
 
 // --------

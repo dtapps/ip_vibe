@@ -293,7 +293,7 @@ var (
 		{Name: "check_interval", Type: field.TypeInt, Comment: "检查间隔（秒）", Default: 60},
 		{Name: "check_protocol", Type: field.TypeEnum, Comment: "检查类型（HTTP/HTTPS）", Enums: []string{"http", "https"}},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
-		{Name: "current_status", Type: field.TypeEnum, Comment: "当前运行状态", Enums: []string{"success", "failure", "unknown"}, Default: "unknown"},
+		{Name: "current_status", Type: field.TypeEnum, Comment: "当前运行状态", Enums: []string{"unknown", "success", "failure"}, Default: "unknown"},
 		{Name: "last_success_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次检查成功时间"},
 		{Name: "last_failure_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次检查失败时间"},
 	}
