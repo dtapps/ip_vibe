@@ -1,22 +1,27 @@
-// 请选择服务能力 capability
+// 选择 服务能力 capability
 function changeCapability(el) {
   console.log("changeCapability", el);
 
-  const platform = document.getElementById("platform").value;
-  const capability = el.value;
+  const platform = document.getElementById("platform").value.trim();
+  const capability = el.value.trim();
+  const original_config_json =
+    document.getElementById("original_config_json").value.trim() || "{}";
 
-  // 重新渲染字段，自动处理显隐
-  renderPlatformFields(platform, capability);
+  // 重新渲染字段
+  renderPlatformFields(platform, capability, JSON.parse(original_config_json));
 }
 
-// 请选择平台 platform
+// 选择 平台类型 platform
 function changePlatform(el) {
   console.log("changePlatform", el);
 
-  const platform = el.value;
-  const capability = document.getElementById("capability").value;
+  const platform = el.value.trim();
+  const capability = document.getElementById("capability").value.trim();
+  const original_config_json = document
+    .getElementById("original_config_json")
+    .value.trim();
 
-  // 重新渲染字段，自动处理显隐
+  // 重新渲染字段
   renderPlatformFields(platform, capability);
 }
 
@@ -45,7 +50,10 @@ async function openFormModal(id, action = "") {
     document.getElementById("platform").value = config.platform;
     document.getElementById("platform").disabled = true;
 
-    // 渲染字段，回填数据，自动处理显隐
+    // 渲染字段，回填数据
+    document.getElementById("original_config_json").value = JSON.stringify(
+      config.config_json || {},
+    );
     renderPlatformFields(
       config.platform,
       config.capability,
@@ -80,8 +88,8 @@ async function openFormModal(id, action = "") {
 
     // 默认渲染字段
     renderPlatformFields(
-      document.getElementById("platform").value.trim(),
-      "all",
+      document.getElementById("platform").value.trim() || "",
+      document.getElementById("capability").value.trim() || "all",
     );
 
     showModal("formModal", "modalTitle", "添加 平台配置");

@@ -1,4 +1,4 @@
-// 选择配置 config_id
+// 选择 配置 config_id
 async function onConfigSelect(el) {
   console.log("onConfigSelect", el);
 
@@ -32,7 +32,7 @@ async function onConfigSelect(el) {
   renderDnsFields(platform);
 }
 
-// 选择类型 type
+// 选择 记录类型 type
 function onTypeSelect(el) {
   console.log("onTypeSelect", el);
 
@@ -48,7 +48,7 @@ function onTypeSelect(el) {
   }
 }
 
-// 选择IP组 ip_group_id
+// 选择 IP 组 ip_group_id
 function onIpGroupSelect(el) {
   console.log("onIpGroupSelect", el);
 
@@ -60,7 +60,7 @@ function onIpGroupSelect(el) {
   }
 }
 
-// 选择CDN记录 cdn_record_id
+// 选择 CDN记录 cdn_record_id
 function onCdnRecordSelect(el) {
   console.log("onCdnRecordSelect", el);
 
@@ -244,6 +244,9 @@ async function openFormModal(id, action = "") {
       }
 
       // 渲染字段，回填数据
+      document.getElementById("original_config_json").value = JSON.stringify(
+        dnsRecord.config_json || {},
+      );
       renderDnsFields(dnsRecord.platform, dnsRecord.config_json || {});
 
       // 如果是复制操作，清空 id 字段，取消 sub_domain 禁用
@@ -307,7 +310,7 @@ async function openFormModal(id, action = "") {
       selectId2.val(null).trigger("change");
 
       // 默认渲染字段
-      renderDnsFields(document.getElementById("platform").value.trim());
+      renderDnsFields(document.getElementById("platform").value.trim() || "");
 
       showModal("formModal", "modalTitle", "添加 DNS记录");
     }

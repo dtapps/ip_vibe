@@ -1,4 +1,4 @@
-// 选择配置 config_id
+// 选择 配置 config_id
 function onConfigSelect(el) {
   console.log("onConfigSelect", el);
 
@@ -18,14 +18,14 @@ function onConfigSelect(el) {
   renderCdnFields(platform);
 }
 
-// 选择类型 type
+// 选择 记录类型 type
 function onTypeSelect(el) {
   console.log("onTypeSelect", el);
 
   const opt = el.options[el.selectedIndex];
 }
 
-// 选择IP组 ip_group_id
+// 选择 IP 组 ip_group_id
 function onIpGroupSelect(el) {
   console.log("onIpGroupSelect", el);
 
@@ -166,6 +166,9 @@ async function openFormModal(id, action = "") {
       }
 
       // 渲染字段，回填数据
+      document.getElementById("original_config_json").value = JSON.stringify(
+        cdnRecord.config_json || {},
+      );
       renderCdnFields(cdnRecord.platform, cdnRecord.config_json || {});
 
       // 如果是复制操作，清空 id 字段，取消 sub_domain 禁用
@@ -219,7 +222,7 @@ async function openFormModal(id, action = "") {
       selectId2.val(null).trigger("change");
 
       // 默认渲染字段
-      renderCdnFields(document.getElementById("platform").value.trim());
+      renderCdnFields(document.getElementById("platform").value.trim() || "");
 
       showModal("formModal", "modalTitle", "添加 CDN记录");
     }
