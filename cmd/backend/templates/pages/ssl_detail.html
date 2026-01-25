@@ -42,9 +42,11 @@
         </div>
     </div>
     <div class="flex gap-2">
+        {{if ne $item.Provider "unknown"}}
         <button class="btn btn-primary btn-sm rounded-xl px-4" onclick="triggerRenewal('{{$item.ID}}')">
             {{ template "icons" (dict "Name" "i-lucide-refresh-cw") }} 立即续期
         </button>
+        {{end}}
         <a href="{{$baseWebUrlPath}}" class="btn btn-ghost btn-sm rounded-xl px-4">
             {{ template "icons" (dict "Name" "i-lucide-arrow-left") }} 返回列表
         </a>
@@ -70,7 +72,8 @@
                 </div>
                 <progress
                     class="progress {{ if lt $cert.ExpiryDays 15 }}progress-error{{ else }}progress-primary{{ end }} w-full h-3 rounded-full"
-                    value="{{ $cert.ExpiryPercent }}" max="100"></progress>
+                    value="{{ $cert.ExpiryPercent }}" max="100">
+                </progress>
             </div>
 
             <div class="space-y-3 text-xs text-left bg-base-200/40 p-4 rounded-2xl border border-base-300/10">
@@ -89,6 +92,7 @@
             </div>
         </div>
 
+        {{if ne $item.Provider "unknown"}}
         <div class="ui-panel">
             <div class="ui-header !py-4">
                 <h3 class="font-bold">策略中心</h3>
@@ -101,10 +105,14 @@
                         <div class="w-2 h-2 rounded-full bg-success animate-pulse"></div>
                         {{ end }}
                     </div>
+                    {{ $autoRenewalApiUrlPath := join $apiUrlPath "/auto-renewal" }}
                     {{ if $item.IsAutoRenewal }}
-                    <input type="checkbox" class="toggle toggle-primary toggle-sm" checked disabled />
+                    <input type="checkbox" class="toggle toggle-primary toggle-sm" checked
+                        data-url="{{$autoRenewalApiUrlPath}}" data-data-key="is_auto_renewal" data-data-value="false"
+                        onclick="handleStatusAction(this)" />
                     {{ else }}
-                    <input type="checkbox" class="toggle toggle-primary toggle-sm" disabled />
+                    <input type="checkbox" class="toggle toggle-primary toggle-sm" data-url="{{$autoRenewalApiUrlPath}}"
+                        data-data-key="is_auto_renewal" data-data-value="true" onclick="handleStatusAction(this)" />
                     {{ end }}
                 </div>
                 <div class="flex justify-between items-center">
@@ -117,7 +125,9 @@
                 </div>
             </div>
         </div>
+        {{end}}
 
+        {{if ne $item.Provider "unknown"}}
         <div class="ui-panel">
             <div class="ui-header !py-4">
                 <h3 class="font-bold flex items-center gap-2">
@@ -148,6 +158,7 @@
                 {{ end }}
             </div>
         </div>
+        {{end}}
 
         <div class="ui-panel overflow-hidden">
             <div class="ui-header !py-4">
@@ -266,9 +277,11 @@
                 <h3 class="font-bold text-primary flex items-center gap-2 text-sm">
                     {{ template "icons" (dict "Name" "i-lucide-check-circle") }} 当前部署内容
                 </h3>
+                {{if ne $item.Provider "unknown"}}
                 <span class="text-[10px] opacity-40 font-mono italic">
                     Refreshed: {{ formatTimeOrNil $item.LastRefreshAt }}
                 </span>
+                {{end}}
             </div>
             <div class="p-6">
                 <div class="flex gap-4">
@@ -289,6 +302,7 @@
             </div>
         </div>
 
+        {{if ne $item.Provider "unknown"}}
         <div class="ui-panel">
             <div class="ui-header flex justify-between items-center">
                 <h3 class="font-bold">最后一次接口反馈 (Lego Output)</h3>
@@ -303,7 +317,9 @@
                 </pre>
             </div>
         </div>
+        {{end}}
 
+        {{if ne $item.Provider "unknown"}}
         <div class="ui-panel">
             <div class="ui-header flex justify-between items-center">
                 <h3 class="font-bold flex items-center gap-2">
@@ -354,6 +370,7 @@
                 </table>
             </div>
         </div>
+        {{end}}
 
     </div>
 

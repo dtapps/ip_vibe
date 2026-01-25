@@ -113,6 +113,18 @@ async function withErrorHandling(asyncFn, options = {}) {
 }
 
 /**
+ * 将字符串转换为布尔值
+ * @param {string} str - 要转换的字符串，只能是 "true" 或 "false"
+ * @returns {boolean} - 转换后的布尔值
+ */
+function stringToBoolean(str) {
+  if (str === "true") return true;
+  if (str === "false") return false;
+  // 可选：处理其他情况，比如抛错或返回 undefined
+  throw new Error(`Invalid boolean string: ${str}`);
+}
+
+/**
  * 批量操作执行器
  * @param {HTMLButtonElement} el - 触发批量操作的按钮元素
  */
@@ -211,6 +223,50 @@ async function handleAction(el) {
     }
   } catch (err) {
     alert(`操作失败: ${err.message}`);
-    console.error("Action Error:", err);
+    console.error("handleAction Error:", err);
+  }
+}
+
+/**
+ * 处理状态操作
+ * @param {HTMLButtonElement} el - 按钮元素
+ * @returns
+ */
+async function handleStatusAction(el) {
+  console.log("[handleStatusAction] el.dataset", el.dataset);
+  try {
+    // 提取配置
+    const {
+      id,
+      url,
+      method = "PATCH",
+      dataKey,
+      dataValue,
+      confirm: customMsg,
+      isReload = true,
+    } = el.dataset;
+
+    if (!dataKey || !dataValue) {
+      throw new Error("dataKey 和 dataValue 不能为空");
+    }
+
+    if (id && !confirm(customMsg || `确定对 ${id} 执行该操作吗？`)) {
+      return;
+    }
+
+    // 根据请求方式调用 API
+    const methodFunc = method.toLowerCase();
+    if (typeof API[methodFunc] !== "function") {
+      throw new Error(`不支持的请求方式: ${method}`);
+    }
+    await API[methodFunc](url, { [dataKey]: stringToBoolean(dataValue) });
+
+    // 刷新页面
+    if (isReload) {
+      window.location.reload();
+    }
+  } catch (err) {
+    alert(`操作失败: ${err.message}`);
+    console.error("handleStatusAction Error:", err);
   }
 }
