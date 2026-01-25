@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"time"
 	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/sslrecord"
@@ -154,6 +155,14 @@ func (s *SSLRecordServiceImpl) ImportSSLRecord(ctx context.Context, request *typ
 		return fmt.Errorf("解析证书失败: %w", err)
 	}
 
+	// 证书状态
+	status := sslrecord.StatusUnknown
+	if parsedSsl.NotAfter.After(time.Now()) {
+		status = sslrecord.StatusValid
+	} else {
+		status = sslrecord.StatusExpired
+	}
+
 	// 创建SSL记录
 	err = s.db.SSLRecord.Create().
 		SetConfigID(request.ConfigID).
@@ -163,7 +172,7 @@ func (s *SSLRecordServiceImpl) ImportSSLRecord(ctx context.Context, request *typ
 		SetCertCertificate(request.CertCertificate).
 		SetNotBefore(parsedSsl.NotBefore).
 		SetNotAfter(parsedSsl.NotAfter).
-		SetStatus(sslrecord.StatusUnknown).
+		SetStatus(status).
 		SetProvider(sslrecord.ProviderUnknown).
 		SetIsActive(false).
 		SetRenewalDays(0).
