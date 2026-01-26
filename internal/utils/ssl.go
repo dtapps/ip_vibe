@@ -7,12 +7,14 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"strings"
 	"time"
+	"vibe_ip/internal/types"
 )
 
 // ValidateCertAndKey 验证证书和私钥是否有效且匹配
 func ValidateCertAndKey(certPEM, keyPEM string) error {
-	// 1. 解析证书
+	// 解析证书
 	certBlock, _ := pem.Decode([]byte(certPEM))
 	if certBlock == nil || certBlock.Type != "CERTIFICATE" {
 		return fmt.Errorf("无效的证书格式")
@@ -22,7 +24,7 @@ func ValidateCertAndKey(certPEM, keyPEM string) error {
 		return fmt.Errorf("无效的证书内容")
 	}
 
-	// 2. 解析私钥
+	// 解析私钥
 	keyBlock, _ := pem.Decode([]byte(keyPEM))
 	if keyBlock == nil {
 		return fmt.Errorf("无效的私钥格式")
@@ -43,7 +45,7 @@ func ValidateCertAndKey(certPEM, keyPEM string) error {
 		return fmt.Errorf("无效的私钥内容")
 	}
 
-	// 3. 提取公钥
+	// 提取公钥
 	var pubKey crypto.PublicKey
 	switch k := privKey.(type) {
 	case *rsa.PrivateKey:
@@ -54,25 +56,12 @@ func ValidateCertAndKey(certPEM, keyPEM string) error {
 		return fmt.Errorf("不支持的私钥算法")
 	}
 
-	// 4. 比较公钥
+	// 比较公钥
 	if !publicKeysEqual(cert.PublicKey, pubKey) {
 		return fmt.Errorf("证书与私钥不匹配")
 	}
 
 	return nil
-}
-
-// ExtractDomainFromCert 从证书中提取主域名（CommonName）
-func ExtractDomainFromCert(certPEM string) (string, error) {
-	block, _ := pem.Decode([]byte(certPEM))
-	if block == nil || block.Type != "CERTIFICATE" {
-		return "", fmt.Errorf("无效的证书格式")
-	}
-	cert, err := x509.ParseCertificate(block.Bytes)
-	if err != nil {
-		return "", fmt.Errorf("解析证书失败: %w", err)
-	}
-	return cert.Subject.CommonName, nil
 }
 
 // publicKeysEqual 手动比较两个公钥是否相等
@@ -100,15 +89,8 @@ func publicKeysEqual(a, b crypto.PublicKey) bool {
 	}
 }
 
-// ParsedCertificate 从 PEM 证书中解析出的关键信息
-type ParsedCertificate struct {
-	Domain    string    // CommonName
-	NotBefore time.Time // 生效时间
-	NotAfter  time.Time // 过期时间
-}
-
 // ParseCertificate 从 PEM 格式证书中提取域名和有效期
-func ParseCertificate(certPEM []byte) (*ParsedCertificate, error) {
+func ParseCertificate(certPEM []byte) (*types.UtilsParsedCertificate, error) {
 	if len(certPEM) == 0 {
 		return nil, fmt.Errorf("证书数据为空")
 	}
@@ -119,14 +101,89 @@ func ParseCertificate(certPEM []byte) (*ParsedCertificate, error) {
 		return nil, fmt.Errorf("无效的证书格式")
 	}
 
+	// 解析证书
 	cert, err := x509.ParseCertificate(block.Bytes)
 	if err != nil {
 		return nil, fmt.Errorf("解析证书失败: %w", err)
 	}
 
-	return &ParsedCertificate{
+	return &types.UtilsParsedCertificate{
 		Domain:    cert.Subject.CommonName,
 		NotBefore: cert.NotBefore.UTC(),
 		NotAfter:  cert.NotAfter.UTC(),
+	}, nil
+}
+
+// ParseCertificate 从 PEM 格式证书中提取全部信息
+func ParseCertificateFull(certPEM []byte) (*types.UtilsParsedCertificateFull, error) {
+	if len(certPEM) == 0 {
+		return nil, fmt.Errorf("证书数据为空")
+	}
+
+	// 解析 PEM 数据
+	block, _ := pem.Decode([]byte(certPEM))
+	if block == nil || block.Type != "CERTIFICATE" {
+		return nil, fmt.Errorf("无效的证书格式")
+	}
+
+	// 解析证书
+	cert, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		return nil, fmt.Errorf("解析证书失败: %w", err)
+	}
+
+	// 获取当前时间 (UTC)
+	now := time.Now().UTC()
+
+	// 判断是否包含通配符
+	hasWildcard := false
+	for _, name := range cert.DNSNames {
+		if strings.Contains(name, "*") {
+			hasWildcard = true
+			break
+		}
+	}
+
+	// 获取密钥长度
+	keyLen := 0
+	isECC := false
+	switch pub := cert.PublicKey.(type) {
+	case *rsa.PublicKey:
+		keyLen = pub.N.BitLen()
+	case *ecdsa.PublicKey:
+		isECC = true
+		keyLen = pub.Curve.Params().BitSize
+	}
+
+	// 计算百分比
+	total := cert.NotAfter.Sub(cert.NotBefore).Seconds()
+	elapsed := now.Sub(cert.NotBefore).Seconds()
+	percent := int((elapsed / total) * 100)
+	if percent > 100 {
+		percent = 100
+	} else if percent < 0 {
+		percent = 0
+	}
+
+	return &types.UtilsParsedCertificateFull{
+		// 身份信息
+		Subject:      cert.Subject.CommonName,
+		Issuer:       cert.Issuer.CommonName,
+		DNSNames:     cert.DNSNames,
+		SerialNumber: cert.SerialNumber.String(),
+		// 算法与安全
+		SignatureAlgorithm: cert.SignatureAlgorithm.String(),
+		PublicKeyAlgorithm: cert.PublicKeyAlgorithm.String(),
+		KeyLength:          keyLen,
+		Version:            cert.Version,
+		// 时间与寿命
+		NotBefore:     cert.NotBefore,
+		NotAfter:      cert.NotAfter,
+		ExpiryDays:    int(cert.NotAfter.Sub(now).Hours() / 24),
+		ExpiryPercent: percent,
+		// 状态标志 (用于 UI 逻辑)
+		IsExpired:  now.After(cert.NotAfter),
+		IsWildcard: hasWildcard,
+		IsECC:      isECC,
 	}, nil
 }

@@ -1,14 +1,8 @@
 package handlers
 
 import (
-	"crypto/ecdsa"
-	"crypto/rsa"
-	"crypto/x509"
-	"encoding/pem"
 	"net/http"
 	"path/filepath"
-	"strings"
-	"time"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/ent/sslrecord"
@@ -19,6 +13,7 @@ import (
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
+	"vibe_ip/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
@@ -116,7 +111,13 @@ func SslDetail(c *gin.Context) {
 	}
 	pageData.Item = *firstSSLRecord
 
-	pageData.CertDetail = *ParseSSLCertificate(firstSSLRecord.CertCertificate)
+	// 解析证书
+	parsedCert, err := utils.ParseCertificateFull([]byte(firstSSLRecord.CertCertificate))
+	if err != nil {
+		errorResponse(c, http.StatusInternalServerError, "解析证书详情失败: "+err.Error())
+		return
+	}
+	pageData.CertDetail = *parsedCert
 
 	// 查询 SSL 证书申请历史记录
 	allSSLCertificateHistory, err := global.GvaEntLogDb.SSLCertificateHistory.Query().
@@ -220,64 +221,4 @@ func SslHistory(c *gin.Context) {
 		},
 		"ssl",
 	)
-}
-
-func ParseSSLCertificate(certPEM string) *types.SSLDetailCertDetail {
-	block, _ := pem.Decode([]byte(certPEM))
-	if block == nil {
-		return nil
-	}
-	cert, err := x509.ParseCertificate(block.Bytes)
-	if err != nil {
-		return nil
-	}
-
-	now := time.Now()
-
-	// 判断是否包含通配符
-	hasWildcard := false
-	for _, name := range cert.DNSNames {
-		if strings.Contains(name, "*") {
-			hasWildcard = true
-			break
-		}
-	}
-
-	// 获取密钥长度
-	keyLen := 0
-	isECC := false
-	switch pub := cert.PublicKey.(type) {
-	case *rsa.PublicKey:
-		keyLen = pub.N.BitLen()
-	case *ecdsa.PublicKey:
-		isECC = true
-		keyLen = pub.Curve.Params().BitSize
-	}
-
-	// 计算百分比
-	total := cert.NotAfter.Sub(cert.NotBefore).Seconds()
-	elapsed := now.Sub(cert.NotBefore).Seconds()
-	percent := int((elapsed / total) * 100)
-	if percent > 100 {
-		percent = 100
-	} else if percent < 0 {
-		percent = 0
-	}
-
-	return &types.SSLDetailCertDetail{
-		Subject:            cert.Subject.CommonName,
-		Issuer:             cert.Issuer.CommonName,
-		DNSNames:           cert.DNSNames,
-		SerialNumber:       cert.SerialNumber.String(),
-		SignatureAlgorithm: cert.SignatureAlgorithm.String(),
-		PublicKeyAlgorithm: cert.PublicKeyAlgorithm.String(),
-		KeyLength:          keyLen,
-		IsECC:              isECC,
-		IsWildcard:         hasWildcard,
-		NotBefore:          cert.NotBefore,
-		NotAfter:           cert.NotAfter,
-		ExpiryDays:         int(cert.NotAfter.Sub(now).Hours() / 24),
-		ExpiryPercent:      percent,
-		IsExpired:          now.After(cert.NotAfter),
-	}
 }
