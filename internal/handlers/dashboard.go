@@ -61,11 +61,11 @@ func Dashboard(c *gin.Context) {
 		Value: cdnRecordCount,
 	})
 
-	// 通知渠道
-	webhookCount, _ := global.GvaEntDb.Webhook.Query().Count(c)
+	// SSL 记录
+	sslRecordCount, _ := global.GvaEntDb.SSLRecord.Query().Count(c)
 	pageData.Stats = append(pageData.Stats, types.DashboardStat{
-		Label: "通知渠道",
-		Value: webhookCount,
+		Label: "SSL 记录",
+		Value: sslRecordCount,
 	})
 
 	// 运行任务

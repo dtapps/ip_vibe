@@ -195,6 +195,21 @@ func main() {
 		panic(err)
 	}
 
+	// 启动 SSL 刷新任务
+	sslRefresh := task.NewSSLRefreshTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog,
+		global.GvaHttpLog,
+	)
+	if err := sslRefresh.StartPeriodicTask(ctx); err != nil {
+		slog.Error("启动SSL刷新任务失败",
+			slog.Any("err", err),
+		)
+		panic(err)
+	}
+
 	// 启动域名监控任务
 	domainMonitor := task.NewDomainMonitorTask(
 		global.GvaEntDb,
