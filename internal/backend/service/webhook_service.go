@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
@@ -40,7 +41,11 @@ type WebhookServiceImpl struct {
 }
 
 // NewWebhookService 创建通知服务实例
-func NewWebhookService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, debug bool) WebhookService {
+func NewWebhookService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) WebhookService {
+	debug := false
+	if sys_env.GvaEnv != nil {
+		debug = sys_env.GvaEnv.DEBUG
+	}
 	webhookService := webhookService.NewSend(db, global.GvaEntLogDb)
 	return &WebhookServiceImpl{
 		db:             db,
@@ -49,6 +54,11 @@ func NewWebhookService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logge
 		webhookService: webhookService,
 		debug:          debug,
 	}
+}
+
+// SetDebug 设置调试模式
+func (s *WebhookServiceImpl) SetDebug(debug bool) {
+	s.debug = debug
 }
 
 // BuildResponse 将实体转换为响应

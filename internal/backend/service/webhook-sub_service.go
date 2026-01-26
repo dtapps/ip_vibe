@@ -14,6 +14,7 @@ import (
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/spf13/cast"
@@ -41,13 +42,22 @@ type WebhookSubServiceImpl struct {
 }
 
 // NewWebhookSubService 创建通知订阅服务实例
-func NewWebhookSubService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, debug bool) WebhookSubService {
+func NewWebhookSubService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) WebhookSubService {
+	debug := false
+	if sys_env.GvaEnv != nil {
+		debug = sys_env.GvaEnv.DEBUG
+	}
 	return &WebhookSubServiceImpl{
 		db:     db,
 		logDb:  logDb,
 		logger: logger,
 		debug:  debug,
 	}
+}
+
+// SetDebug 设置调试模式
+func (s *WebhookSubServiceImpl) SetDebug(debug bool) {
+	s.debug = debug
 }
 
 // BuildResponse 将实体转换为响应

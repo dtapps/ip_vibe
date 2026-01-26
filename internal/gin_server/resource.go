@@ -110,6 +110,11 @@ var EnumRegistry = map[string]EnumDefinition{
 		Values:       schematype.GetSSLImportSources,
 		Descriptions: schematype.GetSSLImportSourceDescriptions,
 	},
+	// SSL导入 状态
+	"ssl_import_status": {
+		Values:       schematype.GetSSLImportStatuss,
+		Descriptions: schematype.GetSSLImportStatusDescriptions,
+	},
 }
 
 // 将原 main.go 的 funcMap 逻辑移入此处

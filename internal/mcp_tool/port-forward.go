@@ -4,7 +4,6 @@ import (
 	"context"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
-	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
@@ -62,7 +61,6 @@ func getPortForwardList(ctx context.Context, req *mcp.CallToolRequest, params *t
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -82,7 +80,6 @@ func getPortForwardDetail(ctx context.Context, req *mcp.CallToolRequest, params 
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -102,7 +99,6 @@ func createPortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -122,7 +118,6 @@ func updatePortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -142,7 +137,6 @@ func updatePortForwardForward(ctx context.Context, req *mcp.CallToolRequest, par
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -162,7 +156,6 @@ func updatePortForwardActive(ctx context.Context, req *mcp.CallToolRequest, para
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -182,7 +175,6 @@ func deletePortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -202,7 +194,6 @@ func healthCheckPortForward(ctx context.Context, req *mcp.CallToolRequest, param
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

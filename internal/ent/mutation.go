@@ -8511,6 +8511,7 @@ type SSLImportMutation struct {
 	private_key   *string
 	not_before    *time.Time
 	not_after     *time.Time
+	status        *sslimport.Status
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*SSLImport, error)
@@ -8974,6 +8975,42 @@ func (m *SSLImportMutation) ResetNotAfter() {
 	delete(m.clearedFields, sslimport.FieldNotAfter)
 }
 
+// SetStatus sets the "status" field.
+func (m *SSLImportMutation) SetStatus(s sslimport.Status) {
+	m.status = &s
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *SSLImportMutation) Status() (r sslimport.Status, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the SSLImport entity.
+// If the SSLImport object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLImportMutation) OldStatus(ctx context.Context) (v sslimport.Status, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *SSLImportMutation) ResetStatus() {
+	m.status = nil
+}
+
 // Where appends a list predicates to the SSLImportMutation builder.
 func (m *SSLImportMutation) Where(ps ...predicate.SSLImport) {
 	m.predicates = append(m.predicates, ps...)
@@ -9008,7 +9045,7 @@ func (m *SSLImportMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SSLImportMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, sslimport.FieldCreatedAt)
 	}
@@ -9032,6 +9069,9 @@ func (m *SSLImportMutation) Fields() []string {
 	}
 	if m.not_after != nil {
 		fields = append(fields, sslimport.FieldNotAfter)
+	}
+	if m.status != nil {
+		fields = append(fields, sslimport.FieldStatus)
 	}
 	return fields
 }
@@ -9057,6 +9097,8 @@ func (m *SSLImportMutation) Field(name string) (ent.Value, bool) {
 		return m.NotBefore()
 	case sslimport.FieldNotAfter:
 		return m.NotAfter()
+	case sslimport.FieldStatus:
+		return m.Status()
 	}
 	return nil, false
 }
@@ -9082,6 +9124,8 @@ func (m *SSLImportMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldNotBefore(ctx)
 	case sslimport.FieldNotAfter:
 		return m.OldNotAfter(ctx)
+	case sslimport.FieldStatus:
+		return m.OldStatus(ctx)
 	}
 	return nil, fmt.Errorf("unknown SSLImport field %s", name)
 }
@@ -9146,6 +9190,13 @@ func (m *SSLImportMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNotAfter(v)
+		return nil
+	case sslimport.FieldStatus:
+		v, ok := value.(sslimport.Status)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
 		return nil
 	}
 	return fmt.Errorf("unknown SSLImport field %s", name)
@@ -9252,6 +9303,9 @@ func (m *SSLImportMutation) ResetField(name string) error {
 		return nil
 	case sslimport.FieldNotAfter:
 		m.ResetNotAfter()
+		return nil
+	case sslimport.FieldStatus:
+		m.ResetStatus()
 		return nil
 	}
 	return fmt.Errorf("unknown SSLImport field %s", name)

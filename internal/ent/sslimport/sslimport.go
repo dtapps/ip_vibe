@@ -31,6 +31,8 @@ const (
 	FieldNotBefore = "not_before"
 	// FieldNotAfter holds the string denoting the not_after field in the database.
 	FieldNotAfter = "not_after"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
 	// Table holds the table name of the sslimport in the database.
 	Table = "ssl_import"
 )
@@ -46,6 +48,7 @@ var Columns = []string{
 	FieldPrivateKey,
 	FieldNotBefore,
 	FieldNotAfter,
+	FieldStatus,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -102,6 +105,35 @@ func SourceValidator(s Source) error {
 	}
 }
 
+// Status defines the type for the "status" enum field.
+type Status string
+
+// StatusUnknown is the default value of the Status enum.
+const DefaultStatus = StatusUnknown
+
+// Status values.
+const (
+	StatusUnknown Status = "unknown"
+	StatusValid   Status = "valid"
+	StatusExpired Status = "expired"
+	StatusRevoked Status = "revoked"
+	StatusPending Status = "pending"
+)
+
+func (s Status) String() string {
+	return string(s)
+}
+
+// StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
+func StatusValidator(s Status) error {
+	switch s {
+	case StatusUnknown, StatusValid, StatusExpired, StatusRevoked, StatusPending:
+		return nil
+	default:
+		return fmt.Errorf("sslimport: invalid enum value for status field: %q", s)
+	}
+}
+
 // OrderOption defines the ordering options for the SSLImport queries.
 type OrderOption func(*sql.Selector)
 
@@ -148,4 +180,9 @@ func ByNotBefore(opts ...sql.OrderTermOption) OrderOption {
 // ByNotAfter orders the results by the not_after field.
 func ByNotAfter(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldNotAfter, opts...).ToFunc()
+}
+
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
 }

@@ -7,7 +7,6 @@ import (
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
-	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -35,7 +34,6 @@ func PortForward(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 查询全部端口转发
@@ -67,7 +65,6 @@ func PortForward(c *gin.Context) {
 		c,
 		filepath.Join("pages", "port-forward.html"),
 		types.BasePageData[types.PortForwardResponse]{
-			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "端口转发记录",
 			Data:  pageData,
 		},
@@ -103,7 +100,6 @@ func PortForwardStats(c *gin.Context) {
 		c,
 		filepath.Join("pages", "port-forward_stats.html"),
 		types.BasePageData[types.PortForwardStatsResponse]{
-			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "端口转发统计",
 			Data:  pageData,
 		},

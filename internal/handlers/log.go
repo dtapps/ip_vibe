@@ -6,7 +6,6 @@ import (
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
-	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -60,7 +59,6 @@ func Log(c *gin.Context) {
 		c,
 		filepath.Join("pages", "log.html"),
 		types.BasePageData[types.LogResponse]{
-			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "操作日志",
 			Data:  pageData,
 		},

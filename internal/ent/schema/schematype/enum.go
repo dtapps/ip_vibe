@@ -581,3 +581,29 @@ var GetSSLImportSources = []string{
 	SSLImportSourceWebhook,
 	SSLImportSourceManual,
 }
+
+const (
+	SSLImportStatusUnknown string = "unknown" // 未知
+	SSLImportStatusValid   string = "valid"   // 有效
+	SSLImportStatusExpired string = "expired" // 过期
+	SSLImportStatusRevoked string = "revoked" // 吊销
+	SSLImportStatusPending string = "pending" // 待处理
+)
+
+// GetSSLImportStatusDescriptions SSL记录状态说明映射
+var GetSSLImportStatusDescriptions = map[string]string{
+	SSLImportStatusUnknown: "未知",
+	SSLImportStatusValid:   "有效",
+	SSLImportStatusExpired: "过期",
+	SSLImportStatusRevoked: "吊销",
+	SSLImportStatusPending: "待处理",
+}
+
+// GetSSLImportStatuss 返回所有SSL记录状态
+var GetSSLImportStatuss = []string{
+	SSLImportStatusUnknown,
+	SSLImportStatusValid,
+	SSLImportStatusExpired,
+	SSLImportStatusRevoked,
+	SSLImportStatusPending,
+}

@@ -54,8 +54,9 @@
                             onclick="tableSelectAll(this)" />
                     </th>
                     <th class="ui-th">域名</th>
-                    <th class="ui-th">证书开始时间</th>
-                    <th class="ui-th">证书结束时间</th>
+                    <th class="ui-th">生效时间</th>
+                    <th class="ui-th">过期时间</th>
+                    <th class="ui-th">状态</th>
                     <th class="ui-th text-center">操作</th>
                 </tr>
             </thead>
@@ -80,6 +81,22 @@
 
                     <td class="ui-td">
                         {{formatTimeOrNil .NotAfter}}
+                    </td>
+
+                    <td class="ui-td">
+                        {{ $statusCss := "badge font-bold px-4 py-2 tooltip" }}
+                        {{if eq .Status "valid"}}
+                        <span class="badge-success {{ $statusCss }}" data-tip="{{ .Status }}">有效</span>
+                        {{else if eq .Status "expired"}}
+                        <span class="badge-error {{ $statusCss }} text-white" data-tip="{{ .Status }}">过期</span>
+                        {{else if eq .Status "revoked"}}
+                        <span class="badge-warning {{ $statusCss }} text-warning-content"
+                            data-tip="{{ .Status }}">已撤销</span>
+                        {{else if eq .Status "pending"}}
+                        <span class="badge-ghost {{ $statusCss }}" data-tip="{{ .Status }}">待处理</span>
+                        {{else}}
+                        <span class="badge-ghost {{ $statusCss }}">{{.Status}}</span>
+                        {{end}}
                     </td>
 
                     <td class="ui-td">

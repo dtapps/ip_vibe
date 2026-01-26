@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/sslimport"
 	"vibe_ip/internal/ent_log"
@@ -31,23 +32,34 @@ type SSLImportServiceImpl struct {
 
 // NewSSLImportService 创建 SSL 记录服务实例
 func NewSSLImportService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) SSLImportService {
+	debug := false
+	if sys_env.GvaEnv != nil {
+		debug = sys_env.GvaEnv.DEBUG
+	}
 	return &SSLImportServiceImpl{
 		db:     db,
 		logDb:  logDb,
 		logger: logger,
-		debug:  sys_env.GvaEnv.DEBUG,
+		debug:  debug,
 	}
+}
+
+// SetDebug 设置调试模式
+func (s *SSLImportServiceImpl) SetDebug(debug bool) {
+	s.debug = debug
 }
 
 // BuildResponse 将实体转换为响应
 func (s *SSLImportServiceImpl) BuildResponse(ctx context.Context, item *ent.SSLImport) (*types.GetSSLImportResponse, error) {
 	resp := &types.GetSSLImportResponse{
 		ID:          item.ID,
+		Source:      item.Source.String(),
 		Domain:      item.Domain,
 		Certificate: item.Certificate,
 		PrivateKey:  item.PrivateKey,
 		NotBefore:   item.NotBefore,
 		NotAfter:    item.NotAfter,
+		Status:      item.Status.String(),
 	}
 
 	return resp, nil
@@ -62,6 +74,14 @@ func (s *SSLImportServiceImpl) ImportSSLImport(ctx context.Context, request *typ
 		return fmt.Errorf("解析证书失败: %w", err)
 	}
 
+	// 证书状态
+	status := sslimport.StatusUnknown
+	if parsedSsl.NotAfter.After(time.Now()) {
+		status = sslimport.StatusValid
+	} else {
+		status = sslimport.StatusExpired
+	}
+
 	// 创建SSL导入记录
 	err = s.db.SSLImport.Create().
 		SetSource(sslimport.SourceWebhook).
@@ -70,6 +90,7 @@ func (s *SSLImportServiceImpl) ImportSSLImport(ctx context.Context, request *typ
 		SetPrivateKey(request.PrivateKey).
 		SetNotBefore(parsedSsl.NotBefore).
 		SetNotAfter(parsedSsl.NotAfter).
+		SetStatus(status).
 		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("创建SSL导入记录失败: %w", err)
@@ -93,7 +114,15 @@ func (s *SSLImportServiceImpl) CreateSSLImport(ctx context.Context, request *typ
 		return fmt.Errorf("验证证书与私钥匹配失败: %w", err)
 	}
 
-	// 创建SSL记录
+	// 证书状态
+	status := sslimport.StatusUnknown
+	if parsedSsl.NotAfter.After(time.Now()) {
+		status = sslimport.StatusValid
+	} else {
+		status = sslimport.StatusExpired
+	}
+
+	// 创建SSL导入记录
 	err = s.db.SSLImport.Create().
 		SetSource(sslimport.SourceManual).
 		SetDomain(request.Domain).
@@ -101,6 +130,7 @@ func (s *SSLImportServiceImpl) CreateSSLImport(ctx context.Context, request *typ
 		SetPrivateKey(request.PrivateKey).
 		SetNotBefore(parsedSsl.NotBefore).
 		SetNotAfter(parsedSsl.NotAfter).
+		SetStatus(status).
 		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("创建SSL导入记录失败: %w", err)

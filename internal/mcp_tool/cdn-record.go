@@ -4,7 +4,6 @@ import (
 	"context"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
-	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
@@ -57,7 +56,6 @@ func getCdnRecordList(ctx context.Context, req *mcp.CallToolRequest, params *typ
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -76,7 +74,6 @@ func getCdnRecordDetail(ctx context.Context, req *mcp.CallToolRequest, params *t
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -95,7 +92,6 @@ func createCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -114,7 +110,6 @@ func updateCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -133,7 +128,6 @@ func updateCdnRecordActive(ctx context.Context, req *mcp.CallToolRequest, params
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -152,7 +146,6 @@ func deleteCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -172,7 +165,6 @@ func healthCheckCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params 
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

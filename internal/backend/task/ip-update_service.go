@@ -18,6 +18,7 @@ import (
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/helper/gocron_helper"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/provider/cdn"
 	"vibe_ip/internal/provider/dns"
@@ -44,7 +45,11 @@ type IPUpdateTask struct {
 }
 
 // 创建实例
-func NewIPUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) *IPUpdateTask {
+func NewIPUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *IPUpdateTask {
+	debug := false
+	if sys_env.GvaEnv != nil {
+		debug = sys_env.GvaEnv.DEBUG
+	}
 	webhookService := webhookService.NewSend(db, logDb)
 	return &IPUpdateTask{
 		db:             db,
@@ -66,6 +71,12 @@ func (s *IPUpdateTask) Close() {
 	if s.cron != nil && s.cdnJob != nil {
 		_ = s.cron.RemoveJob(s.cdnJob.ID())
 	}
+}
+
+// SetDebug 设置调试模式
+func (s *IPUpdateTask) SetDebug(debug bool) *IPUpdateTask {
+	s.debug = debug
+	return s
 }
 
 // 自定义 logger

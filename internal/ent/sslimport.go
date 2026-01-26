@@ -33,7 +33,9 @@ type SSLImport struct {
 	// 证书生效时间
 	NotBefore time.Time `json:"not_before,omitempty"`
 	// 证书过期时间
-	NotAfter     time.Time `json:"not_after,omitempty"`
+	NotAfter time.Time `json:"not_after,omitempty"`
+	// 证书状态
+	Status       sslimport.Status `json:"status,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -44,7 +46,7 @@ func (*SSLImport) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case sslimport.FieldID:
 			values[i] = new(sql.NullInt64)
-		case sslimport.FieldSource, sslimport.FieldDomain, sslimport.FieldCertificate, sslimport.FieldPrivateKey:
+		case sslimport.FieldSource, sslimport.FieldDomain, sslimport.FieldCertificate, sslimport.FieldPrivateKey, sslimport.FieldStatus:
 			values[i] = new(sql.NullString)
 		case sslimport.FieldCreatedAt, sslimport.FieldUpdatedAt, sslimport.FieldNotBefore, sslimport.FieldNotAfter:
 			values[i] = new(sql.NullTime)
@@ -117,6 +119,12 @@ func (_m *SSLImport) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.NotAfter = value.Time
 			}
+		case sslimport.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				_m.Status = sslimport.Status(value.String)
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -175,6 +183,9 @@ func (_m *SSLImport) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("not_after=")
 	builder.WriteString(_m.NotAfter.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("status=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Status))
 	builder.WriteByte(')')
 	return builder.String()
 }

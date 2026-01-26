@@ -28,6 +28,20 @@ func (_u *SSLImportUpdate) Where(ps ...predicate.SSLImport) *SSLImportUpdate {
 	return _u
 }
 
+// SetStatus sets the "status" field.
+func (_u *SSLImportUpdate) SetStatus(v sslimport.Status) *SSLImportUpdate {
+	_u.mutation.SetStatus(v)
+	return _u
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_u *SSLImportUpdate) SetNillableStatus(v *sslimport.Status) *SSLImportUpdate {
+	if v != nil {
+		_u.SetStatus(*v)
+	}
+	return _u
+}
+
 // Mutation returns the SSLImportMutation object of the builder.
 func (_u *SSLImportUpdate) Mutation() *SSLImportMutation {
 	return _u.mutation
@@ -75,6 +89,16 @@ func (_u *SSLImportUpdate) defaults() error {
 	return nil
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *SSLImportUpdate) check() error {
+	if v, ok := _u.mutation.Status(); ok {
+		if err := sslimport.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "SSLImport.status": %w`, err)}
+		}
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *SSLImportUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *SSLImportUpdate {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -82,6 +106,9 @@ func (_u *SSLImportUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *SSLI
 }
 
 func (_u *SSLImportUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(sslimport.Table, sslimport.Columns, sqlgraph.NewFieldSpec(sslimport.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -108,6 +135,9 @@ func (_u *SSLImportUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.NotAfterCleared() {
 		_spec.ClearField(sslimport.FieldNotAfter, field.TypeTime)
 	}
+	if value, ok := _u.mutation.Status(); ok {
+		_spec.SetField(sslimport.FieldStatus, field.TypeEnum, value)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -128,6 +158,20 @@ type SSLImportUpdateOne struct {
 	hooks     []Hook
 	mutation  *SSLImportMutation
 	modifiers []func(*sql.UpdateBuilder)
+}
+
+// SetStatus sets the "status" field.
+func (_u *SSLImportUpdateOne) SetStatus(v sslimport.Status) *SSLImportUpdateOne {
+	_u.mutation.SetStatus(v)
+	return _u
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_u *SSLImportUpdateOne) SetNillableStatus(v *sslimport.Status) *SSLImportUpdateOne {
+	if v != nil {
+		_u.SetStatus(*v)
+	}
+	return _u
 }
 
 // Mutation returns the SSLImportMutation object of the builder.
@@ -190,6 +234,16 @@ func (_u *SSLImportUpdateOne) defaults() error {
 	return nil
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *SSLImportUpdateOne) check() error {
+	if v, ok := _u.mutation.Status(); ok {
+		if err := sslimport.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "SSLImport.status": %w`, err)}
+		}
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *SSLImportUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *SSLImportUpdateOne {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -197,6 +251,9 @@ func (_u *SSLImportUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *S
 }
 
 func (_u *SSLImportUpdateOne) sqlSave(ctx context.Context) (_node *SSLImport, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(sslimport.Table, sslimport.Columns, sqlgraph.NewFieldSpec(sslimport.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {
@@ -239,6 +296,9 @@ func (_u *SSLImportUpdateOne) sqlSave(ctx context.Context) (_node *SSLImport, er
 	}
 	if _u.mutation.NotAfterCleared() {
 		_spec.ClearField(sslimport.FieldNotAfter, field.TypeTime)
+	}
+	if value, ok := _u.mutation.Status(); ok {
+		_spec.SetField(sslimport.FieldStatus, field.TypeEnum, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &SSLImport{config: _u.config}

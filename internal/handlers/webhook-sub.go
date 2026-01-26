@@ -7,7 +7,6 @@ import (
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
-	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -34,7 +33,6 @@ func WebhookSub(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 查询全部通知订阅
@@ -68,7 +66,6 @@ func WebhookSub(c *gin.Context) {
 		c,
 		filepath.Join("pages", "webhook-sub.html"),
 		types.BasePageData[types.WebhookSubResponse]{
-			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "Webhook订阅记录",
 			Data:  pageData,
 		},

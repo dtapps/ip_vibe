@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
@@ -40,13 +41,22 @@ type CDNRecordServiceImpl struct {
 }
 
 // NewCDNRecordService 创建 CDN 记录服务实例
-func NewCDNRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, debug bool) CDNRecordService {
+func NewCDNRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) CDNRecordService {
+	debug := false
+	if sys_env.GvaEnv != nil {
+		debug = sys_env.GvaEnv.DEBUG
+	}
 	return &CDNRecordServiceImpl{
 		db:     db,
 		logDb:  logDb,
 		logger: logger,
 		debug:  debug,
 	}
+}
+
+// SetDebug 设置调试模式
+func (s *CDNRecordServiceImpl) SetDebug(debug bool) {
+	s.debug = debug
 }
 
 // BuildResponse 将实体转换为响应

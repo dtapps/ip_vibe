@@ -8,6 +8,7 @@ import (
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/helper/gocron_helper"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/types"
 
@@ -37,7 +38,11 @@ type TaskServiceImpl struct {
 }
 
 // NewTaskService 创建任务调度服务实例
-func NewTaskService(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) TaskService {
+func NewTaskService(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) TaskService {
+	debug := false
+	if sys_env.GvaEnv != nil {
+		debug = sys_env.GvaEnv.DEBUG
+	}
 	return &TaskServiceImpl{
 		db:            db,
 		logDb:         logDb,
@@ -46,6 +51,11 @@ func NewTaskService(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler
 		httpTransport: httpTransport,
 		debug:         debug,
 	}
+}
+
+// SetDebug 设置调试模式
+func (s *TaskServiceImpl) SetDebug(debug bool) {
+	s.debug = debug
 }
 
 // getJobsHelper 辅助方法：创建 JobHelper 实例
@@ -134,7 +144,6 @@ func (s *TaskServiceImpl) StartScheduler(ctx context.Context) error {
 			s.cron,
 			s.logger,
 			s.httpTransport,
-			s.debug,
 		)
 		if err := ipUpdate.StartCdnJob(ctx); err != nil {
 			return fmt.Errorf("启动CDN、DNS刷新任务失败: %w", err)

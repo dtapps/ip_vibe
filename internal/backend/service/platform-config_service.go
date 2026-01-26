@@ -8,6 +8,7 @@ import (
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 )
 
@@ -31,13 +32,22 @@ type PlatformConfigServiceImpl struct {
 }
 
 // NewPlatformConfigService 创建配置服务实例
-func NewPlatformConfigService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, debug bool) PlatformConfigService {
+func NewPlatformConfigService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) PlatformConfigService {
+	debug := false
+	if sys_env.GvaEnv != nil {
+		debug = sys_env.GvaEnv.DEBUG
+	}
 	return &PlatformConfigServiceImpl{
 		db:     db,
 		logDb:  logDb,
 		logger: logger,
 		debug:  debug,
 	}
+}
+
+// SetDebug 设置调试模式
+func (s *PlatformConfigServiceImpl) SetDebug(debug bool) {
+	s.debug = debug
 }
 
 // BuildResponse 将实体转换为响应

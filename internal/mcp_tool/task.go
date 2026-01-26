@@ -4,7 +4,6 @@ import (
 	"context"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
-	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
@@ -56,7 +55,6 @@ func getTaskList(ctx context.Context, req *mcp.CallToolRequest, params *types.Ge
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -78,7 +76,6 @@ func getTaskDetail(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -100,7 +97,6 @@ func runTask(ctx context.Context, req *mcp.CallToolRequest, params *types.RunTas
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -122,7 +118,6 @@ func deleteTask(ctx context.Context, req *mcp.CallToolRequest, params *types.Del
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -144,7 +139,6 @@ func cleanAllTask(ctx context.Context, req *mcp.CallToolRequest, params *any) (*
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -166,7 +160,6 @@ func startScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) 
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -188,7 +181,6 @@ func stopScheduler(ctx context.Context, req *mcp.CallToolRequest, params *any) (
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

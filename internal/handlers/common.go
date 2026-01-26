@@ -74,7 +74,6 @@ func renderHTML[T any](c *gin.Context, templateName string, data types.BasePageD
 
 	// 获取基础数据
 	baseData := getBaseData[T](c)
-	baseData.SetDebug(data.Debug)
 	baseData.SetTitle(data.Title)
 	baseData.SetData(data.Data)
 
@@ -99,7 +98,6 @@ func renderHTMLWithMenu[T any](c *gin.Context, templateName string, data types.B
 
 	// 获取基础数据
 	baseData := getBaseData[T](c)
-	baseData.SetDebug(data.Debug)
 	baseData.SetActiveMenu(activeMenu)
 	baseData.SetTitle(data.Title)
 	baseData.SetData(data.Data)

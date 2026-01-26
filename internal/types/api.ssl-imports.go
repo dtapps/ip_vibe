@@ -11,6 +11,7 @@ type GetSSLImportResponse struct {
 	PrivateKey  string    `json:"private_key"`      // 私钥(PEM格式)
 	NotBefore   time.Time `json:"not_before"`       // 证书开始时间
 	NotAfter    time.Time `json:"not_after"`        // 证书结束时间
+	Status      string    `json:"status,omitempty"` // 证书状态
 }
 
 // 导入 SSL 导入 请求结构

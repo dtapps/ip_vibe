@@ -134,6 +134,20 @@ func (_c *SSLImportCreate) SetNillableNotAfter(v *time.Time) *SSLImportCreate {
 	return _c
 }
 
+// SetStatus sets the "status" field.
+func (_c *SSLImportCreate) SetStatus(v sslimport.Status) *SSLImportCreate {
+	_c.mutation.SetStatus(v)
+	return _c
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_c *SSLImportCreate) SetNillableStatus(v *sslimport.Status) *SSLImportCreate {
+	if v != nil {
+		_c.SetStatus(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *SSLImportCreate) SetID(v int64) *SSLImportCreate {
 	_c.mutation.SetID(v)
@@ -195,6 +209,10 @@ func (_c *SSLImportCreate) defaults() error {
 		v := sslimport.DefaultSource
 		_c.mutation.SetSource(v)
 	}
+	if _, ok := _c.mutation.Status(); !ok {
+		v := sslimport.DefaultStatus
+		_c.mutation.SetStatus(v)
+	}
 	return nil
 }
 
@@ -212,6 +230,14 @@ func (_c *SSLImportCreate) check() error {
 	if v, ok := _c.mutation.Source(); ok {
 		if err := sslimport.SourceValidator(v); err != nil {
 			return &ValidationError{Name: "source", err: fmt.Errorf(`ent: validator failed for field "SSLImport.source": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "SSLImport.status"`)}
+	}
+	if v, ok := _c.mutation.Status(); ok {
+		if err := sslimport.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "SSLImport.status": %w`, err)}
 		}
 	}
 	if v, ok := _c.mutation.ID(); ok {
@@ -284,6 +310,10 @@ func (_c *SSLImportCreate) createSpec() (*SSLImport, *sqlgraph.CreateSpec) {
 		_spec.SetField(sslimport.FieldNotAfter, field.TypeTime, value)
 		_node.NotAfter = value
 	}
+	if value, ok := _c.mutation.Status(); ok {
+		_spec.SetField(sslimport.FieldStatus, field.TypeEnum, value)
+		_node.Status = value
+	}
 	return _node, _spec
 }
 
@@ -335,6 +365,18 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetStatus sets the "status" field.
+func (u *SSLImportUpsert) SetStatus(v sslimport.Status) *SSLImportUpsert {
+	u.Set(sslimport.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *SSLImportUpsert) UpdateStatus() *SSLImportUpsert {
+	u.SetExcluded(sslimport.FieldStatus)
+	return u
+}
 
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
@@ -406,6 +448,20 @@ func (u *SSLImportUpsertOne) Update(set func(*SSLImportUpsert)) *SSLImportUpsert
 		set(&SSLImportUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetStatus sets the "status" field.
+func (u *SSLImportUpsertOne) SetStatus(v sslimport.Status) *SSLImportUpsertOne {
+	return u.Update(func(s *SSLImportUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *SSLImportUpsertOne) UpdateStatus() *SSLImportUpsertOne {
+	return u.Update(func(s *SSLImportUpsert) {
+		s.UpdateStatus()
+	})
 }
 
 // Exec executes the query.
@@ -644,6 +700,20 @@ func (u *SSLImportUpsertBulk) Update(set func(*SSLImportUpsert)) *SSLImportUpser
 		set(&SSLImportUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetStatus sets the "status" field.
+func (u *SSLImportUpsertBulk) SetStatus(v sslimport.Status) *SSLImportUpsertBulk {
+	return u.Update(func(s *SSLImportUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *SSLImportUpsertBulk) UpdateStatus() *SSLImportUpsertBulk {
+	return u.Update(func(s *SSLImportUpsert) {
+		s.UpdateStatus()
+	})
 }
 
 // Exec executes the query.

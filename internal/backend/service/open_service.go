@@ -13,6 +13,7 @@ import (
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/deviceipreport"
 	"vibe_ip/internal/helper/db_cache"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
@@ -41,7 +42,11 @@ type DeviceOpenServiceImpl struct {
 }
 
 // NewDeviceOpenService 创建设备服务实例
-func NewDeviceOpenService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, debug bool) DeviceOpenService {
+func NewDeviceOpenService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) DeviceOpenService {
+	debug := false
+	if sys_env.GvaEnv != nil {
+		debug = sys_env.GvaEnv.DEBUG
+	}
 	webhookService := webhookService.NewSend(db, logDb)
 	return &DeviceOpenServiceImpl{
 		db:             db,
@@ -50,6 +55,11 @@ func NewDeviceOpenService(db *ent.Client, logDb *ent_log.Client, logger *slog.Lo
 		webhookService: webhookService,
 		debug:          debug,
 	}
+}
+
+// SetDebug 设置调试模式
+func (s *DeviceOpenServiceImpl) SetDebug(debug bool) {
+	s.debug = debug
 }
 
 // GetSetting 获取配置

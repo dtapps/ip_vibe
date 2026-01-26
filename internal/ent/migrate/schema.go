@@ -448,6 +448,7 @@ var (
 		{Name: "private_key", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "私钥(PEM格式)"},
 		{Name: "not_before", Type: field.TypeTime, Nullable: true, Comment: "证书生效时间"},
 		{Name: "not_after", Type: field.TypeTime, Nullable: true, Comment: "证书过期时间"},
+		{Name: "status", Type: field.TypeEnum, Comment: "证书状态", Enums: []string{"unknown", "valid", "expired", "revoked", "pending"}, Default: "unknown"},
 	}
 	// SslImportTable holds the schema information for the "ssl_import" table.
 	SslImportTable = &schema.Table{

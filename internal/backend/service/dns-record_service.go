@@ -9,6 +9,7 @@ import (
 	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
@@ -39,13 +40,22 @@ type DNSRecordServiceImpl struct {
 }
 
 // NewDNSRecordService 创建 DNS 记录服务实例
-func NewDNSRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, debug bool) DNSRecordService {
+func NewDNSRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) DNSRecordService {
+	debug := false
+	if sys_env.GvaEnv != nil {
+		debug = sys_env.GvaEnv.DEBUG
+	}
 	return &DNSRecordServiceImpl{
 		db:     db,
 		logDb:  logDb,
 		logger: logger,
 		debug:  debug,
 	}
+}
+
+// SetDebug 设置调试模式
+func (s *DNSRecordServiceImpl) SetDebug(debug bool) {
+	s.debug = debug
 }
 
 // BuildResponse 将实体转换为响应

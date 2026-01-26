@@ -19,6 +19,7 @@ import (
 	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/helper/ssl_helper"
+	"vibe_ip/internal/helper/sys_env"
 
 	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-co-op/gocron/v2"
@@ -29,12 +30,12 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// SSL更新任务
-type SSLUpdateTask struct {
+// SSL申请任务
+type SSLApplyTask struct {
 	db            *ent.Client                   // 数据库客户端
 	logDb         *ent_log.Client               // 日志数据库客户端
 	cron          gocron.Scheduler              // 定时任务调度器
-	job           gocron.Job                    // SSL刷新任务
+	job           gocron.Job                    // SSL申请任务
 	taskName      string                        // 任务名称
 	jobHelper     *gocron_helper.JobHelper      // 任务助手
 	logger        *slog.Logger                  // 日志记录器
@@ -43,12 +44,16 @@ type SSLUpdateTask struct {
 }
 
 // 创建实例
-func NewSSLUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) *SSLUpdateTask {
-	return &SSLUpdateTask{
+func NewSSLApplyTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *SSLApplyTask {
+	debug := false
+	if sys_env.GvaEnv != nil {
+		debug = sys_env.GvaEnv.DEBUG
+	}
+	return &SSLApplyTask{
 		db:            db,
 		logDb:         logDb,
 		cron:          cron,
-		taskName:      "SSL更新",
+		taskName:      "SSL申请",
 		jobHelper:     gocron_helper.NewJobHelper(cron, logger),
 		logger:        logger,
 		httpTransport: httpTransport,
@@ -56,21 +61,27 @@ func NewSSLUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Schedul
 	}
 }
 
+// SetDebug 设置调试模式
+func (s *SSLApplyTask) SetDebug(debug bool) *SSLApplyTask {
+	s.debug = debug
+	return s
+}
+
 // Close 关闭服务，释放资源
-func (s *SSLUpdateTask) Close() {
+func (s *SSLApplyTask) Close() {
 	if s.cron != nil && s.job != nil && s.jobHelper != nil {
 		_ = s.jobHelper.DeleteJob(s.job.ID().String())
 	}
 }
 
 // 自定义 logger
-func (s *SSLUpdateTask) SetLogger(logger *slog.Logger) *SSLUpdateTask {
+func (s *SSLApplyTask) SetLogger(logger *slog.Logger) *SSLApplyTask {
 	s.logger = logger
 	return s
 }
 
 // 计算下次执行时间
-func (s *SSLUpdateTask) CalculateNextRun(sslRecord *ent.SSLRecord, now time.Time) time.Time {
+func (s *SSLApplyTask) CalculateNextRun(sslRecord *ent.SSLRecord, now time.Time) time.Time {
 	// 如果是首次申请（没有过期时间），立即执行
 	if sslRecord.NotAfter.IsZero() {
 		return now
@@ -98,7 +109,7 @@ func (s *SSLUpdateTask) CalculateNextRun(sslRecord *ent.SSLRecord, now time.Time
 }
 
 // StartPeriodicTask 启动周期任务
-func (s *SSLUpdateTask) StartPeriodicTask(ctx context.Context) (err error) {
+func (s *SSLApplyTask) StartPeriodicTask(ctx context.Context) (err error) {
 	// 判断是否存在任务
 	if s.job != nil {
 		return nil
@@ -140,7 +151,7 @@ func (s *SSLUpdateTask) StartPeriodicTask(ctx context.Context) (err error) {
 }
 
 // RunPeriodicTask 运行任务
-func (s *SSLUpdateTask) RunPeriodicTask() {
+func (s *SSLApplyTask) RunPeriodicTask() {
 
 	// 创建上下文
 	ctx := schemahook.WithSource(context.Background(), operationlog.SourceTask.String())
@@ -206,7 +217,7 @@ func (s *SSLUpdateTask) RunPeriodicTask() {
 				item := item // 创建副本以避免闭包问题
 				eg.Go(func() error {
 
-					if err = s.executeSSLUpdate(egCtx, logger.With(
+					if err = s.executeSSLApply(egCtx, logger.With(
 						slog.String("处理方式", "并发"),
 					), item); err != nil {
 						logger.ErrorContext(egCtx, "处理失败",
@@ -228,7 +239,7 @@ func (s *SSLUpdateTask) RunPeriodicTask() {
 		// 2. 串行处理不支持并发的记录
 		for _, item := range serialRecords {
 
-			if err = s.executeSSLUpdate(ctx, logger.With(
+			if err = s.executeSSLApply(ctx, logger.With(
 				slog.String("处理方式", "串行"),
 			), item); err != nil {
 				logger.ErrorContext(ctx, "处理失败",
@@ -249,8 +260,8 @@ type PendingSSLRecord struct {
 	Params   *ssl_helper.SSLProcessParams // 处理参数
 }
 
-// 执行SSL更新
-func (s *SSLUpdateTask) executeSSLUpdate(ctx context.Context, logger *slog.Logger, pendingRecord *PendingSSLRecord) (err error) {
+// 执行SSL申请
+func (s *SSLApplyTask) executeSSLApply(ctx context.Context, logger *slog.Logger, pendingRecord *PendingSSLRecord) (err error) {
 
 	// 日志
 	logger = logger.With(
@@ -399,7 +410,7 @@ type CertificateValidity struct {
 }
 
 // 从 lego Resource 解析证书有效期
-func (s *SSLUpdateTask) parseCertificateValidity(res *certificate.Resource) (*CertificateValidity, error) {
+func (s *SSLApplyTask) parseCertificateValidity(res *certificate.Resource) (*CertificateValidity, error) {
 	if res == nil || len(res.Certificate) == 0 {
 		return nil, errors.New("certificate data is empty")
 	}
@@ -423,7 +434,7 @@ func (s *SSLUpdateTask) parseCertificateValidity(res *certificate.Resource) (*Ce
 }
 
 // AddDisposableTask 添加一次性任务
-func (s *SSLUpdateTask) AddDisposableTask(ctx context.Context, pendingRecord *PendingSSLRecord) (err error) {
+func (s *SSLApplyTask) AddDisposableTask(ctx context.Context, pendingRecord *PendingSSLRecord) (err error) {
 
 	// 任务编号
 	jobID := uuid.New()
@@ -462,8 +473,8 @@ func (s *SSLUpdateTask) AddDisposableTask(ctx context.Context, pendingRecord *Pe
 }
 
 // RunDisposableTask 运行一次性任务
-func (s *SSLUpdateTask) RunDisposableTask(ctx context.Context, logger *slog.Logger, taskPendingRecord *PendingSSLRecord) {
-	err := s.executeSSLUpdate(ctx, logger, taskPendingRecord)
+func (s *SSLApplyTask) RunDisposableTask(ctx context.Context, logger *slog.Logger, taskPendingRecord *PendingSSLRecord) {
+	err := s.executeSSLApply(ctx, logger, taskPendingRecord)
 	if err != nil {
 		logger.ErrorContext(ctx, "处理失败",
 			slog.Any("错误信息", err),

@@ -12,6 +12,7 @@ import (
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/portforwardstats"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
@@ -43,13 +44,22 @@ type IPGroupServiceImpl struct {
 }
 
 // NewIPGroupService 创建 IP 组服务实例
-func NewIPGroupService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, debug bool) IPGroupService {
+func NewIPGroupService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) IPGroupService {
+	debug := false
+	if sys_env.GvaEnv != nil {
+		debug = sys_env.GvaEnv.DEBUG
+	}
 	return &IPGroupServiceImpl{
 		db:     db,
 		logDb:  logDb,
 		logger: logger,
 		debug:  debug,
 	}
+}
+
+// SetDebug 设置调试模式
+func (s *IPGroupServiceImpl) SetDebug(debug bool) {
+	s.debug = debug
 }
 
 // BuildResponse 将实体转换为响应

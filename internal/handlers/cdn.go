@@ -7,7 +7,6 @@ import (
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
-	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -34,7 +33,6 @@ func Cdn(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 查询全部CDN记录
@@ -70,7 +68,6 @@ func Cdn(c *gin.Context) {
 		c,
 		filepath.Join("pages", "cdn.html"),
 		types.BasePageData[types.CdnResponse]{
-			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "CDN记录",
 			Data:  pageData,
 		},

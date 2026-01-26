@@ -4,7 +4,6 @@ import (
 	"context"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
-	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -36,7 +35,6 @@ func getDomainMonitorList(ctx context.Context, req *mcp.ReadResourceRequest) (*m
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -66,7 +64,6 @@ func getDomainMonitorDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req 
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

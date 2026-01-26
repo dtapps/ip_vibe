@@ -172,7 +172,6 @@ func main() {
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 	if err := ipUpdate.StartCdnJob(ctx); err != nil {
 		slog.Error("启动CDN、DNS刷新任务失败",
@@ -181,17 +180,16 @@ func main() {
 		panic(err)
 	}
 
-	// 启动 SSL 刷新任务
-	sslUpdate := task.NewSSLUpdateTask(
+	// 启动 SSL 申请任务
+	sslApply := task.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
-	if err := sslUpdate.StartPeriodicTask(ctx); err != nil {
-		slog.Error("启动SSL刷新任务失败",
+	if err := sslApply.StartPeriodicTask(ctx); err != nil {
+		slog.Error("启动SSL申请任务失败",
 			slog.Any("err", err),
 		)
 		panic(err)
@@ -204,7 +202,6 @@ func main() {
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 	if err := domainMonitor.StartPeriodicTask(ctx); err != nil {
 		slog.Error("启动域名监控任务失败",
@@ -219,7 +216,6 @@ func main() {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 	if err := clearData.StartPeriodicTask(ctx); err != nil {
 		slog.Error("启动清除数据任务失败",

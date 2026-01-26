@@ -17,6 +17,7 @@ import (
 	"vibe_ip/internal/ent_log/webhookhistory"
 	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/helper/gocron_helper"
+	"vibe_ip/internal/helper/sys_env"
 
 	"github.com/go-co-op/gocron/v2"
 	"go.dtapp.net/library/utils/gotime"
@@ -35,7 +36,11 @@ type ClearDataTask struct {
 }
 
 // 创建实例
-func NewClearDataTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, debug bool) *ClearDataTask {
+func NewClearDataTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger) *ClearDataTask {
+	debug := false
+	if sys_env.GvaEnv != nil {
+		debug = sys_env.GvaEnv.DEBUG
+	}
 	return &ClearDataTask{
 		db:        db,
 		logDb:     logDb,
@@ -52,6 +57,12 @@ func (s *ClearDataTask) Close() {
 	if s.cron != nil && s.job != nil && s.jobHelper != nil {
 		_ = s.jobHelper.DeleteJob(s.job.ID().String())
 	}
+}
+
+// SetDebug 设置调试模式
+func (s *ClearDataTask) SetDebug(debug bool) *ClearDataTask {
+	s.debug = debug
+	return s
 }
 
 // 自定义 logger

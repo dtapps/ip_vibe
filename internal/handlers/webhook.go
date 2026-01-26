@@ -7,7 +7,6 @@ import (
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
-	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -34,7 +33,6 @@ func Webhook(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 查询全部通知
@@ -65,7 +63,6 @@ func Webhook(c *gin.Context) {
 		c,
 		filepath.Join("pages", "webhook.html"),
 		types.BasePageData[types.WebhookResponse]{
-			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "Webhook记录",
 			Data:  pageData,
 		},

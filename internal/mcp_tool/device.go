@@ -4,7 +4,6 @@ import (
 	"context"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
-	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
@@ -57,7 +56,6 @@ func getDeviceList(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -77,7 +75,6 @@ func getDeviceDetail(ctx context.Context, req *mcp.CallToolRequest, params *type
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -97,7 +94,6 @@ func createDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.C
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -117,7 +113,6 @@ func updateDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.U
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -137,7 +132,6 @@ func deleteDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.D
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -157,7 +151,6 @@ func getDeviceIpHistory(ctx context.Context, req *mcp.CallToolRequest, params *t
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -177,7 +170,6 @@ func healthCheckDevice(ctx context.Context, req *mcp.CallToolRequest, params *ty
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

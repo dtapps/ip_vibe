@@ -80,6 +80,12 @@ func (SSLImport) Fields() []ent.Field {
 			Immutable().
 			Comment("证书过期时间").
 			Annotations(entsql.WithComments(true)),
+
+		field.Enum("status").
+			Values(schematype.GetSSLImportStatuss...).
+			Default(schematype.SSLImportStatusUnknown).
+			Comment("证书状态").
+			Annotations(entsql.WithComments(true)),
 	}
 }
 

@@ -13,6 +13,7 @@ import (
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/helper/domain_helper"
 	"vibe_ip/internal/helper/gocron_helper"
+	"vibe_ip/internal/helper/sys_env"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/google/uuid"
@@ -34,7 +35,11 @@ type DomainMonitorTask struct {
 }
 
 // 创建实例
-func NewDomainMonitorTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) *DomainMonitorTask {
+func NewDomainMonitorTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *DomainMonitorTask {
+	debug := false
+	if sys_env.GvaEnv != nil {
+		debug = sys_env.GvaEnv.DEBUG
+	}
 	return &DomainMonitorTask{
 		db:            db,
 		logDb:         logDb,
@@ -52,6 +57,12 @@ func (s *DomainMonitorTask) Close() {
 	if s.cron != nil && s.job != nil && s.jobHelper != nil {
 		_ = s.jobHelper.DeleteJob(s.job.ID().String())
 	}
+}
+
+// SetDebug 设置调试模式
+func (s *DomainMonitorTask) SetDebug(debug bool) *DomainMonitorTask {
+	s.debug = debug
+	return s
 }
 
 // 自定义 logger

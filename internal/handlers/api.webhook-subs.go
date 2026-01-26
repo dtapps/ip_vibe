@@ -5,7 +5,6 @@ import (
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
-	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -37,7 +36,6 @@ func GetWebhookSubs(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -76,7 +74,6 @@ func UpdateWebhookSubActive(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -113,7 +110,6 @@ func BatchUpdateWebhookSubActive(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -151,7 +147,6 @@ func DeleteWebhookSub(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -188,7 +183,6 @@ func BatchDeleteWebhookSub(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

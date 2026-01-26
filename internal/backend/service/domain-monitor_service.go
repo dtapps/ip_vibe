@@ -9,6 +9,7 @@ import (
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
@@ -42,7 +43,11 @@ type DomainMonitorServiceImpl struct {
 }
 
 // NewDomainMonitorService 创建域名监控服务实例
-func NewDomainMonitorService(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) DomainMonitorService {
+func NewDomainMonitorService(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) DomainMonitorService {
+	debug := false
+	if sys_env.GvaEnv != nil {
+		debug = sys_env.GvaEnv.DEBUG
+	}
 	return &DomainMonitorServiceImpl{
 		db:            db,
 		logDb:         logDb,
@@ -51,6 +56,11 @@ func NewDomainMonitorService(db *ent.Client, logDb *ent_log.Client, cron gocron.
 		httpTransport: httpTransport,
 		debug:         debug,
 	}
+}
+
+// SetDebug 设置调试模式
+func (s *DomainMonitorServiceImpl) SetDebug(debug bool) {
+	s.debug = debug
 }
 
 // BuildResponse 将实体转换为响应
@@ -348,7 +358,6 @@ func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id in
 		s.cron,
 		s.logger,
 		s.httpTransport,
-		s.debug,
 	)
 
 	// 添加域名监控一次性任务

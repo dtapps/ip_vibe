@@ -514,6 +514,26 @@ func NotAfterNotNil() predicate.SSLImport {
 	return predicate.SSLImport(sql.FieldNotNull(FieldNotAfter))
 }
 
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v Status) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldEQ(FieldStatus, v))
+}
+
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v Status) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldNEQ(FieldStatus, v))
+}
+
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...Status) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldIn(FieldStatus, vs...))
+}
+
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...Status) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldNotIn(FieldStatus, vs...))
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.SSLImport) predicate.SSLImport {
 	return predicate.SSLImport(sql.AndPredicates(predicates...))

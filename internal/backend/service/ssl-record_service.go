@@ -40,22 +40,31 @@ type SSLRecordService interface {
 
 // SSLRecordServiceImpl SSL 记录服务实现
 type SSLRecordServiceImpl struct {
-	db            *ent.Client         // 数据库客户端
-	logDb         *ent_log.Client     // 日志数据库客户端
-	logger        *slog.Logger        // 日志记录器
-	sslUpdateTask *task.SSLUpdateTask // SSL刷新任务
-	debug         bool                // 调试模式
+	db           *ent.Client        // 数据库客户端
+	logDb        *ent_log.Client    // 日志数据库客户端
+	logger       *slog.Logger       // 日志记录器
+	sslApplyTask *task.SSLApplyTask // SSL申请任务
+	debug        bool               // 调试模式
 }
 
 // NewSSLRecordService 创建 SSL 记录服务实例
-func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, sslUpdateTask *task.SSLUpdateTask) SSLRecordService {
-	return &SSLRecordServiceImpl{
-		db:            db,
-		logDb:         logDb,
-		logger:        logger,
-		sslUpdateTask: sslUpdateTask,
-		debug:         sys_env.GvaEnv.DEBUG,
+func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, sslApplyTask *task.SSLApplyTask) SSLRecordService {
+	debug := false
+	if sys_env.GvaEnv != nil {
+		debug = sys_env.GvaEnv.DEBUG
 	}
+	return &SSLRecordServiceImpl{
+		db:           db,
+		logDb:        logDb,
+		logger:       logger,
+		sslApplyTask: sslApplyTask,
+		debug:        debug,
+	}
+}
+
+// SetDebug 设置调试模式
+func (s *SSLRecordServiceImpl) SetDebug(debug bool) {
+	s.debug = debug
 }
 
 // BuildResponse 将实体转换为响应
@@ -440,8 +449,8 @@ func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) err
 		return fmt.Errorf("平台配置失败: %w", err)
 	}
 
-	// 添加SSL一次性任务
-	err = s.sslUpdateTask.AddDisposableTask(ctx, &task.PendingSSLRecord{
+	// 添加SSL申请一次性任务
+	err = s.sslApplyTask.AddDisposableTask(ctx, &task.PendingSSLRecord{
 		Item:     firstSSLRecord,
 		Platform: config.Platform,
 		Params: &ssl_helper.SSLProcessParams{

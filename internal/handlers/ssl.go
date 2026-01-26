@@ -18,7 +18,6 @@ import (
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
-	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -41,14 +40,13 @@ func Ssl(c *gin.Context) {
 		},
 	}
 
-	// 创建SSL更新任务
-	sslUpdateTask := task.NewSSLUpdateTask(
+	// 创建SSL申请任务
+	sslApplyTask := task.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -56,7 +54,7 @@ func Ssl(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslUpdateTask,
+		sslApplyTask,
 	)
 
 	// 查询全部SSL记录
@@ -90,7 +88,6 @@ func Ssl(c *gin.Context) {
 		c,
 		filepath.Join("pages", "ssl.html"),
 		types.BasePageData[types.SSLResponse]{
-			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "SSL记录",
 			Data:  pageData,
 		},
@@ -164,7 +161,6 @@ func SslDetail(c *gin.Context) {
 		c,
 		filepath.Join("pages", "ssl_detail.html"),
 		types.BasePageData[types.SSLDetailResponse]{
-			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "SSL详情",
 			Data:  pageData,
 		},
@@ -219,7 +215,6 @@ func SslHistory(c *gin.Context) {
 		c,
 		filepath.Join("pages", "ssl_history.html"),
 		types.BasePageData[types.SSLHistoryResponse]{
-			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "SSL证书申请历史记录",
 			Data:  pageData,
 		},

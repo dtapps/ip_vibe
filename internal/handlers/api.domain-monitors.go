@@ -5,7 +5,6 @@ import (
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
-	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -39,7 +38,6 @@ func GetDomainMonitors(c *gin.Context) {
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -79,7 +77,6 @@ func GetDomainMonitorDetail(c *gin.Context) {
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -118,7 +115,6 @@ func CreateDomainMonitor(c *gin.Context) {
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -159,7 +155,6 @@ func UpdateDomainMonitor(c *gin.Context) {
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -200,7 +195,6 @@ func UpdateDomainMonitorActive(c *gin.Context) {
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -239,7 +233,6 @@ func BatchUpdateDomainMonitorActive(c *gin.Context) {
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -279,7 +272,6 @@ func DeleteDomainMonitor(c *gin.Context) {
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -318,7 +310,6 @@ func BatchDeleteDomainMonitor(c *gin.Context) {
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用
@@ -358,7 +349,6 @@ func CheckDomainMonitor(c *gin.Context) {
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 调用

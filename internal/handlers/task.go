@@ -6,7 +6,6 @@ import (
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/helper/gocron_helper"
-	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -53,7 +52,6 @@ func Task(c *gin.Context) {
 		c,
 		filepath.Join("pages", "task.html"),
 		types.BasePageData[types.TaskResponse]{
-			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "任务记录",
 			Data:  pageData,
 		},

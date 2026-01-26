@@ -6,7 +6,6 @@ import (
 	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
-	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -33,14 +32,13 @@ func GetSSLRecords(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL更新任务
-	sslUpdateTask := task.NewSSLUpdateTask(
+	// 创建SSL申请任务
+	sslApplyTask := task.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -48,7 +46,7 @@ func GetSSLRecords(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslUpdateTask,
+		sslApplyTask,
 	)
 
 	// 调用
@@ -81,14 +79,13 @@ func GetSSLRecordDetail(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL更新任务
-	sslUpdateTask := task.NewSSLUpdateTask(
+	// 创建SSL申请任务
+	sslApplyTask := task.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -96,7 +93,7 @@ func GetSSLRecordDetail(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslUpdateTask,
+		sslApplyTask,
 	)
 
 	// 调用
@@ -128,14 +125,13 @@ func ImportSSLRecord(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL更新任务
-	sslUpdateTask := task.NewSSLUpdateTask(
+	// 创建SSL申请任务
+	sslApplyTask := task.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -143,7 +139,7 @@ func ImportSSLRecord(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslUpdateTask,
+		sslApplyTask,
 	)
 
 	// 调用
@@ -175,14 +171,13 @@ func CreateSSLRecord(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL更新任务
-	sslUpdateTask := task.NewSSLUpdateTask(
+	// 创建SSL申请任务
+	sslApplyTask := task.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -190,7 +185,7 @@ func CreateSSLRecord(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslUpdateTask,
+		sslApplyTask,
 	)
 
 	// 调用
@@ -224,14 +219,13 @@ func UpdateSSLRecord(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL更新任务
-	sslUpdateTask := task.NewSSLUpdateTask(
+	// 创建SSL申请任务
+	sslApplyTask := task.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -239,7 +233,7 @@ func UpdateSSLRecord(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslUpdateTask,
+		sslApplyTask,
 	)
 
 	// 调用
@@ -273,14 +267,13 @@ func UpdateSSLRecordAutoRenewal(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL更新任务
-	sslUpdateTask := task.NewSSLUpdateTask(
+	// 创建SSL申请任务
+	sslApplyTask := task.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -288,7 +281,7 @@ func UpdateSSLRecordAutoRenewal(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslUpdateTask,
+		sslApplyTask,
 	)
 
 	// 调用
@@ -322,14 +315,13 @@ func UpdateSSLRecordActive(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL更新任务
-	sslUpdateTask := task.NewSSLUpdateTask(
+	// 创建SSL申请任务
+	sslApplyTask := task.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -337,7 +329,7 @@ func UpdateSSLRecordActive(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslUpdateTask,
+		sslApplyTask,
 	)
 
 	// 调用
@@ -369,14 +361,13 @@ func BatchUpdateSSLRecordActive(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL更新任务
-	sslUpdateTask := task.NewSSLUpdateTask(
+	// 创建SSL申请任务
+	sslApplyTask := task.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -384,7 +375,7 @@ func BatchUpdateSSLRecordActive(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslUpdateTask,
+		sslApplyTask,
 	)
 
 	// 调用
@@ -417,14 +408,13 @@ func DeleteSSLRecord(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL更新任务
-	sslUpdateTask := task.NewSSLUpdateTask(
+	// 创建SSL申请任务
+	sslApplyTask := task.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -432,7 +422,7 @@ func DeleteSSLRecord(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslUpdateTask,
+		sslApplyTask,
 	)
 
 	// 调用
@@ -464,14 +454,13 @@ func BatchDeleteSSLRecord(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL更新任务
-	sslUpdateTask := task.NewSSLUpdateTask(
+	// 创建SSL申请任务
+	sslApplyTask := task.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -479,7 +468,7 @@ func BatchDeleteSSLRecord(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslUpdateTask,
+		sslApplyTask,
 	)
 
 	// 调用
@@ -512,14 +501,13 @@ func ApplySSLRecord(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL更新任务
-	sslUpdateTask := task.NewSSLUpdateTask(
+	// 创建SSL申请任务
+	sslApplyTask := task.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -527,7 +515,7 @@ func ApplySSLRecord(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslUpdateTask,
+		sslApplyTask,
 	)
 
 	// 调用
@@ -562,14 +550,13 @@ func GetSSLRecordHistoryDetail(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL更新任务
-	sslUpdateTask := task.NewSSLUpdateTask(
+	// 创建SSL申请任务
+	sslApplyTask := task.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
-		sys_env.GvaEnv.DEBUG,
 	)
 
 	// 创建服务
@@ -577,7 +564,7 @@ func GetSSLRecordHistoryDetail(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslUpdateTask,
+		sslApplyTask,
 	)
 
 	// 调用

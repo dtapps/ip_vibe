@@ -14,6 +14,7 @@ import (
 	"vibe_ip/internal/ent_log/deviceipreport"
 	"vibe_ip/internal/ent_log/portforwardstats"
 	"vibe_ip/internal/helper/db_cache"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
 
@@ -43,13 +44,22 @@ type DeviceServiceImpl struct {
 }
 
 // NewDeviceService 创建设备服务实例
-func NewDeviceService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, debug bool) DeviceService {
+func NewDeviceService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) DeviceService {
+	debug := false
+	if sys_env.GvaEnv != nil {
+		debug = sys_env.GvaEnv.DEBUG
+	}
 	return &DeviceServiceImpl{
 		db:     db,
 		logDb:  logDb,
 		logger: logger,
 		debug:  debug,
 	}
+}
+
+// SetDebug 设置调试模式
+func (s *DeviceServiceImpl) SetDebug(debug bool) {
+	s.debug = debug
 }
 
 // BuildResponse 将实体转换为响应

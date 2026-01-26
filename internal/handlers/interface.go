@@ -40,7 +40,6 @@ func Interface(c *gin.Context) {
 		c,
 		filepath.Join("pages", "interface.html"),
 		types.BasePageData[types.InterfaceResponse]{
-			Debug: sys_env.GvaEnv.DEBUG,
 			Title: "接口日志",
 			Data:  pageData,
 		},
