@@ -103,6 +103,11 @@ func (SSLImport) Indexes() []ent.Index {
 		// 按域名排序
 		index.Fields("domain").
 			Annotations(entsql.WithComments(true)),
+
+		// 按证书序列号排序
+		index.Fields("serial_number").
+			Unique().
+			Annotations(entsql.WithComments(true)),
 	}
 }
 

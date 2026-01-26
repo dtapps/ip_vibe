@@ -174,14 +174,6 @@ func (SSLRecord) Indexes() []ent.Index {
 		index.Fields("domain").
 			Annotations(entsql.WithComments(true)),
 
-		// 按证书生效时间排序排序
-		index.Fields("not_before").
-			Annotations(entsql.WithComments(true)),
-
-		// 按证书过期时间排序
-		index.Fields("not_after").
-			Annotations(entsql.Desc(), entsql.WithComments(true)),
-
 		// 按证书状态排序
 		index.Fields("status").
 			Annotations(entsql.WithComments(true)),

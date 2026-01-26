@@ -68,11 +68,6 @@ var (
 				Columns: []*schema.Column{CdnRecordColumns[14]},
 			},
 			{
-				Name:    "cdnrecord_record_id",
-				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[3]},
-			},
-			{
 				Name:    "cdnrecord_sub_domain",
 				Unique:  false,
 				Columns: []*schema.Column{CdnRecordColumns[4]},
@@ -86,6 +81,11 @@ var (
 				Name:    "cdnrecord_ip_group_id",
 				Unique:  false,
 				Columns: []*schema.Column{CdnRecordColumns[13]},
+			},
+			{
+				Name:    "cdnrecord_device_group_id",
+				Unique:  false,
+				Columns: []*schema.Column{CdnRecordColumns[12]},
 			},
 			{
 				Name:    "cdnrecord_is_active",
@@ -177,11 +177,6 @@ var (
 				Name:    "dnsrecord_config_id",
 				Unique:  false,
 				Columns: []*schema.Column{DNSRecordColumns[14]},
-			},
-			{
-				Name:    "dnsrecord_record_id",
-				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[3]},
 			},
 			{
 				Name:    "dnsrecord_sub_domain",
@@ -278,6 +273,11 @@ var (
 				Annotation: &entsql.IndexAnnotation{
 					Desc: true,
 				},
+			},
+			{
+				Name:    "devicegroup_code",
+				Unique:  true,
+				Columns: []*schema.Column{DeviceGroupColumns[3]},
 			},
 		},
 	}
@@ -440,6 +440,11 @@ var (
 					Desc: true,
 				},
 			},
+			{
+				Name:    "ipgroup_code",
+				Unique:  true,
+				Columns: []*schema.Column{IPGroupColumns[3]},
+			},
 		},
 	}
 	// IPGroupDeviceColumns holds the columns for the "ip_group_device" table.
@@ -561,6 +566,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{SslImportColumns[4]},
 			},
+			{
+				Name:    "sslimport_serial_number",
+				Unique:  true,
+				Columns: []*schema.Column{SslImportColumns[5]},
+			},
 		},
 	}
 	// SslRecordColumns holds the columns for the "ssl_record" table.
@@ -615,19 +625,6 @@ var (
 				Name:    "sslrecord_domain",
 				Unique:  false,
 				Columns: []*schema.Column{SslRecordColumns[3]},
-			},
-			{
-				Name:    "sslrecord_not_before",
-				Unique:  false,
-				Columns: []*schema.Column{SslRecordColumns[11]},
-			},
-			{
-				Name:    "sslrecord_not_after",
-				Unique:  false,
-				Columns: []*schema.Column{SslRecordColumns[12]},
-				Annotation: &entsql.IndexAnnotation{
-					Desc: true,
-				},
 			},
 			{
 				Name:    "sslrecord_status",

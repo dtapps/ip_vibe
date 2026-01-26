@@ -16,6 +16,14 @@ CREATE INDEX `device_last_heartbeat_at` ON `device` (`last_heartbeat_at`);
 CREATE INDEX `device_created_at` ON `device` (`created_at` DESC);
 
 
+-- device_group definition
+
+CREATE TABLE `device_group` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `code` text NOT NULL, `name` text NOT NULL, `description` text NULL);
+
+CREATE INDEX `devicegroup_created_at` ON `device_group` (`created_at` DESC);
+CREATE UNIQUE INDEX `devicegroup_code` ON `device_group` (`code`);
+
+
 -- domain_monitor definition
 
 CREATE TABLE "domain_monitor" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `name` text NOT NULL, `domain` text NOT NULL, `check_interval` integer NOT NULL DEFAULT (60), `check_protocol` text NOT NULL, `is_active` bool NOT NULL DEFAULT (false), `current_status` text NOT NULL DEFAULT ('unknown'), `last_success_at` datetime NULL, `last_failure_at` datetime NULL, `description` text NULL, `request_headers` json NULL);
@@ -27,10 +35,18 @@ CREATE INDEX `domainmonitor_created_at` ON `domain_monitor` (`created_at` DESC);
 
 -- ip_group definition
 
-CREATE TABLE "ip_group" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `code` text NOT NULL, `record_id` text NULL, `name` text NOT NULL, `description` text NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL);
+CREATE TABLE ip_group (
+	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	created_at DATETIME NOT NULL,
+	updated_at DATETIME NOT NULL,
+	code TEXT NOT NULL,
+	record_id TEXT,
+	name TEXT NOT NULL,
+	description TEXT
+);
 
 CREATE INDEX `ipgroup_created_at` ON `ip_group` (`created_at` DESC);
-CREATE INDEX `ipgroup_record_id` ON `ip_group` (`record_id`);
+CREATE UNIQUE INDEX `ipgroup_code` ON `ip_group` (`code`);
 
 
 -- platform_config definition
@@ -49,6 +65,7 @@ CREATE TABLE "ssl_import" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `cre
 CREATE UNIQUE INDEX `ssl_import_serial_number_key` ON `ssl_import` (`serial_number`);
 CREATE INDEX `sslimport_created_at` ON `ssl_import` (`created_at` DESC);
 CREATE INDEX `sslimport_domain` ON `ssl_import` (`domain`);
+CREATE UNIQUE INDEX `sslimport_serial_number` ON `ssl_import` (`serial_number`);
 
 
 -- webhook definition
@@ -62,7 +79,7 @@ CREATE INDEX `webhook_created_at` ON `webhook` (`created_at` DESC);
 
 -- cdn_record definition
 
-CREATE TABLE `cdn_record` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `record_id` text NULL, `sub_domain` text NOT NULL, `type` text NOT NULL, `config_json` json NULL, `cdn_domain` text NULL, `is_active` bool NOT NULL DEFAULT (false), `last_refresh_at` datetime NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL, `ip_group_id` integer NOT NULL, `config_id` integer NOT NULL, CONSTRAINT `cdn_record_ip_group_cdn_records` FOREIGN KEY (`ip_group_id`) REFERENCES `ip_group` (`id`) ON DELETE NO ACTION, CONSTRAINT `cdn_record_platform_config_cdn_records` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
+CREATE TABLE "cdn_record" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `record_id` text NULL, `sub_domain` text NOT NULL, `type` text NOT NULL, `config_json` json NULL, `cdn_domain` text NULL, `is_active` bool NOT NULL DEFAULT (false), `last_refresh_at` datetime NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL, `device_group_id` integer NULL, `ip_group_id` integer NULL, `config_id` integer NOT NULL, CONSTRAINT `cdn_record_device_group_cdn_records` FOREIGN KEY (`device_group_id`) REFERENCES `device_group` (`id`) ON DELETE SET NULL, CONSTRAINT `cdn_record_ip_group_cdn_records` FOREIGN KEY (`ip_group_id`) REFERENCES `ip_group` (`id`) ON DELETE SET NULL, CONSTRAINT `cdn_record_platform_config_cdn_records` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
 
 CREATE INDEX `cdnrecord_created_at` ON `cdn_record` (`created_at` DESC);
 CREATE INDEX `cdnrecord_config_id` ON `cdn_record` (`config_id`);
@@ -71,6 +88,16 @@ CREATE INDEX `cdnrecord_sub_domain` ON `cdn_record` (`sub_domain`);
 CREATE INDEX `cdnrecord_type` ON `cdn_record` (`type`);
 CREATE INDEX `cdnrecord_ip_group_id` ON `cdn_record` (`ip_group_id`);
 CREATE INDEX `cdnrecord_is_active` ON `cdn_record` (`is_active`);
+CREATE INDEX `cdnrecord_device_group_id` ON `cdn_record` (`device_group_id`);
+
+
+-- device_group_device definition
+
+CREATE TABLE `device_group_device` (`created_at` datetime NOT NULL, `device_id` integer NOT NULL, `device_group_id` integer NOT NULL, PRIMARY KEY (`device_id`, `device_group_id`), CONSTRAINT `device_group_device_device_device` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`) ON DELETE NO ACTION, CONSTRAINT `device_group_device_device_group_device_group` FOREIGN KEY (`device_group_id`) REFERENCES `device_group` (`id`) ON DELETE NO ACTION);
+
+CREATE INDEX `devicegroupdevice_created_at` ON `device_group_device` (`created_at` DESC);
+CREATE INDEX `devicegroupdevice_device_id` ON `device_group_device` (`device_id`);
+CREATE INDEX `devicegroupdevice_device_group_id` ON `device_group_device` (`device_group_id`);
 
 
 -- device_port_forward definition
@@ -83,16 +110,17 @@ CREATE INDEX `deviceportforward_created_at` ON `device_port_forward` (`created_a
 
 -- dns_record definition
 
-CREATE TABLE "dns_record" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `record_id` text NULL, `sub_domain` text NOT NULL, `type` text NOT NULL, `is_active` bool NOT NULL DEFAULT (false), `last_refresh_at` datetime NULL, `cdn_record_id` integer NULL, `ip_group_id` integer NULL, `config_id` integer NOT NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL, `config_json` json NULL, CONSTRAINT `dns_record_cdn_record_dns_records` FOREIGN KEY (`cdn_record_id`) REFERENCES `cdn_record` (`id`) ON DELETE SET NULL, CONSTRAINT `dns_record_ip_group_dns_records` FOREIGN KEY (`ip_group_id`) REFERENCES `ip_group` (`id`) ON DELETE SET NULL, CONSTRAINT `dns_record_platform_config_dns_records` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
+CREATE TABLE "dns_record" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `record_id` text NULL, `sub_domain` text NOT NULL, `type` text NOT NULL, `config_json` json NULL, `is_active` bool NOT NULL DEFAULT (false), `last_refresh_at` datetime NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL, `cdn_record_id` integer NULL, `device_group_id` integer NULL, `ip_group_id` integer NULL, `config_id` integer NOT NULL, CONSTRAINT `dns_record_cdn_record_dns_records` FOREIGN KEY (`cdn_record_id`) REFERENCES `cdn_record` (`id`) ON DELETE SET NULL, CONSTRAINT `dns_record_device_group_dns_records` FOREIGN KEY (`device_group_id`) REFERENCES `device_group` (`id`) ON DELETE SET NULL, CONSTRAINT `dns_record_ip_group_dns_records` FOREIGN KEY (`ip_group_id`) REFERENCES `ip_group` (`id`) ON DELETE SET NULL, CONSTRAINT `dns_record_platform_config_dns_records` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
 
-CREATE INDEX `dnsrecord_sub_domain` ON `dns_record` (`sub_domain`);
-CREATE INDEX `dnsrecord_type` ON `dns_record` (`type`);
-CREATE INDEX `dnsrecord_is_active` ON `dns_record` (`is_active`);
 CREATE INDEX `dnsrecord_created_at` ON `dns_record` (`created_at` DESC);
 CREATE INDEX `dnsrecord_config_id` ON `dns_record` (`config_id`);
-CREATE INDEX `dnsrecord_ip_group_id` ON `dns_record` (`ip_group_id`);
-CREATE INDEX `dnsrecord_cdn_record_id` ON `dns_record` (`cdn_record_id`);
 CREATE INDEX `dnsrecord_record_id` ON `dns_record` (`record_id`);
+CREATE INDEX `dnsrecord_sub_domain` ON `dns_record` (`sub_domain`);
+CREATE INDEX `dnsrecord_type` ON `dns_record` (`type`);
+CREATE INDEX `dnsrecord_ip_group_id` ON `dns_record` (`ip_group_id`);
+CREATE INDEX `dnsrecord_device_group_id` ON `dns_record` (`device_group_id`);
+CREATE INDEX `dnsrecord_cdn_record_id` ON `dns_record` (`cdn_record_id`);
+CREATE INDEX `dnsrecord_is_active` ON `dns_record` (`is_active`);
 
 
 -- ip_group_device definition

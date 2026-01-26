@@ -89,6 +89,11 @@ func (IpGroup) Indexes() []ent.Index {
 		// 按创建时间排序
 		index.Fields("created_at").
 			Annotations(entsql.Desc(), entsql.WithComments(true)),
+
+		// 按IP组编码排序
+		index.Fields("code").
+			Unique().
+			Annotations(entsql.WithComments(true)),
 	}
 }
 

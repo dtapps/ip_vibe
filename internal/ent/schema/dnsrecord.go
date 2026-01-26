@@ -159,10 +159,6 @@ func (DNSRecord) Indexes() []ent.Index {
 		index.Fields("config_id").
 			Annotations(entsql.WithComments(true)),
 
-		// 按平台侧记录ID排序
-		index.Fields("record_id").
-			Annotations(entsql.WithComments(true)),
-
 		// 按域名排序
 		index.Fields("sub_domain").
 			Annotations(entsql.WithComments(true)),

@@ -156,10 +156,6 @@ func (CDNRecord) Indexes() []ent.Index {
 		index.Fields("config_id").
 			Annotations(entsql.WithComments(true)),
 
-		// 按平台侧记录ID排序
-		index.Fields("record_id").
-			Annotations(entsql.WithComments(true)),
-
 		// 按域名排序
 		index.Fields("sub_domain").
 			Annotations(entsql.WithComments(true)),
@@ -170,6 +166,10 @@ func (CDNRecord) Indexes() []ent.Index {
 
 		// 按IP组序号排序
 		index.Fields("ip_group_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 按设备组序号排序
+		index.Fields("device_group_id").
 			Annotations(entsql.WithComments(true)),
 
 		// 按是否活跃排序
