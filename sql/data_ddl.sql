@@ -42,6 +42,15 @@ CREATE INDEX `platformconfig_platform` ON `platform_config` (`platform`);
 CREATE INDEX `platformconfig_created_at` ON `platform_config` (`created_at` DESC);
 
 
+-- ssl_import definition
+
+CREATE TABLE "ssl_import" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `source` text NOT NULL DEFAULT ('unknown'), `domain` text NOT NULL, `serial_number` text NOT NULL, `certificate` text NOT NULL, `private_key` text NOT NULL, `not_before` datetime NOT NULL, `not_after` datetime NOT NULL, `status` text NOT NULL DEFAULT ('unknown'));
+
+CREATE UNIQUE INDEX `ssl_import_serial_number_key` ON `ssl_import` (`serial_number`);
+CREATE INDEX `sslimport_created_at` ON `ssl_import` (`created_at` DESC);
+CREATE INDEX `sslimport_domain` ON `ssl_import` (`domain`);
+
+
 -- webhook definition
 
 CREATE TABLE "webhook" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `name` text NOT NULL, `description` text NULL, `platform` text NOT NULL, `url` text NOT NULL, `secret` text NULL, `events` json NOT NULL, `template_title` text NULL, `template_content` text NULL, `is_active` bool NOT NULL DEFAULT (false));
@@ -97,7 +106,7 @@ CREATE INDEX `ipgroupdevice_ip_group_id` ON `ip_group_device` (`ip_group_id`);
 
 -- ssl_record definition
 
-CREATE TABLE "ssl_record" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `domain` text NOT NULL, `cert_domain` text NULL, `cert_url` text NULL, `cert_stable_url` text NULL, `cert_private_key` text NULL, `cert_certificate` text NULL, `cert_issuer_certificate` text NULL, `cert_csr` text NULL, `not_before` datetime NULL, `not_after` datetime NULL, `status` text NOT NULL DEFAULT ('pending'), `provider` text NOT NULL DEFAULT ('letsencrypt'), `is_active` bool NOT NULL DEFAULT (false), `renewal_days` integer NOT NULL DEFAULT (30), `is_auto_renewal` bool NOT NULL DEFAULT (false), `last_refresh_at` datetime NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL, `config_id` integer NOT NULL, CONSTRAINT `ssl_record_platform_config_ssl_records` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
+CREATE TABLE "ssl_record" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `domain` text NOT NULL, `cert_domain` text NULL, `cert_url` text NULL, `cert_stable_url` text NULL, `cert_private_key` text NULL, `cert_certificate` text NULL, `cert_issuer_certificate` text NULL, `cert_csr` text NULL, `not_before` datetime NULL, `not_after` datetime NULL, `status` text NOT NULL DEFAULT ('unknown'), `provider` text NOT NULL DEFAULT ('unknown'), `is_active` bool NOT NULL DEFAULT (false), `renewal_days` integer NULL DEFAULT (30), `is_auto_renewal` bool NULL DEFAULT (false), `last_refresh_at` datetime NULL, `last_api_response` text NULL, `last_api_response_at` datetime NULL, `config_id` integer NOT NULL, CONSTRAINT `ssl_record_platform_config_ssl_records` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
 
 CREATE INDEX `sslrecord_created_at` ON `ssl_record` (`created_at` DESC);
 CREATE INDEX `sslrecord_domain` ON `ssl_record` (`domain`);
