@@ -180,7 +180,11 @@ func Dashboard(c *gin.Context) {
 		PortForwardReportTime:    setting.PortForwardReportTime,
 		CDNRefreshTaskTime:       setting.CDNRefreshTaskTime,
 		DNSRefreshTaskTime:       setting.DNSRefreshTaskTime,
+		SSLApplyTaskTime:         setting.SSLApplyTaskTime,
 		SSLRefreshTaskTime:       setting.SSLRefreshTaskTime,
+		HTTPRequestLogRecordTime: setting.HTTPRequestLogRecordTime,
+		HistoryDataRetainTime:    setting.HistoryDataRetainTime,
+		StatisticDataRetainTime:  setting.StatisticDataRetainTime,
 	}
 
 	// 渲染模板
