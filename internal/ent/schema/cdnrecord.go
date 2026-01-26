@@ -77,7 +77,13 @@ func (CDNRecord) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("ip_group_id").
-			Comment("IP组序号").
+			Optional().
+			Comment("IP组序号（二选一）").
+			Annotations(entsql.WithComments(true)),
+
+		field.Int64("device_group_id").
+			Optional().
+			Comment("设备组序号（二选一）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Bool("is_active").
@@ -121,8 +127,15 @@ func (CDNRecord) Edges() []ent.Edge {
 			Ref("cdn_records").
 			Field("ip_group_id").
 			Unique().
-			Required().
-			Comment("关联的IP组").
+			Comment("关联的IP组（二选一）").
+			Annotations(entsql.WithComments(true)),
+
+		// 一对多 DeviceGroup -> CDNRecord
+		edge.From("device_group", DeviceGroup.Type).
+			Ref("cdn_records").
+			Field("device_group_id").
+			Unique().
+			Comment("关联的设备组（二选一）").
 			Annotations(entsql.WithComments(true)),
 
 		// 一对一 CDNRecord -> DNSRecord

@@ -351,6 +351,8 @@ const (
 	LogObjTypeCache               string = "Cache"               // 缓存
 	LogObjTypeDNSRecord           string = "DNSRecord"           // DNS记录
 	LogObjTypeDevice              string = "Device"              // 设备
+	LogObjTypeDeviceGroup         string = "DeviceGroup"         // 设备组
+	LogObjTypeDeviceGroupDevice   string = "DeviceGroupDevice"   // 设备组设备
 	LogObjTypeDevicePortForward   string = "DevicePortForward"   // 端口转发
 	LogObjTypeDomainMonitor       string = "DomainMonitor"       // 域名监控
 	LogObjTypeIpGroup             string = "IpGroup"             // IP组
@@ -382,6 +384,8 @@ var GetLogObjTypeDescriptions = map[string]string{
 	LogObjTypeCDNRecord:           "CDN记录",
 	LogObjTypeDNSRecord:           "DNS记录",
 	LogObjTypeDevice:              "设备",
+	LogObjTypeDeviceGroup:         "设备组",
+	LogObjTypeDeviceGroupDevice:   "设备组设备",
 	LogObjTypeDevicePortForward:   "端口转发",
 	LogObjTypeDomainMonitor:       "域名监控",
 	LogObjTypeIpGroup:             "IP组",
@@ -410,6 +414,8 @@ var GetLogObjTypes = []string{
 	LogObjTypeCDNRecord,
 	LogObjTypeDNSRecord,
 	LogObjTypeDevice,
+	LogObjTypeDeviceGroup,
+	LogObjTypeDeviceGroupDevice,
 	LogObjTypeDevicePortForward,
 	LogObjTypeDomainMonitor,
 	LogObjTypeIpGroup,

@@ -7,6 +7,8 @@ import (
 	"vibe_ip/internal/ent/cache"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
+	"vibe_ip/internal/ent/devicegroup"
+	"vibe_ip/internal/ent/devicegroupdevice"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
@@ -92,6 +94,46 @@ func (q *DeviceQuery) OrderIf(condition bool, o device.OrderOption) *DeviceQuery
 // OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
 func (q *DeviceQuery) OrderIfs(condition bool, o ...device.OrderOption) *DeviceQuery {
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o...)
+	}
+	return q
+}
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *DeviceGroupQuery) OrderIf(condition bool, o devicegroup.OrderOption) *DeviceGroupQuery {
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o)
+	}
+	return q
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *DeviceGroupQuery) OrderIfs(condition bool, o ...devicegroup.OrderOption) *DeviceGroupQuery {
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o...)
+	}
+	return q
+}
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *DeviceGroupDeviceQuery) OrderIf(condition bool, o devicegroupdevice.OrderOption) *DeviceGroupDeviceQuery {
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o)
+	}
+	return q
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *DeviceGroupDeviceQuery) OrderIfs(condition bool, o ...devicegroupdevice.OrderOption) *DeviceGroupDeviceQuery {
 	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
 	if condition {
 		q.Order(o...)

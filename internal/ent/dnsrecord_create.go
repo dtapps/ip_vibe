@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/platformconfig"
@@ -106,6 +107,20 @@ func (_c *DNSRecordCreate) SetNillableIPGroupID(v *int64) *DNSRecordCreate {
 	return _c
 }
 
+// SetDeviceGroupID sets the "device_group_id" field.
+func (_c *DNSRecordCreate) SetDeviceGroupID(v int64) *DNSRecordCreate {
+	_c.mutation.SetDeviceGroupID(v)
+	return _c
+}
+
+// SetNillableDeviceGroupID sets the "device_group_id" field if the given value is not nil.
+func (_c *DNSRecordCreate) SetNillableDeviceGroupID(v *int64) *DNSRecordCreate {
+	if v != nil {
+		_c.SetDeviceGroupID(*v)
+	}
+	return _c
+}
+
 // SetCdnRecordID sets the "cdn_record_id" field.
 func (_c *DNSRecordCreate) SetCdnRecordID(v int64) *DNSRecordCreate {
 	_c.mutation.SetCdnRecordID(v)
@@ -190,6 +205,11 @@ func (_c *DNSRecordCreate) SetConfig(v *PlatformConfig) *DNSRecordCreate {
 // SetIPGroup sets the "ip_group" edge to the IpGroup entity.
 func (_c *DNSRecordCreate) SetIPGroup(v *IpGroup) *DNSRecordCreate {
 	return _c.SetIPGroupID(v.ID)
+}
+
+// SetDeviceGroup sets the "device_group" edge to the DeviceGroup entity.
+func (_c *DNSRecordCreate) SetDeviceGroup(v *DeviceGroup) *DNSRecordCreate {
+	return _c.SetDeviceGroupID(v.ID)
 }
 
 // SetCdnRecord sets the "cdn_record" edge to the CDNRecord entity.
@@ -400,6 +420,23 @@ func (_c *DNSRecordCreate) createSpec() (*DNSRecord, *sqlgraph.CreateSpec) {
 		_node.IPGroupID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := _c.mutation.DeviceGroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   dnsrecord.DeviceGroupTable,
+			Columns: []string{dnsrecord.DeviceGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.DeviceGroupID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := _c.mutation.CdnRecordIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -532,6 +569,24 @@ func (u *DNSRecordUpsert) UpdateIPGroupID() *DNSRecordUpsert {
 // ClearIPGroupID clears the value of the "ip_group_id" field.
 func (u *DNSRecordUpsert) ClearIPGroupID() *DNSRecordUpsert {
 	u.SetNull(dnsrecord.FieldIPGroupID)
+	return u
+}
+
+// SetDeviceGroupID sets the "device_group_id" field.
+func (u *DNSRecordUpsert) SetDeviceGroupID(v int64) *DNSRecordUpsert {
+	u.Set(dnsrecord.FieldDeviceGroupID, v)
+	return u
+}
+
+// UpdateDeviceGroupID sets the "device_group_id" field to the value that was provided on create.
+func (u *DNSRecordUpsert) UpdateDeviceGroupID() *DNSRecordUpsert {
+	u.SetExcluded(dnsrecord.FieldDeviceGroupID)
+	return u
+}
+
+// ClearDeviceGroupID clears the value of the "device_group_id" field.
+func (u *DNSRecordUpsert) ClearDeviceGroupID() *DNSRecordUpsert {
+	u.SetNull(dnsrecord.FieldDeviceGroupID)
 	return u
 }
 
@@ -753,6 +808,27 @@ func (u *DNSRecordUpsertOne) UpdateIPGroupID() *DNSRecordUpsertOne {
 func (u *DNSRecordUpsertOne) ClearIPGroupID() *DNSRecordUpsertOne {
 	return u.Update(func(s *DNSRecordUpsert) {
 		s.ClearIPGroupID()
+	})
+}
+
+// SetDeviceGroupID sets the "device_group_id" field.
+func (u *DNSRecordUpsertOne) SetDeviceGroupID(v int64) *DNSRecordUpsertOne {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.SetDeviceGroupID(v)
+	})
+}
+
+// UpdateDeviceGroupID sets the "device_group_id" field to the value that was provided on create.
+func (u *DNSRecordUpsertOne) UpdateDeviceGroupID() *DNSRecordUpsertOne {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.UpdateDeviceGroupID()
+	})
+}
+
+// ClearDeviceGroupID clears the value of the "device_group_id" field.
+func (u *DNSRecordUpsertOne) ClearDeviceGroupID() *DNSRecordUpsertOne {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.ClearDeviceGroupID()
 	})
 }
 
@@ -1154,6 +1230,27 @@ func (u *DNSRecordUpsertBulk) UpdateIPGroupID() *DNSRecordUpsertBulk {
 func (u *DNSRecordUpsertBulk) ClearIPGroupID() *DNSRecordUpsertBulk {
 	return u.Update(func(s *DNSRecordUpsert) {
 		s.ClearIPGroupID()
+	})
+}
+
+// SetDeviceGroupID sets the "device_group_id" field.
+func (u *DNSRecordUpsertBulk) SetDeviceGroupID(v int64) *DNSRecordUpsertBulk {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.SetDeviceGroupID(v)
+	})
+}
+
+// UpdateDeviceGroupID sets the "device_group_id" field to the value that was provided on create.
+func (u *DNSRecordUpsertBulk) UpdateDeviceGroupID() *DNSRecordUpsertBulk {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.UpdateDeviceGroupID()
+	})
+}
+
+// ClearDeviceGroupID clears the value of the "device_group_id" field.
+func (u *DNSRecordUpsertBulk) ClearDeviceGroupID() *DNSRecordUpsertBulk {
+	return u.Update(func(s *DNSRecordUpsert) {
+		s.ClearDeviceGroupID()
 	})
 }
 

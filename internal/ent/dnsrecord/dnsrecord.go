@@ -32,6 +32,8 @@ const (
 	FieldConfigJSON = "config_json"
 	// FieldIPGroupID holds the string denoting the ip_group_id field in the database.
 	FieldIPGroupID = "ip_group_id"
+	// FieldDeviceGroupID holds the string denoting the device_group_id field in the database.
+	FieldDeviceGroupID = "device_group_id"
 	// FieldCdnRecordID holds the string denoting the cdn_record_id field in the database.
 	FieldCdnRecordID = "cdn_record_id"
 	// FieldIsActive holds the string denoting the is_active field in the database.
@@ -46,6 +48,8 @@ const (
 	EdgeConfig = "config"
 	// EdgeIPGroup holds the string denoting the ip_group edge name in mutations.
 	EdgeIPGroup = "ip_group"
+	// EdgeDeviceGroup holds the string denoting the device_group edge name in mutations.
+	EdgeDeviceGroup = "device_group"
 	// EdgeCdnRecord holds the string denoting the cdn_record edge name in mutations.
 	EdgeCdnRecord = "cdn_record"
 	// Table holds the table name of the dnsrecord in the database.
@@ -64,6 +68,13 @@ const (
 	IPGroupInverseTable = "ip_group"
 	// IPGroupColumn is the table column denoting the ip_group relation/edge.
 	IPGroupColumn = "ip_group_id"
+	// DeviceGroupTable is the table that holds the device_group relation/edge.
+	DeviceGroupTable = "dns_record"
+	// DeviceGroupInverseTable is the table name for the DeviceGroup entity.
+	// It exists in this package in order to avoid circular dependency with the "devicegroup" package.
+	DeviceGroupInverseTable = "device_group"
+	// DeviceGroupColumn is the table column denoting the device_group relation/edge.
+	DeviceGroupColumn = "device_group_id"
 	// CdnRecordTable is the table that holds the cdn_record relation/edge.
 	CdnRecordTable = "dns_record"
 	// CdnRecordInverseTable is the table name for the CDNRecord entity.
@@ -84,6 +95,7 @@ var Columns = []string{
 	FieldType,
 	FieldConfigJSON,
 	FieldIPGroupID,
+	FieldDeviceGroupID,
 	FieldCdnRecordID,
 	FieldIsActive,
 	FieldLastRefreshAt,
@@ -189,6 +201,11 @@ func ByIPGroupID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIPGroupID, opts...).ToFunc()
 }
 
+// ByDeviceGroupID orders the results by the device_group_id field.
+func ByDeviceGroupID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDeviceGroupID, opts...).ToFunc()
+}
+
 // ByCdnRecordID orders the results by the cdn_record_id field.
 func ByCdnRecordID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCdnRecordID, opts...).ToFunc()
@@ -228,6 +245,13 @@ func ByIPGroupField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// ByDeviceGroupField orders the results by device_group field.
+func ByDeviceGroupField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newDeviceGroupStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByCdnRecordField orders the results by cdn_record field.
 func ByCdnRecordField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -246,6 +270,13 @@ func newIPGroupStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(IPGroupInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, IPGroupTable, IPGroupColumn),
+	)
+}
+func newDeviceGroupStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(DeviceGroupInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, DeviceGroupTable, DeviceGroupColumn),
 	)
 }
 func newCdnRecordStep() *sqlgraph.Step {

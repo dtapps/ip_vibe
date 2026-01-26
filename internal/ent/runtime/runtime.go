@@ -7,6 +7,8 @@ import (
 	"vibe_ip/internal/ent/cache"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
+	"vibe_ip/internal/ent/devicegroup"
+	"vibe_ip/internal/ent/devicegroupdevice"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
@@ -46,7 +48,7 @@ func init() {
 	// cdnrecord.ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
 	cdnrecord.ConfigIDValidator = cdnrecordDescConfigID.Validators[0].(func(int64) error)
 	// cdnrecordDescIsActive is the schema descriptor for is_active field.
-	cdnrecordDescIsActive := cdnrecordFields[8].Descriptor()
+	cdnrecordDescIsActive := cdnrecordFields[9].Descriptor()
 	// cdnrecord.DefaultIsActive holds the default value on creation for the is_active field.
 	cdnrecord.DefaultIsActive = cdnrecordDescIsActive.Default.(bool)
 	// cdnrecordDescID is the schema descriptor for id field.
@@ -83,7 +85,7 @@ func init() {
 	// dnsrecord.ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
 	dnsrecord.ConfigIDValidator = dnsrecordDescConfigID.Validators[0].(func(int64) error)
 	// dnsrecordDescIsActive is the schema descriptor for is_active field.
-	dnsrecordDescIsActive := dnsrecordFields[8].Descriptor()
+	dnsrecordDescIsActive := dnsrecordFields[9].Descriptor()
 	// dnsrecord.DefaultIsActive holds the default value on creation for the is_active field.
 	dnsrecord.DefaultIsActive = dnsrecordDescIsActive.Default.(bool)
 	// dnsrecordDescID is the schema descriptor for id field.
@@ -119,6 +121,48 @@ func init() {
 	deviceDescID := deviceFields[0].Descriptor()
 	// device.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	device.IDValidator = deviceDescID.Validators[0].(func(int64) error)
+	devicegroupMixin := schema.DeviceGroup{}.Mixin()
+	devicegroupHooks := schema.DeviceGroup{}.Hooks()
+	devicegroup.Hooks[0] = devicegroupHooks[0]
+	devicegroupMixinFields0 := devicegroupMixin[0].Fields()
+	_ = devicegroupMixinFields0
+	devicegroupFields := schema.DeviceGroup{}.Fields()
+	_ = devicegroupFields
+	// devicegroupDescCreatedAt is the schema descriptor for created_at field.
+	devicegroupDescCreatedAt := devicegroupMixinFields0[0].Descriptor()
+	// devicegroup.DefaultCreatedAt holds the default value on creation for the created_at field.
+	devicegroup.DefaultCreatedAt = devicegroupDescCreatedAt.Default.(func() time.Time)
+	// devicegroupDescUpdatedAt is the schema descriptor for updated_at field.
+	devicegroupDescUpdatedAt := devicegroupMixinFields0[1].Descriptor()
+	// devicegroup.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	devicegroup.DefaultUpdatedAt = devicegroupDescUpdatedAt.Default.(func() time.Time)
+	// devicegroup.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	devicegroup.UpdateDefaultUpdatedAt = devicegroupDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// devicegroupDescCode is the schema descriptor for code field.
+	devicegroupDescCode := devicegroupFields[1].Descriptor()
+	// devicegroup.DefaultCode holds the default value on creation for the code field.
+	devicegroup.DefaultCode = devicegroupDescCode.Default.(func() string)
+	// devicegroupDescID is the schema descriptor for id field.
+	devicegroupDescID := devicegroupFields[0].Descriptor()
+	// devicegroup.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	devicegroup.IDValidator = devicegroupDescID.Validators[0].(func(int64) error)
+	devicegroupdeviceMixin := schema.DeviceGroupDevice{}.Mixin()
+	devicegroupdeviceMixinFields0 := devicegroupdeviceMixin[0].Fields()
+	_ = devicegroupdeviceMixinFields0
+	devicegroupdeviceFields := schema.DeviceGroupDevice{}.Fields()
+	_ = devicegroupdeviceFields
+	// devicegroupdeviceDescCreatedAt is the schema descriptor for created_at field.
+	devicegroupdeviceDescCreatedAt := devicegroupdeviceMixinFields0[0].Descriptor()
+	// devicegroupdevice.DefaultCreatedAt holds the default value on creation for the created_at field.
+	devicegroupdevice.DefaultCreatedAt = devicegroupdeviceDescCreatedAt.Default.(func() time.Time)
+	// devicegroupdeviceDescDeviceID is the schema descriptor for device_id field.
+	devicegroupdeviceDescDeviceID := devicegroupdeviceFields[1].Descriptor()
+	// devicegroupdevice.DeviceIDValidator is a validator for the "device_id" field. It is called by the builders before save.
+	devicegroupdevice.DeviceIDValidator = devicegroupdeviceDescDeviceID.Validators[0].(func(int64) error)
+	// devicegroupdeviceDescDeviceGroupID is the schema descriptor for device_group_id field.
+	devicegroupdeviceDescDeviceGroupID := devicegroupdeviceFields[2].Descriptor()
+	// devicegroupdevice.DeviceGroupIDValidator is a validator for the "device_group_id" field. It is called by the builders before save.
+	devicegroupdevice.DeviceGroupIDValidator = devicegroupdeviceDescDeviceGroupID.Validators[0].(func(int64) error)
 	deviceportforwardMixin := schema.DevicePortForward{}.Mixin()
 	deviceportforwardHooks := schema.DevicePortForward{}.Hooks()
 	deviceportforward.Hooks[0] = deviceportforwardHooks[0]

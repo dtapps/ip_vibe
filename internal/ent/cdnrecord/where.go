@@ -90,6 +90,11 @@ func IPGroupID(v int64) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldEQ(FieldIPGroupID, v))
 }
 
+// DeviceGroupID applies equality check predicate on the "device_group_id" field. It's identical to DeviceGroupIDEQ.
+func DeviceGroupID(v int64) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldEQ(FieldDeviceGroupID, v))
+}
+
 // IsActive applies equality check predicate on the "is_active" field. It's identical to IsActiveEQ.
 func IsActive(v bool) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldEQ(FieldIsActive, v))
@@ -475,6 +480,46 @@ func IPGroupIDNotIn(vs ...int64) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldNotIn(FieldIPGroupID, vs...))
 }
 
+// IPGroupIDIsNil applies the IsNil predicate on the "ip_group_id" field.
+func IPGroupIDIsNil() predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldIsNull(FieldIPGroupID))
+}
+
+// IPGroupIDNotNil applies the NotNil predicate on the "ip_group_id" field.
+func IPGroupIDNotNil() predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldNotNull(FieldIPGroupID))
+}
+
+// DeviceGroupIDEQ applies the EQ predicate on the "device_group_id" field.
+func DeviceGroupIDEQ(v int64) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldEQ(FieldDeviceGroupID, v))
+}
+
+// DeviceGroupIDNEQ applies the NEQ predicate on the "device_group_id" field.
+func DeviceGroupIDNEQ(v int64) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldNEQ(FieldDeviceGroupID, v))
+}
+
+// DeviceGroupIDIn applies the In predicate on the "device_group_id" field.
+func DeviceGroupIDIn(vs ...int64) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldIn(FieldDeviceGroupID, vs...))
+}
+
+// DeviceGroupIDNotIn applies the NotIn predicate on the "device_group_id" field.
+func DeviceGroupIDNotIn(vs ...int64) predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldNotIn(FieldDeviceGroupID, vs...))
+}
+
+// DeviceGroupIDIsNil applies the IsNil predicate on the "device_group_id" field.
+func DeviceGroupIDIsNil() predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldIsNull(FieldDeviceGroupID))
+}
+
+// DeviceGroupIDNotNil applies the NotNil predicate on the "device_group_id" field.
+func DeviceGroupIDNotNil() predicate.CDNRecord {
+	return predicate.CDNRecord(sql.FieldNotNull(FieldDeviceGroupID))
+}
+
 // IsActiveEQ applies the EQ predicate on the "is_active" field.
 func IsActiveEQ(v bool) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldEQ(FieldIsActive, v))
@@ -698,6 +743,29 @@ func HasIPGroup() predicate.CDNRecord {
 func HasIPGroupWith(preds ...predicate.IpGroup) predicate.CDNRecord {
 	return predicate.CDNRecord(func(s *sql.Selector) {
 		step := newIPGroupStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasDeviceGroup applies the HasEdge predicate on the "device_group" edge.
+func HasDeviceGroup() predicate.CDNRecord {
+	return predicate.CDNRecord(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, DeviceGroupTable, DeviceGroupColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDeviceGroupWith applies the HasEdge predicate on the "device_group" edge with a given conditions (other predicates).
+func HasDeviceGroupWith(preds ...predicate.DeviceGroup) predicate.CDNRecord {
+	return predicate.CDNRecord(func(s *sql.Selector) {
+		step := newDeviceGroupStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

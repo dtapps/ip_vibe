@@ -73,13 +73,17 @@ func (DNSRecord) Fields() []ent.Field {
 
 		field.Int64("ip_group_id").
 			Optional().
-			Comment("IP组序号（与 cdn_record_id 二选一）").
+			Comment("IP组序号（三选一）").
+			Annotations(entsql.WithComments(true)),
+
+		field.Int64("device_group_id").
+			Optional().
+			Comment("设备组序号（三选一）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("cdn_record_id").
 			Optional().
-			Unique().
-			Comment("CDN记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）").
+			Comment("CDN记录序号（三选一）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Bool("is_active").
@@ -123,7 +127,15 @@ func (DNSRecord) Edges() []ent.Edge {
 			Ref("dns_records").
 			Field("ip_group_id").
 			Unique().
-			Comment("关联的IP组（二选一）").
+			Comment("关联的IP组（三选一）").
+			Annotations(entsql.WithComments(true)),
+
+		// 一对多 DeviceGroup -> DNSRecord
+		edge.From("device_group", DeviceGroup.Type).
+			Ref("dns_records").
+			Field("device_group_id").
+			Unique().
+			Comment("关联的设备组（三选一）").
 			Annotations(entsql.WithComments(true)),
 
 		// 一对一 CDNRecord -> DNSRecord
@@ -131,7 +143,7 @@ func (DNSRecord) Edges() []ent.Edge {
 			Ref("dns_records").
 			Field("cdn_record_id").
 			Unique().
-			Comment("关联的CDN记录（二选一）").
+			Comment("关联的CDN记录（三选一）").
 			Annotations(entsql.WithComments(true)),
 	}
 }
@@ -161,6 +173,10 @@ func (DNSRecord) Indexes() []ent.Index {
 
 		// 按IP组序号排序
 		index.Fields("ip_group_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 按设备组序号排序
+		index.Fields("device_group_id").
 			Annotations(entsql.WithComments(true)),
 
 		// 按CDN记录序号排序

@@ -6,6 +6,8 @@ import (
 	"vibe_ip/internal/ent/cache"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
+	"vibe_ip/internal/ent/devicegroup"
+	"vibe_ip/internal/ent/devicegroupdevice"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
@@ -920,6 +922,181 @@ func (q *DeviceQuery) OrderByLastHeartbeatAtAsc() *DeviceQuery {
 
 // OrderByIDDesc 按主键 ID 降序排列查询结果。
 // 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *DeviceGroupQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DeviceGroup.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DeviceGroupQuery) OrderByIDDesc() *DeviceGroupQuery {
+	return q.Order(Desc(devicegroup.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *DeviceGroupQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DeviceGroup.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *DeviceGroupQuery) OrderByIDAsc() *DeviceGroupQuery {
+	return q.Order(Asc(devicegroup.FieldID))
+}
+
+// OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *DeviceGroupQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DeviceGroup.Query().
+//	    OrderByCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DeviceGroupQuery) OrderByCreatedAtDesc() *DeviceGroupQuery {
+	return q.Order(Desc(devicegroup.FieldCreatedAt))
+}
+
+// OrderByCreatedAtAsc 按字段 created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *DeviceGroupQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DeviceGroup.Query().
+//	    OrderByCreatedAtAsc().
+//	    All(ctx)
+func (q *DeviceGroupQuery) OrderByCreatedAtAsc() *DeviceGroupQuery {
+	return q.Order(Asc(devicegroup.FieldCreatedAt))
+}
+
+// OrderByUpdatedAtDesc 按字段 updated_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *DeviceGroupQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DeviceGroup.Query().
+//	    OrderByUpdatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DeviceGroupQuery) OrderByUpdatedAtDesc() *DeviceGroupQuery {
+	return q.Order(Desc(devicegroup.FieldUpdatedAt))
+}
+
+// OrderByUpdatedAtAsc 按字段 updated_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *DeviceGroupQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DeviceGroup.Query().
+//	    OrderByUpdatedAtAsc().
+//	    All(ctx)
+func (q *DeviceGroupQuery) OrderByUpdatedAtAsc() *DeviceGroupQuery {
+	return q.Order(Asc(devicegroup.FieldUpdatedAt))
+}
+
+// OrderByCodeDesc 按字段 code 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *DeviceGroupQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DeviceGroup.Query().
+//	    OrderByCodeDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DeviceGroupQuery) OrderByCodeDesc() *DeviceGroupQuery {
+	return q.Order(Desc(devicegroup.FieldCode))
+}
+
+// OrderByCodeAsc 按字段 code 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *DeviceGroupQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DeviceGroup.Query().
+//	    OrderByCodeAsc().
+//	    All(ctx)
+func (q *DeviceGroupQuery) OrderByCodeAsc() *DeviceGroupQuery {
+	return q.Order(Asc(devicegroup.FieldCode))
+}
+
+// OrderByNameDesc 按字段 name 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *DeviceGroupQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DeviceGroup.Query().
+//	    OrderByNameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DeviceGroupQuery) OrderByNameDesc() *DeviceGroupQuery {
+	return q.Order(Desc(devicegroup.FieldName))
+}
+
+// OrderByNameAsc 按字段 name 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *DeviceGroupQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DeviceGroup.Query().
+//	    OrderByNameAsc().
+//	    All(ctx)
+func (q *DeviceGroupQuery) OrderByNameAsc() *DeviceGroupQuery {
+	return q.Order(Asc(devicegroup.FieldName))
+}
+
+// OrderByDescriptionDesc 按字段 description 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *DeviceGroupQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DeviceGroup.Query().
+//	    OrderByDescriptionDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DeviceGroupQuery) OrderByDescriptionDesc() *DeviceGroupQuery {
+	return q.Order(Desc(devicegroup.FieldDescription))
+}
+
+// OrderByDescriptionAsc 按字段 description 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *DeviceGroupQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DeviceGroup.Query().
+//	    OrderByDescriptionAsc().
+//	    All(ctx)
+func (q *DeviceGroupQuery) OrderByDescriptionAsc() *DeviceGroupQuery {
+	return q.Order(Asc(devicegroup.FieldDescription))
+}
+
+// OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *DeviceGroupDeviceQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DeviceGroupDevice.Query().
+//	    OrderByCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DeviceGroupDeviceQuery) OrderByCreatedAtDesc() *DeviceGroupDeviceQuery {
+	return q.Order(Desc(devicegroupdevice.FieldCreatedAt))
+}
+
+// OrderByCreatedAtAsc 按字段 created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *DeviceGroupDeviceQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DeviceGroupDevice.Query().
+//	    OrderByCreatedAtAsc().
+//	    All(ctx)
+func (q *DeviceGroupDeviceQuery) OrderByCreatedAtAsc() *DeviceGroupDeviceQuery {
+	return q.Order(Asc(devicegroupdevice.FieldCreatedAt))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
 // 返回值类型为 *DevicePortForwardQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
 // 示例：
 //
@@ -1666,56 +1843,6 @@ func (q *IpGroupQuery) OrderByDescriptionDesc() *IpGroupQuery {
 //	    All(ctx)
 func (q *IpGroupQuery) OrderByDescriptionAsc() *IpGroupQuery {
 	return q.Order(Asc(ipgroup.FieldDescription))
-}
-
-// OrderByLastAPIResponseDesc 按字段 last_api_response 降序排列查询结果。
-// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
-// 返回值类型为 *IpGroupQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
-// 示例：
-//
-//	records, err := client.IpGroup.Query().
-//	    OrderByLastAPIResponseDesc().
-//	    Limit(10).
-//	    All(ctx)
-func (q *IpGroupQuery) OrderByLastAPIResponseDesc() *IpGroupQuery {
-	return q.Order(Desc(ipgroup.FieldLastAPIResponse))
-}
-
-// OrderByLastAPIResponseAsc 按字段 last_api_response 升序排列查询结果。
-// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
-// 返回值类型为 *IpGroupQuery，支持链式调用其他查询方法。
-// 示例：
-//
-//	records, err := client.IpGroup.Query().
-//	    OrderByLastAPIResponseAsc().
-//	    All(ctx)
-func (q *IpGroupQuery) OrderByLastAPIResponseAsc() *IpGroupQuery {
-	return q.Order(Asc(ipgroup.FieldLastAPIResponse))
-}
-
-// OrderByLastAPIResponseAtDesc 按字段 last_api_response_at 降序排列查询结果。
-// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
-// 返回值类型为 *IpGroupQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
-// 示例：
-//
-//	records, err := client.IpGroup.Query().
-//	    OrderByLastAPIResponseAtDesc().
-//	    Limit(10).
-//	    All(ctx)
-func (q *IpGroupQuery) OrderByLastAPIResponseAtDesc() *IpGroupQuery {
-	return q.Order(Desc(ipgroup.FieldLastAPIResponseAt))
-}
-
-// OrderByLastAPIResponseAtAsc 按字段 last_api_response_at 升序排列查询结果。
-// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
-// 返回值类型为 *IpGroupQuery，支持链式调用其他查询方法。
-// 示例：
-//
-//	records, err := client.IpGroup.Query().
-//	    OrderByLastAPIResponseAtAsc().
-//	    All(ctx)
-func (q *IpGroupQuery) OrderByLastAPIResponseAtAsc() *IpGroupQuery {
-	return q.Order(Asc(ipgroup.FieldLastAPIResponseAt))
 }
 
 // OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。

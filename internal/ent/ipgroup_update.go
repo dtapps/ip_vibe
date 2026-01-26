@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/dnsrecord"
@@ -63,46 +62,6 @@ func (_u *IpGroupUpdate) SetNillableDescription(v *string) *IpGroupUpdate {
 // ClearDescription clears the value of the "description" field.
 func (_u *IpGroupUpdate) ClearDescription() *IpGroupUpdate {
 	_u.mutation.ClearDescription()
-	return _u
-}
-
-// SetLastAPIResponse sets the "last_api_response" field.
-func (_u *IpGroupUpdate) SetLastAPIResponse(v string) *IpGroupUpdate {
-	_u.mutation.SetLastAPIResponse(v)
-	return _u
-}
-
-// SetNillableLastAPIResponse sets the "last_api_response" field if the given value is not nil.
-func (_u *IpGroupUpdate) SetNillableLastAPIResponse(v *string) *IpGroupUpdate {
-	if v != nil {
-		_u.SetLastAPIResponse(*v)
-	}
-	return _u
-}
-
-// ClearLastAPIResponse clears the value of the "last_api_response" field.
-func (_u *IpGroupUpdate) ClearLastAPIResponse() *IpGroupUpdate {
-	_u.mutation.ClearLastAPIResponse()
-	return _u
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (_u *IpGroupUpdate) SetLastAPIResponseAt(v time.Time) *IpGroupUpdate {
-	_u.mutation.SetLastAPIResponseAt(v)
-	return _u
-}
-
-// SetNillableLastAPIResponseAt sets the "last_api_response_at" field if the given value is not nil.
-func (_u *IpGroupUpdate) SetNillableLastAPIResponseAt(v *time.Time) *IpGroupUpdate {
-	if v != nil {
-		_u.SetLastAPIResponseAt(*v)
-	}
-	return _u
-}
-
-// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
-func (_u *IpGroupUpdate) ClearLastAPIResponseAt() *IpGroupUpdate {
-	_u.mutation.ClearLastAPIResponseAt()
 	return _u
 }
 
@@ -287,18 +246,6 @@ func (_u *IpGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.DescriptionCleared() {
 		_spec.ClearField(ipgroup.FieldDescription, field.TypeString)
-	}
-	if value, ok := _u.mutation.LastAPIResponse(); ok {
-		_spec.SetField(ipgroup.FieldLastAPIResponse, field.TypeString, value)
-	}
-	if _u.mutation.LastAPIResponseCleared() {
-		_spec.ClearField(ipgroup.FieldLastAPIResponse, field.TypeString)
-	}
-	if value, ok := _u.mutation.LastAPIResponseAt(); ok {
-		_spec.SetField(ipgroup.FieldLastAPIResponseAt, field.TypeTime, value)
-	}
-	if _u.mutation.LastAPIResponseAtCleared() {
-		_spec.ClearField(ipgroup.FieldLastAPIResponseAt, field.TypeTime)
 	}
 	if _u.mutation.DevicesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -500,46 +447,6 @@ func (_u *IpGroupUpdateOne) SetNillableDescription(v *string) *IpGroupUpdateOne 
 // ClearDescription clears the value of the "description" field.
 func (_u *IpGroupUpdateOne) ClearDescription() *IpGroupUpdateOne {
 	_u.mutation.ClearDescription()
-	return _u
-}
-
-// SetLastAPIResponse sets the "last_api_response" field.
-func (_u *IpGroupUpdateOne) SetLastAPIResponse(v string) *IpGroupUpdateOne {
-	_u.mutation.SetLastAPIResponse(v)
-	return _u
-}
-
-// SetNillableLastAPIResponse sets the "last_api_response" field if the given value is not nil.
-func (_u *IpGroupUpdateOne) SetNillableLastAPIResponse(v *string) *IpGroupUpdateOne {
-	if v != nil {
-		_u.SetLastAPIResponse(*v)
-	}
-	return _u
-}
-
-// ClearLastAPIResponse clears the value of the "last_api_response" field.
-func (_u *IpGroupUpdateOne) ClearLastAPIResponse() *IpGroupUpdateOne {
-	_u.mutation.ClearLastAPIResponse()
-	return _u
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (_u *IpGroupUpdateOne) SetLastAPIResponseAt(v time.Time) *IpGroupUpdateOne {
-	_u.mutation.SetLastAPIResponseAt(v)
-	return _u
-}
-
-// SetNillableLastAPIResponseAt sets the "last_api_response_at" field if the given value is not nil.
-func (_u *IpGroupUpdateOne) SetNillableLastAPIResponseAt(v *time.Time) *IpGroupUpdateOne {
-	if v != nil {
-		_u.SetLastAPIResponseAt(*v)
-	}
-	return _u
-}
-
-// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
-func (_u *IpGroupUpdateOne) ClearLastAPIResponseAt() *IpGroupUpdateOne {
-	_u.mutation.ClearLastAPIResponseAt()
 	return _u
 }
 
@@ -754,18 +661,6 @@ func (_u *IpGroupUpdateOne) sqlSave(ctx context.Context) (_node *IpGroup, err er
 	}
 	if _u.mutation.DescriptionCleared() {
 		_spec.ClearField(ipgroup.FieldDescription, field.TypeString)
-	}
-	if value, ok := _u.mutation.LastAPIResponse(); ok {
-		_spec.SetField(ipgroup.FieldLastAPIResponse, field.TypeString, value)
-	}
-	if _u.mutation.LastAPIResponseCleared() {
-		_spec.ClearField(ipgroup.FieldLastAPIResponse, field.TypeString)
-	}
-	if value, ok := _u.mutation.LastAPIResponseAt(); ok {
-		_spec.SetField(ipgroup.FieldLastAPIResponseAt, field.TypeTime, value)
-	}
-	if _u.mutation.LastAPIResponseAtCleared() {
-		_spec.ClearField(ipgroup.FieldLastAPIResponseAt, field.TypeTime)
 	}
 	if _u.mutation.DevicesCleared() {
 		edge := &sqlgraph.EdgeSpec{

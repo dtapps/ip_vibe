@@ -150,6 +150,8 @@ const (
 	ObjTypeCDNRecord             ObjType = "CDNRecord"
 	ObjTypeDNSRecord             ObjType = "DNSRecord"
 	ObjTypeDevice                ObjType = "Device"
+	ObjTypeDeviceGroup           ObjType = "DeviceGroup"
+	ObjTypeDeviceGroupDevice     ObjType = "DeviceGroupDevice"
 	ObjTypeDevicePortForward     ObjType = "DevicePortForward"
 	ObjTypeDomainMonitor         ObjType = "DomainMonitor"
 	ObjTypeIpGroup               ObjType = "IpGroup"
@@ -176,7 +178,7 @@ func (ot ObjType) String() string {
 // ObjTypeValidator is a validator for the "obj_type" field enum values. It is called by the builders before save.
 func ObjTypeValidator(ot ObjType) error {
 	switch ot {
-	case ObjTypeUnknown, ObjTypeCache, ObjTypeCDNRecord, ObjTypeDNSRecord, ObjTypeDevice, ObjTypeDevicePortForward, ObjTypeDomainMonitor, ObjTypeIpGroup, ObjTypeIpGroupDevice, ObjTypePlatformConfig, ObjTypeSSLImport, ObjTypeSSLRecord, ObjTypeWebhook, ObjTypeWebhookSubscription, ObjTypeDeviceIpReport, ObjTypeDomainMonitorHistory, ObjTypeHttpLog, ObjTypeOperationLog, ObjTypePortForwardStats, ObjTypeRestyLog, ObjTypeSSLCertificateHistory, ObjTypeWebhookHistory:
+	case ObjTypeUnknown, ObjTypeCache, ObjTypeCDNRecord, ObjTypeDNSRecord, ObjTypeDevice, ObjTypeDeviceGroup, ObjTypeDeviceGroupDevice, ObjTypeDevicePortForward, ObjTypeDomainMonitor, ObjTypeIpGroup, ObjTypeIpGroupDevice, ObjTypePlatformConfig, ObjTypeSSLImport, ObjTypeSSLRecord, ObjTypeWebhook, ObjTypeWebhookSubscription, ObjTypeDeviceIpReport, ObjTypeDomainMonitorHistory, ObjTypeHttpLog, ObjTypeOperationLog, ObjTypePortForwardStats, ObjTypeRestyLog, ObjTypeSSLCertificateHistory, ObjTypeWebhookHistory:
 		return nil
 	default:
 		return fmt.Errorf("operationlog: invalid enum value for obj_type field: %q", ot)

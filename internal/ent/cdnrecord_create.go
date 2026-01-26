@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/platformconfig"
@@ -112,6 +113,28 @@ func (_c *CDNRecordCreate) SetIPGroupID(v int64) *CDNRecordCreate {
 	return _c
 }
 
+// SetNillableIPGroupID sets the "ip_group_id" field if the given value is not nil.
+func (_c *CDNRecordCreate) SetNillableIPGroupID(v *int64) *CDNRecordCreate {
+	if v != nil {
+		_c.SetIPGroupID(*v)
+	}
+	return _c
+}
+
+// SetDeviceGroupID sets the "device_group_id" field.
+func (_c *CDNRecordCreate) SetDeviceGroupID(v int64) *CDNRecordCreate {
+	_c.mutation.SetDeviceGroupID(v)
+	return _c
+}
+
+// SetNillableDeviceGroupID sets the "device_group_id" field if the given value is not nil.
+func (_c *CDNRecordCreate) SetNillableDeviceGroupID(v *int64) *CDNRecordCreate {
+	if v != nil {
+		_c.SetDeviceGroupID(*v)
+	}
+	return _c
+}
+
 // SetIsActive sets the "is_active" field.
 func (_c *CDNRecordCreate) SetIsActive(v bool) *CDNRecordCreate {
 	_c.mutation.SetIsActive(v)
@@ -182,6 +205,11 @@ func (_c *CDNRecordCreate) SetConfig(v *PlatformConfig) *CDNRecordCreate {
 // SetIPGroup sets the "ip_group" edge to the IpGroup entity.
 func (_c *CDNRecordCreate) SetIPGroup(v *IpGroup) *CDNRecordCreate {
 	return _c.SetIPGroupID(v.ID)
+}
+
+// SetDeviceGroup sets the "device_group" edge to the DeviceGroup entity.
+func (_c *CDNRecordCreate) SetDeviceGroup(v *DeviceGroup) *CDNRecordCreate {
+	return _c.SetDeviceGroupID(v.ID)
 }
 
 // AddDNSRecordIDs adds the "dns_records" edge to the DNSRecord entity by IDs.
@@ -284,9 +312,6 @@ func (_c *CDNRecordCreate) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.type": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.IPGroupID(); !ok {
-		return &ValidationError{Name: "ip_group_id", err: errors.New(`ent: missing required field "CDNRecord.ip_group_id"`)}
-	}
 	if _, ok := _c.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "CDNRecord.is_active"`)}
 	}
@@ -297,9 +322,6 @@ func (_c *CDNRecordCreate) check() error {
 	}
 	if len(_c.mutation.ConfigIDs()) == 0 {
 		return &ValidationError{Name: "config", err: errors.New(`ent: missing required edge "CDNRecord.config"`)}
-	}
-	if len(_c.mutation.IPGroupIDs()) == 0 {
-		return &ValidationError{Name: "ip_group", err: errors.New(`ent: missing required edge "CDNRecord.ip_group"`)}
 	}
 	return nil
 }
@@ -410,6 +432,23 @@ func (_c *CDNRecordCreate) createSpec() (*CDNRecord, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.IPGroupID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.DeviceGroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cdnrecord.DeviceGroupTable,
+			Columns: []string{cdnrecord.DeviceGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.DeviceGroupID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.DNSRecordsIDs(); len(nodes) > 0 {
@@ -555,6 +594,30 @@ func (u *CDNRecordUpsert) SetIPGroupID(v int64) *CDNRecordUpsert {
 // UpdateIPGroupID sets the "ip_group_id" field to the value that was provided on create.
 func (u *CDNRecordUpsert) UpdateIPGroupID() *CDNRecordUpsert {
 	u.SetExcluded(cdnrecord.FieldIPGroupID)
+	return u
+}
+
+// ClearIPGroupID clears the value of the "ip_group_id" field.
+func (u *CDNRecordUpsert) ClearIPGroupID() *CDNRecordUpsert {
+	u.SetNull(cdnrecord.FieldIPGroupID)
+	return u
+}
+
+// SetDeviceGroupID sets the "device_group_id" field.
+func (u *CDNRecordUpsert) SetDeviceGroupID(v int64) *CDNRecordUpsert {
+	u.Set(cdnrecord.FieldDeviceGroupID, v)
+	return u
+}
+
+// UpdateDeviceGroupID sets the "device_group_id" field to the value that was provided on create.
+func (u *CDNRecordUpsert) UpdateDeviceGroupID() *CDNRecordUpsert {
+	u.SetExcluded(cdnrecord.FieldDeviceGroupID)
+	return u
+}
+
+// ClearDeviceGroupID clears the value of the "device_group_id" field.
+func (u *CDNRecordUpsert) ClearDeviceGroupID() *CDNRecordUpsert {
+	u.SetNull(cdnrecord.FieldDeviceGroupID)
 	return u
 }
 
@@ -772,6 +835,34 @@ func (u *CDNRecordUpsertOne) SetIPGroupID(v int64) *CDNRecordUpsertOne {
 func (u *CDNRecordUpsertOne) UpdateIPGroupID() *CDNRecordUpsertOne {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.UpdateIPGroupID()
+	})
+}
+
+// ClearIPGroupID clears the value of the "ip_group_id" field.
+func (u *CDNRecordUpsertOne) ClearIPGroupID() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.ClearIPGroupID()
+	})
+}
+
+// SetDeviceGroupID sets the "device_group_id" field.
+func (u *CDNRecordUpsertOne) SetDeviceGroupID(v int64) *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetDeviceGroupID(v)
+	})
+}
+
+// UpdateDeviceGroupID sets the "device_group_id" field to the value that was provided on create.
+func (u *CDNRecordUpsertOne) UpdateDeviceGroupID() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateDeviceGroupID()
+	})
+}
+
+// ClearDeviceGroupID clears the value of the "device_group_id" field.
+func (u *CDNRecordUpsertOne) ClearDeviceGroupID() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.ClearDeviceGroupID()
 	})
 }
 
@@ -1166,6 +1257,34 @@ func (u *CDNRecordUpsertBulk) SetIPGroupID(v int64) *CDNRecordUpsertBulk {
 func (u *CDNRecordUpsertBulk) UpdateIPGroupID() *CDNRecordUpsertBulk {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.UpdateIPGroupID()
+	})
+}
+
+// ClearIPGroupID clears the value of the "ip_group_id" field.
+func (u *CDNRecordUpsertBulk) ClearIPGroupID() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.ClearIPGroupID()
+	})
+}
+
+// SetDeviceGroupID sets the "device_group_id" field.
+func (u *CDNRecordUpsertBulk) SetDeviceGroupID(v int64) *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetDeviceGroupID(v)
+	})
+}
+
+// UpdateDeviceGroupID sets the "device_group_id" field to the value that was provided on create.
+func (u *CDNRecordUpsertBulk) UpdateDeviceGroupID() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateDeviceGroupID()
+	})
+}
+
+// ClearDeviceGroupID clears the value of the "device_group_id" field.
+func (u *CDNRecordUpsertBulk) ClearDeviceGroupID() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.ClearDeviceGroupID()
 	})
 }
 

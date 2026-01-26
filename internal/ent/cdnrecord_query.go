@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/platformconfig"
@@ -28,6 +29,7 @@ type CDNRecordQuery struct {
 	predicates          []predicate.CDNRecord
 	withConfig          *PlatformConfigQuery
 	withIPGroup         *IpGroupQuery
+	withDeviceGroup     *DeviceGroupQuery
 	withDNSRecords      *DNSRecordQuery
 	modifiers           []func(*sql.Selector)
 	withNamedDNSRecords map[string]*DNSRecordQuery
@@ -104,6 +106,28 @@ func (_q *CDNRecordQuery) QueryIPGroup() *IpGroupQuery {
 			sqlgraph.From(cdnrecord.Table, cdnrecord.FieldID, selector),
 			sqlgraph.To(ipgroup.Table, ipgroup.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, cdnrecord.IPGroupTable, cdnrecord.IPGroupColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryDeviceGroup chains the current query on the "device_group" edge.
+func (_q *CDNRecordQuery) QueryDeviceGroup() *DeviceGroupQuery {
+	query := (&DeviceGroupClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cdnrecord.Table, cdnrecord.FieldID, selector),
+			sqlgraph.To(devicegroup.Table, devicegroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cdnrecord.DeviceGroupTable, cdnrecord.DeviceGroupColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -320,14 +344,15 @@ func (_q *CDNRecordQuery) Clone() *CDNRecordQuery {
 		return nil
 	}
 	return &CDNRecordQuery{
-		config:         _q.config,
-		ctx:            _q.ctx.Clone(),
-		order:          append([]cdnrecord.OrderOption{}, _q.order...),
-		inters:         append([]Interceptor{}, _q.inters...),
-		predicates:     append([]predicate.CDNRecord{}, _q.predicates...),
-		withConfig:     _q.withConfig.Clone(),
-		withIPGroup:    _q.withIPGroup.Clone(),
-		withDNSRecords: _q.withDNSRecords.Clone(),
+		config:          _q.config,
+		ctx:             _q.ctx.Clone(),
+		order:           append([]cdnrecord.OrderOption{}, _q.order...),
+		inters:          append([]Interceptor{}, _q.inters...),
+		predicates:      append([]predicate.CDNRecord{}, _q.predicates...),
+		withConfig:      _q.withConfig.Clone(),
+		withIPGroup:     _q.withIPGroup.Clone(),
+		withDeviceGroup: _q.withDeviceGroup.Clone(),
+		withDNSRecords:  _q.withDNSRecords.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -354,6 +379,17 @@ func (_q *CDNRecordQuery) WithIPGroup(opts ...func(*IpGroupQuery)) *CDNRecordQue
 		opt(query)
 	}
 	_q.withIPGroup = query
+	return _q
+}
+
+// WithDeviceGroup tells the query-builder to eager-load the nodes that are connected to
+// the "device_group" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *CDNRecordQuery) WithDeviceGroup(opts ...func(*DeviceGroupQuery)) *CDNRecordQuery {
+	query := (&DeviceGroupClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withDeviceGroup = query
 	return _q
 }
 
@@ -446,9 +482,10 @@ func (_q *CDNRecordQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*CD
 	var (
 		nodes       = []*CDNRecord{}
 		_spec       = _q.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			_q.withConfig != nil,
 			_q.withIPGroup != nil,
+			_q.withDeviceGroup != nil,
 			_q.withDNSRecords != nil,
 		}
 	)
@@ -485,12 +522,18 @@ func (_q *CDNRecordQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*CD
 			return nil, err
 		}
 	}
+	if query := _q.withDeviceGroup; query != nil {
+		if err := _q.loadDeviceGroup(ctx, query, nodes, nil,
+			func(n *CDNRecord, e *DeviceGroup) { n.Edges.DeviceGroup = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := _q.withDNSRecords; query != nil {
 		if err := _q.loadDNSRecords(ctx, query, nodes,
 			func(n *CDNRecord) { n.Edges.DNSRecords = []*DNSRecord{} },
 			func(n *CDNRecord, e *DNSRecord) {
 				n.Edges.DNSRecords = append(n.Edges.DNSRecords, e)
-				if !e.Edges.loadedTypes[2] {
+				if !e.Edges.loadedTypes[3] {
 					e.Edges.CdnRecord = n
 				}
 			}); err != nil {
@@ -502,7 +545,7 @@ func (_q *CDNRecordQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*CD
 			func(n *CDNRecord) { n.appendNamedDNSRecords(name) },
 			func(n *CDNRecord, e *DNSRecord) {
 				n.appendNamedDNSRecords(name, e)
-				if !e.Edges.loadedTypes[2] {
+				if !e.Edges.loadedTypes[3] {
 					e.Edges.CdnRecord = n
 				}
 			}); err != nil {
@@ -563,6 +606,35 @@ func (_q *CDNRecordQuery) loadIPGroup(ctx context.Context, query *IpGroupQuery, 
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "ip_group_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (_q *CDNRecordQuery) loadDeviceGroup(ctx context.Context, query *DeviceGroupQuery, nodes []*CDNRecord, init func(*CDNRecord), assign func(*CDNRecord, *DeviceGroup)) error {
+	ids := make([]int64, 0, len(nodes))
+	nodeids := make(map[int64][]*CDNRecord)
+	for i := range nodes {
+		fk := nodes[i].DeviceGroupID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(devicegroup.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "device_group_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -634,6 +706,9 @@ func (_q *CDNRecordQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if _q.withIPGroup != nil {
 			_spec.Node.AddColumnOnce(cdnrecord.FieldIPGroupID)
+		}
+		if _q.withDeviceGroup != nil {
+			_spec.Node.AddColumnOnce(cdnrecord.FieldDeviceGroupID)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {

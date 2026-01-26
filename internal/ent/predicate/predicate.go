@@ -18,6 +18,12 @@ type DNSRecord func(*sql.Selector)
 // Device is the predicate function for device builders.
 type Device func(*sql.Selector)
 
+// DeviceGroup is the predicate function for devicegroup builders.
+type DeviceGroup func(*sql.Selector)
+
+// DeviceGroupDevice is the predicate function for devicegroupdevice builders.
+type DeviceGroupDevice func(*sql.Selector)
+
 // DevicePortForward is the predicate function for deviceportforward builders.
 type DevicePortForward func(*sql.Selector)
 

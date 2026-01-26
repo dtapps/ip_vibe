@@ -56,6 +56,30 @@ func (f DeviceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DeviceMutation", m)
 }
 
+// The DeviceGroupFunc type is an adapter to allow the use of ordinary
+// function as DeviceGroup mutator.
+type DeviceGroupFunc func(context.Context, *ent.DeviceGroupMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f DeviceGroupFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.DeviceGroupMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DeviceGroupMutation", m)
+}
+
+// The DeviceGroupDeviceFunc type is an adapter to allow the use of ordinary
+// function as DeviceGroupDevice mutator.
+type DeviceGroupDeviceFunc func(context.Context, *ent.DeviceGroupDeviceMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f DeviceGroupDeviceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.DeviceGroupDeviceMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DeviceGroupDeviceMutation", m)
+}
+
 // The DevicePortForwardFunc type is an adapter to allow the use of ordinary
 // function as DevicePortForward mutator.
 type DevicePortForwardFunc func(context.Context, *ent.DevicePortForwardMutation) (ent.Value, error)

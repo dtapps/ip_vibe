@@ -11,6 +11,8 @@ import (
 	"vibe_ip/internal/ent/cache"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
+	"vibe_ip/internal/ent/devicegroup"
+	"vibe_ip/internal/ent/devicegroupdevice"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
@@ -89,6 +91,8 @@ func checkColumn(t, c string) error {
 			cache.Table:               cache.ValidColumn,
 			dnsrecord.Table:           dnsrecord.ValidColumn,
 			device.Table:              device.ValidColumn,
+			devicegroup.Table:         devicegroup.ValidColumn,
+			devicegroupdevice.Table:   devicegroupdevice.ValidColumn,
 			deviceportforward.Table:   deviceportforward.ValidColumn,
 			domainmonitor.Table:       domainmonitor.ValidColumn,
 			ipgroup.Table:             ipgroup.ValidColumn,

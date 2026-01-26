@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/internal/ent/device"
+	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/predicate"
@@ -160,6 +161,21 @@ func (_u *DeviceUpdate) AddIPGroups(v ...*IpGroup) *DeviceUpdate {
 	return _u.AddIPGroupIDs(ids...)
 }
 
+// AddDeviceGroupIDs adds the "device_groups" edge to the DeviceGroup entity by IDs.
+func (_u *DeviceUpdate) AddDeviceGroupIDs(ids ...int64) *DeviceUpdate {
+	_u.mutation.AddDeviceGroupIDs(ids...)
+	return _u
+}
+
+// AddDeviceGroups adds the "device_groups" edges to the DeviceGroup entity.
+func (_u *DeviceUpdate) AddDeviceGroups(v ...*DeviceGroup) *DeviceUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddDeviceGroupIDs(ids...)
+}
+
 // AddPortForwardIDs adds the "port_forwards" edge to the DevicePortForward entity by IDs.
 func (_u *DeviceUpdate) AddPortForwardIDs(ids ...int64) *DeviceUpdate {
 	_u.mutation.AddPortForwardIDs(ids...)
@@ -199,6 +215,27 @@ func (_u *DeviceUpdate) RemoveIPGroups(v ...*IpGroup) *DeviceUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveIPGroupIDs(ids...)
+}
+
+// ClearDeviceGroups clears all "device_groups" edges to the DeviceGroup entity.
+func (_u *DeviceUpdate) ClearDeviceGroups() *DeviceUpdate {
+	_u.mutation.ClearDeviceGroups()
+	return _u
+}
+
+// RemoveDeviceGroupIDs removes the "device_groups" edge to DeviceGroup entities by IDs.
+func (_u *DeviceUpdate) RemoveDeviceGroupIDs(ids ...int64) *DeviceUpdate {
+	_u.mutation.RemoveDeviceGroupIDs(ids...)
+	return _u
+}
+
+// RemoveDeviceGroups removes "device_groups" edges to DeviceGroup entities.
+func (_u *DeviceUpdate) RemoveDeviceGroups(v ...*DeviceGroup) *DeviceUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveDeviceGroupIDs(ids...)
 }
 
 // ClearPortForwards clears all "port_forwards" edges to the DevicePortForward entity.
@@ -385,6 +422,63 @@ func (_u *DeviceUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		createE := &IpGroupDeviceCreate{config: _u.config, mutation: newIpGroupDeviceMutation(_u.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.DeviceGroupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   device.DeviceGroupsTable,
+			Columns: device.DeviceGroupsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
+			},
+		}
+		createE := &DeviceGroupDeviceCreate{config: _u.config, mutation: newDeviceGroupDeviceMutation(_u.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedDeviceGroupsIDs(); len(nodes) > 0 && !_u.mutation.DeviceGroupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   device.DeviceGroupsTable,
+			Columns: device.DeviceGroupsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &DeviceGroupDeviceCreate{config: _u.config, mutation: newDeviceGroupDeviceMutation(_u.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.DeviceGroupsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   device.DeviceGroupsTable,
+			Columns: device.DeviceGroupsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &DeviceGroupDeviceCreate{config: _u.config, mutation: newDeviceGroupDeviceMutation(_u.config, OpCreate)}
 		createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields
@@ -586,6 +680,21 @@ func (_u *DeviceUpdateOne) AddIPGroups(v ...*IpGroup) *DeviceUpdateOne {
 	return _u.AddIPGroupIDs(ids...)
 }
 
+// AddDeviceGroupIDs adds the "device_groups" edge to the DeviceGroup entity by IDs.
+func (_u *DeviceUpdateOne) AddDeviceGroupIDs(ids ...int64) *DeviceUpdateOne {
+	_u.mutation.AddDeviceGroupIDs(ids...)
+	return _u
+}
+
+// AddDeviceGroups adds the "device_groups" edges to the DeviceGroup entity.
+func (_u *DeviceUpdateOne) AddDeviceGroups(v ...*DeviceGroup) *DeviceUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddDeviceGroupIDs(ids...)
+}
+
 // AddPortForwardIDs adds the "port_forwards" edge to the DevicePortForward entity by IDs.
 func (_u *DeviceUpdateOne) AddPortForwardIDs(ids ...int64) *DeviceUpdateOne {
 	_u.mutation.AddPortForwardIDs(ids...)
@@ -625,6 +734,27 @@ func (_u *DeviceUpdateOne) RemoveIPGroups(v ...*IpGroup) *DeviceUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveIPGroupIDs(ids...)
+}
+
+// ClearDeviceGroups clears all "device_groups" edges to the DeviceGroup entity.
+func (_u *DeviceUpdateOne) ClearDeviceGroups() *DeviceUpdateOne {
+	_u.mutation.ClearDeviceGroups()
+	return _u
+}
+
+// RemoveDeviceGroupIDs removes the "device_groups" edge to DeviceGroup entities by IDs.
+func (_u *DeviceUpdateOne) RemoveDeviceGroupIDs(ids ...int64) *DeviceUpdateOne {
+	_u.mutation.RemoveDeviceGroupIDs(ids...)
+	return _u
+}
+
+// RemoveDeviceGroups removes "device_groups" edges to DeviceGroup entities.
+func (_u *DeviceUpdateOne) RemoveDeviceGroups(v ...*DeviceGroup) *DeviceUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveDeviceGroupIDs(ids...)
 }
 
 // ClearPortForwards clears all "port_forwards" edges to the DevicePortForward entity.
@@ -841,6 +971,63 @@ func (_u *DeviceUpdateOne) sqlSave(ctx context.Context) (_node *Device, err erro
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		createE := &IpGroupDeviceCreate{config: _u.config, mutation: newIpGroupDeviceMutation(_u.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.DeviceGroupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   device.DeviceGroupsTable,
+			Columns: device.DeviceGroupsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
+			},
+		}
+		createE := &DeviceGroupDeviceCreate{config: _u.config, mutation: newDeviceGroupDeviceMutation(_u.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedDeviceGroupsIDs(); len(nodes) > 0 && !_u.mutation.DeviceGroupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   device.DeviceGroupsTable,
+			Columns: device.DeviceGroupsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &DeviceGroupDeviceCreate{config: _u.config, mutation: newDeviceGroupDeviceMutation(_u.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.DeviceGroupsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   device.DeviceGroupsTable,
+			Columns: device.DeviceGroupsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &DeviceGroupDeviceCreate{config: _u.config, mutation: newDeviceGroupDeviceMutation(_u.config, OpCreate)}
 		createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields

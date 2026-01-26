@@ -46,16 +46,22 @@ type Device struct {
 type DeviceEdges struct {
 	// 关联的IP组
 	IPGroups []*IpGroup `json:"ip_groups,omitempty"`
+	// 关联的设备组
+	DeviceGroups []*DeviceGroup `json:"device_groups,omitempty"`
 	// 设备的端口转发规则
 	PortForwards []*DevicePortForward `json:"port_forwards,omitempty"`
 	// IPGroupDevice holds the value of the ip_group_device edge.
 	IPGroupDevice []*IpGroupDevice `json:"ip_group_device,omitempty"`
+	// DeviceGroupDevice holds the value of the device_group_device edge.
+	DeviceGroupDevice []*DeviceGroupDevice `json:"device_group_device,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes        [3]bool
-	namedIPGroups      map[string][]*IpGroup
-	namedPortForwards  map[string][]*DevicePortForward
-	namedIPGroupDevice map[string][]*IpGroupDevice
+	loadedTypes            [5]bool
+	namedIPGroups          map[string][]*IpGroup
+	namedDeviceGroups      map[string][]*DeviceGroup
+	namedPortForwards      map[string][]*DevicePortForward
+	namedIPGroupDevice     map[string][]*IpGroupDevice
+	namedDeviceGroupDevice map[string][]*DeviceGroupDevice
 }
 
 // IPGroupsOrErr returns the IPGroups value or an error if the edge
@@ -67,10 +73,19 @@ func (e DeviceEdges) IPGroupsOrErr() ([]*IpGroup, error) {
 	return nil, &NotLoadedError{edge: "ip_groups"}
 }
 
+// DeviceGroupsOrErr returns the DeviceGroups value or an error if the edge
+// was not loaded in eager-loading.
+func (e DeviceEdges) DeviceGroupsOrErr() ([]*DeviceGroup, error) {
+	if e.loadedTypes[1] {
+		return e.DeviceGroups, nil
+	}
+	return nil, &NotLoadedError{edge: "device_groups"}
+}
+
 // PortForwardsOrErr returns the PortForwards value or an error if the edge
 // was not loaded in eager-loading.
 func (e DeviceEdges) PortForwardsOrErr() ([]*DevicePortForward, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.PortForwards, nil
 	}
 	return nil, &NotLoadedError{edge: "port_forwards"}
@@ -79,10 +94,19 @@ func (e DeviceEdges) PortForwardsOrErr() ([]*DevicePortForward, error) {
 // IPGroupDeviceOrErr returns the IPGroupDevice value or an error if the edge
 // was not loaded in eager-loading.
 func (e DeviceEdges) IPGroupDeviceOrErr() ([]*IpGroupDevice, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.IPGroupDevice, nil
 	}
 	return nil, &NotLoadedError{edge: "ip_group_device"}
+}
+
+// DeviceGroupDeviceOrErr returns the DeviceGroupDevice value or an error if the edge
+// was not loaded in eager-loading.
+func (e DeviceEdges) DeviceGroupDeviceOrErr() ([]*DeviceGroupDevice, error) {
+	if e.loadedTypes[4] {
+		return e.DeviceGroupDevice, nil
+	}
+	return nil, &NotLoadedError{edge: "device_group_device"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -189,6 +213,11 @@ func (_m *Device) QueryIPGroups() *IpGroupQuery {
 	return NewDeviceClient(_m.config).QueryIPGroups(_m)
 }
 
+// QueryDeviceGroups queries the "device_groups" edge of the Device entity.
+func (_m *Device) QueryDeviceGroups() *DeviceGroupQuery {
+	return NewDeviceClient(_m.config).QueryDeviceGroups(_m)
+}
+
 // QueryPortForwards queries the "port_forwards" edge of the Device entity.
 func (_m *Device) QueryPortForwards() *DevicePortForwardQuery {
 	return NewDeviceClient(_m.config).QueryPortForwards(_m)
@@ -197,6 +226,11 @@ func (_m *Device) QueryPortForwards() *DevicePortForwardQuery {
 // QueryIPGroupDevice queries the "ip_group_device" edge of the Device entity.
 func (_m *Device) QueryIPGroupDevice() *IpGroupDeviceQuery {
 	return NewDeviceClient(_m.config).QueryIPGroupDevice(_m)
+}
+
+// QueryDeviceGroupDevice queries the "device_group_device" edge of the Device entity.
+func (_m *Device) QueryDeviceGroupDevice() *DeviceGroupDeviceQuery {
+	return NewDeviceClient(_m.config).QueryDeviceGroupDevice(_m)
 }
 
 // Update returns a builder for updating this Device.
@@ -276,6 +310,30 @@ func (_m *Device) appendNamedIPGroups(name string, edges ...*IpGroup) {
 	}
 }
 
+// NamedDeviceGroups returns the DeviceGroups named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *Device) NamedDeviceGroups(name string) ([]*DeviceGroup, error) {
+	if _m.Edges.namedDeviceGroups == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedDeviceGroups[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *Device) appendNamedDeviceGroups(name string, edges ...*DeviceGroup) {
+	if _m.Edges.namedDeviceGroups == nil {
+		_m.Edges.namedDeviceGroups = make(map[string][]*DeviceGroup)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedDeviceGroups[name] = []*DeviceGroup{}
+	} else {
+		_m.Edges.namedDeviceGroups[name] = append(_m.Edges.namedDeviceGroups[name], edges...)
+	}
+}
+
 // NamedPortForwards returns the PortForwards named value or an error if the edge was not
 // loaded in eager-loading with this name.
 func (_m *Device) NamedPortForwards(name string) ([]*DevicePortForward, error) {
@@ -321,6 +379,30 @@ func (_m *Device) appendNamedIPGroupDevice(name string, edges ...*IpGroupDevice)
 		_m.Edges.namedIPGroupDevice[name] = []*IpGroupDevice{}
 	} else {
 		_m.Edges.namedIPGroupDevice[name] = append(_m.Edges.namedIPGroupDevice[name], edges...)
+	}
+}
+
+// NamedDeviceGroupDevice returns the DeviceGroupDevice named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *Device) NamedDeviceGroupDevice(name string) ([]*DeviceGroupDevice, error) {
+	if _m.Edges.namedDeviceGroupDevice == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedDeviceGroupDevice[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *Device) appendNamedDeviceGroupDevice(name string, edges ...*DeviceGroupDevice) {
+	if _m.Edges.namedDeviceGroupDevice == nil {
+		_m.Edges.namedDeviceGroupDevice = make(map[string][]*DeviceGroupDevice)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedDeviceGroupDevice[name] = []*DeviceGroupDevice{}
+	} else {
+		_m.Edges.namedDeviceGroupDevice[name] = append(_m.Edges.namedDeviceGroupDevice[name], edges...)
 	}
 }
 

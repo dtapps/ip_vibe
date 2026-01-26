@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/predicate"
@@ -119,6 +120,32 @@ func (_u *CDNRecordUpdate) SetNillableIPGroupID(v *int64) *CDNRecordUpdate {
 	return _u
 }
 
+// ClearIPGroupID clears the value of the "ip_group_id" field.
+func (_u *CDNRecordUpdate) ClearIPGroupID() *CDNRecordUpdate {
+	_u.mutation.ClearIPGroupID()
+	return _u
+}
+
+// SetDeviceGroupID sets the "device_group_id" field.
+func (_u *CDNRecordUpdate) SetDeviceGroupID(v int64) *CDNRecordUpdate {
+	_u.mutation.SetDeviceGroupID(v)
+	return _u
+}
+
+// SetNillableDeviceGroupID sets the "device_group_id" field if the given value is not nil.
+func (_u *CDNRecordUpdate) SetNillableDeviceGroupID(v *int64) *CDNRecordUpdate {
+	if v != nil {
+		_u.SetDeviceGroupID(*v)
+	}
+	return _u
+}
+
+// ClearDeviceGroupID clears the value of the "device_group_id" field.
+func (_u *CDNRecordUpdate) ClearDeviceGroupID() *CDNRecordUpdate {
+	_u.mutation.ClearDeviceGroupID()
+	return _u
+}
+
 // SetIsActive sets the "is_active" field.
 func (_u *CDNRecordUpdate) SetIsActive(v bool) *CDNRecordUpdate {
 	_u.mutation.SetIsActive(v)
@@ -198,6 +225,11 @@ func (_u *CDNRecordUpdate) SetIPGroup(v *IpGroup) *CDNRecordUpdate {
 	return _u.SetIPGroupID(v.ID)
 }
 
+// SetDeviceGroup sets the "device_group" edge to the DeviceGroup entity.
+func (_u *CDNRecordUpdate) SetDeviceGroup(v *DeviceGroup) *CDNRecordUpdate {
+	return _u.SetDeviceGroupID(v.ID)
+}
+
 // AddDNSRecordIDs adds the "dns_records" edge to the DNSRecord entity by IDs.
 func (_u *CDNRecordUpdate) AddDNSRecordIDs(ids ...int64) *CDNRecordUpdate {
 	_u.mutation.AddDNSRecordIDs(ids...)
@@ -221,6 +253,12 @@ func (_u *CDNRecordUpdate) Mutation() *CDNRecordMutation {
 // ClearIPGroup clears the "ip_group" edge to the IpGroup entity.
 func (_u *CDNRecordUpdate) ClearIPGroup() *CDNRecordUpdate {
 	_u.mutation.ClearIPGroup()
+	return _u
+}
+
+// ClearDeviceGroup clears the "device_group" edge to the DeviceGroup entity.
+func (_u *CDNRecordUpdate) ClearDeviceGroup() *CDNRecordUpdate {
+	_u.mutation.ClearDeviceGroup()
 	return _u
 }
 
@@ -296,9 +334,6 @@ func (_u *CDNRecordUpdate) check() error {
 	}
 	if _u.mutation.ConfigCleared() && len(_u.mutation.ConfigIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CDNRecord.config"`)
-	}
-	if _u.mutation.IPGroupCleared() && len(_u.mutation.IPGroupIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "CDNRecord.ip_group"`)
 	}
 	return nil
 }
@@ -393,6 +428,35 @@ func (_u *CDNRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ipgroup.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.DeviceGroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cdnrecord.DeviceGroupTable,
+			Columns: []string{cdnrecord.DeviceGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.DeviceGroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cdnrecord.DeviceGroupTable,
+			Columns: []string{cdnrecord.DeviceGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -553,6 +617,32 @@ func (_u *CDNRecordUpdateOne) SetNillableIPGroupID(v *int64) *CDNRecordUpdateOne
 	return _u
 }
 
+// ClearIPGroupID clears the value of the "ip_group_id" field.
+func (_u *CDNRecordUpdateOne) ClearIPGroupID() *CDNRecordUpdateOne {
+	_u.mutation.ClearIPGroupID()
+	return _u
+}
+
+// SetDeviceGroupID sets the "device_group_id" field.
+func (_u *CDNRecordUpdateOne) SetDeviceGroupID(v int64) *CDNRecordUpdateOne {
+	_u.mutation.SetDeviceGroupID(v)
+	return _u
+}
+
+// SetNillableDeviceGroupID sets the "device_group_id" field if the given value is not nil.
+func (_u *CDNRecordUpdateOne) SetNillableDeviceGroupID(v *int64) *CDNRecordUpdateOne {
+	if v != nil {
+		_u.SetDeviceGroupID(*v)
+	}
+	return _u
+}
+
+// ClearDeviceGroupID clears the value of the "device_group_id" field.
+func (_u *CDNRecordUpdateOne) ClearDeviceGroupID() *CDNRecordUpdateOne {
+	_u.mutation.ClearDeviceGroupID()
+	return _u
+}
+
 // SetIsActive sets the "is_active" field.
 func (_u *CDNRecordUpdateOne) SetIsActive(v bool) *CDNRecordUpdateOne {
 	_u.mutation.SetIsActive(v)
@@ -632,6 +722,11 @@ func (_u *CDNRecordUpdateOne) SetIPGroup(v *IpGroup) *CDNRecordUpdateOne {
 	return _u.SetIPGroupID(v.ID)
 }
 
+// SetDeviceGroup sets the "device_group" edge to the DeviceGroup entity.
+func (_u *CDNRecordUpdateOne) SetDeviceGroup(v *DeviceGroup) *CDNRecordUpdateOne {
+	return _u.SetDeviceGroupID(v.ID)
+}
+
 // AddDNSRecordIDs adds the "dns_records" edge to the DNSRecord entity by IDs.
 func (_u *CDNRecordUpdateOne) AddDNSRecordIDs(ids ...int64) *CDNRecordUpdateOne {
 	_u.mutation.AddDNSRecordIDs(ids...)
@@ -655,6 +750,12 @@ func (_u *CDNRecordUpdateOne) Mutation() *CDNRecordMutation {
 // ClearIPGroup clears the "ip_group" edge to the IpGroup entity.
 func (_u *CDNRecordUpdateOne) ClearIPGroup() *CDNRecordUpdateOne {
 	_u.mutation.ClearIPGroup()
+	return _u
+}
+
+// ClearDeviceGroup clears the "device_group" edge to the DeviceGroup entity.
+func (_u *CDNRecordUpdateOne) ClearDeviceGroup() *CDNRecordUpdateOne {
+	_u.mutation.ClearDeviceGroup()
 	return _u
 }
 
@@ -743,9 +844,6 @@ func (_u *CDNRecordUpdateOne) check() error {
 	}
 	if _u.mutation.ConfigCleared() && len(_u.mutation.ConfigIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CDNRecord.config"`)
-	}
-	if _u.mutation.IPGroupCleared() && len(_u.mutation.IPGroupIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "CDNRecord.ip_group"`)
 	}
 	return nil
 }
@@ -857,6 +955,35 @@ func (_u *CDNRecordUpdateOne) sqlSave(ctx context.Context) (_node *CDNRecord, er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ipgroup.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.DeviceGroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cdnrecord.DeviceGroupTable,
+			Columns: []string{cdnrecord.DeviceGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.DeviceGroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cdnrecord.DeviceGroupTable,
+			Columns: []string{cdnrecord.DeviceGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

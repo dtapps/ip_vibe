@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/internal/ent/device"
+	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/ipgroup"
 
@@ -153,6 +154,21 @@ func (_c *DeviceCreate) AddIPGroups(v ...*IpGroup) *DeviceCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddIPGroupIDs(ids...)
+}
+
+// AddDeviceGroupIDs adds the "device_groups" edge to the DeviceGroup entity by IDs.
+func (_c *DeviceCreate) AddDeviceGroupIDs(ids ...int64) *DeviceCreate {
+	_c.mutation.AddDeviceGroupIDs(ids...)
+	return _c
+}
+
+// AddDeviceGroups adds the "device_groups" edges to the DeviceGroup entity.
+func (_c *DeviceCreate) AddDeviceGroups(v ...*DeviceGroup) *DeviceCreate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddDeviceGroupIDs(ids...)
 }
 
 // AddPortForwardIDs adds the "port_forwards" edge to the DevicePortForward entity by IDs.
@@ -337,6 +353,26 @@ func (_c *DeviceCreate) createSpec() (*Device, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		createE := &IpGroupDeviceCreate{config: _c.config, mutation: newIpGroupDeviceMutation(_c.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.DeviceGroupsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   device.DeviceGroupsTable,
+			Columns: device.DeviceGroupsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &DeviceGroupDeviceCreate{config: _c.config, mutation: newDeviceGroupDeviceMutation(_c.config, OpCreate)}
 		createE.defaults()
 		_, specE := createE.createSpec()
 		edge.Target.Fields = specE.Fields

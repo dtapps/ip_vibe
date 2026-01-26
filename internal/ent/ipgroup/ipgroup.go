@@ -25,10 +25,6 @@ const (
 	FieldName = "name"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
-	// FieldLastAPIResponse holds the string denoting the last_api_response field in the database.
-	FieldLastAPIResponse = "last_api_response"
-	// FieldLastAPIResponseAt holds the string denoting the last_api_response_at field in the database.
-	FieldLastAPIResponseAt = "last_api_response_at"
 	// EdgeDevices holds the string denoting the devices edge name in mutations.
 	EdgeDevices = "devices"
 	// EdgeDNSRecords holds the string denoting the dns_records edge name in mutations.
@@ -75,8 +71,6 @@ var Columns = []string{
 	FieldCode,
 	FieldName,
 	FieldDescription,
-	FieldLastAPIResponse,
-	FieldLastAPIResponseAt,
 }
 
 var (
@@ -145,16 +139,6 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByDescription orders the results by the description field.
 func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
-}
-
-// ByLastAPIResponse orders the results by the last_api_response field.
-func ByLastAPIResponse(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLastAPIResponse, opts...).ToFunc()
-}
-
-// ByLastAPIResponseAt orders the results by the last_api_response_at field.
-func ByLastAPIResponseAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLastAPIResponseAt, opts...).ToFunc()
 }
 
 // ByDevicesCount orders the results by devices count.

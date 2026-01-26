@@ -14,6 +14,8 @@ import (
 	"vibe_ip/internal/ent/cache"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
+	"vibe_ip/internal/ent/devicegroup"
+	"vibe_ip/internal/ent/devicegroupdevice"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
@@ -46,6 +48,10 @@ type Client struct {
 	DNSRecord *DNSRecordClient
 	// Device is the client for interacting with the Device builders.
 	Device *DeviceClient
+	// DeviceGroup is the client for interacting with the DeviceGroup builders.
+	DeviceGroup *DeviceGroupClient
+	// DeviceGroupDevice is the client for interacting with the DeviceGroupDevice builders.
+	DeviceGroupDevice *DeviceGroupDeviceClient
 	// DevicePortForward is the client for interacting with the DevicePortForward builders.
 	DevicePortForward *DevicePortForwardClient
 	// DomainMonitor is the client for interacting with the DomainMonitor builders.
@@ -79,6 +85,8 @@ func (c *Client) init() {
 	c.Cache = NewCacheClient(c.config)
 	c.DNSRecord = NewDNSRecordClient(c.config)
 	c.Device = NewDeviceClient(c.config)
+	c.DeviceGroup = NewDeviceGroupClient(c.config)
+	c.DeviceGroupDevice = NewDeviceGroupDeviceClient(c.config)
 	c.DevicePortForward = NewDevicePortForwardClient(c.config)
 	c.DomainMonitor = NewDomainMonitorClient(c.config)
 	c.IpGroup = NewIpGroupClient(c.config)
@@ -184,6 +192,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Cache:               NewCacheClient(cfg),
 		DNSRecord:           NewDNSRecordClient(cfg),
 		Device:              NewDeviceClient(cfg),
+		DeviceGroup:         NewDeviceGroupClient(cfg),
+		DeviceGroupDevice:   NewDeviceGroupDeviceClient(cfg),
 		DevicePortForward:   NewDevicePortForwardClient(cfg),
 		DomainMonitor:       NewDomainMonitorClient(cfg),
 		IpGroup:             NewIpGroupClient(cfg),
@@ -216,6 +226,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Cache:               NewCacheClient(cfg),
 		DNSRecord:           NewDNSRecordClient(cfg),
 		Device:              NewDeviceClient(cfg),
+		DeviceGroup:         NewDeviceGroupClient(cfg),
+		DeviceGroupDevice:   NewDeviceGroupDeviceClient(cfg),
 		DevicePortForward:   NewDevicePortForwardClient(cfg),
 		DomainMonitor:       NewDomainMonitorClient(cfg),
 		IpGroup:             NewIpGroupClient(cfg),
@@ -254,9 +266,9 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.CDNRecord, c.Cache, c.DNSRecord, c.Device, c.DevicePortForward,
-		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLImport,
-		c.SSLRecord, c.Webhook, c.WebhookSubscription,
+		c.CDNRecord, c.Cache, c.DNSRecord, c.Device, c.DeviceGroup, c.DeviceGroupDevice,
+		c.DevicePortForward, c.DomainMonitor, c.IpGroup, c.IpGroupDevice,
+		c.PlatformConfig, c.SSLImport, c.SSLRecord, c.Webhook, c.WebhookSubscription,
 	} {
 		n.Use(hooks...)
 	}
@@ -266,9 +278,9 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.CDNRecord, c.Cache, c.DNSRecord, c.Device, c.DevicePortForward,
-		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLImport,
-		c.SSLRecord, c.Webhook, c.WebhookSubscription,
+		c.CDNRecord, c.Cache, c.DNSRecord, c.Device, c.DeviceGroup, c.DeviceGroupDevice,
+		c.DevicePortForward, c.DomainMonitor, c.IpGroup, c.IpGroupDevice,
+		c.PlatformConfig, c.SSLImport, c.SSLRecord, c.Webhook, c.WebhookSubscription,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -285,6 +297,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.DNSRecord.mutate(ctx, m)
 	case *DeviceMutation:
 		return c.Device.mutate(ctx, m)
+	case *DeviceGroupMutation:
+		return c.DeviceGroup.mutate(ctx, m)
+	case *DeviceGroupDeviceMutation:
+		return c.DeviceGroupDevice.mutate(ctx, m)
 	case *DevicePortForwardMutation:
 		return c.DevicePortForward.mutate(ctx, m)
 	case *DomainMonitorMutation:
@@ -441,6 +457,22 @@ func (c *CDNRecordClient) QueryIPGroup(_m *CDNRecord) *IpGroupQuery {
 			sqlgraph.From(cdnrecord.Table, cdnrecord.FieldID, id),
 			sqlgraph.To(ipgroup.Table, ipgroup.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, cdnrecord.IPGroupTable, cdnrecord.IPGroupColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryDeviceGroup queries the device_group edge of a CDNRecord.
+func (c *CDNRecordClient) QueryDeviceGroup(_m *CDNRecord) *DeviceGroupQuery {
+	query := (&DeviceGroupClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cdnrecord.Table, cdnrecord.FieldID, id),
+			sqlgraph.To(devicegroup.Table, devicegroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cdnrecord.DeviceGroupTable, cdnrecord.DeviceGroupColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -764,6 +796,22 @@ func (c *DNSRecordClient) QueryIPGroup(_m *DNSRecord) *IpGroupQuery {
 	return query
 }
 
+// QueryDeviceGroup queries the device_group edge of a DNSRecord.
+func (c *DNSRecordClient) QueryDeviceGroup(_m *DNSRecord) *DeviceGroupQuery {
+	query := (&DeviceGroupClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(dnsrecord.Table, dnsrecord.FieldID, id),
+			sqlgraph.To(devicegroup.Table, devicegroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, dnsrecord.DeviceGroupTable, dnsrecord.DeviceGroupColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryCdnRecord queries the cdn_record edge of a DNSRecord.
 func (c *DNSRecordClient) QueryCdnRecord(_m *DNSRecord) *CDNRecordQuery {
 	query := (&CDNRecordClient{config: c.config}).Query()
@@ -930,6 +978,22 @@ func (c *DeviceClient) QueryIPGroups(_m *Device) *IpGroupQuery {
 	return query
 }
 
+// QueryDeviceGroups queries the device_groups edge of a Device.
+func (c *DeviceClient) QueryDeviceGroups(_m *Device) *DeviceGroupQuery {
+	query := (&DeviceGroupClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(device.Table, device.FieldID, id),
+			sqlgraph.To(devicegroup.Table, devicegroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, device.DeviceGroupsTable, device.DeviceGroupsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryPortForwards queries the port_forwards edge of a Device.
 func (c *DeviceClient) QueryPortForwards(_m *Device) *DevicePortForwardQuery {
 	query := (&DevicePortForwardClient{config: c.config}).Query()
@@ -962,6 +1026,22 @@ func (c *DeviceClient) QueryIPGroupDevice(_m *Device) *IpGroupDeviceQuery {
 	return query
 }
 
+// QueryDeviceGroupDevice queries the device_group_device edge of a Device.
+func (c *DeviceClient) QueryDeviceGroupDevice(_m *Device) *DeviceGroupDeviceQuery {
+	query := (&DeviceGroupDeviceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(device.Table, device.FieldID, id),
+			sqlgraph.To(devicegroupdevice.Table, devicegroupdevice.DeviceColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, device.DeviceGroupDeviceTable, device.DeviceGroupDeviceColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *DeviceClient) Hooks() []Hook {
 	hooks := c.hooks.Device
@@ -985,6 +1065,320 @@ func (c *DeviceClient) mutate(ctx context.Context, m *DeviceMutation) (Value, er
 		return (&DeviceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Device mutation op: %q", m.Op())
+	}
+}
+
+// DeviceGroupClient is a client for the DeviceGroup schema.
+type DeviceGroupClient struct {
+	config
+}
+
+// NewDeviceGroupClient returns a client for the DeviceGroup from the given config.
+func NewDeviceGroupClient(c config) *DeviceGroupClient {
+	return &DeviceGroupClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `devicegroup.Hooks(f(g(h())))`.
+func (c *DeviceGroupClient) Use(hooks ...Hook) {
+	c.hooks.DeviceGroup = append(c.hooks.DeviceGroup, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `devicegroup.Intercept(f(g(h())))`.
+func (c *DeviceGroupClient) Intercept(interceptors ...Interceptor) {
+	c.inters.DeviceGroup = append(c.inters.DeviceGroup, interceptors...)
+}
+
+// Create returns a builder for creating a DeviceGroup entity.
+func (c *DeviceGroupClient) Create() *DeviceGroupCreate {
+	mutation := newDeviceGroupMutation(c.config, OpCreate)
+	return &DeviceGroupCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of DeviceGroup entities.
+func (c *DeviceGroupClient) CreateBulk(builders ...*DeviceGroupCreate) *DeviceGroupCreateBulk {
+	return &DeviceGroupCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DeviceGroupClient) MapCreateBulk(slice any, setFunc func(*DeviceGroupCreate, int)) *DeviceGroupCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DeviceGroupCreateBulk{err: fmt.Errorf("calling to DeviceGroupClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DeviceGroupCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &DeviceGroupCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for DeviceGroup.
+func (c *DeviceGroupClient) Update() *DeviceGroupUpdate {
+	mutation := newDeviceGroupMutation(c.config, OpUpdate)
+	return &DeviceGroupUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DeviceGroupClient) UpdateOne(_m *DeviceGroup) *DeviceGroupUpdateOne {
+	mutation := newDeviceGroupMutation(c.config, OpUpdateOne, withDeviceGroup(_m))
+	return &DeviceGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DeviceGroupClient) UpdateOneID(id int64) *DeviceGroupUpdateOne {
+	mutation := newDeviceGroupMutation(c.config, OpUpdateOne, withDeviceGroupID(id))
+	return &DeviceGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for DeviceGroup.
+func (c *DeviceGroupClient) Delete() *DeviceGroupDelete {
+	mutation := newDeviceGroupMutation(c.config, OpDelete)
+	return &DeviceGroupDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *DeviceGroupClient) DeleteOne(_m *DeviceGroup) *DeviceGroupDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *DeviceGroupClient) DeleteOneID(id int64) *DeviceGroupDeleteOne {
+	builder := c.Delete().Where(devicegroup.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DeviceGroupDeleteOne{builder}
+}
+
+// Query returns a query builder for DeviceGroup.
+func (c *DeviceGroupClient) Query() *DeviceGroupQuery {
+	return &DeviceGroupQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeDeviceGroup},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a DeviceGroup entity by its id.
+func (c *DeviceGroupClient) Get(ctx context.Context, id int64) (*DeviceGroup, error) {
+	return c.Query().Where(devicegroup.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DeviceGroupClient) GetX(ctx context.Context, id int64) *DeviceGroup {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryDevices queries the devices edge of a DeviceGroup.
+func (c *DeviceGroupClient) QueryDevices(_m *DeviceGroup) *DeviceQuery {
+	query := (&DeviceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(devicegroup.Table, devicegroup.FieldID, id),
+			sqlgraph.To(device.Table, device.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, devicegroup.DevicesTable, devicegroup.DevicesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryDNSRecords queries the dns_records edge of a DeviceGroup.
+func (c *DeviceGroupClient) QueryDNSRecords(_m *DeviceGroup) *DNSRecordQuery {
+	query := (&DNSRecordClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(devicegroup.Table, devicegroup.FieldID, id),
+			sqlgraph.To(dnsrecord.Table, dnsrecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, devicegroup.DNSRecordsTable, devicegroup.DNSRecordsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCdnRecords queries the cdn_records edge of a DeviceGroup.
+func (c *DeviceGroupClient) QueryCdnRecords(_m *DeviceGroup) *CDNRecordQuery {
+	query := (&CDNRecordClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(devicegroup.Table, devicegroup.FieldID, id),
+			sqlgraph.To(cdnrecord.Table, cdnrecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, devicegroup.CdnRecordsTable, devicegroup.CdnRecordsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryDeviceGroupDevice queries the device_group_device edge of a DeviceGroup.
+func (c *DeviceGroupClient) QueryDeviceGroupDevice(_m *DeviceGroup) *DeviceGroupDeviceQuery {
+	query := (&DeviceGroupDeviceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(devicegroup.Table, devicegroup.FieldID, id),
+			sqlgraph.To(devicegroupdevice.Table, devicegroupdevice.DeviceGroupColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, devicegroup.DeviceGroupDeviceTable, devicegroup.DeviceGroupDeviceColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *DeviceGroupClient) Hooks() []Hook {
+	hooks := c.hooks.DeviceGroup
+	return append(hooks[:len(hooks):len(hooks)], devicegroup.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *DeviceGroupClient) Interceptors() []Interceptor {
+	return c.inters.DeviceGroup
+}
+
+func (c *DeviceGroupClient) mutate(ctx context.Context, m *DeviceGroupMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&DeviceGroupCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&DeviceGroupUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&DeviceGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&DeviceGroupDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown DeviceGroup mutation op: %q", m.Op())
+	}
+}
+
+// DeviceGroupDeviceClient is a client for the DeviceGroupDevice schema.
+type DeviceGroupDeviceClient struct {
+	config
+}
+
+// NewDeviceGroupDeviceClient returns a client for the DeviceGroupDevice from the given config.
+func NewDeviceGroupDeviceClient(c config) *DeviceGroupDeviceClient {
+	return &DeviceGroupDeviceClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `devicegroupdevice.Hooks(f(g(h())))`.
+func (c *DeviceGroupDeviceClient) Use(hooks ...Hook) {
+	c.hooks.DeviceGroupDevice = append(c.hooks.DeviceGroupDevice, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `devicegroupdevice.Intercept(f(g(h())))`.
+func (c *DeviceGroupDeviceClient) Intercept(interceptors ...Interceptor) {
+	c.inters.DeviceGroupDevice = append(c.inters.DeviceGroupDevice, interceptors...)
+}
+
+// Create returns a builder for creating a DeviceGroupDevice entity.
+func (c *DeviceGroupDeviceClient) Create() *DeviceGroupDeviceCreate {
+	mutation := newDeviceGroupDeviceMutation(c.config, OpCreate)
+	return &DeviceGroupDeviceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of DeviceGroupDevice entities.
+func (c *DeviceGroupDeviceClient) CreateBulk(builders ...*DeviceGroupDeviceCreate) *DeviceGroupDeviceCreateBulk {
+	return &DeviceGroupDeviceCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DeviceGroupDeviceClient) MapCreateBulk(slice any, setFunc func(*DeviceGroupDeviceCreate, int)) *DeviceGroupDeviceCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DeviceGroupDeviceCreateBulk{err: fmt.Errorf("calling to DeviceGroupDeviceClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DeviceGroupDeviceCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &DeviceGroupDeviceCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for DeviceGroupDevice.
+func (c *DeviceGroupDeviceClient) Update() *DeviceGroupDeviceUpdate {
+	mutation := newDeviceGroupDeviceMutation(c.config, OpUpdate)
+	return &DeviceGroupDeviceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DeviceGroupDeviceClient) UpdateOne(_m *DeviceGroupDevice) *DeviceGroupDeviceUpdateOne {
+	mutation := newDeviceGroupDeviceMutation(c.config, OpUpdateOne)
+	mutation.device = &_m.DeviceID
+	mutation.device_group = &_m.DeviceGroupID
+	return &DeviceGroupDeviceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for DeviceGroupDevice.
+func (c *DeviceGroupDeviceClient) Delete() *DeviceGroupDeviceDelete {
+	mutation := newDeviceGroupDeviceMutation(c.config, OpDelete)
+	return &DeviceGroupDeviceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Query returns a query builder for DeviceGroupDevice.
+func (c *DeviceGroupDeviceClient) Query() *DeviceGroupDeviceQuery {
+	return &DeviceGroupDeviceQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeDeviceGroupDevice},
+		inters: c.Interceptors(),
+	}
+}
+
+// QueryDevice queries the device edge of a DeviceGroupDevice.
+func (c *DeviceGroupDeviceClient) QueryDevice(_m *DeviceGroupDevice) *DeviceQuery {
+	return c.Query().
+		Where(devicegroupdevice.DeviceID(_m.DeviceID), devicegroupdevice.DeviceGroupID(_m.DeviceGroupID)).
+		QueryDevice()
+}
+
+// QueryDeviceGroup queries the device_group edge of a DeviceGroupDevice.
+func (c *DeviceGroupDeviceClient) QueryDeviceGroup(_m *DeviceGroupDevice) *DeviceGroupQuery {
+	return c.Query().
+		Where(devicegroupdevice.DeviceID(_m.DeviceID), devicegroupdevice.DeviceGroupID(_m.DeviceGroupID)).
+		QueryDeviceGroup()
+}
+
+// Hooks returns the client hooks.
+func (c *DeviceGroupDeviceClient) Hooks() []Hook {
+	return c.hooks.DeviceGroupDevice
+}
+
+// Interceptors returns the client interceptors.
+func (c *DeviceGroupDeviceClient) Interceptors() []Interceptor {
+	return c.inters.DeviceGroupDevice
+}
+
+func (c *DeviceGroupDeviceClient) mutate(ctx context.Context, m *DeviceGroupDeviceMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&DeviceGroupDeviceCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&DeviceGroupDeviceUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&DeviceGroupDeviceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&DeviceGroupDeviceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown DeviceGroupDevice mutation op: %q", m.Op())
 	}
 }
 
@@ -2355,14 +2749,14 @@ func (c *WebhookSubscriptionClient) mutate(ctx context.Context, m *WebhookSubscr
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		CDNRecord, Cache, DNSRecord, Device, DevicePortForward, DomainMonitor, IpGroup,
-		IpGroupDevice, PlatformConfig, SSLImport, SSLRecord, Webhook,
-		WebhookSubscription []ent.Hook
+		CDNRecord, Cache, DNSRecord, Device, DeviceGroup, DeviceGroupDevice,
+		DevicePortForward, DomainMonitor, IpGroup, IpGroupDevice, PlatformConfig,
+		SSLImport, SSLRecord, Webhook, WebhookSubscription []ent.Hook
 	}
 	inters struct {
-		CDNRecord, Cache, DNSRecord, Device, DevicePortForward, DomainMonitor, IpGroup,
-		IpGroupDevice, PlatformConfig, SSLImport, SSLRecord, Webhook,
-		WebhookSubscription []ent.Interceptor
+		CDNRecord, Cache, DNSRecord, Device, DeviceGroup, DeviceGroupDevice,
+		DevicePortForward, DomainMonitor, IpGroup, IpGroupDevice, PlatformConfig,
+		SSLImport, SSLRecord, Webhook, WebhookSubscription []ent.Interceptor
 	}
 )
 

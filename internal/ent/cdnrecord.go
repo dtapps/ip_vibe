@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/platformconfig"
 
@@ -37,8 +38,10 @@ type CDNRecord struct {
 	ConfigJSON json.RawMessage `json:"config_json,omitempty"`
 	// CDN边缘域名（平台提供）
 	CdnDomain string `json:"cdn_domain,omitempty"`
-	// IP组序号
+	// IP组序号（二选一）
 	IPGroupID int64 `json:"ip_group_id,omitempty"`
+	// 设备组序号（二选一）
+	DeviceGroupID int64 `json:"device_group_id,omitempty"`
 	// 是否活跃
 	IsActive bool `json:"is_active,omitempty"`
 	// 最后一次刷新成功时间
@@ -57,13 +60,15 @@ type CDNRecord struct {
 type CDNRecordEdges struct {
 	// 关联的平台配置
 	Config *PlatformConfig `json:"config,omitempty"`
-	// 关联的IP组
+	// 关联的IP组（二选一）
 	IPGroup *IpGroup `json:"ip_group,omitempty"`
+	// 关联的设备组（二选一）
+	DeviceGroup *DeviceGroup `json:"device_group,omitempty"`
 	// 关联的DNS记录
 	DNSRecords []*DNSRecord `json:"dns_records,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes     [3]bool
+	loadedTypes     [4]bool
 	namedDNSRecords map[string][]*DNSRecord
 }
 
@@ -89,10 +94,21 @@ func (e CDNRecordEdges) IPGroupOrErr() (*IpGroup, error) {
 	return nil, &NotLoadedError{edge: "ip_group"}
 }
 
+// DeviceGroupOrErr returns the DeviceGroup value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CDNRecordEdges) DeviceGroupOrErr() (*DeviceGroup, error) {
+	if e.DeviceGroup != nil {
+		return e.DeviceGroup, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: devicegroup.Label}
+	}
+	return nil, &NotLoadedError{edge: "device_group"}
+}
+
 // DNSRecordsOrErr returns the DNSRecords value or an error if the edge
 // was not loaded in eager-loading.
 func (e CDNRecordEdges) DNSRecordsOrErr() ([]*DNSRecord, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.DNSRecords, nil
 	}
 	return nil, &NotLoadedError{edge: "dns_records"}
@@ -107,7 +123,7 @@ func (*CDNRecord) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case cdnrecord.FieldIsActive:
 			values[i] = new(sql.NullBool)
-		case cdnrecord.FieldID, cdnrecord.FieldConfigID, cdnrecord.FieldIPGroupID:
+		case cdnrecord.FieldID, cdnrecord.FieldConfigID, cdnrecord.FieldIPGroupID, cdnrecord.FieldDeviceGroupID:
 			values[i] = new(sql.NullInt64)
 		case cdnrecord.FieldRecordID, cdnrecord.FieldSubDomain, cdnrecord.FieldType, cdnrecord.FieldCdnDomain, cdnrecord.FieldLastAPIResponse:
 			values[i] = new(sql.NullString)
@@ -190,6 +206,12 @@ func (_m *CDNRecord) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.IPGroupID = value.Int64
 			}
+		case cdnrecord.FieldDeviceGroupID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field device_group_id", values[i])
+			} else if value.Valid {
+				_m.DeviceGroupID = value.Int64
+			}
 		case cdnrecord.FieldIsActive:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field is_active", values[i])
@@ -235,6 +257,11 @@ func (_m *CDNRecord) QueryConfig() *PlatformConfigQuery {
 // QueryIPGroup queries the "ip_group" edge of the CDNRecord entity.
 func (_m *CDNRecord) QueryIPGroup() *IpGroupQuery {
 	return NewCDNRecordClient(_m.config).QueryIPGroup(_m)
+}
+
+// QueryDeviceGroup queries the "device_group" edge of the CDNRecord entity.
+func (_m *CDNRecord) QueryDeviceGroup() *DeviceGroupQuery {
+	return NewCDNRecordClient(_m.config).QueryDeviceGroup(_m)
 }
 
 // QueryDNSRecords queries the "dns_records" edge of the CDNRecord entity.
@@ -291,6 +318,9 @@ func (_m *CDNRecord) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("ip_group_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IPGroupID))
+	builder.WriteString(", ")
+	builder.WriteString("device_group_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.DeviceGroupID))
 	builder.WriteString(", ")
 	builder.WriteString("is_active=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsActive))

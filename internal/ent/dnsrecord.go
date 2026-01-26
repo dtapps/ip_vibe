@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/platformconfig"
@@ -36,9 +37,11 @@ type DNSRecord struct {
 	Type dnsrecord.Type `json:"type,omitempty"`
 	// DNS记录配置（JSON）
 	ConfigJSON json.RawMessage `json:"config_json,omitempty"`
-	// IP组序号（与 cdn_record_id 二选一）
+	// IP组序号（三选一）
 	IPGroupID int64 `json:"ip_group_id,omitempty"`
-	// CDN记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）
+	// 设备组序号（三选一）
+	DeviceGroupID int64 `json:"device_group_id,omitempty"`
+	// CDN记录序号（三选一）
 	CdnRecordID int64 `json:"cdn_record_id,omitempty"`
 	// 是否活跃
 	IsActive bool `json:"is_active,omitempty"`
@@ -58,13 +61,15 @@ type DNSRecord struct {
 type DNSRecordEdges struct {
 	// 关联的平台配置
 	Config *PlatformConfig `json:"config,omitempty"`
-	// 关联的IP组（二选一）
+	// 关联的IP组（三选一）
 	IPGroup *IpGroup `json:"ip_group,omitempty"`
-	// 关联的CDN记录（二选一）
+	// 关联的设备组（三选一）
+	DeviceGroup *DeviceGroup `json:"device_group,omitempty"`
+	// 关联的CDN记录（三选一）
 	CdnRecord *CDNRecord `json:"cdn_record,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // ConfigOrErr returns the Config value or an error if the edge
@@ -89,12 +94,23 @@ func (e DNSRecordEdges) IPGroupOrErr() (*IpGroup, error) {
 	return nil, &NotLoadedError{edge: "ip_group"}
 }
 
+// DeviceGroupOrErr returns the DeviceGroup value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e DNSRecordEdges) DeviceGroupOrErr() (*DeviceGroup, error) {
+	if e.DeviceGroup != nil {
+		return e.DeviceGroup, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: devicegroup.Label}
+	}
+	return nil, &NotLoadedError{edge: "device_group"}
+}
+
 // CdnRecordOrErr returns the CdnRecord value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e DNSRecordEdges) CdnRecordOrErr() (*CDNRecord, error) {
 	if e.CdnRecord != nil {
 		return e.CdnRecord, nil
-	} else if e.loadedTypes[2] {
+	} else if e.loadedTypes[3] {
 		return nil, &NotFoundError{label: cdnrecord.Label}
 	}
 	return nil, &NotLoadedError{edge: "cdn_record"}
@@ -109,7 +125,7 @@ func (*DNSRecord) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case dnsrecord.FieldIsActive:
 			values[i] = new(sql.NullBool)
-		case dnsrecord.FieldID, dnsrecord.FieldConfigID, dnsrecord.FieldIPGroupID, dnsrecord.FieldCdnRecordID:
+		case dnsrecord.FieldID, dnsrecord.FieldConfigID, dnsrecord.FieldIPGroupID, dnsrecord.FieldDeviceGroupID, dnsrecord.FieldCdnRecordID:
 			values[i] = new(sql.NullInt64)
 		case dnsrecord.FieldRecordID, dnsrecord.FieldSubDomain, dnsrecord.FieldType, dnsrecord.FieldLastAPIResponse:
 			values[i] = new(sql.NullString)
@@ -186,6 +202,12 @@ func (_m *DNSRecord) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.IPGroupID = value.Int64
 			}
+		case dnsrecord.FieldDeviceGroupID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field device_group_id", values[i])
+			} else if value.Valid {
+				_m.DeviceGroupID = value.Int64
+			}
 		case dnsrecord.FieldCdnRecordID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field cdn_record_id", values[i])
@@ -239,6 +261,11 @@ func (_m *DNSRecord) QueryIPGroup() *IpGroupQuery {
 	return NewDNSRecordClient(_m.config).QueryIPGroup(_m)
 }
 
+// QueryDeviceGroup queries the "device_group" edge of the DNSRecord entity.
+func (_m *DNSRecord) QueryDeviceGroup() *DeviceGroupQuery {
+	return NewDNSRecordClient(_m.config).QueryDeviceGroup(_m)
+}
+
 // QueryCdnRecord queries the "cdn_record" edge of the DNSRecord entity.
 func (_m *DNSRecord) QueryCdnRecord() *CDNRecordQuery {
 	return NewDNSRecordClient(_m.config).QueryCdnRecord(_m)
@@ -290,6 +317,9 @@ func (_m *DNSRecord) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("ip_group_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IPGroupID))
+	builder.WriteString(", ")
+	builder.WriteString("device_group_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.DeviceGroupID))
 	builder.WriteString(", ")
 	builder.WriteString("cdn_record_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.CdnRecordID))

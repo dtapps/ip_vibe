@@ -92,6 +92,12 @@ func (Device) Edges() []ent.Edge {
 			Comment("关联的IP组").
 			Annotations(entsql.WithComments(true)),
 
+		// 多对多：Device <-> DeviceGroup
+		edge.To("device_groups", DeviceGroup.Type).
+			Through("device_group_device", DeviceGroupDevice.Type).
+			Comment("关联的设备组").
+			Annotations(entsql.WithComments(true)),
+
 		// 一对多 Device -> DevicePortForward
 		edge.To("port_forwards", DevicePortForward.Type).
 			Comment("设备的端口转发规则").

@@ -35,10 +35,14 @@ const (
 	FieldLastHeartbeatAt = "last_heartbeat_at"
 	// EdgeIPGroups holds the string denoting the ip_groups edge name in mutations.
 	EdgeIPGroups = "ip_groups"
+	// EdgeDeviceGroups holds the string denoting the device_groups edge name in mutations.
+	EdgeDeviceGroups = "device_groups"
 	// EdgePortForwards holds the string denoting the port_forwards edge name in mutations.
 	EdgePortForwards = "port_forwards"
 	// EdgeIPGroupDevice holds the string denoting the ip_group_device edge name in mutations.
 	EdgeIPGroupDevice = "ip_group_device"
+	// EdgeDeviceGroupDevice holds the string denoting the device_group_device edge name in mutations.
+	EdgeDeviceGroupDevice = "device_group_device"
 	// Table holds the table name of the device in the database.
 	Table = "device"
 	// IPGroupsTable is the table that holds the ip_groups relation/edge. The primary key declared below.
@@ -46,6 +50,11 @@ const (
 	// IPGroupsInverseTable is the table name for the IpGroup entity.
 	// It exists in this package in order to avoid circular dependency with the "ipgroup" package.
 	IPGroupsInverseTable = "ip_group"
+	// DeviceGroupsTable is the table that holds the device_groups relation/edge. The primary key declared below.
+	DeviceGroupsTable = "device_group_device"
+	// DeviceGroupsInverseTable is the table name for the DeviceGroup entity.
+	// It exists in this package in order to avoid circular dependency with the "devicegroup" package.
+	DeviceGroupsInverseTable = "device_group"
 	// PortForwardsTable is the table that holds the port_forwards relation/edge.
 	PortForwardsTable = "device_port_forward"
 	// PortForwardsInverseTable is the table name for the DevicePortForward entity.
@@ -60,6 +69,13 @@ const (
 	IPGroupDeviceInverseTable = "ip_group_device"
 	// IPGroupDeviceColumn is the table column denoting the ip_group_device relation/edge.
 	IPGroupDeviceColumn = "device_id"
+	// DeviceGroupDeviceTable is the table that holds the device_group_device relation/edge.
+	DeviceGroupDeviceTable = "device_group_device"
+	// DeviceGroupDeviceInverseTable is the table name for the DeviceGroupDevice entity.
+	// It exists in this package in order to avoid circular dependency with the "devicegroupdevice" package.
+	DeviceGroupDeviceInverseTable = "device_group_device"
+	// DeviceGroupDeviceColumn is the table column denoting the device_group_device relation/edge.
+	DeviceGroupDeviceColumn = "device_id"
 )
 
 // Columns holds all SQL columns for device fields.
@@ -80,6 +96,9 @@ var (
 	// IPGroupsPrimaryKey and IPGroupsColumn2 are the table columns denoting the
 	// primary key for the ip_groups relation (M2M).
 	IPGroupsPrimaryKey = []string{"device_id", "ip_group_id"}
+	// DeviceGroupsPrimaryKey and DeviceGroupsColumn2 are the table columns denoting the
+	// primary key for the device_groups relation (M2M).
+	DeviceGroupsPrimaryKey = []string{"device_id", "device_group_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -180,6 +199,20 @@ func ByIPGroups(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByDeviceGroupsCount orders the results by device_groups count.
+func ByDeviceGroupsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newDeviceGroupsStep(), opts...)
+	}
+}
+
+// ByDeviceGroups orders the results by device_groups terms.
+func ByDeviceGroups(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newDeviceGroupsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByPortForwardsCount orders the results by port_forwards count.
 func ByPortForwardsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -207,11 +240,32 @@ func ByIPGroupDevice(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newIPGroupDeviceStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByDeviceGroupDeviceCount orders the results by device_group_device count.
+func ByDeviceGroupDeviceCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newDeviceGroupDeviceStep(), opts...)
+	}
+}
+
+// ByDeviceGroupDevice orders the results by device_group_device terms.
+func ByDeviceGroupDevice(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newDeviceGroupDeviceStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newIPGroupsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(IPGroupsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, IPGroupsTable, IPGroupsPrimaryKey...),
+	)
+}
+func newDeviceGroupsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(DeviceGroupsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, DeviceGroupsTable, DeviceGroupsPrimaryKey...),
 	)
 }
 func newPortForwardsStep() *sqlgraph.Step {
@@ -226,5 +280,12 @@ func newIPGroupDeviceStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(IPGroupDeviceInverseTable, IPGroupDeviceColumn),
 		sqlgraph.Edge(sqlgraph.O2M, true, IPGroupDeviceTable, IPGroupDeviceColumn),
+	)
+}
+func newDeviceGroupDeviceStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(DeviceGroupDeviceInverseTable, DeviceGroupDeviceColumn),
+		sqlgraph.Edge(sqlgraph.O2M, true, DeviceGroupDeviceTable, DeviceGroupDeviceColumn),
 	)
 }

@@ -23,7 +23,8 @@ var (
 		{Name: "last_refresh_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次刷新成功时间"},
 		{Name: "last_api_response", Type: field.TypeString, Nullable: true, Comment: "最近一次接口的反馈"},
 		{Name: "last_api_response_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次接口的反馈时间"},
-		{Name: "ip_group_id", Type: field.TypeInt64, Comment: "IP组序号"},
+		{Name: "device_group_id", Type: field.TypeInt64, Nullable: true, Comment: "设备组序号（二选一）"},
+		{Name: "ip_group_id", Type: field.TypeInt64, Nullable: true, Comment: "IP组序号（二选一）"},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
 	}
 	// CdnRecordTable holds the schema information for the "cdn_record" table.
@@ -34,14 +35,20 @@ var (
 		PrimaryKey: []*schema.Column{CdnRecordColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "cdn_record_ip_group_cdn_records",
+				Symbol:     "cdn_record_device_group_cdn_records",
 				Columns:    []*schema.Column{CdnRecordColumns[12]},
+				RefColumns: []*schema.Column{DeviceGroupColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "cdn_record_ip_group_cdn_records",
+				Columns:    []*schema.Column{CdnRecordColumns[13]},
 				RefColumns: []*schema.Column{IPGroupColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cdn_record_platform_config_cdn_records",
-				Columns:    []*schema.Column{CdnRecordColumns[13]},
+				Columns:    []*schema.Column{CdnRecordColumns[14]},
 				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -58,7 +65,7 @@ var (
 			{
 				Name:    "cdnrecord_config_id",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[13]},
+				Columns: []*schema.Column{CdnRecordColumns[14]},
 			},
 			{
 				Name:    "cdnrecord_record_id",
@@ -78,7 +85,7 @@ var (
 			{
 				Name:    "cdnrecord_ip_group_id",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[12]},
+				Columns: []*schema.Column{CdnRecordColumns[13]},
 			},
 			{
 				Name:    "cdnrecord_is_active",
@@ -120,8 +127,9 @@ var (
 		{Name: "last_refresh_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次刷新成功时间"},
 		{Name: "last_api_response", Type: field.TypeString, Nullable: true, Comment: "最近一次接口的反馈"},
 		{Name: "last_api_response_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次接口的反馈时间"},
-		{Name: "cdn_record_id", Type: field.TypeInt64, Nullable: true, Comment: "CDN记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）"},
-		{Name: "ip_group_id", Type: field.TypeInt64, Nullable: true, Comment: "IP组序号（与 cdn_record_id 二选一）"},
+		{Name: "cdn_record_id", Type: field.TypeInt64, Nullable: true, Comment: "CDN记录序号（三选一）"},
+		{Name: "device_group_id", Type: field.TypeInt64, Nullable: true, Comment: "设备组序号（三选一）"},
+		{Name: "ip_group_id", Type: field.TypeInt64, Nullable: true, Comment: "IP组序号（三选一）"},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
 	}
 	// DNSRecordTable holds the schema information for the "dns_record" table.
@@ -138,14 +146,20 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "dns_record_ip_group_dns_records",
+				Symbol:     "dns_record_device_group_dns_records",
 				Columns:    []*schema.Column{DNSRecordColumns[12]},
+				RefColumns: []*schema.Column{DeviceGroupColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "dns_record_ip_group_dns_records",
+				Columns:    []*schema.Column{DNSRecordColumns[13]},
 				RefColumns: []*schema.Column{IPGroupColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "dns_record_platform_config_dns_records",
-				Columns:    []*schema.Column{DNSRecordColumns[13]},
+				Columns:    []*schema.Column{DNSRecordColumns[14]},
 				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -162,7 +176,7 @@ var (
 			{
 				Name:    "dnsrecord_config_id",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[13]},
+				Columns: []*schema.Column{DNSRecordColumns[14]},
 			},
 			{
 				Name:    "dnsrecord_record_id",
@@ -181,6 +195,11 @@ var (
 			},
 			{
 				Name:    "dnsrecord_ip_group_id",
+				Unique:  false,
+				Columns: []*schema.Column{DNSRecordColumns[13]},
+			},
+			{
+				Name:    "dnsrecord_device_group_id",
 				Unique:  false,
 				Columns: []*schema.Column{DNSRecordColumns[12]},
 			},
@@ -233,6 +252,79 @@ var (
 				Name:    "device_last_heartbeat_at",
 				Unique:  false,
 				Columns: []*schema.Column{DeviceColumns[9]},
+			},
+		},
+	}
+	// DeviceGroupColumns holds the columns for the "device_group" table.
+	DeviceGroupColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "设备组序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "code", Type: field.TypeString, Comment: "设备组编码"},
+		{Name: "name", Type: field.TypeString, Comment: "设备组名称"},
+		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "设备组描述"},
+	}
+	// DeviceGroupTable holds the schema information for the "device_group" table.
+	DeviceGroupTable = &schema.Table{
+		Name:       "device_group",
+		Comment:    "设备组",
+		Columns:    DeviceGroupColumns,
+		PrimaryKey: []*schema.Column{DeviceGroupColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "devicegroup_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeviceGroupColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+		},
+	}
+	// DeviceGroupDeviceColumns holds the columns for the "device_group_device" table.
+	DeviceGroupDeviceColumns = []*schema.Column{
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "device_id", Type: field.TypeInt64, Comment: "设备序号"},
+		{Name: "device_group_id", Type: field.TypeInt64, Comment: "设备组序号"},
+	}
+	// DeviceGroupDeviceTable holds the schema information for the "device_group_device" table.
+	DeviceGroupDeviceTable = &schema.Table{
+		Name:       "device_group_device",
+		Comment:    "设备组设备 (多对多关联)",
+		Columns:    DeviceGroupDeviceColumns,
+		PrimaryKey: []*schema.Column{DeviceGroupDeviceColumns[1], DeviceGroupDeviceColumns[2]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "device_group_device_device_device",
+				Columns:    []*schema.Column{DeviceGroupDeviceColumns[1]},
+				RefColumns: []*schema.Column{DeviceColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "device_group_device_device_group_device_group",
+				Columns:    []*schema.Column{DeviceGroupDeviceColumns[2]},
+				RefColumns: []*schema.Column{DeviceGroupColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "devicegroupdevice_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DeviceGroupDeviceColumns[0]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "devicegroupdevice_device_id",
+				Unique:  false,
+				Columns: []*schema.Column{DeviceGroupDeviceColumns[1]},
+			},
+			{
+				Name:    "devicegroupdevice_device_group_id",
+				Unique:  false,
+				Columns: []*schema.Column{DeviceGroupDeviceColumns[2]},
 			},
 		},
 	}
@@ -332,8 +424,6 @@ var (
 		{Name: "code", Type: field.TypeString, Comment: "IP组编码"},
 		{Name: "name", Type: field.TypeString, Comment: "IP组名称"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "IP组描述"},
-		{Name: "last_api_response", Type: field.TypeString, Nullable: true, Comment: "最近一次接口的反馈"},
-		{Name: "last_api_response_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次接口的反馈时间"},
 	}
 	// IPGroupTable holds the schema information for the "ip_group" table.
 	IPGroupTable = &schema.Table{
@@ -690,6 +780,8 @@ var (
 		CacheTable,
 		DNSRecordTable,
 		DeviceTable,
+		DeviceGroupTable,
+		DeviceGroupDeviceTable,
 		DevicePortForwardTable,
 		DomainMonitorTable,
 		IPGroupTable,
@@ -703,8 +795,9 @@ var (
 )
 
 func init() {
-	CdnRecordTable.ForeignKeys[0].RefTable = IPGroupTable
-	CdnRecordTable.ForeignKeys[1].RefTable = PlatformConfigTable
+	CdnRecordTable.ForeignKeys[0].RefTable = DeviceGroupTable
+	CdnRecordTable.ForeignKeys[1].RefTable = IPGroupTable
+	CdnRecordTable.ForeignKeys[2].RefTable = PlatformConfigTable
 	CdnRecordTable.Annotation = &entsql.Annotation{
 		Table: "cdn_record",
 	}
@@ -712,13 +805,22 @@ func init() {
 		Table: "cache",
 	}
 	DNSRecordTable.ForeignKeys[0].RefTable = CdnRecordTable
-	DNSRecordTable.ForeignKeys[1].RefTable = IPGroupTable
-	DNSRecordTable.ForeignKeys[2].RefTable = PlatformConfigTable
+	DNSRecordTable.ForeignKeys[1].RefTable = DeviceGroupTable
+	DNSRecordTable.ForeignKeys[2].RefTable = IPGroupTable
+	DNSRecordTable.ForeignKeys[3].RefTable = PlatformConfigTable
 	DNSRecordTable.Annotation = &entsql.Annotation{
 		Table: "dns_record",
 	}
 	DeviceTable.Annotation = &entsql.Annotation{
 		Table: "device",
+	}
+	DeviceGroupTable.Annotation = &entsql.Annotation{
+		Table: "device_group",
+	}
+	DeviceGroupDeviceTable.ForeignKeys[0].RefTable = DeviceTable
+	DeviceGroupDeviceTable.ForeignKeys[1].RefTable = DeviceGroupTable
+	DeviceGroupDeviceTable.Annotation = &entsql.Annotation{
+		Table: "device_group_device",
 	}
 	DevicePortForwardTable.ForeignKeys[0].RefTable = DeviceTable
 	DevicePortForwardTable.Annotation = &entsql.Annotation{

@@ -658,6 +658,29 @@ func HasIPGroupsWith(preds ...predicate.IpGroup) predicate.Device {
 	})
 }
 
+// HasDeviceGroups applies the HasEdge predicate on the "device_groups" edge.
+func HasDeviceGroups() predicate.Device {
+	return predicate.Device(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, DeviceGroupsTable, DeviceGroupsPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDeviceGroupsWith applies the HasEdge predicate on the "device_groups" edge with a given conditions (other predicates).
+func HasDeviceGroupsWith(preds ...predicate.DeviceGroup) predicate.Device {
+	return predicate.Device(func(s *sql.Selector) {
+		step := newDeviceGroupsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasPortForwards applies the HasEdge predicate on the "port_forwards" edge.
 func HasPortForwards() predicate.Device {
 	return predicate.Device(func(s *sql.Selector) {
@@ -696,6 +719,29 @@ func HasIPGroupDevice() predicate.Device {
 func HasIPGroupDeviceWith(preds ...predicate.IpGroupDevice) predicate.Device {
 	return predicate.Device(func(s *sql.Selector) {
 		step := newIPGroupDeviceStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasDeviceGroupDevice applies the HasEdge predicate on the "device_group_device" edge.
+func HasDeviceGroupDevice() predicate.Device {
+	return predicate.Device(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, DeviceGroupDeviceTable, DeviceGroupDeviceColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDeviceGroupDeviceWith applies the HasEdge predicate on the "device_group_device" edge with a given conditions (other predicates).
+func HasDeviceGroupDeviceWith(preds ...predicate.DeviceGroupDevice) predicate.Device {
+	return predicate.Device(func(s *sql.Selector) {
+		step := newDeviceGroupDeviceStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -85,6 +85,11 @@ func IPGroupID(v int64) predicate.DNSRecord {
 	return predicate.DNSRecord(sql.FieldEQ(FieldIPGroupID, v))
 }
 
+// DeviceGroupID applies equality check predicate on the "device_group_id" field. It's identical to DeviceGroupIDEQ.
+func DeviceGroupID(v int64) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldEQ(FieldDeviceGroupID, v))
+}
+
 // CdnRecordID applies equality check predicate on the "cdn_record_id" field. It's identical to CdnRecordIDEQ.
 func CdnRecordID(v int64) predicate.DNSRecord {
 	return predicate.DNSRecord(sql.FieldEQ(FieldCdnRecordID, v))
@@ -410,6 +415,36 @@ func IPGroupIDNotNil() predicate.DNSRecord {
 	return predicate.DNSRecord(sql.FieldNotNull(FieldIPGroupID))
 }
 
+// DeviceGroupIDEQ applies the EQ predicate on the "device_group_id" field.
+func DeviceGroupIDEQ(v int64) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldEQ(FieldDeviceGroupID, v))
+}
+
+// DeviceGroupIDNEQ applies the NEQ predicate on the "device_group_id" field.
+func DeviceGroupIDNEQ(v int64) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldNEQ(FieldDeviceGroupID, v))
+}
+
+// DeviceGroupIDIn applies the In predicate on the "device_group_id" field.
+func DeviceGroupIDIn(vs ...int64) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldIn(FieldDeviceGroupID, vs...))
+}
+
+// DeviceGroupIDNotIn applies the NotIn predicate on the "device_group_id" field.
+func DeviceGroupIDNotIn(vs ...int64) predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldNotIn(FieldDeviceGroupID, vs...))
+}
+
+// DeviceGroupIDIsNil applies the IsNil predicate on the "device_group_id" field.
+func DeviceGroupIDIsNil() predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldIsNull(FieldDeviceGroupID))
+}
+
+// DeviceGroupIDNotNil applies the NotNil predicate on the "device_group_id" field.
+func DeviceGroupIDNotNil() predicate.DNSRecord {
+	return predicate.DNSRecord(sql.FieldNotNull(FieldDeviceGroupID))
+}
+
 // CdnRecordIDEQ applies the EQ predicate on the "cdn_record_id" field.
 func CdnRecordIDEQ(v int64) predicate.DNSRecord {
 	return predicate.DNSRecord(sql.FieldEQ(FieldCdnRecordID, v))
@@ -663,6 +698,29 @@ func HasIPGroup() predicate.DNSRecord {
 func HasIPGroupWith(preds ...predicate.IpGroup) predicate.DNSRecord {
 	return predicate.DNSRecord(func(s *sql.Selector) {
 		step := newIPGroupStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasDeviceGroup applies the HasEdge predicate on the "device_group" edge.
+func HasDeviceGroup() predicate.DNSRecord {
+	return predicate.DNSRecord(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, DeviceGroupTable, DeviceGroupColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDeviceGroupWith applies the HasEdge predicate on the "device_group" edge with a given conditions (other predicates).
+func HasDeviceGroupWith(preds ...predicate.DeviceGroup) predicate.DNSRecord {
+	return predicate.DNSRecord(func(s *sql.Selector) {
+		step := newDeviceGroupStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/predicate"
@@ -102,6 +103,26 @@ func (_u *DNSRecordUpdate) SetNillableIPGroupID(v *int64) *DNSRecordUpdate {
 // ClearIPGroupID clears the value of the "ip_group_id" field.
 func (_u *DNSRecordUpdate) ClearIPGroupID() *DNSRecordUpdate {
 	_u.mutation.ClearIPGroupID()
+	return _u
+}
+
+// SetDeviceGroupID sets the "device_group_id" field.
+func (_u *DNSRecordUpdate) SetDeviceGroupID(v int64) *DNSRecordUpdate {
+	_u.mutation.SetDeviceGroupID(v)
+	return _u
+}
+
+// SetNillableDeviceGroupID sets the "device_group_id" field if the given value is not nil.
+func (_u *DNSRecordUpdate) SetNillableDeviceGroupID(v *int64) *DNSRecordUpdate {
+	if v != nil {
+		_u.SetDeviceGroupID(*v)
+	}
+	return _u
+}
+
+// ClearDeviceGroupID clears the value of the "device_group_id" field.
+func (_u *DNSRecordUpdate) ClearDeviceGroupID() *DNSRecordUpdate {
+	_u.mutation.ClearDeviceGroupID()
 	return _u
 }
 
@@ -204,6 +225,11 @@ func (_u *DNSRecordUpdate) SetIPGroup(v *IpGroup) *DNSRecordUpdate {
 	return _u.SetIPGroupID(v.ID)
 }
 
+// SetDeviceGroup sets the "device_group" edge to the DeviceGroup entity.
+func (_u *DNSRecordUpdate) SetDeviceGroup(v *DeviceGroup) *DNSRecordUpdate {
+	return _u.SetDeviceGroupID(v.ID)
+}
+
 // SetCdnRecord sets the "cdn_record" edge to the CDNRecord entity.
 func (_u *DNSRecordUpdate) SetCdnRecord(v *CDNRecord) *DNSRecordUpdate {
 	return _u.SetCdnRecordID(v.ID)
@@ -217,6 +243,12 @@ func (_u *DNSRecordUpdate) Mutation() *DNSRecordMutation {
 // ClearIPGroup clears the "ip_group" edge to the IpGroup entity.
 func (_u *DNSRecordUpdate) ClearIPGroup() *DNSRecordUpdate {
 	_u.mutation.ClearIPGroup()
+	return _u
+}
+
+// ClearDeviceGroup clears the "device_group" edge to the DeviceGroup entity.
+func (_u *DNSRecordUpdate) ClearDeviceGroup() *DNSRecordUpdate {
+	_u.mutation.ClearDeviceGroup()
 	return _u
 }
 
@@ -372,6 +404,35 @@ func (_u *DNSRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.DeviceGroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   dnsrecord.DeviceGroupTable,
+			Columns: []string{dnsrecord.DeviceGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.DeviceGroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   dnsrecord.DeviceGroupTable,
+			Columns: []string{dnsrecord.DeviceGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _u.mutation.CdnRecordCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -495,6 +556,26 @@ func (_u *DNSRecordUpdateOne) ClearIPGroupID() *DNSRecordUpdateOne {
 	return _u
 }
 
+// SetDeviceGroupID sets the "device_group_id" field.
+func (_u *DNSRecordUpdateOne) SetDeviceGroupID(v int64) *DNSRecordUpdateOne {
+	_u.mutation.SetDeviceGroupID(v)
+	return _u
+}
+
+// SetNillableDeviceGroupID sets the "device_group_id" field if the given value is not nil.
+func (_u *DNSRecordUpdateOne) SetNillableDeviceGroupID(v *int64) *DNSRecordUpdateOne {
+	if v != nil {
+		_u.SetDeviceGroupID(*v)
+	}
+	return _u
+}
+
+// ClearDeviceGroupID clears the value of the "device_group_id" field.
+func (_u *DNSRecordUpdateOne) ClearDeviceGroupID() *DNSRecordUpdateOne {
+	_u.mutation.ClearDeviceGroupID()
+	return _u
+}
+
 // SetCdnRecordID sets the "cdn_record_id" field.
 func (_u *DNSRecordUpdateOne) SetCdnRecordID(v int64) *DNSRecordUpdateOne {
 	_u.mutation.SetCdnRecordID(v)
@@ -594,6 +675,11 @@ func (_u *DNSRecordUpdateOne) SetIPGroup(v *IpGroup) *DNSRecordUpdateOne {
 	return _u.SetIPGroupID(v.ID)
 }
 
+// SetDeviceGroup sets the "device_group" edge to the DeviceGroup entity.
+func (_u *DNSRecordUpdateOne) SetDeviceGroup(v *DeviceGroup) *DNSRecordUpdateOne {
+	return _u.SetDeviceGroupID(v.ID)
+}
+
 // SetCdnRecord sets the "cdn_record" edge to the CDNRecord entity.
 func (_u *DNSRecordUpdateOne) SetCdnRecord(v *CDNRecord) *DNSRecordUpdateOne {
 	return _u.SetCdnRecordID(v.ID)
@@ -607,6 +693,12 @@ func (_u *DNSRecordUpdateOne) Mutation() *DNSRecordMutation {
 // ClearIPGroup clears the "ip_group" edge to the IpGroup entity.
 func (_u *DNSRecordUpdateOne) ClearIPGroup() *DNSRecordUpdateOne {
 	_u.mutation.ClearIPGroup()
+	return _u
+}
+
+// ClearDeviceGroup clears the "device_group" edge to the DeviceGroup entity.
+func (_u *DNSRecordUpdateOne) ClearDeviceGroup() *DNSRecordUpdateOne {
+	_u.mutation.ClearDeviceGroup()
 	return _u
 }
 
@@ -785,6 +877,35 @@ func (_u *DNSRecordUpdateOne) sqlSave(ctx context.Context) (_node *DNSRecord, er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ipgroup.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.DeviceGroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   dnsrecord.DeviceGroupTable,
+			Columns: []string{dnsrecord.DeviceGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.DeviceGroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   dnsrecord.DeviceGroupTable,
+			Columns: []string{dnsrecord.DeviceGroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

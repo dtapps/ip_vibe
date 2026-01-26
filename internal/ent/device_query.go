@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"math"
 	"vibe_ip/internal/ent/device"
+	"vibe_ip/internal/ent/devicegroup"
+	"vibe_ip/internal/ent/devicegroupdevice"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
@@ -22,17 +24,21 @@ import (
 // DeviceQuery is the builder for querying Device entities.
 type DeviceQuery struct {
 	config
-	ctx                    *QueryContext
-	order                  []device.OrderOption
-	inters                 []Interceptor
-	predicates             []predicate.Device
-	withIPGroups           *IpGroupQuery
-	withPortForwards       *DevicePortForwardQuery
-	withIPGroupDevice      *IpGroupDeviceQuery
-	modifiers              []func(*sql.Selector)
-	withNamedIPGroups      map[string]*IpGroupQuery
-	withNamedPortForwards  map[string]*DevicePortForwardQuery
-	withNamedIPGroupDevice map[string]*IpGroupDeviceQuery
+	ctx                        *QueryContext
+	order                      []device.OrderOption
+	inters                     []Interceptor
+	predicates                 []predicate.Device
+	withIPGroups               *IpGroupQuery
+	withDeviceGroups           *DeviceGroupQuery
+	withPortForwards           *DevicePortForwardQuery
+	withIPGroupDevice          *IpGroupDeviceQuery
+	withDeviceGroupDevice      *DeviceGroupDeviceQuery
+	modifiers                  []func(*sql.Selector)
+	withNamedIPGroups          map[string]*IpGroupQuery
+	withNamedDeviceGroups      map[string]*DeviceGroupQuery
+	withNamedPortForwards      map[string]*DevicePortForwardQuery
+	withNamedIPGroupDevice     map[string]*IpGroupDeviceQuery
+	withNamedDeviceGroupDevice map[string]*DeviceGroupDeviceQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -91,6 +97,28 @@ func (_q *DeviceQuery) QueryIPGroups() *IpGroupQuery {
 	return query
 }
 
+// QueryDeviceGroups chains the current query on the "device_groups" edge.
+func (_q *DeviceQuery) QueryDeviceGroups() *DeviceGroupQuery {
+	query := (&DeviceGroupClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(device.Table, device.FieldID, selector),
+			sqlgraph.To(devicegroup.Table, devicegroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, device.DeviceGroupsTable, device.DeviceGroupsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryPortForwards chains the current query on the "port_forwards" edge.
 func (_q *DeviceQuery) QueryPortForwards() *DevicePortForwardQuery {
 	query := (&DevicePortForwardClient{config: _q.config}).Query()
@@ -128,6 +156,28 @@ func (_q *DeviceQuery) QueryIPGroupDevice() *IpGroupDeviceQuery {
 			sqlgraph.From(device.Table, device.FieldID, selector),
 			sqlgraph.To(ipgroupdevice.Table, ipgroupdevice.DeviceColumn),
 			sqlgraph.Edge(sqlgraph.O2M, true, device.IPGroupDeviceTable, device.IPGroupDeviceColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryDeviceGroupDevice chains the current query on the "device_group_device" edge.
+func (_q *DeviceQuery) QueryDeviceGroupDevice() *DeviceGroupDeviceQuery {
+	query := (&DeviceGroupDeviceClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(device.Table, device.FieldID, selector),
+			sqlgraph.To(devicegroupdevice.Table, devicegroupdevice.DeviceColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, device.DeviceGroupDeviceTable, device.DeviceGroupDeviceColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -322,14 +372,16 @@ func (_q *DeviceQuery) Clone() *DeviceQuery {
 		return nil
 	}
 	return &DeviceQuery{
-		config:            _q.config,
-		ctx:               _q.ctx.Clone(),
-		order:             append([]device.OrderOption{}, _q.order...),
-		inters:            append([]Interceptor{}, _q.inters...),
-		predicates:        append([]predicate.Device{}, _q.predicates...),
-		withIPGroups:      _q.withIPGroups.Clone(),
-		withPortForwards:  _q.withPortForwards.Clone(),
-		withIPGroupDevice: _q.withIPGroupDevice.Clone(),
+		config:                _q.config,
+		ctx:                   _q.ctx.Clone(),
+		order:                 append([]device.OrderOption{}, _q.order...),
+		inters:                append([]Interceptor{}, _q.inters...),
+		predicates:            append([]predicate.Device{}, _q.predicates...),
+		withIPGroups:          _q.withIPGroups.Clone(),
+		withDeviceGroups:      _q.withDeviceGroups.Clone(),
+		withPortForwards:      _q.withPortForwards.Clone(),
+		withIPGroupDevice:     _q.withIPGroupDevice.Clone(),
+		withDeviceGroupDevice: _q.withDeviceGroupDevice.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -345,6 +397,17 @@ func (_q *DeviceQuery) WithIPGroups(opts ...func(*IpGroupQuery)) *DeviceQuery {
 		opt(query)
 	}
 	_q.withIPGroups = query
+	return _q
+}
+
+// WithDeviceGroups tells the query-builder to eager-load the nodes that are connected to
+// the "device_groups" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *DeviceQuery) WithDeviceGroups(opts ...func(*DeviceGroupQuery)) *DeviceQuery {
+	query := (&DeviceGroupClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withDeviceGroups = query
 	return _q
 }
 
@@ -367,6 +430,17 @@ func (_q *DeviceQuery) WithIPGroupDevice(opts ...func(*IpGroupDeviceQuery)) *Dev
 		opt(query)
 	}
 	_q.withIPGroupDevice = query
+	return _q
+}
+
+// WithDeviceGroupDevice tells the query-builder to eager-load the nodes that are connected to
+// the "device_group_device" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *DeviceQuery) WithDeviceGroupDevice(opts ...func(*DeviceGroupDeviceQuery)) *DeviceQuery {
+	query := (&DeviceGroupDeviceClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withDeviceGroupDevice = query
 	return _q
 }
 
@@ -448,10 +522,12 @@ func (_q *DeviceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Devic
 	var (
 		nodes       = []*Device{}
 		_spec       = _q.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [5]bool{
 			_q.withIPGroups != nil,
+			_q.withDeviceGroups != nil,
 			_q.withPortForwards != nil,
 			_q.withIPGroupDevice != nil,
+			_q.withDeviceGroupDevice != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -482,6 +558,13 @@ func (_q *DeviceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Devic
 			return nil, err
 		}
 	}
+	if query := _q.withDeviceGroups; query != nil {
+		if err := _q.loadDeviceGroups(ctx, query, nodes,
+			func(n *Device) { n.Edges.DeviceGroups = []*DeviceGroup{} },
+			func(n *Device, e *DeviceGroup) { n.Edges.DeviceGroups = append(n.Edges.DeviceGroups, e) }); err != nil {
+			return nil, err
+		}
+	}
 	if query := _q.withPortForwards; query != nil {
 		if err := _q.loadPortForwards(ctx, query, nodes,
 			func(n *Device) { n.Edges.PortForwards = []*DevicePortForward{} },
@@ -506,10 +589,29 @@ func (_q *DeviceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Devic
 			return nil, err
 		}
 	}
+	if query := _q.withDeviceGroupDevice; query != nil {
+		if err := _q.loadDeviceGroupDevice(ctx, query, nodes,
+			func(n *Device) { n.Edges.DeviceGroupDevice = []*DeviceGroupDevice{} },
+			func(n *Device, e *DeviceGroupDevice) {
+				n.Edges.DeviceGroupDevice = append(n.Edges.DeviceGroupDevice, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Device = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
 	for name, query := range _q.withNamedIPGroups {
 		if err := _q.loadIPGroups(ctx, query, nodes,
 			func(n *Device) { n.appendNamedIPGroups(name) },
 			func(n *Device, e *IpGroup) { n.appendNamedIPGroups(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedDeviceGroups {
+		if err := _q.loadDeviceGroups(ctx, query, nodes,
+			func(n *Device) { n.appendNamedDeviceGroups(name) },
+			func(n *Device, e *DeviceGroup) { n.appendNamedDeviceGroups(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -530,6 +632,18 @@ func (_q *DeviceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Devic
 			func(n *Device) { n.appendNamedIPGroupDevice(name) },
 			func(n *Device, e *IpGroupDevice) {
 				n.appendNamedIPGroupDevice(name, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Device = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedDeviceGroupDevice {
+		if err := _q.loadDeviceGroupDevice(ctx, query, nodes,
+			func(n *Device) { n.appendNamedDeviceGroupDevice(name) },
+			func(n *Device, e *DeviceGroupDevice) {
+				n.appendNamedDeviceGroupDevice(name, e)
 				if !e.Edges.loadedTypes[0] {
 					e.Edges.Device = n
 				}
@@ -601,6 +715,67 @@ func (_q *DeviceQuery) loadIPGroups(ctx context.Context, query *IpGroupQuery, no
 	}
 	return nil
 }
+func (_q *DeviceQuery) loadDeviceGroups(ctx context.Context, query *DeviceGroupQuery, nodes []*Device, init func(*Device), assign func(*Device, *DeviceGroup)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[int64]*Device)
+	nids := make(map[int64]map[*Device]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(device.DeviceGroupsTable)
+		s.Join(joinT).On(s.C(devicegroup.FieldID), joinT.C(device.DeviceGroupsPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(device.DeviceGroupsPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(device.DeviceGroupsPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullInt64).Int64
+				inValue := values[1].(*sql.NullInt64).Int64
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Device]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*DeviceGroup](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "device_groups" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
 func (_q *DeviceQuery) loadPortForwards(ctx context.Context, query *DevicePortForwardQuery, nodes []*Device, init func(*Device), assign func(*Device, *DevicePortForward)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int64]*Device)
@@ -647,6 +822,36 @@ func (_q *DeviceQuery) loadIPGroupDevice(ctx context.Context, query *IpGroupDevi
 	}
 	query.Where(predicate.IpGroupDevice(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(device.IPGroupDeviceColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.DeviceID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "device_id" returned %v for node %v`, fk, n)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *DeviceQuery) loadDeviceGroupDevice(ctx context.Context, query *DeviceGroupDeviceQuery, nodes []*Device, init func(*Device), assign func(*Device, *DeviceGroupDevice)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int64]*Device)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(devicegroupdevice.FieldDeviceID)
+	}
+	query.Where(predicate.DeviceGroupDevice(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(device.DeviceGroupDeviceColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -770,6 +975,20 @@ func (_q *DeviceQuery) WithNamedIPGroups(name string, opts ...func(*IpGroupQuery
 	return _q
 }
 
+// WithNamedDeviceGroups tells the query-builder to eager-load the nodes that are connected to the "device_groups"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *DeviceQuery) WithNamedDeviceGroups(name string, opts ...func(*DeviceGroupQuery)) *DeviceQuery {
+	query := (&DeviceGroupClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedDeviceGroups == nil {
+		_q.withNamedDeviceGroups = make(map[string]*DeviceGroupQuery)
+	}
+	_q.withNamedDeviceGroups[name] = query
+	return _q
+}
+
 // WithNamedPortForwards tells the query-builder to eager-load the nodes that are connected to the "port_forwards"
 // edge with the given name. The optional arguments are used to configure the query builder of the edge.
 func (_q *DeviceQuery) WithNamedPortForwards(name string, opts ...func(*DevicePortForwardQuery)) *DeviceQuery {
@@ -795,6 +1014,20 @@ func (_q *DeviceQuery) WithNamedIPGroupDevice(name string, opts ...func(*IpGroup
 		_q.withNamedIPGroupDevice = make(map[string]*IpGroupDeviceQuery)
 	}
 	_q.withNamedIPGroupDevice[name] = query
+	return _q
+}
+
+// WithNamedDeviceGroupDevice tells the query-builder to eager-load the nodes that are connected to the "device_group_device"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *DeviceQuery) WithNamedDeviceGroupDevice(name string, opts ...func(*DeviceGroupDeviceQuery)) *DeviceQuery {
+	query := (&DeviceGroupDeviceClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedDeviceGroupDevice == nil {
+		_q.withNamedDeviceGroupDevice = make(map[string]*DeviceGroupDeviceQuery)
+	}
+	_q.withNamedDeviceGroupDevice[name] = query
 	return _q
 }
 

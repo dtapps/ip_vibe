@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/platformconfig"
@@ -21,14 +22,15 @@ import (
 // DNSRecordQuery is the builder for querying DNSRecord entities.
 type DNSRecordQuery struct {
 	config
-	ctx           *QueryContext
-	order         []dnsrecord.OrderOption
-	inters        []Interceptor
-	predicates    []predicate.DNSRecord
-	withConfig    *PlatformConfigQuery
-	withIPGroup   *IpGroupQuery
-	withCdnRecord *CDNRecordQuery
-	modifiers     []func(*sql.Selector)
+	ctx             *QueryContext
+	order           []dnsrecord.OrderOption
+	inters          []Interceptor
+	predicates      []predicate.DNSRecord
+	withConfig      *PlatformConfigQuery
+	withIPGroup     *IpGroupQuery
+	withDeviceGroup *DeviceGroupQuery
+	withCdnRecord   *CDNRecordQuery
+	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -102,6 +104,28 @@ func (_q *DNSRecordQuery) QueryIPGroup() *IpGroupQuery {
 			sqlgraph.From(dnsrecord.Table, dnsrecord.FieldID, selector),
 			sqlgraph.To(ipgroup.Table, ipgroup.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, dnsrecord.IPGroupTable, dnsrecord.IPGroupColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryDeviceGroup chains the current query on the "device_group" edge.
+func (_q *DNSRecordQuery) QueryDeviceGroup() *DeviceGroupQuery {
+	query := (&DeviceGroupClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(dnsrecord.Table, dnsrecord.FieldID, selector),
+			sqlgraph.To(devicegroup.Table, devicegroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, dnsrecord.DeviceGroupTable, dnsrecord.DeviceGroupColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -318,14 +342,15 @@ func (_q *DNSRecordQuery) Clone() *DNSRecordQuery {
 		return nil
 	}
 	return &DNSRecordQuery{
-		config:        _q.config,
-		ctx:           _q.ctx.Clone(),
-		order:         append([]dnsrecord.OrderOption{}, _q.order...),
-		inters:        append([]Interceptor{}, _q.inters...),
-		predicates:    append([]predicate.DNSRecord{}, _q.predicates...),
-		withConfig:    _q.withConfig.Clone(),
-		withIPGroup:   _q.withIPGroup.Clone(),
-		withCdnRecord: _q.withCdnRecord.Clone(),
+		config:          _q.config,
+		ctx:             _q.ctx.Clone(),
+		order:           append([]dnsrecord.OrderOption{}, _q.order...),
+		inters:          append([]Interceptor{}, _q.inters...),
+		predicates:      append([]predicate.DNSRecord{}, _q.predicates...),
+		withConfig:      _q.withConfig.Clone(),
+		withIPGroup:     _q.withIPGroup.Clone(),
+		withDeviceGroup: _q.withDeviceGroup.Clone(),
+		withCdnRecord:   _q.withCdnRecord.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -352,6 +377,17 @@ func (_q *DNSRecordQuery) WithIPGroup(opts ...func(*IpGroupQuery)) *DNSRecordQue
 		opt(query)
 	}
 	_q.withIPGroup = query
+	return _q
+}
+
+// WithDeviceGroup tells the query-builder to eager-load the nodes that are connected to
+// the "device_group" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *DNSRecordQuery) WithDeviceGroup(opts ...func(*DeviceGroupQuery)) *DNSRecordQuery {
+	query := (&DeviceGroupClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withDeviceGroup = query
 	return _q
 }
 
@@ -444,9 +480,10 @@ func (_q *DNSRecordQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*DN
 	var (
 		nodes       = []*DNSRecord{}
 		_spec       = _q.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			_q.withConfig != nil,
 			_q.withIPGroup != nil,
+			_q.withDeviceGroup != nil,
 			_q.withCdnRecord != nil,
 		}
 	)
@@ -480,6 +517,12 @@ func (_q *DNSRecordQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*DN
 	if query := _q.withIPGroup; query != nil {
 		if err := _q.loadIPGroup(ctx, query, nodes, nil,
 			func(n *DNSRecord, e *IpGroup) { n.Edges.IPGroup = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withDeviceGroup; query != nil {
+		if err := _q.loadDeviceGroup(ctx, query, nodes, nil,
+			func(n *DNSRecord, e *DeviceGroup) { n.Edges.DeviceGroup = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -550,6 +593,35 @@ func (_q *DNSRecordQuery) loadIPGroup(ctx context.Context, query *IpGroupQuery, 
 	}
 	return nil
 }
+func (_q *DNSRecordQuery) loadDeviceGroup(ctx context.Context, query *DeviceGroupQuery, nodes []*DNSRecord, init func(*DNSRecord), assign func(*DNSRecord, *DeviceGroup)) error {
+	ids := make([]int64, 0, len(nodes))
+	nodeids := make(map[int64][]*DNSRecord)
+	for i := range nodes {
+		fk := nodes[i].DeviceGroupID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(devicegroup.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "device_group_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (_q *DNSRecordQuery) loadCdnRecord(ctx context.Context, query *CDNRecordQuery, nodes []*DNSRecord, init func(*DNSRecord), assign func(*DNSRecord, *CDNRecord)) error {
 	ids := make([]int64, 0, len(nodes))
 	nodeids := make(map[int64][]*DNSRecord)
@@ -613,6 +685,9 @@ func (_q *DNSRecordQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if _q.withIPGroup != nil {
 			_spec.Node.AddColumnOnce(dnsrecord.FieldIPGroupID)
+		}
+		if _q.withDeviceGroup != nil {
+			_spec.Node.AddColumnOnce(dnsrecord.FieldDeviceGroupID)
 		}
 		if _q.withCdnRecord != nil {
 			_spec.Node.AddColumnOnce(dnsrecord.FieldCdnRecordID)

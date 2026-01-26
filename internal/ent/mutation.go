@@ -12,6 +12,8 @@ import (
 	"vibe_ip/internal/ent/cache"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
+	"vibe_ip/internal/ent/devicegroup"
+	"vibe_ip/internal/ent/devicegroupdevice"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
@@ -41,6 +43,8 @@ const (
 	TypeCache               = "Cache"
 	TypeDNSRecord           = "DNSRecord"
 	TypeDevice              = "Device"
+	TypeDeviceGroup         = "DeviceGroup"
+	TypeDeviceGroupDevice   = "DeviceGroupDevice"
 	TypeDevicePortForward   = "DevicePortForward"
 	TypeDomainMonitor       = "DomainMonitor"
 	TypeIpGroup             = "IpGroup"
@@ -75,6 +79,8 @@ type CDNRecordMutation struct {
 	cleared_config       bool
 	ip_group             *int64
 	clearedip_group      bool
+	device_group         *int64
+	cleareddevice_group  bool
 	dns_records          map[int64]struct{}
 	removeddns_records   map[int64]struct{}
 	cleareddns_records   bool
@@ -561,9 +567,71 @@ func (m *CDNRecordMutation) OldIPGroupID(ctx context.Context) (v int64, err erro
 	return oldValue.IPGroupID, nil
 }
 
+// ClearIPGroupID clears the value of the "ip_group_id" field.
+func (m *CDNRecordMutation) ClearIPGroupID() {
+	m.ip_group = nil
+	m.clearedFields[cdnrecord.FieldIPGroupID] = struct{}{}
+}
+
+// IPGroupIDCleared returns if the "ip_group_id" field was cleared in this mutation.
+func (m *CDNRecordMutation) IPGroupIDCleared() bool {
+	_, ok := m.clearedFields[cdnrecord.FieldIPGroupID]
+	return ok
+}
+
 // ResetIPGroupID resets all changes to the "ip_group_id" field.
 func (m *CDNRecordMutation) ResetIPGroupID() {
 	m.ip_group = nil
+	delete(m.clearedFields, cdnrecord.FieldIPGroupID)
+}
+
+// SetDeviceGroupID sets the "device_group_id" field.
+func (m *CDNRecordMutation) SetDeviceGroupID(i int64) {
+	m.device_group = &i
+}
+
+// DeviceGroupID returns the value of the "device_group_id" field in the mutation.
+func (m *CDNRecordMutation) DeviceGroupID() (r int64, exists bool) {
+	v := m.device_group
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeviceGroupID returns the old "device_group_id" field's value of the CDNRecord entity.
+// If the CDNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CDNRecordMutation) OldDeviceGroupID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeviceGroupID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeviceGroupID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeviceGroupID: %w", err)
+	}
+	return oldValue.DeviceGroupID, nil
+}
+
+// ClearDeviceGroupID clears the value of the "device_group_id" field.
+func (m *CDNRecordMutation) ClearDeviceGroupID() {
+	m.device_group = nil
+	m.clearedFields[cdnrecord.FieldDeviceGroupID] = struct{}{}
+}
+
+// DeviceGroupIDCleared returns if the "device_group_id" field was cleared in this mutation.
+func (m *CDNRecordMutation) DeviceGroupIDCleared() bool {
+	_, ok := m.clearedFields[cdnrecord.FieldDeviceGroupID]
+	return ok
+}
+
+// ResetDeviceGroupID resets all changes to the "device_group_id" field.
+func (m *CDNRecordMutation) ResetDeviceGroupID() {
+	m.device_group = nil
+	delete(m.clearedFields, cdnrecord.FieldDeviceGroupID)
 }
 
 // SetIsActive sets the "is_active" field.
@@ -784,7 +852,7 @@ func (m *CDNRecordMutation) ClearIPGroup() {
 
 // IPGroupCleared reports if the "ip_group" edge to the IpGroup entity was cleared.
 func (m *CDNRecordMutation) IPGroupCleared() bool {
-	return m.clearedip_group
+	return m.IPGroupIDCleared() || m.clearedip_group
 }
 
 // IPGroupIDs returns the "ip_group" edge IDs in the mutation.
@@ -801,6 +869,33 @@ func (m *CDNRecordMutation) IPGroupIDs() (ids []int64) {
 func (m *CDNRecordMutation) ResetIPGroup() {
 	m.ip_group = nil
 	m.clearedip_group = false
+}
+
+// ClearDeviceGroup clears the "device_group" edge to the DeviceGroup entity.
+func (m *CDNRecordMutation) ClearDeviceGroup() {
+	m.cleareddevice_group = true
+	m.clearedFields[cdnrecord.FieldDeviceGroupID] = struct{}{}
+}
+
+// DeviceGroupCleared reports if the "device_group" edge to the DeviceGroup entity was cleared.
+func (m *CDNRecordMutation) DeviceGroupCleared() bool {
+	return m.DeviceGroupIDCleared() || m.cleareddevice_group
+}
+
+// DeviceGroupIDs returns the "device_group" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// DeviceGroupID instead. It exists only for internal usage by the builders.
+func (m *CDNRecordMutation) DeviceGroupIDs() (ids []int64) {
+	if id := m.device_group; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetDeviceGroup resets all changes to the "device_group" edge.
+func (m *CDNRecordMutation) ResetDeviceGroup() {
+	m.device_group = nil
+	m.cleareddevice_group = false
 }
 
 // AddDNSRecordIDs adds the "dns_records" edge to the DNSRecord entity by ids.
@@ -891,7 +986,7 @@ func (m *CDNRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CDNRecordMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, cdnrecord.FieldCreatedAt)
 	}
@@ -918,6 +1013,9 @@ func (m *CDNRecordMutation) Fields() []string {
 	}
 	if m.ip_group != nil {
 		fields = append(fields, cdnrecord.FieldIPGroupID)
+	}
+	if m.device_group != nil {
+		fields = append(fields, cdnrecord.FieldDeviceGroupID)
 	}
 	if m.is_active != nil {
 		fields = append(fields, cdnrecord.FieldIsActive)
@@ -957,6 +1055,8 @@ func (m *CDNRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.CdnDomain()
 	case cdnrecord.FieldIPGroupID:
 		return m.IPGroupID()
+	case cdnrecord.FieldDeviceGroupID:
+		return m.DeviceGroupID()
 	case cdnrecord.FieldIsActive:
 		return m.IsActive()
 	case cdnrecord.FieldLastRefreshAt:
@@ -992,6 +1092,8 @@ func (m *CDNRecordMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldCdnDomain(ctx)
 	case cdnrecord.FieldIPGroupID:
 		return m.OldIPGroupID(ctx)
+	case cdnrecord.FieldDeviceGroupID:
+		return m.OldDeviceGroupID(ctx)
 	case cdnrecord.FieldIsActive:
 		return m.OldIsActive(ctx)
 	case cdnrecord.FieldLastRefreshAt:
@@ -1072,6 +1174,13 @@ func (m *CDNRecordMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIPGroupID(v)
 		return nil
+	case cdnrecord.FieldDeviceGroupID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeviceGroupID(v)
+		return nil
 	case cdnrecord.FieldIsActive:
 		v, ok := value.(bool)
 		if !ok {
@@ -1142,6 +1251,12 @@ func (m *CDNRecordMutation) ClearedFields() []string {
 	if m.FieldCleared(cdnrecord.FieldCdnDomain) {
 		fields = append(fields, cdnrecord.FieldCdnDomain)
 	}
+	if m.FieldCleared(cdnrecord.FieldIPGroupID) {
+		fields = append(fields, cdnrecord.FieldIPGroupID)
+	}
+	if m.FieldCleared(cdnrecord.FieldDeviceGroupID) {
+		fields = append(fields, cdnrecord.FieldDeviceGroupID)
+	}
 	if m.FieldCleared(cdnrecord.FieldLastRefreshAt) {
 		fields = append(fields, cdnrecord.FieldLastRefreshAt)
 	}
@@ -1173,6 +1288,12 @@ func (m *CDNRecordMutation) ClearField(name string) error {
 		return nil
 	case cdnrecord.FieldCdnDomain:
 		m.ClearCdnDomain()
+		return nil
+	case cdnrecord.FieldIPGroupID:
+		m.ClearIPGroupID()
+		return nil
+	case cdnrecord.FieldDeviceGroupID:
+		m.ClearDeviceGroupID()
 		return nil
 	case cdnrecord.FieldLastRefreshAt:
 		m.ClearLastRefreshAt()
@@ -1218,6 +1339,9 @@ func (m *CDNRecordMutation) ResetField(name string) error {
 	case cdnrecord.FieldIPGroupID:
 		m.ResetIPGroupID()
 		return nil
+	case cdnrecord.FieldDeviceGroupID:
+		m.ResetDeviceGroupID()
+		return nil
 	case cdnrecord.FieldIsActive:
 		m.ResetIsActive()
 		return nil
@@ -1236,12 +1360,15 @@ func (m *CDNRecordMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CDNRecordMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m._config != nil {
 		edges = append(edges, cdnrecord.EdgeConfig)
 	}
 	if m.ip_group != nil {
 		edges = append(edges, cdnrecord.EdgeIPGroup)
+	}
+	if m.device_group != nil {
+		edges = append(edges, cdnrecord.EdgeDeviceGroup)
 	}
 	if m.dns_records != nil {
 		edges = append(edges, cdnrecord.EdgeDNSRecords)
@@ -1261,6 +1388,10 @@ func (m *CDNRecordMutation) AddedIDs(name string) []ent.Value {
 		if id := m.ip_group; id != nil {
 			return []ent.Value{*id}
 		}
+	case cdnrecord.EdgeDeviceGroup:
+		if id := m.device_group; id != nil {
+			return []ent.Value{*id}
+		}
 	case cdnrecord.EdgeDNSRecords:
 		ids := make([]ent.Value, 0, len(m.dns_records))
 		for id := range m.dns_records {
@@ -1273,7 +1404,7 @@ func (m *CDNRecordMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CDNRecordMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removeddns_records != nil {
 		edges = append(edges, cdnrecord.EdgeDNSRecords)
 	}
@@ -1296,12 +1427,15 @@ func (m *CDNRecordMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CDNRecordMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.cleared_config {
 		edges = append(edges, cdnrecord.EdgeConfig)
 	}
 	if m.clearedip_group {
 		edges = append(edges, cdnrecord.EdgeIPGroup)
+	}
+	if m.cleareddevice_group {
+		edges = append(edges, cdnrecord.EdgeDeviceGroup)
 	}
 	if m.cleareddns_records {
 		edges = append(edges, cdnrecord.EdgeDNSRecords)
@@ -1317,6 +1451,8 @@ func (m *CDNRecordMutation) EdgeCleared(name string) bool {
 		return m.cleared_config
 	case cdnrecord.EdgeIPGroup:
 		return m.clearedip_group
+	case cdnrecord.EdgeDeviceGroup:
+		return m.cleareddevice_group
 	case cdnrecord.EdgeDNSRecords:
 		return m.cleareddns_records
 	}
@@ -1333,6 +1469,9 @@ func (m *CDNRecordMutation) ClearEdge(name string) error {
 	case cdnrecord.EdgeIPGroup:
 		m.ClearIPGroup()
 		return nil
+	case cdnrecord.EdgeDeviceGroup:
+		m.ClearDeviceGroup()
+		return nil
 	}
 	return fmt.Errorf("unknown CDNRecord unique edge %s", name)
 }
@@ -1346,6 +1485,9 @@ func (m *CDNRecordMutation) ResetEdge(name string) error {
 		return nil
 	case cdnrecord.EdgeIPGroup:
 		m.ResetIPGroup()
+		return nil
+	case cdnrecord.EdgeDeviceGroup:
+		m.ResetDeviceGroup()
 		return nil
 	case cdnrecord.EdgeDNSRecords:
 		m.ResetDNSRecords()
@@ -1784,6 +1926,8 @@ type DNSRecordMutation struct {
 	cleared_config       bool
 	ip_group             *int64
 	clearedip_group      bool
+	device_group         *int64
+	cleareddevice_group  bool
 	cdn_record           *int64
 	clearedcdn_record    bool
 	done                 bool
@@ -2238,6 +2382,55 @@ func (m *DNSRecordMutation) ResetIPGroupID() {
 	delete(m.clearedFields, dnsrecord.FieldIPGroupID)
 }
 
+// SetDeviceGroupID sets the "device_group_id" field.
+func (m *DNSRecordMutation) SetDeviceGroupID(i int64) {
+	m.device_group = &i
+}
+
+// DeviceGroupID returns the value of the "device_group_id" field in the mutation.
+func (m *DNSRecordMutation) DeviceGroupID() (r int64, exists bool) {
+	v := m.device_group
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeviceGroupID returns the old "device_group_id" field's value of the DNSRecord entity.
+// If the DNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DNSRecordMutation) OldDeviceGroupID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeviceGroupID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeviceGroupID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeviceGroupID: %w", err)
+	}
+	return oldValue.DeviceGroupID, nil
+}
+
+// ClearDeviceGroupID clears the value of the "device_group_id" field.
+func (m *DNSRecordMutation) ClearDeviceGroupID() {
+	m.device_group = nil
+	m.clearedFields[dnsrecord.FieldDeviceGroupID] = struct{}{}
+}
+
+// DeviceGroupIDCleared returns if the "device_group_id" field was cleared in this mutation.
+func (m *DNSRecordMutation) DeviceGroupIDCleared() bool {
+	_, ok := m.clearedFields[dnsrecord.FieldDeviceGroupID]
+	return ok
+}
+
+// ResetDeviceGroupID resets all changes to the "device_group_id" field.
+func (m *DNSRecordMutation) ResetDeviceGroupID() {
+	m.device_group = nil
+	delete(m.clearedFields, dnsrecord.FieldDeviceGroupID)
+}
+
 // SetCdnRecordID sets the "cdn_record_id" field.
 func (m *DNSRecordMutation) SetCdnRecordID(i int64) {
 	m.cdn_record = &i
@@ -2524,6 +2717,33 @@ func (m *DNSRecordMutation) ResetIPGroup() {
 	m.clearedip_group = false
 }
 
+// ClearDeviceGroup clears the "device_group" edge to the DeviceGroup entity.
+func (m *DNSRecordMutation) ClearDeviceGroup() {
+	m.cleareddevice_group = true
+	m.clearedFields[dnsrecord.FieldDeviceGroupID] = struct{}{}
+}
+
+// DeviceGroupCleared reports if the "device_group" edge to the DeviceGroup entity was cleared.
+func (m *DNSRecordMutation) DeviceGroupCleared() bool {
+	return m.DeviceGroupIDCleared() || m.cleareddevice_group
+}
+
+// DeviceGroupIDs returns the "device_group" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// DeviceGroupID instead. It exists only for internal usage by the builders.
+func (m *DNSRecordMutation) DeviceGroupIDs() (ids []int64) {
+	if id := m.device_group; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetDeviceGroup resets all changes to the "device_group" edge.
+func (m *DNSRecordMutation) ResetDeviceGroup() {
+	m.device_group = nil
+	m.cleareddevice_group = false
+}
+
 // ClearCdnRecord clears the "cdn_record" edge to the CDNRecord entity.
 func (m *DNSRecordMutation) ClearCdnRecord() {
 	m.clearedcdn_record = true
@@ -2585,7 +2805,7 @@ func (m *DNSRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DNSRecordMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, dnsrecord.FieldCreatedAt)
 	}
@@ -2609,6 +2829,9 @@ func (m *DNSRecordMutation) Fields() []string {
 	}
 	if m.ip_group != nil {
 		fields = append(fields, dnsrecord.FieldIPGroupID)
+	}
+	if m.device_group != nil {
+		fields = append(fields, dnsrecord.FieldDeviceGroupID)
 	}
 	if m.cdn_record != nil {
 		fields = append(fields, dnsrecord.FieldCdnRecordID)
@@ -2649,6 +2872,8 @@ func (m *DNSRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.ConfigJSON()
 	case dnsrecord.FieldIPGroupID:
 		return m.IPGroupID()
+	case dnsrecord.FieldDeviceGroupID:
+		return m.DeviceGroupID()
 	case dnsrecord.FieldCdnRecordID:
 		return m.CdnRecordID()
 	case dnsrecord.FieldIsActive:
@@ -2684,6 +2909,8 @@ func (m *DNSRecordMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldConfigJSON(ctx)
 	case dnsrecord.FieldIPGroupID:
 		return m.OldIPGroupID(ctx)
+	case dnsrecord.FieldDeviceGroupID:
+		return m.OldDeviceGroupID(ctx)
 	case dnsrecord.FieldCdnRecordID:
 		return m.OldCdnRecordID(ctx)
 	case dnsrecord.FieldIsActive:
@@ -2758,6 +2985,13 @@ func (m *DNSRecordMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIPGroupID(v)
+		return nil
+	case dnsrecord.FieldDeviceGroupID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeviceGroupID(v)
 		return nil
 	case dnsrecord.FieldCdnRecordID:
 		v, ok := value.(int64)
@@ -2836,6 +3070,9 @@ func (m *DNSRecordMutation) ClearedFields() []string {
 	if m.FieldCleared(dnsrecord.FieldIPGroupID) {
 		fields = append(fields, dnsrecord.FieldIPGroupID)
 	}
+	if m.FieldCleared(dnsrecord.FieldDeviceGroupID) {
+		fields = append(fields, dnsrecord.FieldDeviceGroupID)
+	}
 	if m.FieldCleared(dnsrecord.FieldCdnRecordID) {
 		fields = append(fields, dnsrecord.FieldCdnRecordID)
 	}
@@ -2870,6 +3107,9 @@ func (m *DNSRecordMutation) ClearField(name string) error {
 		return nil
 	case dnsrecord.FieldIPGroupID:
 		m.ClearIPGroupID()
+		return nil
+	case dnsrecord.FieldDeviceGroupID:
+		m.ClearDeviceGroupID()
 		return nil
 	case dnsrecord.FieldCdnRecordID:
 		m.ClearCdnRecordID()
@@ -2915,6 +3155,9 @@ func (m *DNSRecordMutation) ResetField(name string) error {
 	case dnsrecord.FieldIPGroupID:
 		m.ResetIPGroupID()
 		return nil
+	case dnsrecord.FieldDeviceGroupID:
+		m.ResetDeviceGroupID()
+		return nil
 	case dnsrecord.FieldCdnRecordID:
 		m.ResetCdnRecordID()
 		return nil
@@ -2936,12 +3179,15 @@ func (m *DNSRecordMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *DNSRecordMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m._config != nil {
 		edges = append(edges, dnsrecord.EdgeConfig)
 	}
 	if m.ip_group != nil {
 		edges = append(edges, dnsrecord.EdgeIPGroup)
+	}
+	if m.device_group != nil {
+		edges = append(edges, dnsrecord.EdgeDeviceGroup)
 	}
 	if m.cdn_record != nil {
 		edges = append(edges, dnsrecord.EdgeCdnRecord)
@@ -2961,6 +3207,10 @@ func (m *DNSRecordMutation) AddedIDs(name string) []ent.Value {
 		if id := m.ip_group; id != nil {
 			return []ent.Value{*id}
 		}
+	case dnsrecord.EdgeDeviceGroup:
+		if id := m.device_group; id != nil {
+			return []ent.Value{*id}
+		}
 	case dnsrecord.EdgeCdnRecord:
 		if id := m.cdn_record; id != nil {
 			return []ent.Value{*id}
@@ -2971,7 +3221,7 @@ func (m *DNSRecordMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *DNSRecordMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	return edges
 }
 
@@ -2983,12 +3233,15 @@ func (m *DNSRecordMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *DNSRecordMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.cleared_config {
 		edges = append(edges, dnsrecord.EdgeConfig)
 	}
 	if m.clearedip_group {
 		edges = append(edges, dnsrecord.EdgeIPGroup)
+	}
+	if m.cleareddevice_group {
+		edges = append(edges, dnsrecord.EdgeDeviceGroup)
 	}
 	if m.clearedcdn_record {
 		edges = append(edges, dnsrecord.EdgeCdnRecord)
@@ -3004,6 +3257,8 @@ func (m *DNSRecordMutation) EdgeCleared(name string) bool {
 		return m.cleared_config
 	case dnsrecord.EdgeIPGroup:
 		return m.clearedip_group
+	case dnsrecord.EdgeDeviceGroup:
+		return m.cleareddevice_group
 	case dnsrecord.EdgeCdnRecord:
 		return m.clearedcdn_record
 	}
@@ -3019,6 +3274,9 @@ func (m *DNSRecordMutation) ClearEdge(name string) error {
 		return nil
 	case dnsrecord.EdgeIPGroup:
 		m.ClearIPGroup()
+		return nil
+	case dnsrecord.EdgeDeviceGroup:
+		m.ClearDeviceGroup()
 		return nil
 	case dnsrecord.EdgeCdnRecord:
 		m.ClearCdnRecord()
@@ -3036,6 +3294,9 @@ func (m *DNSRecordMutation) ResetEdge(name string) error {
 		return nil
 	case dnsrecord.EdgeIPGroup:
 		m.ResetIPGroup()
+		return nil
+	case dnsrecord.EdgeDeviceGroup:
+		m.ResetDeviceGroup()
 		return nil
 	case dnsrecord.EdgeCdnRecord:
 		m.ResetCdnRecord()
@@ -3063,6 +3324,9 @@ type DeviceMutation struct {
 	ip_groups            map[int64]struct{}
 	removedip_groups     map[int64]struct{}
 	clearedip_groups     bool
+	device_groups        map[int64]struct{}
+	removeddevice_groups map[int64]struct{}
+	cleareddevice_groups bool
 	port_forwards        map[int64]struct{}
 	removedport_forwards map[int64]struct{}
 	clearedport_forwards bool
@@ -3618,6 +3882,60 @@ func (m *DeviceMutation) ResetIPGroups() {
 	m.removedip_groups = nil
 }
 
+// AddDeviceGroupIDs adds the "device_groups" edge to the DeviceGroup entity by ids.
+func (m *DeviceMutation) AddDeviceGroupIDs(ids ...int64) {
+	if m.device_groups == nil {
+		m.device_groups = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.device_groups[ids[i]] = struct{}{}
+	}
+}
+
+// ClearDeviceGroups clears the "device_groups" edge to the DeviceGroup entity.
+func (m *DeviceMutation) ClearDeviceGroups() {
+	m.cleareddevice_groups = true
+}
+
+// DeviceGroupsCleared reports if the "device_groups" edge to the DeviceGroup entity was cleared.
+func (m *DeviceMutation) DeviceGroupsCleared() bool {
+	return m.cleareddevice_groups
+}
+
+// RemoveDeviceGroupIDs removes the "device_groups" edge to the DeviceGroup entity by IDs.
+func (m *DeviceMutation) RemoveDeviceGroupIDs(ids ...int64) {
+	if m.removeddevice_groups == nil {
+		m.removeddevice_groups = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.device_groups, ids[i])
+		m.removeddevice_groups[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedDeviceGroups returns the removed IDs of the "device_groups" edge to the DeviceGroup entity.
+func (m *DeviceMutation) RemovedDeviceGroupsIDs() (ids []int64) {
+	for id := range m.removeddevice_groups {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// DeviceGroupsIDs returns the "device_groups" edge IDs in the mutation.
+func (m *DeviceMutation) DeviceGroupsIDs() (ids []int64) {
+	for id := range m.device_groups {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetDeviceGroups resets all changes to the "device_groups" edge.
+func (m *DeviceMutation) ResetDeviceGroups() {
+	m.device_groups = nil
+	m.cleareddevice_groups = false
+	m.removeddevice_groups = nil
+}
+
 // AddPortForwardIDs adds the "port_forwards" edge to the DevicePortForward entity by ids.
 func (m *DeviceMutation) AddPortForwardIDs(ids ...int64) {
 	if m.port_forwards == nil {
@@ -3974,9 +4292,12 @@ func (m *DeviceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *DeviceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.ip_groups != nil {
 		edges = append(edges, device.EdgeIPGroups)
+	}
+	if m.device_groups != nil {
+		edges = append(edges, device.EdgeDeviceGroups)
 	}
 	if m.port_forwards != nil {
 		edges = append(edges, device.EdgePortForwards)
@@ -3994,6 +4315,12 @@ func (m *DeviceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case device.EdgeDeviceGroups:
+		ids := make([]ent.Value, 0, len(m.device_groups))
+		for id := range m.device_groups {
+			ids = append(ids, id)
+		}
+		return ids
 	case device.EdgePortForwards:
 		ids := make([]ent.Value, 0, len(m.port_forwards))
 		for id := range m.port_forwards {
@@ -4006,9 +4333,12 @@ func (m *DeviceMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *DeviceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedip_groups != nil {
 		edges = append(edges, device.EdgeIPGroups)
+	}
+	if m.removeddevice_groups != nil {
+		edges = append(edges, device.EdgeDeviceGroups)
 	}
 	if m.removedport_forwards != nil {
 		edges = append(edges, device.EdgePortForwards)
@@ -4026,6 +4356,12 @@ func (m *DeviceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case device.EdgeDeviceGroups:
+		ids := make([]ent.Value, 0, len(m.removeddevice_groups))
+		for id := range m.removeddevice_groups {
+			ids = append(ids, id)
+		}
+		return ids
 	case device.EdgePortForwards:
 		ids := make([]ent.Value, 0, len(m.removedport_forwards))
 		for id := range m.removedport_forwards {
@@ -4038,9 +4374,12 @@ func (m *DeviceMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *DeviceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedip_groups {
 		edges = append(edges, device.EdgeIPGroups)
+	}
+	if m.cleareddevice_groups {
+		edges = append(edges, device.EdgeDeviceGroups)
 	}
 	if m.clearedport_forwards {
 		edges = append(edges, device.EdgePortForwards)
@@ -4054,6 +4393,8 @@ func (m *DeviceMutation) EdgeCleared(name string) bool {
 	switch name {
 	case device.EdgeIPGroups:
 		return m.clearedip_groups
+	case device.EdgeDeviceGroups:
+		return m.cleareddevice_groups
 	case device.EdgePortForwards:
 		return m.clearedport_forwards
 	}
@@ -4075,11 +4416,1260 @@ func (m *DeviceMutation) ResetEdge(name string) error {
 	case device.EdgeIPGroups:
 		m.ResetIPGroups()
 		return nil
+	case device.EdgeDeviceGroups:
+		m.ResetDeviceGroups()
+		return nil
 	case device.EdgePortForwards:
 		m.ResetPortForwards()
 		return nil
 	}
 	return fmt.Errorf("unknown Device edge %s", name)
+}
+
+// DeviceGroupMutation represents an operation that mutates the DeviceGroup nodes in the graph.
+type DeviceGroupMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *int64
+	created_at         *time.Time
+	updated_at         *time.Time
+	code               *string
+	name               *string
+	description        *string
+	clearedFields      map[string]struct{}
+	devices            map[int64]struct{}
+	removeddevices     map[int64]struct{}
+	cleareddevices     bool
+	dns_records        map[int64]struct{}
+	removeddns_records map[int64]struct{}
+	cleareddns_records bool
+	cdn_records        map[int64]struct{}
+	removedcdn_records map[int64]struct{}
+	clearedcdn_records bool
+	done               bool
+	oldValue           func(context.Context) (*DeviceGroup, error)
+	predicates         []predicate.DeviceGroup
+}
+
+var _ ent.Mutation = (*DeviceGroupMutation)(nil)
+
+// devicegroupOption allows management of the mutation configuration using functional options.
+type devicegroupOption func(*DeviceGroupMutation)
+
+// newDeviceGroupMutation creates new mutation for the DeviceGroup entity.
+func newDeviceGroupMutation(c config, op Op, opts ...devicegroupOption) *DeviceGroupMutation {
+	m := &DeviceGroupMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeDeviceGroup,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withDeviceGroupID sets the ID field of the mutation.
+func withDeviceGroupID(id int64) devicegroupOption {
+	return func(m *DeviceGroupMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *DeviceGroup
+		)
+		m.oldValue = func(ctx context.Context) (*DeviceGroup, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().DeviceGroup.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withDeviceGroup sets the old DeviceGroup of the mutation.
+func withDeviceGroup(node *DeviceGroup) devicegroupOption {
+	return func(m *DeviceGroupMutation) {
+		m.oldValue = func(context.Context) (*DeviceGroup, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m DeviceGroupMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m DeviceGroupMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of DeviceGroup entities.
+func (m *DeviceGroupMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *DeviceGroupMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *DeviceGroupMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().DeviceGroup.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *DeviceGroupMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *DeviceGroupMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the DeviceGroup entity.
+// If the DeviceGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeviceGroupMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *DeviceGroupMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *DeviceGroupMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *DeviceGroupMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the DeviceGroup entity.
+// If the DeviceGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeviceGroupMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *DeviceGroupMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetCode sets the "code" field.
+func (m *DeviceGroupMutation) SetCode(s string) {
+	m.code = &s
+}
+
+// Code returns the value of the "code" field in the mutation.
+func (m *DeviceGroupMutation) Code() (r string, exists bool) {
+	v := m.code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCode returns the old "code" field's value of the DeviceGroup entity.
+// If the DeviceGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeviceGroupMutation) OldCode(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCode: %w", err)
+	}
+	return oldValue.Code, nil
+}
+
+// ResetCode resets all changes to the "code" field.
+func (m *DeviceGroupMutation) ResetCode() {
+	m.code = nil
+}
+
+// SetName sets the "name" field.
+func (m *DeviceGroupMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *DeviceGroupMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the DeviceGroup entity.
+// If the DeviceGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeviceGroupMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *DeviceGroupMutation) ResetName() {
+	m.name = nil
+}
+
+// SetDescription sets the "description" field.
+func (m *DeviceGroupMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *DeviceGroupMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the DeviceGroup entity.
+// If the DeviceGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeviceGroupMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *DeviceGroupMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[devicegroup.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *DeviceGroupMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[devicegroup.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *DeviceGroupMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, devicegroup.FieldDescription)
+}
+
+// AddDeviceIDs adds the "devices" edge to the Device entity by ids.
+func (m *DeviceGroupMutation) AddDeviceIDs(ids ...int64) {
+	if m.devices == nil {
+		m.devices = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.devices[ids[i]] = struct{}{}
+	}
+}
+
+// ClearDevices clears the "devices" edge to the Device entity.
+func (m *DeviceGroupMutation) ClearDevices() {
+	m.cleareddevices = true
+}
+
+// DevicesCleared reports if the "devices" edge to the Device entity was cleared.
+func (m *DeviceGroupMutation) DevicesCleared() bool {
+	return m.cleareddevices
+}
+
+// RemoveDeviceIDs removes the "devices" edge to the Device entity by IDs.
+func (m *DeviceGroupMutation) RemoveDeviceIDs(ids ...int64) {
+	if m.removeddevices == nil {
+		m.removeddevices = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.devices, ids[i])
+		m.removeddevices[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedDevices returns the removed IDs of the "devices" edge to the Device entity.
+func (m *DeviceGroupMutation) RemovedDevicesIDs() (ids []int64) {
+	for id := range m.removeddevices {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// DevicesIDs returns the "devices" edge IDs in the mutation.
+func (m *DeviceGroupMutation) DevicesIDs() (ids []int64) {
+	for id := range m.devices {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetDevices resets all changes to the "devices" edge.
+func (m *DeviceGroupMutation) ResetDevices() {
+	m.devices = nil
+	m.cleareddevices = false
+	m.removeddevices = nil
+}
+
+// AddDNSRecordIDs adds the "dns_records" edge to the DNSRecord entity by ids.
+func (m *DeviceGroupMutation) AddDNSRecordIDs(ids ...int64) {
+	if m.dns_records == nil {
+		m.dns_records = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.dns_records[ids[i]] = struct{}{}
+	}
+}
+
+// ClearDNSRecords clears the "dns_records" edge to the DNSRecord entity.
+func (m *DeviceGroupMutation) ClearDNSRecords() {
+	m.cleareddns_records = true
+}
+
+// DNSRecordsCleared reports if the "dns_records" edge to the DNSRecord entity was cleared.
+func (m *DeviceGroupMutation) DNSRecordsCleared() bool {
+	return m.cleareddns_records
+}
+
+// RemoveDNSRecordIDs removes the "dns_records" edge to the DNSRecord entity by IDs.
+func (m *DeviceGroupMutation) RemoveDNSRecordIDs(ids ...int64) {
+	if m.removeddns_records == nil {
+		m.removeddns_records = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.dns_records, ids[i])
+		m.removeddns_records[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedDNSRecords returns the removed IDs of the "dns_records" edge to the DNSRecord entity.
+func (m *DeviceGroupMutation) RemovedDNSRecordsIDs() (ids []int64) {
+	for id := range m.removeddns_records {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// DNSRecordsIDs returns the "dns_records" edge IDs in the mutation.
+func (m *DeviceGroupMutation) DNSRecordsIDs() (ids []int64) {
+	for id := range m.dns_records {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetDNSRecords resets all changes to the "dns_records" edge.
+func (m *DeviceGroupMutation) ResetDNSRecords() {
+	m.dns_records = nil
+	m.cleareddns_records = false
+	m.removeddns_records = nil
+}
+
+// AddCdnRecordIDs adds the "cdn_records" edge to the CDNRecord entity by ids.
+func (m *DeviceGroupMutation) AddCdnRecordIDs(ids ...int64) {
+	if m.cdn_records == nil {
+		m.cdn_records = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.cdn_records[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCdnRecords clears the "cdn_records" edge to the CDNRecord entity.
+func (m *DeviceGroupMutation) ClearCdnRecords() {
+	m.clearedcdn_records = true
+}
+
+// CdnRecordsCleared reports if the "cdn_records" edge to the CDNRecord entity was cleared.
+func (m *DeviceGroupMutation) CdnRecordsCleared() bool {
+	return m.clearedcdn_records
+}
+
+// RemoveCdnRecordIDs removes the "cdn_records" edge to the CDNRecord entity by IDs.
+func (m *DeviceGroupMutation) RemoveCdnRecordIDs(ids ...int64) {
+	if m.removedcdn_records == nil {
+		m.removedcdn_records = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.cdn_records, ids[i])
+		m.removedcdn_records[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCdnRecords returns the removed IDs of the "cdn_records" edge to the CDNRecord entity.
+func (m *DeviceGroupMutation) RemovedCdnRecordsIDs() (ids []int64) {
+	for id := range m.removedcdn_records {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CdnRecordsIDs returns the "cdn_records" edge IDs in the mutation.
+func (m *DeviceGroupMutation) CdnRecordsIDs() (ids []int64) {
+	for id := range m.cdn_records {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCdnRecords resets all changes to the "cdn_records" edge.
+func (m *DeviceGroupMutation) ResetCdnRecords() {
+	m.cdn_records = nil
+	m.clearedcdn_records = false
+	m.removedcdn_records = nil
+}
+
+// Where appends a list predicates to the DeviceGroupMutation builder.
+func (m *DeviceGroupMutation) Where(ps ...predicate.DeviceGroup) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the DeviceGroupMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *DeviceGroupMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.DeviceGroup, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *DeviceGroupMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *DeviceGroupMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (DeviceGroup).
+func (m *DeviceGroupMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *DeviceGroupMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.created_at != nil {
+		fields = append(fields, devicegroup.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, devicegroup.FieldUpdatedAt)
+	}
+	if m.code != nil {
+		fields = append(fields, devicegroup.FieldCode)
+	}
+	if m.name != nil {
+		fields = append(fields, devicegroup.FieldName)
+	}
+	if m.description != nil {
+		fields = append(fields, devicegroup.FieldDescription)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *DeviceGroupMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case devicegroup.FieldCreatedAt:
+		return m.CreatedAt()
+	case devicegroup.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case devicegroup.FieldCode:
+		return m.Code()
+	case devicegroup.FieldName:
+		return m.Name()
+	case devicegroup.FieldDescription:
+		return m.Description()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *DeviceGroupMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case devicegroup.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case devicegroup.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case devicegroup.FieldCode:
+		return m.OldCode(ctx)
+	case devicegroup.FieldName:
+		return m.OldName(ctx)
+	case devicegroup.FieldDescription:
+		return m.OldDescription(ctx)
+	}
+	return nil, fmt.Errorf("unknown DeviceGroup field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DeviceGroupMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case devicegroup.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case devicegroup.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case devicegroup.FieldCode:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCode(v)
+		return nil
+	case devicegroup.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case devicegroup.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DeviceGroup field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *DeviceGroupMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *DeviceGroupMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DeviceGroupMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown DeviceGroup numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *DeviceGroupMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(devicegroup.FieldDescription) {
+		fields = append(fields, devicegroup.FieldDescription)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *DeviceGroupMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *DeviceGroupMutation) ClearField(name string) error {
+	switch name {
+	case devicegroup.FieldDescription:
+		m.ClearDescription()
+		return nil
+	}
+	return fmt.Errorf("unknown DeviceGroup nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *DeviceGroupMutation) ResetField(name string) error {
+	switch name {
+	case devicegroup.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case devicegroup.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case devicegroup.FieldCode:
+		m.ResetCode()
+		return nil
+	case devicegroup.FieldName:
+		m.ResetName()
+		return nil
+	case devicegroup.FieldDescription:
+		m.ResetDescription()
+		return nil
+	}
+	return fmt.Errorf("unknown DeviceGroup field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *DeviceGroupMutation) AddedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.devices != nil {
+		edges = append(edges, devicegroup.EdgeDevices)
+	}
+	if m.dns_records != nil {
+		edges = append(edges, devicegroup.EdgeDNSRecords)
+	}
+	if m.cdn_records != nil {
+		edges = append(edges, devicegroup.EdgeCdnRecords)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *DeviceGroupMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case devicegroup.EdgeDevices:
+		ids := make([]ent.Value, 0, len(m.devices))
+		for id := range m.devices {
+			ids = append(ids, id)
+		}
+		return ids
+	case devicegroup.EdgeDNSRecords:
+		ids := make([]ent.Value, 0, len(m.dns_records))
+		for id := range m.dns_records {
+			ids = append(ids, id)
+		}
+		return ids
+	case devicegroup.EdgeCdnRecords:
+		ids := make([]ent.Value, 0, len(m.cdn_records))
+		for id := range m.cdn_records {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *DeviceGroupMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.removeddevices != nil {
+		edges = append(edges, devicegroup.EdgeDevices)
+	}
+	if m.removeddns_records != nil {
+		edges = append(edges, devicegroup.EdgeDNSRecords)
+	}
+	if m.removedcdn_records != nil {
+		edges = append(edges, devicegroup.EdgeCdnRecords)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *DeviceGroupMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case devicegroup.EdgeDevices:
+		ids := make([]ent.Value, 0, len(m.removeddevices))
+		for id := range m.removeddevices {
+			ids = append(ids, id)
+		}
+		return ids
+	case devicegroup.EdgeDNSRecords:
+		ids := make([]ent.Value, 0, len(m.removeddns_records))
+		for id := range m.removeddns_records {
+			ids = append(ids, id)
+		}
+		return ids
+	case devicegroup.EdgeCdnRecords:
+		ids := make([]ent.Value, 0, len(m.removedcdn_records))
+		for id := range m.removedcdn_records {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *DeviceGroupMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.cleareddevices {
+		edges = append(edges, devicegroup.EdgeDevices)
+	}
+	if m.cleareddns_records {
+		edges = append(edges, devicegroup.EdgeDNSRecords)
+	}
+	if m.clearedcdn_records {
+		edges = append(edges, devicegroup.EdgeCdnRecords)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *DeviceGroupMutation) EdgeCleared(name string) bool {
+	switch name {
+	case devicegroup.EdgeDevices:
+		return m.cleareddevices
+	case devicegroup.EdgeDNSRecords:
+		return m.cleareddns_records
+	case devicegroup.EdgeCdnRecords:
+		return m.clearedcdn_records
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *DeviceGroupMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown DeviceGroup unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *DeviceGroupMutation) ResetEdge(name string) error {
+	switch name {
+	case devicegroup.EdgeDevices:
+		m.ResetDevices()
+		return nil
+	case devicegroup.EdgeDNSRecords:
+		m.ResetDNSRecords()
+		return nil
+	case devicegroup.EdgeCdnRecords:
+		m.ResetCdnRecords()
+		return nil
+	}
+	return fmt.Errorf("unknown DeviceGroup edge %s", name)
+}
+
+// DeviceGroupDeviceMutation represents an operation that mutates the DeviceGroupDevice nodes in the graph.
+type DeviceGroupDeviceMutation struct {
+	config
+	op                  Op
+	typ                 string
+	created_at          *time.Time
+	clearedFields       map[string]struct{}
+	device              *int64
+	cleareddevice       bool
+	device_group        *int64
+	cleareddevice_group bool
+	done                bool
+	oldValue            func(context.Context) (*DeviceGroupDevice, error)
+	predicates          []predicate.DeviceGroupDevice
+}
+
+var _ ent.Mutation = (*DeviceGroupDeviceMutation)(nil)
+
+// devicegroupdeviceOption allows management of the mutation configuration using functional options.
+type devicegroupdeviceOption func(*DeviceGroupDeviceMutation)
+
+// newDeviceGroupDeviceMutation creates new mutation for the DeviceGroupDevice entity.
+func newDeviceGroupDeviceMutation(c config, op Op, opts ...devicegroupdeviceOption) *DeviceGroupDeviceMutation {
+	m := &DeviceGroupDeviceMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeDeviceGroupDevice,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m DeviceGroupDeviceMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m DeviceGroupDeviceMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *DeviceGroupDeviceMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *DeviceGroupDeviceMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *DeviceGroupDeviceMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetDeviceID sets the "device_id" field.
+func (m *DeviceGroupDeviceMutation) SetDeviceID(i int64) {
+	m.device = &i
+}
+
+// DeviceID returns the value of the "device_id" field in the mutation.
+func (m *DeviceGroupDeviceMutation) DeviceID() (r int64, exists bool) {
+	v := m.device
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDeviceID resets all changes to the "device_id" field.
+func (m *DeviceGroupDeviceMutation) ResetDeviceID() {
+	m.device = nil
+}
+
+// SetDeviceGroupID sets the "device_group_id" field.
+func (m *DeviceGroupDeviceMutation) SetDeviceGroupID(i int64) {
+	m.device_group = &i
+}
+
+// DeviceGroupID returns the value of the "device_group_id" field in the mutation.
+func (m *DeviceGroupDeviceMutation) DeviceGroupID() (r int64, exists bool) {
+	v := m.device_group
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDeviceGroupID resets all changes to the "device_group_id" field.
+func (m *DeviceGroupDeviceMutation) ResetDeviceGroupID() {
+	m.device_group = nil
+}
+
+// ClearDevice clears the "device" edge to the Device entity.
+func (m *DeviceGroupDeviceMutation) ClearDevice() {
+	m.cleareddevice = true
+	m.clearedFields[devicegroupdevice.FieldDeviceID] = struct{}{}
+}
+
+// DeviceCleared reports if the "device" edge to the Device entity was cleared.
+func (m *DeviceGroupDeviceMutation) DeviceCleared() bool {
+	return m.cleareddevice
+}
+
+// DeviceIDs returns the "device" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// DeviceID instead. It exists only for internal usage by the builders.
+func (m *DeviceGroupDeviceMutation) DeviceIDs() (ids []int64) {
+	if id := m.device; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetDevice resets all changes to the "device" edge.
+func (m *DeviceGroupDeviceMutation) ResetDevice() {
+	m.device = nil
+	m.cleareddevice = false
+}
+
+// ClearDeviceGroup clears the "device_group" edge to the DeviceGroup entity.
+func (m *DeviceGroupDeviceMutation) ClearDeviceGroup() {
+	m.cleareddevice_group = true
+	m.clearedFields[devicegroupdevice.FieldDeviceGroupID] = struct{}{}
+}
+
+// DeviceGroupCleared reports if the "device_group" edge to the DeviceGroup entity was cleared.
+func (m *DeviceGroupDeviceMutation) DeviceGroupCleared() bool {
+	return m.cleareddevice_group
+}
+
+// DeviceGroupIDs returns the "device_group" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// DeviceGroupID instead. It exists only for internal usage by the builders.
+func (m *DeviceGroupDeviceMutation) DeviceGroupIDs() (ids []int64) {
+	if id := m.device_group; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetDeviceGroup resets all changes to the "device_group" edge.
+func (m *DeviceGroupDeviceMutation) ResetDeviceGroup() {
+	m.device_group = nil
+	m.cleareddevice_group = false
+}
+
+// Where appends a list predicates to the DeviceGroupDeviceMutation builder.
+func (m *DeviceGroupDeviceMutation) Where(ps ...predicate.DeviceGroupDevice) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the DeviceGroupDeviceMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *DeviceGroupDeviceMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.DeviceGroupDevice, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *DeviceGroupDeviceMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *DeviceGroupDeviceMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (DeviceGroupDevice).
+func (m *DeviceGroupDeviceMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *DeviceGroupDeviceMutation) Fields() []string {
+	fields := make([]string, 0, 3)
+	if m.created_at != nil {
+		fields = append(fields, devicegroupdevice.FieldCreatedAt)
+	}
+	if m.device != nil {
+		fields = append(fields, devicegroupdevice.FieldDeviceID)
+	}
+	if m.device_group != nil {
+		fields = append(fields, devicegroupdevice.FieldDeviceGroupID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *DeviceGroupDeviceMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case devicegroupdevice.FieldCreatedAt:
+		return m.CreatedAt()
+	case devicegroupdevice.FieldDeviceID:
+		return m.DeviceID()
+	case devicegroupdevice.FieldDeviceGroupID:
+		return m.DeviceGroupID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *DeviceGroupDeviceMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	return nil, errors.New("edge schema DeviceGroupDevice does not support getting old values")
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DeviceGroupDeviceMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case devicegroupdevice.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case devicegroupdevice.FieldDeviceID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeviceID(v)
+		return nil
+	case devicegroupdevice.FieldDeviceGroupID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeviceGroupID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DeviceGroupDevice field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *DeviceGroupDeviceMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *DeviceGroupDeviceMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DeviceGroupDeviceMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown DeviceGroupDevice numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *DeviceGroupDeviceMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *DeviceGroupDeviceMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *DeviceGroupDeviceMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown DeviceGroupDevice nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *DeviceGroupDeviceMutation) ResetField(name string) error {
+	switch name {
+	case devicegroupdevice.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case devicegroupdevice.FieldDeviceID:
+		m.ResetDeviceID()
+		return nil
+	case devicegroupdevice.FieldDeviceGroupID:
+		m.ResetDeviceGroupID()
+		return nil
+	}
+	return fmt.Errorf("unknown DeviceGroupDevice field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *DeviceGroupDeviceMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.device != nil {
+		edges = append(edges, devicegroupdevice.EdgeDevice)
+	}
+	if m.device_group != nil {
+		edges = append(edges, devicegroupdevice.EdgeDeviceGroup)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *DeviceGroupDeviceMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case devicegroupdevice.EdgeDevice:
+		if id := m.device; id != nil {
+			return []ent.Value{*id}
+		}
+	case devicegroupdevice.EdgeDeviceGroup:
+		if id := m.device_group; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *DeviceGroupDeviceMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *DeviceGroupDeviceMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *DeviceGroupDeviceMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.cleareddevice {
+		edges = append(edges, devicegroupdevice.EdgeDevice)
+	}
+	if m.cleareddevice_group {
+		edges = append(edges, devicegroupdevice.EdgeDeviceGroup)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *DeviceGroupDeviceMutation) EdgeCleared(name string) bool {
+	switch name {
+	case devicegroupdevice.EdgeDevice:
+		return m.cleareddevice
+	case devicegroupdevice.EdgeDeviceGroup:
+		return m.cleareddevice_group
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *DeviceGroupDeviceMutation) ClearEdge(name string) error {
+	switch name {
+	case devicegroupdevice.EdgeDevice:
+		m.ClearDevice()
+		return nil
+	case devicegroupdevice.EdgeDeviceGroup:
+		m.ClearDeviceGroup()
+		return nil
+	}
+	return fmt.Errorf("unknown DeviceGroupDevice unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *DeviceGroupDeviceMutation) ResetEdge(name string) error {
+	switch name {
+	case devicegroupdevice.EdgeDevice:
+		m.ResetDevice()
+		return nil
+	case devicegroupdevice.EdgeDeviceGroup:
+		m.ResetDeviceGroup()
+		return nil
+	}
+	return fmt.Errorf("unknown DeviceGroupDevice edge %s", name)
 }
 
 // DevicePortForwardMutation represents an operation that mutates the DevicePortForward nodes in the graph.
@@ -6135,29 +7725,27 @@ func (m *DomainMonitorMutation) ResetEdge(name string) error {
 // IpGroupMutation represents an operation that mutates the IpGroup nodes in the graph.
 type IpGroupMutation struct {
 	config
-	op                   Op
-	typ                  string
-	id                   *int64
-	created_at           *time.Time
-	updated_at           *time.Time
-	code                 *string
-	name                 *string
-	description          *string
-	last_api_response    *string
-	last_api_response_at *time.Time
-	clearedFields        map[string]struct{}
-	devices              map[int64]struct{}
-	removeddevices       map[int64]struct{}
-	cleareddevices       bool
-	dns_records          map[int64]struct{}
-	removeddns_records   map[int64]struct{}
-	cleareddns_records   bool
-	cdn_records          map[int64]struct{}
-	removedcdn_records   map[int64]struct{}
-	clearedcdn_records   bool
-	done                 bool
-	oldValue             func(context.Context) (*IpGroup, error)
-	predicates           []predicate.IpGroup
+	op                 Op
+	typ                string
+	id                 *int64
+	created_at         *time.Time
+	updated_at         *time.Time
+	code               *string
+	name               *string
+	description        *string
+	clearedFields      map[string]struct{}
+	devices            map[int64]struct{}
+	removeddevices     map[int64]struct{}
+	cleareddevices     bool
+	dns_records        map[int64]struct{}
+	removeddns_records map[int64]struct{}
+	cleareddns_records bool
+	cdn_records        map[int64]struct{}
+	removedcdn_records map[int64]struct{}
+	clearedcdn_records bool
+	done               bool
+	oldValue           func(context.Context) (*IpGroup, error)
+	predicates         []predicate.IpGroup
 }
 
 var _ ent.Mutation = (*IpGroupMutation)(nil)
@@ -6457,104 +8045,6 @@ func (m *IpGroupMutation) ResetDescription() {
 	delete(m.clearedFields, ipgroup.FieldDescription)
 }
 
-// SetLastAPIResponse sets the "last_api_response" field.
-func (m *IpGroupMutation) SetLastAPIResponse(s string) {
-	m.last_api_response = &s
-}
-
-// LastAPIResponse returns the value of the "last_api_response" field in the mutation.
-func (m *IpGroupMutation) LastAPIResponse() (r string, exists bool) {
-	v := m.last_api_response
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldLastAPIResponse returns the old "last_api_response" field's value of the IpGroup entity.
-// If the IpGroup object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *IpGroupMutation) OldLastAPIResponse(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastAPIResponse is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastAPIResponse requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastAPIResponse: %w", err)
-	}
-	return oldValue.LastAPIResponse, nil
-}
-
-// ClearLastAPIResponse clears the value of the "last_api_response" field.
-func (m *IpGroupMutation) ClearLastAPIResponse() {
-	m.last_api_response = nil
-	m.clearedFields[ipgroup.FieldLastAPIResponse] = struct{}{}
-}
-
-// LastAPIResponseCleared returns if the "last_api_response" field was cleared in this mutation.
-func (m *IpGroupMutation) LastAPIResponseCleared() bool {
-	_, ok := m.clearedFields[ipgroup.FieldLastAPIResponse]
-	return ok
-}
-
-// ResetLastAPIResponse resets all changes to the "last_api_response" field.
-func (m *IpGroupMutation) ResetLastAPIResponse() {
-	m.last_api_response = nil
-	delete(m.clearedFields, ipgroup.FieldLastAPIResponse)
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (m *IpGroupMutation) SetLastAPIResponseAt(t time.Time) {
-	m.last_api_response_at = &t
-}
-
-// LastAPIResponseAt returns the value of the "last_api_response_at" field in the mutation.
-func (m *IpGroupMutation) LastAPIResponseAt() (r time.Time, exists bool) {
-	v := m.last_api_response_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldLastAPIResponseAt returns the old "last_api_response_at" field's value of the IpGroup entity.
-// If the IpGroup object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *IpGroupMutation) OldLastAPIResponseAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastAPIResponseAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastAPIResponseAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastAPIResponseAt: %w", err)
-	}
-	return oldValue.LastAPIResponseAt, nil
-}
-
-// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
-func (m *IpGroupMutation) ClearLastAPIResponseAt() {
-	m.last_api_response_at = nil
-	m.clearedFields[ipgroup.FieldLastAPIResponseAt] = struct{}{}
-}
-
-// LastAPIResponseAtCleared returns if the "last_api_response_at" field was cleared in this mutation.
-func (m *IpGroupMutation) LastAPIResponseAtCleared() bool {
-	_, ok := m.clearedFields[ipgroup.FieldLastAPIResponseAt]
-	return ok
-}
-
-// ResetLastAPIResponseAt resets all changes to the "last_api_response_at" field.
-func (m *IpGroupMutation) ResetLastAPIResponseAt() {
-	m.last_api_response_at = nil
-	delete(m.clearedFields, ipgroup.FieldLastAPIResponseAt)
-}
-
 // AddDeviceIDs adds the "devices" edge to the Device entity by ids.
 func (m *IpGroupMutation) AddDeviceIDs(ids ...int64) {
 	if m.devices == nil {
@@ -6751,7 +8241,7 @@ func (m *IpGroupMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *IpGroupMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 5)
 	if m.created_at != nil {
 		fields = append(fields, ipgroup.FieldCreatedAt)
 	}
@@ -6766,12 +8256,6 @@ func (m *IpGroupMutation) Fields() []string {
 	}
 	if m.description != nil {
 		fields = append(fields, ipgroup.FieldDescription)
-	}
-	if m.last_api_response != nil {
-		fields = append(fields, ipgroup.FieldLastAPIResponse)
-	}
-	if m.last_api_response_at != nil {
-		fields = append(fields, ipgroup.FieldLastAPIResponseAt)
 	}
 	return fields
 }
@@ -6791,10 +8275,6 @@ func (m *IpGroupMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case ipgroup.FieldDescription:
 		return m.Description()
-	case ipgroup.FieldLastAPIResponse:
-		return m.LastAPIResponse()
-	case ipgroup.FieldLastAPIResponseAt:
-		return m.LastAPIResponseAt()
 	}
 	return nil, false
 }
@@ -6814,10 +8294,6 @@ func (m *IpGroupMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldName(ctx)
 	case ipgroup.FieldDescription:
 		return m.OldDescription(ctx)
-	case ipgroup.FieldLastAPIResponse:
-		return m.OldLastAPIResponse(ctx)
-	case ipgroup.FieldLastAPIResponseAt:
-		return m.OldLastAPIResponseAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown IpGroup field %s", name)
 }
@@ -6862,20 +8338,6 @@ func (m *IpGroupMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDescription(v)
 		return nil
-	case ipgroup.FieldLastAPIResponse:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetLastAPIResponse(v)
-		return nil
-	case ipgroup.FieldLastAPIResponseAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetLastAPIResponseAt(v)
-		return nil
 	}
 	return fmt.Errorf("unknown IpGroup field %s", name)
 }
@@ -6909,12 +8371,6 @@ func (m *IpGroupMutation) ClearedFields() []string {
 	if m.FieldCleared(ipgroup.FieldDescription) {
 		fields = append(fields, ipgroup.FieldDescription)
 	}
-	if m.FieldCleared(ipgroup.FieldLastAPIResponse) {
-		fields = append(fields, ipgroup.FieldLastAPIResponse)
-	}
-	if m.FieldCleared(ipgroup.FieldLastAPIResponseAt) {
-		fields = append(fields, ipgroup.FieldLastAPIResponseAt)
-	}
 	return fields
 }
 
@@ -6931,12 +8387,6 @@ func (m *IpGroupMutation) ClearField(name string) error {
 	switch name {
 	case ipgroup.FieldDescription:
 		m.ClearDescription()
-		return nil
-	case ipgroup.FieldLastAPIResponse:
-		m.ClearLastAPIResponse()
-		return nil
-	case ipgroup.FieldLastAPIResponseAt:
-		m.ClearLastAPIResponseAt()
 		return nil
 	}
 	return fmt.Errorf("unknown IpGroup nullable field %s", name)
@@ -6960,12 +8410,6 @@ func (m *IpGroupMutation) ResetField(name string) error {
 		return nil
 	case ipgroup.FieldDescription:
 		m.ResetDescription()
-		return nil
-	case ipgroup.FieldLastAPIResponse:
-		m.ResetLastAPIResponse()
-		return nil
-	case ipgroup.FieldLastAPIResponseAt:
-		m.ResetLastAPIResponseAt()
 		return nil
 	}
 	return fmt.Errorf("unknown IpGroup field %s", name)
