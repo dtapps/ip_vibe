@@ -200,6 +200,8 @@ func (s *IPUpdateTask) RunDnsTask() {
 				withDevices.OrderByIDAsc()
 			})
 		}).
+		// 排序
+		OrderByCreatedAtAsc().
 		All(ctx)
 	if err == nil {
 
@@ -357,6 +359,8 @@ func (s *IPUpdateTask) RunCdnTask() {
 				withDevices.OrderByIDAsc()
 			})
 		}).
+		// 排序
+		OrderByCreatedAtAsc().
 		All(ctx)
 	if err == nil {
 

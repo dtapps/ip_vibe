@@ -69,14 +69,14 @@ func (s *SSLImportServiceImpl) BuildResponse(ctx context.Context, item *ent.SSLI
 func (s *SSLImportServiceImpl) ImportSSLImport(ctx context.Context, request *types.ImportSSLImportRequest) error {
 
 	// 解析证书
-	parsedSsl, err := utils.ParseCertificate(request.Certificate)
+	parsedCert, err := utils.ParseCertificate([]byte(request.Certificate))
 	if err != nil {
 		return fmt.Errorf("解析证书失败: %w", err)
 	}
 
 	// 证书状态
 	status := sslimport.StatusUnknown
-	if parsedSsl.NotAfter.After(time.Now()) {
+	if parsedCert.NotAfter.After(time.Now()) {
 		status = sslimport.StatusValid
 	} else {
 		status = sslimport.StatusExpired
@@ -85,11 +85,11 @@ func (s *SSLImportServiceImpl) ImportSSLImport(ctx context.Context, request *typ
 	// 创建SSL导入记录
 	err = s.db.SSLImport.Create().
 		SetSource(sslimport.SourceWebhook).
-		SetDomain(parsedSsl.Domain).
+		SetDomain(parsedCert.Domain).
 		SetCertificate(request.Certificate).
 		SetPrivateKey(request.PrivateKey).
-		SetNotBefore(parsedSsl.NotBefore).
-		SetNotAfter(parsedSsl.NotAfter).
+		SetNotBefore(parsedCert.NotBefore).
+		SetNotAfter(parsedCert.NotAfter).
 		SetStatus(status).
 		Exec(ctx)
 	if err != nil {
@@ -103,7 +103,7 @@ func (s *SSLImportServiceImpl) ImportSSLImport(ctx context.Context, request *typ
 func (s *SSLImportServiceImpl) CreateSSLImport(ctx context.Context, request *types.CreateSSLImportRequest) error {
 
 	// 解析证书
-	parsedSsl, err := utils.ParseCertificate(request.Certificate)
+	parsedCert, err := utils.ParseCertificate([]byte(request.Certificate))
 	if err != nil {
 		return fmt.Errorf("解析证书失败: %w", err)
 	}
@@ -116,7 +116,7 @@ func (s *SSLImportServiceImpl) CreateSSLImport(ctx context.Context, request *typ
 
 	// 证书状态
 	status := sslimport.StatusUnknown
-	if parsedSsl.NotAfter.After(time.Now()) {
+	if parsedCert.NotAfter.After(time.Now()) {
 		status = sslimport.StatusValid
 	} else {
 		status = sslimport.StatusExpired
@@ -128,8 +128,8 @@ func (s *SSLImportServiceImpl) CreateSSLImport(ctx context.Context, request *typ
 		SetDomain(request.Domain).
 		SetCertificate(request.Certificate).
 		SetPrivateKey(request.PrivateKey).
-		SetNotBefore(parsedSsl.NotBefore).
-		SetNotAfter(parsedSsl.NotAfter).
+		SetNotBefore(parsedCert.NotBefore).
+		SetNotAfter(parsedCert.NotAfter).
 		SetStatus(status).
 		Exec(ctx)
 	if err != nil {

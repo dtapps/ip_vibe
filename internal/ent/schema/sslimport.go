@@ -71,13 +71,11 @@ func (SSLImport) Fields() []ent.Field {
 
 		field.Time("not_before").
 			Optional().
-			Immutable().
 			Comment("证书生效时间").
 			Annotations(entsql.WithComments(true)),
 
 		field.Time("not_after").
 			Optional().
-			Immutable().
 			Comment("证书过期时间").
 			Annotations(entsql.WithComments(true)),
 

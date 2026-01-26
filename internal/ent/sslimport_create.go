@@ -366,6 +366,42 @@ type (
 	}
 )
 
+// SetNotBefore sets the "not_before" field.
+func (u *SSLImportUpsert) SetNotBefore(v time.Time) *SSLImportUpsert {
+	u.Set(sslimport.FieldNotBefore, v)
+	return u
+}
+
+// UpdateNotBefore sets the "not_before" field to the value that was provided on create.
+func (u *SSLImportUpsert) UpdateNotBefore() *SSLImportUpsert {
+	u.SetExcluded(sslimport.FieldNotBefore)
+	return u
+}
+
+// ClearNotBefore clears the value of the "not_before" field.
+func (u *SSLImportUpsert) ClearNotBefore() *SSLImportUpsert {
+	u.SetNull(sslimport.FieldNotBefore)
+	return u
+}
+
+// SetNotAfter sets the "not_after" field.
+func (u *SSLImportUpsert) SetNotAfter(v time.Time) *SSLImportUpsert {
+	u.Set(sslimport.FieldNotAfter, v)
+	return u
+}
+
+// UpdateNotAfter sets the "not_after" field to the value that was provided on create.
+func (u *SSLImportUpsert) UpdateNotAfter() *SSLImportUpsert {
+	u.SetExcluded(sslimport.FieldNotAfter)
+	return u
+}
+
+// ClearNotAfter clears the value of the "not_after" field.
+func (u *SSLImportUpsert) ClearNotAfter() *SSLImportUpsert {
+	u.SetNull(sslimport.FieldNotAfter)
+	return u
+}
+
 // SetStatus sets the "status" field.
 func (u *SSLImportUpsert) SetStatus(v sslimport.Status) *SSLImportUpsert {
 	u.Set(sslimport.FieldStatus, v)
@@ -413,12 +449,6 @@ func (u *SSLImportUpsertOne) UpdateNewValues() *SSLImportUpsertOne {
 		if _, exists := u.create.mutation.PrivateKey(); exists {
 			s.SetIgnore(sslimport.FieldPrivateKey)
 		}
-		if _, exists := u.create.mutation.NotBefore(); exists {
-			s.SetIgnore(sslimport.FieldNotBefore)
-		}
-		if _, exists := u.create.mutation.NotAfter(); exists {
-			s.SetIgnore(sslimport.FieldNotAfter)
-		}
 	}))
 	return u
 }
@@ -448,6 +478,48 @@ func (u *SSLImportUpsertOne) Update(set func(*SSLImportUpsert)) *SSLImportUpsert
 		set(&SSLImportUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetNotBefore sets the "not_before" field.
+func (u *SSLImportUpsertOne) SetNotBefore(v time.Time) *SSLImportUpsertOne {
+	return u.Update(func(s *SSLImportUpsert) {
+		s.SetNotBefore(v)
+	})
+}
+
+// UpdateNotBefore sets the "not_before" field to the value that was provided on create.
+func (u *SSLImportUpsertOne) UpdateNotBefore() *SSLImportUpsertOne {
+	return u.Update(func(s *SSLImportUpsert) {
+		s.UpdateNotBefore()
+	})
+}
+
+// ClearNotBefore clears the value of the "not_before" field.
+func (u *SSLImportUpsertOne) ClearNotBefore() *SSLImportUpsertOne {
+	return u.Update(func(s *SSLImportUpsert) {
+		s.ClearNotBefore()
+	})
+}
+
+// SetNotAfter sets the "not_after" field.
+func (u *SSLImportUpsertOne) SetNotAfter(v time.Time) *SSLImportUpsertOne {
+	return u.Update(func(s *SSLImportUpsert) {
+		s.SetNotAfter(v)
+	})
+}
+
+// UpdateNotAfter sets the "not_after" field to the value that was provided on create.
+func (u *SSLImportUpsertOne) UpdateNotAfter() *SSLImportUpsertOne {
+	return u.Update(func(s *SSLImportUpsert) {
+		s.UpdateNotAfter()
+	})
+}
+
+// ClearNotAfter clears the value of the "not_after" field.
+func (u *SSLImportUpsertOne) ClearNotAfter() *SSLImportUpsertOne {
+	return u.Update(func(s *SSLImportUpsert) {
+		s.ClearNotAfter()
+	})
 }
 
 // SetStatus sets the "status" field.
@@ -664,12 +736,6 @@ func (u *SSLImportUpsertBulk) UpdateNewValues() *SSLImportUpsertBulk {
 			if _, exists := b.mutation.PrivateKey(); exists {
 				s.SetIgnore(sslimport.FieldPrivateKey)
 			}
-			if _, exists := b.mutation.NotBefore(); exists {
-				s.SetIgnore(sslimport.FieldNotBefore)
-			}
-			if _, exists := b.mutation.NotAfter(); exists {
-				s.SetIgnore(sslimport.FieldNotAfter)
-			}
 		}
 	}))
 	return u
@@ -700,6 +766,48 @@ func (u *SSLImportUpsertBulk) Update(set func(*SSLImportUpsert)) *SSLImportUpser
 		set(&SSLImportUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetNotBefore sets the "not_before" field.
+func (u *SSLImportUpsertBulk) SetNotBefore(v time.Time) *SSLImportUpsertBulk {
+	return u.Update(func(s *SSLImportUpsert) {
+		s.SetNotBefore(v)
+	})
+}
+
+// UpdateNotBefore sets the "not_before" field to the value that was provided on create.
+func (u *SSLImportUpsertBulk) UpdateNotBefore() *SSLImportUpsertBulk {
+	return u.Update(func(s *SSLImportUpsert) {
+		s.UpdateNotBefore()
+	})
+}
+
+// ClearNotBefore clears the value of the "not_before" field.
+func (u *SSLImportUpsertBulk) ClearNotBefore() *SSLImportUpsertBulk {
+	return u.Update(func(s *SSLImportUpsert) {
+		s.ClearNotBefore()
+	})
+}
+
+// SetNotAfter sets the "not_after" field.
+func (u *SSLImportUpsertBulk) SetNotAfter(v time.Time) *SSLImportUpsertBulk {
+	return u.Update(func(s *SSLImportUpsert) {
+		s.SetNotAfter(v)
+	})
+}
+
+// UpdateNotAfter sets the "not_after" field to the value that was provided on create.
+func (u *SSLImportUpsertBulk) UpdateNotAfter() *SSLImportUpsertBulk {
+	return u.Update(func(s *SSLImportUpsert) {
+		s.UpdateNotAfter()
+	})
+}
+
+// ClearNotAfter clears the value of the "not_after" field.
+func (u *SSLImportUpsertBulk) ClearNotAfter() *SSLImportUpsertBulk {
+	return u.Update(func(s *SSLImportUpsert) {
+		s.ClearNotAfter()
+	})
 }
 
 // SetStatus sets the "status" field.

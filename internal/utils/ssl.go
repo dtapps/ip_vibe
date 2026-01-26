@@ -108,8 +108,13 @@ type ParsedCertificate struct {
 }
 
 // ParseCertificate 从 PEM 格式证书中提取域名和有效期
-func ParseCertificate(certPEM string) (*ParsedCertificate, error) {
-	block, _ := pem.Decode([]byte(certPEM))
+func ParseCertificate(certPEM []byte) (*ParsedCertificate, error) {
+	if len(certPEM) == 0 {
+		return nil, fmt.Errorf("证书数据为空")
+	}
+
+	// 解析 PEM 数据
+	block, _ := pem.Decode(certPEM)
 	if block == nil || block.Type != "CERTIFICATE" {
 		return nil, fmt.Errorf("无效的证书格式")
 	}

@@ -23,6 +23,8 @@ async function openSettingFormModal() {
       setting.cdn_refresh_task_time;
     document.getElementById("dns_refresh_task_time").value =
       setting.dns_refresh_task_time;
+    document.getElementById("ssl_apply_task_time").value =
+      setting.ssl_apply_task_time;
     document.getElementById("ssl_refresh_task_time").value =
       setting.ssl_refresh_task_time;
     document.getElementById("http_request_log_record_time").value =
@@ -65,6 +67,9 @@ if (form) {
       dns_refresh_task_time: document
         .getElementById("dns_refresh_task_time")
         .value.trim(),
+      ssl_apply_task_time: document
+        .getElementById("ssl_apply_task_time")
+        .value.trim(),
       ssl_refresh_task_time: document
         .getElementById("ssl_refresh_task_time")
         .value.trim(),
@@ -89,6 +94,9 @@ if (form) {
     }
     if (!form_data.dns_refresh_task_time) {
       return alert("请输入DNS刷新任务时间");
+    }
+    if (!form_data.ssl_apply_task_time) {
+      return alert("请输入SSL申请任务时间");
     }
     if (!form_data.ssl_refresh_task_time) {
       return alert("请输入SSL刷新任务时间");

@@ -2,9 +2,6 @@ package task
 
 import (
 	"context"
-	"crypto/x509"
-	"encoding/pem"
-	"errors"
 	"fmt"
 	"log/slog"
 	"math/rand"
@@ -20,8 +17,8 @@ import (
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/helper/ssl_helper"
 	"vibe_ip/internal/helper/sys_env"
+	"vibe_ip/internal/utils"
 
-	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-co-op/gocron/v2"
 	"github.com/google/uuid"
 	"github.com/spf13/cast"
@@ -116,7 +113,7 @@ func (s *SSLApplyTask) StartPeriodicTask(ctx context.Context) (err error) {
 	}
 	// 解析设置的时间
 	jobDuration, isStart, err := gocron_helper.ParseTaskTime(
-		db_cache.GvaSetting.SSLRefreshTaskTime,
+		db_cache.GvaSetting.SSLApplyTaskTime,
 		time.Hour,
 	)
 	if !isStart {
@@ -145,7 +142,7 @@ func (s *SSLApplyTask) StartPeriodicTask(ctx context.Context) (err error) {
 	}
 
 	s.logger.InfoContext(ctx, s.taskName+"任务已启动",
-		slog.String("执行间隔", fmt.Sprintf("%s小时", db_cache.GvaSetting.SSLRefreshTaskTime)),
+		slog.String("执行间隔", fmt.Sprintf("%s小时", db_cache.GvaSetting.SSLApplyTaskTime)),
 	)
 	return nil
 }
@@ -160,7 +157,7 @@ func (s *SSLApplyTask) RunPeriodicTask() {
 	logger := s.jobHelper.SlogWith(s.logger, s.job.ID().String(), s.job.Name())
 
 	// 分组记录
-	var concurrentRecords, serialRecords []*PendingSSLRecord
+	var concurrentRecords, serialRecords []*ExecuteSSLApplyParams
 
 	// 查询全部SSL记录
 	allSSLRecords, err := s.db.SSLRecord.Query().
@@ -169,6 +166,8 @@ func (s *SSLApplyTask) RunPeriodicTask() {
 		Where(sslrecord.ProviderNEQ(sslrecord.ProviderUnknown)).
 		// 预加载 配置
 		WithConfig().
+		// 排序
+		OrderByCreatedAtAsc().
 		All(ctx)
 	if err == nil {
 
@@ -182,7 +181,7 @@ func (s *SSLApplyTask) RunPeriodicTask() {
 			// 如果已超过或等于下次运行时间，则执行任务
 			if now.After(nextRun) || now.Equal(nextRun) {
 				// 创建待处理记录
-				pendingRecord := &PendingSSLRecord{
+				executeParams := &ExecuteSSLApplyParams{
 					Item:     sslRecord,
 					Platform: sslRecord.Edges.Config.Platform,
 					Params: &ssl_helper.SSLProcessParams{
@@ -195,9 +194,9 @@ func (s *SSLApplyTask) RunPeriodicTask() {
 
 				// 按策略分组
 				if allowConcurrent(sslRecord.Edges.Config) {
-					concurrentRecords = append(concurrentRecords, pendingRecord)
+					concurrentRecords = append(concurrentRecords, executeParams)
 				} else {
-					serialRecords = append(serialRecords, pendingRecord)
+					serialRecords = append(serialRecords, executeParams)
 				}
 			}
 		}
@@ -254,21 +253,21 @@ func (s *SSLApplyTask) RunPeriodicTask() {
 }
 
 // 待处理
-type PendingSSLRecord struct {
+type ExecuteSSLApplyParams struct {
 	Item     *ent.SSLRecord               // SSL记录
 	Platform platformconfig.Platform      // 平台
 	Params   *ssl_helper.SSLProcessParams // 处理参数
 }
 
 // 执行SSL申请
-func (s *SSLApplyTask) executeSSLApply(ctx context.Context, logger *slog.Logger, pendingRecord *PendingSSLRecord) (err error) {
+func (s *SSLApplyTask) executeSSLApply(ctx context.Context, logger *slog.Logger, params *ExecuteSSLApplyParams) (err error) {
 
 	// 日志
 	logger = logger.With(
-		slog.String("记录", pendingRecord.Params.SSLRecordID),
-		slog.String("提供商", pendingRecord.Item.Provider.String()),
-		slog.String("平台", pendingRecord.Platform.String()),
-		slog.Any("域名列表", pendingRecord.Params.Domains),
+		slog.String("记录", params.Params.SSLRecordID),
+		slog.String("提供商", params.Item.Provider.String()),
+		slog.String("平台", params.Platform.String()),
+		slog.Any("域名列表", params.Params.Domains),
 	)
 	logger.InfoContext(ctx, "开始处理")
 	defer logger.InfoContext(ctx, "处理完成")
@@ -277,10 +276,10 @@ func (s *SSLApplyTask) executeSSLApply(ctx context.Context, logger *slog.Logger,
 	var sslProcess ssl_helper.SSLProcess
 
 	// 准备保存
-	updateOne := s.db.SSLRecord.UpdateOneID(pendingRecord.Item.ID)
+	updateOne := s.db.SSLRecord.UpdateOneID(params.Item.ID)
 	createLogOne := s.logDb.SSLCertificateHistory.Create()
 
-	switch pendingRecord.Platform {
+	switch params.Platform {
 	case platformconfig.PlatformCloudflare:
 		sslProcess = ssl_helper.NewSSLProcessCloudflare(
 			logger,
@@ -324,7 +323,7 @@ func (s *SSLApplyTask) executeSSLApply(ctx context.Context, logger *slog.Logger,
 			s.debug,
 		)
 	default:
-		err = fmt.Errorf("暂不支持该平台: %s", pendingRecord.Platform.String())
+		err = fmt.Errorf("暂不支持该平台: %s", params.Platform.String())
 		updateOne.SetLastAPIResponse(err.Error())
 		updateOne.SetLastAPIResponseAt(time.Now())
 		_ = updateOne.Exec(ctx)
@@ -332,7 +331,7 @@ func (s *SSLApplyTask) executeSSLApply(ctx context.Context, logger *slog.Logger,
 	}
 
 	// 配置
-	err = sslProcess.Configure(ctx, pendingRecord.Params)
+	err = sslProcess.Configure(ctx, params.Params)
 	if err != nil {
 		updateOne.SetLastAPIResponse(err.Error())
 		updateOne.SetLastAPIResponseAt(time.Now())
@@ -345,7 +344,7 @@ func (s *SSLApplyTask) executeSSLApply(ctx context.Context, logger *slog.Logger,
 	}
 
 	// 申请
-	res, err := sslProcess.Apply(ctx, pendingRecord.Params.Domains)
+	res, err := sslProcess.Apply(ctx, params.Params.Domains)
 	if err != nil {
 		updateOne.SetLastAPIResponse(err.Error())
 		updateOne.SetLastAPIResponseAt(time.Now())
@@ -357,8 +356,8 @@ func (s *SSLApplyTask) executeSSLApply(ctx context.Context, logger *slog.Logger,
 		return err
 	}
 
-	// 解析证书有效期
-	certValidity, err := s.parseCertificateValidity(res)
+	// 解析证书
+	parsedCert, err := utils.ParseCertificate(res.Certificate)
 	if err != nil {
 		updateOne.SetLastAPIResponse(err.Error())
 		updateOne.SetLastAPIResponseAt(time.Now())
@@ -378,8 +377,8 @@ func (s *SSLApplyTask) executeSSLApply(ctx context.Context, logger *slog.Logger,
 	updateOne.SetCertCertificate(string(res.Certificate))
 	updateOne.SetCertIssuerCertificate(string(res.IssuerCertificate))
 	updateOne.SetCertCsr(string(res.CSR))
-	updateOne.SetNotBefore(certValidity.NotBefore)
-	updateOne.SetNotAfter(certValidity.NotAfter)
+	updateOne.SetNotBefore(parsedCert.NotBefore)
+	updateOne.SetNotAfter(parsedCert.NotAfter)
 	updateOne.SetStatus(sslrecord.StatusValid)
 	updateOne.SetLastRefreshAt(time.Now())
 	updateOne.SetLastAPIResponse("ok")
@@ -387,7 +386,7 @@ func (s *SSLApplyTask) executeSSLApply(ctx context.Context, logger *slog.Logger,
 	_ = updateOne.Exec(ctx)
 
 	// 保存到SSL证书申请历史记录
-	createLogOne.SetSslRecordID(pendingRecord.Item.ID)
+	createLogOne.SetSslRecordID(params.Item.ID)
 	createLogOne.SetCertDomain(res.Domain)
 	createLogOne.SetCertURL(res.CertURL)
 	createLogOne.SetCertStableURL(res.CertStableURL)
@@ -395,52 +394,22 @@ func (s *SSLApplyTask) executeSSLApply(ctx context.Context, logger *slog.Logger,
 	createLogOne.SetCertCertificate(string(res.Certificate))
 	createLogOne.SetCertIssuerCertificate(string(res.IssuerCertificate))
 	createLogOne.SetCertCsr(string(res.CSR))
-	createLogOne.SetNotBefore(certValidity.NotBefore)
-	createLogOne.SetNotAfter(certValidity.NotAfter)
-	createLogOne.SetProvider(sslcertificatehistory.Provider(pendingRecord.Item.Provider))
+	createLogOne.SetNotBefore(parsedCert.NotBefore)
+	createLogOne.SetNotAfter(parsedCert.NotAfter)
+	createLogOne.SetProvider(sslcertificatehistory.Provider(params.Item.Provider))
 	_ = createLogOne.Exec(ctx)
 
 	return nil
 }
 
-// CertificateValidity 证书有效期信息
-type CertificateValidity struct {
-	NotBefore time.Time
-	NotAfter  time.Time
-}
-
-// 从 lego Resource 解析证书有效期
-func (s *SSLApplyTask) parseCertificateValidity(res *certificate.Resource) (*CertificateValidity, error) {
-	if res == nil || len(res.Certificate) == 0 {
-		return nil, errors.New("certificate data is empty")
-	}
-
-	// 解析 PEM 数据
-	block, _ := pem.Decode(res.Certificate)
-	if block == nil {
-		return nil, errors.New("failed to parse PEM block containing certificate")
-	}
-
-	// 解析 X.509 证书
-	cert, err := x509.ParseCertificate(block.Bytes)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse certificate: %v", err)
-	}
-
-	return &CertificateValidity{
-		NotBefore: cert.NotBefore,
-		NotAfter:  cert.NotAfter,
-	}, nil
-}
-
 // AddDisposableTask 添加一次性任务
-func (s *SSLApplyTask) AddDisposableTask(ctx context.Context, pendingRecord *PendingSSLRecord) (err error) {
+func (s *SSLApplyTask) AddDisposableTask(ctx context.Context, params *ExecuteSSLApplyParams) (err error) {
 
 	// 任务编号
 	jobID := uuid.New()
 
 	// 任务名称
-	jobName := fmt.Sprintf("%s-%v", s.taskName, pendingRecord.Params.SSLRecordID)
+	jobName := fmt.Sprintf("%s-%v", s.taskName, params.Params.SSLRecordID)
 
 	// 检查是否已存在同名任务
 	isExist := s.jobHelper.IsJob("", jobName)
@@ -457,7 +426,7 @@ func (s *SSLApplyTask) AddDisposableTask(ctx context.Context, pendingRecord *Pen
 			s.RunDisposableTask,
 			ctx,
 			s.jobHelper.SlogWith(s.logger, jobID.String(), jobName),
-			pendingRecord,
+			params,
 		),
 		gocron.WithSingletonMode(gocron.LimitModeWait), // 单例模式
 		gocron.WithName(jobName),                       // 任务名称
@@ -473,8 +442,8 @@ func (s *SSLApplyTask) AddDisposableTask(ctx context.Context, pendingRecord *Pen
 }
 
 // RunDisposableTask 运行一次性任务
-func (s *SSLApplyTask) RunDisposableTask(ctx context.Context, logger *slog.Logger, taskPendingRecord *PendingSSLRecord) {
-	err := s.executeSSLApply(ctx, logger, taskPendingRecord)
+func (s *SSLApplyTask) RunDisposableTask(ctx context.Context, logger *slog.Logger, taskParams *ExecuteSSLApplyParams) {
+	err := s.executeSSLApply(ctx, logger, taskParams)
 	if err != nil {
 		logger.ErrorContext(ctx, "处理失败",
 			slog.Any("错误信息", err),

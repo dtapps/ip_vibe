@@ -159,14 +159,14 @@ func (s *SSLRecordServiceImpl) GetSSLRecord(ctx context.Context, id int64) (*typ
 func (s *SSLRecordServiceImpl) ImportSSLRecord(ctx context.Context, request *types.ImportSSLRecordRequest) error {
 
 	// 解析证书
-	parsedSsl, err := utils.ParseCertificate(request.CertCertificate)
+	parsedCert, err := utils.ParseCertificate([]byte(request.CertCertificate))
 	if err != nil {
 		return fmt.Errorf("解析证书失败: %w", err)
 	}
 
 	// 证书状态
 	status := sslrecord.StatusUnknown
-	if parsedSsl.NotAfter.After(time.Now()) {
+	if parsedCert.NotAfter.After(time.Now()) {
 		status = sslrecord.StatusValid
 	} else {
 		status = sslrecord.StatusExpired
@@ -176,11 +176,11 @@ func (s *SSLRecordServiceImpl) ImportSSLRecord(ctx context.Context, request *typ
 	err = s.db.SSLRecord.Create().
 		SetConfigID(request.ConfigID).
 		SetDomain(request.Domain).
-		SetCertDomain(parsedSsl.Domain).
+		SetCertDomain(parsedCert.Domain).
 		SetCertPrivateKey(request.CertPrivateKey).
 		SetCertCertificate(request.CertCertificate).
-		SetNotBefore(parsedSsl.NotBefore).
-		SetNotAfter(parsedSsl.NotAfter).
+		SetNotBefore(parsedCert.NotBefore).
+		SetNotAfter(parsedCert.NotAfter).
 		SetStatus(status).
 		SetProvider(sslrecord.ProviderUnknown).
 		SetIsActive(false).
@@ -450,7 +450,7 @@ func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) err
 	}
 
 	// 添加SSL申请一次性任务
-	err = s.sslApplyTask.AddDisposableTask(ctx, &task.PendingSSLRecord{
+	err = s.sslApplyTask.AddDisposableTask(ctx, &task.ExecuteSSLApplyParams{
 		Item:     firstSSLRecord,
 		Platform: config.Platform,
 		Params: &ssl_helper.SSLProcessParams{

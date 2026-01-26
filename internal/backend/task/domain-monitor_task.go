@@ -141,6 +141,8 @@ func (s *DomainMonitorTask) RunPeriodicTask() {
 	// 查询全部域名监控
 	allDomainMonitors, err := s.db.DomainMonitor.Query().
 		Where(domainmonitor.IsActive(true)).
+		// 排序
+		OrderByCreatedAtAsc().
 		All(ctx)
 	if err == nil {
 		now := time.Now()

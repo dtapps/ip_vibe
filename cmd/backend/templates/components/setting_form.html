@@ -31,29 +31,30 @@
         </div> -->
 
         <form id="settingForm" class="p-8 space-y-5">
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 gap-4">
                 <div class="ui-form-control">
                     <label class="ui-label-text">设备离线失效时间 </label>
                     <input type="number" name="device_offline_invalid_time" id="device_offline_invalid_time"
                         class="ui-input" placeholder="如: 12" />
                     <div class="ui-hint">注意: 0表示不失效，单位：分钟，默认：12分钟</div>
                 </div>
+            </div>
 
+            <div class="grid grid-cols-3 gap-4">
                 <div class="ui-form-control">
                     <label class="ui-label-text">IP上报间隔时间 <span class="text-error">*</span></label>
                     <input type="text" name="ip_report_interval_time" id="ip_report_interval_time" class="ui-input"
                         required placeholder="如: 8-12" />
                     <div class="ui-hint">注意: 单位：分钟，默认：8-12分钟，范围时用-分隔</div>
                 </div>
-            </div>
 
-            <div class="grid grid-cols-2 gap-4">
                 <div class="ui-form-control">
                     <label class="ui-label-text">端口转发重载时间 <span class="text-error">*</span></label>
                     <input type="text" name="port_forward_reload_time" id="port_forward_reload_time" class="ui-input"
                         required placeholder="如：30" />
                     <div class="ui-hint">注意: 单位：分钟，默认：30分钟，范围时用-分隔</div>
                 </div>
+
                 <div class="ui-form-control">
                     <label class="ui-label-text">端口转发统计上报时间 </label>
                     <input type="text" name="port_forward_report_time" id="port_forward_report_time" class="ui-input"
@@ -62,7 +63,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-3 gap-4">
                 <div class="ui-form-control">
                     <label class="ui-label-text">CDN刷新任务时间 <span class="text-error">*</span></label>
                     <input type="text" name="cdn_refresh_task_time" id="cdn_refresh_task_time" class="ui-input" required
@@ -79,21 +80,28 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div class="ui-form-control">
-                    <label class="ui-label-text">SSL刷新任务时间 </label>
-                    <input type="text" name="ssl_refresh_task_time" id="ssl_refresh_task_time" class="ui-input"
+                    <label class="ui-label-text">SSL申请任务时间 </label>
+                    <input type="text" name="ssl_apply_task_time" id="ssl_apply_task_time" class="ui-input"
                         placeholder="如: 8-10" />
                     <div class="ui-hint">注意: 留空表示不开启，单位：小时，默认：8-10小时，范围时用-分隔</div>
                 </div>
 
+                <div class="ui-form-control">
+                    <label class="ui-label-text">SSL刷新任务时间 </label>
+                    <input type="text" name="ssl_refresh_task_time" id="ssl_refresh_task_time" class="ui-input"
+                        placeholder="如: 12-24" />
+                    <div class="ui-hint">注意: 留空表示不开启，单位：小时，默认：12-24小时，范围时用-分隔</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
                 <div class="ui-form-control">
                     <label class="ui-label-text">HTTP请求日志记录时间 </label>
                     <input type="number" name="http_request_log_record_time" id="http_request_log_record_time"
                         class="ui-input" placeholder="如: 90" />
                     <div class="ui-hint">注意: 单位：天，默认：90天</div>
                 </div>
-            </div>
 
-            <div class="grid grid-cols-2 gap-4">
                 <div class="ui-form-control">
                     <label class="ui-label-text">历史数据保留时间 </label>
                     <input type="number" name="history_data_retain_time" id="history_data_retain_time" class="ui-input"

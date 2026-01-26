@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 	"vibe_ip/internal/ent/predicate"
 	"vibe_ip/internal/ent/sslimport"
 
@@ -25,6 +26,46 @@ type SSLImportUpdate struct {
 // Where appends a list predicates to the SSLImportUpdate builder.
 func (_u *SSLImportUpdate) Where(ps ...predicate.SSLImport) *SSLImportUpdate {
 	_u.mutation.Where(ps...)
+	return _u
+}
+
+// SetNotBefore sets the "not_before" field.
+func (_u *SSLImportUpdate) SetNotBefore(v time.Time) *SSLImportUpdate {
+	_u.mutation.SetNotBefore(v)
+	return _u
+}
+
+// SetNillableNotBefore sets the "not_before" field if the given value is not nil.
+func (_u *SSLImportUpdate) SetNillableNotBefore(v *time.Time) *SSLImportUpdate {
+	if v != nil {
+		_u.SetNotBefore(*v)
+	}
+	return _u
+}
+
+// ClearNotBefore clears the value of the "not_before" field.
+func (_u *SSLImportUpdate) ClearNotBefore() *SSLImportUpdate {
+	_u.mutation.ClearNotBefore()
+	return _u
+}
+
+// SetNotAfter sets the "not_after" field.
+func (_u *SSLImportUpdate) SetNotAfter(v time.Time) *SSLImportUpdate {
+	_u.mutation.SetNotAfter(v)
+	return _u
+}
+
+// SetNillableNotAfter sets the "not_after" field if the given value is not nil.
+func (_u *SSLImportUpdate) SetNillableNotAfter(v *time.Time) *SSLImportUpdate {
+	if v != nil {
+		_u.SetNotAfter(*v)
+	}
+	return _u
+}
+
+// ClearNotAfter clears the value of the "not_after" field.
+func (_u *SSLImportUpdate) ClearNotAfter() *SSLImportUpdate {
+	_u.mutation.ClearNotAfter()
 	return _u
 }
 
@@ -129,8 +170,14 @@ func (_u *SSLImportUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.PrivateKeyCleared() {
 		_spec.ClearField(sslimport.FieldPrivateKey, field.TypeString)
 	}
+	if value, ok := _u.mutation.NotBefore(); ok {
+		_spec.SetField(sslimport.FieldNotBefore, field.TypeTime, value)
+	}
 	if _u.mutation.NotBeforeCleared() {
 		_spec.ClearField(sslimport.FieldNotBefore, field.TypeTime)
+	}
+	if value, ok := _u.mutation.NotAfter(); ok {
+		_spec.SetField(sslimport.FieldNotAfter, field.TypeTime, value)
 	}
 	if _u.mutation.NotAfterCleared() {
 		_spec.ClearField(sslimport.FieldNotAfter, field.TypeTime)
@@ -158,6 +205,46 @@ type SSLImportUpdateOne struct {
 	hooks     []Hook
 	mutation  *SSLImportMutation
 	modifiers []func(*sql.UpdateBuilder)
+}
+
+// SetNotBefore sets the "not_before" field.
+func (_u *SSLImportUpdateOne) SetNotBefore(v time.Time) *SSLImportUpdateOne {
+	_u.mutation.SetNotBefore(v)
+	return _u
+}
+
+// SetNillableNotBefore sets the "not_before" field if the given value is not nil.
+func (_u *SSLImportUpdateOne) SetNillableNotBefore(v *time.Time) *SSLImportUpdateOne {
+	if v != nil {
+		_u.SetNotBefore(*v)
+	}
+	return _u
+}
+
+// ClearNotBefore clears the value of the "not_before" field.
+func (_u *SSLImportUpdateOne) ClearNotBefore() *SSLImportUpdateOne {
+	_u.mutation.ClearNotBefore()
+	return _u
+}
+
+// SetNotAfter sets the "not_after" field.
+func (_u *SSLImportUpdateOne) SetNotAfter(v time.Time) *SSLImportUpdateOne {
+	_u.mutation.SetNotAfter(v)
+	return _u
+}
+
+// SetNillableNotAfter sets the "not_after" field if the given value is not nil.
+func (_u *SSLImportUpdateOne) SetNillableNotAfter(v *time.Time) *SSLImportUpdateOne {
+	if v != nil {
+		_u.SetNotAfter(*v)
+	}
+	return _u
+}
+
+// ClearNotAfter clears the value of the "not_after" field.
+func (_u *SSLImportUpdateOne) ClearNotAfter() *SSLImportUpdateOne {
+	_u.mutation.ClearNotAfter()
+	return _u
 }
 
 // SetStatus sets the "status" field.
@@ -291,8 +378,14 @@ func (_u *SSLImportUpdateOne) sqlSave(ctx context.Context) (_node *SSLImport, er
 	if _u.mutation.PrivateKeyCleared() {
 		_spec.ClearField(sslimport.FieldPrivateKey, field.TypeString)
 	}
+	if value, ok := _u.mutation.NotBefore(); ok {
+		_spec.SetField(sslimport.FieldNotBefore, field.TypeTime, value)
+	}
 	if _u.mutation.NotBeforeCleared() {
 		_spec.ClearField(sslimport.FieldNotBefore, field.TypeTime)
+	}
+	if value, ok := _u.mutation.NotAfter(); ok {
+		_spec.SetField(sslimport.FieldNotAfter, field.TypeTime, value)
 	}
 	if _u.mutation.NotAfterCleared() {
 		_spec.ClearField(sslimport.FieldNotAfter, field.TypeTime)
