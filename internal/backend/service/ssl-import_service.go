@@ -109,7 +109,7 @@ func (s *SSLImportServiceImpl) CreateSSLImport(ctx context.Context, request *typ
 	}
 
 	// 验证证书与私钥是否匹配
-	err = utils.ValidateCertAndKey(request.Certificate, request.PrivateKey)
+	err = utils.ValidateCertAndKey([]byte(request.Certificate), []byte(request.PrivateKey))
 	if err != nil {
 		return fmt.Errorf("验证证书与私钥匹配失败: %w", err)
 	}

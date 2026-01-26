@@ -7,35 +7,46 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"reflect"
 	"strings"
 	"time"
 	"vibe_ip/internal/types"
 )
 
 // ValidateCertAndKey 验证证书和私钥是否有效且匹配
-func ValidateCertAndKey(certPEM, keyPEM string) error {
-	// 解析证书
-	certBlock, _ := pem.Decode([]byte(certPEM))
+func ValidateCertAndKey(certPEM []byte, keyPEM []byte) error {
+	if len(certPEM) == 0 {
+		return fmt.Errorf("证书数据为空")
+	}
+	if len(keyPEM) == 0 {
+		return fmt.Errorf("私钥数据为空")
+	}
+
+	// 解析证书数据
+	certBlock, _ := pem.Decode(certPEM)
 	if certBlock == nil || certBlock.Type != "CERTIFICATE" {
 		return fmt.Errorf("无效的证书格式")
 	}
+
+	// 解析证书内容
 	cert, err := x509.ParseCertificate(certBlock.Bytes)
 	if err != nil {
 		return fmt.Errorf("无效的证书内容")
 	}
 
-	// 解析私钥
-	keyBlock, _ := pem.Decode([]byte(keyPEM))
+	// 解析私钥数据
+	keyBlock, _ := pem.Decode(keyPEM)
 	if keyBlock == nil {
 		return fmt.Errorf("无效的私钥格式")
 	}
 
+	// 解析私钥
 	var privKey crypto.PrivateKey
 	switch keyBlock.Type {
-	case "RSA PRIVATE KEY":
-		privKey, err = x509.ParsePKCS1PrivateKey(keyBlock.Bytes)
-	case "PRIVATE KEY":
+	case "PRIVATE KEY": // PKCS8 格式
 		privKey, err = x509.ParsePKCS8PrivateKey(keyBlock.Bytes)
+	case "RSA PRIVATE KEY": // PKCS1
+		privKey, err = x509.ParsePKCS1PrivateKey(keyBlock.Bytes)
 	case "EC PRIVATE KEY":
 		privKey, err = x509.ParseECPrivateKey(keyBlock.Bytes)
 	default:
@@ -66,6 +77,11 @@ func ValidateCertAndKey(certPEM, keyPEM string) error {
 
 // publicKeysEqual 手动比较两个公钥是否相等
 func publicKeysEqual(a, b crypto.PublicKey) bool {
+	// 判断类型是否一致
+	if a == nil || b == nil || reflect.TypeOf(a) != reflect.TypeOf(b) {
+		return false
+	}
+
 	switch aPub := a.(type) {
 	case *rsa.PublicKey:
 		if bPub, ok := b.(*rsa.PublicKey); ok {
@@ -85,14 +101,14 @@ func ParseCertificate(certPEM []byte) (*types.UtilsParsedCertificate, error) {
 		return nil, fmt.Errorf("证书数据为空")
 	}
 
-	// 解析 PEM 数据
-	block, _ := pem.Decode(certPEM)
-	if block == nil || block.Type != "CERTIFICATE" {
+	// 解析证书数据
+	certBlock, _ := pem.Decode(certPEM)
+	if certBlock == nil || certBlock.Type != "CERTIFICATE" {
 		return nil, fmt.Errorf("无效的证书格式")
 	}
 
-	// 解析证书
-	cert, err := x509.ParseCertificate(block.Bytes)
+	// 解析证书内容
+	cert, err := x509.ParseCertificate(certBlock.Bytes)
 	if err != nil {
 		return nil, fmt.Errorf("解析证书失败: %w", err)
 	}
@@ -110,14 +126,14 @@ func ParseCertificateFull(certPEM []byte) (*types.UtilsParsedCertificateFull, er
 		return nil, fmt.Errorf("证书数据为空")
 	}
 
-	// 解析 PEM 数据
-	block, _ := pem.Decode([]byte(certPEM))
-	if block == nil || block.Type != "CERTIFICATE" {
+	// 解析证书数据
+	certBlock, _ := pem.Decode([]byte(certPEM))
+	if certBlock == nil || certBlock.Type != "CERTIFICATE" {
 		return nil, fmt.Errorf("无效的证书格式")
 	}
 
-	// 解析证书
-	cert, err := x509.ParseCertificate(block.Bytes)
+	// 解析证书内容
+	cert, err := x509.ParseCertificate(certBlock.Bytes)
 	if err != nil {
 		return nil, fmt.Errorf("解析证书失败: %w", err)
 	}
