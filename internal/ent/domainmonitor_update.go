@@ -103,6 +103,20 @@ func (_u *DomainMonitorUpdate) AddCheckInterval(v int) *DomainMonitorUpdate {
 	return _u
 }
 
+// SetCheckProtocol sets the "check_protocol" field.
+func (_u *DomainMonitorUpdate) SetCheckProtocol(v domainmonitor.CheckProtocol) *DomainMonitorUpdate {
+	_u.mutation.SetCheckProtocol(v)
+	return _u
+}
+
+// SetNillableCheckProtocol sets the "check_protocol" field if the given value is not nil.
+func (_u *DomainMonitorUpdate) SetNillableCheckProtocol(v *domainmonitor.CheckProtocol) *DomainMonitorUpdate {
+	if v != nil {
+		_u.SetCheckProtocol(*v)
+	}
+	return _u
+}
+
 // SetIsActive sets the "is_active" field.
 func (_u *DomainMonitorUpdate) SetIsActive(v bool) *DomainMonitorUpdate {
 	_u.mutation.SetIsActive(v)
@@ -220,6 +234,11 @@ func (_u *DomainMonitorUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *DomainMonitorUpdate) check() error {
+	if v, ok := _u.mutation.CheckProtocol(); ok {
+		if err := domainmonitor.CheckProtocolValidator(v); err != nil {
+			return &ValidationError{Name: "check_protocol", err: fmt.Errorf(`ent: validator failed for field "DomainMonitor.check_protocol": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.CurrentStatus(); ok {
 		if err := domainmonitor.CurrentStatusValidator(v); err != nil {
 			return &ValidationError{Name: "current_status", err: fmt.Errorf(`ent: validator failed for field "DomainMonitor.current_status": %w`, err)}
@@ -274,6 +293,9 @@ func (_u *DomainMonitorUpdate) sqlSave(ctx context.Context) (_node int, err erro
 	}
 	if value, ok := _u.mutation.AddedCheckInterval(); ok {
 		_spec.AddField(domainmonitor.FieldCheckInterval, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.CheckProtocol(); ok {
+		_spec.SetField(domainmonitor.FieldCheckProtocol, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(domainmonitor.FieldIsActive, field.TypeBool, value)
@@ -385,6 +407,20 @@ func (_u *DomainMonitorUpdateOne) SetNillableCheckInterval(v *int) *DomainMonito
 // AddCheckInterval adds value to the "check_interval" field.
 func (_u *DomainMonitorUpdateOne) AddCheckInterval(v int) *DomainMonitorUpdateOne {
 	_u.mutation.AddCheckInterval(v)
+	return _u
+}
+
+// SetCheckProtocol sets the "check_protocol" field.
+func (_u *DomainMonitorUpdateOne) SetCheckProtocol(v domainmonitor.CheckProtocol) *DomainMonitorUpdateOne {
+	_u.mutation.SetCheckProtocol(v)
+	return _u
+}
+
+// SetNillableCheckProtocol sets the "check_protocol" field if the given value is not nil.
+func (_u *DomainMonitorUpdateOne) SetNillableCheckProtocol(v *domainmonitor.CheckProtocol) *DomainMonitorUpdateOne {
+	if v != nil {
+		_u.SetCheckProtocol(*v)
+	}
 	return _u
 }
 
@@ -518,6 +554,11 @@ func (_u *DomainMonitorUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *DomainMonitorUpdateOne) check() error {
+	if v, ok := _u.mutation.CheckProtocol(); ok {
+		if err := domainmonitor.CheckProtocolValidator(v); err != nil {
+			return &ValidationError{Name: "check_protocol", err: fmt.Errorf(`ent: validator failed for field "DomainMonitor.check_protocol": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.CurrentStatus(); ok {
 		if err := domainmonitor.CurrentStatusValidator(v); err != nil {
 			return &ValidationError{Name: "current_status", err: fmt.Errorf(`ent: validator failed for field "DomainMonitor.current_status": %w`, err)}
@@ -589,6 +630,9 @@ func (_u *DomainMonitorUpdateOne) sqlSave(ctx context.Context) (_node *DomainMon
 	}
 	if value, ok := _u.mutation.AddedCheckInterval(); ok {
 		_spec.AddField(domainmonitor.FieldCheckInterval, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.CheckProtocol(); ok {
+		_spec.SetField(domainmonitor.FieldCheckProtocol, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(domainmonitor.FieldIsActive, field.TypeBool, value)

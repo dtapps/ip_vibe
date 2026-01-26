@@ -69,7 +69,6 @@ func (DomainMonitor) Fields() []ent.Field {
 
 		field.Enum("check_protocol").
 			Values(schematype.GetDomainMonitorCheckProtocols...).
-			Immutable().
 			Comment("检查类型（HTTP/HTTPS）").
 			Annotations(entsql.WithComments(true)),
 

@@ -84,7 +84,6 @@ async function openFormModal(id, action = "") {
         domainMonitor.check_interval;
       document.getElementById("check_protocol").value =
         domainMonitor.check_protocol;
-      document.getElementById("check_protocol").disabled = true;
 
       if (domainMonitor.webhooks && domainMonitor.webhooks.length > 0) {
         // 高亮已选
@@ -101,7 +100,6 @@ async function openFormModal(id, action = "") {
         document.getElementById("id").value = "";
         document.getElementById("id").disabled = false;
         document.getElementById("domain").disabled = false;
-        document.getElementById("check_protocol").disabled = false;
 
         showModal("formModal", "modalTitle", "复制 域名监控");
       } else {
@@ -124,10 +122,6 @@ async function openFormModal(id, action = "") {
         {
           id: "check_interval",
           value: 60,
-          disabled: false,
-        },
-        {
-          id: "check_protocol",
           disabled: false,
         },
       ]);

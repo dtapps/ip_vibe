@@ -1,6 +1,7 @@
 // CDN配置（同之前，保持不变）
 const CDN_CONFIG = {
   "clipboard-js": [
+    "/static/libs/clipboard/clipboard.min.js",
     "https://esa-cdnjs.dtapp.net/ajax/libs/clipboard.js/2.0.11/clipboard.min.js",
     "https://esa-jsdelivr.dtapp.net/npm/clipboard@2.0.11/dist/clipboard.min.js",
     "https://eo-cdnjs.dtapp.net/ajax/libs/clipboard.js/2.0.11/clipboard.min.js",
@@ -10,6 +11,7 @@ const CDN_CONFIG = {
     "https://unpkg.com/npm/clipboard@2.0.11/dist/clipboard.min.js",
   ],
   jquery: [
+    "/static/libs/jquery/jquery.min.js",
     "https://esa-cdnjs.dtapp.net/ajax/libs/jquery/3.7.1/jquery.min.js",
     "https://esa-jsdelivr.dtapp.net/npm/jquery@3.7.1/dist/jquery.min.js",
     "https://eo-cdnjs.dtapp.net/ajax/libs/jquery/3.7.1/jquery.min.js",
@@ -19,6 +21,7 @@ const CDN_CONFIG = {
     "https://unpkg.com/npm/jquery@3.7.1/dist/jquery.min.js",
   ],
   echarts: [
+    "/static/libs/echarts/echarts.min.js",
     "https://esa-cdnjs.dtapp.net/ajax/libs/echarts/6.0.0/echarts.min.js",
     "https://esa-jsdelivr.dtapp.net/npm/echarts@6.0.0/dist/echarts.min.js",
     "https://eo-cdnjs.dtapp.net/ajax/libs/echarts/6.0.0/echarts.min.js",
@@ -28,6 +31,7 @@ const CDN_CONFIG = {
     "https://unpkg.com/npm/echarts@6.0.0/dist/echarts.min.js",
   ],
   "select2-js": [
+    "/static/libs/select2/js/select2.min.js",
     "https://esa-cdnjs.dtapp.net/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js",
     "https://esa-jsdelivr.dtapp.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js",
     "https://eo-cdnjs.dtapp.net/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js",
@@ -37,6 +41,7 @@ const CDN_CONFIG = {
     "https://unpkg.com/npm/select2@4.1.0-rc.0/dist/js/select2.min.js",
   ],
   "select2-css": [
+    "/static/libs/select2/css/select2.min.css",
     "https://esa-cdnjs.dtapp.net/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css",
     "https://esa-jsdelivr.dtapp.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css",
     "https://eo-cdnjs.dtapp.net/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css",

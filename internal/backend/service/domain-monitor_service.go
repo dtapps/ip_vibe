@@ -183,6 +183,7 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitor(ctx context.Context, requ
 		SetDescription(request.Description).
 		SetRequestHeaders(request.RequestHeaders).
 		SetCheckInterval(request.CheckInterval).
+		SetCheckProtocol(domainmonitor.CheckProtocol(request.CheckProtocol)).
 		Save(ctx)
 	if err != nil {
 		return fmt.Errorf("更新域名监控失败: %w", err)

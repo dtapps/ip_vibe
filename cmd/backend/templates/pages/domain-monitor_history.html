@@ -57,6 +57,7 @@
           <td class="ui-td font-mono text-xs opacity-50">
             {{.ID}}
           </td>
+
           <td class="ui-td">
             {{ if .IsSuccess }}
             <div class="badge badge-success badge-sm text-white">成功</div>
@@ -64,27 +65,35 @@
             <div class="badge badge-error badge-sm text-white">失败</div>
             {{ end }}
           </td>
+
           <td class="ui-td font-medium text-primary">
-            {{.CheckDuration}} ms</td>
+            {{.CheckDuration}} ms
+          </td>
+
           <td class="ui-td max-w-[200px] truncate" title="{{.StatusMessage}}">
             <span class="text-xs opacity-70 italic">
               {{.StatusMessage}}
             </span>
           </td>
+
           <td class="ui-td">
             <span class="text-xs {{ if .SslExpiryDate }}text-warning font-medium{{ else }}opacity-30{{ end }}">
               {{ formatTimeOrNil .SslExpiryDate }}
             </span>
           </td>
+
           <td class="ui-td text-xs">
             {{.SslCommonName}}
           </td>
+
           <td class="ui-td text-xs opacity-70">
             {{.SslIssuerName}}
           </td>
+
           <td class="ui-td text-[10px] uppercase opacity-50">
             {{.SslSignatureAlg}}
           </td>
+
           <td class="ui-td text-xs font-medium">
             {{ formatTimeOrNil .CheckTime }}
           </td>

@@ -1484,6 +1484,9 @@ components:
         check_interval:
           description: 检查间隔（秒）
           type: integer
+        check_protocol:
+          description: 检查类型（HTTP/HTTPS）
+          type: string
         description:
           description: 描述
           type: string

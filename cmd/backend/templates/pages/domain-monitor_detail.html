@@ -167,8 +167,7 @@
                     </div>
                 </div>
 
-                {{ if eq $item.CheckProtocol "https" }}
-                {{ if $latestHistory.SslExpiryDate }}
+                {{ if ne (formatTimeOrNil $latestHistory.SslExpiryDate) "—" }}
                 <div class="divider">SSL 证书信息</div>
                 <div class="grid grid-cols-1 gap-4 text-sm">
                     <div class="flex justify-between p-3 bg-warning/5 rounded-xl border border-warning/10">
@@ -214,7 +213,6 @@
                         </span>
                     </div>
                 </div>
-                {{ end }}
                 {{ end }}
             </div>
         </div>

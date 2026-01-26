@@ -53,6 +53,7 @@ type UpdateDomainMonitorRequest struct {
 	Description    string   `json:"description,omitempty" jsonschema:"域名监控的描述"`                          // 描述
 	RequestHeaders []string `json:"request_headers,omitempty" jsonschema:"请求头（多个之间用换行符分隔，格式：key=value）"` // 请求头（多个之间用换行符分隔，格式：key=value）
 	CheckInterval  int      `json:"check_interval" jsonschema:"检查间隔（秒）"`                                 // 检查间隔（秒）
+	CheckProtocol  string   `json:"check_protocol" jsonschema:"检查类型（HTTP/HTTPS）"`                        // 检查类型（HTTP/HTTPS）
 
 	WebhookIDs []int64 `json:"webhook_ids,omitempty" jsonschema:"关联的Webhook ID列表"` // 关联的 Webhook 列表
 }
