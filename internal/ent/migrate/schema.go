@@ -443,11 +443,12 @@ var (
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "source", Type: field.TypeEnum, Comment: "来源", Enums: []string{"unknown", "webhook", "manual"}, Default: "unknown"},
-		{Name: "domain", Type: field.TypeString, Nullable: true, Comment: "域名"},
-		{Name: "certificate", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "证书(PEM格式)"},
-		{Name: "private_key", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "私钥(PEM格式)"},
-		{Name: "not_before", Type: field.TypeTime, Nullable: true, Comment: "证书生效时间"},
-		{Name: "not_after", Type: field.TypeTime, Nullable: true, Comment: "证书过期时间"},
+		{Name: "domain", Type: field.TypeString, Comment: "域名"},
+		{Name: "serial_number", Type: field.TypeString, Unique: true, Comment: "证书序列号"},
+		{Name: "certificate", Type: field.TypeString, Size: 2147483647, Comment: "证书(PEM格式)"},
+		{Name: "private_key", Type: field.TypeString, Size: 2147483647, Comment: "私钥(PEM格式)"},
+		{Name: "not_before", Type: field.TypeTime, Comment: "证书生效时间"},
+		{Name: "not_after", Type: field.TypeTime, Comment: "证书过期时间"},
 		{Name: "status", Type: field.TypeEnum, Comment: "证书状态", Enums: []string{"unknown", "valid", "expired", "revoked", "pending"}, Default: "unknown"},
 	}
 	// SslImportTable holds the schema information for the "ssl_import" table.

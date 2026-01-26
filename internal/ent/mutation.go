@@ -8507,6 +8507,7 @@ type SSLImportMutation struct {
 	updated_at    *time.Time
 	source        *sslimport.Source
 	domain        *string
+	serial_number *string
 	certificate   *string
 	private_key   *string
 	not_before    *time.Time
@@ -8761,22 +8762,45 @@ func (m *SSLImportMutation) OldDomain(ctx context.Context) (v string, err error)
 	return oldValue.Domain, nil
 }
 
-// ClearDomain clears the value of the "domain" field.
-func (m *SSLImportMutation) ClearDomain() {
-	m.domain = nil
-	m.clearedFields[sslimport.FieldDomain] = struct{}{}
-}
-
-// DomainCleared returns if the "domain" field was cleared in this mutation.
-func (m *SSLImportMutation) DomainCleared() bool {
-	_, ok := m.clearedFields[sslimport.FieldDomain]
-	return ok
-}
-
 // ResetDomain resets all changes to the "domain" field.
 func (m *SSLImportMutation) ResetDomain() {
 	m.domain = nil
-	delete(m.clearedFields, sslimport.FieldDomain)
+}
+
+// SetSerialNumber sets the "serial_number" field.
+func (m *SSLImportMutation) SetSerialNumber(s string) {
+	m.serial_number = &s
+}
+
+// SerialNumber returns the value of the "serial_number" field in the mutation.
+func (m *SSLImportMutation) SerialNumber() (r string, exists bool) {
+	v := m.serial_number
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSerialNumber returns the old "serial_number" field's value of the SSLImport entity.
+// If the SSLImport object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SSLImportMutation) OldSerialNumber(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSerialNumber is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSerialNumber requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSerialNumber: %w", err)
+	}
+	return oldValue.SerialNumber, nil
+}
+
+// ResetSerialNumber resets all changes to the "serial_number" field.
+func (m *SSLImportMutation) ResetSerialNumber() {
+	m.serial_number = nil
 }
 
 // SetCertificate sets the "certificate" field.
@@ -8810,22 +8834,9 @@ func (m *SSLImportMutation) OldCertificate(ctx context.Context) (v string, err e
 	return oldValue.Certificate, nil
 }
 
-// ClearCertificate clears the value of the "certificate" field.
-func (m *SSLImportMutation) ClearCertificate() {
-	m.certificate = nil
-	m.clearedFields[sslimport.FieldCertificate] = struct{}{}
-}
-
-// CertificateCleared returns if the "certificate" field was cleared in this mutation.
-func (m *SSLImportMutation) CertificateCleared() bool {
-	_, ok := m.clearedFields[sslimport.FieldCertificate]
-	return ok
-}
-
 // ResetCertificate resets all changes to the "certificate" field.
 func (m *SSLImportMutation) ResetCertificate() {
 	m.certificate = nil
-	delete(m.clearedFields, sslimport.FieldCertificate)
 }
 
 // SetPrivateKey sets the "private_key" field.
@@ -8859,22 +8870,9 @@ func (m *SSLImportMutation) OldPrivateKey(ctx context.Context) (v string, err er
 	return oldValue.PrivateKey, nil
 }
 
-// ClearPrivateKey clears the value of the "private_key" field.
-func (m *SSLImportMutation) ClearPrivateKey() {
-	m.private_key = nil
-	m.clearedFields[sslimport.FieldPrivateKey] = struct{}{}
-}
-
-// PrivateKeyCleared returns if the "private_key" field was cleared in this mutation.
-func (m *SSLImportMutation) PrivateKeyCleared() bool {
-	_, ok := m.clearedFields[sslimport.FieldPrivateKey]
-	return ok
-}
-
 // ResetPrivateKey resets all changes to the "private_key" field.
 func (m *SSLImportMutation) ResetPrivateKey() {
 	m.private_key = nil
-	delete(m.clearedFields, sslimport.FieldPrivateKey)
 }
 
 // SetNotBefore sets the "not_before" field.
@@ -8908,22 +8906,9 @@ func (m *SSLImportMutation) OldNotBefore(ctx context.Context) (v time.Time, err 
 	return oldValue.NotBefore, nil
 }
 
-// ClearNotBefore clears the value of the "not_before" field.
-func (m *SSLImportMutation) ClearNotBefore() {
-	m.not_before = nil
-	m.clearedFields[sslimport.FieldNotBefore] = struct{}{}
-}
-
-// NotBeforeCleared returns if the "not_before" field was cleared in this mutation.
-func (m *SSLImportMutation) NotBeforeCleared() bool {
-	_, ok := m.clearedFields[sslimport.FieldNotBefore]
-	return ok
-}
-
 // ResetNotBefore resets all changes to the "not_before" field.
 func (m *SSLImportMutation) ResetNotBefore() {
 	m.not_before = nil
-	delete(m.clearedFields, sslimport.FieldNotBefore)
 }
 
 // SetNotAfter sets the "not_after" field.
@@ -8957,22 +8942,9 @@ func (m *SSLImportMutation) OldNotAfter(ctx context.Context) (v time.Time, err e
 	return oldValue.NotAfter, nil
 }
 
-// ClearNotAfter clears the value of the "not_after" field.
-func (m *SSLImportMutation) ClearNotAfter() {
-	m.not_after = nil
-	m.clearedFields[sslimport.FieldNotAfter] = struct{}{}
-}
-
-// NotAfterCleared returns if the "not_after" field was cleared in this mutation.
-func (m *SSLImportMutation) NotAfterCleared() bool {
-	_, ok := m.clearedFields[sslimport.FieldNotAfter]
-	return ok
-}
-
 // ResetNotAfter resets all changes to the "not_after" field.
 func (m *SSLImportMutation) ResetNotAfter() {
 	m.not_after = nil
-	delete(m.clearedFields, sslimport.FieldNotAfter)
 }
 
 // SetStatus sets the "status" field.
@@ -9045,7 +9017,7 @@ func (m *SSLImportMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SSLImportMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, sslimport.FieldCreatedAt)
 	}
@@ -9057,6 +9029,9 @@ func (m *SSLImportMutation) Fields() []string {
 	}
 	if m.domain != nil {
 		fields = append(fields, sslimport.FieldDomain)
+	}
+	if m.serial_number != nil {
+		fields = append(fields, sslimport.FieldSerialNumber)
 	}
 	if m.certificate != nil {
 		fields = append(fields, sslimport.FieldCertificate)
@@ -9089,6 +9064,8 @@ func (m *SSLImportMutation) Field(name string) (ent.Value, bool) {
 		return m.Source()
 	case sslimport.FieldDomain:
 		return m.Domain()
+	case sslimport.FieldSerialNumber:
+		return m.SerialNumber()
 	case sslimport.FieldCertificate:
 		return m.Certificate()
 	case sslimport.FieldPrivateKey:
@@ -9116,6 +9093,8 @@ func (m *SSLImportMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldSource(ctx)
 	case sslimport.FieldDomain:
 		return m.OldDomain(ctx)
+	case sslimport.FieldSerialNumber:
+		return m.OldSerialNumber(ctx)
 	case sslimport.FieldCertificate:
 		return m.OldCertificate(ctx)
 	case sslimport.FieldPrivateKey:
@@ -9162,6 +9141,13 @@ func (m *SSLImportMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDomain(v)
+		return nil
+	case sslimport.FieldSerialNumber:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSerialNumber(v)
 		return nil
 	case sslimport.FieldCertificate:
 		v, ok := value.(string)
@@ -9227,23 +9213,7 @@ func (m *SSLImportMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *SSLImportMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(sslimport.FieldDomain) {
-		fields = append(fields, sslimport.FieldDomain)
-	}
-	if m.FieldCleared(sslimport.FieldCertificate) {
-		fields = append(fields, sslimport.FieldCertificate)
-	}
-	if m.FieldCleared(sslimport.FieldPrivateKey) {
-		fields = append(fields, sslimport.FieldPrivateKey)
-	}
-	if m.FieldCleared(sslimport.FieldNotBefore) {
-		fields = append(fields, sslimport.FieldNotBefore)
-	}
-	if m.FieldCleared(sslimport.FieldNotAfter) {
-		fields = append(fields, sslimport.FieldNotAfter)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -9256,23 +9226,6 @@ func (m *SSLImportMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *SSLImportMutation) ClearField(name string) error {
-	switch name {
-	case sslimport.FieldDomain:
-		m.ClearDomain()
-		return nil
-	case sslimport.FieldCertificate:
-		m.ClearCertificate()
-		return nil
-	case sslimport.FieldPrivateKey:
-		m.ClearPrivateKey()
-		return nil
-	case sslimport.FieldNotBefore:
-		m.ClearNotBefore()
-		return nil
-	case sslimport.FieldNotAfter:
-		m.ClearNotAfter()
-		return nil
-	}
 	return fmt.Errorf("unknown SSLImport nullable field %s", name)
 }
 
@@ -9291,6 +9244,9 @@ func (m *SSLImportMutation) ResetField(name string) error {
 		return nil
 	case sslimport.FieldDomain:
 		m.ResetDomain()
+		return nil
+	case sslimport.FieldSerialNumber:
+		m.ResetSerialNumber()
 		return nil
 	case sslimport.FieldCertificate:
 		m.ResetCertificate()

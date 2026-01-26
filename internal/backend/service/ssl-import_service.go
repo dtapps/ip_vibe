@@ -52,14 +52,15 @@ func (s *SSLImportServiceImpl) SetDebug(debug bool) {
 // BuildResponse 将实体转换为响应
 func (s *SSLImportServiceImpl) BuildResponse(ctx context.Context, item *ent.SSLImport) (*types.GetSSLImportResponse, error) {
 	resp := &types.GetSSLImportResponse{
-		ID:          item.ID,
-		Source:      item.Source.String(),
-		Domain:      item.Domain,
-		Certificate: item.Certificate,
-		PrivateKey:  item.PrivateKey,
-		NotBefore:   item.NotBefore,
-		NotAfter:    item.NotAfter,
-		Status:      item.Status.String(),
+		ID:           item.ID,
+		Source:       item.Source.String(),
+		Domain:       item.Domain,
+		SerialNumber: item.SerialNumber,
+		Certificate:  item.Certificate,
+		PrivateKey:   item.PrivateKey,
+		NotBefore:    item.NotBefore,
+		NotAfter:     item.NotAfter,
+		Status:       item.Status.String(),
 	}
 
 	return resp, nil
@@ -82,10 +83,22 @@ func (s *SSLImportServiceImpl) ImportSSLImport(ctx context.Context, request *typ
 		status = sslimport.StatusExpired
 	}
 
+	// 先查询是否存在相同的证书序列号
+	count, err := s.db.SSLImport.Query().
+		Where(sslimport.SerialNumberEQ(parsedCert.SerialNumber)).
+		Count(ctx)
+	if err != nil {
+		return fmt.Errorf("查询证书序列号失败: %w", err)
+	}
+	if count > 0 {
+		return fmt.Errorf("证书序列号 %s 已存在", parsedCert.SerialNumber)
+	}
+
 	// 创建SSL导入记录
 	err = s.db.SSLImport.Create().
 		SetSource(sslimport.SourceWebhook).
 		SetDomain(parsedCert.Domain).
+		SetSerialNumber(parsedCert.SerialNumber).
 		SetCertificate(request.Certificate).
 		SetPrivateKey(request.PrivateKey).
 		SetNotBefore(parsedCert.NotBefore).
@@ -122,10 +135,22 @@ func (s *SSLImportServiceImpl) CreateSSLImport(ctx context.Context, request *typ
 		status = sslimport.StatusExpired
 	}
 
+	// 先查询是否存在相同的证书序列号
+	count, err := s.db.SSLImport.Query().
+		Where(sslimport.SerialNumberEQ(parsedCert.SerialNumber)).
+		Count(ctx)
+	if err != nil {
+		return fmt.Errorf("查询证书序列号失败: %w", err)
+	}
+	if count > 0 {
+		return fmt.Errorf("证书序列号 %s 已存在", parsedCert.SerialNumber)
+	}
+
 	// 创建SSL导入记录
 	err = s.db.SSLImport.Create().
 		SetSource(sslimport.SourceManual).
 		SetDomain(request.Domain).
+		SetSerialNumber(parsedCert.SerialNumber).
 		SetCertificate(request.Certificate).
 		SetPrivateKey(request.PrivateKey).
 		SetNotBefore(parsedCert.NotBefore).

@@ -43,12 +43,6 @@ func (_u *SSLImportUpdate) SetNillableNotBefore(v *time.Time) *SSLImportUpdate {
 	return _u
 }
 
-// ClearNotBefore clears the value of the "not_before" field.
-func (_u *SSLImportUpdate) ClearNotBefore() *SSLImportUpdate {
-	_u.mutation.ClearNotBefore()
-	return _u
-}
-
 // SetNotAfter sets the "not_after" field.
 func (_u *SSLImportUpdate) SetNotAfter(v time.Time) *SSLImportUpdate {
 	_u.mutation.SetNotAfter(v)
@@ -60,12 +54,6 @@ func (_u *SSLImportUpdate) SetNillableNotAfter(v *time.Time) *SSLImportUpdate {
 	if v != nil {
 		_u.SetNotAfter(*v)
 	}
-	return _u
-}
-
-// ClearNotAfter clears the value of the "not_after" field.
-func (_u *SSLImportUpdate) ClearNotAfter() *SSLImportUpdate {
-	_u.mutation.ClearNotAfter()
 	return _u
 }
 
@@ -161,26 +149,11 @@ func (_u *SSLImportUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(sslimport.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if _u.mutation.DomainCleared() {
-		_spec.ClearField(sslimport.FieldDomain, field.TypeString)
-	}
-	if _u.mutation.CertificateCleared() {
-		_spec.ClearField(sslimport.FieldCertificate, field.TypeString)
-	}
-	if _u.mutation.PrivateKeyCleared() {
-		_spec.ClearField(sslimport.FieldPrivateKey, field.TypeString)
-	}
 	if value, ok := _u.mutation.NotBefore(); ok {
 		_spec.SetField(sslimport.FieldNotBefore, field.TypeTime, value)
 	}
-	if _u.mutation.NotBeforeCleared() {
-		_spec.ClearField(sslimport.FieldNotBefore, field.TypeTime)
-	}
 	if value, ok := _u.mutation.NotAfter(); ok {
 		_spec.SetField(sslimport.FieldNotAfter, field.TypeTime, value)
-	}
-	if _u.mutation.NotAfterCleared() {
-		_spec.ClearField(sslimport.FieldNotAfter, field.TypeTime)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(sslimport.FieldStatus, field.TypeEnum, value)
@@ -221,12 +194,6 @@ func (_u *SSLImportUpdateOne) SetNillableNotBefore(v *time.Time) *SSLImportUpdat
 	return _u
 }
 
-// ClearNotBefore clears the value of the "not_before" field.
-func (_u *SSLImportUpdateOne) ClearNotBefore() *SSLImportUpdateOne {
-	_u.mutation.ClearNotBefore()
-	return _u
-}
-
 // SetNotAfter sets the "not_after" field.
 func (_u *SSLImportUpdateOne) SetNotAfter(v time.Time) *SSLImportUpdateOne {
 	_u.mutation.SetNotAfter(v)
@@ -238,12 +205,6 @@ func (_u *SSLImportUpdateOne) SetNillableNotAfter(v *time.Time) *SSLImportUpdate
 	if v != nil {
 		_u.SetNotAfter(*v)
 	}
-	return _u
-}
-
-// ClearNotAfter clears the value of the "not_after" field.
-func (_u *SSLImportUpdateOne) ClearNotAfter() *SSLImportUpdateOne {
-	_u.mutation.ClearNotAfter()
 	return _u
 }
 
@@ -369,26 +330,11 @@ func (_u *SSLImportUpdateOne) sqlSave(ctx context.Context) (_node *SSLImport, er
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(sslimport.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if _u.mutation.DomainCleared() {
-		_spec.ClearField(sslimport.FieldDomain, field.TypeString)
-	}
-	if _u.mutation.CertificateCleared() {
-		_spec.ClearField(sslimport.FieldCertificate, field.TypeString)
-	}
-	if _u.mutation.PrivateKeyCleared() {
-		_spec.ClearField(sslimport.FieldPrivateKey, field.TypeString)
-	}
 	if value, ok := _u.mutation.NotBefore(); ok {
 		_spec.SetField(sslimport.FieldNotBefore, field.TypeTime, value)
 	}
-	if _u.mutation.NotBeforeCleared() {
-		_spec.ClearField(sslimport.FieldNotBefore, field.TypeTime)
-	}
 	if value, ok := _u.mutation.NotAfter(); ok {
 		_spec.SetField(sslimport.FieldNotAfter, field.TypeTime, value)
-	}
-	if _u.mutation.NotAfterCleared() {
-		_spec.ClearField(sslimport.FieldNotAfter, field.TypeTime)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(sslimport.FieldStatus, field.TypeEnum, value)

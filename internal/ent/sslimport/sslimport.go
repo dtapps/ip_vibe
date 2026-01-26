@@ -23,6 +23,8 @@ const (
 	FieldSource = "source"
 	// FieldDomain holds the string denoting the domain field in the database.
 	FieldDomain = "domain"
+	// FieldSerialNumber holds the string denoting the serial_number field in the database.
+	FieldSerialNumber = "serial_number"
 	// FieldCertificate holds the string denoting the certificate field in the database.
 	FieldCertificate = "certificate"
 	// FieldPrivateKey holds the string denoting the private_key field in the database.
@@ -44,6 +46,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldSource,
 	FieldDomain,
+	FieldSerialNumber,
 	FieldCertificate,
 	FieldPrivateKey,
 	FieldNotBefore,
@@ -160,6 +163,11 @@ func BySource(opts ...sql.OrderTermOption) OrderOption {
 // ByDomain orders the results by the domain field.
 func ByDomain(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDomain, opts...).ToFunc()
+}
+
+// BySerialNumber orders the results by the serial_number field.
+func BySerialNumber(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSerialNumber, opts...).ToFunc()
 }
 
 // ByCertificate orders the results by the certificate field.

@@ -2068,6 +2068,31 @@ func (q *SSLImportQuery) OrderByDomainAsc() *SSLImportQuery {
 	return q.Order(Asc(sslimport.FieldDomain))
 }
 
+// OrderBySerialNumberDesc 按字段 serial_number 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderBySerialNumberDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *SSLImportQuery) OrderBySerialNumberDesc() *SSLImportQuery {
+	return q.Order(Desc(sslimport.FieldSerialNumber))
+}
+
+// OrderBySerialNumberAsc 按字段 serial_number 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.SSLImport.Query().
+//	    OrderBySerialNumberAsc().
+//	    All(ctx)
+func (q *SSLImportQuery) OrderBySerialNumberAsc() *SSLImportQuery {
+	return q.Order(Asc(sslimport.FieldSerialNumber))
+}
+
 // OrderByCertificateDesc 按字段 certificate 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *SSLImportQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。

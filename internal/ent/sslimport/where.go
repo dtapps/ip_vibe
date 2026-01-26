@@ -69,6 +69,11 @@ func Domain(v string) predicate.SSLImport {
 	return predicate.SSLImport(sql.FieldEQ(FieldDomain, v))
 }
 
+// SerialNumber applies equality check predicate on the "serial_number" field. It's identical to SerialNumberEQ.
+func SerialNumber(v string) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldEQ(FieldSerialNumber, v))
+}
+
 // Certificate applies equality check predicate on the "certificate" field. It's identical to CertificateEQ.
 func Certificate(v string) predicate.SSLImport {
 	return predicate.SSLImport(sql.FieldEQ(FieldCertificate, v))
@@ -244,16 +249,6 @@ func DomainHasSuffix(v string) predicate.SSLImport {
 	return predicate.SSLImport(sql.FieldHasSuffix(FieldDomain, v))
 }
 
-// DomainIsNil applies the IsNil predicate on the "domain" field.
-func DomainIsNil() predicate.SSLImport {
-	return predicate.SSLImport(sql.FieldIsNull(FieldDomain))
-}
-
-// DomainNotNil applies the NotNil predicate on the "domain" field.
-func DomainNotNil() predicate.SSLImport {
-	return predicate.SSLImport(sql.FieldNotNull(FieldDomain))
-}
-
 // DomainEqualFold applies the EqualFold predicate on the "domain" field.
 func DomainEqualFold(v string) predicate.SSLImport {
 	return predicate.SSLImport(sql.FieldEqualFold(FieldDomain, v))
@@ -262,6 +257,71 @@ func DomainEqualFold(v string) predicate.SSLImport {
 // DomainContainsFold applies the ContainsFold predicate on the "domain" field.
 func DomainContainsFold(v string) predicate.SSLImport {
 	return predicate.SSLImport(sql.FieldContainsFold(FieldDomain, v))
+}
+
+// SerialNumberEQ applies the EQ predicate on the "serial_number" field.
+func SerialNumberEQ(v string) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldEQ(FieldSerialNumber, v))
+}
+
+// SerialNumberNEQ applies the NEQ predicate on the "serial_number" field.
+func SerialNumberNEQ(v string) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldNEQ(FieldSerialNumber, v))
+}
+
+// SerialNumberIn applies the In predicate on the "serial_number" field.
+func SerialNumberIn(vs ...string) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldIn(FieldSerialNumber, vs...))
+}
+
+// SerialNumberNotIn applies the NotIn predicate on the "serial_number" field.
+func SerialNumberNotIn(vs ...string) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldNotIn(FieldSerialNumber, vs...))
+}
+
+// SerialNumberGT applies the GT predicate on the "serial_number" field.
+func SerialNumberGT(v string) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldGT(FieldSerialNumber, v))
+}
+
+// SerialNumberGTE applies the GTE predicate on the "serial_number" field.
+func SerialNumberGTE(v string) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldGTE(FieldSerialNumber, v))
+}
+
+// SerialNumberLT applies the LT predicate on the "serial_number" field.
+func SerialNumberLT(v string) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldLT(FieldSerialNumber, v))
+}
+
+// SerialNumberLTE applies the LTE predicate on the "serial_number" field.
+func SerialNumberLTE(v string) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldLTE(FieldSerialNumber, v))
+}
+
+// SerialNumberContains applies the Contains predicate on the "serial_number" field.
+func SerialNumberContains(v string) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldContains(FieldSerialNumber, v))
+}
+
+// SerialNumberHasPrefix applies the HasPrefix predicate on the "serial_number" field.
+func SerialNumberHasPrefix(v string) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldHasPrefix(FieldSerialNumber, v))
+}
+
+// SerialNumberHasSuffix applies the HasSuffix predicate on the "serial_number" field.
+func SerialNumberHasSuffix(v string) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldHasSuffix(FieldSerialNumber, v))
+}
+
+// SerialNumberEqualFold applies the EqualFold predicate on the "serial_number" field.
+func SerialNumberEqualFold(v string) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldEqualFold(FieldSerialNumber, v))
+}
+
+// SerialNumberContainsFold applies the ContainsFold predicate on the "serial_number" field.
+func SerialNumberContainsFold(v string) predicate.SSLImport {
+	return predicate.SSLImport(sql.FieldContainsFold(FieldSerialNumber, v))
 }
 
 // CertificateEQ applies the EQ predicate on the "certificate" field.
@@ -317,16 +377,6 @@ func CertificateHasPrefix(v string) predicate.SSLImport {
 // CertificateHasSuffix applies the HasSuffix predicate on the "certificate" field.
 func CertificateHasSuffix(v string) predicate.SSLImport {
 	return predicate.SSLImport(sql.FieldHasSuffix(FieldCertificate, v))
-}
-
-// CertificateIsNil applies the IsNil predicate on the "certificate" field.
-func CertificateIsNil() predicate.SSLImport {
-	return predicate.SSLImport(sql.FieldIsNull(FieldCertificate))
-}
-
-// CertificateNotNil applies the NotNil predicate on the "certificate" field.
-func CertificateNotNil() predicate.SSLImport {
-	return predicate.SSLImport(sql.FieldNotNull(FieldCertificate))
 }
 
 // CertificateEqualFold applies the EqualFold predicate on the "certificate" field.
@@ -394,16 +444,6 @@ func PrivateKeyHasSuffix(v string) predicate.SSLImport {
 	return predicate.SSLImport(sql.FieldHasSuffix(FieldPrivateKey, v))
 }
 
-// PrivateKeyIsNil applies the IsNil predicate on the "private_key" field.
-func PrivateKeyIsNil() predicate.SSLImport {
-	return predicate.SSLImport(sql.FieldIsNull(FieldPrivateKey))
-}
-
-// PrivateKeyNotNil applies the NotNil predicate on the "private_key" field.
-func PrivateKeyNotNil() predicate.SSLImport {
-	return predicate.SSLImport(sql.FieldNotNull(FieldPrivateKey))
-}
-
 // PrivateKeyEqualFold applies the EqualFold predicate on the "private_key" field.
 func PrivateKeyEqualFold(v string) predicate.SSLImport {
 	return predicate.SSLImport(sql.FieldEqualFold(FieldPrivateKey, v))
@@ -454,16 +494,6 @@ func NotBeforeLTE(v time.Time) predicate.SSLImport {
 	return predicate.SSLImport(sql.FieldLTE(FieldNotBefore, v))
 }
 
-// NotBeforeIsNil applies the IsNil predicate on the "not_before" field.
-func NotBeforeIsNil() predicate.SSLImport {
-	return predicate.SSLImport(sql.FieldIsNull(FieldNotBefore))
-}
-
-// NotBeforeNotNil applies the NotNil predicate on the "not_before" field.
-func NotBeforeNotNil() predicate.SSLImport {
-	return predicate.SSLImport(sql.FieldNotNull(FieldNotBefore))
-}
-
 // NotAfterEQ applies the EQ predicate on the "not_after" field.
 func NotAfterEQ(v time.Time) predicate.SSLImport {
 	return predicate.SSLImport(sql.FieldEQ(FieldNotAfter, v))
@@ -502,16 +532,6 @@ func NotAfterLT(v time.Time) predicate.SSLImport {
 // NotAfterLTE applies the LTE predicate on the "not_after" field.
 func NotAfterLTE(v time.Time) predicate.SSLImport {
 	return predicate.SSLImport(sql.FieldLTE(FieldNotAfter, v))
-}
-
-// NotAfterIsNil applies the IsNil predicate on the "not_after" field.
-func NotAfterIsNil() predicate.SSLImport {
-	return predicate.SSLImport(sql.FieldIsNull(FieldNotAfter))
-}
-
-// NotAfterNotNil applies the NotNil predicate on the "not_after" field.
-func NotAfterNotNil() predicate.SSLImport {
-	return predicate.SSLImport(sql.FieldNotNull(FieldNotAfter))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.

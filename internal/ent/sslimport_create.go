@@ -70,11 +70,9 @@ func (_c *SSLImportCreate) SetDomain(v string) *SSLImportCreate {
 	return _c
 }
 
-// SetNillableDomain sets the "domain" field if the given value is not nil.
-func (_c *SSLImportCreate) SetNillableDomain(v *string) *SSLImportCreate {
-	if v != nil {
-		_c.SetDomain(*v)
-	}
+// SetSerialNumber sets the "serial_number" field.
+func (_c *SSLImportCreate) SetSerialNumber(v string) *SSLImportCreate {
+	_c.mutation.SetSerialNumber(v)
 	return _c
 }
 
@@ -84,25 +82,9 @@ func (_c *SSLImportCreate) SetCertificate(v string) *SSLImportCreate {
 	return _c
 }
 
-// SetNillableCertificate sets the "certificate" field if the given value is not nil.
-func (_c *SSLImportCreate) SetNillableCertificate(v *string) *SSLImportCreate {
-	if v != nil {
-		_c.SetCertificate(*v)
-	}
-	return _c
-}
-
 // SetPrivateKey sets the "private_key" field.
 func (_c *SSLImportCreate) SetPrivateKey(v string) *SSLImportCreate {
 	_c.mutation.SetPrivateKey(v)
-	return _c
-}
-
-// SetNillablePrivateKey sets the "private_key" field if the given value is not nil.
-func (_c *SSLImportCreate) SetNillablePrivateKey(v *string) *SSLImportCreate {
-	if v != nil {
-		_c.SetPrivateKey(*v)
-	}
 	return _c
 }
 
@@ -112,25 +94,9 @@ func (_c *SSLImportCreate) SetNotBefore(v time.Time) *SSLImportCreate {
 	return _c
 }
 
-// SetNillableNotBefore sets the "not_before" field if the given value is not nil.
-func (_c *SSLImportCreate) SetNillableNotBefore(v *time.Time) *SSLImportCreate {
-	if v != nil {
-		_c.SetNotBefore(*v)
-	}
-	return _c
-}
-
 // SetNotAfter sets the "not_after" field.
 func (_c *SSLImportCreate) SetNotAfter(v time.Time) *SSLImportCreate {
 	_c.mutation.SetNotAfter(v)
-	return _c
-}
-
-// SetNillableNotAfter sets the "not_after" field if the given value is not nil.
-func (_c *SSLImportCreate) SetNillableNotAfter(v *time.Time) *SSLImportCreate {
-	if v != nil {
-		_c.SetNotAfter(*v)
-	}
 	return _c
 }
 
@@ -232,6 +198,24 @@ func (_c *SSLImportCreate) check() error {
 			return &ValidationError{Name: "source", err: fmt.Errorf(`ent: validator failed for field "SSLImport.source": %w`, err)}
 		}
 	}
+	if _, ok := _c.mutation.Domain(); !ok {
+		return &ValidationError{Name: "domain", err: errors.New(`ent: missing required field "SSLImport.domain"`)}
+	}
+	if _, ok := _c.mutation.SerialNumber(); !ok {
+		return &ValidationError{Name: "serial_number", err: errors.New(`ent: missing required field "SSLImport.serial_number"`)}
+	}
+	if _, ok := _c.mutation.Certificate(); !ok {
+		return &ValidationError{Name: "certificate", err: errors.New(`ent: missing required field "SSLImport.certificate"`)}
+	}
+	if _, ok := _c.mutation.PrivateKey(); !ok {
+		return &ValidationError{Name: "private_key", err: errors.New(`ent: missing required field "SSLImport.private_key"`)}
+	}
+	if _, ok := _c.mutation.NotBefore(); !ok {
+		return &ValidationError{Name: "not_before", err: errors.New(`ent: missing required field "SSLImport.not_before"`)}
+	}
+	if _, ok := _c.mutation.NotAfter(); !ok {
+		return &ValidationError{Name: "not_after", err: errors.New(`ent: missing required field "SSLImport.not_after"`)}
+	}
 	if _, ok := _c.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "SSLImport.status"`)}
 	}
@@ -293,6 +277,10 @@ func (_c *SSLImportCreate) createSpec() (*SSLImport, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Domain(); ok {
 		_spec.SetField(sslimport.FieldDomain, field.TypeString, value)
 		_node.Domain = value
+	}
+	if value, ok := _c.mutation.SerialNumber(); ok {
+		_spec.SetField(sslimport.FieldSerialNumber, field.TypeString, value)
+		_node.SerialNumber = value
 	}
 	if value, ok := _c.mutation.Certificate(); ok {
 		_spec.SetField(sslimport.FieldCertificate, field.TypeString, value)
@@ -378,12 +366,6 @@ func (u *SSLImportUpsert) UpdateNotBefore() *SSLImportUpsert {
 	return u
 }
 
-// ClearNotBefore clears the value of the "not_before" field.
-func (u *SSLImportUpsert) ClearNotBefore() *SSLImportUpsert {
-	u.SetNull(sslimport.FieldNotBefore)
-	return u
-}
-
 // SetNotAfter sets the "not_after" field.
 func (u *SSLImportUpsert) SetNotAfter(v time.Time) *SSLImportUpsert {
 	u.Set(sslimport.FieldNotAfter, v)
@@ -393,12 +375,6 @@ func (u *SSLImportUpsert) SetNotAfter(v time.Time) *SSLImportUpsert {
 // UpdateNotAfter sets the "not_after" field to the value that was provided on create.
 func (u *SSLImportUpsert) UpdateNotAfter() *SSLImportUpsert {
 	u.SetExcluded(sslimport.FieldNotAfter)
-	return u
-}
-
-// ClearNotAfter clears the value of the "not_after" field.
-func (u *SSLImportUpsert) ClearNotAfter() *SSLImportUpsert {
-	u.SetNull(sslimport.FieldNotAfter)
 	return u
 }
 
@@ -442,6 +418,9 @@ func (u *SSLImportUpsertOne) UpdateNewValues() *SSLImportUpsertOne {
 		}
 		if _, exists := u.create.mutation.Domain(); exists {
 			s.SetIgnore(sslimport.FieldDomain)
+		}
+		if _, exists := u.create.mutation.SerialNumber(); exists {
+			s.SetIgnore(sslimport.FieldSerialNumber)
 		}
 		if _, exists := u.create.mutation.Certificate(); exists {
 			s.SetIgnore(sslimport.FieldCertificate)
@@ -494,13 +473,6 @@ func (u *SSLImportUpsertOne) UpdateNotBefore() *SSLImportUpsertOne {
 	})
 }
 
-// ClearNotBefore clears the value of the "not_before" field.
-func (u *SSLImportUpsertOne) ClearNotBefore() *SSLImportUpsertOne {
-	return u.Update(func(s *SSLImportUpsert) {
-		s.ClearNotBefore()
-	})
-}
-
 // SetNotAfter sets the "not_after" field.
 func (u *SSLImportUpsertOne) SetNotAfter(v time.Time) *SSLImportUpsertOne {
 	return u.Update(func(s *SSLImportUpsert) {
@@ -512,13 +484,6 @@ func (u *SSLImportUpsertOne) SetNotAfter(v time.Time) *SSLImportUpsertOne {
 func (u *SSLImportUpsertOne) UpdateNotAfter() *SSLImportUpsertOne {
 	return u.Update(func(s *SSLImportUpsert) {
 		s.UpdateNotAfter()
-	})
-}
-
-// ClearNotAfter clears the value of the "not_after" field.
-func (u *SSLImportUpsertOne) ClearNotAfter() *SSLImportUpsertOne {
-	return u.Update(func(s *SSLImportUpsert) {
-		s.ClearNotAfter()
 	})
 }
 
@@ -730,6 +695,9 @@ func (u *SSLImportUpsertBulk) UpdateNewValues() *SSLImportUpsertBulk {
 			if _, exists := b.mutation.Domain(); exists {
 				s.SetIgnore(sslimport.FieldDomain)
 			}
+			if _, exists := b.mutation.SerialNumber(); exists {
+				s.SetIgnore(sslimport.FieldSerialNumber)
+			}
 			if _, exists := b.mutation.Certificate(); exists {
 				s.SetIgnore(sslimport.FieldCertificate)
 			}
@@ -782,13 +750,6 @@ func (u *SSLImportUpsertBulk) UpdateNotBefore() *SSLImportUpsertBulk {
 	})
 }
 
-// ClearNotBefore clears the value of the "not_before" field.
-func (u *SSLImportUpsertBulk) ClearNotBefore() *SSLImportUpsertBulk {
-	return u.Update(func(s *SSLImportUpsert) {
-		s.ClearNotBefore()
-	})
-}
-
 // SetNotAfter sets the "not_after" field.
 func (u *SSLImportUpsertBulk) SetNotAfter(v time.Time) *SSLImportUpsertBulk {
 	return u.Update(func(s *SSLImportUpsert) {
@@ -800,13 +761,6 @@ func (u *SSLImportUpsertBulk) SetNotAfter(v time.Time) *SSLImportUpsertBulk {
 func (u *SSLImportUpsertBulk) UpdateNotAfter() *SSLImportUpsertBulk {
 	return u.Update(func(s *SSLImportUpsert) {
 		s.UpdateNotAfter()
-	})
-}
-
-// ClearNotAfter clears the value of the "not_after" field.
-func (u *SSLImportUpsertBulk) ClearNotAfter() *SSLImportUpsertBulk {
-	return u.Update(func(s *SSLImportUpsert) {
-		s.ClearNotAfter()
 	})
 }
 

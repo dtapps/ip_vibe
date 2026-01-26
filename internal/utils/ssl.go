@@ -114,9 +114,10 @@ func ParseCertificate(certPEM []byte) (*types.UtilsParsedCertificate, error) {
 	}
 
 	return &types.UtilsParsedCertificate{
-		Domain:    cert.Subject.CommonName,
-		NotBefore: cert.NotBefore.UTC(),
-		NotAfter:  cert.NotAfter.UTC(),
+		Domain:       cert.Subject.CommonName,
+		SerialNumber: cert.SerialNumber.String(),
+		NotBefore:    cert.NotBefore.UTC(),
+		NotAfter:     cert.NotAfter.UTC(),
 	}, nil
 }
 

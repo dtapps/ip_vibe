@@ -1121,8 +1121,11 @@ components:
         port_forward_report_time:
           description: 端口转发统计上报时间（分，默认 8-12 分钟，多个时用-分隔）
           type: string
+        ssl_apply_task_time:
+          description: SSL申请任务时间（时，默认 8-10 小时，多个时用-分隔）
+          type: string
         ssl_refresh_task_time:
-          description: SSL刷新任务时间（时，默认 8-10 小时，多个时用-分隔）
+          description: SSL刷新任务时间（时，默认 12-24 小时，多个时用-分隔）
           type: string
         statistic_data_retain_time:
           description: 统计数据保留时间（天，默认 365 天）
@@ -1575,8 +1578,11 @@ components:
         port_forward_report_time:
           description: 端口转发统计上报时间（分，默认 8-12 分钟，多个时用-分隔）
           type: string
+        ssl_apply_task_time:
+          description: SSL申请任务时间（时，默认 8-10 小时，多个时用-分隔）
+          type: string
         ssl_refresh_task_time:
-          description: SSL刷新任务时间（时，默认 8-10 小时，多个时用-分隔）
+          description: SSL刷新任务时间（时，默认 12-24 小时，多个时用-分隔）
           type: string
         statistic_data_retain_time:
           description: 统计数据保留时间（天，默认 365 天）

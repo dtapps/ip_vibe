@@ -51,31 +51,32 @@ func (SSLImport) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("domain").
-			Optional().
 			Immutable().
 			Comment("域名").
 			Annotations(entsql.WithComments(true)),
 
+		field.String("serial_number").
+			Unique().
+			Immutable().
+			Comment("证书序列号").
+			Annotations(entsql.WithComments(true)),
+
 		field.Text("certificate").
-			Optional().
 			Immutable().
 			Comment("证书(PEM格式)").
 			Annotations(entsql.WithComments(true)),
 
 		field.Text("private_key").
-			Optional().
 			Sensitive(). // 敏感
 			Immutable().
 			Comment("私钥(PEM格式)").
 			Annotations(entsql.WithComments(true)),
 
 		field.Time("not_before").
-			Optional().
 			Comment("证书生效时间").
 			Annotations(entsql.WithComments(true)),
 
 		field.Time("not_after").
-			Optional().
 			Comment("证书过期时间").
 			Annotations(entsql.WithComments(true)),
 

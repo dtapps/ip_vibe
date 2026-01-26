@@ -14,18 +14,18 @@
 
             <div class="ui-form-control">
                 <label class="ui-label-text">域名 <span class="text-error">*</span></label>
-                <input type="text" name="domain" id="domain" class="ui-input" required
+                <input type="text" name="domain" class="ui-input" required
                     placeholder="如 example.com, *.example.com 多个域名用逗号分隔" />
             </div>
 
             <div class="ui-form-control">
                 <label class="ui-label-text">证书 <span class="text-error">*</span></label>
-                <textarea name="certificate" id="certificate" class="ui-textarea" required placeholder="可选"></textarea>
+                <textarea name="certificate" class="ui-textarea" required placeholder="请粘贴证书内容"></textarea>
             </div>
 
             <div class="ui-form-control">
                 <label class="ui-label-text">私钥 <span class="text-error">*</span></label>
-                <textarea name="private_key" id="private_key" class="ui-textarea" required placeholder="可选"></textarea>
+                <textarea name="private_key" class="ui-textarea" required placeholder="可选请粘贴私钥内容"></textarea>
             </div>
 
             <div class="modal-action gap-3">
@@ -55,18 +55,17 @@
 
             <div class="ui-form-control">
                 <label class="ui-label-text">选择配置 <span class="text-error">*</span></label>
-                <select name="config_id" id="config_id" class="ui-select" required
-                    onchange="onConfigSelect(this)"></select>
+                <select name="config_id" class="ui-select" required onchange="onConfigSelect(this)"></select>
             </div>
 
             <div class="ui-form-control">
                 <label class="ui-label-text">域名 <span class="text-error">*</span></label>
-                <input type="text" name="domain" id="domain" class="ui-input" required
+                <input type="text" name="domain" class="ui-input" required
                     placeholder="如 example.com, *.example.com 多个域名用逗号分隔" />
             </div>
 
-            <input type="hidden" name="cert_private_key" id="cert_private_key" />
-            <input type="hidden" name="cert_certificate" id="cert_certificate" />
+            <input type="hidden" name="cert_private_key" />
+            <input type="hidden" name="cert_certificate" />
 
             <div class="modal-action gap-3">
                 <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('importFormModal')">

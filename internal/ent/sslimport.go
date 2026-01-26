@@ -26,6 +26,8 @@ type SSLImport struct {
 	Source sslimport.Source `json:"source,omitempty"`
 	// 域名
 	Domain string `json:"domain,omitempty"`
+	// 证书序列号
+	SerialNumber string `json:"serial_number,omitempty"`
 	// 证书(PEM格式)
 	Certificate string `json:"certificate,omitempty"`
 	// 私钥(PEM格式)
@@ -46,7 +48,7 @@ func (*SSLImport) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case sslimport.FieldID:
 			values[i] = new(sql.NullInt64)
-		case sslimport.FieldSource, sslimport.FieldDomain, sslimport.FieldCertificate, sslimport.FieldPrivateKey, sslimport.FieldStatus:
+		case sslimport.FieldSource, sslimport.FieldDomain, sslimport.FieldSerialNumber, sslimport.FieldCertificate, sslimport.FieldPrivateKey, sslimport.FieldStatus:
 			values[i] = new(sql.NullString)
 		case sslimport.FieldCreatedAt, sslimport.FieldUpdatedAt, sslimport.FieldNotBefore, sslimport.FieldNotAfter:
 			values[i] = new(sql.NullTime)
@@ -94,6 +96,12 @@ func (_m *SSLImport) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field domain", values[i])
 			} else if value.Valid {
 				_m.Domain = value.String
+			}
+		case sslimport.FieldSerialNumber:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field serial_number", values[i])
+			} else if value.Valid {
+				_m.SerialNumber = value.String
 			}
 		case sslimport.FieldCertificate:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -172,6 +180,9 @@ func (_m *SSLImport) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("domain=")
 	builder.WriteString(_m.Domain)
+	builder.WriteString(", ")
+	builder.WriteString("serial_number=")
+	builder.WriteString(_m.SerialNumber)
 	builder.WriteString(", ")
 	builder.WriteString("certificate=")
 	builder.WriteString(_m.Certificate)

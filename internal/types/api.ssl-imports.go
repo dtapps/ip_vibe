@@ -4,14 +4,15 @@ import "time"
 
 // 获取 SSL 导入 请求结构
 type GetSSLImportResponse struct {
-	ID          int64     `json:"id,omitempty"`     // SSL导入序号
-	Source      string    `json:"source,omitempty"` // 来源
-	Domain      string    `json:"domain,omitempty"` // 域名（支持通配符 *.example.com 或精确域名，多个域名之间用逗号分隔）
-	Certificate string    `json:"certificate"`      // 证书(PEM格式)
-	PrivateKey  string    `json:"private_key"`      // 私钥(PEM格式)
-	NotBefore   time.Time `json:"not_before"`       // 证书开始时间
-	NotAfter    time.Time `json:"not_after"`        // 证书结束时间
-	Status      string    `json:"status,omitempty"` // 证书状态
+	ID           int64     `json:"id"`            // SSL导入序号
+	Source       string    `json:"source"`        // 来源
+	Domain       string    `json:"domain"`        // 域名
+	SerialNumber string    `json:"serial_number"` // 证书序列号
+	Certificate  string    `json:"certificate"`   // 证书(PEM格式)
+	PrivateKey   string    `json:"private_key"`   // 私钥(PEM格式)
+	NotBefore    time.Time `json:"not_before"`    // 证书开始时间
+	NotAfter     time.Time `json:"not_after"`     // 证书结束时间
+	Status       string    `json:"status"`        // 证书状态
 }
 
 // 导入 SSL 导入 请求结构

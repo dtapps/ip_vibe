@@ -1070,8 +1070,11 @@ definitions:
       port_forward_report_time:
         description: 端口转发统计上报时间（分，默认 8-12 分钟，多个时用-分隔）
         type: string
+      ssl_apply_task_time:
+        description: SSL申请任务时间（时，默认 8-10 小时，多个时用-分隔）
+        type: string
       ssl_refresh_task_time:
-        description: SSL刷新任务时间（时，默认 8-10 小时，多个时用-分隔）
+        description: SSL刷新任务时间（时，默认 12-24 小时，多个时用-分隔）
         type: string
       statistic_data_retain_time:
         description: 统计数据保留时间（天，默认 365 天）
@@ -1514,8 +1517,11 @@ definitions:
       port_forward_report_time:
         description: 端口转发统计上报时间（分，默认 8-12 分钟，多个时用-分隔）
         type: string
+      ssl_apply_task_time:
+        description: SSL申请任务时间（时，默认 8-10 小时，多个时用-分隔）
+        type: string
       ssl_refresh_task_time:
-        description: SSL刷新任务时间（时，默认 8-10 小时，多个时用-分隔）
+        description: SSL刷新任务时间（时，默认 12-24 小时，多个时用-分隔）
         type: string
       statistic_data_retain_time:
         description: 统计数据保留时间（天，默认 365 天）
@@ -1655,6 +1661,7 @@ paths:
       description: 删除CDN记录
       parameters:
       - description: CDN记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1683,6 +1690,7 @@ paths:
       description: 获取CDN记录详情
       parameters:
       - description: CDN记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1716,6 +1724,7 @@ paths:
       description: 更新CDN记录
       parameters:
       - description: CDN记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1756,6 +1765,7 @@ paths:
       description: 更新CDN记录启用状态
       parameters:
       - description: CDN记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1791,6 +1801,7 @@ paths:
       description: 检查CDN记录健康状态
       parameters:
       - description: CDN记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1949,6 +1960,7 @@ paths:
       description: 删除设备
       parameters:
       - description: 设备序号
+        format: int64
         in: path
         name: id
         required: true
@@ -1977,6 +1989,7 @@ paths:
       description: 获取设备详情
       parameters:
       - description: 设备序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2010,6 +2023,7 @@ paths:
       description: 更新设备
       parameters:
       - description: 设备序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2050,6 +2064,7 @@ paths:
       description: 检查设备健康状态
       parameters:
       - description: 设备序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2088,6 +2103,7 @@ paths:
       description: 获取设备IP历史记录
       parameters:
       - description: 设备序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2124,6 +2140,7 @@ paths:
       description: 获取设备端口转发统计数据
       parameters:
       - description: 设备序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2261,6 +2278,7 @@ paths:
       description: 删除DNS记录
       parameters:
       - description: DNS记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2289,6 +2307,7 @@ paths:
       description: 获取DNS记录详情
       parameters:
       - description: DNS记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2322,6 +2341,7 @@ paths:
       description: 更新DNS记录
       parameters:
       - description: DNS记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2362,6 +2382,7 @@ paths:
       description: 更新DNS记录启用状态
       parameters:
       - description: DNS记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2397,6 +2418,7 @@ paths:
       description: 检查DNS记录健康状态
       parameters:
       - description: DNS记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2564,6 +2586,7 @@ paths:
       description: 删除域名监控
       parameters:
       - description: 域名监控序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2592,6 +2615,7 @@ paths:
       description: 获取域名监控详情
       parameters:
       - description: 域名监控记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2625,6 +2649,7 @@ paths:
       description: 更新域名监控
       parameters:
       - description: 域名监控序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2665,6 +2690,7 @@ paths:
       description: 更新域名监控启用状态
       parameters:
       - description: 域名监控序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2700,6 +2726,7 @@ paths:
       description: 检查域名监控健康状态
       parameters:
       - description: 域名监控序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2854,6 +2881,7 @@ paths:
       description: 删除IP组
       parameters:
       - description: IP组序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2882,6 +2910,7 @@ paths:
       description: 获取IP组详情
       parameters:
       - description: IP组序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2916,6 +2945,7 @@ paths:
       description: 更新IP组
       parameters:
       - description: IP组序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2956,6 +2986,7 @@ paths:
       description: 获取IP组设备
       parameters:
       - description: IP组序号
+        format: int64
         in: path
         name: id
         required: true
@@ -2992,6 +3023,7 @@ paths:
       description: 检查IP组健康状态
       parameters:
       - description: IP组序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3030,6 +3062,7 @@ paths:
       description: 获取IP组设备端口转发统计数据
       parameters:
       - description: IP组序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3154,6 +3187,7 @@ paths:
       description: 删除平台配置
       parameters:
       - description: 配置序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3182,6 +3216,7 @@ paths:
       description: 获取平台配置详情
       parameters:
       - description: 配置序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3215,6 +3250,7 @@ paths:
       description: 更新平台配置
       parameters:
       - description: 配置序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3354,6 +3390,7 @@ paths:
       description: 删除端口转发
       parameters:
       - description: 端口转发序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3382,6 +3419,7 @@ paths:
       description: 获取端口转发详情
       parameters:
       - description: 设备端口转发序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3415,6 +3453,7 @@ paths:
       description: 更新端口转发
       parameters:
       - description: 端口转发序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3455,6 +3494,7 @@ paths:
       description: 更新端口转发启用状态
       parameters:
       - description: 端口转发序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3490,6 +3530,7 @@ paths:
       description: 更新端口转发防火墙状态
       parameters:
       - description: 端口转发序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3530,6 +3571,7 @@ paths:
       description: 检查端口转发健康状态
       parameters:
       - description: 端口转发序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3568,6 +3610,7 @@ paths:
       description: 获取端口转发统计数据
       parameters:
       - description: 端口转发序号
+        format: int64
         in: path
         name: id
         required: true
@@ -3671,6 +3714,7 @@ paths:
         required: true
         type: string
       - description: 平台配置ID
+        format: int64
         in: path
         name: config_id
         required: true
@@ -3710,6 +3754,7 @@ paths:
         required: true
         type: string
       - description: 平台配置ID
+        format: int64
         in: path
         name: config_id
         required: true
@@ -3865,6 +3910,7 @@ paths:
       description: 删除SSL导入记录
       parameters:
       - description: SSL导入序号
+        format: int64
         in: path
         name: id
         required: true
@@ -4018,6 +4064,7 @@ paths:
       description: 删除SSL记录
       parameters:
       - description: SSL记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -4046,6 +4093,7 @@ paths:
       description: 获取SSL记录详情
       parameters:
       - description: SSL记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -4079,6 +4127,7 @@ paths:
       description: 更新SSL记录
       parameters:
       - description: SSL记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -4114,6 +4163,7 @@ paths:
       description: 更新SSL记录启用状态
       parameters:
       - description: SSL记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -4149,6 +4199,7 @@ paths:
       description: 申请新的SSL证书
       parameters:
       - description: SSL记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -4183,6 +4234,7 @@ paths:
       description: 更新SSL记录自动续费状态
       parameters:
       - description: SSL记录序号
+        format: int64
         in: path
         name: id
         required: true
@@ -4218,11 +4270,13 @@ paths:
       description: 获取SSL记录历史详情
       parameters:
       - description: SSL记录序号
+        format: int64
         in: path
         name: id
         required: true
         type: integer
       - description: SSL记录历史序号
+        format: int64
         in: path
         name: history_id
         required: true
@@ -4555,6 +4609,7 @@ paths:
       description: 删除通知订阅
       parameters:
       - description: 通知订阅序号
+        format: int64
         in: path
         name: id
         required: true
@@ -4584,6 +4639,7 @@ paths:
       description: 更新通知订阅启用状态
       parameters:
       - description: 通知订阅序号
+        format: int64
         in: path
         name: id
         required: true
@@ -4748,6 +4804,7 @@ paths:
       description: 删除通知
       parameters:
       - description: 通知序号
+        format: int64
         in: path
         name: id
         required: true
@@ -4776,6 +4833,7 @@ paths:
       description: 获取通知详情
       parameters:
       - description: 通知序号
+        format: int64
         in: path
         name: id
         required: true
@@ -4809,6 +4867,7 @@ paths:
       description: 更新通知
       parameters:
       - description: 通知序号
+        format: int64
         in: path
         name: id
         required: true
@@ -4849,6 +4908,7 @@ paths:
       description: 更新通知启用状态
       parameters:
       - description: 通知序号
+        format: int64
         in: path
         name: id
         required: true
@@ -4884,6 +4944,7 @@ paths:
       description: 测试通知
       parameters:
       - description: 通知序号
+        format: int64
         in: path
         name: id
         required: true

@@ -4,9 +4,10 @@ import "time"
 
 // UtilsParsedCertificate 从 PEM 证书中解析出的关键信息
 type UtilsParsedCertificate struct {
-	Domain    string    // CommonName
-	NotBefore time.Time // 生效时间
-	NotAfter  time.Time // 过期时间
+	Domain       string    // 域名
+	SerialNumber string    // 证书序列号
+	NotBefore    time.Time // 生效时间
+	NotAfter     time.Time // 过期时间
 }
 
 // UtilsParsedCertificateFull 从 PEM 证书中解析出的关键信息
