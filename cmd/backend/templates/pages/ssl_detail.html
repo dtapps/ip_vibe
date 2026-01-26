@@ -200,8 +200,13 @@
                     <p class="text-center text-xs opacity-30 py-4">暂无记录</p>
                     {{ end }}
                 </div>
+                {{if ne $item.Provider "unknown"}}
                 <a href="/log?obj_id={{ $item.ID }}&obj_type=SSLRecord"
                     class="btn btn-xs btn-ghost w-full mt-4 text-[9px] opacity-30 uppercase">查看完整日志</a>
+                {{else}}
+                <a href="/log?obj_id={{ $item.ID }}&obj_type=SSLImport"
+                    class="btn btn-xs btn-ghost w-full mt-4 text-[9px] opacity-30 uppercase">查看完整日志</a>
+                {{end}}
             </div>
         </div>
 
