@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"regexp"
 	"time"
+	"vibe_ip/internal/helper/sys_env"
 
 	"golang.org/x/sync/errgroup"
 	"resty.dev/v3"
@@ -32,16 +33,15 @@ type IPHelper struct {
 
 // NewIPHelper 创建一个新的 IPHelper 实例
 func NewIPHelper() *IPHelper {
-	// 创建一个新的 Resty 客户端
-	client := resty.New()
 
-	// 如果全局 Resty 客户端存在，使用它
-	// if global.GvaRestyClientWithLog != nil {
-	// 	client = global.GvaRestyClientWithLog
-	// }
+	// 创建 Resty 客户端
+	client := resty.New()
 
 	// 设置默认超时
 	client.SetTimeout(5 * time.Second)
+
+	// 开启日志
+	client.SetDebug(sys_env.GvaEnv.DEBUG)
 
 	// 跳过证书验证
 	client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})

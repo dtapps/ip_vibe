@@ -26,8 +26,11 @@ func InitThirdParty(ctx context.Context, logger *slog.Logger, httpTransport *htt
 
 		var err error
 
-		// 创建客户端
+		// 创建 Resty 客户端
 		restyClient := resty.New()
+
+		// 开启日志
+		restyClient.SetDebug(sys_env.GvaEnv.DEBUG)
 
 		// 添加 HTTP 日志记录器
 		if httpTransport != nil {

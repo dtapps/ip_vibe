@@ -2,6 +2,7 @@ package webhook
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log/slog"
@@ -11,6 +12,7 @@ import (
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/utils"
 
 	"go.dtapp.net/library/service/bark"
@@ -39,10 +41,19 @@ type Send struct {
 }
 
 func NewSend(db *ent.Client, logDb *ent_log.Client) *Send {
-	// 创建一个新的 Resty 客户端
+
+	// 创建 Resty 客户端
 	client := resty.New()
+
+	// 开启日志
+	client.SetDebug(sys_env.GvaEnv.DEBUG)
+
 	// 设置默认超时
 	client.SetTimeout(30 * time.Second)
+
+	// 跳过证书验证
+	client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+
 	return &Send{
 		db:     db,
 		logDb:  logDb,
