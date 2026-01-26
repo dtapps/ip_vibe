@@ -68,22 +68,12 @@ func ValidateCertAndKey(certPEM, keyPEM string) error {
 func publicKeysEqual(a, b crypto.PublicKey) bool {
 	switch aPub := a.(type) {
 	case *rsa.PublicKey:
-		bPub, ok := b.(*rsa.PublicKey)
-		if !ok {
-			return false
+		if bPub, ok := b.(*rsa.PublicKey); ok {
+			return aPub.E == bPub.E && aPub.N.Cmp(bPub.N) == 0
 		}
-		return aPub.N.Cmp(bPub.N) == 0 && aPub.E == bPub.E
-
+		return false
 	case *ecdsa.PublicKey:
-		bPub, ok := b.(*ecdsa.PublicKey)
-		if !ok {
-			return false
-		}
-		if aPub.Curve != bPub.Curve {
-			return false
-		}
-		return aPub.X.Cmp(bPub.X) == 0 && aPub.Y.Cmp(bPub.Y) == 0
-
+		return aPub.Equal(b)
 	default:
 		return false
 	}
