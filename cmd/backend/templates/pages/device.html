@@ -16,9 +16,15 @@
 </h1>
 
 <div class="ui-panel">
+  <div class="tabs tabs-lifted px-6 pt-4">
+    <a class="tab tab-active font-bold">设备</a>
+    <a href="/device-group" class="tab">设备分组</a>
+    <a href="/ip-group" class="tab">IP分组</a>
+  </div>
+
   <div class="ui-header">
     <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
-      {{ template "icons" (dict "Name" "i-lucide-smartphone") }} 设备（实时上报）
+      {{ template "icons" (dict "Name" "i-lucide-smartphone") }} 设备列表（实时上报）
     </h2>
     <div>
       <button class="btn-ui-primary" onclick="openFormModal()">

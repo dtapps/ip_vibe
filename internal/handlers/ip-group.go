@@ -62,13 +62,14 @@ func IPGroup(c *gin.Context) {
 	pageData.Total = allIpGroup.Total
 
 	// 渲染模板
-	renderHTML(
+	renderHTMLWithMenu(
 		c,
 		filepath.Join("pages", "ip-group.html"),
 		types.BasePageData[types.IPGroupResponse]{
 			Title: "IP组记录",
 			Data:  pageData,
 		},
+		"device",
 	)
 }
 
@@ -102,6 +103,6 @@ func IPGroupPortForwardStats(c *gin.Context) {
 			Title: "IP组端口转发统计",
 			Data:  pageData,
 		},
-		"ip-group",
+		"device",
 	)
 }
