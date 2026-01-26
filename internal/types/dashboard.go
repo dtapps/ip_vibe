@@ -1,5 +1,7 @@
 package types
 
+import "vibe_ip/internal/ent_log"
+
 // 仪表盘 统计
 type DashboardStat struct {
 	Label string `json:"label"` // 标题
@@ -15,9 +17,9 @@ type DashboardEntrance struct {
 
 // 仪表盘 响应结构
 type DashboardResponse struct {
-	Stats      []DashboardStat     `json:"stats"`
-	Entrances  []DashboardEntrance `json:"entrances"`
-	RecentLogs []GetLogResponse    `json:"recent_logs"`
+	Stats      []DashboardStat        `json:"stats"`
+	Entrances  []DashboardEntrance    `json:"entrances"`
+	RecentLogs []ent_log.OperationLog `json:"recent_logs"`
 
 	DeviceCode string `json:"device_code"`
 

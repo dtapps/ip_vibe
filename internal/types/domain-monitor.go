@@ -28,7 +28,7 @@ type DomainMonitorDetailRequest struct {
 
 // 域名监控详情页面 响应结构
 type DomainMonitorDetailResponse struct {
-	Item          ent.DomainMonitor            // 域名监控记录
+	Item          GetDomainMonitorResponse     // 域名监控记录
 	LatestHistory ent_log.DomainMonitorHistory // 最新监控记录
 	WebhookSubs   []ent.WebhookSubscription    // 通知订阅
 	OperationLogs []ent_log.OperationLog       // 最近操作日志
@@ -42,6 +42,6 @@ type DomainMonitorHistoryRequest struct {
 
 // 域名监控页面 响应结构
 type DomainMonitorHistoryResponse struct {
-	CommonPageResponse[ent_log.DomainMonitorHistory, DomainMonitorHistoryRequest] // 域名监控记录列表
-	Item                                                                          ent.DomainMonitor
+	CommonPageResponse[ent_log.DomainMonitorHistory, DomainMonitorHistoryRequest]                          // 域名监控记录列表
+	Item                                                                          GetDomainMonitorResponse // 域名监控记录
 }

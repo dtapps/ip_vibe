@@ -87,6 +87,15 @@ func DomainMonitorDetail(c *gin.Context) {
 		return
 	}
 
+	// 创建服务
+	service := service.NewDomainMonitorService(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog,
+		global.GvaHttpLog,
+	)
+
 	// 准备页面数据
 	pageData := types.DomainMonitorDetailResponse{}
 
@@ -98,7 +107,12 @@ func DomainMonitorDetail(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询域名监控失败: "+err.Error())
 		return
 	}
-	pageData.Item = *firstDomainMonitor
+	item, err := service.BuildResponse(c, firstDomainMonitor)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	pageData.Item = *item
 
 	// 查询最新的监控记录
 	latestHistory, err := global.GvaEntLogDb.DomainMonitorHistory.Query().
@@ -156,6 +170,15 @@ func DomainMonitorHistory(c *gin.Context) {
 		return
 	}
 
+	// 创建服务
+	service := service.NewDomainMonitorService(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog,
+		global.GvaHttpLog,
+	)
+
 	// 准备页面数据
 	pageData := types.DomainMonitorHistoryResponse{
 		CommonPageResponse: types.CommonPageResponse[ent_log.DomainMonitorHistory, types.DomainMonitorHistoryRequest]{
@@ -172,7 +195,12 @@ func DomainMonitorHistory(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询域名监控失败: "+err.Error())
 		return
 	}
-	pageData.Item = *firstDomainMonitor
+	item, err := service.BuildResponse(c, firstDomainMonitor)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	pageData.Item = *item
 
 	// 查询全部域名监控
 	allDomainMonitor, err := global.GvaEntLogDb.DomainMonitorHistory.Query().

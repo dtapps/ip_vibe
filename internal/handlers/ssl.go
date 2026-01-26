@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/backend/service"
-	"vibe_ip/internal/backend/task"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
@@ -35,21 +34,12 @@ func Ssl(c *gin.Context) {
 		},
 	}
 
-	// 创建SSL申请任务
-	sslApplyTask := task.NewSSLApplyTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-
 	// 创建服务
 	service := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslApplyTask,
+		nil,
 	)
 
 	// 查询全部SSL记录
@@ -98,8 +88,18 @@ func SslDetail(c *gin.Context) {
 		return
 	}
 
+	// 创建服务
+	service := service.NewSSLRecordService(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
+		nil,
+	)
+
 	// 准备页面数据
-	pageData := types.SSLDetailResponse{}
+	pageData := types.SSLDetailResponse{
+		OperationLogs: []ent_log.OperationLog{},
+	}
 
 	// 查询 SSL 记录
 	firstSSLRecord, err := global.GvaEntDb.SSLRecord.Query().
@@ -109,7 +109,12 @@ func SslDetail(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询 SSL 记录失败: "+err.Error())
 		return
 	}
-	pageData.Item = *firstSSLRecord
+	item, err := service.BuildResponse(c, firstSSLRecord)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	pageData.Item = *item
 
 	// 解析证书
 	parsedCert, err := utils.ParseCertificateFull([]byte(firstSSLRecord.CertCertificate))
@@ -178,6 +183,14 @@ func SslHistory(c *gin.Context) {
 		return
 	}
 
+	// 创建服务
+	service := service.NewSSLRecordService(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
+		nil,
+	)
+
 	// 准备页面数据
 	pageData := types.SSLHistoryResponse{
 		CommonPageResponse: types.CommonPageResponse[ent_log.SSLCertificateHistory, types.SSLHistoryRequest]{
@@ -194,7 +207,12 @@ func SslHistory(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询 SSL 记录失败: "+err.Error())
 		return
 	}
-	pageData.Item = *firstSSLRecord
+	item, err := service.BuildResponse(c, firstSSLRecord)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	pageData.Item = *item
 
 	// 查询 SSL 证书申请历史记录
 	allSSLCertificateHistory, err := global.GvaEntLogDb.SSLCertificateHistory.Query().

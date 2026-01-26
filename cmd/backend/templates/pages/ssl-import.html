@@ -30,14 +30,6 @@
                 {{ template "icons" (dict "Name" "i-lucide-plus") }} 添加记录
             </button>
 
-            <button class="btn-batch btn-ui-info hidden" data-url="{{$baseApiUrlPath}}/batch/active" data-method="PATCH"
-                data-id-key="ids" data-key="is_active" data-val="true" onclick="handleBatchAction(this)">
-                {{ template "icons" (dict "Name" "i-lucide-play") }} 批量开启 (<span id="selected_count">0</span>)
-            </button>
-            <button class="btn-batch btn-ui-info hidden" data-url="{{$baseApiUrlPath}}/batch/active" data-method="PATCH"
-                data-id-key="ids" data-key="is_active" data-val="false" onclick="handleBatchAction(this)">
-                {{ template "icons" (dict "Name" "i-lucide-pause") }} 批量关闭 (<span id="selected_count">0</span>)
-            </button>
             <button class="btn-batch btn-ui-error hidden" data-url="{{$baseApiUrlPath}}/batch" data-method="DELETE"
                 data-id-key="ids" onclick="handleBatchAction(this)">
                 {{ template "icons" (dict "Name" "i-lucide-trash-2") }} 批量删除 (<span id="selected_count">0</span>)

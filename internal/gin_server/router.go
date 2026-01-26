@@ -54,7 +54,10 @@ func (m *GinServerManager) setupWebRouter() {
 	r.GET("/ssl", handlers.Ssl)
 	r.GET("/ssl/:id/detail", handlers.SslDetail)
 	r.GET("/ssl/:id/history", handlers.SslHistory)
-	r.GET("/ssl/import", handlers.SslImport)
+
+	// SSL导入页面 - 提供HTML页面并渲染数据
+	r.GET("/ssl-import", handlers.SslImport)
+	r.GET("/ssl-import/:id/detail", handlers.SslImportDetail)
 
 	// 域名监控页面 - 提供HTML页面并渲染数据
 	r.GET("/domain-monitor", handlers.DomainMonitor)

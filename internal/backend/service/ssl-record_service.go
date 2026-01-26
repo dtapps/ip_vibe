@@ -430,7 +430,12 @@ func (s *SSLRecordServiceImpl) BatchDeleteSSLRecord(ctx context.Context, ids []i
 }
 
 // ApplySSLRecord 申请新的SSL证书
+// sslApplyTask 不能为nil
 func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) error {
+	if s.sslApplyTask == nil {
+		return fmt.Errorf("sslApplyTask 不能为nil")
+	}
+
 	// 查询SSL记录
 	firstSSLRecord, err := s.db.SSLRecord.Query().
 		Where(sslrecord.IDEQ(id)).

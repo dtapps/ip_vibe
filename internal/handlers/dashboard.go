@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"time"
 	"vibe_ip/internal/ent/device"
+	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/db_cache"
@@ -21,7 +22,7 @@ func Dashboard(c *gin.Context) {
 	pageData := types.DashboardResponse{
 		Stats:      []types.DashboardStat{},
 		Entrances:  []types.DashboardEntrance{},
-		RecentLogs: []types.GetLogResponse{},
+		RecentLogs: []ent_log.OperationLog{},
 	}
 
 	// 设备总数
@@ -137,17 +138,7 @@ func Dashboard(c *gin.Context) {
 		All(c)
 	if err == nil {
 		for _, item := range allOperationLog {
-			pageData.RecentLogs = append(pageData.RecentLogs, types.GetLogResponse{
-				ID:        item.ID,
-				OpType:    item.OpType.String(),
-				ObjID:     item.ObjID,
-				ObjType:   item.ObjType.String(),
-				OldValue:  item.OldValue,
-				NewValue:  item.NewValue,
-				Status:    item.Status.String(),
-				Message:   item.Message,
-				CreatedAt: item.CreatedAt,
-			})
+			pageData.RecentLogs = append(pageData.RecentLogs, *item)
 		}
 	} else {
 		slog.ErrorContext(c, "查询操作日志失败",
