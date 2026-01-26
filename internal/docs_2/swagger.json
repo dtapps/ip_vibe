@@ -93,19 +93,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetCdnRecordRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -349,19 +337,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetCdnRecordRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -1034,19 +1010,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDeviceRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -1244,19 +1208,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDeviceRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -1544,19 +1496,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDnsRecordRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -1800,19 +1740,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDnsRecordRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -2031,19 +1959,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDomainMonitorRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -2287,19 +2203,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDomainMonitorRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -2398,19 +2302,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDomainMonitorRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -2966,19 +2858,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.CreatePlatformConfigRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -3176,19 +3056,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetPlatformConfigRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -3290,19 +3158,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetPortForwardRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -3546,19 +3402,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetPortForwardRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -3666,19 +3510,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetPortForwardRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -5506,19 +5338,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetWebhookRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -5762,19 +5582,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetWebhookRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -5873,19 +5681,7 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetWebhookRequest"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
                     "400": {
@@ -6624,18 +6420,6 @@
                 }
             }
         },
-        "vibe_ip_internal_types.GetCdnRecordRequest": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "description": "CDN记录序号",
-                    "type": "integer"
-                }
-            }
-        },
         "vibe_ip_internal_types.GetCdnRecordResponse": {
             "type": "object",
             "properties": {
@@ -6893,18 +6677,6 @@
                 }
             }
         },
-        "vibe_ip_internal_types.GetDeviceRequest": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "description": "设备序号",
-                    "type": "integer"
-                }
-            }
-        },
         "vibe_ip_internal_types.GetDeviceResponse": {
             "type": "object",
             "properties": {
@@ -6954,18 +6726,6 @@
                     "items": {
                         "type": "integer"
                     }
-                }
-            }
-        },
-        "vibe_ip_internal_types.GetDnsRecordRequest": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "description": "DNS记录序号",
-                    "type": "integer"
                 }
             }
         },
@@ -7055,18 +6815,6 @@
                             "type": "integer"
                         }
                     }
-                }
-            }
-        },
-        "vibe_ip_internal_types.GetDomainMonitorRequest": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "description": "域名监控记录序号",
-                    "type": "integer"
                 }
             }
         },
@@ -7284,18 +7032,6 @@
                 }
             }
         },
-        "vibe_ip_internal_types.GetPlatformConfigRequest": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "description": "配置序号",
-                    "type": "integer"
-                }
-            }
-        },
         "vibe_ip_internal_types.GetPlatformConfigResponse": {
             "type": "object",
             "properties": {
@@ -7340,18 +7076,6 @@
                             "type": "integer"
                         }
                     }
-                }
-            }
-        },
-        "vibe_ip_internal_types.GetPortForwardRequest": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "description": "设备端口转发序号",
-                    "type": "integer"
                 }
             }
         },
@@ -7613,18 +7337,6 @@
                 },
                 "statistic_data_retain_time": {
                     "description": "统计数据保留时间（天，默认 365 天）",
-                    "type": "integer"
-                }
-            }
-        },
-        "vibe_ip_internal_types.GetWebhookRequest": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "description": "通知序号",
                     "type": "integer"
                 }
             }

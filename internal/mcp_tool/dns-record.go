@@ -97,12 +97,12 @@ func createDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	)
 
 	// 调用
-	response, err := service.CreateDnsRecord(ctx, params)
+	err := service.CreateDnsRecord(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 更新DNS记录
@@ -116,12 +116,12 @@ func updateDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	)
 
 	// 调用
-	response, err := service.UpdateDnsRecord(ctx, params)
+	err := service.UpdateDnsRecord(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 更新DNS记录启用状态

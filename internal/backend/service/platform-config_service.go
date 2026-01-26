@@ -17,8 +17,8 @@ type PlatformConfigService interface {
 	BuildResponse(ctx context.Context, item *ent.PlatformConfig) (*types.GetPlatformConfigResponse, error)
 	GetConfigs(ctx context.Context) ([]*types.GetPlatformConfigResponse, error)
 	GetConfig(ctx context.Context, id int64) (*types.GetPlatformConfigResponse, error)
-	CreateConfig(ctx context.Context, request *types.CreatePlatformConfigRequest) (*types.GetPlatformConfigRequest, error)
-	UpdateConfig(ctx context.Context, request *types.UpdatePlatformConfigRequest) (*types.GetPlatformConfigRequest, error)
+	CreateConfig(ctx context.Context, request *types.CreatePlatformConfigRequest) error
+	UpdateConfig(ctx context.Context, request *types.UpdatePlatformConfigRequest) error
 	DeleteConfig(ctx context.Context, id int64) error
 	BatchDeleteConfig(ctx context.Context, ids []int64) error
 }
@@ -114,51 +114,47 @@ func (s *PlatformConfigServiceImpl) GetConfig(ctx context.Context, id int64) (*t
 }
 
 // CreateConfig 创建配置
-func (s *PlatformConfigServiceImpl) CreateConfig(ctx context.Context, request *types.CreatePlatformConfigRequest) (*types.GetPlatformConfigRequest, error) {
+func (s *PlatformConfigServiceImpl) CreateConfig(ctx context.Context, request *types.CreatePlatformConfigRequest) error {
 	// 创建配置
-	saveConfig, err := s.db.PlatformConfig.Create().
+	err := s.db.PlatformConfig.Create().
 		SetName(request.Name).
 		SetDescription(request.Description).
 		SetPlatform(platformconfig.Platform(request.Platform)).
 		SetConfigJSON([]byte(request.ConfigJSON)).
 		SetCapability(platformconfig.Capability(request.Capability)).
-		Save(ctx)
+		Exec(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("创建配置失败: %w", err)
+		return fmt.Errorf("创建配置失败: %w", err)
 	}
 
-	return &types.GetPlatformConfigRequest{
-		ID: saveConfig.ID,
-	}, nil
+	return nil
 }
 
 // UpdateConfig 更新配置
-func (s *PlatformConfigServiceImpl) UpdateConfig(ctx context.Context, request *types.UpdatePlatformConfigRequest) (*types.GetPlatformConfigRequest, error) {
+func (s *PlatformConfigServiceImpl) UpdateConfig(ctx context.Context, request *types.UpdatePlatformConfigRequest) error {
 	// 查询配置
 	firstConfig, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(request.ID)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询配置失败: 配置不存在")
+			return fmt.Errorf("查询配置失败: 配置不存在")
 		}
-		return nil, fmt.Errorf("查询配置失败: %w", err)
+		return fmt.Errorf("查询配置失败: %w", err)
 	}
 
 	// 更新配置
-	saveConfig, err := s.db.PlatformConfig.UpdateOne(firstConfig).
+	err = s.db.PlatformConfig.UpdateOne(firstConfig).
 		SetName(request.Name).
 		SetDescription(request.Description).
 		SetConfigJSON([]byte(request.ConfigJSON)).
 		SetCapability(platformconfig.Capability(request.Capability)).
-		Save(ctx)
+		Exec(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("更新配置失败: %w", err)
+		return fmt.Errorf("更新配置失败: %w", err)
 	}
 
-	return &types.GetPlatformConfigRequest{
-		ID: saveConfig.ID,
-	}, nil
+	return nil
 }
 
 // DeleteConfig 删除配置

@@ -25,8 +25,8 @@ type WebhookSubService interface {
 	BuildResponse(ctx context.Context, item *ent.WebhookSubscription) (*types.GetWebhookSubResponse, error)
 	GetWebhookSubs(ctx context.Context, request *types.GetWebhookSubsRequest) ([]*types.GetWebhookSubResponse, error)
 	GetWebhookSub(ctx context.Context, id int64) (*types.GetWebhookSubResponse, error)
-	CreateWebhookSub(ctx context.Context, request *types.CreateWebhookSubRequest) (*types.CreateWebhookSubResponse, error)
-	UpdateWebhookSub(ctx context.Context, request *types.UpdateWebhookSubRequest) (*types.GetWebhookSubRequest, error)
+	CreateWebhookSub(ctx context.Context, request *types.CreateWebhookSubRequest) error
+	UpdateWebhookSub(ctx context.Context, request *types.UpdateWebhookSubRequest) error
 	UpdateWebhookSubActive(ctx context.Context, id int64, isActive bool) error
 	BatchUpdateWebhookSubActive(ctx context.Context, ids []int64, isActive bool) error
 	DeleteWebhookSub(ctx context.Context, id int64) error
@@ -200,7 +200,7 @@ func (s *WebhookSubServiceImpl) GetWebhookSub(ctx context.Context, id int64) (*t
 }
 
 // CreateWebhookSub 创建通知订阅
-func (s *WebhookSubServiceImpl) CreateWebhookSub(ctx context.Context, request *types.CreateWebhookSubRequest) (*types.CreateWebhookSubResponse, error) {
+func (s *WebhookSubServiceImpl) CreateWebhookSub(ctx context.Context, request *types.CreateWebhookSubRequest) error {
 	// 循环创建通知订阅
 	for _, objID := range request.ObjIDs {
 		// 创建通知订阅
@@ -212,38 +212,36 @@ func (s *WebhookSubServiceImpl) CreateWebhookSub(ctx context.Context, request *t
 			SetObjID(objID).
 			Exec(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("创建通知订阅失败: %w", err)
+			return fmt.Errorf("创建通知订阅失败: %w", err)
 		}
 	}
 
-	return &types.CreateWebhookSubResponse{
-		IDs: request.ObjIDs,
-	}, nil
+	return nil
 }
 
 // UpdateWebhookSub 更新通知订阅
-func (s *WebhookSubServiceImpl) UpdateWebhookSub(ctx context.Context, request *types.UpdateWebhookSubRequest) (*types.GetWebhookSubRequest, error) {
+func (s *WebhookSubServiceImpl) UpdateWebhookSub(ctx context.Context, request *types.UpdateWebhookSubRequest) error {
 	// 查询通知订阅
 	firstWebhookSubscription, err := s.db.WebhookSubscription.Query().
 		Where(webhooksubscription.IDEQ(request.ID)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询通知订阅失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询通知订阅失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询通知订阅失败: %w", err)
+		return fmt.Errorf("查询通知订阅失败: %w", err)
 	}
+
 	// 更新通知订阅
-	saveWebhookSubscription, err := s.db.WebhookSubscription.UpdateOne(firstWebhookSubscription).
+	err = s.db.WebhookSubscription.UpdateOne(firstWebhookSubscription).
 		SetName(request.Name).
 		SetDescription(request.Description).
-		Save(ctx)
+		Exec(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("更新通知订阅失败: %w", err)
+		return fmt.Errorf("更新通知订阅失败: %w", err)
 	}
-	return &types.GetWebhookSubRequest{
-		ID: saveWebhookSubscription.ID,
-	}, nil
+
+	return nil
 }
 
 // UpdateWebhookSubActive 更新通知订阅启用状态

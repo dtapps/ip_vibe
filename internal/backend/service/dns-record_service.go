@@ -22,8 +22,8 @@ type DNSRecordService interface {
 	BuildResponse(ctx context.Context, item *ent.DNSRecord) (*types.GetDnsRecordResponse, error)
 	GetDnsRecords(ctx context.Context, request *types.GetDnsRecordsRequest) ([]*types.GetDnsRecordResponse, error)
 	GetDnsRecord(ctx context.Context, id int64) (*types.GetDnsRecordResponse, error)
-	CreateDnsRecord(ctx context.Context, request *types.CreateDnsRecordRequest) (*types.GetDnsRecordRequest, error)
-	UpdateDnsRecord(ctx context.Context, request *types.UpdateDnsRecordRequest) (*types.GetDnsRecordRequest, error)
+	CreateDnsRecord(ctx context.Context, request *types.CreateDnsRecordRequest) error
+	UpdateDnsRecord(ctx context.Context, request *types.UpdateDnsRecordRequest) error
 	UpdateDnsRecordActive(ctx context.Context, id int64, isActive bool) error
 	BatchUpdateDnsRecordActive(ctx context.Context, ids []int64, isActive bool) error
 	DeleteDnsRecord(ctx context.Context, id int64) error
@@ -161,7 +161,7 @@ func (s *DNSRecordServiceImpl) GetDnsRecord(ctx context.Context, id int64) (*typ
 }
 
 // CreateDnsRecord 创建DNS记录
-func (s *DNSRecordServiceImpl) CreateDnsRecord(ctx context.Context, request *types.CreateDnsRecordRequest) (*types.GetDnsRecordRequest, error) {
+func (s *DNSRecordServiceImpl) CreateDnsRecord(ctx context.Context, request *types.CreateDnsRecordRequest) error {
 	// 创建DNS记录 (保持原始的链式设置逻辑)
 	createDnsRecord := s.db.DNSRecord.Create().
 		SetConfigID(request.ConfigID).
@@ -177,7 +177,7 @@ func (s *DNSRecordServiceImpl) CreateDnsRecord(ctx context.Context, request *typ
 
 	saveDnsRecord, err := createDnsRecord.Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("创建DNS记录失败: %w", err)
+		return fmt.Errorf("创建DNS记录失败: %w", err)
 	}
 
 	// 创建通知订阅
@@ -188,22 +188,20 @@ func (s *DNSRecordServiceImpl) CreateDnsRecord(ctx context.Context, request *typ
 		}
 	}
 
-	return &types.GetDnsRecordRequest{
-		ID: saveDnsRecord.ID,
-	}, nil
+	return nil
 }
 
 // UpdateDnsRecord 更新DNS记录
-func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *types.UpdateDnsRecordRequest) (*types.GetDnsRecordRequest, error) {
+func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *types.UpdateDnsRecordRequest) error {
 	// 查询DNS记录
 	firstDnsRecord, err := s.db.DNSRecord.Query().
 		Where(dnsrecord.IDEQ(request.ID)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询DNS记录失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询DNS记录失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询DNS记录失败: %w", err)
+		return fmt.Errorf("查询DNS记录失败: %w", err)
 	}
 
 	// 更新DNS记录 (保持原始的链式设置逻辑)
@@ -221,7 +219,7 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *typ
 
 	saveDnsRecord, err := updateDnsRecord.Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("更新DNS记录失败: %w", err)
+		return fmt.Errorf("更新DNS记录失败: %w", err)
 	}
 
 	// 更新通知订阅
@@ -232,9 +230,7 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *typ
 		}
 	}
 
-	return &types.GetDnsRecordRequest{
-		ID: saveDnsRecord.ID,
-	}, nil
+	return nil
 }
 
 // UpdateDnsRecordActive 更新DNS记录启用状态

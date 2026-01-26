@@ -91,10 +91,10 @@ func GetCdnRecordDetail(c *gin.Context) {
 //	@Tags			CDN记录
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.CreateCdnRecordRequest				true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetCdnRecordRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								"参数错误"
-//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Param			request	body		types.CreateCdnRecordRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}					"成功响应"
+//	@Failure		400		{object}	APIResponse{}					"参数错误"
+//	@Failure		404		{object}	APIResponse{}					"错误响应"
 //	@Router			/cdn-records [post]
 func CreateCdnRecord(c *gin.Context) {
 	// 请求参数
@@ -112,12 +112,12 @@ func CreateCdnRecord(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.CreateCdnRecord(c, &requestParams)
+	err := service.CreateCdnRecord(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
 }
 
 // 更新CDN记录
@@ -127,11 +127,11 @@ func CreateCdnRecord(c *gin.Context) {
 //	@Tags			CDN记录
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id		path		int64										true	"CDN记录序号"
-//	@Param			request	body		types.UpdateCdnRecordRequest				true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetCdnRecordRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								"参数错误"
-//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Param			id		path		int64							true	"CDN记录序号"
+//	@Param			request	body		types.UpdateCdnRecordRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}					"成功响应"
+//	@Failure		400		{object}	APIResponse{}					"参数错误"
+//	@Failure		404		{object}	APIResponse{}					"错误响应"
 //	@Router			/cdn-records/{id} [patch]
 func UpdateCdnRecord(c *gin.Context) {
 	// 请求参数
@@ -150,12 +150,12 @@ func UpdateCdnRecord(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.UpdateCdnRecord(c, &requestParams)
+	err := service.UpdateCdnRecord(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
 }
 
 // 更新CDN记录启用状态

@@ -103,12 +103,12 @@ func createDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 	)
 
 	// 调用
-	response, err := service.CreateDomainMonitor(ctx, params)
+	err := service.CreateDomainMonitor(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 更新域名监控
@@ -124,12 +124,12 @@ func updateDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 	)
 
 	// 调用
-	response, err := service.UpdateDomainMonitor(ctx, params)
+	err := service.UpdateDomainMonitor(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 更新域名监控启用状态
@@ -187,10 +187,10 @@ func checkDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *t
 	)
 
 	// 调用
-	response, err := service.CheckDomainMonitor(ctx, params.ID)
+	err := service.CheckDomainMonitor(ctx, params.ID)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }

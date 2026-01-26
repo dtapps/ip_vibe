@@ -23,13 +23,13 @@ type DomainMonitorService interface {
 	BuildResponse(ctx context.Context, item *ent.DomainMonitor) (*types.GetDomainMonitorResponse, error)
 	GetDomainMonitors(ctx context.Context, request *types.GetDomainMonitorsRequest) ([]*types.GetDomainMonitorResponse, error)
 	GetDomainMonitor(ctx context.Context, id int64) (*types.GetDomainMonitorResponse, error)
-	CreateDomainMonitor(ctx context.Context, request *types.CreateDomainMonitorRequest) (*types.GetDomainMonitorRequest, error)
-	UpdateDomainMonitor(ctx context.Context, request *types.UpdateDomainMonitorRequest) (*types.GetDomainMonitorRequest, error)
+	CreateDomainMonitor(ctx context.Context, request *types.CreateDomainMonitorRequest) error
+	UpdateDomainMonitor(ctx context.Context, request *types.UpdateDomainMonitorRequest) error
 	UpdateDomainMonitorActive(ctx context.Context, id int64, isActive bool) error
 	BatchUpdateDomainMonitorActive(ctx context.Context, ids []int64, isActive bool) error
 	DeleteDomainMonitor(ctx context.Context, id int64) error
 	BatchDeleteDomainMonitor(ctx context.Context, ids []int64) error
-	CheckDomainMonitor(ctx context.Context, id int64) (*types.GetDomainMonitorRequest, error)
+	CheckDomainMonitor(ctx context.Context, id int64) error
 }
 
 // DomainMonitorServiceImpl 域名监控服务实现
@@ -137,7 +137,7 @@ func (s *DomainMonitorServiceImpl) GetDomainMonitor(ctx context.Context, id int6
 }
 
 // CreateDomainMonitor 创建域名监控
-func (s *DomainMonitorServiceImpl) CreateDomainMonitor(ctx context.Context, request *types.CreateDomainMonitorRequest) (*types.GetDomainMonitorRequest, error) {
+func (s *DomainMonitorServiceImpl) CreateDomainMonitor(ctx context.Context, request *types.CreateDomainMonitorRequest) error {
 	// 创建域名监控
 	saveDomainMonitor, err := s.db.DomainMonitor.Create().
 		SetName(request.Name).
@@ -148,7 +148,7 @@ func (s *DomainMonitorServiceImpl) CreateDomainMonitor(ctx context.Context, requ
 		SetCheckProtocol(domainmonitor.CheckProtocol(request.CheckProtocol)).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("创建域名监控失败: %w", err)
+		return fmt.Errorf("创建域名监控失败: %w", err)
 	}
 
 	// 创建通知订阅
@@ -159,22 +159,20 @@ func (s *DomainMonitorServiceImpl) CreateDomainMonitor(ctx context.Context, requ
 		}
 	}
 
-	return &types.GetDomainMonitorRequest{
-		ID: saveDomainMonitor.ID,
-	}, nil
+	return nil
 }
 
 // UpdateDomainMonitor 更新域名监控
-func (s *DomainMonitorServiceImpl) UpdateDomainMonitor(ctx context.Context, request *types.UpdateDomainMonitorRequest) (*types.GetDomainMonitorRequest, error) {
+func (s *DomainMonitorServiceImpl) UpdateDomainMonitor(ctx context.Context, request *types.UpdateDomainMonitorRequest) error {
 	// 查询域名监控
 	firstDomainMonitor, err := s.db.DomainMonitor.Query().
 		Where(domainmonitor.IDEQ(request.ID)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询域名监控失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询域名监控失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询域名监控失败: %w", err)
+		return fmt.Errorf("查询域名监控失败: %w", err)
 	}
 	// 更新域名监控
 	saveDomainMonitor, err := s.db.DomainMonitor.UpdateOne(firstDomainMonitor).
@@ -184,7 +182,7 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitor(ctx context.Context, requ
 		SetCheckInterval(request.CheckInterval).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("更新域名监控失败: %w", err)
+		return fmt.Errorf("更新域名监控失败: %w", err)
 	}
 
 	// 更新通知订阅
@@ -195,9 +193,7 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitor(ctx context.Context, requ
 		}
 	}
 
-	return &types.GetDomainMonitorRequest{
-		ID: saveDomainMonitor.ID,
-	}, nil
+	return nil
 }
 
 // UpdateDomainMonitorActive 更新域名监控启用状态
@@ -339,16 +335,16 @@ func (s *DomainMonitorServiceImpl) BatchDeleteDomainMonitor(ctx context.Context,
 }
 
 // CheckDomainMonitor 检查域名监控（执行一次任务）
-func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id int64) (*types.GetDomainMonitorRequest, error) {
+func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id int64) error {
 	// 查询域名监控
 	firstDomainMonitor, err := s.db.DomainMonitor.Query().
 		Where(domainmonitor.IDEQ(id)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询域名监控失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询域名监控失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询域名监控失败: %w", err)
+		return fmt.Errorf("查询域名监控失败: %w", err)
 	}
 
 	// 域名监控任务 (保持 Handler 中创建依赖的原始逻辑，但使用 Service 内部的注入依赖)
@@ -363,10 +359,8 @@ func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id in
 	// 添加域名监控一次性任务
 	err = domainMonitorService.AddDisposableTask(ctx, firstDomainMonitor)
 	if err != nil {
-		return nil, fmt.Errorf("添加域名监控一次性任务失败: %w", err)
+		return fmt.Errorf("添加域名监控一次性任务失败: %w", err)
 	}
 
-	return &types.GetDomainMonitorRequest{
-		ID: firstDomainMonitor.ID,
-	}, nil
+	return nil
 }

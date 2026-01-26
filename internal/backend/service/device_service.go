@@ -26,8 +26,8 @@ type DeviceService interface {
 	BuildResponse(ctx context.Context, item *ent.Device) (*types.GetDeviceResponse, error)
 	GetDevices(ctx context.Context) ([]*types.GetDeviceResponse, error)
 	GetDevice(ctx context.Context, id int64) (*types.GetDeviceResponse, error)
-	CreateDevice(ctx context.Context, request *types.CreateDeviceRequest) (*types.GetDeviceRequest, error)
-	UpdateDevice(ctx context.Context, request *types.UpdateDeviceRequest) (*types.GetDeviceRequest, error)
+	CreateDevice(ctx context.Context, request *types.CreateDeviceRequest) error
+	UpdateDevice(ctx context.Context, request *types.UpdateDeviceRequest) error
 	DeleteDevice(ctx context.Context, id int64) error
 	BatchDeleteDevice(ctx context.Context, ids []int64) error
 	GetDeviceIpHistory(ctx context.Context, id int64) ([]*types.GetDeviceIpHistoryResponse, error)
@@ -163,7 +163,7 @@ func (s *DeviceServiceImpl) GetDevice(ctx context.Context, id int64) (*types.Get
 }
 
 // CreateDevice 创建设备
-func (s *DeviceServiceImpl) CreateDevice(ctx context.Context, request *types.CreateDeviceRequest) (*types.GetDeviceRequest, error) {
+func (s *DeviceServiceImpl) CreateDevice(ctx context.Context, request *types.CreateDeviceRequest) error {
 	// 创建设备
 	saveDevice, err := s.db.Device.Create().
 		SetCode(request.Code).
@@ -173,7 +173,7 @@ func (s *DeviceServiceImpl) CreateDevice(ctx context.Context, request *types.Cre
 		SetIPV6(request.IPV6).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("创建设备失败: %w", err)
+		return fmt.Errorf("创建设备失败: %w", err)
 	}
 
 	// 创建通知订阅 (保持原始逻辑)
@@ -184,22 +184,20 @@ func (s *DeviceServiceImpl) CreateDevice(ctx context.Context, request *types.Cre
 		}
 	}
 
-	return &types.GetDeviceRequest{
-		ID: saveDevice.ID,
-	}, nil
+	return nil
 }
 
 // UpdateDevice 更新设备
-func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.UpdateDeviceRequest) (*types.GetDeviceRequest, error) {
+func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.UpdateDeviceRequest) error {
 	// 查询设备
 	firstDevice, err := s.db.Device.Query().
 		Where(device.IDEQ(request.ID)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询设备失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询设备失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询设备失败: %w", err)
+		return fmt.Errorf("查询设备失败: %w", err)
 	}
 	// 更新设备
 	saveDevice, err := s.db.Device.UpdateOne(firstDevice).
@@ -209,7 +207,7 @@ func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.Upd
 		SetIPV6(request.IPV6).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("更新设备失败: %w", err)
+		return fmt.Errorf("更新设备失败: %w", err)
 	}
 
 	// 更新通知订阅 (保持原始逻辑)
@@ -220,9 +218,7 @@ func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.Upd
 		}
 	}
 
-	return &types.GetDeviceRequest{
-		ID: saveDevice.ID,
-	}, nil
+	return nil
 }
 
 // DeleteDevice 删除设备

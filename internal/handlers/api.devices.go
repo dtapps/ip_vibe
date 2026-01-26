@@ -83,10 +83,10 @@ func GetDeviceDetail(c *gin.Context) {
 //	@Tags			设备
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.CreateDeviceRequest					true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetDeviceRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								"参数错误"
-//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Param			request	body		types.CreateDeviceRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}				"成功响应"
+//	@Failure		400		{object}	APIResponse{}				"参数错误"
+//	@Failure		404		{object}	APIResponse{}				"错误响应"
 //	@Router			/devices [post]
 func CreateDevice(c *gin.Context) {
 	// 请求参数
@@ -104,12 +104,12 @@ func CreateDevice(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.CreateDevice(c, &requestParams)
+	err := service.CreateDevice(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
 }
 
 // 更新设备
@@ -119,11 +119,11 @@ func CreateDevice(c *gin.Context) {
 //	@Tags			设备
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id		path		int64										true	"设备序号"
-//	@Param			request	body		types.UpdateDeviceRequest					true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetDeviceRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								"参数错误"
-//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Param			id		path		int64						true	"设备序号"
+//	@Param			request	body		types.UpdateDeviceRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}				"成功响应"
+//	@Failure		400		{object}	APIResponse{}				"参数错误"
+//	@Failure		404		{object}	APIResponse{}				"错误响应"
 //	@Router			/devices/{id} [patch]
 func UpdateDevice(c *gin.Context) {
 	// 请求参数
@@ -142,12 +142,12 @@ func UpdateDevice(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.UpdateDevice(c, &requestParams)
+	err := service.UpdateDevice(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
 }
 
 // 删除设备

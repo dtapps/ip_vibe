@@ -4,7 +4,7 @@
             "data": {
                 "properties": {
                     "data": {
-                        "$ref": "#/components/schemas/vibe_ip_internal_types.GetWebhookRequest"
+                        "$ref": "#/components/schemas/vibe_ip_internal_types.GetWebhookResponse"
                     }
                 },
                 "type": "object"
@@ -763,18 +763,6 @@
                 ],
                 "type": "object"
             },
-            "vibe_ip_internal_types.GetCdnRecordRequest": {
-                "properties": {
-                    "id": {
-                        "description": "CDN记录序号",
-                        "type": "integer"
-                    }
-                },
-                "required": [
-                    "id"
-                ],
-                "type": "object"
-            },
             "vibe_ip_internal_types.GetCdnRecordResponse": {
                 "properties": {
                     "cdn_domain": {
@@ -1033,18 +1021,6 @@
                 },
                 "type": "object"
             },
-            "vibe_ip_internal_types.GetDeviceRequest": {
-                "properties": {
-                    "id": {
-                        "description": "设备序号",
-                        "type": "integer"
-                    }
-                },
-                "required": [
-                    "id"
-                ],
-                "type": "object"
-            },
             "vibe_ip_internal_types.GetDeviceResponse": {
                 "properties": {
                     "code": {
@@ -1096,18 +1072,6 @@
                         "uniqueItems": false
                     }
                 },
-                "type": "object"
-            },
-            "vibe_ip_internal_types.GetDnsRecordRequest": {
-                "properties": {
-                    "id": {
-                        "description": "DNS记录序号",
-                        "type": "integer"
-                    }
-                },
-                "required": [
-                    "id"
-                ],
                 "type": "object"
             },
             "vibe_ip_internal_types.GetDnsRecordResponse": {
@@ -1200,18 +1164,6 @@
                         "uniqueItems": false
                     }
                 },
-                "type": "object"
-            },
-            "vibe_ip_internal_types.GetDomainMonitorRequest": {
-                "properties": {
-                    "id": {
-                        "description": "域名监控记录序号",
-                        "type": "integer"
-                    }
-                },
-                "required": [
-                    "id"
-                ],
                 "type": "object"
             },
             "vibe_ip_internal_types.GetDomainMonitorResponse": {
@@ -1428,18 +1380,6 @@
                 },
                 "type": "object"
             },
-            "vibe_ip_internal_types.GetPlatformConfigRequest": {
-                "properties": {
-                    "id": {
-                        "description": "配置序号",
-                        "type": "integer"
-                    }
-                },
-                "required": [
-                    "id"
-                ],
-                "type": "object"
-            },
             "vibe_ip_internal_types.GetPlatformConfigResponse": {
                 "properties": {
                     "capability": {
@@ -1487,18 +1427,6 @@
                         "uniqueItems": false
                     }
                 },
-                "type": "object"
-            },
-            "vibe_ip_internal_types.GetPortForwardRequest": {
-                "properties": {
-                    "id": {
-                        "description": "设备端口转发序号",
-                        "type": "integer"
-                    }
-                },
-                "required": [
-                    "id"
-                ],
                 "type": "object"
             },
             "vibe_ip_internal_types.GetPortForwardResponse": {
@@ -1763,18 +1691,6 @@
                         "type": "integer"
                     }
                 },
-                "type": "object"
-            },
-            "vibe_ip_internal_types.GetWebhookRequest": {
-                "properties": {
-                    "id": {
-                        "description": "通知序号",
-                        "type": "integer"
-                    }
-                },
-                "required": [
-                    "id"
-                ],
                 "type": "object"
             },
             "vibe_ip_internal_types.GetWebhookResponse": {
@@ -2619,21 +2535,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },
@@ -2959,21 +2861,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },
@@ -3838,21 +3726,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },
@@ -4117,21 +3991,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },
@@ -4491,21 +4351,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },
@@ -4831,21 +4677,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },
@@ -5127,21 +4959,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },
@@ -5467,21 +5285,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },
@@ -5614,21 +5418,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },
@@ -6346,21 +6136,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },
@@ -6625,21 +6401,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },
@@ -6774,21 +6536,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },
@@ -7114,21 +6862,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },
@@ -7272,21 +7006,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },
@@ -9704,21 +9424,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },
@@ -10044,21 +9750,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },
@@ -10191,21 +9883,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/data"
-                                        }
-                                    ],
-                                    "properties": {
-                                        "code": {
-                                            "type": "integer"
-                                        },
-                                        "data": {},
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
                                 }
                             }
                         },

@@ -102,12 +102,12 @@ func createPortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	)
 
 	// 调用
-	response, err := service.CreatePortForward(ctx, params)
+	err := service.CreatePortForward(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 更新端口转发
@@ -121,12 +121,12 @@ func updatePortForward(ctx context.Context, req *mcp.CallToolRequest, params *ty
 	)
 
 	// 调用
-	response, err := service.UpdatePortForward(ctx, params)
+	err := service.UpdatePortForward(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 更新端口转发防火墙状态
@@ -140,12 +140,12 @@ func updatePortForwardForward(ctx context.Context, req *mcp.CallToolRequest, par
 	)
 
 	// 调用
-	response, err := service.UpdatePortForwardForward(ctx, params)
+	err := service.UpdatePortForwardForward(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 更新端口转发启用状态

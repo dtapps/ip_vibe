@@ -91,10 +91,10 @@ func GetPortForwardDetail(c *gin.Context) {
 //	@Tags			端口转发
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.CreatePortForwardRequest					true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}									"参数错误"
-//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Param			request	body		types.CreatePortForwardRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}					"成功响应"
+//	@Failure		400		{object}	APIResponse{}					"参数错误"
+//	@Failure		404		{object}	APIResponse{}					"错误响应"
 //	@Router			/port-forwards [post]
 func CreatePortForward(c *gin.Context) {
 	// 请求参数
@@ -112,12 +112,12 @@ func CreatePortForward(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.CreatePortForward(c, &requestParams)
+	err := service.CreatePortForward(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
 }
 
 // 更新端口转发
@@ -127,11 +127,11 @@ func CreatePortForward(c *gin.Context) {
 //	@Tags			端口转发
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id		path		int64											true	"端口转发序号"
-//	@Param			request	body		types.UpdatePortForwardRequest					true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}									"参数错误"
-//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Param			id		path		int64							true	"端口转发序号"
+//	@Param			request	body		types.UpdatePortForwardRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}					"成功响应"
+//	@Failure		400		{object}	APIResponse{}					"参数错误"
+//	@Failure		404		{object}	APIResponse{}					"错误响应"
 //	@Router			/port-forwards/{id} [patch]
 func UpdatePortForward(c *gin.Context) {
 	// 请求参数
@@ -150,12 +150,12 @@ func UpdatePortForward(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.UpdatePortForward(c, &requestParams)
+	err := service.UpdatePortForward(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
 }
 
 // 更新端口转发防火墙状态
@@ -165,11 +165,11 @@ func UpdatePortForward(c *gin.Context) {
 //	@Tags			端口转发
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id		path		int64											true	"端口转发序号"
-//	@Param			request	body		types.UpdatePortForwardForwardRequest			true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetPortForwardRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}									"参数错误"
-//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Param			id		path		int64									true	"端口转发序号"
+//	@Param			request	body		types.UpdatePortForwardForwardRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}							"成功响应"
+//	@Failure		400		{object}	APIResponse{}							"参数错误"
+//	@Failure		404		{object}	APIResponse{}							"错误响应"
 //	@Router			/port-forwards/{id}/forward [patch]
 func UpdatePortForwardForward(c *gin.Context) {
 	// 请求参数
@@ -188,12 +188,12 @@ func UpdatePortForwardForward(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.UpdatePortForwardForward(c, &requestParams)
+	err := service.UpdatePortForwardForward(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
 }
 
 // 更新端口转发启用状态

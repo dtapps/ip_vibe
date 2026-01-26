@@ -23,8 +23,8 @@ type CDNRecordService interface {
 	BuildResponse(ctx context.Context, item *ent.CDNRecord) (*types.GetCdnRecordResponse, error)
 	GetCdnRecords(ctx context.Context, request *types.GetCdnRecordsRequest) ([]*types.GetCdnRecordResponse, error)
 	GetCdnRecord(ctx context.Context, id int64) (*types.GetCdnRecordResponse, error)
-	CreateCdnRecord(ctx context.Context, request *types.CreateCdnRecordRequest) (*types.GetCdnRecordRequest, error)
-	UpdateCdnRecord(ctx context.Context, request *types.UpdateCdnRecordRequest) (*types.GetCdnRecordRequest, error)
+	CreateCdnRecord(ctx context.Context, request *types.CreateCdnRecordRequest) error
+	UpdateCdnRecord(ctx context.Context, request *types.UpdateCdnRecordRequest) error
 	UpdateCdnRecordActive(ctx context.Context, id int64, isActive bool) error
 	BatchUpdateCdnRecordActive(ctx context.Context, ids []int64, isActive bool) error
 	DeleteCdnRecord(ctx context.Context, id int64) error
@@ -153,7 +153,7 @@ func (s *CDNRecordServiceImpl) GetCdnRecord(ctx context.Context, id int64) (*typ
 }
 
 // CreateCdnRecord 创建 CDN 记录
-func (s *CDNRecordServiceImpl) CreateCdnRecord(ctx context.Context, request *types.CreateCdnRecordRequest) (*types.GetCdnRecordRequest, error) {
+func (s *CDNRecordServiceImpl) CreateCdnRecord(ctx context.Context, request *types.CreateCdnRecordRequest) error {
 	// 创建CDN记录
 	saveCdnRecord, err := s.db.CDNRecord.Create().
 		SetConfigID(request.ConfigID).
@@ -163,7 +163,7 @@ func (s *CDNRecordServiceImpl) CreateCdnRecord(ctx context.Context, request *typ
 		SetIPGroupID(request.IPGroupID).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("创建CDN记录失败: %w", err)
+		return fmt.Errorf("创建CDN记录失败: %w", err)
 	}
 
 	// 创建通知订阅
@@ -172,22 +172,20 @@ func (s *CDNRecordServiceImpl) CreateCdnRecord(ctx context.Context, request *typ
 		fmt.Printf("创建通知订阅失败: %s\n", err.Error())
 	}
 
-	return &types.GetCdnRecordRequest{
-		ID: saveCdnRecord.ID,
-	}, nil
+	return nil
 }
 
 // UpdateCdnRecord 更新 CDN 记录
-func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *types.UpdateCdnRecordRequest) (*types.GetCdnRecordRequest, error) {
+func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *types.UpdateCdnRecordRequest) error {
 	// 查询CDN记录
 	firstCdnRecord, err := s.db.CDNRecord.Query().
 		Where(cdnrecord.IDEQ(request.ID)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询CDN记录失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询CDN记录失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询CDN记录失败: %w", err)
+		return fmt.Errorf("查询CDN记录失败: %w", err)
 	}
 
 	// 更新CDN记录
@@ -197,7 +195,7 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *typ
 		SetIPGroupID(request.IPGroupID).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("更新CDN记录失败: %w", err)
+		return fmt.Errorf("更新CDN记录失败: %w", err)
 	}
 
 	// 更新通知订阅
@@ -208,9 +206,7 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *typ
 		}
 	}
 
-	return &types.GetCdnRecordRequest{
-		ID: saveCdnRecord.ID,
-	}, nil
+	return nil
 }
 
 // UpdateCdnRecordActive 更新 CDN 记录启用状态

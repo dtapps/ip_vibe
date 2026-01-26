@@ -97,12 +97,12 @@ func createDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.C
 	)
 
 	// 调用
-	response, err := service.CreateDevice(ctx, params)
+	err := service.CreateDevice(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 更新设备
@@ -116,12 +116,12 @@ func updateDevice(ctx context.Context, req *mcp.CallToolRequest, params *types.U
 	)
 
 	// 调用
-	response, err := service.UpdateDevice(ctx, params)
+	err := service.UpdateDevice(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 删除设备

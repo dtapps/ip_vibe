@@ -3,7 +3,7 @@ components:
     data:
       properties:
         data:
-          $ref: '#/components/schemas/vibe_ip_internal_types.GetWebhookRequest'
+          $ref: '#/components/schemas/vibe_ip_internal_types.GetWebhookResponse'
       type: object
     internal_handlers.APIResponse:
       allOf:
@@ -543,14 +543,6 @@ components:
       - template_content
       - template_title
       type: object
-    vibe_ip_internal_types.GetCdnRecordRequest:
-      properties:
-        id:
-          description: CDN记录序号
-          type: integer
-      required:
-      - id
-      type: object
     vibe_ip_internal_types.GetCdnRecordResponse:
       properties:
         cdn_domain:
@@ -738,14 +730,6 @@ components:
           description: IP地址V6
           type: string
       type: object
-    vibe_ip_internal_types.GetDeviceRequest:
-      properties:
-        id:
-          description: 设备序号
-          type: integer
-      required:
-      - id
-      type: object
     vibe_ip_internal_types.GetDeviceResponse:
       properties:
         code:
@@ -784,14 +768,6 @@ components:
             type: integer
           type: array
           uniqueItems: false
-      type: object
-    vibe_ip_internal_types.GetDnsRecordRequest:
-      properties:
-        id:
-          description: DNS记录序号
-          type: integer
-      required:
-      - id
       type: object
     vibe_ip_internal_types.GetDnsRecordResponse:
       properties:
@@ -859,14 +835,6 @@ components:
             type: array
           type: array
           uniqueItems: false
-      type: object
-    vibe_ip_internal_types.GetDomainMonitorRequest:
-      properties:
-        id:
-          description: 域名监控记录序号
-          type: integer
-      required:
-      - id
       type: object
     vibe_ip_internal_types.GetDomainMonitorResponse:
       properties:
@@ -1024,14 +992,6 @@ components:
           type: array
           uniqueItems: false
       type: object
-    vibe_ip_internal_types.GetPlatformConfigRequest:
-      properties:
-        id:
-          description: 配置序号
-          type: integer
-      required:
-      - id
-      type: object
     vibe_ip_internal_types.GetPlatformConfigResponse:
       properties:
         capability:
@@ -1066,14 +1026,6 @@ components:
             type: array
           type: array
           uniqueItems: false
-      type: object
-    vibe_ip_internal_types.GetPortForwardRequest:
-      properties:
-        id:
-          description: 设备端口转发序号
-          type: integer
-      required:
-      - id
       type: object
     vibe_ip_internal_types.GetPortForwardResponse:
       properties:
@@ -1268,14 +1220,6 @@ components:
         statistic_data_retain_time:
           description: 统计数据保留时间（天，默认 365 天）
           type: integer
-      type: object
-    vibe_ip_internal_types.GetWebhookRequest:
-      properties:
-        id:
-          description: 通知序号
-          type: integer
-      required:
-      - id
       type: object
     vibe_ip_internal_types.GetWebhookResponse:
       properties:
@@ -1878,15 +1822,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:
@@ -2009,15 +1945,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:
@@ -2606,15 +2534,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:
@@ -2737,15 +2657,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:
@@ -2997,15 +2909,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:
@@ -3128,15 +3032,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:
@@ -3377,15 +3273,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:
@@ -3508,15 +3396,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:
@@ -3596,15 +3476,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:
@@ -4105,15 +3977,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:
@@ -4236,15 +4100,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:
@@ -4361,15 +4217,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:
@@ -4492,15 +4340,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:
@@ -4586,15 +4426,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:
@@ -6115,15 +5947,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:
@@ -6246,15 +6070,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:
@@ -6334,15 +6150,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                - $ref: '#/components/schemas/data'
-                properties:
-                  code:
-                    type: integer
-                  data: {}
-                  message:
-                    type: string
-                type: object
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 成功响应
         "400":
           content:

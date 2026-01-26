@@ -95,11 +95,11 @@ func createCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	)
 
 	// 调用
-	response, err := service.CreateCdnRecord(ctx, params)
+	err := service.CreateCdnRecord(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 更新CDN记录
@@ -113,11 +113,11 @@ func updateCdnRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 	)
 
 	// 调用
-	response, err := service.UpdateCdnRecord(ctx, params)
+	err := service.UpdateCdnRecord(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 更新CDN记录启用状态

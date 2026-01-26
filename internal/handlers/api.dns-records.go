@@ -91,10 +91,10 @@ func GetDnsRecordDetail(c *gin.Context) {
 //	@Tags			DNS记录
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.CreateDnsRecordRequest				true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								"参数错误"
-//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Param			request	body		types.CreateDnsRecordRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}					"成功响应"
+//	@Failure		400		{object}	APIResponse{}					"参数错误"
+//	@Failure		404		{object}	APIResponse{}					"错误响应"
 //	@Router			/dns-records [post]
 func CreateDnsRecord(c *gin.Context) {
 	// 请求参数
@@ -112,12 +112,12 @@ func CreateDnsRecord(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.CreateDnsRecord(c, &requestParams)
+	err := service.CreateDnsRecord(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
 }
 
 // 更新DNS记录
@@ -127,11 +127,11 @@ func CreateDnsRecord(c *gin.Context) {
 //	@Tags			DNS记录
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id		path		int64										true	"DNS记录序号"
-//	@Param			request	body		types.UpdateDnsRecordRequest				true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetDnsRecordRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								"参数错误"
-//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Param			id		path		int64							true	"DNS记录序号"
+//	@Param			request	body		types.UpdateDnsRecordRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}					"成功响应"
+//	@Failure		400		{object}	APIResponse{}					"参数错误"
+//	@Failure		404		{object}	APIResponse{}					"错误响应"
 //	@Router			/dns-records/{id} [patch]
 func UpdateDnsRecord(c *gin.Context) {
 	// 请求参数
@@ -150,12 +150,12 @@ func UpdateDnsRecord(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.UpdateDnsRecord(c, &requestParams)
+	err := service.UpdateDnsRecord(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
 }
 
 // 更新DNS记录启用状态

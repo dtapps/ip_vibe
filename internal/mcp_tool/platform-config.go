@@ -87,12 +87,12 @@ func createPlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 	)
 
 	// 调用
-	response, err := service.CreateConfig(ctx, params)
+	err := service.CreateConfig(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 更新配置
@@ -106,12 +106,12 @@ func updatePlatformConfig(ctx context.Context, req *mcp.CallToolRequest, params 
 	)
 
 	// 调用
-	response, err := service.UpdateConfig(ctx, params)
+	err := service.UpdateConfig(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 删除配置

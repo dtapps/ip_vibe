@@ -92,12 +92,12 @@ func createWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	)
 
 	// 调用
-	response, err := service.CreateWebhook(ctx, params)
+	err := service.CreateWebhook(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 更新通知
@@ -111,12 +111,12 @@ func updateWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	)
 
 	// 调用
-	response, err := service.UpdateWebhook(ctx, params)
+	err := service.UpdateWebhook(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 更新通知启用状态

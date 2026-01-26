@@ -506,14 +506,6 @@ definitions:
     - template_content
     - template_title
     type: object
-  vibe_ip_internal_types.GetCdnRecordRequest:
-    properties:
-      id:
-        description: CDN记录序号
-        type: integer
-    required:
-    - id
-    type: object
   vibe_ip_internal_types.GetCdnRecordResponse:
     properties:
       cdn_domain:
@@ -694,14 +686,6 @@ definitions:
         description: IP地址V6
         type: string
     type: object
-  vibe_ip_internal_types.GetDeviceRequest:
-    properties:
-      id:
-        description: 设备序号
-        type: integer
-    required:
-    - id
-    type: object
   vibe_ip_internal_types.GetDeviceResponse:
     properties:
       code:
@@ -739,14 +723,6 @@ definitions:
         items:
           type: integer
         type: array
-    type: object
-  vibe_ip_internal_types.GetDnsRecordRequest:
-    properties:
-      id:
-        description: DNS记录序号
-        type: integer
-    required:
-    - id
     type: object
   vibe_ip_internal_types.GetDnsRecordResponse:
     properties:
@@ -811,14 +787,6 @@ definitions:
             type: integer
           type: array
         type: array
-    type: object
-  vibe_ip_internal_types.GetDomainMonitorRequest:
-    properties:
-      id:
-        description: 域名监控记录序号
-        type: integer
-    required:
-    - id
     type: object
   vibe_ip_internal_types.GetDomainMonitorResponse:
     properties:
@@ -970,14 +938,6 @@ definitions:
           type: integer
         type: array
     type: object
-  vibe_ip_internal_types.GetPlatformConfigRequest:
-    properties:
-      id:
-        description: 配置序号
-        type: integer
-    required:
-    - id
-    type: object
   vibe_ip_internal_types.GetPlatformConfigResponse:
     properties:
       capability:
@@ -1010,14 +970,6 @@ definitions:
             type: integer
           type: array
         type: array
-    type: object
-  vibe_ip_internal_types.GetPortForwardRequest:
-    properties:
-      id:
-        description: 设备端口转发序号
-        type: integer
-    required:
-    - id
     type: object
   vibe_ip_internal_types.GetPortForwardResponse:
     properties:
@@ -1210,14 +1162,6 @@ definitions:
       statistic_data_retain_time:
         description: 统计数据保留时间（天，默认 365 天）
         type: integer
-    type: object
-  vibe_ip_internal_types.GetWebhookRequest:
-    properties:
-      id:
-        description: 通知序号
-        type: integer
-    required:
-    - id
     type: object
   vibe_ip_internal_types.GetWebhookResponse:
     properties:
@@ -1794,12 +1738,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetCdnRecordRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -1898,12 +1837,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetCdnRecordRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -2389,12 +2323,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetDeviceRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -2493,12 +2422,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetDeviceRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -2707,12 +2631,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetDnsRecordRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -2811,12 +2730,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetDnsRecordRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -3015,12 +2929,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetDomainMonitorRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -3119,12 +3028,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetDomainMonitorRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -3190,12 +3094,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetDomainMonitorRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -3606,12 +3505,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.CreatePlatformConfigRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -3710,12 +3604,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetPlatformConfigRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -3809,12 +3698,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetPortForwardRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -3913,12 +3797,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetPortForwardRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -3990,12 +3869,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetPortForwardRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -5223,12 +5097,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetWebhookRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -5327,12 +5196,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetWebhookRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -5398,12 +5262,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetWebhookRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:

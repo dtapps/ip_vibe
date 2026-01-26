@@ -22,9 +22,9 @@ type PortForwardService interface {
 	BuildResponse(ctx context.Context, item *ent.DevicePortForward) (*types.GetPortForwardResponse, error)
 	GetPortForwards(ctx context.Context, request *types.GetPortForwardsRequest) ([]*types.GetPortForwardResponse, error)
 	GetPortForward(ctx context.Context, id int64) (*types.GetPortForwardResponse, error)
-	CreatePortForward(ctx context.Context, request *types.CreatePortForwardRequest) (*types.GetPortForwardRequest, error)
-	UpdatePortForward(ctx context.Context, request *types.UpdatePortForwardRequest) (*types.GetPortForwardRequest, error)
-	UpdatePortForwardForward(ctx context.Context, request *types.UpdatePortForwardForwardRequest) (*types.GetPortForwardRequest, error)
+	CreatePortForward(ctx context.Context, request *types.CreatePortForwardRequest) error
+	UpdatePortForward(ctx context.Context, request *types.UpdatePortForwardRequest) error
+	UpdatePortForwardForward(ctx context.Context, request *types.UpdatePortForwardForwardRequest) error
 	UpdatePortForwardActive(ctx context.Context, id int64, isActive bool) error
 	BatchUpdatePortForwardActive(ctx context.Context, ids []int64, isActive bool) error
 	DeletePortForward(ctx context.Context, id int64) error
@@ -131,9 +131,9 @@ func (s *PortForwardServiceImpl) GetPortForward(ctx context.Context, id int64) (
 }
 
 // CreatePortForward 创建端口转发
-func (s *PortForwardServiceImpl) CreatePortForward(ctx context.Context, request *types.CreatePortForwardRequest) (*types.GetPortForwardRequest, error) {
+func (s *PortForwardServiceImpl) CreatePortForward(ctx context.Context, request *types.CreatePortForwardRequest) error {
 	// 创建端口转发
-	savePortForward, err := s.db.DevicePortForward.Create().
+	err := s.db.DevicePortForward.Create().
 		SetName(request.Name).
 		SetDescription(request.Description).
 		SetLocalPort(request.LocalPort).
@@ -141,29 +141,29 @@ func (s *PortForwardServiceImpl) CreatePortForward(ctx context.Context, request 
 		SetRemotePort(request.RemotePort).
 		SetProtocols(request.Protocols).
 		SetDeviceID(request.DeviceID).
-		Save(ctx)
+		Exec(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("创建端口转发失败: %w", err)
+		return fmt.Errorf("创建端口转发失败: %w", err)
 	}
-	return &types.GetPortForwardRequest{
-		ID: savePortForward.ID,
-	}, nil
+
+	return nil
 }
 
 // UpdatePortForward 更新端口转发
-func (s *PortForwardServiceImpl) UpdatePortForward(ctx context.Context, request *types.UpdatePortForwardRequest) (*types.GetPortForwardRequest, error) {
+func (s *PortForwardServiceImpl) UpdatePortForward(ctx context.Context, request *types.UpdatePortForwardRequest) error {
 	// 查询端口转发
 	firstPortForward, err := s.db.DevicePortForward.Query().
 		Where(deviceportforward.IDEQ(request.ID)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询端口转发失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询端口转发失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询端口转发失败: %w", err)
+		return fmt.Errorf("查询端口转发失败: %w", err)
 	}
+
 	// 更新端口转发
-	savePortForward, err := s.db.DevicePortForward.UpdateOne(firstPortForward).
+	err = s.db.DevicePortForward.UpdateOne(firstPortForward).
 		SetName(request.Name).
 		SetDescription(request.Description).
 		SetLocalPort(request.LocalPort).
@@ -171,37 +171,36 @@ func (s *PortForwardServiceImpl) UpdatePortForward(ctx context.Context, request 
 		SetRemotePort(request.RemotePort).
 		SetProtocols(request.Protocols).
 		SetDeviceID(request.DeviceID).
-		Save(ctx)
+		Exec(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("更新端口转发失败: %w", err)
+		return fmt.Errorf("更新端口转发失败: %w", err)
 	}
-	return &types.GetPortForwardRequest{
-		ID: savePortForward.ID,
-	}, nil
+
+	return nil
 }
 
 // UpdatePortForwardForward 更新端口转发防火墙状态 (AutoForward)
-func (s *PortForwardServiceImpl) UpdatePortForwardForward(ctx context.Context, request *types.UpdatePortForwardForwardRequest) (*types.GetPortForwardRequest, error) {
+func (s *PortForwardServiceImpl) UpdatePortForwardForward(ctx context.Context, request *types.UpdatePortForwardForwardRequest) error {
 	// 查询端口转发
 	firstPortForward, err := s.db.DevicePortForward.Query().
 		Where(deviceportforward.IDEQ(request.ID)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询端口转发失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询端口转发失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询端口转发失败: %w", err)
+		return fmt.Errorf("查询端口转发失败: %w", err)
 	}
+
 	// 更新端口转发状态
-	savePortForward, err := s.db.DevicePortForward.UpdateOne(firstPortForward).
+	err = s.db.DevicePortForward.UpdateOne(firstPortForward).
 		SetAutoForward(request.AutoForward).
-		Save(ctx)
+		Exec(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("更新端口转发防火墙状态失败: %w", err)
+		return fmt.Errorf("更新端口转发防火墙状态失败: %w", err)
 	}
-	return &types.GetPortForwardRequest{
-		ID: savePortForward.ID,
-	}, nil
+
+	return nil
 }
 
 // UpdatePortForwardActive 更新端口转发启用状态
