@@ -696,7 +696,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "name", Type: field.TypeString, Comment: "通知订阅名称"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "通知订阅描述"},
-		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"cdn_record", "dns_record", "device", "ip_group", "domain_monitor", "ssl_record"}},
+		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"cdn_record", "dns_record", "device", "device_group", "ip_group", "domain_monitor", "ssl_record"}},
 		{Name: "obj_id", Type: field.TypeInt64, Comment: "对象主键"},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
 		{Name: "webhook_subscriptions", Type: field.TypeInt64, Nullable: true},

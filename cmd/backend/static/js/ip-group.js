@@ -56,7 +56,7 @@ async function openFormModal(id) {
       const { data: ipGroup } = await API.get(`/api/ip-groups/${id}`);
       console.log("ipGroup", ipGroup);
       if (!ipGroup) {
-        alert("IP 组数据异常");
+        alert("IP组数据异常");
         return;
       }
 
@@ -75,7 +75,7 @@ async function openFormModal(id) {
         selectId2.val(null).trigger("change");
       }
 
-      showModal("formModal", "modalTitle", "编辑 IP 组");
+      showModal("formModal", "modalTitle", "编辑 IP组");
     }
 
     // 创建
@@ -92,7 +92,7 @@ async function openFormModal(id) {
       console.log("select2 清空已选");
       selectId2.val(null).trigger("change");
 
-      showModal("formModal", "modalTitle", "添加 IP 组");
+      showModal("formModal", "modalTitle", "添加 IP组");
     }
   } catch (error) {
     alert(`加载数据失败: ${error.message}`);

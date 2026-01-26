@@ -24,6 +24,16 @@ definitions:
     required:
     - ids
     type: object
+  vibe_ip_internal_types.BatchDeleteDeviceGroupRequest:
+    properties:
+      ids:
+        description: 设备组序号列表
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
   vibe_ip_internal_types.BatchDeleteDeviceRequest:
     properties:
       ids:
@@ -242,6 +252,28 @@ definitions:
     - ip_group_id
     - sub_domain
     - type
+    type: object
+  vibe_ip_internal_types.CreateDeviceGroupRequest:
+    properties:
+      description:
+        description: 设备组描述
+        type: string
+      devices:
+        description: 设备列表
+        items:
+          type: integer
+        type: array
+      name:
+        description: 设备组名称
+        type: string
+      webhook_ids:
+        description: 关联的 Webhook 列表
+        items:
+          type: integer
+        type: array
+    required:
+    - devices
+    - name
     type: object
   vibe_ip_internal_types.CreateDeviceRequest:
     properties:
@@ -543,6 +575,113 @@ definitions:
           type: array
         type: array
     type: object
+  vibe_ip_internal_types.GetDeviceGroupDevicePortForwardStatsDelta:
+    properties:
+      bytes_in_incr:
+        description: 本时段新增入站流量 (bytes)
+        type: integer
+      bytes_out_incr:
+        description: 本时段新增出站流量 (bytes)
+        type: integer
+      errors_incr:
+        description: 本时段新增错误数
+        type: integer
+    type: object
+  vibe_ip_internal_types.GetDeviceGroupDevicePortForwardStatsLatest:
+    properties:
+      active_conn:
+        description: 当前活跃连接数
+        type: integer
+      bytes_in:
+        description: 累计入站流量 (bytes)
+        type: integer
+      bytes_out:
+        description: 累计出站流量 (bytes)
+        type: integer
+      errors:
+        description: 累计错误数
+        type: integer
+    type: object
+  vibe_ip_internal_types.GetDeviceGroupDevicePortForwardStatsRates:
+    properties:
+      active_conn:
+        description: 该时刻的活跃连接数
+        type: integer
+      in_kbps:
+        description: 入站速率（KB/s，保留3位小数）
+        type: number
+      out_kbps:
+        description: 出站速率（KB/s，保留3位小数）
+        type: number
+      timestamp:
+        description: 数据采样时间戳（UTC）
+        type: integer
+    type: object
+  vibe_ip_internal_types.GetDeviceGroupDevicePortForwardStatsResponse:
+    properties:
+      delta:
+        allOf:
+        - $ref: '#/definitions/vibe_ip_internal_types.GetDeviceGroupDevicePortForwardStatsDelta'
+        description: 所选时间范围内的增量
+      device_ids:
+        description: 关联的设备ID列表
+        items:
+          type: integer
+        type: array
+      latest:
+        allOf:
+        - $ref: '#/definitions/vibe_ip_internal_types.GetDeviceGroupDevicePortForwardStatsLatest'
+        description: 最新状态快照
+      rates:
+        description: 速率趋势数据
+        items:
+          $ref: '#/definitions/vibe_ip_internal_types.GetDeviceGroupDevicePortForwardStatsRates'
+        type: array
+    type: object
+  vibe_ip_internal_types.GetDeviceGroupResponse:
+    properties:
+      cdn_record_count:
+        description: CDN记录数
+        type: integer
+      cdn_records:
+        description: CDN记录列表
+        items:
+          type: integer
+        type: array
+      code:
+        description: 设备组编码
+        type: string
+      description:
+        description: 设备组描述
+        type: string
+      device_count:
+        description: 设备数
+        type: integer
+      devices:
+        description: 设备列表
+        items:
+          type: integer
+        type: array
+      dns_record_count:
+        description: DNS记录数
+        type: integer
+      dns_records:
+        description: DNS记录列表
+        items:
+          type: integer
+        type: array
+      id:
+        description: 设备组序号
+        type: integer
+      name:
+        description: 设备组名称
+        type: string
+      webhooks:
+        description: 关联的 Webhook 列表
+        items:
+          type: integer
+        type: array
+    type: object
   vibe_ip_internal_types.GetDeviceIpHistoryResponse:
     properties:
       created_at:
@@ -786,14 +925,6 @@ definitions:
         items:
           $ref: '#/definitions/vibe_ip_internal_types.GetIPGroupDevicePortForwardStatsRates'
         type: array
-    type: object
-  vibe_ip_internal_types.GetIPGroupRequest:
-    properties:
-      id:
-        description: IP组序号
-        type: integer
-    required:
-    - id
     type: object
   vibe_ip_internal_types.GetIPGroupResponse:
     properties:
@@ -1239,6 +1370,32 @@ definitions:
     - id
     - ip_group_id
     - type
+    type: object
+  vibe_ip_internal_types.UpdateDeviceGroupRequest:
+    properties:
+      description:
+        description: 设备组描述
+        type: string
+      devices:
+        description: 设备列表
+        items:
+          type: integer
+        type: array
+      id:
+        description: 设备组序号
+        type: integer
+      name:
+        description: 设备组名称
+        type: string
+      webhook_ids:
+        description: 关联的 Webhook 列表
+        items:
+          type: integer
+        type: array
+    required:
+    - devices
+    - id
+    - name
     type: object
   vibe_ip_internal_types.UpdateDeviceRequest:
     properties:
@@ -1893,6 +2050,302 @@ paths:
       summary: 批量更新CDN记录启用状态
       tags:
       - CDN记录
+  /device-groups:
+    get:
+      consumes:
+      - application/json
+      description: 获取全部设备组
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetDeviceGroupResponse'
+                  type: array
+              type: object
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取全部设备组
+      tags:
+      - 设备组
+    post:
+      consumes:
+      - application/json
+      description: 创建设备组
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.CreateDeviceGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 创建设备组
+      tags:
+      - 设备组
+  /device-groups/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除设备组
+      parameters:
+      - description: 设备组序号
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 删除设备组
+      tags:
+      - 设备组
+    get:
+      consumes:
+      - application/json
+      description: 获取设备组详情
+      parameters:
+      - description: 设备组序号
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetDeviceGroupResponse'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取设备组详情
+      tags:
+      - 设备组
+  /device-groups/{id}/active:
+    patch:
+      consumes:
+      - application/json
+      description: 更新设备组
+      parameters:
+      - description: 设备组序号
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.UpdateDeviceGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 更新设备组
+      tags:
+      - 设备组
+  /device-groups/{id}/devices:
+    get:
+      consumes:
+      - application/json
+      description: 获取设备组设备
+      parameters:
+      - description: 设备组序号
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetDeviceResponse'
+                  type: array
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取设备组设备
+      tags:
+      - 设备组
+  /device-groups/{id}/health-check:
+    get:
+      consumes:
+      - application/json
+      description: 检查设备组健康状态
+      parameters:
+      - description: 设备组序号
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  items:
+                    items:
+                      $ref: '#/definitions/vibe_ip_internal_backend_service.ToPairsStruct'
+                    type: array
+                  type: array
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 检查设备组健康状态
+      tags:
+      - 设备组
+  /device-groups/{id}/port-forward/stats:
+    get:
+      consumes:
+      - application/json
+      description: 获取设备组设备端口转发统计数据
+      parameters:
+      - description: 设备组序号
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetDeviceGroupDevicePortForwardStatsResponse'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取设备组设备端口转发统计数据
+      tags:
+      - 设备组
+  /device-groups/batch:
+    delete:
+      consumes:
+      - application/json
+      description: 批量删除设备组
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.BatchDeleteDeviceGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 批量删除设备组
+      tags:
+      - 设备组
   /devices:
     get:
       consumes:
@@ -2857,12 +3310,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetIPGroupRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:
@@ -2962,12 +3410,7 @@ paths:
         "200":
           description: 成功响应
           schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetIPGroupRequest'
-              type: object
+            $ref: '#/definitions/internal_handlers.APIResponse'
         "400":
           description: 参数错误
           schema:

@@ -96,12 +96,12 @@ func createIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	)
 
 	// 调用
-	response, err := service.CreateIPGroup(ctx, params)
+	err := service.CreateIPGroup(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 更新IP组
@@ -115,12 +115,12 @@ func updateIPGroup(ctx context.Context, req *mcp.CallToolRequest, params *types.
 	)
 
 	// 调用
-	response, err := service.UpdateIPGroup(ctx, params)
+	err := service.UpdateIPGroup(ctx, params)
 	if err != nil {
 		return errorResponseErr(err)
 	}
 
-	return successResponse(response, response)
+	return successResponse(nil, nil)
 }
 
 // 删除IP组

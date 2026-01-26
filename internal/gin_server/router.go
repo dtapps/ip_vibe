@@ -42,6 +42,10 @@ func (m *GinServerManager) setupWebRouter() {
 	r.GET("/device", handlers.Device)
 	r.GET("/device/:id/port-forward/stats", handlers.DevicePortForwardStats)
 
+	// 设备分组页面 - 提供HTML页面并渲染数据
+	r.GET("/device-group", handlers.DeviceGroup)
+	r.GET("/device-group/:id/port-forward/stats", handlers.DeviceGroupPortForwardStats)
+
 	// IP组页面 - 提供HTML页面并渲染数据
 	r.GET("/ip-group", handlers.IPGroup)
 	r.GET("/ip-group/:id/port-forward/stats", handlers.IPGroupPortForwardStats)
@@ -177,6 +181,20 @@ func (m *GinServerManager) setupApiRouter() {
 			devices.GET("/:id/ip-history", handlers.GetDeviceIpHistory)                // 获取设备IP历史记录
 			devices.GET("/:id/health-check", handlers.HealthCheckDevice)               // 检查设备健康状态
 			devices.GET("/:id/port-forward/stats", handlers.GetDevicePortForwardStats) // 获取设备端口转发统计数据
+		}
+
+		// 设备组相关API
+		deviceGroups := api.Group("/device-groups")
+		{
+			deviceGroups.GET("", handlers.GetDeviceGroups)                                             // 获取全部设备组
+			deviceGroups.GET("/:id", handlers.GetDeviceGroupDetail)                                    // 获取设备组详情
+			deviceGroups.POST("", handlers.CreateDeviceGroup)                                          // 创建设备组
+			deviceGroups.PATCH("/:id", handlers.UpdateDeviceGroup)                                     // 更新设备组
+			deviceGroups.DELETE("/:id", handlers.DeleteDeviceGroup)                                    // 删除设备组
+			deviceGroups.DELETE("/batch", handlers.BatchDeleteDeviceGroup)                             // 批量删除设备组
+			deviceGroups.GET("/:id/devices", handlers.GetDeviceGroupDevices)                           // 获取设备组设备
+			deviceGroups.GET("/:id/health-check", handlers.HealthCheckDeviceGroup)                     // 检查设备组健康状态
+			deviceGroups.GET("/:id/port-forward/stats", handlers.GetDeviceGroupDevicePortForwardStats) // 获取设备组设备端口转发统计数据
 		}
 
 		// IP组相关API

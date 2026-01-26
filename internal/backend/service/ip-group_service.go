@@ -26,8 +26,8 @@ type IPGroupService interface {
 	BuildResponse(ctx context.Context, item *ent.IpGroup) (*types.GetIPGroupResponse, error)
 	GetIPGroups(ctx context.Context) ([]*types.GetIPGroupResponse, error)
 	GetIPGroup(ctx context.Context, id int64) (*types.GetIPGroupResponse, error)
-	CreateIPGroup(ctx context.Context, request *types.CreateIPGroupRequest) (int64, error)
-	UpdateIPGroup(ctx context.Context, request *types.UpdateIPGroupRequest) (*types.GetIPGroupRequest, error)
+	CreateIPGroup(ctx context.Context, request *types.CreateIPGroupRequest) error
+	UpdateIPGroup(ctx context.Context, request *types.UpdateIPGroupRequest) error
 	DeleteIPGroup(ctx context.Context, id int64) error
 	BatchDeleteIPGroup(ctx context.Context, ids []int64) error
 	GetIPGroupDevices(ctx context.Context, id int64) ([]*types.GetDeviceResponse, error)
@@ -159,8 +159,7 @@ func (s *IPGroupServiceImpl) GetIPGroup(ctx context.Context, id int64) (*types.G
 }
 
 // CreateIPGroup 创建IP组
-// 注意：Handler返回的是 gin.H{"id": saveIpGroup.ID}，这里返回 int64 ID
-func (s *IPGroupServiceImpl) CreateIPGroup(ctx context.Context, request *types.CreateIPGroupRequest) (int64, error) {
+func (s *IPGroupServiceImpl) CreateIPGroup(ctx context.Context, request *types.CreateIPGroupRequest) error {
 	// 创建IP组
 	saveIpGroup, err := s.db.IpGroup.Create().
 		SetName(request.Name).
@@ -168,7 +167,7 @@ func (s *IPGroupServiceImpl) CreateIPGroup(ctx context.Context, request *types.C
 		AddDeviceIDs(request.Devices...).
 		Save(ctx)
 	if err != nil {
-		return 0, fmt.Errorf("创建IP组失败: %w", err)
+		return fmt.Errorf("创建IP组失败: %w", err)
 	}
 
 	// 创建通知订阅
@@ -179,20 +178,20 @@ func (s *IPGroupServiceImpl) CreateIPGroup(ctx context.Context, request *types.C
 		}
 	}
 
-	return saveIpGroup.ID, nil
+	return nil
 }
 
 // UpdateIPGroup 更新IP组
-func (s *IPGroupServiceImpl) UpdateIPGroup(ctx context.Context, request *types.UpdateIPGroupRequest) (*types.GetIPGroupRequest, error) {
+func (s *IPGroupServiceImpl) UpdateIPGroup(ctx context.Context, request *types.UpdateIPGroupRequest) error {
 	// 查询IP组
 	firstIpGroup, err := s.db.IpGroup.Query().
 		Where(ipgroup.IDEQ(request.ID)).
 		First(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, fmt.Errorf("查询IP组失败: 记录不存在或 %w", err)
+			return fmt.Errorf("查询IP组失败: 记录不存在或 %w", err)
 		}
-		return nil, fmt.Errorf("查询IP组失败: %w", err)
+		return fmt.Errorf("查询IP组失败: %w", err)
 	}
 	// 更新IP组
 	saveIpGroup, err := s.db.IpGroup.UpdateOne(firstIpGroup).
@@ -202,7 +201,7 @@ func (s *IPGroupServiceImpl) UpdateIPGroup(ctx context.Context, request *types.U
 		AddDeviceIDs(request.Devices...).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("更新IP组失败: %w", err)
+		return fmt.Errorf("更新IP组失败: %w", err)
 	}
 
 	// 更新通知订阅
@@ -213,9 +212,7 @@ func (s *IPGroupServiceImpl) UpdateIPGroup(ctx context.Context, request *types.U
 		}
 	}
 
-	return &types.GetIPGroupRequest{
-		ID: saveIpGroup.ID,
-	}, nil
+	return nil
 }
 
 // DeleteIPGroup 删除IP组

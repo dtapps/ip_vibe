@@ -27,9 +27,12 @@
     --color-green-600: oklch(62.7% 0.194 149.214);
     --color-green-700: oklch(52.7% 0.154 150.069);
     --color-green-900: oklch(39.3% 0.095 152.535);
+    --color-blue-50: oklch(97% 0.014 254.604);
     --color-blue-200: oklch(88.2% 0.059 254.128);
+    --color-blue-300: oklch(80.9% 0.105 251.813);
     --color-blue-500: oklch(62.3% 0.214 259.815);
     --color-blue-600: oklch(54.6% 0.245 262.881);
+    --color-blue-800: oklch(42.4% 0.199 265.638);
     --color-indigo-100: oklch(93% 0.034 272.788);
     --color-indigo-500: oklch(58.5% 0.233 277.117);
     --color-indigo-600: oklch(51.1% 0.262 276.966);
@@ -2050,6 +2053,19 @@
     mask-size: 100% 100%;
     --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cg fill='none' stroke='black' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'%3E%3Cpath d='M3 12a9 9 0 1 0 9-9a9.75 9.75 0 0 0-6.74 2.74L3 8'/%3E%3Cpath d='M3 3v5h5m4-1v5l4 2'/%3E%3C/g%3E%3C/svg%3E");
   }
+  .i-lucide-info {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-color: currentColor;
+    -webkit-mask-image: var(--svg);
+    mask-image: var(--svg);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cg fill='none' stroke='black' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4m0-4h.01'/%3E%3C/g%3E%3C/svg%3E");
+  }
   .i-lucide-layers {
     display: inline-block;
     width: 1em;
@@ -2965,6 +2981,9 @@
       border-color: color-mix(in oklab, var(--color-base-300) 50%, transparent);
     }
   }
+  .border-blue-200 {
+    border-color: var(--color-blue-200);
+  }
   .border-blue-500\/20 {
     border-color: color-mix(in srgb, oklch(62.3% 0.214 259.815) 20%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
@@ -3099,6 +3118,9 @@
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-base-300) 80%, transparent);
     }
+  }
+  .bg-blue-50 {
+    background-color: var(--color-blue-50);
   }
   .bg-blue-500\/10 {
     background-color: color-mix(in srgb, oklch(62.3% 0.214 259.815) 10%, transparent);
@@ -3570,6 +3592,9 @@
   .text-blue-600 {
     color: var(--color-blue-600);
   }
+  .text-blue-800 {
+    color: var(--color-blue-800);
+  }
   .text-error {
     color: var(--color-error);
   }
@@ -3644,6 +3669,9 @@
   }
   .decoration-amber-300 {
     text-decoration-color: var(--color-amber-300);
+  }
+  .decoration-blue-300 {
+    text-decoration-color: var(--color-blue-300);
   }
   .decoration-2 {
     text-decoration-thickness: 2px;

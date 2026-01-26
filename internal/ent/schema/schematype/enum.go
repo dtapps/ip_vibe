@@ -181,6 +181,7 @@ const (
 	WebhookSubscriptionObjTypeCDNRecord     string = "cdn_record"     // CDN记录
 	WebhookSubscriptionObjTypeDNSRecord     string = "dns_record"     // DNS记录
 	WebhookSubscriptionObjTypeDevice        string = "device"         // 设备
+	WebhookSubscriptionObjTypeDeviceGroup   string = "device_group"   // 设备组
 	WebhookSubscriptionObjTypeIPGroup       string = "ip_group"       // IP组
 	WebhookSubscriptionObjTypeDomainMonitor string = "domain_monitor" // 域名监控
 	WebhookSubscriptionObjTypeSSLRecord     string = "ssl_record"     // SSL记录
@@ -191,6 +192,7 @@ var GetWebhookSubscriptionObjTypeDescriptions = map[string]string{
 	WebhookSubscriptionObjTypeCDNRecord:     "CDN记录",
 	WebhookSubscriptionObjTypeDNSRecord:     "DNS记录",
 	WebhookSubscriptionObjTypeDevice:        "设备",
+	WebhookSubscriptionObjTypeDeviceGroup:   "设备组",
 	WebhookSubscriptionObjTypeIPGroup:       "IP组",
 	WebhookSubscriptionObjTypeDomainMonitor: "域名监控",
 	WebhookSubscriptionObjTypeSSLRecord:     "SSL记录",
@@ -201,6 +203,7 @@ var GetWebhookSubscriptionObjTypes = []string{
 	WebhookSubscriptionObjTypeCDNRecord,
 	WebhookSubscriptionObjTypeDNSRecord,
 	WebhookSubscriptionObjTypeDevice,
+	WebhookSubscriptionObjTypeDeviceGroup,
 	WebhookSubscriptionObjTypeIPGroup,
 	WebhookSubscriptionObjTypeDomainMonitor,
 	WebhookSubscriptionObjTypeSSLRecord,

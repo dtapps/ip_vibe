@@ -1,0 +1,42 @@
+{{ define "pages/device-group_form.html" }}
+<div id="formModal" class="modal">
+    <div class="ui-modal-box">
+        <div class="ui-header">
+            <h3 class="text-xl font-bold">
+                {{ template "icons" (dict "Name" "i-lucide-folder-plus") }} <span id="modalTitle">添加 / 编辑 设备组</span>
+            </h3>
+            <button class="btn btn-sm btn-circle btn-ghost" onclick="closeModal('formModal')">
+                {{ template "icons" (dict "Name" "i-lucide-x") }}
+            </button>
+        </div>
+
+        <form id="form" class="p-8 space-y-5">
+            <div class="ui-form-control">
+                <label class="ui-label-text">组名 <span class="text-error">*</span></label>
+                <input type="text" name="name" id="name" class="ui-input" required placeholder="如：CDN-边缘" />
+            </div>
+
+            <div class="ui-form-control">
+                <label class="ui-label-text">描述</label>
+                <textarea name="description" id="description" class="ui-textarea" placeholder="可选"></textarea>
+            </div>
+
+            <div class="ui-form-control">
+                <label class="ui-label-text">选择设备（多选） <span class="text-error">*</span></label>
+                <select name="devices" id="devices" class="ui-select" multiple></select>
+            </div>
+
+            <input type="hidden" name="id" id="id" />
+
+            <div class="modal-action gap-3">
+                <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('formModal')">
+                    {{ template "icons" (dict "Name" "i-lucide-x") }} 取消
+                </button>
+                <button type="submit" class="btn-ui-primary">
+                    {{ template "icons" (dict "Name" "i-lucide-save") }} 保存
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{{ end }}

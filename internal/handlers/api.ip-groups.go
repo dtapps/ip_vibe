@@ -83,10 +83,10 @@ func GetIPGroupDetail(c *gin.Context) {
 //	@Tags			IP组
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.CreateIPGroupRequest					true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetIPGroupRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								"参数错误"
-//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Param			request	body		types.CreateIPGroupRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}				"成功响应"
+//	@Failure		400		{object}	APIResponse{}				"参数错误"
+//	@Failure		404		{object}	APIResponse{}				"错误响应"
 //	@Router			/ip-groups [post]
 func CreateIPGroup(c *gin.Context) {
 	// 请求参数
@@ -104,12 +104,12 @@ func CreateIPGroup(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.CreateIPGroup(c, &requestParams)
+	err := service.CreateIPGroup(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
 }
 
 // 更新IP组
@@ -119,11 +119,11 @@ func CreateIPGroup(c *gin.Context) {
 //	@Tags			IP组
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id		path		int64										true	"IP组序号"
-//	@Param			request	body		types.UpdateIPGroupRequest					true	"请求参数"
-//	@Success		200		{object}	APIResponse{data=types.GetIPGroupRequest}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}								"参数错误"
-//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Param			id		path		int64						true	"IP组序号"
+//	@Param			request	body		types.UpdateIPGroupRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}				"成功响应"
+//	@Failure		400		{object}	APIResponse{}				"参数错误"
+//	@Failure		404		{object}	APIResponse{}				"错误响应"
 //	@Router			/ip-groups/{id}/active [patch]
 func UpdateIPGroup(c *gin.Context) {
 	// 请求参数
@@ -142,12 +142,12 @@ func UpdateIPGroup(c *gin.Context) {
 	)
 
 	// 调用
-	response, err := service.UpdateIPGroup(c, &requestParams)
+	err := service.UpdateIPGroup(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
-	successResponse(c, response)
+	successResponse(c, nil)
 }
 
 // 删除IP组
