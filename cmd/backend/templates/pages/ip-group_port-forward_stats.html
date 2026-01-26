@@ -39,6 +39,15 @@
     </div>
 </div>
 
+<div class="alert bg-amber-50 border-amber-200 mb-6 rounded-2xl flex items-start gap-3 py-3">
+    {{ template "icons" (dict "Name" "i-lucide-alert-circle" "Class" "w-5 h-5 text-amber-500 shrink-0 mt-0.5") }}
+    <div class="text-xs text-amber-800 leading-relaxed">
+        <span class="font-bold">统计口径说明：</span>
+        该页面展示的是此 IP 组下所有关联设备及端口的<span class="underline decoration-amber-300 decoration-2 font-bold">全局汇总流量</span>。
+        目前系统不支持在汇总视图中下钻查看单一设备的细分流量。
+    </div>
+</div>
+
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <div class="ui-stat-card">
         <div class="flex items-center justify-between mb-4">
