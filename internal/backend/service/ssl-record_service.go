@@ -88,6 +88,11 @@ func (s *SSLRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.SSLR
 		RenewalDays:           item.RenewalDays,
 		IsAutoRenewal:         item.IsAutoRenewal,
 		LastRefreshAt:         item.LastRefreshAt,
+
+		CreatedAt:         item.CreatedAt,
+		UpdatedAt:         item.UpdatedAt,
+		LastAPIResponse:   item.LastAPIResponse,
+		LastAPIResponseAt: item.LastAPIResponseAt,
 	}
 
 	// 平台配置

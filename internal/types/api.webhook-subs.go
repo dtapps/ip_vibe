@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 // 获取全部通知订阅 请求结构
 type GetWebhookSubsRequest struct {
 	IsActive *bool `json:"is_active,omitempty" form:"is_active,omitempty" jsonschema:"指定是否只返回活跃的通知订阅"` // 是否活跃
@@ -16,6 +18,9 @@ type GetWebhookSubResponse struct {
 	ObjID       int64  `json:"obj_id" jsonschema:"订阅对象的主键ID"`       // 订阅对象主键
 	ObjName     string `json:"obj_name" jsonschema:"订阅对象的名称"`       // 订阅对象名称
 	IsActive    bool   `json:"is_active" jsonschema:"是否启用该通知订阅"`    // 是否启用
+
+	CreatedAt time.Time `json:"-"` // 创建时间
+	UpdatedAt time.Time `json:"-"` // 更新时间
 }
 
 // 获取通知订阅 请求结构

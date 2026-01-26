@@ -71,6 +71,9 @@ func (s *WebhookSubServiceImpl) BuildResponse(ctx context.Context, item *ent.Web
 		ObjType:     item.ObjType.String(),
 		ObjID:       item.ObjID,
 		IsActive:    item.IsActive,
+
+		CreatedAt: item.CreatedAt,
+		UpdatedAt: item.UpdatedAt,
 	}
 
 	// 查询关联对象名称

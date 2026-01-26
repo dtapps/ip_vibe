@@ -69,6 +69,9 @@ func (s *DeviceGroupServiceImpl) BuildResponse(ctx context.Context, item *ent.De
 		Code:        item.Code,
 		Name:        item.Name,
 		Description: item.Description,
+
+		CreatedAt: item.CreatedAt,
+		UpdatedAt: item.UpdatedAt,
 	}
 
 	if item.Code == "" {

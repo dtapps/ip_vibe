@@ -72,6 +72,9 @@ func (s *PortForwardServiceImpl) BuildResponse(ctx context.Context, item *ent.De
 		Protocols:   item.Protocols,
 		AutoForward: item.AutoForward,
 		IsActive:    item.IsActive,
+
+		CreatedAt: item.CreatedAt,
+		UpdatedAt: item.UpdatedAt,
 	}
 
 	// 设备

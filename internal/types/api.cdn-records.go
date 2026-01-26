@@ -29,6 +29,11 @@ type GetCdnRecordResponse struct {
 	IPGroupName string `json:"ip_group_name" jsonschema:"IP组名称"`  // IP 组名称
 
 	Webhooks []int64 `json:"webhooks" jsonschema:"关联的Webhook ID列表"` // 关联的 Webhook 列表
+
+	CreatedAt         time.Time `json:"-"` // 创建时间
+	UpdatedAt         time.Time `json:"-"` // 更新时间
+	LastAPIResponse   string    `json:"-"` // 最近一次接口的反馈
+	LastAPIResponseAt time.Time `json:"-"` // 最近一次接口的反馈时间
 }
 
 // 获取CDN记录 请求结构

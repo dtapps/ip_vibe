@@ -66,6 +66,9 @@ func (s *PlatformConfigServiceImpl) BuildResponse(ctx context.Context, item *ent
 		ConfigJSON:           item.ConfigJSON,
 		ConfigJSONDomainName: configJson.DomainName,
 		ConfigJSONEmail:      configJson.Email,
+
+		CreatedAt: item.CreatedAt,
+		UpdatedAt: item.UpdatedAt,
 	}
 	return resp, nil
 }

@@ -71,6 +71,11 @@ func (s *CDNRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.CDNR
 		CdnDomain:     item.CdnDomain,
 		IsActive:      item.IsActive,
 		LastRefreshAt: item.LastRefreshAt,
+
+		CreatedAt:         item.CreatedAt,
+		UpdatedAt:         item.UpdatedAt,
+		LastAPIResponse:   item.LastAPIResponse,
+		LastAPIResponseAt: item.LastAPIResponseAt,
 	}
 
 	// 平台配置

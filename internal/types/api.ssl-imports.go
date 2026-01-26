@@ -13,6 +13,9 @@ type GetSSLImportResponse struct {
 	NotBefore    time.Time `json:"not_before"`    // 证书开始时间
 	NotAfter     time.Time `json:"not_after"`     // 证书结束时间
 	Status       string    `json:"status"`        // 证书状态
+
+	CreatedAt time.Time `json:"-"` // 创建时间
+	UpdatedAt time.Time `json:"-"` // 更新时间
 }
 
 // 导入 SSL 导入 请求结构

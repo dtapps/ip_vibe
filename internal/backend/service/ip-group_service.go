@@ -69,6 +69,9 @@ func (s *IPGroupServiceImpl) BuildResponse(ctx context.Context, item *ent.IpGrou
 		Code:        item.Code,
 		Name:        item.Name,
 		Description: item.Description,
+
+		CreatedAt: item.CreatedAt,
+		UpdatedAt: item.UpdatedAt,
 	}
 
 	if item.Code == "" {

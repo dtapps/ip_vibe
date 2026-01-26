@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 // 获取全部端口转发 请求结构
 type GetPortForwardsRequest struct {
 	IsActive *bool `json:"is_active,omitempty" form:"is_active,omitempty" jsonschema:"指定是否只返回活跃的端口转发记录"` // 是否活跃
@@ -19,6 +21,9 @@ type GetPortForwardResponse struct {
 
 	DeviceID   int64  `json:"device_id" jsonschema:"关联的设备ID"`   // 设备ID
 	DeviceName string `json:"device_name" jsonschema:"关联的设备名称"` // 设备名称
+
+	CreatedAt time.Time `json:"-"` // 创建时间
+	UpdatedAt time.Time `json:"-"` // 更新时间
 }
 
 // 获取端口转发 请求结构

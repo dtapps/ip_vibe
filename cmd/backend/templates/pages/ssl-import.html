@@ -104,6 +104,12 @@
                                 {{ template "icons" (dict "Name" "i-lucide-eye") }} 查看
                             </button>
 
+                            {{ $detailWebUrlPath := join $webUrlPath "/detail" }}
+                            <button class="btn btn-sm btn-outline btn-info rounded-lg px-4"
+                                onclick="location.href='{{$detailWebUrlPath}}'">
+                                {{ template "icons" (dict "Name" "i-lucide-eye") }} 详情
+                            </button>
+
                             <button class="btn btn-primary btn-sm rounded-lg px-4" data-detail='{{ marshalJSON . }}'
                                 onclick="openImportFormModal(this)">
                                 {{ template "icons" (dict "Name" "i-lucide-copy") }} 导入

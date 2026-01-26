@@ -1,0 +1,222 @@
+{{ define "content" }}
+
+{{/* 初始化局部变量 */}}
+{{ $item := .Data.Item }}
+{{ $cert := .Data.CertDetail }}
+{{ $operationLogs := .Data.OperationLogs }}
+{{ $baseWebUrlPath := "/ssl-import" }}
+{{ $apiUrlPath := printf "/api/ssl-imports/%d" $item.ID }}
+{{ $webUrlPath := printf "/ssl-import/%d" $item.ID }}
+
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+    <div class="flex items-center gap-4">
+        <div class="relative">
+            <div class="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-inner">
+                {{ template "icons" (dict "Name" "i-lucide-shield-check" "Class" "w-8 h-8") }}
+            </div>
+            {{ if $cert.IsECC }}
+            <div class="absolute -top-1 -right-1 badge badge-success badge-xs !p-1 shadow-sm" title="现代 ECC 加密">
+                {{ template "icons" (dict "Name" "i-lucide-zap" "Class" "w-3 h-3") }}
+            </div>
+            {{ end }}
+        </div>
+        <div>
+            <div class="flex items-center gap-3">
+                <h1 class="text-3xl font-bold tracking-tight">{{ $item.Domain }}</h1>
+                {{ if $cert.IsWildcard }}
+                <span class="badge badge-secondary badge-sm font-bold uppercase tracking-wider">Wildcard</span>
+                {{ end }}
+            </div>
+            <div class="flex items-center gap-2 mt-1">
+                <span class="text-xs opacity-50 font-mono">
+                    ID: {{ $item.ID }}
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="flex gap-2">
+        <a href="{{$baseWebUrlPath}}" class="btn btn-ghost btn-sm rounded-xl px-4">
+            {{ template "icons" (dict "Name" "i-lucide-arrow-left") }} 返回列表
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <div class="lg:col-span-1 space-y-6">
+        <div class="ui-panel p-6 text-center">
+            <div class="text-sm opacity-50 mb-2 font-medium">证书有效期剩余</div>
+
+            <div
+                class="text-6xl font-black {{ if lt $cert.ExpiryDays 15 }}text-error{{ else }}text-primary{{ end }} tracking-tighter mb-4">
+                {{ $cert.ExpiryDays }} <span class="text-xl">天</span>
+            </div>
+
+            <div class="px-2 mb-6">
+                <div class="flex justify-between text-[10px] opacity-40 mb-1 font-mono uppercase tracking-widest">
+                    <span>Issued</span>
+                    <span>Usage: {{ $cert.ExpiryPercent }}%</span>
+                    <span>Expiry</span>
+                </div>
+                <progress
+                    class="progress {{ if lt $cert.ExpiryDays 15 }}progress-error{{ else }}progress-primary{{ end }} w-full h-3 rounded-full"
+                    value="{{ $cert.ExpiryPercent }}" max="100">
+                </progress>
+            </div>
+
+            <div class="space-y-3 text-xs text-left bg-base-200/40 p-4 rounded-2xl border border-base-300/10">
+                <div class="flex justify-between items-center">
+                    <span class="opacity-50">生效时间</span>
+                    <span class="font-mono font-medium">
+                        {{ formatTimeOrNil $cert.NotBefore }}
+                    </span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="opacity-50">到期时间</span>
+                    <span class="font-mono font-medium {{ if $cert.IsExpired }}text-error{{ end }}">
+                        {{ formatTimeOrNil $cert.NotAfter }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-panel overflow-hidden">
+            <div class="ui-header !py-4">
+                <h3 class="font-bold flex items-center gap-2">
+                    {{ template "icons" (dict "Name" "i-lucide-scroll-text" "Class" "w-4 h-4 text-blue-500") }} 操作日志
+                </h3>
+            </div>
+            <div class="px-6 pb-6">
+                <div class="space-y-6 mt-2">
+                    {{ if $operationLogs }}
+                    {{ range $operationLogs }}
+                    <div class="relative pl-6 pb-6 border-l border-base-300 last:pb-0 last:border-none">
+                        <div
+                            class='absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full {{ if eq .Status "success"}}bg-green-500{{ else }}bg-red-500{{ end }} border-2 border-base-100 shadow-sm'>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[10px] font-mono opacity-40 leading-none">
+                                    {{ diffForHumans .CreatedAt }}
+                                </span>
+                                <span
+                                    class='badge badge-xs {{ if eq .Status "success" }}badge-ghost opacity-50{{ else }}badge-error{{ end }} font-mono'>
+                                    {{fieldEnumLabel "operation_log_op_type" .OpType}}
+                                </span>
+                            </div>
+                            <span class="text-xs font-medium text-base-content/80">
+                                {{ .Message }}
+                            </span>
+                            {{ if .NewValue }}
+                            <div class="text-[9px] bg-base-200/80 px-2 py-1 rounded mt-1 font-mono truncate opacity-60 tooltip tooltip-top"
+                                data-tip="{{ jsonify .NewValue }}">
+                                {{ .NewValue }}
+                            </div>
+                            {{ end }}
+                        </div>
+                    </div>
+                    {{ end }}
+                    {{ else }}
+                    <p class="text-center text-xs opacity-30 py-4">暂无记录</p>
+                    {{ end }}
+                </div>
+                <a href="/log?obj_id={{ $item.ID }}&obj_type=SSLImport"
+                    class="btn btn-xs btn-ghost w-full mt-4 text-[9px] opacity-30 uppercase">查看完整日志</a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="lg:col-span-2 space-y-8">
+
+        <div class="ui-panel">
+            <div class="ui-header flex justify-between items-center border-b-0">
+                <h3 class="font-bold text-lg">证书深度解析</h3>
+                <div class="flex gap-2">
+                    <span class="badge badge-outline badge-xs opacity-40 font-mono">v{{ $cert.Version }}</span>
+                </div>
+            </div>
+            <div class="px-6 pb-6 space-y-6">
+                <div class="space-y-3">
+                    <label class="text-[10px] uppercase font-bold opacity-30 tracking-widest">
+                        受保护域名 (Subject Alternative Names)
+                    </label>
+                    <div
+                        class="flex flex-wrap gap-2 p-4 bg-base-300/20 rounded-2xl border border-base-300/10 min-h-[60px]">
+                        {{ range $cert.DNSNames }}
+                        <span
+                            class="badge badge-md bg-base-100 border-base-300/50 font-mono text-[11px] py-3 shadow-sm hover:border-primary transition-all cursor-default">
+                            {{ . }}
+                        </span>
+                        {{ else }}
+                        <span class="text-sm italic opacity-30">仅包含主域名</span>
+                        {{ end }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-base-200/50">
+                    <div>
+                        <span class="text-[10px] opacity-40 block mb-1 uppercase tracking-tighter">
+                            签名算法
+                        </span>
+                        <span class="text-[13px] font-mono font-medium">
+                            {{ $cert.SignatureAlgorithm }}
+                        </span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] opacity-40 block mb-1 uppercase tracking-tighter">
+                            加密方式
+                        </span>
+                        <span class="text-[13px] font-mono font-medium {{ if $cert.IsECC }}text-success{{ end }}">
+                            {{ $cert.PublicKeyAlgorithm }} ({{ $cert.KeyLength }} bit)
+                        </span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] opacity-40 block mb-1 uppercase tracking-tighter">
+                            颁发者
+                        </span>
+                        <span class="text-[13px] font-semibold text-primary">
+                            {{ $cert.Issuer }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="pt-4 pb-4 border-t border-base-200/50">
+                    <span class="text-[10px] opacity-40 block mb-1 uppercase tracking-tighter">
+                        序列号 (Serial Number)
+                    </span>
+                    <span class="text-[10px] font-mono opacity-50 break-all select-all">
+                        {{ $cert.SerialNumber }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-panel overflow-hidden">
+            <div class="bg-primary/5 px-6 py-4 flex justify-between items-center border-b border-primary/10">
+                <h3 class="font-bold text-primary flex items-center gap-2 text-sm">
+                    {{ template "icons" (dict "Name" "i-lucide-check-circle") }} 当前部署内容
+                </h3>
+            </div>
+            <div class="p-6">
+                <div class="flex gap-4">
+                    <button
+                        class="btn btn-outline btn-md flex-1 rounded-2xl shadow-sm hover:bg-primary hover:border-primary transition-all group"
+                        data-detail='{{ marshalJSON $item }}' onclick="openViewModal(this)">
+                        <span class="group-hover:text-white flex items-center gap-2">
+                            {{ template "icons" (dict "Name" "i-lucide-eye") }} 查看 PEM 证书与私钥
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- 查看 -->
+{{ template "pages/ssl-import_view.html" . }}
+
+<script src="/static/js/ssl-import.js"></script>
+{{ end }}

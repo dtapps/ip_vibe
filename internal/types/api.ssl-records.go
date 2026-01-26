@@ -33,6 +33,11 @@ type GetSSLRecordResponse struct {
 	LastRefreshAt         time.Time `json:"last_refresh_at" jsonschema:"最后一次刷新成功时间"`                       // 最后一次刷新成功时间
 
 	Webhooks []int64 `json:"webhooks" jsonschema:"关联的Webhook ID列表"` // 关联的 Webhook 列表
+
+	CreatedAt         time.Time `json:"-"` // 创建时间
+	UpdatedAt         time.Time `json:"-"` // 更新时间
+	LastAPIResponse   string    `json:"-"` // 最近一次接口的反馈
+	LastAPIResponseAt time.Time `json:"-"` // 最近一次接口的反馈时间
 }
 
 // 获取 SSL 记录 请求结构

@@ -131,7 +131,7 @@ func SslImportDetail(c *gin.Context) {
 	// 渲染模板
 	renderHTMLWithMenu(
 		c,
-		filepath.Join("pages", "ssl_detail.html"),
+		filepath.Join("pages", "ssl-import_detail.html"),
 		types.BasePageData[types.SSLImportDetailResponse]{
 			Title: "SSL导入详情",
 			Data:  pageData,

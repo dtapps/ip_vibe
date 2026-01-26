@@ -1,6 +1,9 @@
 package types
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"time"
+)
 
 // 获取全部平台配置 请求结构
 type GetPlatformConfigsRequest struct {
@@ -17,6 +20,9 @@ type GetPlatformConfigResponse struct {
 
 	ConfigJSONDomainName string `json:"-"` // 配置平台域名
 	ConfigJSONEmail      string `json:"-"` // 配置平台邮箱
+
+	CreatedAt time.Time `json:"-"` // 创建时间
+	UpdatedAt time.Time `json:"-"` // 更新时间
 }
 
 // 获取平台配置 请求结构

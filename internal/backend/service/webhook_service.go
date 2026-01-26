@@ -73,6 +73,9 @@ func (s *WebhookServiceImpl) BuildResponse(ctx context.Context, item *ent.Webhoo
 		IsActive:        item.IsActive,
 		TemplateTitle:   item.TemplateTitle,
 		TemplateContent: item.TemplateContent,
+
+		CreatedAt: item.CreatedAt,
+		UpdatedAt: item.UpdatedAt,
 	}
 	return resp, nil
 }

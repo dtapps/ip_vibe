@@ -61,6 +61,9 @@ func (s *SSLImportServiceImpl) BuildResponse(ctx context.Context, item *ent.SSLI
 		NotBefore:    item.NotBefore,
 		NotAfter:     item.NotAfter,
 		Status:       item.Status.String(),
+
+		CreatedAt: item.CreatedAt,
+		UpdatedAt: item.UpdatedAt,
 	}
 
 	return resp, nil

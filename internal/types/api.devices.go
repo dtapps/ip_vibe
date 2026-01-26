@@ -21,6 +21,9 @@ type GetDeviceResponse struct {
 
 	Online bool   `json:"online" jsonschema:"设备是否在线"` // 设备是否在线
 	Status string `json:"status" jsonschema:"设备的状态"`  // 设备状态
+
+	CreatedAt time.Time `json:"-"` // 创建时间
+	UpdatedAt time.Time `json:"-"` // 更新时间
 }
 
 // 获取设备 请求结构

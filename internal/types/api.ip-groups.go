@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 // 获取全部IP组 请求结构
 type GetIPGroupsRequest struct {
 }
@@ -21,6 +23,9 @@ type GetIPGroupResponse struct {
 	DnsRecords     []int64 `json:"dns_records" jsonschema:"关联的DNS记录ID列表"`    // DNS记录列表
 
 	Webhooks []int64 `json:"webhooks" jsonschema:"关联的Webhook ID列表"` // 关联的 Webhook 列表
+
+	CreatedAt time.Time `json:"-"` // 创建时间
+	UpdatedAt time.Time `json:"-"` // 更新时间
 }
 
 // 获取IP组 请求结构

@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 // 获取全部通知 请求结构
 type GetWebhooksRequest struct {
 	IsActive *bool `json:"is_active,omitempty" form:"is_active,omitempty" jsonschema:"指定是否只返回活跃的通知"` // 是否活跃
@@ -16,6 +18,9 @@ type GetWebhookResponse struct {
 	TemplateTitle   string `json:"template_title" jsonschema:"通知标题的Go Template"`   // 通知标题 Go Template
 	TemplateContent string `json:"template_content" jsonschema:"通知内容的Go Template"` // 通知内容 Go Template
 	IsActive        bool   `json:"is_active" jsonschema:"是否启用该通知"`                 // 是否启用
+
+	CreatedAt time.Time `json:"-"` // 创建时间
+	UpdatedAt time.Time `json:"-"` // 更新时间
 }
 
 // 获取通知 请求结构

@@ -77,6 +77,9 @@ func (s *DomainMonitorServiceImpl) BuildResponse(ctx context.Context, item *ent.
 		CurrentStatus:  item.CurrentStatus.String(),
 		LastSuccessAt:  item.LastSuccessAt,
 		LastFailureAt:  item.LastFailureAt,
+
+		CreatedAt: item.CreatedAt,
+		UpdatedAt: item.UpdatedAt,
 	}
 
 	// 查询通知订阅

@@ -73,6 +73,9 @@ func (s *DeviceServiceImpl) BuildResponse(ctx context.Context, item *ent.Device)
 		IPV6:            item.IPV6,
 		LastReportedAt:  item.LastReportedAt,
 		LastHeartbeatAt: item.LastHeartbeatAt,
+
+		CreatedAt: item.CreatedAt,
+		UpdatedAt: item.UpdatedAt,
 	}
 
 	// 查询通知订阅

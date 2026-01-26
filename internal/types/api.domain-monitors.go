@@ -24,6 +24,9 @@ type GetDomainMonitorResponse struct {
 	LastFailureAt  time.Time `json:"last_failure_at" jsonschema:"最后一次检查失败时间"`                   // 最后一次检查失败时间
 
 	Webhooks []int64 `json:"webhooks" jsonschema:"关联的Webhook ID列表"` // 关联的 Webhook 列表
+
+	CreatedAt time.Time `json:"-"` // 创建时间
+	UpdatedAt time.Time `json:"-"` // 更新时间
 }
 
 // 获取域名监控 请求结构
