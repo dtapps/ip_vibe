@@ -62,12 +62,13 @@ func WebhookSub(c *gin.Context) {
 	pageData.Total = allWebhookSubscription.Total
 
 	// 渲染模板
-	renderHTML(
+	renderHTMLWithMenu(
 		c,
 		filepath.Join("pages", "webhook-sub.html"),
 		types.BasePageData[types.WebhookSubResponse]{
 			Title: "Webhook订阅记录",
 			Data:  pageData,
 		},
+		"webhook",
 	)
 }
