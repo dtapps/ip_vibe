@@ -375,10 +375,14 @@ type AliyunESAProviderGroupOriginInfo struct {
 // https://next.api.aliyun.com/api/ESA/2024-09-10/UpdateOriginPool
 func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues []string) (originInfo *AliyunESAProviderGroupOriginInfo, err error) {
 
+	// 源站组
 	const sourceType = "OP"
 	originInfo = new(AliyunESAProviderGroupOriginInfo)
 	originInfo.List = newOriginValues
 	originInfo.SourceType = sourceType
+
+	// 权重, 每个源站的权重为 100 / 源站数量, 保留整数部分
+	weight := int32(100) / int32(len(newOriginValues))
 
 	// 查询源站组
 	requestGroupQuery := &esa20240910.ListOriginPoolsRequest{}
@@ -435,9 +439,10 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 		for _, item := range newOriginValues {
 			requestGroupCreate.Origins = append(requestGroupCreate.Origins, &esa20240910.CreateOriginPoolRequestOrigins{
 				Address: tea.String(item),
-				Type:    tea.String("ip_domain"),
-				Name:    tea.String(gomd5.Get16MD5Encode(item)),
 				Enabled: tea.Bool(true),
+				Name:    tea.String(gomd5.Get16MD5Encode(item)),
+				Type:    tea.String("ip_domain"),
+				Weight:  tea.Int32(weight),
 			})
 		}
 		responseGroupCreate, err := p.Provider.Client.CreateOriginPoolWithContext(ctx, requestGroupCreate, p.Provider.Runtime)
@@ -466,10 +471,11 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 		requestGroupUpdate.Origins = make([]*esa20240910.UpdateOriginPoolRequestOrigins, 0) // 源地址池里添加的源站信息
 		for _, item := range newOriginValues {
 			requestGroupUpdate.Origins = append(requestGroupUpdate.Origins, &esa20240910.UpdateOriginPoolRequestOrigins{
-				Name:    tea.String(gomd5.Get16MD5Encode(item)),
 				Address: tea.String(item),
-				Type:    tea.String("ip_domain"),
 				Enabled: tea.Bool(true),
+				Name:    tea.String(gomd5.Get16MD5Encode(item)),
+				Type:    tea.String("ip_domain"),
+				Weight:  tea.Int32(weight),
 			})
 		}
 		requestGroupUpdate.SiteId = tea.Int64(p.cfg.SiteID) // 站点ID
