@@ -53,6 +53,7 @@ const (
 	ConfigCapabilityDns string = "dns" // DNS服务能力
 	ConfigCapabilityCdn string = "cdn" // CDN服务能力
 	ConfigCapabilitySsl string = "ssl" // SSL服务能力
+	ConfigCapabilityTun string = "tun" // TUN服务能力
 )
 
 // GetConfigCapabilityDescriptions 服务能力说明映射
@@ -61,6 +62,7 @@ var GetConfigCapabilityDescriptions = map[string]string{
 	ConfigCapabilityDns: "DNS服务能力",
 	ConfigCapabilityCdn: "CDN服务能力",
 	ConfigCapabilitySsl: "SSL服务能力",
+	ConfigCapabilityTun: "TUN服务能力",
 }
 
 // GetConfigCapabilitys 返回所有服务能力
@@ -69,6 +71,7 @@ var GetConfigCapabilitys = []string{
 	ConfigCapabilityDns,
 	ConfigCapabilityCdn,
 	ConfigCapabilitySsl,
+	ConfigCapabilityTun,
 }
 
 // --------

@@ -48,7 +48,7 @@ func (PlatformConfig) Fields() []ent.Field {
 		field.Enum("capability").
 			Default(schematype.ConfigCapabilityAll).
 			Values(schematype.GetConfigCapabilitys...).
-			Comment("平台支持的服务能力：all（全部）dns（仅DNS）、cdn（仅CDN）、ssl（仅SSL）").
+			Comment("平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
