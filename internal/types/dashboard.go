@@ -23,36 +23,26 @@ type DashboardResponse struct {
 
 	DeviceCode string `json:"device_code"`
 
-	SystemVersion    string           `json:"system_version"`
-	SystemGitCommit  string           `json:"system_git_commit"`
-	SystemBuildTime  string           `json:"system_build_time"`
-	SystemGoVersion  string           `json:"system_go_version"`
-	SystemOS         string           `json:"system_os"`
-	SystemArch       string           `json:"system_arch"`
 	SystemMemoryInfo ReturnMemoryInfo `json:"memory_info"`
 
 	Settings GetSettingResponse `json:"settings"`
 }
 
-// ReturnMemoryInfo 内存与 GC 综合信息
+// ReturnMemoryInfo 系统信息和系统状态
 type ReturnMemoryInfo struct {
-	AllocMB       float64 `json:"allocMB"`       // 已分配堆内存 (MB)
-	SysMB         float64 `json:"sysMB"`         // 从系统获取的总内存 (MB)
-	NumGC         uint32  `json:"numGC"`         // GC 总次数
-	LastPauseMs   float64 `json:"lastPauseMs"`   // 最近一次 GC 暂停时间 (ms)
-	PauseTotalMs  float64 `json:"pauseTotalMs"`  // GC 总暂停时间 (ms)
-	GCCPUFraction float64 `json:"gccpuFraction"` // GC 占用 CPU 时间比例
-	GCPerSec      float64 `json:"gcPerSec"`      // 平均每秒 GC 次数
-	LastGCTime    string  `json:"lastGCTime"`    // 上次 GC 完成时间 (HH:MM:SS)
-	HeapIdleMB    float64 `json:"heapIdleMB"`    // 空闲堆内存 (MB)
-	StackInuseMB  float64 `json:"stackInuseMB"`  // 栈内存使用量 (MB)
-	NumMallocs    uint64  `json:"numMallocs"`    // 总分配次数
-	NumFrees      uint64  `json:"numFrees"`      // 总释放次数
-	NextGCMB      float64 `json:"nextGCMB"`      // 下次GC触发的堆大小 (MB)
-	HeapObjects   uint64  `json:"heapObjects"`   // 堆上活跃对象总数
-	CPUCoreCount  int     `json:"cpuCoreCount"`  // CPU 核心数
-	GoMaxProcs    int     `json:"goMaxProcs"`    // 当前 GOMAXPROCS 值
-	NumGoroutine  int     `json:"numGoroutine"`  // 当前 Goroutine 数量
+	Version   string `json:"version"`    // 系统版本
+	GitCommit string `json:"git_commit"` // 系统 Git 提交
+	BuildTime string `json:"build_time"` // 系统构建时间
+	GoVersion string `json:"go_version"` // 系统 Go 版本
+	OS        string `json:"os"`         // 系统 OS
+	Arch      string `json:"arch"`       // 系统架构
 
-	RuntimeStartTime string `json:"runtimeStartTime"` // 应用启动时间
+	RuntimeStartTime string `json:"runtime_start_time"` // 应用启动时间
+	NumGoroutine     int    `json:"num_goroutine"`      // Goroutine 数量
+	NumGC            uint32 `json:"num_gc"`             // GC 总次数
+
+	CPUModel    string  `json:"cpu_model"`    // CPU 型号
+	UsedPercent float64 `json:"used_percent"` // 内存使用率
+	TotalMem    string  `json:"total_mem"`    // 总物理内存
+	AllocMem    string  `json:"alloc_mem"`    // Go 进程分配内存
 }

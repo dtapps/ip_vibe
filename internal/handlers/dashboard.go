@@ -149,17 +149,9 @@ func Dashboard(c *gin.Context) {
 	// 获取自身设备ID
 	pageData.DeviceCode, _ = machineid.ID()
 
-	// 获取系统版本信息
+	// 获取系统信息和系统状态
 	systemHelper := system_helper.NewSystemHelper()
-	pageData.SystemVersion = global.GvaVersion
-	pageData.SystemGitCommit = global.GvaGitCommit
-	pageData.SystemBuildTime = global.GvaBuildTime
-	pageData.SystemGoVersion = global.GvaGoVersion
-	pageData.SystemOS = global.GvaOS
-	pageData.SystemArch = global.GvaArch
-
-	// 获取系统内存信息
-	pageData.SystemMemoryInfo = systemHelper.GetMemoryInfo()
+	pageData.SystemMemoryInfo = systemHelper.GetMemoryInfo(c)
 
 	// 获取系统设置
 	// setting := db_cache.GetSetting(c, global.GvaEntDb)

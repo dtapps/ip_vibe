@@ -470,6 +470,10 @@ github.com/go-co-op/gocron/v2
 github.com/go-jose/go-jose/v4
 github.com/go-jose/go-jose/v4/cipher
 github.com/go-jose/go-jose/v4/json
+# github.com/go-ole/go-ole v1.3.0
+## explicit; go 1.12
+github.com/go-ole/go-ole
+github.com/go-ole/go-ole/oleutil
 # github.com/go-openapi/inflect v0.21.5
 ## explicit; go 1.24
 github.com/go-openapi/inflect
@@ -655,7 +659,7 @@ github.com/jonboulle/clockwork
 # github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12
 ## explicit; go 1.12
 github.com/json-iterator/go
-# github.com/kingsoftcloud/sdk-go/v2 v2.2.64
+# github.com/kingsoftcloud/sdk-go/v2 v2.2.65
 ## explicit; go 1.17
 github.com/kingsoftcloud/sdk-go/v2/ksyun/client/cdn/v3
 github.com/kingsoftcloud/sdk-go/v2/ksyun/common
@@ -679,6 +683,9 @@ github.com/klauspost/cpuid/v2
 ## explicit; go 1.18
 github.com/leodido/go-urn
 github.com/leodido/go-urn/scim/schema
+# github.com/lufia/plan9stats v0.0.0-20251013123823-9fd1530e3ec3
+## explicit; go 1.21
+github.com/lufia/plan9stats
 # github.com/magefile/mage v1.15.1-0.20241126214340-bdc92f694516
 ## explicit; go 1.12
 github.com/magefile/mage/mg
@@ -726,6 +733,9 @@ github.com/petar-dambovaliev/aho-corasick
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
+# github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55
+## explicit; go 1.14
+github.com/power-devops/perfstat
 # github.com/qiniu/go-sdk/v7 v7.25.6
 ## explicit; go 1.14
 github.com/qiniu/go-sdk/v7
@@ -781,6 +791,15 @@ github.com/remyoudompheng/bigfft
 github.com/robfig/cron/v3
 # github.com/rogpeppe/go-internal v1.14.1
 ## explicit; go 1.23
+# github.com/shirou/gopsutil/v3 v3.24.5
+## explicit; go 1.18
+github.com/shirou/gopsutil/v3/common
+github.com/shirou/gopsutil/v3/cpu
+github.com/shirou/gopsutil/v3/internal/common
+github.com/shirou/gopsutil/v3/mem
+# github.com/shoenig/go-m1cpu v0.1.7
+## explicit; go 1.20
+github.com/shoenig/go-m1cpu
 # github.com/spf13/cast v1.10.0
 ## explicit; go 1.21.0
 github.com/spf13/cast
@@ -833,6 +852,12 @@ github.com/tidwall/sjson
 ## explicit; go 1.14
 github.com/tjfoc/gmsm/sm2
 github.com/tjfoc/gmsm/sm3
+# github.com/tklauser/go-sysconf v0.3.16
+## explicit; go 1.24.0
+github.com/tklauser/go-sysconf
+# github.com/tklauser/numcpus v0.11.0
+## explicit; go 1.24.0
+github.com/tklauser/numcpus
 # github.com/twitchyliquid64/golang-asm v0.15.1
 ## explicit; go 1.13
 github.com/twitchyliquid64/golang-asm/asm/arch
@@ -902,6 +927,9 @@ github.com/wdcbot/qingfeng
 # github.com/yosida95/uritemplate/v3 v3.0.2
 ## explicit; go 1.14
 github.com/yosida95/uritemplate/v3
+# github.com/yusufpapurcu/wmi v1.2.4
+## explicit; go 1.16
+github.com/yusufpapurcu/wmi
 # github.com/zclconf/go-cty v1.17.0
 ## explicit; go 1.23
 github.com/zclconf/go-cty/cty
